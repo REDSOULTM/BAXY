@@ -132,7 +132,6 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             bool changed = after is { } later
                 && later.Hwnd == captured.Hwnd
                 && !string.Equals(later.Sha256, captured.Sha256, StringComparison.Ordinal);
-            VisibleControlSurface.Delete(after?.Path);
             if (!changed)
                 return effectBoundary.Failure(operation, "scroll_surface_unchanged", effectObserved: true);
 
@@ -141,10 +140,6 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return effectBoundary.Failure(operation, "scroll_receipt_invalid");
-        }
-        finally
-        {
-            VisibleControlSurface.Delete(captured.Path);
         }
     }
 

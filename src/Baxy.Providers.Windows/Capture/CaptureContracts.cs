@@ -41,6 +41,9 @@ public interface IScreenshotProvider
     ValueTask<CaptureResult> CaptureActiveWindowAsync(CancellationToken cancellationToken);
 }
 
+// A window image held in memory only: a 32-bit bottom-up BMP and its SHA-256.
+internal sealed record WindowImage(int Width, int Height, byte[] Bmp, string Sha256);
+
 internal sealed record ScreenshotFrame(
     int Width, int Height, byte[] BgraBottomUp,
     ActiveWindowCaptureProvenance? ActiveWindow = null);

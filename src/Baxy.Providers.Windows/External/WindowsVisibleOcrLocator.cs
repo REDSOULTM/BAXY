@@ -5,7 +5,6 @@ using System.Text.Json;
 using Windows.Globalization;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
-using Windows.Storage;
 using Windows.Storage.Streams;
 
 namespace Baxy.Providers.Windows.External;
@@ -30,12 +29,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
             if (engine is null)
                 return null;
-            StorageFile file = await StorageFile.GetFileFromPathAsync(before.Path);
-            using IRandomAccessStream stream = await file.OpenReadAsync();
-            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-            using SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Ignore);
+            using SoftwareBitmap bitmap = await DecodeAsync(before.Bmp);
             OcrResult recognized = await engine.RecognizeAsync(bitmap);
             cancellationToken.ThrowIfCancellationRequested();
             OcrResult? enhanced = null;
@@ -63,11 +57,10 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             if (after is not null)
             {
                 (surfaceObserved, observedText) = await ObserveLabelAsync(
-                    after.Value.Path,
+                    after.Value.Bmp,
                     engine,
                     label,
                     cancellationToken).ConfigureAwait(false);
-                VisibleControlSurface.Delete(after.Value.Path);
             }
             // H0101: el diálogo de descarga del lanzador de juegos dice «Instalar» tres veces
             // —el título, el rótulo «INSTALAR EN:» y el botón—. Al pulsar el
@@ -106,24 +99,23 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         {
             return null;
         }
-        finally
-        {
-            VisibleControlSurface.Delete(before.Path);
-        }
+    }
+
+    // A capture held in memory, decoded for the OCR engine (the bitmap a file read used to hand it).
+    internal static async Task<SoftwareBitmap> DecodeAsync(byte[] bmp)
+    {
+        using IRandomAccessStream stream = new MemoryStream(bmp, writable: false).AsRandomAccessStream();
+        BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+        return await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore);
     }
 
     private static async ValueTask<(bool observed, string text)> ObserveLabelAsync(
-        string path,
+        byte[] bmp,
         OcrEngine engine,
         string label,
         CancellationToken cancellationToken)
     {
-        StorageFile file = await StorageFile.GetFileFromPathAsync(path);
-        using IRandomAccessStream stream = await file.OpenReadAsync();
-        BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-        using SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync(
-            BitmapPixelFormat.Bgra8,
-            BitmapAlphaMode.Ignore);
+        using SoftwareBitmap bitmap = await DecodeAsync(bmp);
         OcrResult recognized = await engine.RecognizeAsync(bitmap);
         cancellationToken.ThrowIfCancellationRequested();
         string text = recognized.Text ?? "";
@@ -185,7 +177,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
     // (la ventana heredada de CEF), sin un hijo. Ahí lo único que se puede
     // leer es lo que se ve.
     internal static async ValueTask<IReadOnlyList<LayoutLine>?> ReadLayoutAsync(
-        string capturePath,
+        byte[] capture,
         int limit,
         CancellationToken cancellationToken)
     {
@@ -194,12 +186,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
             if (engine is null)
                 return null;
-            StorageFile file = await StorageFile.GetFileFromPathAsync(capturePath);
-            using IRandomAccessStream stream = await file.OpenReadAsync();
-            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-            using SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Ignore);
+            using SoftwareBitmap bitmap = await DecodeAsync(capture);
             OcrResult recognized = await engine.RecognizeAsync(bitmap);
             cancellationToken.ThrowIfCancellationRequested();
             OcrResult? enhanced = null;

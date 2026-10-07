@@ -18,6 +18,20 @@ public sealed class ComputerUseSpeedTests
     private static WindowsDesktopInteractionAdapter Keys(FakeDesktopKeyboard keyboard) =>
         new(new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", keyboard);
 
+    // v2-s04 «en el Explorador de archivos andá a Descargas»: the folder window opened inside the shell's explorer.exe,
+    // running for hours; that opening is no launch to wait 30 s on, nor a process family to search for the window.
+    [TestCase(-2 * 3600, true, false)]
+    [TestCase(-3, true, true)]
+    [TestCase(-3, false, false)]
+    public void OnlyAProcessStartedByTheOpeningIsALaunch(int startedSecondsAgo, bool launched, bool expected)
+    {
+        DateTime noted = new(2026, 10, 7, 4, 0, 0, DateTimeKind.Utc);
+
+        Assert.That(
+            VisibleControlSurface.LaunchedNow(noted.AddSeconds(startedSecondsAgo), noted, launched),
+            Is.EqualTo(expected));
+    }
+
     [TestCase("ctrl_shift_escape", new ushort[] { 0x11, 0x10, 0x1B })]
     [TestCase("ctrl_l", new ushort[] { 0x11, 0x4C })]
     [TestCase("alt_tab", new ushort[] { 0x12, 0x09 })]

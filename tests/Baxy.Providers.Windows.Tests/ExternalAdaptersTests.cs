@@ -1354,6 +1354,36 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // v2-u3 «abrí Fotos y andá a Carpetas»: a control already pressed by its identity in the opened application proves
+    // it drawn; the next click by label looks at once instead of waiting for a dark page to stop looking blank.
+    [Test]
+    public async Task VisibleClickByLabelAfterAnIdentifiedPressDoesNotWaitForTheOpening()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
+            "{\"version\":2,\"ok\":true,\"effectObserved\":true,\"error\":\"\",\"name\":\"Buscar\"," +
+            "\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":true,\"authority\":\"windows_uia_or_win32_button_postread\"}",
+            NotFoundByUia);
+        var focus = new ScriptedFocus(launched: true, windowAfter: 0, drawnAfter: int.MaxValue);
+        var ocr = new CountingLocator("ocr", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, ocr, vision: null, focus, ShortTiming);
+
+        ExternalCapabilityReceipt pressed = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"buscar","controlId":"1.2.3"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"carpetas"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pressed.Verified, Is.True);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
+            Assert.That(focus.FrontCalls, Is.Zero);
+        });
+    }
+
     // M132, measured live: while the label was looked for, the front fell to the person's editor, where the same
     // word was on screen, and it was pressed there. A click after an opening reads the opened window only.
     [Test]

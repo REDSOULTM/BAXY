@@ -253,7 +253,15 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             ExternalCapabilityReceipt identified = await InvokeUiaAsync(
                 operation, label, controlId, 0, cancellationToken).ConfigureAwait(false);
             if (identified.ErrorCode != "visible_control_identity_stale")
+            {
+                // A control of the view pressed by its identity: the application opened is drawn and answering, so a
+                // later click by label does not wait for it to finish opening. v2-u3 «abrí Fotos y andá a Carpetas»:
+                // the search field was pressed by identity 2 s after the opening, and the next click by label still
+                // waited 26 s for the dark gallery to stop looking blank.
+                if (identified.EffectObserved)
+                    _ = _focus.TakeOpened();
                 return identified;
+            }
             // The control moved or was redrawn since the view: the ordinary
             // cascade by label, which is what the reviewer saw, takes over.
         }
@@ -513,7 +521,6 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         long uiaMs = stopwatch.ElapsedMilliseconds;
         if (answer is null)
         {
-            await DiscardAsync(captureTask, textTask).ConfigureAwait(false);
             return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
         }
 
@@ -522,7 +529,6 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             JsonElement root = answer.RootElement;
             if (!root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
             {
-                await DiscardAsync(captureTask, textTask).ConfigureAwait(false);
                 string code = root.TryGetProperty("error", out JsonElement error)
                     && error.ValueKind == JsonValueKind.String
                     && error.GetString() is { Length: > 0 } text
@@ -552,154 +558,147 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
             var names = new List<string>();
-            try
+            if (captured is { } capture)
             {
-                if (captured is { } capture)
+                var colourWatch = Stopwatch.StartNew();
+                VisibleControlColors.Assign(capture, controls);
+                colorMs = colourWatch.ElapsedMilliseconds;
+                // Not asked for, the text is still read when the tree shows nothing to act on.
+                if (textTask is null && controls.Count <= 1)
+                    textTask = ReadTextAsync(captureTask, limit, cancellationToken);
+                if (textTask is not null)
                 {
-                    var colourWatch = Stopwatch.StartNew();
-                    VisibleControlColors.Assign(capture, controls);
-                    colorMs = colourWatch.ElapsedMilliseconds;
-                    // Not asked for, the text is still read when the tree shows nothing to act on.
-                    if (textTask is null && controls.Count <= 1)
-                        textTask = ReadTextAsync(captureTask, limit, cancellationToken);
-                    if (textTask is not null)
+                    (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines, ocrMs) =
+                        await textTask.ConfigureAwait(false);
+                    if (lines is not null)
                     {
-                        (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines, ocrMs) =
-                            await textTask.ConfigureAwait(false);
-                        if (lines is not null)
+                        textAuthority = "windows_media_ocr_lines";
+                        foreach (WindowsVisibleOcrLocator.LayoutLine line in lines)
                         {
-                            textAuthority = "windows_media_ocr_lines";
-                            foreach (WindowsVisibleOcrLocator.LayoutLine line in lines)
+                            string zone = Zone(
+                                line.X + line.Width / 2, line.Y + line.Height / 2,
+                                new Rect(0, 0, capture.Width, capture.Height));
+                            if (!textZones.TryGetValue(zone, out List<string>? bucket))
                             {
-                                string zone = Zone(
-                                    line.X + line.Width / 2, line.Y + line.Height / 2,
-                                    new Rect(0, 0, capture.Width, capture.Height));
-                                if (!textZones.TryGetValue(zone, out List<string>? bucket))
-                                {
-                                    bucket = [];
-                                    textZones[zone] = bucket;
-                                }
-
-                                bucket.Add(line.Text);
-                                names.Add(line.Text);
+                                bucket = [];
+                                textZones[zone] = bucket;
                             }
+
+                            bucket.Add(line.Text);
+                            names.Add(line.Text);
                         }
-                        else
-                        {
-                            textAuthority = "unavailable";
-                        }
-                    }
-                }
-
-                foreach (ViewControl control in controls)
-                {
-                    control.Zone = control.RectValue is { } rect
-                        ? Zone(rect.X + rect.W / 2, rect.Y + rect.H / 2, windowRect)
-                        : string.Empty;
-                    names.Add(control.Name);
-                }
-
-                lock (_viewLock)
-                {
-                    _lastView = new LastView(hwnd, controls);
-                }
-
-                JsonElement result = ExternalJson.Create(writer =>
-                {
-                    writer.WriteStartObject();
-                    writer.WriteNumber("version", 2);
-                    writer.WriteBoolean("ok", true);
-                    writer.WriteString("error", string.Empty);
-                    writer.WriteStartObject("window");
-                    writer.WriteString("title", title);
-                    writer.WriteString("process", processName);
-                    writer.WriteNumber("processId", ownerProcessId);
-                    writer.WriteNumber("hwnd", hwnd);
-                    writer.WriteBoolean("requested", requested);
-                    if (VisibleControlSurface.RunsAboveUs(ownerProcessId))
-                        writer.WriteBoolean("elevated", true);
-                    WriteRect(writer, "rect", windowRect);
-                    if (cover != 0)
-                    {
-                        (_, string coverProcess) = VisibleControlSurface.WindowProcess(cover);
-                        writer.WriteStartObject("coveredBy");
-                        writer.WriteString("title", VisibleControlSurface.WindowTitle(cover));
-                        writer.WriteString("process", coverProcess);
-                        writer.WriteEndObject();
-                    }
-                    if (root.TryGetProperty("focused", out JsonElement focused)
-                        && focused.ValueKind == JsonValueKind.Object)
-                    {
-                        writer.WritePropertyName("focused");
-                        focused.WriteTo(writer);
                     }
                     else
                     {
-                        writer.WriteNull("focused");
+                        textAuthority = "unavailable";
                     }
-
-                    writer.WriteEndObject();
-                    writer.WriteStartArray("controls");
-                    foreach (ViewControl control in controls)
-                    {
-                        writer.WriteStartObject();
-                        writer.WriteNumber("i", control.Index);
-                        writer.WriteString("kind", control.Kind);
-                        writer.WriteString("name", control.Name);
-                        writer.WriteString("id", control.Id);
-                        writer.WriteString("state", control.State);
-                        if (control.Value is null)
-                            writer.WriteNull("value");
-                        else
-                            writer.WriteString("value", control.Value);
-                        if (control.RectValue is { } rect)
-                            WriteRect(writer, "rect", rect);
-                        else
-                            writer.WriteNull("rect");
-                        writer.WriteString("zone", control.Zone);
-                        writer.WriteString("color", control.Color);
-                        if (control.Repeated > 0)
-                            writer.WriteNumber("repeated", control.Repeated);
-                        writer.WriteEndObject();
-                    }
-
-                    writer.WriteEndArray();
-                    writer.WriteNumber("controlCount", counted);
-                    if (textAuthority is not null)
-                    {
-                        writer.WriteStartObject("text");
-                        foreach (string zone in ZoneOrder)
-                        {
-                            if (!textZones.TryGetValue(zone, out List<string>? bucket) || bucket.Count == 0)
-                                continue;
-                            writer.WriteStartArray(zone);
-                            foreach (string line in bucket)
-                                writer.WriteStringValue(line);
-                            writer.WriteEndArray();
-                        }
-
-                        writer.WriteEndObject();
-                        writer.WriteString("textAuthority", textAuthority);
-                    }
-
-                    writer.WriteString("surface", captured?.Sha256 ?? string.Empty);
-                    writer.WriteStartObject("elapsedMs");
-                    writer.WriteNumber("uia", uiaMs);
-                    writer.WriteNumber("ocr", ocrMs);
-                    writer.WriteNumber("color", colorMs);
-                    writer.WriteNumber("total", stopwatch.ElapsedMilliseconds);
-                    writer.WriteEndObject();
-                    writer.WriteString("authority", controls.Count <= 1 && textAuthority == "windows_media_ocr_lines"
-                        ? "windows_media_ocr_lines"
-                        : "windows_uia_snapshot_ocr_zones");
-                    writer.WriteEndObject();
-                });
-                return new ViewResult(ExternalJson.Success(operation, result, false), names);
+                }
             }
-            finally
+
+            foreach (ViewControl control in controls)
             {
-                await DiscardAsync(captureTask, textTask).ConfigureAwait(false);
+                control.Zone = control.RectValue is { } rect
+                    ? Zone(rect.X + rect.W / 2, rect.Y + rect.H / 2, windowRect)
+                    : string.Empty;
+                names.Add(control.Name);
             }
+
+            lock (_viewLock)
+            {
+                _lastView = new LastView(hwnd, controls);
+            }
+
+            JsonElement result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 2);
+                writer.WriteBoolean("ok", true);
+                writer.WriteString("error", string.Empty);
+                writer.WriteStartObject("window");
+                writer.WriteString("title", title);
+                writer.WriteString("process", processName);
+                writer.WriteNumber("processId", ownerProcessId);
+                writer.WriteNumber("hwnd", hwnd);
+                writer.WriteBoolean("requested", requested);
+                if (VisibleControlSurface.RunsAboveUs(ownerProcessId))
+                    writer.WriteBoolean("elevated", true);
+                WriteRect(writer, "rect", windowRect);
+                if (cover != 0)
+                {
+                    (_, string coverProcess) = VisibleControlSurface.WindowProcess(cover);
+                    writer.WriteStartObject("coveredBy");
+                    writer.WriteString("title", VisibleControlSurface.WindowTitle(cover));
+                    writer.WriteString("process", coverProcess);
+                    writer.WriteEndObject();
+                }
+                if (root.TryGetProperty("focused", out JsonElement focused)
+                    && focused.ValueKind == JsonValueKind.Object)
+                {
+                    writer.WritePropertyName("focused");
+                    focused.WriteTo(writer);
+                }
+                else
+                {
+                    writer.WriteNull("focused");
+                }
+
+                writer.WriteEndObject();
+                writer.WriteStartArray("controls");
+                foreach (ViewControl control in controls)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("i", control.Index);
+                    writer.WriteString("kind", control.Kind);
+                    writer.WriteString("name", control.Name);
+                    writer.WriteString("id", control.Id);
+                    writer.WriteString("state", control.State);
+                    if (control.Value is null)
+                        writer.WriteNull("value");
+                    else
+                        writer.WriteString("value", control.Value);
+                    if (control.RectValue is { } rect)
+                        WriteRect(writer, "rect", rect);
+                    else
+                        writer.WriteNull("rect");
+                    writer.WriteString("zone", control.Zone);
+                    writer.WriteString("color", control.Color);
+                    if (control.Repeated > 0)
+                        writer.WriteNumber("repeated", control.Repeated);
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
+                writer.WriteNumber("controlCount", counted);
+                if (textAuthority is not null)
+                {
+                    writer.WriteStartObject("text");
+                    foreach (string zone in ZoneOrder)
+                    {
+                        if (!textZones.TryGetValue(zone, out List<string>? bucket) || bucket.Count == 0)
+                            continue;
+                        writer.WriteStartArray(zone);
+                        foreach (string line in bucket)
+                            writer.WriteStringValue(line);
+                        writer.WriteEndArray();
+                    }
+
+                    writer.WriteEndObject();
+                    writer.WriteString("textAuthority", textAuthority);
+                }
+
+                writer.WriteString("surface", captured?.Sha256 ?? string.Empty);
+                writer.WriteStartObject("elapsedMs");
+                writer.WriteNumber("uia", uiaMs);
+                writer.WriteNumber("ocr", ocrMs);
+                writer.WriteNumber("color", colorMs);
+                writer.WriteNumber("total", stopwatch.ElapsedMilliseconds);
+                writer.WriteEndObject();
+                writer.WriteString("authority", controls.Count <= 1 && textAuthority == "windows_media_ocr_lines"
+                    ? "windows_media_ocr_lines"
+                    : "windows_uia_snapshot_ocr_zones");
+                writer.WriteEndObject();
+            });
+            return new ViewResult(ExternalJson.Success(operation, result, false), names);
         }
     }
 
@@ -730,34 +729,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             return default;
         var watch = Stopwatch.StartNew();
         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines = await WindowsVisibleOcrLocator.ReadLayoutAsync(
-            capture.Path, Math.Max(limit, 40), cancellationToken).ConfigureAwait(false);
+            capture.Bmp, Math.Max(limit, 40), cancellationToken).ConfigureAwait(false);
         return new WrittenText(lines, watch.ElapsedMilliseconds);
-    }
-
-    // The capture file goes once nothing reads it any more, whatever ended the view.
-    private static async Task DiscardAsync(
-        Task<VisibleControlSurface.CapturedWindow?> captureTask,
-        Task<WrittenText>? textTask)
-    {
-        VisibleControlSurface.CapturedWindow? captured = null;
-        try
-        {
-            if (textTask is not null)
-                _ = await textTask.ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-
-        try
-        {
-            captured = await captureTask.ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-
-        VisibleControlSurface.Delete(captured?.Path);
     }
 
     private static List<ViewControl> ParseControls(JsonElement root)
@@ -936,10 +909,6 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         {
             return effectBoundary.Failure(operation, "visible_click_receipt_invalid");
         }
-        finally
-        {
-            VisibleControlSurface.Delete(before?.Path);
-        }
     }
 
     /// <summary>
@@ -1006,19 +975,15 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
 
     private static async ValueTask<string?> SurfaceAsync(nint window, CancellationToken cancellationToken)
     {
-        VisibleControlSurface.CapturedWindow? capture = null;
         try
         {
-            capture = await VisibleControlSurface.CaptureAsync(window, cancellationToken).ConfigureAwait(false);
+            VisibleControlSurface.CapturedWindow? capture =
+                await VisibleControlSurface.CaptureAsync(window, cancellationToken).ConfigureAwait(false);
             return capture is { } taken && taken.Hwnd == window ? taken.Sha256 : null;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
             return null;
-        }
-        finally
-        {
-            VisibleControlSurface.Delete(capture?.Path);
         }
     }
 
@@ -1237,16 +1202,7 @@ internal static class VisibleControlColors
         VisibleControlSurface.CapturedWindow capture,
         IReadOnlyList<WindowsVisibleControlAdapter.ViewControl> controls)
     {
-        byte[] bmp;
-        try
-        {
-            bmp = File.ReadAllBytes(capture.Path);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            return;
-        }
-
+        byte[] bmp = capture.Bmp;
         if (!TryParse(bmp, out int offset, out int width, out int height) || width <= 0 || height <= 0)
             return;
         foreach (WindowsVisibleControlAdapter.ViewControl control in controls)

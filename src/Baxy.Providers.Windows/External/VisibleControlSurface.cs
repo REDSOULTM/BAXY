@@ -352,21 +352,17 @@ internal static partial class VisibleControlSurface
         public void Dispose() => RequiredWindow.Value = previous;
     }
 
-    internal static async ValueTask<CapturedWindow?> CaptureAsync(
+    // The window as drawn now, held in memory: what the view, a click and a scroll compare and read is never written.
+    internal static ValueTask<CapturedWindow?> CaptureAsync(
         nint hwnd,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (hwnd == 0 || !TryBounds(hwnd, out int left, out int top, out _, out _))
-            return null;
-        string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
-        var provider = new WindowsScreenshotProvider(directory);
-        CaptureResult capture = await provider.CaptureWindowAsync(hwnd, cancellationToken)
-            .ConfigureAwait(false);
-        string path = Path.Combine(directory, capture.CaptureId + ".bmp");
-        if (!File.Exists(path))
-            return null;
-        return new CapturedWindow(hwnd, path, left, top, capture.Width, capture.Height, capture.Sha256);
+            return ValueTask.FromResult<CapturedWindow?>(null);
+        WindowImage image = WindowsScreenshotProvider.CaptureWindowImage(hwnd);
+        return ValueTask.FromResult<CapturedWindow?>(
+            new CapturedWindow(hwnd, image.Bmp, left, top, image.Width, image.Height, image.Sha256));
     }
 
     // M132 (owner script t36 «abre … y ve a la biblioteca», launched cold): the opening was verified on the
@@ -377,7 +373,7 @@ internal static partial class VisibleControlSurface
     private static readonly object OpenedGate = new();
     private static OpenedApplication? _opened;
 
-    internal static void NoteOpened(int processId, bool launched)
+    internal static void NoteOpened(int processId, bool launched, long window = 0)
     {
         if (processId <= 0)
             return;
@@ -394,9 +390,19 @@ internal static partial class VisibleControlSurface
             return;
         }
 
+        DateTime noted = DateTime.UtcNow;
         lock (OpenedGate)
-            _opened = new OpenedApplication(processId, started, DateTime.UtcNow, launched);
+            _opened = new OpenedApplication(processId, started, noted, LaunchedNow(started, noted, launched), (nint)window);
     }
+
+    // A process this opening started, against a new window of one already running: File Explorer opens its folder
+    // window inside the shell's explorer.exe (v2-s04, measured: the click then took the largest window of every
+    // program the shell ever started, the desktop among them, waited 41 s for its label and covered the folder
+    // window with the person's editor). A window of a running process is drawn as it shows.
+    private static readonly TimeSpan LaunchWindow = TimeSpan.FromMinutes(1);
+
+    internal static bool LaunchedNow(DateTime processStartedUtc, DateTime notedUtc, bool launched) =>
+        launched && notedUtc - processStartedUtc < LaunchWindow;
 
     internal static OpenedApplication? TakeOpened(TimeSpan freshness)
     {
@@ -428,10 +434,22 @@ internal static partial class VisibleControlSurface
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        HashSet<uint> family = ProcessFamily(opened);
-        if (family.Count == 0)
-            return default;
-        nint target = LargestUsableWindow(family);
+        // An application that was running already is the window the opening verified while it is still on screen;
+        // only one launched now is followed through the processes it starts (its main window replaces a splash).
+        nint target = 0;
+        if (!opened.Launched && opened.Window != 0 && IsAlive(opened.Window)
+            && HasUsableSurface(opened.Window) && !IsShellSurface(opened.Window))
+        {
+            target = opened.Window;
+        }
+        else
+        {
+            HashSet<uint> family = ProcessFamily(opened);
+            if (family.Count == 0)
+                return default;
+            target = LargestUsableWindow(family);
+        }
+
         if (target == 0)
             return default;
         nint foreground = GetForegroundWindow();
@@ -458,25 +476,16 @@ internal static partial class VisibleControlSurface
         nint window,
         CancellationToken cancellationToken)
     {
-        string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
-        string? path = null;
         try
         {
-            var provider = new WindowsScreenshotProvider(directory);
-            CaptureResult capture = await provider.CaptureWindowAsync(window, cancellationToken)
-                .ConfigureAwait(false);
-            path = Path.Combine(directory, capture.CaptureId + ".bmp");
-            byte[] bmp = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
-            return DominantColourShare(bmp);
+            return await CaptureAsync(window, cancellationToken).ConfigureAwait(false) is { } capture
+                ? DominantColourShare(capture.Bmp)
+                : null;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException
             or UnauthorizedAccessException or ArgumentException)
         {
             return null;
-        }
-        finally
-        {
-            Delete(path);
         }
     }
 
@@ -605,7 +614,7 @@ internal static partial class VisibleControlSurface
             _ = GetWindowThreadProcessId(window, out uint owner);
             // A packaged app opened is drawn inside the frame that hosts it (its own process has no top-level window).
             bool owned = family.Contains(owner) || (IsVisibleFrame(window) && FrameHosts(window, family.Contains));
-            if (!owned || !HasUsableSurface(window))
+            if (!owned || !HasUsableSurface(window) || IsShellSurface(window))
                 return true;
             if (!TryBounds(window, out int left, out int top, out int right, out int bottom))
                 return true;
@@ -663,15 +672,6 @@ internal static partial class VisibleControlSurface
         mouse_event(0x0004, 0, 0, 0, 0);
     }
 
-    internal static void Delete(string? path)
-    {
-        if (path is null)
-            return;
-        try { File.Delete(path); }
-        catch (IOException) { }
-        catch (UnauthorizedAccessException) { }
-    }
-
     /// <summary>
     /// Whether a window's process runs with more rights than this one (an elevated app such as Task Manager):
     /// Windows refuses UI Automation patterns and input from a lower process (UIPI), so nothing can be done there.
@@ -684,7 +684,7 @@ internal static partial class VisibleControlSurface
         return Elevated(processId) != false;
     }
 
-    private static bool? Elevated(int processId)
+    internal static bool? Elevated(int processId)
     {
         nint process = OpenProcess(0x1000, false, unchecked((uint)processId));
         if (process == 0)
@@ -965,11 +965,12 @@ internal static partial class VisibleControlSurface
         int ProcessId,
         DateTime StartedUtc,
         DateTime NotedUtc,
-        bool Launched);
+        bool Launched,
+        nint Window = 0);
 
     internal readonly record struct CapturedWindow(
         nint Hwnd,
-        string Path,
+        byte[] Bmp,
         int Left,
         int Top,
         int Width,
