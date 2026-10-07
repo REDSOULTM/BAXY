@@ -104,3 +104,18 @@ def test_a_chosen_colour_is_proved_by_its_whole_name_never_a_word_holding_it() -
     assert {"control:=rojo:selected", "control:=rojo:on", "stepDone:input.visible.click:=rojo"} <= atoms
     assert "stepDone:input.visible.click:=red" in atoms
     assert not any(atom.endswith((":red", ":rojo")) or ":red:" in atom or ":rojo:" in atom for atom in atoms)
+
+
+def test_the_name_the_window_writes_goes_before_the_persons_other_language_word() -> None:
+    # «blue» said to a Spanish window that writes «azul» in a long name it lists (too long to be that colour's
+    # control): the window's own name first, so the other language's click does not spend a step.
+    palette = {"i": 4, "kind": "Group", "state": "",
+               "name": "Paleta: negro, gris, blanco, rojo, naranja, amarillo, verde, azul, violeta, rosa"}
+    first = computer_use.deterministic_step(goal="seleccionar blue", view=_tools(extra=[palette]), history=[])
+    assert first is not None and first["arguments"] == {"label": "azul"}
+    assert first["reason"] == computer_use.REASON_BY_NAME
+    then = computer_use.deterministic_step(goal="seleccionar blue", view=_tools(extra=[palette]), history=[_failed(1, "azul")])
+    assert then is not None and then["arguments"] == {"label": "blue"}
+    # Neither name written anywhere: the person's word first, as before.
+    plain = computer_use.deterministic_step(goal="seleccionar blue", view=_tools(), history=[])
+    assert plain is not None and plain["arguments"] == {"label": "blue"}

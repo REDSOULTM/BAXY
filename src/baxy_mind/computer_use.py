@@ -827,11 +827,29 @@ def _unlisted_name_click(view: dict, history: list[dict], names: Iterable[str], 
     names = tuple(dict.fromkeys(str(name).strip() for name in names if str(name).strip()))
     if any(_REMOVAL_NAME.search(fold(name)) or _OPENS_ELSEWHERE.search(fold(name)) for name in names):
         return None
+    # The name the window itself writes somewhere (a word of a listed control or a line on screen) goes first: it is
+    # the window's language, and a click on the other language's name costs one of the sub-goal's steps.
+    shown = _view_words(view)
+    names = tuple(sorted(names, key=lambda name: not _shown_as_words(fold(name), shown)))
     for name in names:
         if fold(name) in clicked:
             continue
         return {"operation": "input.visible.click", "arguments": {"label": name}, "reason": REASON_BY_NAME}
     return None
+
+
+def _view_words(view: dict) -> str:
+    """The listed controls' names and the view's lines, folded, one per line."""
+
+    controls = view.get("controls")
+    named = [str(control.get("name") or "") for control in controls if isinstance(control, dict)] if isinstance(controls, list) else []
+    appeared = view.get("newText")
+    lines = [str(line) for line in appeared] if isinstance(appeared, list) else []
+    return "\n".join(fold(text) for text in (*named, *lines, *_view_lines(view)))
+
+
+def _shown_as_words(name: str, shown: str) -> bool:
+    return bool(name) and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", shown) is not None
 
 
 def _without_switches(view: dict) -> dict:
