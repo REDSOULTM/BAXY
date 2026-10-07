@@ -18706,7 +18706,7 @@ def compose_visible_defect(
             _computer_use.project_seen(_merged_observed(situation), "es"),
             " ".join(part for part in (user_text, said) if part),
         ) is not None:
-            return "unknown_word"
+            return "ungrounded_word"
     # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY never calls the person by its own name. Judged last,
     # so a draft with another defect is told that one first.
     return "person_called_baxy" if visible_reply_calls_the_person_baxy(stripped) else ""
@@ -28751,7 +28751,7 @@ class LlmRuntime:
                     else "Nombra la muestra que elegiste tal como la escribe seen.chosenShade.chosen, como el tono del color pedido."
                 ),
                 # cu-r16 (voice audit 2026-10-07: «Abrazé a la sección…», «Ya estamos en…», «mis playlists»).
-                "unknown_word": (
+                "ungrounded_word": (
                     "Use only words from seen and the person's request, in your own first person singular "
                     "(«I got to…», «I chose…», «I typed…»)."
                     if response_language == "en"

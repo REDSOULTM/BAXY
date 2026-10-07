@@ -1,6 +1,6 @@
 {
  "schema": "baxy.computer-use-words.v1",
- "source": "cu-r16 (voice audit 2026-10-07): every content word of a computer-use final comes from the turn's facts (goal, steps, window, screen, application, the person's request) or from this vocabulary: the words BAXY uses to say its own arrival or act in first person singular, function words, numbers and units. A word outside both is vetoed as unknown_word («Abrazé», a leaked «Wi-Fi», «busco»). Words are folded (lower case, no accents). Peninsular perfects («he», «ha»), the plural «estamos», «mis» and «already» are left out on purpose: they are not BAXY's voice.",
+ "source": "cu-r16 (voice audit 2026-10-07): every content word of a computer-use final comes from the turn's facts (goal, steps, window, screen, application, the person's request) or from this vocabulary: the words BAXY uses to say its own arrival or act in first person singular, function words, numbers and units. A word outside both is vetoed as ungrounded_word («Abrazé», a leaked «Wi-Fi», «busco»). Words are folded (lower case, no accents). Peninsular perfects («he», «ha»), the plural «estamos», «mis» and «already» are left out on purpose: they are not BAXY's voice. cu-r17: short first-person preterites of common UI acts («pegué», «cerré») are listed whole, since the stem match cannot reach them from the request («pegalo»); screenStates maps a Spanish screen state or UI word to the English word an English reply says for it («Emparejado» → «paired»), used only when the reply is English. applicationKinds names what the pages of an application hold, in both languages, keyed by the folded application name the facts carry: a final may call the listed things by their kind («los juegos» in Steam, «el disco» in the File Explorer, «la resolución» in Settings) though no line on the screen spells it.",
  "stemLength": 5,
  "function": {
   "es": [
@@ -98,7 +98,16 @@
    "inferior",
    "quieres",
    "queres",
-   "quieras"
+   "quieras",
+   "da",
+   "dan",
+   "estaba",
+   "estaban",
+   "todavia",
+   "nada",
+   "aun",
+   "sigue",
+   "siguen"
   ],
   "en": [
    "a",
@@ -174,7 +183,12 @@
    "upper",
    "lower",
    "if",
-   "want"
+   "want",
+   "still",
+   "nothing",
+   "yet",
+   "stayed",
+   "remains"
   ]
  },
  "own": {
@@ -343,7 +357,30 @@
    "encontrarla",
    "tienda",
    "lienzo",
-   "equipo"
+   "equipo",
+   "copie",
+   "pegue",
+   "cerre",
+   "borre",
+   "guarde",
+   "movi",
+   "solte",
+   "arrastre",
+   "recorte",
+   "deshice",
+   "rehice",
+   "limpie",
+   "quite",
+   "agregue",
+   "anadi",
+   "inserte",
+   "renombre",
+   "minimice",
+   "maximice",
+   "restaure",
+   "subi",
+   "baje",
+   "desplace"
   ],
   "en": [
    "done",
@@ -464,7 +501,458 @@
    "do",
    "store",
    "canvas",
-   "computer"
+   "computer",
+   "copied",
+   "pasted",
+   "closed",
+   "deleted",
+   "saved",
+   "moved",
+   "dragged",
+   "cut",
+   "undid",
+   "cleared",
+   "removed",
+   "added",
+   "inserted",
+   "renamed",
+   "minimized",
+   "maximized",
+   "restored",
+   "raised",
+   "lowered",
+   "scrolled"
+  ]
+ },
+ "screenStates": {
+  "activado": [
+   "on",
+   "enabled",
+   "active"
+  ],
+  "activada": [
+   "on",
+   "enabled",
+   "active"
+  ],
+  "desactivado": [
+   "off",
+   "disabled"
+  ],
+  "desactivada": [
+   "off",
+   "disabled"
+  ],
+  "encendido": [
+   "on"
+  ],
+  "encendida": [
+   "on"
+  ],
+  "apagado": [
+   "off"
+  ],
+  "apagada": [
+   "off"
+  ],
+  "emparejado": [
+   "paired"
+  ],
+  "emparejados": [
+   "paired"
+  ],
+  "emparejada": [
+   "paired"
+  ],
+  "conectado": [
+   "connected"
+  ],
+  "conectados": [
+   "connected"
+  ],
+  "conectada": [
+   "connected"
+  ],
+  "desconectado": [
+   "disconnected"
+  ],
+  "desconectada": [
+   "disconnected"
+  ],
+  "claro": [
+   "light"
+  ],
+  "oscuro": [
+   "dark"
+  ],
+  "seleccionado": [
+   "selected"
+  ],
+  "seleccionada": [
+   "selected"
+  ],
+  "seleccionados": [
+   "selected"
+  ],
+  "marcado": [
+   "checked"
+  ],
+  "marcada": [
+   "checked"
+  ],
+  "desmarcado": [
+   "unchecked"
+  ],
+  "abierto": [
+   "open"
+  ],
+  "abierta": [
+   "open"
+  ],
+  "cerrado": [
+   "closed"
+  ],
+  "cerrada": [
+   "closed"
+  ],
+  "instalado": [
+   "installed"
+  ],
+  "instalados": [
+   "installed"
+  ],
+  "instalada": [
+   "installed"
+  ],
+  "disponible": [
+   "available"
+  ],
+  "disponibles": [
+   "available"
+  ],
+  "recomendado": [
+   "recommended"
+  ],
+  "recomendada": [
+   "recommended"
+  ],
+  "predeterminado": [
+   "default"
+  ],
+  "predeterminada": [
+   "default"
+  ],
+  "silenciado": [
+   "muted"
+  ],
+  "pausado": [
+   "paused"
+  ],
+  "reproduciendo": [
+   "playing"
+  ],
+  "brillo": [
+   "brightness"
+  ],
+  "volumen": [
+   "volume"
+  ],
+  "pantalla": [
+   "display",
+   "screen"
+  ],
+  "configuracion": [
+   "settings"
+  ],
+  "temas": [
+   "themes"
+  ],
+  "tema": [
+   "theme"
+  ],
+  "personalizacion": [
+   "personalization"
+  ],
+  "sistema": [
+   "system"
+  ],
+  "dispositivos": [
+   "devices"
+  ],
+  "aplicaciones": [
+   "apps",
+   "applications"
+  ],
+  "biblioteca": [
+   "library"
+  ],
+  "tienda": [
+   "store"
+  ],
+  "descargas": [
+   "downloads"
+  ],
+  "documentos": [
+   "documents"
+  ],
+  "imagenes": [
+   "pictures",
+   "images"
+  ],
+  "escritorio": [
+   "desktop"
+  ],
+  "calculadora": [
+   "calculator"
+  ],
+  "explorador": [
+   "explorer"
+  ],
+  "archivos": [
+   "files"
+  ],
+  "carpeta": [
+   "folder"
+  ],
+  "cancion": [
+   "song"
+  ],
+  "canciones": [
+   "songs"
+  ],
+  "juego": [
+   "game"
+  ],
+  "juegos": [
+   "games"
+  ],
+  "fondo": [
+   "background"
+  ],
+  "sonido": [
+   "sound"
+  ],
+  "sonidos": [
+   "sounds"
+  ],
+  "red": [
+   "network"
+  ],
+  "cuenta": [
+   "account"
+  ],
+  "cuentas": [
+   "accounts"
+  ],
+  "hora": [
+   "time"
+  ],
+  "idioma": [
+   "language"
+  ]
+ },
+ "applicationKinds": {
+  "explorador de archivos": [
+   "archivo",
+   "archivos",
+   "carpeta",
+   "carpetas",
+   "disco",
+   "discos",
+   "unidad",
+   "unidades",
+   "foto",
+   "fotos",
+   "imagen",
+   "imagenes",
+   "documento",
+   "documentos",
+   "video",
+   "videos",
+   "file",
+   "files",
+   "folder",
+   "folders",
+   "disk",
+   "disks",
+   "drive",
+   "drives",
+   "photo",
+   "photos",
+   "picture",
+   "pictures",
+   "image",
+   "images",
+   "document",
+   "documents",
+   "videos",
+   "guardado",
+   "guardada",
+   "guardados",
+   "guardadas",
+   "usado",
+   "libre",
+   "lleno",
+   "llena",
+   "espacio",
+   "saved",
+   "used",
+   "free",
+   "full",
+   "space"
+  ],
+  "file explorer": [
+   "archivo",
+   "archivos",
+   "carpeta",
+   "carpetas",
+   "disco",
+   "discos",
+   "unidad",
+   "unidades",
+   "foto",
+   "fotos",
+   "imagen",
+   "imagenes",
+   "documento",
+   "documentos",
+   "video",
+   "videos",
+   "file",
+   "files",
+   "folder",
+   "folders",
+   "disk",
+   "disks",
+   "drive",
+   "drives",
+   "photo",
+   "photos",
+   "picture",
+   "pictures",
+   "image",
+   "images",
+   "document",
+   "documents",
+   "videos",
+   "guardado",
+   "guardada",
+   "guardados",
+   "guardadas",
+   "usado",
+   "libre",
+   "lleno",
+   "llena",
+   "espacio",
+   "saved",
+   "used",
+   "free",
+   "full",
+   "space"
+  ],
+  "configuracion": [
+   "ajuste",
+   "ajustes",
+   "opcion",
+   "opciones",
+   "resolucion",
+   "escala",
+   "brillo",
+   "tema",
+   "temas",
+   "fondo",
+   "dispositivo",
+   "dispositivos",
+   "red",
+   "redes",
+   "setting",
+   "settings",
+   "option",
+   "options",
+   "resolution",
+   "scale",
+   "brightness",
+   "theme",
+   "themes",
+   "background",
+   "device",
+   "devices",
+   "network",
+   "networks"
+  ],
+  "settings": [
+   "ajuste",
+   "ajustes",
+   "opcion",
+   "opciones",
+   "resolucion",
+   "escala",
+   "brillo",
+   "tema",
+   "temas",
+   "fondo",
+   "dispositivo",
+   "dispositivos",
+   "red",
+   "redes",
+   "setting",
+   "settings",
+   "option",
+   "options",
+   "resolution",
+   "scale",
+   "brightness",
+   "theme",
+   "themes",
+   "background",
+   "device",
+   "devices",
+   "network",
+   "networks"
+  ],
+  "steam": [
+   "juego",
+   "juegos",
+   "coleccion",
+   "colecciones",
+   "game",
+   "games",
+   "collection",
+   "collections",
+   "instalado",
+   "instalados",
+   "comprado",
+   "comprados",
+   "installed",
+   "bought",
+   "owned"
+  ],
+  "epic games launcher": [
+   "juego",
+   "juegos",
+   "game",
+   "games",
+   "instalado",
+   "instalados",
+   "installed",
+   "owned"
+  ],
+  "spotify": [
+   "cancion",
+   "canciones",
+   "artista",
+   "artistas",
+   "album",
+   "albumes",
+   "playlist",
+   "playlists",
+   "lista",
+   "listas",
+   "song",
+   "songs",
+   "artist",
+   "artists",
+   "albums"
   ]
  }
 }
