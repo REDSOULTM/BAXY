@@ -1012,3 +1012,17 @@ def test_a_menu_opened_by_the_place_survives_a_failed_learned_click() -> None:
     ]
     step = computer_use.deterministic_step(goal="ir a biblioteca", view=menu, history=history)
     assert step is not None and step["arguments"].get("label") == "Página principal"
+
+
+def test_a_search_field_holding_old_text_is_selected_whole_before_typing() -> None:
+    # Measured on Settings: «colores» was appended to a leftover «colorespantalla».
+    settings = {
+        "window": {"title": "Configuración", "process": "SystemSettings",
+                   "focused": {"kind": "Edit", "name": "Cuadro de búsqueda, Buscar una opción", "value": "colorespantalla"}},
+        "controls": [{"i": 0, "kind": "Edit", "name": "Cuadro de búsqueda, Buscar una opción", "state": "focused"}],
+        "text": {},
+    }
+    first = computer_use.deterministic_step(goal="ir a colores", view=settings, history=[])
+    assert first["arguments"] == {"key": "ctrl_a"}
+    selected = [_ok(1, "input.key.press", key="ctrl_a")]
+    assert computer_use.deterministic_step(goal="ir a colores", view=settings, history=selected)["arguments"] == {"text": "colores"}

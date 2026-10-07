@@ -798,6 +798,18 @@ def _click(control: dict, reason: str) -> dict[str, object]:
     return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
 
 
+def _type_into(view: dict, history: list[dict], target: str) -> dict[str, object]:
+    """Typing the name into the search field in focus; a field that still holds an earlier text is selected whole
+    first, so the name replaces it (measured on Settings: «colores» appended to a leftover «colorespantalla»)."""
+
+    focused = _focused_field(view)
+    held = str((focused or {}).get("value") or "").strip()
+    last = history[-1] if history and isinstance(history[-1], dict) else {}
+    if held and fold(held) != fold(target) and not (last.get("operation") == "input.key.press" and last.get("key") == "ctrl_a"):
+        return _key("ctrl_a")
+    return _type(target)
+
+
 def _type(target: str) -> dict[str, object]:
     return {"operation": "input.text.type", "arguments": {"text": typed_text(target)}, "reason": _REASON_FIND}
 
@@ -863,7 +875,7 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
             return picked
     if last is not None and last_operation == "input.key.press" and last.get("key") in _SEARCH_KEYS:
         if _focused_field(view) is not None:
-            return _type(target)
+            return _type_into(view, history, target)
         return _key("escape")
     if last is not None and last_operation == "input.visible.click":
         clicked = find_control(view, str(last.get("label") or ""))
@@ -872,12 +884,12 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
         if _is_search_field({"name": last.get("label")}) and (
             _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS) or written_box
         ):
-            return _type(target)
+            return _type_into(view, history, target)
     searched = _typed_target(history, target)
     if not searched:
         focused = _focused_field(view)
         if focused is not None and _is_search_field(focused):
-            return _type(target)
+            return _type_into(view, history, target)
         affordance = _search_affordance(view, history)
         if affordance is not None:
             return _click(affordance, _REASON_FIND)

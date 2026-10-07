@@ -1855,9 +1855,12 @@ internal static class ComputerUseSuccessCheck
             var before = new HashSet<string>(
                 (view["selectedBeforeClick"]?[key] as JsonArray ?? []).Select(node => (string?)node ?? string.Empty),
                 StringComparer.Ordinal);
-            if (SelectedNames(view).Select(node => (string?)node ?? string.Empty)
-                .Any(name => !before.Contains(name) && !name.Contains(target, StringComparison.Ordinal)))
+            var chosenNow = new HashSet<string>(SelectedNames(view).Select(node => (string?)node ?? string.Empty), StringComparer.Ordinal);
+            bool selectionMoved = before.Any(name => !chosenNow.Contains(name));
+            if (selectionMoved && chosenNow.Any(name => !before.Contains(name) && !name.Contains(target, StringComparison.Ordinal)))
             {
+                // A value chosen inside the page reached («Oscuro» in Colores) is not a move: only a selection that
+                // left the item chosen before for another one is.
                 return false;
             }
 
