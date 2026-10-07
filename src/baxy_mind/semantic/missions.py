@@ -221,6 +221,9 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"barra de tareas", "taskbar"}), frozenset({"fuentes", "fonts"}),
     frozenset({"hora e idioma", "hora y idioma", "time & language", "time and language"}),
     frozenset({"accesibilidad", "accessibility"}), frozenset({"cuentas", "accounts"}),
+    # 2026-10-07 a3 «go to Accessibility and then to Text size» on a Spanish Settings: «Tamaño de texto» is its name.
+    frozenset({"tamano de texto", "tamano del texto", "text size"}),
+    frozenset({"efectos visuales", "visual effects"}), frozenset({"puntero del mouse", "mouse pointer"}),
     frozenset({"energia", "power"}), frozenset({"energia y bateria", "power & battery", "power and battery"}),
     frozenset({"bateria", "battery"}), frozenset({"almacenamiento", "storage"}),
     frozenset({"portapapeles", "clipboard"}), frozenset({"acerca de", "about"}),
