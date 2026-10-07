@@ -357,6 +357,18 @@ internal static class OperationFloor
                 continue;
             }
 
+            if (PartMatch(data, "mode", part) is { } moded)
+            {
+                string mode = ModeChosen(FloorName(JsonValue.Create(PartObject(moded)), floor), done, where, data, floor);
+                if (mode.Length == 0)
+                {
+                    return null;
+                }
+
+                clauses.Add(("place", Quoted(mode), where, true));
+                continue;
+            }
+
             if (PlaceGoal.Value.Match(part) is { Success: true } place)
             {
                 string asked = FloorName(JsonValue.Create(PartObject(place.Groups[1].Value)), floor);
@@ -495,6 +507,56 @@ internal static class OperationFloor
         }
 
         return T(said, "clauses").Replace("{clauses}", Joined(told, templates), StringComparison.Ordinal) + ".";
+    }
+
+    private static readonly Regex OneGenderedWord = new("^[a-z]+[oa]$", RegexOptions.CultureInvariant);
+
+    /// <summary>
+    /// Live 2026-10-07 (cu-r20) twin of the mind's computer_use._mode_chosen: the mode a goal «activar modo X» reached
+    /// by choosing it, as the window writes it without the application's name («Científica Calculadora» →
+    /// «Científica», either gender); empty when no click chose it or a switch set it.
+    /// </summary>
+    private static string ModeChosen(string asked, List<JsonObject> done, string app, JsonObject data, JsonObject floor)
+    {
+        string wanted = Folded(asked);
+        if (wanted.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var names = new HashSet<string>(StringComparer.Ordinal) { wanted };
+        if (OneGenderedWord.IsMatch(wanted))
+        {
+            names.Add(wanted[..^1] + (wanted[^1] == 'o' ? "a" : "o"));
+        }
+
+        var appWords = new HashSet<string>(Folded(app).Split(' ', StringSplitOptions.RemoveEmptyEntries), StringComparer.Ordinal);
+        var switchKinds = ((JsonArray)data["switchKinds"]!).Select(kind => (string)kind!).ToHashSet(StringComparer.Ordinal);
+        string chosen = string.Empty;
+        foreach (JsonObject step in done)
+        {
+            string name = FloorName(step["name"], floor);
+            if (Text(step, "operation") != "input.visible.click" || name.Length == 0)
+            {
+                continue;
+            }
+
+            string mode = string.Join(' ', name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Where(word => !appWords.Contains(Folded(word))));
+            if (mode.Length == 0 || !names.Contains(Folded(mode)))
+            {
+                continue;
+            }
+
+            if (Text(step, "kind") is { } kind && switchKinds.Contains(kind))
+            {
+                return string.Empty;
+            }
+
+            chosen = CalmCaps(mode);
+        }
+
+        return chosen;
     }
 
     private static string? PartMatch(JsonObject data, string kind, string part) =>

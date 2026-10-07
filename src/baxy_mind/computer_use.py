@@ -2914,8 +2914,9 @@ def _place_of(goal: object, names: list[str]) -> str:
 # the window shows. Its twin is the App's OperationFloor.Parts.
 _PARTS: dict = operation_floor.floor_data()["computerUse"]["parts"]
 _PART_GOALS: dict[str, re.Pattern[str]] = {
-    kind: re.compile(_PARTS[kind], re.IGNORECASE) for kind in ("select", "type", "search", "calculate", "key")
+    kind: re.compile(_PARTS[kind], re.IGNORECASE) for kind in ("select", "type", "search", "calculate", "key", "mode")
 }
+_ONE_GENDERED_WORD = re.compile(r"^[a-z]+[oa]$")
 _PART_QUOTES = "«»\"“”'"
 # Live 2026-10-07: «calcular 1.500 + 500» read as 1,5 + 500. A «.» followed by exactly three digits groups thousands
 # (the Chilean writing); a comma after them is the decimal one.
@@ -2928,6 +2929,33 @@ _LONGEST_DECIMALS = 10
 
 def _part_object(value: object) -> str:
     return " ".join(str(value or "").split()).strip(_PART_QUOTES + " .;:") if isinstance(value, str) else ""
+
+
+def _mode_chosen(asked: str, done: list[dict], app: str) -> str:
+    """Live 2026-10-07 (cu-r20): the mode a goal «activar modo X» reached by choosing it, as the window writes it
+    without the application's name («Científica Calculadora» → «Científica» for «activar modo cientifico», either
+    gender); "" when no click chose it or a switch set it (data «computerUse.parts.mode»). Twin of the App's
+    OperationFloor.ModeChosen."""
+
+    wanted = fold(asked)
+    if not wanted:
+        return ""
+    names = {wanted}
+    if _ONE_GENDERED_WORD.match(wanted):
+        names.add(wanted[:-1] + ("a" if wanted[-1] == "o" else "o"))
+    app_words = set(fold(app).split())
+    chosen = ""
+    for step in done:
+        name = _floor_name(step.get("name"))
+        if step.get("operation") != "input.visible.click" or not name:
+            continue
+        mode = " ".join(word for word in name.split() if fold(word) not in app_words)
+        if not mode or fold(mode) not in names:
+            continue
+        if step.get("kind") in _PARTS["switchKinds"]:
+            return ""
+        chosen = _calm_caps(mode)
+    return chosen
 
 
 def _spelled(asked: str, names: list[str]) -> str | None:
@@ -3100,6 +3128,13 @@ def _parts_final(observed: dict, seen: dict, english: bool, names: list[str], ap
         if _PART_GOALS["key"].match(part):
             # A key is never told (the instruction's «never the keys»); its application is told by another part.
             keyed.add(where)
+            continue
+        found = _PART_GOALS["mode"].match(part)
+        if found is not None:
+            mode = _mode_chosen(_floor_name(_part_object(found.group(1))), done, where)
+            if not mode:
+                return "", False
+            clauses.append(("place", quote.format(value=mode), where, True))
             continue
         place = _PLACE_GOAL.match(part)
         if place is not None:
