@@ -71,7 +71,8 @@ STEP_PROMPT = (
     "menú, elegí la opción que lleva al destino. done sólo cuando ves la página o sección pedida: citá "
     "algo de ella, no sólo su nombre. El objetivo puede estar dicho en otro idioma que el de la ventana: "
     "elegí el control por su significado, no por sus letras. Un clic en un elemento de una lista de "
-    "contenido sólo lo elige: para entrar en él, key enter."
+    "contenido sólo lo elige: para entrar en él, key enter; nunca en un instalador, un programa de una lista de "
+    "programas ni un archivo que se ejecuta."
 )
 
 
@@ -535,7 +536,11 @@ def deterministic_step(
                 return None
             # A click that failed (a learned label now ambiguous or gone, measured on Settings after a replay) leaves
             # the goal's own step to be found again on this view, by identity, never the same act once more.
-            retried = deterministic_step(goal=goal, view=view, history=history[:-1], application=application)
+            # Without the failed step its look is not the last one: what the last verified click made appear is the
+            # App's newTextAfterClick, never the failed look's newText (stale or empty).
+            after_click = view.get("newTextAfterClick")
+            retry_view = {**view, "newText": after_click if isinstance(after_click, list) else []}
+            retried = deterministic_step(goal=goal, view=retry_view, history=history[:-1], application=application)
             if retried is None or retried.get("operation") != "input.visible.click":
                 return retried
             arguments = retried.get("arguments") or {}
@@ -632,19 +637,29 @@ def deterministic_step(
         if typed:
             # The name was typed into a search: what to click is the result that names it, never the field's echo.
             return _find_step(target, view, history, navigate=navigate)
-        twin = gender_twin(target) if searching else None
+        # Only a mode's name has two genders on screen; a place keeps the gender said («partido» is no «partida»),
+        # neither as a second name nor as the one typo the loose match allows.
+        is_mode = _mode_named(target) is not None
+        twin = gender_twin(target) if searching and is_mode else None
         names = (target, *label_alternatives(target), *((twin,) if twin else ()))
-        if head == "ir a " and kind is None and _content_item_chosen(view, history, names) is not None:
+        other_gender = None if is_mode else gender_twin(target)
+        seen = _without_name(view, other_gender) if other_gender else view
+        chosen = _content_item_chosen(view, history, names) if head == "ir a " and kind is None else None
+        if chosen is not None:
             # One click on an item of a content list chose it and opened nothing (measured on Explorer: «Descargas»
-            # in the Home view); a person then presses Enter. Enter on a list item sends nothing to anyone.
+            # in the Home view); a person then presses Enter. Enter on a list item sends nothing to anyone. Never on
+            # a file that runs or in a view that offers to remove what is chosen (a list of programs): there Enter
+            # may start or uninstall something, so the step is the model's.
+            if _runs_when_opened(chosen) or _offers_removal(view):
+                return None
             return {"operation": "input.key.press", "arguments": key_arguments("enter", view),
                     "reason": "el clic sólo eligió el elemento: Enter lo abre"}
         # Going to a place looks among the controls that are not switches first («Bluetooth» as a switch and as the
         # navigation item: the item is the place).
-        among = _without_switches(view) if placing else view
+        among = _without_switches(seen) if placing else seen
         control = next((found for name in names if (found := find_control(among, name, kind=kind)) is not None), None)
         if control is None and placing:
-            control = next((found for name in names if (found := find_control(view, name, kind=kind)) is not None), None)
+            control = next((found for name in names if (found := find_control(seen, name, kind=kind)) is not None), None)
         if control is not None and placing and _is_switch(control):
             # Going somewhere never changes a setting on the way: a switch named like the place is not the place, and
             # neither is its written name; the place is looked up the way the window offers.
@@ -655,7 +670,7 @@ def deterministic_step(
             mode = _mode_named(target)
             if mode is not None:
                 return deterministic_step(goal=f"ir a {mode}", view=view, history=history, application=application)
-        if control is None and wanted is None and _controls_naming(view, names, kind, placing) >= 2:
+        if control is None and wanted is None and _controls_naming(seen, names, kind, placing) >= 2:
             # Two controls carry the name (measured on Discord: «Cotele» was a server and an activity card): neither
             # is surely the place, and the written word is the same doubt; the place is looked up instead.
             return _find_step(target, view, history, navigate=navigate) if searching else None
@@ -665,7 +680,7 @@ def deterministic_step(
             # click's cascade (UIA → OCR → vision) finds where it is. Never the written name of a switch.
             written = next(
                 (name for name in names
-                 if (line := _text_line_with(view, name)) is not None and not (placing and _names_a_switch(view, line))),
+                 if (line := _text_line_with(seen, name)) is not None and not (placing and _names_a_switch(view, line))),
                 None,
             ) if kind is None else None
             if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
@@ -694,17 +709,51 @@ def _without_switches(view: dict) -> dict:
     return {**view, "controls": [control for control in controls if not (isinstance(control, dict) and _is_switch(control))]}
 
 
-def _controls_naming(view: dict, names: Iterable[str], kind: str | None, placing: bool) -> int:
-    """How many controls (of ``kind`` when given; never a switch while going to a place) any of the names names."""
+# What may follow a name at the start of a control's name that is still that name («Cotele (servidor)», «general ·
+# Mi servidor», «Descargas - Anclado»); a name inside a sentence is not one.
+_NAME_SEPARATORS = (" (", ",", " ·", " -", ":")
 
+
+def _carries_name(control_name: str, name: str) -> bool:
+    """A control's name is ``name``: equal folded, or ``name`` followed by a separator at its start."""
+
+    folded, wanted = fold(control_name), fold(name)
+    return bool(wanted) and (folded == wanted or any(folded.startswith(wanted + mark) for mark in _NAME_SEPARATORS))
+
+
+def _controls_naming(view: dict, names: Iterable[str], kind: str | None, placing: bool) -> int:
+    """How many controls (of ``kind`` when given; never a switch while going to a place) carry one of the names as
+    their own (``_carries_name``): a message that says «… en general …» does not make «general» two places."""
+
+    names = tuple(names)
     controls = view.get("controls") if isinstance(view, dict) else None
     named = [
         control for control in (controls if isinstance(controls, list) else [])
         if isinstance(control, dict) and (kind is None or control.get("kind") == kind)
         and not (placing and _is_switch(control))
-        and any(label_names(name, str(control.get("name") or "")) for name in names)
+        and any(_carries_name(str(control.get("name") or ""), name) for name in names)
     ]
     return len(named)
+
+
+def _without_name(view: dict, name: str) -> dict:
+    """The view without the controls and written lines whose whole folded name is ``name``."""
+
+    if not isinstance(view, dict):
+        return view
+    wanted = fold(name)
+    controls = view.get("controls")
+    text = view.get("text")
+    return {
+        **view,
+        "controls": [
+            control for control in controls if not (isinstance(control, dict) and fold(control.get("name")) == wanted)
+        ] if isinstance(controls, list) else controls,
+        "text": {
+            zone: [line for line in lines if fold(line) != wanted] if isinstance(lines, list) else lines
+            for zone, lines in text.items()
+        } if isinstance(text, dict) else text,
+    }
 
 
 def _names_a_switch(view: dict, line: str) -> bool:
@@ -718,12 +767,61 @@ def _names_a_switch(view: dict, line: str) -> bool:
     )
 
 
-def is_content_item(control: dict) -> bool:
-    """A ListItem or DataItem out of the window's left column (zones L, TL, BL): an item of a content view (files,
-    pictures, results), where one click selects and does not open; navigation lists sit in the side column."""
+_CONTENT_KINDS = {"ListItem", "DataItem"}
+
+
+def is_content_item(control: dict, view: dict | None = None) -> bool:
+    """A ListItem or DataItem of a content view (files, pictures, results), where one click selects and does not
+    open: out of the window's left column (zones L, TL, BL), where navigation lists sit; or in it, when another item
+    of the view sits in the same row out of that column (a grid of tiles that starts at the left edge). Same row:
+    vertical centres within half the item's height (the App's ``IsContentItem`` reads it the same way)."""
 
     zone = str(control.get("zone") or "")
-    return str(control.get("kind")) in {"ListItem", "DataItem"} and bool(zone) and not zone.endswith("L")
+    if str(control.get("kind")) not in _CONTENT_KINDS or not zone:
+        return False
+    if not zone.endswith("L"):
+        return True
+    controls = view.get("controls") if isinstance(view, dict) else None
+    centre, height = _vertical_centre(control.get("rect"))
+    if centre is None or not isinstance(controls, list):
+        return False
+    for other in controls:
+        if other is control or not isinstance(other, dict) or str(other.get("kind")) not in _CONTENT_KINDS:
+            continue
+        other_zone = str(other.get("zone") or "")
+        other_centre, _ = _vertical_centre(other.get("rect"))
+        if other_zone and not other_zone.endswith("L") and other_centre is not None and abs(other_centre - centre) <= height / 2:
+            return True
+    return False
+
+
+def _vertical_centre(rect: object) -> tuple[float | None, float]:
+    try:
+        top, height = float(rect["y"]), float(rect["h"])  # type: ignore[index]
+    except (KeyError, TypeError, ValueError):
+        return None, 0.0
+    return (top + height / 2, height) if height > 0 else (None, 0.0)
+
+
+# A control that removes what is chosen (a list of programs, a file manager's delete): with it on offer, Enter on the
+# chosen item is no safe default. Whole words, so «Borradores» or «Quitarse» names nothing here.
+_REMOVAL_NAME = re.compile(
+    r"(?<!\w)(?:desinstal\w*|uninstall\w*|elimin(?:ar|a)|delete|borr(?:ar|a)|quit(?:ar|a)|remove)(?!\w)"
+)
+# A file that runs, installs or launches something when opened.
+_RUNS_WHEN_OPENED = re.compile(r"\.(?:exe|msi|bat|cmd|ps1|vbs|js|lnk|appx|msix)(?!\w)")
+
+
+def _offers_removal(view: dict) -> bool:
+    controls = view.get("controls") if isinstance(view, dict) else None
+    return any(
+        isinstance(control, dict) and _REMOVAL_NAME.search(fold(control.get("name"))) is not None
+        for control in (controls if isinstance(controls, list) else ())
+    )
+
+
+def _runs_when_opened(control: dict) -> bool:
+    return _RUNS_WHEN_OPENED.search(fold(control.get("name"))) is not None
 
 
 def _content_item_chosen(view: dict, history: list[dict], names: tuple[str, ...]) -> dict | None:
@@ -743,7 +841,7 @@ def _content_item_chosen(view: dict, history: list[dict], names: tuple[str, ...]
     for control in controls if isinstance(controls, list) else ():
         if (
             isinstance(control, dict)
-            and is_content_item(control)
+            and is_content_item(control, view)
             and "selected" in str(control.get("state") or "").split()
             and any(fold(control.get("name")) == fold(name) for name in names)
         ):
