@@ -1525,8 +1525,20 @@ internal static class ComputerUseSuccessCheck
         // Only a window without an accessible tree (CEF, canvas) is judged by its written text; where controls exist,
         // arriving is the place selected or titled (measured on Discord: «Cotele» written in an activity card passed
         // for the channel while the Friends page was open).
+        if ((view["controls"] as JsonArray)?.Count > 1)
+        {
+            return false;
+        }
+
+        if (AddressNames(view, rest))
+        {
+            // The page's own address written on screen names the place (measured on Steam, which opens on its store:
+            // «https://store.steampowered.com/»): it is that page's title, wherever the mission started.
+            return true;
+        }
+
         int? click = AClickWentTo(rest, steps);
-        if ((view["controls"] as JsonArray)?.Count > 1 || !ViewContains(view, rest) || click is null)
+        if (!ViewContains(view, rest) || click is null)
         {
             return false;
         }
@@ -1547,6 +1559,35 @@ internal static class ComputerUseSuccessCheck
         // (measured on Steam: the store was in front, «TIENDA» clicked twice and the mission ended unchanged).
         bool alreadyThere = kept == current.Count && baseline.Count == current.Count;
         return alreadyThere || kept * 2 < current.Count;
+    }
+
+    // A written web address (scheme or www.) whose host or path has the place as one of its words.
+    private static bool AddressNames(JsonObject view, string place)
+    {
+        string target = Fold(place);
+        if (target.Length < 3 || target.Contains(' ', StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        foreach (JsonNode? line in TextLines(view))
+        {
+            string text = (string?)line ?? string.Empty;
+            int scheme = text.IndexOf("://", StringComparison.Ordinal);
+            string address = scheme >= 0 ? text[(scheme + 3)..] : text.StartsWith("www.", StringComparison.Ordinal) ? text : string.Empty;
+            if (address.Length == 0 || address.Contains(' ', StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (address.Split(['.', '/', '-', '_', '?', '=', '&', '#'], StringSplitOptions.RemoveEmptyEntries)
+                .Contains(target, StringComparer.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // A verified click whose label names the place, or the entry picked right after

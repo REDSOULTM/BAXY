@@ -206,6 +206,21 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void TheWrittenAddressOfATreelessPageNamesWhereItIs()
+    {
+        JsonObject store = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA BIBLIOTECA COMUNIDAD", "https://store.steampowered.com/", "Buscar en la tienda", "REBAJAS DE OTOÑO"]}}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda|page:store", store, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca|page:library", store, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:steam", store, [], out _), Is.False, "whole words of the address only");
+        });
+    }
+
+    [Test]
     public void TypingCountsOnlyWhenTheFocusedFieldShowsTheTextOrDoesNotExposeIt()
     {
         JsonArray typed = [new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "lista: pan" }];
