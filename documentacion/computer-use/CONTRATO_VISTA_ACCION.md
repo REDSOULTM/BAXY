@@ -740,6 +740,11 @@ disculpa; en una cadena no lograda, primero lo que no se pudo y su causa, despu�
   escribe, y el Enter sin un campo de búsqueda visible con el teclado pregunta.
 - Una app abierta en frío se vuelve a mirar hasta 10 s mientras la ventana cambie o parezca de arranque (≤ 1 control
   accionable —un marco, un panel o una barra de dirección de sólo lectura no cuentan— y ≤ 5 líneas).
+- Un `none` del modelo sobre la vista tomada justo tras un acto verificado que cambió la pantalla, cuando esa vista
+  lista menos controles que la pantalla desde la que se actuó (la pantalla se desmontó: medido en vivo, 185 ms tras el
+  Enter de una búsqueda la página de resultados listaba 17 de 52 controles, un esqueleto de marcadores), no para la
+  misión todavía: una vez por acto se vuelve a mirar cada 400 ms, hasta 6 veces, hasta que la vista cambia y se queda
+  quieta, y el bucle mira y decide de nuevo; si no cambió, el `none` vale (`computer_use_no_step_visible`).
 - Una ventana de administrador (`window.elevated`) para la misión con `computer_use_window_elevated`, dicho con esa
   causa.
 - Un control sin patrón invocable ni punto clicable (Electron) se pulsa en el centro de su rectángulo.
