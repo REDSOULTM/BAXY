@@ -1,0 +1,282 @@
+using System.Text.Json.Nodes;
+using Baxy.App;
+using NUnit.Framework;
+
+namespace Baxy.Integration.Tests;
+
+/// <summary>
+/// The shell side of the computer-use engine that needs no window
+/// (documentacion/computer-use/CONTRATO_VISTA_ACCION.md): the deterministic
+/// success check (§4.3), what the mind receives (§4.4), the confirmed-step
+/// resume (§2.1) and the procedure memory (§5).
+/// </summary>
+[TestFixture]
+public sealed class ComputerUseMissionTests
+{
+    private static JsonObject View(string json) => (JsonObject)JsonNode.Parse(json)!;
+
+    private static readonly string SteamView = """
+        {
+          "window": {"title": "Steam", "process": "steamwebhelper", "processId": 12, "hwnd": 5,
+                     "rect": {"x": 0, "y": 0, "w": 800, "h": 600}, "focused": null},
+          "controls": [
+            {"i": 0, "kind": "Button", "name": "Tienda", "id": "1.2", "state": "", "value": null, "rect": {"x": 10, "y": 10, "w": 60, "h": 20}, "zone": "TL", "color": "gray"},
+            {"i": 1, "kind": "Button", "name": "Biblioteca", "id": "1.3", "state": "selected", "value": null, "rect": {"x": 80, "y": 10, "w": 60, "h": 20}, "zone": "TL", "color": "blue"},
+            {"i": 2, "kind": "TabItem", "name": "Pestaña 1", "id": "1.4", "state": "", "value": null, "rect": null, "zone": "T", "color": "", "repeated": 2},
+            {"i": 3, "kind": "Edit", "name": "Pantalla", "id": "1.5", "state": "readonly", "value": "La pantalla muestra 84", "rect": null, "zone": "C", "color": ""}
+          ],
+          "controlCount": 4,
+          "text": {"T": ["TIENDA", "BIBLIOTECA"], "C": ["12 × 7 =", "84"]},
+          "surface": "abc",
+          "elapsedMs": {"uia": 100, "ocr": 500, "color": 10, "total": 620},
+          "authority": "windows_uia_snapshot_ocr_zones"
+        }
+        """;
+
+    [TestCase("control:Biblioteca:selected", true, "control:Biblioteca:selected")]
+    [TestCase("control:biblioteca", true, "control:biblioteca")]
+    [TestCase("control:Tienda:selected", false, null)]
+    [TestCase("text:BIBLIOTECA", true, "text:BIBLIOTECA")]
+    [TestCase("text:84", true, "text:84")]
+    [TestCase("title:steam", true, "title:steam")]
+    [TestCase("process:steam", true, "process:steam")]
+    [TestCase("process:discord", false, null)]
+    [TestCase("count:TabItem<=1", false, null)]
+    [TestCase("count:TabItem<=3", true, "count:TabItem<=3")]
+    [TestCase("count:TabItem==3", true, "count:TabItem==3")]
+    [TestCase("value:Pantalla=84", true, "value:Pantalla=84")]
+    [TestCase("process:discord|text:84", true, "text:84")]
+    [TestCase("process:steam&control:Biblioteca:selected", true, "process:steam&control:Biblioteca:selected")]
+    [TestCase("process:steam&control:Tienda:selected", false, null)]
+    [TestCase("", false, null)]
+    [TestCase("nonsense", false, null)]
+    [TestCase("file:C:\\definitely\\not\\here.txt", false, null)]
+    public void SuccessCheckIsEvaluatedOverTheViewWithoutAModel(string check, bool expected, string? satisfiedBy)
+    {
+        bool reached = ComputerUseSuccessCheck.Evaluate(check, View(SteamView), [], out string? by);
+        Assert.Multiple(() =>
+        {
+            Assert.That(reached, Is.EqualTo(expected));
+            Assert.That(by, Is.EqualTo(satisfiedBy));
+        });
+    }
+
+    [Test]
+    public void ALongTabTitleIsNamedByTheSiteItEndsWith()
+    {
+        JsonObject view = View("""
+            {"window": {"title": "Never Gonna Give You Up - YouTube - Opera", "process": "opera", "processId": 7},
+             "controls": [
+               {"i": 0, "kind": "TabItem", "name": "Correo - Bandeja de entrada", "state": ""},
+               {"i": 1, "kind": "TabItem", "name": "Never Gonna Give You Up - YouTube", "state": "selected"}
+             ]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:youtube:selected", view, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:correo:selected", view, [], out _), Is.False);
+        });
+    }
+
+    // Measured on Steam (CEF, one control): clicking «BIBLIOTECA» first opened its menu, three new lines of twenty-five;
+    // only the library page itself replaces most of the written text.
+    [Test]
+    public void APlaceIsReachedWhenMostOfTheWrittenTextIsNewNotWhenAMenuOpens()
+    {
+        const string Store = """["TIENDA", "BIBLIOTECA COMUNIDAD", "https://store.steampowered.com/", "Explorar", "Buscar en la tienda", "REBAJAS DE OTOÑO", "Lista de deseados"]""";
+        JsonArray clicked = [new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "biblioteca" }];
+        JsonObject menu = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "https://store.steampowered.com/", "Explorar", "Pagina principal", "Colecciones"],
+                      "C": ["Buscar en la tienda", "REBAJAS DE OTOÑO", "Lista de deseados"]}}
+            """);
+        JsonObject library = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Pagina principal", "Juegos y Software", "FAVORITOS (324)"],
+                      "C": ["TUS COLECCIONES", "INSTALADO LOCALMENTE"]}}
+            """);
+        foreach (JsonObject view in new[] { menu, library })
+        {
+            view["baselineText"] = ComputerUseSuccessCheck.TextLines(View("{\"text\": {\"TL\": " + Store + "}}"));
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", menu, clicked, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, clicked, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, [], out _), Is.False);
+        });
+    }
+
+    [Test]
+    public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
+    {
+        var browser = new JsonObject { ["application"] = "navegador" };
+        var foreground = new JsonObject { ["application"] = "navegador" };
+        ComputerUseMission.AdoptWindow(browser, View("""
+            {"window": {"title": "Inicio - Opera", "process": "opera", "processId": 7, "requested": true}}
+            """));
+        ComputerUseMission.AdoptWindow(foreground, View("""
+            {"window": {"title": "navegador - Bloc de notas", "process": "notepad", "processId": 9, "requested": false}}
+            """));
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)browser["processId"], Is.EqualTo(7));
+            Assert.That(foreground["processId"], Is.Null, "a window that only held the front is never adopted");
+        });
+    }
+
+    [Test]
+    public void StepDoneNeedsAVerifiedStepOfThatOperationAndArgument()
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["ok"] = true },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["label"] = "Biblioteca", ["ok"] = true },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "enter", ["ok"] = false },
+        };
+        JsonObject view = View(SteamView);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:biblioteca", view, steps, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:tienda", view, steps, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:app.open", view, steps, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.key.press:enter", view, steps, out _), Is.False);
+        });
+    }
+
+    [Test]
+    public void TheMindReceivesIndicesNamesStatesZonesColoursAndTextButNoIdentitiesOrHashes()
+    {
+        JsonObject compact = ComputerUseMission.CompactForTheMind(View(SteamView));
+        string serialized = compact.ToJsonString();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)compact["window"]!["title"], Is.EqualTo("Steam"));
+            Assert.That(compact["controls"]!.AsArray(), Has.Count.EqualTo(4));
+            Assert.That((string?)compact["controls"]![1]!["name"], Is.EqualTo("Biblioteca"));
+            Assert.That((string?)compact["controls"]![1]!["state"], Is.EqualTo("selected"));
+            Assert.That((string?)compact["controls"]![1]!["color"], Is.EqualTo("blue"));
+            Assert.That((int?)compact["controls"]![2]!["repeated"], Is.EqualTo(2));
+            Assert.That(serialized, Does.Not.Contain("\"id\""));
+            Assert.That(serialized, Does.Not.Contain("surface"));
+            Assert.That(serialized, Does.Not.Contain("rect"));
+            Assert.That((string?)compact["text"]!["C"]![0], Is.EqualTo("12 × 7 ="));
+        });
+    }
+
+    [Test]
+    public void AConfirmedPrimitiveJoinsTheMissionStepsAndMarksAJoinedVoiceChannel()
+    {
+        var execution = new PendingMindPlanExecution(
+            "ve a Cotele en Discord",
+            [new MindPlanStep("step_1", ComputerUseMission.OperationName, "ir a Cotele", [], "literal", new JsonObject { ["goal"] = "ir a Cotele" })])
+        {
+            ComputerUse = new JsonObject
+            {
+                ["goal"] = "ir a Cotele",
+                ["steps"] = new JsonArray(),
+                ["pendingStep"] = new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "Cotele (canal de voz)", ["source"] = "model" },
+            },
+        };
+        PreparedOperation click = PreparedOperation.Create("input.visible.click", new JsonObject { ["label"] = "Cotele (canal de voz)" });
+        var response = new Baxy.Contracts.OperationResponse(
+            Baxy.Contracts.ProtocolTypes.OperationResponse, click.InvocationId, click.MissionId, click.InvocationId,
+            Baxy.Contracts.OperationStatuses.Completed, "{}", true, false,
+            System.Text.Json.JsonDocument.Parse("""{"name":"Cotele (canal de voz)","selected":true,"cascadeStage":"uia"}""").RootElement, null);
+
+        ComputerUseMission.RecordConfirmedStep(execution, click, response);
+
+        JsonObject state = execution.ComputerUse!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(state["pendingStep"], Is.Null);
+            Assert.That(state["steps"]!.AsArray(), Has.Count.EqualTo(1));
+            Assert.That((bool?)state["steps"]![0]!["ok"], Is.True);
+            Assert.That((bool?)state["steps"]![0]!["confirmed"], Is.True);
+            Assert.That((bool?)state["steps"]![0]!["selected"], Is.True);
+            Assert.That((bool?)state["joined"], Is.True);
+        });
+    }
+
+    [Test]
+    public void ProceduresLearnAReachedMissionAndReplayItByKey()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-cu-procedures-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var procedures = new ComputerUseProcedures(Path.Combine(directory, "procedures.v1.json"));
+            Assert.That(procedures.Find("Steam", "ir a la biblioteca"), Is.Null);
+            var state = new JsonObject
+            {
+                ["goal"] = "ir a la biblioteca",
+                ["application"] = "Steam",
+                ["successCheck"] = "stepDone:input.visible.click:biblioteca",
+                ["elapsedMs"] = 6100L,
+                ["modelMs"] = 2400L,
+            };
+            var steps = new JsonArray
+            {
+                new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["appId"] = "Steam", ["ok"] = true, ["source"] = "model" },
+                new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["label"] = "Biblioteca", ["index"] = 1, ["ok"] = true, ["surfaceChanged"] = true, ["source"] = "model" },
+            };
+            // Contract §5 (measured on Steam: a dropped failed click left a meaningless procedure): a mission with a
+            // failed step is not learned; an opening that did not verify does not count as failed.
+            var withAFailure = (JsonArray)steps.DeepClone();
+            withAFailure.Add(new JsonObject { ["step"] = 3, ["operation"] = "input.scroll", ["direction"] = "down", ["ok"] = false, ["source"] = "model" });
+            Assert.That(procedures.Learn(state, withAFailure), Is.EqualTo("none"));
+
+            Assert.That(procedures.Learn(state, steps), Is.EqualTo("learned"));
+
+            var reloaded = new ComputerUseProcedures(Path.Combine(directory, "procedures.v1.json"));
+            JsonObject? found = reloaded.Find("steam", "Por favor, ir a la biblioteca.");
+            Assert.That(found, Is.Not.Null);
+            JsonArray recorded = found!["steps"]!.AsArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(recorded, Has.Count.EqualTo(2));
+                Assert.That((string?)recorded[1]!["operation"], Is.EqualTo("input.visible.click"));
+                Assert.That((string?)recorded[1]!["arguments"]!["label"], Is.EqualTo("Biblioteca"));
+                Assert.That(recorded[1]!["arguments"]!["index"], Is.Null, "an index belongs to one view, never to a procedure");
+                Assert.That((string?)recorded[1]!["expect"], Is.EqualTo("surfaceChanged"));
+                Assert.That((long?)found["lastModelMs"], Is.EqualTo(2400L));
+            });
+
+            var replayState = new JsonObject
+            {
+                ["goal"] = "ir a la biblioteca",
+                ["application"] = "Steam",
+                ["procedureKey"] = ComputerUseProcedures.Key("Steam", "ir a la biblioteca"),
+                ["elapsedMs"] = 900L,
+                ["modelMs"] = 0L,
+            };
+            var replaySteps = new JsonArray
+            {
+                new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["ok"] = true, ["source"] = "procedure" },
+                new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["label"] = "Biblioteca", ["ok"] = true, ["source"] = "procedure" },
+            };
+            Assert.That(reloaded.Learn(replayState, replaySteps), Is.EqualTo("replayed"));
+            JsonObject again = reloaded.Find("Steam", "ir a la biblioteca")!;
+            Assert.Multiple(() =>
+            {
+                Assert.That((int?)again["replays"], Is.EqualTo(1));
+                Assert.That((long?)again["lastReplayMs"], Is.EqualTo(900L));
+            });
+        }
+        finally
+        {
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    [TestCase("Steam", "Ir a la biblioteca", "steam|ir a la biblioteca")]
+    [TestCase("steam", "por favor ir a la biblioteca.", "steam|ir a la biblioteca")]
+    [TestCase(null, "Activá el modo avión", "|activa el modo avion")]
+    public void ProcedureKeysFoldTheApplicationAndTheGoal(string? application, string goal, string expected)
+    {
+        Assert.That(ComputerUseProcedures.Key(application, goal), Is.EqualTo(expected));
+    }
+}

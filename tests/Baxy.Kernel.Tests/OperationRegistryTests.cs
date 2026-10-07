@@ -76,6 +76,8 @@ public sealed class OperationRegistryTests
     [TestCase("window.close.all", PolicyDecision.RequireConfirmation)]
     [TestCase("app.close", PolicyDecision.RequireConfirmation)]
     [TestCase("system.power", PolicyDecision.Allow)]
+    [TestCase("input.scroll", PolicyDecision.Allow)]
+    [TestCase("mission.computer.use", PolicyDecision.Allow)]
     public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
         string operation,
         PolicyDecision expected)
@@ -87,6 +89,68 @@ public sealed class OperationRegistryTests
         Assert.That(
             RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation),
             Is.EqualTo(PolicyDecision.Allow));
+    }
+
+    // Computer use (CONTRATO_VISTA_ACCION.md §2.1, D15): the step's exact
+    // arguments decide whether it reaches a person — a voice channel, a call, a
+    // send button, Enter over a message composer — and only then it asks.
+    [TestCase("input.visible.click", """{"label":"Cotele (canal de voz)"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"General, voice channel"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Llamar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Send message"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Biblioteca"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Cotele"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Recall the callback"}""", PolicyDecision.Allow)]
+    [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
+    [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
+    public void Normal_mode_asks_when_the_exact_step_reaches_another_person(
+        string operation,
+        string arguments,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, operation, document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation, document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // Closing every tab of the person's browser loses their session: that exact
+    // argument asks in normal mode; any other action on the browser does not.
+    [TestCase("close_all", PolicyDecision.RequireConfirmation)]
+    [TestCase("close", PolicyDecision.Allow)]
+    [TestCase("new_tab", PolicyDecision.Allow)]
+    [TestCase("back", PolicyDecision.Allow)]
+    public void Normal_mode_asks_before_closing_every_tab_and_bypass_does_not(
+        string action,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("browser.control");
+        using JsonDocument document = JsonDocument.Parse("{\"action\":\"" + action + "\"}");
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, descriptor.Name, document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, descriptor.Name, document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "browser.navigate", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow),
+                "the rule is the operation and its argument together");
+        });
     }
 
     [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]

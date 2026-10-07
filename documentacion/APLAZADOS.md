@@ -221,3 +221,7 @@ operaciones sueltas nuevas: ir a una pestaña por su nombre (se propuso `browser
 pestañas con confirmación, elegir un título que el servicio escribe distinto («house of the dragon» frente a «La
 Casa del Dragón»), la pantalla «¿Quién está viendo?» y, en general, cualquier paso dentro de una página o una app
 que el catálogo no tenga. Estado y hallazgos: `documentacion/NAVEGADOR_USUARIO.md`.
+
+- 2026-10-06 (Fase 4): «cerrá todas las pestañas de <navegador>» actúa sobre el navegador **predeterminado**
+  (`browser.control` no lleva navegador). Si la persona nombra otro navegador abierto, no se distingue todavía;
+  la confirmación previa nombra lo que se va a cerrar. Hacer que `browser.control` acepte un navegador nombrado.

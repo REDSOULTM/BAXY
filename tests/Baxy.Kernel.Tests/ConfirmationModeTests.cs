@@ -47,6 +47,34 @@ public sealed class ConfirmationModeTests
     }
 
     [Test]
+    public async Task ClosingEveryTabIsChallengedOnItsOwnArgumentWhileOneTabCloses()
+    {
+        var control = new CountingHandler(
+            "browser.control",
+            ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("browser.control").Risk));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([control]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Normal });
+
+        OperationResponse one = await engine.ExecuteAsync(
+            Request("browser.control", "{\"action\":\"close\"}"),
+            CancellationToken.None);
+        OperationResponse all = await engine.ExecuteAsync(
+            Request("browser.control", "{\"action\":\"close_all\"}"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(one.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(all.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(all.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(control.ExecutionCount, Is.EqualTo(1), "only the single close ran");
+        });
+    }
+
+    [Test]
     public async Task BypassSkipsTheChallengeOnTheSamePathAndStillRefusesUnverifiedSuccess()
     {
         ConfirmationMode mode = ConfirmationMode.Bypass;

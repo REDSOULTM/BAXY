@@ -222,6 +222,10 @@ APP_FILES: dict[str, tuple[str, str]] = {
     "FieldProductChannel.cs": ("OTHER", "model identity strings of the runtime manifest"),
 }
 APP_METHODS: dict[tuple[str, str], tuple[str, str]] = {
+    # Computer use: the success check is a grammar the mind's reader (semantic/missions) writes; the App parses it.
+    ("ComputerUseMission.cs", "CountAtom"): (
+        "GROUNDING", "parses the «count:<kind> <op> N» atom of the success check that semantic.missions wrote and "
+        "counts the view's controls; the person's words are not read here"),
     # M116: a failed step's facts carry its grounded arguments; this only shapes an argument value for display.
     ("AttemptedArguments.cs", "Said"): (
         "GROUNDING", "a grounded argument value shown as the person would say it: no ids, URL host/path only, a path's "

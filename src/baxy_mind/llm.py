@@ -5947,7 +5947,9 @@ _CAUSE_FACT = {
     # browser; what it could not do or could not confirm there is told as such.
     "user_browser_tab_step_unconfirmed": (
         "the step was sent to the person's own web browser, but afterwards its tabs and page did not show the change, "
-        "so it is not confirmed; say it may not have happened and that they can check it there"
+        "so it is not confirmed; say it may not have happened and that they can check it there. When seen.closedTabs "
+        "is a number above zero, that many tabs WERE closed (each seen gone) before one close was not seen: say how "
+        "many you closed and that the others stayed open"
     ),
     "user_browser_tab_step_unavailable": (
         "the person's own web browser did not offer a way to do that step right now (the tab was not on screen or "
@@ -5957,10 +5959,9 @@ _CAUSE_FACT = {
         "that is the only tab open in the person's web browser and closing it would close the whole browser window, "
         "so it was left open; nothing was done"
     ),
-    "user_browser_close_all_declined": (
-        "closing every tab would close the person's whole browser with all their open pages and signed-in sessions, "
-        "so the assistant does not do it in one step; nothing was closed, and it can close the tab they are on, one "
-        "at a time"
+    "user_browser_close_all_incomplete": (
+        "closing the tabs of the person's web browser one at a time stopped before only one was left (it reached its "
+        "limit of tabs or time); seen.closedTabs says how many were closed and the others are still open"
     ),
     "user_browser_fullscreen_control_missing": (
         "the page open in the person's web browser has no video full-screen control, so nothing was done"
@@ -7694,6 +7695,12 @@ def _compose_situation_payload(
             if visible_seen.get("surfaceChanged") is True:
                 projected["surfaceChanged"] = True
             visible_seen = projected
+        elif operation == "mission.computer.use":
+            # Computer use (CONTRATO_VISTA_ACCION.md §4.5): the composer sees
+            # what the loop did and saw, never the raw steps or hashes.
+            from . import computer_use as _computer_use
+
+            visible_seen = _computer_use.project_seen(visible_seen, language)
         elif operation == "window.close.all" and isinstance(visible_seen.get("closed"), int):
             # CLOSEALL1733 «cerrame todo»: the counts are the facts; process names
             # («Code», «Notepad») are not words for the person — the kept editor
@@ -7790,11 +7797,15 @@ def _compose_situation_payload(
             # BROWSER1493 «abrí una pestaña nueva»: the target id is an
             # internal identifier; the person needs the action and its state.
             # In the person's own browser (owner 2026-10-06) the tab that closed and the tab now in front are what
-            # the person sees change.
+            # the person sees change; closing every tab also says how many closed and how many are left.
+            counts = ("closedTabs", "tabCount") if visible_seen.get("action") == "close_all" else ()
             visible_seen = {
-                key: visible_seen[key]
-                for key in ("action", "observedState", "closedTab", "activeTab")
-                if isinstance(visible_seen.get(key), str)
+                **{
+                    key: visible_seen[key]
+                    for key in ("action", "observedState", "closedTab", "activeTab")
+                    if isinstance(visible_seen.get(key), str)
+                },
+                **{key: visible_seen[key] for key in counts if type(visible_seen.get(key)) is int},
             }
         elif operation == "browser.tabs.list":
             visible_seen = _project_tab_listing(visible_seen)
@@ -8107,6 +8118,12 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "failure to search, missing permission, or an unperformed search. "
             "Explain the finding briefly and naturally in the person's language."
         )
+    if situation.get("operation") == "mission.computer.use" and isinstance(observed, dict):
+        from . import computer_use as _computer_use
+
+        bits.append(_computer_use.compose_instruction(
+            _computer_use.project_seen(observed, language), language,
+        ))
     if (
         situation.get("operation") == "client.channel.locate"
         and situation.get("verified") is True
@@ -8449,16 +8466,16 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             and situation.get("succeeded") is True
             and _merged_observed(situation).get("action") == "close_all"
         ):
-            # BROWSER1841 «cerrá todas las pestañas»: every open tab in the
-            # browser is gone now; say so in the past, nothing else.
+            # BROWSER1841 «cerrá todas las pestañas»: the person's browser keeps
+            # its last tab (closing it would close the browser); the tabs closed
+            # and the one left were read back.
             bits.append(
-                "You have just closed every open tab in the browser and their "
-                "absence was verified: say that in the past in one short sentence "
-                "(for example «Cerré todas las pestañas del navegador»). Do not "
-                "give a number, mention identifiers, states or codes, do not "
-                "promise anything, and never say the tabs are still open or that "
-                "you could not close them. Address the person naturally in their "
-                "language."
+                "You have just closed the tabs of the person's web browser one at a time and read the result back: "
+                "seen.closedTabs is how many you closed and seen.tabCount how many are left open (the browser keeps "
+                "its last tab, since closing it would close the browser). Say it in the past in one short sentence "
+                "with those numbers (for example «Cerré 3 pestañas; queda una abierta»). Never say every tab was "
+                "closed, do not mention identifiers, states or codes, and do not promise anything. Address the "
+                "person naturally in their language."
             )
         if (
             situation.get("operation") in {"note.create", "task.create"}
@@ -8796,6 +8813,25 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
         and (tabs_final := _tab_listing_final(seen, english))
     ):
         return tabs_final
+    if (
+        operation == "browser.control"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and seen.get("action") == "close_all"
+        and (closed_final := _closed_tabs_final(seen, english))
+    ):
+        return closed_final
+    if (
+        operation == "browser.control"
+        and situation.get("succeeded") is not True
+        and seen.get("action") == "close_all"
+        and type(seen.get("closedTabs")) is int
+        and seen["closedTabs"] > 0
+    ):
+        closed = seen["closedTabs"]
+        if english:
+            return f"I closed {closed} {'tab' if closed == 1 else 'tabs'}; I couldn't close the rest, they're still open."
+        return f"Cerré {closed} {'pestaña' if closed == 1 else 'pestañas'}; no pude cerrar las demás, siguen abiertas."
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         reason = situation.get("reason")
         if isinstance(reason, str) and reason.lstrip().startswith("{"):
@@ -10035,6 +10071,19 @@ def _tab_listing_final(seen: dict, english: bool) -> str:
     noun = "pestaña abierta" if count == 1 else "pestañas abiertas"
     more = f", y {rest} más" if rest > 0 else ""
     return f"Tienes {count} {noun}{where}: {listed}{more}."
+
+
+def _closed_tabs_final(seen: dict, english: bool) -> str:
+    """When every draft failed: how many tabs were closed and how many are left, as read back."""
+
+    closed, left = seen.get("closedTabs"), seen.get("tabCount")
+    if type(closed) is not int or type(left) is not int or closed < 1:
+        return ""
+    if english:
+        return f"I closed {closed} {'tab' if closed == 1 else 'tabs'}; {left} {'is' if left == 1 else 'are'} left open."
+    closed_noun = "pestaña" if closed == 1 else "pestañas"
+    left_said = f"queda {left} abierta" if left == 1 else f"quedan {left} abiertas"
+    return f"Cerré {closed} {closed_noun}; {left_said}."
 
 
 def _page_read_final(seen: dict, english: bool) -> str:
@@ -16971,6 +17020,17 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
         )
+    if kind == "operation" and situation.get("operation") == "mission.computer.use":
+        # Computer use (CONTRATO_VISTA_ACCION.md §4.5): a join never observed, a
+        # false past time or a failed mission told as a success are invented.
+        from . import computer_use as _computer_use
+
+        mission_defect = _computer_use.mission_defect(
+            _accent_folded_with_punctuation(stripped),
+            _computer_use.project_seen(_merged_observed(situation), "es"),
+        )
+        if mission_defect is not None:
+            return mission_defect
     if (
         kind == "operation"
         and situation.get("operation") == "client.channel.locate"
@@ -16988,18 +17048,46 @@ def compose_visible_defect(
         kind == "operation"
         and situation.get("operation") == "browser.control"
         and _merged_observed(situation).get("action") == "close_all"
+        and situation.get("succeeded") is not True
+        and type(_merged_observed(situation).get("closedTabs")) is int
+        and _merged_observed(situation)["closedTabs"] > 0
+    ):
+        # Measured live (Opera GX): three tabs closed, the fourth close not seen, and the final said «No se cerraron
+        # las pestañas». The tabs seen closed are said, with their number.
+        closed = _merged_observed(situation)["closedTabs"]
+        words = ("", "una|uno|one", "dos|two", "tres|three", "cuatro|four", "cinco|five", "seis|six", "siete|seven",
+                 "ocho|eight", "nueve|nine", "diez|ten")
+        said_word = closed < len(words) and re.search(
+            r"\b(?:" + words[closed] + r")\b", _accent_folded_with_punctuation(stripped),
+        )
+        if closed not in _numbers_in_figures(stripped) and not said_word:
+            return "extra_claim"
+    if (
+        kind == "operation"
+        and situation.get("operation") == "browser.control"
+        and _merged_observed(situation).get("action") == "close_all"
         and situation.get("verified") is True
         and situation.get("succeeded") is True
-        and re.search(
+    ):
+        folded_reply = _accent_folded_with_punctuation(stripped)
+        closed_seen = _merged_observed(situation)
+        if re.search(
             # BROWSER1841: the tabs were closed just now, in this turn; a final
             # that places the action at a specific past time («yesterday», «ayer»,
             # «last week») invents when it happened.
             r"\b(?:ayer|anoche|antier|anteayer|antes\s+de\s+ayer|la\s+semana\s+pasada|el\s+otro\s+dia|hace\s+(?:un|unos|varios|dos|tres)\s+(?:dia|dias|semana|semanas|hora|horas)|"
             r"yesterday|last\s+night|last\s+week|the\s+other\s+day|days?\s+ago|hours?\s+ago|weeks?\s+ago)\b",
-            _accent_folded_with_punctuation(stripped),
-        )
-    ):
-        return "extra_claim"
+            folded_reply,
+        ) or (
+            # The browser keeps its last tab: «cerré todas» without the one left says what did not happen.
+            re.search(r"\b(?:todas|all|every)\b", folded_reply)
+            and not re.search(r"\b(?:queda|quedan|quedo|dej\w*|menos|salvo|excepto|left|remains?|kept|except|but\s+one)\b", folded_reply)
+        ):
+            return "extra_claim"
+        # The counts said are the ones read back: tabs closed and tabs left.
+        read_counts = {closed_seen.get(key) for key in ("closedTabs", "tabCount") if type(closed_seen.get(key)) is int}
+        if read_counts and not _numbers_in_figures(stripped) <= read_counts:
+            return "invented_number"
     if (
         kind == "operation"
         and situation.get("operation") == "message.draft"
@@ -25990,6 +26078,20 @@ class LlmRuntime:
                 f"{', '.join(required_words or visible_situation.get('choices', []))}. "
                 "Do not claim the action already happened."
             )
+            pending = situation.get("pendingAction")
+            if (
+                isinstance(pending, dict)
+                and pending.get("operation") == "browser.control"
+                and isinstance(pending.get("arguments"), dict)
+                and pending["arguments"].get("action") == "close_all"
+            ):
+                # «cerrá todas las pestañas» keeps the browser's last tab (closing it closes the browser): the
+                # question says what will really happen.
+                instruct(
+                    " The pending action closes the tabs of the person's web browser one at a time and leaves one "
+                    "open, because closing the last one would close the browser: say that in the question, never "
+                    "that every tab will be closed."
+                )
         elif intent == "clarification" or kind == "clarification":
             if _required_compose_input(situation) is not None:
                 instruct("\nAsk one short question for missingValue. Do not guess or claim completion.")

@@ -1,9 +1,17 @@
 {
   "schema": "baxy.catalog-operation-aliases.v1",
   "authority": "proposal_only_authenticated_catalog_intersection",
-  "note": "Aliases de operaciones añadidas en C03 (AGENDA1435 notification.list, NETWORK1457 bluetooth.radio.status, SYSTEM1459 display.status). El activo v1 queda sellado en su identidad R267; estas filas se cargan junto a él (catalog_operation_aliases.py) y se atan al catálogo vigente en test_catalog_operation_aliases.py.",
-  "alias_count": 3,
+  "note": "Aliases de operaciones añadidas en C03 (AGENDA1435 notification.list, NETWORK1457 bluetooth.radio.status, SYSTEM1459 display.status). El activo v1 queda sellado en su identidad R267; estas filas se cargan junto a él (catalog_operation_aliases.py) y se atan al catálogo vigente en test_catalog_operation_aliases.py. CU (motor de computer use, Fase 4 post-goal): mission.computer.use e input.scroll.",
+  "alias_count": 5,
   "aliases": [
+    {
+      "normalized_text": "abre steam y ve a la biblioteca.",
+      "operations": [
+        "mission.computer.use"
+      ],
+      "target_operation": "mission.computer.use",
+      "text": "Abre Steam y ve a la biblioteca."
+    },
     {
       "normalized_text": "decime que resolucion de pantalla tengo.",
       "operations": [
@@ -19,6 +27,14 @@
       ],
       "target_operation": "bluetooth.radio.status",
       "text": "Decime si tengo el bluetooth encendido."
+    },
+    {
+      "normalized_text": "desplaza la ventana hacia abajo.",
+      "operations": [
+        "input.scroll"
+      ],
+      "target_operation": "input.scroll",
+      "text": "Desplazá la ventana hacia abajo."
     },
     {
       "normalized_text": "lista los timers y alarmas programados.",

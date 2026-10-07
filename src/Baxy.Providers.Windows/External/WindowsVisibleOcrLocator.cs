@@ -151,6 +151,17 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return false;
     }
 
+    private static global::Windows.Foundation.Rect SpanBox(IReadOnlyList<OcrWord> words, int start, int span)
+    {
+        global::Windows.Foundation.Rect first = words[start].BoundingRect;
+        if (span == 1)
+            return first;
+        global::Windows.Foundation.Rect last = words[start + span - 1].BoundingRect;
+        double top = Math.Min(first.Y, last.Y);
+        double bottom = Math.Max(first.Y + first.Height, last.Y + last.Height);
+        return new global::Windows.Foundation.Rect(first.X, top, Math.Max(1, last.X + last.Width - first.X), bottom - top);
+    }
+
     private static HashSet<string> Needles(string needle)
     {
         HashSet<string> needles = new(StringComparer.Ordinal) { needle };
@@ -165,26 +176,25 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return needles;
     }
 
-    // Lo que está escrito en la ventana de delante, línea a línea. Hace falta
-    // porque hay superficies que no exponen árbol de accesibilidad: la interfaz
-    // del lanzador de juegos devuelve un solo nodo (la ventana heredada de CEF), sin un hijo. Ahí
-    // lo único que se puede leer es lo que se ve.
-    internal static async ValueTask<string[]?> TryReadLinesAsync(
+    /// <summary>One OCR line with its box in capture pixels (contract §1.2, text by zone).</summary>
+    internal sealed record LayoutLine(string Text, double X, double Y, double Width, double Height);
+
+    // Lo que está escrito en la ventana capturada, línea a línea y con su
+    // posición. Hace falta porque hay superficies que no exponen árbol de
+    // accesibilidad: la interfaz del lanzador de juegos devuelve un solo nodo
+    // (la ventana heredada de CEF), sin un hijo. Ahí lo único que se puede
+    // leer es lo que se ve.
+    internal static async ValueTask<IReadOnlyList<LayoutLine>?> ReadLayoutAsync(
+        string capturePath,
         int limit,
         CancellationToken cancellationToken)
     {
-        VisibleControlSurface.CapturedWindow? captured =
-            await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
-                .ConfigureAwait(false);
-        if (captured is null)
-            return null;
-        VisibleControlSurface.CapturedWindow window = captured.Value;
         try
         {
             OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
             if (engine is null)
                 return null;
-            StorageFile file = await StorageFile.GetFileFromPathAsync(window.Path);
+            StorageFile file = await StorageFile.GetFileFromPathAsync(capturePath);
             using IRandomAccessStream stream = await file.OpenReadAsync();
             BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
             using SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync(
@@ -201,7 +211,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
 
             cancellationToken.ThrowIfCancellationRequested();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var lines = new List<string>();
+            var lines = new List<LayoutLine>();
             // La segunda pasada nombra lo que la primera no alcanza a leer, como
             // el botón «Instalar» del lanzador de juegos: blanco sobre azul saturado.
             OcrResult[] readPasses = enhanced is null ? [recognized] : [recognized, enhanced];
@@ -212,7 +222,22 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     string text = line.Text.Trim();
                     if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
                         continue;
-                    lines.Add(text);
+                    global::Windows.Foundation.Rect box = default;
+                    bool started = false;
+                    foreach (OcrWord word in line.Words)
+                    {
+                        if (!started)
+                        {
+                            box = word.BoundingRect;
+                            started = true;
+                        }
+                        else
+                        {
+                            box.Union(word.BoundingRect);
+                        }
+                    }
+
+                    lines.Add(new LayoutLine(text, box.X, box.Y, box.Width, box.Height));
                     if (lines.Count >= limit)
                         break;
                 }
@@ -221,16 +246,21 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     break;
             }
 
-            return lines.ToArray();
+            // Orden de lectura: arriba→abajo, izquierda→derecha, con las dos
+            // pasadas fundidas.
+            lines.Sort((left, right) =>
+            {
+                int byRow = (left.Y + left.Height / 2).CompareTo(right.Y + right.Height / 2);
+                return Math.Abs(left.Y - right.Y) <= Math.Min(left.Height, right.Height) / 2
+                    ? left.X.CompareTo(right.X)
+                    : byRow;
+            });
+            return lines;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException
             or UnauthorizedAccessException)
         {
             return null;
-        }
-        finally
-        {
-            VisibleControlSurface.Delete(window.Path);
         }
     }
 
@@ -254,6 +284,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             }
         }
 
+        int span = needle.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
         List<WordHit> hits = [];
         List<double> heights = [];
         List<bool> continues = [];
@@ -261,11 +292,15 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         {
             foreach (OcrLine line in pass.Lines)
             {
-                foreach (OcrWord word in line.Words)
+                // A label of several words («Página principal») is a run of consecutive words of one line; its box
+                // spans them. A one-word label is one word, as before.
+                IReadOnlyList<OcrWord> lineWords = line.Words;
+                for (int start = 0; start + span <= lineWords.Count; start++)
                 {
-                    if (!needles.Contains(Fold(word.Text)))
+                    if (!needles.Contains(string.Join(' ', lineWords.Skip(start).Take(span).Select(each => Fold(each.Text)))))
                         continue;
-                    global::Windows.Foundation.Rect box = word.BoundingRect;
+                    OcrWord word = lineWords[start];
+                    global::Windows.Foundation.Rect box = SpanBox(lineWords, start, span);
                     var hit = new WordHit(
                         word.Text,
                         (int)(box.X + box.Width / 2),
@@ -426,7 +461,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return false;
     }
 
-    private static string Fold(string value)
+    internal static string Fold(string value)
     {
         string form = value.Normalize(NormalizationForm.FormD).ToLowerInvariant();
         var builder = new StringBuilder(form.Length);

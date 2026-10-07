@@ -201,6 +201,12 @@ internal static class Goal05CatalogObservation
                 or "game.purchase.commit" or "game.purchase.prepare" => Unverifiable(
                 descriptor,
                 "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."),
+            "input.scroll" => Unverifiable(
+                descriptor,
+                "Rueda Win32 sobre la ventana en primer plano verificada por el cambio de superficie; aquí desplazaría esta sesión."),
+            "mission.computer.use" => Unverifiable(
+                descriptor,
+                "Bucle del shell (vista → mente → primitiva verificada); el core solo contesta computer_use_requires_shell sin tocar nada."),
             "input.key.press" or "input.text.type" => Unverifiable(
                 descriptor,
                 "Win32 SendInput aceptado no es el efecto semántico en la app enfocada; dispararlo aquí escribiría en esta sesión."),

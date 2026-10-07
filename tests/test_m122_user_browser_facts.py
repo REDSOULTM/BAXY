@@ -28,7 +28,7 @@ from baxy_mind import llm
         ("user_browser_tab_step_unconfirmed", "not confirmed"),
         ("user_browser_tab_step_unavailable", "nothing was done"),
         ("user_browser_last_tab_kept", "would close the whole browser window"),
-        ("user_browser_close_all_declined", "nothing was closed"),
+        ("user_browser_close_all_incomplete", "seen.closedTabs says how many were closed"),
         ("user_browser_fullscreen_control_missing", "no video full-screen control"),
         ("user_browser_history_start", "no previous page"),
         ("user_browser_scroll_boundary", "already at that end"),
@@ -276,26 +276,26 @@ def test_the_short_orders_over_the_page_in_front_are_read(text: str, action: str
     assert (browser_page_step_arguments(text) or {}).get("action") == action
 
 
-def test_closing_every_tab_of_the_persons_browser_is_said_as_not_done() -> None:
+def test_closing_every_tab_that_stopped_part_way_is_said_as_not_done() -> None:
     situation = {
         "kind": "operation",
         "operation": "browser.control",
         "polarity": "failure",
         "verified": False,
         "succeeded": False,
-        "error": "user_browser_close_all_declined",
+        "error": "user_browser_close_all_incomplete",
     }
 
     final = llm._told_result_final(situation, {}, "cierra todas las pestañas", "es")
 
     assert final.startswith("No pude cerrarlas todas")
-    assert "Puedo cerrar la pestaña que tienes delante" in final
+    assert "quedan varias" in final
 
 
 @pytest.mark.parametrize(
     ("code", "said"),
     [
-        ("user_browser_close_all_declined", "cierra todas las pestañas"),
+        ("user_browser_close_all_incomplete", "cierra todas las pestañas"),
         ("user_browser_last_tab_kept", "cierra esta pestaña"),
         ("user_browser_tab_step_unconfirmed", "recarga la página"),
         ("user_browser_fullscreen_control_missing", "pon el video en pantalla completa"),
@@ -364,3 +364,64 @@ def test_a_tab_step_is_told_as_done_by_the_assistant_just_now() -> None:
 
     assert "«Puse el video en pantalla completa»" in instruction
     assert "Never say it already was so" in instruction
+
+
+_CLOSED_ALL = {
+    "kind": "operation",
+    "operation": "browser.control",
+    "polarity": "success",
+    "verified": True,
+    "succeeded": True,
+    "observed": {
+        "version": 1,
+        "action": "close_all",
+        "observedState": "tabs_closed",
+        "browser": "Opera GX",
+        "closedTabs": 3,
+        "tabCount": 1,
+        "activeTab": "Google",
+        "authority": "user_browser_uia_frame_postread",
+    },
+}
+
+
+def test_closing_every_tab_tells_how_many_closed_and_the_one_left() -> None:
+    """Owner 2026-10-06: «cerrá todas las pestañas» closes the person's tabs one at a time, with confirmation, and
+    keeps the last one (closing it would close the browser); the final says the counts read back."""
+
+    import json
+
+    said = "cierra todas las pestañas del navegador"
+    facts = {"situation": json.dumps(_CLOSED_ALL)}
+    seen = llm._compose_situation_payload(_CLOSED_ALL, "es", said)["seen"]
+
+    assert seen["closedTabs"] == 3 and seen["tabCount"] == 1
+    assert llm.compose_visible_defect("Cerré 3 pestañas; queda una abierta.", "status", said, facts) == ""
+    assert llm.compose_visible_defect("Cerré 5 pestañas; queda una abierta.", "status", said, facts) == "invented_number"
+    assert llm.compose_visible_defect("Cerré todas las pestañas del navegador.", "status", said, facts) == "extra_claim"
+    final = llm._told_result_final(_CLOSED_ALL, {"seen": seen}, said, "es")
+    assert final == "Cerré 3 pestañas; queda 1 abierta."
+    assert llm.compose_visible_defect(final, "status", said, facts) == ""
+
+
+def test_the_question_before_closing_every_tab_says_one_stays() -> None:
+    class _Recorder(llm.LlmRuntime):
+        def __init__(self) -> None:
+            self._gguf = r"D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf"
+            self.captured: list[dict] = []
+
+        def _post(self, payload):  # noqa: ANN001, ANN201
+            self.captured.append(payload)
+            content = "¿Cierro tus pestañas una por una y dejo una abierta? Puedes confirmar o cancelar."
+            return {"choices": [{"message": {"content": content}, "finish_reason": "stop"}]}
+
+    client = _Recorder()
+    facts = {"situation": {
+        "kind": "confirmation", "polarity": "pending", "cause": "confirmation_required",
+        "choices": ["confirmar", "cancelar"],
+        "pendingRequest": "cierra todas las pestañas del navegador",
+        "pendingAction": {"operation": "browser.control", "arguments": {"action": "close_all"}},
+    }}
+    client.compose_user_message("cierra todas las pestañas del navegador", "confirmation", facts)
+
+    assert "leaves one open" in client.captured[0]["messages"][-1]["content"]

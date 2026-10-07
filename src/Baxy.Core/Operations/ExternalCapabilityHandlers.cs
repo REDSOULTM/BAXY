@@ -58,6 +58,7 @@ internal static class ExternalCapabilityHandlers
         "input.keyboard.open",
         "input.keyboard.status",
         "input.pointer.control",
+        "input.scroll",
         "input.select.all",
         "input.text.type",
         "input.visible.click",
@@ -167,8 +168,11 @@ internal sealed class ExternalCapabilityHandler(
         {
             bool effectMayHaveOccurred =
                 receipt.EffectObserved || receipt.EffectMayHaveOccurred;
+            // What a failing provider still observed (how many tabs it closed
+            // before stopping) travels with the failure, never as success.
             return OperationOutcome.Failure(
                 receipt.ErrorCode ?? "external_verification_failed",
+                result: receipt.Verified ? null : receipt.Result,
                 effectMayHaveOccurred: effectMayHaveOccurred,
                 causeCode: effectMayHaveOccurred ? "external_effect_ambiguous" : null);
         }

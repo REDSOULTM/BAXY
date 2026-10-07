@@ -213,22 +213,19 @@ queda **incierto** (`user_browser_tab_step_unconfirmed`, efecto posible).
 | `close` | Chromium: `WM_COMMAND IDC_CLOSE_TAB` (34015); Firefox: `APPCOMMAND_CLOSE`; Opera: clic central publicado (`WM_MBUTTONDOWN/UP`) en el centro de la pestaña activa, sólo si sigue siendo la misma y está en pantalla | una pestaña menos (`closedTab`, `activeTab`) |
 | `scroll_down`/`scroll_up` | `ScrollPattern` del documento (si no desplaza, su primer elemento que desplace en vertical), una pantalla (`LargeIncrement`) | el porcentaje leído después; en el borde: `user_browser_scroll_boundary`, nada movido |
 | `fullscreen_video` | `Invoke` del botón de la página cuyo nombre empieza por «Pantalla completa»/«Full screen» (Blink lo toma como gesto de la persona) | la ventana cubre su monitor |
-| `close_all` | **no se hace** (`user_browser_close_all_declined`) | — |
+| `close_all` | con confirmación (`RiskPolicy` por el argumento): `close` de la pestaña activa una a una hasta dejar una (≤ 50, ≤ 40 s) | el marco releído tras cada cierre: una menos; `closedTabs`, `tabCount`, `activeTab`; parado a medias: `closedTabs` hasta ahí y efecto posible |
 
 - **La última pestaña se conserva** (`user_browser_last_tab_kept`): cerrarla
   cierra la ventana de la persona.
-- **`close_all`**: en el navegador de la persona cerraría su sesión entera
-  (formularios a medias, páginas con sesión). `RiskPolicy` no pide
-  confirmación para `browser.control` (`low_reversible`) y la confirmación se
-  liga a la operación, no al argumento; hacerlo sin preguntar sería
-  destructivo, así que no se hace y se ofrece cerrar la pestaña de delante.
-  Si el dueño lo quiere con confirmación, hace falta que la política distinga
-  `action=close_all` (decisión aparte, ver «Pendiente»).
-- **Ir a una pestaña por su nombre** («ve a la pestaña de YouTube»): el
-  catálogo no tiene la operación (`browser.control` no lleva título). Se
-  propone `browser.tab.select {title}` (`low_reversible`): `SelectionItemPattern.Select`
-  del `TabItem` cuyo título coincide (o `IDC_SELECT_TAB_0..7` en Chromium),
-  verificado por la pestaña seleccionada. No se añadió.
+- **`close_all`** (Fase 4, 2026-10-06): cierra la sesión entera de la persona,
+  así que `RiskPolicy.LosesTheSession` lo confirma en modo normal, ligado a la
+  invocación exacta (el argumento está en la huella). La última pestaña se
+  conserva siempre.
+- **Ir a una pestaña por su nombre** («ve a la pestaña de YouTube»): no es una
+  operación nueva sino una misión del motor de computer use con aplicación
+  «navegador» (la ventana delantera del navegador predeterminado): clic en la
+  `TabItem` cuyo título contiene el nombre, verificado por la pestaña
+  seleccionada (`documentacion/computer-use/CONTRATO_VISTA_ACCION.md` §6).
 - **Conteo** (`browser.tabs.list`): la mente recibe `tabCount`, los títulos en
   orden, `activeTab` y `tabsPerSite` (cuántas pestañas comparten el sitio que
   el título nombra tras su último « - », « | » o « • », sin aislantes bidi ni
@@ -327,7 +324,7 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   documento nuevo e incierta sin él; Opera pulsa su botón y Chrome recibe
   `IDC_NEW_TAB`; cierre por clic central en el sitio de la pestaña activa
   (Opera) o `IDC_CLOSE_TAB` (Chrome); una pestaña que cambió no se pulsa; la
-  última se conserva; `close_all` no lee ni toca nada; desplazamiento leído de
+  última se conserva; `close_all` cierra una a una y deja una; desplazamiento leído de
   vuelta y borde; pantalla completa por la ventana que cubre el monitor;
   lectura del marco con una sola pestaña (`ConvertTo-Json`).
 - Manual, 2026-10-02, con un Edge **propio y desechable** (perfil temporal,
@@ -397,9 +394,8 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   dragon» frente a «La Casa del Dragón») no se elige: queda incierto con la
   búsqueda abierta. El decisor entrenado no vio HBO Max al entrenarse; lo
   reciben los lectores y la línea de su catálogo.
-- Pestañas: ir a una pestaña por su nombre (propuesta `browser.tab.select`,
-  sección «Pestañas») y `close_all` con confirmación ligada a
-  `action=close_all` (hoy no se hace) son decisiones del dueño. El primer
+- Pestañas: ir a una pestaña por su nombre y `close_all` con confirmación
+  quedaron hechos en la Fase 4 (motor de computer use). El primer
   plano tras una acción UIA (botón de pestaña nueva en Opera, `ScrollPattern`,
   botón de pantalla completa) no está medido en Opera: la investigación lo vio
   traer Chrome/Edge al frente.

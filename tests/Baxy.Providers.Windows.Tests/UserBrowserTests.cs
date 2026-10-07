@@ -500,20 +500,72 @@ public sealed class UserBrowserTests
     }
 
     [Test]
-    public async Task ClosingEveryTabOfThePersonsBrowserIsNotDone()
+    public async Task EveryTabButTheLastIsClosedOneAtATimeAndEachCloseIsSeen()
     {
-        var platform = new FakePlatform(OperaGx) { Tabs = [new("Mine", true), new("Theirs", false)] };
-        using Harness harness = new(platform);
+        var chrome = new FakePlatform(Chrome);
+        chrome.Frames.AddRange([Frame("doc-1", tabs: 3), Frame("doc-2", tabs: 2), Frame("doc-3", tabs: 1)]);
+        var opera = new FakePlatform(OperaGx);
+        opera.Frames.AddRange([
+            Frame("doc-1", tabs: 3), Frame("doc-1", tabs: 3), Frame("doc-2", tabs: 2), Frame("doc-2", tabs: 2),
+            Frame("doc-3", tabs: 1)]);
+        using Harness inChrome = new(chrome);
+        using Harness inOpera = new(opera);
 
-        ExternalCapabilityReceipt control = await Control(harness, "close_all");
+        ExternalCapabilityReceipt chromeAll = await Control(inChrome, "close_all");
+        ExternalCapabilityReceipt operaAll = await Control(inOpera, "close_all");
 
         Assert.Multiple(() =>
         {
-            Assert.That(control.ErrorCode, Is.EqualTo(UserBrowserSurface.CloseAllDeclined));
-            Assert.That(control.EffectObserved || control.EffectMayHaveOccurred, Is.False);
-            Assert.That(platform.MiddleClicks, Is.Empty);
-            Assert.That(platform.FrameReads, Is.Zero);
-            Assert.That(harness.Edge.ReadCalls, Is.Zero);
+            Assert.That(chromeAll.Verified, Is.True);
+            Assert.That(chromeAll.EffectObserved, Is.True);
+            Assert.That(chrome.BrowserCommands, Is.EqualTo(new[]
+            {
+                UserBrowserSurface.BrowserCommandCloseTab, UserBrowserSurface.BrowserCommandCloseTab,
+            }));
+            Assert.That(chrome.MiddleClicks, Is.Empty);
+            Assert.That(chromeAll.Result?.GetProperty("observedState").GetString(), Is.EqualTo("tabs_closed"));
+            Assert.That(chromeAll.Result?.GetProperty("closedTabs").GetInt32(), Is.EqualTo(2));
+            Assert.That(chromeAll.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(chromeAll.Result?.GetProperty("activeTab").GetString(), Is.EqualTo("Mine"));
+            Assert.That(chromeAll.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.FrameAuthority));
+            Assert.That(operaAll.Verified, Is.True);
+            Assert.That(opera.BrowserCommands, Is.Empty);
+            Assert.That(opera.MiddleClicks, Has.Count.EqualTo(2), "each close is a click on the tab then active");
+            Assert.That(operaAll.Result?.GetProperty("closedTabs").GetInt32(), Is.EqualTo(2));
+            Assert.That(inChrome.Edge.ReadCalls + inOpera.Edge.ReadCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task ClosingEveryTabKeepsTheLastAndAStoppedCloseSaysHowManyWereClosed()
+    {
+        var single = new FakePlatform(Chrome);
+        single.Frames.Add(Frame("doc-1", tabs: 1));
+        var stuck = new FakePlatform(Chrome);
+        stuck.Frames.AddRange([Frame("doc-1", tabs: 3), Frame("doc-2", tabs: 2)]);
+        using Harness first = new(single);
+        using Harness second = new(stuck);
+
+        ExternalCapabilityReceipt kept = await Control(first, "close_all");
+        ExternalCapabilityReceipt stopped = await Control(second, "close_all");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(kept.ErrorCode, Is.EqualTo(UserBrowserSurface.LastTabKept));
+            Assert.That(kept.EffectObserved || kept.EffectMayHaveOccurred, Is.False);
+            Assert.That(single.BrowserCommands, Is.Empty);
+            Assert.That(single.MiddleClicks, Is.Empty);
+            Assert.That(kept.Result?.GetProperty("observedState").GetString(), Is.EqualTo("nothing_to_close"));
+            Assert.That(kept.Result?.GetProperty("closedTabs").GetInt32(), Is.Zero);
+            Assert.That(kept.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(stopped.Verified, Is.False);
+            Assert.That(stopped.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnconfirmed));
+            Assert.That(stopped.EffectObserved, Is.True, "one tab was seen closed");
+            Assert.That(stopped.EffectMayHaveOccurred, Is.True);
+            Assert.That(stopped.Result?.GetProperty("closedTabs").GetInt32(), Is.EqualTo(1));
+            Assert.That(stopped.Result?.TryGetProperty("tabCount", out _), Is.False, "what is left is not guessed");
+            Assert.That(stuck.BrowserCommands, Has.Count.EqualTo(2));
         });
     }
 

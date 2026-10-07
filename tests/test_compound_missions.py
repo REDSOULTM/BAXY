@@ -133,12 +133,16 @@ def test_web_destination_is_not_a_visible_click() -> None:
 
 
 def test_visible_click_cascade_source_has_no_app_names() -> None:
+    # Computer use (CONTRATO_VISTA_ACCION.md): the persistent UIA worker replaced
+    # DesktopClickVisible.ps1; the scroll adapter and the worker host joined the cascade.
     files = (
-        REPO / "src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1",
+        REPO / "src/Baxy.Providers.Windows/External/DesktopUiaWorker.ps1",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleVisionLocator.cs",
         REPO / "src/Baxy.Providers.Windows/External/VisibleControlSurface.cs",
+        REPO / "src/Baxy.Providers.Windows/External/UiaWorkerHost.cs",
+        REPO / "src/Baxy.Providers.Windows/External/WindowsScrollAdapter.cs",
     )
     banned = ("steam", "spotify", "discord", "chrome")
     for path in files:
