@@ -8819,6 +8819,40 @@ def _computer_use_mission(situation: dict) -> dict | None:
     return reason if isinstance(reason, dict) and reason.get("operation") == "mission.computer.use" else None
 
 
+# Live 2026-10-07 (v2 voice audit, 239 published computer-use finals): «Ya he entrado en la sección…», «Ya estamos en
+# la pestaña…», «Ya te llevé a la sección de sonido…», «…página de inicio de Spotify Premium», «mis playlists»,
+# «Descargas dentro de Documentos», two sentences where one was asked. The voice of a mission final, in the request's
+# language (documentacion/00_IDENTIDAD.md: first person singular, tuteo, one sentence, the observable state).
+COMPUTER_USE_VOICE_PROMPT_ES = (
+    "Voz de este final: sólo este pedido y los hechos de esta misión, nada de turnos anteriores. Habla en primera "
+    "persona singular, con tuteo chileno y en pretérito simple («llegué», «abrí», «elegí», «escribí»); nunca «he "
+    "entrado», «ha quedado», «estamos», «te llevé». Nombra el lugar o el resultado tal como lo escribe la ventana, "
+    "sin planes ni versiones del producto («Premium», «Pro») y sin decir que un lugar está dentro de otro. Lo de la "
+    "persona es suyo («tus listas»), nunca «mis»."
+)
+COMPUTER_USE_VOICE_PROMPT_EN = (
+    "Voice of this final: only this request and this mission's facts, nothing from earlier turns. Speak in the first "
+    "person singular, in the simple past («I went to», «I opened», «I chose», «I typed»); never «we», never «I've "
+    "gone», never «I'm already in», never «I took you». Name the place or the result as the window writes it, with "
+    "no plan or edition of the product («Premium», «Pro»), and never say one place is inside another. The person's "
+    "things are theirs («your playlists»), never «my»."
+)
+COMPUTER_USE_VOICE_LENGTH_ES = " Una sola frase corta, de 18 palabras o menos."
+COMPUTER_USE_VOICE_LENGTH_EN = " One short sentence of 18 words or fewer."
+
+
+def _computer_use_voice_instruction(situation: dict, language: str) -> str:
+    """The voice of a computer-use final: first person singular, preterite, the window's own words, nothing from
+    earlier turns; a reached mission (no question about a failure to explain) in one sentence of 18 words or fewer."""
+
+    english = language == "en"
+    text = COMPUTER_USE_VOICE_PROMPT_EN if english else COMPUTER_USE_VOICE_PROMPT_ES
+    mission = _computer_use_mission(situation) or {}
+    if _merged_observed(mission).get("reached") is True:
+        text += COMPUTER_USE_VOICE_LENGTH_EN if english else COMPUTER_USE_VOICE_LENGTH_ES
+    return text
+
+
 def _computer_use_floor(situation: dict, english: bool) -> str:
     """Live 2026-10-07 (v2-v9, v2-u7, v2-w1, v2-n5, v2-e2): every draft of a computer-use final refused, the generic
     floor said «Lo hice en la aplicación «Reloj»; hay 2: «Reloj mundial».» (the steps counted as a list read) or «No pude
@@ -25805,8 +25839,11 @@ class LlmRuntime:
             # MUSIC1755: a bare answer («Queen») keeps the conversation language.
             response_language = _conversation_response_language(user_text, facts)
         trace_id = str(facts.get("traceId") or "")[:128]
-        previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
+        # Live 2026-10-07 (v2 voice audit): a computer-use final tells this turn's mission alone. No earlier turn reaches
+        # its prompt (BAXY's previous answer, the topic of earlier requests), so it can only say what this mission saw.
+        computer_use_final = _computer_use_mission(situation) is not None
+        previous_answer = "" if computer_use_final else _referenced_previous_answer(user_text, facts)
         consulted_refused: list[str] = []
         if response_language in {"es", "en"} and _addressed_to_the_person(intent, situation):
             # M99 (DEV-D v3x D-w15-t3): a question back to the person is in their language, not the one they asked a
@@ -26036,7 +26073,9 @@ class LlmRuntime:
             )
             message_prompt += scope
             cpu_prompt += scope
-        compose_sampling = self._compose_sampling(situation)
+        # A computer-use final is greedy in every attempt: the sampled retries (temperature 0.7) wrote misspelled
+        # words the person never said («Abrazé a la sección…» for «Llegué»); a repeated draft falls to the floor.
+        compose_sampling = {"temperature": 0.0} if computer_use_final else self._compose_sampling(situation)
         # Literal contract fields are rendered once below in a compact form and
         # validated again after generation. Repeating them inside the JSON made
         # every CPU composition re-evaluate the same facts up to three times;
@@ -26130,7 +26169,7 @@ class LlmRuntime:
             required_words = _localized_confirmation_words(
                 required_words, response_language
             )
-        if intent == "conversation" or kind == "conversation":
+        if (intent == "conversation" or kind == "conversation") and not computer_use_final:
             # Un seguimiento elíptico no nombra su tema. Cuando la mente falla
             # y su respuesta cae aquí, el compositor sólo veía «¿por qué
             # importa?» y contestaba en abstracto (`seguimiento-1..7`). El tema
@@ -26506,6 +26545,8 @@ class LlmRuntime:
             and not _looks_like_continue_constraint(user_text)
         ):
             instruct("\nEnglish only.")
+        if computer_use_final:
+            instruct("\n" + _computer_use_voice_instruction(situation, response_language))
         if (
             asks_about_mute(user_text)
             # Use the same lifted/mission observations as the visible facts
@@ -29475,7 +29516,7 @@ class LlmRuntime:
             {"role": "user", "content": retry_user},
         ]
         retry_payload.update(compose_sampling)
-        retry_payload.update(_compose_retry_sampling(compose_sampling, 1))
+        retry_payload.update({} if computer_use_final else _compose_retry_sampling(compose_sampling, 1))
         if repair_machine_actor:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
@@ -29513,7 +29554,7 @@ class LlmRuntime:
         )
         third_payload = dict(payload)
         third_payload.update(compose_sampling)
-        third_payload.update(_compose_retry_sampling(compose_sampling, 2))
+        third_payload.update({} if computer_use_final else _compose_retry_sampling(compose_sampling, 2))
         # H0516: el tercer intento pedía la pista del PRIMER defecto (el lugar de
         # la captura) cuando el segundo era otro (faltaba el cierre), y el modelo
         # repetía. Cada intento recibe la pista de su propio defecto.
