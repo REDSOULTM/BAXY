@@ -549,6 +549,19 @@ def _steps_ok(history: list[dict], operation: str, **match: str) -> list[dict]:
     return found
 
 
+# «activar modo X»: the reader's goal for «poné el modo X», which is a switch only where the window has one so named.
+_MODE_SWITCH_GOAL = re.compile(r"^activar\s+modo\s+(?P<what>\S.*)$")
+
+
+def _switch_named(view: dict, what: str) -> bool:
+    controls = view.get("controls") if isinstance(view, dict) else None
+    return any(
+        isinstance(control, dict) and _is_switch(control)
+        and (label_names(what, str(control.get("name") or "")) or label_names(f"modo {what}", str(control.get("name") or "")))
+        for control in controls or ()
+    )
+
+
 def deterministic_step(
     *,
     goal: str,
@@ -565,6 +578,14 @@ def deterministic_step(
     the model."""
 
     folded_goal = fold(goal)
+    mode = _MODE_SWITCH_GOAL.match(folded_goal)
+    if mode is not None and not _switch_named(view, mode.group("what")):
+        # «poné el modo programador» on a window with no switch of that name: the mode is one of the window's places,
+        # chosen the way «cambiá a programador» chooses it (live y1: the model wandered and flipped «Alternar grados»).
+        return deterministic_step(
+            goal=f"ir a {mode.group('what')}", view=view, history=history, application=application,
+            objective=objective, _tried=_tried,
+        )
     last = history[-1] if history and isinstance(history[-1], dict) else None
     if last is not None and last.get("ok") is not True:
         # An opening that could not be verified but left the application in

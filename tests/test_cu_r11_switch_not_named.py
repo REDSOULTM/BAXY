@@ -31,3 +31,27 @@ def test_the_switch_the_goal_names_is_pressed() -> None:
 def test_a_setting_goal_still_clicks_what_is_not_a_switch() -> None:
     step = _decide("activar modo programador", "Programador", 2)
     assert step["operation"] == "input.visible.click"
+
+
+def test_put_mode_without_a_switch_of_that_name_goes_to_the_mode() -> None:
+    view = {
+        "window": {"title": "Calculadora", "process": "calc"},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Abrir navegación", "state": ""},
+            {"i": 1, "kind": "Button", "name": "Alternar grados", "state": "off"},
+        ],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="activar modo programador", view=view, history=[])
+    assert step is not None and step["operation"] == "input.visible.click"
+    assert step["arguments"]["label"] == "Abrir navegación"
+
+
+def test_put_mode_with_a_switch_of_that_name_is_left_to_the_switch_rules() -> None:
+    view = {
+        "window": {"title": "Ajustes", "process": "ajustes"},
+        "controls": [{"i": 0, "kind": "Button", "name": "Modo oscuro", "state": "off", "toggle": True}],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="activar modo oscuro", view=view, history=[])
+    assert step is None or step["arguments"].get("label") != "Abrir navegación"
