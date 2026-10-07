@@ -500,8 +500,15 @@ public sealed class ComputerUseMissionTests
             Assert.That(ComputerUseSuccessCheck.Evaluate(Check, results, Steps("Buscar en Trabajo",
                 new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "down", ["ok"] = true }), out _), Is.False,
                 "a key that moves inside the suggestions submits nothing");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, results, Steps("Buscar en Trabajo", Enter()), out _), Is.False,
+                "a search entered lists what matches; it is not the place");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, Steps("Buscar en Trabajo", Enter(),
+                new JsonObject { ["step"] = 4, ["operation"] = "input.visible.click", ["label"] = "Imágenes", ["ok"] = true }), out _),
+                Is.True, "a click from the results to the place by its name went there");
             Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, Steps("Barra de direcciones", Enter()), out _), Is.True,
                 "the address typed and entered leads to the place it names");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, Steps("Buscar en Trabajo", Enter()), out _), Is.True,
+                "a search whose Enter opened the place is titled by the place, not by the query");
             Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, [], out _), Is.True);
             Assert.That(ComputerUseSuccessCheck.Evaluate("title:imagenes&stepDone:input.key.press:enter", results,
                 Steps("Buscar en Trabajo", Enter()), out _), Is.True, "a search submitted is titled by what it searched");

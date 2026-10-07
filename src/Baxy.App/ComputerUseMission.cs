@@ -1585,7 +1585,10 @@ internal static class ComputerUseSuccessCheck
         foreach (string term in check.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             string[] atoms = term.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (atoms.Length > 0 && atoms.All(atom => Atom(atom, view, steps)))
+            // A term that also asks for an act («title:X&stepDone:input.key.press:enter») is a search's own proof:
+            // the results titled by what was searched are what it wants.
+            bool searchResultsProve = atoms.Any(atom => AtomKind(atom) == "stepdone");
+            if (atoms.Length > 0 && atoms.All(atom => Atom(atom, view, steps, searchResultsProve)))
             {
                 satisfiedBy = term;
                 return true;
@@ -1637,7 +1640,7 @@ internal static class ComputerUseSuccessCheck
         return colon <= 0 ? string.Empty : atom[..colon].Trim().ToLowerInvariant();
     }
 
-    internal static bool Atom(string atom, JsonObject view, JsonArray steps)
+    internal static bool Atom(string atom, JsonObject view, JsonArray steps, bool searchResultsProve = false)
     {
         int colon = atom.IndexOf(':', StringComparison.Ordinal);
         if (colon <= 0)
@@ -1654,7 +1657,7 @@ internal static class ComputerUseSuccessCheck
             case "title":
                 return view["window"] is JsonObject titled
                     && Fold((string?)titled["title"]).Contains(Fold(rest), StringComparison.Ordinal)
-                    && !UnsubmittedQueryNames(rest, steps);
+                    && !QueryEchoNames(rest, view, steps, searchResultsProve);
             case "process":
                 return view["window"] is JsonObject owned
                     && Fold((string?)owned["process"]).Contains(Fold(rest), StringComparison.Ordinal);
@@ -1682,7 +1685,7 @@ internal static class ComputerUseSuccessCheck
                             .Where(step => (string?)step["operation"] == "input.text.type" && EchoesItsQuery(step))
                             .Select(step => Fold((string?)step["text"])),
                         StringComparer.Ordinal);
-                    if (state == "selected" && UnsubmittedQueryNames(name, steps))
+                    if (state == "selected" && QueryEchoNames(name, view, steps, searchResultsProve))
                     {
                         return false;
                     }
@@ -1708,7 +1711,7 @@ internal static class ComputerUseSuccessCheck
             case "count":
                 return CountAtom(rest, view);
             case "page":
-                return !UnsubmittedQueryNames(rest, steps) && PageAtom(rest, view, steps);
+                return !QueryEchoNames(rest, view, steps, searchResultsProve) && PageAtom(rest, view, steps);
             case "stepdone":
                 {
                     string[] parts = rest.Split(':', 2);
@@ -2026,17 +2029,15 @@ internal static class ComputerUseSuccessCheck
     }
 
     // A field whose name says it looks something up (or holds an address); a field of unknown name counts as one.
-    private static readonly System.Text.RegularExpressions.Regex QueryField = new(
-        @"\b(?:busc\w*|busqueda|search\w*|find|filtr\w*|filter\w*|a donde quieres ir|ir a|go to|jump to|quick switcher|direcc\w*|address|url)\b",
-        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
-
-    // The place is named only by a query BAXY typed and has not submitted: the last act was typing the name into a
-    // search or an address box, with no Enter and no click after it. While it stands, a window that shows the name
-    // (its title, its selected tab, its header) is echoing the query, not the place reached (measured on Explorer:
-    // «Imágenes» typed into «Buscar en ETC» titled the window «imagenes - Resultados de la búsqueda en ETC» and its
-    // selected tab the same, and the mission said it was in Imágenes). Submitted, the name in the title is the
-    // page the query led to (a search's results, an address typed and entered).
-    internal static bool UnsubmittedQueryNames(string place, JsonArray steps)
+    // The place is named by a query BAXY typed, not reached: the last thing typed was the name, into a search or an
+    // address box, and either nothing submitted it (no Enter, no click after it), or a search submitted it, its box
+    // still holds the query (its results are what is shown) and no click went from them to the place by name (a
+    // search whose Enter opened the place leaves no box holding it). While it stands, a window that shows the
+    // name (its title, its selected tab, its header) is echoing the query (measured on Explorer: «Imágenes» typed
+    // into «Buscar en ETC» titled the window «imagenes - Resultados de la búsqueda en ETC», its selected tab the
+    // same, and the mission said it was in Imágenes). An address, a «go to» box or a switcher entered leads to the
+    // place it names; a search term that asks for the act itself takes its results (searchResultsProve).
+    internal static bool QueryEchoNames(string place, JsonObject view, JsonArray steps, bool searchResultsProve)
     {
         string target = Fold(place);
         if (target.Length == 0)
@@ -2044,6 +2045,7 @@ internal static class ComputerUseSuccessCheck
             return false;
         }
 
+        bool submitted = false;
         for (int index = steps.Count - 1; index >= 0; index--)
         {
             if (steps[index] is not JsonObject step || (bool?)step["ok"] != true)
@@ -2054,19 +2056,57 @@ internal static class ComputerUseSuccessCheck
             switch ((string?)step["operation"])
             {
                 case "input.visible.click":
-                    return false;
+                    if (Fold((string?)step["label"]).Contains(target, StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+
+                    submitted = true;
+                    break;
                 case "input.key.press" when Fold((string?)step["key"]) == "enter":
-                    return false;
+                    submitted = true;
+                    break;
                 case "input.text.type":
-                    return EchoesItsQuery(step) && Fold((string?)step["text"]).Contains(target, StringComparison.Ordinal);
+                    if (!EchoesItsQuery(step) || !Fold((string?)step["text"]).Contains(target, StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+
+                    return !submitted
+                        || (!searchResultsProve && IsSearchBox((string?)step["into"]) && AFieldHolds(view, (string?)step["text"]));
             }
         }
 
         return false;
     }
 
+    private static bool AFieldHolds(JsonObject view, string? typed)
+    {
+        string query = Fold(typed);
+        return query.Length > 0 && (view["controls"] as JsonArray ?? []).OfType<JsonObject>()
+            .Append(view["window"]?["focused"] as JsonObject ?? new JsonObject())
+            .Any(control => (string?)control["kind"] is "Edit" or "ComboBox"
+                && Fold((string?)control["value"]).Contains(query, StringComparison.Ordinal));
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex SearchBox = new(
+        @"\b(?:busc\w*|busqueda|search\w*|find|filtr\w*|filter\w*)\b",
+        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    private static readonly System.Text.RegularExpressions.Regex AddressBox = new(
+        @"\b(?:a donde quieres ir|ir a|go to|jump to|quick switcher|direcc\w*|address|url)\b",
+        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // A box that only searches: its results are a list of matches, never the place itself. One that also takes an
+    // address (a browser's bar «Buscar o escribir dirección») leads where it is sent.
+    private static bool IsSearchBox(string? into)
+    {
+        string named = Fold(into);
+        return named.Length > 0 && SearchBox.IsMatch(named) && !AddressBox.IsMatch(named);
+    }
+
     private static bool EchoesItsQuery(JsonObject typedStep) =>
-        (string?)typedStep["into"] is not { Length: > 0 } into || QueryField.IsMatch(Fold(into));
+        (string?)typedStep["into"] is not { Length: > 0 } into || SearchBox.IsMatch(Fold(into)) || AddressBox.IsMatch(Fold(into));
 
     internal static JsonArray TextLines(JsonObject view)
     {
