@@ -7844,9 +7844,10 @@ def _compose_situation_payload(
             # session count invited claims about silence and open/closed state.
             for key in ("muted", "processName", "sessionCount", "authority", "endpointIdHash"):
                 visible_seen.pop(key, None)
-        if not asks_for_an_internal_identifier(user_text or ""):
+        if identifier_is_plumbing(operation) and not asks_for_an_internal_identifier(user_text or ""):
             # Live 2026-10-07 (x12 «abrí la calculadora» → «Abrí la calculadora y ahora está ejecutándose en la ventana
             # con el handle 4722336.»): a window handle or process id is the adapter's, never what the person sees.
+            # A window or process inventory keeps them: there they are what was listed.
             for key in _INTERNAL_IDENTIFIER_KEYS:
                 visible_seen.pop(key, None)
         if operation in {"wifi.radio.set", "wifi.radio.status"} and isinstance(visible_seen.get("state"), bool):
@@ -16374,7 +16375,9 @@ def compose_visible_defect(
         # M108: the report of a result names no contract token, and what was verified is never promised.
         if visible_reply_leaks_a_contract_token(stripped, reported, identifier_sources):
             return "internal_code"
-        if visible_reply_says_an_internal_identifier(stripped, f"{user_text} {said or ''}"):
+        if identifier_is_plumbing(str(reported.get("operation") or "")) and visible_reply_says_an_internal_identifier(
+            stripped, f"{user_text} {said or ''}"
+        ):
             return "internal_code"
         if intent == "status" and _verified_effect(reported) and visible_reply_promises_the_act(stripped):
             return "promised_effect"
@@ -19515,6 +19518,15 @@ _INTERNAL_IDENTIFIER_SAID = re.compile(
     r"\b(?:hwnd|handle|pid|process\s*id|id\s+del?\s+proceso|identificador\s+(?:del?\s+)?(?:proceso|ventana)|"
     r"identificador)\b[^.!?\d]{0,24}\d{3,}"
 )
+
+
+def identifier_is_plumbing(operation: str) -> bool:
+    """An operation whose window handle or process id only says which window it acted on (opening an application, the
+    computer-use engine, opening a file or a folder); a window or process inventory lists them as its content."""
+
+    return operation in {"app.open", "app.close", "mission.computer.use", "file.open"} or operation.startswith(
+        "filesystem."
+    )
 
 
 def visible_reply_says_an_internal_identifier(text: object, user_text: str) -> bool:
@@ -26798,8 +26810,13 @@ class LlmRuntime:
                 else f"\nLo hecho es tuyo: cuéntalo como lo ve la persona y en tu voz («Listo, abrí {opened}.»), "
                 "sin identificadores de ventana ni de proceso."
             )
-        elif intent == "status" and _verified_effect(situation):
+        elif (
+            intent == "status" and _verified_effect(situation)
+            and identifier_is_plumbing(str(visible_situation.get("operation") or ""))
+        ):
             # Live 2026-10-07 (y5 «Has abierto correctamente la carpeta…»): a verified act is BAXY's, said in his voice.
+            # Only where it was measured (opening an app, a file or a folder; the engine): other reports keep their
+            # recorded prompts.
             instruct(
                 "\nIt is your own act: say it in your voice («I opened…»), never as the person's («You opened…»)."
                 if response_language == "en"
