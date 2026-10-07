@@ -27,6 +27,15 @@ MISSION = {
     },
 }
 
+# cu-r17: a mission without a question is told from its facts before any draft (floor-first); one whose goal carries
+# the person's question still reaches the model, so the prompt and the sampler are read on it.
+ASKED_MISSION = dict(MISSION)
+ASKED_MISSION["observed"] = dict(
+    MISSION["observed"],
+    goal="ir a temas; y responder: ¿el modo es claro u oscuro?",
+    screen={"title": "Configuración", "values": [{"name": "Temas", "state": "selected"}, {"name": "Modo", "value": "Oscuro"}]},
+)
+
 APP_OPEN = {
     "kind": "operation",
     "operation": "app.open",
@@ -61,7 +70,7 @@ def _text(payload: dict) -> str:
 
 def test_a_computer_use_final_sees_no_earlier_turn_in_any_attempt() -> None:
     # A draft the vetoes refuse (a change claimed on a go-to goal) runs the retry and the third attempt.
-    sent = _sent("y ahora andá a Temas", MISSION, "Ya activé el modo oscuro en Temas.")
+    sent = _sent("y ahora andá a Temas", ASKED_MISSION, "Ya activé el modo oscuro en Temas.")
     assert len(sent) == 3
     for payload in sent:
         prompt = _text(payload)
@@ -71,20 +80,20 @@ def test_a_computer_use_final_sees_no_earlier_turn_in_any_attempt() -> None:
 
 
 def test_a_computer_use_final_told_as_conversation_still_sees_no_earlier_turn() -> None:
-    for payload in _sent("¿y ahora dónde estás?", MISSION, "Llegué a Temas.", intent="conversation"):
+    for payload in _sent("¿y ahora dónde estás?", ASKED_MISSION, "Llegué a Temas.", intent="conversation"):
         prompt = _text(payload)
         assert "MARCA-RESPUESTA-PREVIA" not in prompt and "MARCA-PEDIDO-PREVIO" not in prompt
         assert llm.COMPUTER_USE_VOICE_PROMPT_ES in prompt
 
 
 def test_every_attempt_of_a_computer_use_final_is_greedy() -> None:
-    sent = _sent("y ahora andá a Temas", MISSION, "Ya activé el modo oscuro en Temas.")
+    sent = _sent("y ahora andá a Temas", ASKED_MISSION, "Ya activé el modo oscuro en Temas.")
     assert [payload.get("temperature") for payload in sent] == [0.0, 0.0, 0.0]
     assert not any(key in payload for payload in sent for key in ("top_p", "top_k", "seed"))
 
 
 def test_an_english_request_gets_the_english_voice() -> None:
-    prompt = _text(_sent("go to Themes in Settings", MISSION, "I went to Themes in Settings.")[0])
+    prompt = _text(_sent("go to Themes in Settings", ASKED_MISSION, "I went to Themes in Settings.")[0])
     assert llm.COMPUTER_USE_VOICE_PROMPT_EN in prompt and llm.COMPUTER_USE_VOICE_LENGTH_EN in prompt
     assert llm.COMPUTER_USE_VOICE_PROMPT_ES not in prompt
 

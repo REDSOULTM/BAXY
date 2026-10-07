@@ -835,15 +835,16 @@ _MACHINE_ACTOR_FEEDBACK = (
 )
 
 
-def _machine_actor_repair_payload(payload: dict, draft: str, gguf: str | None) -> dict:
-    """Use an existing retry to correct the actual rejected machine claim."""
+def _machine_actor_repair_payload(payload: dict, draft: str, gguf: str | None, *, greedy: bool = False) -> dict:
+    """Use an existing retry to correct the actual rejected machine claim. ``greedy`` (a computer-use final, cu-r17:
+    «Abrazé» came from a retry at temperature 0.7) keeps the payload's own sampler."""
     repaired = dict(payload)
     repaired["messages"] = [
         *payload["messages"],
         {"role": "assistant", "content": draft},
         {"role": "user", "content": _MACHINE_ACTOR_FEEDBACK},
     ]
-    if "qwen3-4b-instruct-2507" in _gguf_file_name(gguf):
+    if "qwen3-4b-instruct-2507" in _gguf_file_name(gguf) and not greedy:
         # Qualified on draft-aware repair579/580, not a global writer profile.
         repaired.update(
             temperature=0.7, top_p=0.8, top_k=20, min_p=0.0,
@@ -8826,32 +8827,102 @@ def _computer_use_mission(situation: dict) -> dict | None:
 # language (documentacion/00_IDENTIDAD.md: first person singular, tuteo, one sentence, the observable state).
 COMPUTER_USE_VOICE_PROMPT_ES = (
     "Voz de este final: sólo este pedido y los hechos de esta misión, nada de turnos anteriores. Habla en primera "
-    "persona singular, con tuteo chileno y en pretérito simple («llegué», «abrí», «elegí», «escribí»); nunca «he "
-    "entrado», «ha quedado», «estamos», «te llevé». Nombra el lugar o el resultado tal como lo escribe la ventana, "
+    "persona singular, con tuteo chileno y en pretérito simple («llegué», «elegí», «escribí»); nunca «he "
+    "entrado», «ha quedado», «estamos», «te llevé». No digas que abriste una aplicación que ya estaba abierta. Nombra el lugar o el resultado tal como lo escribe la ventana, "
     "sin planes ni versiones del producto («Premium», «Pro») y sin decir que un lugar está dentro de otro. Lo de la "
     "persona es suyo («tus listas»), nunca «mis»."
 )
 COMPUTER_USE_VOICE_PROMPT_EN = (
     "Voice of this final: only this request and this mission's facts, nothing from earlier turns. Speak in the first "
-    "person singular, in the simple past («I went to», «I opened», «I chose», «I typed»); never «we», never «I've "
-    "gone», never «I'm already in», never «I took you». Name the place or the result as the window writes it, with "
+    "person singular, in the simple past («I went to», «I chose», «I typed»); never «we», never «I've "
+    "gone», never «I'm already in», never «I took you». Never say you opened an app that was already open. Name the place or the result as the window writes it, with "
     "no plan or edition of the product («Premium», «Pro»), and never say one place is inside another. The person's "
     "things are theirs («your playlists»), never «my»."
 )
 COMPUTER_USE_VOICE_LENGTH_ES = " Una sola frase corta, de 18 palabras o menos."
 COMPUTER_USE_VOICE_LENGTH_EN = " One short sentence of 18 words or fewer."
+# cu-r17 (live 2026-10-07: «Abrí Configuración.» for «… y decime el volumen»): a mission that carries the person's
+# question answers it in the final, with the value the window wrote, or says it could not see it.
+COMPUTER_USE_VOICE_QUESTION_ES = (
+    " La persona preguntó «{question}»: tu frase responde eso primero, con el valor tal como lo escribe la ventana "
+    "(seen.screen, seen.evidence); si la ventana no lo muestra, di que no lo pude ver. Nombrar el lugar o la "
+    "aplicación no es la respuesta."
+)
+COMPUTER_USE_VOICE_QUESTION_EN = (
+    " The person asked «{question}»: your sentence answers that first, with the value as the window writes it "
+    "(seen.screen, seen.evidence); if the window does not show it, say you could not see it. Naming the place or the "
+    "app is not the answer."
+)
 
 
 def _computer_use_voice_instruction(situation: dict, language: str) -> str:
     """The voice of a computer-use final: first person singular, preterite, the window's own words, nothing from
     earlier turns; a reached mission (no question about a failure to explain) in one sentence of 18 words or fewer."""
 
+    from . import computer_use as _computer_use
+
     english = language == "en"
     text = COMPUTER_USE_VOICE_PROMPT_EN if english else COMPUTER_USE_VOICE_PROMPT_ES
     mission = _computer_use_mission(situation) or {}
-    if _merged_observed(mission).get("reached") is True:
+    observed = _merged_observed(mission)
+    question = _computer_use.project_seen(observed, language).get("question") if observed else None
+    if isinstance(question, str) and question.strip():
+        text += (COMPUTER_USE_VOICE_QUESTION_EN if english else COMPUTER_USE_VOICE_QUESTION_ES).format(
+            question=question.strip()
+        )
+    if observed.get("reached") is True:
         text += COMPUTER_USE_VOICE_LENGTH_EN if english else COMPUTER_USE_VOICE_LENGTH_ES
     return text
+
+
+def _app_open_records(value: object, depth: int = 0) -> list[dict]:
+    """Every app.open record (a mission step, a plan step) a computer-use situation holds."""
+
+    if depth > 6:
+        return []
+    if isinstance(value, list):
+        return [record for item in value for record in _app_open_records(item, depth + 1)]
+    if not isinstance(value, dict):
+        return []
+    own = [value] if value.get("operation") == "app.open" else []
+    return own + [record for child in value.values() for record in _app_open_records(child, depth + 1)]
+
+
+def _computer_use_final_defect(text: str, situation: dict) -> str:
+    """cu-r17 (live 2026-10-07): «Abrí Configuración.» said of an app every app.open of the turn found already
+    running (extra_claim), and a reached mission carrying the person's question («decime el volumen») told without
+    the answer the window showed (unanswered_question). "" for anything else."""
+
+    from . import computer_use as _computer_use
+    from .semantic import mission_answer
+
+    mission = _computer_use_mission(situation)
+    observed = _merged_observed(mission) if mission is not None else {}
+    if not observed:
+        return ""
+    seen = _computer_use.project_seen(observed, "es")
+    opened = _app_open_records(situation)
+    opened += [record for record in _app_open_records(observed) if record not in opened]
+    if opened and all(record.get("alreadyRunning") is True for record in opened):
+        names = [seen.get("application"), seen.get("windowTitle"), observed.get("application")] + [
+            value for record in opened for value in (record.get("name"), record.get("displayName"))
+        ]
+        if mission_answer.claims_opening(text, [name for name in names if isinstance(name, str)]):
+            return "extra_claim"
+    question = seen.get("question")
+    if isinstance(question, str) and question.strip() and seen.get("reached") is True:
+        if mission_answer.says_not_seen(text):
+            return ""
+        raw_steps = observed.get("steps") if isinstance(observed.get("steps"), list) else []
+        screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+        known = [
+            seen.get("goal"), question, seen.get("application"), seen.get("windowTitle"), screen.get("title"),
+            *(step.get(key) for step in raw_steps if isinstance(step, dict) for key in ("label", "name")),
+        ]
+        shown = _computer_use.screen_texts(seen)
+        if mission_answer.gives_an_answer(text, shown, [item for item in known if isinstance(item, str)]) is False:
+            return "unanswered_question"
+    return ""
 
 
 def _computer_use_floor(situation: dict, english: bool) -> str:
@@ -17193,6 +17264,9 @@ def compose_visible_defect(
         )
         if mission_defect is not None:
             return mission_defect
+    if final_defect := _computer_use_final_defect(stripped, situation):
+        # cu-r17: an app already running told as opened, a question of the mission left unanswered.
+        return final_defect
     if (
         kind == "operation"
         and situation.get("operation") == "client.channel.locate"
@@ -29551,6 +29625,14 @@ class LlmRuntime:
                     if response_language == "en"
                     else "La fecha se leyó del reloj de este PC: dila sin «creo» ni «quizás»."
                 ),
+                # cu-r17 (live 2026-10-07 «Abrí Configuración.» for «… y decime el volumen»).
+                "unanswered_question": (
+                    "The person asked a question about the window: answer it with the value the window shows "
+                    "(seen.screen, seen.evidence), or say you could not see it."
+                    if response_language == "en"
+                    else "La persona hizo una pregunta sobre la ventana: respóndela con el valor que muestra la "
+                    "ventana (seen.screen, seen.evidence), o di que no lo pude ver."
+                ),
                 # Voice audit 2026-10-07: BAXY's own act, in its own voice.
                 "misspelled_act": (
                     "A word was misspelled: say what you did with plain, correctly spelled words."
@@ -29603,7 +29685,7 @@ class LlmRuntime:
         retry_payload.update(compose_sampling)
         retry_payload.update({} if computer_use_final else _compose_retry_sampling(compose_sampling, 1))
         if repair_machine_actor:
-            retry_payload = _machine_actor_repair_payload(payload, text, gguf)
+            retry_payload = _machine_actor_repair_payload(payload, text, gguf, greedy=computer_use_final)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
         # tanda-02: a model that does not answer in time (a timeout or a dropped
         # local connection, both OSError) reaches the same last resort as three
@@ -29663,7 +29745,7 @@ class LlmRuntime:
             {"role": "user", "content": third_user},
         ]
         if repair_machine_actor:
-            third_payload = _machine_actor_repair_payload(payload, retry_text, gguf)
+            third_payload = _machine_actor_repair_payload(payload, retry_text, gguf, greedy=computer_use_final)
         try:
             third = post(third_payload)
         except OSError:
