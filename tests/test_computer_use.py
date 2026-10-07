@@ -278,7 +278,8 @@ def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
     entered = typed + [{"step": 2, "operation": "input.key.press", "key": "enter", "ok": True}]
     assert computer_use.deterministic_step(goal="calcular 12×7", view=VIEW, history=entered) is None
     key = computer_use.deterministic_step(goal="apretar enter", view=VIEW, history=[])
-    assert key == {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": "el objetivo lo dice"}
+    # The focus of this window cannot be read: Enter may send what was written, so it is asked first.
+    assert key == {"operation": "input.key.press", "arguments": {"key": "enter", "target": "message_composer"}, "reason": "el objetivo lo dice"}
     go = computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=[])
     assert go["operation"] == "input.visible.click" and go["arguments"] == {"label": "Biblioteca", "index": 1}
     # Not on screen: the focused search field takes the name (the FIND routine below).
@@ -1477,3 +1478,21 @@ def test_a_sentence_that_mentions_the_place_is_not_the_place() -> None:
     ], "text": {}}
     assert computer_use.find_control(view, "wi-fi") is None
     assert computer_use.find_control(view, "proxy")["i"] == 1
+
+
+def test_round_four_review_fixes() -> None:
+    # An explicit click on a named switch is the person's own order; on the way to a place it is refused.
+    view = {"window": {"title": "Configuración"}, "controls": [{"i": 0, "kind": "Button", "name": "Modo avión", "state": "off"}], "text": {}}
+    explicit = computer_use.validate_decision({"act": "click", "i": 0}, view=view, last_failed=None, application_names=(),
+                                              history=[], goal="hacer clic en modo avion")
+    assert explicit["operation"] == "input.visible.click"
+    going = computer_use.validate_decision({"act": "click", "i": 0}, view=view, last_failed=None, application_names=(),
+                                           history=[], goal="ir a red")
+    assert going["operation"] == "none"
+    # «apretá enter» where the focus cannot be read is asked first.
+    blind = {"window": {"title": "WhatsApp", "focused": None}, "controls": [], "text": {}}
+    step = computer_use.deterministic_step(goal="apretar enter", view=blind, history=[])
+    assert step["arguments"] == {"key": "enter", "target": "message_composer"}
+    # An item whose type is an application never gets the Enter, whatever its row shows.
+    app_item = {"kind": "ListItem", "name": "DiscordSetup", "itemType": "Aplicación", "rect": {"x": 0, "y": 0, "w": 200, "h": 20}}
+    assert not computer_use._is_container(app_item, {"controls": [app_item]})

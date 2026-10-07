@@ -85,7 +85,8 @@ def test_enter_on_a_chosen_item_only_with_evidence_it_is_a_folder() -> None:
         assert computer_use.deterministic_step(goal="ir a hades", view=_chosen(item), history=clicked) is None, item
     # The type cell of its row in a details view says folder.
     cell = [{"i": 1, "kind": "Edit", "name": "Tipo", "value": "Carpeta de archivos", "rect": _rect(800, 302, 120, 20)}]
-    step = computer_use.deterministic_step(goal="ir a hades", view=_chosen({"name": "Hades"}, extra=cell), history=clicked)
+    # A details-view row spans the whole width: its type cell lies inside the item.
+    step = computer_use.deterministic_step(goal="ir a hades", view=_chosen({"name": "Hades", "rect": _rect(100, 300, 900, 24)}, extra=cell), history=clicked)
     assert step is not None and step["arguments"] == {"key": "enter"}
     # A cell of another row says nothing of this item.
     other_row = [{"i": 1, "kind": "Text", "name": "File folder", "rect": _rect(800, 360, 120, 20)}]
@@ -225,9 +226,12 @@ def test_a_placing_goal_never_presses_a_switch_the_model_chose() -> None:
         "text": {},
     }
     act = {"act": "click", "label": "Bluetooth", "i": 0}
-    for goal in ("buscar bluetooth", "hacer clic en Bluetooth", "ir a bluetooth"):
+    for goal in ("buscar bluetooth", "ir a bluetooth"):
         refused = computer_use.validate_decision(act, view=view, last_failed=None, application_names=(), goal=goal)
         assert refused["operation"] == "none" and refused.get("code") == "changes_a_setting", goal
+    # «hacé clic en Bluetooth» names that switch: pressing it is the person's own order.
+    named = computer_use.validate_decision(act, view=view, last_failed=None, application_names=(), goal="hacer clic en Bluetooth")
+    assert named["operation"] == "input.visible.click"
     for goal in ("activar bluetooth", "desactivar bluetooth"):
         allowed = computer_use.validate_decision(act, view=view, last_failed=None, application_names=(), goal=goal)
         assert allowed["operation"] == "input.visible.click", goal

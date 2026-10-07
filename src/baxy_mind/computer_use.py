@@ -428,14 +428,18 @@ def _focused_is_text_field(view: dict) -> bool:
     )
 
 
-def key_arguments(key: str, view: dict, history: list[dict] | None = None) -> dict[str, object]:
+def key_arguments(key: str, view: dict, history: list[dict] | None = None, *, blind_asks: bool = False) -> dict[str, object]:
     """The arguments of a key press with the target RiskPolicy reads: Enter or space on a possible message composer
     is ``message_composer`` (it asks); Delete on a text field is ``text_field`` (it erases characters; anywhere else it
     deletes what is selected, and RiskPolicy asks). ``history`` is the sub-goal's steps (a text just typed where the
     focus cannot be read asks too)."""
 
     arguments: dict[str, object] = {"key": key}
-    if key in {"enter", "space"} and _composer_with_text(view, history):
+    focused = _focused(view)
+    unreadable = focused is None or str(focused.get("kind")) in {"Pane", "Custom"}
+    if key in {"enter", "space"} and (_composer_with_text(view, history) or (blind_asks and unreadable)):
+        # «apretá enter» said alone in a chain (its typing was another sub-goal) where the focus cannot be read: it
+        # may send what was written, so it is asked first.
         arguments["target"] = "message_composer"
     elif key == "delete" and _focused_is_text_field(view):
         arguments["target"] = "text_field"
@@ -597,7 +601,7 @@ def deterministic_step(
     if folded_goal.startswith("apretar "):
         key = _key_from_words(folded_goal[len("apretar "):])
         if key is not None and not _steps_ok(history, "input.key.press", key=key):
-            return {"operation": "input.key.press", "arguments": key_arguments(key, view, history), "reason": reason}
+            return {"operation": "input.key.press", "arguments": key_arguments(key, view, history, blind_asks=True), "reason": reason}
         return None
     if folded_goal.startswith("calcular "):
         expression = _expression_for_typing(goal[len("calcular "):])
@@ -949,8 +953,10 @@ def _is_container(control: dict, view: dict) -> bool:
     its ``itemType`` says so, or a control on its row (vertical centres within half the item's height) is the
     type cell «Carpeta de archivos» / «File folder». Without it, nothing tells a folder from an application."""
 
-    if _CONTAINER_TYPE.search(fold(control.get("itemType"))) is not None:
-        return True
+    item_type = fold(control.get("itemType"))
+    if item_type:
+        # The item says what it is: only a folder or a drive opens without running anything.
+        return _CONTAINER_TYPE.search(item_type) is not None
     centre, height = _vertical_centre(control.get("rect"))
     controls = view.get("controls") if isinstance(view, dict) else None
     if centre is None or not isinstance(controls, list):
@@ -959,7 +965,7 @@ def _is_container(control: dict, view: dict) -> bool:
         if other is control or not isinstance(other, dict):
             continue
         other_centre, _ = _vertical_centre(other.get("rect"))
-        if other_centre is None or abs(other_centre - centre) > height / 2:
+        if other_centre is None or abs(other_centre - centre) > height / 2 or not _inside(other.get("rect"), control.get("rect")):
             continue
         if fold(other.get("name")).strip() in _CONTAINER_CELL or fold(other.get("value")).strip() in _CONTAINER_CELL:
             return True
@@ -1738,7 +1744,10 @@ def _checked_act(
         clicked = str(control.get("name") or label) if control is not None else label
         if _OPENS_ELSEWHERE.search(fold(clicked)) and not _ELSEWHERE_WORDS.search(fold(goal)):
             return _none(f"«{clicked[:40]}» abre otra pestaña o ventana y el objetivo no lo pide", code="opens_elsewhere")
-        if control is not None and _placing_goal(goal) and _is_switch(control):
+        named_explicitly = fold(goal or "").startswith("hacer clic en ") and (
+            label_names(_goal_target(goal or "")[2] if _goal_target(goal or "") else "", clicked)
+        )
+        if control is not None and _placing_goal(goal) and _is_switch(control) and not named_explicitly:
             # Going somewhere never changes a setting on the way (measured on Settings: looking for «Colores» the
             # model clicked «Invertir colores» of the Magnifier).
             return _none(f"«{clicked[:40]}» cambia un ajuste y el objetivo no pide cambiar ninguno", code="changes_a_setting")
