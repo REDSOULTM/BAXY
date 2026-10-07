@@ -1475,6 +1475,13 @@ internal static class ComputerUseSuccessCheck
                             continue;
                         }
 
+                        if (operation == "input.text.type" && !TypedTextShows(step, view))
+                        {
+                            // Keys Windows accepted are not text the field holds (measured on Notepad: «lista: pan»
+                            // arrived as «lista:nnnn» and the mission said it was written).
+                            continue;
+                        }
+
                         if (argument is null
                             || Fold((string?)step["key"]) == argument
                             || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal))
@@ -1492,6 +1499,21 @@ internal static class ComputerUseSuccessCheck
             default:
                 return false;
         }
+    }
+
+    // The text a typing step sent, seen in the focused field when that field shows its content; a field that does
+    // not expose it (measured: Discord's editor) cannot be read and the accepted keys stand.
+    internal static bool TypedTextShows(JsonObject step, JsonObject view)
+    {
+        string typed = Fold(((string?)step["text"] ?? string.Empty).Trim().Trim('"', '«', '»', '“', '”'));
+        if (typed.Length == 0 || view["window"]?["focused"] is not JsonObject focused
+            || (string?)focused["kind"] is not ("Edit" or "Document")
+            || focused["value"] is not JsonValue value || !value.TryGetValue(out string? held))
+        {
+            return true;
+        }
+
+        return Fold(held).Contains(typed, StringComparison.Ordinal);
     }
 
     // «ir a X» on a window drawn without an accessible tree (CEF, Electron, canvas; measured on Steam): X is still on

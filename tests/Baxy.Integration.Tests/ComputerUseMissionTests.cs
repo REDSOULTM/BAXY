@@ -206,6 +206,27 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void TypingCountsOnlyWhenTheFocusedFieldShowsTheTextOrDoesNotExposeIt()
+    {
+        JsonArray typed = [new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "lista: pan" }];
+        JsonObject garbled = View("""
+            {"window": {"title": "Sin título: Bloc de notas", "focused": {"kind": "Document", "name": "Editor de texto", "value": "lista:nnnn"}}, "controls": []}
+            """);
+        JsonObject whole = View("""
+            {"window": {"title": "Sin título: Bloc de notas", "focused": {"kind": "Document", "name": "Editor de texto", "value": "lista: pan\rleche"}}, "controls": []}
+            """);
+        JsonObject unexposed = View("""
+            {"window": {"title": "Discord", "focused": {"kind": "Edit", "name": "Enviar mensaje a @Ron92", "value": null}}, "controls": []}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.text.type", garbled, typed, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.text.type", whole, typed, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.text.type", unexposed, typed, out _), Is.True);
+        });
+    }
+
+    [Test]
     public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
     {
         var browser = new JsonObject();

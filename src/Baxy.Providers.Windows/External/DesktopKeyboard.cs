@@ -36,6 +36,7 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
     private const uint InputKeyboard = 1;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
+    private const int KeyPace = 35;
 
     // What the PowerShell path waited before reading the foreground again.
     private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(40);
@@ -65,13 +66,15 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 
     public uint TypeText(string text)
     {
-        // One character at a time (measured: a whole text sent in one batch to Notepad just opened came out as the
-        // same character repeated; WinUI editors drop or repeat packets of a burst; measured: 2 ms per character types it whole). ~3 ms per character.
+        // One character at a time, at a fast typist's pace. Measured on Windows 11 Notepad (2026-10-07, «Querido Ron:
+        // mañana a las 5, llevá pan…»): its editor reads each key when it gets to it, so keys sent faster than it takes
+        // them come out as the last one repeated («lista: pan» → «lista:nnnn» at 3 ms, «lista:ppan» at 20 ms), and real
+        // virtual keys lose their Shift the same way; 25 ms and slower typed every run whole.
         uint accepted = 0;
         for (int index = 0; index < text.Length; index++)
         {
             accepted += Send([Key(0, text[index], Unicode), Key(0, text[index], Unicode | KeyUp)]);
-            Thread.Sleep(3);
+            Thread.Sleep(KeyPace);
         }
 
         return accepted;
