@@ -151,6 +151,17 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return false;
     }
 
+    private static global::Windows.Foundation.Rect SpanBox(IReadOnlyList<OcrWord> words, int start, int span)
+    {
+        global::Windows.Foundation.Rect first = words[start].BoundingRect;
+        if (span == 1)
+            return first;
+        global::Windows.Foundation.Rect last = words[start + span - 1].BoundingRect;
+        double top = Math.Min(first.Y, last.Y);
+        double bottom = Math.Max(first.Y + first.Height, last.Y + last.Height);
+        return new global::Windows.Foundation.Rect(first.X, top, Math.Max(1, last.X + last.Width - first.X), bottom - top);
+    }
+
     private static HashSet<string> Needles(string needle)
     {
         HashSet<string> needles = new(StringComparer.Ordinal) { needle };
@@ -273,6 +284,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             }
         }
 
+        int span = needle.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
         List<WordHit> hits = [];
         List<double> heights = [];
         List<bool> continues = [];
@@ -280,11 +292,15 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         {
             foreach (OcrLine line in pass.Lines)
             {
-                foreach (OcrWord word in line.Words)
+                // A label of several words («Página principal») is a run of consecutive words of one line; its box
+                // spans them. A one-word label is one word, as before.
+                IReadOnlyList<OcrWord> lineWords = line.Words;
+                for (int start = 0; start + span <= lineWords.Count; start++)
                 {
-                    if (!needles.Contains(Fold(word.Text)))
+                    if (!needles.Contains(string.Join(' ', lineWords.Skip(start).Take(span).Select(each => Fold(each.Text)))))
                         continue;
-                    global::Windows.Foundation.Rect box = word.BoundingRect;
+                    OcrWord word = lineWords[start];
+                    global::Windows.Foundation.Rect box = SpanBox(lineWords, start, span);
                     var hit = new WordHit(
                         word.Text,
                         (int)(box.X + box.Width / 2),

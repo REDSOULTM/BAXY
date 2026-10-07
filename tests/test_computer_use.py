@@ -44,7 +44,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     discord = _mission("ve a Cotele en Discord")
     assert discord["application"] == "Discord"
     assert discord["goal"] == "ir a cotele"
-    assert discord["successCheck"] == "stepDone:input.visible.click:cotele|control:cotele:selected|title:cotele"
+    assert discord["successCheck"] == "control:cotele:selected|title:cotele|page:cotele"
 
     # Closing every tab is browser.control close_all (confirmed by RiskPolicy), never a mission of loose keys.
     tabs = resolve_explicit_effects("cerrá todas las pestañas de chrome", AVAILABLE, application_names=APPS)
@@ -53,7 +53,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     steam = _mission("abre Steam y ve a la biblioteca")
     assert steam["application"] == "Steam"
     assert steam["goal"] == "ir a la biblioteca" or steam["goal"] == "ir a biblioteca"
-    assert steam["successCheck"].startswith("stepDone:input.visible.click:")
+    assert steam["successCheck"] == "control:biblioteca:selected|title:biblioteca|page:biblioteca"
 
     enter = _mission("en Discord apretá enter")
     assert enter == {"application": "Discord", "goal": "apretar enter", "successCheck": "stepDone:input.key.press:enter"}
@@ -470,3 +470,18 @@ def test_the_mission_takes_over_its_own_primitives() -> None:
     assert _route("abre Steam y ve a la biblioteca") == ("mission.computer.use",)
     assert _route("abrí el bloc de notas y escribí hola mundo") == ("mission.computer.use",)
     assert _route("ve a la pestaña de YouTube") == ("mission.computer.use",)
+
+
+def test_reaching_a_place_needs_more_than_its_name_on_screen() -> None:
+    # Measured on Steam: «BIBLIOTECA» is on screen before and after its click opened a menu.
+    view = {"window": {"title": "Steam"}, "controls": [], "text": {"TL": ["BIBLIOTECA COMUNIDAD"], "C": ["TUS COLECCIONES"]}}
+    name_only = computer_use.validate_decision(
+        {"act": "done", "evidence": "BIBLIOTECA"}, view=view, last_failed=None, application_names=APPS, goal="ir a biblioteca",
+    )
+    assert name_only["operation"] == "none" and name_only["code"] == "evidence_not_visible"
+    reached = computer_use.validate_decision(
+        {"act": "done", "evidence": "TUS COLECCIONES"}, view=view, last_failed=None, application_names=APPS, goal="ir a biblioteca",
+    )
+    assert reached["operation"] == "done"
+    # The text of the destination alone no longer satisfies a go-to: only the place selected or titled does.
+    assert computer_use.read_clause("andá a la biblioteca")[1] == "control:biblioteca:selected|title:biblioteca|page:biblioteca"

@@ -140,6 +140,13 @@ function Get-Folded([string]$text){
 }
 # El nombre lleva la etiqueta como palabras enteras: «Sitio» nombra la pestana
 # «Un titulo largo - Sitio». Solo cuenta cuando ningun nombre es igual a la etiqueta.
+# A long title names its item by a part of it («... - YouTube»): only items that carry a title (a tab, a list or tree
+# row, a link), never a pane or a document whose name is the whole page (measured on Steam's CEF window).
+$script:TitledKinds=@('ControlType.TabItem','ControlType.ListItem','ControlType.TreeItem','ControlType.Hyperlink')
+function Test-ItemHolds($el,[string[]]$aliases){
+  try { if($script:TitledKinds -notcontains $el.Current.ControlType.ProgrammaticName){ return $false } } catch { return $false }
+  return (Test-NameHolds (Get-Name $el) $aliases)
+}
 function Test-NameHolds([string]$name,[string[]]$aliases){
   $words=' '+(Get-Folded $name)+' '
   foreach($alias in $aliases){
@@ -321,7 +328,7 @@ function Find-Named($root,[string[]]$aliases){
     try {
       if($item.Current.IsOffscreen){ continue }
       $name=Get-Name $item
-      if(Test-NameMatch $name $aliases){ $matches+=@($item) } elseif(Test-NameHolds $name $aliases){ $holding+=@($item) }
+      if(Test-NameMatch $name $aliases){ $matches+=@($item) } elseif(Test-ItemHolds $item $aliases){ $holding+=@($item) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
   if($matches.Count -gt 0){ return $matches }
@@ -341,7 +348,7 @@ function Do-Click($request){
   if(-not [string]::IsNullOrWhiteSpace($controlId)){
     $byId=Find-ById $root $controlId
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
-    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-Name $byId) $aliases) -and -not (Test-NameHolds (Get-Name $byId) $aliases)){
+    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-Name $byId) $aliases) -and -not (Test-ItemHolds $byId $aliases)){
       return (Click-Result $false $false 'visible_control_label_mismatch' (Get-Name $byId) $controlId $false $false $false '')
     }
     $matches=@($byId)

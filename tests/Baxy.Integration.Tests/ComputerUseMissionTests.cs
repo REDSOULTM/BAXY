@@ -78,6 +78,36 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Measured on Steam (CEF, one control): clicking «BIBLIOTECA» first opened its menu, three new lines of twenty-five;
+    // only the library page itself replaces most of the written text.
+    [Test]
+    public void APlaceIsReachedWhenMostOfTheWrittenTextIsNewNotWhenAMenuOpens()
+    {
+        const string Store = """["TIENDA", "BIBLIOTECA COMUNIDAD", "https://store.steampowered.com/", "Explorar", "Buscar en la tienda", "REBAJAS DE OTOÑO", "Lista de deseados"]""";
+        JsonArray clicked = [new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "biblioteca" }];
+        JsonObject menu = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "https://store.steampowered.com/", "Explorar", "Pagina principal", "Colecciones"],
+                      "C": ["Buscar en la tienda", "REBAJAS DE OTOÑO", "Lista de deseados"]}}
+            """);
+        JsonObject library = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Pagina principal", "Juegos y Software", "FAVORITOS (324)"],
+                      "C": ["TUS COLECCIONES", "INSTALADO LOCALMENTE"]}}
+            """);
+        foreach (JsonObject view in new[] { menu, library })
+        {
+            view["baselineText"] = ComputerUseSuccessCheck.TextLines(View("{\"text\": {\"TL\": " + Store + "}}"));
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", menu, clicked, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, clicked, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, [], out _), Is.False);
+        });
+    }
+
     [Test]
     public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
     {

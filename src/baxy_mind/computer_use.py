@@ -288,7 +288,7 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
         if target and not re.search(r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b", target):
             return (
                 f"ir a {target}",
-                f"stepDone:input.visible.click:{target}|control:{target}:selected|title:{target}",
+                f"control:{target}:selected|title:{target}|page:{target}",
             )
     typed = _TYPE_CLAUSE.match(folded)
     if typed is not None:
@@ -428,7 +428,9 @@ STEP_PROMPT = (
     "usá click en el control que lo nombra. Para escribir números, una expresión o un texto usá "
     "type con el texto completo (no clics dígito a dígito) y después key enter si hace falta. "
     "Si el destino no está en la vista, buscá un campo de búsqueda (click) o abrí el buscador "
-    "con key ctrl_k o ctrl_f, escribí el nombre y elegí el resultado. why: una frase corta."
+    "con key ctrl_k o ctrl_f, escribí el nombre y elegí el resultado. Si un clic abrió un menú, elegí la opción "
+    "que lleva al destino. done sólo cuando ves la página o sección pedida: citá algo de ella, no sólo su nombre "
+    "(el nombre de un menú ya estaba en pantalla antes). why: una frase corta."
 )
 
 _STEP_SCHEMA = {
@@ -488,6 +490,9 @@ def compact_view_text(view: dict, limit_controls: int = 60, limit_lines: int = 4
             if isinstance(repeated, int) and repeated > 0:
                 bits.append(f"x{repeated + 1}")
             lines.append(" · ".join(bits))
+    appeared = view.get("newText") if isinstance(view, dict) else None
+    if isinstance(appeared, list) and appeared:
+        lines.append("apareció tras el último paso: " + " · ".join("«" + str(line)[:60] + "»" for line in appeared[:12]))
     text = view.get("text") if isinstance(view, dict) else None
     if isinstance(text, dict):
         count = 0
@@ -728,7 +733,17 @@ def deterministic_step(
         if named_kind is not None and kind is not None:
             target = named_kind.group("name")
         control = find_control(view, target, kind=kind)
+        opened = _menu_opened_by(view, history, target)
+        if opened is not None:
+            # The click on the destination opened a short menu instead of going there (measured on Steam: «BIBLIOTECA»
+            # → «Página principal · Colecciones · Descargas»): its first entry is the destination's own page.
+            return {"operation": "input.visible.click", "arguments": {"label": opened}, "reason": "el clic abrió un menú"}
         if control is None:
+            # A window drawn without an accessible tree (CEF, Electron, canvas: measured on Steam, one control and
+            # the navigation only in the OCR lines): the word written on screen is clicked by its label, and the
+            # click's cascade (UIA → OCR → vision) finds where it is.
+            if wanted is None and kind is None and _text_line_with(view, target) is not None                     and not _steps_ok(history, "input.visible.click", label=target):
+                return {"operation": "input.visible.click", "arguments": {"label": target}, "reason": reason}
             return None
         if wanted is not None and wanted in str(control.get("state") or "").split():
             return None
@@ -739,6 +754,21 @@ def deterministic_step(
             arguments["index"] = control["i"]
         return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
     return None
+
+
+def _menu_opened_by(view: dict, history: list[dict], target: str) -> str | None:
+    """The first entry of the short menu the last click, made on ``target``, opened; None otherwise."""
+
+    last = history[-1] if history and isinstance(history[-1], dict) else None
+    if last is None or last.get("operation") != "input.visible.click" or last.get("ok") is not True:
+        return None
+    if not label_names(target, str(last.get("label") or "")):
+        return None
+    appeared = [str(line) for line in (view.get("newText") or []) if str(line).strip()]
+    if not 1 < len(appeared) <= 6:
+        return None
+    first = appeared[0]
+    return None if label_names(target, first) or _steps_ok(history, "input.visible.click", label=first) else first
 
 
 def decide_step(
@@ -787,13 +817,13 @@ def decide_step(
         "chat_template_kwargs": {"enable_thinking": False},
     }
     raw = llm._post_schema_object(payload, "el paso de computer use")
-    decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names)
+    decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names, goal=goal)
     if decision["operation"] == "none" and decision.get("code") in {"label_not_visible", "evidence_not_visible", "already_open", "application_unknown"}:
         # One more try with the rejection in front of the model (contract §4.4).
         payload["messages"].append({"role": "assistant", "content": as_json(raw)})
         payload["messages"].append({"role": "user", "content": f"Ese paso no vale: {decision['reason']}. Elegí otro acto de la vista, o none si no hay ninguno."})
         raw = llm._post_schema_object(payload, "el paso de computer use")
-        decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names)
+        decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names, goal=goal)
     return decision
 
 
@@ -806,6 +836,15 @@ def _history_line(step: dict) -> str:
     return " ".join(parts)
 
 
+def _destination(goal: str | None) -> str:
+    """«ir a la biblioteca» → «biblioteca»: the place a go-to goal names, folded; empty for other goals."""
+
+    folded = fold(goal or "")
+    if not folded.startswith("ir a "):
+        return ""
+    return re.sub(r"^(?:el|la|los|las|the|al)\s+", "", folded[len("ir a "):]).strip()
+
+
 def validate_decision(
     raw: Any,
     *,
@@ -813,6 +852,7 @@ def validate_decision(
     last_failed: dict | None,
     application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
     history: list[dict] | None = None,
+    goal: str | None = None,
 ) -> dict[str, object]:
     """The model's act, checked against the view without any model (contract §4.4)."""
 
@@ -822,6 +862,12 @@ def validate_decision(
     why = str(raw.get("why") or "")[:160]
     if act == "done":
         evidence = str(raw.get("evidence") or "").strip()
+        destination = _destination(goal)
+        if destination and fold(evidence).strip(" «»\"'") in {destination, f"la {destination}", f"el {destination}"}:
+            # Measured on Steam: «BIBLIOTECA» is on screen before and after the click (it opened a menu); the
+            # destination's own name proves nothing. Something of the page reached must be cited.
+            return _none("el nombre del destino ya estaba en pantalla antes; citá algo de lo que se ve al llegar",
+                         code="evidence_not_visible")
         if evidence and view_contains(view, evidence):
             return {"operation": "done", "arguments": {"evidence": evidence}, "reason": why}
         return _none("la evidencia citada no está en la vista", code="evidence_not_visible")

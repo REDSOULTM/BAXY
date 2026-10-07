@@ -11,13 +11,8 @@ Goal: `documentacion/GOAL_COMPUTER_USE_2026-10-06.md`. Rama `fable/computer-use-
 | Fusión de `fable/computer-use-engine` (13 conflictos de contenido) | hecho; Kernel 207/207, Providers 950/950 | 6cb48f77 |
 | Clic: worker UIA del motor + atadura M132 a la ventana recién abierta; `DesktopClickVisible.ps1` retirado | hecho | 6cb48f77 |
 | Mente: ganchos del motor portados a `semantic/patterns.py`, `semantic/arguments.py`, `__main__.py` | hecho; `tests/test_computer_use.py` 16/16 | 6cb48f77 |
-
-## En curso
-
-- Enrutado: «ve a la pestaña de X» → misión en el navegador de la persona (`application: navegador`); verbos de
-  cláusula generales (voseo, usted, infinitivo, inglés).
-- `browser.control close_all` en el navegador predeterminado con confirmación ligada al argumento; se conserva la
-  última pestaña.
+| Enrutado: pestañas → misión en «navegador»; verbos en cualquier persona; `close_all` confirmado | hecho; Kernel 212, Providers 963, Integración 2430 (1 skip) | 444ebd47 |
+| Prioridad: lo tipado gana salvo primitivas de la misión; verbo suelto → decisor; finales en 1.ª persona | hecho; pytest 9272 (84 ficheros) | c727f1cf |
 
 ## Decisiones (criterio por defecto)
 
@@ -38,10 +33,10 @@ Goal: `documentacion/GOAL_COMPUTER_USE_2026-10-06.md`. Rama `fable/computer-use-
 | 3 | abre Steam y ve a la biblioteca | pendiente | | | |
 | 4 | en Discord apretá enter | pendiente | | | |
 | 5 | abrí Configuración y activá el modo avión | pendiente | | | |
-| 6 | en la calculadora calculá 12×7 | pendiente | | | |
+| 6 | en la calculadora calculá 12×7 | **lograda** — la Calculadora muestra «84», expresión «12 × 7=» (UIA independiente) | 2 (escribir `12*7`, Enter; dictados sin modelo) | 41 s el turno (misión 35,9 s) | final en 3.ª persona → arreglado (c727f1cf); procedimiento aprendido |
 | 7 | ve a la pestaña de YouTube | pendiente | | | |
 | 8 | pon La Casa del Dragón en HBO Max | pendiente | | | |
-| 9 | app desconocida (por elegir) | pendiente | | | |
+| 9 | abrí el Reloj y andá a Cronómetro (UWP que BAXY no conoce) | **lograda** — `ListItem Cronómetro [selected]` (UIA independiente) | — | 35 s el turno | final fiel: «Fui al Cronómetro y vi que estaba pausado a las 96 horas…» (el cronómetro del dueño lo mostraba) |
 
 ## Falta
 

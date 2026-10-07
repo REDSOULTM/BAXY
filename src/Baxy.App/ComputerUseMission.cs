@@ -30,6 +30,8 @@ internal static class ComputerUseMission
     private static readonly TimeSpan TimeBudget = TimeSpan.FromSeconds(90);
     private static readonly TimeSpan ViewTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(45);
+    private const int CoveredLooks = 4;
+    private static readonly TimeSpan CoveredLookInterval = TimeSpan.FromMilliseconds(2500);
 
     // The closed repertoire: what a person does with keyboard and mouse over
     // what they see, plus bringing the application to the front.
@@ -123,6 +125,22 @@ internal static class ComputerUseMission
 
             state["window"] = lastView["window"]?.DeepClone();
             AdoptWindow(state, lastView);
+            // The text of the first look is what «the page changed» is measured against (check atom page:).
+            state["baselineText"] ??= ComputerUseSuccessCheck.TextLines(lastView);
+            lastView["baselineText"] = state["baselineText"]!.DeepClone();
+            // What the last act made appear (a menu it opened, a page it loaded): the mind reads it apart.
+            JsonArray currentText = ComputerUseSuccessCheck.TextLines(lastView);
+            if (steps.Count > 0 && state["lastText"] is JsonArray previousText)
+            {
+                var before = new HashSet<string>(previousText.Select(line => (string?)line ?? string.Empty), StringComparer.Ordinal);
+                lastView["newText"] = new JsonArray([.. currentText
+                    .Select(line => (string?)line ?? string.Empty)
+                    .Where(line => !before.Contains(line))
+                    .Take(12)
+                    .Select(line => (JsonNode?)JsonValue.Create(line))]);
+            }
+
+            state["lastText"] = currentText;
             if (ComputerUseSuccessCheck.Evaluate(successCheck, lastView, steps, out satisfiedBy))
             {
                 reached = true;
@@ -131,8 +149,19 @@ internal static class ComputerUseMission
 
             if (lastView["window"]?["coveredBy"] is JsonObject)
             {
-                // Another process draws over the application and did not yield:
-                // acting there would land on the cover. The mission says so.
+                // Another process draws over the application. Measured live (Steam
+                // launched cold): its window was still behind the editor 1.6 s after
+                // app.open and came up seconds later. Look again a few times, the
+                // way a person waits for an app to finish opening; a cover that
+                // does not yield stops the mission and says so.
+                int coveredLooks = ((int?)state["coveredLooks"] ?? 0) + 1;
+                state["coveredLooks"] = coveredLooks;
+                if (coveredLooks <= CoveredLooks)
+                {
+                    await Task.Delay(CoveredLookInterval, cancellationToken).ConfigureAwait(true);
+                    continue;
+                }
+
                 errorCode = "computer_use_window_covered";
                 break;
             }
@@ -235,6 +264,7 @@ internal static class ComputerUseMission
             }
 
             PreparedOperation prepared = context.Registry.GetOrAdd(new RoutedOperation(decision.Operation, stepArguments));
+            var stepWatch = Stopwatch.StartNew();
             OperationResponse response;
             try
             {
@@ -282,7 +312,7 @@ internal static class ComputerUseMission
 
             state["elapsedMs"] = alreadyElapsed + stopwatch.ElapsedMilliseconds;
             ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer.use.step",
-                $"step.{steps.Count}.{ShellTrace.SanitizeLabel(decision.Operation)}.ok.{(bool?)record["ok"] == true}");
+                $"step.{steps.Count}.{ShellTrace.SanitizeLabel(decision.Operation)}.ok.{((bool?)record["ok"] == true ? "true" : "false")}.ms.{stepWatch.ElapsedMilliseconds}");
             // The window redraws after the act, not during it; an application
             // brought to the front needs a moment more before its window owns
             // the foreground (measured: GetForegroundWindow returned nothing
@@ -303,7 +333,7 @@ internal static class ComputerUseMission
         }
 
         ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.end",
-            $"reached.{reached}.steps.{steps.Count}.{ShellTrace.SanitizeLabel(errorCode ?? "ok")}");
+            $"reached.{(reached ? "true" : "false")}.steps.{steps.Count}.ms.{(long?)state["elapsedMs"] ?? 0}.model_ms.{(long?)state["modelMs"] ?? 0}.{ShellTrace.SanitizeLabel(errorCode ?? "ok")}");
         execution.ComputerUse = null;
         return new Result(Synthesize(missionPrepared, reached, errorCode, observed), missionPrepared, null);
     }
@@ -740,6 +770,11 @@ internal static class ComputerUseMission
             compact["text"] = text.DeepClone();
         }
 
+        if (view["newText"] is JsonArray appeared)
+        {
+            compact["newText"] = appeared.DeepClone();
+        }
+
         return compact;
     }
 
@@ -896,6 +931,8 @@ internal static class ComputerUseSuccessCheck
                 }
             case "count":
                 return CountAtom(rest, view);
+            case "page":
+                return PageAtom(rest, view, steps);
             case "stepdone":
                 {
                     string[] parts = rest.Split(':', 2);
@@ -926,6 +963,57 @@ internal static class ComputerUseSuccessCheck
             default:
                 return false;
         }
+    }
+
+    // «ir a X» on a window drawn without an accessible tree (CEF, Electron, canvas; measured on Steam): X is still on
+    // screen, a click was verified, and most of the written text is new against the mission's first look. A menu
+    // the click opened changes a few lines (Steam: 3 of 25); the page reached changes most of them.
+    private static bool PageAtom(string rest, JsonObject view, JsonArray steps)
+    {
+        if (!ViewContains(view, rest)
+            || !steps.Any(node => node is JsonObject step && (bool?)step["ok"] == true
+                && (string?)step["operation"] == "input.visible.click"))
+        {
+            return false;
+        }
+
+        var baseline = new HashSet<string>(
+            (view["baselineText"] as JsonArray ?? []).Select(line => (string?)line ?? string.Empty),
+            StringComparer.Ordinal);
+        JsonArray current = TextLines(view);
+        if (baseline.Count < 5 || current.Count < 5)
+        {
+            return false;
+        }
+
+        int kept = current.Count(line => baseline.Contains((string?)line ?? string.Empty));
+        return kept * 2 < current.Count;
+    }
+
+    internal static JsonArray TextLines(JsonObject view)
+    {
+        var lines = new JsonArray();
+        if (view["text"] is JsonObject zones)
+        {
+            foreach ((string _, JsonNode? zone) in zones)
+            {
+                if (zone is not JsonArray zoneLines)
+                {
+                    continue;
+                }
+
+                foreach (JsonNode? line in zoneLines)
+                {
+                    string folded = Fold((string?)line);
+                    if (folded.Length > 0)
+                    {
+                        lines.Add(folded);
+                    }
+                }
+            }
+        }
+
+        return lines;
     }
 
     private static bool CountAtom(string rest, JsonObject view)
