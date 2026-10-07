@@ -765,3 +765,16 @@ def test_the_turn_hands_an_unserved_order_to_the_engine() -> None:
     assert kept is limit
     talk = {**limit, "conversationKind": "talk"}
     assert _engine_for_an_unserved_order(talk, {"id": "t", "text": "en Paint dibujá un círculo"}, tools, ("Paint",)) is talk
+
+
+def test_sending_what_was_written_is_always_asked_first() -> None:
+    # Measured: an Enter not marked as sending delivered «prueba BAXY C6» without asking (Discord's editor exposes no value).
+    unexposed = {"window": {"title": "Discord", "focused": {"kind": "Document", "name": "Enviar mensaje a @Ron92"}},
+                 "controls": [], "text": {}}
+    sent = computer_use.deterministic_step(goal="enviar", view=unexposed, history=[])
+    assert sent["arguments"] == {"key": "enter", "target": "message_composer"}
+    enter = computer_use.deterministic_step(goal="apretar enter", view=unexposed, history=[])
+    assert enter["arguments"]["target"] == "message_composer"
+    empty = {**unexposed, "window": {**unexposed["window"], "focused": {**unexposed["window"]["focused"], "value": ""}}}
+    assert "target" not in computer_use.deterministic_step(goal="apretar enter", view=empty, history=[])["arguments"]
+    assert missions.read_clause("mandalo") == ("enviar", "stepDone:input.key.press:enter")

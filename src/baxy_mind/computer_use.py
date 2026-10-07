@@ -329,8 +329,12 @@ def _composer_with_text(view: dict) -> bool:
     if focused is None:
         return False
     name = fold(focused.get("name"))
-    value = str(focused.get("value") or "").strip()
-    return bool(value) and _COMPOSER_NAME.search(name) is not None
+    if _COMPOSER_NAME.search(name) is None:
+        return False
+    # A message box whose content the screen does not expose (measured: Discord's editor has no value) may hold the
+    # text just typed: Enter there is sending, and is asked first.
+    value = focused.get("value")
+    return value is None or bool(str(value).strip())
 
 
 def application_is_in_front(view: dict, application: str | None) -> bool:
@@ -383,6 +387,13 @@ def deterministic_step(
         if not (last.get("operation") == "app.open" and application_is_in_front(view, application)):
             return None
     reason = "el objetivo lo dice"
+    if folded_goal == "enviar":
+        # «… y mandalo»: sending what was written is Enter in the message box, always marked so RiskPolicy asks first
+        # (measured: an unmarked Enter sent «prueba BAXY C6» without asking).
+        if not _steps_ok(history, "input.key.press", key="enter"):
+            return {"operation": "input.key.press", "arguments": {"key": "enter", "target": "message_composer"},
+                    "reason": reason}
+        return None
     if folded_goal.startswith("apretar "):
         key = _key_from_words(folded_goal[len("apretar "):])
         if key is not None and not _steps_ok(history, "input.key.press", key=key):

@@ -324,7 +324,7 @@ _SEND_CLAUSE = re.compile(
 
 def _read_act(folded: str) -> tuple[str, str | None] | None:
     if _SEND_CLAUSE.match(folded) is not None:
-        return "apretar enter", "stepDone:input.key.press:enter"
+        return "enviar", "stepDone:input.key.press:enter"
     key = _KEY_CLAUSE.match(folded)
     if key is not None:
         catalog_key = _key_from_words(key.group("key"))

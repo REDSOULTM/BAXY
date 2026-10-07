@@ -117,7 +117,8 @@ function Get-State($el){
       $vp=([System.Windows.Automation.ValuePattern]$pattern)
       if($vp.Cached.IsReadOnly){$parts+='readonly'}
       $raw=[string]$vp.Cached.Value
-      if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$raw=$raw.Substring(0,120)}; $value=$raw }
+      # An exposed empty value is "" (known empty); a field that exposes none stays null (its content is unknown).
+      if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$raw=$raw.Substring(0,120)}; $value=$raw } else { $value='' }
     } elseif($el.TryGetCachedPattern([System.Windows.Automation.RangeValuePattern]::Pattern,[ref]$pattern)){
       $value=[string]([System.Windows.Automation.RangeValuePattern]$pattern).Cached.Value
     }
