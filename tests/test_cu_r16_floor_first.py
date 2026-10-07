@@ -111,3 +111,34 @@ def test_the_value_must_be_the_window_s_and_not_an_operand() -> None:
     assert computer_use._calculation_shown("10 / 3", ["Se muestra 3,333333333333333"]) is None
     assert computer_use._calculation_shown("2 * (3 + 4)", ["Display is 14"]) == ("2 × (3 + 4)", "14")
     assert computer_use._calculation_shown("5 / 0", ["Se muestra 0"]) is None
+
+
+# Live 2026-10-07 (cu-r17): a chain across two applications lost its first one («Listo, estoy en «TIENDA».»), the
+# Chilean «1.500» was read as 1,5, and a calculation took its value from another window's status bar.
+@pytest.mark.parametrize("case_id", [
+    "cu-parts-places-across-apps", "cu-parts-calculate-thousands", "cu-parts-place-in-capitals",
+])
+@pytest.mark.parametrize("language", ["es", "en"])
+def test_chains_across_apps_thousands_and_capitals_are_told_from_their_facts(case_id: str, language: str) -> None:
+    assert _first(case_id, language) == TWINS[case_id][language]
+
+
+@pytest.mark.parametrize("language", ["es", "en"])
+def test_a_calculation_is_never_told_from_another_window_s_numbers(language: str) -> None:
+    assert _first("cu-parts-calculate-other-window", language) == ""
+    told = llm._deterministic_final(TWINS["cu-parts-calculate-other-window"]["situation"], {}, "", language)
+    assert "13" not in told
+
+
+@pytest.mark.parametrize(("name", "told"), [("TIENDA", "Tienda"), ("MÚSICA", "Música"), ("VPN", "VPN"),
+                                            ("HDMI", "HDMI"), ("Tienda", "Tienda")])
+def test_a_name_in_capitals_is_told_with_its_first_letter_only_unless_an_acronym(name: str, told: str) -> None:
+    assert computer_use._calm_caps(name) == told
+
+
+@pytest.mark.parametrize(("expression", "value"), [("1.500 + 500", 2000), ("2.000 × 3", 6000), ("1.500,5 + 1", "1501.5"),
+                                                   ("3.5 + 1", "4.5"), ("1.250.000 ÷ 2", 625000)])
+def test_a_point_before_three_digits_groups_thousands(expression: str, value: object) -> None:
+    from fractions import Fraction
+    tokens = [computer_use._PARTS["operators"].get(token, token) for token in computer_use._CALC_TOKEN.findall(expression)]
+    assert computer_use._calculated(tokens) == Fraction(str(value))
