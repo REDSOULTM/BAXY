@@ -559,13 +559,17 @@ Legacy Window»). Sin árbol, una palabra del host que empieza o termina con el 
 blanco», los recientes y «Buscar un archivo»; sus pestañas sólo existen con un documento abierto). Un objetivo de
 pestaña («ir a / hacer clic en la pestaña X», fuera del navegador) cuya pestaña no está en la vista, en una ventana cuyo
 título no nombra un documento (sin segmento « - ») y que ofrece **un** elemento para crear uno vacío (su nombre lleva
-en blanco / blank / vacío / empty, ≤ 6 palabras, sin extensión, de un tipo accionable, nunca dentro de una lista de
-archivos propios —recientes, anclados, compartidos—; palabras en `semantic/missions.names_a_blank_item`): la persona
-crea primero el documento en blanco y después va a la pestaña. Enter sobre la oferta cuando tiene el teclado (la página
-se lo da), si no un clic en ella; el paso lleva `code: expects_title_change` y la App vuelve a mirar, sin OCR y hasta
+en blanco / blank / vacío / empty, ≤ 6 palabras, sin extensión, de un tipo accionable, nunca dentro de una lista,
+cuadrícula o árbol salvo el de las ofertas —plantillas, nuevo, templates, new: `names_a_templates_list`—, nunca en una
+vista de archivos —elementos con `itemType`, columnas Tamaño/Fecha/Tipo— ni en una lista de archivos propios;
+palabras en `semantic/missions.names_a_blank_item`; revisión 2026-10-07: un archivo «Documento en blanco» del
+Explorador recibía Enter): la persona crea primero el documento en blanco y después va a la pestaña. Enter cuando el
+elemento con el foco de la ventana es la oferta misma, si no un clic en ella; el paso lleva `code: expects_title_change` y la App vuelve a mirar, sin OCR y hasta
 8 s, hasta que cambia el título de la ventana. Crear un documento sin guardar es reversible y no toca ningún archivo;
-nunca un reciente, nunca dos veces y nunca cuando el pedido nombra un archivo propio (`names_a_file`: un nombre con
-extensión, o archivo/documento/libro/presentación no dichos como nuevos o en blanco). En esos casos, o si la página
+nunca un reciente, nunca dos veces —pulsada o cliqueada la oferta, una página de inicio que sigue se dice, sin otro
+paso— y nunca cuando el pedido nombra un archivo propio (`names_a_file`: un nombre con extensión, o
+archivo/documento/libro/presentación no dichos como nuevos o en blanco; el nombre de la propia aplicación, «explorador
+de archivos», no cuenta). En esos casos, o si la página
 sigue tras crear, la mente devuelve `none` con `code: no_document_open` y la misión para con
 `computer_use_no_document_open` («la aplicación está en su pantalla de inicio, sin ningún documento abierto»), sin
 más clics. Sin oferta (o con dos) no se crea nada.
@@ -711,7 +715,10 @@ disculpa; en una cadena no lograda, primero lo que no se pudo y su causa, despu�
 - Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
 - Una app empaquetada que se dibuja dentro de un marco `ApplicationFrameHost` tiene ese marco por ventana; sus
   ventanas de nivel superior son sus emergentes (medido en vivo: el historial de una búsqueda, «Host de ventanas
-  emergentes», se tomó por la app, la vista perdió el campo y se pulsó una entrada del historial). Un control es
+  emergentes», se tomó por la app, la vista perdió el campo y se pulsó una entrada del historial). La vista de un
+  marco nombra el proceso de la app que aloja (`ViewProcess`), nunca el `ApplicationFrameHost` que comparten todas
+  (Configuración y la Tienda): la misión nunca adopta el pid del anfitrión, que la llevaría al marco de otra app
+  (revisión 2026-10-07). Un control es
   una búsqueda si lo dice su nombre antes de la ayuda que trae («speedtest. Presione la tecla Suprimir…» no lo es), y
   un campo que el recibo del clic dice pulsado conserva el cursor aunque la vista siguiente ya no lo liste: se
   escribe, y el Enter sin un campo de búsqueda visible con el teclado pregunta.
@@ -749,7 +756,8 @@ Display», «hacé clic en Insertar y después en Tabla»), un pronombre o un lu
 aplicación cambia la del paso («… y pegalo en el Bloc de notas») y una pregunta final («… y decime si el modo es
 claro u oscuro», y con un verbo de decir también la cosa sola: «… y decime el volumen», «and tell me the volume»)
 no es sub-objetivo: va al final del `goal` tras `; y responder: ` y el final la contesta sólo con
-`seen.screen`/`seen.evidence`. Las comillas que delimitan un nombre («haz clic en «Sistema»», la reformulación
+`seen.screen`/`seen.evidence`; nunca dentro del texto dictado (entre comillas abiertas, o tras «escribí:» sin
+comillas, que llega hasta el final): «escribí "pasá y decime el horario"» lo teclea entero. Las comillas que delimitan un nombre («haz clic en «Sistema»», la reformulación
 del decisor de contexto) no son parte de él. Nunca es misión un pedido que ordena borrar, vaciar, formatear, desinstalar, comprar
 o pagar (lo tecleado no cuenta). Tipado contra motor: en una cadena sólo las operaciones tipadas que no son
 primitivas del motor cubren sub-objetivos; un cálculo dicho dentro de una aplicación se hace en ella.

@@ -110,7 +110,7 @@ _CALCULATE_CLAUSE = re.compile(
     r"(?P<expr>[0-9][0-9\s.,+\-*/x×÷^%()=]*[0-9)])[\s.!?]*$"
 )
 _TYPE_CLAUSE = re.compile(
-    r"^(?:escribi|escribe|escribime|tipea|tipeame|teclea|type|write)\s+(?P<text>\S.*?)[\s]*$"
+    r"^(?:escribi|escribe|escribime|tipea|tipeame|teclea|type|write)(?:\s*:\s*|\s+)(?P<text>\S.*?)[\s]*$"
 )
 # «in the Clock app go to …», «en la app de Configuración andá a …»: the word that says it is an application frames the
 # name, before or after it, and is no part of the clause.
@@ -1059,6 +1059,32 @@ _QUESTION_TAIL = re.compile(
 )
 # The mark between the sub-goals and the question in a mission's goal (computer_use.project_seen reads it).
 QUESTION_MARK = "; y responder: "
+# A text to type said after a colon runs to the end of the request: «escribí: pasá por lo de Ana y decime el horario».
+_TYPED_LITERAL_TO_END = re.compile(r"(?<!\w)(?:escribi|escribe|escribime|escriba|tipea|tipeame|teclea|type|write)\s*:")
+_PAIRED_QUOTES = {"«": "»", "“": "”", "„": "“"}
+
+
+def _inside_said_text(folded: str, position: int) -> bool:
+    """The position falls inside a text the person dictated: between quotes still open there, or after a writing
+    verb's colon (an unquoted literal runs to the end). A question tail there is part of the text, never a question."""
+
+    before = folded[:position]
+    if before.count('"') % 2 == 1:
+        return True
+    if any(before.count(opening) > before.count(closing) for opening, closing in _PAIRED_QUOTES.items() if opening != closing):
+        return True
+    return _TYPED_LITERAL_TO_END.search(before) is not None
+
+
+def _question_tail(folded: str) -> re.Match[str] | None:
+    """The closing question of the request, skipping a match that starts inside a dictated text."""
+
+    position = 0
+    while (asked := _QUESTION_TAIL.search(folded, position)) is not None:
+        if not _inside_said_text(folded, asked.start()):
+            return asked
+        position = asked.start() + 1
+    return None
 
 
 def mission_request(
@@ -1079,7 +1105,7 @@ def mission_request(
     folded = effect_intent._strip_request_envelope(fold(re.sub(r"[\r\n]+", " . ", text))).strip()
     if not folded or effect_intent._is_negative_effect_clause(folded) or _orders_undoing_or_paying(folded):
         return None
-    asked = _QUESTION_TAIL.search(folded)
+    asked = _question_tail(folded)
     question = None
     if asked is not None and asked.start() > 0:
         question = _restore(asked.group("question").strip(" .!?"), text)
@@ -1570,11 +1596,49 @@ def names_own_files_list(name: object) -> bool:
     return _OWN_FILES_LIST.match(fold(name)) is not None
 
 
-def names_a_file(objective: object) -> bool:
-    """The person's words name a file of their own: a name with its extension, or a file noun that is not said as a
-    new or blank one. Then a start page's blank item is never what they meant."""
+# A list that holds offers to create, never the person's files: «Plantillas», «Nueva», «New», «Templates».
+_TEMPLATES_LIST = re.compile(r"(?<!\w)(?:plantillas?|templates?|nuev[oa]s?|new)(?!\w)")
+# The columns of a file manager's content view («Tamaño», «Fecha de modificación», «Date modified», «Tipo»).
+_FILE_COLUMN = re.compile(
+    r"^(?:tamano|size|tipo|type|fecha(?:\s+de\s+(?:modificacion|creacion))?|date(?:\s+(?:modified|created))?|"
+    r"modificado|modified)$"
+)
 
-    folded = fold(objective)
+
+def names_a_templates_list(name: object) -> bool:
+    """A list, grid or tree named as the start page's offers to create («Plantillas», «Nueva», «Templates»)."""
+
+    return _TEMPLATES_LIST.search(fold(name)) is not None
+
+
+def names_a_file_column(name: object) -> bool:
+    """A column header of a file manager's content view («Tamaño», «Fecha de modificación», «Date modified»)."""
+
+    return _FILE_COLUMN.match(fold(name)) is not None
+
+
+def _without_application(folded: str, application: object) -> str:
+    """The request without the application's own name and its other names («explorador de archivos» is no file)."""
+
+    app = fold(application).strip() if application else ""
+    app = application_name_without_frame(app) or app
+    if not app:
+        return folded
+    names = {app}
+    for spoken, canonical in (*_CATALOG_NAME_ALIASES, *_EXTRA_ALIASES):
+        if app in spoken or app in canonical:
+            names.update(spoken, canonical)
+    for name in sorted(names, key=len, reverse=True):
+        folded = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", " ", folded)
+    return folded
+
+
+def names_a_file(objective: object, application: object = None) -> bool:
+    """The person's words name a file of their own: a name with its extension, or a file noun that is not said as a
+    new or blank one. Then a start page's blank item is never what they meant. The application's own name is no file
+    («explorador de archivos»)."""
+
+    folded = _without_application(fold(objective), application)
     if _FILE_EXTENSION.search(folded) is not None:
         return True
     for found in _FILE_NOUN.finditer(folded):

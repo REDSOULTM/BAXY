@@ -947,14 +947,17 @@ internal static class ComputerUseMission
     /// Once a view shows the window the provider resolved as the sub-goal's
     /// application (titled like it, or the person's browser for «the
     /// browser»), the mission keeps looking at that process (a later
-    /// foreground change does not move the surface).
+    /// foreground change does not move the surface). Never the frame host shared by the packaged apps
+    /// (ApplicationFrameHost): a look bound to it could take another app's frame (Settings vs the Store) and keys
+    /// would be allowed there; the provider names the hosted app's process instead.
     /// </summary>
     internal static void AdoptWindow(JsonObject state, string? application, JsonObject view)
     {
         if ((int?)state["processId"] is > 0 || application is not { Length: > 0 })
             return;
         if (view["window"] is JsonObject window && (bool?)window["requested"] == true
-            && (int?)window["processId"] is > 0 and int owner)
+            && (int?)window["processId"] is > 0 and int owner
+            && !string.Equals((string?)window["process"], "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
             state["processId"] = owner;
     }
 

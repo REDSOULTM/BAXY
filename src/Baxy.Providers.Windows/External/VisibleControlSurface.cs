@@ -103,6 +103,9 @@ internal static partial class VisibleControlSurface
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        // The shared frame host is no app's process: any packaged app's frame would do for it.
+        if (IsSharedFrameHost(ProcessIdentity(unchecked((uint)processId)).ProcessName))
+            return 0;
         nint found = 0;
         for (int attempt = 0; found == 0 && attempt < 8; attempt++)
         {
@@ -356,6 +359,38 @@ internal static partial class VisibleControlSurface
         _ = EnumWindows(callback, nint.Zero);
         return frame;
     }
+
+    /// <summary>
+    /// The process a visible ApplicationFrameHost frame hosts; 0 when the window is no such frame or hosts nothing.
+    /// Review 2026-10-07: the frame's own process is one ApplicationFrameHost shared by every packaged app on screen
+    /// (Settings, the Store, the Calculator); a mission bound to it could take another app's frame on its next look.
+    /// </summary>
+    internal static uint HostedProcess(nint frame)
+    {
+        if (!IsVisibleFrame(frame))
+            return 0;
+        uint found = 0;
+        _ = FrameHosts(frame, owner =>
+        {
+            found = owner;
+            return true;
+        });
+        return found;
+    }
+
+    /// <summary>
+    /// The process a view names as its window's: the hosted app's for an ApplicationFrameHost frame (the shared host
+    /// is never a mission's process), else the window's own.
+    /// </summary>
+    internal static (int ProcessId, string ProcessName) ViewProcess(nint hwnd)
+    {
+        uint hosted = HostedProcess(hwnd);
+        return hosted == 0 ? WindowProcess(hwnd) : ProcessIdentity(hosted);
+    }
+
+    /// <summary>Whether a process name is the frame host shared by the packaged apps (never one app's process).</summary>
+    internal static bool IsSharedFrameHost(string? processName) =>
+        string.Equals(processName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Every visible frame by the process it hosts, read in one pass over the desktop.</summary>
     internal static Dictionary<uint, nint> HostedFrames()
@@ -874,6 +909,11 @@ internal static partial class VisibleControlSurface
     internal static (int ProcessId, string ProcessName) WindowProcess(nint hwnd)
     {
         _ = GetWindowThreadProcessId(hwnd, out uint processId);
+        return ProcessIdentity(processId);
+    }
+
+    private static (int ProcessId, string ProcessName) ProcessIdentity(uint processId)
+    {
         if (processId == 0)
             return (0, string.Empty);
         try
