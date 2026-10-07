@@ -51,7 +51,7 @@ internal static class ComputerUseMission
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
     [
-        "baselineText", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow",
+        "baselineText", "textBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow",
         "procedureKey", "procedureIndex", "procedureSteps", "procedureDeviated",
     ];
 
@@ -181,6 +181,11 @@ internal static class ComputerUseMission
                 if (state["baselineText"] is JsonArray baseline)
                 {
                     lastView["baselineText"] = baseline.DeepClone();
+                }
+
+                if (state["textBeforeClick"] is JsonObject beforeClicks)
+                {
+                    lastView["textBeforeClick"] = beforeClicks.DeepClone();
                 }
 
                 // What the last act made appear (a menu it opened, a page it loaded): the mind reads it apart.
@@ -341,6 +346,16 @@ internal static class ComputerUseMission
                             ["operation"] = decision.Operation,
                             ["source"] = fromProcedure ? "procedure" : "model",
                         };
+                        if (decision.Operation == "input.visible.click")
+                        {
+                            // What was written on screen right before this click: «the page changed» (check atom page:)
+                            // is measured against it, not against a start-up window seen earlier (measured on Steam:
+                            // the login splash was the baseline and the store passed for the library).
+                            var clickTexts = state["textBeforeClick"] as JsonObject ?? new JsonObject();
+                            clickTexts[(steps.Count + 1).ToString(CultureInfo.InvariantCulture)] =
+                                ComputerUseSuccessCheck.TextLines(lastView);
+                            state["textBeforeClick"] = clickTexts;
+                        }
                         if (chained)
                         {
                             record["subgoal"] = index;
@@ -1466,14 +1481,17 @@ internal static class ComputerUseSuccessCheck
     // changes most of them.
     private static bool PageAtom(string rest, JsonObject view, JsonArray steps)
     {
-        if (!ViewContains(view, rest) || !AClickWentTo(rest, steps))
+        int? click = AClickWentTo(rest, steps);
+        if (!ViewContains(view, rest) || click is null)
         {
             return false;
         }
 
-        var baseline = new HashSet<string>(
-            (view["baselineText"] as JsonArray ?? []).Select(line => (string?)line ?? string.Empty),
-            StringComparer.Ordinal);
+        // The view right before the click that reached the place; the mission's first look only when that is unknown.
+        JsonArray before = view["textBeforeClick"]?[click.Value.ToString(CultureInfo.InvariantCulture)] as JsonArray
+            ?? view["baselineText"] as JsonArray
+            ?? [];
+        var baseline = new HashSet<string>(before.Select(line => (string?)line ?? string.Empty), StringComparer.Ordinal);
         JsonArray current = TextLines(view);
         if (baseline.Count < 5 || current.Count < 5)
         {
@@ -1488,12 +1506,15 @@ internal static class ComputerUseSuccessCheck
     // a click on it (the menu that click opened: measured on Steam, the click on
     // «BIBLIOTECA» opened its menu and did not verify; «Inicio» in it did). Any
     // other verified click (a tab, a field) does not reach the place.
-    private static bool AClickWentTo(string place, JsonArray steps)
+    private static int? AClickWentTo(string place, JsonArray steps)
     {
         string target = Fold(place);
         bool previousNamedIt = false;
+        int? namedClick = null;
+        int position = 0;
         foreach (JsonNode? node in steps)
         {
+            position++;
             if (node is not JsonObject step || (string?)step["operation"] != "input.visible.click")
             {
                 previousNamedIt = false;
@@ -1503,15 +1524,22 @@ internal static class ComputerUseSuccessCheck
             string label = Fold((string?)step["label"]);
             bool namesIt = target.Length > 0 && label.Length >= 3
                 && (label.Contains(target, StringComparison.Ordinal) || target.Contains(label, StringComparison.Ordinal));
+            if (namesIt)
+            {
+                namedClick = (int?)step["step"] ?? position;
+            }
+
             if ((bool?)step["ok"] == true && (namesIt || previousNamedIt))
             {
-                return true;
+                // Measured against the view before the click on the place itself (a menu entry picked after it
+                // still counts from before the menu opened).
+                return namedClick ?? (int?)step["step"] ?? position;
             }
 
             previousNamedIt = namesIt;
         }
 
-        return false;
+        return null;
     }
 
     internal static JsonArray TextLines(JsonObject view)

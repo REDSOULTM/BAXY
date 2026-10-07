@@ -179,8 +179,15 @@ function Invoke-NamedControl($el){
     if($ec.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Expanded){ $ec.Collapse() } else { $ec.Expand() }
     return 'expand'
   }
-  $point=$el.GetClickablePoint()
-  [BaxyUiaWorkerNative]::ClickPoint([int]$point.X,[int]$point.Y)
+  # Chromium/Electron items often expose no pattern and no clickable point (measured: a Discord server in its
+  # sidebar): a person clicks the middle of what they see, so does this.
+  $x=$null; $y=$null
+  try { $point=$el.GetClickablePoint(); $x=[int]$point.X; $y=[int]$point.Y } catch {
+    $box=$el.Current.BoundingRectangle
+    if($box.IsEmpty -or $box.Width -le 0 -or $box.Height -le 0){ throw }
+    $x=[int]($box.X+$box.Width/2); $y=[int]($box.Y+$box.Height/2)
+  }
+  [BaxyUiaWorkerNative]::ClickPoint($x,$y)
   return 'click'
 }
 function Test-Selected($el){

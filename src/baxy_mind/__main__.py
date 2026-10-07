@@ -7946,6 +7946,11 @@ def _decide_turn_result(
         # M118: talk the microphone may have caught is the contextual decider's, never a conversation reader's reply
         # to it (DIALOGUE1513: answered as if it were addressed to BAXY).
         explicit_conversation_decision = None
+    if explicit_intent is not None and "mission.computer.use" in explicit_intent.operations:
+        # Computer use (owner 2026-10-07): a step inside an installed application is done on its screen, so a known
+        # limit of BAXY's own («no tengo cronómetro») is not the answer when the person asks for it in an app that
+        # has it (measured: «en el Reloj andá a Cronómetro» ended in a contract failure and a question).
+        explicit_conversation_decision = None
     decided_beforehand: semantic_decider.ContextDecision | None = None
     if (
         stable_awaits_decider

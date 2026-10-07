@@ -469,3 +469,39 @@ Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del sh
   dejar una, releyendo el marco tras cada cierre (`documentacion/NAVEGADOR_USUARIO.md`).
 - Los **modelos de visión** (§3.4) y su decisión con números.
 - La **política de cierre** de lo que la misión abrió: nada se cierra al terminar (D16).
+
+---
+
+## 7. Versión 2 (2026-10-07): universal, encadenado y rápido
+
+Pedido del dueño: que BAXY use el PC como una persona —cualquier app, por cómo está hecho el motor—, con
+misiones encadenadas y lo más rápido posible con calidad.
+
+**Encadenado.** `mission.computer.use` acepta `steps` (1..8 sub-objetivos `{goal, application, successCheck}`) y
+`budgetSteps` hasta 30. La mente parte el pedido en cláusulas de hacer («abrí X, andá a Y y escribí Z»), arrastra la
+aplicación y la cambia cuando una cláusula nombra otra. El bucle corre los sub-objetivos en orden (≤10 pasos y 30 s
+cada uno, ≤30 pasos y 180 s en total), con su propia comprobación, historial y procedimiento; al cambiar de
+aplicación olvida el proceso adoptado. El resultado trae `subgoals[]`; el final narra cada parte o la primera que
+no se logró.
+
+**BUSCAR (universal, sin modelo).** Si el destino no está en la vista: el campo o botón de búsqueda visible (léxico
+bilingüe) → escribir el destino → clic en el resultado que lo nombra (nunca Enter: un canal de voz sigue siendo un
+clic que `RiskPolicy` confirma); si no hay, `ctrl_k` y `ctrl_f` (sólo si aparece un campo con foco; si no, Escape);
+después desplazar la lista más poblada (`input.scroll {index}`); sólo entonces el modelo. Un menú abierto por el clic
+en el destino elige la entrada que nombra el objetivo.
+
+**Último recurso.** Una orden sobre el PC que el turno cerró como límite pasa al motor con las palabras de la persona
+como objetivo (`semantic.missions.engine_can_try`), salvo preguntas, lugares fuera del PC, prohibiciones y objetivos
+de borrar, formatear, desinstalar, comprar o pagar.
+
+**Velocidad.** Paso del modelo con gramática GBNF de acto primero (`{"act":"click","i":12}`, ~10 tokens: 0,2–0,7 s);
+30 controles ordenados por el objetivo con la nota «N de M»; teclas y texto en proceso (SendInput, ~50 ms); clic sin
+esperas fijas (estado UIA cada 50 ms y superficie desde 150 ms); vista con captura y OCR en paralelo y OCR sólo cuando
+hace falta; espera de 150 ms entre pasos; apertura de apps UWP por su marco (antes 30 s); worker precalentado al
+arrancar el core; sin etiquetas de progreso escritas por el LLM durante una misión.
+
+**Guardas.** Sin clics sobre controles que cubren ≥80 % de la ventana; sin repetir un acto que no hizo progresar;
+`page:` sólo cuenta un clic sobre el destino o la entrada de menú que abrió, contra la primera vista de la propia
+app; una app recién lanzada se espera hasta que deja su ventana de arranque; una ventana de administrador
+(`window.elevated`) para la misión con esa causa; `RiskPolicy` confirma también publicar, responder, comentar,
+compartir, unirse, comprar, pagar, borrar y desinstalar.
