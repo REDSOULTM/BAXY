@@ -155,7 +155,48 @@ Mismo montaje, sobre la rama con las tres rondas de revisión adversarial y los 
 (`PROGRESO.md` §«Rondas de revisión adversarial (2–4) y corridas en caliente»). Mismas definiciones de *misión* y
 *turno*; verificación independiente.
 
-<!-- BANCO_FINAL -->
+Banco final en vivo (2026-10-07, 06:50–07:25, rama `fable/cu-universal-v2` tras las rondas 2–4): **34/38 correctos** (s06 cuenta como límite honesto correcto). Fallan n1 y e2 (Paint, elegir un color: un procedimiento aprendido que se desvía; tras el fallo se olvida y la corrida siguiente pasó a las 06:27), n5 (esta PC no muestra Wi-Fi; el fallo es correcto pero el final salió del suelo) y g1 (buscar un juego dentro de la biblioteca de Steam). «Respuesta» es el tiempo hasta el final de cada turno; el primer turno de cada corrida incluye el arranque de la App.
+
+| Caso | Orden | Resultado | Misión | Respuesta | Final |
+|---|---|---|---|---|---|
+| s01 | en la calculadora calculá 37*12 | ✓ | 3.4 s | 5.5 s | Ya calculé 37 por 12 y la respuesta que muestra la calculadora es 444. |
+| s02 | en el Reloj andá a Cronómetro | ✓ | 2.6 s | 4.4 s | Ya estoy en el cronómetro y muestra 96 horas 59 minutos 59 segundos. |
+| s03 | en Configuración andá a Bluetooth y dispositivos | ✓ | 0.7 s | 2.6 s | Estoy en la sección de Bluetooth y dispositivos, donde veo que el control Xbox y el SLEVE EVO están emparejados. |
+| s04 | en el Explorador de archivos andá a Descargas | ✓ | 0.8 s | 2.6 s | Ya estoy en la carpeta de Descargas y veo los archivos que hay ahí. |
+| s05 | en el Panel de control abrí Programas | ✓ | 3.0 s | 4.9 s | Ya estoy en el Panel de control, en la sección de Programas. |
+| s06 | en el Administrador de tareas andá a Rendimiento | ✓ límite honesto | — s | 4.6 s | No pude ir a la pestaña de Rendimiento porque la aplicación corre como administrador y Windows no permite que otra aplicación la controle. |
+| s07 | abrí Paint y elegí la herramienta Texto | ✓ | 1.4 s | 3.4 s | Ya elegí la herramienta Texto en Paint y ahora puedo escribir directamente en el lienzo. |
+| s11 | en Discord andá al canal Cotele / no | ✓ | 0.8 s | 2.4 / 1.4 s | Ya estoy en el canal Cotele!!!😎 / Choche. / Lo dejas ahí. |
+| s12 | en Steam andá a la biblioteca | ✓ | 4.1 s | 6.0 s | Ya estoy en la biblioteca de Steam, donde veo las colecciones y los juegos instalados. |
+| s14 | en Discord mandale a Ron92 "prueba BAXY 14" / no | ✓ | — s | 9.9 / 0.8 s | ¿Quieres que envíe el mensaje "prueba BAXY 14" a Ron92 en Discord? Elige confirmar o cancelar. / No se envió el mensaje a Ron92 porque la ac |
+| c1 | abrí el Bloc de notas, escribí "lista: pan", apretá Enter y escribí "leche" | ✓ | 4.1 s | 6.4 s | Acabo de escribir "lista: pan" y luego "leche" en el Bloc de notas. |
+| c2 | en la calculadora calculá 12*12, copiá el resultado y pegalo en el Bloc de notas | ✓ | 5.6 s | 7.7 s | Acabé de escribir 144 en el Bloc de notas. |
+| c3 | en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba | ✓ | — s | 3.2 s | He abierto la carpeta Documentos y he creado la carpeta baxy-prueba. |
+| c5 | abrí Configuración, andá a Personalización, entrá a Colores y decime si el modo es claro u oscuro | ✓ | 4.2 s | 6.6 s | El modo que aparece seleccionado es Oscuro. Acabé de ir a Personalización y luego a Colores para verlo. |
+| c6 | en Discord abrí el chat con Ron92, escribí "prueba BAXY C6" y mandalo / sí | ✓ | 2.6 s | 4.5 / 1.3 s | ¿Quieres confirmar que envíes el mensaje "prueba BAXY C6" en el chat con Ron92 o cancelar esta acción? / Ya te envié el mensaje "prueba BAXY |
+| c7 | en Discord andá al canal Cotele y después en Steam andá a la tienda / no | ✓ | 3.5 s | 5.2 / 2.0 s | Ya estoy en la tienda de Steam. / Entendido, no vamos a la tienda de Steam. |
+| u1 | abrí Spotify y andá a tu biblioteca | ✓ | 8.4 s | 10.6 s | Ya estoy en tu biblioteca de Spotify viendo tus playlists. |
+| u2 | en la Microsoft Store andá a Juegos | ✓ | 8.9 s | 10.8 s | Ya estoy en la sección de Juegos de la Microsoft Store. |
+| u3 | abrí Fotos y andá a Favoritos | ✓ | 5.0 s | 6.9 s | Ya estoy en la carpeta de Favoritos. |
+| u5 | abrí Excel y elegí libro en blanco | ✓ | 3.7 s | 5.7 s | Ya tengo el libro en blanco abierto en Excel. |
+| u7 | en el Reloj andá a Alarma | ✓ | 3.3 s | 6.8 s | Lo hice en la aplicación «Reloj»; hay 2: «Alarma». |
+| u8 | abrí Configuración, andá a Sistema y después a Pantalla | ✓ | 3.7 s | 6.0 s | Estoy en la pantalla de Configuración, donde ahora se muestra el brillo al 40% y la resolución en 1920 × 1080. |
+| u9 | open Spotify and go to Search | ✓ | 8.0 s | 10.3 s | I'm already on the search page in Spotify. |
+| n1 | abrí Paint, elegí el lápiz y después el color rojo | ✗ | — s | 6.5 s | No pude seleccionar el color rojo porque en la pantalla no apareció ningún paso o control que me indicara cómo hacerlo. |
+| n2 | en la calculadora cambiá a científica | ✓ | 4.1 s | 6.0 s | Ya cambié a la científica y ahora está seleccionada. |
+| n3 | en el Reloj andá a Temporizador | ✓ | 3.2 s | 5.1 s | Ya estoy en la pestaña del Temporizador y veo que el de un minuto está en marcha. |
+| n4 | open Settings and go to Apps | ✓ | 1.4 s | 3.1 s | I'm already in the Apps section, where I can see the installed applications listed. |
+| n5 | en Configuración andá a Red e Internet y después a Wi-Fi | ✗ (sin Wi-Fi en esta PC; final de respaldo) | — s | 9.9 s | No pude hacerlo en la aplicación «Configuración». |
+| n6 | abrí Word y elegí documento en blanco | ✓ | 3.9 s | 6.0 s | Ya tengo el documento en blanco listo para escribir. |
+| n7 | en Steam andá a la comunidad | ✓ | 2.6 s | 4.7 s | Ya estoy en la comunidad de Steam, donde se muestran los nuevos gráficos de la semana y los centros populares como Europa Universalis IV. |
+| n8 | en el Explorador de archivos andá a Imágenes | ✓ | 2.1 s | 3.9 s | Ya estoy en la carpeta Imágenes con las fotos de la cámara y otras guardadas. |
+| g1 | abrí Steam, andá a la biblioteca y buscá Cuphead | ✗ | — s | 6.1 s | No pude buscar Cuphead porque Steam dejó de responder tras hacer clic en biblioteca, y la pantalla se quedó estática. |
+| e1 | open the calculator and calculate 25 times 4 | ✓ | 3.3 s | 5.4 s | I got 25 times 4 to be 100. |
+| e2 | abrí Paint y pick the blue color | ✗ | — s | 10.2 s | No pude hacerlo en la aplicación «Paint». |
+| e3 | in the Clock app go to Stopwatch | ✓ | 2.5 s | 4.5 s | I'm in the Stopwatch app, and the timer is paused at 96 hours, 59 minutes, and 59 seconds. |
+| e4 | open File Explorer and go to Downloads | ✓ | 0.7 s | 3.0 s | I'm already in the Downloads folder, and I can see files like "<archivo>" and "<archivo>" listed there. |
+| w1 | en el Reloj andá a Alarma / en el Reloj andá a Cronómetro / en Configuración andá a Bluetooth y dispositivos / en la calculadora calculá 9 por 8 | ✓ | 3.8 s | 5.5 / 2.1 / 3.0 / 5.2 s | He estado en la pestaña de la alarma del reloj. / Ya estoy en el cronómetro y muestra 96 horas 59 minutos 59 segundos. / Ya estoy en la secc |
+| s13 | en Discord andá al canal Cotele / no / y ahora andá a configuración | ✓ | 0.8 s | 2.3 / 1.4 / 2.9 s | Ya estoy en el canal Cotele!!!😎 / Choche. / Lo dejas ahí. / Ya tenía la configuración de Discord abierta. |
 
 ### Medido antes del banco final
 
