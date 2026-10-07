@@ -4,7 +4,9 @@
 ``mission.computer.use`` con aplicación, objetivo y la comprobación de éxito determinista (§4.3). La aplicación
 tiene que estar en el catálogo de Inicio, o ser la categoría «navegador» (el navegador predeterminado de la persona)
 cuando sólo se nombra una pestaña; el resto de la frase es el objetivo, con el verbo en cualquier persona (tú, vos,
-usted, infinitivo, inglés). Vive en ``semantic/`` como toda lectura de la persona (plan de cierre 2026-09-24);
+usted, infinitivo, inglés). Varias cláusulas de hacer unidas por «y», «,», «luego», «después», «then», «and» son una
+misión encadenada: ``steps`` lleva cada sub-objetivo con su aplicación (la última nombrada, o la que nombra la
+cláusula) y su comprobación. Vive en ``semantic/`` como toda lectura de la persona (plan de cierre 2026-09-24);
 ``computer_use`` elige y verifica los pasos.
 """
 
@@ -16,6 +18,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from .. import effect_intent
+from .catalog import _CATALOG_NAME_ALIASES
 from .grammar import _head_is, imperative_rewrites
 
 # The application a mission names when the person names only a tab: the shell
@@ -139,6 +142,65 @@ _CLAUSE_VERB = (
 )
 
 
+# The same place of a window said in the other language («go to the library» on a Spanish Steam, «andá a
+# configuración» on an English app): a check also accepts the names the window may carry instead. Names only, no
+# application; the application tables below and in the catalog add theirs.
+_LABEL_ALIASES: tuple[frozenset[str], ...] = (
+    frozenset({"biblioteca", "library"}), frozenset({"tienda", "store", "shop"}),
+    frozenset({"configuracion", "ajustes", "settings", "preferencias", "preferences"}),
+    frozenset({"inicio", "home", "pagina principal"}), frozenset({"descargas", "downloads"}),
+    frozenset({"amigos", "friends"}), frozenset({"comunidad", "community"}), frozenset({"perfil", "profile"}),
+    frozenset({"mensajes", "messages"}), frozenset({"historial", "history"}),
+    frozenset({"favoritos", "favorites", "favourites"}), frozenset({"ayuda", "help"}),
+    frozenset({"cuenta", "account"}), frozenset({"notificaciones", "notifications"}),
+    frozenset({"privacidad", "privacy"}), frozenset({"sonido", "sound"}), frozenset({"pantalla", "display"}),
+    frozenset({"red", "network"}), frozenset({"juegos", "games"}), frozenset({"colecciones", "collections"}),
+    frozenset({"musica", "music"}), frozenset({"archivos", "files"}), frozenset({"documentos", "documents"}),
+    frozenset({"escritorio", "desktop"}), frozenset({"contactos", "contacts"}),
+    frozenset({"recibidos", "bandeja de entrada", "inbox"}), frozenset({"enviados", "sent"}),
+    frozenset({"borradores", "drafts"}), frozenset({"papelera", "trash"}), frozenset({"herramientas", "tools"}),
+    frozenset({"opciones", "options"}), frozenset({"modo avion", "modo de avion", "airplane mode"}),
+    frozenset({"actualizaciones", "updates"}), frozenset({"aplicaciones", "apps"}),
+    frozenset({"sistema", "system"}), frozenset({"personalizacion", "personalization"}),
+    frozenset({"dispositivos", "devices"}), frozenset({"servidores", "servers"}),
+)
+
+
+def label_alternatives(name: str) -> tuple[str, ...]:
+    """The other names (other language, catalog aliases) the place ``name`` may carry on screen, sorted; empty
+    when none is known."""
+
+    key = fold(name)
+    groups = (*_LABEL_ALIASES, *(aliases for aliases, _ in (*_EXTRA_ALIASES, *_CATALOG_NAME_ALIASES)))
+    found = {alias for group in groups if key in group for alias in group}
+    found.discard(key)
+    return tuple(sorted(found))
+
+
+def _with_alternatives(target: str, atoms: Iterable[str]) -> str:
+    """The check ``atoms`` (templates over ``{}``) for the target and each of its other names, OR-ed."""
+
+    names = (target, *label_alternatives(target))
+    return "|".join(atom.replace("{}", name) for name in names for atom in atoms)
+
+
+@dataclass(frozen=True, slots=True)
+class MissionStep:
+    """One sub-goal of a chained mission: its own goal, application and check (contract §4.1, steps[])."""
+
+    application: str | None
+    goal: str
+    success_check: str | None
+    clause: str = ""
+
+    def arguments(self) -> dict[str, object]:
+        return {"goal": self.goal, "application": self.application, "successCheck": self.success_check}
+
+
+# A chained mission carries at most this many sub-goals (contract §4.1).
+MAX_STEPS = 8
+
+
 @dataclass(frozen=True, slots=True)
 class MissionRequest:
     application: str | None
@@ -146,10 +208,12 @@ class MissionRequest:
     success_check: str | None
     # The person's clause of doing inside the application («baja el volumen»), empty for a tab named alone.
     clause: str = ""
+    # «… y después en Discord andá a general»: the sub-goals in order, empty for a single clause.
+    steps: tuple[MissionStep, ...] = ()
 
     @property
     def names_a_tab(self) -> bool:
-        return self.goal.startswith("ir a la pestaña ")
+        return not self.steps and self.goal.startswith("ir a la pestaña ")
 
     def arguments(self) -> dict[str, object]:
         arguments: dict[str, object] = {"goal": self.goal}
@@ -157,6 +221,8 @@ class MissionRequest:
             arguments["application"] = self.application
         if self.success_check:
             arguments["successCheck"] = self.success_check
+        if self.steps:
+            arguments["steps"] = [step.arguments() for step in self.steps]
         return arguments
 
 
@@ -253,11 +319,11 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
     on = _TOGGLE_ON_CLAUSE.match(folded)
     if on is not None and not _has_deictic_only(on.group("target")):
         target = on.group("target").strip()
-        return f"activar {target}", f"control:{target}:on"
+        return f"activar {target}", _with_alternatives(target, ("control:{}:on",))
     off = _TOGGLE_OFF_CLAUSE.match(folded)
     if off is not None and not _has_deictic_only(off.group("target")):
         target = off.group("target").strip()
-        return f"desactivar {target}", f"control:{target}:off"
+        return f"desactivar {target}", _with_alternatives(target, ("control:{}:off",))
     tab = _tab_named(folded)
     if tab is not None:
         # The selected tab whose title holds the name (the shell matches a control's name by containment), or
@@ -265,11 +331,12 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
         return f"ir a la pestaña {tab}", f"control:{tab}:selected|title:{tab}"
     navigate = _NAVIGATE_CLAUSE.match(folded)
     if navigate is not None:
-        target = navigate.group("target").strip(" \"'«»")
+        # «ve a la biblioteca y escribí hola»: the place ends where the next clause of doing begins.
+        target = _segments(navigate.group("target"))[0].strip(" \"'«»")
         if target and not re.search(r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b", target):
             return (
                 f"ir a {target}",
-                f"control:{target}:selected|title:{target}|page:{target}",
+                _with_alternatives(target, ("control:{}:selected", "title:{}", "page:{}")),
             )
     typed = _TYPE_CLAUSE.match(folded)
     if typed is not None:
@@ -303,7 +370,7 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
         return None
     label = effect_intent._visible_click_label(doing, allow_navigate=True)
     if label is not None:
-        return f"hacer clic en {label}", f"stepDone:input.visible.click:{label}"
+        return f"hacer clic en {label}", _with_alternatives(label, ("stepDone:input.visible.click:{}",))
     return doing, None
 
 
@@ -337,6 +404,9 @@ def mission_request(
     folded = effect_intent._strip_request_envelope(fold(re.sub(r"[\r\n]+", " . ", text))).strip()
     if not folded or effect_intent._is_negative_effect_clause(folded):
         return None
+    chained = _chained_request(folded, catalog)
+    if chained is not None:
+        return chained
     for application, clause in _app_frames(folded):
         key = _catalog_key(application, catalog)
         if key is None:
@@ -358,6 +428,48 @@ def mission_request(
     return None
 
 
+_NAMED_PLACE = re.compile(
+    r"(?<![a-z0-9])(?:en|in|on|dentro\s+de|abri|abre|abrime|abra|abrir|open|launch)\s+(?:(?:la|el|the)\s+)?"
+    r"(?P<words>[a-z0-9][a-z0-9 .+-]{0,60})"
+)
+
+
+def free_form_arguments(
+    text: str,
+    application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
+) -> dict[str, object] | None:
+    """The decider chose the engine for a request the reader does not read: the goal is the person's own words, as
+    said, and the application the installed one the request names, if any (else the window in front). No check:
+    the loop's model says done with evidence on screen."""
+
+    goal = " ".join(str(text or "").split()).strip(" .!?¡¿")
+    if not goal or len(goal.encode("utf-8")) > 512:
+        return None
+    arguments: dict[str, object] = {"goal": goal}
+    catalog = effect_intent.build_application_catalog_index(application_names)
+    if catalog.occurrence_pattern is not None:
+        folded = fold(goal)
+        exact = catalog.occurrence_pattern.search(folded)
+        key = exact.group("target").casefold() if exact is not None else None
+        if key not in catalog.keys:
+            key = None
+            for found in _NAMED_PLACE.finditer(folded):
+                words = found.group("words").split()
+                key = next(
+                    (
+                        resolved
+                        for count in range(min(len(words), 4), 0, -1)
+                        if (resolved := _catalog_key(" ".join(words[:count]), catalog)) is not None
+                    ),
+                    None,
+                )
+                if key is not None:
+                    break
+        if key is not None:
+            arguments["application"] = _display_name(key, catalog)
+    return arguments
+
+
 def _bare_tab(folded: str) -> tuple[str, str] | None:
     bare = re.sub(rf"^{_BROWSER_CATEGORY_PLACE}\s*[,;:]?\s+|\s+{_BROWSER_CATEGORY_PLACE}(?=[\s.!?]*$)", "", folded, count=1)
     for reading in _clause_readings(bare.strip(" ,;:.!?")):
@@ -374,7 +486,148 @@ def mission_clause_is_direct(text: str) -> bool:
     folded = effect_intent._strip_request_envelope(fold(text)).strip()
     if _bare_tab(folded) is not None:
         return True
-    return any(read_clause(clause) is not None for _, clause in _app_frames(folded, longer_names=False))
+    if any(read_clause(clause) is not None for _, clause in _app_frames(folded, longer_names=False)):
+        return True
+    # «andá a la biblioteca en Steam y después a general en Discord»: clauses of doing, none forbidden, one of them
+    # doing something inside an app (opening one alone is app.open's own reading).
+    segments = _segments(folded)
+    return (
+        len(segments) > 1
+        and all(_starts_clause(segment) and not effect_intent._is_negative_effect_clause(segment) for segment in segments)
+        and any(
+            read_clause(clause) is not None
+            for segment in segments
+            for _, clause in _app_frames(segment, longer_names=False)
+        )
+    )
+
+
+# ------------------------------------------------------------ misiones encadenadas
+
+# Where one clause of doing ends and the next begins: a comma, a semicolon, a sentence stop, or a coordinator
+# («y», «luego», «después», «y después», «then», «and then», «and»). A split is kept only when what follows is
+# itself a clause of doing (``_starts_clause``): «escribí hola y chau» stays one text.
+_JOINER = re.compile(
+    r"\s*[,;]\s*(?:(?:y|and)\s+)?(?:(?:luego|despues|entonces|then|after\s+that)\s+(?:de\s+eso\s+)?)?"
+    r"|\s+\.\s+"
+    r"|\s+(?:y|and)\s+(?:(?:luego|despues|entonces|then|after\s+that)\s+(?:de\s+eso\s+)?)?"
+    r"|\s+(?:luego|despues|entonces|then|after\s+that)\s+(?:de\s+eso\s+)?"
+)
+# «abrí Steam» alone, as one clause of a chain: the application the next clauses happen in.
+_BARE_OPEN = re.compile(
+    r"^(?:abri|abre|abrime|abra|abrir|open|launch|lanza|ejecuta|inicia|start)\s+"
+    r"(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)[\s.!?]*$"
+)
+
+
+def _starts_clause(segment: str) -> bool:
+    segment = segment.strip(" ,;:.!?")
+    if not segment:
+        return False
+    if _BARE_OPEN.match(segment) is not None or read_clause(segment) is not None:
+        return True
+    return any(read_clause(clause) is not None for _, clause in _app_frames(segment, longer_names=False))
+
+
+def _segments(folded: str) -> list[str]:
+    """The clauses of doing a request chains, in order; the whole text when it says one."""
+
+    pieces: list[str] = []
+    joiners: list[str] = []
+    start = 0
+    for found in _JOINER.finditer(folded):
+        if found.start() == 0 or found.end() >= len(folded):
+            continue
+        pieces.append(folded[start:found.start()])
+        joiners.append(found.group())
+        start = found.end()
+    pieces.append(folded[start:])
+    if len(pieces) == 1:
+        return pieces
+    merged = [pieces[0]]
+    for joiner, piece in zip(joiners, pieces[1:]):
+        if _starts_clause(piece):
+            merged.append(piece)
+        elif _ELLIPTIC_PLACE.match(piece) and _goes_to(merged[-1]) and _starts_clause(f"ve {piece}"):
+            # «andá a la biblioteca en Steam y después a general en Discord»: the going is said once.
+            merged.append(f"ve {piece}")
+        else:
+            merged[-1] += joiner + piece
+    return [segment.strip(" ,;") for segment in merged]
+
+
+_ELLIPTIC_PLACE = re.compile(r"(?:a|al|hacia|to)\s+\S")
+
+
+def _goes_to(segment: str) -> bool:
+    segment = segment.strip(" ,;:.!?")
+    reads = (read_clause(segment), *(read_clause(clause) for _, clause in _app_frames(segment, longer_names=False)))
+    return any(read is not None and read[0].startswith("ir a ") for read in reads)
+
+
+def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex) -> MissionRequest | None:
+    """«abre Steam y andá a la biblioteca, y después en Discord andá a general» → one mission whose ``steps`` are
+    the sub-goals in order (contract §4.1). The application is carried forward and switches where a clause names
+    another one; each sub-goal has its own goal and check (``read_clause``). None for a single clause (today's
+    reading stays), for a clause that is not doing, or with no application named at all."""
+
+    segments = _segments(folded)
+    if len(segments) < 2 or any(effect_intent._is_negative_effect_clause(segment) for segment in segments):
+        return None
+    steps: list[MissionStep] = []
+    current: str | None = None
+    opened: str | None = None
+    for segment in segments:
+        segment = segment.strip(" ,;:.!?")
+        bare = _BARE_OPEN.match(segment)
+        bare_key = _catalog_key(bare.group("app"), catalog) if bare is not None else None
+        if bare_key is not None:
+            if opened is not None:
+                steps.append(_open_step(opened))
+            current = opened = _display_name(bare_key, catalog)
+            continue
+        framed = next(
+            (
+                (_display_name(key, catalog), clause.strip(" ,;:"), read)
+                for application, clause in _app_frames(segment)
+                if (key := _catalog_key(application, catalog)) is not None
+                and (read := read_clause(clause.strip(" ,;:"))) is not None
+            ),
+            None,
+        )
+        if framed is not None:
+            application, clause, read = framed
+        else:
+            read = read_clause(segment)
+            if read is None:
+                return None
+            application, clause = current, segment
+        goal, check = read
+        if application is None and goal.startswith("ir a la pestaña "):
+            application = BROWSER_CATEGORY
+        if opened is not None and application != opened:
+            steps.append(_open_step(opened))
+        opened = None
+        current = application
+        steps.append(MissionStep(application, goal, check, clause))
+    if opened is not None:
+        steps.append(_open_step(opened))
+    doing = [step for step in steps if not step.goal.startswith("abrir ")]
+    if len(steps) < 2 or not doing or len(steps) > MAX_STEPS or all(step.application is None for step in steps):
+        return None
+    return MissionRequest(
+        steps[0].application,
+        "; luego ".join(step.goal for step in steps).encode("utf-8")[:500].decode("utf-8", "ignore"),
+        None,
+        doing[0].clause,
+        tuple(steps),
+    )
+
+
+def _open_step(application: str) -> MissionStep:
+    """«… y abrí Discord» with nothing to do in it: the sub-goal is having it in front."""
+
+    return MissionStep(application, f"abrir {application}", f"title:{application}|process:{application}")
 
 
 def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str, str]]:

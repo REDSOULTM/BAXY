@@ -360,10 +360,11 @@ def _completed_missing_message_text_request(
 
 
 # The primitives a computer-use mission does itself: a typed route made only of these is the mission's own steps said
-# one by one, so the mission takes over. A typed read such as client.channel.locate (DISCORD1839: the channel found
-# and the person asked before any join) is the catalog's own and keeps its route.
+# one by one, so the mission takes over. Locating a chat client's channel is one of them: the engine's search on
+# screen finds it in any client, and a voice channel's click is still confirmed by RiskPolicy on its label.
 _MISSION_SUBSUMES = frozenset({
-    "app.open", "input.key.press", "input.text.type", "input.visible.click", "input.visible.controls", "window.focus",
+    "app.open", "client.channel.locate", "input.key.press", "input.text.type", "input.visible.click",
+    "input.visible.controls", "window.focus",
 })
 
 
@@ -377,10 +378,21 @@ def _mission_takes_over(
     """A mission wins over a typed reading made only of its own primitives. With no typed reading it wins only when
     the clause is an act the reader knows how to check (go to, press, calculate, switch, type, click) and is not
     itself a catalog request («en Discord activá el micrófono»: the microphone); a loose verb («en Spotify baja el
-    volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission."""
+    volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission. A chained
+    mission wins when the reader checks every sub-goal and no typed reading covers them all."""
 
+    if intent is not None and set(intent.operations) <= _MISSION_SUBSUMES:
+        return True
+    steps = getattr(mission, "steps", ())
+    if steps:
+        # A chain of steps inside applications («andá a la biblioteca en Steam y después a general en Discord») is
+        # one mission even when a clause alone is a typed request; a typed reading that covers every clause keeps
+        # its route (D21), and a clause the reader cannot check leaves the turn to the decider.
+        if any(step.success_check is None for step in steps):
+            return False
+        return intent is None or len(intent.operations) < len(steps)
     if intent is not None:
-        return set(intent.operations) <= _MISSION_SUBSUMES
+        return False
     if getattr(mission, "success_check", None) is None:
         return False
     clause = getattr(mission, "clause", "")

@@ -62,6 +62,7 @@ from .semantic.notes import (
     question_with_its_reason,
 )
 from .semantic import levels as semantic_levels
+from .semantic import missions as semantic_missions
 from .semantic.memory import explicit_memory_request
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -4218,13 +4219,18 @@ def _ground_explicit_arguments(
         there = weather_destination_there(evidence)
         if there is not None:
             explicit = {**explicit, "location": there}
+    if explicit is None and operation == "mission.computer.use":
+        # The decider chose the engine for a request the mission reader does not read («en Paint dibujá un
+        # círculo»): the goal is the person's clause as said and the application the installed one it names.
+        explicit = semantic_missions.free_form_arguments(evidence, application_names)
     if explicit is None:
         return None
     if operation == "mission.computer.use":
         # Computer use: the application is the catalog's display name, the goal
         # is normalized («calculá» → «calcular») and the success check is a
         # grammar of the reader's own; none of them is a literal the person
-        # must have spelled. The reader is deterministic, never the model.
+        # must have spelled; a chained request carries its sub-goals in steps.
+        # The reader is deterministic, never the model.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "notification.schedule" and "recurrence" in explicit:
         # The repeating-event reader owns kind and recurrence (enum values the person need not
@@ -10431,6 +10437,8 @@ def _run_sidecar(
                     history=history,
                     budget_left=int(message.get("budgetLeft") or 0),
                     application_names=application_catalog,
+                    subgoal=int(message.get("subgoal") or 0),
+                    subgoal_count=int(message.get("subgoalCount") or 1),
                 )
                 write_request_message(
                     {
