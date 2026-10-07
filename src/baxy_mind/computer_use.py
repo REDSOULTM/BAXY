@@ -786,7 +786,11 @@ def deterministic_step(
         ) if kind is None else None
         if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
             return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": reason}
-        if written is None and kind is None and wanted in (None, "selected"):
+        # A navigation button not opened yet goes first: right after a cold start a name clicked by label alone is
+        # waited for as the application draws (live y1: «programador» took 39 s to be not found; it was behind
+        # «Abrir navegación»).
+        opener_first = navigate and _navigation_opener(view, history) is not None
+        if written is None and kind is None and wanted in (None, "selected") and not opener_first:
             unlisted = _unlisted_name_click(view, history, names, _tried)
             if unlisted is not None:
                 return unlisted

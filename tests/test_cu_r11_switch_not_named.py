@@ -55,3 +55,14 @@ def test_put_mode_with_a_switch_of_that_name_is_left_to_the_switch_rules() -> No
     }
     step = computer_use.deterministic_step(goal="activar modo oscuro", view=view, history=[])
     assert step is None or step["arguments"].get("label") != "Abrir navegación"
+
+
+def test_the_navigation_button_goes_before_a_name_clicked_by_label_alone() -> None:
+    controls = [{"i": 0, "kind": "Button", "name": "Abrir navegación", "state": ""}]
+    controls += [{"i": i, "kind": "Button", "name": f"Tecla {i}", "state": ""} for i in range(1, 60)]
+    view = {"window": {"title": "Calculadora", "process": "calc"}, "controls": controls, "text": {}, "controlCount": 90}
+    step = computer_use.deterministic_step(goal="ir a programador", view=view, history=[])
+    assert step is not None and step["arguments"]["label"] == "Abrir navegación"
+    opened = [{"step": 1, "operation": "input.visible.click", "label": "Abrir navegación", "ok": True}]
+    after = computer_use.deterministic_step(goal="ir a programador", view=view, history=opened)
+    assert after is not None and after["arguments"].get("label") == "programador"
