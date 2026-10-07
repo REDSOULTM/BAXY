@@ -98,6 +98,92 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Computer use, chained missions (shared contract «steps»): up to eight ordered sub-goals, each a closed object with
+    // its goal, application and success check; the whole mission up to thirty steps.
+    [TestCase("""{"goal":"abre Steam"}""", true)]
+    [TestCase("""{"goal":"abre Steam","budgetSteps":30}""", true)]
+    [TestCase("""{"goal":"abre Steam","budgetSteps":31}""", false)]
+    [TestCase("""{"goal":"abre Steam","steps":null}""", true)]
+    [TestCase("""{"goal":"a y b","application":null,"successCheck":null,"steps":[{"goal":"a","application":"Steam","successCheck":"text:a"},{"goal":"b","application":null,"successCheck":null}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":" "}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"application":"Steam"}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a","budgetSteps":3}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a","application":7}]}""", false)]
+    [TestCase("""{"goal":"a","steps":["a"]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"}]}""", false)]
+    public void AComputerUseMissionMayChainOrderedSubgoals(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ASubgoalLongerThanItsContractIsRejected()
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
+        string goal = new('x', 513);
+        string application = new('y', 129);
+        using JsonDocument longGoal = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"{{goal}}"}]}""");
+        using JsonDocument longApplication = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"a","application":"{{application}}"}]}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(longGoal.RootElement, descriptor.ArgumentsSchema), Is.False);
+            Assert.That(OperationArgumentValidator.IsValid(longApplication.RootElement, descriptor.ArgumentsSchema), Is.False);
+        });
+    }
+
+    [Test]
+    public void TheSubgoalSchemaIsPublishedAsAClosedObjectInsideTheArray()
+    {
+        OperationDescriptor tool = ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("mission.computer.use"));
+        JsonElement steps = tool.ArgumentsSchema.GetProperty("properties").GetProperty("steps");
+        JsonElement items = steps.GetProperty("items");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps.GetProperty("maxItems").GetInt32(), Is.EqualTo(8));
+            Assert.That(steps.GetProperty("minItems").GetInt32(), Is.EqualTo(1));
+            Assert.That(items.GetProperty("type").GetString(), Is.EqualTo("object"));
+            Assert.That(items.GetProperty("additionalProperties").GetBoolean(), Is.False);
+            Assert.That(items.GetProperty("required").EnumerateArray().Select(name => name.GetString()), Is.EqualTo(new[] { "goal" }));
+            Assert.That(
+                items.GetProperty("properties").EnumerateObject().Select(property => property.Name),
+                Is.EqualTo(new[] { "application", "goal", "successCheck" }));
+        });
+    }
+
+    [Test]
+    public void ObjectItemsCannotNestArrays()
+    {
+        var nested = new OperationArgumentsSchema(
+            [new OperationArgumentProperty("tags", OperationJsonType.Array, itemTypes: OperationJsonType.String)],
+            []);
+        Assert.Throws<ArgumentException>(() => _ = new OperationArgumentProperty(
+            "steps", OperationJsonType.Array, itemSchema: nested));
+    }
+
+    // input.scroll may name the control of the last view to scroll (a list, a conversation) instead of the window.
+    [TestCase("""{"amount":3,"direction":"down"}""", true)]
+    [TestCase("""{"amount":3,"direction":"down","index":0}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":59}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":null}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":60}""", false)]
+    [TestCase("""{"amount":3,"direction":"up","index":-1}""", false)]
+    [TestCase("""{"amount":3,"direction":"up","index":"2"}""", false)]
+    public void ScrollMayTargetOneControlOfTheView(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.scroll");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
     [TestCase("{\"applicationName\":\"Calculadora\"}", true)]
     [TestCase("{\"applicationName\":\" \"}", false)]
     public void WindowInventoryAcceptsTheApplicationNameSelectorOfV3(string json, bool expected)
