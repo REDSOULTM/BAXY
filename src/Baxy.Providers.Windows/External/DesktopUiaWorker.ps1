@@ -372,7 +372,9 @@ function Select-LineageOne($entries){
     }
   }
   $all=@(0..($list.Count-1))
-  $pool=@($all | Where-Object { $list[$_].invoke })
+  # A field that takes text inside a same-named control that invokes (a search box's Edit inside its Group) is what a
+  # person clicks: measured on a store's search, the Group took the click and the field never got the keyboard.
+  $pool=@($all | Where-Object { $list[$_].invoke -or $list[$_].edit })
   if($pool.Count -eq 0){ $pool=@($all | Where-Object { $list[$_].select }) }
   if($pool.Count -eq 0){ $pool=$all }
   $best=$pool[0]
@@ -390,7 +392,9 @@ function Get-LineageEntry($el){
   $invoke=$false;$select=$false
   try { $invoke=$el.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern) } catch {}
   try { $select=$el.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern) } catch {}
-  return @{ name=(Get-Name $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select }
+  $edit=$false
+  try { $edit=($el.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit) } catch {}
+  return @{ name=(Get-Name $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; edit=$edit }
 }
 # Los controles con ese nombre; sin ninguno igual, los que lo llevan como
 # palabras (el clic solo sigue si es uno). Los iguales de una sola linea de

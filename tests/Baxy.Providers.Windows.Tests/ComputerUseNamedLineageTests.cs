@@ -34,7 +34,9 @@ public sealed class ComputerUseNamedLineageTests
               [{"name":"Azul","key":"","ancestors":[],"rect":{"x":0,"y":0,"w":20,"h":20}},
                {"name":"Azul","key":"","ancestors":[],"rect":{"x":30,"y":0,"w":20,"h":20}}],
               [{"name":"Rojo","key":"7.1","ancestors":["7.0"],"select":true},
-               {"name":"Red","key":"7.2","ancestors":["7.1","7.0"],"invoke":true}]
+               {"name":"Red","key":"7.2","ancestors":["7.1","7.0"],"invoke":true}],
+              [{"name":"Buscar","key":"7.1","ancestors":["7.0"],"invoke":true},
+               {"name":"Buscar","key":"7.2","ancestors":["7.1","7.0"],"edit":true}]
             ]
             """;
         string answer = RunRule(worker, cases);
@@ -47,6 +49,7 @@ public sealed class ComputerUseNamedLineageTests
             "1",  // no ancestor chain read: the rectangle inside the other
             "-1", // rectangles apart: separate controls
             "-1", // different names are never collapsed
+            "1",  // a search box's field inside its same-named Group that invokes: the field takes the click
         }));
     }
 
