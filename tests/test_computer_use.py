@@ -283,9 +283,11 @@ def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
     assert go["operation"] == "input.visible.click" and go["arguments"] == {"label": "Biblioteca", "index": 1}
     # Not on screen: the focused search field takes the name (the FIND routine below).
     assert computer_use.deterministic_step(goal="ir a descargas", view=VIEW, history=[])["arguments"] == {"text": "descargas"}
-    # A failed last step hands the decision to the model.
+    # A failed click by label alone is found again by identity; the same act failed again hands it to the model.
     failed = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "ok": False}]
-    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed) is None
+    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed)["arguments"] == {"label": "Biblioteca", "index": 1}
+    failed_again = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "index": 1, "ok": False}]
+    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed_again) is None
     toggle_view = {"window": {"title": "Configuración"}, "controls": [{"i": 4, "kind": "Button", "name": "Modo avión", "state": "off"}], "text": {}}
     on = computer_use.deterministic_step(goal="activar modo avion", view=toggle_view, history=[])
     assert on["arguments"] == {"label": "Modo avión", "index": 4}
@@ -1048,3 +1050,20 @@ def test_going_somewhere_never_presses_a_switch() -> None:
         {"act": "click", "i": 2}, view=view, last_failed=None, application_names=(), history=[], goal="ir a colores",
     )
     assert allowed["operation"] == "input.visible.click"
+
+
+def test_after_a_failed_learned_click_the_goal_step_is_found_again_by_identity() -> None:
+    # Measured on Settings: a replayed «Sistema» by label was ambiguous (nav item and page card) and the model gave up.
+    view = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [
+            {"i": 7, "kind": "ListItem", "name": "Sistema", "state": "", "zone": "L"},
+            {"i": 20, "kind": "Button", "name": "Bluetooth y dispositivos", "zone": "C"},
+        ],
+        "text": {},
+    }
+    failed = [{"step": 1, "operation": "input.visible.click", "label": "Sistema", "ok": False, "error": "visible_button_ambiguous"}]
+    step = computer_use.deterministic_step(goal="ir a sistema", view=view, history=failed)
+    assert step is not None and step["arguments"] == {"label": "Sistema", "index": 7}
+    again = [{"step": 1, "operation": "input.visible.click", "label": "Sistema", "index": 7, "ok": False}]
+    assert computer_use.deterministic_step(goal="ir a sistema", view=view, history=again) is None

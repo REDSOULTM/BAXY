@@ -499,9 +499,19 @@ def deterministic_step(
             # A failed click while the menu the place's own click opened is still on screen: its entry is the step.
             place = folded_goal[len("ir a "):].strip() if folded_goal.startswith("ir a ") else ""
             entry = _menu_opened_by(view, history, place, goal) if place and last.get("operation") == "input.visible.click" else None
-            if entry is None:
+            if entry is not None:
+                return {"operation": "input.visible.click", "arguments": {"label": entry}, "reason": "el clic abrió un menú"}
+            if last.get("operation") != "input.visible.click":
                 return None
-            return {"operation": "input.visible.click", "arguments": {"label": entry}, "reason": "el clic abrió un menú"}
+            # A click that failed (a learned label now ambiguous or gone, measured on Settings after a replay) leaves
+            # the goal's own step to be found again on this view, by identity, never the same act once more.
+            retried = deterministic_step(goal=goal, view=view, history=history[:-1], application=application)
+            if retried is None or retried.get("operation") != "input.visible.click":
+                return retried
+            arguments = retried.get("arguments") or {}
+            same_index = isinstance(arguments, dict) and arguments.get("index") is not None and arguments.get("index") == last.get("index")
+            same_label = isinstance(arguments, dict) and arguments.get("index") is None and fold(arguments.get("label")) == fold(last.get("label"))
+            return None if same_index or same_label else retried
     reason = "el objetivo lo dice"
     if folded_goal == "enviar":
         # «… y mandalo»: sending what was written is Enter in the message box, always marked so RiskPolicy asks first
