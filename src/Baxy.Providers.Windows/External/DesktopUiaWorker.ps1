@@ -1,4 +1,4 @@
-﻿# Worker UIA persistente del motor de computer use (CONTRATO_VISTA_ACCION.md §1, §2).
+# Worker UIA persistente del motor de computer use (CONTRATO_VISTA_ACCION.md §1, §2).
 #
 # Una sola carga de UIAutomationClient y de Add-Type por vida del proceso: la
 # herencia (gemma4_agent, uia_fast.py) midio 243 ms de spawn mas 385 ms de
