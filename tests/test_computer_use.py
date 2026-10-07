@@ -1005,7 +1005,10 @@ def test_a_menu_opened_by_the_place_survives_a_failed_learned_click() -> None:
     menu = {
         "window": {"title": "Steam", "process": "steamwebhelper", "focused": None},
         "controls": [],
-        "newText": ["Página principal", "Colecciones", "Descargas"],
+        # The failed click changed nothing, so the last look's newText is empty; the App keeps what the verified
+        # click made appear.
+        "newText": [],
+        "newTextAfterClick": ["Página principal", "Colecciones", "Descargas"],
         "text": {"TL": ["TIENDA", "BIBLIOTECA", "Página principal", "Colecciones", "Descargas"]},
     }
     history = [
@@ -1191,13 +1194,16 @@ def test_the_navigation_opener_is_a_button_by_its_whole_name_never_a_switch_or_a
     def view(*controls: dict) -> dict:
         return {"window": {"title": "App", "process": "app"}, "controls": list(controls), "text": {}}
 
-    for name, kind in (("Open Navigation", "Button"), ("Menú", "Button"), ("Más opciones", "SplitButton"),
+    for name, kind in (("Open Navigation", "Button"), ("Abrir menú", "Button"), ("Más opciones", "SplitButton"),
                        ("More options", "Button"), ("Main menu", "MenuItem"), ("Navegación", "Button")):
         step = computer_use.deterministic_step(goal="ir a cientifica", view=view({"i": 0, "kind": kind, "name": name}), history=[])
         assert step["arguments"] == {"label": name, "index": 0}, name
     for control in (
         {"i": 0, "kind": "ToggleButton", "name": "Menú"},
         {"i": 0, "kind": "Button", "name": "Menú", "state": "off"},
+        # A bare «Menú» or «More» says nothing of navigation (a card's menu, a list's «more»).
+        {"i": 0, "kind": "Button", "name": "Menú"},
+        {"i": 0, "kind": "Button", "name": "More"},
         {"i": 0, "kind": "Button", "name": "Abrir navegación", "state": "expanded"},
         {"i": 0, "kind": "Button", "name": "Cambiar el tamaño del menú de navegación principal"},
         {"i": 0, "kind": "Group", "name": "Botones de navegación"},
@@ -1225,3 +1231,175 @@ def test_going_to_a_place_never_clicks_the_switch_that_carries_its_name() -> Non
     assert computer_use.deterministic_step(goal="activar modo avion", view=toggle, history=[])["arguments"] == {
         "label": "Modo avión", "index": 0,
     }
+
+
+# ------------------------------------------------ revisión x-mind 2026-10-07
+
+
+def test_delete_after_an_address_is_pressed_only_with_the_keyboard_on_the_address_field() -> None:
+    goal = "ir a la direccion es.wikipedia.org"
+    typed = [_ok(1, "input.key.press", key="ctrl_l"), _ok(2, "input.text.type", text="es.wikipedia.org")]
+    on_bar = {"window": {"title": "Opera", "focused": {"kind": "Edit", "name": "Campo de dirección", "value": "es.wikipedia.org/wiki/Curicó"}},
+              "controls": [], "text": {}}
+    step = computer_use.deterministic_step(goal=goal, view=on_bar, history=typed)
+    assert step["arguments"] == {"key": "delete", "target": "text_field"}
+    # ctrl_l did not reach the bar (the page or a list item has the keyboard, or nothing is known): Delete would erase
+    # what is selected, so nothing is pressed.
+    for focused in (None, {"kind": "ListItem", "name": "informe.pdf"}, {"kind": "Edit", "name": "Buscar en la página", "value": "x"}):
+        view = {"window": {"title": "Opera", "focused": focused}, "controls": [], "text": {}}
+        assert computer_use.deterministic_step(goal=goal, view=view, history=typed) is None, focused
+
+
+def test_going_to_a_place_never_clicks_a_switch_by_its_written_name_or_as_a_search_result() -> None:
+    settings = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Bluetooth", "state": "on"},
+            {"i": 1, "kind": "Edit", "name": "Buscar una configuración"},
+        ],
+        "text": {"C": ["Bluetooth"]},
+    }
+    # The switch's own written word is the switch: the place is looked up in the window's search.
+    step = computer_use.deterministic_step(goal="ir a bluetooth", view=settings, history=[])
+    assert step["arguments"] == {"label": "Buscar una configuración", "index": 1}
+    # The switch and the navigation item carry the same name: the item is the place.
+    both = {**settings, "controls": [*settings["controls"], {"i": 2, "kind": "ListItem", "name": "Bluetooth"}]}
+    assert computer_use.deterministic_step(goal="ir a bluetooth", view=both, history=[])["arguments"] == {"label": "Bluetooth", "index": 2}
+    # A search result that is a switch is never the result, nor its written name.
+    results = {
+        "window": {"title": "Configuración", "process": "SystemSettings",
+                   "focused": {"kind": "Edit", "name": "Buscar una configuración", "value": "colores"}},
+        "controls": [
+            {"i": 0, "kind": "Edit", "name": "Buscar una configuración", "state": "focused"},
+            {"i": 1, "kind": "Button", "name": "Colores", "state": "off"},
+            {"i": 2, "kind": "ListItem", "name": "Colores de acento"},
+        ],
+        "newText": ["Colores"],
+        "text": {"C": ["Colores", "Colores de acento"]},
+    }
+    typed = [_ok(1, "input.visible.click", label="Buscar una configuración"), _ok(2, "input.text.type", text="colores")]
+    picked = computer_use.deterministic_step(goal="ir a colores", view=results, history=typed)
+    assert picked["arguments"] == {"label": "Colores de acento", "index": 2}
+    only_switch = {**results, "controls": results["controls"][:2], "text": {"C": ["Colores"]}}
+    assert computer_use.deterministic_step(goal="ir a colores", view=only_switch, history=typed)["arguments"] == {"key": "escape"}
+
+
+def test_a_name_two_controls_carry_is_looked_up_never_clicked_by_its_written_word() -> None:
+    # Live s13 Discord: «Cotele» was a server and an activity card; the click on the written word failed.
+    discord = {
+        "window": {"title": "Amigos - Discord", "process": "Discord", "focused": None},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Buscar", "state": ""},
+            {"i": 1, "kind": "ListItem", "name": "Cotele"},
+            {"i": 2, "kind": "Button", "name": "Cotele"},
+        ],
+        "text": {"C": ["Cotele"]},
+    }
+    step = computer_use.deterministic_step(goal="ir a cotele", view=discord, history=[])
+    assert step["arguments"] == {"label": "Buscar", "index": 0}
+    # No control names it: the written word is still clicked by its label.
+    written = {**discord, "controls": discord["controls"][:1]}
+    assert computer_use.deterministic_step(goal="ir a cotele", view=written, history=[])["arguments"] == {"label": "cotele"}
+
+
+def test_a_search_field_already_holding_the_name_is_not_typed_into_again() -> None:
+    clicked = [_ok(1, "input.visible.click", label="Buscar")]
+    holding = {
+        "window": {"title": "Amigos - Discord", "process": "Discord", "focused": {"kind": "Edit", "name": "Buscar", "value": "general"}},
+        "controls": [{"i": 0, "kind": "Edit", "name": "Buscar", "state": "focused"}, {"i": 1, "kind": "ListItem", "name": "general · Mi servidor"}],
+        "text": {},
+    }
+    assert computer_use.deterministic_step(goal="ir a general", view=holding, history=clicked)["arguments"] == {
+        "label": "general · Mi servidor", "index": 1,
+    }
+    # No result yet: the name is selected whole and typed once more so the search runs, never appended.
+    bare = {**holding, "controls": holding["controls"][:1]}
+    assert computer_use.deterministic_step(goal="ir a general", view=bare, history=clicked)["arguments"] == {"key": "ctrl_a"}
+    selected = clicked + [_ok(2, "input.key.press", key="ctrl_a")]
+    assert computer_use.deterministic_step(goal="ir a general", view=bare, history=selected)["arguments"] == {"text": "general"}
+
+
+def test_a_field_without_a_search_name_that_holds_text_is_never_selected_whole() -> None:
+    # A document editor exposed as a text field took the keyboard after ctrl_k: select-all would take the person's work.
+    editor = {
+        "window": {"title": "tesis - Editor", "process": "editor", "focused": {"kind": "Edit", "name": "Editor de texto", "value": "mi tesis"}},
+        "controls": [], "newText": ["algo"], "text": {},
+    }
+    after_k = [_ok(1, "input.key.press", key="ctrl_k")]
+    assert computer_use.deterministic_step(goal="ir a general", view=editor, history=after_k) is None
+    empty = {**editor, "window": {**editor["window"], "focused": {"kind": "Edit", "name": "", "value": ""}}}
+    assert computer_use.deterministic_step(goal="ir a general", view=empty, history=after_k)["arguments"] == {"text": "general"}
+
+
+def test_a_menu_after_failed_clicks_is_read_from_what_the_verified_click_made_appear() -> None:
+    history = [
+        _ok(1, "input.visible.click", label="BIBLIOTECA"),
+        {"step": 2, "operation": "input.visible.click", "label": "Inicio", "ok": False},
+    ]
+    stale = {"window": {"title": "Steam"}, "controls": [], "newText": ["Página principal", "Colecciones"], "text": {}}
+    # The current look's newText is not what the verified click made appear: without newTextAfterClick, no menu.
+    assert computer_use._menu_opened_by(stale, history, "biblioteca") is None
+    kept = {**stale, "newText": [], "newTextAfterClick": ["Página principal", "Colecciones"]}
+    assert computer_use._menu_opened_by(kept, history, "biblioteca") == "Página principal"
+    # Right after the verified click its own look's newText is the menu.
+    assert computer_use._menu_opened_by(stale, history[:1], "biblioteca") == "Página principal"
+
+
+def test_the_navigation_opener_is_never_the_browser_frames_nor_used_by_a_search() -> None:
+    browser = {
+        "window": {"title": "Nueva pestaña - Opera", "process": "opera", "rect": _rect(0, 0, 1200, 800), "focused": None},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Main menu", "rect": _rect(0, 0, 40, 30)},
+            {"i": 1, "kind": "Edit", "name": "Campo de dirección", "value": "", "rect": _rect(100, 40, 800, 30)},
+            {"i": 2, "kind": "Document", "name": "Nueva pestaña", "rect": _rect(0, 80, 1200, 720)},
+        ],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="ir a historia", view=browser, history=[])
+    assert step is None or step["arguments"].get("label") != "Main menu"
+    in_page = {**browser, "controls": [*browser["controls"], {"i": 3, "kind": "Button", "name": "Abrir navegación", "rect": _rect(10, 100, 40, 30)}]}
+    assert computer_use.deterministic_step(goal="ir a historia", view=in_page, history=[])["arguments"] == {"label": "Abrir navegación", "index": 3}
+    # A search is the window's search, never its navigation.
+    app = {"window": {"title": "App", "process": "app"}, "controls": [{"i": 0, "kind": "Button", "name": "Abrir navegación"}], "text": {}}
+    assert computer_use.deterministic_step(goal="buscar informe", view=app, history=[])["arguments"] == {"key": "ctrl_k"}
+    assert computer_use.deterministic_step(goal="ir a informe", view=app, history=[])["arguments"] == {"label": "Abrir navegación", "index": 0}
+
+
+def test_evidence_that_holds_what_was_typed_proves_nothing_until_a_click_moved_the_window() -> None:
+    title = "imagenes - Resultados de la búsqueda en ETC"
+    view = {"window": {"title": title}, "controls": [{"i": 0, "kind": "ListItem", "name": "vacaciones.jpg"}], "text": {}}
+    typed = [_ok(1, "input.text.type", text="imagenes"), _ok(2, "input.key.press", key="enter")]
+    done = {"act": "done", "evidence": title}
+    refused = computer_use.validate_decision(done, view=view, last_failed=None, application_names=(), history=typed, goal="ir a imagenes")
+    assert refused["operation"] == "none" and refused["code"] == "evidence_not_visible"
+    moved = typed + [_ok(3, "input.visible.click", label="imagenes", changed=True)]
+    accepted = computer_use.validate_decision(done, view=view, last_failed=None, application_names=(), history=moved, goal="ir a imagenes")
+    assert accepted["operation"] == "done"
+    # A goal of writing a text is proved by the text it wrote.
+    note = {"window": {"title": "hola mundo - Bloc de notas"}, "controls": [], "text": {}}
+    wrote = [_ok(1, "input.text.type", text="hola mundo")]
+    proof = computer_use.validate_decision(
+        {"act": "done", "evidence": "hola mundo - Bloc de notas"}, view=note, last_failed=None, application_names=(),
+        history=wrote, goal="escribir hola mundo",
+    )
+    assert proof["operation"] == "done"
+
+
+def test_a_key_or_typing_final_says_it_is_done_and_a_place_final_confirms_the_window() -> None:
+    def instruction(goal: str, **more: object) -> str:
+        return computer_use.compose_instruction({"goal": goal, "reached": True, **more}, "es")
+
+    for goal in ("apretar enter", "escribir hola"):
+        said = instruction(goal)
+        assert "Confirm the state" not in said and "Say only that it is done in that app" in said, goal
+    for goal in ("ir a biblioteca", "calcular 2+2"):
+        assert "Confirm the state" in instruction(goal), goal
+    assert "Confirm the state" in instruction("apretar enter", question="¿está activado?")
+    mixed = computer_use.compose_instruction(
+        {"goal": "x", "reached": True, "subgoals": [{"goal": "ir a general", "reached": True}, {"goal": "escribir hola", "reached": True}]}, "es",
+    )
+    assert "for a part that pressed a key or typed" in mixed
+    unreached = computer_use.compose_instruction(
+        {"goal": "x", "reached": False, "subgoals": [{"goal": "ir a general", "reached": True}, {"goal": "escribir hola", "reached": False}]}, "es",
+    )
+    assert "at most TWO short sentences" in unreached

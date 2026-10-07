@@ -357,6 +357,31 @@ def _composer_with_text(view: dict) -> bool:
     return str(focused.get("kind")) in _EDITABLE_KINDS and _UNNAMED_FIELD.match(name) is not None and value is None
 
 
+def _focused_controls(view: dict) -> list[dict]:
+    """What has the keyboard: window.focused, and the controls whose state says focused."""
+
+    focused = _focused(view)
+    found = [focused] if focused is not None else []
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if isinstance(controls, list):
+        found += [
+            control for control in controls
+            if isinstance(control, dict) and "focused" in str(control.get("state") or "").split()
+        ]
+    return found
+
+
+def _keyboard_on_address_field(view: dict) -> bool:
+    """The keyboard is on a text field named as an address (an Edit or a ComboBox called «dirección», «address»,
+    «url»): Delete there erases characters of what was typed."""
+
+    return any(
+        str(control.get("kind")) in {"Edit", "ComboBox"} and "password" not in str(control.get("state") or "")
+        and _ADDRESS_NAME.search(fold(control.get("name"))) is not None
+        for control in _focused_controls(view)
+    )
+
+
 def _focused_is_text_field(view: dict) -> bool:
     focused = _focused(view)
     if focused is not None and str(focused.get("kind")) in _EDITABLE_KINDS:
@@ -559,8 +584,11 @@ def deterministic_step(
         if not _steps_ok(history, "input.text.type"):
             return {"operation": "input.text.type", "arguments": {"text": address}, "reason": reason}
         if not _steps_ok(history, "input.key.press", key="delete"):
-            # ctrl_l put the keyboard on the address field: Delete erases characters there, never a selected item.
-            return {"operation": "input.key.press", "arguments": {"key": "delete", "target": "text_field"}, "reason": reason}
+            # Delete erases characters only where the view shows the keyboard on the address field; anywhere else
+            # (ctrl_l did not reach the bar, a page took the focus) it would delete what is selected: stop.
+            if not _keyboard_on_address_field(view):
+                return None
+            return {"operation": "input.key.press", "arguments": key_arguments("delete", view), "reason": reason}
         if not _steps_ok(history, "input.key.press", key="enter"):
             return {"operation": "input.key.press", "arguments": key_arguments("enter", view), "reason": reason}
         return None
@@ -568,7 +596,8 @@ def deterministic_step(
         # «buscá Hades»: the window's own search (field, button or shortcut), the name, then Enter to submit it.
         target = goal[len("buscar "):].strip()
         if not _typed_target(history, target):
-            step = _find_step(target, view, history)
+            # A search is the window's search, never its navigation menu.
+            step = _find_step(target, view, history, navigate=False)
             return None if step is None or step.get("operation") == "input.scroll" else step
         if not _steps_ok(history, "input.key.press", key="enter") and not _focused_is_password(view):
             # The name went into a message box: Enter there would send it, so RiskPolicy asks first.
@@ -587,6 +616,9 @@ def deterministic_step(
         if named_kind is not None and kind is not None:
             target = named_kind.group("name")
         searching = wanted is None and kind is None
+        # Going to a place (any «ir a», and a click on a name said without a kind) never changes a setting on the way.
+        placing = wanted is None and (head == "ir a " or kind is None)
+        navigate = head == "ir a "
         typed = searching and _typed_target(history, target)
         opened = None if typed else _menu_opened_by(view, history, target, goal)
         if opened is not None:
@@ -596,28 +628,42 @@ def deterministic_step(
             return {"operation": "input.visible.click", "arguments": {"label": opened}, "reason": "el clic abrió un menú"}
         if typed:
             # The name was typed into a search: what to click is the result that names it, never the field's echo.
-            return _find_step(target, view, history)
+            return _find_step(target, view, history, navigate=navigate)
         twin = gender_twin(target) if searching else None
         names = (target, *label_alternatives(target), *((twin,) if twin else ()))
-        control = next((found for name in names if (found := find_control(view, name, kind=kind)) is not None), None)
-        if control is not None and searching and _is_switch(control):
-            # Going somewhere never changes a setting on the way: a switch named like the place is not the place.
-            control = None
+        # Going to a place looks among the controls that are not switches first («Bluetooth» as a switch and as the
+        # navigation item: the item is the place).
+        among = _without_switches(view) if placing else view
+        control = next((found for name in names if (found := find_control(among, name, kind=kind)) is not None), None)
+        if control is None and placing:
+            control = next((found for name in names if (found := find_control(view, name, kind=kind)) is not None), None)
+        if control is not None and placing and _is_switch(control):
+            # Going somewhere never changes a setting on the way: a switch named like the place is not the place, and
+            # neither is its written name; the place is looked up the way the window offers.
+            return _find_step(target, view, history, navigate=navigate) if searching else None
         if control is None and wanted == "on":
             # «poné el modo científico» where no switch is called so: the mode is chosen like a place (the
             # Calculator's modes are items of its navigation).
             mode = _mode_named(target)
             if mode is not None:
                 return deterministic_step(goal=f"ir a {mode}", view=view, history=history, application=application)
+        if control is None and wanted is None and _controls_naming(view, names, kind, placing) >= 2:
+            # Two controls carry the name (measured on Discord: «Cotele» was a server and an activity card): neither
+            # is surely the place, and the written word is the same doubt; the place is looked up instead.
+            return _find_step(target, view, history, navigate=navigate) if searching else None
         if control is None:
             # A window drawn without an accessible tree (CEF, Electron, canvas: measured on Steam, one control and
             # the navigation only in the OCR lines): the word written on screen is clicked by its label, and the
-            # click's cascade (UIA → OCR → vision) finds where it is.
-            written = next((name for name in names if _text_line_with(view, name) is not None), None) if kind is None else None
+            # click's cascade (UIA → OCR → vision) finds where it is. Never the written name of a switch.
+            written = next(
+                (name for name in names
+                 if (line := _text_line_with(view, name)) is not None and not (placing and _names_a_switch(view, line))),
+                None,
+            ) if kind is None else None
             if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
                 return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": reason}
             # Not on screen: looked up the way any window offers (search field, quick switcher, find, the list).
-            return _find_step(target, view, history) if searching and written is None else None
+            return _find_step(target, view, history, navigate=navigate) if searching and written is None else None
         states = str(control.get("state") or "").split()
         if wanted is not None and (wanted in states or (wanted == "selected" and "on" in states)):
             # Already so; a tool or a colour chosen shows as selected or pressed.
@@ -625,12 +671,43 @@ def deterministic_step(
         if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
             # Clicked and not there yet (measured on Discord: the name was written in an activity card, not the
             # channel): looked up the way the window offers, never clicked again.
-            return _find_step(target, view, history) if searching else None
+            return _find_step(target, view, history, navigate=navigate) if searching else None
         arguments = {"label": str(control.get("name") or target)}
         if isinstance(control.get("i"), int):
             arguments["index"] = control["i"]
         return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
     return None
+
+
+def _without_switches(view: dict) -> dict:
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if not isinstance(controls, list):
+        return view
+    return {**view, "controls": [control for control in controls if not (isinstance(control, dict) and _is_switch(control))]}
+
+
+def _controls_naming(view: dict, names: Iterable[str], kind: str | None, placing: bool) -> int:
+    """How many controls (of ``kind`` when given; never a switch while going to a place) any of the names names."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    named = [
+        control for control in (controls if isinstance(controls, list) else [])
+        if isinstance(control, dict) and (kind is None or control.get("kind") == kind)
+        and not (placing and _is_switch(control))
+        and any(label_names(name, str(control.get("name") or "")) for name in names)
+    ]
+    return len(named)
+
+
+def _names_a_switch(view: dict, line: str) -> bool:
+    """A written line that is a switch's own name (the same words, a typo apart): clicking it presses the switch."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    return any(
+        isinstance(control, dict) and _is_switch(control)
+        and label_names(str(control.get("name") or ""), line) and label_names(line, str(control.get("name") or ""))
+        for control in (controls if isinstance(controls, list) else [])
+    )
 
 
 _MODE_AROUND = re.compile(r"^(?:modo|vista|mode|view)\s+(?:de\s+)?(?P<before>\S.*)$|^(?P<after>\S.*?)\s+(?:mode|view)$")
@@ -788,11 +865,7 @@ def _of_the_page(view: dict, control: dict) -> bool:
     if not _web_browser(view) or not any(isinstance(item, dict) and item.get("rect") for item in controls or []):
         # Not a browser, or a view without rectangles: nothing tells the frame from the page.
         return True
-    page = _page(view)
-    if page is None or not _inside(control.get("rect"), page.get("rect")):
-        return False
-    position, page_position = control.get("i"), page.get("i")
-    return not (isinstance(position, int) and isinstance(page_position, int)) or position > page_position
+    return _inside_the_page(view, control)
 
 
 def _search_affordance(view: dict, history: list[dict]) -> dict | None:
@@ -835,23 +908,58 @@ _NAVIGATION_OPENER = re.compile(
     r"mas\s+opciones|more\s+options|mas\s+acciones|more\s+actions|more)"
     r"(?:\s+(?:menu|button|boton|pane|panel|principal|de\s+navegacion))?$"
 )
+# A bare «Menú» or «More» (a list's «more», a card's menu) says nothing of navigation: it opens the window's
+# navigation only with a verb («Abrir menú») or the navigation's own words («Menú de navegación», «Hamburger menu»).
+_BARE_OPENER = re.compile(
+    r"^(?:(?:panel|barra|pane|menu)\s+(?:de\s+)?)?(?:menu|more)(?:\s+(?:menu|button|boton|pane|panel))?$"
+)
 _OPENER_KINDS = frozenset({"Button", "MenuItem", "SplitButton"})
 
 
+def _opener_name(name: object) -> bool:
+    folded = fold(name).strip()
+    return _NAVIGATION_OPENER.match(folded) is not None and _BARE_OPENER.match(folded) is None
+
+
+def _has_address_field(view: dict) -> bool:
+    """A text field named as an address, whatever it holds (a browser on a new tab holds nothing)."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    focused = _focused(view)
+    candidates = [*(controls if isinstance(controls, list) else []), *([focused] if focused is not None else [])]
+    return any(
+        isinstance(control, dict) and control.get("kind") in _FIELD_KINDS
+        and _ADDRESS_NAME.search(fold(control.get("name"))) is not None
+        for control in candidates
+    )
+
+
+def _inside_the_page(view: dict, control: dict) -> bool:
+    """The control lies inside the page document and after it in the tree; False when no page is exposed."""
+
+    page = _page(view)
+    if page is None or not _inside(control.get("rect"), page.get("rect")):
+        return False
+    position, page_position = control.get("i"), page.get("i")
+    return not (isinstance(position, int) and isinstance(page_position, int)) or position > page_position
+
+
 def _navigation_opener(view: dict, history: list[dict]) -> dict | None:
-    """The window's navigation or menu button not clicked yet in this sub-goal and not open already; in a web
-    browser, the page's own (the browser's menu is not where the page keeps its places). Never a switch."""
+    """The window's navigation or menu button not clicked yet in this sub-goal and not open already. Where the window
+    has an address field (a browser, even on an empty tab), only one inside the page: the frame's menu is not where
+    the page keeps its places. Never a switch."""
 
     controls = view.get("controls") if isinstance(view, dict) else None
     if not isinstance(controls, list):
         return None
+    framed = _has_address_field(view)
     for control in controls:
         if (
             isinstance(control, dict) and control.get("kind") in _OPENER_KINDS
-            and _NAVIGATION_OPENER.match(fold(control.get("name")).strip()) is not None
+            and _opener_name(control.get("name"))
             and "expanded" not in str(control.get("state") or "").split() and not _is_switch(control)
             and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
-            and _of_the_page(view, control)
+            and (_inside_the_page(view, control) if framed else _of_the_page(view, control))
         ):
             return control
     return None
@@ -864,16 +972,28 @@ def _click(control: dict, reason: str) -> dict[str, object]:
     return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
 
 
-def _type_into(view: dict, history: list[dict], target: str) -> dict[str, object]:
-    """Typing the name into the search field in focus; a field that still holds an earlier text is selected whole
-    first, so the name replaces it (measured on Settings: «colores» appended to a leftover «colorespantalla»)."""
+def _type_into(view: dict, history: list[dict], target: str) -> dict[str, object] | None:
+    """Typing the name into the search field in focus; a search field that still holds an earlier text is selected
+    whole first, so the name replaces it (measured on Settings: «colores» appended to a leftover «colorespantalla»).
+    One that already holds the name is not typed into again: its results are picked, else the name is selected and
+    typed once more so the search runs. Select-all only in a field named as a search (in a document editor exposed as
+    a text field it would select the person's work); a field without a search name that holds text is left to the
+    model."""
 
     focused = _focused_field(view)
     held = str((focused or {}).get("value") or "").strip()
+    if not held:
+        return _type(target)
+    if not _is_search_field(focused or {}):
+        return None
     last = history[-1] if history and isinstance(history[-1], dict) else {}
-    if held and fold(held) != fold(target) and not (last.get("operation") == "input.key.press" and last.get("key") == "ctrl_a"):
-        return _key("ctrl_a")
-    return _type(target)
+    if last.get("operation") == "input.key.press" and last.get("key") == "ctrl_a":
+        return _type(target)
+    if fold(held) == fold(target):
+        picked = _result_naming(view, target, history)
+        if picked is not None:
+            return picked
+    return _key("ctrl_a")
 
 
 def _type(target: str) -> dict[str, object]:
@@ -887,12 +1007,13 @@ def _key(key: str) -> dict[str, object]:
 def _result_naming(view: dict, target: str, history: list[dict]) -> dict[str, object] | None:
     """The result of a search that names the target: a control (list item, tree item, button, link first), else a
     line of text, preferring one that is more than the typed name (the field's own echo). Never Enter: a voice
-    channel stays a click RiskPolicy confirms."""
+    channel stays a click RiskPolicy confirms. Never a switch (going to a place changes no setting on the way)."""
 
     controls = view.get("controls") if isinstance(view, dict) else None
     named = [
         control for control in (controls if isinstance(controls, list) else [])
         if isinstance(control, dict) and control.get("kind") not in _FIELD_KINDS and control.get("kind") != "Document"
+        and not _is_switch(control)
         and label_names(target, str(control.get("name") or ""))
         and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
         and _of_the_page(view, control)
@@ -912,6 +1033,7 @@ def _result_naming(view: dict, target: str, history: list[dict]) -> dict[str, ob
             if (
                 label_names(target, line) and fold(line) != fold(target)
                 and not _steps_ok(history, "input.visible.click", label=line.strip())
+                and not _names_a_switch(view, line.strip())
             ):
                 return {"operation": "input.visible.click", "arguments": {"label": line.strip()}, "reason": "el resultado de la búsqueda"}
     return None
@@ -924,12 +1046,13 @@ def _view_lines(view: dict) -> list[str]:
     return [str(line) for zone_lines in text.values() if isinstance(zone_lines, list) for line in zone_lines]
 
 
-def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object] | None:
+def _find_step(target: str, view: dict, history: list[dict], *, navigate: bool = True) -> dict[str, object] | None:
     """The next step of looking the target up when it is not on screen, from the view and this sub-goal's history
     alone, the same in any application: a search field or button (click, type the name, click the result naming it),
     else the window's navigation or menu button (the target is then looked for among what appeared), else ctrl_k and
     ctrl_f (kept only when a field takes the keyboard, otherwise escape), else scrolling the list that
-    may hold it (up to three times while the view changes). None leaves the step to the model."""
+    may hold it (up to three times while the view changes). The navigation button only when ``navigate`` (going to a
+    place; a search is the window's search). None leaves the step to the model."""
 
     last = history[-1] if history else None
     last_operation = last.get("operation") if last is not None else None
@@ -960,7 +1083,7 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
         affordance = _search_affordance(view, history)
         if affordance is not None:
             return _click(affordance, _REASON_FIND)
-    opener = _navigation_opener(view, history)
+    opener = _navigation_opener(view, history) if navigate else None
     if opener is not None:
         # Modes, sections and pages often live behind the window's navigation or menu button (the Calculator's
         # modes, a WinUI app's pages, a web app's «Menú»): opened before any blind shortcut, and the target is then
@@ -1030,15 +1153,26 @@ def _menu_opened_by(view: dict, history: list[dict], target: str, goal: str = ""
     last = verified[-1] if verified else None
     if last is None or last.get("operation") != "input.visible.click":
         return None
-    if any(isinstance(step, dict) and step.get("operation") != "input.visible.click" for step in history[history.index(last) + 1:]):
+    trailing = history[history.index(last) + 1:]
+    if any(isinstance(step, dict) and step.get("operation") != "input.visible.click" for step in trailing):
         return None
     clicked = str(last.get("label") or "")
     if not (label_names(target, clicked) or label_names(clicked, target)):
         return None
+    # What the verified click made appear: after failed clicks the view's newText is what the last look changed
+    # (nothing, for a click that changed nothing), so the App's newTextAfterClick (the look right after the last
+    # verified click) is read instead; without it the menu cannot be told.
+    if trailing:
+        after_click = view.get("newTextAfterClick")
+        if not isinstance(after_click, list):
+            return None
+        new_lines = after_click
+    else:
+        new_lines = view.get("newText") or []
     # A menu's entries are short new lines; the OCR also rereads, garbled, the long lines the menu now covers.
     # OCR noise (a cut word, an address, a mark) is not an entry: an entry is a short run of real words.
     appeared = [
-        str(line).strip() for line in (view.get("newText") or [])
+        str(line).strip() for line in new_lines
         if str(line).strip() and len(str(line).split()) <= 3 and len(str(line)) <= 30
         and re.fullmatch(r"[^\W\d_][\w'’.-]*(?:\s+[\w'’.-]+){0,2}", str(line).strip()) is not None
         and "://" not in str(line) and len(fold(line).replace(" ", "")) >= 3
@@ -1274,9 +1408,9 @@ def _checked_act(
             # destination's own name proves nothing. Something of the page reached must be cited.
             return _none("el nombre del destino ya estaba en pantalla antes; citá algo de lo que se ve al llegar",
                          code="evidence_not_visible")
-        typed = {fold(step.get("text")) for step in (history or []) if isinstance(step, dict) and step.get("operation") == "input.text.type"}
-        if evidence and fold(evidence).strip(" «»\"'") in typed:
-            # What was typed is on screen because it was typed (the search box's echo), never proof of arriving.
+        if evidence and _echoes_typing(evidence, history or [], contained=not fold(goal or "").startswith("escribir ")):
+            # What was typed is on screen because it was typed (the search box's echo, a title that repeats the
+            # search: «imagenes - Resultados de la búsqueda en ETC»), never proof of arriving.
             return _none("lo que escribí se ve porque lo escribí; citá algo del resultado", code="evidence_not_visible")
         if evidence and view_contains(view, evidence):
             return {"operation": "done", "arguments": {"evidence": evidence}, "reason": why}
@@ -1333,6 +1467,30 @@ def _checked_act(
             return _none("esa aplicación ya está abierta", code="already_open")
         return _guard_repeat({"operation": "app.open", "arguments": {"appId": app_id}, "reason": why}, last_failed)
     return _none(why or "el modelo no ve por dónde seguir")
+
+
+def _echoes_typing(evidence: str, history: list[dict], *, contained: bool = True) -> bool:
+    """The evidence is a text typed in this sub-goal, or (``contained``) holds one as whole words while no verified
+    click after that typing moved the window elsewhere: what is on screen then may be there only because it was
+    typed. A goal of writing a text is proved by the text, so it only refuses the bare echo."""
+
+    cited = fold(evidence).strip(" «»\"'")
+    for position, step in enumerate(history):
+        if not isinstance(step, dict) or step.get("operation") != "input.text.type":
+            continue
+        typed = fold(step.get("text")).strip()
+        if not typed:
+            continue
+        if cited == typed:
+            return True
+        moved = any(
+            isinstance(later, dict) and later.get("ok") is True and later.get("changed") is not False
+            and later.get("operation") in {"input.visible.click", "app.open"}
+            for later in history[position + 1:]
+        )
+        if contained and len(typed) >= 3 and not moved and re.search(rf"(?<!\w){re.escape(typed)}(?!\w)", cited):
+            return True
+    return False
 
 
 def _guard_repeat(decision: dict[str, object], last_failed: dict | None) -> dict[str, object]:
@@ -1474,19 +1632,48 @@ def _question_instruction(seen: dict) -> str:
 
 # The voice of a mission final is BAXY's own (documentacion/00_IDENTIDAD.md): a companion who confirms the observable
 # state, warm and brief, speaking informally to the person; a failure is said plainly with its cause, without apology.
-_VOICE = (
+_SPEAKER = (
     "Speak as the one who acted, in the FIRST PERSON (never the third person, never your own name, never «you» for "
-    "your own acts), informally and warmly, in the person's language, in ONE short sentence. Confirm the state the "
-    "window shows now (where it is, the value asked), not the clicks, keys or steps you took; never mention the "
-    "mission, the evidence, the check, the screen or the view as such. "
+    "your own acts), informally and warmly, in the person's language, in {length}. "
 )
+# What the final confirms depends on what the goal's check read: a place reached or a value read is confirmed as the
+# window shows it; a key pressed or a text typed is only said done (its effect was never read).
+_CONFIRM_STATE = (
+    "Confirm the state the window shows now (where it is, the value asked), not the clicks, keys or steps you took; "
+)
+_DONE_ONLY = "Say only that it is done in that app, never what it caused, nor the keys or steps you took; "
+_MIXED = (
+    "For a part that went somewhere or read a value, confirm the state the window shows now; for a part that pressed "
+    "a key or typed, say only that it is done in that app, never what it caused; never the clicks, keys or steps; "
+)
+_NO_META = "never mention the mission, the evidence, the check, the screen or the view as such. "
+_ACT_ONLY_GOAL = re.compile(r"^(?:apretar|escribir|enviar)\b")
+
+
+def _acts_only(goal: object) -> bool:
+    """A goal whose check reads nothing of the window: a key to press, a text to type, what was written to send."""
+
+    return isinstance(goal, str) and QUESTION_MARK not in goal and _ACT_ONLY_GOAL.match(fold(goal).strip()) is not None
+
+
+def _voice(goals: list[object], question: bool, length: str = "ONE short sentence") -> str:
+    acting = [_acts_only(goal) for goal in goals] or [False]
+    if question or not any(acting):
+        body = _CONFIRM_STATE
+    elif all(acting):
+        body = _DONE_ONLY
+    else:
+        body = _MIXED
+    return _SPEAKER.format(length=length) + body + _NO_META
 
 
 def _result_instruction(seen: dict) -> str:
     if seen.get("subgoals"):
+        goals = [item.get("goal") for item in seen["subgoals"] if isinstance(item, dict)]
+        length = "ONE short sentence" if seen.get("reached") else "at most TWO short sentences"
         chained = (
             "This result is a computer-use mission of several parts done in order: seen.subgoals lists each part "
-            "(goal, application, reached true or false). " + _VOICE
+            "(goal, application, reached true or false). " + _voice(goals, bool(seen.get("question")), length)
             + "Name the parts briefly in their order only when there are several applications or places. "
         )
         if seen.get("reached"):
@@ -1507,12 +1694,14 @@ def _result_instruction(seen: dict) -> str:
             "seen.stepsDone the acts done in order on the window seen.windowTitle, seen.evidence the text on screen "
             "that proves it when present, seen.screen what the window showed at the end (seen.screen.numbers: the "
             "controls and lines carrying a number, such as a display or a counter; seen.screen.values: its fields "
-            "and chosen items; seen.screen.lines: a few lines). " + _VOICE
-            + "When the goal asked for a calculation, a number or a value, lead with it, said exactly as the matching "
-            "entry of seen.screen.numbers or seen.screen.values writes it; do not list the other lines of the window. "
-            "seen.joined says whether a voice channel or call was joined: say you joined only if it is true. Never "
-            "add steps, times or results that are not in seen: when the goal was pressing a key or typing, say only "
-            "that it is done in that app, never what it caused."
+            "and chosen items; seen.screen.lines: a few lines). " + _voice([seen.get("goal")], bool(seen.get("question")))
+            + (
+                "" if _acts_only(seen.get("goal")) and not seen.get("question") else
+                "When the goal asked for a calculation, a number or a value, lead with it, said exactly as the matching "
+                "entry of seen.screen.numbers or seen.screen.values writes it; do not list the other lines of the window. "
+            )
+            + "seen.joined says whether a voice channel or call was joined: say you joined only if it is true. Never "
+            "add steps, times or results that are not in seen."
         )
     return (
         "This result is a computer-use mission that did NOT reach its goal: seen.goal is what was asked, "
