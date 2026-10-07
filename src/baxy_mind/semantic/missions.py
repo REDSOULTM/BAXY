@@ -100,7 +100,7 @@ _TOGGLE_OFF_CLAUSE = re.compile(
 )
 _CALCULATE_CLAUSE = re.compile(
     r"^(?:calcula|calculame|calcular|computa|resuelve|resolve|multiplica|multiplicar|suma|sumar|resta|restar|divide|dividi|"
-    r"dividir|calculate|compute|solve|work\s+out|multiply|add|subtract)(?:me)?\s+(?:cuanto\s+(?:es|da|vale)\s+|how\s+much\s+is\s+|what\s+is\s+)?"
+    r"dividir|haz|hace|hacer|hazme|haceme|calculate|compute|solve|work\s+out|multiply|add|subtract|do)(?:me)?\s+(?:cuanto\s+(?:es|da|vale)\s+|how\s+much\s+is\s+|what\s+is\s+)?"
     r"(?P<expr>[0-9][0-9\s.,+\-*/x×÷^%()=]*[0-9)])[\s.!?]*$"
 )
 _TYPE_CLAUSE = re.compile(
@@ -384,7 +384,8 @@ _ORDINAL = r"(?:primer[oa]?|segund[oa]|tercer[oa]?|ultim[oa]|first|second|third|
 _PLAY_HEAD = r"(?:pone|pon|poneme|ponele|reproduci|reproduce|reproducir|reproducime|toca|tocame|play|start\s+playing|dale\s+play\s+a)"
 _PLAY_ORDINAL_CLAUSE = re.compile(
     rf"^{_PLAY_HEAD}\s+(?P<what>(?:(?:la|el|lo|the)\s+)?{_ORDINAL}"
-    r"(?:\s+(?:cancion|tema|resultado|video|episodio|capitulo|opcion|one|song|track|result|video|episode|option))?)"
+    r"(?:\s+(?:cancion|tema|resultado|video|episodio|capitulo|opcion|playlist|lista|album|disco|podcast|radio|"
+    r"one|song|track|result|video|episode|option|list|album|record))?)"
     r"(?:\s+(?:que\s+(?:aparezca|aparece|salga|sale)|de\s+(?:la\s+lista|los\s+resultados)|on\s+the\s+list|"
     r"in\s+the\s+results|that\s+(?:shows\s+up|appears)))?$"
 )
@@ -430,7 +431,9 @@ _SEARCH_CLAUSE = re.compile(
 _SEARCH_NOUN = (
     r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
     r"(?:(?:cancion|tema|juego|pelicula|serie|video|archivo|documento|contacto|usuario|artista|album|"
-    r"song|track|game|movie|show|video|file|document|contact|user|artist|album)\s+(?:de\s+|del\s+)?)?"
+    r"canal|chat|conversacion|servidor|carpeta|playlist|lista|"
+    r"song|track|game|movie|show|video|file|document|contact|user|artist|album|channel|server|folder)\s+"
+    r"(?:de\s+|del\s+|con\s+|called\s+|named\s+)?)?"
 )
 # «elegí el lápiz», «seleccioná el color rojo», «pick the red color», «choose the fill tool»: a tool, a colour or an
 # option of the window, chosen by clicking it.
@@ -655,6 +658,19 @@ _UNDOING_OR_PAYING_ACT = re.compile(
     r"compra|compralo|comprala|comprar|comprame|compre|paga|pagalo|pagala|pagar|pague|transferi|transferir|transfiere|"
     r"delete|remove|uninstall|format|buy|purchase|pay|wipe|erase)\b"
 )
+def _orders_undoing_or_paying(folded: str) -> bool:
+    """An undoing or paying act in a clause of the request; what a clause types is the person's text, not an act
+    («type buy milk»)."""
+
+    for segment in _segments(folded):
+        said = next((clause for _, clause in _app_frames(segment, longer_names=False)), segment)
+        if any(_TYPE_CLAUSE.match(reading) for reading in _clause_readings(said.strip(" ,;:.!?"))):
+            continue
+        if _UNDOING_OR_PAYING_ACT.search(segment):
+            return True
+    return False
+
+
 # «… y decime si el modo es claro u oscuro», «and tell me what it says»: a question about what the window shows at
 # the end. It is no sub-goal: the mission's final answers it from the last view (computer_use.project_seen).
 _QUESTION_TAIL = re.compile(
@@ -684,7 +700,7 @@ def mission_request(
     if catalog.occurrence_pattern is None:
         return None
     folded = effect_intent._strip_request_envelope(fold(re.sub(r"[\r\n]+", " . ", text))).strip()
-    if not folded or effect_intent._is_negative_effect_clause(folded) or _UNDOING_OR_PAYING_ACT.search(folded):
+    if not folded or effect_intent._is_negative_effect_clause(folded) or _orders_undoing_or_paying(folded):
         return None
     asked = _QUESTION_TAIL.search(folded)
     question = None
@@ -700,7 +716,15 @@ def mission_request(
     return replace(mission, goal=goal + tail, steps=steps)
 
 
+# «en el explorador de archivos, entrá a Descargas …», «en Paint, agarrá el lápiz»: the comma after the application
+# that frames the whole request is no joiner of clauses.
+_FRAME_COMMA = re.compile(r"^(?P<frame>(?:en|in|on|dentro\s+de)\s+(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?))\s*[,;:]\s+")
+
+
 def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCatalogIndex) -> MissionRequest | None:
+    framed = _FRAME_COMMA.match(folded)
+    if framed is not None and _catalog_key(framed.group("app"), catalog) is not None:
+        folded = framed.group("frame") + " " + folded[framed.end():]
     chained = _chained_request(folded, catalog)
     if chained is not None:
         steps = tuple(replace(step, goal=_as_said(step.goal, text)) for step in chained.steps)
@@ -915,9 +939,12 @@ _PRONOUN_CLAUSE = re.compile(
     r"^(?P<verb>[a-z]+?)(?:me|le|se)?(?:lo|la|los|las)$"
     r"|^(?P<english>open|play|select|choose|pick|enable|disable|activate|start|turn\s+on|turn\s+off)\s+(?:it|that|this|them)$"
     r"|^turn\s+(?:it|that|this|them)\s+(?P<turn>on|off)$"
+    # «creá la carpeta Proyectos y entrá»: going in says no object at all.
+    r"|^(?P<bare>entra|entrar|entrale|metete|go\s+in|get\s+in|step\s+in)$"
 )
 _PRONOUN_FAMILIES: tuple[tuple[str, frozenset[str]], ...] = (
-    ("open", frozenset({"abri", "abre", "abrir", "open"})),
+    ("open", frozenset({"abri", "abre", "abrir", "open", "entra", "entrar", "entrale", "metete", "go in", "get in",
+                        "step in"})),
     ("on", frozenset({"activa", "activar", "prende", "prender", "enciende", "encende", "encender", "habilita",
                       "habilitar", "enable", "activate", "turn on", "on"})),
     ("off", frozenset({"desactiva", "desactivar", "apaga", "apagar", "deshabilita", "deshabilitar", "disable",
@@ -932,7 +959,9 @@ def _pronoun_family(segment: str) -> str | None:
     found = _PRONOUN_CLAUSE.match(segment.strip(" ,;:.!?"))
     if found is None:
         return None
-    verb = " ".join((found.group("verb") or found.group("english") or found.group("turn") or "").split())
+    verb = " ".join(
+        (found.group("verb") or found.group("english") or found.group("turn") or found.group("bare") or "").split()
+    )
     return next((family for family, verbs in _PRONOUN_FAMILIES if verb in verbs), None)
 
 
@@ -943,6 +972,12 @@ def _pronoun_read(family: str, referent: str) -> tuple[str, str | None] | None:
     return read_clause(f"{said} {referent}")
 
 
+# A place said by its kind alone after a clause that named one («… y abrí el chat», «and open the folder»).
+_GENERIC_PLACE = frozenset({
+    "chat", "conversacion", "canal", "carpeta", "perfil", "pagina", "resultado", "primer resultado", "juego",
+    "cancion", "archivo", "documento", "ficha", "conversation", "channel", "folder", "profile", "page", "result",
+    "first result", "game", "song", "file", "document",
+})
 # The goal heads whose tail names the thing a pronoun of the next clause stands for.
 _REFERENT_GOAL = re.compile(
     r"^(?:ir a la pestaña |ir a la direccion |ir a |buscar |crear " + _ITEM_KIND + r" |renombrar (?:.+? )?a |"
@@ -994,6 +1029,9 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
                 return None
             application, clause = current, segment
         goal, check = read
+        if referent is not None and goal.startswith("ir a ") and goal[len("ir a "):] in _GENERIC_PLACE:
+            # «buscá a Mamá y abrí el chat»: the chat, the folder, the result of what was just named.
+            goal, check = _pronoun_read("open", referent) or read
         if application is None and goal.startswith("ir a la pestaña "):
             application = BROWSER_CATEGORY
         if opened is not None and application != opened:
