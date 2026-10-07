@@ -2640,7 +2640,11 @@ def ungrounded_word(folded_reply: str, seen: dict, said: str = "") -> str | None
     for text in (*_fact_strings(seen), said):
         facts.update(_folded_words(text))
     stems = {word[:stem_length] for word in facts if len(word) >= stem_length}
-    derived = {form for word in _folded_words(said) for form in _preterites(word)} | _kinds_of(seen)
+    # cu-r18 (live v2-c6: a confirmed send answered «sí», so «Envié «prueba BAXY C6» a Ron92.» had no «mandalo» to come
+    # from): the mission's own goal and each subgoal's goal («…; luego enviar») ground their preterites as well.
+    goals = [seen.get("goal"), *(item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict))]
+    verbs = [word for text in (said, *(goal for goal in goals if isinstance(goal, str))) for word in _folded_words(text)]
+    derived = {form for word in verbs for form in _preterites(word)} | _kinds_of(seen)
     reply = _folded_words(folded_reply)
     if _reply_is_english(reply):
         # cu-r17 (x4 «Windows (light)» from «Windows (claro)»): an English reply names a Spanish screen state in English.
