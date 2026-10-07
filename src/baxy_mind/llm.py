@@ -16369,9 +16369,9 @@ def own_voice_defect(text: str, said: str = "", *, act_report: bool = False, pre
 
     if semantic_voice_register.misspelled_own_preterite(text, said):
         return "misspelled_act"
-    if act_report and semantic_voice_register.tells_own_act_in_plural(text):
+    if act_report and semantic_voice_register.tells_own_act_in_plural(text, said):
         return "plural_own_act"
-    if preterite_floor and semantic_voice_register.tells_own_act_in_peninsular_perfect(text):
+    if preterite_floor and semantic_voice_register.tells_own_act_in_peninsular_perfect(text, said):
         return "peninsular_perfect"
     return ""
 

@@ -52,6 +52,11 @@ _NOT_A_VERB = frozenset({
     "qué", "frappé", "iraní", "israelí", "marroquí", "pakistaní", "bengalí", "paquistaní", "alhelí", "jabalí",
     "frenesí", "ají", "maní", "manatí", "berbiquí", "zaquizamí", "también", "mamá", "papá", "sofá", "allí", "ahí",
     "acá", "bonsái", "pedigrí", "baladí", "turquí", "yemení", "kuwaití", "saudí", "catalí", "hindí", "sufí", "taxi",
+    # demonyms and loans the spelling rules below would take for a misspelled preterite («Qatarí»: q without u;
+    # «negligé»: -gé without u) or that end like one
+    "qatarí", "catarí", "iraquí", "omaní", "bahreiní", "emiratí", "somalí", "nepalí", "guaraní", "ceutí", "magrebí",
+    "negligé", "protegé", "carmesí", "hurí", "zahorí", "cadí", "muftí", "bisturí", "popurrí", "glasé", "plié",
+    "rosé", "cliché", "frapé",
 })
 
 
@@ -156,32 +161,51 @@ _ENGLISH_PLURAL_OWN_ACT = re.compile(
 )
 
 
-def tells_own_act_in_plural(text: object) -> bool:
-    """«Ya estamos en la sección de Accesibilidad», «We're in Settings»: BAXY alone acted, so it speaks for itself."""
+def _words_of_theirs(span: str, said_folded: str) -> bool:
+    """The span, folded and as whole words, stands in what the person or the screen said: the words are theirs
+    («Ya escribí he llegado tarde…», «el video se llama Te he echado de menos»), not BAXY telling its own act."""
 
-    return any(
-        _PLURAL_OWN_ACT.search(fold(sentence)) is not None
-        or _ENGLISH_PLURAL_OWN_ACT.search(sentence.casefold()) is not None
-        for sentence in _report_sentences(text)
-    )
+    words = fold(span)
+    return bool(words) and said_folded != "" and re.search(
+        rf"(?<![a-z0-9]){re.escape(words)}(?![a-z0-9])", said_folded
+    ) is not None
+
+
+def tells_own_act_in_plural(text: object, said: str = "") -> bool:
+    """«Ya estamos en la sección de Accesibilidad», «We're in Settings»: BAXY alone acted, so it speaks for itself.
+    Words the person or the screen said (``said``: the request, typed text, titles) are theirs and left out."""
+
+    said_folded = fold(said)
+    for sentence in _report_sentences(text):
+        for found in (
+            *_PLURAL_OWN_ACT.finditer(fold(sentence)),
+            *_ENGLISH_PLURAL_OWN_ACT.finditer(sentence.casefold()),
+        ):
+            if not _words_of_theirs(found.group(0), said_folded):
+                return True
+    return False
 
 
 # ---------------------------------------------------------------- peninsular present perfect for a just-done act
 _OWN_PERFECT = re.compile(
-    r"(?P<before>.*?)\b(?:(?:me|te|lo|la|los|las|le|les|se)\s+)?he\s+(?:ya\s+)?"
+    r"(?P<before>.*?)\b(?P<act>(?:(?:me|te|lo|la|los|las|le|les|se)\s+)?he\s+(?:ya\s+)?"
     r"(?:[a-z]+(?:ado|ada|ido|ida)|abierto|puesto|hecho|escrito|vuelto|cubierto|descubierto|resuelto|devuelto|"
-    r"impreso|dicho|visto|deshecho|rehecho)\b"
+    r"impreso|dicho|visto|deshecho|rehecho))\b"
 )
 _NEGATED_BEFORE = re.compile(r"\b(?:no|nunca|jamas|aun\s+no|todavia\s+no)\s+(?:(?:lo|la|los|las|le|les|me|te|se)\s+)?$")
 
 
-def tells_own_act_in_peninsular_perfect(text: object) -> bool:
+def tells_own_act_in_peninsular_perfect(text: object, said: str = "") -> bool:
     """«Ya he entrado en…», «Te he encontrado Spotify»: a just-done act told in the perfect, where BAXY's Chilean
-    tuteo uses the preterite («entré», «encontré»). What BAXY has not done («No lo he encontrado») tells no act."""
+    tuteo uses the preterite («entré», «encontré»). What BAXY has not done («No lo he encontrado») tells no act, and
+    words the person or the screen said (``said``: typed text, a title) are theirs: «Ya escribí he llegado tarde»."""
 
+    said_folded = fold(said)
     for sentence in _report_sentences(text):
         folded = fold(sentence)
         for found in _OWN_PERFECT.finditer(folded):
-            if _NEGATED_BEFORE.search(found.group("before")) is None:
+            if _NEGATED_BEFORE.search(found.group("before")) is None and not _words_of_theirs(
+                found.group("act"), said_folded
+            ):
                 return True
     return False
