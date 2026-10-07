@@ -952,8 +952,9 @@ public static class ProductCatalog
             // una etiqueta que la aplicación aún no dibujó.
             Schema(
                 [
-                    // La aplicación de la misión cuando su proceso no se conoce:
-                    // la ventana cuyo título la nombra es la superficie.
+                    // La aplicación de la misión: la ventana cuyo título la nombra es
+                    // la superficie mientras su proceso no se conoce o no muestra
+                    // ventana; «el navegador», la de delante del navegador de la persona.
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
                     Boolean("includeText", types: NullableBoolean),
                     Integer("limit", 1, 60),

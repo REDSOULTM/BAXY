@@ -12,7 +12,7 @@ namespace Baxy.Providers.Windows.External;
 /// Chromium 136, so CDP on the person's browser would mean restarting it with
 /// another profile; this surface never does that (documentacion/NAVEGADOR_USUARIO.md).
 /// </summary>
-internal sealed partial class UserBrowserSurface
+internal sealed partial class UserBrowserSurface : IUserBrowserWindowLocator
 {
     internal const string NavigationUnconfirmed = "user_browser_navigation_unconfirmed";
     internal const string PlaybackUnconfirmed = "user_browser_playback_unconfirmed";
@@ -309,6 +309,13 @@ internal sealed partial class UserBrowserSurface
             writer.WriteEndObject();
         }), effectObserved: false);
     }
+
+    /// <summary>
+    /// The front window of the person's default browser for a computer-use mission on «the browser»: their browser
+    /// whatever BAXY_BROWSER says, since the mission acts on what the person sees.
+    /// </summary>
+    public nint FrontWindow() =>
+        _platform.ResolveDefault() is { } browser && FrontWindow(browser) is { } window ? window.Handle : 0;
 
     /// <summary>The browser window the person sees on top (windows come in z-order), if the browser runs at all.</summary>
     private UserBrowserWindow? FrontWindow(UserBrowserIdentity browser)

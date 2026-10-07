@@ -67,6 +67,26 @@ internal sealed class NoOpenedApplicationFocus : IOpenedApplicationFocus
     public bool Holds(nint window) => true;
 }
 
+// The person's browser when a mission names «the browser» without naming one (a tab spoken of in passing): the front
+// window of their default browser, the window browser.control and browser.tabs.list act on; 0 when it is not running.
+internal interface IUserBrowserWindowLocator
+{
+    nint FrontWindow();
+
+    // «navegador», «el navegador», «mi navegador», «browser», «my browser», «web browser»: the category, not a product.
+    internal static bool NamesTheCategory(string? application)
+    {
+        string[] words = VisibleControlSurface.FoldTitle(application).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        int start = words.Length > 1 && words[0] is "el" or "mi" or "tu" or "su" or "the" or "my" or "your" ? 1 : 0;
+        return string.Join(' ', words[start..]) is "navegador" or "navegador web" or "browser" or "web browser";
+    }
+}
+
+internal sealed class NoUserBrowserWindow : IUserBrowserWindowLocator
+{
+    public nint FrontWindow() => 0;
+}
+
 // How long a click looks for its label. M132 (owner script t42 «En … ve a crash bandicoot», 28 s for «no hay ningún
 // elemento visible con ese nombre»): a label is waited on only while the surface may still be drawing — an
 // application opened moments ago — and then for a bounded stretch once its window is up; on a window that was
@@ -130,6 +150,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
     private readonly IVisibleControlLocator? _vision;
     private readonly IOpenedApplicationFocus _focus;
     private readonly VisibleClickTiming _timing;
+    private readonly IUserBrowserWindowLocator _browserWindow;
     private readonly object _viewLock = new();
     private LastView? _lastView;
 
@@ -139,7 +160,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             new WindowsVisibleOcrLocator(),
             new WindowsVisibleVisionLocator(),
             new OpenedApplicationFocus(),
-            VisibleClickTiming.Default)
+            VisibleClickTiming.Default,
+            new UserBrowserSurface(new WindowsUserBrowserPlatform()))
     {
     }
 
@@ -148,13 +170,15 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         IVisibleControlLocator? ocr,
         IVisibleControlLocator? vision,
         IOpenedApplicationFocus? focus = null,
-        VisibleClickTiming? timing = null)
+        VisibleClickTiming? timing = null,
+        IUserBrowserWindowLocator? browserWindow = null)
     {
         _worker = worker ?? throw new ArgumentNullException(nameof(worker));
         _ocr = ocr;
         _vision = vision;
         _focus = focus ?? new NoOpenedApplicationFocus();
         _timing = timing ?? VisibleClickTiming.Default;
+        _browserWindow = browserWindow ?? new NoUserBrowserWindow();
     }
 
     public bool CanHandle(string operation) =>
@@ -391,23 +415,45 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
     {
         const string operation = "input.visible.controls";
         var stopwatch = Stopwatch.StartNew();
-        nint hwnd;
+        nint hwnd = 0;
         nint cover = 0;
+        bool requested = false;
         try
         {
+            // «The browser» without a name is the person's own: the front
+            // window of their default browser, whichever of its windows the
+            // process holds and whatever is in front.
+            bool theBrowser = IUserBrowserWindowLocator.NamesTheCategory(application);
+            if (theBrowser)
+            {
+                hwnd = _browserWindow.FrontWindow();
+                if (hwnd != 0 && !VisibleControlSurface.ForegroundIs(hwnd))
+                {
+                    VisibleControlSurface.BringToFront(hwnd);
+                    await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+                }
+            }
+
             // The application the mission works on (the one it just opened, or
             // the one named when its process is unknown) is the surface even
             // when another window holds the foreground.
-            hwnd = processId > 0
-                ? await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken)
-                    .ConfigureAwait(false)
-                : 0;
-            if (hwnd == 0 && application is not null)
+            if (hwnd == 0 && processId > 0)
+            {
+                hwnd = await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            // The category is no title: a window whose title says «navegador»
+            // is not the person's browser.
+            if (hwnd == 0 && application is not null && !theBrowser)
             {
                 hwnd = await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken)
                     .ConfigureAwait(false);
             }
 
+            // Whether the window is the mission's application (its process, its
+            // title, the person's browser) and not just what holds the front.
+            requested = hwnd != 0;
             if (hwnd == 0)
             {
                 hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
@@ -559,6 +605,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     writer.WriteString("process", processName);
                     writer.WriteNumber("processId", ownerProcessId);
                     writer.WriteNumber("hwnd", hwnd);
+                    writer.WriteBoolean("requested", requested);
                     WriteRect(writer, "rect", windowRect);
                     if (cover != 0)
                     {

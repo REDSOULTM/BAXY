@@ -319,3 +319,125 @@ def test_mission_arguments_ground_without_a_literal_check() -> None:
     }
     grounded = _ground_explicit_arguments("mission.computer.use", "en la calculadora calculá 12×7", schema, APPS)
     assert grounded is not None and grounded["application"] == "Calculadora" and grounded["goal"] == "calcular 12×7"
+
+
+# ------------------------------------------------- pestañas y cualquier persona
+
+MORE_APPS = (*APPS, "Paint", "Bloc de notas", "Opera GX Browser")
+# The web routes that used to catch «ve a la pestaña de YouTube» are served too: the mission must win over them.
+WEB = AVAILABLE | {"web.search", "browser.navigate", "browser.navigate.named", "media.play.query", "app.close"}
+
+
+def _mission_in(text: str, apps: tuple[str, ...] = MORE_APPS) -> dict:
+    intent = resolve_explicit_effects(text, WEB, application_names=apps)
+    assert intent is not None and intent.operations == ("mission.computer.use",), (text, intent)
+    arguments = _explicit_arguments_from_evidence("mission.computer.use", intent.evidence[0], apps)
+    assert arguments is not None, text
+    return arguments
+
+
+def test_the_already_good_requests_keep_their_routes() -> None:
+    assert _mission_in("ve a Cotele en Discord")["goal"] == "ir a cotele"
+    assert _mission_in("abre Steam y ve a la biblioteca")["application"] == "Steam"
+    assert _mission_in("en Discord apretá enter")["successCheck"] == "stepDone:input.key.press:enter"
+    assert _mission_in("abrí Configuración y activá el modo avión")["successCheck"] == "control:modo avion:on"
+    assert _mission_in("en la calculadora calculá 12×7")["goal"] == "calcular 12×7"
+    # Every tab of the person's own browser stays its typed close (confirmed, the last tab kept).
+    tabs = resolve_explicit_effects("cerrá todas las pestañas del navegador", WEB, application_names=MORE_APPS)
+    assert tabs is not None and tabs.operations == ("browser.control",)
+
+
+def test_going_to_a_tab_by_its_name_is_a_mission_in_the_persons_browser() -> None:
+    wanted = {
+        "application": computer_use.BROWSER_CATEGORY,
+        "goal": "ir a la pestaña youtube",
+        "successCheck": "control:youtube:selected|title:youtube",
+    }
+    for said in (
+        "ve a la pestaña de YouTube",
+        "andá a la pestaña YouTube",
+        "cambiá a la pestaña de YouTube",
+        "vaya a la pestaña de YouTube",
+        "ir a la pestaña de YouTube",
+        "ve a la pestaña de YouTube en el navegador",
+        "go to the YouTube tab",
+        "switch to the tab with YouTube",
+    ):
+        assert _mission_in(said) == wanted, said
+        assert _is_direct_request(said), said
+
+
+def test_a_named_browser_wins_over_the_category() -> None:
+    assert _mission_in("ve a la pestaña de YouTube en Opera")["application"] == "Opera GX Browser"
+    chrome = _mission_in("go to the YouTube tab in Chrome")
+    assert chrome == {"application": "Google Chrome", "goal": "ir a la pestaña youtube", "successCheck": "control:youtube:selected|title:youtube"}
+
+
+def test_a_tab_said_by_its_place_names_no_tab() -> None:
+    for said in ("ve a la siguiente pestaña", "ve a la pestaña", "go to the next tab"):
+        assert computer_use.mission_request(said, MORE_APPS) is None, said
+    # Where to open a page, not which tab to go to.
+    for said in ("ve a YouTube en otra pestaña", "go to youtube in a new tab", "ve a google en una pestaña"):
+        assert computer_use.mission_request(said, MORE_APPS) is None, said
+
+
+def test_a_doing_clause_reads_in_any_person() -> None:
+    for said, goal in (
+        ("en Paint elegí el color rojo", "elegi el color rojo"),
+        ("en Paint elija el color rojo", "elige el color rojo"),
+        ("en Paint elegir el color rojo", "elegir el color rojo"),
+        ("en Paint seleccione el pincel", "selecciona el pincel"),
+        ("en Paint marque la casilla", "marca la casilla"),
+        ("in Paint pick the red color", "pick the red color"),
+    ):
+        arguments = _mission_in(said)
+        assert arguments["application"] == "Paint" and arguments["goal"] == goal, said
+    assert _mission_in("en Steam vaya a la tienda")["goal"] == "ir a tienda"
+    assert _mission_in("en Steam ir a la tienda")["goal"] == "ir a tienda"
+    assert _mission_in("en Discord pulse enter")["successCheck"] == "stepDone:input.key.press:enter"
+    assert _mission_in("en la calculadora calcule 12x7")["goal"] == "calcular 12x7"
+    assert _mission_in("en Configuración active el modo avión")["successCheck"] == "control:modo avion:on"
+    # An application named with several words, before the clause.
+    assert _mission_in("en el bloc de notas escribí hola") == {
+        "application": "Bloc de notas", "goal": "escribir hola", "successCheck": "stepDone:input.text.type",
+    }
+
+
+def test_questions_statements_and_typed_requests_are_not_missions() -> None:
+    for said in (
+        "en Steam tengo 40 juegos",
+        "¿en Steam puedo ir a la biblioteca?",
+        "en Discord está Cotele",
+        "abre Steam y decime la hora",
+        # Music and a pronoun with nothing on screen to name keep their own routes.
+        "abre Opera y ponme una canción de Michael Jackson",
+        "buscalo en google",
+        "open paint then close it",
+    ):
+        assert computer_use.mission_request(said, MORE_APPS) is None, said
+    assert not computer_use.mission_clause_is_direct("en la mañana tengo que ir al banco")
+
+
+def test_a_tab_is_clicked_by_a_part_of_its_title() -> None:
+    view = {
+        "window": {"title": "Recibidos (3) - Gmail - Opera", "process": "opera"},
+        "controls": [
+            {"i": 0, "kind": "TabItem", "name": "Recibidos (3) - Gmail", "state": "selected"},
+            {"i": 1, "kind": "TabItem", "name": "Rick Astley - Never Gonna Give You Up - YouTube"},
+            {"i": 2, "kind": "Hyperlink", "name": "YouTube"},
+        ],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(
+        goal="ir a la pestaña youtube", view=view, history=[], application=computer_use.BROWSER_CATEGORY,
+    )
+    assert step == {
+        "operation": "input.visible.click",
+        "arguments": {"label": "Rick Astley - Never Gonna Give You Up - YouTube", "index": 1},
+        "reason": "el objetivo lo dice",
+    }
+    # Without the kind, the link and the tab both name YouTube and only the exact name is taken.
+    assert computer_use.find_control(view, "youtube")["i"] == 2
+    assert computer_use.find_control(view, "youtube", kind="TabItem")["i"] == 1
+    clicked = [{"step": 1, "operation": "input.visible.click", "label": "Rick Astley - Never Gonna Give You Up - YouTube", "ok": True}]
+    assert computer_use.deterministic_step(goal="ir a la pestaña youtube", view=view, history=clicked) is None

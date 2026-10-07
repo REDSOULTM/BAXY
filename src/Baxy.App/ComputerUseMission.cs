@@ -398,19 +398,17 @@ internal static class ComputerUseMission
     }
 
     /// <summary>
-    /// Once a view shows the window titled like the mission's application, the
-    /// mission keeps looking at that process (a later foreground change does
-    /// not move the surface).
+    /// Once a view shows the window the provider resolved as the mission's
+    /// application (titled like it, or the person's browser for «the
+    /// browser»), the mission keeps looking at that process (a later
+    /// foreground change does not move the surface).
     /// </summary>
-    private static void AdoptWindow(JsonObject state, JsonObject view)
+    internal static void AdoptWindow(JsonObject state, JsonObject view)
     {
-        if ((int?)state["processId"] is > 0 || (string?)state["application"] is not { Length: > 0 } application)
+        if ((int?)state["processId"] is > 0 || (string?)state["application"] is not { Length: > 0 })
             return;
-        if (view["window"] is not JsonObject window || (int?)window["processId"] is not (> 0 and int owner))
-            return;
-        string title = ComputerUseSuccessCheck.Fold((string?)window["title"]);
-        string wanted = ComputerUseSuccessCheck.Fold(application);
-        if (wanted.Length > 0 && title.Contains(wanted, StringComparison.Ordinal))
+        if (view["window"] is JsonObject window && (bool?)window["requested"] == true
+            && (int?)window["processId"] is > 0 and int owner)
             state["processId"] = owner;
     }
 
@@ -424,11 +422,14 @@ internal static class ComputerUseMission
         {
             arguments["processId"] = owner;
         }
-        else if ((string?)state["application"] is { Length: > 0 } application)
+
+        if ((string?)state["application"] is { Length: > 0 } application)
         {
-            // Until the process is known the window titled like the application
-            // is the surface (measured: app.open failed to verify under a
-            // fullscreen player and the view read the player instead).
+            // The window titled like the application is the surface until the
+            // process is known, and when that process shows no window (measured:
+            // app.open failed to verify under a fullscreen player and the view
+            // read the player instead); «the browser» is always the front window
+            // of the person's browser.
             arguments["application"] = application;
         }
 

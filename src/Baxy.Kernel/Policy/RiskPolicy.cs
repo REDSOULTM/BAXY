@@ -18,7 +18,9 @@ namespace Baxy.Kernel.Policy;
 /// Un clic cuya etiqueta nombra un canal de voz o una llamada (alguien te oye),
 /// o un botón de enviar, y un Enter declarado sobre un compositor de mensajes,
 /// llegan a una persona: piden confirmación en modo normal, ligada a esa misma
-/// invocación.
+/// invocación. Igual una invocación cuyo argumento cierra de una vez todo lo
+/// que la persona tiene abierto en una superficie (todas las pestañas de su
+/// navegador): pierde su sesión, aunque la operación con otro argumento no.
 /// </summary>
 public static partial class RiskPolicy
 {
@@ -61,7 +63,8 @@ public static partial class RiskPolicy
             return PolicyDecision.Allow;
         }
 
-        if (arguments is { } invocation && ReachesAPerson(operation, invocation))
+        if (arguments is { } invocation
+            && (ReachesAPerson(operation, invocation) || LosesTheSession(operation, invocation)))
         {
             return PolicyDecision.RequireConfirmation;
         }
@@ -111,6 +114,26 @@ public static partial class RiskPolicy
                 return false;
         }
     }
+
+    /// <summary>
+    /// Whether this exact invocation closes, in one step, everything the person
+    /// has open on a surface: every tab of their browser (unsaved forms,
+    /// signed-in pages). The same operation with another argument does not.
+    /// </summary>
+    public static bool LosesTheSession(string? operation, JsonElement arguments) =>
+        arguments.ValueKind == JsonValueKind.Object
+        && operation is not null
+        && SessionClosingArguments.TryGetValue(operation, out (string Name, string Value) closing)
+        && arguments.TryGetProperty(closing.Name, out JsonElement value)
+        && value.ValueKind == JsonValueKind.String
+        && string.Equals(value.GetString(), closing.Value, StringComparison.Ordinal);
+
+    // Operation → the argument value that closes all at once.
+    private static readonly Dictionary<string, (string Name, string Value)> SessionClosingArguments =
+        new(StringComparer.Ordinal)
+        {
+            ["browser.control"] = ("action", "close_all"),
+        };
 
     internal static bool LabelReachesAPerson(string? label)
     {

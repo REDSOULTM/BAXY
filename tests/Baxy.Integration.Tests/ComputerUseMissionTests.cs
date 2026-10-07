@@ -62,6 +62,41 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void ALongTabTitleIsNamedByTheSiteItEndsWith()
+    {
+        JsonObject view = View("""
+            {"window": {"title": "Never Gonna Give You Up - YouTube - Opera", "process": "opera", "processId": 7},
+             "controls": [
+               {"i": 0, "kind": "TabItem", "name": "Correo - Bandeja de entrada", "state": ""},
+               {"i": 1, "kind": "TabItem", "name": "Never Gonna Give You Up - YouTube", "state": "selected"}
+             ]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:youtube:selected", view, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:correo:selected", view, [], out _), Is.False);
+        });
+    }
+
+    [Test]
+    public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
+    {
+        var browser = new JsonObject { ["application"] = "navegador" };
+        var foreground = new JsonObject { ["application"] = "navegador" };
+        ComputerUseMission.AdoptWindow(browser, View("""
+            {"window": {"title": "Inicio - Opera", "process": "opera", "processId": 7, "requested": true}}
+            """));
+        ComputerUseMission.AdoptWindow(foreground, View("""
+            {"window": {"title": "navegador - Bloc de notas", "process": "notepad", "processId": 9, "requested": false}}
+            """));
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)browser["processId"], Is.EqualTo(7));
+            Assert.That(foreground["processId"], Is.Null, "a window that only held the front is never adopted");
+        });
+    }
+
+    [Test]
     public void StepDoneNeedsAVerifiedStepOfThatOperationAndArgument()
     {
         var steps = new JsonArray

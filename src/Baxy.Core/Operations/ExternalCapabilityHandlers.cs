@@ -168,8 +168,11 @@ internal sealed class ExternalCapabilityHandler(
         {
             bool effectMayHaveOccurred =
                 receipt.EffectObserved || receipt.EffectMayHaveOccurred;
+            // What a failing provider still observed (how many tabs it closed
+            // before stopping) travels with the failure, never as success.
             return OperationOutcome.Failure(
                 receipt.ErrorCode ?? "external_verification_failed",
+                result: receipt.Verified ? null : receipt.Result,
                 effectMayHaveOccurred: effectMayHaveOccurred,
                 causeCode: effectMayHaveOccurred ? "external_effect_ambiguous" : null);
         }

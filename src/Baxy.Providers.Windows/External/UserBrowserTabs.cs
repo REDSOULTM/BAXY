@@ -13,7 +13,7 @@ internal sealed partial class UserBrowserSurface
     internal const string TabStepUnconfirmed = "user_browser_tab_step_unconfirmed";
     internal const string TabStepUnavailable = "user_browser_tab_step_unavailable";
     internal const string LastTabKept = "user_browser_last_tab_kept";
-    internal const string CloseAllDeclined = "user_browser_close_all_declined";
+    internal const string CloseAllIncomplete = "user_browser_close_all_incomplete";
     internal const string FullscreenControlMissing = "user_browser_fullscreen_control_missing";
     internal const string HistoryStart = "user_browser_history_start";
     internal const string ScrollBoundary = "user_browser_scroll_boundary";
@@ -30,6 +30,8 @@ internal sealed partial class UserBrowserSurface
     private static readonly TimeSpan FramePoll = TimeSpan.FromMilliseconds(300);
     private const int FrameReads = 4;
     private const int FullscreenPolls = 12;
+    private const int CloseAllTabs = 50;
+    private static readonly TimeSpan CloseAllTime = TimeSpan.FromSeconds(40);
 
     internal async ValueTask<ExternalCapabilityReceipt> ControlAsync(
         string operation,
@@ -38,11 +40,7 @@ internal sealed partial class UserBrowserSurface
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        // Every tab of the person's browser is theirs: closing them all would close their whole browsing session
-        // in one step (unsaved forms, signed-in pages). It is not done here; a tab at a time is.
-        if (action == "close_all")
-            return ExternalJson.FailureBeforeEffect(operation, CloseAllDeclined);
-        if (action is not ("back" or "close" or "fullscreen_video" or "new_tab" or "reload"
+        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "new_tab" or "reload"
             or "scroll_down" or "scroll_up"))
             return ExternalJson.Failure(operation, "browser_control_action_invalid");
         UserBrowserWindow? window = FrontWindow(browser);
@@ -55,6 +53,7 @@ internal sealed partial class UserBrowserSurface
             "reload" => await HistoryStepAsync(step, AppCommandRefresh, cancellationToken).ConfigureAwait(false),
             "new_tab" => await NewTabAsync(step, cancellationToken).ConfigureAwait(false),
             "close" => await CloseTabAsync(step, cancellationToken).ConfigureAwait(false),
+            "close_all" => await CloseAllTabsAsync(step, cancellationToken).ConfigureAwait(false),
             "fullscreen_video" => await FullscreenAsync(step, cancellationToken).ConfigureAwait(false),
             _ => await ScrollAsync(step, cancellationToken).ConfigureAwait(false),
         };
@@ -136,6 +135,60 @@ internal sealed partial class UserBrowserSurface
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         if (before.Tabs.Count <= 1)
             return ExternalJson.FailureBeforeEffect(step.Operation, LastTabKept);
+        UserBrowserFrame? after = await CloseActiveTabAsync(step, before, active, cancellationToken)
+            .ConfigureAwait(false);
+        if (after is null)
+            return step.Boundary.WasCrossed
+                ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
+                : ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
+        return Done(step, "tab_closed", after, closed: active.Title);
+    }
+
+    /// <summary>
+    /// Every tab but one (asked for with the person's confirmation: RiskPolicy, it loses their session): the active
+    /// tab closed the way a single close is taken, again and again, each close seen as one tab less before the next.
+    /// The last tab is kept, as for a single close. A close that is not seen, or a strip that runs past the bound,
+    /// stops the step there and says how many were closed.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> CloseAllTabsAsync(
+        TabStep step, CancellationToken cancellationToken)
+    {
+        UserBrowserFrame? frame = await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+        if (frame is null || !frame.Tabs.Any(tab => tab.Selected))
+            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+        if (frame.Tabs.Count <= 1)
+            return ExternalJson.FailureBeforeEffect(step.Operation, LastTabKept) with
+            {
+                Result = TabsClosed(step, 0, frame),
+            };
+        long started = System.Diagnostics.Stopwatch.GetTimestamp();
+        int closed = 0;
+        while (frame.Tabs.Count > 1)
+        {
+            UserBrowserTab? active = frame.Tabs.FirstOrDefault(tab => tab.Selected);
+            if (active is null)
+                return StoppedClosing(step, PageUnreadable, closed);
+            if (closed >= CloseAllTabs || System.Diagnostics.Stopwatch.GetElapsedTime(started) > CloseAllTime)
+                return StoppedClosing(step, CloseAllIncomplete, closed);
+            UserBrowserFrame? after = await CloseActiveTabAsync(step, frame, active, cancellationToken)
+                .ConfigureAwait(false);
+            if (after is null)
+                return step.Boundary.WasCrossed
+                    ? StoppedClosing(step, TabStepUnconfirmed, closed)
+                    : ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
+            closed++;
+            frame = after;
+        }
+        return ExternalJson.Success(step.Operation, TabsClosed(step, closed, frame));
+    }
+
+    /// <summary>
+    /// Closes the active tab of <paramref name="before"/>: the frame read with one tab less, or null when none was
+    /// seen (the step's boundary says whether anything was posted).
+    /// </summary>
+    private async ValueTask<UserBrowserFrame?> CloseActiveTabAsync(
+        TabStep step, UserBrowserFrame before, UserBrowserTab active, CancellationToken cancellationToken)
+    {
         int count = before.Tabs.Count;
         bool OneLess(UserBrowserFrame frame) => frame.Tabs.Count == count - 1;
         UserBrowserFrame? after = null;
@@ -151,21 +204,31 @@ internal sealed partial class UserBrowserSurface
             UserBrowserTab? same = now?.Tabs.FirstOrDefault(tab => tab.Selected);
             if (now is null || now.Tabs.Count != count || same is null || !same.Shown
                 || !string.Equals(same.Title, active.Title, StringComparison.Ordinal))
-                return step.Boundary.WasCrossed
-                    ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
-                    : ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
+                return null;
             if (_platform.PostMiddleClick(step.Window, same.X, same.Y))
             {
                 step.Boundary.Cross(CancellationToken.None);
                 after = await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false);
             }
         }
-        if (after is null)
-            return step.Boundary.WasCrossed
-                ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
-                : ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
-        return Done(step, "tab_closed", after, closed: active.Title);
+        return after;
     }
+
+    /// <summary>Closing stopped part way: the tabs seen closed are said; how many are left is not guessed.</summary>
+    private static ExternalCapabilityReceipt StoppedClosing(TabStep step, string errorCode, int closed) =>
+        ExternalJson.FailureAfterEffect(step.Operation, errorCode, effectObserved: closed > 0) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("action", step.Action);
+                writer.WriteNumber("closedTabs", closed);
+                writer.WriteString("browser", step.Browser.DisplayName);
+                writer.WriteString("authority", FrameAuthority);
+                writer.WriteEndObject();
+            }),
+        };
 
     /// <summary>A screen down or up with the page's ScrollPattern; the position read back is the proof.</summary>
     private async ValueTask<ExternalCapabilityReceipt> ScrollAsync(TabStep step, CancellationToken cancellationToken)
@@ -242,6 +305,22 @@ internal sealed partial class UserBrowserSurface
         }
         return null;
     }
+
+    private static System.Text.Json.JsonElement TabsClosed(TabStep step, int closed, UserBrowserFrame frame) =>
+        ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("action", step.Action);
+            writer.WriteString("observedState", closed > 0 ? "tabs_closed" : "nothing_to_close");
+            writer.WriteString("browser", step.Browser.DisplayName);
+            writer.WriteNumber("closedTabs", closed);
+            writer.WriteNumber("tabCount", frame.Tabs.Count);
+            if (frame.Tabs.FirstOrDefault(tab => tab.Selected) is { } active)
+                writer.WriteString("activeTab", active.Title);
+            writer.WriteString("authority", FrameAuthority);
+            writer.WriteEndObject();
+        });
 
     private static ExternalCapabilityReceipt Done(
         TabStep step,

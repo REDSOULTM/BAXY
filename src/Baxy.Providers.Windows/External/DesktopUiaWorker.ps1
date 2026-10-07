@@ -84,7 +84,9 @@ function Get-Name($el){
   try { $name=$el.Cached.Name } catch { $name=$el.Current.Name }
   if([string]::IsNullOrWhiteSpace($name)){ return '' }
   $name=($name -replace '\s+',' ').Trim()
-  if($name.Length -gt 80){ $name=$name.Substring(0,80) }
+  # Un nombre largo conserva su principio y su final: el titulo de una pestana
+  # termina con el sitio («... - Sitio»), que es por lo que se la nombra.
+  if($name.Length -gt 80){ $name=$name.Substring(0,60).TrimEnd()+' ... '+$name.Substring($name.Length-16).TrimStart() }
   return $name
 }
 function Get-State($el){
@@ -128,6 +130,22 @@ function Get-Id($el){
 }
 function Test-NameMatch([string]$name,[string[]]$aliases){
   foreach($alias in $aliases){ if([string]::Equals($alias,$name,[StringComparison]::OrdinalIgnoreCase)){ return $true } }
+  return $false
+}
+# Plegado: sin acentos, en minusculas, solo letras y digitos separados por un espacio.
+function Get-Folded([string]$text){
+  if([string]::IsNullOrWhiteSpace($text)){ return '' }
+  $plain=$text.Normalize([Text.NormalizationForm]::FormD) -replace '\p{Mn}',''
+  return (($plain.ToLowerInvariant() -replace '[^\p{L}\p{N}]+',' ').Trim())
+}
+# El nombre lleva la etiqueta como palabras enteras: «Sitio» nombra la pestana
+# «Un titulo largo - Sitio». Solo cuenta cuando ningun nombre es igual a la etiqueta.
+function Test-NameHolds([string]$name,[string[]]$aliases){
+  $words=' '+(Get-Folded $name)+' '
+  foreach($alias in $aliases){
+    $needle=Get-Folded $alias
+    if($needle.Length -gt 0 -and $words.Contains(' '+$needle+' ')){ return $true }
+  }
   return $false
 }
 function Invoke-NamedControl($el){
@@ -182,15 +200,51 @@ foreach($pp in @([System.Windows.Automation.TogglePattern]::ToggleStateProperty,
                  [System.Windows.Automation.ValuePattern]::IsReadOnlyProperty,[System.Windows.Automation.RangeValuePattern]::ValueProperty)){ $script:Cache.Add($pp) }
 $script:Cache.AutomationElementMode=[System.Windows.Automation.AutomationElementMode]::Full
 $script:Cache.TreeScope=[System.Windows.Automation.TreeScope]::Element
+# Los hijos de un nodo en la vista de control. Un navegador (medido en Opera GX
+# tras abrir una pestana nueva) deja un primer hijo muerto: GetFirstChild falla
+# alli y FindAll desde la ventana no encuentra nada, mientras los hijos vivos
+# siguen alcanzandose desde el ultimo hacia atras (como UserBrowserScripts).
+function Get-Children($walker,$node){
+  $kids=New-Object System.Collections.Generic.List[object]
+  try {
+    $child=$walker.GetFirstChild($node,$script:Cache)
+    while($null -ne $child -and $kids.Count -lt 400){ $kids.Add($child); $child=$walker.GetNextSibling($child,$script:Cache) }
+    return ,$kids
+  } catch {}
+  $kids.Clear()
+  try {
+    $child=$walker.GetLastChild($node,$script:Cache)
+    while($null -ne $child -and $kids.Count -lt 400){ $kids.Insert(0,$child); $child=$walker.GetPreviousSibling($child,$script:Cache) }
+  } catch {}
+  return ,$kids
+}
+# El arbol recorrido nodo a nodo, acotado, cuando FindAll no devuelve nada.
+function Get-WalkedDescendants($root){
+  $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
+  $found=New-Object System.Collections.Generic.List[object]
+  $queue=New-Object System.Collections.Generic.Queue[object]
+  $queue.Enqueue(@($root,0))
+  $visited=0
+  while($queue.Count -gt 0 -and $visited -lt 2500){
+    $pair=$queue.Dequeue(); $visited++
+    foreach($child in (Get-Children $walker $pair[0])){
+      try { if($child.Cached.IsEnabled){ $found.Add($child) } } catch {}
+      if($pair[1] -lt 26){ $queue.Enqueue(@($child,($pair[1]+1))) }
+    }
+  }
+  return ,$found
+}
 function Get-Descendants($root){
   $enabled=New-Object System.Windows.Automation.PropertyCondition($AE::IsEnabledProperty,$true)
   $activated=$script:Cache.Activate()
   try {
-    $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled)
-    if($all.Count -eq 0){
+    $all=$null
+    try { $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled) } catch {}
+    if($null -eq $all -or $all.Count -eq 0){
       Start-Sleep -Milliseconds 400
-      $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled)
+      try { $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled) } catch { $all=$null }
     }
+    if($null -eq $all -or $all.Count -eq 0){ $all=Get-WalkedDescendants $root }
   } finally { $activated.Dispose() }
   return $all
 }
@@ -258,12 +312,20 @@ function Find-ById($root,[string]$controlId){
   }
   return $null
 }
+# Los controles con ese nombre; sin ninguno igual, los que lo llevan como
+# palabras (el clic solo sigue si es uno).
 function Find-Named($root,[string[]]$aliases){
   $matches=@()
+  $holding=@()
   foreach($item in (Get-Descendants $root)){
-    try { if(-not $item.Current.IsOffscreen -and (Test-NameMatch (Get-Name $item) $aliases)){ $matches+=@($item) } } catch [System.Windows.Automation.ElementNotAvailableException] {}
+    try {
+      if($item.Current.IsOffscreen){ continue }
+      $name=Get-Name $item
+      if(Test-NameMatch $name $aliases){ $matches+=@($item) } elseif(Test-NameHolds $name $aliases){ $holding+=@($item) }
+    } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
-  return $matches
+  if($matches.Count -gt 0){ return $matches }
+  return $holding
 }
 function Click-Result([bool]$ok,[bool]$effect,[string]$error,[string]$name,[string]$identity,[bool]$absent,[bool]$selected,[bool]$toggled,[string]$kind){
   return @{ version=2; ok=$ok; effectObserved=$effect; error=$error; name=$name; kind=$kind; controlIdentity=$identity; absentOrDisabled=$absent; selected=$selected; toggled=$toggled; surfaceChanged=$false; cascadeStage='uia'; authority='windows_uia_or_win32_button_postread' }
@@ -279,7 +341,7 @@ function Do-Click($request){
   if(-not [string]::IsNullOrWhiteSpace($controlId)){
     $byId=Find-ById $root $controlId
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
-    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-Name $byId) $aliases)){
+    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-Name $byId) $aliases) -and -not (Test-NameHolds (Get-Name $byId) $aliases)){
       return (Click-Result $false $false 'visible_control_label_mismatch' (Get-Name $byId) $controlId $false $false $false '')
     }
     $matches=@($byId)

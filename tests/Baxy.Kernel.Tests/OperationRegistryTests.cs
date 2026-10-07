@@ -125,6 +125,34 @@ public sealed class OperationRegistryTests
         });
     }
 
+    // Closing every tab of the person's browser loses their session: that exact
+    // argument asks in normal mode; any other action on the browser does not.
+    [TestCase("close_all", PolicyDecision.RequireConfirmation)]
+    [TestCase("close", PolicyDecision.Allow)]
+    [TestCase("new_tab", PolicyDecision.Allow)]
+    [TestCase("back", PolicyDecision.Allow)]
+    public void Normal_mode_asks_before_closing_every_tab_and_bypass_does_not(
+        string action,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("browser.control");
+        using JsonDocument document = JsonDocument.Parse("{\"action\":\"" + action + "\"}");
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, descriptor.Name, document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, descriptor.Name, document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "browser.navigate", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow),
+                "the rule is the operation and its argument together");
+        });
+    }
+
     [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Sensitive, ConfirmationMode.Bypass, PolicyDecision.Allow)]
     [TestCase(OperationRisk.External, ConfirmationMode.Bypass, PolicyDecision.Allow)]

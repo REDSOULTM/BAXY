@@ -635,8 +635,9 @@ _USTED_IRREGULAR = {
 _INFINITIVE_IRREGULAR = {"poner": "pon", "hacer": "haz", "decir": "di", "tener": "ten", "salir": "sal", "venir": "ven"}
 
 
-def _imperatives_of(word: str) -> tuple[str, ...]:
-    """The tú/voseo imperatives ``word`` may say as an infinitive or an «usted» form, clitics kept."""
+def _imperatives_of(word: str, heads: str) -> tuple[str, ...]:
+    """The tú/voseo imperatives ``word`` may say as an infinitive or an «usted» form, clitics kept; an «usted» form
+    only when its imperative is one of the order ``heads``."""
 
     found: list[str] = []
     endings = [(word, "")]
@@ -663,19 +664,23 @@ def _imperatives_of(word: str) -> tuple[str, ...]:
             # -ar verbs: «agregue» → «agrega», «marque» → «marca», «empiece» → «empieza».
             imperative = re.sub(r"gu$", "g", re.sub(r"qu$", "c", re.sub(r"(?<=[aeiou])c$", "z", stem))) + "a"
         else:
-            # -er/-ir verbs: «escriba» → «escribe», «establezca» → «establece».
+            # -er/-ir verbs: «escriba» → «escribe», «establezca» → «establece»; «elija» → «elige» (the «j» of a
+            # -ger/-gir verb is spelling).
             imperative = re.sub(r"zc$", "c", stem) + "e"
+            if stem.endswith("j") and _head_is(stem[:-1] + "ge" + clitic_text, heads):
+                imperative = stem[:-1] + "ge"
         # A tú imperative read backwards is another word («limpia» → «limpie»): only an order head the
         # readers know is an «usted» form of it.
-        if _head_is(imperative + clitic_text, _COVERAGE_ACTION_HEAD):
+        if _head_is(imperative + clitic_text, heads):
             found.append(imperative + clitic_text)
     return tuple(dict.fromkeys(form for form in found if form != word))
 
 
-def imperative_rewrites(text: str) -> tuple[str, ...]:
+def imperative_rewrites(text: str, heads: str | None = None) -> tuple[str, ...]:
     """The request as the tú/voseo imperative the readers read, when its first word says the order with
     «usted», as an infinitive or with its clitic split off (see above); the other words stay as written.
-    Empty when there is nothing to rewrite. The caller keeps a rewrite only if the readers resolve it."""
+    Empty when there is nothing to rewrite. The caller keeps a rewrite only if the readers resolve it.
+    ``heads`` is the order vocabulary its readers know (the action heads when not given)."""
 
     found = re.match(
         r"^(?P<lead>[\s¡¿]*(?:(?:por\s+favor|solo|s[oó]lo)\s*,?\s+)*)(?P<verb>[^\W\d_]{3,})"
@@ -691,7 +696,7 @@ def imperative_rewrites(text: str) -> tuple[str, ...]:
     rest = found.group("rest")
     # «Cierre de Word podía perder trabajo», «corte de luz»: a noun that looks like an «usted» form or an
     # infinitive is followed by its complement, never by an order's object.
-    forms = () if re.match(r"\s+(?:de|del)\b", rest, re.IGNORECASE) else _imperatives_of(verb)
+    forms = () if re.match(r"\s+(?:de|del)\b", rest, re.IGNORECASE) else _imperatives_of(verb, heads or _COVERAGE_ACTION_HEAD)
     rewrites: list[str] = []
     if clitic:
         # «recuérda me» → «recuerdame», «cuénta me» → «cuentame», «recordar me» → «recordame».

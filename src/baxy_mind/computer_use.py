@@ -3,10 +3,13 @@
 Tres responsabilidades, ninguna sabe de una aplicación concreta:
 
 1. **Leer el pedido** (`mission_request`): «en <app> <hacé X>», «abre <app> y
-   <hacé X>», «<hacé X> en <app>», «cerrá todas las pestañas de <navegador>»
-   → una misión ``mission.computer.use`` con aplicación, objetivo y la
-   comprobación de éxito determinista (§4.3). La aplicación tiene que estar en
-   el catálogo de Inicio; el resto de la frase es el objetivo.
+   <hacé X>», «<hacé X> en <app>», «cerrá todas las pestañas de <navegador>»,
+   «andá a la pestaña de X» → una misión ``mission.computer.use`` con
+   aplicación, objetivo y la comprobación de éxito determinista (§4.3). La
+   aplicación tiene que estar en el catálogo de Inicio, o ser la categoría
+   «navegador» (el navegador predeterminado de la persona) cuando sólo se nombra
+   una pestaña; el resto de la frase es el objetivo, con el verbo en cualquier
+   persona (tú, vos, usted, infinitivo, inglés).
 2. **Elegir un paso** (`decide_step`): la vista compacta se serializa en pocas
    líneas, el modelo contesta UN acto con esquema JSON estricto a temperatura
    0, y unas comprobaciones sin modelo deciden si ese acto es legítimo: la
@@ -27,10 +30,14 @@ from dataclasses import dataclass
 from typing import Any, Iterable
 
 from . import effect_intent
+from .semantic.grammar import _head_is, imperative_rewrites
 
 OPERATION = "mission.computer.use"
 STEP_REQUEST = "computer.use.step"
 STEP_RESULT = "computer.use.step.result"
+# The application a mission names when the person names only a tab: the shell
+# resolves it to the front window of the person's default browser.
+BROWSER_CATEGORY = "navegador"
 
 # El repertorio cerrado del bucle (contrato §2) y las teclas del catálogo.
 ACTS = ("click", "type", "key", "scroll", "open", "done", "none")
@@ -77,7 +84,7 @@ _EXTRA_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
 _BROWSER_WORD = r"(?:chrome|google\s+chrome|opera(?:\s*gx)?|edge|microsoft\s+edge|brave|firefox|mozilla\s+firefox)"
 
 _NAVIGATE_HEAD = (
-    r"(?:ve|vete|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|"
+    r"(?:ve|vete|ir|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|"
     r"cambia|cambiate|take\s+me|abri|abre|open)"
 )
 _NAVIGATE_CLAUSE = re.compile(
@@ -124,15 +131,37 @@ _CLOSE_TABS = re.compile(
     r"(?:pestanas|tabs)(?:\s+abiertas|\s+open)?\s+(?:de|del|of|in|en)\s+(?:el\s+|the\s+|mi\s+|my\s+)?"
     rf"(?:navegador\s+|browser\s+)?(?P<browser>{_BROWSER_WORD})(?:\s*,?\s*(?:por\s+favor|please|porfa))?[\s.!?]*$"
 )
-_CLAUSE_HEAD = re.compile(
-    r"^(?:ve|vete|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|cambia|cambiate|take\s+me|"
-    r"apreta|aprieta|apretale|pulsa|pulsale|presiona|presionale|press|hit|toca|tocale|dale|"
-    r"activa|activame|activar|prende|prendeme|prender|enciende|encende|encender|habilita|habilitar|turn|enable|pon|pone|poneme|"
-    r"desactiva|desactivame|desactivar|apaga|apagame|apagar|deshabilita|deshabilitar|quita|disable|saca|"
-    r"calcula|calculame|calcular|computa|resuelve|resolve|multiplica|suma|resta|divide|calculate|compute|solve|work|"
-    r"escribi|escribe|escribime|tipea|tipeame|teclea|type|write|"
-    r"haz|hace|clic|click|clickea|clica|abri|abre|open|busca|buscar|search|selecciona|select|elige|choose|"
-    r"marca|desmarca|check|uncheck|cierra|cerra|close|desplaza|scroll|baja|sube)\b"
+# Going to a tab by what it shows: «andá a la pestaña de YouTube», «go to the YouTube tab», «switch to the tab
+# with YouTube». The tab is named by a part of its title.
+_TAB_WORD = r"(?:pestana|tab|solapa)"
+_TAB_CLAUSE = re.compile(
+    rf"^{_NAVIGATE_HEAD}\s+(?:a(?:l)?|to|hacia|en)\s+(?:(?:la|el|the|mi|my)\s+)?"
+    rf"(?:{_TAB_WORD}\s+(?:(?:de|del|con|que\s+tiene|que\s+dice|donde\s+esta|with|of|for|called|named)\s+)?"
+    r"(?:(?:el|la|los|las|the)\s+)?(?P<after>\S.{0,60}?)"
+    rf"|(?P<before>\S.{{0,60}}?)\s+{_TAB_WORD})(?:\s+on\s+it)?[\s.!?]*$"
+)
+# Words that say which tab by its place, not by what it shows («la siguiente pestaña», «the other tab»), and the
+# article left alone when no tab is named («andá a la pestaña»).
+_TAB_POSITION = frozenset({
+    "siguiente", "anterior", "otra", "nueva", "ultima", "primera", "esta", "esa", "next", "previous", "other",
+    "new", "last", "first", "this", "that", "la", "el", "the", "mi", "my",
+})
+# A name said before the tab word never ends on these: «andá a YouTube en otra pestaña», «go to google in a new
+# tab» say where to open a page, not which tab to go to.
+_TAB_PLACE_END = _TAB_POSITION | {"un", "una", "a", "an", "another", "en", "in", "on"}
+# «… en el navegador», «in the browser»: the category said instead of a browser's name.
+_BROWSER_CATEGORY_PLACE = r"(?:en|in|on|de|del|of)\s+(?:(?:el|the|mi|my)\s+)?(?:navegador|browser|web\s+browser)"
+# The doing verbs of a clause, by their infinitive or by the form no rule derives (grammar._head_is reads
+# «elegí», «seleccioná», «apretale» through their infinitive). «poner» is a doing only as the toggle reader reads
+# it («poné el modo oscuro»): «ponme una canción» is music, which has its own operation.
+_CLAUSE_VERB = (
+    r"(?:ir|ve|vete|andar|entrar|meter|navegar|llevar|cambiar|apretar|aprieta|pulsar|presionar|tocar|dale|"
+    r"activar|prender|encender|enciende|habilitar|desactivar|apagar|deshabilitar|quitar|sacar|"
+    r"calcular|computar|resolver|resuelve|multiplicar|sumar|restar|dividir|divide|"
+    r"escribir|escribe|tipear|teclear|hacer|haz|clic|clickear|clicar|abrir|abre|buscar|seleccionar|"
+    r"elegir|elige|escoger|escoge|marcar|desmarcar|cerrar|cierra|desplazar|bajar|subir|sube|"
+    r"go|navigate|switch|press|hit|tap|turn|enable|disable|calculate|compute|solve|work|type|write|click|"
+    r"open|search|find|select|choose|pick|check|uncheck|close|scroll|toggle)"
 )
 
 
@@ -202,18 +231,33 @@ def _key_from_words(words: str) -> str | None:
     return None
 
 
-def read_clause(clause: str) -> tuple[str, str | None] | None:
-    """One clause of doing inside an application → (goal, successCheck).
+def _clause_readings(folded: str) -> tuple[str, ...]:
+    """The clause as said and with its order as the tú/voseo imperative the readers read («seleccione»,
+    «elegir», «pulse» → grammar.imperative_rewrites over this module's verbs)."""
 
-    Returns None when the clause has no request head at all (a plain noun,
-    a question), so the mission reader abstains instead of inventing a goal.
-    """
+    return (folded, *imperative_rewrites(folded, _CLAUSE_VERB))
 
-    folded = fold(clause).strip(" ,;:.!?")
-    if not folded or len(folded) > 240:
+
+def _is_doing(reading: str) -> bool:
+    if re.match(r"take\s+me\b", reading):
+        return True
+    head = re.match(r"[a-z]+", reading)
+    return head is not None and _head_is(head.group(), _CLAUSE_VERB)
+
+
+def _tab_named(reading: str) -> str | None:
+    """The part of a tab's title a «go to the tab» clause names, or None."""
+
+    tab = _TAB_CLAUSE.match(reading)
+    if tab is None:
         return None
-    if _CLAUSE_HEAD.match(folded) is None and effect_intent._gerund_click_label(folded) is None:
+    named = (tab.group("after") or tab.group("before") or "").strip(" \"'«»")
+    if not named or named.split()[0] in _TAB_POSITION:
         return None
+    return None if tab.group("before") and named.split()[-1] in _TAB_PLACE_END else named
+
+
+def _read_act(folded: str) -> tuple[str, str | None] | None:
     key = _KEY_CLAUSE.match(folded)
     if key is not None:
         catalog_key = _key_from_words(key.group("key"))
@@ -234,6 +278,11 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
     if off is not None and not _has_deictic_only(off.group("target")):
         target = off.group("target").strip()
         return f"desactivar {target}", f"control:{target}:off"
+    tab = _tab_named(folded)
+    if tab is not None:
+        # The selected tab whose title holds the name (the shell matches a control's name by containment), or
+        # the browser's window title, which is the title of the tab in front.
+        return f"ir a la pestaña {tab}", f"control:{tab}:selected|title:{tab}"
     navigate = _NAVIGATE_CLAUSE.match(folded)
     if navigate is not None:
         target = navigate.group("target").strip(" \"'«»")
@@ -245,14 +294,51 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
     typed = _TYPE_CLAUSE.match(folded)
     if typed is not None:
         return f"escribir {typed.group('text').strip()}", "stepDone:input.text.type"
-    label = effect_intent._visible_click_label(folded, allow_navigate=True)
+    return None
+
+
+def read_clause(clause: str) -> tuple[str, str | None] | None:
+    """One clause of doing inside an application → (goal, successCheck).
+
+    The order may be said in any person (tú, vos, usted, infinitive, English).
+    Returns None when the clause has no request head at all (a plain noun,
+    a question, a statement), so the mission reader abstains instead of
+    inventing a goal.
+    """
+
+    folded = fold(clause).strip(" ,;:.!?")
+    if not folded or len(folded) > 240:
+        return None
+    readings = _clause_readings(folded)
+    for reading in readings:
+        act = _read_act(reading)
+        if act is not None:
+            return act
+    doing = next((reading for reading in readings if _is_doing(reading)), None)
+    if doing is None:
+        if effect_intent._gerund_click_label(folded) is None:
+            return None
+        doing = folded
+    elif _names_nothing(doing):
+        return None
+    label = effect_intent._visible_click_label(doing, allow_navigate=True)
     if label is not None:
         return f"hacer clic en {label}", f"stepDone:input.visible.click:{label}"
-    return folded, None
+    return doing, None
 
 
 def _has_deictic_only(target: str) -> bool:
     return fold(target) in {"lo", "la", "eso", "esto", "it", "that", "this"}
+
+
+def _names_nothing(reading: str) -> bool:
+    """«buscalo», «seleccioná eso»: the order's object is only a pronoun, nothing the window can show."""
+
+    head, _, rest = reading.partition(" ")
+    if rest:
+        return _has_deictic_only(rest)
+    clitic = re.search(r"(?:lo|la|los|las)$", head)
+    return clitic is not None and _head_is(head[: clitic.start()], _CLAUSE_VERB)
 
 
 def mission_request(
@@ -260,7 +346,8 @@ def mission_request(
     application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
 ) -> MissionRequest | None:
     """«en <app> <hacé X>», «abre <app> y <hacé X>», «<hacé X> en <app>»,
-    «cerrá todas las pestañas de <navegador>» → the mission, or None."""
+    «cerrá todas las pestañas de <navegador>», «andá a la pestaña de X» → the
+    mission, or None."""
 
     if not text or len(text) > 2048:
         return None
@@ -276,14 +363,11 @@ def mission_request(
         if key is None:
             return None
         return MissionRequest(_display_name(key, catalog), "cerrar todas las pestañas", "count:TabItem<=1")
-    for pattern in (_APP_FRAME_OPEN, _APP_FRAME_FRONT, _APP_FRAME_BACK):
-        found = pattern.match(folded)
-        if found is None:
-            continue
-        key = _catalog_key(found.group("app"), catalog)
+    for application, clause in _app_frames(folded):
+        key = _catalog_key(application, catalog)
         if key is None:
             continue
-        clause = found.group("clause").strip(" ,;:")
+        clause = clause.strip(" ,;:")
         # «abre Steam y decime la hora»: the second clause must be doing inside
         # the app; a catalog read elsewhere is not a mission.
         read = read_clause(clause)
@@ -291,21 +375,48 @@ def mission_request(
             continue
         goal, check = read
         return MissionRequest(_display_name(key, catalog), goal, check)
+    # A tab named with no browser, or with the category alone («en el navegador»): the person's default browser
+    # (a named browser above wins).
+    tab = _bare_tab(folded)
+    if tab is not None:
+        goal, check = tab
+        return MissionRequest(BROWSER_CATEGORY, goal, check)
+    return None
+
+
+def _bare_tab(folded: str) -> tuple[str, str] | None:
+    bare = re.sub(rf"^{_BROWSER_CATEGORY_PLACE}\s*[,;:]?\s+|\s+{_BROWSER_CATEGORY_PLACE}(?=[\s.!?]*$)", "", folded, count=1)
+    for reading in _clause_readings(bare.strip(" ,;:.!?")):
+        named = _tab_named(reading)
+        if named is not None:
+            return f"ir a la pestaña {named}", f"control:{named}:selected|title:{named}"
     return None
 
 
 def mission_clause_is_direct(text: str) -> bool:
     """Speech-act gate (effect_intent._is_direct_request): an app frame with a
-    doing clause, or a close-all-tabs order on a named browser."""
+    doing clause, a close-all-tabs order on a named browser, or going to a tab."""
 
     folded = effect_intent._strip_request_envelope(fold(text)).strip()
-    if _CLOSE_TABS.match(folded) is not None:
+    if _CLOSE_TABS.match(folded) is not None or _bare_tab(folded) is not None:
         return True
+    return any(read_clause(clause) is not None for _, clause in _app_frames(folded, longer_names=False))
+
+
+def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str, str]]:
+    """The (application, clause) splits the request frames say; ``longer_names`` also tries names of several words
+    after «en», which only the catalog can tell from a statement («en la mañana tengo que ir al banco»)."""
+
     for pattern in (_APP_FRAME_OPEN, _APP_FRAME_FRONT, _APP_FRAME_BACK):
         found = pattern.match(folded)
-        if found is not None and read_clause(found.group("clause")) is not None:
-            return True
-    return False
+        if found is None:
+            continue
+        yield found.group("app"), found.group("clause")
+        if longer_names and pattern is _APP_FRAME_FRONT:
+            # «en el bloc de notas escribí hola»: a name of several words ends where the clause begins.
+            words = found.group("clause").split()
+            for count in range(1, min(len(words), 4)):
+                yield f"{found.group('app')} {' '.join(words[:count])}", " ".join(words[count:])
 
 
 # ------------------------------------------------------------- elegir un paso
@@ -456,20 +567,26 @@ def label_names(label: str, name: str) -> bool:
     return allowed > 0 and _edit_distance(needle, haystack, allowed) <= allowed
 
 
-def find_control(view: dict, label: str, index: int | None = None) -> dict | None:
-    """The one control the label (and index, when given) names; None when absent or ambiguous."""
+def find_control(view: dict, label: str, index: int | None = None, kind: str | None = None) -> dict | None:
+    """The one control the label (and index, when given; of that kind, when given) names; None when absent or
+    ambiguous."""
 
-    controls = view.get("controls") if isinstance(view, dict) else None
-    if not isinstance(controls, list):
+    listed = view.get("controls") if isinstance(view, dict) else None
+    if not isinstance(listed, list):
         return None
-    if isinstance(index, int) and 0 <= index < len(controls):
-        candidate = controls[index]
-        if isinstance(candidate, dict) and label_names(label, str(candidate.get("name") or "")):
+    if isinstance(index, int) and 0 <= index < len(listed):
+        candidate = listed[index]
+        if (
+            isinstance(candidate, dict)
+            and (kind is None or candidate.get("kind") == kind)
+            and label_names(label, str(candidate.get("name") or ""))
+        ):
             return candidate
-    exact = [control for control in controls if isinstance(control, dict) and fold(control.get("name")) == fold(label)]
+    controls = [control for control in listed if isinstance(control, dict) and (kind is None or control.get("kind") == kind)]
+    exact = [control for control in controls if fold(control.get("name")) == fold(label)]
     if len(exact) == 1:
         return exact[0]
-    loose = [control for control in controls if isinstance(control, dict) and label_names(label, str(control.get("name") or ""))]
+    loose = [control for control in controls if label_names(label, str(control.get("name") or ""))]
     if len(loose) == 1:
         return loose[0]
     if len(loose) > 1:
@@ -478,6 +595,12 @@ def find_control(view: dict, label: str, index: int | None = None) -> dict | Non
         if len(actionable) == 1:
             return actionable[0]
     return None
+
+
+_KIND_WORDS: dict[str, str] = {
+    "pestana": "TabItem", "tab": "TabItem", "solapa": "TabItem", "boton": "Button", "button": "Button",
+    "enlace": "Hyperlink", "link": "Hyperlink", "casilla": "CheckBox", "checkbox": "CheckBox",
+}
 
 
 def effect_intent_actionable_kinds() -> frozenset[str]:
@@ -613,7 +736,13 @@ def deterministic_step(
         if not folded_goal.startswith(head):
             continue
         target = re.sub(r"^(?:el|la|los|las|the|al|a\s+la|a\s+los|a\s+las)\s+", "", goal[len(head):].strip(), flags=re.IGNORECASE)
-        control = find_control(view, target)
+        # «la pestaña YouTube», «el botón Guardar»: the kind said before the name narrows the controls to it
+        # (a tab's name is its whole title, «Never Gonna Give You Up - YouTube»).
+        named_kind = re.match(r"(?P<word>[^\W\d_]+)\s+(?:(?:de|del|of)\s+)?(?P<name>\S.*)$", target)
+        kind = _KIND_WORDS.get(fold(named_kind.group("word"))) if named_kind is not None else None
+        if named_kind is not None and kind is not None:
+            target = named_kind.group("name")
+        control = find_control(view, target, kind=kind)
         if control is None:
             return None
         if wanted is not None and wanted in str(control.get("state") or "").split():

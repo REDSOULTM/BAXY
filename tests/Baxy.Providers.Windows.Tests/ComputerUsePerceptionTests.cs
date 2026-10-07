@@ -163,6 +163,48 @@ public sealed class ComputerUsePerceptionTests
         });
     }
 
+    [Test]
+    public async Task TheBrowserWithoutANameIsTheFrontWindowOfThePersonsBrowser()
+    {
+        // A handle no window has: nothing on the desktop is read or moved.
+        const long front = 0x7FFF_0F1E;
+        var worker = new ScriptedUiaWorker(
+            "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Inicio\",\"controls\":[" +
+            "{\"i\":0,\"kind\":\"TabItem\",\"name\":\"Never Gonna Give You Up - YouTube\",\"id\":\"4.2\"," +
+            "\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
+        var browser = new FixedBrowserWindow(front);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, browserWindow: browser);
+
+        ExternalCapabilityReceipt view = await adapter.InvokeAsync(
+            "input.visible.controls", Json("""{"application":"el navegador","processId":4242}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(view.Verified, Is.True);
+            Assert.That(browser.Calls, Is.EqualTo(1));
+            Assert.That(worker.Commands[0], Does.Contain("\"hwnd\":" + front),
+                "the person's browser window wins over a process the mission had adopted");
+            Assert.That(view.Result?.GetProperty("window").GetProperty("hwnd").GetInt64(), Is.EqualTo(front));
+            Assert.That(view.Result?.GetProperty("window").GetProperty("requested").GetBoolean(), Is.True);
+            Assert.That(view.Result?.GetProperty("controls")[0].GetProperty("kind").GetString(), Is.EqualTo("TabItem"));
+        });
+    }
+
+    [TestCase("navegador", true)]
+    [TestCase("el navegador", true)]
+    [TestCase("Mi Navegador", true)]
+    [TestCase("browser", true)]
+    [TestCase("my browser", true)]
+    [TestCase("web browser", true)]
+    [TestCase("navegador web", true)]
+    [TestCase("Opera GX", false)]
+    [TestCase("navegador de archivos", false)]
+    [TestCase("", false)]
+    [TestCase(null, false)]
+    public void TheBrowserCategoryIsTheWordNotAProduct(string? application, bool expected) =>
+        Assert.That(IUserBrowserWindowLocator.NamesTheCategory(application), Is.EqualTo(expected));
+
     [TestCase("aceptar", "Aceptar", true)]
     [TestCase("biblioteca", "BIBLIOTECA", true)]
     [TestCase("Modo avión", "Modo avion", true)]
@@ -266,6 +308,17 @@ public sealed class ComputerUsePerceptionTests
                 return ValueTask.FromResult<JsonDocument?>(null);
             string answer = _answers.Count == 1 ? _answers.Peek() : _answers.Dequeue();
             return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(answer));
+        }
+    }
+
+    private sealed class FixedBrowserWindow(long handle) : IUserBrowserWindowLocator
+    {
+        internal int Calls { get; private set; }
+
+        public nint FrontWindow()
+        {
+            Calls++;
+            return (nint)handle;
         }
     }
 
