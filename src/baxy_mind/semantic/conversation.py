@@ -2725,3 +2725,16 @@ def requested_infinitive_stems(request: object) -> tuple[str, ...]:
             if len(stem) >= 5 and stem not in stems:
                 stems.append(stem)
     return tuple(stems)
+
+
+# Live 2026-10-07 (x12 «abrí la calculadora» → «… en la ventana con el handle 4722336.»): a window handle or a process
+# id reaches a final only when the person asks for one.
+_INTERNAL_IDENTIFIER_ASKED = re.compile(
+    r"\b(?:hwnd|handle|pid|process\s+id|processid|id\s+del?\s+proceso|identificador\s+del?\s+(?:proceso|ventana))\b"
+)
+
+
+def asks_for_an_internal_identifier(user_text: object) -> bool:
+    """The person asks for a window handle or a process id («¿cuál es el PID de la calculadora?»)."""
+
+    return _INTERNAL_IDENTIFIER_ASKED.search(_reading_fold(str(user_text or ""))) is not None

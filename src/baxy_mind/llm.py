@@ -138,6 +138,7 @@ from .semantic.conversation import (
     asks_about_own_past_act,
     asks_an_extended_answer,
     asks_baxys_name,
+    asks_for_an_internal_identifier,
     asks_for_code,
     asks_to_make,
     asks_or_has_words_said,
@@ -7843,6 +7844,11 @@ def _compose_situation_payload(
             # session count invited claims about silence and open/closed state.
             for key in ("muted", "processName", "sessionCount", "authority", "endpointIdHash"):
                 visible_seen.pop(key, None)
+        if not asks_for_an_internal_identifier(user_text or ""):
+            # Live 2026-10-07 (x12 «abrí la calculadora» → «Abrí la calculadora y ahora está ejecutándose en la ventana
+            # con el handle 4722336.»): a window handle or process id is the adapter's, never what the person sees.
+            for key in _INTERNAL_IDENTIFIER_KEYS:
+                visible_seen.pop(key, None)
         if operation in {"wifi.radio.set", "wifi.radio.status"} and isinstance(visible_seen.get("state"), bool):
             # NETWORK1737: «state» is removed below as an internal status field,
             # but the radio's read-back state is the fact of these operations.
@@ -14619,13 +14625,20 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         and seen
         and not payload.get("cause")
         and not payload.get("error")
-        and _ACTION_ATTRIBUTED_TO_USER.search(text) is not None
+        and (_ACTION_ATTRIBUTED_TO_USER.search(text) is not None or tells_own_act_as_the_persons(text))
     ):
         # NETWORK1295/1297 «Apagame el bluetooth.» → «Ya apagaste el
         # bluetooth»: the assistant did it, not the person. This is the
         # predicate that gates acceptance (blocked → payload defect), not
         # only the audit label in rejection_reason.
         return "action_attributed_to_user"
+    if (
+        isinstance(payload.get("operation"), str)
+        and not payload.get("cause")
+        and not payload.get("error")
+        and names_an_unseen_known_folder(text, seen)
+    ):
+        return "extra_claim"
     if (
         user_text
         and declined_means(user_text) is not None
@@ -16361,8 +16374,13 @@ def compose_visible_defect(
         # M108: the report of a result names no contract token, and what was verified is never promised.
         if visible_reply_leaks_a_contract_token(stripped, reported, identifier_sources):
             return "internal_code"
+        if visible_reply_says_an_internal_identifier(stripped, f"{user_text} {said or ''}"):
+            return "internal_code"
         if intent == "status" and _verified_effect(reported) and visible_reply_promises_the_act(stripped):
             return "promised_effect"
+        if intent == "status" and _verified_effect(reported) and tells_own_act_as_the_persons(stripped):
+            # Live 2026-10-07 (y5, x12): «Has abierto…», «Has iniciado…» — BAXY's verified act told as the person's.
+            return "action_attributed_to_user"
     if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
         return "internal_code"
     if "el mensaje es" in stripped.casefold():
@@ -19434,6 +19452,118 @@ _ACTION_ATTRIBUTED_TO_USER = re.compile(
     r"you (?:turned|opened|closed|set|sent|saved|muted))\b",
     re.IGNORECASE,
 )
+
+# Live 2026-10-07 (cu-universal v2, y5 «… andá a Descargas y después a Imágenes» → «Has abierto correctamente la
+# carpeta Imágenes dentro de Descargas.»; x12 «Has iniciado la aplicación de la calculadora…»): the compound perfect
+# and any second-person preterite tell BAXY's verified act as the person's. A word in -aste/-iste that is no act of
+# doing (a noun, «existe», the person's own asking or saying: «la carpeta que pediste») is no such claim.
+_SECOND_PERSON_PERFECT = re.compile(
+    r"\b(?:has|habeis)\s+(?:ya\s+)?(?P<verb>[a-z]+(?:ado|ada|ido|ida)|abierto|puesto|hecho|escrito|vuelto|roto|"
+    r"cubierto|descubierto|resuelto|devuelto|impreso)\b"
+)
+_SECOND_PERSON_PRETERITE = re.compile(r"\b(?P<verb>[a-z]{2,}(?:aste|iste))\b")
+_ENGLISH_SECOND_PERSON_ACT = re.compile(
+    r"\byou(?:'ve|\s+have)?\s+(?:just\s+|already\s+|successfully\s+|now\s+)?(?P<verb>[a-z]+ed|made|set|put|sent|shut|"
+    r"ran|began|took|built|did)\b"
+)
+_NOT_AN_OWN_ACT = frozenset({
+    # what the person does by asking or saying
+    "pediste", "pedido", "dijiste", "dicho", "mencionaste", "mencionado", "preguntaste", "preguntado", "quisiste",
+    "querido", "indicaste", "indicado", "solicitaste", "solicitado", "nombraste", "nombrado", "elegiste", "elegido",
+    "especificaste", "especificado", "comentaste", "comentado", "contaste", "contado", "aclaraste", "aclarado",
+    "ordenaste", "ordenado", "viste", "visto", "oiste", "escuchaste", "escuchado", "deseaste", "preferiste",
+    "llamaste",
+    # the person's own progress, which a listing of their tasks tells
+    "completaste", "completado", "terminaste", "terminado", "cumpliste", "cumplido", "acabaste", "acabado",
+    "completed", "finished",
+    "asked", "requested", "wanted", "mentioned", "named", "wished", "needed", "liked", "preferred", "specified",
+    "indicated", "said", "ordered", "described", "chose", "picked", "selected", "called", "meant",
+    # words that only end like a second-person preterite
+    "existe", "consiste", "insiste", "resiste", "asiste", "desiste", "persiste", "subsiste", "coexiste", "triste",
+    "chiste", "quiste", "alpiste", "despiste", "contraste", "desgaste", "engaste", "traste", "taste", "waste",
+    "paste", "haste", "caste",
+})
+
+
+def tells_own_act_as_the_persons(text: object) -> bool:
+    """A sentence of a verified report tells BAXY's act in the second person («Has abierto…», «Ya apagaste…», «You
+    opened…»). A question («¿Has abierto…?») asks the person and is no report; see the note above."""
+
+    for part in re.findall(r"[^.!?;:\n]+[.!?;:\n]*", str(text or "").replace("’", "'")):
+        sentence = _reading_fold(part).strip()
+        if not sentence or "?" in part or "¿" in part:
+            continue
+        for pattern in (_SECOND_PERSON_PERFECT, _SECOND_PERSON_PRETERITE, _ENGLISH_SECOND_PERSON_ACT):
+            for found in pattern.finditer(sentence):
+                verb = found.group("verb")
+                if verb in _NOT_AN_OWN_ACT or (pattern is _ENGLISH_SECOND_PERSON_ACT and verb.endswith("eed")):
+                    continue
+                if _NEGATED_BEFORE.search(sentence[: found.start()]) is not None:
+                    # «Aún no has completado ninguna»: what the person has not done is no claim of an act.
+                    continue
+                return True
+    return False
+
+
+_NEGATED_BEFORE = re.compile(r"\b(?:no|nunca|jamas|not|never)\s+(?:(?:lo|la|los|las|le|les|me|te|se)\s+)?$")
+
+
+# Live 2026-10-07 (x12 «abrí la calculadora» → «Abrí la calculadora y ahora está ejecutándose en la ventana con el
+# handle 4722336.»): a window handle or a process id is the adapter's, never what the person sees, unless asked for.
+_INTERNAL_IDENTIFIER_KEYS = ("windowHandle", "hwnd", "handle", "processId", "pid", "threadId")
+_INTERNAL_IDENTIFIER_SAID = re.compile(
+    r"\b(?:hwnd|handle|pid|process\s*id|id\s+del?\s+proceso|identificador\s+(?:del?\s+)?(?:proceso|ventana)|"
+    r"identificador)\b[^.!?\d]{0,24}\d{3,}"
+)
+
+
+def visible_reply_says_an_internal_identifier(text: object, user_text: str) -> bool:
+    """The reply says a handle or process id with its number, and the person did not ask for one (see above)."""
+
+    return not asks_for_an_internal_identifier(user_text) and (
+        _INTERNAL_IDENTIFIER_SAID.search(_reading_fold(str(text or ""))) is not None
+    )
+
+
+# A known folder named in a report that names one (live 2026-10-07, y5: Downloads opened, the final placed the folder
+# «Imágenes» inside it because the person had said it). The folder the facts name is the only one the report may say.
+_KNOWN_FOLDER_FORMS: dict[str, tuple[str, ...]] = {
+    "desktop": ("desktop", "escritorio"),
+    "downloads": ("downloads", "descargas"),
+    "documents": ("documents", "documentos"),
+    "pictures": ("pictures", "imagenes"),
+    "music": ("music", "musica"),
+    "videos": ("videos",),
+}
+
+
+def _strings_of(value: object) -> Iterable[str]:
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from _strings_of(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from _strings_of(item)
+
+
+def names_an_unseen_known_folder(text: object, seen: object) -> bool:
+    """The report names a known folder (Imágenes, Downloads…) the observed facts do not hold, while those facts name
+    another one: the place the operation acted on is the one it observed, whatever the person asked for. Only facts
+    with a ``folder`` (a known-folder operation) are weighed."""
+
+    if not isinstance(seen, dict) or not isinstance(seen.get("folder"), str):
+        return False
+    observed = " ".join(_reading_fold(item) for item in _strings_of(seen))
+
+    def named(forms: tuple[str, ...], where: str) -> bool:
+        return any(re.search(rf"\b{form}\b", where) is not None for form in forms)
+    if not any(named(forms, observed) for forms in _KNOWN_FOLDER_FORMS.values()):
+        return False
+    said = _reading_fold(str(text or ""))
+    return any(named(forms, said) and not named(forms, observed) for forms in _KNOWN_FOLDER_FORMS.values())
+
 
 _INVENTED_ACTION_VERB = re.compile(
     r"\b(?:abra|abrir|cierre|cerrar|mande|mandar|envie|enviar|borre|borrar|"
@@ -26651,19 +26781,44 @@ class LlmRuntime:
                 "comparten un sitio. Usa sólo esas cifras, nunca una cuenta tuya: di seen.tabCount, y para un "
                 "sitio el número de seen.tabsPerSite (o una, si es un solo título)."
             )
+        if (
+            visible_situation.get("operation") == "app.open"
+            and isinstance(visible_situation.get("seen"), dict)
+            and visible_situation["seen"].get("was_running_before_open") is False
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            # Live 2026-10-07 (x12 «abrí la calculadora»): «Has iniciado la aplicación…» (the person's act) and «… en
+            # la ventana con el handle 4722336» (the adapter's id). The final is what the person sees, said by BAXY.
+            opened = _app_open_observed_name(situation) or ("the app" if response_language == "en" else "la app")
+            instruct(
+                f"\nIt is your own act: say it as the person sees it, in your voice («Done, I opened {opened}.»), "
+                "with no window or process identifier."
+                if response_language == "en"
+                else f"\nLo hecho es tuyo: cuéntalo como lo ve la persona y en tu voz («Listo, abrí {opened}.»), "
+                "sin identificadores de ventana ni de proceso."
+            )
+        elif intent == "status" and _verified_effect(situation):
+            # Live 2026-10-07 (y5 «Has abierto correctamente la carpeta…»): a verified act is BAXY's, said in his voice.
+            instruct(
+                "\nIt is your own act: say it in your voice («I opened…»), never as the person's («You opened…»)."
+                if response_language == "en"
+                else "\nLo hecho es tuyo: cuéntalo en tu voz («Abrí…»), nunca como acto de la persona («Has abierto…», "
+                "«Abriste…»)."
+            )
         if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
             # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own
             # postread; the reply names the file, folder, colour or address seen.
             instruct(
                 "\nseen is the postread of a file tool: file.compress gives zipName, entryCount and "
-                "bytes in seen.folder; file.open gives name and the windowTitle or processId that "
+                "bytes in seen.folder; file.open gives name and the windowTitle that "
                 "appeared; desktop.wallpaper.set gives mode (solid_color with color, or picture with "
                 "name); web.download gives name, bytes, folder and sourceUrl. Say what was done in one "
                 "or two short sentences with those exact names; no sizes unless present; nothing else "
                 "was changed."
                 if response_language == "en"
                 else "\nseen es la postlectura de una herramienta de archivos: file.compress da zipName, "
-                "entryCount y bytes en seen.folder; file.open da name y el windowTitle o processId que "
+                "entryCount y bytes en seen.folder; file.open da name y el windowTitle que "
                 "apareció; desktop.wallpaper.set da mode (solid_color con color, o picture con name); "
                 "web.download da name, bytes, folder y sourceUrl. Di qué se hizo en una o dos oraciones "
                 "cortas con esos nombres exactos; sin tamaños que no estén; no se cambió nada más."
@@ -27691,7 +27846,10 @@ class LlmRuntime:
                 intent == "status"
                 and situation.get("verified") is True
                 and situation.get("succeeded") is True
-                and _ACTION_ATTRIBUTED_TO_USER.search(candidate) is not None
+                and (
+                    _ACTION_ATTRIBUTED_TO_USER.search(candidate) is not None
+                    or tells_own_act_as_the_persons(candidate)
+                )
             ):
                 # NETWORK1295 «Apagame el bluetooth.» → «Ya apagaste el
                 # bluetooth»: the assistant did it, not the person.
