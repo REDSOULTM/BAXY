@@ -598,7 +598,17 @@ def _search_affordance(view: dict, history: list[dict]) -> dict | None:
         and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
     ]
     found.sort(key=lambda control: _SEARCH_KINDS.index(str(control.get("kind"))))
-    return found[0] if found else None
+    if found:
+        return found[0]
+    # A window that exposes no tree still writes its search box (measured on WhatsApp: «Buscar un chat o iniciar uno
+    # nuevo» read by OCR, nothing in UIA): the written line is clicked like the field.
+    written = [
+        line.strip() for line in _view_lines(view)
+        if 0 < len(line.split()) <= 8 and _is_search_field({"name": line})
+        and not _steps_ok(history, "input.visible.click", label=line.strip())
+    ]
+    written.sort(key=lambda line: (len(line.split()[0]) <= 2, len(line)))
+    return {"name": written[0]} if written else None
 
 
 def _click(control: dict, reason: str) -> dict[str, object]:
@@ -673,8 +683,10 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
         return _key("escape")
     if last is not None and last_operation == "input.visible.click":
         clicked = find_control(view, str(last.get("label") or ""))
+        # A search box clicked by its written line (no tree to tell focus) takes the keyboard as a person expects.
+        written_box = clicked is None and last.get("ok") is True and not isinstance(last.get("index"), int)
         if _is_search_field({"name": last.get("label")}) and (
-            _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS)
+            _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS) or written_box
         ):
             return _type(target)
     searched = _typed_target(history, target)

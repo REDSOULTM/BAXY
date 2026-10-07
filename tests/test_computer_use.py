@@ -783,3 +783,17 @@ def test_sending_what_was_written_is_always_asked_first() -> None:
     empty = {**unexposed, "window": {**unexposed["window"], "focused": {**unexposed["window"]["focused"], "value": ""}}}
     assert "target" not in computer_use.deterministic_step(goal="apretar enter", view=empty, history=[])["arguments"]
     assert missions.read_clause("mandalo") == ("enviar", "stepDone:input.key.press:enter")
+
+
+def test_find_clicks_a_written_search_box_when_the_window_has_no_tree_then_types() -> None:
+    # Measured on WhatsApp: UIA exposed only the caption buttons; OCR read the search box.
+    written = {
+        "window": {"title": "WhatsApp", "process": "WhatsApp.Root", "focused": None},
+        "controls": [{"i": 0, "kind": "Button", "name": "Minimize"}, {"i": 1, "kind": "Button", "name": "Close"}],
+        "text": {"TL": ["WhatsApp", "Chats", "Q, Buscar un chat o iniciar uno nuevo", "Buscar un chat o iniciar uno nuevo", "Todos"]},
+    }
+    step = computer_use.deterministic_step(goal="ir a ron92", view=written, history=[])
+    assert step["operation"] == "input.visible.click"
+    assert step["arguments"] == {"label": "Buscar un chat o iniciar uno nuevo"}
+    clicked = [_ok(1, "input.visible.click", label="Buscar un chat o iniciar uno nuevo")]
+    assert computer_use.deterministic_step(goal="ir a ron92", view=written, history=clicked)["arguments"] == {"text": "ron92"}

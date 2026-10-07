@@ -1090,7 +1090,7 @@ internal static class ComputerUseMission
 
         if (lastView is not null)
         {
-            observed["screen"] = ScreenExcerpt(lastView);
+            observed["screen"] = ScreenExcerpt(lastView, (string?)state["goal"]);
         }
 
         if (evidence is not null)
@@ -1108,22 +1108,53 @@ internal static class ComputerUseMission
 
     // What was on the screen when the mission ended, for the final to quote:
     // the controls that carry a value (a display, a field) and a few lines.
-    private static JsonObject ScreenExcerpt(JsonObject view)
+    internal static JsonObject ScreenExcerpt(JsonObject view, string? goal = null)
     {
-        var values = new JsonArray();
+        // A value or a chosen state answers what the person asked about («¿el modo es claro u oscuro?»: the «Elige tu
+        // modo» list shows «Oscuro»): the controls that share a word with the goal come first.
+        var goalWords = new HashSet<string>(
+            ComputerUseSuccessCheck.Fold(goal).Split([' ', ':', ';', ',', '.', '?', '¿'], StringSplitOptions.RemoveEmptyEntries)
+                .Where(word => word.Length >= 4),
+            StringComparer.Ordinal);
+        var candidates = new List<(bool Related, JsonObject Said)>();
         if (view["controls"] is JsonArray controls)
         {
             foreach (JsonNode? node in controls)
             {
-                if (node is JsonObject control && (string?)control["value"] is { Length: > 0 } value && values.Count < 5)
+                if (node is not JsonObject control)
                 {
-                    values.Add((JsonNode?)new JsonObject
-                    {
-                        ["name"] = (string?)control["name"],
-                        ["value"] = value.Length > 80 ? value[..80] : value,
-                    });
+                    continue;
                 }
+
+                string name = (string?)control["name"] ?? string.Empty;
+                string state = (string?)control["state"] ?? string.Empty;
+                string? value = (string?)control["value"] is { Length: > 0 } held ? held : null;
+                string? chosen = state.Split(' ').FirstOrDefault(word => word is "selected" or "on" or "checked");
+                if (value is null && chosen is null)
+                {
+                    continue;
+                }
+
+                var said = new JsonObject { ["name"] = name.Length > 80 ? name[..80] : name };
+                if (value is not null)
+                {
+                    said["value"] = value.Length > 80 ? value[..80] : value;
+                }
+
+                if (chosen is not null)
+                {
+                    said["state"] = chosen;
+                }
+
+                bool related = ComputerUseSuccessCheck.Fold(name).Split(' ').Any(goalWords.Contains);
+                candidates.Add((related, said));
             }
+        }
+
+        var values = new JsonArray();
+        foreach ((bool _, JsonObject said) in candidates.OrderByDescending(candidate => candidate.Related).Take(8))
+        {
+            values.Add((JsonNode?)said);
         }
 
         var lines = new JsonArray();

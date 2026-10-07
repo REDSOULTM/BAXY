@@ -222,6 +222,26 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void TheFinalSeesTheChosenValueTheQuestionIsAbout()
+    {
+        JsonObject colors = View("""
+            {"window": {"title": "Configuración"}, "controls": [
+              {"i": 0, "kind": "Edit", "name": "Buscar una opción", "value": ""},
+              {"i": 1, "kind": "ListItem", "name": "Personalización", "state": "selected"},
+              {"i": 2, "kind": "ListItem", "name": "Sistema"}, {"i": 3, "kind": "ListItem", "name": "Aplicaciones"},
+              {"i": 4, "kind": "ComboBox", "name": "Elige tu modo", "value": "Oscuro"}]}
+            """);
+        JsonObject excerpt = ComputerUseMission.ScreenExcerpt(colors, "ir a colores; y responder: decime si el modo es claro u oscuro");
+        JsonArray values = (JsonArray)excerpt["values"]!;
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)values[0]!["name"], Is.EqualTo("Elige tu modo"));
+            Assert.That((string?)values[0]!["value"], Is.EqualTo("Oscuro"));
+            Assert.That(values.Any(value => (string?)value!["state"] == "selected"), Is.True);
+        });
+    }
+
+    [Test]
     public void WhatAFieldHoldsIsNotWhereTheWindowWent()
     {
         JsonObject typedOnly = View("""
