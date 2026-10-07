@@ -41,10 +41,13 @@ Goal: `documentacion/GOAL_COMPUTER_USE_2026-10-06.md`. Rama `fable/computer-use-
 | 8 | pon La Casa del Dragón en HBO Max | **lograda** — Opera GX reproduce un episodio (`play.hbomax.com/video/watch/…`, pestaña con sonido, subtítulos de la serie) | ruta tipada `streaming.play.named` | 23 s | sesión de Opera del dueño respaldada antes y restaurada byte a byte después |
 | 9 | abrí el Reloj y andá a Cronómetro (UWP que BAXY no conoce) | **lograda** — `ListItem Cronómetro [selected]` (UIA independiente) | — | 35 s el turno | final fiel: «Fui al Cronómetro y vi que estaba pausado a las 96 horas…» (el cronómetro del dueño lo mostraba) |
 
-## Falta
+## Cierre
 
-- Compuerta Full verde (1.ª corrida: todo verde salvo Setup por el orden del contrato de paquete → arreglado; 2.ª
-  en curso), merge `--no-ff` a `codex/kiro-goal-c03`, push, informe.
-
-Misiones: **9/9 logradas y verificadas** (más una Win32 extra: Panel de control → «Sistema y seguridad»).
-Mediciones: `MEDICIONES.md`.
+- Misiones: **9/9 logradas y verificadas** en vivo (más Win32 extra: Panel de control → «Sistema y seguridad», y
+  humo tras mover el lector a `semantic/missions.py`: Calculadora «84»).
+- Compuerta Full verde (e46afeaf): Contracts 70, Integration 2431 (+1 skip ambiental: pruebas opt-in de runtime
+  real), Kernel 212, Providers.Windows 963, Setup 477, pytest 18 735.
+- Mediciones: `MEDICIONES.md` (cobertura por tipo de app, latencia por paso, ahorro de procedimientos).
+- Estado del PC devuelto: volumen 60 y brillo 40 como al empezar; modo avión revertido; Steam, Discord, Opera,
+  Reloj, Calculadora y Panel de control abiertos por las pruebas, cerrados; sesión de Opera del dueño restaurada
+  byte a byte desde la copia previa.
