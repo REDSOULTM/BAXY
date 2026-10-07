@@ -482,6 +482,67 @@ def _select_check(target: str) -> str:
     return _with_alternatives(target, ("control:{}:selected", "control:{}:on", "stepDone:input.visible.click:{}"))
 
 
+# «cambiá a científica», «pasá a la vista compacta», «poné el modo científico», «switch to scientific mode», «set it
+# to dark mode»: choosing one of the modes or views a window offers, often behind its navigation or menu button.
+# «poner» and «set»/«put» take the mode word («poné la música» is no mode); «cambiar», «pasar», «switch» and «change»
+# do not need it.
+_MODE_WORD = r"(?:modo|vista|mode|view)"
+_MODE_CLAUSE = re.compile(
+    r"^(?:(?P<put>pon|pone|poneme|ponele|ponela|ponelo|ponla|ponlo|set|put)(?:\s+(?:it|la|lo))?\s+(?:(?:en|in|to|into|a|al)\s+)?"
+    r"|(?:cambia|cambiate|cambiala|cambialo|cambiar|cambie|pasa|pasate|pasala|pasalo|pasar|pase|switch|change)"
+    r"(?:\s+(?:it|la|lo|over))?\s+(?:a|al|to|into|en|in)\s+)"
+    rf"(?:(?:el|la|the|un|una|a)\s+)?(?:(?P<before>{_MODE_WORD})\s+(?:de\s+)?(?:(?:el|la)\s+)?)?"
+    rf"(?P<name>[a-z0-9][a-z0-9 .+-]{{0,40}}?)(?:\s+(?P<after>{_MODE_WORD}))?[\s.!?]*$"
+)
+# The endings of a Spanish adjective said in either gender: the person says «el modo científico» and the window
+# names it after its own feminine noun («Calculadora Científica»).
+_GENDERED_ADJECTIVE = re.compile(r"^[a-z]{2,}(?:ic|iv|ad|id|os)[oa]$")
+
+
+def gender_twin(name: str) -> str | None:
+    """«científico» → «cientifica», «automática» → «automatico»: a one-word adjective in the other gender, folded;
+    None for anything else (a noun such as «inicio» keeps its one form)."""
+
+    folded = fold(name)
+    if _GENDERED_ADJECTIVE.match(folded) is None:
+        return None
+    return folded[:-1] + ("a" if folded[-1] == "o" else "o")
+
+
+def _mode_names(name: str) -> tuple[str, ...]:
+    """The names a chosen mode may carry on screen: as said, its other-language names and its other gender."""
+
+    twin = gender_twin(name)
+    found = (fold(name), *label_alternatives(name), *((twin,) if twin else ()))
+    return tuple(dict.fromkeys(found))
+
+
+def _mode_check(name: str) -> str:
+    """Chosen is the mode's item selected, the window titled with it, its page, or a verified click on a control
+    naming it after which a control still names it (measured on the Calculator: after «Científica Calculadora» in its
+    navigation the header reads «Modo de calculadora Científica»; title and selection do not change)."""
+
+    atoms = ("control:{}:selected", "title:{}", "page:{}", "stepDone:input.visible.click:{}&control:{}")
+    return "|".join(atom.replace("{}", alias) for alias in _mode_names(name) for atom in atoms)
+
+
+def _read_mode(folded: str) -> tuple[str, str | None] | None:
+    mode = _MODE_CLAUSE.match(folded)
+    if mode is None or _tab_named(folded) is not None:
+        return None
+    worded = mode.group("before") or mode.group("after")
+    # «cambiá a científica y calculá 2+2»: the mode ends where the next clause of doing begins.
+    name = _segments(mode.group("name"))[0].strip(" \"'«»")
+    if not name or _has_deictic_only(name) or (mode.group("put") and not worded):
+        return None
+    if mode.group("put"):
+        # «poné el modo avión»: a switch named after the mode is turned on where there is one; elsewhere the mode is
+        # chosen like any other (computer_use reads «activar modo X» so).
+        said = f"{mode.group('before')} {name}" if mode.group("before") else f"{name} {mode.group('after')}"
+        return f"activar {said}", _with_alternatives(said, ("control:{}:on",)) + "|" + _mode_check(name)
+    return f"ir a {name}", _mode_check(name)
+
+
 def _read_act(folded: str) -> tuple[str, str | None] | None:
     if _SEND_CLAUSE.match(folded) is not None:
         return "enviar", "stepDone:input.key.press:enter"
@@ -536,6 +597,9 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
             f"calcular {expression}",
             "stepDone:input.key.press:enter|stepDone:input.visible.click:igual|stepDone:input.visible.click:=|stepDone:input.text.type:=",
         )
+    mode = _read_mode(folded)
+    if mode is not None:
+        return mode
     on = _TOGGLE_ON_CLAUSE.match(folded)
     if on is not None and not _has_deictic_only(on.group("target")) and not re.match(_ORDINAL, on.group("target")):
         target = on.group("target").strip()

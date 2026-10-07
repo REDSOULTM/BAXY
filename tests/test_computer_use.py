@@ -1110,3 +1110,118 @@ def test_an_order_that_names_its_application_needs_no_context() -> None:
     assert sidecar._self_contained_mission("en la calculadora calculá 9 por 8", mission, apps)
     assert not sidecar._self_contained_mission("y ahora andá a configuración", mission, apps)
     assert not sidecar._self_contained_mission("en el Reloj andá a Cronómetro", None, apps)
+
+
+# ------------------------------------------------- modos detrás de la navegación
+
+
+def test_switching_to_a_mode_reads_as_choosing_it_with_a_check_the_window_can_show() -> None:
+    for said in (
+        "en la calculadora cambiá a científica",
+        "en la calculadora pasá a la científica",
+        "en la calculadora cambiá al modo científico",
+        "switch to scientific in the calculator",
+        "in the calculator switch to scientific mode",
+    ):
+        arguments = _mission(said)
+        assert arguments["application"] == "Calculadora", said
+        assert arguments["goal"] in {"ir a cientifica", "ir a cientifico", "ir a scientific"}, said
+        name = arguments["goal"][len("ir a "):]
+        # The mode's header after the switch («Modo de calculadora Científica») names it; title and selection do not.
+        assert f"stepDone:input.visible.click:{name}&control:{name}" in arguments["successCheck"].split("|"), said
+    # The other gender of the adjective is the same mode («el modo científico», «Calculadora Científica»).
+    assert "stepDone:input.visible.click:cientifica&control:cientifica" in _mission(
+        "en la calculadora cambiá al modo científico"
+    )["successCheck"].split("|")
+    put = _mission("en la calculadora poné el modo científico")
+    assert put["goal"] == "activar modo cientifico"
+    assert put["successCheck"].startswith("control:modo cientifico:on|")
+    assert "stepDone:input.visible.click:cientifica&control:cientifica" in put["successCheck"].split("|")
+    # A tab is still a tab, and «poner» without a mode word is no mode.
+    assert missions.mission_request("in Chrome switch to the Gmail tab", APPS).goal.startswith("ir a la pesta")
+    assert missions.mission_request("en la calculadora poné la científica", APPS).goal != "ir a cientifica"
+    assert missions.gender_twin("científico") == "cientifica"
+    assert missions.gender_twin("inicio") is None and missions.gender_twin("biblioteca") is None
+
+
+_NAVIGATION_CLOSED = {
+    "window": {"title": "Calculadora", "process": "ApplicationFrameHost", "requested": True,
+               "rect": {"x": 0, "y": 0, "w": 700, "h": 800}, "focused": {"kind": "Text", "name": "Se muestra 0"}},
+    "controls": [
+        {"i": 0, "kind": "Button", "name": "Cerrar Calculadora", "zone": "TR"},
+        {"i": 1, "kind": "Button", "name": "Abrir navegación", "zone": "TL"},
+        {"i": 2, "kind": "Button", "name": "Más", "zone": "B"},
+        {"i": 3, "kind": "Button", "name": "Siete", "zone": "L"},
+        {"i": 4, "kind": "Text", "name": "Modo de calculadora Estándar", "zone": "TL"},
+    ],
+    "text": {"TL": ["Calculadora", "Estándar"]},
+}
+_NAVIGATION_OPEN = {
+    **_NAVIGATION_CLOSED,
+    "controls": [
+        {"i": 0, "kind": "Button", "name": "Cerrar navegación", "zone": "TL"},
+        {"i": 1, "kind": "ListItem", "name": "Estándar Calculadora", "state": "selected", "zone": "L"},
+        {"i": 2, "kind": "ListItem", "name": "Científica Calculadora", "zone": "L"},
+        {"i": 3, "kind": "ListItem", "name": "Programador Calculadora", "zone": "L"},
+        {"i": 4, "kind": "Button", "name": "Más", "zone": "B"},
+    ],
+    "newText": ["Estándar", "Científica", "Programador"],
+}
+
+
+def test_a_mode_behind_the_navigation_button_is_found_by_opening_it_before_any_shortcut() -> None:
+    # Measured live (n2): «cambiá a científica» pressed ctrl_k and escape on the Calculator and stopped; its modes
+    # are items of the navigation behind «Abrir navegación».
+    for goal in ("ir a cientifica", "ir a cientifico", "activar modo cientifico"):
+        first = computer_use.deterministic_step(goal=goal, view=_NAVIGATION_CLOSED, history=[])
+        assert first["operation"] == "input.visible.click", goal
+        assert first["arguments"] == {"label": "Abrir navegación", "index": 1}, goal
+        opened = [_ok(1, "input.visible.click", label="Abrir navegación", index=1)]
+        picked = computer_use.deterministic_step(goal=goal, view=_NAVIGATION_OPEN, history=opened)
+        assert picked["arguments"] == {"label": "Científica Calculadora", "index": 2}, goal
+    # Opened once and the mode is not there: the shortcuts follow, the opener is never clicked again, «Cerrar
+    # navegación» and the «Más» operator are never taken for a menu.
+    empty = {**_NAVIGATION_OPEN, "controls": _NAVIGATION_OPEN["controls"][:1] + _NAVIGATION_OPEN["controls"][4:]}
+    opened = [_ok(1, "input.visible.click", label="Abrir navegación", index=1)]
+    assert computer_use.deterministic_step(goal="ir a cientifica", view=empty, history=opened)["arguments"] == {"key": "ctrl_k"}
+    assert computer_use.deterministic_step(goal="ir a cientifica", view=_NAVIGATION_CLOSED, history=opened)["arguments"] == {"key": "ctrl_k"}
+
+
+def test_the_navigation_opener_is_a_button_by_its_whole_name_never_a_switch_or_an_open_one() -> None:
+    def view(*controls: dict) -> dict:
+        return {"window": {"title": "App", "process": "app"}, "controls": list(controls), "text": {}}
+
+    for name, kind in (("Open Navigation", "Button"), ("Menú", "Button"), ("Más opciones", "SplitButton"),
+                       ("More options", "Button"), ("Main menu", "MenuItem"), ("Navegación", "Button")):
+        step = computer_use.deterministic_step(goal="ir a cientifica", view=view({"i": 0, "kind": kind, "name": name}), history=[])
+        assert step["arguments"] == {"label": name, "index": 0}, name
+    for control in (
+        {"i": 0, "kind": "ToggleButton", "name": "Menú"},
+        {"i": 0, "kind": "Button", "name": "Menú", "state": "off"},
+        {"i": 0, "kind": "Button", "name": "Abrir navegación", "state": "expanded"},
+        {"i": 0, "kind": "Button", "name": "Cambiar el tamaño del menú de navegación principal"},
+        {"i": 0, "kind": "Group", "name": "Botones de navegación"},
+        {"i": 0, "kind": "Pane", "name": "Panel de navegación"},
+    ):
+        step = computer_use.deterministic_step(goal="ir a cientifica", view=view(control), history=[])
+        assert step["arguments"] == {"key": "ctrl_k"}, control
+    # A search of the window still comes first.
+    searchable = view({"i": 0, "kind": "Button", "name": "Abrir navegación"}, {"i": 1, "kind": "Edit", "name": "Buscar una configuración"})
+    assert computer_use.deterministic_step(goal="ir a colores", view=searchable, history=[])["arguments"] == {
+        "label": "Buscar una configuración", "index": 1,
+    }
+
+
+def test_going_to_a_place_never_clicks_the_switch_that_carries_its_name() -> None:
+    settings = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [{"i": 0, "kind": "Button", "name": "Bluetooth", "state": "on"}],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="ir a bluetooth", view=settings, history=[])
+    assert step is None or step["operation"] != "input.visible.click"
+    # «poné el modo avión» where a switch is called so turns it on, as before.
+    toggle = {**settings, "controls": [{"i": 0, "kind": "Button", "name": "Modo avión", "state": "off"}]}
+    assert computer_use.deterministic_step(goal="activar modo avion", view=toggle, history=[])["arguments"] == {
+        "label": "Modo avión", "index": 0,
+    }

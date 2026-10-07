@@ -12,7 +12,8 @@ Tres responsabilidades, ninguna sabe de una aplicación concreta:
    persona (tú, vos, usted, infinitivo, inglés).
 2. **Elegir un paso** (`decide_step`): primero lo que el objetivo dicta sin
    modelo, incluida la búsqueda de un destino que no está en pantalla (campo de
-   búsqueda, ctrl_k / ctrl_f, desplazar la lista: `_find_step`); si no queda
+   búsqueda, botón de navegación o menú, ctrl_k / ctrl_f, desplazar la lista:
+   `_find_step`); si no queda
    nada, la vista compacta se serializa en pocas
    líneas, el modelo contesta UN acto con esquema JSON estricto a temperatura
    0, y unas comprobaciones sin modelo deciden si ese acto es legítimo: la
@@ -40,6 +41,7 @@ from .semantic.missions import (
     QUESTION_MARK,
     _key_from_words,
     fold,
+    gender_twin,
     label_alternatives,
 )
 
@@ -595,8 +597,18 @@ def deterministic_step(
         if typed:
             # The name was typed into a search: what to click is the result that names it, never the field's echo.
             return _find_step(target, view, history)
-        names = (target, *label_alternatives(target))
+        twin = gender_twin(target) if searching else None
+        names = (target, *label_alternatives(target), *((twin,) if twin else ()))
         control = next((found for name in names if (found := find_control(view, name, kind=kind)) is not None), None)
+        if control is not None and searching and _is_switch(control):
+            # Going somewhere never changes a setting on the way: a switch named like the place is not the place.
+            control = None
+        if control is None and wanted == "on":
+            # «poné el modo científico» where no switch is called so: the mode is chosen like a place (the
+            # Calculator's modes are items of its navigation).
+            mode = _mode_named(target)
+            if mode is not None:
+                return deterministic_step(goal=f"ir a {mode}", view=view, history=history, application=application)
         if control is None:
             # A window drawn without an accessible tree (CEF, Electron, canvas: measured on Steam, one control and
             # the navigation only in the OCR lines): the word written on screen is clicked by its label, and the
@@ -619,6 +631,18 @@ def deterministic_step(
             arguments["index"] = control["i"]
         return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
     return None
+
+
+_MODE_AROUND = re.compile(r"^(?:modo|vista|mode|view)\s+(?:de\s+)?(?P<before>\S.*)$|^(?P<after>\S.*?)\s+(?:mode|view)$")
+
+
+def _mode_named(target: str) -> str | None:
+    """«modo científico» → «científico», «scientific mode» → «scientific»: the mode a toggle goal names, or None."""
+
+    found = _MODE_AROUND.match(fold(target).strip())
+    if found is None:
+        return None
+    return (found.group("before") or found.group("after") or "").strip() or None
 
 
 # ------------------------------------------------------------- buscar el destino
@@ -801,6 +825,38 @@ def _search_affordance(view: dict, history: list[dict]) -> dict | None:
     return {"name": written[0]} if written else None
 
 
+# The button that opens a window's navigation or menu, by its whole name in either language: «Abrir navegación»,
+# «Open Navigation», «Menú», «Más opciones», «More options», «Main menu», a hamburger. Its opposite («Cerrar
+# navegación»), a group of buttons, a resize handle or a «Más» that is an operator are not.
+_NAVIGATION_OPENER = re.compile(
+    r"^(?:(?:abrir|abre|open|mostrar|muestra|show|expandir|expand|alternar|toggle)\s+(?:(?:el|la|the)\s+)?)?"
+    r"(?:(?:panel|barra|pane|menu)\s+(?:de\s+)?)?"
+    r"(?:navegacion|navigation|nav|menu|menu\s+principal|main\s+menu|hamburguesa|hamburger|"
+    r"mas\s+opciones|more\s+options|mas\s+acciones|more\s+actions|more)"
+    r"(?:\s+(?:menu|button|boton|pane|panel|principal|de\s+navegacion))?$"
+)
+_OPENER_KINDS = frozenset({"Button", "MenuItem", "SplitButton"})
+
+
+def _navigation_opener(view: dict, history: list[dict]) -> dict | None:
+    """The window's navigation or menu button not clicked yet in this sub-goal and not open already; in a web
+    browser, the page's own (the browser's menu is not where the page keeps its places). Never a switch."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if not isinstance(controls, list):
+        return None
+    for control in controls:
+        if (
+            isinstance(control, dict) and control.get("kind") in _OPENER_KINDS
+            and _NAVIGATION_OPENER.match(fold(control.get("name")).strip()) is not None
+            and "expanded" not in str(control.get("state") or "").split() and not _is_switch(control)
+            and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
+            and _of_the_page(view, control)
+        ):
+            return control
+    return None
+
+
 def _click(control: dict, reason: str) -> dict[str, object]:
     arguments: dict[str, object] = {"label": str(control.get("name") or "")}
     if isinstance(control.get("i"), int):
@@ -871,7 +927,8 @@ def _view_lines(view: dict) -> list[str]:
 def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object] | None:
     """The next step of looking the target up when it is not on screen, from the view and this sub-goal's history
     alone, the same in any application: a search field or button (click, type the name, click the result naming it),
-    else ctrl_k and ctrl_f (kept only when a field takes the keyboard, otherwise escape), else scrolling the list that
+    else the window's navigation or menu button (the target is then looked for among what appeared), else ctrl_k and
+    ctrl_f (kept only when a field takes the keyboard, otherwise escape), else scrolling the list that
     may hold it (up to three times while the view changes). None leaves the step to the model."""
 
     last = history[-1] if history else None
@@ -903,6 +960,12 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
         affordance = _search_affordance(view, history)
         if affordance is not None:
             return _click(affordance, _REASON_FIND)
+    opener = _navigation_opener(view, history)
+    if opener is not None:
+        # Modes, sections and pages often live behind the window's navigation or menu button (the Calculator's
+        # modes, a WinUI app's pages, a web app's «Menú»): opened before any blind shortcut, and the target is then
+        # looked for among what appeared.
+        return _click(opener, "el destino no está en pantalla: abro la navegación")
     # In a web browser ctrl_k searches the web from the address bar, not the page: only the page's find (ctrl_f).
     keys = ("ctrl_f",) if _web_browser(view) else _SEARCH_KEYS
     for key in keys:
