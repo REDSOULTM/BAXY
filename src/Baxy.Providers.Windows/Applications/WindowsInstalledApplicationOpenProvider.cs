@@ -700,7 +700,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         bool reused)
     {
         // M132: a click that follows this opening acts on the application opened (VisibleControlSurface).
-        External.VisibleControlSurface.NoteOpened(observation.ProcessId, launched: !reused);
+        External.VisibleControlSurface.NoteOpened(observation.ProcessId, launched: !reused, observation.WindowHandle);
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,
             request.ApplicationId,
@@ -1194,6 +1194,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             throw new ApplicationInventoryException("The installed executable identity is unavailable.");
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
+        Dictionary<uint, nint>? hostedFrames = null;
         try
         {
             foreach (Process process in processes)
@@ -1216,7 +1217,19 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     // app suspended in the background keeps a «visible» CoreWindow
                     // that DWM cloaks; nobody sees it, so it is not a running window
                     // to reuse — the launch below activates the app and its frame.
-                    if (window == 0 || !IsWindowVisible(window) || IsCloaked(window))
+                    bool usable = window != 0 && IsWindowVisible(window) && !IsCloaked(window);
+                    nint frame = 0;
+                    if (!usable && packaged && !strongIdentityOnly)
+                    {
+                        // Computer use (smoke run: app.open of a packaged app spent its whole
+                        // 30 s budget with the app on screen): a UWP app has no top-level
+                        // window of its own; the visible ApplicationFrameHost frame hosting
+                        // its process is what the person sees, so opening is verified there.
+                        hostedFrames ??= External.VisibleControlSurface.HostedFrames();
+                        usable = hostedFrames.TryGetValue(unchecked((uint)process.Id), out frame);
+                    }
+
+                    if (!usable)
                     {
                         continue;
                     }
@@ -1248,7 +1261,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
                     }
 
-                    string? executablePath = process.MainModule?.FileName;
+                    string? executablePath = ExecutableImagePath(process.Id);
                     if (string.IsNullOrWhiteSpace(executablePath)
                         || !Path.IsPathFullyQualified(executablePath))
                     {
@@ -1269,7 +1282,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
 
                     long creationTime = process.StartTime.ToUniversalTime().Ticks;
-                    foreach (nint operated in ownedWindows ?? VisibleTopLevelWindows(process.Id))
+                    foreach (nint operated in ownedWindows ?? (frame != 0 ? [frame] : VisibleTopLevelWindows(process.Id)))
                     {
                         observations.Add(new InstalledApplicationObservation(
                             process.Id,
@@ -1510,6 +1523,26 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
     }
 
+    /// <summary>
+    /// The executable of a process, read with the least access Windows grants on any process. Computer use v2-s06
+    /// («en el Administrador de tareas andá a Rendimiento»): Task Manager runs elevated, so reading its main module
+    /// was refused, its visible window never counted as the application and app.open polled its whole 30 s budget
+    /// with the window on screen. The limited query answers for an elevated window too: found is opened, and what
+    /// can be done there is the view's to say (VisibleControlSurface.RunsAboveUs).
+    /// </summary>
+    internal static unsafe string? ExecutableImagePath(int processId)
+    {
+        using SafeProcessHandle handle = OpenProcess(0x1000, false, processId);
+        if (handle.IsInvalid)
+            return null;
+        const int capacity = 1024;
+        char* buffer = stackalloc char[capacity];
+        uint length = capacity;
+        return QueryFullProcessImageName(handle, 0, buffer, ref length) && length is > 0 and < capacity
+            ? new string(buffer, 0, (int)length)
+            : null;
+    }
+
     public bool Activate(InstalledApplicationEntry entry)
     {
         string explorer = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
@@ -1685,6 +1718,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial SafeProcessHandle OpenProcess(
         uint desiredAccess, [MarshalAs(UnmanagedType.Bool)] bool inheritHandle, int processId);
+
+    [LibraryImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static unsafe partial bool QueryFullProcessImageName(
+        SafeProcessHandle process, uint flags, char* executablePath, ref uint length);
 
     [LibraryImport("kernel32.dll")]
     private static partial int GetApplicationUserModelId(

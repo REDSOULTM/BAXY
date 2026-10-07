@@ -360,10 +360,11 @@ def _completed_missing_message_text_request(
 
 
 # The primitives a computer-use mission does itself: a typed route made only of these is the mission's own steps said
-# one by one, so the mission takes over. A typed read such as client.channel.locate (DISCORD1839: the channel found
-# and the person asked before any join) is the catalog's own and keeps its route.
-_MISSION_SUBSUMES = frozenset({
-    "app.open", "input.key.press", "input.text.type", "input.visible.click", "input.visible.controls", "window.focus",
+# one by one, so the mission takes over. Locating a chat client's channel is one of them: the engine's search on
+# screen finds it in any client, and a voice channel's click is still confirmed by RiskPolicy on its label.
+MISSION_SUBSUMES = frozenset({
+    "app.open", "client.channel.locate", "input.key.press", "input.text.type", "input.visible.click",
+    "input.visible.controls", "window.focus",
 })
 
 
@@ -377,17 +378,38 @@ def _mission_takes_over(
     """A mission wins over a typed reading made only of its own primitives. With no typed reading it wins only when
     the clause is an act the reader knows how to check (go to, press, calculate, switch, type, click) and is not
     itself a catalog request («en Discord activá el micrófono»: the microphone); a loose verb («en Spotify baja el
-    volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission."""
+    volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission. A chained
+    mission wins when the reader checks every sub-goal and no typed reading covers them all."""
 
+    if intent is not None and set(intent.operations) <= MISSION_SUBSUMES:
+        return True
+    steps = getattr(mission, "steps", ())
+    if steps:
+        # A chain of steps inside applications («andá a la biblioteca en Steam y después a general en Discord») is
+        # one mission even when a clause alone is a typed request; a typed reading that covers every clause keeps
+        # its route (D21), and a clause the reader cannot check leaves the turn to the decider.
+        if any(step.success_check is None for step in steps):
+            return False
+        # The mission's own primitives in the typed reading are its steps said one by one; only the other typed
+        # operations can cover a sub-goal (measured: «… go to Desktop and create a new folder called tasks» read as
+        # open + click + a task to remember).
+        return intent is None or len(set(intent.operations) - MISSION_SUBSUMES) < len(steps)
     if intent is not None:
-        return set(intent.operations) <= _MISSION_SUBSUMES
+        # «en la calculadora multiplicá 15 por 3»: a calculation said inside the application is done in it; the
+        # typed evaluation does not show it there.
+        return set(intent.operations) <= {"calculator.expression.evaluate"} and str(
+            getattr(mission, "goal", "")
+        ).startswith("calcular ")
     if getattr(mission, "success_check", None) is None:
         return False
     clause = getattr(mission, "clause", "")
-    if not clause:
+    # Only a switch is weighed against the catalog («en Discord activá el micrófono»: the microphone). Going to,
+    # opening, pressing, typing or calculating inside an application is the screen's (measured: «en el Reloj andá a
+    # Cronómetro» was vetoed because «cronómetro» reads as a timer, and a lone click without the app was run).
+    if not clause or not str(getattr(mission, "goal", "")).startswith(("activar ", "desactivar ")):
         return True
     inner = _resolve_clause_effects(clause, available, application_names, game_catalog)
-    return inner is None or set(inner.operations) <= _MISSION_SUBSUMES
+    return inner is None or set(inner.operations) <= MISSION_SUBSUMES
 
 
 def _computer_use_mission_is_direct(text: str) -> bool:
@@ -2828,7 +2850,7 @@ def _ip_list_request(folded: str) -> bool:
 
 _DIRECTORY_CREATION_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:cre[aá]|crear|cre[aá]me|create|haz|hac[eé]|hazme|make)(?:me)?\s+"
-    r"(?:(?:una|un|a|the)\s+)?(?:carpeta|directorio|folder|directory)"
+    r"(?:(?:una|un|a|the)\s+)?(?:(?:nueva|new)\s+)?(?:carpeta|directorio|folder|directory)(?:\s+nuev[ao])?"
     rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_a>{_KNOWN_FOLDER_WORDS}))?"
     r"\s+(?:llamad[oa]|named|called|con\s+(?:el\s+)?nombre)\s+(?P<name>\"[^\"]+\"|'[^']+'|\S+?)"
     rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_b>{_KNOWN_FOLDER_WORDS}))?"
@@ -2841,6 +2863,65 @@ def _directory_creation_request(text: str) -> re.Match[str] | None:
     """Match one literal folder creation with a name."""
 
     return _DIRECTORY_CREATION_REQUEST.match(text.strip())
+
+
+# Live 2026-10-07 «en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba»: the decider
+# planned folder.open + create.directory, no reader read either clause, the model's extraction left the folder out
+# and the question it asked («¿en qué carpeta…?») was vetoed (machine_slot_ask) until the turn ended in ⚠. Going to a
+# known folder and creating a named folder there is two catalog effects: the folder opened, and the new folder made
+# inside it unless the creation names another. Read on the surface (case-insensitive) so the name keeps its letters.
+_EXPLORER_PLACE = r"(?:(?:el|the)\s+)?(?:explorador(?:\s+de\s+archivos)?|file\s+explorer|explorer)"
+_KNOWN_FOLDER_SURFACE = r"(?:escritorio|desktop|descargas|downloads|documentos|documents)"
+_KNOWN_FOLDER_NAVIGATION = (
+    r"[¿?¡!\s]*(?:(?:por\s+favor|please)\s*,?\s*)?"
+    rf"(?:(?:en|in|desde|from)\s+{_EXPLORER_PLACE}\s*,?\s+)?"
+    r"(?:abr[eií]|abr[ií]me|abrir|and[aá]|ve|vete|v[aá]|ir|entr[aá]|naveg[aá]|pas[aá]|open|go|navigate|head|switch)"
+    r"(?:\s+(?:a|al|en|hasta|to|into|over\s+to))?"
+    r"(?:\s+(?:la|el|mi|mis|my|the))?"
+    r"(?:\s+(?:carpeta|folder|directorio)(?:\s+(?:de|of))?)?"
+    r"(?:\s+(?:la|el|mis|my|the))?"
+    rf"\s+(?P<folder>{_KNOWN_FOLDER_SURFACE})"
+    r"(?:\s+(?:folder|carpeta))?"
+    rf"(?:\s+(?:en|in|on|with|desde|from)\s+{_EXPLORER_PLACE})?"
+)
+_FOLDER_THEN_DIRECTORY = re.compile(
+    rf"^(?P<open>{_KNOWN_FOLDER_NAVIGATION})"
+    r"\s*(?:,\s*|\s+)(?:(?:y|and)\s+)?(?:(?:luego|despu[eé]s|then|ah[ií]|all[ií]|there)\s*,?\s+)?"
+    r"(?P<create>\S.*)$",
+    re.IGNORECASE,
+)
+
+
+@dataclass(frozen=True, slots=True)
+class FolderThenDirectory:
+    """«andá a Documentos y creá una carpeta llamada X»: the folder gone to and the creation said after it."""
+
+    folder: str
+    open_clause: str
+    creation: re.Match[str]
+
+    @property
+    def creation_folder(self) -> str:
+        """The catalog root of the new folder: the one the creation names, else the one gone to."""
+
+        named = self.creation.group("folder_a") or self.creation.group("folder_b")
+        return _KNOWN_FOLDER_ENUM[_fold(named)] if named else self.folder
+
+
+def folder_then_directory_request(text: str) -> FolderThenDirectory | None:
+    """Going to a known folder, then creating a named folder (es/en, File Explorer named or not); None otherwise."""
+
+    match = _FOLDER_THEN_DIRECTORY.match(text.strip())
+    if match is None:
+        return None
+    creation = _directory_creation_request(match.group("create"))
+    if creation is None:
+        return None
+    return FolderThenDirectory(
+        _KNOWN_FOLDER_ENUM[_fold(match.group("folder"))],
+        match.group("open").strip(" \t,;"),
+        creation,
+    )
 
 
 _REMINDER_IDIOM = re.compile(
@@ -13353,6 +13434,15 @@ def _resolve_clause_effects(
         # is the sensitive write (confirmation). The raw text is the evidence so
         # the literal keeps its case and accents.
         return EffectIntent(("clipboard.write.text",), (text,))
+    if {"filesystem.folder.open", "filesystem.create.directory"} <= available:
+        said = next((form for form in (text, folded) if folder_then_directory_request(form) is not None), None)
+        if said is not None:
+            # Live 2026-10-07: the folder gone to is opened; the creation clause is read with what came before it,
+            # so the new folder is made inside the one opened (``FolderThenDirectory.creation_folder``).
+            gone_to = folder_then_directory_request(said)
+            return EffectIntent(
+                ("filesystem.folder.open", "filesystem.create.directory"), (gone_to.open_clause, said.strip()),
+            )
     if (
         "filesystem.create.directory" in available
         and _directory_creation_request(folded) is not None

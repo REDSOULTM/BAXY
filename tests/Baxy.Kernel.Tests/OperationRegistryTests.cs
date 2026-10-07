@@ -102,9 +102,36 @@ public sealed class OperationRegistryTests
     [TestCase("input.visible.click", """{"label":"Biblioteca"}""", PolicyDecision.Allow)]
     [TestCase("input.visible.click", """{"label":"Cotele"}""", PolicyDecision.Allow)]
     [TestCase("input.visible.click", """{"label":"Recall the callback"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Publicar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Post"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Responder a todos"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Reply"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comentar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comment"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Compartir"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Share"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Unirse"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Join meeting"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comentarios (12)"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Shared with me"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Postres"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Respuestas guardadas"}""", PolicyDecision.Allow)]
     [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
     [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
+    // Safety review 2026-10-07: the send verb opens the label whatever follows it, a shortcut hint or a format
+    // character does not hide it, and space on a composer's send control sends like Enter.
+    [TestCase("input.key.press", """{"key":"space","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar a Ron92"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Send Friend Request"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Reenviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Forward"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Invitar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Invite people to this server"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar (Ctrl+Enter)"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"En\u200Bviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviados"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Invitaciones"}""", PolicyDecision.Allow)]
     public void Normal_mode_asks_when_the_exact_step_reaches_another_person(
         string operation,
         string arguments,
@@ -123,6 +150,91 @@ public sealed class OperationRegistryTests
                     ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation, document.RootElement),
                 Is.EqualTo(PolicyDecision.Allow));
         });
+    }
+
+    // A click that cannot be taken back — buying, paying, deleting, uninstalling — asks in normal mode like one that
+    // reaches a person, but it is not one: it never marks a mission as having joined anybody.
+    [TestCase("Comprar ahora", true)]
+    [TestCase("Buy now", true)]
+    [TestCase("Pagar", true)]
+    [TestCase("Pay $4.99", true)]
+    [TestCase("Proceed to checkout", true)]
+    [TestCase("Realizar pedido", true)]
+    [TestCase("Place your order", true)]
+    [TestCase("Eliminar", true)]
+    [TestCase("Borrar historial", true)]
+    [TestCase("Delete", true)]
+    [TestCase("Desinstalar", true)]
+    [TestCase("Uninstall", true)]
+    // Safety review 2026-10-07: a destructive verb anywhere in a short label, the Delete key outside a text field.
+    [TestCase("No guardar", true)]
+    [TestCase("Don't save", true)]
+    [TestCase("Descartar cambios", true)]
+    [TestCase("Discard", true)]
+    [TestCase("Cerrar sin guardar", true)]
+    [TestCase("Mover a la papelera", true)]
+    [TestCase("Move to Trash", true)]
+    [TestCase("Vaciar papelera de reciclaje", true)]
+    [TestCase("Empty Recycle Bin", true)]
+    [TestCase("Quitar", true)]
+    [TestCase("Quitar de la biblioteca", true)]
+    [TestCase("Remove", true)]
+    [TestCase("Limpiar", true)]
+    [TestCase("Clear all", true)]
+    [TestCase("Archivo: eliminar", true)]
+    [TestCase("Delete (Supr)", true)]
+    [TestCase("Eli\u200Bminar", true)]
+    [TestCase("Elementos eliminados", false)]
+    [TestCase("Deleted items", false)]
+    [TestCase("You can remove any of these items from your list later", false)]
+    [TestCase("Carrito de compras", false)]
+    [TestCase("Payment methods", false)]
+    [TestCase("Papelera de reciclaje", false)]
+    [TestCase("Biblioteca", false)]
+    public void Normal_mode_asks_before_a_click_that_cannot_be_undone(string label, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(JsonSerializer.Serialize(new { label }));
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.CannotBeUndone("input.visible.click", document.RootElement), Is.EqualTo(asks));
+            Assert.That(RiskPolicy.ReachesAPerson("input.visible.click", document.RootElement), Is.False);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.False);
+        });
+    }
+
+    [TestCase("""{"key":"delete"}""", true)]
+    [TestCase("""{"key":"delete","target":"message_composer"}""", true)]
+    [TestCase("""{"key":"delete","target":"text_field"}""", false)]
+    [TestCase("""{"key":"backspace"}""", false)]
+    public void The_delete_key_asks_unless_the_keyboard_is_on_a_text_field(string arguments, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.EqualTo(asks));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.key.press", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+        });
+    }
+
+    [TestCase("Cotele (canal de voz)", true)]
+    [TestCase("Join meeting", true)]
+    [TestCase("Unirse", true)]
+    [TestCase("Enviar", false)]
+    [TestCase("Publicar", false)]
+    [TestCase("", false)]
+    public void Only_a_label_that_joins_a_call_or_meeting_joins(string label, bool joins)
+    {
+        Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
     }
 
     // Closing every tab of the person's browser loses their session: that exact

@@ -135,6 +135,40 @@ public sealed class FieldProductHonestTerminalTests
         return viewModel;
     }
 
+    // Live 2026-10-07: «en el Explorador de archivos andá a Documentos y creá una carpeta
+    // llamada baxy-prueba» → the question was vetoed, every recomposition failed and the
+    // person read «⚠ (internal_code;retry_exhausted)». The line is the floor's data
+    // sentence for what the turn was, in the person's language; never the code.
+    [TestCase("clarification", "en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba", false)]
+    [TestCase("clarification", "in File Explorer go to Documents and create a folder named baxy-test", true)]
+    [TestCase("status", "What time is it?", true)]
+    public void FailedCompositionLeavesTheFloorSentenceNotTheDiagnostic(string intent, string userText, bool english)
+    {
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", intent, null), userText, new JsonObject(), "t0");
+
+        string line = MainWindowViewModel.CompositionFailureFallback(pending, "internal_code;retry_exhausted");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(line, Is.EqualTo(OperationFloor.CompositionFailureSentence(intent, english)));
+            Assert.That(line, Is.Not.Empty);
+            Assert.That(line, Does.Not.Contain("internal_code").And.Not.Contain("retry_exhausted").And.Not.Contain("⚠"));
+        });
+    }
+
+    // Owner's M75 ruling: a turn that did nothing keeps its ⚠ marker; only a question still to ask and a result have
+    // a floor sentence.
+    [Test]
+    public void AFailedConversationKeepsTheMarker()
+    {
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", "conversation", null), "¿qué me recomendás para cenar?", new JsonObject(), "t0");
+
+        Assert.That(MainWindowViewModel.CompositionFailureFallback(pending, "internal_code;retry_exhausted"),
+            Is.EqualTo("⚠ (internal_code;retry_exhausted)"));
+    }
+
     [TestCase(false)]
     [TestCase(true)]
     public async Task CompositionFailureProjectsARecoverableStateWithoutInventingProse(
@@ -163,14 +197,17 @@ public sealed class FieldProductHonestTerminalTests
                 (string?)item["type"] == "composition_failed"
                 && (string?)item["cause"] == "retry_exhausted"), Is.True);
             // d8eb8836 (owner session 2026-09-21 16:08): a failed composition leaves
-            // exactly one BAXY line, the fixed fallback with its diagnostic code;
-            // nothing else is written and no prose is invented.
+            // exactly one BAXY line; nothing else is written and no prose is invented.
+            // Live 2026-10-07: that line is the operation floor's data sentence, never
+            // the raw diagnostic code (which stays in the composition_failed event).
             List<JsonObject> activity = sink.Snapshot().Where(item =>
                 (string?)item["type"] == "activity").ToList();
             Assert.That(activity, Has.Count.EqualTo(1));
             Assert.That((string?)activity[0]["entry"]?["src"], Is.EqualTo("BAXY"));
             Assert.That((string?)activity[0]["entry"]?["msg"],
-                Is.EqualTo(MainWindowViewModel.CompositionFailureFallback("retry_exhausted")));
+                Is.EqualTo(MainWindowViewModel.CompositionFailureFallback(pending, "retry_exhausted")));
+            Assert.That((string?)activity[0]["entry"]?["msg"], Does.Not.Contain("retry_exhausted"));
+            Assert.That((string?)activity[0]["entry"]?["msg"], Does.Not.Contain("⚠"));
         });
 
         if (recoverWithNewTurn)

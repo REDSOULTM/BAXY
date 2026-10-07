@@ -83,9 +83,10 @@ pedida, pero un clic caería sobre la que la tapa. La misión se detiene con
       "id": "42.1837.4.12",          // RuntimeId UIA; vale sólo para esta vista
       "state": "",                   // tokens separados por espacio, ver §1.3
       "value": null,                 // Value/RangeValue si el control lo expone (≤ 120 chars)
-      "rect": {"x": 120, "y": 500, "w": 60, "h": 48},   // píxeles de pantalla
+      "rect": {"x": 120, "y": 500, "w": 60, "h": 48},   // píxeles físicos de pantalla
       "zone": "BL",                  // rejilla 3×3 sobre la ventana, ver §1.4
-      "color": "gray"                // color dominante HSV del rectángulo, ver §1.5
+      "color": "gray",               // color dominante HSV del rectángulo, ver §1.5
+      "itemType": "Carpeta de archivos" // sólo elementos de lista, cuadrícula o árbol que exponen ItemType (v2)
     }
   ],
   "controlCount": 43,                // accionables visibles antes del límite
@@ -109,7 +110,12 @@ Reglas:
   etiqueta sobre un repetido es ambiguo y exige índice.
 - **La ventana** es la de delante según `VisibleControlSurface` (raíz `GA_ROOT`, la ventana
   ajena más alta cuando la de delante es la nuestra). Título, nombre de proceso y pid vienen
-  de Win32, no de UIA.
+  de Win32, no de UIA. Con `processId`, la ventana del proceso es la de delante si es suya y
+  usable; si no, la mayor usable (visible, no oculta por DWM, con título): explorer.exe guarda un
+  marco oculto mayor que la ventana de carpeta (`ChooseProcessWindow`).
+- **Píxeles físicos.** Los rectángulos, la captura y los límites de DWM están en píxeles
+  físicos; el clic por OCR/visión, la rueda y `WindowFromPoint` ponen el hilo en
+  `PER_MONITOR_AWARE_V2` (a 125 % un punto lógico caía tres filas más abajo).
 - **Sin árbol útil** (≤ 1 control: CEF/SDL/canvas), `controls` trae lo que hay y `text` se
   rellena siempre, con `authority: windows_media_ocr_lines`. Es el caso medido en Steam y
   en el diálogo de descarga.
@@ -155,8 +161,8 @@ Win32, UWP, Electron, canvas).
 | Acto | Operación | Argumentos | Postlectura (qué prueba el efecto) |
 |---|---|---|---|
 | pulsar | `input.visible.click` | `label` (obligatorio), `index?` (de la vista), `controlId?` (RuntimeId de la vista) | `selected` \| `absentOrDisabled` \| `surfaceChanged`; con índice/id, el nombre del control debe coincidir con `label` |
-| escribir | `input.text.type` | `text` | SendInput aceptado + el control enfocado no es `password` |
-| tecla | `input.key.press` | `key` (enum cerrado, ahora con combos `ctrl_a ctrl_c ctrl_f ctrl_k ctrl_t ctrl_w ctrl_z f5`), `target?` (`message_composer`) | SendInput aceptado |
+| escribir | `input.text.type` | `text`, `window?` (la ventana de la misión, v2) | SendInput aceptado + el control enfocado no es `password`; en una misión, el campo muestra el texto (§7) |
+| tecla | `input.key.press` | `key` (enum cerrado, ahora con combos `ctrl_a ctrl_c ctrl_f ctrl_k ctrl_t ctrl_w ctrl_z f5`), `target?` (`message_composer` \| `text_field`), `window?` (la ventana de la misión, v2) | SendInput aceptado en esa ventana delante |
 | desplazar | `input.scroll` | `direction` (`down`\|`up`), `amount` (1..10) | hash de superficie cambió; si no, `scroll_surface_unchanged` |
 | abrir / traer al frente | `app.open` | `appId` del catálogo instalado | proceso vivo + ventana visible + foco (reutiliza la instancia que ya corre) |
 | enfocar ventana | `window.focus` | `windowId` (de `window.resolve`) | identidad + foreground |
@@ -185,7 +191,9 @@ con los argumentos delante:
 |---|---|---|
 | clic, tecla, texto, scroll, abrir | directo | D3: pulsar y escribir en apps no destruye |
 | clic cuyo `label` nombra un **canal de voz / llamada** (`canal de voz`, `voice channel`, `llamar`, `call`, `unirse a la llamada`, `join call`) | **confirma** | D15: alguien te oye; «voz pregunta antes y se queda» |
-| clic cuyo `label` es **enviar** (`enviar`, `send`) o `enter` con `target: message_composer` | **confirma** | llega a una persona (misma regla que `message.send`) |
+| clic cuyo `label` **empieza** por enviar, reenviar, invitar o responder (`send`, `forward`, `invite`, `reply`), o `enter`/`space` con `target: message_composer` | **confirma** | llega a una persona (misma regla que `message.send`) |
+| clic cuyo `label` (≤ 6 palabras) lleva un verbo destructivo (no guardar, descartar, papelera, quitar, vaciar, limpiar, eliminar, desinstalar) o comprar/pagar en cualquier etiqueta | **confirma** | no se deshace (revisión de seguridad v2) |
+| `delete` sin `target: text_field` | **confirma** | fuera de un campo de texto borra lo seleccionado |
 | bypass | todo directo | identidad §«dos modos» |
 
 La regla vive en `RiskPolicy.Evaluate(risk, mode, operation, arguments)`: el Kernel decide
@@ -288,7 +296,13 @@ independientes; nunca por el modelo.
 check   := term ( "|" term )*          # OR de términos; un término con "&" es AND
 term    := atom ( "&" atom )*
 atom    := "text:" needle              # needle plegada dentro de algún control o línea OCR
-         | "control:" name [ ":" state ]   # control con ese nombre (plegado) y, si se da, ese estado (selected|on|off|expanded|focused)
+         | "control:" name [ ":" state ]   # control con ese nombre (plegado) y, si se da, ese estado (selected|current|on|off|expanded|focused)
+                                       # current: selected y no es un elemento de contenido (ListItem/DataItem fuera de la
+                                       # columna izquierda L/TL/BL, o en ella pero con un mosaico del mismo tamaño ±25 % en su
+                                       # fila); es el estado de «ir a X». «control:=X»: el nombre entero. Un nombre nunca lleva
+                                       # «&» ni «|» (se comprueba por la pieza de antes; la del usuario, por la más larga ≥ 4).
+         | "header:" name               # el último clic verificado nombra X y un Text arriba (T/TL/TR) que lo nombra apareció
+                                       # tras ese clic (la cabecera de un modo: «Modo de calculadora Científica»)
          | "title:" needle              # título de la ventana de delante
          | "process:" name              # proceso de la ventana de delante
          | "count:" kind op N           # número de controles de ese kind (op: <= < == >= >)
@@ -312,6 +326,16 @@ Ejemplos de las seis misiones de CU1959:
 `stepDone:<op>[:<arg>]` es un atom más: se cumple cuando un paso verificado con esa
 operación (y ese `key`/`label`) está en la misión.
 
+**Eco de la consulta** (`QueryEchoNames`). Mientras lo último tecleado sea el nombre del lugar en una
+búsqueda o una barra de direcciones y nada lo haya enviado, o una búsqueda lo envió y su cuadro aún lo
+contiene sin que un clic haya ido de los resultados al lugar por su nombre, `title:`, `page:` y
+`control:X:selected|current` no se cumplen: la ventana repite la consulta («imagenes - Resultados de la
+búsqueda en ETC», su pestaña elegida igual). Un clic que sólo seleccionó (recibo `selected` o un
+`ListItem`/`DataItem`/`TreeItem`) no sale de los resultados. Una dirección, un «ir a» o un selector rápido
+enviados llevan al lugar; un término que pide el acto de buscar (un `stepDone` junto a `title:`/`text:`,
+`SearchResultsProve`) se queda con sus resultados. Lo mismo vale para la evidencia que cita el modelo:
+lo que el sub-objetivo tecleó nunca es evidencia de haber llegado (`CitationEchoesQuery`).
+
 ### 4.4 Protocolo mente ↔ shell: `computer.use.step`
 
 Petición del shell (JSONL, mismo canal que `plan.ground`):
@@ -323,7 +347,9 @@ Petición del shell (JSONL, mismo canal que `plan.ground`):
   "goal": "ir a la biblioteca",
   "application": "Steam",
   "successCheck": "…",
-  "view": { …§1.2, sin surface/elapsedMs/rect… },
+  "view": { …§1.2, sin surface/elapsedMs/id; con rect e itemType, que la mente usa y el prompt del modelo no imprime;
+            newText: lo que la última mirada vio nuevo; newTextAfterClick: lo que apareció en la mirada que siguió al
+            último clic verificado del sub-objetivo (≤ 12 líneas; vacío sin clic), con sólo pasos fallidos después… },
   "history": [ {"step": 1, "operation": "app.open", "applicationName": "Steam", "ok": true},
                {"step": 2, "operation": "input.visible.click", "label": "Tienda", "ok": true, "changed": true} ],
   "budgetLeft": 10
@@ -443,6 +469,18 @@ Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del sh
   falla o su `expect` no se ve (desvío), y desde ahí sigue el bucle normal. Si la
   reproducción termina con éxito, `replays++`; si se desvió, se sustituye por la secuencia
   nueva si esta llegó.
+- **Teclas de activación** (Enter, espacio, Supr) aprendidas no se reproducen ni guardan su
+  `target`: ese paso lo decide la mente sobre la vista actual y la reproducción sigue después
+  (`ActsOnTheFocusedItem`). Un clic aprendido se fija por identidad al único control de la vista
+  con su nombre.
+- **Olvida** (v2) un procedimiento que se desvió, o cuyos pasos reproducidos toparon con una pantalla
+  que no respondió (dejó de cambiar, sin paso visible, sin evidencia, paso repetido, presupuesto o
+  tiempo agotados), uno cuyo propio paso cortó el bucle (sus argumentos ya no encajan, su ventana no es
+  la de la app, no se pudo enviar) y uno con argumentos grabados inválidos; lo conserva ante una vista
+  no disponible, una ventana tapada o elevada, el modelo sin respuesta o un paso del modelo que no se
+  pudo enviar (`ForgetsProcedure`). Al
+  abandonar una reproducción la cuenta de vistas sin cambio vuelve a cero: decide la rutina (reintento
+  por identidad, BUSCAR) y luego el modelo.
 - **Mide** el ahorro: `modelMs` de la primera vez frente a `lastReplayMs`.
 
 ---
@@ -469,3 +507,226 @@ Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del sh
   dejar una, releyendo el marco tras cada cierre (`documentacion/NAVEGADOR_USUARIO.md`).
 - Los **modelos de visión** (§3.4) y su decisión con números.
 - La **política de cierre** de lo que la misión abrió: nada se cierra al terminar (D16).
+
+---
+
+## 7. Versión 2 (2026-10-07): universal, encadenado y rápido
+
+Pedido del dueño: que BAXY use el PC como una persona —cualquier app, por cómo está hecho el motor—, con
+misiones encadenadas y lo más rápido posible con calidad.
+
+**Encadenado.** `mission.computer.use` acepta `steps` (1..8 sub-objetivos `{goal, application, successCheck}`) y
+`budgetSteps` hasta 30. La mente parte el pedido en cláusulas de hacer («abrí X, andá a Y y escribí Z»), arrastra la
+aplicación y la cambia cuando una cláusula nombra otra. El bucle corre los sub-objetivos en orden (≤10 pasos y 30 s
+cada uno, ≤30 pasos y 180 s en total), con su propia comprobación, historial y procedimiento; al cambiar de
+aplicación olvida el proceso adoptado. El resultado trae `subgoals[]`; el final narra cada parte o la primera que
+no se logró.
+
+**BUSCAR (universal, sin modelo, `computer_use._find_step`).** Si el destino no está en la vista: el campo o botón
+de búsqueda visible (léxico bilingüe) → escribir el destino → clic en el resultado que lo nombra (nunca Enter: un
+canal de voz sigue siendo un clic que `RiskPolicy` confirma); un botón de búsqueda pulsado que cambió la ventana
+abrió su cuadro y se escribe aunque el árbol no informe el foco (el buscador rápido de Discord). Si no hay buscador y
+el objetivo es «ir a», el botón de navegación o menú de la ventana aún no usado («Abrir navegación», «Open
+Navigation», «Menú principal», «Más opciones», «Main menu», «Hamburger menu»; por su nombre entero,
+`Button`/`MenuItem`/`SplitButton`, nunca un interruptor ni uno ya `expanded`; «Menú» o «More» solos no valen, y con
+campo de dirección sólo uno dentro de la página) y el destino se busca entre lo que apareció (los modos de la
+Calculadora, live n2); después `ctrl_k` y `ctrl_f` (sólo si aparece un campo con foco; si no, Escape); después
+desplazar hasta tres veces la lista con más ítems (`input.scroll {index}`: `ScrollPattern` de ese control o la rueda
+en su centro); sólo entonces el modelo. Un clic en algo visible que nombra el destino sin llegar (una tarjeta con su
+nombre) no cierra BUSCAR: sigue con el buscador; si el clic fallido fue en el control del propio lugar, el lugar se
+busca como lo ofrece la ventana, sólo cuando se nombró sin tipo («la pestaña de Gmail» no se busca). Dos o más
+controles con el nombre del destino: el único ítem de navegación entre ellos (`TreeItem`/`ListItem`/`TabItem` en la
+columna izquierda, no contenido) es el lugar; si no hay uno solo, se busca, nunca el clic en la palabra escrita. Una
+frase que sólo menciona el nombre no es el lugar: un `Text`/`Group`/`Pane`/`Custom`/`Document` lo contiene sólo con ≤ 6
+palabras más que él (Configuración: la descripción del proxy por «Wi-Fi»). Un menú abierto por el clic en el destino
+(lo nuevo tras ese clic: `newText`, o `newTextAfterClick` si después sólo hubo clics fallidos; 2–8 líneas cortas de
+palabras reales, sin ruido de OCR) elige la entrada que nombra el objetivo; si ninguna, la página propia del lugar
+(«Página principal», «Inicio», «Home»…) y si no, la primera entrada sólo cuando el menú está en el árbol; nunca una
+entrada que actúa (jugar, instalar, iniciar, ejecutar, comprar, enviar, unirse, desinstalar, eliminar). Nunca se
+pulsa por su nombre el cuerpo de la ventana (un `Pane`/`Document`/`Window`/`Custom`/`Group` que cubre ≥ 80 %: «Chrome
+Legacy Window»). Sin árbol, una palabra del host que empieza o termina con el lugar (≥ 5 letras) lo nombra
+(«steamcommunity»: comunidad/community).
+
+**Modos.** «cambiá/pasá/switch to X» se leen como modo sólo con palabra de modo (modo, vista, mode, view) o con el
+nombre propio de un modo (científica, estándar, programador, gráfica, conversor y sus nombres en inglés): `ir a X`;
+lo demás lo lee el navegador, que quita el sustantivo de lugar («cambiá al canal general» → `ir a general`). «la vista
+de detalles», «the details view» → `ir a detalles`; «vista previa» (sin «de») queda entera y se comprueba también por
+X sola. «poné el modo X», «set it to X mode» → `activar modo X` (el interruptor así llamado si existe; si no, se elige
+el modo como un lugar). Un modo con nombre propio se comprueba con `control:X:selected|title:X|page:X|header:X`
+(`_mode_check`): la Calculadora no cambia título ni selección, su cabecera nueva dice «Modo de calculadora
+Científica»; un clic sobre algo que nombra X no prueba nada (una tarjeta, una carpeta o un canal también lo llevan).
+Un modo que ninguna ventana ofrece por su nombre («modo avión», «dark mode») se comprueba sólo con `control:modo
+X:on` o `control:X:selected`, nunca página, título ni cabecera (la página «Modo avión» queda elegida y titulada con
+el interruptor apagado). El adjetivo vale en los dos géneros («modo científico» / «Científica») sólo en modos: un
+lugar conserva el género dicho, tampoco como errata. Un elemento «<lugar> <aplicación>» es el lugar («Científica
+Calculadora» en la navegación de la Calculadora: la palabra del título de ≥ 4 letras al final se quita).
+
+**Nombres en ambos idiomas.** Las apps que trae Windows se nombran en español e inglés (Paint, Terminal, El tiempo,
+Vínculo móvil, Editor del Registro, Seguridad de Windows…; datos del catálogo), y «the Clock app», «la aplicación
+Reloj», «la app de Configuración» nombran la app sin la palabra «app» (`catalog.application_name_without_frame`, también
+en «in the X app go to …»). Los lugares de las ventanas tienen sus dos nombres en `semantic/missions._LABEL_ALIASES`
+(cronómetro/stopwatch, alarmas, reloj mundial, colores, temas, pantalla de bloqueo, hora e idioma, rendimiento,
+científica, este equipo…; ~60 pares nuevos el 2026-10-07): la comprobación acepta cualquiera de ellos y el prompt
+del modelo dice que el control se elige por su significado. Los nombres de una app sólo cuentan para una palabra que
+ningún lugar lleva («alarmas» nunca acepta el título «Reloj»); {inicio, start} y las palabras de menú que son actos
+(archivo, vista, nuevo, abrir) no tienen otro nombre.
+
+**Elemento de contenido elegido.** Tras un clic verificado en un elemento de contenido que quedó elegido sin que el
+título nombre el lugar (un clic en «Descargas» del Explorador), el paso es Enter, con las condiciones de seguridad de
+abajo. Contenido es un `ListItem`/`DataItem` fuera de la columna izquierda o, dentro de ella, uno con un mosaico del
+mismo tamaño (±25 %) en su fila; un ítem de navegación junto a una tarjeta de la página sigue siendo navegación (el
+Reloj: las alarmas de la página comparten fila con «Alarma»).
+
+**En una conversación.** Una orden que nombra una aplicación instalada y se lee sola como un paso dentro de ella es su
+propia misión, no la del decisor de contexto (`_self_contained_mission`: en caliente, el decisor elegía un clic suelto
+o el cálculo tipado y fallaba). Un seguimiento sin aplicación sigue yendo al decisor; si su reformulación («Haz clic
+en Configuración en Discord.») la lee el lector como un paso dentro de una aplicación y el decisor eligió una primitiva
+de la misión (`MISSION_SUBSUMES`), el turno es `mission.computer.use` con esa reformulación como objetivo; una
+operación tipada elegida por el decisor conserva su ruta (D21). La aplicación es la dicha tras el último «en» («hacé
+clic en Ajustes en Steam»), y ese corte sólo enmarca cláusulas de lugar (ir a, hacer clic, seleccionar, activar,
+desactivar): «escribí Cuphead en el buscador en Steam» escribe «Cuphead».
+
+**Objetivos libres.** Cuando el decisor elige el motor para un pedido que el lector no sabe partir,
+`semantic.missions.free_form_arguments` usa las palabras de la persona tal cual como `goal` (≤ 512 bytes) y, como
+`application`, la app instalada que el pedido nombre (si no, la ventana de delante); sin `successCheck`: termina el
+`done` del modelo con evidencia en pantalla.
+
+**Último recurso.** Una orden sobre el PC que el turno cerró como límite pasa al motor con las palabras de la persona
+como objetivo (`semantic.missions.engine_can_try`), salvo preguntas, lugares fuera del PC, prohibiciones y objetivos
+de borrar, formatear, desinstalar, comprar o pagar.
+
+**Velocidad.** Paso del modelo con gramática GBNF de acto primero (`{"act":"click","i":12}`, ~10 tokens de salida en
+vez de ~148, con caché de prompt: 4 s → 0,2–0,7 s en llama-server; en vivo 0,66–1,0 s con el prefill); 30 controles
+ordenados por el objetivo (primero los que comparten palabras con él, luego enfocados, seleccionados y buscadores)
+con la nota «N de M»; teclas por `SendInput` desde el propio proceso (46 ms la tecla en el provider, 67–79 ms el paso en vivo) y texto carácter a carácter a
+35 ms (medido en el Bloc de notas de Windows 11: su editor lee cada tecla cuando llega a ella, así que más rápido
+sale la última repetida —«lista: pan» → «lista:nnnn» a 3 ms, «lista:ppan» a 20 ms— y las teclas virtuales pierden
+el Shift; desde 25 ms sale íntegro; un «escribí X» sólo cuenta si el campo enfocado que expone su valor muestra X); clic sin esperas fijas: el worker responde al
+invocar y la postlectura pregunta el estado UIA cada 50 ms hasta 500 ms y compara la superficie desde 150 ms;
+vista con captura y OCR en paralelo al árbol y OCR sólo cuando hace falta; 150 ms de asentamiento entre pasos (antes
+400/1 200 ms); apertura de apps UWP verificada en su marco `ApplicationFrameHost` (antes agotaba 30 s); worker UIA
+arrancado en segundo plano al iniciar el Core; sin rótulos de progreso escritos por el LLM durante una misión (el
+estado se publica como «acting»); la ventana de un proceso se elige entre las usables (antes una vista atada al
+proceso agotaba ocho reintentos, ~1,8 s, sobre el marco oculto de explorer.exe).
+
+**Escribir y enviar.** El texto va con la grafía que dijo la persona, sin comillas. Sin foco en un campo de texto,
+primero se pulsa el campo de mensaje o el único editable. «mandalo / envialo / send it» es el acto enviar: Enter con
+`target: message_composer`, que `RiskPolicy` confirma siempre; un Enter en un campo de mensaje cuyo contenido la
+pantalla no expone (`value` nulo, distinto de `""`) también cuenta como envío y se pregunta antes. Un buscador que
+ya tiene otro texto se selecciona entero (`ctrl_a`, sólo en un campo de búsqueda) antes de escribir; uno que ya
+tiene el nombre no se reescribe; un campo con texto que no es una búsqueda queda para el modelo. Un paso de
+escritura es una sola línea.
+
+**Voz del final** (`documentacion/00_IDENTIDAD.md`). El final de una misión lo dice quien actuó: primera persona,
+informal y cálido, en el idioma de la persona, una frase; confirma el estado que la ventana muestra ahora (dónde
+está, el valor pedido, dicho como lo escribe `seen.screen`), no los clics, teclas ni pasos, y nunca nombra la misión,
+la evidencia, la comprobación, la pantalla ni la vista. Una tecla o un texto: sólo que está hecho en esa app, nunca
+lo que causó. Un «ir a X» sólo fue a X: nunca dice que puso, creó, inició, encendió o cambió algo allí (el Reloj:
+«Alarma» se contaba como una alarma puesta). El fallo se dice plano, con su causa (`seen.stoppedBecause`) y sin
+disculpa; en una cadena no lograda, primero lo que no se pudo y su causa, después lo hecho, hasta dos frases.
+
+**Seguridad v2 (revisión 2026-10-07).**
+- La ventana de la aplicación es la que el provider resolvió para ella (`requested`), la de su ejecutable o la que
+  lleva su nombre como palabras enteras en el último segmento « - » del título; nunca VS Code, Visual Studio, un
+  editor, una terminal, una consola o BAXY si la persona no los nombró.
+- `input.key.press` e `input.text.type` llevan `window` (el hwnd de la vista sobre la que se decidieron): el provider
+  la trae al frente o no envía nada, también al confirmar un paso tras el «sí» con BAXY delante; escribir se para si
+  la ventana pierde el frente o se cancela; un texto con salto de línea o tabulador se rechaza. Si la misión nombra
+  una aplicación y la vista no es su ventana (resuelta para ella o de su proceso adoptado), nada se pulsa, escribe,
+  clica ni desplaza (`computer_use_window_not_application`, `BindToMissionWindow`); clic y desplazamiento van por el
+  control de esa vista, sin hwnd.
+- Enter o espacio sobre enviar/responder/comentar, o sobre un campo sin nombre que no expone su valor, llevan
+  `target: message_composer`; también justo después de teclear si el foco es ilegible (ninguno, `Pane`, `Custom`:
+  WhatsApp), y en el objetivo «apretar enter/espacio» con el foco ilegible (en una cadena lo escrito pudo ser otro
+  sub-objetivo). En «buscar X» el Enter tras escribir va sin `target` sólo si el campo con el teclado es una búsqueda;
+  si no, pregunta. Suprimir sobre un campo de texto lleva `target: text_field` (§2.1); el Supr de «ir a la dirección
+  X» se arma desde la vista y sólo con el teclado en un campo de dirección (si no, no hay paso).
+- Enter tras un clic que sólo eligió un elemento de contenido (sin `target`: no envía nada) sólo cuando el elemento es
+  un contenedor: su `itemType` dice carpeta o unidad (si lo trae, decide solo), o la celda «Carpeta de archivos» /
+  «File folder» está en su fila y dentro de él. Nunca en un archivo que se ejecuta (`.exe .msi .bat .cmd .ps1 .vbs .js
+  .lnk .appx .msix .reg .hta .scr .cpl .jar .com .pif`), en una vista que ofrece desinstalar ni en un elemento que se
+  llama quitar/eliminar/borrar.
+- Procedimientos: Enter, espacio o Supr aprendidos no se repiten con su destino grabado (§5).
+- Ninguna entrada al motor (lector, objetivo libre, último recurso) toma una meta de quitar, descartar, tirar a la
+  papelera, cancelar o contratar una suscripción, alquilar, donar, vender, restablecer, limpiar, vaciar o salir de un
+  servidor, además de las de borrar, formatear, desinstalar, comprar o pagar.
+- Las metas de lugar («ir a», «buscar», «hacer clic en» sin tipo de interruptor) nunca pulsan un interruptor
+  (casilla, opción, conmutador, deslizador, un control on/off o un botón cuyo nombre empieza por alternar, cambiar
+  entre, toggle o switch between: «Alternar grados» pasó DEG a RAD): `changes_a_setting`, ni en los pasos sin modelo
+  (se busca primero entre lo que no es interruptor, y ni el resultado ni la línea escrita eligen uno). Sólo un «hacé
+  clic en X» cuyo X nombra ese interruptor lo pulsa: es orden de la persona.
+
+**Guardas.**
+- Sin clics sobre un control que cubre ≥ 80 % de la ventana (`control_covers_window`); el modelo no repite por
+  tercera vez un acto que no hizo aparecer texto nuevo (`no_progress`), y el bucle marca fallido un acto ya hecho
+  desde la misma pantalla cuando la pantalla vuelve a ella (`computer_use_no_progress`).
+- `page:` sólo juzga ventanas sin árbol de accesibilidad (≤ 1 control: CEF, canvas); donde hay controles, llegar es el
+  lugar seleccionado, en el título, en el encabezado de la página (un texto, botón o vínculo con ese nombre exacto,
+  todos los que lo llevan en la zona T o TL y últimos de su fila —una miga de pan acaba donde está la ventana; una
+  barra de pestañas o de herramientas tiene más a la derecha—, y sólo tras un clic verificado o con el título
+  nombrando el lugar: la primera mirada no es llegada; «Personalización > Colores») o un clic verificado en el
+  control que lo nombra o lo abre («Abre Tu biblioteca»; un «<lugar> <aplicación>» cuenta como el lugar) tras el que
+  la ventana cambió (≥ 40 % de controles nuevos) sin que la selección se moviera a otro elemento (un valor elegido
+  dentro de la página alcanzada no cuenta como movida). Un clic verificado posterior en otro sitio deshace esa
+  llegada (Steam: «BIBLIOTECA» y luego «TIENDA»); tras el clic en el lugar sólo cuenta como entrada de su menú un rótulo
+  que no estaba escrito antes de ese clic, y un clic fallido que no lo nombra no cambia nada. En
+  `page:` cuenta sólo un clic verificado que nombra el destino (o la entrada del menú que abrió), medido contra el
+  texto de la vista **justo antes de ese clic**: llega si cambió más de la mitad de las líneas. Una ventana que quedó
+  igual tras el clic **no** es llegada (la página puede no estar dibujada todavía); un lugar ya abierto lo dice su
+  selección, su título o, sin árbol, su dirección escrita.
+- Lo tecleado se juzga en pantalla, nunca por los recibos de las teclas: el campo enfocado que expone su valor debe
+  mostrarlo; un valor cortado (120 caracteres) es desconocido. El eco de lo que BAXY escribió (un buscador o su
+  sugerencia) nunca cumple `control:X`, y lo que un campo contiene no prueba llegada. Lo tecleado nunca es evidencia:
+  el `done` del modelo que cita lo escrito (o lo contiene, salvo en «escribir») se rechaza en la mente
+  (`evidence_not_visible`) y en la
+  App (§4.3, eco de la consulta); Steam citaba «Cuphead» del buscador de la tienda.
+- Un clic aprendido (procedimiento) se fija al único control de la vista actual con su nombre y se pulsa por
+  identidad; tras un clic fallido el paso del objetivo se busca de nuevo en la vista, nunca el mismo acto.
+- Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
+- Una app abierta en frío se vuelve a mirar hasta 10 s mientras la ventana cambie o parezca de arranque (≤ 1 control
+  accionable —un marco, un panel o una barra de dirección de sólo lectura no cuentan— y ≤ 5 líneas).
+- Una ventana de administrador (`window.elevated`) para la misión con `computer_use_window_elevated`, dicho con esa
+  causa.
+- Un control sin patrón invocable ni punto clicable (Electron) se pulsa en el centro de su rectángulo.
+- Un procedimiento que deja de cambiar la pantalla se abandona y sigue el bucle; la misión no.
+- `RiskPolicy` confirma también publicar, responder, comentar, compartir, unirse, comprar, pagar, borrar y
+  desinstalar; un límite conocido del catálogo no anula una misión probada dentro de una app instalada.
+
+**Lectura del pedido v2 (`semantic/missions.py`).** Cada cláusula de hacer trae su comprobación determinista; una
+cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y comprobación:
+
+| Cláusula | Objetivo | `successCheck` |
+|---|---|---|
+| creá una carpeta llamada X / create a folder named X | `crear carpeta X` | `control:=X&stepDone:input.text.type:X` |
+| renombrá A a B / rename A to B | `renombrar A a B` | `control:=B&stepDone:input.text.type:B` |
+| andá a X / go to X | `ir a X` | `control:X:current\|title:X\|page:X` (+ nombres en el otro idioma); un clic que sólo eligió un elemento de contenido sigue con Enter |
+| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:X:selected\|control:X:on\|stepDone:input.visible.click:X` (+ nombres en el otro idioma) |
+| buscá X / search for X | `buscar X` | `title:X&stepDone:input.key.press:enter\|title:X&stepDone:input.visible.click:X\|stepDone:input.text.type&stepDone:input.key.press:enter&text:X` (los resultados en pantalla son la meta) |
+| cambiá a científica / pasá a la vista X / switch to X mode | `ir a X` | `control:X:selected\|title:X\|page:X\|header:X` (+ nombres en el otro idioma y el otro género) |
+| poné el modo X / set it to X mode | `activar modo X` | `control:modo X:on` + la de arriba si X es un modo con nombre propio; si no, `control:X:selected` |
+| poné la primera / play the first one / ponelo | `reproducir …` | `control:pausa&stepDone:input.visible.click` (y `pause`, y con tecla) |
+| copiá / pegá / deshacé / seleccioná todo | `apretar ctrl c` … | la tecla o el clic en su control |
+| abrí una pestaña nueva | `apretar ctrl t` | `stepDone:input.key.press:ctrl_t` |
+| andá a es.wikipedia.org | `ir a la direccion …` (ctrl_l, texto, Supr, Enter: Supr quita la página del historial con que la barra completa la dirección) | `title:wikipedia` |
+| abrí la sección Historia | `ir a historia` | lo de `ir a` + el clic verificado en la sección |
+| calculá 12 por 7 / multiply 6 by 7 | `calcular 12 × 7` | la de calcular |
+
+En una cadena el verbo puede decirse una vez («elegí el lápiz y después el color rojo», «go to System, then
+Display», «hacé clic en Insertar y después en Tabla»), un pronombre o un lugar genérico retoma lo último nombrado
+(«buscá Hades y abrilo», «creá la carpeta X y entrá», «buscá a Mamá y abrí el chat»), una cláusula que nombra otra
+aplicación cambia la del paso («… y pegalo en el Bloc de notas») y una pregunta final («… y decime si el modo es
+claro u oscuro») no es sub-objetivo: va al final del `goal` tras `; y responder: ` y el final la contesta sólo con
+`seen.screen`/`seen.evidence`. Nunca es misión un pedido que ordena borrar, vaciar, formatear, desinstalar, comprar
+o pagar (lo tecleado no cuenta). Tipado contra motor: en una cadena sólo las operaciones tipadas que no son
+primitivas del motor cubren sub-objetivos; un cálculo dicho dentro de una aplicación se hace en ella.
+
+El paso de tecleo guarda en qué campo se escribió (`into`); el átomo `control:` descarta lo tecleado sólo si se
+tecleó en una búsqueda, una barra de direcciones o un campo sin nombre (el eco de sus sugerencias), no el nombre
+escrito en la caja de un elemento que se crea o se renombra. Corpus: `tests/test_computer_use_corpus.py`.
+
+En un navegador (un campo de dirección que contiene una dirección web) la búsqueda y sus resultados son los de la
+página: controles dentro del documento más grande y listados después de él; la pestaña de búsqueda de pestañas, los
+marcadores y la barra lateral son del marco, y `ctrl_k` (la búsqueda web de la barra) no se usa, sólo `ctrl_f`. Mientras
+la página no está expuesta (ningún documento de un cuarto de la ventana) la App vuelve a mirar, hasta 6 veces cada
+400 ms, una sola vez por título. El modelo no puede pulsar un control que abre otra pestaña o ventana si el objetivo
+no lo pide (`opens_elsewhere`).

@@ -166,6 +166,61 @@ public sealed class FieldProgressContractTests
         Assert.That(viewModel.ProgressLabel, Is.EqualTo(first));
     }
 
+    // A computer-use mission shows its own status: its looks and steps are «acting», and no label is composed by
+    // the model while it runs (each one cost 0.3-0.6 s of GPU and evicted the step's prompt cache).
+    [TestCase("Mirando la pantalla")]
+    [TestCase("Paso 2: decidiendo")]
+    [TestCase("Paso 3: clic en «Biblioteca»")]
+    public void ComputerUseStatusIsActing(string status)
+    {
+        FieldProgressNotice? notice = FieldBridgeContract.ResolveProgress(
+            isReady: true, isBusy: true, hasStartupError: false, statusDescription: status);
+        Assert.Multiple(() =>
+        {
+            Assert.That(notice?.Stage, Is.EqualTo(FieldProgressNotice.StageActing));
+            Assert.That(notice?.Label, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task NoMilestoneIsComposedWhileAComputerUseMissionRuns()
+    {
+        DateTimeOffset start = DateTimeOffset.Parse(
+            "2026-08-23T12:00:00Z",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal);
+        string root = Path.Combine(Path.GetTempPath(), "baxy-cu-milestone-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using var viewModel = new MainWindowViewModel();
+            var plans = (MindPlanSession)typeof(MainWindowViewModel)
+                .GetField("_mindPlans", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(viewModel)!;
+            plans.UseStore(new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key")));
+            var arguments = new JsonObject { ["goal"] = "ir a la biblioteca", ["application"] = "Steam" };
+            var execution = new PendingMindPlanExecution(
+                "Abre Steam y ve a la biblioteca",
+                [new MindPlanStep("step_1", ComputerUseMission.OperationName, "ir a la biblioteca", [], "literal", arguments)])
+            {
+                ComputerUse = new JsonObject { ["goal"] = "ir a la biblioteca", ["steps"] = new JsonArray() },
+            };
+            plans.Begin(execution);
+            viewModel.BeginTurnPresentation("Abre Steam y ve a la biblioteca", start);
+
+            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(start)), Is.False);
+            Assert.That(viewModel.ProgressLabel, Is.Null);
+
+            execution.ComputerUse = null;
+            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(start)), Is.True,
+                "once the mission ends the ordinary milestone comes back");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Test]
     public void FormulatedProgressLabelIsVisibleAndDoesNotClaimAResult()
     {

@@ -46,7 +46,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     discord = missions.mission_request("ve a Cotele en Discord", APPS).arguments()
     assert discord["application"] == "Discord"
     assert discord["goal"] == "ir a cotele"
-    assert discord["successCheck"] == "control:cotele:selected|title:cotele|page:cotele"
+    assert discord["successCheck"] == "control:cotele:current|title:cotele|page:cotele"
 
     # Closing every tab is browser.control close_all (confirmed by RiskPolicy), never a mission of loose keys.
     tabs = resolve_explicit_effects("cerrá todas las pestañas de chrome", AVAILABLE, application_names=APPS)
@@ -55,13 +55,13 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     steam = _mission("abre Steam y ve a la biblioteca")
     assert steam["application"] == "Steam"
     assert steam["goal"] == "ir a la biblioteca" or steam["goal"] == "ir a biblioteca"
-    assert steam["successCheck"] == "control:biblioteca:selected|title:biblioteca|page:biblioteca"
+    assert steam["successCheck"] == "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library"
 
     enter = _mission("en Discord apretá enter")
     assert enter == {"application": "Discord", "goal": "apretar enter", "successCheck": "stepDone:input.key.press:enter"}
 
     airplane = _mission("abrí Configuración y activá el modo avión")
-    assert airplane == {"application": "Configuración", "goal": "activar modo avion", "successCheck": "control:modo avion:on"}
+    assert airplane == {"application": "Configuración", "goal": "activar modo avion", "successCheck": "control:modo avion:on|control:airplane mode:on|control:modo de avion:on"}
 
     calculator = _mission("en la calculadora calculá 12×7")
     assert calculator["application"] == "Calculadora"
@@ -73,7 +73,7 @@ def test_english_and_variant_phrasings_read_the_same_missions() -> None:
     assert missions.mission_request("Go to Cotele in Discord", APPS).goal == "ir a cotele"
     assert _mission("Open Steam and go to the library")["goal"] in {"ir a the library", "ir a library"}
     assert _mission("In Discord press enter")["successCheck"] == "stepDone:input.key.press:enter"
-    assert _mission("abrí configuración y desactivá el modo avión")["successCheck"] == "control:modo avion:off"
+    assert _mission("abrí configuración y desactivá el modo avión")["successCheck"] == "control:modo avion:off|control:airplane mode:off|control:modo de avion:off"
 
 
 def test_requests_outside_an_installed_application_are_not_missions() -> None:
@@ -100,7 +100,7 @@ def test_mission_shapes_pass_the_speech_act_gate() -> None:
 def test_read_clause_shapes() -> None:
     assert missions.read_clause("apretá la tecla escape") == ("apretar escape", "stepDone:input.key.press:escape")
     assert missions.read_clause("pulsá ctrl+w") == ("apretar ctrl+w", "stepDone:input.key.press:ctrl_w")
-    assert missions.read_clause("hacé clic en Biblioteca") == ("hacer clic en biblioteca", "stepDone:input.visible.click:biblioteca")
+    assert missions.read_clause("hacé clic en Biblioteca") == ("hacer clic en biblioteca", "stepDone:input.visible.click:biblioteca|stepDone:input.visible.click:library")
     assert missions.read_clause("escribí hola mundo") == ("escribir hola mundo", "stepDone:input.text.type")
     assert missions.read_clause("la biblioteca") is None
     assert missions.read_clause("prendé el bluetooth") == ("activar bluetooth", "control:bluetooth:on")
@@ -278,13 +278,20 @@ def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
     entered = typed + [{"step": 2, "operation": "input.key.press", "key": "enter", "ok": True}]
     assert computer_use.deterministic_step(goal="calcular 12×7", view=VIEW, history=entered) is None
     key = computer_use.deterministic_step(goal="apretar enter", view=VIEW, history=[])
-    assert key == {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": "el objetivo lo dice"}
+    # The focus of this window cannot be read: Enter may send what was written, so it is asked first.
+    assert key == {"operation": "input.key.press", "arguments": {"key": "enter", "target": "message_composer"}, "reason": "el objetivo lo dice"}
     go = computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=[])
     assert go["operation"] == "input.visible.click" and go["arguments"] == {"label": "Biblioteca", "index": 1}
-    assert computer_use.deterministic_step(goal="ir a descargas", view=VIEW, history=[]) is None
-    # A failed last step hands the decision to the model.
+    # Not on screen: the focused search field takes the name (the FIND routine below).
+    assert computer_use.deterministic_step(goal="ir a descargas", view=VIEW, history=[])["arguments"] == {"text": "descargas"}
+    # A failed click by label alone is found again by identity; the same act failed again hands it to the model.
     failed = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "ok": False}]
-    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed) is None
+    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed)["arguments"] == {"label": "Biblioteca", "index": 1}
+    failed_again = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "index": 1, "ok": False}]
+    # The same act failed again: the place is looked up instead (the window's search), never clicked once more.
+    again = computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed_again)
+    assert again is not None and again["arguments"] != {"label": "Biblioteca", "index": 1}
+    assert again["arguments"].get("text") in (None, "biblioteca")
     toggle_view = {"window": {"title": "Configuración"}, "controls": [{"i": 4, "kind": "Button", "name": "Modo avión", "state": "off"}], "text": {}}
     on = computer_use.deterministic_step(goal="activar modo avion", view=toggle_view, history=[])
     assert on["arguments"] == {"label": "Modo avión", "index": 4}
@@ -338,7 +345,7 @@ def test_the_already_good_requests_keep_their_routes() -> None:
     assert missions.mission_request("ve a Cotele en Discord", MORE_APPS).goal == "ir a cotele"
     assert _mission_in("abre Steam y ve a la biblioteca")["application"] == "Steam"
     assert _mission_in("en Discord apretá enter")["successCheck"] == "stepDone:input.key.press:enter"
-    assert _mission_in("abrí Configuración y activá el modo avión")["successCheck"] == "control:modo avion:on"
+    assert _mission_in("abrí Configuración y activá el modo avión")["successCheck"] == "control:modo avion:on|control:airplane mode:on|control:modo de avion:on"
     assert _mission_in("en la calculadora calculá 12×7")["goal"] == "calcular 12×7"
     # Every tab of the person's own browser stays its typed close (confirmed, the last tab kept).
     tabs = resolve_explicit_effects("cerrá todas las pestañas del navegador", WEB, application_names=MORE_APPS)
@@ -381,21 +388,22 @@ def test_a_tab_said_by_its_place_names_no_tab() -> None:
 
 def test_a_doing_clause_reads_in_any_person() -> None:
     for said, goal in (
-        ("en Paint elegí el color rojo", "elegi el color rojo"),
-        ("en Paint elija el color rojo", "elige el color rojo"),
-        ("en Paint elegir el color rojo", "elegir el color rojo"),
-        ("en Paint seleccione el pincel", "selecciona el pincel"),
-        ("en Paint marque la casilla", "marca la casilla"),
-        ("in Paint pick the red color", "pick the red color"),
-    ):
+        # Choosing a tool or a colour is clicking it until it shows selected (computer use v2, owner 2026-10-07).
+        ("en Paint elegí el color rojo", "seleccionar rojo"),
+        ("en Paint elija el color rojo", "seleccionar rojo"),
+        ("en Paint elegir el color rojo", "seleccionar rojo"),
+        ("en Paint seleccione el pincel", "seleccionar pincel"),
+        ("in Paint pick the red color", "seleccionar red"),
         # The reader reads the act; with no check of its own the route is the decider's (test below).
+        ("en Paint marque la casilla", "marca la casilla"),
+    ):
         arguments = missions.mission_request(said, MORE_APPS).arguments()
         assert arguments["application"] == "Paint" and arguments["goal"] == goal, said
     assert _mission_in("en Steam vaya a la tienda")["goal"] == "ir a tienda"
     assert missions.mission_request("en Steam ir a la tienda", MORE_APPS).goal == "ir a tienda"
     assert _mission_in("en Discord pulse enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission_in("en la calculadora calcule 12x7")["goal"] == "calcular 12x7"
-    assert _mission_in("en Configuración active el modo avión")["successCheck"] == "control:modo avion:on"
+    assert _mission_in("en Configuración active el modo avión")["successCheck"] == "control:modo avion:on|control:airplane mode:on|control:modo de avion:on"
     # An application named with several words, before the clause.
     assert _mission_in("en el bloc de notas escribí hola") == {
         "application": "Bloc de notas", "goal": "escribir hola", "successCheck": "stepDone:input.text.type",
@@ -463,13 +471,15 @@ def test_what_the_catalog_already_does_keeps_its_typed_operation() -> None:
 def test_a_loose_verb_inside_an_app_is_left_to_the_decider() -> None:
     assert _route("en Spotify baja el volumen") is None
     assert _route("en WhatsApp escribile a Ron92 hola") is None
-    assert _route("en Paint elegí el color rojo") is None
+    assert _route("en Paint marcá la casilla") is None
+    # Choosing a colour now has its check (selected, or the verified click on it): the engine's.
+    assert _route("en Paint elegí el color rojo") == ("mission.computer.use",)
 
 
 def test_the_mission_takes_over_its_own_primitives() -> None:
-    # Once a typed reading of open + click / channel locate: those are the mission's own steps.
-    # A channel of a chat client is the catalog's typed read (asked before any join), not a mission.
-    assert _route("ve a Cotele en Discord") == ("client.channel.locate",)
+    # Once a typed reading of open + click / channel locate: those are the mission's own steps. A channel of a chat
+    # client is found by the engine's search on screen; joining a voice channel stays confirmed by RiskPolicy.
+    assert _route("ve a Cotele en Discord") == ("mission.computer.use",)
     assert _route("abre Steam y ve a la biblioteca") == ("mission.computer.use",)
     assert _route("abrí el bloc de notas y escribí hola mundo") == ("mission.computer.use",)
     assert _route("ve a la pestaña de YouTube") == ("mission.computer.use",)
@@ -487,4 +497,1008 @@ def test_reaching_a_place_needs_more_than_its_name_on_screen() -> None:
     )
     assert reached["operation"] == "done"
     # The text of the destination alone no longer satisfies a go-to: only the place selected or titled does.
-    assert missions.read_clause("andá a la biblioteca")[1] == "control:biblioteca:selected|title:biblioteca|page:biblioteca"
+    assert missions.read_clause("andá a la biblioteca")[1] == "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library"
+
+
+# ------------------------------------------------ buscar lo que no está en pantalla
+
+
+def _ok(step: int, operation: str, **fields: object) -> dict:
+    return {"step": step, "operation": operation, "ok": True, **fields}
+
+
+CHAT = {
+    "window": {"title": "Amigos - Discord", "process": "Discord", "focused": None},
+    "controls": [
+        {"i": 0, "kind": "Button", "name": "Buscar", "state": ""},
+        {"i": 1, "kind": "ListItem", "name": "Cotele"},
+        {"i": 2, "kind": "Edit", "name": "Enviar mensaje a @Ron92", "state": ""},
+    ],
+    "text": {"C": ["Cotele", "Ron92"]},
+}
+
+
+def test_find_uses_the_search_of_the_window_then_clicks_the_result() -> None:
+    step = computer_use.deterministic_step(goal="ir a general", view=CHAT, history=[])
+    assert step["operation"] == "input.visible.click" and step["arguments"] == {"label": "Buscar", "index": 0}
+    clicked = [_ok(1, "input.visible.click", label="Buscar")]
+    searching = {**CHAT, "window": {**CHAT["window"], "focused": {"kind": "Edit", "name": "Buscar", "value": ""}}}
+    assert computer_use.deterministic_step(goal="ir a general", view=searching, history=clicked)["arguments"] == {"text": "general"}
+    typed = clicked + [_ok(2, "input.text.type", text="general")]
+    results = {
+        "window": {"title": "Amigos - Discord", "process": "Discord", "focused": {"kind": "Edit", "name": "Buscar", "value": "general"}},
+        "controls": [
+            {"i": 0, "kind": "Edit", "name": "general", "state": "focused"},
+            {"i": 1, "kind": "Text", "name": "general"},
+            {"i": 2, "kind": "ListItem", "name": "general · Mi servidor"},
+        ],
+        "newText": ["general", "general · Mi servidor"],
+        "text": {"C": ["general", "general · Mi servidor"]},
+    }
+    picked = computer_use.deterministic_step(goal="ir a general", view=results, history=typed)
+    # The list item, never the field that echoes the name, and never Enter (a voice channel stays a confirmed click).
+    assert picked["operation"] == "input.visible.click" and picked["arguments"] == {"label": "general · Mi servidor", "index": 2}
+    # A window without an accessible tree: the new line that is more than the typed name.
+    ocr_only = {"window": {"title": "Steam"}, "controls": [], "newText": ["batman", "Batman: Arkham Knight"], "text": {"C": ["batman", "Batman: Arkham Knight"]}}
+    batman = [_ok(1, "input.visible.click", label="Buscar"), _ok(2, "input.text.type", text="batman")]
+    assert computer_use.deterministic_step(goal="ir a batman", view=ocr_only, history=batman)["arguments"] == {"label": "Batman: Arkham Knight"}
+    # Nothing names it: the search is closed and the next way is tried.
+    empty = {"window": {"title": "Steam"}, "controls": [], "newText": [], "text": {}}
+    assert computer_use.deterministic_step(goal="ir a batman", view=empty, history=batman)["arguments"] == {"key": "escape"}
+    escaped = batman + [_ok(3, "input.key.press", key="escape")]
+    assert computer_use.deterministic_step(goal="ir a batman", view=empty, history=escaped)["arguments"] == {"key": "ctrl_k"}
+
+
+def test_find_without_a_search_field_tries_the_shortcuts_then_scrolls_the_list() -> None:
+    plain = {
+        "window": {"title": "App", "process": "app", "rect": {"x": 0, "y": 0, "w": 800, "h": 600}, "focused": None},
+        "controls": [
+            {"i": 0, "kind": "ListItem", "name": "Uno", "rect": {"x": 10, "y": 100, "w": 200, "h": 20}},
+            {"i": 1, "kind": "ListItem", "name": "Dos", "rect": {"x": 10, "y": 120, "w": 200, "h": 20}},
+            {"i": 2, "kind": "Pane", "name": "Contenido", "rect": {"x": 300, "y": 0, "w": 500, "h": 600}},
+            {"i": 3, "kind": "List", "name": "Canales", "rect": {"x": 0, "y": 80, "w": 250, "h": 500}},
+        ],
+        "text": {},
+    }
+    assert computer_use.deterministic_step(goal="ir a general", view=plain, history=[])["arguments"] == {"key": "ctrl_k"}
+    after_k = [_ok(1, "input.key.press", key="ctrl_k")]
+    switcher = {
+        **plain,
+        "window": {**plain["window"], "focused": {"kind": "Edit", "name": "", "value": ""}},
+        "newText": ["Busca servidores, canales o MD"],
+    }
+    assert computer_use.deterministic_step(goal="ir a general", view=switcher, history=after_k)["arguments"] == {"text": "general"}
+    # The shortcut opened nothing: escape, then ctrl_f, then the list that holds the items.
+    assert computer_use.deterministic_step(goal="ir a general", view=plain, history=after_k)["arguments"] == {"key": "escape"}
+    tried = after_k + [
+        _ok(2, "input.key.press", key="escape"), _ok(3, "input.key.press", key="ctrl_f"), _ok(4, "input.key.press", key="escape"),
+    ]
+    scroll = computer_use.deterministic_step(goal="ir a general", view=plain, history=tried)
+    assert scroll["operation"] == "input.scroll" and scroll["arguments"] == {"direction": "down", "amount": 5, "index": 3}
+    scrolled = tried + [_ok(5 + n, "input.scroll", direction="down") for n in range(3)]
+    assert computer_use.deterministic_step(goal="ir a general", view=plain, history=scrolled) is None
+    unchanged = tried + [{"step": 5, "operation": "input.scroll", "ok": True, "changed": False}, _ok(6, "input.key.press", key="escape")]
+    assert computer_use.deterministic_step(goal="ir a general", view=plain, history=unchanged) is None
+
+
+def test_find_never_types_into_a_composer_or_the_address_bar() -> None:
+    composer = {
+        "window": {
+            "title": "#off-topic - Discord", "process": "Discord",
+            "focused": {"kind": "Edit", "name": "Enviar mensaje a #off-topic", "value": ""},
+        },
+        "controls": [], "newText": ["algo"], "text": {},
+    }
+    after_k = [_ok(1, "input.key.press", key="ctrl_k")]
+    assert computer_use.deterministic_step(goal="ir a general", view=composer, history=after_k)["arguments"] == {"key": "escape"}
+    browser = {
+        "window": {"title": "Nueva pestaña - Google Chrome", "process": "chrome", "focused": None},
+        "controls": [{"i": 0, "kind": "Edit", "name": "Barra de direcciones y de búsqueda", "state": ""}],
+        "text": {},
+    }
+    assert computer_use.deterministic_step(goal="ir a general", view=browser, history=[])["arguments"] == {"key": "ctrl_k"}
+
+
+def test_an_english_goal_finds_the_spanish_control() -> None:
+    step = computer_use.deterministic_step(goal="ir a library", view=VIEW, history=[])
+    assert step["arguments"] == {"label": "Biblioteca", "index": 1}
+    check = missions.read_clause("go to the library")[1]
+    assert "control:library:current" in check and "control:biblioteca:current" in check
+
+
+def test_a_menu_entry_named_by_the_goal_wins_over_the_first_one() -> None:
+    menu = {"window": {"title": "Steam"}, "controls": [], "newText": ["Página principal", "Colecciones", "Descargas"], "text": {}}
+    clicked = [_ok(1, "input.visible.click", label="BIBLIOTECA")]
+    named = computer_use.deterministic_step(goal="ir a descargas de la biblioteca", view=menu, history=clicked)
+    assert named["arguments"] == {"label": "Descargas"}
+    first = computer_use.deterministic_step(goal="ir a biblioteca", view=menu, history=clicked)
+    assert first["arguments"] == {"label": "Página principal"}
+
+
+def test_a_click_on_the_whole_window_and_a_third_idle_repeat_are_refused() -> None:
+    view = {
+        "window": {"title": "Página", "rect": {"x": 0, "y": 0, "w": 1000, "h": 800}},
+        "controls": [
+            {"i": 0, "kind": "Document", "name": "Contenido", "rect": {"x": 0, "y": 40, "w": 1000, "h": 760}},
+            {"i": 1, "kind": "Button", "name": "Siguiente", "rect": {"x": 10, "y": 10, "w": 80, "h": 24}},
+        ],
+        "text": {},
+    }
+    covering = computer_use.validate_decision({"act": "click", "i": 0}, view=view, last_failed=None, application_names=APPS)
+    assert covering["operation"] == "none" and covering["code"] == "control_covers_window"
+    button = computer_use.validate_decision({"act": "click", "i": 1}, view=view, last_failed=None, application_names=APPS)
+    assert button["arguments"] == {"label": "Siguiente", "index": 1}
+    twice = [_ok(1, "input.visible.click", label="Siguiente"), _ok(2, "input.visible.click", label="Siguiente")]
+    idle = computer_use.validate_decision({"act": "click", "i": 1}, view=view, last_failed=None, application_names=APPS, history=twice)
+    assert idle["operation"] == "none" and idle["code"] == "no_progress"
+    moving = computer_use.validate_decision(
+        {"act": "click", "i": 1}, view={**view, "newText": ["Página 3"]}, last_failed=None, application_names=APPS, history=twice,
+    )
+    assert moving["operation"] == "input.visible.click"
+
+
+# ------------------------------------------------------- el navegador: su marco y la página
+# Synthetic views shaped like the live failure of 2026-10-07 (Opera, «buscá Ñuñoa» on es.wikipedia.org): the
+# frame (tab strip with its tab search, address bar, bookmarks) above the page, the page a large document.
+
+def _rect(x: int, y: int, w: int, h: int) -> dict:
+    return {"x": x, "y": y, "w": w, "h": h}
+
+
+_FRAME = [
+    {"i": 0, "kind": "Button", "name": "Buscar pestañas", "rect": _rect(1420, 5, 37, 37)},
+    {"i": 1, "kind": "Edit", "name": "Barra de direcciones", "value": "", "rect": _rect(160, 54, 1200, 37)},
+    {"i": 2, "kind": "TabItem", "name": "Ciudad - Wikipedia, la enciclopedia libre", "state": "selected", "rect": _rect(100, 5, 240, 37)},
+    {"i": 3, "kind": "Button", "name": "Nueva pestaña", "rect": _rect(344, 13, 22, 22)},
+    {"i": 4, "kind": "Edit", "name": "Campo de dirección", "value": "https://es.wikipedia.org/wiki/Ciudad", "rect": _rect(210, 54, 970, 37)},
+    {"i": 5, "kind": "Button", "name": "Marcador uno", "rect": _rect(60, 95, 180, 37)},
+]
+BROWSER_LOADING = {
+    "window": {"title": "es.wikipedia.org/wiki/Ciudad - Navegador", "process": "browser", "rect": _rect(0, 0, 1575, 965), "focused": None},
+    "controls": [*_FRAME, {"i": 6, "kind": "Document", "name": "Cargando…", "rect": _rect(106, 13, 22, 22)}],
+    "text": {"TR": ["Q Buscar pestañas"]},
+}
+BROWSER_PAGE = {
+    "window": {
+        "title": "Ciudad - Wikipedia, la enciclopedia libre - Navegador", "process": "browser", "rect": _rect(0, 0, 1575, 965),
+        "focused": {"kind": "Document", "name": "Ciudad - Wikipedia, la enciclopedia libre", "value": "https://es.wikipedia.org/wiki/Ciudad"},
+    },
+    "controls": [
+        *_FRAME,
+        {"i": 6, "kind": "Document", "name": "Ciudad - Wikipedia, la enciclopedia libre", "state": "readonly focused", "rect": _rect(53, 136, 1519, 825)},
+        {"i": 7, "kind": "Edit", "name": "Buscar en Wikipedia", "value": "", "rect": _rect(435, 157, 506, 41)},
+        {"i": 8, "kind": "Button", "name": "Buscar", "rect": _rect(939, 157, 90, 41)},
+    ],
+    "text": {"TR": ["Q Buscar pestañas"], "T": ["Buscar en Wikipedia"]},
+}
+
+
+def test_a_search_in_a_browser_uses_the_pages_field_never_the_tab_search() -> None:
+    # The page is there: its own search field, never the tab strip's «Buscar pestañas» (measured: clicked first).
+    step = computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_PAGE, history=[])
+    assert step["operation"] == "input.visible.click" and step["arguments"] == {"label": "Buscar en Wikipedia", "index": 7}
+    clicked = [_ok(1, "input.visible.click", label="Buscar en Wikipedia", index=7)]
+    assert computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_PAGE, history=clicked)["arguments"] == {"text": "Ñuñoa"}
+    typed = clicked + [_ok(2, "input.text.type", text="Ñuñoa")]
+    assert computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_PAGE, history=typed)["arguments"]["key"] == "enter"
+    # The page still loading shows only the frame: nothing of it is the page's search, its written lines neither, and
+    # ctrl_k (the web search of the address bar) is not the page's: only the page's find.
+    loading = computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_LOADING, history=[])
+    assert loading == {"operation": "input.key.press", "arguments": {"key": "ctrl_f"}, "reason": computer_use._REASON_FIND}
+
+
+def test_a_browser_result_is_the_one_in_the_page_that_is_exactly_the_name() -> None:
+    suggestions = {
+        **BROWSER_PAGE,
+        "controls": [
+            *BROWSER_PAGE["controls"][:2],
+            {"i": 2, "kind": "TabItem", "name": "Ñuñoa - Wikipedia", "rect": _rect(100, 5, 240, 37)},
+            *BROWSER_PAGE["controls"][3:],
+            {"i": 9, "kind": "ListItem", "name": "Festival Internacional de la Canción de Ñuñoa", "rect": _rect(435, 200, 506, 30)},
+            {"i": 10, "kind": "ListItem", "name": "Ñuñoa", "rect": _rect(435, 230, 506, 30)},
+        ],
+    }
+    typed = [_ok(1, "input.visible.click", label="Buscar en Wikipedia"), _ok(2, "input.text.type", text="Ñuñoa")]
+    picked = computer_use.deterministic_step(goal="ir a Ñuñoa", view=suggestions, history=typed)
+    assert picked["arguments"] == {"label": "Ñuñoa", "index": 10}
+
+
+def test_a_file_explorer_keeps_its_search_box_beside_the_address_bar() -> None:
+    explorer = {
+        "window": {"title": "Descargas - Explorador de archivos", "process": "explorer", "rect": _rect(0, 0, 1200, 800), "focused": None},
+        "controls": [
+            {"i": 0, "kind": "Edit", "name": "Barra de direcciones", "value": "C:\\Users\\persona\\Downloads", "rect": _rect(200, 60, 700, 30)},
+            {"i": 1, "kind": "Edit", "name": "Buscar en Descargas", "value": "", "rect": _rect(920, 60, 260, 30)},
+        ],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="buscar informe", view=explorer, history=[])
+    assert step["arguments"] == {"label": "Buscar en Descargas", "index": 1}
+
+
+def test_the_model_may_not_open_another_tab_unless_the_goal_says_so() -> None:
+    refused = computer_use.validate_decision(
+        {"act": "click", "i": 3}, view=BROWSER_PAGE, last_failed=None, application_names=APPS, goal="buscar Ñuñoa",
+    )
+    assert refused["operation"] == "none" and refused["code"] == "opens_elsewhere"
+    assert "opens_elsewhere" in computer_use._RETRIED
+    by_text = computer_use.validate_decision(
+        {"act": "click", "text": "Open in new tab"}, view={**BROWSER_PAGE, "text": {"C": ["Open in new tab"]}},
+        last_failed=None, application_names=APPS, goal="go to history",
+    )
+    assert by_text["code"] == "opens_elsewhere"
+    asked = computer_use.validate_decision(
+        {"act": "click", "i": 3}, view=BROWSER_PAGE, last_failed=None, application_names=APPS, goal="abrir una pestaña nueva",
+    )
+    assert asked["arguments"] == {"label": "Nueva pestaña", "index": 3}
+    # The page document covers most of the window: a click on it is no place to go.
+    body = computer_use.validate_decision({"act": "click", "i": 6}, view=BROWSER_PAGE, last_failed=None, application_names=APPS, goal="ir a historia")
+    assert body["code"] == "control_covers_window"
+
+
+# ------------------------------------------------------- misiones encadenadas
+
+CHAIN_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "application": {"type": ["string", "null"], "x-maxUtf8Bytes": 128},
+        "budgetSteps": {"type": ["integer", "null"], "minimum": 1, "maximum": 30},
+        "goal": {"type": "string", "x-maxUtf8Bytes": 512, "x-nonWhitespace": True},
+        "successCheck": {"type": ["string", "null"], "x-maxUtf8Bytes": 512},
+        "steps": {
+            "type": "array", "minItems": 1, "maxItems": 8,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "goal": {"type": "string", "x-maxUtf8Bytes": 512, "x-nonWhitespace": True},
+                    "application": {"type": ["string", "null"], "x-maxUtf8Bytes": 128},
+                    "successCheck": {"type": ["string", "null"], "x-maxUtf8Bytes": 512},
+                },
+                "required": ["goal", "application", "successCheck"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    "required": ["goal"],
+    "additionalProperties": False,
+}
+
+
+def test_a_chained_request_reads_its_sub_goals_in_order() -> None:
+    chained = _mission_in("abre Steam y ve a la biblioteca y después en Discord andá a general")
+    assert [(step["application"], step["goal"]) for step in chained["steps"]] == [("Steam", "ir a biblioteca"), ("Discord", "ir a general")]
+    assert chained["steps"][1]["successCheck"] == "control:general:current|title:general|page:general"
+    assert chained["goal"] == "ir a biblioteca; luego ir a general"
+    # Typing into a place: go to it, then type; the application is carried forward.
+    typing = missions.mission_request("en Discord andá a general y escribí hola", MORE_APPS).arguments()
+    assert typing["steps"] == [
+        {"goal": "ir a general", "application": "Discord", "successCheck": "control:general:current|title:general|page:general"},
+        {"goal": "escribir hola", "application": "Discord", "successCheck": "stepDone:input.text.type"},
+    ]
+    english = missions.mission_request("go to the library in Steam and then go to general in Discord", MORE_APPS)
+    assert [step.application for step in english.steps] == ["Steam", "Discord"]
+    # The going said once: «… y después a general en Discord».
+    elliptic = missions.mission_request("andá a la biblioteca en Steam y después a general en Discord", MORE_APPS)
+    assert [(step.application, step.goal) for step in elliptic.steps] == [("Steam", "ir a biblioteca"), ("Discord", "ir a general")]
+    # An application opened with nothing to do in it is its own sub-goal.
+    opened = missions.mission_request("andá a la tienda en Steam, luego abrí Discord", MORE_APPS)
+    assert [step.goal for step in opened.steps] == ["ir a tienda", "abrir Discord"]
+
+
+def test_a_single_clause_keeps_todays_arguments() -> None:
+    assert "steps" not in _mission_in("abre Steam y ve a la biblioteca")
+    # «y chau» is not a clause of doing: one text to type.
+    assert missions.mission_request("en el bloc de notas escribí hola y chau", MORE_APPS).goal == "escribir hola y chau"
+    # The place ends where the next clause begins.
+    assert missions.read_clause("ve a la biblioteca y escribí hola")[0] == "ir a biblioteca"
+
+
+def test_chained_missions_route_to_the_engine_and_ground_their_steps() -> None:
+    from baxy_mind.__main__ import _ground_explicit_arguments
+
+    said = "en Discord andá a general y escribí hola, después en Steam andá a la biblioteca"
+    assert _route(said) == ("mission.computer.use",)
+    assert _is_direct_request("andá a la biblioteca en Steam y después a general en Discord")
+    grounded = _ground_explicit_arguments("mission.computer.use", said, CHAIN_SCHEMA, MORE_APPS)
+    assert grounded is not None and len(grounded["steps"]) == 3 and grounded["steps"][2]["application"] == "Steam"
+    # A clause the reader cannot check leaves the turn to the decider.
+    assert _route("abre Steam, ve a la biblioteca y dibujá a Batman") != ("mission.computer.use",)
+    # Searching is checked now (the name typed and submitted, or the page titled with it): the engine's.
+    assert _route("abre Steam, ve a la biblioteca y busca Batman") == ("mission.computer.use",)
+
+
+def test_a_free_form_goal_is_the_persons_clause_with_the_app_it_names() -> None:
+    from baxy_mind.__main__ import _ground_explicit_arguments
+
+    drawn = _ground_explicit_arguments("mission.computer.use", "en Paint dibujá un círculo rojo", CHAIN_SCHEMA, MORE_APPS)
+    assert drawn == {"goal": "en Paint dibujá un círculo rojo", "application": "Paint"}
+    front = _ground_explicit_arguments("mission.computer.use", "ordená esto por fecha", CHAIN_SCHEMA, MORE_APPS)
+    assert front == {"goal": "ordená esto por fecha"}
+
+
+class _CapturingModel:
+    def __init__(self) -> None:
+        self.payloads: list[dict] = []
+
+    def _post_schema_object(self, payload: dict, label: str) -> dict:
+        del label
+        self.payloads.append(payload)
+        return {"act": "none"}
+
+
+def test_the_step_prompt_names_the_sub_goal() -> None:
+    model = _CapturingModel()
+    computer_use.decide_step(
+        model, objective="en Discord andá a general y escribí hola", goal="escribir", application=None, success_check=None,
+        view={"window": {"title": "x"}, "controls": [], "text": {}}, history=[], budget_left=5, application_names=APPS,
+        subgoal=1, subgoal_count=2,
+    )
+    assert "Sub-objetivo 2 de 2\nObjetivo: escribir" in model.payloads[0]["messages"][1]["content"]
+
+
+def test_a_chained_result_is_told_part_by_part_and_never_claims_an_unreached_part() -> None:
+    observed = {
+        **OBSERVED,
+        "reached": False,
+        "stoppedBy": "computer_use_no_step_visible",
+        "subgoals": [
+            {"goal": "ir a biblioteca", "application": "Steam", "reached": True, "stepCount": 2, "satisfiedBy": "page:biblioteca"},
+            {"goal": "ir a general", "application": "Discord", "reached": False, "stepCount": 4, "satisfiedBy": None},
+        ],
+    }
+    seen = computer_use.project_seen(observed, "es")
+    assert seen["firstUnreached"] == "ir a general" and [part["reached"] for part in seen["subgoals"]] == [True, False]
+    assert "seen.firstUnreached" in computer_use.compose_instruction(seen, "es")
+    assert computer_use.mission_defect("fui a la biblioteca de steam y despues a general en discord.", seen) == "subgoal_claimed"
+    assert computer_use.mission_defect("fui a la biblioteca de steam, pero no pude llegar a general: no vi con que seguir.", seen) is None
+
+
+def test_an_unserved_order_about_the_pc_is_tried_by_the_engine() -> None:
+    apps = ("Discord", "Steam", "Spotify", "Paint")
+    for said in ("en Paint dibujá un círculo", "activá el modo oscuro de Discord", "ordená mi escritorio"):
+        assert missions.engine_can_try(said, apps), said
+    # Never a question, a place outside the PC, a prohibition, or an undoing or paying goal.
+    for said in ("¿qué hora es?", "andá a Marte", "no abras Steam", "borrá todos mis archivos", "comprá Hades en Steam"):
+        assert not missions.engine_can_try(said, apps), said
+
+
+def test_the_turn_hands_an_unserved_order_to_the_engine() -> None:
+    from baxy_mind.__main__ import _engine_for_an_unserved_order
+
+    limit = {"type": "turn.result", "id": "t", "kind": "conversation", "conversationKind": "unsupported",
+             "effectOperations": [], "intentOperations": [], "reply": "", "question": ""}
+    tools = {"mission.computer.use": {}}
+    tried = _engine_for_an_unserved_order(limit, {"id": "t", "text": "en Paint dibujá un círculo"}, tools, ("Paint",))
+    assert tried["kind"] == "plan" and tried["effectOperations"] == ["mission.computer.use"]
+    assert tried["objective"] == "en Paint dibujá un círculo"
+    kept = _engine_for_an_unserved_order(limit, {"id": "t", "text": "borrá todos mis archivos"}, tools, ("Paint",))
+    assert kept is limit
+    talk = {**limit, "conversationKind": "talk"}
+    assert _engine_for_an_unserved_order(talk, {"id": "t", "text": "en Paint dibujá un círculo"}, tools, ("Paint",)) is talk
+
+
+def test_sending_what_was_written_is_always_asked_first() -> None:
+    # Measured: an Enter not marked as sending delivered «prueba BAXY C6» without asking (Discord's editor exposes no value).
+    unexposed = {"window": {"title": "Discord", "focused": {"kind": "Document", "name": "Enviar mensaje a @Ron92"}},
+                 "controls": [], "text": {}}
+    sent = computer_use.deterministic_step(goal="enviar", view=unexposed, history=[])
+    assert sent["arguments"] == {"key": "enter", "target": "message_composer"}
+    enter = computer_use.deterministic_step(goal="apretar enter", view=unexposed, history=[])
+    assert enter["arguments"]["target"] == "message_composer"
+    empty = {**unexposed, "window": {**unexposed["window"], "focused": {**unexposed["window"]["focused"], "value": ""}}}
+    assert "target" not in computer_use.deterministic_step(goal="apretar enter", view=empty, history=[])["arguments"]
+    assert missions.read_clause("mandalo") == ("enviar", "stepDone:input.key.press:enter")
+
+
+def test_find_clicks_a_written_search_box_when_the_window_has_no_tree_then_types() -> None:
+    # Measured on WhatsApp: UIA exposed only the caption buttons; OCR read the search box.
+    written = {
+        "window": {"title": "WhatsApp", "process": "WhatsApp.Root", "focused": None},
+        "controls": [{"i": 0, "kind": "Button", "name": "Minimize"}, {"i": 1, "kind": "Button", "name": "Close"}],
+        "text": {"TL": ["WhatsApp", "Chats", "Q, Buscar un chat o iniciar uno nuevo", "Buscar un chat o iniciar uno nuevo", "Todos"]},
+    }
+    step = computer_use.deterministic_step(goal="ir a ron92", view=written, history=[])
+    assert step["operation"] == "input.visible.click"
+    assert step["arguments"] == {"label": "Buscar un chat o iniciar uno nuevo"}
+    clicked = [_ok(1, "input.visible.click", label="Buscar un chat o iniciar uno nuevo")]
+    assert computer_use.deterministic_step(goal="ir a ron92", view=written, history=clicked)["arguments"] == {"text": "ron92"}
+
+
+# ------------------------------------------------- revisión de seguridad 2026-10-07
+
+def _key_act(key: str) -> dict:
+    return {"act": "key", "i": -1, "label": "", "text": "", "key": key, "direction": "", "application": "", "evidence": "", "why": ""}
+
+
+def test_an_editor_whose_title_mentions_the_application_is_never_taken_for_it() -> None:
+    editor = {"window": {"title": "SteamLocalAdapter.cs - BAXY Definitivo - Visual Studio Code", "process": "Code"}}
+    assert not computer_use.application_is_in_front(editor, "Steam")
+    # Not even when the provider says it resolved it: a developer's or BAXY's own window is not the application.
+    assert not computer_use.application_is_in_front({"window": {**editor["window"], "requested": True}}, "Steam")
+    assert not computer_use.application_is_in_front({"window": {"title": "Steam - Windows PowerShell", "process": "powershell"}}, "Steam")
+    assert not computer_use.application_is_in_front({"window": {"title": "BAXY", "process": "Baxy"}}, "Steam")
+    # The title names the application only in its last segment, as whole words.
+    assert not computer_use.application_is_in_front({"window": {"title": "Steam - Bloc de notas", "process": "Notepad"}}, "Steam")
+    assert not computer_use.application_is_in_front({"window": {"title": "Steamworks", "process": "x"}}, "Steam")
+    assert computer_use.application_is_in_front({"window": {"title": "Ron92 - Discord", "process": "Update"}}, "Discord")
+    assert computer_use.application_is_in_front({"window": {"title": "Inicio - Personal - Microsoft​ Edge", "process": "msedge"}}, "Microsoft Edge")
+    assert computer_use.application_is_in_front({"window": {"title": "Artista - Canción", "process": "Spotify"}}, "Spotify")
+    # Named on purpose, the editor is the application.
+    assert computer_use.application_is_in_front(editor, "Visual Studio Code")
+
+
+def test_enter_and_space_on_a_possible_message_box_are_marked_and_free_where_nothing_is_sent() -> None:
+    def view(focused: dict | None) -> dict:
+        return {"window": {"title": "App", "process": "app", "focused": focused}, "controls": [], "text": {}}
+
+    asked = (
+        {"kind": "Edit", "name": "Responder a Ron92"},
+        {"kind": "Button", "name": "Send"},
+        {"kind": "Document", "name": "(document)"},
+        {"kind": "Edit", "name": "(edit)", "value": None},
+    )
+    for focused in asked:
+        for key in ("enter", "space"):
+            step = computer_use.validate_decision(_key_act(key), view=view(focused), last_failed=None, application_names=APPS)
+            assert step["arguments"] == {"key": key, "target": "message_composer"}, (focused, key)
+    free = (
+        None,  # a calculator: no focused editable
+        {"kind": "Edit", "name": "Buscar", "value": "hades"},
+        {"kind": "Edit", "name": "Barra de direcciones y de búsqueda", "value": "es.wikipedia.org"},
+        {"kind": "Document", "name": "Editor de texto", "value": "lista: pan"},
+        {"kind": "Document", "name": "(document)", "value": "lista: pan"},
+        {"kind": "Edit", "name": "Enviar mensaje a @Ron92", "value": ""},
+    )
+    for focused in free:
+        step = computer_use.validate_decision(_key_act("enter"), view=view(focused), last_failed=None, application_names=APPS)
+        assert step["arguments"] == {"key": "enter"}, focused
+    # «calcular»: Enter on the Calculator's buttons stays free.
+    calc = {"window": {"title": "Calculadora", "process": "CalculatorApp", "focused": None}, "controls": [{"i": 0, "kind": "Button", "name": "Uno"}], "text": {}}
+    typed = [{"operation": "input.text.type", "ok": True, "text": "2+2"}]
+    assert computer_use.deterministic_step(goal="calcular 2+2", view=calc, history=typed)["arguments"] == {"key": "enter"}
+
+
+def test_delete_is_marked_as_a_text_field_only_when_the_keyboard_is_on_one() -> None:
+    on_field = {"window": {"title": "App", "focused": {"kind": "Edit", "name": "Nombre", "value": "x"}}, "controls": [], "text": {}}
+    on_list = {"window": {"title": "Descargas", "focused": {"kind": "ListItem", "name": "informe.pdf"}}, "controls": [], "text": {}}
+    assert computer_use.validate_decision(_key_act("delete"), view=on_field, last_failed=None, application_names=APPS)["arguments"] == {"key": "delete", "target": "text_field"}
+    assert computer_use.validate_decision(_key_act("delete"), view=on_list, last_failed=None, application_names=APPS)["arguments"] == {"key": "delete"}
+
+
+def test_a_typed_step_carries_one_line_without_tabs() -> None:
+    raw = {"act": "type", "i": -1, "label": "", "text": "hola\nchau\r\n\tfin", "key": "", "direction": "", "application": "", "evidence": "", "why": ""}
+    step = computer_use.validate_decision(raw, view={"window": {"title": "App"}, "controls": [], "text": {}}, last_failed=None, application_names=APPS)
+    assert step["operation"] == "input.text.type"
+    assert step["arguments"]["text"] == "hola chau fin"
+    blank = {**raw, "text": "\n\t\r\n"}
+    assert computer_use.validate_decision(blank, view={"window": {"title": "App"}, "controls": [], "text": {}}, last_failed=None, application_names=APPS)["operation"] == "none"
+
+
+def test_no_way_into_the_engine_takes_an_undoing_paying_or_leaving_goal() -> None:
+    apps = ("Discord", "Steam", "Spotify", "Paint", "Explorador de archivos")
+    never = (
+        "en Discord quitá a Ron92 de mis amigos",
+        "sacá a Cotele del servidor",
+        "en el explorador mandá informe.pdf a la papelera",
+        "move the report to the trash",
+        "descartá los cambios en Paint",
+        "en Spotify cancelá la suscripción",
+        "unsubscribe from this channel",
+        "suscribime al canal de Ron92",
+        "alquilá la película en Steam",
+        "doná 5 dólares en Steam",
+        "vendé mis cromos en Steam",
+        "restablecé la configuración de Discord",
+        "limpiá el historial de Steam",
+        "vaciá la papelera de reciclaje",
+        "empty the recycle bin",
+        "en Discord salí del servidor de BAXY",
+        "leave the server in Discord",
+    )
+    for said in never:
+        assert not missions.engine_can_try(said, apps), said
+        # The decider choosing the engine itself gets no arguments for it either.
+        assert missions.free_form_arguments(said, apps) is None, said
+        assert missions.mission_request(said, apps) is None, said
+    for said in ("en Paint dibujá un círculo", "sacá una captura de pantalla en Paint", "en el explorador creá una carpeta vacía"):
+        assert missions.free_form_arguments(said, apps) is not None, said
+
+
+def test_a_menu_opened_by_the_place_survives_a_failed_learned_click() -> None:
+    # Measured on Steam: «BIBLIOTECA» opened its menu, the replayed entry was ambiguous, the model answered none.
+    menu = {
+        "window": {"title": "Steam", "process": "steamwebhelper", "focused": None},
+        "controls": [],
+        # The failed click changed nothing, so the last look's newText is empty; the App keeps what the verified
+        # click made appear.
+        "newText": [],
+        "newTextAfterClick": ["Página principal", "Colecciones", "Descargas"],
+        "text": {"TL": ["TIENDA", "BIBLIOTECA", "Página principal", "Colecciones", "Descargas"]},
+    }
+    history = [
+        _ok(1, "input.visible.click", label="BIBLIOTECA"),
+        {"step": 2, "operation": "input.visible.click", "label": "Inicio", "ok": False, "error": "visible_button_ambiguous"},
+    ]
+    step = computer_use.deterministic_step(goal="ir a biblioteca", view=menu, history=history)
+    assert step is not None and step["arguments"].get("label") == "Página principal"
+
+
+def test_a_search_field_holding_old_text_is_selected_whole_before_typing() -> None:
+    # Measured on Settings: «colores» was appended to a leftover «colorespantalla».
+    settings = {
+        "window": {"title": "Configuración", "process": "SystemSettings",
+                   "focused": {"kind": "Edit", "name": "Cuadro de búsqueda, Buscar una opción", "value": "colorespantalla"}},
+        "controls": [{"i": 0, "kind": "Edit", "name": "Cuadro de búsqueda, Buscar una opción", "state": "focused"}],
+        "text": {},
+    }
+    first = computer_use.deterministic_step(goal="ir a colores", view=settings, history=[])
+    assert first["arguments"] == {"key": "ctrl_a"}
+    selected = [_ok(1, "input.key.press", key="ctrl_a")]
+    assert computer_use.deterministic_step(goal="ir a colores", view=settings, history=selected)["arguments"] == {"text": "colores"}
+
+
+def test_going_somewhere_never_presses_a_switch() -> None:
+    # Measured on Settings: looking for «Colores» the model clicked «Invertir colores» of the Magnifier.
+    view = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Invertir colores", "state": "off"},
+            {"i": 1, "kind": "CheckBox", "name": "Invertir colores de la lupa"},
+            {"i": 2, "kind": "ListItem", "name": "Colores"},
+        ],
+        "text": {},
+    }
+    for index, label in ((0, "Invertir colores"), (1, "Invertir colores de la lupa")):
+        refused = computer_use.validate_decision(
+            {"act": "click", "i": index}, view=view, last_failed=None, application_names=(), history=[], goal="ir a colores",
+        )
+        assert refused["operation"] == "none", label
+    allowed = computer_use.validate_decision(
+        {"act": "click", "i": 2}, view=view, last_failed=None, application_names=(), history=[], goal="ir a colores",
+    )
+    assert allowed["operation"] == "input.visible.click"
+
+
+def test_after_a_failed_learned_click_the_goal_step_is_found_again_by_identity() -> None:
+    # Measured on Settings: a replayed «Sistema» by label was ambiguous (nav item and page card) and the model gave up.
+    view = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [
+            {"i": 7, "kind": "ListItem", "name": "Sistema", "state": "", "zone": "L"},
+            {"i": 20, "kind": "Button", "name": "Bluetooth y dispositivos", "zone": "C"},
+        ],
+        "text": {},
+    }
+    failed = [{"step": 1, "operation": "input.visible.click", "label": "Sistema", "ok": False, "error": "visible_button_ambiguous"}]
+    step = computer_use.deterministic_step(goal="ir a sistema", view=view, history=failed)
+    assert step is not None and step["arguments"] == {"label": "Sistema", "index": 7}
+    again = [{"step": 1, "operation": "input.visible.click", "label": "Sistema", "index": 7, "ok": False}]
+    looked_up = computer_use.deterministic_step(goal="ir a sistema", view=view, history=again)
+    assert looked_up is None or looked_up["arguments"] != {"label": "Sistema", "index": 7}
+
+
+def test_a_menu_with_ocr_noise_gives_its_first_entry_only_from_the_tree_and_the_window_body_is_never_clicked() -> None:
+    # Measured on Steam: «COMUNIDAD» opened its menu among OCR noise; the model then clicked the web view itself.
+    # Written lines alone never make a blind first-entry click (safety review cu-z): that step is the model's.
+    menu = {
+        "window": {"title": "Steam", "process": "steamwebhelper", "focused": None,
+                   "rect": {"x": 0, "y": 0, "w": 1000, "h": 800}},
+        "controls": [{"i": 0, "kind": "Pane", "name": "Chrome Legacy Window", "rect": {"x": 0, "y": 0, "w": 1000, "h": 800}}],
+        "newText": ["https://steamcommunity.com/id/x/", "Actividad", "Perfil", "Amigos", "Grupos", "Contenido", "Insignias", "_ SOUL.TM", ".RED"],
+        "text": {"TL": ["TIENDA BIBLIOTECA COMUNIDAD", "Actividad", "Perfil"]},
+    }
+    clicked = [_ok(1, "input.visible.click", label="COMUNIDAD")]
+    step = computer_use.deterministic_step(goal="ir a comunidad", view=menu, history=clicked)
+    assert step is None or step["arguments"].get("label") != "Actividad"
+    # The same menu exposed in the tree as menu items that appeared together: its first entry.
+    entries = ["Actividad", "Perfil", "Amigos", "Grupos", "Contenido", "Insignias"]
+    in_tree = {**menu, "controls": [*menu["controls"], *({"i": n + 1, "kind": "MenuItem", "name": name} for n, name in enumerate(entries))]}
+    step = computer_use.deterministic_step(goal="ir a comunidad", view=in_tree, history=clicked)
+    assert step is not None and step["arguments"].get("label") == "Actividad"
+    refused = computer_use.validate_decision(
+        {"act": "click", "label": "Chrome Legacy Window"}, view=menu, last_failed=None, application_names=(),
+        history=clicked, goal="ir a comunidad",
+    )
+    assert refused["operation"] == "none"
+
+
+def test_what_was_typed_is_never_the_evidence_of_arriving() -> None:
+    view = {"window": {"title": "Steam"}, "controls": [], "text": {"T": ["Cuphead", "Buscar en la tienda"]}}
+    history = [_ok(1, "input.text.type", text="Cuphead"), _ok(2, "input.key.press", key="enter")]
+    refused = computer_use.validate_decision(
+        {"act": "done", "evidence": "Cuphead"}, view=view, last_failed=None, application_names=(), history=history,
+        goal="buscar Cuphead",
+    )
+    assert refused["operation"] == "none"
+
+
+def test_an_order_that_names_its_application_needs_no_context() -> None:
+    # Live 2026-10-07: in a warm session every order after the first went to the contextual decider (a lone click, the
+    # typed calculation) and failed; an order naming its application reads alone.
+    from baxy_mind import __main__ as sidecar
+    from baxy_mind.effect_intent import EffectIntent
+
+    apps = ("Reloj", "Calculadora", "Configuración")
+    mission = EffectIntent(("mission.computer.use",), ("x",))
+    assert sidecar._self_contained_mission("en el Reloj andá a Cronómetro", mission, apps)
+    assert sidecar._self_contained_mission("en la calculadora calculá 9 por 8", mission, apps)
+    assert not sidecar._self_contained_mission("y ahora andá a configuración", mission, apps)
+    assert not sidecar._self_contained_mission("en el Reloj andá a Cronómetro", None, apps)
+
+
+# ------------------------------------------------- modos detrás de la navegación
+
+
+def test_switching_to_a_mode_reads_as_choosing_it_with_a_check_the_window_can_show() -> None:
+    for said in (
+        "en la calculadora cambiá a científica",
+        "en la calculadora pasá a la científica",
+        "en la calculadora cambiá al modo científico",
+        "switch to scientific in the calculator",
+        "in the calculator switch to scientific mode",
+    ):
+        arguments = _mission(said)
+        assert arguments["application"] == "Calculadora", said
+        assert arguments["goal"] in {"ir a cientifica", "ir a cientifico", "ir a scientific"}, said
+        name = arguments["goal"][len("ir a "):]
+        # The mode's header after the switch («Modo de calculadora Científica») names it; title and selection do not.
+        assert f"header:{name}" in arguments["successCheck"].split("|"), said
+    # The other gender of the adjective is the same mode («el modo científico», «Calculadora Científica»).
+    assert "header:cientifica" in _mission(
+        "en la calculadora cambiá al modo científico"
+    )["successCheck"].split("|")
+    put = _mission("en la calculadora poné el modo científico")
+    assert put["goal"] == "activar modo cientifico"
+    assert put["successCheck"].startswith("control:modo cientifico:on|")
+    assert "header:cientifica" in put["successCheck"].split("|")
+    # A tab is still a tab, and «poner» without a mode word is no mode.
+    assert missions.mission_request("in Chrome switch to the Gmail tab", APPS).goal.startswith("ir a la pesta")
+    assert missions.mission_request("en la calculadora poné la científica", APPS).goal != "ir a cientifica"
+    assert missions.gender_twin("científico") == "cientifica"
+    assert missions.gender_twin("inicio") is None and missions.gender_twin("biblioteca") is None
+
+
+_NAVIGATION_CLOSED = {
+    "window": {"title": "Calculadora", "process": "ApplicationFrameHost", "requested": True,
+               "rect": {"x": 0, "y": 0, "w": 700, "h": 800}, "focused": {"kind": "Text", "name": "Se muestra 0"}},
+    "controls": [
+        {"i": 0, "kind": "Button", "name": "Cerrar Calculadora", "zone": "TR"},
+        {"i": 1, "kind": "Button", "name": "Abrir navegación", "zone": "TL"},
+        {"i": 2, "kind": "Button", "name": "Más", "zone": "B"},
+        {"i": 3, "kind": "Button", "name": "Siete", "zone": "L"},
+        {"i": 4, "kind": "Text", "name": "Modo de calculadora Estándar", "zone": "TL"},
+    ],
+    "text": {"TL": ["Calculadora", "Estándar"]},
+}
+_NAVIGATION_OPEN = {
+    **_NAVIGATION_CLOSED,
+    "controls": [
+        {"i": 0, "kind": "Button", "name": "Cerrar navegación", "zone": "TL"},
+        {"i": 1, "kind": "ListItem", "name": "Estándar Calculadora", "state": "selected", "zone": "L"},
+        {"i": 2, "kind": "ListItem", "name": "Científica Calculadora", "zone": "L"},
+        {"i": 3, "kind": "ListItem", "name": "Programador Calculadora", "zone": "L"},
+        {"i": 4, "kind": "Button", "name": "Más", "zone": "B"},
+    ],
+    "newText": ["Estándar", "Científica", "Programador"],
+}
+
+
+def test_a_mode_behind_the_navigation_button_is_found_by_opening_it_before_any_shortcut() -> None:
+    # Measured live (n2): «cambiá a científica» pressed ctrl_k and escape on the Calculator and stopped; its modes
+    # are items of the navigation behind «Abrir navegación».
+    for goal in ("ir a cientifica", "ir a cientifico", "activar modo cientifico"):
+        first = computer_use.deterministic_step(goal=goal, view=_NAVIGATION_CLOSED, history=[])
+        assert first["operation"] == "input.visible.click", goal
+        assert first["arguments"] == {"label": "Abrir navegación", "index": 1}, goal
+        opened = [_ok(1, "input.visible.click", label="Abrir navegación", index=1)]
+        picked = computer_use.deterministic_step(goal=goal, view=_NAVIGATION_OPEN, history=opened)
+        assert picked["arguments"] == {"label": "Científica Calculadora", "index": 2}, goal
+    # Opened once and the mode is not there: the shortcuts follow, the opener is never clicked again, «Cerrar
+    # navegación» and the «Más» operator are never taken for a menu.
+    empty = {**_NAVIGATION_OPEN, "controls": _NAVIGATION_OPEN["controls"][:1] + _NAVIGATION_OPEN["controls"][4:]}
+    opened = [_ok(1, "input.visible.click", label="Abrir navegación", index=1)]
+    assert computer_use.deterministic_step(goal="ir a cientifica", view=empty, history=opened)["arguments"] == {"key": "ctrl_k"}
+    assert computer_use.deterministic_step(goal="ir a cientifica", view=_NAVIGATION_CLOSED, history=opened)["arguments"] == {"key": "ctrl_k"}
+
+
+def test_the_navigation_opener_is_a_button_by_its_whole_name_never_a_switch_or_an_open_one() -> None:
+    def view(*controls: dict) -> dict:
+        return {"window": {"title": "App", "process": "app"}, "controls": list(controls), "text": {}}
+
+    for name, kind in (("Open Navigation", "Button"), ("Abrir menú", "Button"), ("Más opciones", "SplitButton"),
+                       ("More options", "Button"), ("Main menu", "MenuItem"), ("Navegación", "Button")):
+        step = computer_use.deterministic_step(goal="ir a cientifica", view=view({"i": 0, "kind": kind, "name": name}), history=[])
+        assert step["arguments"] == {"label": name, "index": 0}, name
+    for control in (
+        {"i": 0, "kind": "ToggleButton", "name": "Menú"},
+        {"i": 0, "kind": "Button", "name": "Menú", "state": "off"},
+        # A bare «Menú» or «More» says nothing of navigation (a card's menu, a list's «more»).
+        {"i": 0, "kind": "Button", "name": "Menú"},
+        {"i": 0, "kind": "Button", "name": "More"},
+        {"i": 0, "kind": "Button", "name": "Abrir navegación", "state": "expanded"},
+        {"i": 0, "kind": "Button", "name": "Cambiar el tamaño del menú de navegación principal"},
+        {"i": 0, "kind": "Group", "name": "Botones de navegación"},
+        {"i": 0, "kind": "Pane", "name": "Panel de navegación"},
+    ):
+        step = computer_use.deterministic_step(goal="ir a cientifica", view=view(control), history=[])
+        assert step["arguments"] == {"key": "ctrl_k"}, control
+    # A search of the window still comes first.
+    searchable = view({"i": 0, "kind": "Button", "name": "Abrir navegación"}, {"i": 1, "kind": "Edit", "name": "Buscar una configuración"})
+    assert computer_use.deterministic_step(goal="ir a colores", view=searchable, history=[])["arguments"] == {
+        "label": "Buscar una configuración", "index": 1,
+    }
+
+
+def test_going_to_a_place_never_clicks_the_switch_that_carries_its_name() -> None:
+    settings = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [{"i": 0, "kind": "Button", "name": "Bluetooth", "state": "on"}],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="ir a bluetooth", view=settings, history=[])
+    assert step is None or step["operation"] != "input.visible.click"
+    # «poné el modo avión» where a switch is called so turns it on, as before.
+    toggle = {**settings, "controls": [{"i": 0, "kind": "Button", "name": "Modo avión", "state": "off"}]}
+    assert computer_use.deterministic_step(goal="activar modo avion", view=toggle, history=[])["arguments"] == {
+        "label": "Modo avión", "index": 0,
+    }
+
+
+# ------------------------------------------------ revisión x-mind 2026-10-07
+
+
+def test_delete_after_an_address_is_pressed_only_with_the_keyboard_on_the_address_field() -> None:
+    goal = "ir a la direccion es.wikipedia.org"
+    typed = [_ok(1, "input.key.press", key="ctrl_l"), _ok(2, "input.text.type", text="es.wikipedia.org")]
+    on_bar = {"window": {"title": "Opera", "focused": {"kind": "Edit", "name": "Campo de dirección", "value": "es.wikipedia.org/wiki/Curicó"}},
+              "controls": [], "text": {}}
+    step = computer_use.deterministic_step(goal=goal, view=on_bar, history=typed)
+    assert step["arguments"] == {"key": "delete", "target": "text_field"}
+    # ctrl_l did not reach the bar (the page or a list item has the keyboard, or nothing is known): Delete would erase
+    # what is selected, so nothing is pressed.
+    for focused in (None, {"kind": "ListItem", "name": "informe.pdf"}, {"kind": "Edit", "name": "Buscar en la página", "value": "x"}):
+        view = {"window": {"title": "Opera", "focused": focused}, "controls": [], "text": {}}
+        assert computer_use.deterministic_step(goal=goal, view=view, history=typed) is None, focused
+
+
+def test_going_to_a_place_never_clicks_a_switch_by_its_written_name_or_as_a_search_result() -> None:
+    settings = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Bluetooth", "state": "on"},
+            {"i": 1, "kind": "Edit", "name": "Buscar una configuración"},
+        ],
+        "text": {"C": ["Bluetooth"]},
+    }
+    # The switch's own written word is the switch: the place is looked up in the window's search.
+    step = computer_use.deterministic_step(goal="ir a bluetooth", view=settings, history=[])
+    assert step["arguments"] == {"label": "Buscar una configuración", "index": 1}
+    # The switch and the navigation item carry the same name: the item is the place.
+    both = {**settings, "controls": [*settings["controls"], {"i": 2, "kind": "ListItem", "name": "Bluetooth"}]}
+    assert computer_use.deterministic_step(goal="ir a bluetooth", view=both, history=[])["arguments"] == {"label": "Bluetooth", "index": 2}
+    # A search result that is a switch is never the result, nor its written name.
+    results = {
+        "window": {"title": "Configuración", "process": "SystemSettings",
+                   "focused": {"kind": "Edit", "name": "Buscar una configuración", "value": "colores"}},
+        "controls": [
+            {"i": 0, "kind": "Edit", "name": "Buscar una configuración", "state": "focused"},
+            {"i": 1, "kind": "Button", "name": "Colores", "state": "off"},
+            {"i": 2, "kind": "ListItem", "name": "Colores de acento"},
+        ],
+        "newText": ["Colores"],
+        "text": {"C": ["Colores", "Colores de acento"]},
+    }
+    typed = [_ok(1, "input.visible.click", label="Buscar una configuración"), _ok(2, "input.text.type", text="colores")]
+    picked = computer_use.deterministic_step(goal="ir a colores", view=results, history=typed)
+    assert picked["arguments"] == {"label": "Colores de acento", "index": 2}
+    only_switch = {**results, "controls": results["controls"][:2], "text": {"C": ["Colores"]}}
+    assert computer_use.deterministic_step(goal="ir a colores", view=only_switch, history=typed)["arguments"] == {"key": "escape"}
+
+
+def test_a_name_two_controls_carry_is_looked_up_never_clicked_by_its_written_word() -> None:
+    # Live s13 Discord: «Cotele» was a server and an activity card; the click on the written word failed.
+    discord = {
+        "window": {"title": "Amigos - Discord", "process": "Discord", "focused": None},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Buscar", "state": ""},
+            {"i": 1, "kind": "ListItem", "name": "Cotele"},
+            {"i": 2, "kind": "Button", "name": "Cotele"},
+        ],
+        "text": {"C": ["Cotele"]},
+    }
+    step = computer_use.deterministic_step(goal="ir a cotele", view=discord, history=[])
+    assert step["arguments"] == {"label": "Buscar", "index": 0}
+    # No control names it: the written word is still clicked by its label.
+    written = {**discord, "controls": discord["controls"][:1]}
+    assert computer_use.deterministic_step(goal="ir a cotele", view=written, history=[])["arguments"] == {"label": "cotele"}
+
+
+def test_a_search_field_already_holding_the_name_is_not_typed_into_again() -> None:
+    clicked = [_ok(1, "input.visible.click", label="Buscar")]
+    holding = {
+        "window": {"title": "Amigos - Discord", "process": "Discord", "focused": {"kind": "Edit", "name": "Buscar", "value": "general"}},
+        "controls": [{"i": 0, "kind": "Edit", "name": "Buscar", "state": "focused"}, {"i": 1, "kind": "ListItem", "name": "general · Mi servidor"}],
+        "text": {},
+    }
+    assert computer_use.deterministic_step(goal="ir a general", view=holding, history=clicked)["arguments"] == {
+        "label": "general · Mi servidor", "index": 1,
+    }
+    # No result yet: the name is selected whole and typed once more so the search runs, never appended.
+    bare = {**holding, "controls": holding["controls"][:1]}
+    assert computer_use.deterministic_step(goal="ir a general", view=bare, history=clicked)["arguments"] == {"key": "ctrl_a"}
+    selected = clicked + [_ok(2, "input.key.press", key="ctrl_a")]
+    assert computer_use.deterministic_step(goal="ir a general", view=bare, history=selected)["arguments"] == {"text": "general"}
+
+
+def test_a_field_without_a_search_name_that_holds_text_is_never_selected_whole() -> None:
+    # A document editor exposed as a text field took the keyboard after ctrl_k: select-all would take the person's work.
+    editor = {
+        "window": {"title": "tesis - Editor", "process": "editor", "focused": {"kind": "Edit", "name": "Editor de texto", "value": "mi tesis"}},
+        "controls": [], "newText": ["algo"], "text": {},
+    }
+    after_k = [_ok(1, "input.key.press", key="ctrl_k")]
+    assert computer_use.deterministic_step(goal="ir a general", view=editor, history=after_k) is None
+    empty = {**editor, "window": {**editor["window"], "focused": {"kind": "Edit", "name": "", "value": ""}}}
+    assert computer_use.deterministic_step(goal="ir a general", view=empty, history=after_k)["arguments"] == {"text": "general"}
+
+
+def test_a_menu_after_failed_clicks_is_read_from_what_the_verified_click_made_appear() -> None:
+    history = [
+        _ok(1, "input.visible.click", label="BIBLIOTECA"),
+        {"step": 2, "operation": "input.visible.click", "label": "Inicio", "ok": False},
+    ]
+    stale = {"window": {"title": "Steam"}, "controls": [], "newText": ["Página principal", "Colecciones"], "text": {}}
+    # The current look's newText is not what the verified click made appear: without newTextAfterClick, no menu.
+    assert computer_use._menu_opened_by(stale, history, "biblioteca") is None
+    kept = {**stale, "newText": [], "newTextAfterClick": ["Página principal", "Colecciones"]}
+    assert computer_use._menu_opened_by(kept, history, "biblioteca") == "Página principal"
+    # Right after the verified click its own look's newText is the menu.
+    assert computer_use._menu_opened_by(stale, history[:1], "biblioteca") == "Página principal"
+
+
+def test_the_navigation_opener_is_never_the_browser_frames_nor_used_by_a_search() -> None:
+    browser = {
+        "window": {"title": "Nueva pestaña - Opera", "process": "opera", "rect": _rect(0, 0, 1200, 800), "focused": None},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Main menu", "rect": _rect(0, 0, 40, 30)},
+            {"i": 1, "kind": "Edit", "name": "Campo de dirección", "value": "", "rect": _rect(100, 40, 800, 30)},
+            {"i": 2, "kind": "Document", "name": "Nueva pestaña", "rect": _rect(0, 80, 1200, 720)},
+        ],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="ir a historia", view=browser, history=[])
+    assert step is None or step["arguments"].get("label") != "Main menu"
+    in_page = {**browser, "controls": [*browser["controls"], {"i": 3, "kind": "Button", "name": "Abrir navegación", "rect": _rect(10, 100, 40, 30)}]}
+    assert computer_use.deterministic_step(goal="ir a historia", view=in_page, history=[])["arguments"] == {"label": "Abrir navegación", "index": 3}
+    # A search is the window's search, never its navigation.
+    app = {"window": {"title": "App", "process": "app"}, "controls": [{"i": 0, "kind": "Button", "name": "Abrir navegación"}], "text": {}}
+    assert computer_use.deterministic_step(goal="buscar informe", view=app, history=[])["arguments"] == {"key": "ctrl_k"}
+    assert computer_use.deterministic_step(goal="ir a informe", view=app, history=[])["arguments"] == {"label": "Abrir navegación", "index": 0}
+
+
+def test_evidence_that_holds_what_was_typed_proves_nothing_until_a_click_moved_the_window() -> None:
+    title = "imagenes - Resultados de la búsqueda en ETC"
+    view = {"window": {"title": title}, "controls": [{"i": 0, "kind": "ListItem", "name": "vacaciones.jpg"}], "text": {}}
+    typed = [_ok(1, "input.text.type", text="imagenes"), _ok(2, "input.key.press", key="enter")]
+    done = {"act": "done", "evidence": title}
+    refused = computer_use.validate_decision(done, view=view, last_failed=None, application_names=(), history=typed, goal="ir a imagenes")
+    assert refused["operation"] == "none" and refused["code"] == "evidence_not_visible"
+    moved = typed + [_ok(3, "input.visible.click", label="imagenes", changed=True)]
+    accepted = computer_use.validate_decision(done, view=view, last_failed=None, application_names=(), history=moved, goal="ir a imagenes")
+    assert accepted["operation"] == "done"
+    # A goal of writing a text is proved by the text it wrote.
+    note = {"window": {"title": "hola mundo - Bloc de notas"}, "controls": [], "text": {}}
+    wrote = [_ok(1, "input.text.type", text="hola mundo")]
+    proof = computer_use.validate_decision(
+        {"act": "done", "evidence": "hola mundo - Bloc de notas"}, view=note, last_failed=None, application_names=(),
+        history=wrote, goal="escribir hola mundo",
+    )
+    assert proof["operation"] == "done"
+
+
+def test_a_key_or_typing_final_says_it_is_done_and_a_place_final_confirms_the_window() -> None:
+    def instruction(goal: str, **more: object) -> str:
+        return computer_use.compose_instruction({"goal": goal, "reached": True, **more}, "es")
+
+    for goal in ("apretar enter", "escribir hola"):
+        said = instruction(goal)
+        assert "Confirm the state" not in said and "Say only that it is done in that app" in said, goal
+    for goal in ("ir a biblioteca", "calcular 2+2"):
+        assert "Confirm the state" in instruction(goal), goal
+    assert "Confirm the state" in instruction("apretar enter", question="¿está activado?")
+    mixed = computer_use.compose_instruction(
+        {"goal": "x", "reached": True, "subgoals": [{"goal": "ir a general", "reached": True}, {"goal": "escribir hola", "reached": True}]}, "es",
+    )
+    assert "for a part that pressed a key or typed" in mixed
+    unreached = computer_use.compose_instruction(
+        {"goal": "x", "reached": False, "subgoals": [{"goal": "ir a general", "reached": True}, {"goal": "escribir hola", "reached": False}]}, "es",
+    )
+    assert "at most TWO short sentences" in unreached
+
+
+def test_a_button_named_as_switching_is_never_pressed_on_the_way_to_a_place() -> None:
+    # Measured on the Calculator: going to «Científica» the model pressed «Alternar grados» and DEG became RAD.
+    view = {"window": {"title": "Calculadora"}, "controls": [{"i": 0, "kind": "Button", "name": "Alternar grados"}], "text": {}}
+    refused = computer_use.validate_decision(
+        {"act": "click", "i": 0}, view=view, last_failed=None, application_names=(), history=[], goal="ir a cientifica",
+    )
+    assert refused["operation"] == "none"
+
+
+def test_a_search_button_that_opened_its_box_is_typed_into() -> None:
+    # Measured on Discord: «Buscar o iniciar una conversación» opens the quick switcher; its field is not reported focused.
+    view = {
+        "window": {"title": "Discord", "process": "Discord", "focused": None},
+        "controls": [{"i": 3, "kind": "Button", "name": "Buscar o iniciar una conversación"}],
+        "newText": ["¿A dónde quieres ir?"],
+        "text": {"C": ["¿A dónde quieres ir?"]},
+    }
+    clicked = [{"step": 1, "operation": "input.visible.click", "label": "Buscar o iniciar una conversación", "ok": True,
+                "surfaceChanged": True}]
+    step = computer_use.deterministic_step(goal="ir a cotele", view=view, history=clicked)
+    assert step is not None and step["operation"] == "input.text.type" and step["arguments"] == {"text": "cotele"}
+
+
+def test_when_the_places_own_control_failed_the_place_is_looked_up() -> None:
+    view = {
+        "window": {"title": "Discord", "process": "Discord", "focused": None},
+        "controls": [
+            {"i": 2, "kind": "TreeItem", "name": "Cotele"},
+            {"i": 3, "kind": "Button", "name": "Buscar o iniciar una conversación"},
+        ],
+        "text": {},
+    }
+    failed = [{"step": 1, "operation": "input.visible.click", "label": "Cotele", "index": 2, "ok": False,
+               "error": "visible_button_postread_unchanged"}]
+    step = computer_use.deterministic_step(goal="ir a cotele", view=view, history=failed)
+    assert step is not None and step["arguments"].get("label") == "Buscar o iniciar una conversación"
+
+
+def test_a_file_views_delete_command_does_not_stop_opening_the_chosen_folder() -> None:
+    # Explorer always shows «Eliminar (Supr)» in its command bar: only an uninstall offered, or a chosen item that runs
+    # or removes, keeps the Enter from being pressed.
+    view = {
+        "window": {"title": "Inicio - Explorador de archivos", "process": "explorer"},
+        "controls": [
+            {"i": 1, "kind": "Button", "name": "Eliminar (Supr)", "zone": "T"},
+            {"i": 5, "kind": "ListItem", "name": "Descargas", "state": "selected", "zone": "C",
+             "itemType": "Carpeta de archivos", "rect": {"x": 600, "y": 300, "w": 120, "h": 40}},
+        ],
+        "text": {},
+    }
+    clicked = [{"step": 1, "operation": "input.visible.click", "label": "Descargas", "index": 5, "ok": True}]
+    step = computer_use.deterministic_step(goal="ir a descargas", view=view, history=clicked)
+    assert step is not None and step["operation"] == "input.key.press" and step["arguments"].get("key") == "enter"
+
+
+def test_a_sentence_that_mentions_the_place_is_not_the_place() -> None:
+    view = {"window": {"title": "Configuración"}, "controls": [
+        {"i": 0, "kind": "Text", "name": "Usa un servidor proxy para conexiones Ethernet o Wi-Fi. Esta configuración no se aplica a conexiones VPN."},
+        {"i": 1, "kind": "ListItem", "name": "Proxy"},
+    ], "text": {}}
+    assert computer_use.find_control(view, "wi-fi") is None
+    assert computer_use.find_control(view, "proxy")["i"] == 1
+
+
+def test_round_four_review_fixes() -> None:
+    # An explicit click on a named switch is the person's own order; on the way to a place it is refused.
+    view = {"window": {"title": "Configuración"}, "controls": [{"i": 0, "kind": "Button", "name": "Modo avión", "state": "off"}], "text": {}}
+    explicit = computer_use.validate_decision({"act": "click", "i": 0}, view=view, last_failed=None, application_names=(),
+                                              history=[], goal="hacer clic en modo avion")
+    assert explicit["operation"] == "input.visible.click"
+    going = computer_use.validate_decision({"act": "click", "i": 0}, view=view, last_failed=None, application_names=(),
+                                           history=[], goal="ir a red")
+    assert going["operation"] == "none"
+    # «apretá enter» where the focus cannot be read is asked first.
+    blind = {"window": {"title": "WhatsApp", "focused": None}, "controls": [], "text": {}}
+    step = computer_use.deterministic_step(goal="apretar enter", view=blind, history=[])
+    assert step["arguments"] == {"key": "enter", "target": "message_composer"}
+    # An item whose type is an application never gets the Enter, whatever its row shows.
+    app_item = {"kind": "ListItem", "name": "DiscordSetup", "itemType": "Aplicación", "rect": {"x": 0, "y": 0, "w": 200, "h": 20}}
+    assert not computer_use._is_container(app_item, {"controls": [app_item]})
+
+
+def test_a_toggle_that_opens_the_navigation_is_no_switch() -> None:
+    assert not computer_use._is_switch({"kind": "Button", "name": "Alternar navegación"})
+    assert not computer_use._is_switch({"kind": "Button", "name": "Toggle navigation"})
+    assert computer_use._is_switch({"kind": "Button", "name": "Alternar grados"})

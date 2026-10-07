@@ -103,6 +103,23 @@ internal sealed record MindComputerUseStep(
     JsonObject Arguments,
     string Reason);
 
+/// <summary>
+/// What the mind is asked for one computer-use step: the person's whole
+/// request (<see cref="Objective"/>), the CURRENT sub-goal's goal, application
+/// and success check, the compact view, that sub-goal's history, the steps
+/// left, and where the sub-goal sits in a chained mission (0-based).
+/// </summary>
+internal sealed record ComputerUseStepRequest(
+    string Objective,
+    string Goal,
+    string? Application,
+    string? SuccessCheck,
+    JsonObject View,
+    JsonArray History,
+    int BudgetLeft,
+    int Subgoal,
+    int SubgoalCount);
+
 internal sealed record MindVoiceStatus(
     bool Available,
     bool InputAvailable,
@@ -1160,29 +1177,24 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     // temperature 0 (CONTRATO_VISTA_ACCION.md §4.4).
     internal static readonly TimeSpan ComputerUseStepRequestTimeout = TimeSpan.FromSeconds(30);
 
-    public async Task<MindComputerUseStep?> DecideComputerUseStepAsync(
-        string objective,
-        string goal,
-        string? application,
-        string? successCheck,
-        JsonObject view,
-        JsonArray history,
-        int budgetLeft,
+    internal async Task<MindComputerUseStep?> DecideComputerUseStepAsync(
+        ComputerUseStepRequest step,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(view);
-        ArgumentNullException.ThrowIfNull(history);
+        ArgumentNullException.ThrowIfNull(step);
         JsonObject? reply = await RequestAsync(
             new JsonObject
             {
                 ["type"] = "computer.use.step",
-                ["objective"] = objective,
-                ["goal"] = goal,
-                ["application"] = application,
-                ["successCheck"] = successCheck,
-                ["view"] = view.DeepClone(),
-                ["history"] = history.DeepClone(),
-                ["budgetLeft"] = budgetLeft,
+                ["objective"] = step.Objective,
+                ["goal"] = step.Goal,
+                ["application"] = step.Application,
+                ["successCheck"] = step.SuccessCheck,
+                ["view"] = step.View.DeepClone(),
+                ["history"] = step.History.DeepClone(),
+                ["budgetLeft"] = step.BudgetLeft,
+                ["subgoal"] = step.Subgoal,
+                ["subgoalCount"] = step.SubgoalCount,
             },
             ComputerUseStepRequestTimeout,
             cancellationToken).ConfigureAwait(false);

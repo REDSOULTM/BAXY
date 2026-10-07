@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Providers.Windows.Capture;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
@@ -289,6 +290,25 @@ public sealed class ComputerUsePerceptionTests
         });
     }
 
+    [Test]
+    public async Task TheOcrReadsAWindowImageHeldInMemory()
+    {
+        // A red pixel beside a green one, as a window capture encodes it (BGRA, bottom-up): decoded from memory,
+        // with no capture file, for the OCR engine.
+        WindowImage image = WindowsScreenshotProvider.Image(new ScreenshotFrame(2, 1, [0, 0, 255, 255, 0, 255, 0, 255]));
+
+        using global::Windows.Graphics.Imaging.SoftwareBitmap bitmap = await WindowsVisibleOcrLocator.DecodeAsync(image.Bmp);
+        byte[] pixels = new byte[8];
+        bitmap.CopyToBuffer(System.Runtime.InteropServices.WindowsRuntime.WindowsRuntimeBufferExtensions.AsBuffer(pixels));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bitmap.PixelWidth, bitmap.PixelHeight), Is.EqualTo((2, 1)));
+            Assert.That(pixels[..3], Is.EqualTo(new byte[] { 0, 0, 255 }));
+            Assert.That(pixels[4..7], Is.EqualTo(new byte[] { 0, 255, 0 }));
+        });
+    }
+
     internal sealed class ScriptedUiaWorker : IUiaWorker
     {
         private readonly Queue<string> _answers;
@@ -300,11 +320,22 @@ public sealed class ComputerUsePerceptionTests
 
         internal List<string> Commands { get; } = [];
 
+        internal int Prewarmed { get; private set; }
+
+        // After this many commands the worker answers nothing more.
+        internal int? FallSilentAfter { get; set; }
+
+        public ValueTask PrewarmAsync(CancellationToken cancellationToken)
+        {
+            Prewarmed++;
+            return ValueTask.CompletedTask;
+        }
+
         public ValueTask<JsonDocument?> SendAsync(string commandJson, TimeSpan timeout, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             Commands.Add(commandJson);
-            if (_answers.Count == 0)
+            if (_answers.Count == 0 || Commands.Count > FallSilentAfter)
                 return ValueTask.FromResult<JsonDocument?>(null);
             string answer = _answers.Count == 1 ? _answers.Peek() : _answers.Dequeue();
             return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(answer));

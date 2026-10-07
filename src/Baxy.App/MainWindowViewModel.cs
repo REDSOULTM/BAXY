@@ -202,7 +202,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 // sees a line (and the private log keeps the cause for diagnosis).
                 AddMessageCore(
                     "BAXY",
-                    CompositionFailureFallback(failure),
+                    CompositionFailureFallback(pending, failure),
                     isUser: false,
                     PublicResponseRoute.Error);
                 RestorePresentationState();
@@ -210,12 +210,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     // Notebook closure 2026-09-22: the line stays (the transcript is never left
-    // empty), but the App does not author BAXY's prose — every sentence BAXY
-    // says comes from the model (scripts/censo_voz_visible.py, zero fixed
-    // visible literals). A failed composition shows a neutral marker with its
-    // diagnostic code instead of a fixed Spanish sentence.
-    internal static string CompositionFailureFallback(string failure) =>
-        "⚠ (" + failure + ")";
+    // empty), but the App does not author BAXY's prose (scripts/censo_voz_visible.py,
+    // zero fixed visible literals). Live 2026-10-07: the person read the raw
+    // «⚠ (internal_code;retry_exhausted)» after a question BAXY could not word; the
+    // line is now the operation floor's data sentence for what the turn was (a
+    // question still to ask, a result, anything else), in the person's language. The
+    // diagnostic code stays in the private log (LastMessageCompositionFailure, the
+    // composition_failed event); the marker remains only if the data has no line.
+    internal static string CompositionFailureFallback(PendingModelMessage pending, string failure)
+    {
+        ArgumentNullException.ThrowIfNull(pending);
+        return OperationFloor.CompositionFailureSentence(
+                pending.Draft.Intent, ModelMessageComposer.LooksEnglish(pending.UserText))
+            ?? "⚠ (" + failure + ")";
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -258,6 +266,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public string? ProgressLabel => _progressLabel;
 
+    /// <summary>A computer-use mission is between its looks and steps (its state lives on the plan until it ends).</summary>
+    internal bool IsComputerUseMissionRunning => _mindPlans.Current?.ComputerUse is not null;
+
     internal void ApplyInProgressSignal(string text, DateTimeOffset? nowUtc = null)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -299,6 +310,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (_lastMilestoneAttemptUtc is { } attempted
             && !FirstSignal.ShouldEmitMilestone(attempted, nowUtc))
+        {
+            return false;
+        }
+
+        // A computer-use mission shows its own status (acting, step by step):
+        // a composed label would cost the GPU 0.3-0.6 s every few seconds and
+        // evict the prompt cache the next step decision reuses.
+        if (IsComputerUseMissionRunning)
         {
             return false;
         }

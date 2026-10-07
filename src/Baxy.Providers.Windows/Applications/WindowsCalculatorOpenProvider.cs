@@ -95,6 +95,9 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
             return processes.Select(process =>
             {
                 process.Refresh(); nint window = process.MainWindowHandle;
+                // The packaged Calculator draws inside the ApplicationFrameHost frame that hosts it.
+                if (window == 0 || !IsWindowVisible(window))
+                    window = External.VisibleControlSurface.FrameHosting(unchecked((uint)process.Id));
                 return new CalculatorSnapshot(process.Id, process.StartTime.ToUniversalTime().Ticks,
                     window.ToInt64(), window != 0 && IsWindowVisible(window),
                     window != 0 && GetForegroundWindow() == window);

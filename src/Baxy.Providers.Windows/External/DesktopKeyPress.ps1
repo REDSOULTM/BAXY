@@ -1,13 +1,10 @@
-[CmdletBinding(DefaultParameterSetName='Key')]
+# input.key.press e input.text.type ya no pasan por aquí: los envía el adaptador
+# desde su propio proceso (DesktopKeyboard.cs), sin un PowerShell por tecla.
+[CmdletBinding(DefaultParameterSetName='Pointer')]
 param(
-    [Parameter(Mandatory=$true,ParameterSetName='Key',Position=0)]
-    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_a','ctrl_c','ctrl_f','ctrl_k','ctrl_l','ctrl_shift_escape','ctrl_t','ctrl_v','ctrl_w','ctrl_z','delete','end','enter','escape','f5','home','page_down','page_up','shift','space','tab','win')]
-    [string]$Key,
     [Parameter(Mandatory=$true,ParameterSetName='Pointer')]
     [ValidateSet('click','move_center','scroll_down')]
     [string]$PointerAction,
-    [Parameter(Mandatory=$true,ParameterSetName='Text')]
-    [string]$TextBase64,
     [Parameter(Mandatory=$true,ParameterSetName='Layout')]
     [ValidateSet('spanish')]
     [string]$Layout,
@@ -121,16 +118,6 @@ public static class BaxyKeyInput {
     [DllImport("user32.dll")]
     public static extern bool SetForegroundWindow(IntPtr window);
 
-    public static uint Press(ushort virtualKey) {
-        INPUT[] inputs = new INPUT[2];
-        inputs[0].type = 1;
-        inputs[0].data.keyboard.virtualKey = virtualKey;
-        inputs[1].type = 1;
-        inputs[1].data.keyboard.virtualKey = virtualKey;
-        inputs[1].data.keyboard.flags = 2;
-        return SendInput((uint)inputs.Length, inputs, InputSize);
-    }
-
     public static uint PressChord(ushort[] keys) {
         INPUT[] inputs = new INPUT[keys.Length * 2];
         for (int index = 0; index < keys.Length; index++) {
@@ -171,19 +158,6 @@ public static class BaxyKeyInput {
         return observedLanguageId != 0;
     }
 
-    public static uint TypeText(string text) {
-        INPUT[] inputs = new INPUT[text.Length * 2];
-        for (int index = 0; index < text.Length; index++) {
-            inputs[index * 2].type = 1;
-            inputs[index * 2].data.keyboard.scanCode = text[index];
-            inputs[index * 2].data.keyboard.flags = 4;
-            inputs[index * 2 + 1].type = 1;
-            inputs[index * 2 + 1].data.keyboard.scanCode = text[index];
-            inputs[index * 2 + 1].data.keyboard.flags = 6;
-        }
-        return inputs.Length == 0 ? 0 : SendInput((uint)inputs.Length, inputs, InputSize);
-    }
-
     public static bool MoveCenter(out POINT observed) {
         int x = Math.Max(0, GetSystemMetrics(0) / 2);
         int y = Math.Max(0, GetSystemMetrics(1) / 2);
@@ -212,12 +186,6 @@ public static class BaxyKeyInput {
 }
 '@
 
-    $virtualKeys=@{
-        arrow_down=0x28; arrow_left=0x25; arrow_right=0x27; arrow_up=0x26
-        backspace=0x08; context_menu=0x5D; control=0x11; delete=0x2E; end=0x23
-        enter=0x0D; escape=0x1B; f5=0x74; home=0x24; page_down=0x22; page_up=0x21
-        shift=0x10; space=0x20; tab=0x09; win=0x5B
-    }
     $before=[BaxyKeyInput]::GetForegroundWindow()
     if($before -eq [IntPtr]::Zero){throw 'foreground_window_missing'}
     [uint32]$beforeProcess=0
@@ -226,32 +194,9 @@ public static class BaxyKeyInput {
     $expectedInputSize=$(if([IntPtr]::Size -eq 8){40}else{28})
     if([BaxyKeyInput]::InputSize -ne $expectedInputSize){throw 'sendinput_layout_invalid'}
     $action=$PSCmdlet.ParameterSetName.ToLowerInvariant()
-    $expected=0;$accepted=0;$verified=$false;$textLength=0;$pointerX=$null;$pointerY=$null;$layoutLanguageId=$null;$openedProcessId=$null
+    $expected=0;$accepted=0;$verified=$false;$pointerX=$null;$pointerY=$null;$layoutLanguageId=$null;$openedProcessId=$null
     $clipboardFormatCount=$null;$clipboardSequenceBefore=$null;$clipboardSequenceAfter=$null
-    if($PSCmdlet.ParameterSetName -eq 'Key') {
-        $chords=@{
-            alt_tab=[uint16[]]@(0x12,0x09)
-            # ctrl_l enfoca la barra de direcciones del navegador de delante.
-            ctrl_l=[uint16[]]@(0x11,0x4C)
-            ctrl_shift_escape=[uint16[]]@(0x11,0x10,0x1B)
-            ctrl_v=[uint16[]]@(0x11,0x56)
-            # Motor de computer use (CONTRATO_VISTA_ACCION.md §2): los atajos que una
-            # persona usa en cualquier app —seleccionar todo, copiar, buscar, paleta
-            # de comandos, pestaña nueva, cerrar pestaña, deshacer—. Ninguno cierra
-            # una ventana ni un proceso.
-            ctrl_a=[uint16[]]@(0x11,0x41)
-            ctrl_c=[uint16[]]@(0x11,0x43)
-            ctrl_f=[uint16[]]@(0x11,0x46)
-            ctrl_k=[uint16[]]@(0x11,0x4B)
-            ctrl_t=[uint16[]]@(0x11,0x54)
-            ctrl_w=[uint16[]]@(0x11,0x57)
-            ctrl_z=[uint16[]]@(0x11,0x5A)
-        }
-        $isChord=$chords.ContainsKey($Key)
-        $expected=$(if($isChord){$chords[$Key].Length*2}else{2})
-        $accepted=$(if($isChord){[BaxyKeyInput]::PressChord($chords[$Key])}else{[BaxyKeyInput]::Press([uint16]$virtualKeys[$Key])})
-        $verified=$accepted -eq $expected
-    } elseif($PSCmdlet.ParameterSetName -eq 'Copy') {
+    if($PSCmdlet.ParameterSetName -eq 'Copy') {
         $clipboardSequenceBefore=[BaxyKeyInput]::GetClipboardSequenceNumber()
         $expected=4
         $accepted=[BaxyKeyInput]::PressChord([uint16[]]@(0x11,0x43))
@@ -262,12 +207,6 @@ public static class BaxyKeyInput {
         $clipboardSequenceBefore=[BaxyKeyInput]::GetClipboardSequenceNumber()
         $expected=4
         $accepted=[BaxyKeyInput]::PressChord([uint16[]]@(0x11,0x56))
-        $verified=$accepted -eq $expected
-    } elseif($PSCmdlet.ParameterSetName -eq 'Text') {
-        $text=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($TextBase64))
-        if([string]::IsNullOrWhiteSpace($text) -or $text.Length -gt 4096){throw 'text_input_invalid'}
-        $textLength=$text.Length;$expected=$text.Length*2
-        $accepted=[BaxyKeyInput]::TypeText($text)
         $verified=$accepted -eq $expected
     } elseif($PointerAction -eq 'move_center') {
         $point=New-Object BaxyKeyInput+POINT
@@ -351,11 +290,9 @@ public static class BaxyKeyInput {
         ok=$verified
         effectObserved=$effect
         action=$action
-        key=$Key
         pointerAction=$PointerAction
         pointerX=$pointerX
         pointerY=$pointerY
-        textLength=$textLength
         clipboardFormatCount=$clipboardFormatCount
         clipboardSequenceBefore=$clipboardSequenceBefore
         clipboardSequenceAfter=$clipboardSequenceAfter
@@ -379,7 +316,6 @@ public static class BaxyKeyInput {
         version=1
         ok=$false
         effectObserved=$effect
-        key=$Key
         error=$(if($PSCmdlet.ParameterSetName -eq 'Copy'){'clipboard_copy_sendinput_failed'}elseif($PSCmdlet.ParameterSetName -eq 'Paste'){'clipboard_paste_sendinput_failed'}else{'key_press_sendinput_failed'})
     } | ConvertTo-Json -Compress
     exit 2

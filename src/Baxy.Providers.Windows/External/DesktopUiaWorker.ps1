@@ -12,8 +12,16 @@
 #   {"cmd":"ping"}
 #   {"cmd":"view","hwnd":123,"limit":60}
 #   {"cmd":"click","hwnd":123,"aliases":["Biblioteca","Library"],"controlId":"42.1837.4"}
+#   {"cmd":"postread"}   (el control del ultimo clic: ausente, seleccionado o conmutado)
+#   {"cmd":"scroll","hwnd":123,"controlId":"42.1837.4","direction":"down","amount":3}
 #   {"cmd":"find","hwnd":123,"aliases":["Biblioteca"]}
+#   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
 #   {"cmd":"exit"}
+#
+# -DpiUnaware: el worker de los guiones del navegador conserva la escala que
+# tenia el PowerShell de cada llamada al que sustituye (sus coordenadas de
+# pestana se convierten en el proceso del producto).
+param([switch]$DpiUnaware)
 $ErrorActionPreference='Stop'
 [Console]::InputEncoding=[System.Text.Encoding]::UTF8
 [Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
@@ -63,7 +71,7 @@ public static class BaxyUiaWorkerNative {
 # Coordenadas fisicas: la captura con la que se comparan los rectangulos se toma
 # en pixeles fisicos (GdiScreenshotPlatform), asi que este proceso no puede ser
 # virtualizado por el escalado del monitor. -4 = PER_MONITOR_AWARE_V2.
-try { [void][BaxyUiaWorkerNative]::SetProcessDpiAwarenessContext([IntPtr](-4)) } catch {}
+if(-not $DpiUnaware){ try { [void][BaxyUiaWorkerNative]::SetProcessDpiAwarenessContext([IntPtr](-4)) } catch {} }
 
 $AE=[System.Windows.Automation.AutomationElement]
 $Actionable=@('Button','MenuItem','ListItem','TabItem','Hyperlink','CheckBox','RadioButton','Edit','ComboBox','TreeItem','SplitButton','Slider','Document')
@@ -109,7 +117,8 @@ function Get-State($el){
       $vp=([System.Windows.Automation.ValuePattern]$pattern)
       if($vp.Cached.IsReadOnly){$parts+='readonly'}
       $raw=[string]$vp.Cached.Value
-      if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$raw=$raw.Substring(0,120)}; $value=$raw }
+      # An exposed empty value is "" (known empty); a field that exposes none stays null (its content is unknown).
+      if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$raw=$raw.Substring(0,120)}; $value=$raw } else { $value='' }
     } elseif($el.TryGetCachedPattern([System.Windows.Automation.RangeValuePattern]::Pattern,[ref]$pattern)){
       $value=[string]([System.Windows.Automation.RangeValuePattern]$pattern).Cached.Value
     }
@@ -171,8 +180,15 @@ function Invoke-NamedControl($el){
     if($ec.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Expanded){ $ec.Collapse() } else { $ec.Expand() }
     return 'expand'
   }
-  $point=$el.GetClickablePoint()
-  [BaxyUiaWorkerNative]::ClickPoint([int]$point.X,[int]$point.Y)
+  # Chromium/Electron items often expose no pattern and no clickable point (measured: a messaging client's server in its
+  # sidebar): a person clicks the middle of what they see, so does this.
+  $x=$null; $y=$null
+  try { $point=$el.GetClickablePoint(); $x=[int]$point.X; $y=[int]$point.Y } catch {
+    $box=$el.Current.BoundingRectangle
+    if($box.IsEmpty -or $box.Width -le 0 -or $box.Height -le 0){ throw }
+    $x=[int]($box.X+$box.Width/2); $y=[int]($box.Y+$box.Height/2)
+  }
+  [BaxyUiaWorkerNative]::ClickPoint($x,$y)
   return 'click'
 }
 function Test-Selected($el){
@@ -198,7 +214,8 @@ function Get-Toggle($el){
 # (medido: VS Code 154 controles 2,2 s -> menos de 1 s).
 $script:Cache=New-Object System.Windows.Automation.CacheRequest
 foreach($prop in @($AE::NameProperty,$AE::ControlTypeProperty,$AE::IsOffscreenProperty,$AE::BoundingRectangleProperty,
-                   $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty)){ $script:Cache.Add($prop) }
+                   $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty,
+                   $AE::ItemTypeProperty)){ $script:Cache.Add($prop) }
 foreach($pat in @([System.Windows.Automation.TogglePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern,
                   [System.Windows.Automation.ExpandCollapsePattern]::Pattern,[System.Windows.Automation.ValuePattern]::Pattern,
                   [System.Windows.Automation.RangeValuePattern]::Pattern)){ $script:Cache.Add($pat) }
@@ -287,7 +304,12 @@ function Do-View($request){
       }
       $total++
       $id=Get-Id $item
-      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; rect=$rect; repeated=0 }
+      # Lo que la aplicacion dice que es un elemento de lista o arbol (una carpeta, un acceso directo, una aplicacion).
+      $itemType=''
+      if($kind -eq 'ListItem' -or $kind -eq 'DataItem' -or $kind -eq 'TreeItem'){
+        try { $itemType=[string]$item.Cached.ItemType; if($null -eq $itemType){ $itemType='' } else { $itemType=($itemType -replace '\s+',' ').Trim() } } catch { $itemType='' }
+      }
+      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; itemType=$itemType; rect=$rect; repeated=0 }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -301,7 +323,7 @@ function Do-View($request){
   $ordered=@()
   $position=0
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; rect=$entry.rect; repeated=$entry.repeated })
+    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; itemType=$entry.itemType; rect=$entry.rect; repeated=$entry.repeated })
     $position++
   }
   $focusedOut=$null
@@ -337,13 +359,43 @@ function Find-Named($root,[string[]]$aliases){
 function Click-Result([bool]$ok,[bool]$effect,[string]$error,[string]$name,[string]$identity,[bool]$absent,[bool]$selected,[bool]$toggled,[string]$kind){
   return @{ version=2; ok=$ok; effectObserved=$effect; error=$error; name=$name; kind=$kind; controlIdentity=$identity; absentOrDisabled=$absent; selected=$selected; toggled=$toggled; surfaceChanged=$false; cascadeStage='uia'; authority='windows_uia_or_win32_button_postread' }
 }
+# El clic responde en cuanto invoca («pending»): el adaptador pide «postread»
+# cada 50 ms mientras compara la superficie, y se queda con la primera prueba
+# (antes: 150 ms de espera previa y 20 x 100 ms de sondeo, 2,6-3,1 s por clic
+# en una ventana Electron/CEF que no cambia de estado UIA).
+$script:Pending=$null
+function Pending-Result($pending){
+  $result=Click-Result $false $true 'visible_button_postread_pending' $pending.name $pending.identity $false $false $false $pending.kind
+  $result.pending=$true
+  return $result
+}
+function Do-Postread($request){
+  $pending=$script:Pending
+  if($null -eq $pending){ return (Click-Result $false $false 'visible_click_no_pending' '' '' $false $false $false '') }
+  $absent=$false;$selected=$false;$toggled=$false
+  if($null -ne $pending.native){
+    $handle=$pending.native
+    $absent=(-not [BaxyUiaWorkerNative]::IsWindow($handle)) -or (-not [BaxyUiaWorkerNative]::IsWindowVisible($handle)) -or (-not [BaxyUiaWorkerNative]::IsWindowEnabled($handle))
+  } else {
+    $button=$pending.element
+    try {
+      if(-not $button.Current.IsEnabled -or $button.Current.IsOffscreen){$absent=$true}
+      elseif(Test-Selected $button){$selected=$true}
+      elseif($null -ne $pending.toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $pending.toggleBefore){$toggled=$true} }
+    }
+    catch [System.Windows.Automation.ElementNotAvailableException] {$absent=$true}
+  }
+  if(-not $absent -and -not $selected -and -not $toggled){ return (Click-Result $false $true 'visible_button_postread_unchanged' $pending.name $pending.identity $false $false $false $pending.kind) }
+  $script:Pending=$null
+  return (Click-Result $true $true '' $pending.name $pending.identity $absent $selected $toggled $pending.kind)
+}
 function Do-Click($request){
+  $script:Pending=$null
   $aliases=@($request.aliases | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
   $controlId=[string]$request.controlId
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target){ return (Click-Result $false $false 'active_window_not_found' '' '' $false $false $false '') }
   $root=$target.root
-  Start-Sleep -Milliseconds 150
   $matches=@()
   if(-not [string]::IsNullOrWhiteSpace($controlId)){
     $byId=Find-ById $root $controlId
@@ -363,10 +415,8 @@ function Do-Click($request){
     if($native.Count -eq 1){
       $nativeButton=$native[0];$name=[BaxyUiaWorkerNative]::Text($nativeButton);$identity=('hwnd.'+$nativeButton.ToInt64())
       [BaxyUiaWorkerNative]::Click($nativeButton)
-      $absent=$false
-      for($i=0;$i -lt 20;$i++){Start-Sleep -Milliseconds 100;if(-not [BaxyUiaWorkerNative]::IsWindow($nativeButton) -or -not [BaxyUiaWorkerNative]::IsWindowVisible($nativeButton) -or -not [BaxyUiaWorkerNative]::IsWindowEnabled($nativeButton)){$absent=$true;break}}
-      if(-not $absent){ return (Click-Result $false $true 'visible_button_postread_unchanged' $name $identity $false $false $false 'Button') }
-      return (Click-Result $true $true '' $name $identity $true $false $false 'Button')
+      $script:Pending=@{ native=$nativeButton; element=$null; toggleBefore=$null; name=$name; identity=$identity; kind='Button' }
+      return (Pending-Result $script:Pending)
     }
     return (Click-Result $false $false 'visible_button_not_found' (Get-Name $root) '' $false $false $false '')
   }
@@ -376,18 +426,55 @@ function Do-Click($request){
   $toggleBefore=Get-Toggle $button
   try { Invoke-NamedControl $button | Out-Null }
   catch { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
-  $absent=$false;$selected=$false;$toggled=$false
-  for($i=0;$i -lt 20;$i++){
-    Start-Sleep -Milliseconds 100
-    try {
-      if(-not $button.Current.IsEnabled -or $button.Current.IsOffscreen){$absent=$true;break}
-      if(Test-Selected $button){$selected=$true;break}
-      if($null -ne $toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $toggleBefore){$toggled=$true;break} }
-    }
-    catch [System.Windows.Automation.ElementNotAvailableException] {$absent=$true;break}
+  $script:Pending=@{ native=$null; element=$button; toggleBefore=$toggleBefore; name=$name; identity=$identity; kind=$kind }
+  return (Pending-Result $script:Pending)
+}
+# input.scroll con «index»: el control de la ultima vista se desplaza por su
+# ScrollPattern y la prueba es su porcentaje vertical antes y despues; sin
+# patron (o sin desplazamiento vertical) el adaptador usa la rueda en su centro.
+function Do-Scroll($request){
+  $target=Get-Root ([long]$request.hwnd)
+  if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
+  $element=Find-ById $target.root ([string]$request.controlId)
+  if($null -eq $element){ return @{ ok=$false; error='visible_control_identity_stale' } }
+  $pattern=$null
+  if(-not $element.TryGetCurrentPattern([System.Windows.Automation.ScrollPattern]::Pattern,[ref]$pattern)){ return @{ ok=$false; error='scroll_pattern_unavailable' } }
+  $scroll=[System.Windows.Automation.ScrollPattern]$pattern
+  if(-not $scroll.Current.VerticallyScrollable){ return @{ ok=$false; error='scroll_pattern_unavailable' } }
+  $before=[double]$scroll.Current.VerticalScrollPercent
+  $step=$(if([string]$request.direction -eq 'up'){[System.Windows.Automation.ScrollAmount]::SmallDecrement}else{[System.Windows.Automation.ScrollAmount]::SmallIncrement})
+  $amount=[int]$request.amount; if($amount -lt 1){$amount=1}; if($amount -gt 10){$amount=10}
+  # Una muesca de rueda son tres lineas.
+  for($i=0;$i -lt $amount*3;$i++){
+    try { $scroll.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) } catch [System.InvalidOperationException] { break }
   }
-  if(-not $absent -and -not $selected -and -not $toggled){ return (Click-Result $false $true 'visible_button_postread_unchanged' $name $identity $false $false $false $kind) }
-  return (Click-Result $true $true '' $name $identity $absent $selected $toggled $kind)
+  $after=[double]$scroll.Current.VerticalScrollPercent
+  return @{ ok=$true; error=''; scrolled=($after -ne $before); percentBefore=$before; percentAfter=$after; name=(Get-Name $element) }
+}
+# Los guiones del navegador (UserBrowserScripts) corren en un runspace propio y
+# persistente: su «exit» termina el guion, no el worker, y sus variables no se
+# filtran entre llamadas. Antes, un PowerShell nuevo por lectura del marco
+# (cierre de pestanas medido: 3,1 s por pestana).
+$script:ScriptRunspace=$null
+function Do-Script($request){
+  if($null -eq $script:ScriptRunspace){
+    $script:ScriptRunspace=[runspacefactory]::CreateRunspace()
+    $script:ScriptRunspace.ApartmentState='STA'
+    $script:ScriptRunspace.Open()
+  }
+  $shell=[powershell]::Create()
+  try {
+    $shell.Runspace=$script:ScriptRunspace
+    [void]$shell.AddScript([string]$request.script,$true)
+    foreach($argument in @($request.args)){ [void]$shell.AddArgument([string]$argument) }
+    $line=$null
+    foreach($item in $shell.Invoke()){
+      $text=([string]$item).Trim()
+      if($text.StartsWith('{')){ $line=$text }
+    }
+    if($null -eq $line){ return @{ ok=$false; error='script_no_receipt' } }
+    return @{ ok=$true; error=''; line=$line }
+  } finally { $shell.Dispose() }
 }
 function Do-Find($request){
   $aliases=@($request.aliases | ForEach-Object { [string]$_ })
@@ -409,6 +496,9 @@ while($true){
     elseif($cmd -eq 'ping'){ Send-Line @{ ok=$true; pid=$PID } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
     elseif($cmd -eq 'click'){ Send-Line (Do-Click $request) }
+    elseif($cmd -eq 'postread'){ Send-Line (Do-Postread $request) }
+    elseif($cmd -eq 'scroll'){ Send-Line (Do-Scroll $request) }
+    elseif($cmd -eq 'script'){ Send-Line (Do-Script $request) }
     elseif($cmd -eq 'find'){ Send-Line (Do-Find $request) }
     else { Send-Line @{ ok=$false; error='uia_worker_unknown_command' } }
   } catch {

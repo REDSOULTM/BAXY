@@ -62,6 +62,7 @@ from .semantic.notes import (
     question_with_its_reason,
 )
 from .semantic import levels as semantic_levels
+from .semantic import missions as semantic_missions
 from .semantic.memory import explicit_memory_request
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -69,6 +70,7 @@ from .semantic import temporal as semantic_temporal
 from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
 from .semantic.patterns import (
+    MISSION_SUBSUMES,
     application_shown_media_name,
     clarification_awaits_decider,
     list_entries_said_before,
@@ -4218,13 +4220,18 @@ def _ground_explicit_arguments(
         there = weather_destination_there(evidence)
         if there is not None:
             explicit = {**explicit, "location": there}
+    if explicit is None and operation == "mission.computer.use":
+        # The decider chose the engine for a request the mission reader does not read («en Paint dibujá un
+        # círculo»): the goal is the person's clause as said and the application the installed one it names.
+        explicit = semantic_missions.free_form_arguments(evidence, application_names)
     if explicit is None:
         return None
     if operation == "mission.computer.use":
         # Computer use: the application is the catalog's display name, the goal
         # is normalized («calculá» → «calcular») and the success check is a
         # grammar of the reader's own; none of them is a literal the person
-        # must have spelled. The reader is deterministic, never the model.
+        # must have spelled; a chained request carries its sub-goals in steps.
+        # The reader is deterministic, never the model.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "notification.schedule" and "recurrence" in explicit:
         # The repeating-event reader owns kind and recurrence (enum values the person need not
@@ -6120,6 +6127,19 @@ def _context_decided_result(
             decided = semantic_decider.ContextDecision(
                 decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
             )
+        elif (
+            restated is not None
+            and restated.operations == ("mission.computer.use",)
+            and set(decided.operations) <= MISSION_SUBSUMES
+        ):
+            # Live v2-s13 «y ahora andá a configuración» after a mission in Discord: the decider took the application
+            # from the conversation («En Discord, haz clic en Configuración.») but chose a lone click, which went to
+            # whatever window was in front and ended «No se confirmó si… funcionó». A restatement the mission reader
+            # reads as a step inside an application is that mission, decided by the screen like any other; one of its
+            # own primitives alone is a piece of it. Its arguments are read from the restatement, not the click's.
+            decided = semantic_decider.ContextDecision(
+                decided.request, "action", ("mission.computer.use",), decided.question,
+            )
     listed_entries = (
         entries_on_a_list(text, said_before_by_person[::-1])
         if decided.decision == "action"
@@ -7165,6 +7185,70 @@ def _prepare_turn_result(
     return result
 
 
+def _engine_for_an_unserved_order(
+    turn_result: dict[str, Any],
+    message: dict[str, Any],
+    tool_by_name: dict[str, dict],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> dict[str, Any]:
+    """Owner 2026-10-07: a direct order about the PC that the turn closed as a limit is handed to the computer-use
+    engine (the person's words are its goal; semantic.missions.engine_can_try), the way a person would try it on
+    the screen. Every step it takes is still policed: what reaches a person or destroys is confirmed."""
+
+    if (
+        turn_result.get("kind") != "conversation"
+        or turn_result.get("conversationKind") != "unsupported"
+        or turn_result.get("effectOperations")
+        or "mission.computer.use" not in tool_by_name
+    ):
+        return turn_result
+    text = str(turn_result.get("objective") or message.get("text") or "")
+    if not semantic_missions.engine_can_try(text, application_names):
+        return turn_result
+    tried = {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "kind": "plan",
+        "operation": None,
+        "intentOperations": ["mission.computer.use"],
+        "effectOperations": ["mission.computer.use"],
+        "question": "",
+        "reply": "",
+        "objective": text,
+    }
+    if turn_result.get("responseLanguage"):
+        tried["responseLanguage"] = turn_result["responseLanguage"]
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "engine_for_unserved_order",
+            "raw_decision": {"mode": "action", "request": text, "effect_operations": ["mission.computer.use"]},
+            "stages": [],
+            "final": {"kind": "plan", "intent_operations": ["mission.computer.use"],
+                      "effect_operations": ["mission.computer.use"]},
+        }
+    )
+    return tried
+
+
+def _self_contained_mission(
+    objective: str,
+    explicit_intent: EffectIntent | None,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> bool:
+    """The message names an installed application and reads alone as a step inside it: in a conversation its own
+    reading is the turn, not the contextual decider's (a follow-up without the application still goes to the decider,
+    Fase 3.5b F4)."""
+
+    return (
+        explicit_intent is not None
+        and explicit_intent.operations == ("mission.computer.use",)
+        and getattr(semantic_missions.mission_request(objective, application_names), "application", None) is not None
+    )
+
+
 def _decide_turn_result(
     message: dict[str, Any],
     *,
@@ -7892,6 +7976,11 @@ def _decide_turn_result(
         # M118: talk the microphone may have caught is the contextual decider's, never a conversation reader's reply
         # to it (DIALOGUE1513: answered as if it were addressed to BAXY).
         explicit_conversation_decision = None
+    if explicit_intent is not None and "mission.computer.use" in explicit_intent.operations:
+        # Computer use (owner 2026-10-07): a step inside an installed application is done on its screen, so a known
+        # limit of BAXY's own («no tengo cronómetro») is not the answer when the person asks for it in an app that
+        # has it (measured: «en el Reloj andá a Cronómetro» ended in a contract failure and a question).
+        explicit_conversation_decision = None
     decided_beforehand: semantic_decider.ContextDecision | None = None
     if (
         stable_awaits_decider
@@ -7937,7 +8026,15 @@ def _decide_turn_result(
                 decided_beforehand=searched,
             )
     decider_confirmed = decided_beforehand is not None and explicit_conversation_decision is not None
-    if explicit_conversation_decision is None and (explicit_intent is None or in_conversation):
+    # Live 2026-10-07 (warm session «en el Reloj andá a Alarma» → «en el Reloj andá a Cronómetro» → «en Configuración
+    # andá a Bluetooth…» → «en la calculadora calculá 9 por 8»): after the first turn every message went to the
+    # contextual decider, which chose a lone click or the typed calculation and failed. A message that names an
+    # installed application and reads alone as a step inside it needs no context: its own reading is the turn.
+    self_contained_mission = (
+        in_conversation and decided_beforehand is None
+        and _self_contained_mission(objective, explicit_intent, application_names)
+    )
+    if explicit_conversation_decision is None and (explicit_intent is None or (in_conversation and not self_contained_mission)):
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
         # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
         # the gates.
@@ -8231,6 +8328,15 @@ def _decide_turn_result(
                 )
             else:
                 intent_operations = []
+    if (
+        explicit_intent is not None
+        and "mission.computer.use" in explicit_intent.operations
+        and "mission.computer.use" in (decision.get("effect_operations") or [])
+    ):
+        # A mission the reader proved covers the whole request (its application frame and every clause, chained or
+        # not); no clause is left for the conservation contract (measured: «en el Reloj andá a Cronómetro» kept
+        # «cronómetro» as an unresolved timer and the turn fell to a bare click without the Clock).
+        unresolved_compound_effects = None
     try:
         decision = apply_compound_effect_conservation_veto(
             decision,
@@ -9943,6 +10049,7 @@ def _run_sidecar(
                         failure_kinds=tuple(turn_failure_kinds),
                         conversation_kinds=tuple(turn_failure_conversation_kinds),
                     )
+                turn_result = _engine_for_an_unserved_order(turn_result, message, tool_by_name, application_catalog)
                 # The request this turn decided is the last one now; its operations (the effects, or those a
                 # question is about) wait for their verified results (message.compose).
                 dialogue_state.expect(
@@ -10431,6 +10538,8 @@ def _run_sidecar(
                     history=history,
                     budget_left=int(message.get("budgetLeft") or 0),
                     application_names=application_catalog,
+                    subgoal=int(message.get("subgoal") or 0),
+                    subgoal_count=int(message.get("subgoalCount") or 1),
                 )
                 write_request_message(
                     {

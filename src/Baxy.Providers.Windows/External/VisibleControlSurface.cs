@@ -55,10 +55,13 @@ internal static partial class VisibleControlSurface
         }
         else
         {
+            // The window in front stays the one, when it has a surface; only
+            // a front window without one gives way to the process's largest
+            // usable window (File Explorer with several folder windows open).
             _ = GetWindowThreadProcessId(hwnd, out uint processId);
-            nint largest = LargestTopLevelWindow(unchecked((int)processId));
-            if (largest != 0)
-                hwnd = largest;
+            nint chosen = ProcessWindow(unchecked((int)processId), hwnd);
+            if (chosen != 0)
+                hwnd = chosen;
         }
         // UI1735: two Chromium-based launchers replace their start-up
         // window with their main window a few seconds after app.open verified
@@ -88,7 +91,8 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The window of one process: its largest visible top-level window, or the
+    /// The window of one process: the one in front when it is the process's and
+    /// has a usable surface, else its largest usable top-level window, or the
     /// ApplicationFrameHost frame hosting it (a UWP app such as the Calculator
     /// has no top-level window of its own). Brought to the front so keys and
     /// clicks land on it; 0 when the process shows nothing.
@@ -103,7 +107,8 @@ internal static partial class VisibleControlSurface
         {
             if (attempt > 0)
                 await Task.Delay(250, cancellationToken).ConfigureAwait(false);
-            found = LargestTopLevelWindow(processId);
+            nint front = GetForegroundWindow();
+            found = ProcessWindow(processId, front == 0 ? 0 : GetAncestor(front, 2));
             if (found == 0 || !HasUsableSurface(found))
                 found = FrameHosting(unchecked((uint)processId));
         }
@@ -120,22 +125,24 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The topmost visible window whose title names the application: the
-    /// mission's target when its process is unknown (app.open did not verify,
-    /// or the application was already there). Brought to the front; 0 when no
-    /// window is titled that way. Title matching is generic: the folded
-    /// application name inside the folded title.
+    /// The application's window when its process is unknown (app.open did not
+    /// verify, or the application was already there): the topmost visible
+    /// window whose executable is the application, else the topmost one whose
+    /// title names it in its last segment (<see cref="TitleNamesApplication"/>).
+    /// Never a developer's or BAXY's own window the request did not name
+    /// (<see cref="ProtectedFrom"/>). Brought to the front; 0 when none is.
     /// </summary>
     internal static async ValueTask<nint> ResolveTitledWindowAsync(
         string application,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        string wanted = FoldTitle(application);
-        if (wanted.Length == 0)
+        if (FoldTitle(application).Length == 0)
             return 0;
-        nint found = 0;
+        nint byProcess = 0;
+        nint byTitle = 0;
         uint self = unchecked((uint)Environment.ProcessId);
+        var names = new Dictionary<uint, string>();
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
@@ -145,12 +152,26 @@ internal static partial class VisibleControlSurface
             GetWindowThreadProcessId(window, out uint owner);
             if (owner == 0 || owner == self || !HasUsableSurface(window))
                 return true;
-            if (!FoldTitle(WindowTitle(window)).Contains(wanted, StringComparison.Ordinal))
+            if (!names.TryGetValue(owner, out string? processName))
+            {
+                processName = WindowProcess(window).ProcessName;
+                names[owner] = processName;
+            }
+
+            if (ProtectedFrom(processName, application))
                 return true;
-            found = window;
-            return false;
+            if (ProcessIsApplication(processName, application))
+            {
+                byProcess = window;
+                return false;
+            }
+
+            if (byTitle == 0 && TitleNamesApplication(WindowTitle(window), application))
+                byTitle = window;
+            return true;
         };
         _ = EnumWindows(callback, nint.Zero);
+        nint found = byProcess != 0 ? byProcess : byTitle;
         if (found == 0)
             return 0;
         if (GetForegroundWindow() != found)
@@ -173,7 +194,7 @@ internal static partial class VisibleControlSurface
         if (!TryBounds(hwnd, out int left, out int top, out int right, out int bottom))
             return 0;
         var centre = new Point((left + right) / 2, (top + bottom) / 2);
-        nint hit = WindowFromPoint(centre);
+        nint hit = InPhysicalPixels(() => WindowFromPoint(centre));
         if (hit == 0)
             return 0;
         nint root = GetAncestor(hit, 2);
@@ -190,6 +211,93 @@ internal static partial class VisibleControlSurface
         return root;
     }
 
+    // The windows where the person's own work and BAXY live: an editor, an IDE, a terminal, a console, BAXY itself.
+    // Safety review 2026-10-07: a file «<App>LocalAdapter.cs» open in Visual Studio Code was the first window titled
+    // «<App>», and a mission would have typed and pressed keys in the editor where the developer's agent lives. Such
+    // a window is the application only when the request names that very application (the names on the right).
+    private static readonly Dictionary<string, string[]> ProtectedProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Code"] = ["code", "vs code", "vscode", "visual studio code"],
+        ["Code - Insiders"] = ["code insiders", "visual studio code insiders"],
+        ["devenv"] = ["visual studio", "devenv"],
+        ["WindowsTerminal"] = ["terminal", "windows terminal"],
+        ["OpenConsole"] = ["terminal", "windows terminal"],
+        ["powershell"] = ["powershell", "windows powershell"],
+        ["pwsh"] = ["powershell", "pwsh"],
+        ["cmd"] = ["cmd", "simbolo del sistema", "command prompt"],
+        ["conhost"] = ["cmd", "simbolo del sistema", "command prompt", "consola"],
+        ["Baxy"] = ["baxy"],
+        ["baxy-core"] = ["baxy"],
+    };
+
+    // Words of an application's name that name no application by themselves.
+    private static readonly HashSet<string> GenericApplicationWords = new(StringComparer.Ordinal)
+    {
+        "the", "los", "las", "navegador", "browser", "google", "microsoft", "mozilla", "app", "aplicacion",
+    };
+
+    /// <summary>A developer's or BAXY's own process that the request did not name.</summary>
+    internal static bool ProtectedFrom(string? processName, string? application)
+    {
+        string process = (processName ?? string.Empty).Trim();
+        if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            process = process[..^4];
+        return ProtectedProcesses.TryGetValue(process, out string[]? names)
+            && !names.Contains(FoldTitle(application), StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The executable is the application: its name is the application's name without spaces
+    /// («EpicGamesLauncher»), or one of its distinctive words (the browser's short name for its full name).
+    /// </summary>
+    internal static bool ProcessIsApplication(string? processName, string? application)
+    {
+        string process = FoldTitle(processName);
+        if (process.EndsWith(".exe", StringComparison.Ordinal))
+            process = process[..^4];
+        string wanted = FoldTitle(application);
+        if (process.Length == 0 || wanted.Length == 0)
+            return false;
+        return process == wanted.Replace(" ", string.Empty, StringComparison.Ordinal)
+            || ApplicationWords(wanted).Contains(process, StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The title names the application where windows put their own name: as whole words in its last « - »
+    /// segment («Ron92 - <chat app>», «Nueva pestaña - <browser>»), or the whole title when it has no separator
+    /// («Calculadora»). «<App>LocalAdapter.cs - BAXY - Visual Studio Code» names Visual Studio Code.
+    /// </summary>
+    internal static bool TitleNamesApplication(string? title, string? application)
+    {
+        string wanted = FoldTitle(application);
+        if (wanted.Length == 0)
+            return false;
+        string segment = TitleSeparator().Split(FoldTitle(title))[^1].Trim();
+        if (segment.Length == 0)
+            return false;
+        return NamesAsWords(segment, wanted) || ApplicationWords(wanted).Any(word => NamesAsWords(segment, word));
+    }
+
+    private static string[] ApplicationWords(string folded) =>
+        [.. folded.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Where(word => word.Length >= 3 && !GenericApplicationWords.Contains(word))];
+
+    private static bool NamesAsWords(string text, string words)
+    {
+        for (int at = text.IndexOf(words, StringComparison.Ordinal); at >= 0;
+             at = text.IndexOf(words, at + 1, StringComparison.Ordinal))
+        {
+            int end = at + words.Length;
+            if ((at == 0 || !char.IsLetterOrDigit(text[at - 1])) && (end == text.Length || !char.IsLetterOrDigit(text[end])))
+                return true;
+        }
+
+        return false;
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+[-\u2013\u2014|]\s+", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
+    private static partial System.Text.RegularExpressions.Regex TitleSeparator();
+
     internal static string FoldTitle(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -199,8 +307,9 @@ internal static partial class VisibleControlSurface
         bool pendingSpace = false;
         foreach (char character in decomposed)
         {
+            // A format character (Edge writes «Microsoft\u200b Edge» in its titles) is no letter of the name.
             if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
-                == System.Globalization.UnicodeCategory.NonSpacingMark)
+                is System.Globalization.UnicodeCategory.NonSpacingMark or System.Globalization.UnicodeCategory.Format)
             {
                 continue;
             }
@@ -223,33 +332,65 @@ internal static partial class VisibleControlSurface
         return builder.ToString();
     }
 
-    private static nint FrameHosting(uint processId)
+    /// <summary>
+    /// The visible ApplicationFrameHost frame that hosts this process (a packaged app such as the Calculator, the
+    /// Clock or Settings draws inside a frame of another process and has no top-level window of its own); 0 when
+    /// none shows it. A cloaked frame (a suspended app) is not on screen.
+    /// </summary>
+    internal static nint FrameHosting(uint processId)
     {
         nint frame = 0;
         EnumWindowsProc callback = (window, outerParameter) =>
         {
-            if (!IsWindowVisible(window) || ClassName(window) != "ApplicationFrameWindow")
-                return true;
-            bool hosts = false;
-            EnumWindowsProc children = (child, innerParameter) =>
-            {
-                GetWindowThreadProcessId(child, out uint owner);
-                if (owner == processId)
-                {
-                    hosts = true;
-                    return false;
-                }
-
-                return true;
-            };
-            _ = EnumChildWindows(window, children, nint.Zero);
-            if (!hosts)
+            if (!IsVisibleFrame(window) || !FrameHosts(window, owner => owner == processId))
                 return true;
             frame = window;
             return false;
         };
         _ = EnumWindows(callback, nint.Zero);
         return frame;
+    }
+
+    /// <summary>Every visible frame by the process it hosts, read in one pass over the desktop.</summary>
+    internal static Dictionary<uint, nint> HostedFrames()
+    {
+        var frames = new Dictionary<uint, nint>();
+        EnumWindowsProc callback = (window, outerParameter) =>
+        {
+            if (!IsVisibleFrame(window))
+                return true;
+            _ = FrameHosts(window, owner =>
+            {
+                frames.TryAdd(owner, window);
+                return false;
+            });
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return frames;
+    }
+
+    private static bool IsVisibleFrame(nint window) =>
+        IsWindowVisible(window) && ClassName(window) == "ApplicationFrameWindow"
+        && !(DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0);
+
+    private static bool FrameHosts(nint frame, Func<uint, bool> hosted)
+    {
+        _ = GetWindowThreadProcessId(frame, out uint host);
+        bool hosts = false;
+        EnumWindowsProc children = (child, innerParameter) =>
+        {
+            GetWindowThreadProcessId(child, out uint owner);
+            if (owner != host && hosted(owner))
+            {
+                hosts = true;
+                return false;
+            }
+
+            return true;
+        };
+        _ = EnumChildWindows(frame, children, nint.Zero);
+        return hosts;
     }
 
     private static bool IsShellSurface(nint window)
@@ -320,21 +461,17 @@ internal static partial class VisibleControlSurface
         public void Dispose() => RequiredWindow.Value = previous;
     }
 
-    internal static async ValueTask<CapturedWindow?> CaptureAsync(
+    // The window as drawn now, held in memory: what the view, a click and a scroll compare and read is never written.
+    internal static ValueTask<CapturedWindow?> CaptureAsync(
         nint hwnd,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (hwnd == 0 || !TryBounds(hwnd, out int left, out int top, out _, out _))
-            return null;
-        string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
-        var provider = new WindowsScreenshotProvider(directory);
-        CaptureResult capture = await provider.CaptureWindowAsync(hwnd, cancellationToken)
-            .ConfigureAwait(false);
-        string path = Path.Combine(directory, capture.CaptureId + ".bmp");
-        if (!File.Exists(path))
-            return null;
-        return new CapturedWindow(hwnd, path, left, top, capture.Width, capture.Height, capture.Sha256);
+            return ValueTask.FromResult<CapturedWindow?>(null);
+        WindowImage image = WindowsScreenshotProvider.CaptureWindowImage(hwnd);
+        return ValueTask.FromResult<CapturedWindow?>(
+            new CapturedWindow(hwnd, image.Bmp, left, top, image.Width, image.Height, image.Sha256));
     }
 
     // M132 (owner script t36 «abre … y ve a la biblioteca», launched cold): the opening was verified on the
@@ -345,7 +482,7 @@ internal static partial class VisibleControlSurface
     private static readonly object OpenedGate = new();
     private static OpenedApplication? _opened;
 
-    internal static void NoteOpened(int processId, bool launched)
+    internal static void NoteOpened(int processId, bool launched, long window = 0)
     {
         if (processId <= 0)
             return;
@@ -362,9 +499,19 @@ internal static partial class VisibleControlSurface
             return;
         }
 
+        DateTime noted = DateTime.UtcNow;
         lock (OpenedGate)
-            _opened = new OpenedApplication(processId, started, DateTime.UtcNow, launched);
+            _opened = new OpenedApplication(processId, started, noted, LaunchedNow(started, noted, launched), (nint)window);
     }
+
+    // A process this opening started, against a new window of one already running: File Explorer opens its folder
+    // window inside the shell's explorer.exe (v2-s04, measured: the click then took the largest window of every
+    // program the shell ever started, the desktop among them, waited 41 s for its label and covered the folder
+    // window with the person's editor). A window of a running process is drawn as it shows.
+    private static readonly TimeSpan LaunchWindow = TimeSpan.FromMinutes(1);
+
+    internal static bool LaunchedNow(DateTime processStartedUtc, DateTime notedUtc, bool launched) =>
+        launched && notedUtc - processStartedUtc < LaunchWindow;
 
     internal static OpenedApplication? TakeOpened(TimeSpan freshness)
     {
@@ -396,10 +543,22 @@ internal static partial class VisibleControlSurface
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        HashSet<uint> family = ProcessFamily(opened);
-        if (family.Count == 0)
-            return default;
-        nint target = LargestUsableWindow(family);
+        // An application that was running already is the window the opening verified while it is still on screen;
+        // only one launched now is followed through the processes it starts (its main window replaces a splash).
+        nint target = 0;
+        if (!opened.Launched && opened.Window != 0 && IsAlive(opened.Window)
+            && HasUsableSurface(opened.Window) && !IsShellSurface(opened.Window))
+        {
+            target = opened.Window;
+        }
+        else
+        {
+            HashSet<uint> family = ProcessFamily(opened);
+            if (family.Count == 0)
+                return default;
+            target = LargestUsableWindow(family);
+        }
+
         if (target == 0)
             return default;
         nint foreground = GetForegroundWindow();
@@ -426,25 +585,16 @@ internal static partial class VisibleControlSurface
         nint window,
         CancellationToken cancellationToken)
     {
-        string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
-        string? path = null;
         try
         {
-            var provider = new WindowsScreenshotProvider(directory);
-            CaptureResult capture = await provider.CaptureWindowAsync(window, cancellationToken)
-                .ConfigureAwait(false);
-            path = Path.Combine(directory, capture.CaptureId + ".bmp");
-            byte[] bmp = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
-            return DominantColourShare(bmp);
+            return await CaptureAsync(window, cancellationToken).ConfigureAwait(false) is { } capture
+                ? DominantColourShare(capture.Bmp)
+                : null;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException
             or UnauthorizedAccessException or ArgumentException)
         {
             return null;
-        }
-        finally
-        {
-            Delete(path);
         }
     }
 
@@ -571,7 +721,9 @@ internal static partial class VisibleControlSurface
             if (GetAncestor(window, 3) != window || (GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
                 return true;
             _ = GetWindowThreadProcessId(window, out uint owner);
-            if (!family.Contains(owner) || !HasUsableSurface(window))
+            // A packaged app opened is drawn inside the frame that hosts it (its own process has no top-level window).
+            bool owned = family.Contains(owner) || (IsVisibleFrame(window) && FrameHosts(window, family.Contains));
+            if (!owned || !HasUsableSurface(window) || IsShellSurface(window))
                 return true;
             if (!TryBounds(window, out int left, out int top, out int right, out int bottom))
                 return true;
@@ -624,19 +776,82 @@ internal static partial class VisibleControlSurface
 
     internal static void Click(int screenX, int screenY)
     {
-        _ = SetCursorPos(screenX, screenY);
+        _ = PointAt(screenX, screenY);
         mouse_event(0x0002, 0, 0, 0, 0);
         mouse_event(0x0004, 0, 0, 0, 0);
     }
 
-    internal static void Delete(string? path)
+    /// <summary>
+    /// The cursor placed on a point of the screen in physical pixels, the unit of every point the views hold (the
+    /// capture, the window bounds from the compositor, the accessible tree's rectangles). This process is not DPI
+    /// aware: a point set without a per-monitor context is scaled by the monitor's factor (measured 2026-10-07 at
+    /// 125 %: a word read at y=440 in a folder window's side list was clicked at y=550, three rows lower, and the
+    /// window opened another folder).
+    /// </summary>
+    internal static bool PointAt(int screenX, int screenY) => InPhysicalPixels(() => SetCursorPos(screenX, screenY));
+
+    internal static T InPhysicalPixels<T>(Func<T> act)
     {
-        if (path is null)
-            return;
-        try { File.Delete(path); }
-        catch (IOException) { }
-        catch (UnauthorizedAccessException) { }
+        nint previous = SetThreadDpiAwarenessContext(PerMonitorAwareV2);
+        try
+        {
+            return act();
+        }
+        finally
+        {
+            if (previous != 0)
+                _ = SetThreadDpiAwarenessContext(previous);
+        }
     }
+
+    private static readonly nint PerMonitorAwareV2 = -4;
+
+    /// <summary>
+    /// Whether a window's process runs with more rights than this one (an elevated app such as Task Manager):
+    /// Windows refuses UI Automation patterns and input from a lower process (UIPI), so nothing can be done there.
+    /// Measured: Task Manager showed four controls and every click failed.
+    /// </summary>
+    internal static bool RunsAboveUs(int processId)
+    {
+        if (processId <= 0 || Elevated(Environment.ProcessId) == true)
+            return false;
+        return Elevated(processId) != false;
+    }
+
+    internal static bool? Elevated(int processId)
+    {
+        nint process = OpenProcess(0x1000, false, unchecked((uint)processId));
+        if (process == 0)
+            return null;
+        try
+        {
+            if (!OpenProcessToken(process, 0x0008, out nint token))
+                return null;
+            try
+            {
+                return GetTokenInformation(token, 20, out int elevation, sizeof(int), out _) ? elevation != 0 : null;
+            }
+            finally
+            {
+                _ = CloseHandle(token);
+            }
+        }
+        finally
+        {
+            _ = CloseHandle(process);
+        }
+    }
+
+    [LibraryImport("kernel32.dll")]
+    private static partial nint OpenProcess(uint access, [MarshalAs(UnmanagedType.Bool)] bool inherit, uint processId);
+
+    [LibraryImport("advapi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool OpenProcessToken(nint process, uint access, out nint token);
+
+    [LibraryImport("advapi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetTokenInformation(nint token, int informationClass, out int information, int length, out int returned);
 
     internal static bool IsAlive(nint hwnd) => hwnd != 0 && IsWindow(hwnd) && IsWindowVisible(hwnd);
 
@@ -690,33 +905,67 @@ internal static partial class VisibleControlSurface
         public int Bottom;
     }
 
-    private static nint LargestTopLevelWindow(int processId)
+    /// <summary>A top-level window as the choice of a process's window reads it.</summary>
+    internal readonly record struct TopLevelWindow(nint Window, uint ProcessId, bool Usable, long Area);
+
+    /// <summary>
+    /// The window of <paramref name="processId"/> a person acts on: the one in
+    /// front (<paramref name="front"/>, a root window) when it is the
+    /// process's and usable, else the process's largest usable window; 0 when
+    /// it has none. Usable is visible, titled, uncloaked, of a real size and
+    /// not a shell surface. Measured live: explorer.exe holds the desktop, the
+    /// taskbar and a cloaked untitled frame larger than its folder windows
+    /// (taking it made every look bound to the process wait out its eight
+    /// retries, ≈1.8 s), and with two folder windows open the largest is not
+    /// necessarily the one the person is looking at.
+    /// </summary>
+    internal static nint ChooseProcessWindow(IEnumerable<TopLevelWindow> windows, uint processId, nint front)
     {
         nint best = 0;
         long bestArea = 0;
+        foreach (TopLevelWindow window in windows)
+        {
+            if (window.ProcessId != processId || !window.Usable)
+                continue;
+            if (front != 0 && window.Window == front)
+                return window.Window;
+            if (window.Area > bestArea)
+            {
+                bestArea = window.Area;
+                best = window.Window;
+            }
+        }
+        return best;
+    }
+
+    internal static nint LargestTopLevelWindow(int processId) => ProcessWindow(processId, 0);
+
+    internal static nint ProcessWindow(int processId, nint front) =>
+        ChooseProcessWindow(TopLevelWindowsOf(unchecked((uint)processId)), unchecked((uint)processId), front);
+
+    private static List<TopLevelWindow> TopLevelWindowsOf(uint processId)
+    {
+        var windows = new List<TopLevelWindow>();
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window))
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
-            if (owner != unchecked((uint)processId))
+            if (owner != processId)
                 return true;
-            if (!GetWindowRect(window, out Rect rect))
-                return true;
-            long area = (long)Math.Max(0, rect.Right - rect.Left)
-                * Math.Max(0, rect.Bottom - rect.Top);
-            if (area > bestArea)
-            {
-                bestArea = area;
-                best = window;
-            }
+            Rect rect = default;
+            bool usable = !IsShellSurface(window) && HasUsableSurface(window) && GetWindowRect(window, out rect);
+            long area = usable
+                ? (long)Math.Max(0, rect.Right - rect.Left) * Math.Max(0, rect.Bottom - rect.Top)
+                : 0;
+            windows.Add(new TopLevelWindow(window, owner, usable, area));
             return true;
         };
         _ = EnumWindows(callback, nint.Zero);
-        return best;
+        return windows;
     }
 
-    private static bool HasUsableSurface(nint window)
+    internal static bool HasUsableSurface(nint window)
     {
         if (!IsWindowVisible(window) || GetWindowTextLengthW(window) == 0)
             return false;
@@ -838,6 +1087,9 @@ internal static partial class VisibleControlSurface
     private static partial bool SetCursorPos(int x, int y);
 
     [LibraryImport("user32.dll")]
+    private static partial nint SetThreadDpiAwarenessContext(nint context);
+
+    [LibraryImport("user32.dll")]
     private static partial void mouse_event(
         uint flags, uint dx, uint dy, uint data, nuint extra);
 
@@ -881,11 +1133,12 @@ internal static partial class VisibleControlSurface
         int ProcessId,
         DateTime StartedUtc,
         DateTime NotedUtc,
-        bool Launched);
+        bool Launched,
+        nint Window = 0);
 
     internal readonly record struct CapturedWindow(
         nint Hwnd,
-        string Path,
+        byte[] Bmp,
         int Left,
         int Top,
         int Width,

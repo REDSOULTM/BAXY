@@ -111,6 +111,27 @@ internal static class OperationFloor
         return null;
     }
 
+    /// <summary>
+    /// Live 2026-10-07 («en el Explorador de archivos andá a Documentos y creá una carpeta…» → the person read
+    /// «⚠ (internal_code;retry_exhausted)»): the line a composition that every draft failed leaves when no floor tells
+    /// it, by what the turn was (data: compositionFailures). The diagnostic code stays in the private log.
+    /// </summary>
+    internal static string? CompositionFailureSentence(string intent, bool english)
+    {
+        if (Data.Value["compositionFailures"] is not JsonObject lines)
+        {
+            return null;
+        }
+
+        string kind = intent switch
+        {
+            "clarification" => "clarification",
+            "status" or "error" => "result",
+            _ => "default",
+        };
+        return lines[kind] is JsonObject said ? Text(said, english ? "en" : "es") : null;
+    }
+
     /// <summary>The sentence for one operation result or one mission, or null when there is no action to tell.</summary>
     internal static string? Final(JsonObject situation, bool english, TimeProvider? clock = null)
     {
