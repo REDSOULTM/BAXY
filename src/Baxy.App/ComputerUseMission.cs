@@ -1653,7 +1653,8 @@ internal static class ComputerUseSuccessCheck
                 return ViewContains(view, rest);
             case "title":
                 return view["window"] is JsonObject titled
-                    && Fold((string?)titled["title"]).Contains(Fold(rest), StringComparison.Ordinal);
+                    && Fold((string?)titled["title"]).Contains(Fold(rest), StringComparison.Ordinal)
+                    && !UnsubmittedQueryNames(rest, steps);
             case "process":
                 return view["window"] is JsonObject owned
                     && Fold((string?)owned["process"]).Contains(Fold(rest), StringComparison.Ordinal);
@@ -1681,6 +1682,11 @@ internal static class ComputerUseSuccessCheck
                             .Where(step => (string?)step["operation"] == "input.text.type" && EchoesItsQuery(step))
                             .Select(step => Fold((string?)step["text"])),
                         StringComparer.Ordinal);
+                    if (state == "selected" && UnsubmittedQueryNames(name, steps))
+                    {
+                        return false;
+                    }
+
                     return FindControls(view, name).Any(control =>
                         (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
                         && !typed.Contains(Fold((string?)control["name"]))
@@ -1702,7 +1708,7 @@ internal static class ComputerUseSuccessCheck
             case "count":
                 return CountAtom(rest, view);
             case "page":
-                return PageAtom(rest, view, steps);
+                return !UnsubmittedQueryNames(rest, steps) && PageAtom(rest, view, steps);
             case "stepdone":
                 {
                     string[] parts = rest.Split(':', 2);
@@ -2023,6 +2029,41 @@ internal static class ComputerUseSuccessCheck
     private static readonly System.Text.RegularExpressions.Regex QueryField = new(
         @"\b(?:busc\w*|busqueda|search\w*|find|filtr\w*|filter\w*|a donde quieres ir|ir a|go to|jump to|quick switcher|direcc\w*|address|url)\b",
         System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // The place is named only by a query BAXY typed and has not submitted: the last act was typing the name into a
+    // search or an address box, with no Enter and no click after it. While it stands, a window that shows the name
+    // (its title, its selected tab, its header) is echoing the query, not the place reached (measured on Explorer:
+    // «Imágenes» typed into «Buscar en ETC» titled the window «imagenes - Resultados de la búsqueda en ETC» and its
+    // selected tab the same, and the mission said it was in Imágenes). Submitted, the name in the title is the
+    // page the query led to (a search's results, an address typed and entered).
+    internal static bool UnsubmittedQueryNames(string place, JsonArray steps)
+    {
+        string target = Fold(place);
+        if (target.Length == 0)
+        {
+            return false;
+        }
+
+        for (int index = steps.Count - 1; index >= 0; index--)
+        {
+            if (steps[index] is not JsonObject step || (bool?)step["ok"] != true)
+            {
+                continue;
+            }
+
+            switch ((string?)step["operation"])
+            {
+                case "input.visible.click":
+                    return false;
+                case "input.key.press" when Fold((string?)step["key"]) == "enter":
+                    return false;
+                case "input.text.type":
+                    return EchoesItsQuery(step) && Fold((string?)step["text"]).Contains(target, StringComparison.Ordinal);
+            }
+        }
+
+        return false;
+    }
 
     private static bool EchoesItsQuery(JsonObject typedStep) =>
         (string?)typedStep["into"] is not { Length: > 0 } into || QueryField.IsMatch(Fold(into));
