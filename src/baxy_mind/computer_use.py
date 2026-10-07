@@ -33,6 +33,9 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from fractions import Fraction
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Iterable
 
 from . import effect_intent, operation_floor
@@ -2501,6 +2504,30 @@ _SUCCESS_CLAIM = re.compile(
 )
 
 
+# Live 2026-10-07 (cu-r19): «Llegué al modo Oscuro.», «Llegué a la zona horaria y es …»: an arrival is told only at a
+# place of the mission (a place goal, its application or its window), never at a value or an option the window shows.
+_ARRIVAL = re.compile(
+    r"\b(?:llegue|llegamos|i\s+reached|we\s+reached|i\s+got\s+to|i\s+made\s+it\s+to)\s+"
+    r"(?:a\s+(?:la|las|los|el)\s+|al\s+|a\s+|the\s+)?([^.;:!?,]+)"
+)
+_ARRIVAL_FUNCTION = {"del", "los", "las", "the", "and", "seccion", "pagina", "pestana", "section", "page", "tab", "parte"}
+_ARRIVAL_END = re.compile(r"\s+(?:y|e|and|donde|where|que|that|con|with|para|to)\s+.*$")
+
+
+def _arrived_off_mission(folded_reply: str, seen: dict) -> bool:
+    goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)]
+    goals = goals or str(seen.get("goal") or "").split(_PARTS["chain"])
+    places = {fold(found.group(1)) for goal in goals if isinstance(goal, str) and (found := _PLACE_GOAL.match(goal.strip()))}
+    places |= {fold(seen.get(key)) for key in ("application", "windowTitle") if isinstance(seen.get(key), str)}
+    # A place told short («la sección de Bluetooth» for «Bluetooth y dispositivos») shares a word with it.
+    words = {word for place in places for word in re.findall(r"[a-z0-9]+", place) if len(word) >= 3} - _ARRIVAL_FUNCTION
+    for found in _ARRIVAL.finditer(folded_reply):
+        head = set(re.findall(r"[a-z0-9]+", _ARRIVAL_END.sub("", found.group(1)))) - _ARRIVAL_FUNCTION
+        if head and not head & words:
+            return True
+    return False
+
+
 def mission_defect(folded_reply: str, seen: dict) -> str | None:
     """Vetos of a mission final: a join never observed, a false past time, a
     failed mission told as a success (contract §4.5)."""
@@ -2519,6 +2546,8 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
             return "subgoal_claimed"
     if _invented_meridiem(folded_reply, seen):
         return "extra_claim"
+    if _arrived_off_mission(folded_reply, seen):
+        return "extra_claim"
     shade = seen.get("chosenShade")
     if isinstance(shade, dict) and fold(shade.get("chosen")) not in folded_reply:
         # «Listo, elegí el azul» when the palette had no «Azul» and «Añil» was clicked: the swatch is named.
@@ -2529,6 +2558,130 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
         return "extra_claim"
     if _NEW_STATE_CLAIM.search(folded_reply) and not _toggles_something(seen):
         return "extra_claim"
+    return None
+
+
+# cu-r16 (voice audit 2026-10-07: «Abrazé a la sección de Bluetooth», «donde busco la opción de Wi-Fi», «Ya estamos
+# en…», «mis playlists»): every word of a mission final comes from the turn's facts or from BAXY's own small vocabulary
+# of arrival, act and function words (data/computer_use_words.v1.json). A word from neither was never observed.
+_WORDS_DATA = Path(__file__).resolve().parent / "data" / "computer_use_words.v1.json"
+_WORD = re.compile(r"[a-z0-9]+")
+
+
+@lru_cache(maxsize=1)
+def _own_words() -> tuple[frozenset[str], int]:
+    data = json.loads(_WORDS_DATA.read_text(encoding="utf-8"))
+    words: set[str] = set()
+    for family in ("function", "own"):
+        for listed in data[family].values():
+            words.update(fold(word) for word in listed)
+    return frozenset(words), int(data["stemLength"])
+
+
+@lru_cache(maxsize=1)
+def _language_words() -> tuple[frozenset[str], frozenset[str], dict[str, tuple[str, ...]]]:
+    """The Spanish and English function words (to tell an English reply) and the es→en screen-state map."""
+
+    data = json.loads(_WORDS_DATA.read_text(encoding="utf-8"))
+    spanish = frozenset(fold(word) for word in data["function"]["es"])
+    english = frozenset(fold(word) for word in data["function"]["en"])
+    listed = data.get("screenStates") or {}
+    states = {fold(word): tuple(fold(item) for item in said) for word, said in listed.items()}
+    return spanish - english, english - spanish, states
+
+
+@lru_cache(maxsize=1)
+def _application_kinds() -> dict[str, frozenset[str]]:
+    data = json.loads(_WORDS_DATA.read_text(encoding="utf-8"))
+    listed = data.get("applicationKinds") or {}
+    return {fold(name): frozenset(fold(word) for word in words) for name, words in listed.items()}
+
+
+def _kinds_of(seen: dict) -> set[str]:
+    """The words that name what the mission's applications hold («juegos» in Steam, «disco» in the File Explorer)."""
+
+    kinds = _application_kinds()
+    subgoals = [item for item in seen.get("subgoals") or () if isinstance(item, dict)]
+    names = [seen.get("application"), *(item.get("application") for item in subgoals)]
+    return {word for name in names if isinstance(name, str) for word in kinds.get(fold(name).strip(), ())}
+
+
+# cu-r17 (voice audit 2026-10-07: «Pegué el texto» from «pegalo», «Cerré la ventana» from «cerrala»): the stem match
+# cannot reach a short preterite from the request's imperative, so each imperative or infinitive of the request also
+# grounds its own first-person preterite: «copiá» → «copié», «pegalo» → «pegué», «buscá» → «busqué», «abrí» → «abrí»,
+# «mové» → «moví», «guardar» → «guardé».
+_ENCLITIC = re.compile(r"(?:selos|selas|selo|sela|los|las|les|lo|la|le|me|nos)$")
+
+
+def _preterites(word: str) -> set[str]:
+    forms: set[str] = set()
+    bare = word[:-1] if word.endswith("r") and len(word) > 3 else word
+    stripped = _ENCLITIC.sub("", bare)
+    for base in {bare, stripped}:
+        if len(base) < 3:
+            continue
+        if base.endswith("a"):
+            stem = base[:-1]
+            if stem.endswith("c"):
+                stem = stem[:-1] + "qu"
+            elif stem.endswith("g"):
+                stem = stem[:-1] + "gu"
+            elif stem.endswith("z"):
+                stem = stem[:-1] + "c"
+            forms.add(stem + "e")
+        elif base.endswith(("e", "i")):
+            forms.add(base[:-1] + "i")
+    return forms
+
+
+def _reply_is_english(words: list[str]) -> bool:
+    spanish, english, _ = _language_words()
+    return sum(word in english for word in words) > sum(word in spanish for word in words)
+
+
+def _fact_strings(value: object) -> Iterable[str]:
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from _fact_strings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from _fact_strings(item)
+
+
+def _folded_words(value: object) -> list[str]:
+    return _WORD.findall(fold(value))
+
+
+def ungrounded_word(folded_reply: str, seen: dict, said: str = "") -> str | None:
+    """The first word of a mission final that neither the facts (seen, the person's words) nor BAXY's own vocabulary
+    hold; a word sharing its first ``stemLength`` letters with a fact word is the same word in another form
+    («calculé» from «calculá»), the preterite of a request verb is BAXY's own act («pegué» from «pegalo»), and an
+    English reply may name a Spanish screen state in English («paired» for «Emparejado»). None when every word is
+    grounded."""
+
+    own, stem_length = _own_words()
+    facts: set[str] = set()
+    for text in (*_fact_strings(seen), said):
+        facts.update(_folded_words(text))
+    stems = {word[:stem_length] for word in facts if len(word) >= stem_length}
+    # cu-r18 (live v2-c6: a confirmed send answered «sí», so «Envié «prueba BAXY C6» a Ron92.» had no «mandalo» to come
+    # from): the mission's own goal and each subgoal's goal («…; luego enviar») ground their preterites as well.
+    goals = [seen.get("goal"), *(item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict))]
+    verbs = [word for text in (said, *(goal for goal in goals if isinstance(goal, str))) for word in _folded_words(text)]
+    derived = {form for word in verbs for form in _preterites(word)} | _kinds_of(seen)
+    reply = _folded_words(folded_reply)
+    if _reply_is_english(reply):
+        # cu-r17 (x4 «Windows (light)» from «Windows (claro)»): an English reply names a Spanish screen state in English.
+        states = _language_words()[2]
+        derived.update(said_en for word in facts for said_en in states.get(word, ()))
+    for word in reply:
+        if word in own or word in facts or word in derived:
+            continue
+        if len(word) >= stem_length and word[:stem_length] in stems:
+            continue
+        return word
     return None
 
 
@@ -2751,7 +2904,405 @@ def _place_of(goal: object, names: list[str]) -> str:
     if found is None:
         return ""
     asked = _floor_name(found.group(1))
-    return next((name for name in names if fold(name) == fold(asked)), asked)
+    return _spelled(asked, names) or asked
+
+
+# Voice audit 2026-10-07 (cu-r16): a third of the published mission finals the model wrote had a defect («Ya te llevé a
+# la sección de sonido», «Abrazé a la sección de Bluetooth», «ahora selecciono Títulos», «mis playlists»), and the
+# simple missions are most of them. A mission without a question is told part by part from its facts (data
+# «computerUse.parts»): the places reached, the controls picked, the text typed or searched, a calculation whose value
+# the window shows. Its twin is the App's OperationFloor.Parts.
+_PARTS: dict = operation_floor.floor_data()["computerUse"]["parts"]
+_PART_GOALS: dict[str, re.Pattern[str]] = {
+    kind: re.compile(_PARTS[kind], re.IGNORECASE) for kind in ("select", "type", "search", "calculate", "key")
+}
+_PART_QUOTES = "«»\"“”'"
+# Live 2026-10-07: «calcular 1.500 + 500» read as 1,5 + 500. A «.» followed by exactly three digits groups thousands
+# (the Chilean writing); a comma after them is the decimal one.
+_CALC_TOKEN = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?(?![\d.])|\d+(?:[.,]\d+)?|\S")
+_GROUPED_NUMBER = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?")
+# What a window writes of the expression itself («La expresión es 144 ÷ 12=») never proves its value.
+_WRITTEN_EXPRESSION = re.compile(r"\d[\d.,]*(?:\s*[-+×÷*/xX]\s*\(?\s*\d[\d.,]*\)?)+\s*=?")
+_LONGEST_DECIMALS = 10
+
+
+def _part_object(value: object) -> str:
+    return " ".join(str(value or "").split()).strip(_PART_QUOTES + " .;:") if isinstance(value, str) else ""
+
+
+def _spelled(asked: str, names: list[str]) -> str | None:
+    name = next((name for name in names if fold(name) == fold(asked)), None)
+    return None if name is None else _calm_caps(name)
+
+
+def _calm_caps(name: str) -> str:
+    """A name the window writes in capitals («TIENDA», read off the screen) told with only its first letter so; an
+    acronym («VPN», «HDMI») keeps them."""
+
+    letters = [char for char in name if char.isalpha()]
+    words = re.findall(r"[^\W\d_]+", name)
+    if not letters or any(not char.isupper() for char in letters):
+        return name
+    if not any(len(word) >= _PARTS["capsWord"] for word in words):
+        return name
+    return name[:1] + name[1:].lower()
+
+
+def _calculated(tokens: list[str]) -> Fraction | None:
+    """The value of an arithmetic expression (numbers, + - × ÷ and parentheses), or None when it is no such thing."""
+
+    position = 0
+
+    def peek() -> str | None:
+        return tokens[position] if position < len(tokens) else None
+
+    def factor() -> Fraction | None:
+        nonlocal position
+        token = peek()
+        if token == "-":
+            position += 1
+            inner = factor()
+            return None if inner is None else -inner
+        if token == "(":
+            position += 1
+            inner = expression()
+            if inner is None or peek() != ")":
+                return None
+            position += 1
+            return inner
+        if token is not None and token[0].isdigit():
+            position += 1
+            plain = token.replace(".", "") if _GROUPED_NUMBER.fullmatch(token) else token
+            return Fraction(plain.replace(",", "."))
+        return None
+
+    def term() -> Fraction | None:
+        nonlocal position
+        value = factor()
+        while value is not None and peek() in {"×", "÷"}:
+            operator = peek()
+            position += 1
+            right = factor()
+            if right is None or (operator == "÷" and right == 0):
+                return None
+            value = value * right if operator == "×" else value / right
+        return value
+
+    def expression() -> Fraction | None:
+        nonlocal position
+        value = term()
+        while value is not None and peek() in {"+", "-"}:
+            operator = peek()
+            position += 1
+            right = term()
+            if right is None:
+                return None
+            value = value + right if operator == "+" else value - right
+        return value
+
+    value = expression()
+    return value if position == len(tokens) else None
+
+
+def _value_spellings(value: Fraction) -> list[str]:
+    """How a window may write ``value``: plain, with its thousands grouped, with a decimal point or comma; [] when it
+    has no finite decimal writing."""
+
+    denominator, twos, fives = value.denominator, 0, 0
+    while denominator % 2 == 0:
+        denominator, twos = denominator // 2, twos + 1
+    while denominator % 5 == 0:
+        denominator, fives = denominator // 5, fives + 1
+    decimals = max(twos, fives)
+    if denominator != 1 or decimals > _LONGEST_DECIMALS:
+        return []
+    sign = "-" if value < 0 else ""
+    scaled = abs(value.numerator) * (10 ** decimals) // value.denominator
+    whole, fraction = divmod(scaled, 10 ** decimals) if decimals else (scaled, 0)
+    digits = str(whole)
+    groups = [digits[max(0, end - 3):end] for end in range(len(digits), 0, -3)][::-1]
+    spellings: list[str] = []
+    for separator in ("", ".", ",", " ", "\u00a0"):
+        if separator and len(groups) < 2:
+            continue
+        integer = separator.join(groups)
+        if not decimals:
+            spellings.append(sign + integer)
+            continue
+        tail = str(fraction).rjust(decimals, "0")
+        spellings.extend(
+            sign + integer + point + tail for point in (".", ",") if point != separator
+        )
+    return spellings
+
+
+def _calculation_shown(expression: str, texts: list[str]) -> tuple[str, str] | None:
+    """(expression as said, value as the window writes it) for «calcular E» when the window shows E's value."""
+
+    operators: dict[str, str] = _PARTS["operators"]
+    tokens = [operators.get(token, token) for token in _CALC_TOKEN.findall(expression)]
+    if not tokens or any(not (token[0].isdigit() or token in {"+", "-", "×", "÷", "(", ")"}) for token in tokens):
+        return None
+    value = _calculated(tokens)
+    if value is None:
+        return None
+    shown = [_WRITTEN_EXPRESSION.sub(" ", " ".join(_BIDI_MARKS.sub("", text).split())) for text in texts]
+    for spelling in _value_spellings(value):
+        pattern = re.compile(r"(?<![\d.,])" + re.escape(spelling) + r"(?![\d]|[.,]\d)")
+        if any(pattern.search(text) for text in shown):
+            said = " ".join(tokens).replace("( ", "(").replace(" )", ")")
+            return said, spelling
+    return None
+
+
+def _screen_texts(observed: dict) -> list[str]:
+    screen = observed.get("screen") if isinstance(observed.get("screen"), dict) else {}
+    texts: list[str] = []
+    for key in ("numbers", "lines"):
+        texts.extend(item for item in screen.get(key) or () if isinstance(item, str))
+    for item in screen.get("values") or ():
+        if isinstance(item, dict):
+            texts.extend(value for value in (item.get("name"), item.get("value")) if isinstance(value, str))
+    texts.extend(value for value in (screen.get("title"),) if isinstance(value, str))
+    return texts
+
+
+def _join(items: list[str], english: bool) -> str:
+    said = operation_floor.floor_data()["templates"]["en" if english else "es"]
+    return items[0] if len(items) == 1 else said["list"].join(items[:-1]) + said["and"] + items[-1]
+
+
+def _parts_final(observed: dict, seen: dict, english: bool, names: list[str], app: str) -> tuple[str, bool]:
+    """(the sentence of a reached mission told part by part, whether every name in it is the window's own spelling or
+    the text typed); ("", False) when one of its parts cannot be told from the facts."""
+
+    goal = seen.get("goal")
+    subgoals = [item for item in seen.get("subgoals") or () if isinstance(item, dict)]
+    parts = [(item.get("goal"), item.get("application")) for item in subgoals] or [
+        (part, seen.get("application")) for part in str(goal or "").split(_PARTS["chain"])
+    ]
+    language = "en" if english else "es"
+    said, quote = _PARTS[language], operation_floor.floor_data()["templates"][language]["quote"]
+    raw_steps = observed.get("steps") if isinstance(observed.get("steps"), list) else []
+    done = [step for step in raw_steps if isinstance(step, dict) and step.get("ok") is True]
+    typed = [
+        fold(_part_object(step.get("text"))) for step in done
+        if step.get("operation") == "input.text.type" and isinstance(step.get("text"), str)
+    ]
+    texts = _screen_texts(observed)
+    clauses: list[tuple[str, str, str, bool]] = []  # (kind, said, application, the window's own spelling)
+    keyed: set[str] = set()
+    for part, part_app in parts:
+        part = part.strip() if isinstance(part, str) else ""
+        where = _floor_name(part_app) or app
+        if not part or QUESTION_MARK in part:
+            return "", False
+        if _PART_GOALS["key"].match(part):
+            # A key is never told (the instruction's «never the keys»); its application is told by another part.
+            keyed.add(where)
+            continue
+        place = _PLACE_GOAL.match(part)
+        if place is not None:
+            asked = _floor_name(_part_object(place.group(1)))
+            if not asked:
+                return "", False
+            spelled = _spelled(asked, names)
+            clauses.append(("place", quote.format(value=spelled or asked), where, spelled is not None))
+            continue
+        found = _PART_GOALS["select"].match(part)
+        if found is not None:
+            asked = _floor_name(_part_object(found.group(1)))
+            if not asked:
+                return "", False
+            shade = _chosen_shade(part, done)
+            if shade is not None and fold(shade["chosen"]) != fold(asked):
+                colour = next(iter(colour_shades(shade["asked"], language)), str(shade["asked"]))
+                item = said["shadeItem"].format(chosen=shade["chosen"], asked=colour.casefold())
+                clauses.append(("select", item, where, True))
+                continue
+            spelled = _spelled(asked, names)
+            clauses.append(("select", quote.format(value=spelled or asked), where, spelled is not None))
+            continue
+        found = _PART_GOALS["type"].match(part)
+        if found is not None:
+            text = _part_object(found.group(1))
+            if not text or fold(text) not in typed or not where:
+                return "", False
+            clauses.append(("type", quote.format(value=text), where, True))
+            continue
+        found = _PART_GOALS["search"].match(part)
+        if found is not None:
+            query = _part_object(found.group(1))
+            if not query or not any(fold(query) in text for text in typed) or not where:
+                return "", False
+            search = said["search"].format(query=quote.format(value=query), app=quote.format(value=where))
+            clauses.append(("search", search, where, True))
+            continue
+        found = _PART_GOALS["calculate"].match(part)
+        # Only the calculating window's own display proves the value: a chain that ends in another application shows
+        # that one's numbers («Línea 1, Columna 13» of the Bloc de notas).
+        window = observed.get("window") if isinstance(observed.get("window"), dict) else {}
+        title = window.get("title") if isinstance(window.get("title"), str) else ""
+        ends_here = bool(where) and (fold(where) == fold(app) or fold(where) in fold(title))
+        shown = _calculation_shown(found.group(1), texts) if found is not None and ends_here else None
+        if shown is None:
+            return "", False
+        if len(parts) == 1:
+            return said["calculateAlone"].format(expression=shown[0], value=shown[1]) + ".", True
+        clauses.append(("calculate", said["calculate"].format(expression=shown[0], value=shown[1]), where, True))
+    if not clauses:
+        return "", False
+    if len(clauses) == 1 and clauses[0][0] == "place":
+        return _floor_said(english)["place"].format(place=clauses[0][1]) + ".", clauses[0][3]
+    told: list[str] = []
+    # Keys pressed in an application no other part is told in (a paste in another window) are the model's to word.
+    spelled_all = keyed <= {clause[2] for clause in clauses}
+    index = 0
+    while index < len(clauses):
+        kind, text, where, spelled = clauses[index]
+        run = [(text, spelled)]
+        while (
+            index + 1 < len(clauses) and kind in {"place", "select", "type"}
+            and clauses[index + 1][0] == kind and clauses[index + 1][2] == where
+        ):
+            index += 1
+            run.append((clauses[index][1], clauses[index][3]))
+        if kind == "place":
+            # Live 2026-10-07: «ir a cotele» in Discord then «ir a tienda» in Steam came out «estoy en «TIENDA»»; a
+            # mission across applications tells each place with its application.
+            crossed = len({fold(clause[2]) for clause in clauses}) > 1
+            if index == len(clauses) - 1:
+                # Only the places the window spelled are told as passed through; the last is where the mission is.
+                passed = [name for name, ok in run[:-1] if ok]
+                if passed:
+                    told.append(said["places"].format(places=_join(passed, english)))
+                last = said["lastPlaceIn"] if crossed and where else said["lastPlace"]
+                told.append(last.format(place=run[-1][0], app=quote.format(value=where)))
+                spelled_all = spelled_all and run[-1][1]
+            elif where and fold(where) != fold(clauses[index + 1][2]):
+                # A place in an application the mission then left is told with it.
+                told.append(said["placesIn"].format(
+                    places=_join([name for name, _ in run], english), app=quote.format(value=where)))
+                spelled_all = spelled_all and all(ok for _, ok in run)
+            # A place passed on the way to another part of the same application is not told.
+            index += 1
+            continue
+        spelled_all = spelled_all and all(ok for _, ok in run)
+        if kind == "select":
+            told.append(said["select"].format(items=_join([name for name, _ in run], english)))
+        elif kind == "type":
+            told.append(said["type"].format(texts=_join([name for name, _ in run], english), app=quote.format(value=where)))
+        else:
+            told.append(text)
+        index += 1
+    if len(told) == 1 and clauses[-1][0] == "place" and told[0] == said["lastPlace"].format(place=clauses[-1][1]):
+        # The places passed were not the window's spelling: only where the mission is is told.
+        return _floor_said(english)["place"].format(place=clauses[-1][1]) + ".", spelled_all
+    return said["clauses"].format(clauses=_join(told, english)) + ".", spelled_all
+
+
+def _floor_said(english: bool) -> dict:
+    return operation_floor.floor_data()["computerUse"]["en" if english else "es"]
+
+
+# Live 2026-10-07 (cu-r19): «Llegué al modo Oscuro.», «Llegué a la zona horaria y es (UTC-04:00) Santiago.» A reached
+# mission whose question one fact of the window answers alone is answered from that fact (data «computerUse.answer»):
+# the option the question names that the window shows selected, or the one value its noun names. Mind only: the App
+# leaves every mission with a question to the mind.
+_ANSWER: dict = operation_floor.floor_data()["computerUse"]["answer"]
+_ANSWER_OPTIONS = re.compile(_ANSWER["options"], re.IGNORECASE)
+_ANSWER_NOUN = re.compile(_ANSWER["noun"], re.IGNORECASE)
+_ANSWER_NUMBER = re.compile(_ANSWER["number"])
+_ANSWER_SHAPES = [
+    (re.compile(shape["noun"], re.IGNORECASE), re.compile(shape["value"], re.IGNORECASE)) for shape in _ANSWER["shapes"]
+]
+
+
+def _answer_words(text: str) -> list[str]:
+    return [word for word in re.findall(r"[a-z0-9]+", fold(text)) if word not in _ANSWER["articles"]]
+
+
+def question_answer(seen: dict, english: bool) -> str:
+    """The answer to a reached mission's question when exactly one fact of the window gives it; "" otherwise."""
+
+    question = " ".join(str(seen.get("question") or "").split()).strip(" .?¿!¡")
+    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+    if seen.get("reached") is not True or not question:
+        return ""
+    values = [item for item in screen.get("values") or () if isinstance(item, dict)]
+    said = _ANSWER["en" if english else "es"]
+    quote = operation_floor.floor_data()["templates"]["en" if english else "es"]["quote"]
+    asked = _ANSWER_OPTIONS.match(question)
+    if asked is not None:
+        options = {fold(asked.group("first")), fold(asked.group("second"))}
+        chosen = {
+            _floor_name(item.get("name")) for item in values
+            if str(item.get("state") or "").casefold() in _ANSWER["selectedStates"] and fold(item.get("name")) in options
+        } - {""}
+        if len(chosen) != 1:
+            return ""
+        return said["option"].format(noun=asked.group("noun"), value=quote.format(value=next(iter(chosen)))) + "."
+    asked = _ANSWER_NOUN.match(question)
+    if asked is None:
+        return ""
+    noun = asked.group("noun")
+    words = _answer_words(noun)
+    if not words:
+        return ""
+    named = {
+        _floor_name(item.get("value")) for item in values
+        if isinstance(item.get("value"), str) and set(words) <= set(_answer_words(str(item.get("name") or "")))
+    }
+    if not named:
+        bare = " ".join(words)
+        shapes = [value for noun_shape, value in _ANSWER_SHAPES if noun_shape.match(bare)]
+        texts = [
+            " ".join(_BIDI_MARKS.sub("", text).split()) for key in ("numbers", "lines")
+            for text in screen.get(key) or () if isinstance(text, str)
+        ]
+        named = {_floor_name(text) for text in texts if any(shape.match(text) for shape in shapes)}
+    if len(named) != 1 or "" in named:
+        return ""
+    value = next(iter(named))
+    if _ANSWER_NUMBER.match(value):
+        return said["number"].format(noun=noun, value=value) + "."
+    return said["text"].format(noun=noun, value=quote.format(value=value)) + "."
+
+
+def floor_first(observed: dict, english: bool, succeeded: bool) -> str:
+    """The final a mission without a question is told with before any draft (voice audit 2026-10-07): its parts
+    from the facts when every name in them is the window's or the person's own, or a failure with its typed cause;
+    "" when the model has to word it (a question about the window, a part the facts cannot tell)."""
+
+    seen = project_seen(observed, "en" if english else "es")
+    if seen.get("question"):
+        return question_answer(seen, english) if succeeded else ""
+    if succeeded:
+        if seen.get("reached") is not True:
+            return ""
+        sentence, preferred = _parts_final(observed, seen, english, _window_names(observed, seen), _mission_app(seen))
+        return sentence if preferred else ""
+    if seen.get("subgoals") or str(observed.get("stoppedBy") or "") not in _STOP_CAUSES:
+        return ""
+    sentence = floor_sentence(observed, english, succeeded)
+    return sentence if not sentence.startswith(_floor_said(english)["not"] + ":") else ""
+
+
+def _window_names(observed: dict, seen: dict) -> list[str]:
+    raw_steps = observed.get("steps") if isinstance(observed.get("steps"), list) else []
+    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+    return [
+        name for value in (
+            *(step.get("name") for step in raw_steps if isinstance(step, dict) and step.get("ok") is True),
+            *(item.get("name") for item in screen.get("values") or () if isinstance(item, dict)),
+            *(line for line in screen.get("lines") or () if isinstance(line, str)),
+            seen.get("windowTitle"),
+        ) if (name := _floor_name(value))
+    ]
+
+
+def _mission_app(seen: dict) -> str:
+    return _floor_name(seen.get("application")) or _floor_name(seen.get("windowTitle"))
 
 
 def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
@@ -2760,7 +3311,11 @@ def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
 
     seen = project_seen(observed, "en" if english else "es")
     if seen.get("question"):
-        return ""
+        return question_answer(seen, english) if succeeded else ""
+    if succeeded and seen.get("reached") is True:
+        told, _ = _parts_final(observed, seen, english, _window_names(observed, seen), _mission_app(seen))
+        if told:
+            return told
     data = operation_floor.floor_data()
     said = data["computerUse"]["en" if english else "es"]
     quote = data["templates"]["en" if english else "es"]["quote"]

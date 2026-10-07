@@ -507,6 +507,983 @@
    },
    "es": "No pude llegar a «bluetooth»: se agotaron los pasos previstos sin llegar.",
    "en": "I couldn't get to «bluetooth»: the planned steps ran out before getting there."
+  },
+  {
+   "id": "cu-parts-select",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar lapiz; luego seleccionar rojo",
+     "application": "Paint",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Paint",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Lápiz",
+       "ok": true,
+       "name": "Lápiz",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "rojo",
+       "ok": true,
+       "name": "rojo",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Sin título: Paint",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Sin título: Paint"
+     },
+     "subgoals": [
+      {
+       "goal": "seleccionar lapiz",
+       "application": "Paint",
+       "reached": true
+      },
+      {
+       "goal": "seleccionar rojo",
+       "application": "Paint",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, elegí «Lápiz» y «rojo».",
+   "en": "Done, I picked «Lápiz» and «rojo»."
+  },
+  {
+   "id": "cu-parts-type",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "escribir hola BAXY",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "hola BAXY",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*hola BAXY: Bloc de notas",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*hola BAXY: Bloc de notas",
+      "values": [
+       {
+        "name": "Editor de texto",
+        "value": "hola BAXY"
+       }
+      ]
+     }
+    }
+   },
+   "es": "Listo, escribí «hola BAXY» en «Bloc de notas».",
+   "en": "Done, I typed «hola BAXY» in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-type-chain",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "escribir lista: pan; luego apretar enter; luego escribir leche",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "lista: pan",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.text.type",
+       "text": "leche",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*lista: pan: Bloc de notas",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*lista: pan: Bloc de notas"
+     },
+     "subgoals": [
+      {
+       "goal": "escribir lista: pan",
+       "application": "Bloc de notas",
+       "reached": true
+      },
+      {
+       "goal": "apretar enter",
+       "application": "Bloc de notas",
+       "reached": true
+      },
+      {
+       "goal": "escribir leche",
+       "application": "Bloc de notas",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, escribí «lista: pan» y «leche» en «Bloc de notas».",
+   "en": "Done, I typed «lista: pan» and «leche» in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-search",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "buscar Spotify",
+     "application": "Microsoft Store",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Microsoft Store",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.text.type",
+       "text": "Spotify",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Microsoft Store",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Microsoft Store"
+     }
+    }
+   },
+   "es": "Listo, busqué «Spotify» en «Microsoft Store».",
+   "en": "Done, I searched for «Spotify» in «Microsoft Store»."
+  },
+  {
+   "id": "cu-parts-calculate",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 37*12",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "37*12=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 37 × 12=",
+       "Se muestra 444"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 37 × 12 = 444.",
+   "en": "Done: 37 × 12 = 444."
+  },
+  {
+   "id": "cu-parts-calculate-grouped",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 1250 × 4",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "1250*4=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 1.250 × 4=",
+       "Se muestra 5.000"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 1250 × 4 = 5.000.",
+   "en": "Done: 1250 × 4 = 5.000."
+  },
+  {
+   "id": "cu-parts-calculate-decimal",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 7 ÷ 2",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "7/2=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 7 ÷ 2=",
+       "Se muestra 3,5"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 7 ÷ 2 = 3,5.",
+   "en": "Done: 7 ÷ 2 = 3,5."
+  },
+  {
+   "id": "cu-parts-calculate-operand-only",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 144 ÷ 12",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "144/12=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 144 ÷ 12="
+      ]
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Calculadora».",
+   "en": "Done, I did it in «Calculadora»."
+  },
+  {
+   "id": "cu-parts-calculate-not-shown",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 9 × 8",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "9*8=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "Se muestra 0"
+      ]
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Calculadora».",
+   "en": "Done, I did it in «Calculadora»."
+  },
+  {
+   "id": "cu-parts-places",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a sistema; luego ir a sonido",
+     "application": "Configuración",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Configuración",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Sistema",
+       "ok": true,
+       "name": "Sistema",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Sonido",
+       "ok": true,
+       "name": "Sonido",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a sistema",
+       "application": "Configuración",
+       "reached": true
+      },
+      {
+       "goal": "ir a sonido",
+       "application": "Configuración",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Sistema» y ya estoy en «Sonido».",
+   "en": "Done, I went through «Sistema» and I'm now in «Sonido»."
+  },
+  {
+   "id": "cu-parts-select-then-place",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar documento en blanco; luego ir a la pestaña insertar",
+     "application": "Word",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Word",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Documento en blanco",
+       "ok": true,
+       "name": "Documento en blanco",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Insertar",
+       "ok": true,
+       "name": "Insertar",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Documento1 - Word",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Documento1 - Word",
+      "values": [
+       {
+        "name": "Insertar",
+        "state": "selected"
+       }
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "seleccionar documento en blanco",
+       "application": "Word",
+       "reached": true
+      },
+      {
+       "goal": "ir a la pestaña insertar",
+       "application": "Word",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, elegí «Documento en blanco» y ya estoy en «Insertar».",
+   "en": "Done, I picked «Documento en blanco» and I'm now in «Insertar»."
+  },
+  {
+   "id": "cu-parts-place-then-search",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca; luego buscar Cuphead",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "BIBLIOTECA",
+       "ok": true,
+       "name": "BIBLIOTECA",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "ctrl_f",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.text.type",
+       "text": "Cuphead",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a biblioteca",
+       "application": "Steam",
+       "reached": true
+      },
+      {
+       "goal": "buscar Cuphead",
+       "application": "Steam",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, busqué «Cuphead» en «Steam».",
+   "en": "Done, I searched for «Cuphead» in «Steam»."
+  },
+  {
+   "id": "cu-parts-typed-other-text",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "escribir el resultado",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "56",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*56: Bloc de notas",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*56: Bloc de notas"
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Bloc de notas».",
+   "en": "Done, I did it in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-places-across-apps",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a cotele; luego ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Discord",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "cotele",
+       "name": "Cotele",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.visible.click",
+       "label": "TIENDA",
+       "name": "TIENDA",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a cotele",
+       "application": "Discord",
+       "reached": true
+      },
+      {
+       "goal": "ir a tienda",
+       "application": "Steam",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Cotele» en «Discord» y ya estoy en «Tienda» de «Steam».",
+   "en": "Done, I went through «Cotele» in «Discord» and I'm now in «Tienda» in «Steam»."
+  },
+  {
+   "id": "cu-parts-calculate-thousands",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 1.500 + 500",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "1500+500=",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 1.500 + 500=",
+       "Se muestra 2.000"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 1.500 + 500 = 2.000.",
+   "en": "Done: 1.500 + 500 = 2.000."
+  },
+  {
+   "id": "cu-parts-calculate-other-window",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 6 + 7; luego ir a archivo",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "6+7=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.visible.click",
+       "label": "Archivo",
+       "name": "Archivo",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*13: Bloc de notas",
+      "process": "Notepad"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*13: Bloc de notas",
+      "lines": [
+       "Línea 1, Columna 13"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "calcular 6 + 7",
+       "application": "Calculadora",
+       "reached": true
+      },
+      {
+       "goal": "ir a archivo",
+       "application": "Bloc de notas",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, estoy en «Archivo».",
+   "en": "Done, I'm in «Archivo»."
+  },
+  {
+   "id": "cu-parts-place-in-capitals",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "TIENDA",
+       "name": "TIENDA",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     }
+    }
+   },
+   "es": "Listo, estoy en «Tienda».",
+   "en": "Done, I'm in «Tienda»."
   }
  ]
 }

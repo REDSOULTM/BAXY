@@ -221,6 +221,11 @@ internal static class OperationFloor
                 return null;
             }
 
+            if (Parts(observed, subgoals, goal, app, english) is { Length: > 0 } parts)
+            {
+                return parts;
+            }
+
             string reached = Place(subgoals.Count > 0 ? Text(subgoals[^1], "goal") : goal, names, question, data);
             if (reached.Length > 0)
             {
@@ -261,6 +266,420 @@ internal static class OperationFloor
             ? T(said, "cause").Replace("{head}", head, StringComparison.Ordinal)
                 .Replace("{cause}", cause, StringComparison.Ordinal)
             : head;
+    }
+
+    // Live 2026-10-07: «calcular 1.500 + 500» read as 1,5 + 500. A «.» followed by exactly three digits groups
+    // thousands (the Chilean writing); a comma after them is the decimal one.
+    private static readonly Regex CalcToken = new(
+        @"[0-9]{1,3}(?:\.[0-9]{3})+(?:,[0-9]+)?(?![0-9.])|[0-9]+(?:[.,][0-9]+)?|\S", RegexOptions.CultureInvariant);
+
+    private static readonly Regex GroupedNumber = new(@"^[0-9]{1,3}(?:\.[0-9]{3})+(?:,[0-9]+)?$", RegexOptions.CultureInvariant);
+
+    // What a window writes of the expression itself («La expresión es 144 ÷ 12=») never proves its value.
+    private static readonly Regex WrittenExpression = new(
+        @"[0-9][0-9.,]*(?:\s*[-+×÷*/xX]\s*\(?\s*[0-9][0-9.,]*\)?)+\s*=?", RegexOptions.CultureInvariant);
+
+    private const int LongestDecimals = 10;
+    private static readonly string[] ScreenTextKeys = ["numbers", "lines"];
+    private static readonly string[] DecimalPoints = [".", ","];
+    private static readonly string[] GroupSeparators = [string.Empty, ".", ",", " ", "\u00a0"];
+    private const string QuoteMarks = "«»\"“”'";
+
+    /// <summary>
+    /// Voice audit 2026-10-07 (cu-r16) twin of the mind's computer_use._parts_final: a reached mission told part by
+    /// part from its facts (data «computerUse.parts»): the places reached, the controls picked, the text typed or
+    /// searched, a calculation whose value the window shows. Null when one part cannot be told. The mind also names
+    /// a colour's shade («Añil, el azul de la paleta»); the App says the swatch the person named.
+    /// </summary>
+    private static string? Parts(JsonObject observed, List<JsonObject> subgoals, string? goal, string app, bool english)
+    {
+        var floor = (JsonObject)Data.Value["computerUse"]!;
+        var data = (JsonObject)floor["parts"]!;
+        string language = english ? "en" : "es";
+        var said = (JsonObject)data[language]!;
+        JsonObject templates = Templates(english);
+        string question = T(floor, "questionMark");
+        List<(string? Goal, JsonNode? Application)> parts = subgoals.Count > 0
+            ? subgoals.Select(item => (Text(item, "goal"), item["application"])).ToList()
+            : (goal ?? string.Empty).Split(T(data, "chain")).Select(part => ((string?)part, observed["application"])).ToList();
+        List<JsonObject> done = (observed["steps"] as JsonArray ?? new JsonArray()).OfType<JsonObject>()
+            .Where(step => Flag(step, "ok") == true).ToList();
+        List<string> typed = done.Where(step => Text(step, "operation") == "input.text.type" && Text(step, "text") is not null)
+            .Select(step => Folded(PartObject(Text(step, "text")))).ToList();
+        var screen = observed["screen"] as JsonObject;
+        var names = new List<string>();
+        var texts = new List<string>();
+        foreach (JsonNode? candidate in done.Select(step => step["name"])
+            .Concat(((screen?["values"] as JsonArray) ?? new JsonArray()).OfType<JsonObject>().Select(item => item["name"]))
+            .Concat(((screen?["lines"] as JsonArray) ?? new JsonArray()).Select(line => line))
+            .Append((observed["window"] as JsonObject)?["title"]))
+        {
+            if (FloorName(candidate, floor) is { Length: > 0 } name)
+            {
+                names.Add(name);
+            }
+        }
+
+        foreach (string key in ScreenTextKeys)
+        {
+            texts.AddRange(((screen?[key] as JsonArray) ?? new JsonArray()).OfType<JsonValue>()
+                .Select(value => value.TryGetValue(out string? text) ? text : null).OfType<string>());
+        }
+
+        foreach (JsonObject item in ((screen?["values"] as JsonArray) ?? new JsonArray()).OfType<JsonObject>())
+        {
+            texts.AddRange(new[] { Text(item, "name"), Text(item, "value") }.OfType<string>());
+        }
+
+        if (screen is not null && Text(screen, "title") is { } title)
+        {
+            texts.Add(title);
+        }
+
+        string Quoted(string value) => Quote(value, templates);
+        string? Spelled(string asked) => names.FirstOrDefault(name => Folded(name) == Folded(asked)) is { } name
+            ? CalmCaps(name)
+            : null;
+        var clauses = new List<(string Kind, string Said, string Where, bool Spelled)>();
+        string shownTitle = Text(observed["window"] as JsonObject ?? new JsonObject(), "title") ?? string.Empty;
+        foreach ((string? rawPart, JsonNode? partApp) in parts)
+        {
+            string part = (rawPart ?? string.Empty).Trim();
+            string where = FloorName(partApp, floor) is { Length: > 0 } named ? named : app;
+            if (part.Length == 0 || part.Contains(question, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            if (PartMatch(data, "key", part) is not null)
+            {
+                // A key is never told; its application is told by another part.
+                continue;
+            }
+
+            if (PlaceGoal.Value.Match(part) is { Success: true } place)
+            {
+                string asked = FloorName(JsonValue.Create(PartObject(place.Groups[1].Value)), floor);
+                if (asked.Length == 0)
+                {
+                    return null;
+                }
+
+                clauses.Add(("place", Quoted(Spelled(asked) ?? asked), where, Spelled(asked) is not null));
+                continue;
+            }
+
+            if (PartMatch(data, "select", part) is { } selected)
+            {
+                string asked = FloorName(JsonValue.Create(PartObject(selected)), floor);
+                if (asked.Length == 0)
+                {
+                    return null;
+                }
+
+                clauses.Add(("select", Quoted(Spelled(asked) ?? asked), where, Spelled(asked) is not null));
+                continue;
+            }
+
+            if (PartMatch(data, "type", part) is { } written)
+            {
+                string text = PartObject(written);
+                if (text.Length == 0 || !typed.Contains(Folded(text)) || where.Length == 0)
+                {
+                    return null;
+                }
+
+                clauses.Add(("type", Quoted(text), where, true));
+                continue;
+            }
+
+            if (PartMatch(data, "search", part) is { } searched)
+            {
+                string query = PartObject(searched);
+                if (query.Length == 0 || !typed.Any(text => text.Contains(Folded(query), StringComparison.Ordinal))
+                    || where.Length == 0)
+                {
+                    return null;
+                }
+
+                clauses.Add(("search", T(said, "search").Replace("{query}", Quoted(query), StringComparison.Ordinal)
+                    .Replace("{app}", Quoted(where), StringComparison.Ordinal), where, true));
+                continue;
+            }
+
+            // Only the calculating window's own display proves the value: a chain that ends in another application
+            // shows that one's numbers («Línea 1, Columna 13» of the Bloc de notas).
+            if (PartMatch(data, "calculate", part) is not { } expression
+                || where.Length == 0
+                || (Folded(where) != Folded(app) && !Folded(shownTitle).Contains(Folded(where), StringComparison.Ordinal))
+                || CalculationShown(expression, texts, data) is not { } shown)
+            {
+                return null;
+            }
+
+            if (parts.Count == 1)
+            {
+                return T(said, "calculateAlone").Replace("{expression}", shown.Expression, StringComparison.Ordinal)
+                    .Replace("{value}", shown.Value, StringComparison.Ordinal) + ".";
+            }
+
+            clauses.Add(("calculate", T(said, "calculate").Replace("{expression}", shown.Expression, StringComparison.Ordinal)
+                .Replace("{value}", shown.Value, StringComparison.Ordinal), where, true));
+        }
+
+        if (clauses.Count == 0)
+        {
+            return null;
+        }
+
+        string placeSaid = T((JsonObject)floor[language]!, "place");
+        if (clauses.Count == 1 && clauses[0].Kind == "place")
+        {
+            return placeSaid.Replace("{place}", clauses[0].Said, StringComparison.Ordinal) + ".";
+        }
+
+        var told = new List<string>();
+        // Live 2026-10-07: «ir a cotele» in Discord then «ir a tienda» in Steam came out «estoy en «TIENDA»»; a mission
+        // across applications tells each place with its application.
+        bool crossed = clauses.Select(clause => Folded(clause.Where)).Distinct().Count() > 1;
+        for (int index = 0; index < clauses.Count; index++)
+        {
+            (string kind, string text, string where, bool spelled) = clauses[index];
+            var run = new List<(string Said, bool Spelled)> { (text, spelled) };
+            while (index + 1 < clauses.Count && kind is "place" or "select" or "type"
+                && clauses[index + 1].Kind == kind && clauses[index + 1].Where == where)
+            {
+                index++;
+                run.Add((clauses[index].Said, clauses[index].Spelled));
+            }
+
+            List<string> runSaid = run.Select(item => item.Said).ToList();
+            if (kind == "place")
+            {
+                if (index == clauses.Count - 1)
+                {
+                    // Only the places the window spelled are told as passed through.
+                    List<string> passed = run.Take(run.Count - 1).Where(item => item.Spelled).Select(item => item.Said).ToList();
+                    if (passed.Count > 0)
+                    {
+                        told.Add(T(said, "places").Replace("{places}", Joined(passed, templates), StringComparison.Ordinal));
+                    }
+
+                    told.Add(T(said, crossed && where.Length > 0 ? "lastPlaceIn" : "lastPlace")
+                        .Replace("{place}", run[^1].Said, StringComparison.Ordinal)
+                        .Replace("{app}", Quoted(where), StringComparison.Ordinal));
+                }
+                else if (where.Length > 0 && Folded(where) != Folded(clauses[index + 1].Where))
+                {
+                    // A place in an application the mission then left is told with it.
+                    told.Add(T(said, "placesIn").Replace("{places}", Joined(runSaid, templates), StringComparison.Ordinal)
+                        .Replace("{app}", Quoted(where), StringComparison.Ordinal));
+                }
+
+                continue;
+            }
+
+            told.Add(kind switch
+            {
+                "select" => T(said, "select").Replace("{items}", Joined(runSaid, templates), StringComparison.Ordinal),
+                "type" => T(said, "type").Replace("{texts}", Joined(runSaid, templates), StringComparison.Ordinal)
+                    .Replace("{app}", Quoted(where), StringComparison.Ordinal),
+                _ => text,
+            });
+        }
+
+        if (told.Count == 1 && clauses[^1].Kind == "place"
+            && told[0] == T(said, "lastPlace").Replace("{place}", clauses[^1].Said, StringComparison.Ordinal))
+        {
+            return placeSaid.Replace("{place}", clauses[^1].Said, StringComparison.Ordinal) + ".";
+        }
+
+        return T(said, "clauses").Replace("{clauses}", Joined(told, templates), StringComparison.Ordinal) + ".";
+    }
+
+    private static string? PartMatch(JsonObject data, string kind, string part) =>
+        Regex.Match(part, T(data, kind), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) is { Success: true } found
+            ? (found.Groups.Count > 1 ? found.Groups[1].Value : found.Value)
+            : null;
+
+    private static string PartObject(string? value) =>
+        Regex.Replace(value ?? string.Empty, @"\s+", " ", RegexOptions.CultureInvariant).Trim()
+            .Trim((QuoteMarks + " .;:").ToCharArray());
+
+    // The expression as said and its value as the window writes it, when «calcular E» shows E's value.
+    private static (string Expression, string Value)? CalculationShown(string expression, List<string> texts, JsonObject data)
+    {
+        var operators = (JsonObject)data["operators"]!;
+        List<string> tokens = CalcToken.Matches(expression).Select(match =>
+            operators[match.Value] is JsonValue mapped ? (string)mapped! : match.Value).ToList();
+        if (tokens.Count == 0 || tokens.Any(token => !(char.IsAsciiDigit(token[0]) || token is "+" or "-" or "×" or "÷" or "(" or ")")))
+        {
+            return null;
+        }
+
+        int position = 0;
+        (System.Numerics.BigInteger N, System.Numerics.BigInteger D)? value = Sum();
+        if (value is null || position != tokens.Count)
+        {
+            return null;
+        }
+
+        List<string> shown = texts.Select(text => WrittenExpression.Replace(
+            Regex.Replace(BidiMarks.Replace(text, string.Empty), @"\s+", " ", RegexOptions.CultureInvariant).Trim(), " ")).ToList();
+        foreach (string spelling in Spellings(value.Value.N, value.Value.D))
+        {
+            var pattern = new Regex(@"(?<![0-9.,])" + Regex.Escape(spelling) + @"(?![0-9]|[.,][0-9])", RegexOptions.CultureInvariant);
+            if (shown.Any(text => pattern.IsMatch(text)))
+            {
+                return (string.Join(" ", tokens).Replace("( ", "(", StringComparison.Ordinal).Replace(" )", ")", StringComparison.Ordinal), spelling);
+            }
+        }
+
+        return null;
+
+        string? Peek() => position < tokens.Count ? tokens[position] : null;
+
+        (System.Numerics.BigInteger, System.Numerics.BigInteger)? Factor()
+        {
+            string? token = Peek();
+            if (token == "-")
+            {
+                position++;
+                return Factor() is { } inner ? Reduced(-inner.Item1, inner.Item2) : null;
+            }
+
+            if (token == "(")
+            {
+                position++;
+                if (Sum() is not { } inner || Peek() != ")")
+                {
+                    return null;
+                }
+
+                position++;
+                return inner;
+            }
+
+            if (token is not null && char.IsAsciiDigit(token[0]))
+            {
+                position++;
+                string plain = GroupedNumber.IsMatch(token) ? token.Replace(".", string.Empty, StringComparison.Ordinal) : token;
+                string[] pieces = plain.Replace(',', '.').Split('.');
+                System.Numerics.BigInteger scale = System.Numerics.BigInteger.Pow(10, pieces.Length > 1 ? pieces[1].Length : 0);
+                return Reduced(System.Numerics.BigInteger.Parse(string.Concat(pieces), CultureInfo.InvariantCulture), scale);
+            }
+
+            return null;
+        }
+
+        (System.Numerics.BigInteger, System.Numerics.BigInteger)? Product()
+        {
+            var current = Factor();
+            while (current is not null && Peek() is "×" or "÷")
+            {
+                string op = Peek()!;
+                position++;
+                if (Factor() is not { } right || (op == "÷" && right.Item1.IsZero))
+                {
+                    return null;
+                }
+
+                current = op == "×"
+                    ? Reduced(current.Value.Item1 * right.Item1, current.Value.Item2 * right.Item2)
+                    : Reduced(current.Value.Item1 * right.Item2, current.Value.Item2 * right.Item1);
+            }
+
+            return current;
+        }
+
+        (System.Numerics.BigInteger, System.Numerics.BigInteger)? Sum()
+        {
+            var current = Product();
+            while (current is not null && Peek() is "+" or "-")
+            {
+                string op = Peek()!;
+                position++;
+                if (Product() is not { } right)
+                {
+                    return null;
+                }
+
+                System.Numerics.BigInteger numerator = op == "+"
+                    ? current.Value.Item1 * right.Item2 + right.Item1 * current.Value.Item2
+                    : current.Value.Item1 * right.Item2 - right.Item1 * current.Value.Item2;
+                current = Reduced(numerator, current.Value.Item2 * right.Item2);
+            }
+
+            return current;
+        }
+    }
+
+    private static (System.Numerics.BigInteger, System.Numerics.BigInteger) Reduced(
+        System.Numerics.BigInteger numerator, System.Numerics.BigInteger denominator)
+    {
+        if (denominator.Sign < 0)
+        {
+            (numerator, denominator) = (-numerator, -denominator);
+        }
+
+        System.Numerics.BigInteger divisor = System.Numerics.BigInteger.GreatestCommonDivisor(numerator, denominator);
+        return divisor.IsZero || divisor.IsOne ? (numerator, denominator) : (numerator / divisor, denominator / divisor);
+    }
+
+    // How a window may write a value: plain, with its thousands grouped, with a decimal point or comma.
+    private static List<string> Spellings(System.Numerics.BigInteger numerator, System.Numerics.BigInteger denominator)
+    {
+        System.Numerics.BigInteger rest = denominator;
+        int twos = 0, fives = 0;
+        while (rest % 2 == 0)
+        {
+            rest /= 2;
+            twos++;
+        }
+
+        while (rest % 5 == 0)
+        {
+            rest /= 5;
+            fives++;
+        }
+
+        int decimals = Math.Max(twos, fives);
+        var spellings = new List<string>();
+        if (!rest.IsOne || decimals > LongestDecimals)
+        {
+            return spellings;
+        }
+
+        string sign = numerator.Sign < 0 ? "-" : string.Empty;
+        System.Numerics.BigInteger power = System.Numerics.BigInteger.Pow(10, decimals);
+        System.Numerics.BigInteger scaled = System.Numerics.BigInteger.Abs(numerator) * power / denominator;
+        System.Numerics.BigInteger whole = System.Numerics.BigInteger.DivRem(scaled, power, out System.Numerics.BigInteger fraction);
+        string digits = whole.ToString(CultureInfo.InvariantCulture);
+        var groups = new List<string>();
+        for (int end = digits.Length; end > 0; end -= 3)
+        {
+            groups.Insert(0, digits[Math.Max(0, end - 3)..end]);
+        }
+
+        foreach (string separator in GroupSeparators)
+        {
+            if (separator.Length > 0 && groups.Count < 2)
+            {
+                continue;
+            }
+
+            string integer = string.Join(separator, groups);
+            if (decimals == 0)
+            {
+                spellings.Add(sign + integer);
+                continue;
+            }
+
+            string tail = fraction.ToString(CultureInfo.InvariantCulture).PadLeft(decimals, '0');
+            spellings.AddRange(DecimalPoints.Where(point => point != separator).Select(point => sign + integer + point + tail));
+        }
+
+        return spellings;
     }
 
     // The mission a turn tells: the result itself, the reason of a mission that failed on it alone, or the only step
@@ -306,7 +725,28 @@ internal static class OperationFloor
         }
 
         string asked = FloorName(JsonValue.Create(found.Groups[1].Value), data);
-        return names.FirstOrDefault(name => Folded(name) == Folded(asked)) ?? asked;
+        return names.FirstOrDefault(name => Folded(name) == Folded(asked)) is { } spelled ? CalmCaps(spelled) : asked;
+    }
+
+    // A name the window writes in capitals («TIENDA», read off the screen) told with only its first letter so; an
+    // acronym («VPN», «HDMI») keeps them. Twin of the mind's computer_use._calm_caps.
+    private static string CalmCaps(string name)
+    {
+        int longest = (int)((JsonObject)((JsonObject)Data.Value["computerUse"]!)["parts"]!)["capsWord"]!;
+        List<char> letters = name.Where(char.IsLetter).ToList();
+        int run = 0, widest = 0;
+        foreach (char letter in name)
+        {
+            run = char.IsLetter(letter) ? run + 1 : 0;
+            widest = Math.Max(widest, run);
+        }
+
+        if (letters.Count == 0 || letters.Any(letter => !char.IsUpper(letter)) || widest < longest)
+        {
+            return name;
+        }
+
+        return name[..1] + name[1..].ToLowerInvariant();
     }
 
     private static string FloorName(JsonNode? node, JsonObject data)

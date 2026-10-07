@@ -2373,22 +2373,27 @@ internal static class ComputerUseSuccessCheck
                 StringComparer.Ordinal);
             var chosenNow = new HashSet<string>(SelectedNames(view).Select(node => (string?)node ?? string.Empty), StringComparer.Ordinal);
             bool selectionMoved = before.Any(name => !chosenNow.Contains(name));
-            if (selectionMoved && chosenNow.Any(name => !before.Contains(name) && !name.Contains(target, StringComparison.Ordinal)))
+            HashSet<string>? seenBefore = view["controlsBeforeClick"]?[key] is JsonArray earlier
+                ? new HashSet<string>(earlier.Select(node => (string?)node ?? string.Empty), StringComparer.Ordinal)
+                : null;
+            if (selectionMoved && chosenNow.Any(name => !before.Contains(name) && !name.Contains(target, StringComparison.Ordinal)
+                    && (seenBefore is null || seenBefore.Contains(name))))
             {
                 // A value chosen inside the page reached («Oscuro» in Colores) is not a move: only a selection that
-                // left the item chosen before for another one is.
+                // left the item chosen before for another one the click could have landed on (shown before it) is.
+                // An item the page reached brings chosen is part of it (measured 2026-10-07 on the Calculator, from
+                // Programador to Científica: the new page's «Historial» tab, absent before, came selected).
                 return false;
             }
 
             // And the window shows something else than before the click: most of its controls are new (a panel opened,
             // a page loaded). A click that left the same controls did not go anywhere (measured on Settings: the
             // «Colores» card clicked, Personalización still shown, the mission said it was in Colores).
-            if (view["controlsBeforeClick"]?[key] is not JsonArray earlier)
+            if (seenBefore is null)
             {
                 return false;
             }
 
-            var seenBefore = new HashSet<string>(earlier.Select(node => (string?)node ?? string.Empty), StringComparer.Ordinal);
             JsonArray now = ControlNames(view);
             int fresh = now.Count(node => !seenBefore.Contains((string?)node ?? string.Empty));
             if (now.Count > 0 && fresh * 10 >= now.Count * 4)

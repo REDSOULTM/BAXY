@@ -438,9 +438,17 @@ public sealed class ComputerUseMissionTests
         stayed["controlsBeforeClick"] = new JsonObject { ["2"] = new JsonArray("personalizacion", "colores", "temas") };
         JsonArray card = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Colores" }];
         JsonArray screen = [new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Pantalla" }];
+        JsonObject picturesSeen = (JsonObject)pictures.DeepClone();
+        picturesSeen["controlsBeforeClick"] = new JsonObject { ["2"] = new JsonArray("downloads", "imagenes", "documentos") };
+        foreach (string photo in new[] { "foto 1", "foto 2", "foto 3", "foto 4", "foto 5", "foto 6" })
+        {
+            ((JsonArray)picturesSeen["controls"]!).Add(new JsonObject { ["i"] = 9, ["kind"] = "ListItem", ["name"] = photo });
+        }
+
         Assert.Multiple(() =>
         {
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:downloads", pictures, clicked, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:downloads", picturesSeen, clicked, out _), Is.False, "an item listed before became the chosen one");
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:pantalla", display, screen, out _), Is.True, "the section kept selected was chosen before");
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", stayed, card, out _), Is.False, "the same controls: the click went nowhere");
         });
@@ -861,6 +869,60 @@ public sealed class ComputerUseMissionTests
         scientific["controlsBeforeClick"] = new JsonObject { ["3"] = new JsonArray("cerrar navegacion", "estandar calculadora", "cientifica calculadora", "graficar calculadora") };
         JsonArray clicked = [new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Científica Calculadora" }];
         Assert.That(ComputerUseSuccessCheck.Evaluate("page:cientifica", scientific, clicked, out _), Is.True);
+    }
+
+    [Test]
+    public void AModeReachedFromAnotherModeWhoseNewPageBringsATabChosenArrived()
+    {
+        // Measured 2026-10-07 (x1): the Calculator left in Programador; «Científica Calculadora» clicked in its
+        // navigation, the pane closed and the scientific page came with its «Historial» tab selected (absent before).
+        string[] shared = ["abrir navegacion", "borrar", "retroceso", "cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete",
+            "ocho", "nueve", "mas", "menos", "es igual a", "dividido por", "multiplicar por", "modulo", "parentesis de apertura"];
+        string[] pane = ["cerrar navegacion", "estandar calculadora", "cientifica calculadora", "graficar calculadora",
+            "programador calculadora", "configuracion", "no hay nada guardado en la memoria. memoria", "hexadecimal 0", "decimal 0",
+            "bit a bit", "desplazamiento de bits", "mayus izquierda"];
+        JsonObject Page(string selected, params string[] names)
+        {
+            var controls = new JsonArray();
+            int index = 0;
+            foreach (string name in names)
+            {
+                var control = new JsonObject { ["i"] = index++, ["kind"] = name.EndsWith("calculadora", StringComparison.Ordinal) ? "ListItem" : "Button", ["name"] = name };
+                if (name == selected)
+                {
+                    control["kind"] = name.Contains("historial", StringComparison.Ordinal) ? "TabItem" : "ListItem";
+                    control["state"] = "selected";
+                }
+
+                controls.Add(control);
+            }
+
+            JsonObject view = View("""{"window": {"title": "Calculadora"}, "controls": []}""");
+            view["controls"] = controls;
+            view["selectedBeforeClick"] = new JsonObject { ["3"] = new JsonArray("programador calculadora", "no hay nada guardado en la memoria. memoria") };
+            view["controlsBeforeClick"] = new JsonObject { ["3"] = new JsonArray(pane.Concat(shared[1..]).Select(name => (JsonNode?)JsonValue.Create(name)).ToArray()) };
+            return view;
+        }
+
+        string[] scientificPage = [.. shared, "alternar grados", "notacion cientifica", "sumar memoria", "trigonometria", "funciones",
+            "pi", "numero de euler", "cuadrado", "raiz cuadrada", "logaritmo", "factorial", "no hay historial todavia. historial"];
+        JsonObject scientific = Page("no hay historial todavia. historial", scientificPage);
+        // The pane still open with another listed item chosen: the click landed on it, not on the place.
+        JsonObject landedElsewhere = Page("estandar calculadora", [.. scientificPage[..^1], .. pane[1..4]]);
+        JsonArray Click(string label) => [new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = label }];
+        JsonArray escaped =
+        [
+            new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Abrir navegación" },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "escape" },
+        ];
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:cientifica", scientific, Click("Científica Calculadora"), out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:cientifica", scientific, escaped, out _), Is.False, "the menu closed, nothing chosen");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:cientifica", scientific, Click("Graficar Calculadora"), out _), Is.False, "another item clicked");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:conversor", scientific, Click("Conversor Calculadora"), out _), Is.False, "a place absent");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:cientifica", landedElsewhere, Click("Científica Calculadora"), out _), Is.False, "another listed item chosen");
+        });
     }
 
     [Test]

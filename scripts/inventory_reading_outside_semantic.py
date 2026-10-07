@@ -156,6 +156,15 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "GROUNDING",
         "M172: words an observed value already repeats («Fru Fru»), so saying them is not a stutter",
     ),
+    ("computer_use.py", "_folded_words"): (
+        "GROUNDING",
+        "cu-r16: a word of a mission final must be one of the facts, the person's own words or BAXY's vocabulary",
+    ),
+    ("computer_use.py", "_preterites"): (
+        "GROUNDING",
+        "cu-r17/r18: the first-person past forms of the verbs the person and the goal said, so a final telling that "
+        "act («pegué», «envié») is grounded; decides no intention",
+    ),
     ("llm.py", "_said_misspelled"): (
         "GROUNDING",
         "A7 E1: a name in the reply checked against a word the person wrote with a typo",
@@ -243,6 +252,15 @@ APP_METHODS: dict[tuple[str, str], tuple[str, str]] = {
     ("ComputerUseMission.cs", "CountAtom"): (
         "GROUNDING", "parses the «count:<kind> <op> N» atom of the success check that semantic.missions wrote and "
         "counts the view's controls; the person's words are not read here"),
+    # cu-r16: the floor of a mission tells its parts from the goals semantic.missions wrote (data «computerUse.parts»).
+    ("OperationFloor.cs", "PartMatch"): (
+        "GROUNDING", "splits a goal that semantic.missions wrote («ir a X», «escribir X») into its object, to say it "
+        "back from the facts; the person's words are not read here"),
+    ("OperationFloor.cs", "PartObject"): (
+        "GROUNDING", "trims the quotes and spaces of a goal's object or a typed step's text to compare it literally"),
+    ("OperationFloor.cs", "CalculationShown"): (
+        "GROUNDING", "the expression of a «calcular E» goal is evaluated and its value looked for, literally, in what "
+        "the window shows; the person's words are not read here"),
     # M116: a failed step's facts carry its grounded arguments; this only shapes an argument value for display.
     ("AttemptedArguments.cs", "Said"): (
         "GROUNDING", "a grounded argument value shown as the person would say it: no ids, URL host/path only, a path's "

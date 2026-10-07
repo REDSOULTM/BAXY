@@ -97,6 +97,32 @@
   },
   "coveredBy": {"es": "la ventana «{window}» tapa la aplicación", "en": "the window «{window}» covers the application"},
   "placeNotFound": {"es": "no encontré {place} en esta ventana; puede que este equipo no lo tenga", "en": "I did not find {place} in this window; this computer may not have it"},
+  "answer": {
+   "source": "Live 2026-10-07 (cu-r19): «Llegué al modo Oscuro.», «Llegué a la zona horaria y es (UTC-04:00) Santiago.» A reached mission whose question one fact of the window answers alone (an option the question names that the window shows selected, or the one value named by the question's noun) is answered from that fact, not drafted. Zero or several such facts leave it to the model. Mind only: the App never composes a mission with a question.",
+   "options": "^(?:(?:dec[ií]me|dime|dec[ií]|cont[aá]me|cu[eé]ntame|tell\\s+me|let\\s+me\\s+know)\\s+)?(?:si|if|whether)\\s+(?P<noun>(?:(?:el|la|los|las|the|my|mi)\\s+)?[^\\W\\d_]+(?:\\s+[^\\W\\d_]+){0,2}?)\\s+(?:es|est[aá]|est[aá]\\s+en|is|is\\s+set\\s+to|is\\s+in)\\s+(?:(?:el|la|en|the|on)\\s+)?(?P<first>[^\\W\\d_]+(?:\\s+[^\\W\\d_]+)?)\\s+(?:o|u|or)\\s+(?:(?:el|la|en|the|on)\\s+)?(?P<second>[^\\W\\d_]+(?:\\s+[^\\W\\d_]+)?)$",
+   "noun": "^(?:dec[ií]me|dime|dec[ií]|cont[aá]me|cu[eé]ntame|cu[aá]l\\s+es|qu[eé]\\s+es|tell\\s+me|what\\s+is|what's|which\\s+is)\\s+(?!(?:si|if|whether|c[oó]mo|how|cu[aá]nt\\w*|d[oó]nde|where|cu[aá]ndo|when|qu[eé]|what|por\\s+qu[eé]|why)\\b)(?P<noun>(?:(?:el|la|los|las|the|my|mi)\\s+)?[^\\W\\d_]+(?:\\s+[^\\W\\d_]+){0,3})$",
+   "articles": ["el", "la", "los", "las", "the", "my", "mi", "de", "del", "of"],
+   "selectedStates": ["selected", "on", "checked"],
+   "number": "^-?\\d+(?:[.,]\\d+)?\\s*%?$",
+   "shapes": [
+    {"noun": "^(?:zona\\s+horaria|huso\\s+horario|time\\s*zone)$", "value": "^\\(UTC(?:[+\\-−]\\d{1,2}:\\d{2})?\\)\\s*\\S.*$"}
+   ],
+   "es": {"option": "Listo: {noun} está en {value}", "number": "Listo: {noun} está en {value}", "text": "Listo: {noun} es {value}"},
+   "en": {"option": "Done: {noun} is set to {value}", "number": "Done: {noun} is at {value}", "text": "Done: {noun} is {value}"}
+  },
+  "parts": {
+   "source": "Live 2026-10-07 voice audit (cu-r16): a mission without a question is told from its facts first, part by part, not by the model: the places reached, the controls picked, the text typed or searched, a calculation whose value the window shows. Parts are the goals the mission reader writes, joined by «chain».",
+   "chain": "; luego ",
+   "select": "^seleccionar\\s+(?:el\\s+|la\\s+|los\\s+|las\\s+)?(.+)$",
+   "type": "^escribir\\s+(.+)$",
+   "search": "^buscar\\s+(.+)$",
+   "calculate": "^calcular\\s+([0-9][0-9\\s.,()+*/×÷x-]*[0-9)])$",
+   "key": "^apretar\\s+\\S.*$",
+   "capsWord": 5,
+   "operators": {"*": "×", "x": "×", "X": "×", "×": "×", "/": "÷", "÷": "÷", "+": "+", "-": "-"},
+   "es": {"places": "pasé por {places}", "placesIn": "pasé por {places} en {app}", "lastPlace": "ya estoy en {place}", "lastPlaceIn": "ya estoy en {place} de {app}", "select": "elegí {items}", "shadeItem": "{chosen}, el {asked} de la paleta", "type": "escribí {texts} en {app}", "search": "busqué {query} en {app}", "calculate": "calculé {expression} = {value}", "calculateAlone": "Listo: {expression} = {value}", "clauses": "Listo, {clauses}"},
+   "en": {"places": "I went through {places}", "placesIn": "I went through {places} in {app}", "lastPlace": "I'm now in {place}", "lastPlaceIn": "I'm now in {place} in {app}", "select": "I picked {items}", "shadeItem": "{chosen}, the {asked} of the palette", "type": "I typed {texts} in {app}", "search": "I searched for {query} in {app}", "calculate": "I worked out {expression} = {value}", "calculateAlone": "Done: {expression} = {value}", "clauses": "Done, {clauses}"}
+  },
   "es": {"place": "Listo, estoy en {place}", "shade": "Listo, elegí {chosen}, el {asked} de la paleta", "app": "Listo, lo hice en {app}", "notPlace": "No pude llegar a {place}", "notApp": "No pude hacerlo en {app}", "not": "No pude hacerlo", "cause": "{head}: {cause}"},
   "en": {"place": "Done, I'm in {place}", "shade": "Done, I picked {chosen}, the {asked} of the palette", "app": "Done, I did it in {app}", "notPlace": "I couldn't get to {place}", "notApp": "I couldn't do it in {app}", "not": "I couldn't do it", "cause": "{head}: {cause}"}
  },

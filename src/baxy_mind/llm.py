@@ -51,6 +51,7 @@ from .semantic import decider as semantic_decider
 from .semantic import knowledge as semantic_knowledge
 from .semantic import quantities as semantic_quantities
 from .semantic import web as semantic_web
+from .semantic import voice_register as semantic_voice_register
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
     asks_calendar_part, calendar_parts_asked, days_until_asked, hours_until_asked, present_calendar_question,
@@ -834,15 +835,16 @@ _MACHINE_ACTOR_FEEDBACK = (
 )
 
 
-def _machine_actor_repair_payload(payload: dict, draft: str, gguf: str | None) -> dict:
-    """Use an existing retry to correct the actual rejected machine claim."""
+def _machine_actor_repair_payload(payload: dict, draft: str, gguf: str | None, *, greedy: bool = False) -> dict:
+    """Use an existing retry to correct the actual rejected machine claim. ``greedy`` (a computer-use final, cu-r17:
+    «Abrazé» came from a retry at temperature 0.7) keeps the payload's own sampler."""
     repaired = dict(payload)
     repaired["messages"] = [
         *payload["messages"],
         {"role": "assistant", "content": draft},
         {"role": "user", "content": _MACHINE_ACTOR_FEEDBACK},
     ]
-    if "qwen3-4b-instruct-2507" in _gguf_file_name(gguf):
+    if "qwen3-4b-instruct-2507" in _gguf_file_name(gguf) and not greedy:
         # Qualified on draft-aware repair579/580, not a global writer profile.
         repaired.update(
             temperature=0.7, top_p=0.8, top_k=20, min_p=0.0,
@@ -8819,6 +8821,120 @@ def _computer_use_mission(situation: dict) -> dict | None:
     return reason if isinstance(reason, dict) and reason.get("operation") == "mission.computer.use" else None
 
 
+# Live 2026-10-07 (v2 voice audit, 239 published computer-use finals): «Ya he entrado en la sección…», «Ya estamos en
+# la pestaña…», «Ya te llevé a la sección de sonido…», «…página de inicio de Spotify Premium», «mis playlists»,
+# «Descargas dentro de Documentos», two sentences where one was asked. The voice of a mission final, in the request's
+# language (documentacion/00_IDENTIDAD.md: first person singular, tuteo, one sentence, the observable state).
+COMPUTER_USE_VOICE_PROMPT_ES = (
+    "Voz de este final: sólo este pedido y los hechos de esta misión, nada de turnos anteriores. Habla en primera "
+    "persona singular, con tuteo chileno y en pretérito simple («llegué», «elegí», «escribí»); nunca «he "
+    "entrado», «ha quedado», «estamos», «te llevé». No digas que abriste una aplicación que ya estaba abierta. Nombra el lugar o el resultado tal como lo escribe la ventana, "
+    "sin planes ni versiones del producto («Premium», «Pro») y sin decir que un lugar está dentro de otro. Lo de la "
+    "persona es suyo («tus listas»), nunca «mis»."
+)
+COMPUTER_USE_VOICE_PROMPT_EN = (
+    "Voice of this final: only this request and this mission's facts, nothing from earlier turns. Speak in the first "
+    "person singular, in the simple past («I went to», «I chose», «I typed»); never «we», never «I've "
+    "gone», never «I'm already in», never «I took you». Never say you opened an app that was already open. Name the place or the result as the window writes it, with "
+    "no plan or edition of the product («Premium», «Pro»), and never say one place is inside another. The person's "
+    "things are theirs («your playlists»), never «my»."
+)
+COMPUTER_USE_VOICE_LENGTH_ES = " Una sola frase corta, de 18 palabras o menos."
+COMPUTER_USE_VOICE_LENGTH_EN = " One short sentence of 18 words or fewer."
+# cu-r17 (live 2026-10-07: «Abrí Configuración.» for «… y decime el volumen»): a mission that carries the person's
+# question answers it in the final, with the value the window wrote, or says it could not see it.
+COMPUTER_USE_VOICE_QUESTION_ES = (
+    " La persona preguntó «{question}»: tu frase responde eso primero, con el valor tal como lo escribe la ventana "
+    "(seen.screen, seen.evidence), como dato y no como lugar («El volumen está en 60.», «El modo es Oscuro.»; nunca "
+    "«Llegué al volumen…»); si la ventana no lo muestra, di que no lo pude ver. Nombrar el lugar o la "
+    "aplicación no es la respuesta."
+)
+COMPUTER_USE_VOICE_QUESTION_EN = (
+    " The person asked «{question}»: your sentence answers that first, with the value as the window writes it "
+    "(seen.screen, seen.evidence), as a fact and not as a place («The volume is at 60.», «The mode is Dark.»; never "
+    "«I went to the volume…»); if the window does not show it, say you could not see it. Naming the place or the "
+    "app is not the answer."
+)
+
+
+def _computer_use_voice_instruction(situation: dict, language: str) -> str:
+    """The voice of a computer-use final: first person singular, preterite, the window's own words, nothing from
+    earlier turns; a reached mission (no question about a failure to explain) in one sentence of 18 words or fewer."""
+
+    from . import computer_use as _computer_use
+
+    english = language == "en"
+    text = COMPUTER_USE_VOICE_PROMPT_EN if english else COMPUTER_USE_VOICE_PROMPT_ES
+    mission = _computer_use_mission(situation) or {}
+    observed = _merged_observed(mission)
+    question = _computer_use.project_seen(observed, language).get("question") if observed else None
+    if isinstance(question, str) and question.strip():
+        text += (COMPUTER_USE_VOICE_QUESTION_EN if english else COMPUTER_USE_VOICE_QUESTION_ES).format(
+            question=question.strip()
+        )
+    if observed.get("reached") is True:
+        text += COMPUTER_USE_VOICE_LENGTH_EN if english else COMPUTER_USE_VOICE_LENGTH_ES
+    return text
+
+
+def _app_open_records(value: object, depth: int = 0) -> list[dict]:
+    """Every app.open record (a mission step, a plan step) a computer-use situation holds."""
+
+    if depth > 6:
+        return []
+    if isinstance(value, list):
+        return [record for item in value for record in _app_open_records(item, depth + 1)]
+    if not isinstance(value, dict):
+        return []
+    own = [value] if value.get("operation") == "app.open" else []
+    return own + [record for child in value.values() for record in _app_open_records(child, depth + 1)]
+
+
+def _computer_use_final_defect(text: str, situation: dict) -> str:
+    """cu-r17 (live 2026-10-07): «Abrí Configuración.» said of an app every app.open of the turn found already
+    running (extra_claim), and a reached mission carrying the person's question («decime el volumen») told without
+    the answer the window showed (unanswered_question). "" for anything else."""
+
+    from . import computer_use as _computer_use
+    from .semantic import mission_answer
+
+    mission = _computer_use_mission(situation)
+    observed = _merged_observed(mission) if mission is not None else {}
+    if not observed:
+        return ""
+    seen = _computer_use.project_seen(observed, "es")
+    opened = _app_open_records(situation)
+    opened += [record for record in _app_open_records(observed) if record not in opened]
+    if opened and all(record.get("alreadyRunning") is True for record in opened):
+        names = [seen.get("application"), seen.get("windowTitle"), observed.get("application")] + [
+            value for record in opened for value in (record.get("name"), record.get("displayName"))
+        ]
+        if mission_answer.claims_opening(text, [name for name in names if isinstance(name, str)]):
+            return "extra_claim"
+    question = seen.get("question")
+    if isinstance(question, str) and question.strip() and seen.get("reached") is True:
+        if mission_answer.says_not_seen(text):
+            return ""
+        raw_steps = observed.get("steps") if isinstance(observed.get("steps"), list) else []
+        screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+        known = [
+            seen.get("goal"), seen.get("application"), seen.get("windowTitle"), screen.get("title"),
+            *(step.get(key) for step in raw_steps if isinstance(step, dict) for key in ("label", "name")),
+        ]
+        shown = _computer_use.screen_texts(seen)
+        states = [
+            item.get("state") for item in screen.get("values") or () if isinstance(item, dict)
+            and isinstance(item.get("state"), str)
+        ]
+        # cu-r18 (live v2-c5): the question goes apart so the option the window shows («Oscuro» for «claro u
+        # oscuro») or the state it asks about («si el Bluetooth está activado») still answers it.
+        if mission_answer.gives_an_answer(
+            text, shown, [item for item in known if isinstance(item, str)], question, states
+        ) is False:
+            return "unanswered_question"
+    return ""
+
+
 def _computer_use_floor(situation: dict, english: bool) -> str:
     """Live 2026-10-07 (v2-v9, v2-u7, v2-w1, v2-n5, v2-e2): every draft of a computer-use final refused, the generic
     floor said «Lo hice en la aplicación «Reloj»; hay 2: «Reloj mundial».» (the steps counted as a list read) or «No pude
@@ -8833,6 +8949,23 @@ def _computer_use_floor(situation: dict, english: bool) -> str:
         return ""
     succeeded = mission.get("verified") is True and mission.get("succeeded") is True
     return _computer_use.floor_sentence(observed, english, succeeded)
+
+
+def _computer_use_floor_first(situation: dict, language: str) -> str:
+    """Voice audit 2026-10-07 (cu-r16): a third of the model's mission finals had a defect («Ya te llevé a la sección
+    de sonido», «Abrazé a la sección de Bluetooth», «mis playlists»). A mission whose request asks nothing about the
+    window is told from its facts first (computer_use.floor_first); "" leaves it to the model."""
+
+    from . import computer_use as _computer_use
+
+    mission = _computer_use_mission(situation)
+    if mission is None or str(situation.get("kind") or "") not in {"operation", "status", "failure", "error"}:
+        return ""
+    observed = _merged_observed(mission)
+    if not observed:
+        return ""
+    succeeded = mission.get("verified") is True and mission.get("succeeded") is True
+    return _computer_use.floor_first(observed, language == "en", succeeded)
 
 
 # D59 §7 (owner, 2026-10-02; supersedes the owner's review of M75 that left D-w02-t2 with no final): a turn not
@@ -16305,6 +16438,25 @@ _NO_TIMER_SAID = re.compile(
 )
 
 
+def own_voice_defect(text: str, said: str = "", *, act_report: bool = False, preterite_floor: bool = False) -> str:
+    """A report of BAXY's own act that is not said in BAXY's voice (voice audit 2026-10-07): a misspelled first person
+    preterite («Abrazé», «Andé»), the first person plural for what BAXY alone did («Ya estamos en…») or the
+    peninsular perfect for a just-done act («Ya he entrado en…»). ``said`` holds the person's and the screen's words,
+    which are theirs. The plural is judged only in the report of a verified act (``act_report``), where nobody but
+    BAXY acted; elsewhere «estamos en la misma zona horaria» is the person and BAXY together. The perfect is vetoed
+    only where a preterite floor stands behind the retries
+    (``preterite_floor``: the computer-use mission); elsewhere «He guardado la nota» is still published. Returns the
+    defect, or ""."""
+
+    if semantic_voice_register.misspelled_own_preterite(text, said):
+        return "misspelled_act"
+    if act_report and semantic_voice_register.tells_own_act_in_plural(text, said):
+        return "plural_own_act"
+    if preterite_floor and semantic_voice_register.tells_own_act_in_peninsular_perfect(text, said):
+        return "peninsular_perfect"
+    return ""
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -16384,6 +16536,14 @@ def compose_visible_defect(
         if intent == "status" and _verified_effect(reported) and tells_own_act_as_the_persons(stripped):
             # Live 2026-10-07 (y5, x12): «Has abierto…», «Has iniciado…» — BAXY's verified act told as the person's.
             return "action_attributed_to_user"
+        heard = f"{user_text} {said or ''} {json.dumps(facts, ensure_ascii=False, default=str)}"
+        if voice_defect := own_voice_defect(
+            stripped,
+            heard,
+            act_report=intent == "status" and _verified_effect(reported),
+            preterite_floor=reported.get("operation") == "mission.computer.use",
+        ):
+            return voice_defect
     if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
         return "internal_code"
     if "el mensaje es" in stripped.casefold():
@@ -17114,6 +17274,9 @@ def compose_visible_defect(
         )
         if mission_defect is not None:
             return mission_defect
+    if final_defect := _computer_use_final_defect(stripped, situation):
+        # cu-r17: an app already running told as opened, a question of the mission left unanswered.
+        return final_defect
     if (
         kind == "operation"
         and situation.get("operation") == "client.channel.locate"
@@ -18543,6 +18706,17 @@ def compose_visible_defect(
     calendar = _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
     if calendar:
         return calendar
+    if kind == "operation" and situation.get("operation") == "mission.computer.use":
+        # cu-r16: every word of a mission final comes from the facts, the person's words or BAXY's own vocabulary.
+        # Judged after the named vetoes, so a draft with one of them is told that one first.
+        from . import computer_use as _computer_use
+
+        if _computer_use.ungrounded_word(
+            _accent_folded_with_punctuation(stripped),
+            _computer_use.project_seen(_merged_observed(situation), "es"),
+            " ".join(part for part in (user_text, said) if part),
+        ) is not None:
+            return "ungrounded_word"
     # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY never calls the person by its own name. Judged last,
     # so a draft with another defect is told that one first.
     return "person_called_baxy" if visible_reply_calls_the_person_baxy(stripped) else ""
@@ -25805,13 +25979,19 @@ class LlmRuntime:
             # MUSIC1755: a bare answer («Queen») keeps the conversation language.
             response_language = _conversation_response_language(user_text, facts)
         trace_id = str(facts.get("traceId") or "")[:128]
-        previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
+        # Live 2026-10-07 (v2 voice audit): a computer-use final tells this turn's mission alone. No earlier turn reaches
+        # its prompt (BAXY's previous answer, the topic of earlier requests), so it can only say what this mission saw.
+        computer_use_final = _computer_use_mission(situation) is not None
+        previous_answer = "" if computer_use_final else _referenced_previous_answer(user_text, facts)
         consulted_refused: list[str] = []
         if response_language in {"es", "en"} and _addressed_to_the_person(intent, situation):
             # M99 (DEV-D v3x D-w15-t3): a question back to the person is in their language, not the one they asked a
             # translation into; M134: so is the failure told.
             response_language = addressed_language(said or user_text, response_language)
+        if response_language in {"es", "en"} and (floor_first := _computer_use_floor_first(situation, response_language)):
+            # Voice audit 2026-10-07 (cu-r16): a mission without a question is told from its facts, not drafted.
+            return floor_first
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
             refused=consulted_refused, said=said,
@@ -26036,7 +26216,9 @@ class LlmRuntime:
             )
             message_prompt += scope
             cpu_prompt += scope
-        compose_sampling = self._compose_sampling(situation)
+        # A computer-use final is greedy in every attempt: the sampled retries (temperature 0.7) wrote misspelled
+        # words the person never said («Abrazé a la sección…» for «Llegué»); a repeated draft falls to the floor.
+        compose_sampling = {"temperature": 0.0} if computer_use_final else self._compose_sampling(situation)
         # Literal contract fields are rendered once below in a compact form and
         # validated again after generation. Repeating them inside the JSON made
         # every CPU composition re-evaluate the same facts up to three times;
@@ -26130,7 +26312,7 @@ class LlmRuntime:
             required_words = _localized_confirmation_words(
                 required_words, response_language
             )
-        if intent == "conversation" or kind == "conversation":
+        if (intent == "conversation" or kind == "conversation") and not computer_use_final:
             # Un seguimiento elíptico no nombra su tema. Cuando la mente falla
             # y su respuesta cae aquí, el compositor sólo veía «¿por qué
             # importa?» y contestaba en abstracto (`seguimiento-1..7`). El tema
@@ -26506,6 +26688,8 @@ class LlmRuntime:
             and not _looks_like_continue_constraint(user_text)
         ):
             instruct("\nEnglish only.")
+        if computer_use_final:
+            instruct("\n" + _computer_use_voice_instruction(situation, response_language))
         if (
             asks_about_mute(user_text)
             # Use the same lifted/mission observations as the visible facts
@@ -28576,6 +28760,14 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Nombra la muestra que elegiste tal como la escribe seen.chosenShade.chosen, como el tono del color pedido."
                 ),
+                # cu-r16 (voice audit 2026-10-07: «Abrazé a la sección…», «Ya estamos en…», «mis playlists»).
+                "ungrounded_word": (
+                    "Use only words from seen and the person's request, in your own first person singular "
+                    "(«I got to…», «I chose…», «I typed…»)."
+                    if response_language == "en"
+                    else "Usá sólo palabras de seen y del pedido, en tu primera persona singular "
+                    "(«Llegué a…», «Elegí…», «Escribí…»)."
+                ),
                 "joined_claimed": (
                     "You did NOT join or open the channel: say you found it and ask whether the person wants you to join; never say you joined or entered."
                     if response_language == "en"
@@ -29443,6 +29635,32 @@ class LlmRuntime:
                     if response_language == "en"
                     else "La fecha se leyó del reloj de este PC: dila sin «creo» ni «quizás»."
                 ),
+                # cu-r17 (live 2026-10-07 «Abrí Configuración.» for «… y decime el volumen»).
+                "unanswered_question": (
+                    "The person asked a question about the window: answer it with the value the window shows "
+                    "(seen.screen, seen.evidence), or say you could not see it."
+                    if response_language == "en"
+                    else "La persona hizo una pregunta sobre la ventana: respóndela con el valor que muestra la "
+                    "ventana (seen.screen, seen.evidence), o di que no lo pude ver."
+                ),
+                # Voice audit 2026-10-07: BAXY's own act, in its own voice.
+                "misspelled_act": (
+                    "A word was misspelled: say what you did with plain, correctly spelled words."
+                    if response_language == "en"
+                    else "Una palabra quedó mal escrita: di lo que hiciste en pretérito, bien escrito («Llegué», "
+                    "«Busqué», «Abrí»)."
+                ),
+                "plural_own_act": (
+                    "You alone did it: say it in the first person singular («I»), never «we»."
+                    if response_language == "en"
+                    else "Lo hiciste tú solo: dilo en primera persona singular («Llegué», «Estoy»), nunca «estamos»."
+                ),
+                "peninsular_perfect": (
+                    "Say what you just did in the simple past."
+                    if response_language == "en"
+                    else "Di lo que acabas de hacer en pretérito simple («Entré», «Abrí», «Encontré»), "
+                    "no con «he»."
+                ),
             }.get(defect, "")
 
         retry_hint = hint_for(defect)
@@ -29475,9 +29693,9 @@ class LlmRuntime:
             {"role": "user", "content": retry_user},
         ]
         retry_payload.update(compose_sampling)
-        retry_payload.update(_compose_retry_sampling(compose_sampling, 1))
+        retry_payload.update({} if computer_use_final else _compose_retry_sampling(compose_sampling, 1))
         if repair_machine_actor:
-            retry_payload = _machine_actor_repair_payload(payload, text, gguf)
+            retry_payload = _machine_actor_repair_payload(payload, text, gguf, greedy=computer_use_final)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
         # tanda-02: a model that does not answer in time (a timeout or a dropped
         # local connection, both OSError) reaches the same last resort as three
@@ -29513,7 +29731,7 @@ class LlmRuntime:
         )
         third_payload = dict(payload)
         third_payload.update(compose_sampling)
-        third_payload.update(_compose_retry_sampling(compose_sampling, 2))
+        third_payload.update({} if computer_use_final else _compose_retry_sampling(compose_sampling, 2))
         # H0516: el tercer intento pedía la pista del PRIMER defecto (el lugar de
         # la captura) cuando el segundo era otro (faltaba el cierre), y el modelo
         # repetía. Cada intento recibe la pista de su propio defecto.
@@ -29537,7 +29755,7 @@ class LlmRuntime:
             {"role": "user", "content": third_user},
         ]
         if repair_machine_actor:
-            third_payload = _machine_actor_repair_payload(payload, retry_text, gguf)
+            third_payload = _machine_actor_repair_payload(payload, retry_text, gguf, greedy=computer_use_final)
         try:
             third = post(third_payload)
         except OSError:

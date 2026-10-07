@@ -352,3 +352,28 @@ ventana actual») en vez de «la pantalla se quedó quieta».
 
 Pendiente de voz (modelo 4B, en vivo 12:15): a2 añadió «donde busco la opción de Wi-Fi», tomado de un turno anterior
 del mismo perfil; a12 dijo «Abrazé» por «Llegué». La misión y la verificación fueron correctas en ambos.
+
+## Voz de los finales (rondas 16–19, 2026-10-07, 12:50–14:40)
+
+Auditoría de los 350 finales compuestos hoy (corpus en el scratchpad de la sesión): de los 239 finales de misión
+publicados, 67 % estaban bien. Defectos más frecuentes: frases raras («Ya te llevé…», «Spotify Premium»), datos
+inventados o leídos de más («16270 horas», «donde busco la opción de Wi-Fi», que venía de texto que otra prueba dejó en
+el buscador), frases largas, perfecto peninsular («Ya he entrado»), estado dicho como cambio («ahora está activado»),
+persona equivocada («mis playlists»), palabras mal escritas («Abrazé», en un reintento a temperatura 0,7), relaciones
+falsas («Descargas dentro de Documentos») y «estamos».
+
+Arreglos, todos generales y con prueba:
+- Frase determinista primero para las misiones sin pregunta, construida desde los hechos («Listo, estoy en «Juegos».»,
+  «Listo, pasé por «Sistema» y ya estoy en «Almacenamiento».», «Listo, elegí «Lápiz» y «Rojo».», «Listo: 37 × 12 =
+  444.», «Listo, busqué «Spotify» en «Microsoft Store».»). La mente y su gemela en la App comparten los datos.
+- Respuesta determinista cuando un único hecho contesta la pregunta («Listo: el volumen está en 60.», «Listo: el modo
+  está en «Oscuro».», «Listo: la zona horaria es «(UTC-04:00) Santiago».»).
+- Para lo que todavía escribe el modelo: sólo este turno y sus hechos, siempre a temperatura 0, voz en primera persona
+  con tuteo chileno, y vetos de palabra no fundamentada (vocabulario en datos), pretérito mal escrito, plural, perfecto
+  peninsular, «abrí» con la app ya abierta, pregunta sin respuesta, «Llegué a <valor>», contención entre lugares y
+  estado como cambio.
+
+En vivo tras las rondas: lote ciego c 12/12 con 9 finales deterministas; banco amplio de 55 casos con 51 correctos
+(s06 y n5 son límites honestos; s12 y c17 son Steam ya en la biblioteca, sin árbol para probar la llegada, y fallan
+honestamente). Suites completas: pytest 19 219 (un fallo de censo, corregido), Integración 2602, Providers 1039.
+Pendiente menor: un seguimiento de modo todavía dice «elegí la Científica Calculadora» (el nombre crudo del control).
