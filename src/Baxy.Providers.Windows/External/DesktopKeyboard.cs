@@ -17,8 +17,18 @@ internal interface IDesktopKeyboard
     /// <summary>Presses the keys in order and releases them in reverse; the events Windows accepted.</summary>
     uint PressChord(IReadOnlyList<ushort> virtualKeys);
 
-    /// <summary>Types each UTF-16 unit as a Unicode key down and up; the events Windows accepted.</summary>
-    uint TypeText(string text);
+    /// <summary>
+    /// Types each UTF-16 unit as a Unicode key down and up while <paramref name="keepGoing"/> holds before each one
+    /// (the request is not cancelled and the window that takes the keys is still in front); the events Windows
+    /// accepted, fewer than two per unit when it stopped.
+    /// </summary>
+    uint TypeText(string text, Func<bool> keepGoing);
+
+    /// <summary>Whether this window (or one of its own process) holds the foreground.</summary>
+    bool Holds(nint window);
+
+    /// <summary>Brings this window to the front; whether it holds the foreground afterwards.</summary>
+    ValueTask<bool> FrontAsync(nint window, CancellationToken cancellationToken);
 
     /// <summary>The size of one native INPUT record (40 on x64), checked before anything is sent.</summary>
     int InputSize { get; }
@@ -64,20 +74,52 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
         return Send(inputs);
     }
 
-    public uint TypeText(string text)
+    public uint TypeText(string text, Func<bool> keepGoing)
     {
         // One character at a time, at a fast typist's pace. Measured on Windows 11 Notepad (2026-10-07, «Querido Ron:
         // mañana a las 5, llevá pan…»): its editor reads each key when it gets to it, so keys sent faster than it takes
         // them come out as the last one repeated («lista: pan» → «lista:nnnn» at 3 ms, «lista:ppan» at 20 ms), and real
         // virtual keys lose their Shift the same way; 25 ms and slower typed every run whole.
+        // Safety review 2026-10-07: 4096 characters at this pace take about 143 s, well past the App's step timeout,
+        // and a window that takes the front meanwhile would get the rest. Before each character the request must
+        // still stand and the window must still be in front; otherwise typing stops there.
         uint accepted = 0;
         for (int index = 0; index < text.Length; index++)
         {
+            if (!keepGoing())
+                break;
             accepted += Send([Key(0, text[index], Unicode), Key(0, text[index], Unicode | KeyUp)]);
             Thread.Sleep(KeyPace);
         }
 
         return accepted;
+    }
+
+    public bool Holds(nint window)
+    {
+        if (window == 0)
+            return false;
+        if (VisibleControlSurface.ForegroundIs(window))
+            return true;
+        // A window of the same process in front (its own pop-up or dialog) still takes the keys for it.
+        nint foreground = GetForegroundWindow();
+        if (foreground == 0)
+            return false;
+        _ = GetWindowThreadProcessId(foreground, out uint foregroundProcess);
+        _ = GetWindowThreadProcessId(window, out uint windowProcess);
+        return windowProcess != 0 && foregroundProcess == windowProcess;
+    }
+
+    public async ValueTask<bool> FrontAsync(nint window, CancellationToken cancellationToken)
+    {
+        if (Holds(window))
+            return true;
+        if (!VisibleControlSurface.IsAlive(window))
+            return false;
+        _ = VisibleControlSurface.BringToFront(window);
+        for (int attempt = 0; attempt < 4 && !Holds(window); attempt++)
+            await Task.Delay(50, cancellationToken).ConfigureAwait(false);
+        return Holds(window);
     }
 
     public int LastError() => Marshal.GetLastPInvokeError();

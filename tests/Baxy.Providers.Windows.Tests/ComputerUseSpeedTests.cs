@@ -123,6 +123,109 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // Safety review 2026-10-07: a mission's key goes to its window or nowhere.
+    [Test]
+    public async Task AMissionKeyGoesOnlyToItsWindowBroughtToTheFront()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.key.press", Json("""{"key":"enter","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(keyboard.Fronted, Is.EqualTo(new nint[] { 4660 }));
+            Assert.That(keyboard.Chords, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task AMissionWindowThatCannotBeFrontedGetsNothing()
+    {
+        var keyboard = new FakeDesktopKeyboard { Frontable = false };
+
+        ExternalCapabilityReceipt key = await Keys(keyboard).InvokeAsync(
+            "input.key.press", Json("""{"key":"enter","window":4660}"""), CancellationToken.None);
+        ExternalCapabilityReceipt text = await Keys(keyboard).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(key.ErrorCode, Is.EqualTo("input_window_not_in_front"));
+            Assert.That(key.EffectMayHaveOccurred, Is.False);
+            Assert.That(text.ErrorCode, Is.EqualTo("input_window_not_in_front"));
+            Assert.That(keyboard.Chords, Is.Empty);
+            Assert.That(keyboard.Texts, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task TypingStopsWhenTheMissionWindowLosesTheFront()
+    {
+        var keyboard = new FakeDesktopKeyboard { LosesFrontAfter = 3 };
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola mundo","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_window_changed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(keyboard.Texts.Single(), Is.EqualTo("hol"));
+        });
+    }
+
+    [Test]
+    public async Task TypingStopsWhenTheRequestIsCancelled()
+    {
+        using var cancellation = new CancellationTokenSource();
+        var keyboard = new FakeDesktopKeyboard { EachCharacter = typed => { if (typed == 2) cancellation.Cancel(); } };
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), cancellation.Token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(keyboard.Texts.Single(), Is.EqualTo("ho"));
+        });
+    }
+
+    [Test]
+    public async Task AWholeTextIsNotVerifiedWhenAnotherProcessTookTheFrontMeanwhile()
+    {
+        var keyboard = new FakeDesktopKeyboard { ProcessAfterTyping = 777 };
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_window_changed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    [TestCase("hola\\nchau")]
+    [TestCase("hola\\tchau")]
+    public async Task AMissionTextWithALineBreakOrATabIsRefused(string text)
+    {
+        var keyboard = new FakeDesktopKeyboard();
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.text.type", Json("{\"text\":\"" + text + "\",\"window\":4660}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("desktop_interaction_argument_invalid"));
+            Assert.That(keyboard.Texts, Is.Empty);
+        });
+    }
+
     [Test]
     public void TheNativeInputRecordHasItsNativeSize() =>
         Assert.That(new WindowsDesktopKeyboard().InputSize, Is.EqualTo(IntPtr.Size == 8 ? 40 : 28));
@@ -368,18 +471,59 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
 
     public int InputSize => IntPtr.Size == 8 ? 40 : 28;
 
-    public DesktopForeground Foreground() => Front;
-
     public uint PressChord(IReadOnlyList<ushort> virtualKeys)
     {
         Chords.Add(virtualKeys.ToArray());
         return Accept(virtualKeys.Count * 2);
     }
 
-    public uint TypeText(string text)
+    // The windows that hold the front, by handle; a window brought to the front holds it when Frontable says so.
+    internal HashSet<nint> Holding { get; } = [];
+
+    internal bool Frontable { get; init; } = true;
+
+    internal List<nint> Fronted { get; } = [];
+
+    // Characters typed before the window loses the front (null: it never does).
+    internal int? LosesFrontAfter { get; init; }
+
+    // The foreground process once the text is typed (null: the same as before).
+    internal int? ProcessAfterTyping { get; init; }
+
+    // Called with the characters typed so far, before each one.
+    internal Action<int>? EachCharacter { get; init; }
+
+    private bool _typed;
+
+    public DesktopForeground Foreground() =>
+        _typed && ProcessAfterTyping is int after ? Front with { ProcessId = after } : Front;
+
+    public uint TypeText(string text, Func<bool> keepGoing)
     {
-        Texts.Add(text);
-        return Accept(text.Length * 2);
+        int typed = 0;
+        foreach (char _ in text)
+        {
+            EachCharacter?.Invoke(typed);
+            if (LosesFrontAfter is int limit && typed >= limit)
+                Holding.Clear();
+            if (!keepGoing())
+                break;
+            typed++;
+        }
+
+        Texts.Add(text[..typed]);
+        _typed = true;
+        return Accept(typed * 2);
+    }
+
+    public bool Holds(nint window) => Holding.Contains(window);
+
+    public ValueTask<bool> FrontAsync(nint window, CancellationToken cancellationToken)
+    {
+        Fronted.Add(window);
+        if (Frontable)
+            Holding.Add(window);
+        return ValueTask.FromResult(Holds(window));
     }
 
     public int LastError() => 0;

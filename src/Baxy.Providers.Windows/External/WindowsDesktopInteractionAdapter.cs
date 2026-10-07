@@ -204,6 +204,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// A key or a text sent to the window in front by SendInput from this process: verified when Windows accepted
     /// every event, with the foreground read before and after for the receipt. Nothing is sent while nobody holds
     /// the foreground or when the native INPUT record does not have its native size.
+    /// Safety review 2026-10-07: a computer-use step names its mission's window (<c>window</c>, the hwnd of its last
+    /// view). That window is brought to the front and nothing is sent unless it holds it; a text stops the moment
+    /// the window loses the front or the request is cancelled, and a text whose foreground process changed while it
+    /// was typed is not verified. A mission's text carries no line break or tab (each would be a key of its own).
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> SendKeysAsync(
         string operation,
@@ -214,20 +218,44 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         string? key = null;
         string text = string.Empty;
         ushort[] chord = [];
+        nint window = 0;
         try
         {
             if (typing)
                 text = ExternalJson.RequiredString(arguments, "text");
             else
                 key = ExternalJson.RequiredString(arguments, "key");
+            if (arguments.TryGetProperty("window", out JsonElement named) && named.ValueKind != JsonValueKind.Null)
+            {
+                if (named.ValueKind != JsonValueKind.Number || !named.TryGetInt64(out long handle) || handle <= 0)
+                    throw new InvalidDataException("window");
+                window = (nint)handle;
+            }
         }
         catch (InvalidDataException)
         {
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         }
 
-        if ((typing && text.Length > MaximumTypedText) || (!typing && !VirtualKeys.TryGetValue(key!, out chord!)))
+        if ((typing && text.Length > MaximumTypedText) || (!typing && !VirtualKeys.TryGetValue(key!, out chord!))
+            || (typing && window != 0 && text.Any(char.IsControl)))
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
+        if (window != 0)
+        {
+            bool fronted;
+            try
+            {
+                fronted = await _keyboard.FrontAsync(window, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_adapter_failed");
+            }
+
+            if (!fronted)
+                return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
+        }
+
         DesktopForeground before = _keyboard.Foreground();
         if (before.Window == 0 || _keyboard.InputSize != (IntPtr.Size == 8 ? 40 : 28))
             return ExternalJson.FailureBeforeEffect(operation, "key_press_sendinput_failed");
@@ -235,7 +263,16 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);
         uint expected = typing ? (uint)text.Length * 2 : (uint)chord.Length * 2;
-        uint accepted = typing ? _keyboard.TypeText(text) : _keyboard.PressChord(chord);
+        bool interrupted = false;
+        uint accepted = typing
+            ? _keyboard.TypeText(text, () =>
+            {
+                bool stays = !cancellationToken.IsCancellationRequested
+                    && (window != 0 ? _keyboard.Holds(window) : _keyboard.Foreground().ProcessId == before.ProcessId);
+                interrupted |= !stays;
+                return stays;
+            })
+            : _keyboard.PressChord(chord);
         bool verified = accepted == expected;
         int lastError = verified ? 0 : _keyboard.LastError();
         bool effect = accepted > 0;
@@ -249,6 +286,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         }
 
         DesktopForeground after = _keyboard.Foreground();
+        if (interrupted)
+            return effect
+                ? effectBoundary.Failure(operation, "input_window_changed", effect)
+                : ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
+        // The text went whole, but another process took the front while it was typed: what it got is not proven.
+        if (typing && after.ProcessId != before.ProcessId)
+            return effectBoundary.Failure(operation, "input_window_changed", effect);
         if (!verified)
             return effectBoundary.Failure(operation, "input_effect_not_verified", effect);
         JsonElement result = ExternalJson.Create(writer =>
