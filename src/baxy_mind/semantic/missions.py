@@ -215,7 +215,8 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"alarma", "alarmas", "alarm", "alarms"}), frozenset({"reloj mundial", "world clock"}),
     frozenset({"enfoque", "sesiones de enfoque", "focus", "focus sessions"}),
     frozenset({"colores", "colors", "colours"}), frozenset({"temas", "themes"}), frozenset({"fondo", "background"}),
-    frozenset({"pantalla de bloqueo", "lock screen"}), frozenset({"inicio", "start"}),
+    # 2026-10-07 «go to Start» passed on Settings' Home at the first look: «inicio» is that Home, never Start.
+    frozenset({"pantalla de bloqueo", "lock screen"}),
     frozenset({"barra de tareas", "taskbar"}), frozenset({"fuentes", "fonts"}),
     frozenset({"hora e idioma", "hora y idioma", "time & language", "time and language"}),
     frozenset({"accesibilidad", "accessibility"}), frozenset({"cuentas", "accounts"}),
@@ -238,9 +239,10 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"galeria", "gallery"}), frozenset({"albumes", "albums"}), frozenset({"carpetas", "folders"}),
     frozenset({"recientes", "recent"}), frozenset({"compartido", "compartidos", "shared"}),
     frozenset({"este equipo", "this pc"}), frozenset({"papelera de reciclaje", "recycle bin"}),
-    frozenset({"vista", "view"}), frozenset({"archivo", "file"}), frozenset({"editar", "edicion", "edit"}),
+    # Menu names only; «archivo», «vista», «nuevo» and «abrir» are acts as well, which a window's title or a control
+    # holds at the first look («Nuevo» beside any list, «Abrir» in a title), so they carry no other name.
+    frozenset({"editar", "edicion", "edit"}),
     frozenset({"formato", "format"}), frozenset({"diseno", "design"}), frozenset({"revisar", "review"}),
-    frozenset({"nuevo", "nueva", "new"}), frozenset({"abrir", "open"}),
 )
 
 
@@ -267,21 +269,38 @@ def _with_alternatives(target: str, atoms: Iterable[str]) -> str:
     stop where the check would no longer fit the operation (the target's own atoms always stay)."""
 
     terms: list[str] = []
-    names = dict.fromkeys(_check_name(name) for name in (target, *label_alternatives(target)))
-    for position, name in enumerate(name for name in names if name):
+    others = label_alternatives(target)
+    # The target is a name of the tables when it has other names there; only such a name is known to hold its first
+    # piece on screen in either spelling.
+    names = dict.fromkeys(
+        (_check_name(target, known=bool(others)), *(_check_name(name, known=True) for name in others))
+    )
+    for name in (name for name in names if name):
         named = [atom.replace("{}", name) for atom in atoms]
-        if position and len("|".join((*terms, *named)).encode("utf-8")) > _CHECK_BYTES:
+        if terms and len("|".join((*terms, *named)).encode("utf-8")) > _CHECK_BYTES:
             break
         terms.extend(named)
     return "|".join(terms)
 
 
-def _check_name(name: str) -> str:
-    """A name as a check can hold it: «&» and «|» join the check's atoms, so «Time & language» is checked by the part
-    before them («time»), which the place's name holds in either spelling."""
+# A piece of a name said shorter than this is no proof of the whole name («q» of «Q&A», «at» of «AT&T»: inside any
+# word on screen).
+_SHORTEST_CHECK_PIECE = 4
+
+
+def _check_name(name: str, *, known: bool = True) -> str:
+    """A name as a check can hold it: «&» and «|» join the check's atoms. A name of the tables («Time & language»)
+    is checked by the part before them («time»), which the place's name holds in either spelling. A name only the
+    person said («Q&A», «Rock & Roll») by its longest piece, and by nothing (empty) when that piece is too short to
+    tell the place from any other («at» of «AT&T»)."""
 
     pieces = [piece.strip() for piece in re.split(r"[&|]", name)]
-    return pieces[0] or max(pieces, key=len)
+    if len(pieces) == 1:
+        return pieces[0]
+    if known:
+        return pieces[0] or max(pieces, key=len)
+    longest = max(pieces, key=len)
+    return longest if len(longest) >= _SHORTEST_CHECK_PIECE else ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -567,9 +586,12 @@ _MODE_CLAUSE = re.compile(
     r"^(?:(?P<put>pon|pone|poneme|ponele|ponela|ponelo|ponla|ponlo|set|put)(?:\s+(?:it|la|lo))?\s+(?:(?:en|in|to|into|a|al)\s+)?"
     r"|(?:cambia|cambiate|cambiala|cambialo|cambiar|cambie|pasa|pasate|pasala|pasalo|pasar|pase|switch|change)"
     r"(?:\s+(?:it|la|lo|over))?\s+(?:a|al|to|into|en|in)\s+)"
-    rf"(?:(?:el|la|the|un|una|a)\s+)?(?:(?P<before>{_MODE_WORD})\s+(?:de\s+)?(?:(?:el|la)\s+)?)?"
+    rf"(?:(?:el|la|the|un|una|a)\s+)?(?:(?P<before>{_MODE_WORD})\s+(?P<of>de\s+)?(?:(?:el|la|los|las)\s+)?)?"
     rf"(?P<name>[a-z0-9][a-z0-9 .+-]{{0,40}}?)(?:\s+(?P<after>{_MODE_WORD}))?[\s.!?]*$"
 )
+_VIEW_WORDS = frozenset({"vista", "view"})
+# «vista de detalles», «vista previa»: a goal's target that names a view by the view word before it.
+_VIEW_AROUND = re.compile(r"^(?:vista|view)\s+(?P<of>de\s+)?(?:(?:el|la|los|las)\s+)?(?P<name>\S.*)$")
 # «modo científico», «scientific mode», «vista previa»: a goal's target that names a mode by the mode word.
 _MODE_AROUND = re.compile(rf"^{_MODE_WORD}\s+(?:de\s+)?(?:(?:el|la)\s+)?(?P<before>\S.*)$|^(?P<after>\S.*?)\s+(?:mode|view)$")
 # The endings of a Spanish adjective said in either gender: the person says «el modo científico» and the window
@@ -605,10 +627,12 @@ def mode_named(target: str) -> str | None:
     The mind asks it before looking a mode up by its other names (``mode_names``, the other gender among them)."""
 
     key = fold(target).strip(" \"'«».!?")
+    view = _VIEW_AROUND.match(key)
+    if view is not None:
+        # «vista de detalles» → «detalles», what ``_read_mode`` goes to; «vista previa», a compound noun said without
+        # «de», keeps the view word as part of its name.
+        return view.group("name").strip() if view.group("of") else key
     found = _MODE_AROUND.match(key)
-    if found is not None and found.group("before") and key.startswith(("vista ", "view ")):
-        # «vista previa»: the view word is part of its name (``_read_mode``).
-        return key
     if found is not None:
         return (found.group("before") or found.group("after") or "").strip() or None
     return key if key and _is_mode_name(key) else None
@@ -623,7 +647,20 @@ def mode_names(name: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(found))
 
 
-def _mode_check(name: str) -> str:
+def _fit(*checks: str) -> str:
+    """The checks OR-ed, their terms kept in order while they fit the operation (``_CHECK_BYTES``)."""
+
+    terms: list[str] = []
+    for term in (term for check in checks for term in check.split("|") if term):
+        if term in terms:
+            continue
+        if terms and len("|".join((*terms, term)).encode("utf-8")) > _CHECK_BYTES:
+            break
+        terms.append(term)
+    return "|".join(terms)
+
+
+def _mode_check(*names: str) -> str:
     """Chosen is the mode's item selected, the window titled with it, its page, or its header: a text at the top of
     the window that names it and appeared after the verified click on it (``header:X``, measured on the Calculator:
     after «Científica Calculadora» in its navigation the header reads «Modo de calculadora Científica»; title and
@@ -631,7 +668,10 @@ def _mode_check(name: str) -> str:
     that holds the word is clicked as well."""
 
     atoms = ("control:{}:selected", "title:{}", "page:{}", "header:{}")
-    return "|".join(atom.replace("{}", alias) for alias in mode_names(name) for atom in atoms)
+    aliases = dict.fromkeys(
+        checked for name in names for alias in mode_names(name) if (checked := _check_name(alias, known=False))
+    )
+    return _fit(*(atom.replace("{}", alias) for alias in aliases for atom in atoms))
 
 
 def _read_mode(folded: str) -> tuple[str, str | None] | None:
@@ -646,17 +686,35 @@ def _read_mode(folded: str) -> tuple[str, str | None] | None:
     if not (before or after) and (mode.group("put") or not _is_mode_name(name)):
         # No mode said: «cambiá a descargas», «pasá al canal general» are places (the navigate reader's).
         return None
-    # «la vista previa», «the view menu»: a view is named with its word, which stays part of the name.
-    shown = f"{before} {name}" if before in {"vista", "view"} else name
-    if mode.group("put"):
-        # «poné el modo avión»: a switch named after the mode is turned on where there is one; elsewhere the mode is
-        # chosen like any other (computer_use reads «activar modo X» so). Only a mode a window offers by name may
-        # also show chosen: the page of a switch («Modo avión» in the settings) is selected and titled with it
-        # while the switch stays off.
-        said = f"{before} {name}" if before else f"{name} {after}"
-        switched = _with_alternatives(said, ("control:{}:on",))
-        return f"activar {said}", (switched + "|" + _mode_check(shown)) if _is_mode_name(name) else switched
-    return f"ir a {shown}", _mode_check(shown)
+    put = mode.group("put") is not None
+    if not (before or after):
+        # «cambiá a científica»: a mode a window offers, said by its own name.
+        return f"ir a {name}", _mode_check(name)
+    if before in _VIEW_WORDS or after in _VIEW_WORDS:
+        # «la vista de detalles», «the details view»: the view chosen is X (the item «Detalles» of the window's view
+        # menu). «la vista previa», a compound noun said without «de», keeps its word; it is also checked by X alone,
+        # so that «la vista detalles» is never only a name no window carries.
+        compound = before in _VIEW_WORDS and not mode.group("of")
+        shown = f"{before} {name}" if compound else name
+        chosen = _mode_check(shown, name) if compound else _mode_check(name)
+        if not put:
+            return f"ir a {shown}", chosen
+        # «poné la vista previa»: the pane of that name is a switch turned on where there is one (computer_use reads
+        # «activar vista de X» as the view X where there is none, ``mode_named``).
+        said = f"{before} de {name}" if before and mode.group("of") else (f"{before} {name}" if before else f"{name} {after}")
+        return f"activar {said}", _fit(_with_alternatives(said, ("control:{}:on",)), chosen)
+    said = f"{before} {name}" if before else f"{name} {after}"
+    switched = _with_alternatives(said, ("control:{}:on",))
+    if _is_mode_name(name):
+        if put:
+            # «poné el modo científico»: a switch of that name where there is one, else the mode the window offers.
+            return f"activar {said}", _fit(switched, _mode_check(name))
+        return f"ir a {name}", _mode_check(name)
+    # «poné el modo avión», «cambiá al modo avión», «switch to airplane mode»: a mode no window is known to offer by
+    # name is a switch turned on (computer_use reads «activar modo X» so, and chooses the mode X where no switch is
+    # called so), or the item X chosen (the theme «Oscuro»). Never a page, a title or a header: the settings page of
+    # the switch («Modo avión») is selected, titled and headed with it while the switch stays off.
+    return f"activar {said}", _fit(switched, _with_alternatives(name, ("control:{}:selected",)))
 
 
 def _read_act(folded: str) -> tuple[str, str | None] | None:
@@ -793,7 +851,8 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
     for reading in readings:
         act = _read_act(reading)
         if act is not None:
-            return act
+            # A check left with no atom («ir a Q&A»: no piece of the name proves it) is no check.
+            return act[0], act[1] or None
     doing = next((reading for reading in readings if _is_doing(reading)), None)
     if doing is None:
         if effect_intent._gerund_click_label(folded) is None:
@@ -805,7 +864,7 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
         _TOUCH_HEAD.sub("haz clic en ", doing, count=1)
     )
     if label is not None:
-        return f"hacer clic en {label}", _with_alternatives(label, ("stepDone:input.visible.click:{}",))
+        return f"hacer clic en {label}", _with_alternatives(label, ("stepDone:input.visible.click:{}",)) or None
     return doing, None
 
 

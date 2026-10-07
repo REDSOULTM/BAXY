@@ -292,8 +292,12 @@ _CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
      ("microsoft solitaire collection",)),
     (frozenset({"to do", "microsoft to do", "lista de tareas"}), ("microsoft to do", "to do")),
     (frozenset({"barra de juegos", "game bar", "xbox game bar"}), ("xbox game bar", "game bar")),
-    (frozenset({"windows media player", "reproductor de windows media", "windows media player legacy"}),
-     ("reproductor multimedia", "media player", "reproductor de windows media", "windows media player legacy")),
+    # «windows media player» is the legacy player where it is installed; the new player («Reproductor multimedia»)
+    # only where it is not (2026-10-07: with both installed it opened the new one).
+    (frozenset({"windows media player", "reproductor de windows media", "windows media player legacy",
+                "reproductor de windows media heredado"}),
+     ("windows media player legacy", "reproductor de windows media heredado", "reproductor de windows media",
+      "reproductor multimedia", "media player")),
 )
 
 
