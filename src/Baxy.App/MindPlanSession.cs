@@ -244,8 +244,8 @@ internal sealed class MindPlanSession
                 ComputerUseMission.Result loop = await ComputerUseMission.RunAsync(
                     new ComputerUseMission.Context
                     {
-                        Core = client,
-                        Mind = mind,
+                        Execute = (prepared, timeout, token) => client.SendOperationAsync(prepared, timeout, token),
+                        Decide = mind.DecideComputerUseStepAsync,
                         Registry = registry,
                         MarkResolved = _host.TryMarkResolved,
                         SetStatus = _host.SetStatus,

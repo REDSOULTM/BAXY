@@ -258,6 +258,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public string? ProgressLabel => _progressLabel;
 
+    /// <summary>A computer-use mission is between its looks and steps (its state lives on the plan until it ends).</summary>
+    internal bool IsComputerUseMissionRunning => _mindPlans.Current?.ComputerUse is not null;
+
     internal void ApplyInProgressSignal(string text, DateTimeOffset? nowUtc = null)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -299,6 +302,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (_lastMilestoneAttemptUtc is { } attempted
             && !FirstSignal.ShouldEmitMilestone(attempted, nowUtc))
+        {
+            return false;
+        }
+
+        // A computer-use mission shows its own status (acting, step by step):
+        // a composed label would cost the GPU 0.3-0.6 s every few seconds and
+        // evict the prompt cache the next step decision reuses.
+        if (IsComputerUseMissionRunning)
         {
             return false;
         }

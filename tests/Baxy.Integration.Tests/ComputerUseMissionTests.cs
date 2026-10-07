@@ -100,29 +100,81 @@ public sealed class ComputerUseMissionTests
             view["baselineText"] = ComputerUseSuccessCheck.TextLines(View("{\"text\": {\"TL\": " + Store + "}}"));
         }
 
+        // Only a click that went there counts: one naming the place, or the entry picked from the menu a click on it
+        // opened (even when that click itself did not verify); a click on anything else does not.
+        JsonArray elsewhere = [new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Tienda" }];
+        JsonArray throughItsMenu =
+        [
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "BIBLIOTECA" },
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Inicio" },
+        ];
+        JsonArray menuThenElsewhere =
+        [
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "BIBLIOTECA" },
+            new JsonObject { ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "escape" },
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Inicio" },
+        ];
         Assert.Multiple(() =>
         {
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", menu, clicked, out _), Is.False);
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, clicked, out _), Is.True);
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, elsewhere, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, throughItsMenu, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, menuThenElsewhere, out _), Is.False);
+        });
+    }
+
+    // A check held by verified receipts alone (a step done, a file) needs no new look; a term that reads the screen
+    // does, even when another of its atoms is a receipt.
+    [TestCase("stepDone:input.visible.click:biblioteca", true)]
+    [TestCase("text:84|stepDone:input.visible.click:biblioteca", true)]
+    [TestCase("stepDone:input.visible.click:biblioteca&text:84", false)]
+    [TestCase("stepDone:input.key.press:enter", false)]
+    [TestCase("control:Biblioteca", false)]
+    [TestCase("", false)]
+    public void ReceiptsAloneDecideOnlyTermsThatReadNoScreen(string check, bool expected)
+    {
+        JsonArray steps = [new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Biblioteca" }];
+        Assert.That(ComputerUseSuccessCheck.EvaluateReceipts(check, steps, out _), Is.EqualTo(expected));
+    }
+
+    // «Did the screen change» compares the controls; the written text counts only on a window without a useful
+    // accessible tree, where the provider always reads it. A look with OCR and one without compare equal.
+    [Test]
+    public void TheViewSignatureIgnoresTheTextWhenTheControlsDescribeTheScreen()
+    {
+        JsonObject withText = View(SteamView);
+        JsonObject withoutText = View(SteamView);
+        withoutText.Remove("text");
+        JsonObject canvas = View("""{"window": {"title": "Steam"}, "controls": [{"i": 0, "kind": "Document", "name": "Steam"}], "text": {"C": ["TIENDA"]}}""");
+        JsonObject canvasMoved = View("""{"window": {"title": "Steam"}, "controls": [{"i": 0, "kind": "Document", "name": "Steam"}], "text": {"C": ["BIBLIOTECA"]}}""");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseMission.ViewSignature(withText), Is.EqualTo(ComputerUseMission.ViewSignature(withoutText)));
+            Assert.That(ComputerUseMission.ViewSignature(canvas), Is.Not.EqualTo(ComputerUseMission.ViewSignature(canvasMoved)));
         });
     }
 
     [Test]
     public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
     {
-        var browser = new JsonObject { ["application"] = "navegador" };
-        var foreground = new JsonObject { ["application"] = "navegador" };
-        ComputerUseMission.AdoptWindow(browser, View("""
+        var browser = new JsonObject();
+        var foreground = new JsonObject();
+        var unnamed = new JsonObject();
+        JsonObject opera = View("""
             {"window": {"title": "Inicio - Opera", "process": "opera", "processId": 7, "requested": true}}
-            """));
-        ComputerUseMission.AdoptWindow(foreground, View("""
+            """);
+        ComputerUseMission.AdoptWindow(browser, "navegador", opera);
+        ComputerUseMission.AdoptWindow(foreground, "navegador", View("""
             {"window": {"title": "navegador - Bloc de notas", "process": "notepad", "processId": 9, "requested": false}}
             """));
+        ComputerUseMission.AdoptWindow(unnamed, null, opera);
         Assert.Multiple(() =>
         {
             Assert.That((int?)browser["processId"], Is.EqualTo(7));
             Assert.That(foreground["processId"], Is.Null, "a window that only held the front is never adopted");
+            Assert.That(unnamed["processId"], Is.Null, "a sub-goal that names no application adopts nothing");
         });
     }
 
@@ -197,6 +249,31 @@ public sealed class ComputerUseMissionTests
             Assert.That((bool?)state["steps"]![0]!["selected"], Is.True);
             Assert.That((bool?)state["joined"], Is.True);
         });
+    }
+
+    // Sending, publishing or deleting is confirmed too, but only a click that joins a channel, a call or a meeting
+    // lets the final say the person joined.
+    [TestCase("Enviar", false)]
+    [TestCase("Publicar", false)]
+    [TestCase("Join meeting", true)]
+    [TestCase("General, voice channel", true)]
+    public void OnlyAConfirmedJoinMarksTheMissionJoined(string label, bool joined)
+    {
+        var execution = new PendingMindPlanExecution(
+            "haz clic",
+            [new MindPlanStep("step_1", ComputerUseMission.OperationName, "clic", [], "literal", new JsonObject { ["goal"] = "clic" })])
+        {
+            ComputerUse = new JsonObject { ["goal"] = "clic", ["steps"] = new JsonArray() },
+        };
+        PreparedOperation click = PreparedOperation.Create("input.visible.click", new JsonObject { ["label"] = label });
+        var response = new Baxy.Contracts.OperationResponse(
+            Baxy.Contracts.ProtocolTypes.OperationResponse, click.InvocationId, click.MissionId, click.InvocationId,
+            Baxy.Contracts.OperationStatuses.Completed, "{}", true, false,
+            System.Text.Json.JsonDocument.Parse("""{"surfaceChanged":true}""").RootElement, null);
+
+        ComputerUseMission.RecordConfirmedStep(execution, click, response);
+
+        Assert.That((bool?)execution.ComputerUse!["joined"] == true, Is.EqualTo(joined));
     }
 
     [Test]

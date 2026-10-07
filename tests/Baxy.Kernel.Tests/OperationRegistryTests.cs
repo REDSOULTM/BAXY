@@ -102,6 +102,20 @@ public sealed class OperationRegistryTests
     [TestCase("input.visible.click", """{"label":"Biblioteca"}""", PolicyDecision.Allow)]
     [TestCase("input.visible.click", """{"label":"Cotele"}""", PolicyDecision.Allow)]
     [TestCase("input.visible.click", """{"label":"Recall the callback"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Publicar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Post"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Responder a todos"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Reply"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comentar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comment"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Compartir"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Share"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Unirse"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Join meeting"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comentarios (12)"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Shared with me"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Postres"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Respuestas guardadas"}""", PolicyDecision.Allow)]
     [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
     [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
@@ -123,6 +137,51 @@ public sealed class OperationRegistryTests
                     ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation, document.RootElement),
                 Is.EqualTo(PolicyDecision.Allow));
         });
+    }
+
+    // A click that cannot be taken back — buying, paying, deleting, uninstalling — asks in normal mode like one that
+    // reaches a person, but it is not one: it never marks a mission as having joined anybody.
+    [TestCase("Comprar ahora", true)]
+    [TestCase("Buy now", true)]
+    [TestCase("Pagar", true)]
+    [TestCase("Pay $4.99", true)]
+    [TestCase("Proceed to checkout", true)]
+    [TestCase("Realizar pedido", true)]
+    [TestCase("Place your order", true)]
+    [TestCase("Eliminar", true)]
+    [TestCase("Borrar historial", true)]
+    [TestCase("Delete", true)]
+    [TestCase("Desinstalar", true)]
+    [TestCase("Uninstall", true)]
+    [TestCase("Carrito de compras", false)]
+    [TestCase("Payment methods", false)]
+    [TestCase("Papelera de reciclaje", false)]
+    [TestCase("Biblioteca", false)]
+    public void Normal_mode_asks_before_a_click_that_cannot_be_undone(string label, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(JsonSerializer.Serialize(new { label }));
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.CannotBeUndone("input.visible.click", document.RootElement), Is.EqualTo(asks));
+            Assert.That(RiskPolicy.ReachesAPerson("input.visible.click", document.RootElement), Is.False);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.False);
+        });
+    }
+
+    [TestCase("Cotele (canal de voz)", true)]
+    [TestCase("Join meeting", true)]
+    [TestCase("Unirse", true)]
+    [TestCase("Enviar", false)]
+    [TestCase("Publicar", false)]
+    [TestCase("", false)]
+    public void Only_a_label_that_joins_a_call_or_meeting_joins(string label, bool joins)
+    {
+        Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
     }
 
     // Closing every tab of the person's browser loses their session: that exact

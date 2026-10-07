@@ -907,12 +907,15 @@ public static class ProductCatalog
                 [
                     Integer("amount", 1, 10),
                     String("direction", values: ["down", "up"]),
+                    // Un panel concreto de la última vista (una lista, una conversación):
+                    // se desplaza ese control y no el centro de la ventana.
+                    Integer("index", 0, 59, types: NullableInteger),
                 ],
                 ["amount", "direction"]),
             OperationRisks.LowReversible,
             "input.scroll.win32.wheel.surface.postread.v1",
             ToolExposure.Public,
-            "Desplaza la ventana en primer plano hacia arriba o hacia abajo la cantidad de pasos de rueda pedida y verifica que la superficie visible cambió."),
+            "Desplaza la ventana en primer plano, o el control de la última vista que nombra su índice, hacia arriba o hacia abajo la cantidad de pasos de rueda pedida y verifica que la superficie visible cambió."),
         Descriptor(
             "input.select.all",
             EmptySchema(),
@@ -1210,21 +1213,34 @@ public static class ProductCatalog
         // se vuelve a mirar, hasta que la comprobación de éxito se cumple o se
         // agota el presupuesto. Cada paso lleva el riesgo de su primitiva. El
         // core solo no puede correr el bucle: sin el shell y la mente delante
-        // contesta que le faltan.
+        // contesta que le faltan. Una misión encadenada trae sus sub-objetivos
+        // en orden (steps): cada uno con su aplicación y su comprobación.
         Descriptor(
             "mission.computer.use",
             Schema(
                 [
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
-                    Integer("budgetSteps", 1, 12, types: NullableInteger),
+                    Integer("budgetSteps", 1, 30, types: NullableInteger),
                     String("goal", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    new OperationArgumentProperty(
+                        "steps",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        minimumItems: 1,
+                        maximumItems: 8,
+                        itemSchema: Schema(
+                            [
+                                String("application", types: NullableString, maximumUtf8Bytes: 128),
+                                String("goal", maximumUtf8Bytes: 512, nonWhitespace: true),
+                                String("successCheck", types: NullableString, maximumUtf8Bytes: 512),
+                            ],
+                            ["goal"])),
                     String("successCheck", types: NullableString, maximumUtf8Bytes: 512),
                 ],
                 ["goal"]),
             OperationRisks.LowReversible,
             "mission.computer.use.shell.loop.v1",
             ToolExposure.Public,
-            "Cumple un objetivo dentro de cualquier aplicación mirando la ventana en primer plano, eligiendo un paso a la vez (pulsar, escribir, tecla, desplazar, abrir) y verificando cada uno hasta ver la comprobación de éxito o agotar el presupuesto.",
+            "Cumple un objetivo dentro de cualquier aplicación —o una cadena ordenada de sub-objetivos, cada uno en su aplicación— mirando la ventana en primer plano, eligiendo un paso a la vez (pulsar, escribir, tecla, desplazar, abrir) y verificando cada uno hasta ver la comprobación de éxito o agotar el presupuesto.",
             requiresObservedEffect: false),
         Descriptor(
             "network.dns.status",

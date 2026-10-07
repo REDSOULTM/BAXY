@@ -16,9 +16,10 @@ namespace Baxy.Kernel.Policy;
 /// Motor de computer use (CONTRATO_VISTA_ACCION.md §2.1, D15): un paso del bucle
 /// lleva el riesgo de su primitiva evaluado con los argumentos exactos delante.
 /// Un clic cuya etiqueta nombra un canal de voz o una llamada (alguien te oye),
-/// o un botón de enviar, y un Enter declarado sobre un compositor de mensajes,
-/// llegan a una persona: piden confirmación en modo normal, ligada a esa misma
-/// invocación. Igual una invocación cuyo argumento cierra de una vez todo lo
+/// o un botón de enviar, publicar, responder, comentar, compartir o unirse, y un
+/// Enter declarado sobre un compositor de mensajes, llegan a una persona; un clic
+/// que compra, paga, elimina o desinstala no se deshace. Ambos piden confirmación
+/// en modo normal, ligada a esa misma invocación. Igual una invocación cuyo argumento cierra de una vez todo lo
 /// que la persona tiene abierto en una superficie (todas las pestañas de su
 /// navegador): pierde su sesión, aunque la operación con otro argumento no.
 /// </summary>
@@ -64,7 +65,9 @@ public static partial class RiskPolicy
         }
 
         if (arguments is { } invocation
-            && (ReachesAPerson(operation, invocation) || LosesTheSession(operation, invocation)))
+            && (ReachesAPerson(operation, invocation)
+                || CannotBeUndone(operation, invocation)
+                || LosesTheSession(operation, invocation)))
         {
             return PolicyDecision.RequireConfirmation;
         }
@@ -86,9 +89,10 @@ public static partial class RiskPolicy
 
     /// <summary>
     /// Whether this exact invocation of a computer-use primitive reaches another
-    /// person: joining a voice channel or a call, pressing «enviar/send», or
-    /// Enter over a message composer that holds text. Bilingual, general, and
-    /// never naming an application.
+    /// person: joining a voice channel or a call, pressing «enviar/send»,
+    /// «publicar/post», «responder/reply», «comentar/comment»,
+    /// «compartir/share» or «unirse/join», or Enter over a message composer
+    /// that holds text. Bilingual, general, and never naming an application.
     /// </summary>
     public static bool ReachesAPerson(string? operation, JsonElement arguments)
     {
@@ -114,6 +118,19 @@ public static partial class RiskPolicy
                 return false;
         }
     }
+
+    /// <summary>
+    /// Whether this exact click commits what cannot be taken back: buying or
+    /// paying (checkout, place order) and deleting or uninstalling. Read from
+    /// the label the step names, bilingual, never naming an application.
+    /// </summary>
+    public static bool CannotBeUndone(string? operation, JsonElement arguments) =>
+        string.Equals(operation, "input.visible.click", StringComparison.Ordinal)
+        && arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty("label", out JsonElement label)
+        && label.ValueKind == JsonValueKind.String
+        && !string.IsNullOrWhiteSpace(label.GetString())
+        && IrreversibleAct().IsMatch(Fold(label.GetString()!));
 
     /// <summary>
     /// Whether this exact invocation closes, in one step, everything the person
@@ -143,7 +160,19 @@ public static partial class RiskPolicy
         }
 
         string folded = Fold(label);
-        return VoiceOrCall().IsMatch(folded) || SendButton().IsMatch(folded);
+        return VoiceOrCall().IsMatch(folded) || SendButton().IsMatch(folded) || PublicAct().IsMatch(folded);
+    }
+
+    /// <summary>A click whose label joins a voice channel, a call or a meeting: others hear or see the person from then on.</summary>
+    public static bool LabelJoins(string? label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            return false;
+        }
+
+        string folded = Fold(label);
+        return VoiceOrCall().IsMatch(folded) || JoinVerb().IsMatch(folded);
     }
 
     private static string Fold(string value)
@@ -175,4 +204,27 @@ public static partial class RiskPolicy
         @"^(?:enviar|send)(?:\s+(?:mensaje|message|ahora|now))?$",
         RegexOptions.CultureInvariant)]
     private static partial Regex SendButton();
+
+    // The control that puts the person's words or presence in front of others,
+    // named by its verb as the first word of the label and at most three more
+    // («Publicar», «Post», «Responder a todos», «Reply», «Comentar», «Comment»,
+    // «Compartir», «Share», «Unirse», «Join», «Join meeting»). A label that only
+    // mentions the noun («Comentarios (12)», «Shared with me») does not.
+    [GeneratedRegex(
+        @"^(?:publicar|publica|post|tweet|twittear|responder|responde|reply|comentar|comenta|comment|compartir|comparte|share|unirse|unirme|unete|join)(?:\s+\S+){0,3}$",
+        RegexOptions.CultureInvariant)]
+    private static partial Regex PublicAct();
+
+    [GeneratedRegex(@"^(?:unirse|unirme|unete|join)\b", RegexOptions.CultureInvariant)]
+    private static partial Regex JoinVerb();
+
+    // What cannot be taken back once clicked: buying and paying («Comprar ahora»,
+    // «Buy now», «Pagar», «Pay», «Checkout», «Proceed to checkout», «Realizar
+    // pedido», «Place order») and deleting or uninstalling («Eliminar», «Borrar»,
+    // «Delete», «Desinstalar», «Uninstall»). The verb opens the label; checkout
+    // and placing the order count wherever they appear.
+    [GeneratedRegex(
+        @"^(?:comprar|buy|pagar|pay|eliminar|elimina|borrar|borra|delete|desinstalar|desinstala|uninstall)(?:\s+\S+){0,3}$|\b(?:checkout|check\s+out|finalizar\s+(?:la\s+)?compra|realizar\s+(?:el\s+)?pedido|place\s+(?:your\s+)?order|confirmar\s+(?:la\s+)?compra|confirm\s+purchase)\b",
+        RegexOptions.CultureInvariant)]
+    private static partial Regex IrreversibleAct();
 }
