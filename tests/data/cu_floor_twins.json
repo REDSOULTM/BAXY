@@ -1595,7 +1595,9 @@
     }
    },
    "es": "Listo, estoy en «Scientific».",
-   "en": "Done, I'm in «Scientific».",
+   "en": "Done, I'm in «Scientific»."
+  },
+  {
    "id": "cu-failed-already-there",
    "situation": {
     "kind": "failure",
