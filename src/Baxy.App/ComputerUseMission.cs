@@ -46,7 +46,8 @@ internal static class ComputerUseMission
     // right after app.open on the Calculator; a fixed 1.2 s was paid always).
     internal static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(150);
     private static readonly TimeSpan WindowWait = TimeSpan.FromSeconds(3);
-    private static readonly TimeSpan StartWait = TimeSpan.FromSeconds(10);
+    // Measured: the Epic Games launcher still showed its «EPIC GAMES» splash 11 s after its window appeared.
+    private static readonly TimeSpan StartWait = TimeSpan.FromSeconds(20);
 
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
@@ -759,7 +760,7 @@ internal static class ComputerUseMission
     /// </summary>
     internal static bool NeedsText(string goal, string? application, string? successCheck, JsonObject? previousView)
     {
-        if (previousView is null || ControlCount(previousView) <= 1)
+        if (previousView is null || ActionableCount(previousView) <= 1)
         {
             return true;
         }
@@ -828,7 +829,7 @@ internal static class ComputerUseMission
                 {
                     // A window without an accessible tree (CEF) is judged by what is written on it.
                     bool cold = (bool?)state["openedCold"] == true;
-                    JsonObject seen = (includeText || cold) && TextCount(early) == 0 && (ControlCount(early) > 1 || cold)
+                    JsonObject seen = (includeText || cold) && TextCount(early) == 0 && (ControlCount(early) > 1 || ActionableCount(early) <= 1 || cold)
                         ? await ReadViewAsync(context, state, application, includeText: true, cancellationToken)
                             .ConfigureAwait(true) ?? early
                         : early;
@@ -874,10 +875,27 @@ internal static class ComputerUseMission
 
     // Controls a person could act on: a frame, a pane or a read-only address bar is the shell an application draws
     // before its content (measured on Spotify starting: an address bar and two panes, «x» the only written line).
+    // The window's caption buttons are not content either (measured on WhatsApp: Minimize, Maximize, Close and two
+    // panes were all its tree exposed).
     internal static int ActionableCount(JsonObject view) =>
         (view["controls"] as JsonArray)?.Count(node => node is JsonObject control
             && (string?)control["kind"] is not ("Pane" or "Window" or "Document" or "Group" or "Custom" or "TitleBar" or "Image" or "Text")
-            && !((string?)control["state"] ?? string.Empty).Contains("readonly", StringComparison.Ordinal)) ?? 0;
+            && !((string?)control["state"] ?? string.Empty).Contains("readonly", StringComparison.Ordinal)
+            && !IsCaptionButton(control)) ?? 0;
+
+    private static readonly string[] CaptionWords =
+        ["minimizar", "maximizar", "restaurar", "cerrar", "minimize", "maximize", "restore", "close"];
+
+    private static bool IsCaptionButton(JsonObject control)
+    {
+        if ((string?)control["kind"] != "Button")
+        {
+            return false;
+        }
+
+        string[] words = ComputerUseSuccessCheck.Fold((string?)control["name"]).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return words.Length is > 0 and <= 3 && CaptionWords.Contains(words[0], StringComparer.Ordinal);
+    }
 
     private static bool ShowsTheApplication(JsonObject state, JsonObject view) =>
         view["window"] is JsonObject window

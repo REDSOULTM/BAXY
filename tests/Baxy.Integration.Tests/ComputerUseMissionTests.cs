@@ -285,6 +285,11 @@ public sealed class ComputerUseMissionTests
         {
             Assert.That(ComputerUseMission.ActionableCount(starting), Is.EqualTo(0));
             Assert.That(ComputerUseMission.ActionableCount(loaded), Is.EqualTo(2));
+            Assert.That(ComputerUseMission.ActionableCount(View("""
+                {"window": {"title": "WhatsApp"}, "controls": [
+                  {"i": 0, "kind": "Button", "name": "Minimize"}, {"i": 1, "kind": "Button", "name": "Maximize"},
+                  {"i": 2, "kind": "Button", "name": "Close"}, {"i": 3, "kind": "Pane", "name": "AppWindow Custom Title Bar"}]}
+                """)), Is.EqualTo(0), "caption buttons are not content");
         });
     }
 
