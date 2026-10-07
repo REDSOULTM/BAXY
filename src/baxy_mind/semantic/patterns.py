@@ -359,11 +359,11 @@ def _completed_missing_message_text_request(
     return completed if message_draft_request(completed) is not None else None
 
 
-# The primitives a computer-use mission does itself, and the channel read it replaces: a typed route made only of
-# these is the mission's own steps said one by one, so the mission takes over.
+# The primitives a computer-use mission does itself: a typed route made only of these is the mission's own steps said
+# one by one, so the mission takes over. A typed read such as client.channel.locate (DISCORD1839: the channel found
+# and the person asked before any join) is the catalog's own and keeps its route.
 _MISSION_SUBSUMES = frozenset({
-    "app.open", "client.channel.locate", "input.key.press", "input.text.type", "input.visible.click",
-    "input.visible.controls", "window.focus",
+    "app.open", "input.key.press", "input.text.type", "input.visible.click", "input.visible.controls", "window.focus",
 })
 
 

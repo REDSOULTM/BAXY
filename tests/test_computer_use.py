@@ -41,7 +41,8 @@ def _mission(text: str):
 
 
 def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
-    discord = _mission("ve a Cotele en Discord")
+    # The reader reads the mission; the route is the catalog's typed channel read (test_the_mission_takes_over…).
+    discord = computer_use.mission_request("ve a Cotele en Discord", APPS).arguments()
     assert discord["application"] == "Discord"
     assert discord["goal"] == "ir a cotele"
     assert discord["successCheck"] == "control:cotele:selected|title:cotele|page:cotele"
@@ -68,7 +69,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
 
 
 def test_english_and_variant_phrasings_read_the_same_missions() -> None:
-    assert _mission("Go to Cotele in Discord")["goal"] == "ir a cotele"
+    assert computer_use.mission_request("Go to Cotele in Discord", APPS).goal == "ir a cotele"
     assert _mission("Open Steam and go to the library")["goal"] in {"ir a the library", "ir a library"}
     assert _mission("In Discord press enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission("abrí configuración y desactivá el modo avión")["successCheck"] == "control:modo avion:off"
@@ -333,7 +334,7 @@ def _mission_in(text: str, apps: tuple[str, ...] = MORE_APPS) -> dict:
 
 
 def test_the_already_good_requests_keep_their_routes() -> None:
-    assert _mission_in("ve a Cotele en Discord")["goal"] == "ir a cotele"
+    assert computer_use.mission_request("ve a Cotele en Discord", MORE_APPS).goal == "ir a cotele"
     assert _mission_in("abre Steam y ve a la biblioteca")["application"] == "Steam"
     assert _mission_in("en Discord apretá enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission_in("abrí Configuración y activá el modo avión")["successCheck"] == "control:modo avion:on"
@@ -466,7 +467,8 @@ def test_a_loose_verb_inside_an_app_is_left_to_the_decider() -> None:
 
 def test_the_mission_takes_over_its_own_primitives() -> None:
     # Once a typed reading of open + click / channel locate: those are the mission's own steps.
-    assert _route("ve a Cotele en Discord") == ("mission.computer.use",)
+    # A channel of a chat client is the catalog's typed read (asked before any join), not a mission.
+    assert _route("ve a Cotele en Discord") == ("client.channel.locate",)
     assert _route("abre Steam y ve a la biblioteca") == ("mission.computer.use",)
     assert _route("abrí el bloc de notas y escribí hola mundo") == ("mission.computer.use",)
     assert _route("ve a la pestaña de YouTube") == ("mission.computer.use",)

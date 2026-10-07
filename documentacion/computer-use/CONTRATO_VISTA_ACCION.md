@@ -458,7 +458,8 @@ Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del sh
   2. si los lectores dan una operación tipada, gana ella (D21: ficheros, radios, música,
      búsquedas, Windows lo verifica mejor que la pantalla) salvo que sea sólo primitivas que
      la misión hace por sí misma (`app.open`, `input.visible.*`, `input.text.type`,
-     `input.key.press`, `window.focus`, `client.channel.locate`);
+     `input.key.press`, `window.focus`); una lectura tipada como `client.channel.locate`
+     (canal hallado y pregunta antes de unirse) conserva su ruta;
   3. sin lectura tipada, la misión gana sólo si la cláusula es un acto con comprobación de
      éxito propia (ir a, tecla, calcular, activar/desactivar, escribir, clic) y no es ella
      misma un pedido del catálogo («activá el micrófono»); un verbo suelto («en Spotify baja
