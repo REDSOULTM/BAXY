@@ -32,6 +32,33 @@ public sealed class WindowsScreenshotProviderTests
         });
     }
 
+    // Computer use looks at windows it never keeps: the image held in memory is the stored capture, byte for byte and
+    // hash for hash, so a click compares surfaces as before without writing, flushing and re-reading each one.
+    [Test]
+    public async Task AWindowImageInMemoryIsTheStoredCaptureWithoutTheFile()
+    {
+        using TemporaryDirectory temporary = new();
+        var platform = new FakePlatform();
+        var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
+
+        CaptureResult stored = await provider.CaptureAsync(CancellationToken.None);
+        byte[] file = File.ReadAllBytes(Directory.GetFiles(temporary.Path, "*.bmp").Single());
+        WindowImage image = WindowsScreenshotProvider.Image(platform.CaptureVirtualScreen());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(image.Bmp, Is.EqualTo(file));
+            Assert.That(image.Sha256, Is.EqualTo(stored.Sha256));
+            Assert.That((image.Width, image.Height), Is.EqualTo((stored.Width, stored.Height)));
+        });
+    }
+
+    [Test]
+    public void AnInvalidFrameIsNoWindowImage()
+    {
+        Assert.Throws<IOException>(() => WindowsScreenshotProvider.Image(new ScreenshotFrame(2, 1, [0, 0, 255, 255])));
+    }
+
     [TestCase(false)]
     [TestCase(true)]
     public async Task ActiveWindowPreservesVerifiedIdentityCaptureIntervalAndCrop(bool clipped)

@@ -43,8 +43,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         VisibleControlSurface.CapturedWindow before = captured.Value;
         try
         {
-            byte[] image = await File.ReadAllBytesAsync(before.Path, cancellationToken)
-                .ConfigureAwait(false);
+            byte[] image = before.Bmp;
             using var request = new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new StringContent(
@@ -89,8 +88,6 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
                     .ConfigureAwait(false);
             bool changed = after is not null && after.Value.Sha256 != before.Sha256;
-            if (after is not null)
-                VisibleControlSurface.Delete(after.Value.Path);
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -119,10 +116,6 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             or KeyNotFoundException)
         {
             return ExternalJson.Failure(operation, "vision_provider_request_failed");
-        }
-        finally
-        {
-            VisibleControlSurface.Delete(before.Path);
         }
     }
 

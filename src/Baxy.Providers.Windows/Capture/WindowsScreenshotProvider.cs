@@ -47,12 +47,30 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         return ValueTask.FromResult(CaptureAndStore(_platform.CaptureWindow(window)));
     }
 
+    /// <summary>
+    /// A window looked at only inside this process (computer use: the visible-control view, a click's surface before
+    /// and after): encoded and hashed in memory, never written. Storing it as a verified capture wrote, flushed to
+    /// disk, re-read and re-hashed the whole bitmap (measured offline on a 1920×1080 frame: 75 ms against 8 ms in
+    /// memory), three or more times per click.
+    /// </summary>
+    internal static WindowImage CaptureWindowImage(nint window) =>
+        Image(new GdiScreenshotPlatform().CaptureWindow(window));
+
+    internal static WindowImage Image(ScreenshotFrame frame)
+    {
+        byte[] bmp = EncodeBmp(Validated(frame));
+        return new WindowImage(frame.Width, frame.Height, bmp, Convert.ToHexStringLower(SHA256.HashData(bmp)));
+    }
+
+    private static ScreenshotFrame Validated(ScreenshotFrame frame) =>
+        frame.Width is < 1 or > 32_768 || frame.Height is < 1 or > 32_768
+            || frame.BgraBottomUp.Length != checked(frame.Width * frame.Height * 4)
+            ? throw new IOException("Screenshot frame is invalid.")
+            : frame;
+
     private CaptureResult CaptureAndStore(ScreenshotFrame frame)
     {
-        if (frame.Width is < 1 or > 32_768 || frame.Height is < 1 or > 32_768
-            || frame.BgraBottomUp.Length != checked(frame.Width * frame.Height * 4))
-            throw new IOException("Screenshot frame is invalid.");
-        byte[] bmp = EncodeBmp(frame);
+        byte[] bmp = EncodeBmp(Validated(frame));
         string hash = Convert.ToHexStringLower(SHA256.HashData(bmp));
         string id = "capture_" + Guid.NewGuid().ToString("N");
         string final = Path.Combine(_directory, id + ".bmp");

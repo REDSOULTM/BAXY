@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Providers.Windows.Capture;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
@@ -286,6 +287,25 @@ public sealed class ComputerUsePerceptionTests
             Assert.That((parsedOffset, parsedWidth, parsedHeight), Is.EqualTo((offset, width, height)));
             Assert.That(VisibleControlColors.Dominant(bmp, offset, width, height, 0, 0, 8, 4), Is.EqualTo("red"));
             Assert.That(VisibleControlColors.Dominant(bmp, offset, width, height, 0, 4, 8, 4), Is.EqualTo("blue"));
+        });
+    }
+
+    [Test]
+    public async Task TheOcrReadsAWindowImageHeldInMemory()
+    {
+        // A red pixel beside a green one, as a window capture encodes it (BGRA, bottom-up): decoded from memory,
+        // with no capture file, for the OCR engine.
+        WindowImage image = WindowsScreenshotProvider.Image(new ScreenshotFrame(2, 1, [0, 0, 255, 255, 0, 255, 0, 255]));
+
+        using global::Windows.Graphics.Imaging.SoftwareBitmap bitmap = await WindowsVisibleOcrLocator.DecodeAsync(image.Bmp);
+        byte[] pixels = new byte[8];
+        bitmap.CopyToBuffer(System.Runtime.InteropServices.WindowsRuntime.WindowsRuntimeBufferExtensions.AsBuffer(pixels));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bitmap.PixelWidth, bitmap.PixelHeight), Is.EqualTo((2, 1)));
+            Assert.That(pixels[..3], Is.EqualTo(new byte[] { 0, 0, 255 }));
+            Assert.That(pixels[4..7], Is.EqualTo(new byte[] { 0, 255, 0 }));
         });
     }
 
