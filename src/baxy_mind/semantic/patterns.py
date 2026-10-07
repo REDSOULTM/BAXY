@@ -396,7 +396,10 @@ def _mission_takes_over(
     if getattr(mission, "success_check", None) is None:
         return False
     clause = getattr(mission, "clause", "")
-    if not clause:
+    # Only a switch is weighed against the catalog («en Discord activá el micrófono»: the microphone). Going to,
+    # opening, pressing, typing or calculating inside an application is the screen's (measured: «en el Reloj andá a
+    # Cronómetro» was vetoed because «cronómetro» reads as a timer, and a lone click without the app was run).
+    if not clause or not str(getattr(mission, "goal", "")).startswith(("activar ", "desactivar ")):
         return True
     inner = _resolve_clause_effects(clause, available, application_names, game_catalog)
     return inner is None or set(inner.operations) <= _MISSION_SUBSUMES

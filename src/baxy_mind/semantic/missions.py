@@ -70,6 +70,9 @@ _NAVIGATE_HEAD = (
     r"(?:ve|vete|ir|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|"
     r"cambia|cambiate|take\s+me|abri|abre|open)"
 )
+_OPEN_INSIDE_CLAUSE = re.compile(
+    r"^(?:abri|abre|abrime|abra|abrir|open)\s+(?:(?:el|la|los|las|the|mi|my|un|una)\s+)?(?P<target>\S.{0,60}?)[\s.!?]*$"
+)
 _NAVIGATE_CLAUSE = re.compile(
     rf"^{_NAVIGATE_HEAD}\s+(?:a(?:l)?|to|hacia|hasta|into|en|por\s+la\s+gui\s+hasta|por\s+la\s+interfaz\s+hasta|through\s+the\s+gui\s+to)\s+"
     r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
@@ -334,6 +337,15 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
         # «ve a la biblioteca y escribí hola»: the place ends where the next clause of doing begins.
         target = _segments(navigate.group("target"))[0].strip(" \"'«»")
         if target and not re.search(r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b", target):
+            return (
+                f"ir a {target}",
+                _with_alternatives(target, ("control:{}:selected", "title:{}", "page:{}")),
+            )
+    opened = _OPEN_INSIDE_CLAUSE.match(folded)
+    if opened is not None:
+        # «en el Panel de control abrí Programas»: opening a place inside the application is going to it.
+        target = _segments(opened.group("target"))[0].strip(" \"'«»")
+        if target:
             return (
                 f"ir a {target}",
                 _with_alternatives(target, ("control:{}:selected", "title:{}", "page:{}")),
