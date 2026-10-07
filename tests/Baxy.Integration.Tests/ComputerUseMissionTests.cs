@@ -374,6 +374,45 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void APanelOpenedBesideAFullPageReachesThePlaceWhenItsOpenerFlipped()
+    {
+        // Measured 2026-10-07 (z7): after «Inicio», «Abre Tu biblioteca» opened the side panel; the home page kept most
+        // of its controls, so «most controls new» missed the arrival and the model collapsed the panel again.
+        string[] page = ["inicio", "buscar", "crear", "novedades", "actividad reciente", "explorar", "tarjeta 1", "tarjeta 2",
+            "tarjeta 3", "tarjeta 4", "tarjeta 5", "tarjeta 6", "tarjeta 7", "tarjeta 8", "tarjeta 9", "tarjeta 10"];
+        JsonArray Names(params string[] extra) => new(page.Concat(extra).Select(name => (JsonNode?)JsonValue.Create(name)).ToArray());
+        JsonObject Shown(params string[] extra)
+        {
+            var controls = new JsonArray();
+            int index = 0;
+            foreach (string name in page.Concat(extra))
+            {
+                controls.Add(new JsonObject { ["i"] = index++, ["kind"] = "Button", ["name"] = name });
+            }
+
+            return new JsonObject { ["window"] = new JsonObject { ["title"] = "Reproductor" }, ["controls"] = controls };
+        }
+
+        JsonArray opened = [new JsonObject { ["step"] = 4, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Abre Tu biblioteca" }];
+        JsonObject flipped = Shown("Comprimir Tu biblioteca", "Buscar en Tu biblioteca", "Playlists");
+        flipped["controlsBeforeClick"] = new JsonObject { ["4"] = Names("abre tu biblioteca") };
+        JsonObject unchanged = Shown("Abre Tu biblioteca", "Playlists");
+        unchanged["controlsBeforeClick"] = new JsonObject { ["4"] = Names("abre tu biblioteca") };
+        JsonObject goneNothingNamed = Shown("Tu biblioteca", "Playlists");
+        goneNothingNamed["controlsBeforeClick"] = new JsonObject { ["4"] = Names("abre tu biblioteca", "tu biblioteca") };
+        JsonObject stayed = Shown("Colores", "Comprimir Colores");
+        stayed["controlsBeforeClick"] = new JsonObject { ["4"] = Names("colores") };
+        JsonArray card = [new JsonObject { ["step"] = 4, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Colores" }];
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", flipped, opened, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", unchanged, opened, out _), Is.False, "the opener still there: nothing opened");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", goneNothingNamed, opened, out _), Is.False, "no new control names the place");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", stayed, card, out _), Is.False, "a card named as the place is no opener");
+        });
+    }
+
+    [Test]
     public void AClickNamedAsThePlaceThatMadeAnotherItemTheChosenOneDidNotArrive()
     {
         JsonObject pictures = View("""
