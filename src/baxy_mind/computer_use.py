@@ -1517,10 +1517,7 @@ def _type_into(view: dict, history: list[dict], target: str) -> dict[str, object
     return _key("ctrl_a")
 
 
-REASON_SEARCH_FOCUS_UNPROVEN = (
-    "hice clic en el cuadro de búsqueda escrito en pantalla, pero no pude comprobar que tomara el teclado, "
-    "así que no escribí nada"
-)
+REASON_SEARCH_FOCUS_UNPROVEN = "el clic en el cuadro de búsqueda escrito no probó que tomara el teclado: no se escribe nada"
 SEARCH_FOCUS_UNPROVEN = "search_focus_unproven"
 
 
