@@ -275,6 +275,7 @@ def test_what_the_engine_never_tries_is_not_a_mission() -> None:
         assert not missions.engine_can_try(text, APPS), text
     # An order no reader knows is no part of the place before it: the chain is left to the decider.
     assert _route("abre Steam, ve a la biblioteca y dibujá a Batman") != ("mission.computer.use",)
+    assert _route("en Discord buscá a Cotele y llamalo") != ("mission.computer.use",)
 
 
 def _steps(text: str) -> list[tuple[str | None, str, str | None]]:

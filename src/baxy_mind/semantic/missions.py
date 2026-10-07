@@ -878,7 +878,7 @@ def _segments(folded: str) -> list[str]:
         elliptic = _elliptic(piece, joiner, merged[-1])
         if elliptic is not None:
             merged.append(elliptic)
-        elif _VERB_AND_OBJECT.match(piece) and _family(merged[-1]) is not None:
+        elif (_VERB_AND_OBJECT.match(piece) or _CLITIC_ORDER.match(piece)) and _family(merged[-1]) is not None:
             # «andá a la biblioteca y dibujá a Batman»: an order the readers do not know is no part of a place's
             # name; kept apart, it leaves the chain unread (the decider's) instead of glued into the place.
             merged.append(piece)
@@ -892,6 +892,8 @@ _ELLIPTIC_PLACE = re.compile(r"(?:a|al|hacia|to)\s+\S")
 _VERB_AND_OBJECT = re.compile(
     r"^[a-z]{3,}\s+(?:a|al|el|la|los|las|un|una|unos|unas|mi|mis|tu|que|con|lo|le|me|the|an|my|your|it|me|to)\s+\S"
 )
+# A verb with its pronoun and nothing else («llamalo», «descargala»): an order, never the end of a name.
+_CLITIC_ORDER = re.compile(r"^[a-z]{2,}[aei]r?(?:me|te|se)?(?:lo|la|los|las|le|les)$")
 _SEQUENCER = re.compile(r"\b(?:luego|despues|entonces|then|after\s+that)\b")
 # «… y después el color rojo», «then the red color»: an object said with its article, the verb said once before.
 _ARTICLE_OBJECT = re.compile(r"^(?:el|la|los|las|the)\s+\S")
@@ -921,14 +923,15 @@ def _elliptic(piece: str, joiner: str, previous: str) -> str | None:
 
 
 def _family(segment: str) -> str | None:
-    """The goal head of the act a clause says (``ir a ``, ``seleccionar ``, ``hacer clic en ``), or None."""
+    """The goal head of the act a clause says (``ir a ``, ``seleccionar ``, ``hacer clic en ``, ``buscar ``), or
+    None."""
 
     segment = segment.strip(" ,;:.!?")
     reads = (read_clause(segment), *(read_clause(clause) for _, clause in _app_frames(segment, longer_names=False)))
     for read in reads:
         if read is None:
             continue
-        for head in ("ir a la pestaña ", "ir a la direccion ", "ir a ", "seleccionar ", "hacer clic en "):
+        for head in ("ir a la pestaña ", "ir a la direccion ", "ir a ", "seleccionar ", "hacer clic en ", "buscar "):
             if read[0].startswith(head):
                 return None if head in {"ir a la pestaña ", "ir a la direccion "} else head
     return None
