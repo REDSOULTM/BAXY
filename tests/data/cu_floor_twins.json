@@ -1,0 +1,435 @@
+{
+ "source": "Computer-use floor twins (live 2026-10-07, cu-r8): written by the mind (llm._deterministic_final over computer_use.floor_sentence); the App's OperationFloor says the same (ComputerUseFloorTests).",
+ "cases": [
+  {
+   "id": "cu-reached-place",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a reloj mundial",
+     "application": "Reloj",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Reloj",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Reloj mundial",
+       "ok": true,
+       "name": "Reloj mundial",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Reloj",
+      "values": [
+       {
+        "name": "Reloj mundial",
+        "state": "selected"
+       }
+      ],
+      "numbers": [
+       "Hora local, ‎7‎:‎58‎",
+       "7:58"
+      ],
+      "lines": [
+       "7:58",
+       "Hora local"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Reloj mundial».",
+   "en": "Done, I'm in «Reloj mundial»."
+  },
+  {
+   "id": "cu-reached-tab",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a la pestaña de alarma",
+     "application": "Reloj",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Reloj",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Alarma",
+       "ok": true,
+       "name": "Alarma",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Reloj",
+      "values": [
+       {
+        "name": "Alarma",
+        "state": "selected"
+       }
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Alarma».",
+   "en": "Done, I'm in «Alarma»."
+  },
+  {
+   "id": "cu-reached-chain",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a red e internet; luego ir a wi-fi",
+     "application": "Configuración",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Configuración",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Wi-Fi",
+       "ok": true,
+       "name": "Wi-Fi",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a red e internet",
+       "application": "Configuración",
+       "reached": true
+      },
+      {
+       "goal": "ir a wi-fi",
+       "application": "Configuración",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, estoy en «Wi-Fi».",
+   "en": "Done, I'm in «Wi-Fi»."
+  },
+  {
+   "id": "cu-reached-act",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo oscuro",
+     "application": "Configuración",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Configuración",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Modo oscuro",
+       "ok": true,
+       "name": "Modo oscuro",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración"
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Configuración».",
+   "en": "Done, I did it in «Configuración»."
+  },
+  {
+   "id": "cu-plan-one-step",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "mission_completed",
+    "stepCount": 1,
+    "steps": [
+     "{\"kind\": \"operation\", \"operation\": \"mission.computer.use\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"goal\": \"ir a reloj mundial\", \"application\": \"Reloj\", \"reached\": true, \"steps\": [{\"step\": 1, \"operation\": \"app.open\", \"appId\": \"Reloj\", \"ok\": true, \"changed\": true}, {\"step\": 2, \"operation\": \"input.visible.click\", \"label\": \"Reloj mundial\", \"ok\": true, \"name\": \"Reloj mundial\", \"kind\": \"TabItem\", \"selected\": true, \"changed\": true}], \"window\": {\"title\": \"Reloj\", \"process\": \"ApplicationFrameHost\"}, \"joined\": false, \"screen\": {\"title\": \"Reloj\", \"values\": [{\"name\": \"Reloj mundial\", \"state\": \"selected\"}], \"numbers\": [\"Hora local, ‎7‎:‎58‎\", \"7:58\"], \"lines\": [\"7:58\", \"Hora local\"]}}}"
+    ]
+   },
+   "es": "Listo, estoy en «Reloj mundial».",
+   "en": "Done, I'm in «Reloj mundial»."
+  },
+  {
+   "id": "cu-failed-cause",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_surface_unchanged",
+     "observed": {
+      "goal": "ir a red e internet; luego ir a wi-fi",
+      "application": "Configuración",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "label": "Red e Internet",
+        "ok": true,
+        "name": "Red e Internet",
+        "selected": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "wi-fi",
+        "ok": true,
+        "name": "Wi-Fi",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "ApplicationFrameHost"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Configuración",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_surface_unchanged",
+      "subgoals": [
+       {
+        "goal": "ir a red e internet",
+        "application": "Configuración",
+        "reached": true
+       },
+       {
+        "goal": "ir a wi-fi",
+        "application": "Configuración",
+        "reached": false
+       }
+      ]
+     }
+    }
+   },
+   "es": "No pude llegar a «Wi-Fi»: la pantalla dejó de cambiar tras lo que hice.",
+   "en": "I couldn't get to «Wi-Fi»: the screen stopped changing after what I did."
+  },
+  {
+   "id": "cu-failed-untyped",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_something_new",
+     "observed": {
+      "goal": "ir a red e internet; luego ir a wi-fi",
+      "application": "Configuración",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "label": "Red e Internet",
+        "ok": true,
+        "name": "Red e Internet",
+        "selected": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "wi-fi",
+        "ok": true,
+        "name": "Wi-Fi",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "ApplicationFrameHost"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Configuración",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_something_new",
+      "subgoals": [
+       {
+        "goal": "ir a red e internet",
+        "application": "Configuración",
+        "reached": true
+       },
+       {
+        "goal": "ir a wi-fi",
+        "application": "Configuración",
+        "reached": false
+       }
+      ]
+     }
+    }
+   },
+   "es": "No pude llegar a «Wi-Fi».",
+   "en": "I couldn't get to «Wi-Fi»."
+  },
+  {
+   "id": "cu-failed-covered",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_window_covered",
+     "observed": {
+      "goal": "hacer clic en guardar",
+      "application": "Paint",
+      "reached": false,
+      "steps": [],
+      "window": {
+       "title": "Paint",
+       "process": "mspaint",
+       "coveredBy": {
+        "title": "Sin título: Bloc de notas"
+       }
+      },
+      "joined": false,
+      "screen": {
+       "title": "Paint",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_window_covered"
+     }
+    }
+   },
+   "es": "No pude hacerlo en «Paint»: la ventana «Sin título: Bloc de notas» tapa la aplicación.",
+   "en": "I couldn't do it in «Paint»: the window «Sin título: Bloc de notas» covers the application."
+  },
+  {
+   "id": "cu-failed-direct",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_budget_exhausted",
+    "observed": {
+     "goal": "ir a bluetooth",
+     "application": "Configuración",
+     "reached": false,
+     "steps": [],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración",
+      "lines": [
+       "Proxy"
+      ]
+     },
+     "stoppedBy": "computer_use_budget_exhausted"
+    }
+   },
+   "es": "No pude llegar a «bluetooth»: se agotaron los pasos previstos sin llegar.",
+   "en": "I couldn't get to «bluetooth»: the planned steps ran out before getting there."
+  }
+ ]
+}

@@ -73,9 +73,35 @@
   "airplane_mode_already_off": {"es": "El modo avión ya estaba desactivado.", "en": "Airplane mode was already off."}
  },
  "computerUse": {
+<<<<<<< HEAD
   "source": "Live 2026-10-07 (v2-v9, v2-u7, v2-n5): the floor of a computer-use mission, read by the mind (computer_use.floor_sentence). A place reached is said as the window writes it; a mission not done says what was not reached and the typed cause.",
   "es": {"place": "Listo, estoy en {place}", "shade": "Listo, elegí {chosen}, el {asked} de la paleta", "app": "Listo, lo hice en {app}", "notPlace": "No pude llegar a {place}", "notApp": "No pude hacerlo en {app}", "not": "No pude hacerlo", "cause": "{head}: {cause}"},
   "en": {"place": "Done, I'm in {place}", "shade": "Done, I picked {chosen}, the {asked} of the palette", "app": "Done, I did it in {app}", "notPlace": "I couldn't get to {place}", "notApp": "I couldn't do it in {app}", "not": "I couldn't do it", "cause": "{head}: {cause}"}
+=======
+  "source": "Live 2026-10-07 (v2-v9, v2-u7, v2-n5): the floor of a computer-use mission, read by the mind (computer_use.floor_sentence) and by the App's twin (OperationFloor.ComputerUse). A place reached is said as the window writes it; a mission not done says what was not reached and the typed cause.",
+  "questionMark": "; y responder: ",
+  "placeGoal": "^ir\\s+a\\s+(?:(?:la\\s+)?(?:pesta[nñ]a|direcci[oó]n|secci[oó]n|p[aá]gina|parte)\\s+(?:de\\s+)?|el\\s+|la\\s+|los\\s+|las\\s+)?(.+)$",
+  "longestName": 60,
+  "causes": {
+   "computer_use_no_step_visible": {"es": "no vi en la pantalla un control con el que seguir", "en": "I did not see on the screen a control to go on with"},
+   "computer_use_no_document_open": {"es": "la aplicación está en su pantalla de inicio, sin ningún documento abierto", "en": "the application is on its start screen with no document open"},
+   "computer_use_evidence_not_visible": {"es": "la pantalla no mostró la prueba de que se hubiera logrado", "en": "I did not find on the screen the proof that it was done"},
+   "computer_use_budget_exhausted": {"es": "se agotaron los pasos previstos sin llegar", "en": "the planned steps ran out before getting there"},
+   "computer_use_time_exhausted": {"es": "se agotó el tiempo previsto sin llegar", "en": "the planned time ran out before getting there"},
+   "computer_use_surface_unchanged": {"es": "la pantalla dejó de cambiar tras lo que hice", "en": "the screen stopped changing after what I did"},
+   "computer_use_view_unavailable": {"es": "la ventana no se dejó leer", "en": "I could not read the window"},
+   "computer_use_decision_unavailable": {"es": "el siguiente paso quedó sin decidir", "en": "I could not decide the next step"},
+   "computer_use_repeated_step": {"es": "el único paso que veía ya había fallado", "en": "the only step I could see had already failed"},
+   "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
+   "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
+   "computer_use_window_covered": {"es": "otra ventana tapa la aplicación", "en": "another window covers the application"},
+   "computer_use_window_not_application": {"es": "la ventana de delante no era la de la aplicación, así que no pulsé ni escribí nada en ella", "en": "the window in front was not the application's, so I pressed and typed nothing there"},
+   "computer_use_window_elevated": {"es": "esa aplicación corre como administrador y Windows no deja que otra aplicación la controle", "en": "that application runs as administrator and Windows does not let another application control it"}
+  },
+  "coveredBy": {"es": "la ventana «{window}» tapa la aplicación", "en": "the window «{window}» covers the application"},
+  "es": {"place": "Listo, estoy en {place}", "app": "Listo, lo hice en {app}", "notPlace": "No pude llegar a {place}", "notApp": "No pude hacerlo en {app}", "not": "No pude hacerlo", "cause": "{head}: {cause}"},
+  "en": {"place": "Done, I'm in {place}", "app": "Done, I did it in {app}", "notPlace": "I couldn't get to {place}", "notApp": "I couldn't do it in {app}", "not": "I couldn't do it", "cause": "{head}: {cause}"}
+>>>>>>> fable/cu-r8-voice2
  },
  "compositionFailures": {
   "clarification": {"es": "Todavía no hice nada: me falta un dato y no supe preguntártelo bien. ¿Me lo dices con un poco más de detalle?", "en": "I haven't done anything yet: something is missing and I couldn't word the question. Could you tell me with a bit more detail?"},

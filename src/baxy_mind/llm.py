@@ -8795,7 +8795,12 @@ def _computer_use_mission(situation: dict) -> dict | None:
 
     if situation.get("operation") == "mission.computer.use":
         return situation
-    if str(situation.get("cause") or "").strip().lower() != "mission_failed" or situation.get("steps"):
+    cause = str(situation.get("cause") or "").strip().lower()
+    if cause == "mission_completed":
+        # A plan whose only step was the mission (the App's OperationFloor.ComputerUseMission says the same).
+        steps = _situation_steps(situation)
+        return steps[0] if len(steps) == 1 and steps[0].get("operation") == "mission.computer.use" else None
+    if cause != "mission_failed" or situation.get("steps"):
         # Steps of other operations beside it are told by the generic floor, each its own clause.
         return None
     reason = situation.get("reason")
