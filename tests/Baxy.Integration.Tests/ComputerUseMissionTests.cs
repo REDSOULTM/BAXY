@@ -353,6 +353,42 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // The Calculator's alternative «stepDone:input.text.type:=»: an expression typed with its equals sign is the
+    // typing step's own text, which carries no key and no label.
+    [Test]
+    public void StepDoneArgumentAlsoNamesWhatWasTyped()
+    {
+        JsonArray typed = [new JsonObject { ["step"] = 1, ["operation"] = "input.text.type", ["text"] = "12*12=", ["ok"] = true }];
+        JsonObject view = View("""{"window": {"title": "Calculadora", "focused": null}, "controls": [], "text": {}}""");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.text.type:=", view, typed, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.text.type:13", view, typed, out _), Is.False);
+        });
+    }
+
+    // «control:=informe»: the name whole. A longer name holding it («informe2») is another item; a name that says it
+    // and then its kind («general (canal de texto)») is that item.
+    [Test]
+    public void AWholeNameControlAtomIgnoresLongerNamesThatHoldIt()
+    {
+        JsonObject view = View("""
+            {"window": {"title": "Documentos", "process": "explorer"},
+             "controls": [{"i": 0, "kind": "ListItem", "name": "informe2", "state": ""},
+                          {"i": 1, "kind": "Hyperlink", "name": "general (canal de texto)", "state": "selected"}], "text": {}}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:informe", view, [], out _), Is.True, "contains, as before");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=informe", view, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=informe2", view, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=general", view, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=general:selected", view, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=canal", view, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=gene", view, [], out _), Is.False);
+        });
+    }
+
     [Test]
     public void TheMindReceivesIndicesNamesStatesZonesColoursAndTextButNoIdentitiesOrHashes()
     {
