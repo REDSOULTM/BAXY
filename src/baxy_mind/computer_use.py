@@ -905,6 +905,14 @@ def _goal_target(goal: str) -> tuple[str, str | None, str, str | None] | None:
     return None
 
 
+# A goal that sets or chooses one named thing («activar modo programador», «seleccionar lapiz»): what it names, for a
+# switch to be pressed only when it is that thing.
+_SETTING_GOAL = re.compile(
+    r"^(?:activar|desactivar|encender|apagar|seleccionar|elegir|turn\s+on|turn\s+off|enable|disable|select)\s+"
+    r"(?:(?:el|la|los|las|the)\s+)?(?:(?:modo|mode)\s+)?(?P<what>\S.*)$"
+)
+
+
 def _placing_goal(goal: str | None) -> bool:
     """A goal that places the person somewhere or presses a named thing, never one that sets something: «ir a …»,
     «buscar …», and «hacer clic en …» unless it names a switch's kind («la casilla …»)."""
@@ -2129,6 +2137,13 @@ def _checked_act(
             # Going somewhere never changes a setting on the way (measured on Settings: looking for «Colores» the
             # model clicked «Invertir colores» of the Magnifier).
             return _none(f"«{clicked[:40]}» cambia un ajuste y el objetivo no pide cambiar ninguno", code="changes_a_setting")
+        setting = _SETTING_GOAL.match(fold(goal or ""))
+        if control is not None and setting is not None and _is_switch(control) and not named_explicitly and not (
+            label_names(setting.group("what"), clicked) or label_names(clicked, setting.group("what"))
+        ):
+            # Setting or choosing one thing never flips another switch on the way (live y1: for «activar modo
+            # programador» the model clicked the Calculator's «Alternar grados» and left it in radians).
+            return _none(f"«{clicked[:40]}» cambia otro ajuste que el objetivo no nombra", code="changes_a_setting")
         if control is not None:
             arguments: dict[str, object] = {"label": str(control.get("name") or label)}
             if isinstance(control.get("i"), int):

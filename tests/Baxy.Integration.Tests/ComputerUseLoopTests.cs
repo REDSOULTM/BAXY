@@ -552,7 +552,8 @@ public sealed class ComputerUseLoopTests
             Screen = _ => !entered ? SearchBox() : looksAfterEnter++ < 2 ? TornDown() : Results(),
             Mind = request => request.View["controls"]!.AsArray().Any(control => (string?)control!["kind"] == "Edit")
                 ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
-                : Step("none", new JsonObject()),
+                // The mind's «none» carries its default code (live v1: the redraw was never awaited because of it).
+                : new MindComputerUseStep("none", new JsonObject(), string.Empty, "no_step_visible"),
         };
         harness.Receipt = (_, _) =>
         {

@@ -390,7 +390,7 @@ internal static class ComputerUseMission
                             // step (measured 2026-10-07 on a store: 185 ms after Enter its results page listed 17 of
                             // 52 controls, a placeholder layout, and the model rightly saw nothing to press). Once
                             // per act, looked at again, bounded, while it is redrawn; then the loop decides anew.
-                            if (decision.Operation == "none" && string.IsNullOrEmpty(decision.Code)
+                            if (decision.Operation == "none" && decision.Code is "" or "no_step_visible"
                                 && await RedrawnAfterActAsync(context, state, steps, start, application, lastView, signature, cancellationToken)
                                     .ConfigureAwait(true))
                             {
