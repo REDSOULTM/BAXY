@@ -440,7 +440,9 @@ def deterministic_step(
         if wanted is not None and wanted in str(control.get("state") or "").split():
             return None
         if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
-            return None
+            # Clicked and not there yet (measured on Discord: the name was written in an activity card, not the
+            # channel): looked up the way the window offers, never clicked again.
+            return _find_step(target, view, history) if searching else None
         arguments = {"label": str(control.get("name") or target)}
         if isinstance(control.get("i"), int):
             arguments["index"] = control["i"]
@@ -580,11 +582,6 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
     else ctrl_k and ctrl_f (kept only when a field takes the keyboard, otherwise escape), else scrolling the list that
     may hold it (up to three times while the view changes). None leaves the step to the model."""
 
-    if any(
-        step.get("operation") == "input.visible.click" and step.get("ok") is True
-        and label_names(target, str(step.get("label") or "")) for step in history
-    ):
-        return None
     last = history[-1] if history else None
     last_operation = last.get("operation") if last is not None else None
     if last is not None and last_operation == "input.text.type" and fold(last.get("text")) == fold(target):
