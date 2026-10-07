@@ -68,14 +68,34 @@ fallaba por un solo acto por pedido, sin búsqueda dentro de la app ni objetivos
 | Provider (agente A): UWP por su marco, teclas en proceso, clic rápido, worker precalentado, scroll por control | merge 8177a776 |
 | App/Kernel (agente B): sub-objetivos, esperas de 150 ms, OCR a demanda, guardas, política ampliada | merge cbbf199c |
 | Arreglos medidos en vivo: escritorio no es ventana de app; espera de arranque; ventana elevada; page: contra la vista previa al clic; clic físico si no se invoca; límite no anula misión | ea14333b, b396dfe8, fa009cf1 |
+| «abrí X» dentro de una app es ir a X; la cláusula interior sólo se pesa contra el catálogo en activar/desactivar | a6c10401 |
+| Dos falsos éxitos cerrados: `page:` sólo en ventanas sin árbol; la misión probada no la anula el veto de conservación; procedimiento rancio se abandona | 165aa153 |
+| BUSCAR sigue con el buscador tras pulsar algo que nombra el destino sin llegar | e8a6a560 |
+| Texto con la grafía dicha; «mandalo» es enviar; cursor en el campo antes de escribir; el eco no prueba llegada; tecleo por carácter | 2e06fa28 |
+| Enviar lo escrito siempre se pregunta antes (Enter en un campo de mensaje ilegible cuenta como envío) | 3ae1dc88 |
+| Tecleo a 3 ms por carácter | e04bc54b |
+| Un clic en el nombre del lugar que deja la ventana igual: ya estaba ahí | e4254ef6 |
 
-### Banco en vivo (turno completo, `latency_ms`; verificación independiente)
+### Banco en vivo (última corrida de cada caso; verificación independiente)
 
-| # | Pedido | Resultado | Turno | Antes |
-|---|---|---|---|---|
-| 1 | en la calculadora calculá 37*12 (cerrada) | **logrado** — pantalla «444» | 4,4 s | 38–41 s |
-| 3 | en Configuración andá a Bluetooth y dispositivos | **logrado** — ítem seleccionado | 3,3 s | — |
-| 4 | en el Explorador de archivos andá a Descargas | **logrado** (tras arreglo del escritorio) | misión 3,5 s | — |
-| 5 | en el Panel de control abrí Programas | **logrado** | 4,7 s | 7,5 s |
-| 6 | en el Administrador de tareas andá a Rendimiento | límite de Windows (app elevada), dicho con esa causa | 33,6 s | — |
-| 7 | abrí Paint y elegí la herramienta Texto | **logrado** — «Texto» activo | 6,5 s | — |
+Turno = `latency_ms` del final; misión y modelo = `computer_use.end`. Detalle, corridas anteriores y comparación con
+la fase 4: `MEDICIONES.md` §«v2».
+
+| Caso | Pedido | Resultado | Turno | Misión (modelo) | Antes (fase 4) |
+|---|---|---|---|---|---|
+| s01 | en la calculadora calculá 37*12 (cerrada) | **logrado** — pantalla «444» | 4,4 s | 2,5 s (18 ms), 3 pasos | turno 41 s |
+| s02 | en el Reloj andá a Cronómetro | **logrado** — Cronómetro seleccionado | 4,6 s | 2,6 s (3 ms), 1 paso | turno 34,9 s |
+| s03 | en Configuración andá a Bluetooth y dispositivos | **logrado** — ítem seleccionado | 3,3 s | 1,5 s (4 ms), 1 paso | — |
+| s04 | en el Explorador de archivos andá a Descargas | **logrado** — Shell en Downloads | 6,4 s | 3,5 s (5 ms), 1 paso | — |
+| s05 | en el Panel de control abrí Programas | **logrado** — título «Programas» | 4,7 s | 2,9 s (12 ms), 2 pasos | 7,5 s («Sistema y seguridad») |
+| s06 | en el Administrador de tareas andá a Rendimiento | **límite honesto** — app elevada, dicho con esa causa | 33,6 s | ≈31,5 s, 1 paso | — |
+| s07 | abrí Paint y elegí la herramienta Texto | **logrado** — «Texto» activo (plan tipado, no misión) | 6,5 s | — | — |
+| s11 | en Discord andá al canal Cotele → «no» | **logrado** — BUSCAR halló el canal, preguntó antes de unirse; no se unió | 6,8 s a la pregunta | ≈3,1 s (0 ms), 3 pasos + el confirmado | motor falló; ruta tipada 17,2 s |
+| s12 | en Steam andá a la biblioteca | **logrado** — captura: BIBLIOTECA | 5,5 s | 3,8 s (662 ms), 2 pasos | turno 11,2 s, misión 9,3 s |
+| s14 | en Discord mandale a Ron92 "prueba BAXY 14" → «no» | **logrado** — preguntó antes de enviar; no se envió (ruta tipada) | 9,7 s a la pregunta | — | — |
+| c1 | abrí el Bloc de notas, escribí "lista: pan", apretá Enter y escribí "leche" | **fallido** — quedó «lista:nnnnleche» y se dio por logrado; en arreglo | 7,9 s | 3,2 s (0 ms), 4 pasos | — |
+| c3 | en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba | **fallido** — el plan no llega a la misión (`internal_code;retry_exhausted`); en arreglo | 8,5 s | — | — |
+| c6 | en Discord abrí el chat con Ron92, escribí "prueba BAXY C6" y mandalo → «sí» | **logrado** — preguntó antes de enviar; enviado con el «sí» | 3,4 s a la pregunta | 1,8 s (5 ms), 2 pasos | — |
+| c7 | en Discord andá al canal Cotele y después en Steam andá a la tienda → «no» | **fallido** — falso negativo en Steam (ya estaba en la Tienda); arreglado en e4254ef6, **re-corrida pendiente** | 11,2 s | ≈9,2 s (1,0 s), 6 pasos | — |
+
+Pendiente: re-correr c7 sobre e4254ef6; arreglar y re-correr c1 (contenido escrito) y c3 (camino del plan).

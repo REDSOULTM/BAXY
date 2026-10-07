@@ -484,24 +484,54 @@ cada uno, ≤30 pasos y 180 s en total), con su propia comprobación, historial 
 aplicación olvida el proceso adoptado. El resultado trae `subgoals[]`; el final narra cada parte o la primera que
 no se logró.
 
-**BUSCAR (universal, sin modelo).** Si el destino no está en la vista: el campo o botón de búsqueda visible (léxico
-bilingüe) → escribir el destino → clic en el resultado que lo nombra (nunca Enter: un canal de voz sigue siendo un
-clic que `RiskPolicy` confirma); si no hay, `ctrl_k` y `ctrl_f` (sólo si aparece un campo con foco; si no, Escape);
-después desplazar la lista más poblada (`input.scroll {index}`); sólo entonces el modelo. Un menú abierto por el clic
-en el destino elige la entrada que nombra el objetivo.
+**BUSCAR (universal, sin modelo, `computer_use._find_step`).** Si el destino no está en la vista: el campo o botón
+de búsqueda visible (léxico bilingüe) → escribir el destino → clic en el resultado que lo nombra (nunca Enter: un
+canal de voz sigue siendo un clic que `RiskPolicy` confirma); si no hay, `ctrl_k` y `ctrl_f` (sólo si aparece un
+campo con foco; si no, Escape); después desplazar hasta tres veces la lista con más ítems (`input.scroll {index}`:
+`ScrollPattern` de ese control o la rueda en su centro); sólo entonces el modelo. Un clic en algo visible que nombra
+el destino sin llegar (una tarjeta con su nombre) no cierra BUSCAR: sigue con el buscador. Un menú abierto por el
+clic en el destino elige la entrada que nombra el objetivo.
+
+**Objetivos libres.** Cuando el decisor elige el motor para un pedido que el lector no sabe partir,
+`semantic.missions.free_form_arguments` usa las palabras de la persona tal cual como `goal` (≤ 512 bytes) y, como
+`application`, la app instalada que el pedido nombre (si no, la ventana de delante); sin `successCheck`: termina el
+`done` del modelo con evidencia en pantalla.
 
 **Último recurso.** Una orden sobre el PC que el turno cerró como límite pasa al motor con las palabras de la persona
 como objetivo (`semantic.missions.engine_can_try`), salvo preguntas, lugares fuera del PC, prohibiciones y objetivos
 de borrar, formatear, desinstalar, comprar o pagar.
 
-**Velocidad.** Paso del modelo con gramática GBNF de acto primero (`{"act":"click","i":12}`, ~10 tokens: 0,2–0,7 s);
-30 controles ordenados por el objetivo con la nota «N de M»; teclas y texto en proceso (SendInput, ~50 ms); clic sin
-esperas fijas (estado UIA cada 50 ms y superficie desde 150 ms); vista con captura y OCR en paralelo y OCR sólo cuando
-hace falta; espera de 150 ms entre pasos; apertura de apps UWP por su marco (antes 30 s); worker precalentado al
-arrancar el core; sin etiquetas de progreso escritas por el LLM durante una misión.
+**Velocidad.** Paso del modelo con gramática GBNF de acto primero (`{"act":"click","i":12}`, ~10 tokens de salida en
+vez de ~148, con caché de prompt: 4 s → 0,2–0,7 s en llama-server; en vivo 0,66–1,0 s con el prefill); 30 controles
+ordenados por el objetivo (primero los que comparten palabras con él, luego enfocados, seleccionados y buscadores)
+con la nota «N de M»; teclas por `SendInput` desde el propio proceso (46 ms la tecla en el provider, 67–79 ms el paso en vivo) y texto carácter a carácter a
+3 ms (en ráfaga un editor recién abierto pierde o repite caracteres); clic sin esperas fijas: el worker responde al
+invocar y la postlectura pregunta el estado UIA cada 50 ms hasta 500 ms y compara la superficie desde 150 ms;
+vista con captura y OCR en paralelo al árbol y OCR sólo cuando hace falta; 150 ms de asentamiento entre pasos (antes
+400/1 200 ms); apertura de apps UWP verificada en su marco `ApplicationFrameHost` (antes agotaba 30 s); worker UIA
+arrancado en segundo plano al iniciar el Core; sin rótulos de progreso escritos por el LLM durante una misión (el
+estado se publica como «acting»).
 
-**Guardas.** Sin clics sobre controles que cubren ≥80 % de la ventana; sin repetir un acto que no hizo progresar;
-`page:` sólo cuenta un clic sobre el destino o la entrada de menú que abrió, contra la primera vista de la propia
-app; una app recién lanzada se espera hasta que deja su ventana de arranque; una ventana de administrador
-(`window.elevated`) para la misión con esa causa; `RiskPolicy` confirma también publicar, responder, comentar,
-compartir, unirse, comprar, pagar, borrar y desinstalar.
+**Escribir y enviar.** El texto va con la grafía que dijo la persona, sin comillas. Sin foco en un campo de texto,
+primero se pulsa el campo de mensaje o el único editable. «mandalo / envialo / send it» es el acto enviar: Enter con
+`target: message_composer`, que `RiskPolicy` confirma siempre; un Enter en un campo de mensaje cuyo contenido la
+pantalla no expone (`value` nulo, distinto de `""`) también cuenta como envío y se pregunta antes.
+
+**Guardas.**
+- Sin clics sobre un control que cubre ≥ 80 % de la ventana (`control_covers_window`); el modelo no repite por
+  tercera vez un acto que no hizo aparecer texto nuevo (`no_progress`), y el bucle marca fallido un acto ya hecho
+  desde la misma pantalla cuando la pantalla vuelve a ella (`computer_use_no_progress`).
+- `page:` sólo juzga ventanas sin árbol de accesibilidad (≤ 1 control: CEF, canvas); donde hay controles, llegar es el
+  lugar seleccionado o en el título. Cuenta sólo un clic verificado que nombra el destino (o la entrada del menú que
+  abrió), medido contra el texto de la vista **justo antes de ese clic**: llega si cambió más de la mitad de las
+  líneas, o si la ventana quedó exactamente igual (un clic en el nombre del lugar que no cambia nada: ya estaba ahí).
+- El eco de lo que BAXY escribió (un buscador o su sugerencia) nunca cumple `control:X`: no prueba llegada.
+- Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
+- Una app abierta en frío se vuelve a mirar hasta 10 s mientras la ventana cambie o parezca de arranque (≤ 1 control
+  y ≤ 5 líneas).
+- Una ventana de administrador (`window.elevated`) para la misión con `computer_use_window_elevated`, dicho con esa
+  causa.
+- Un control sin patrón invocable ni punto clicable (Electron) se pulsa en el centro de su rectángulo.
+- Un procedimiento que deja de cambiar la pantalla se abandona y sigue el bucle; la misión no.
+- `RiskPolicy` confirma también publicar, responder, comentar, compartir, unirse, comprar, pagar, borrar y
+  desinstalar; un límite conocido del catálogo no anula una misión probada dentro de una app instalada.
