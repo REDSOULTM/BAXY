@@ -156,6 +156,10 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "GROUNDING",
         "M172: words an observed value already repeats («Fru Fru»), so saying them is not a stutter",
     ),
+    ("computer_use.py", "_folded_words"): (
+        "GROUNDING",
+        "cu-r16: a word of a mission final must be one of the facts, the person's own words or BAXY's vocabulary",
+    ),
     ("llm.py", "_said_misspelled"): (
         "GROUNDING",
         "A7 E1: a name in the reply checked against a word the person wrote with a typo",
