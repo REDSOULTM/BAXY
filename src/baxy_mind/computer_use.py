@@ -1211,6 +1211,10 @@ def _checked_act(
             # destination's own name proves nothing. Something of the page reached must be cited.
             return _none("el nombre del destino ya estaba en pantalla antes; citá algo de lo que se ve al llegar",
                          code="evidence_not_visible")
+        typed = {fold(step.get("text")) for step in (history or []) if isinstance(step, dict) and step.get("operation") == "input.text.type"}
+        if evidence and fold(evidence).strip(" «»\"'") in typed:
+            # What was typed is on screen because it was typed (the search box's echo), never proof of arriving.
+            return _none("lo que escribí se ve porque lo escribí; citá algo del resultado", code="evidence_not_visible")
         if evidence and view_contains(view, evidence):
             return {"operation": "done", "arguments": {"evidence": evidence}, "reason": why}
         return _none("la evidencia citada no está en la vista", code="evidence_not_visible")

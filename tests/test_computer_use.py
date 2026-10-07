@@ -1086,3 +1086,13 @@ def test_a_menu_with_ocr_noise_still_gives_its_first_entry_and_the_window_body_i
         history=clicked, goal="ir a comunidad",
     )
     assert refused["operation"] == "none"
+
+
+def test_what_was_typed_is_never_the_evidence_of_arriving() -> None:
+    view = {"window": {"title": "Steam"}, "controls": [], "text": {"T": ["Cuphead", "Buscar en la tienda"]}}
+    history = [_ok(1, "input.text.type", text="Cuphead"), _ok(2, "input.key.press", key="enter")]
+    refused = computer_use.validate_decision(
+        {"act": "done", "evidence": "Cuphead"}, view=view, last_failed=None, application_names=(), history=history,
+        goal="buscar Cuphead",
+    )
+    assert refused["operation"] == "none"

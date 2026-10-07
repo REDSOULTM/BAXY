@@ -367,6 +367,26 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void ALaterClickElsewhereUndoesAnEarlierArrivalByClick()
+    {
+        JsonObject store = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "Explorar", "Recomendaciones", "Categorías", "Buscar en la tienda", "REBAJAS"]}}
+            """);
+        store["textBeforeClick"] = new JsonObject
+        {
+            ["1"] = new JsonArray("comunidad", "actividad", "perfil", "amigos", "grupos", "insignias"),
+            ["3"] = new JsonArray("biblioteca", "pagina principal", "colecciones", "descargas", "juegos", "batman"),
+        };
+        JsonArray steps =
+        [
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "BIBLIOTECA" },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "TIENDA" },
+        ];
+        Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", store, steps, out _), Is.False);
+    }
+
+    [Test]
     public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
     {
         JsonObject starting = View("""

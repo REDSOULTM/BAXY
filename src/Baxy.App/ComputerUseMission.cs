@@ -322,7 +322,13 @@ internal static class ComputerUseMission
                                 .ConfigureAwait(true) ?? lastView;
                         }
 
-                        if (cited.Length > 0 && ComputerUseSuccessCheck.ViewContains(lastView, cited))
+                        // What this sub-goal typed is on screen because it was typed (the search box's echo), never
+                        // proof of arriving (measured on Steam: «Cuphead» typed in the store search cited as found).
+                        bool echo = SubgoalSteps(steps, start).OfType<JsonObject>().Any(step =>
+                            (string?)step["operation"] == "input.text.type"
+                            && ComputerUseSuccessCheck.Fold((string?)step["text"]) is { Length: > 0 } typed
+                            && ComputerUseSuccessCheck.Fold(cited).Trim(' ', '«', '»', '"', '\'').Equals(typed, StringComparison.Ordinal));
+                        if (cited.Length > 0 && !echo && ComputerUseSuccessCheck.ViewContains(lastView, cited))
                         {
                             subgoalReached = true;
                             subgoalEvidence = cited;
@@ -1991,6 +1997,7 @@ internal static class ComputerUseSuccessCheck
         string target = Fold(place);
         bool previousNamedIt = false;
         int? namedClick = null;
+        int? went = null;
         int position = 0;
         foreach (JsonNode? node in steps)
         {
@@ -2013,13 +2020,20 @@ internal static class ComputerUseSuccessCheck
             {
                 // Measured against the view before the click on the place itself (a menu entry picked after it
                 // still counts from before the menu opened).
-                return namedClick ?? (int?)step["step"] ?? position;
+                went ??= namedClick ?? (int?)step["step"] ?? position;
+            }
+            else if ((bool?)step["ok"] == true)
+            {
+                // A later verified click went somewhere else (measured on Steam: «BIBLIOTECA», then «TIENDA», and the
+                // store passed for the library).
+                went = null;
+                namedClick = null;
             }
 
             previousNamedIt = namesIt;
         }
 
-        return null;
+        return went;
     }
 
     // A field whose name says it looks something up (or holds an address); a field of unknown name counts as one.
