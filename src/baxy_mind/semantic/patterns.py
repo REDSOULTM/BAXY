@@ -362,7 +362,7 @@ def _completed_missing_message_text_request(
 # The primitives a computer-use mission does itself: a typed route made only of these is the mission's own steps said
 # one by one, so the mission takes over. Locating a chat client's channel is one of them: the engine's search on
 # screen finds it in any client, and a voice channel's click is still confirmed by RiskPolicy on its label.
-_MISSION_SUBSUMES = frozenset({
+MISSION_SUBSUMES = frozenset({
     "app.open", "client.channel.locate", "input.key.press", "input.text.type", "input.visible.click",
     "input.visible.controls", "window.focus",
 })
@@ -381,7 +381,7 @@ def _mission_takes_over(
     volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission. A chained
     mission wins when the reader checks every sub-goal and no typed reading covers them all."""
 
-    if intent is not None and set(intent.operations) <= _MISSION_SUBSUMES:
+    if intent is not None and set(intent.operations) <= MISSION_SUBSUMES:
         return True
     steps = getattr(mission, "steps", ())
     if steps:
@@ -393,7 +393,7 @@ def _mission_takes_over(
         # The mission's own primitives in the typed reading are its steps said one by one; only the other typed
         # operations can cover a sub-goal (measured: «… go to Desktop and create a new folder called tasks» read as
         # open + click + a task to remember).
-        return intent is None or len(set(intent.operations) - _MISSION_SUBSUMES) < len(steps)
+        return intent is None or len(set(intent.operations) - MISSION_SUBSUMES) < len(steps)
     if intent is not None:
         # «en la calculadora multiplicá 15 por 3»: a calculation said inside the application is done in it; the
         # typed evaluation does not show it there.
@@ -409,7 +409,7 @@ def _mission_takes_over(
     if not clause or not str(getattr(mission, "goal", "")).startswith(("activar ", "desactivar ")):
         return True
     inner = _resolve_clause_effects(clause, available, application_names, game_catalog)
-    return inner is None or set(inner.operations) <= _MISSION_SUBSUMES
+    return inner is None or set(inner.operations) <= MISSION_SUBSUMES
 
 
 def _computer_use_mission_is_direct(text: str) -> bool:

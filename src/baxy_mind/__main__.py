@@ -70,6 +70,7 @@ from .semantic import temporal as semantic_temporal
 from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
 from .semantic.patterns import (
+    MISSION_SUBSUMES,
     application_shown_media_name,
     clarification_awaits_decider,
     list_entries_said_before,
@@ -6125,6 +6126,19 @@ def _context_decided_result(
             # many times as the readers read it; each one is a step.
             decided = semantic_decider.ContextDecision(
                 decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
+            )
+        elif (
+            restated is not None
+            and restated.operations == ("mission.computer.use",)
+            and set(decided.operations) <= MISSION_SUBSUMES
+        ):
+            # Live v2-s13 «y ahora andá a configuración» after a mission in Discord: the decider took the application
+            # from the conversation («En Discord, haz clic en Configuración.») but chose a lone click, which went to
+            # whatever window was in front and ended «No se confirmó si… funcionó». A restatement the mission reader
+            # reads as a step inside an application is that mission, decided by the screen like any other; one of its
+            # own primitives alone is a piece of it. Its arguments are read from the restatement, not the click's.
+            decided = semantic_decider.ContextDecision(
+                decided.request, "action", ("mission.computer.use",), decided.question,
             )
     listed_entries = (
         entries_on_a_list(text, said_before_by_person[::-1])
