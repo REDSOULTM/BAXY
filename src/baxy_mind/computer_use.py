@@ -254,6 +254,9 @@ def label_names(label: str, name: str) -> bool:
     return allowed > 0 and _edit_distance(needle, haystack, allowed) <= allowed
 
 
+_DESCRIPTIVE_KINDS = frozenset({"Text", "Group", "Pane", "Custom", "Document"})
+
+
 def _short_name(name: str, label: str) -> bool:
     """A control's name short enough to be what it names: at most six words beyond the label's own."""
 
@@ -283,7 +286,8 @@ def find_control(view: dict, label: str, index: int | None = None, kind: str | N
     # Ethernet o Wi-Fi…» was clicked for «Wi-Fi» on a PC without one): containment counts in short names only.
     loose = [
         control for control in controls
-        if label_names(label, str(control.get("name") or "")) and _short_name(str(control.get("name") or ""), label)
+        if label_names(label, str(control.get("name") or ""))
+        and (str(control.get("kind")) not in _DESCRIPTIVE_KINDS or _short_name(str(control.get("name") or ""), label))
     ]
     if len(loose) == 1:
         return loose[0]
