@@ -129,3 +129,14 @@ def test_the_floor_data_is_the_mind_s_own() -> None:
     assert computer_use._STOP_CAUSES is data["causes"]
     for said in data["causes"].values():
         assert set(said) == {"es", "en"} and "operaci" not in said["es"] and "operation" not in said["en"]
+
+
+def test_a_value_the_window_marks_without_a_click_is_not_the_missions_pick() -> None:
+    # Live v6: Word marks its default style «Títulos»; the mission only went to the tab «Diseño».
+    marked = _mission("ir a la pestaña diseño", [("Documento en blanco", "ListItem"), ("Diseño", "TabItem")], {
+        "title": "Documento1 - Word",
+        "values": [{"name": "Diseño", "state": "selected"}, {"name": "Títulos", "state": "selected"}],
+    }, "Word")
+    assert _mission_defect("Ya estoy en la pestaña Diseño y ahora selecciono Títulos.", marked) == "extra_claim"
+    assert _mission_defect("Ya elegí Títulos en Word.", marked) == "extra_claim"
+    assert _mission_defect("Ya estoy en la pestaña Diseño.", marked) is None

@@ -2533,13 +2533,13 @@ _QUOTED = re.compile(r"«([^«»]+)»")
 
 
 def _picked_places(seen: dict) -> set[str]:
+    # What the goals named and what the steps clicked; a value the window marks without this mission clicking it is
+    # not its pick (live v6: Word's «Títulos» style, selected by default, said as «ahora selecciono Títulos»).
     goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)] + [seen.get("goal")]
-    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
     names = [
         *(found.group(1) for goal in goals if isinstance(goal, str) for part in goal.split(";")
           if (found := _PLACE_GOAL.match(re.sub(r"^\s*luego\s+", "", part.strip()))) is not None),
         *(quoted for step in seen.get("stepsDone") or () if isinstance(step, str) for quoted in _QUOTED.findall(step)),
-        *(item.get("name") for item in screen.get("values") or () if isinstance(item, dict)),
     ]
     return {fold(_BIDI_MARKS.sub("", name)).strip(" .") for name in names if isinstance(name, str) and name.strip()}
 
