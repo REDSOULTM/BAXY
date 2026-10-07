@@ -25,9 +25,11 @@ from .files import _TEXT_FILE_EXTENSIONS, files_named_in_reply
 from .grammar import titled_note_with_content
 from .notes import agenda_event_request, new_list_title, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
+    _KNOWN_FOLDER_NAVIGATION,
     _MUSIC_GENERIC_WORDS,
     _MUSIC_QUERY_FILLER,
     application_shown_media_name,
+    folder_then_directory_request,
     resolve_application_catalog_app_id,
     resolve_application_installed_name,
 )
@@ -1244,6 +1246,10 @@ def _explicit_arguments_from_evidence(
         # «crea una carpeta llamada CarterTest en el escritorio»: the name is
         # the person's, the folder is a catalog root (owner decision, point 2).
         directory_match = effect_intent._directory_creation_request(evidence)
+        gone_to = None if directory_match is not None else folder_then_directory_request(evidence)
+        if gone_to is not None:
+            # «andá a Documentos y creá una carpeta llamada X»: made inside the folder gone to.
+            directory_match = gone_to.creation
         if directory_match is None:
             return None
         relative_path = directory_match.group("name").strip()
@@ -1264,11 +1270,23 @@ def _explicit_arguments_from_evidence(
             return None
         folder_word = directory_match.group("folder_a") or directory_match.group("folder_b")
         arguments: dict[str, object] = {"relativePath": relative_path}
-        if folder_word:
+        if gone_to is not None:
+            arguments["folder"] = gone_to.creation_folder
+        elif folder_word:
             arguments["folder"] = effect_intent._KNOWN_FOLDER_ENUM[
                 effect_intent._fold(folder_word)
             ]
         return arguments
+
+    if operation == "filesystem.folder.open":
+        # Live 2026-10-07: the known folder gone to («andá a Documentos», alone or before a creation in it).
+        gone_to = folder_then_directory_request(evidence)
+        if gone_to is None:
+            opened = re.fullmatch(
+                _KNOWN_FOLDER_NAVIGATION + r"[\s.!?]*", evidence.strip(), re.IGNORECASE,
+            )
+            return {"folder": effect_intent._KNOWN_FOLDER_ENUM[effect_intent._fold(opened.group("folder"))]} if opened else None
+        return {"folder": gone_to.folder}
 
     if operation == "filesystem.write.text":
         write_match = effect_intent._file_creation_request(evidence) or re.fullmatch(
