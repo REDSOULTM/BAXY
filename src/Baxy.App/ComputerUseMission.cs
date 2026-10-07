@@ -1637,7 +1637,8 @@ internal static class ComputerUseMission
                 ["operation"] = step["operation"]?.DeepClone(),
                 ["ok"] = step["ok"]?.DeepClone(),
             };
-            foreach (string key in new[] { "label", "index", "text", "key", "direction", "appId", "error", "changed" })
+            // «kind»: what the click pressed, by its receipt (a field keeps the caret when a pop-up of it hides it).
+            foreach (string key in new[] { "label", "index", "text", "key", "direction", "appId", "error", "changed", "kind" })
             {
                 if (step[key] is JsonNode value)
                 {
