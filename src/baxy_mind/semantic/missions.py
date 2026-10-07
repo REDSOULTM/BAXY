@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Iterable
 
 from .. import effect_intent
@@ -70,14 +70,20 @@ _NAVIGATE_HEAD = (
     r"(?:ve|vete|ir|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|"
     r"cambia|cambiate|take\s+me|abri|abre|open)"
 )
+# «el chat con Ron92», «la conversación con Ana», «el canal de voz de X»: a generic place noun before the name is not the
+# name (measured: «abrí el chat con Ron92» searched Discord for «chat con ron92»).
+_PLACE_NOUN = (
+    r"(?:(?:canal|channel|chat|conversacion|conversation|sala|room|seccion|section|pestana|tab|apartado|menu|carpeta|"
+    r"folder|servidor|server|perfil|profile)\s+(?:de\s+(?:voz|texto)\s+)?(?:de\s+|del\s+|con\s+|with\s+|of\s+)?)?"
+)
 _OPEN_INSIDE_CLAUSE = re.compile(
-    r"^(?:abri|abre|abrime|abra|abrir|open)\s+(?:(?:el|la|los|las|the|mi|my|un|una)\s+)?(?P<target>\S.{0,60}?)[\s.!?]*$"
+    r"^(?:abri|abre|abrime|abra|abrir|open)\s+(?:(?:el|la|los|las|the|mi|my|un|una)\s+)?"
+    + _PLACE_NOUN + r"(?P<target>\S.{0,60}?)[\s.!?]*$"
 )
 _NAVIGATE_CLAUSE = re.compile(
     rf"^{_NAVIGATE_HEAD}\s+(?:a(?:l)?|to|hacia|hasta|into|en|por\s+la\s+gui\s+hasta|por\s+la\s+interfaz\s+hasta|through\s+the\s+gui\s+to)\s+"
     r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
-    r"(?:(?:canal|channel|chat|sala|room|seccion|section|pestana|tab|apartado|menu)\s+(?:de\s+(?:voz|texto)\s+)?(?:de\s+|del\s+)?)?"
-    r"(?P<target>\S.{0,60}?)[\s.!?]*$"
+    + _PLACE_NOUN + r"(?P<target>\S.{0,60}?)[\s.!?]*$"
 )
 _KEY_CLAUSE = re.compile(
     r"^(?:apreta|aprieta|apretale|pulsa|pulsale|presiona|presionale|press|hit|toca|tocale|dale(?:\s+a)?)"
@@ -140,8 +146,10 @@ _CLAUSE_VERB = (
     r"calcular|computar|resolver|resuelve|multiplicar|sumar|restar|dividir|divide|"
     r"escribir|escribe|tipear|teclear|hacer|haz|clic|clickear|clicar|abrir|abre|buscar|seleccionar|"
     r"elegir|elige|escoger|escoge|marcar|desmarcar|cerrar|cierra|desplazar|bajar|subir|sube|"
+    r"crear|crea|renombrar|guardar|copiar|pegar|mover|mueve|enviar|envia|mandar|descargar|"
     r"go|navigate|switch|press|hit|tap|turn|enable|disable|calculate|compute|solve|work|type|write|click|"
-    r"open|search|find|select|choose|pick|check|uncheck|close|scroll|toggle)"
+    r"open|search|find|select|choose|pick|check|uncheck|close|scroll|toggle|create|rename|save|copy|paste|move|send|"
+    r"download)"
 )
 
 
@@ -306,7 +314,17 @@ def _tab_named(reading: str) -> str | None:
     return None if tab.group("before") and named.split()[-1] in _TAB_PLACE_END else named
 
 
+# «… y mandalo», «envialo», «send it»: sending what was just written is Enter in the message box; RiskPolicy asks
+# before it reaches the person (measured: «escribí "prueba" y mandalo» typed «… y mandalo» as text).
+_SEND_CLAUSE = re.compile(
+    r"^(?:manda|mandale|mandalo|mandala|mandar|mandarlo|envia|envialo|enviala|enviar|enviarlo|send|submit)"
+    r"(?:\s+(?:it|el\s+mensaje|the\s+message|eso|that))?[\s.!?]*$"
+)
+
+
 def _read_act(folded: str) -> tuple[str, str | None] | None:
+    if _SEND_CLAUSE.match(folded) is not None:
+        return "apretar enter", "stepDone:input.key.press:enter"
     key = _KEY_CLAUSE.match(folded)
     if key is not None:
         catalog_key = _key_from_words(key.group("key"))
@@ -400,6 +418,28 @@ def _names_nothing(reading: str) -> bool:
     return clitic is not None and _head_is(head[: clitic.start()], _CLAUSE_VERB)
 
 
+def _as_said(goal: str, said: str) -> str:
+    """«escribir X»: X as the person wrote it (case, accents) and without the quotes that delimit it (measured:
+    «escribí "leche"» typed the quotes, and the folded reading would type «hola mundo» for «Hola Mundo»)."""
+
+    if not goal.startswith("escribir "):
+        return goal
+    wanted = goal[len("escribir "):].strip()
+    folded_chars: list[str] = []
+    origin: list[int] = []
+    for position, character in enumerate(said):
+        for piece in fold(character) or (" " if character.isspace() else ""):
+            folded_chars.append(piece)
+            origin.append(position)
+    folded_said = "".join(folded_chars)
+    start = folded_said.find(wanted)
+    if start < 0:
+        return "escribir " + wanted.strip("\"'«»“”")
+    end = start + len(wanted) - 1
+    original = said[origin[start]:origin[end] + 1]
+    return "escribir " + original.strip().strip("\"'«»“”").strip()
+
+
 def mission_request(
     text: str,
     application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
@@ -418,7 +458,9 @@ def mission_request(
         return None
     chained = _chained_request(folded, catalog)
     if chained is not None:
-        return chained
+        steps = tuple(replace(step, goal=_as_said(step.goal, text)) for step in chained.steps)
+        joined = "; luego ".join(step.goal for step in steps).encode("utf-8")[:500].decode("utf-8", "ignore")
+        return replace(chained, steps=steps, goal=joined if steps else chained.goal)
     for application, clause in _app_frames(folded):
         key = _catalog_key(application, catalog)
         if key is None:
@@ -430,7 +472,7 @@ def mission_request(
         if read is None:
             continue
         goal, check = read
-        return MissionRequest(_display_name(key, catalog), goal, check, clause)
+        return MissionRequest(_display_name(key, catalog), _as_said(goal, text), check, clause)
     # A tab named with no browser, or with the category alone («en el navegador»): the person's default browser
     # (a named browser above wins).
     tab = _bare_tab(folded)

@@ -402,9 +402,17 @@ def deterministic_step(
         return None
     if folded_goal.startswith("escribir "):
         text = goal[len("escribir "):].strip()
-        if text and not _steps_ok(history, "input.text.type") and not _focused_is_password(view):
-            return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
-        return None
+        if not text or _steps_ok(history, "input.text.type") or _focused_is_password(view):
+            return None
+        field = _place_to_type(view, history)
+        if field is not None:
+            # The keyboard is not on a text field: the field is clicked first, the way a person puts the cursor there
+            # (measured: in Discord the text went to the message search instead of the message box).
+            arguments = {"label": str(field.get("name") or "")}
+            if isinstance(field.get("i"), int):
+                arguments["index"] = field["i"]
+            return {"operation": "input.visible.click", "arguments": arguments, "reason": "pongo el cursor donde se escribe"}
+        return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
     for head, wanted in (("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off")):
         if not folded_goal.startswith(head):
             continue
@@ -481,6 +489,35 @@ def _is_search_field(control: dict) -> bool:
     if _ADDRESS_NAME.search(name) or "password" in str(control.get("state") or ""):
         return False
     return _SEARCH_NAME.search(name) is not None
+
+
+def _place_to_type(view: dict, history: list[dict]) -> dict | None:
+    """The text field to click before typing when the keyboard is not on one: a message box first, else the only
+    editable field; None when a text field already has the keyboard, when it was just clicked, or when there is no
+    single field to choose."""
+
+    focused = _focused(view)
+    if focused is not None and str(focused.get("kind")) in {"Edit", "Document", "ComboBox"}:
+        return None
+    controls = [control for control in (view.get("controls") or []) if isinstance(control, dict)]
+    if any("focused" in str(control.get("state") or "").split() and str(control.get("kind")) in {"Edit", "Document"}
+           for control in controls):
+        return None
+    fields = [
+        control for control in controls
+        if str(control.get("kind")) in {"Edit", "Document"} and "password" not in str(control.get("state") or "")
+        and not _is_search_field(control) and not re.search(r"\b(?:direcc|address|url)", fold(control.get("name")))
+    ]
+    composers = [control for control in fields if _COMPOSER_NAME.search(fold(control.get("name")))]
+    chosen = composers[0] if len(composers) == 1 else fields[0] if len(fields) == 1 else None
+    if chosen is None:
+        return None
+    last = history[-1] if history else None
+    if last is not None and last.get("operation") == "input.visible.click" and label_names(
+        str(chosen.get("name") or ""), str(last.get("label") or "")
+    ):
+        return None
+    return chosen
 
 
 def _focused_field(view: dict) -> dict | None:

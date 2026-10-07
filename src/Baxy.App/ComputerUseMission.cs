@@ -1434,8 +1434,17 @@ internal static class ComputerUseSuccessCheck
                         state = rest[(split + 1)..];
                     }
 
-                    return FindControls(view, name).Any(control => state is null
-                        || Fold((string?)control["state"]).Split(' ').Contains(state));
+                    // What BAXY itself typed (a search box, its suggestion echoing the query) never proves arriving
+                    // (measured: the Explorer search echo passed for a folder that was never created).
+                    var typed = new HashSet<string>(
+                        steps.OfType<JsonObject>()
+                            .Where(step => (string?)step["operation"] == "input.text.type")
+                            .Select(step => Fold((string?)step["text"])),
+                        StringComparer.Ordinal);
+                    return FindControls(view, name).Any(control =>
+                        (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
+                        && !typed.Contains(Fold((string?)control["name"]))
+                        && (state is null || Fold((string?)control["state"]).Split(' ').Contains(state)));
                 }
             case "value":
                 {

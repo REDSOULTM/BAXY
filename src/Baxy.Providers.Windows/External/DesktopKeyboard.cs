@@ -65,14 +65,16 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 
     public uint TypeText(string text)
     {
-        var inputs = new Input[text.Length * 2];
+        // One character at a time (measured: a whole text sent in one batch to Notepad just opened came out as the
+        // same character repeated; WinUI editors drop or repeat packets of a burst). ~1 ms per character.
+        uint accepted = 0;
         for (int index = 0; index < text.Length; index++)
         {
-            inputs[index * 2] = Key(0, text[index], Unicode);
-            inputs[index * 2 + 1] = Key(0, text[index], Unicode | KeyUp);
+            accepted += Send([Key(0, text[index], Unicode), Key(0, text[index], Unicode | KeyUp)]);
+            Thread.Sleep(1);
         }
 
-        return Send(inputs);
+        return accepted;
     }
 
     public int LastError() => Marshal.GetLastPInvokeError();
