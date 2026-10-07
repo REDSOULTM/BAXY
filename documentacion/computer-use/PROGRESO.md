@@ -151,7 +151,7 @@ Pedidos completos, corridas anteriores y comparación con la fase 4: `MEDICIONES
 | u8 | Configuración → Sistema → Pantalla | **logrado** | 4,4 / 6,1 s | — |
 | u9 | Spotify «go to Search» (inglés) | **logrado** | 8,7 / 10,7 s | — |
 
-Total del banco principal: **21/24 correctos** (s06 cuenta como límite honesto correcto), 3 fallos (c4, u4, u6).
+Total del banco principal (24 casos; u2 y u5 son extras que pasaron en su primera corrida): **21/24 correctos** (s06 cuenta como límite honesto correcto), 3 fallos (c4, u4, u6).
 Corpus del lector: 165 órdenes es/en → 161 misiones verificables + 4 cubiertas por la ruta tipada (D21).
 
 Pendiente: re-correr c4 en vivo con el Supr de la barra de direcciones; Epic (u4: carga larga) y WhatsApp (u6: el

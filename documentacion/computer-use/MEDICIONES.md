@@ -97,7 +97,7 @@ en caliente, un turno ≈ decisión 0,5–0,7 s + misión + final 1–2 s.
 | u8 | Configuración → Sistema → Pantalla | ✓ | 4,4 s / 6,1 s |
 | u9 | Spotify «go to Search» (inglés) | ✓ | 8,7 s / 10,7 s |
 
-Los casos u* son aplicaciones que el motor nunca había probado. **Banco principal: 21/24 correctos** (s06 cuenta
+Los casos u* son aplicaciones que el motor nunca había probado. **Banco principal (24 casos: s01–s07, s11, s12, s14, c1–c7, u1, u3, u4, u6–u9): 21/24 correctos**; u2 y u5 pasaron en su primera corrida y quedan fuera del banco principal (s06 cuenta
 como límite honesto correcto), 3 fallos: c4, u4, u6. **Corpus del lector** (`tests/test_computer_use_corpus.py`):
 165 órdenes es/en → 161 misiones verificables + 4 cubiertas por la ruta tipada (D21).
 
