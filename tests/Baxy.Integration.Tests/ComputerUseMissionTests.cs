@@ -324,6 +324,24 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void ALearnedClickIsPinnedToTheOnlyControlOfTheViewThatCarriesItsName()
+    {
+        JsonObject clock = View("""
+            {"window": {"title": "Reloj"}, "controls": [
+              {"i": 3, "kind": "ListItem", "name": "Temporizador"}, {"i": 4, "kind": "ListItem", "name": "Alarma"}]}
+            """);
+        var learned = new MindComputerUseStep("input.visible.click", new JsonObject { ["label"] = "Alarma" }, "procedure");
+        var twice = View("""
+            {"window": {"title": "X"}, "controls": [{"i": 1, "kind": "Button", "name": "Alarma"}, {"i": 2, "kind": "Text", "name": "Alarma"}]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)ComputerUseMission.IdentifyOnView(learned, clock)!.Arguments["index"], Is.EqualTo(4));
+            Assert.That(ComputerUseMission.IdentifyOnView(learned, twice)!.Arguments["index"], Is.Null, "two controls carry it: the label decides");
+        });
+    }
+
+    [Test]
     public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
     {
         JsonObject starting = View("""
