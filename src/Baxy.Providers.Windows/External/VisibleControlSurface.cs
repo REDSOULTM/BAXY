@@ -120,22 +120,24 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The topmost visible window whose title names the application: the
-    /// mission's target when its process is unknown (app.open did not verify,
-    /// or the application was already there). Brought to the front; 0 when no
-    /// window is titled that way. Title matching is generic: the folded
-    /// application name inside the folded title.
+    /// The application's window when its process is unknown (app.open did not
+    /// verify, or the application was already there): the topmost visible
+    /// window whose executable is the application, else the topmost one whose
+    /// title names it in its last segment (<see cref="TitleNamesApplication"/>).
+    /// Never a developer's or BAXY's own window the request did not name
+    /// (<see cref="ProtectedFrom"/>). Brought to the front; 0 when none is.
     /// </summary>
     internal static async ValueTask<nint> ResolveTitledWindowAsync(
         string application,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        string wanted = FoldTitle(application);
-        if (wanted.Length == 0)
+        if (FoldTitle(application).Length == 0)
             return 0;
-        nint found = 0;
+        nint byProcess = 0;
+        nint byTitle = 0;
         uint self = unchecked((uint)Environment.ProcessId);
+        var names = new Dictionary<uint, string>();
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
@@ -145,12 +147,26 @@ internal static partial class VisibleControlSurface
             GetWindowThreadProcessId(window, out uint owner);
             if (owner == 0 || owner == self || !HasUsableSurface(window))
                 return true;
-            if (!FoldTitle(WindowTitle(window)).Contains(wanted, StringComparison.Ordinal))
+            if (!names.TryGetValue(owner, out string? processName))
+            {
+                processName = WindowProcess(window).ProcessName;
+                names[owner] = processName;
+            }
+
+            if (ProtectedFrom(processName, application))
                 return true;
-            found = window;
-            return false;
+            if (ProcessIsApplication(processName, application))
+            {
+                byProcess = window;
+                return false;
+            }
+
+            if (byTitle == 0 && TitleNamesApplication(WindowTitle(window), application))
+                byTitle = window;
+            return true;
         };
         _ = EnumWindows(callback, nint.Zero);
+        nint found = byProcess != 0 ? byProcess : byTitle;
         if (found == 0)
             return 0;
         if (GetForegroundWindow() != found)
@@ -190,6 +206,93 @@ internal static partial class VisibleControlSurface
         return root;
     }
 
+    // The windows where the person's own work and BAXY live: an editor, an IDE, a terminal, a console, BAXY itself.
+    // Safety review 2026-10-07: a file «SteamLocalAdapter.cs» open in Visual Studio Code was the first window titled
+    // «Steam», and a mission would have typed and pressed keys in the editor where the developer's agent lives. Such
+    // a window is the application only when the request names that very application (the names on the right).
+    private static readonly Dictionary<string, string[]> ProtectedProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Code"] = ["code", "vs code", "vscode", "visual studio code"],
+        ["Code - Insiders"] = ["code insiders", "visual studio code insiders"],
+        ["devenv"] = ["visual studio", "devenv"],
+        ["WindowsTerminal"] = ["terminal", "windows terminal"],
+        ["OpenConsole"] = ["terminal", "windows terminal"],
+        ["powershell"] = ["powershell", "windows powershell"],
+        ["pwsh"] = ["powershell", "pwsh"],
+        ["cmd"] = ["cmd", "simbolo del sistema", "command prompt"],
+        ["conhost"] = ["cmd", "simbolo del sistema", "command prompt", "consola"],
+        ["Baxy"] = ["baxy"],
+        ["baxy-core"] = ["baxy"],
+    };
+
+    // Words of an application's name that name no application by themselves.
+    private static readonly HashSet<string> GenericApplicationWords = new(StringComparer.Ordinal)
+    {
+        "the", "los", "las", "navegador", "browser", "google", "microsoft", "mozilla", "app", "aplicacion",
+    };
+
+    /// <summary>A developer's or BAXY's own process that the request did not name.</summary>
+    internal static bool ProtectedFrom(string? processName, string? application)
+    {
+        string process = (processName ?? string.Empty).Trim();
+        if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            process = process[..^4];
+        return ProtectedProcesses.TryGetValue(process, out string[]? names)
+            && !names.Contains(FoldTitle(application), StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The executable is the application: its name is the application's name without spaces
+    /// («EpicGamesLauncher»), or one of its distinctive words («chrome» for Google Chrome, «Spotify»).
+    /// </summary>
+    internal static bool ProcessIsApplication(string? processName, string? application)
+    {
+        string process = FoldTitle(processName);
+        if (process.EndsWith(".exe", StringComparison.Ordinal))
+            process = process[..^4];
+        string wanted = FoldTitle(application);
+        if (process.Length == 0 || wanted.Length == 0)
+            return false;
+        return process == wanted.Replace(" ", string.Empty, StringComparison.Ordinal)
+            || ApplicationWords(wanted).Contains(process, StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The title names the application where windows put their own name: as whole words in its last « - »
+    /// segment («Ron92 - Discord», «Nueva pestaña - Google Chrome»), or the whole title when it has no separator
+    /// («Steam», «Calculadora»). «SteamLocalAdapter.cs - BAXY - Visual Studio Code» names Visual Studio Code.
+    /// </summary>
+    internal static bool TitleNamesApplication(string? title, string? application)
+    {
+        string wanted = FoldTitle(application);
+        if (wanted.Length == 0)
+            return false;
+        string segment = TitleSeparator().Split(FoldTitle(title))[^1].Trim();
+        if (segment.Length == 0)
+            return false;
+        return NamesAsWords(segment, wanted) || ApplicationWords(wanted).Any(word => NamesAsWords(segment, word));
+    }
+
+    private static string[] ApplicationWords(string folded) =>
+        [.. folded.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Where(word => word.Length >= 3 && !GenericApplicationWords.Contains(word))];
+
+    private static bool NamesAsWords(string text, string words)
+    {
+        for (int at = text.IndexOf(words, StringComparison.Ordinal); at >= 0;
+             at = text.IndexOf(words, at + 1, StringComparison.Ordinal))
+        {
+            int end = at + words.Length;
+            if ((at == 0 || !char.IsLetterOrDigit(text[at - 1])) && (end == text.Length || !char.IsLetterOrDigit(text[end])))
+                return true;
+        }
+
+        return false;
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+[-\u2013\u2014|]\s+", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
+    private static partial System.Text.RegularExpressions.Regex TitleSeparator();
+
     internal static string FoldTitle(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -199,8 +302,9 @@ internal static partial class VisibleControlSurface
         bool pendingSpace = false;
         foreach (char character in decomposed)
         {
+            // A format character (Edge writes «Microsoft\u200b Edge» in its titles) is no letter of the name.
             if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
-                == System.Globalization.UnicodeCategory.NonSpacingMark)
+                is System.Globalization.UnicodeCategory.NonSpacingMark or System.Globalization.UnicodeCategory.Format)
             {
                 continue;
             }
