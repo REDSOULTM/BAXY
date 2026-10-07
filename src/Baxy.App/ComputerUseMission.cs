@@ -250,6 +250,16 @@ internal static class ComputerUseMission
                     state["unchangedViews"] = unchanged;
                     // Two acts in a row without the screen changing: the loop stops and
                     // says what it sees instead of going round (diseño §3).
+                    if (unchanged >= 2 && done > 0 && (int?)state["procedureIndex"] is >= 0 && (bool?)state["procedureDeviated"] != true)
+                    {
+                        // A learned sequence that stopped changing the screen is abandoned, not the mission: from
+                        // here the routine and the model decide (measured: a stale Steam procedure ended the mission).
+                        state["procedureDeviated"] = true;
+                        state["procedureIndex"] = -1;
+                        state["unchangedViews"] = 0;
+                        unchanged = 0;
+                    }
+
                     if (unchanged >= 2 && done > 0)
                     {
                         errorCode = "computer_use_surface_unchanged";
@@ -1481,8 +1491,11 @@ internal static class ComputerUseSuccessCheck
     // changes most of them.
     private static bool PageAtom(string rest, JsonObject view, JsonArray steps)
     {
+        // Only a window without an accessible tree (CEF, canvas) is judged by its written text; where controls exist,
+        // arriving is the place selected or titled (measured on Discord: «Cotele» written in an activity card passed
+        // for the channel while the Friends page was open).
         int? click = AClickWentTo(rest, steps);
-        if (!ViewContains(view, rest) || click is null)
+        if ((view["controls"] as JsonArray)?.Count > 1 || !ViewContains(view, rest) || click is null)
         {
             return false;
         }

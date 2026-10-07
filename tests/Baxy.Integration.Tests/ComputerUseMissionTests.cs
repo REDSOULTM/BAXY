@@ -156,6 +156,34 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Two false successes measured live: Steam's start-up window was the baseline and the store passed for the library;
+    // Discord's Friends page passed for a channel because the channel's name was written in an activity card.
+    [Test]
+    public void APlaceIsMeasuredAgainstTheViewBeforeItsClickAndOnlyInAWindowWithoutATree()
+    {
+        JsonArray clicked = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "biblioteca" }];
+        JsonObject store = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Pagina principal", "Colecciones", "Descargas", "Explorar", "REBAJAS DE OTOÑO"]}}
+            """);
+        store["baselineText"] = ComputerUseSuccessCheck.TextLines(View("""{"text": {"TL": ["Iniciar sesion en Steam", "Conectando"]}}"""));
+        store["textBeforeClick"] = new JsonObject
+        {
+            ["2"] = ComputerUseSuccessCheck.TextLines(View("""{"text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Explorar", "REBAJAS DE OTOÑO", "Lista de deseados"]}}""")),
+        };
+        JsonObject friends = View("""
+            {"window": {"title": "Discord"},
+             "controls": [{"i": 0, "kind": "TreeItem", "name": "Amigos", "state": "selected"}, {"i": 1, "kind": "Button", "name": "Choche Cotele!!!"}],
+             "text": {"TL": ["Amigos", "En linea", "Choche", "Cotele!!!", "burrollegua", "Activo ahora"]}}
+            """);
+        JsonArray cardClick = [new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Choche Cotele!!!" }];
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", store, clicked, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:cotele", friends, cardClick, out _), Is.False);
+        });
+    }
+
     [Test]
     public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
     {

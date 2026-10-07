@@ -51,3 +51,31 @@ Goal: `documentacion/GOAL_COMPUTER_USE_2026-10-06.md`. Rama `fable/computer-use-
 - Estado del PC devuelto: volumen 60 y brillo 40 como al empezar; modo avión revertido; Steam, Discord, Opera,
   Reloj, Calculadora y Panel de control abiertos por las pruebas, cerrados; sesión de Opera del dueño restaurada
   byte a byte desde la copia previa.
+
+## v2 (2026-10-07): universal, encadenado, rápido
+
+Pedido del dueño (00:10): que BAXY use el PC como una persona, en cualquier app, con misiones encadenadas, rápido y
+con calidad; plazo 13:00. Rama `fable/cu-universal-v2`. Análisis (fase A): el tiempo era sobrecoste de BAXY (UWP 30 s,
+PowerShell por tecla, esperas fijas, finales y progreso por LLM, paso del modelo con 148 tokens), y la universalidad
+fallaba por un solo acto por pedido, sin búsqueda dentro de la app ni objetivos libres.
+
+| Cambio | Commit |
+|---|---|
+| Paso del modelo con gramática de acto primero (4 s → 0,2–0,7 s medido en llama-server) | bf38d6b4 |
+| Mente: BUSCAR universal, encadenado `steps[]`, objetivos libres, guardas, nombres bilingües | 9ff5b4fc |
+| Último recurso: una orden sobre el PC sin operación la intenta el motor | df446de1 |
+| Vista para el modelo: 30 controles por el objetivo + «N de M» | 2a6b2c3e |
+| Provider (agente A): UWP por su marco, teclas en proceso, clic rápido, worker precalentado, scroll por control | merge 8177a776 |
+| App/Kernel (agente B): sub-objetivos, esperas de 150 ms, OCR a demanda, guardas, política ampliada | merge cbbf199c |
+| Arreglos medidos en vivo: escritorio no es ventana de app; espera de arranque; ventana elevada; page: contra la vista previa al clic; clic físico si no se invoca; límite no anula misión | ea14333b, b396dfe8, fa009cf1 |
+
+### Banco en vivo (turno completo, `latency_ms`; verificación independiente)
+
+| # | Pedido | Resultado | Turno | Antes |
+|---|---|---|---|---|
+| 1 | en la calculadora calculá 37*12 (cerrada) | **logrado** — pantalla «444» | 4,4 s | 38–41 s |
+| 3 | en Configuración andá a Bluetooth y dispositivos | **logrado** — ítem seleccionado | 3,3 s | — |
+| 4 | en el Explorador de archivos andá a Descargas | **logrado** (tras arreglo del escritorio) | misión 3,5 s | — |
+| 5 | en el Panel de control abrí Programas | **logrado** | 4,7 s | 7,5 s |
+| 6 | en el Administrador de tareas andá a Rendimiento | límite de Windows (app elevada), dicho con esa causa | 33,6 s | — |
+| 7 | abrí Paint y elegí la herramienta Texto | **logrado** — «Texto» activo | 6,5 s | — |

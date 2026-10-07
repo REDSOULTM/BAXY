@@ -8290,6 +8290,15 @@ def _decide_turn_result(
                 )
             else:
                 intent_operations = []
+    if (
+        explicit_intent is not None
+        and "mission.computer.use" in explicit_intent.operations
+        and "mission.computer.use" in (decision.get("effect_operations") or [])
+    ):
+        # A mission the reader proved covers the whole request (its application frame and every clause, chained or
+        # not); no clause is left for the conservation contract (measured: «en el Reloj andá a Cronómetro» kept
+        # «cronómetro» as an unresolved timer and the turn fell to a bare click without the Clock).
+        unresolved_compound_effects = None
     try:
         decision = apply_compound_effect_conservation_veto(
             decision,
