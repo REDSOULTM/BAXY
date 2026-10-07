@@ -5401,6 +5401,25 @@ def _clock_read_request(text: str, history: object) -> str | None:
     return semantic_temporal.clock_there_request(text, prior)
 
 
+def _decider_left_the_step(
+    decided: semantic_decider.ContextDecision,
+    in_application: str,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> bool:
+    """Live v2-x12: the decider closed «ahora ponela en modo científica» (after «abrí la calculadora») as a limit, and
+    the engine ran the bare words in no window. A step inside the conversation's application
+    (``semantic.missions.follow_up_in_application``) is that mission unless the decider chose a typed operation (D21)
+    or already restated it as a mission in that same application (its words stand, v2-s13)."""
+
+    if decided.decision != "action" or not decided.operations:
+        return True
+    if not set(decided.operations) <= MISSION_SUBSUMES | {"mission.computer.use"}:
+        return False
+    application = getattr(semantic_missions.mission_request(in_application, application_names), "application", None)
+    restated = semantic_missions.mission_request(decided.request, application_names)
+    return restated is None or restated.application != application
+
+
 def _close_of_the_just_opened(
     text: str,
     history: object,
@@ -5690,6 +5709,16 @@ def _context_decided_result(
     )
     placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
     closing = _close_of_the_just_opened(text, history, available_operations, application_names)
+    # Live v2-x12 «ahora ponela en modo científica» after «abrí la calculadora»: a step that names no application
+    # happens in the one the conversation is in, as the one-turn order (``semantic.missions.follow_up_in_application``).
+    in_application = (
+        semantic_missions.follow_up_in_application(
+            text, _prior_user_texts(history, text), available_operations, application_names,
+            english=_read_reply_language(text, history) == "en",
+        )
+        if closing is None
+        else None
+    )
     said_before = [
         str(turn.get("content") or "") for turn in reversed(history)
         if isinstance(turn, dict) and str(turn.get("content") or "") != text
@@ -5853,6 +5882,8 @@ def _context_decided_result(
             decided = semantic_decider.ContextDecision(
                 decided.request, "action", (memory,), decided.question, decided.arguments,
             )
+        if in_application is not None and _decider_left_the_step(decided, in_application, application_names):
+            decided = semantic_decider.ContextDecision(in_application, "action", ("mission.computer.use",), "")
     # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
     # wrong can be told apart from one whose decider gave none.
     argument_fields = [name for name, _ in decided.arguments]
