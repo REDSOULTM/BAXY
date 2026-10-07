@@ -382,14 +382,15 @@ def test_a_tab_said_by_its_place_names_no_tab() -> None:
 
 def test_a_doing_clause_reads_in_any_person() -> None:
     for said, goal in (
-        ("en Paint elegí el color rojo", "elegi el color rojo"),
-        ("en Paint elija el color rojo", "elige el color rojo"),
-        ("en Paint elegir el color rojo", "elegir el color rojo"),
-        ("en Paint seleccione el pincel", "selecciona el pincel"),
-        ("en Paint marque la casilla", "marca la casilla"),
-        ("in Paint pick the red color", "pick the red color"),
-    ):
+        # Choosing a tool or a colour is clicking it until it shows selected (computer use v2, owner 2026-10-07).
+        ("en Paint elegí el color rojo", "seleccionar rojo"),
+        ("en Paint elija el color rojo", "seleccionar rojo"),
+        ("en Paint elegir el color rojo", "seleccionar rojo"),
+        ("en Paint seleccione el pincel", "seleccionar pincel"),
+        ("in Paint pick the red color", "seleccionar red"),
         # The reader reads the act; with no check of its own the route is the decider's (test below).
+        ("en Paint marque la casilla", "marca la casilla"),
+    ):
         arguments = missions.mission_request(said, MORE_APPS).arguments()
         assert arguments["application"] == "Paint" and arguments["goal"] == goal, said
     assert _mission_in("en Steam vaya a la tienda")["goal"] == "ir a tienda"
@@ -464,7 +465,9 @@ def test_what_the_catalog_already_does_keeps_its_typed_operation() -> None:
 def test_a_loose_verb_inside_an_app_is_left_to_the_decider() -> None:
     assert _route("en Spotify baja el volumen") is None
     assert _route("en WhatsApp escribile a Ron92 hola") is None
-    assert _route("en Paint elegí el color rojo") is None
+    assert _route("en Paint marcá la casilla") is None
+    # Choosing a colour now has its check (selected, or the verified click on it): the engine's.
+    assert _route("en Paint elegí el color rojo") == ("mission.computer.use",)
 
 
 def test_the_mission_takes_over_its_own_primitives() -> None:
@@ -694,7 +697,9 @@ def test_chained_missions_route_to_the_engine_and_ground_their_steps() -> None:
     grounded = _ground_explicit_arguments("mission.computer.use", said, CHAIN_SCHEMA, MORE_APPS)
     assert grounded is not None and len(grounded["steps"]) == 3 and grounded["steps"][2]["application"] == "Steam"
     # A clause the reader cannot check leaves the turn to the decider.
-    assert _route("abre Steam, ve a la biblioteca y busca Batman") != ("mission.computer.use",)
+    assert _route("abre Steam, ve a la biblioteca y dibujá a Batman") != ("mission.computer.use",)
+    # Searching is checked now (the name typed and submitted, or the page titled with it): the engine's.
+    assert _route("abre Steam, ve a la biblioteca y busca Batman") == ("mission.computer.use",)
 
 
 def test_a_free_form_goal_is_the_persons_clause_with_the_app_it_names() -> None:

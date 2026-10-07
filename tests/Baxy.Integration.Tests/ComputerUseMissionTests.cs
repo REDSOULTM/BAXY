@@ -284,6 +284,34 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void ANameTypedIntoASearchNeverProvesTheItemButOneTypedIntoItsNameBoxDoes()
+    {
+        JsonObject view = View("""
+            {"window": {"title": "Documentos", "process": "explorer"},
+             "controls": [{"i": 0, "kind": "ListItem", "name": "baxy-prueba", "state": ""}], "text": {}}
+            """);
+        JsonArray Typed(string? into)
+        {
+            var step = new JsonObject { ["step"] = 1, ["operation"] = "input.text.type", ["text"] = "baxy-prueba", ["ok"] = true };
+            if (into is not null)
+            {
+                step["into"] = into;
+            }
+
+            return [step];
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:baxy-prueba", view, Typed("Buscar en Documentos"), out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:baxy-prueba", view, Typed("Barra de direcciones"), out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:baxy-prueba", view, Typed(null), out _), Is.False, "where it went unknown, an echo");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:baxy-prueba", view, Typed("Nombre"), out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:baxy-prueba", view, [], out _), Is.True);
+        });
+    }
+
+    [Test]
     public void StepDoneNeedsAVerifiedStepOfThatOperationAndArgument()
     {
         var steps = new JsonArray

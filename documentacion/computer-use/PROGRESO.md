@@ -73,7 +73,7 @@ fallaba por un solo acto por pedido, sin búsqueda dentro de la app ni objetivos
 | BUSCAR sigue con el buscador tras pulsar algo que nombra el destino sin llegar | e8a6a560 |
 | Texto con la grafía dicha; «mandalo» es enviar; cursor en el campo antes de escribir; el eco no prueba llegada; tecleo por carácter | 2e06fa28 |
 | Enviar lo escrito siempre se pregunta antes (Enter en un campo de mensaje ilegible cuenta como envío) | 3ae1dc88 |
-| Tecleo a 3 ms por carácter | e04bc54b |
+| Tecleo a 3 ms por carácter (luego 35 ms: 5ac16f90) | e04bc54b |
 | Un clic en el nombre del lugar que deja la ventana igual: ya estaba ahí | e4254ef6 |
 
 ### Banco en vivo (última corrida de cada caso; verificación independiente)

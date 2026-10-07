@@ -505,7 +505,9 @@ de borrar, formatear, desinstalar, comprar o pagar.
 vez de ~148, con caché de prompt: 4 s → 0,2–0,7 s en llama-server; en vivo 0,66–1,0 s con el prefill); 30 controles
 ordenados por el objetivo (primero los que comparten palabras con él, luego enfocados, seleccionados y buscadores)
 con la nota «N de M»; teclas por `SendInput` desde el propio proceso (46 ms la tecla en el provider, 67–79 ms el paso en vivo) y texto carácter a carácter a
-3 ms (en ráfaga un editor recién abierto pierde o repite caracteres); clic sin esperas fijas: el worker responde al
+35 ms (medido en el Bloc de notas de Windows 11: su editor lee cada tecla cuando llega a ella, así que más rápido
+sale la última repetida —«lista: pan» → «lista:nnnn» a 3 ms, «lista:ppan» a 20 ms— y las teclas virtuales pierden
+el Shift; desde 25 ms sale íntegro; un «escribí X» sólo cuenta si el campo enfocado que expone su valor muestra X); clic sin esperas fijas: el worker responde al
 invocar y la postlectura pregunta el estado UIA cada 50 ms hasta 500 ms y compara la superficie desde 150 ms;
 vista con captura y OCR en paralelo al árbol y OCR sólo cuando hace falta; 150 ms de asentamiento entre pasos (antes
 400/1 200 ms); apertura de apps UWP verificada en su marco `ApplicationFrameHost` (antes agotaba 30 s); worker UIA
@@ -528,10 +530,39 @@ pantalla no expone (`value` nulo, distinto de `""`) también cuenta como envío 
 - El eco de lo que BAXY escribió (un buscador o su sugerencia) nunca cumple `control:X`: no prueba llegada.
 - Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
 - Una app abierta en frío se vuelve a mirar hasta 10 s mientras la ventana cambie o parezca de arranque (≤ 1 control
-  y ≤ 5 líneas).
+  accionable —un marco, un panel o una barra de dirección de sólo lectura no cuentan— y ≤ 5 líneas).
 - Una ventana de administrador (`window.elevated`) para la misión con `computer_use_window_elevated`, dicho con esa
   causa.
 - Un control sin patrón invocable ni punto clicable (Electron) se pulsa en el centro de su rectángulo.
 - Un procedimiento que deja de cambiar la pantalla se abandona y sigue el bucle; la misión no.
 - `RiskPolicy` confirma también publicar, responder, comentar, compartir, unirse, comprar, pagar, borrar y
   desinstalar; un límite conocido del catálogo no anula una misión probada dentro de una app instalada.
+
+**Lectura del pedido v2 (`semantic/missions.py`).** Cada cláusula de hacer trae su comprobación determinista; una
+cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y comprobación:
+
+| Cláusula | Objetivo | `successCheck` |
+|---|---|---|
+| creá una carpeta llamada X / create a folder named X | `crear carpeta X` | `control:X` |
+| renombrá A a B / rename A to B | `renombrar A a B` | `control:B` |
+| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:X:selected\|control:X:on\|stepDone:input.visible.click:X` (+ nombres en el otro idioma) |
+| buscá X / search for X | `buscar X` | `title:X\|stepDone:input.text.type&stepDone:input.key.press:enter&text:X` |
+| poné la primera / play the first one / ponelo | `reproducir …` | `control:pausa&stepDone:input.visible.click` (y `pause`, y con tecla) |
+| copiá / pegá / deshacé / seleccioná todo | `apretar ctrl c` … | la tecla o el clic en su control |
+| abrí una pestaña nueva | `apretar ctrl t` | `stepDone:input.key.press:ctrl_t` |
+| andá a es.wikipedia.org | `ir a la direccion …` (ctrl_l, texto, Enter) | `title:wikipedia` |
+| abrí la sección Historia | `ir a historia` | lo de `ir a` + el clic verificado en la sección |
+| calculá 12 por 7 / multiply 6 by 7 | `calcular 12 × 7` | la de calcular |
+
+En una cadena el verbo puede decirse una vez («elegí el lápiz y después el color rojo», «go to System, then
+Display», «hacé clic en Insertar y después en Tabla»), un pronombre o un lugar genérico retoma lo último nombrado
+(«buscá Hades y abrilo», «creá la carpeta X y entrá», «buscá a Mamá y abrí el chat»), una cláusula que nombra otra
+aplicación cambia la del paso («… y pegalo en el Bloc de notas») y una pregunta final («… y decime si el modo es
+claro u oscuro») no es sub-objetivo: va al final del `goal` tras `; y responder: ` y el final la contesta sólo con
+`seen.screen`/`seen.evidence`. Nunca es misión un pedido que ordena borrar, vaciar, formatear, desinstalar, comprar
+o pagar (lo tecleado no cuenta). Tipado contra motor: en una cadena sólo las operaciones tipadas que no son
+primitivas del motor cubren sub-objetivos; un cálculo dicho dentro de una aplicación se hace en ella.
+
+El paso de tecleo guarda en qué campo se escribió (`into`); el átomo `control:` descarta lo tecleado sólo si se
+tecleó en una búsqueda, una barra de direcciones o un campo sin nombre (el eco de sus sugerencias), no el nombre
+escrito en la caja de un elemento que se crea o se renombra. Corpus: `tests/test_computer_use_corpus.py`.
