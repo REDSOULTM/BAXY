@@ -35,7 +35,7 @@ import re
 import unicodedata
 from typing import Any, Iterable
 
-from . import effect_intent
+from . import effect_intent, operation_floor
 from .semantic.missions import (
     BROWSER_CATEGORY,
     KEYS,
@@ -2166,7 +2166,8 @@ def _result_instruction(seen: dict) -> str:
                 "Never add parts, steps, times or results that are not in seen."
             )
         return chained + (
-            "Not every part was reached: lead with what you could not do (seen.firstUnreached) and its cause "
+            "Not every part was reached: lead with what you could not do (seen.firstUnreached), said in the first "
+            "person singular (Spanish «pude», never «pudiste»: you acted, not the person), and its cause "
             "(seen.stoppedBecause, reworded lightly, never «operación» or «operation»), plainly and without apology; "
             "then, briefly, the parts that were done. Never say that a part with reached false was done, never say "
             "the whole request succeeded, and never invent a cause that is not in seen."
@@ -2184,15 +2185,17 @@ def _result_instruction(seen: dict) -> str:
                 "entry of seen.screen.numbers or seen.screen.values writes it; do not list the other lines of the window. "
             )
             + "seen.joined says whether a voice channel or call was joined: say you joined only if it is true. Never "
-            "add steps, times or results that are not in seen."
+            "add steps, times or results that are not in seen: a time or a date only as seen.screen writes it, never "
+            "the part of the day (morning, afternoon, a.m., p.m.) unless it is written there."
         )
     return (
         "This result is a computer-use mission that did NOT reach its goal: seen.goal is what was asked, "
         "seen.stepsDone what was done before stopping, seen.stepsFailed what could not be done, "
         "seen.stoppedBecause the cause in the person's words. In ONE short sentence, in the person's language and "
         "in the FIRST PERSON, say plainly that you could not do it and why (seen.stoppedBecause, reworded lightly, "
-        "never «operación» or «operation»), without apology and without listing steps. Never say it succeeded and "
-        "never invent a cause that is not in seen."
+        "never «operación» or «operation»), without apology and without listing steps: say first, in the first "
+        "person singular, that you could not (Spanish «pude», never «pudiste»: you acted, not the person). Never say "
+        "it succeeded and never invent a cause that is not in seen."
     )
 
 _JOIN_CLAIM = re.compile(
@@ -2226,7 +2229,136 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
     for subgoal in seen.get("subgoals") or ():
         if isinstance(subgoal, dict) and subgoal.get("reached") is not True and _claims_part(folded_reply, str(subgoal.get("goal") or "")):
             return "subgoal_claimed"
+    if _invented_meridiem(folded_reply, seen):
+        return "extra_claim"
+    if _only_went_somewhere(seen) and _claims_a_change(folded_reply):
+        return "extra_claim"
     return None
+
+
+# Live 2026-10-07 (v2-v9 «en el Reloj andá a Reloj mundial», v2-u7/v2-w1 «… andá a Alarma»): a clock the window shows is
+# what was observed, but Windows writes it with bidi marks inside («7‎:‎58»), and the part of the day is not written.
+_BIDI_MARKS = re.compile("[‎‏‪-‮⁦-⁩]")
+_CLOCK = re.compile(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)")
+_MERIDIEM = re.compile(
+    r"(?<!\d)\d{1,2}:\d{2}(?!\d)\s*(?:hs?\s+)?(?:de\s+la\s+|del\s+|en\s+la\s+|por\s+la\s+|in\s+the\s+)?"
+    r"(manana|tarde|noche|madrugada|mediodia|morning|afternoon|evening|night|a\.?\s?m\b\.?|p\.?\s?m\b\.?)"
+)
+
+
+def screen_texts(seen: dict) -> list[str]:
+    """Every text the window showed at the end (title, fields, numbers, lines) and the evidence, without bidi marks."""
+
+    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+    texts: list[object] = [screen.get("title"), seen.get("evidence"), seen.get("windowTitle")]
+    for key in ("numbers", "lines"):
+        texts.extend(screen.get(key) if isinstance(screen.get(key), list) else ())
+    for item in screen.get("values") if isinstance(screen.get("values"), list) else ():
+        if isinstance(item, dict):
+            texts.extend((item.get("name"), item.get("value")))
+    return [_BIDI_MARKS.sub("", text) for text in texts if isinstance(text, str) and text.strip()]
+
+
+def screen_clocks(seen: dict) -> frozenset[str]:
+    """The «HH:MM» clocks the window wrote: a clock app's time, an alarm's, a call's length."""
+
+    return frozenset(
+        f"{int(hour):02d}:{minute}" for text in screen_texts(seen) for hour, minute in _CLOCK.findall(text)
+    )
+
+
+def _invented_meridiem(folded_reply: str, seen: dict) -> bool:
+    """«las 7:58 de la tarde» over a window that writes only «7:58»: the part of the day is a guess."""
+
+    shown = fold(" ".join(screen_texts(seen)))
+    for found in _MERIDIEM.finditer(folded_reply):
+        word = re.sub(r"[\s.]", "", found.group(1))
+        if not re.search(rf"\b{word[0]}\.?\s?{word[1:]}\b" if word in {"am", "pm"} else rf"\b{word}\b", shown):
+            return True
+    return False
+
+
+# A goal «ir a X» only went to X (_NO_META): a first-person change said beside it was never done nor observed.
+_GO_GOAL = re.compile(r"^ir\s+a\b")
+_CHANGE_CLAIM = re.compile(
+    r"\b(?:puse|configure|cree|programe|cambie|ajuste|encendi|apague|inicie|borre|elimine|agregue|anadi|guarde|"
+    r"(?:des)?active\s+(?:el|la|los|las|lo|un|una)|"
+    r"i\s+(?:have\s+|'ve\s+)?(?:set|created|started|turned|changed|scheduled|enabled|disabled|deleted|added|saved))\b"
+)
+_CHANGE_DENIED = re.compile(r"\b(?:no|nunca|ni|not|never|didn'?t)\s+(?:\w+\s+)?$")
+
+
+def _only_went_somewhere(seen: dict) -> bool:
+    goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)] or [seen.get("goal")]
+    return all(isinstance(goal, str) and _GO_GOAL.match(fold(goal)) for goal in goals)
+
+
+def _claims_a_change(folded_reply: str) -> bool:
+    return any(
+        _CHANGE_DENIED.search(folded_reply[max(0, found.start() - 20):found.start()]) is None
+        for found in _CHANGE_CLAIM.finditer(folded_reply)
+    )
+
+
+# The floor of a mission (live 2026-10-07): when every draft was refused, «Lo hice en la aplicación «Reloj»; hay 2:
+# «Reloj mundial».» counted the steps as a list read. The floor says what the person asked about, from the facts only:
+# the place reached, or what could not be done and its cause.
+_PLACE_GOAL = re.compile(
+    r"^ir\s+a\s+(?:(?:la\s+)?(?:pesta[nñ]a|direcci[oó]n|secci[oó]n|p[aá]gina|parte)\s+(?:de\s+)?|el\s+|la\s+|los\s+|las\s+)?(.+)$",
+    re.IGNORECASE,
+)
+_LONGEST_FLOOR_NAME = 60
+
+
+def _floor_name(value: object) -> str:
+    text = " ".join(_BIDI_MARKS.sub("", value).split()).strip(" .;:") if isinstance(value, str) else ""
+    return text if text and len(text) <= _LONGEST_FLOOR_NAME and "«" not in text and "»" not in text else ""
+
+
+def _place_of(goal: object, names: list[str]) -> str:
+    """The place a goal «ir a X» went to, spelled as the window wrote it when one of its names is X."""
+
+    found = _PLACE_GOAL.match(str(goal or "").strip()) if isinstance(goal, str) and QUESTION_MARK not in goal else None
+    if found is None:
+        return ""
+    asked = _floor_name(found.group(1))
+    return next((name for name in names if fold(name) == fold(asked)), asked)
+
+
+def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
+    """The plain final of a mission said from its facts alone (data/operation_floor.v1.json «computerUse»), or ""
+    when they hold nothing to say."""
+
+    seen = project_seen(observed, "en" if english else "es")
+    if seen.get("question"):
+        return ""
+    data = operation_floor.floor_data()
+    said = data["computerUse"]["en" if english else "es"]
+    quote = data["templates"]["en" if english else "es"]["quote"]
+    raw_steps = observed.get("steps") if isinstance(observed.get("steps"), list) else []
+    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+    names = [
+        name for value in (
+            *(step.get("name") for step in raw_steps if isinstance(step, dict) and step.get("ok") is True),
+            *(item.get("name") for item in screen.get("values") or () if isinstance(item, dict)),
+        ) if (name := _floor_name(value))
+    ]
+    app = _floor_name(seen.get("application")) or _floor_name(seen.get("windowTitle"))
+    if succeeded and seen.get("reached") is True:
+        goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)] or [seen.get("goal")]
+        place = _place_of(goals[-1], names)
+        if place:
+            return said["place"].format(place=quote.format(value=place)) + "."
+        return said["app"].format(app=quote.format(value=app)) + "." if app else ""
+    place = _place_of(seen.get("firstUnreached") or seen.get("goal"), names)
+    if place:
+        head = said["notPlace"].format(place=quote.format(value=place))
+    elif app:
+        head = said["notApp"].format(app=quote.format(value=app))
+    else:
+        head = said["not"]
+    cause = seen.get("stoppedBecause") if str(observed.get("stoppedBy") or "") in _STOP_CAUSES else None
+    return (said["cause"].format(head=head, cause=cause) if isinstance(cause, str) and cause.strip() else head) + "."
 
 
 # The goal heads the mission reader writes (semantic.missions), so a part's object is what is left after them.
