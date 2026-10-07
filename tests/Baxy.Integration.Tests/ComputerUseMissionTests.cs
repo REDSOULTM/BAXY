@@ -1226,8 +1226,12 @@ public sealed class ComputerUseMissionTests
         JsonObject results = View(ExplorerSearchResults);
         JsonObject Click(bool selected, string kind) => new()
         {
-            ["step"] = 4, ["operation"] = "input.visible.click", ["label"] = "Imágenes", ["ok"] = true,
-            ["selected"] = selected, ["kind"] = kind,
+            ["step"] = 4,
+            ["operation"] = "input.visible.click",
+            ["label"] = "Imágenes",
+            ["ok"] = true,
+            ["selected"] = selected,
+            ["kind"] = kind,
         };
         JsonObject arrived = View("""
             {"window": {"title": "Imágenes - Explorador de archivos", "process": "explorer",
