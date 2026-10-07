@@ -457,7 +457,9 @@ public sealed class ComputerUseLoopTests
             : Step("input.key.press", new JsonObject { ["key"] = "enter" });
         var arguments = new JsonObject
         {
-            ["goal"] = "escribir hola", ["application"] = "Bloc de notas", ["successCheck"] = "stepDone:input.key.press:enter",
+            ["goal"] = "escribir hola",
+            ["application"] = "Bloc de notas",
+            ["successCheck"] = "stepDone:input.key.press:enter",
         };
 
         await ComputerUseMission.RunAsync(
