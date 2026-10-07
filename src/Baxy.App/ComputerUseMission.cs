@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 
@@ -55,7 +56,7 @@ internal static class ComputerUseMission
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
     [
-        "baselineText", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow", "awaitTitleChange",
+        "baselineText", "focusAtStart", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow", "awaitTitleChange",
         "newTextAfterClick", "newTextAfterClickStep",
         "procedureKey", "procedureIndex", "procedureSteps", "procedureDeviated",
     ];
@@ -220,6 +221,18 @@ internal static class ComputerUseMission
                 if (state["baselineText"] is JsonArray baseline)
                 {
                     lastView["baselineText"] = baseline.DeepClone();
+                }
+
+                // Where the keyboard was at the application's own first look: a field that had it before any step is
+                // not one this mission brought it to (check atom focus:).
+                if (application is null || (bool?)lastView["window"]?["requested"] == true)
+                {
+                    state["focusAtStart"] ??= ComputerUseSuccessCheck.FocusSignature(lastView);
+                }
+
+                if (state["focusAtStart"] is JsonNode focusAtStart)
+                {
+                    lastView["focusAtStart"] = focusAtStart.DeepClone();
                 }
 
                 if (state["textBeforeClick"] is JsonObject beforeClicks)
@@ -400,6 +413,15 @@ internal static class ComputerUseMission
                         if (done > 0 && steps[^1] is JsonObject previous
                             && (bool?)previous["ok"] == false
                             && SameStep(previous, decision.Operation, stepArguments))
+                        {
+                            errorCode = "computer_use_repeated_step";
+                            break;
+                        }
+
+                        // A click refused twice in this sub-goal is not tried a third time, whatever came between
+                        // (measured 2026-10-07: a read-only field clicked four times between other steps, 41 s spent).
+                        if (decision.Operation == "input.visible.click"
+                            && ComputerUseSuccessCheck.RefusedClicks(SubgoalSteps(steps, start), stepArguments) >= 2)
                         {
                             errorCode = "computer_use_repeated_step";
                             break;
@@ -1919,6 +1941,8 @@ internal static class ComputerUseSuccessCheck
                 return !QueryEchoNames(rest, view, steps, searchResultsProve) && PageAtom(rest, view, steps);
             case "header":
                 return HeaderAppeared(rest, view, steps);
+            case "focus":
+                return FocusBrought(rest, view, steps);
             case "stepdone":
                 {
                     string[] parts = rest.Split(':', 2);
@@ -1988,6 +2012,72 @@ internal static class ComputerUseSuccessCheck
                 return rest.Length > 0 && Path.IsPathRooted(rest) && File.Exists(rest);
             case "manifest":
                 return SteamManifestExists(rest);
+            default:
+                return false;
+        }
+    }
+
+    // «focus:search»: the window's keyboard is in a text field (not read-only, not a password, not an address bar) that
+    // this sub-goal brought it to: it did not have it at the application's first look, the last verified step was a
+    // click on a search control or on that field, or a find key, and nothing was typed (an echo of typed text is never
+    // arriving). A search box shown on every page proves nothing until the mission puts the keyboard in it (measured
+    // 2026-10-07: the search button focused the box and listed recent searches; no navigation item was chosen).
+    private static readonly Regex SearchWord = new(@"\b(?:busc\w*|busqueda|search\w*|find)\b", RegexOptions.CultureInvariant);
+    private static readonly Regex AddressWord = new(@"\b(?:direccion\w*|address|url)\b", RegexOptions.CultureInvariant);
+    private static readonly HashSet<string> FindKeys = new(StringComparer.Ordinal) { "ctrl_f", "ctrl_k", "ctrl_e", "f3" };
+
+    internal static string FocusSignature(JsonObject view) =>
+        view["window"]?["focused"] is JsonObject focused
+            ? $"{(string?)focused["kind"]}|{Fold((string?)focused["name"])}"
+            : string.Empty;
+
+    internal static int RefusedClicks(JsonArray steps, JsonObject arguments)
+    {
+        string label = Fold((string?)arguments["label"]);
+        return label.Length == 0
+            ? 0
+            : steps.OfType<JsonObject>().Count(step =>
+                (string?)step["operation"] == "input.visible.click" && (bool?)step["ok"] == false
+                && Fold((string?)step["label"]) == label);
+    }
+
+    private static bool FocusBrought(string rest, JsonObject view, JsonArray steps)
+    {
+        if (Fold(rest) != "search" || view["window"]?["focused"] is not JsonObject focused
+            || (string?)focused["kind"] is not ("Edit" or "ComboBox")
+            || view["focusAtStart"] is not JsonValue start || !start.TryGetValue(out string? atStart)
+            || FocusSignature(view) == atStart)
+        {
+            return false;
+        }
+
+        string name = Fold((string?)focused["name"]);
+        if (AddressWord.IsMatch(name))
+        {
+            return false;
+        }
+
+        JsonObject? listed = (view["controls"] as JsonArray)?.OfType<JsonObject>().FirstOrDefault(control =>
+            (string?)control["kind"] == (string?)focused["kind"] && Fold((string?)control["name"]) == name);
+        string[] states = Fold((string?)listed?["state"]).Split(' ');
+        if (states.Contains("readonly") || states.Contains("password"))
+        {
+            return false;
+        }
+
+        if (steps.OfType<JsonObject>().Any(step => (string?)step["operation"] == "input.text.type"))
+        {
+            return false;
+        }
+
+        JsonObject? last = steps.OfType<JsonObject>().LastOrDefault(step => (bool?)step["ok"] == true);
+        switch ((string?)last?["operation"])
+        {
+            case "input.key.press":
+                return FindKeys.Contains(Fold((string?)last!["key"]));
+            case "input.visible.click":
+                string label = Fold((string?)last!["label"]);
+                return !AddressWord.IsMatch(label) && (SearchWord.IsMatch(label) || (name.Length > 0 && label == name));
             default:
                 return false;
         }

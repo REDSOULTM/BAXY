@@ -698,6 +698,8 @@ def deterministic_step(
     names = (target, *label_alternatives(target), *((twin,) if twin else ()))
     other_gender = None if is_mode else gender_twin(target)
     seen = _without_name(view, other_gender) if other_gender else view
+    if placing:
+        seen = _without_fixed_fields(seen)
     chosen = _content_item_chosen(view, history, names) if head == "ir a " and kind is None else None
     if chosen is not None:
         # One click on an item of a content list chose it and opened nothing (measured on Explorer: «Descargas»
@@ -773,9 +775,12 @@ def deterministic_step(
     if wanted is not None and (wanted in states or (wanted == "selected" and "on" in states)):
         # Already so; a tool or a colour chosen shows as selected or pressed.
         return None
-    if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
+    if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")) or _click_failed(
+        history, str(control.get("name") or "")
+    ):
         # Clicked and not there yet (measured on Discord: the name was written in an activity card, not the
-        # channel): looked up the way the window offers, never clicked again.
+        # channel), or clicked and refused (measured 2026-10-07: a field that cannot be pressed was clicked four times
+        # in one sub-goal): looked up the way the window offers, never clicked again.
         return _find_step(target, view, history, navigate=navigate) if searching else None
     arguments = {"label": str(control.get("name") or target)}
     if isinstance(control.get("i"), int):
@@ -1024,6 +1029,32 @@ def _view_words(view: dict) -> str:
 
 def _shown_as_words(name: str, shown: str) -> bool:
     return bool(name) and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", shown) is not None
+
+
+def _without_fixed_fields(view: dict) -> dict:
+    """The view without the fields that only show a value (read-only, or a browser's address): going to a place never
+    clicks one (measured 2026-10-07: «search» matched a web app's read-only «Address and search bar», whose clicks
+    all failed)."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if not isinstance(controls, list):
+        return view
+    return {**view, "controls": [
+        control for control in controls
+        if not (
+            isinstance(control, dict) and control.get("kind") in {"Edit", "ComboBox", "Document"}
+            and ("readonly" in str(control.get("state") or "").split() or _ADDRESS_NAME.search(fold(control.get("name"))))
+        )
+    ]}
+
+
+def _click_failed(history: list[dict], label: str) -> bool:
+    """A click on this label already failed in this sub-goal."""
+
+    return bool(label) and any(
+        step.get("operation") == "input.visible.click" and step.get("ok") is False and fold(step.get("label")) == fold(label)
+        for step in history if isinstance(step, dict)
+    )
 
 
 def _without_switches(view: dict) -> dict:

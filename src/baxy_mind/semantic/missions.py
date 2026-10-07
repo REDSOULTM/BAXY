@@ -194,7 +194,7 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"actualizaciones", "updates"}), frozenset({"aplicaciones", "apps"}),
     frozenset({"sistema", "system"}), frozenset({"personalizacion", "personalization"}),
     frozenset({"dispositivos", "devices"}), frozenset({"servidores", "servers"}),
-    frozenset({"buscar", "search"}), frozenset({"canciones", "songs"}), frozenset({"imagenes", "images", "pictures"}),
+    frozenset({"buscar", "busqueda", "search"}), frozenset({"canciones", "songs"}), frozenset({"imagenes", "images", "pictures"}),
     frozenset({"calendario", "calendar"}), frozenset({"insertar", "insert"}), frozenset({"tabla", "table"}),
     frozenset({"elementos enviados", "sent items"}), frozenset({"escala", "scale"}),
     # The modes a window offers by name: «cambiá a científica» on an English calculator.
@@ -832,7 +832,14 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
             if _SECTION_WORD.search(place.group(0)[: place.start("target")]):
                 # A section of a page is reached by its link: the verified click on it is arriving.
                 atoms.append("stepDone:input.visible.click:{}")
-            return f"ir a {target}", _with_alternatives(target, atoms)
+            check = _with_alternatives(target, atoms)
+            if target in _SEARCH_PLACE:
+                # The search is where a person types what to look for: its field taking the keyboard after this
+                # mission's own click or find key is arriving, even where no navigation item is chosen (measured
+                # 2026-10-07: «andá a search» focused the search box and stopped out of steps). A box shown on every
+                # page, or one that had the keyboard before any step, is not (the shell's focus: atom).
+                check = f"{check}|focus:search"
+            return f"ir a {target}", check
     typed = _TYPE_CLAUSE.match(folded)
     if typed is not None:
         return f"escribir {typed.group('text').strip()}", "stepDone:input.text.type"
@@ -846,6 +853,8 @@ _NEW_TAB_CLAUSE = re.compile(
 )
 _ADDRESS = re.compile(r"(?:https?://)?(?P<host>(?:[a-z0-9-]+\.)+[a-z]{2,63})(?:/\S*)?")
 _SECTION_WORD = re.compile(r"\b(?:seccion|section|apartado)\b")
+# The search as a place, by its names in either language («andá a search», «ve a la búsqueda»).
+_SEARCH_PLACE = frozenset({"buscar", "busqueda", "search", "buscador"})
 # «the music channel», «the Pictures folder»: the English place noun after the name is not the name.
 _ENGLISH_PLACE_AFTER = re.compile(r"(?<=\S)\s+(?:channel|folder|server|section|menu|chat|room|page)$")
 

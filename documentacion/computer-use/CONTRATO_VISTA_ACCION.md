@@ -308,6 +308,10 @@ atom    := "text:" needle              # needle plegada dentro de algún control
                                        # «&» ni «|» (se comprueba por la pieza de antes; la del usuario, por la más larga ≥ 4).
          | "header:" name               # el último clic verificado nombra X y un Text arriba (T/TL/TR) que lo nombra apareció
                                        # tras ese clic (la cabecera de un modo: «Modo de calculadora Científica»)
+         | "focus:search"               # «ir a buscar/search/búsqueda»: el foco está en un Edit/ComboBox (no readonly, ni
+                                       # contraseña, ni barra de direcciones) que no lo tenía en la primera mirada de la app,
+                                       # el último paso verificado fue un clic en un control de búsqueda (o en ese campo) o una
+                                       # tecla de buscar (ctrl_f, ctrl_k, ctrl_e, f3) y no se escribió nada en el sub-objetivo
          | "title:" needle              # título de la ventana de delante
          | "process:" name              # proceso de la ventana de delante
          | "count:" kind op N           # número de controles de ese kind (op: <= < == >= >)
