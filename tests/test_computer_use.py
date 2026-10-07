@@ -1412,3 +1412,17 @@ def test_a_button_named_as_switching_is_never_pressed_on_the_way_to_a_place() ->
         {"act": "click", "i": 0}, view=view, last_failed=None, application_names=(), history=[], goal="ir a cientifica",
     )
     assert refused["operation"] == "none"
+
+
+def test_a_search_button_that_opened_its_box_is_typed_into() -> None:
+    # Measured on Discord: «Buscar o iniciar una conversación» opens the quick switcher; its field is not reported focused.
+    view = {
+        "window": {"title": "Discord", "process": "Discord", "focused": None},
+        "controls": [{"i": 3, "kind": "Button", "name": "Buscar o iniciar una conversación"}],
+        "newText": ["¿A dónde quieres ir?"],
+        "text": {"C": ["¿A dónde quieres ir?"]},
+    }
+    clicked = [{"step": 1, "operation": "input.visible.click", "label": "Buscar o iniciar una conversación", "ok": True,
+                "surfaceChanged": True}]
+    step = computer_use.deterministic_step(goal="ir a cotele", view=view, history=clicked)
+    assert step is not None and step["operation"] == "input.text.type" and step["arguments"] == {"text": "cotele"}

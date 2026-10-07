@@ -1100,8 +1100,15 @@ def _find_step(target: str, view: dict, history: list[dict], *, navigate: bool =
         clicked = find_control(view, str(last.get("label") or ""))
         # A search box clicked by its written line (no tree to tell focus) takes the keyboard as a person expects.
         written_box = clicked is None and last.get("ok") is True and not isinstance(last.get("index"), int)
+        # A search button that changed the window opened its box (measured on Discord: «Buscar o iniciar una
+        # conversación» opens the quick switcher, whose field the tree does not report focused): a person types now.
+        opened_box = (
+            clicked is not None and last.get("ok") is True and clicked.get("kind") in {"Button", "SplitButton", "MenuItem"}
+            and (last.get("surfaceChanged") is True or bool(view.get("newText")))
+        )
         if _is_search_field({"name": last.get("label")}) and (
-            _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS) or written_box
+            _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS)
+            or written_box or opened_box
         ):
             return _type_into(view, history, target)
     searched = _typed_target(history, target)
