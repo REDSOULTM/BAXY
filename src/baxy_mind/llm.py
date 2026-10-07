@@ -8916,11 +8916,19 @@ def _computer_use_final_defect(text: str, situation: dict) -> str:
         raw_steps = observed.get("steps") if isinstance(observed.get("steps"), list) else []
         screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
         known = [
-            seen.get("goal"), question, seen.get("application"), seen.get("windowTitle"), screen.get("title"),
+            seen.get("goal"), seen.get("application"), seen.get("windowTitle"), screen.get("title"),
             *(step.get(key) for step in raw_steps if isinstance(step, dict) for key in ("label", "name")),
         ]
         shown = _computer_use.screen_texts(seen)
-        if mission_answer.gives_an_answer(text, shown, [item for item in known if isinstance(item, str)]) is False:
+        states = [
+            item.get("state") for item in screen.get("values") or () if isinstance(item, dict)
+            and isinstance(item.get("state"), str)
+        ]
+        # cu-r18 (live v2-c5): the question goes apart so the option the window shows («Oscuro» for «claro u
+        # oscuro») or the state it asks about («si el Bluetooth está activado») still answers it.
+        if mission_answer.gives_an_answer(
+            text, shown, [item for item in known if isinstance(item, str)], question, states
+        ) is False:
             return "unanswered_question"
     return ""
 
