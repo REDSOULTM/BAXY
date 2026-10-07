@@ -1504,6 +1504,11 @@ internal static class ComputerUseSuccessCheck
                         state = rest[(split + 1)..];
                     }
 
+                    // «control:=informe»: the name whole, not inside a longer word («informe2» is not «informe»;
+                    // «general (canal de texto)» is «general»).
+                    bool whole = name.StartsWith('=');
+                    name = whole ? name[1..] : name;
+
                     // What BAXY itself typed into a search or an address bar (its suggestions echo the query) never
                     // proves arriving (measured: the Explorer search echo passed for a folder that was never
                     // created). A name typed into the box of an item being created or renamed is that item's name.
@@ -1515,6 +1520,7 @@ internal static class ComputerUseSuccessCheck
                     return FindControls(view, name).Any(control =>
                         (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
                         && !typed.Contains(Fold((string?)control["name"]))
+                        && (!whole || NamesWhole(Fold((string?)control["name"]), Fold(name)))
                         && (state is null || Fold((string?)control["state"]).Split(' ').Contains(state)));
                 }
             case "value":
@@ -1553,9 +1559,12 @@ internal static class ComputerUseSuccessCheck
                             continue;
                         }
 
+                        // The argument names the key pressed, the control clicked or what was typed
+                        // («stepDone:input.text.type:=» is an expression typed with its equals sign).
                         if (argument is null
                             || Fold((string?)step["key"]) == argument
-                            || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal))
+                            || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal)
+                            || Fold((string?)step["text"]).Contains(argument, StringComparison.Ordinal))
                         {
                             return true;
                         }
@@ -1811,6 +1820,22 @@ internal static class ComputerUseSuccessCheck
             ">" => count > expected,
             _ => count == expected,
         };
+    }
+
+    // The folded needle inside the folded name with no letter or digit glued on either side.
+    private static bool NamesWhole(string name, string needle)
+    {
+        for (int at = name.IndexOf(needle, StringComparison.Ordinal); at >= 0;
+             at = name.IndexOf(needle, at + 1, StringComparison.Ordinal))
+        {
+            int end = at + needle.Length;
+            if ((at == 0 || !char.IsLetterOrDigit(name[at - 1])) && (end == name.Length || !char.IsLetterOrDigit(name[end])))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static IEnumerable<JsonObject> FindControls(JsonObject view, string name)

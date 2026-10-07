@@ -86,10 +86,14 @@ _NAVIGATE_CLAUSE = re.compile(
     + _PLACE_NOUN + r"(?P<target>\S.{0,60}?)[\s.!?]*$"
 )
 _KEY_CLAUSE = re.compile(
-    r"^(?:apreta|aprieta|apretale|pulsa|pulsale|presiona|presionale|press|hit|toca|tocale|dale(?:\s+a)?)"
-    r"(?:le|lo|la)?\s+(?:(?:la|el|the)\s+)?(?:tecla\s+|key\s+)?(?:(?:la|el|the)\s+)?"
+    r"^(?:apreta|aprieta|apretale|pulsa|pulsale|presiona|presionale|press|hit|(?P<touch>toca|tocale|dale(?:\s+a)?|tap(?:\s+on)?))"
+    r"(?:le|lo|la)?\s+(?:(?:la|el|the)\s+)?(?P<named>tecla\s+|key\s+)?(?:(?:la|el|the)\s+)?"
     r"(?P<key>[a-z0-9]+(?:\s*\+\s*[a-z0-9]+|\s+[a-z](?![a-z]))?)[\s.!?]*$"
 )
+# «tocá Inicio», «tap Home»: touching a word that names a key and also a place of the window (Spotify's and
+# YouTube's «Inicio») is clicking that place; only «tocá la tecla Inicio» or «apretá Inicio» is the key. «dale enter»,
+# «tocá escape» name no place and stay keys.
+_KEYS_THAT_NAME_PLACES = frozenset({"inicio", "home", "fin", "end"})
 _TOGGLE_ON_CLAUSE = re.compile(
     r"^(?:activa|activame|activar|prende|prendeme|prender|enciende|encende|encender|habilita|habilitar|"
     r"turn\s+on|enable|switch\s+on|pon|pone|poneme)\s+(?:(?:el|la|los|las|the)\s+)?(?P<target>\S.{0,60}?)[\s.!?]*$"
@@ -389,13 +393,23 @@ _PLAY_ORDINAL_CLAUSE = re.compile(
     r"(?:\s+(?:que\s+(?:aparezca|aparece|salga|sale)|de\s+(?:la\s+lista|los\s+resultados)|on\s+the\s+list|"
     r"in\s+the\s+results|that\s+(?:shows\s+up|appears)))?$"
 )
-# Playing shows as the player's pause control, after a click or a key of this sub-goal (something already playing
-# before it does not count).
-_PLAYING_CHECK = "|".join(
-    f"control:{pause}&stepDone:{operation}"
-    for pause in ("pausa", "pause")
-    for operation in ("input.visible.click", "input.key.press")
-)
+
+
+def _playing_check(named: str | None = None) -> str:
+    """Playing shows as the player's pause control together with an act of this sub-goal that started it: a click
+    on a control that says it plays («Reproducir …», «Play …»), a click on the result named by the clause before
+    («buscá Duki y poné la primera»: a click on «Duki …»), or Enter on the chosen result. Any click or key is not
+    enough (review 2026-10-07: with music already playing, any click of the sub-goal passed).
+
+    Residual: the grammar has no order between atoms, so the pause control is not proven to appear after that act;
+    with something already playing, a play click that did not change the track still passes. Without a named
+    result, a click on a result by its own title (a video's) is not recognised and the loop asks the model."""
+
+    clicks = ["reproducir", "play", *((named,) if named else ())]
+    acts = [*(f"stepDone:input.visible.click:{label}" for label in clicks), "stepDone:input.key.press:enter"]
+    return "|".join(f"control:{pause}&{act}" for pause in ("pausa", "pause") for act in acts)
+
+
 # The kinds of things a person creates or renames by name inside an application.
 _ITEM_KIND = (
     r"(?:subcarpeta|carpeta|archivo|documento|fichero|nota|lista\s+de\s+reproduccion|lista|playlist|hoja\s+de\s+calculo|"
@@ -452,6 +466,17 @@ def _select_target(what: str) -> str:
     return _SELECT_NOUN_AFTER.sub("", target).strip()
 
 
+def _named_item_check(name: str) -> str:
+    """Created or renamed is a control carrying the whole name (``control:=``: «informe2» is not «informe»; never the
+    field the name was typed in) once this sub-goal typed that name: an item of that name already there at the
+    first look («creá un canal llamado general» beside the old #general) is not the one this sub-goal made.
+
+    Residual: a create that types the name and is abandoned before confirming still passes beside an older item of
+    the same name; the grammar cannot tell the two items apart."""
+
+    return f"control:={name}&stepDone:input.text.type:{name}"
+
+
 def _select_check(target: str) -> str:
     # Chosen is the control selected or pressed; where the window says neither, the verified click on it.
     return _with_alternatives(target, ("control:{}:selected", "control:{}:on", "stepDone:input.visible.click:{}"))
@@ -461,6 +486,9 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
     if _SEND_CLAUSE.match(folded) is not None:
         return "enviar", "stepDone:input.key.press:enter"
     key = _KEY_CLAUSE.match(folded)
+    if key is not None and key.group("touch") and not key.group("named") and key.group("key") in _KEYS_THAT_NAME_PLACES:
+        place = key.group("key")
+        return f"hacer clic en {place}", _with_alternatives(place, ("stepDone:input.visible.click:{}",))
     if key is not None:
         catalog_key = _key_from_words(key.group("key"))
         if catalog_key is not None:
@@ -473,26 +501,29 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
             return f"apretar {keys}", check
     played = _PLAY_ORDINAL_CLAUSE.match(folded)
     if played is not None:
-        return f"reproducir {played.group('what')}", _PLAYING_CHECK
+        return f"reproducir {played.group('what')}", _playing_check()
     created = _CREATE_CLAUSE.match(folded)
     if created is not None and (created.group("naming") or created.group("article") in {"la", "el", "the"}):
         name = created.group("name").strip(" \"'«»“”")
         if name and fold(name) not in {"nueva", "nuevo", "new", "vacia", "vacio", "empty"}:
-            # The item named appears among the window's controls (never the field the name was typed in).
-            return f"crear {created.group('kind')} {name}", f"control:{name}"
+            return f"crear {created.group('kind')} {name}", _named_item_check(name)
     renamed = _RENAME_CLAUSE.match(folded)
     if renamed is not None:
         old = (renamed.group("old") or "").strip(" \"'«»“”")
         new = renamed.group("new").strip(" \"'«»“”")
         if new and not _has_deictic_only(new):
-            return (f"renombrar {old} a {new}" if old else f"renombrar a {new}"), f"control:{new}"
+            return (f"renombrar {old} a {new}" if old else f"renombrar a {new}"), _named_item_check(new)
     searched = _SEARCH_CLAUSE.match(folded)
     if searched is not None:
         what = re.sub(rf"^{_SEARCH_NOUN}", "", searched.group("what"), count=1).strip(" \"'«»“”")
         if what and not _has_deictic_only(what):
-            # Searched is the page titled with the name (a site's search goes to it), or the name typed in this
-            # sub-goal and submitted while it is on screen (the window's results).
-            return f"buscar {what}", f"title:{what}|stepDone:input.text.type&stepDone:input.key.press:enter&text:{what}"
+            # Searched is the page titled with the name after this sub-goal submitted it (Enter, or a click on the
+            # suggestion that names it: a title that already said it before is no search), or the name typed in
+            # this sub-goal and submitted while it is on screen (the window's results).
+            return f"buscar {what}", (
+                f"title:{what}&stepDone:input.key.press:enter|title:{what}&stepDone:input.visible.click:{what}"
+                f"|stepDone:input.text.type&stepDone:input.key.press:enter&text:{what}"
+            )
     selected = _SELECT_CLAUSE.match(folded)
     if selected is not None:
         target = _select_target(selected.group("what"))
@@ -620,20 +651,87 @@ _LITERAL_GOAL = re.compile(
 )
 
 
-def _restore(wanted: str, said: str) -> str:
-    """The folded piece ``wanted`` as the person wrote it in ``said`` (case, accents), without delimiting quotes."""
+_LINE_BREAKS = frozenset({"\r", "\n"})
+
+
+def _said_span(wanted: str, said: str) -> str | None:
+    """The stretch of ``said`` whose fold is the folded piece ``wanted``, or None. Whitespace is compared by runs
+    (a double space or a line break is one space, as in the folded reading, where a line break reads « . »), and
+    the stretch comes back with its runs as one space (a line break is never typed as Enter)."""
 
     folded_chars: list[str] = []
     origin: list[int] = []
     for position, character in enumerate(said):
-        for piece in fold(character) or (" " if character.isspace() else ""):
+        if character.isspace():
+            # A line break is the « . » the reading puts between lines (mission_request).
+            pieces = " . " if character in _LINE_BREAKS and not (position and said[position - 1] in _LINE_BREAKS) else " "
+        else:
+            pieces = fold(character)
+        for piece in pieces:
+            if piece == " " and folded_chars and folded_chars[-1] == " ":
+                continue
             folded_chars.append(piece)
             origin.append(position)
-    start = "".join(folded_chars).find(wanted)
+    needle = " ".join(wanted.split())
+    start = "".join(folded_chars).find(needle) if needle else -1
     if start < 0:
+        return None
+    end = start + len(needle) - 1
+    return " ".join(said[origin[start]:origin[end] + 1].split())
+
+
+def _restore(wanted: str, said: str) -> str:
+    """The folded piece ``wanted`` as the person wrote it in ``said`` (case, accents), without delimiting quotes."""
+
+    span = _said_span(wanted, said)
+    if span is None:
         return wanted.strip("\"'«»“”")
-    end = start + len(wanted) - 1
-    return said[origin[start]:origin[end] + 1].strip().strip("\"'«»“”").strip()
+    return span.strip().strip("\"'«»“”").strip()
+
+
+def check_fold(value: object) -> str:
+    """A name as the shell folds it for a check (ComputerUseSuccessCheck.Fold: FormD, ToLowerInvariant, no
+    non-spacing marks, one space): ``fold`` reads the request with casefold and NFKD, which the shell does not
+    («Straße» is «strasse» to the reader and «straße» to the shell)."""
+
+    text = unicodedata.normalize("NFD", str(value or "")).lower()
+    text = "".join(character for character in text if unicodedata.category(character) != "Mn")
+    return " ".join(text.split())
+
+
+_CONTROL_STATES = frozenset({"selected", "on", "off", "expanded", "focused", "collapsed"})
+
+
+def _check_as_said(check: str | None, said: str) -> str | None:
+    """The check with every name it took from the request folded as the shell folds it (``check_fold`` over the
+    words as said); names the request does not hold (another language's, a control's) stay as they are."""
+
+    if not check:
+        return check
+
+    def name(folded: str) -> str:
+        span = _said_span(folded, said) if folded else None
+        return check_fold(span) if span is not None else folded
+
+    def atom(text: str) -> str:
+        kind, colon, rest = text.partition(":")
+        if not colon:
+            return text
+        lead = tail = ""
+        if kind == "stepDone":
+            operation, colon, rest = rest.partition(":")
+            if not colon:
+                return text
+            lead = operation + ":"
+        elif kind == "control":
+            if rest.startswith("="):
+                lead, rest = "=", rest[1:]
+            stem, colon, state = rest.rpartition(":")
+            if colon and state in _CONTROL_STATES:
+                rest, tail = stem, ":" + state
+        return f"{kind}:{lead}{name(rest)}{tail}"
+
+    return "|".join("&".join(atom(part) for part in term.split("&")) for term in check.split("|"))
 
 
 def _as_said(goal: str, said: str) -> str:
@@ -710,10 +808,11 @@ def mission_request(
     mission = _read_mission(folded, text, catalog)
     if mission is None or question is None:
         return mission
-    steps = mission.steps or (MissionStep(mission.application, mission.goal, mission.success_check, mission.clause),)
-    goal = "; luego ".join(step.goal for step in steps).encode("utf-8")[:400].decode("utf-8", "ignore")
+    # The question rides on the goal; a single sub-goal stays a single mission (its budget, not a chain link's).
+    goal = "; luego ".join(step.goal for step in mission.steps) if mission.steps else mission.goal
+    goal = goal.encode("utf-8")[:400].decode("utf-8", "ignore")
     tail = (QUESTION_MARK + question).encode("utf-8")[:100].decode("utf-8", "ignore")
-    return replace(mission, goal=goal + tail, steps=steps)
+    return replace(mission, goal=goal + tail)
 
 
 # «en el explorador de archivos, entrá a Descargas …», «en Paint, agarrá el lápiz»: the comma after the application
@@ -727,7 +826,10 @@ def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCata
         folded = framed.group("frame") + " " + folded[framed.end():]
     chained = _chained_request(folded, catalog)
     if chained is not None:
-        steps = tuple(replace(step, goal=_as_said(step.goal, text)) for step in chained.steps)
+        steps = tuple(
+            replace(step, goal=_as_said(step.goal, text), success_check=_check_as_said(step.success_check, text))
+            for step in chained.steps
+        )
         joined = "; luego ".join(step.goal for step in steps).encode("utf-8")[:500].decode("utf-8", "ignore")
         return replace(chained, steps=steps, goal=joined if steps else chained.goal)
     for application, clause in _app_frames(folded):
@@ -744,13 +846,13 @@ def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCata
         if read is None:
             continue
         goal, check = read
-        return MissionRequest(_display_name(key, catalog), _as_said(goal, text), check, clause)
+        return MissionRequest(_display_name(key, catalog), _as_said(goal, text), _check_as_said(check, text), clause)
     # A tab named with no browser, or with the category alone («en el navegador»): the person's default browser
     # (a named browser above wins).
     tab = _bare_tab(folded)
     if tab is not None:
         goal, check = tab
-        return MissionRequest(BROWSER_CATEGORY, goal, check)
+        return MissionRequest(BROWSER_CATEGORY, goal, _check_as_said(check, text))
     return None
 
 
@@ -970,7 +1072,7 @@ def _pronoun_family(segment: str) -> str | None:
 
 def _pronoun_read(family: str, referent: str) -> tuple[str, str | None] | None:
     if family == "play":
-        return f"reproducir {referent}", _PLAYING_CHECK
+        return f"reproducir {referent}", _playing_check(referent)
     said = {"open": "abri", "on": "activa", "off": "desactiva", "select": "selecciona"}[family]
     return read_clause(f"{said} {referent}")
 
@@ -1035,6 +1137,9 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
         if referent is not None and goal.startswith("ir a ") and goal[len("ir a "):] in _GENERIC_PLACE:
             # «buscá a Mamá y abrí el chat»: the chat, the folder, the result of what was just named.
             goal, check = _pronoun_read("open", referent) or read
+        if goal.startswith("reproducir ") and steps and steps[-1].goal.startswith("buscar "):
+            # «buscá Duki y poné la primera»: the result clicked to play it carries the name searched.
+            check = _playing_check(steps[-1].goal[len("buscar "):])
         if application is None and goal.startswith("ir a la pestaña "):
             application = BROWSER_CATEGORY
         if opened is not None and application != opened:
