@@ -317,3 +317,18 @@ Compuerta Full sobre la punta del banco más r12 (76c574bd6): .NET verde (Integr
 Kernel 307, Contracts 70), formato y compilación verdes; pytest dio 14 fallos de inventarios de procesos y ventanas
 (el veto de identificadores de r11 también quitaba sus PID). Acotado a abrir app, archivo o carpeta y al motor
 (1f22bb5e6), la etapa pytest completa pasa: 19 051.
+
+### Lote ciego z y ronda 13 (11:15–11:35)
+
+Tercer lote de 12 órdenes nuevas, escrito tras publicar 1bbe01704: **11/12 a la primera** (Bloc de notas en inglés,
+cadenas Reloj y Steam, Windows Update, Música, «15 por 3 más 2» = 47, lápiz y rojo en inglés, Aplicaciones de la Store,
+la zona horaria leída de Configuración, seguimiento «escribí: …», spanglish «switch to Temporizador»). Falló z7 «en
+Spotify andá a Inicio y después a tu biblioteca» (35 s): el panel lateral abierto junto a la página llena no contaba
+como llegada (acc13d996). Tras el arreglo: z7 en 11,3 s de misión; u1, v8 y x7 siguen bien.
+
+Efecto lateral hallado en esa corrida de z7: buscando la biblioteca, el modelo pulsó «Seguir a Tu biblioteca» (un
+perfil), «Siguiendo…» (que lo deshizo) y «Guardar La biblioteca de media noche en Tu Biblioteca». La playlist se quitó
+a mano de la cuenta tras comprobar el botón «Eliminar … de Tu biblioteca». Desde a9d09c445 ningún clic que cambie la
+cuenta (seguir, guardar, me gusta, suscribirse, obtener o instalar) se hace si el objetivo no lo pide; un lugar que se
+llama así («Tus me gusta», «Liked Songs») sigue siendo un lugar. La corrida de z7 posterior no tuvo ningún clic de ese
+tipo.
