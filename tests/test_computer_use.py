@@ -1496,3 +1496,9 @@ def test_round_four_review_fixes() -> None:
     # An item whose type is an application never gets the Enter, whatever its row shows.
     app_item = {"kind": "ListItem", "name": "DiscordSetup", "itemType": "Aplicación", "rect": {"x": 0, "y": 0, "w": 200, "h": 20}}
     assert not computer_use._is_container(app_item, {"controls": [app_item]})
+
+
+def test_a_toggle_that_opens_the_navigation_is_no_switch() -> None:
+    assert not computer_use._is_switch({"kind": "Button", "name": "Alternar navegación"})
+    assert not computer_use._is_switch({"kind": "Button", "name": "Toggle navigation"})
+    assert computer_use._is_switch({"kind": "Button", "name": "Alternar grados"})
