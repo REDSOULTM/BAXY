@@ -478,7 +478,7 @@ internal static class ModelMessageComposer
     // English function words outnumber Spanish ones; accents and inverted marks are Spanish. M107: the floor of an
     // action the mind answered nothing for reads the request alone («open google keep for me» was told in Spanish),
     // so the common request words of each language count too; a word both languages write («me», «a», «no») never.
-    private static bool LooksEnglish(string? text)
+    internal static bool LooksEnglish(string? text)
     {
         if (string.IsNullOrWhiteSpace(text) || text.IndexOfAny(['á', 'é', 'í', 'ó', 'ú', 'ñ', '¿', '¡']) >= 0)
         {
