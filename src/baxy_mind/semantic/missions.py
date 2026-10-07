@@ -572,8 +572,10 @@ def _named_item_check(name: str) -> str:
 
 
 def _select_check(target: str) -> str:
-    # Chosen is the control selected or pressed; where the window says neither, the verified click on it.
-    return _with_alternatives(target, ("control:{}:selected", "control:{}:on", "stepDone:input.visible.click:{}"))
+    # Chosen is the control selected or pressed; where the window says neither, the verified click on it. The name
+    # whole (``=``): measured on Paint, «red» inside «Rectángulo redondeado» passed a click on that shape as the colour
+    # chosen, and the mission learned that click as the way to choose red.
+    return _with_alternatives(target, ("control:={}:selected", "control:={}:on", "stepDone:input.visible.click:={}"))
 
 
 # «cambiá a científica», «pasá a la vista compacta», «poné el modo científico», «switch to scientific mode», «set it
@@ -964,6 +966,8 @@ def _check_as_said(check: str | None, said: str) -> str | None:
             if not colon:
                 return text
             lead = operation + ":"
+            if len(rest) > 1 and rest.startswith("="):
+                lead, rest = lead + "=", rest[1:]
         elif kind == "control":
             if rest.startswith("="):
                 lead, rest = "=", rest[1:]

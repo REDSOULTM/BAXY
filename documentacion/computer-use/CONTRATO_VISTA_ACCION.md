@@ -265,7 +265,12 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
    Enter; «escribir <texto>» → escribirlo; «ir a / hacer clic en <X>» → clic en el control
    que se llama X si está en la vista; «activar/desactivar <X>» → clic en ese control si su
    estado no es ya el pedido; «ir a la pestaña X» → clic en la `TabItem` cuyo título
-   contiene X (el tipo de control nombrado en el objetivo acota la búsqueda). Un paso que acaba de fallar nunca se repite: lo que sigue lo decide el
+   contiene X (el tipo de control nombrado en el objetivo acota la búsqueda). «seleccionar / ir a / hacer clic en <X>»
+   sin control listado ni línea escrita que lo nombre, cuando la vista lista sólo parte del árbol (`controlCount` mayor
+   que los listados): un clic por la etiqueta sola con el nombre del objetivo (la palabra de la persona, después la del
+   otro idioma), que el provider resuelve en todo el árbol; cada nombre una vez por sub-objetivo, nunca con un tipo de
+   control nombrado, ni para activar/desactivar, ni con un nombre que borra o abre otra ventana (medido en Paint: los
+   colores quedan más allá de los 60 controles listados). Un paso que acaba de fallar nunca se repite: lo que sigue lo decide el
    modelo, con JSON estricto y temperatura 0 (medido en la Calculadora: el modelo pulsando
    dígito a dígito agotó los 90 s; con el paso dictado la misión son dos pasos).
 4. **Actuar.** La primitiva va al Kernel como operación con sus argumentos; el Kernel
@@ -324,7 +329,9 @@ Ejemplos de las seis misiones de CU1959:
 | en la calculadora calculá 12×7 | `value:Pantalla=84`? No: `84` no se afirma sin verificar. `text:12 × 7 =` y el modelo dice `done` citando la pantalla; el final cita lo observado |
 
 `stepDone:<op>[:<arg>]` es un atom más: se cumple cuando un paso verificado con esa
-operación (y ese `key`/`label`) está en la misión.
+operación (y ese `key`/`label`) está en la misión. `stepDone:input.visible.click:=X`: el clic nombra X entero, no
+dentro de otra palabra (medido en Paint: «red» dentro de «Rectángulo redondeado» dio por elegido el rojo); un `=` solo
+sigue siendo la tecla igual.
 
 **Eco de la consulta** (`QueryEchoNames`). Mientras lo último tecleado sea el nombre del lugar en una
 búsqueda o una barra de direcciones y nada lo haya enviado, o una búsqueda lo envió y su cuadro aún lo
@@ -349,7 +356,8 @@ Petición del shell (JSONL, mismo canal que `plan.ground`):
   "successCheck": "…",
   "view": { …§1.2, sin surface/elapsedMs/id; con rect e itemType, que la mente usa y el prompt del modelo no imprime;
             newText: lo que la última mirada vio nuevo; newTextAfterClick: lo que apareció en la mirada que siguió al
-            último clic verificado del sub-objetivo (≤ 12 líneas; vacío sin clic), con sólo pasos fallidos después… },
+            último clic verificado del sub-objetivo (≤ 12 líneas; vacío sin clic), con sólo pasos fallidos después;
+            controlCount: cuántos controles tiene el árbol además de los ≤ 60 listados… },
   "history": [ {"step": 1, "operation": "app.open", "applicationName": "Steam", "ok": true},
                {"step": 2, "operation": "input.visible.click", "label": "Tienda", "ok": true, "changed": true} ],
   "budgetLeft": 10
@@ -700,7 +708,7 @@ cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y 
 | creá una carpeta llamada X / create a folder named X | `crear carpeta X` | `control:=X&stepDone:input.text.type:X` |
 | renombrá A a B / rename A to B | `renombrar A a B` | `control:=B&stepDone:input.text.type:B` |
 | andá a X / go to X | `ir a X` | `control:X:current\|title:X\|page:X` (+ nombres en el otro idioma); un clic que sólo eligió un elemento de contenido sigue con Enter |
-| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:X:selected\|control:X:on\|stepDone:input.visible.click:X` (+ nombres en el otro idioma) |
+| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:=X:selected\|control:=X:on\|stepDone:input.visible.click:=X` (+ nombres en el otro idioma) |
 | buscá X / search for X | `buscar X` | `title:X&stepDone:input.key.press:enter\|title:X&stepDone:input.visible.click:X\|stepDone:input.text.type&stepDone:input.key.press:enter&text:X` (los resultados en pantalla son la meta) |
 | cambiá a científica / pasá a la vista X / switch to X mode | `ir a X` | `control:X:selected\|title:X\|page:X\|header:X` (+ nombres en el otro idioma y el otro género) |
 | poné el modo X / set it to X mode | `activar modo X` | `control:modo X:on` + la de arriba si X es un modo con nombre propio; si no, `control:X:selected` |

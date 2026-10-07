@@ -1590,6 +1590,13 @@ internal static class ComputerUseMission
         }
 
         compact["controls"] = controls;
+        // How many controls the window's tree holds beside the listed ones (at most 60): the mind tells a name that
+        // lies beyond the listing (a click by label resolves it against the whole tree) from one the window lacks.
+        if (view["controlCount"] is JsonValue controlCount)
+        {
+            compact["controlCount"] = controlCount.DeepClone();
+        }
+
         if (view["text"] is JsonObject text)
         {
             compact["text"] = text.DeepClone();
@@ -1844,6 +1851,11 @@ internal static class ComputerUseSuccessCheck
                     string[] parts = rest.Split(':', 2);
                     string operation = parts[0].Trim();
                     string? argument = parts.Length > 1 ? Fold(parts[1]) : null;
+                    // «stepDone:input.visible.click:=red»: the clicked control's name holds the name whole, not
+                    // inside a longer word (measured on Paint: «red» inside «Rectángulo redondeado» passed a click on
+                    // that shape as the colour chosen). A bare «=» is the equals key's own name.
+                    bool wholeLabel = operation == "input.visible.click" && argument is { Length: > 1 } && argument[0] == '=';
+                    argument = wholeLabel ? argument![1..] : argument;
                     foreach (JsonNode? node in steps)
                     {
                         if (node is not JsonObject step || (bool?)step["ok"] != true
@@ -1861,6 +1873,16 @@ internal static class ComputerUseSuccessCheck
 
                         // The argument names the key pressed, the control clicked or what was typed
                         // («stepDone:input.text.type:=» is an expression typed with its equals sign).
+                        if (wholeLabel)
+                        {
+                            if (NamesWhole(Fold((string?)step["label"]), argument!) || NamesWhole(Fold((string?)step["name"]), argument!))
+                            {
+                                return true;
+                            }
+
+                            continue;
+                        }
+
                         if (argument is null
                             || Fold((string?)step["key"]) == argument
                             || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal)
