@@ -735,7 +735,10 @@ internal static partial class VisibleControlSurface
             GetWindowThreadProcessId(window, out uint owner);
             if (owner != unchecked((uint)processId))
                 return true;
-            if (!GetWindowRect(window, out Rect rect))
+            // Measured live: a File Explorer window belongs to explorer.exe, which also owns the desktop and the
+            // taskbar; the desktop is the largest of them and is always covered. Shell surfaces are never the
+            // window of an application.
+            if (IsShellSurface(window) || !GetWindowRect(window, out Rect rect))
                 return true;
             long area = (long)Math.Max(0, rect.Right - rect.Left)
                 * Math.Max(0, rect.Bottom - rect.Top);
