@@ -185,6 +185,27 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void AClickOnThePlaceThatLeavesTheWindowAsItWasMeansThePlaceWasAlreadyOpen()
+    {
+        JsonArray clicked = [new JsonObject { ["step"] = 5, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "TIENDA" }];
+        JsonObject store = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Buscar en la tienda", "Explorar", "REBAJAS DE OTOÑO"]}}
+            """);
+        store["textBeforeClick"] = new JsonObject { ["5"] = ComputerUseSuccessCheck.TextLines(store) };
+        JsonObject menu = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Buscar en la tienda", "Explorar", "REBAJAS DE OTOÑO", "Destacados"]}}
+            """);
+        menu["textBeforeClick"] = new JsonObject { ["5"] = ComputerUseSuccessCheck.TextLines(store) };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda", store, clicked, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda", menu, clicked, out _), Is.False, "one new line is a menu, not the place");
+        });
+    }
+
+    [Test]
     public void TheMissionAdoptsTheWindowTheProviderResolvedForItsApplication()
     {
         var browser = new JsonObject();

@@ -1521,7 +1521,10 @@ internal static class ComputerUseSuccessCheck
         }
 
         int kept = current.Count(line => baseline.Contains((string?)line ?? string.Empty));
-        return kept * 2 < current.Count;
+        // A click on the place's own name that leaves the window exactly as it was: the place was already open
+        // (measured on Steam: the store was in front, «TIENDA» clicked twice and the mission ended unchanged).
+        bool alreadyThere = kept == current.Count && baseline.Count == current.Count;
+        return alreadyThere || kept * 2 < current.Count;
     }
 
     // A verified click whose label names the place, or the entry picked right after
