@@ -347,23 +347,247 @@ public sealed class ComputerUseMissionTests
     [Test]
     public void ThePagesOwnHeaderNamesWhereTheWindowIs()
     {
-        JsonObject colors = View("""
-            {"window": {"title": "Configuración"}, "controls": [
-              {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L"},
-              {"i": 1, "kind": "Button", "name": "Personalización", "zone": "T"}, {"i": 2, "kind": "Button", "name": "Colores", "zone": "T"},
-              {"i": 3, "kind": "ComboBox", "name": "Elige tu modo", "zone": "R"}]}
-            """);
+        static JsonObject Colors(string title, string zone, bool moreToTheRight)
+        {
+            JsonObject view = View("""
+                {"window": {"title": "Configuración"}, "controls": [
+                  {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L", "rect": {"x": 0, "y": 100, "w": 200, "h": 40}},
+                  {"i": 1, "kind": "Button", "name": "Personalización", "zone": "T", "rect": {"x": 220, "y": 40, "w": 200, "h": 40}},
+                  {"i": 2, "kind": "Button", "name": "Colores", "zone": "T", "rect": {"x": 440, "y": 40, "w": 120, "h": 40}},
+                  {"i": 3, "kind": "ComboBox", "name": "Elige tu modo", "zone": "R", "rect": {"x": 700, "y": 200, "w": 200, "h": 30}}]}
+                """);
+            view["window"]!["title"] = title;
+            view["controls"]![2]!["zone"] = zone;
+            if (moreToTheRight)
+            {
+                view["controls"]!.AsArray().Add(View("""
+                    {"i": 4, "kind": "Button", "name": "Compartir", "zone": "T", "rect": {"x": 600, "y": 45, "w": 80, "h": 30}}
+                    """));
+            }
+
+            return view;
+        }
+
         JsonObject personalization = View("""
             {"window": {"title": "Configuración"}, "controls": [
-              {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L"},
-              {"i": 1, "kind": "Text", "name": "Personalización", "zone": "T"}, {"i": 2, "kind": "ListItem", "name": "Colores", "zone": "C"},
-              {"i": 3, "kind": "Text", "name": "Colores", "zone": "C"}]}
+              {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L", "rect": {"x": 0, "y": 100, "w": 200, "h": 40}},
+              {"i": 1, "kind": "Text", "name": "Personalización", "zone": "T", "rect": {"x": 220, "y": 40, "w": 200, "h": 40}},
+              {"i": 2, "kind": "ListItem", "name": "Colores", "zone": "C", "rect": {"x": 220, "y": 200, "w": 400, "h": 60}},
+              {"i": 3, "kind": "Text", "name": "Colores", "zone": "C", "rect": {"x": 230, "y": 210, "w": 100, "h": 20}}]}
             """);
+        JsonArray clicked = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Colores" }];
+        JsonArray failed = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Colores" }];
         Assert.Multiple(() =>
         {
-            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", colors, [], out _), Is.True);
-            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", personalization, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "T", false), clicked, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "T", false), [], out _), Is.False,
+                "the sub-goal's first look is not an arrival");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "T", false), failed, out _), Is.False,
+                "a click that did not verify brought nothing");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Colores - Configuración", "T", false), [], out _), Is.True,
+                "the title names the place");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "TL", false), clicked, out _), Is.False,
+                "a toolbar in a top corner is not the header");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "T", true), clicked, out _), Is.False,
+                "a control with more to its right is a tab or a tool, not where the header ends");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", personalization, clicked, out _), Is.False);
         });
+    }
+
+    // Measured on the Calculator: the mode clicked in the navigation is written as the window's heading («Modo de
+    // calculadora Científica»); a heading already there before the click, or one the last click did not name, is not it.
+    [Test]
+    public void AHeadingTheLastClickMadeAppearNamesTheModeReached()
+    {
+        JsonObject Calculator(string zone, params string[] before)
+        {
+            JsonObject view = View("""
+                {"window": {"title": "Calculadora"}, "controls": [
+                  {"i": 0, "kind": "Button", "name": "Abrir navegación", "zone": "TL"},
+                  {"i": 1, "kind": "Text", "name": "Modo de calculadora Científica", "zone": "T"},
+                  {"i": 2, "kind": "Button", "name": "Seno", "zone": "C"}]}
+                """);
+            view["controls"]![1]!["zone"] = zone;
+            view["controlsBeforeClick"] = new JsonObject { ["2"] = new JsonArray([.. before.Select(name => (JsonNode?)JsonValue.Create(name))]) };
+            return view;
+        }
+
+        JsonArray Steps(string lastLabel, bool lastOk = true) =>
+        [
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Abrir navegación" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = lastOk, ["label"] = lastLabel },
+        ];
+        JsonObject noBefore = Calculator("T");
+        noBefore.Remove("controlsBeforeClick");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("T", "modo de calculadora estandar", "abrir navegacion"),
+                Steps("Calculadora Científica"), out string? by), Is.True);
+            Assert.That(by, Is.EqualTo("header:Científica"));
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("TR", "modo de calculadora estandar"),
+                Steps("Científica"), out _), Is.True, "any top zone holds a heading");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("T", "modo de calculadora cientifica"),
+                Steps("Calculadora Científica"), out _), Is.False, "the heading was there before the click");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("T", "modo de calculadora estandar"),
+                Steps("Historial"), out _), Is.False, "the last click named something else");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("T", "modo de calculadora estandar"),
+                Steps("Calculadora Científica", lastOk: false), out _), Is.False, "the click on it did not verify");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("C", "modo de calculadora estandar"),
+                Steps("Calculadora Científica"), out _), Is.False, "written in the body, not as a heading");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", noBefore, Steps("Calculadora Científica"), out _), Is.False,
+                "what was there before the click is unknown");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("header:Científica", Calculator("T", "modo de calculadora estandar"), [], out _), Is.False);
+        });
+    }
+
+    // Measured on Steam: «BIBLIOTECA» and then «TIENDA», both written in the header before the first click, and the store
+    // passed for the library as if «TIENDA» were an entry of the library's menu. A click that failed in between (a
+    // learned «Inicio» no longer there) changes nothing: the entry picked after it still reaches the place.
+    [Test]
+    public void OnlyAnEntryTheMenuShowedCountsAsReachingThePlaceAfterTheClickOnIt()
+    {
+        JsonObject library = View("""
+            {"window": {"title": "Steam"}, "controls": [],
+             "text": {"TL": ["TIENDA", "BIBLIOTECA COMUNIDAD", "Pagina principal", "Juegos y Software", "FAVORITOS (324)"],
+                      "C": ["TUS COLECCIONES", "INSTALADO LOCALMENTE"]}}
+            """);
+        library["textBeforeClick"] = new JsonObject
+        {
+            ["1"] = new JsonArray("tienda", "biblioteca comunidad", "explorar", "buscar en la tienda", "rebajas de otono", "lista de deseados"),
+        };
+        JsonArray thenTheStore =
+        [
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "BIBLIOTECA" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "TIENDA" },
+        ];
+        JsonArray throughAFailedEntry =
+        [
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "BIBLIOTECA" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Inicio" },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Página principal" },
+        ];
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, thenTheStore, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", library, throughAFailedEntry, out _), Is.True);
+        });
+    }
+
+    // A search typed in this sub-goal and still echoing (its box holds it, nothing went from its results to the place)
+    // makes any citation holding it an echo (measured on Explorer: «imagenes - Resultados de la búsqueda en ETC» cited as
+    // evidence). Only a click on the place itself, not on a result that merely holds the name, ends the echo.
+    [Test]
+    public void EvidenceHoldingAQueryThatStillEchoesIsNotProof()
+    {
+        JsonObject results = View("""
+            {"window": {"title": "imagenes - Resultados de la búsqueda en Trabajo - Explorador de archivos", "process": "explorer",
+                        "focused": {"kind": "Edit", "name": "Buscar en Trabajo", "value": "imagenes"}},
+             "controls": [{"i": 0, "kind": "TabItem", "name": "imagenes - Resultados de la búsqueda en Trabajo", "state": "selected"},
+                          {"i": 1, "kind": "Edit", "name": "Buscar en Trabajo", "state": "focused", "value": "imagenes"},
+                          {"i": 2, "kind": "ListItem", "name": "Imagenes viejas", "state": ""}],
+             "text": {}}
+            """);
+        JsonObject arrived = View("""
+            {"window": {"title": "Imágenes - Explorador de archivos", "process": "explorer",
+                        "focused": {"kind": "Pane", "name": "Imágenes", "value": null}},
+             "controls": [{"i": 0, "kind": "TabItem", "name": "Imágenes", "state": "selected"}], "text": {}}
+            """);
+        JsonArray Searched(params JsonObject[] after)
+        {
+            var steps = new JsonArray
+            {
+                new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "Buscar en Trabajo", ["ok"] = true },
+                new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["text"] = "imagenes", ["into"] = "Buscar en Trabajo", ["ok"] = true },
+                new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "enter", ["ok"] = true },
+            };
+            foreach (JsonObject step in after)
+            {
+                steps.Add(step);
+            }
+
+            return steps;
+        }
+
+        JsonObject Click(string label) => new() { ["step"] = 4, ["operation"] = "input.visible.click", ["label"] = label, ["ok"] = true };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery("imagenes - Resultados de la búsqueda en Trabajo", results, Searched()), Is.True);
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery("«imagenes»", results, Searched()), Is.True);
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery("Imágenes - Explorador de archivos", arrived, Searched(Click("Imágenes"))), Is.False,
+                "a click on the place by its name went there");
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery("Imagenes viejas", results, []), Is.False, "nothing typed in this sub-goal");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:Imágenes", results, Searched(Click("Imagenes viejas")), out _), Is.False,
+                "a result that holds the name is one of the matches, not the place");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:Imágenes", arrived, Searched(Click("Abrir Imágenes")), out _), Is.True);
+        });
+    }
+
+    // Every view the mind receives carries what the sub-goal's last verified click made appear (the look right after
+    // it), kept while the screen stays and forgotten with the sub-goal.
+    [Test]
+    public void EveryViewCarriesWhatTheLastVerifiedClickMadeAppear()
+    {
+        static JsonObject Look(params string[] lines) =>
+            new() { ["text"] = new JsonObject { ["C"] = new JsonArray([.. lines.Select(line => (JsonNode?)JsonValue.Create(line))]) } };
+        static string[] After(JsonObject view) =>
+            [.. ((JsonArray)ComputerUseMission.CompactForTheMind(view)["newTextAfterClick"]!).Select(node => (string?)node ?? string.Empty)];
+
+        var state = new JsonObject
+        {
+            ["subgoals"] = new JsonArray(new JsonObject { ["goal"] = "abrir el menu" }, new JsonObject { ["goal"] = "ir a ajustes" }),
+            ["steps"] = new JsonArray(),
+        };
+        var steps = (JsonArray)state["steps"]!;
+        void Note(JsonObject view, int start) =>
+            ComputerUseMission.NoteWhatAppeared(state, view, ComputerUseSuccessCheck.TextLines(view), steps, start);
+
+        JsonObject first = Look("Archivo", "Editar");
+        Note(first, 0);
+        steps.Add(new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "Archivo", ["ok"] = true });
+        JsonObject menu = Look("Archivo", "Editar", "Abrir", "Guardar");
+        Note(menu, 0);
+        JsonObject again = Look("Archivo", "Editar", "Abrir", "Guardar");
+        Note(again, 0);
+        steps.Add(new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["label"] = "Ayuda", ["ok"] = false });
+        JsonObject afterFailure = Look("Archivo", "Editar", "Abrir", "Guardar", "Reloj");
+        Note(afterFailure, 0);
+        ComputerUseMission.EnterSubgoal(state, 1, procedures: null);
+        JsonObject nextSubgoal = Look("Ajustes");
+        Note(nextSubgoal, steps.Count);
+        Assert.Multiple(() =>
+        {
+            Assert.That(After(first), Is.Empty);
+            Assert.That(After(menu), Is.EqualTo(new[] { "abrir", "guardar" }));
+            Assert.That(After(again), Is.EqualTo(new[] { "abrir", "guardar" }), "the same screen: the click's effect stands");
+            Assert.That((JsonArray)again["newText"]!, Is.Empty);
+            Assert.That(After(afterFailure), Is.EqualTo(new[] { "abrir", "guardar" }), "a failed click made nothing appear");
+            Assert.That(After(nextSubgoal), Is.Empty, "a new sub-goal starts without it");
+            Assert.That(ComputerUseMission.CompactForTheMind(View(SteamView))["newTextAfterClick"], Is.InstanceOf<JsonArray>());
+        });
+    }
+
+    // A learned sequence is forgotten when it deviated or when the screen did not answer its replayed steps; a stop that
+    // says nothing about it (no view, a covered or elevated window, no decision, a step that could not be sent) keeps it.
+    [TestCase(false, "computer_use_surface_unchanged", true, true)]
+    [TestCase(false, "computer_use_no_step_visible", true, true)]
+    [TestCase(false, "computer_use_evidence_not_visible", true, true)]
+    [TestCase(false, "computer_use_repeated_step", true, true)]
+    [TestCase(false, "computer_use_budget_exhausted", true, true)]
+    [TestCase(false, "computer_use_time_exhausted", true, true)]
+    [TestCase(false, "computer_use_view_unavailable", true, false)]
+    [TestCase(false, "computer_use_window_covered", true, false)]
+    [TestCase(false, "computer_use_window_elevated", true, false)]
+    [TestCase(false, "computer_use_decision_unavailable", true, false)]
+    [TestCase(false, "computer_use_step_failed", true, false)]
+    [TestCase(false, "computer_use_surface_unchanged", false, false)]
+    [TestCase(true, "computer_use_view_unavailable", true, true)]
+    public void AProcedureIsForgottenOnlyWhenItDeviatedOrTheScreenDidNotAnswerIt(bool deviated, string errorCode, bool replayed, bool forgotten)
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["ok"] = true, ["source"] = replayed ? "procedure" : "model" },
+        };
+        Assert.That(ComputerUseMission.ForgetsProcedure(deviated, errorCode, steps), Is.EqualTo(forgotten));
     }
 
     [Test]
