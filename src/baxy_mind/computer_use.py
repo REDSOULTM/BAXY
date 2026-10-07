@@ -1076,6 +1076,7 @@ _ADDRESS_NAME = re.compile(r"\b(?:direccion\w*|address|url)\b")
 # path or «Este equipo > Descargas» is a file explorer's).
 _WEB_ADDRESS = re.compile(r"^(?:https?://)?(?:[\w-]+\.)+[^\W\d_]{2,}(?::\d+)?(?:[/?#]|$)")
 _SEARCH_KINDS = ("Edit", "ComboBox", "Button", "ListItem")
+_SENTENCE_END = re.compile(r"[.!?]\s")
 _FIELD_KINDS = frozenset({"Edit", "ComboBox"})
 # What a search shows its results as, best first; the field itself is never a result.
 _RESULT_KINDS = ("ListItem", "TreeItem", "Button", "Hyperlink", "DataItem", "MenuItem", "TabItem")
@@ -1217,9 +1218,13 @@ def _search_affordance(view: dict, history: list[dict]) -> dict | None:
     controls = view.get("controls") if isinstance(view, dict) else None
     if not isinstance(controls, list):
         return None
+    # A control is a search when its name says so before any sentence of help it carries: an entry of a search's
+    # history («speedtest. Presione la tecla Suprimir para borrar el historial de búsqueda.», measured on a packaged
+    # store) is one of its suggestions, not the search.
     found = [
         control for control in controls
-        if isinstance(control, dict) and control.get("kind") in _SEARCH_KINDS and _is_search_field(control)
+        if isinstance(control, dict) and control.get("kind") in _SEARCH_KINDS
+        and _is_search_field({**control, "name": _SENTENCE_END.split(str(control.get("name") or ""), 1)[0]})
         and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
         and _of_the_page(view, control)
     ]
@@ -1413,6 +1418,9 @@ def _find_step(target: str, view: dict, history: list[dict], *, navigate: bool =
         clicked = find_control(view, str(last.get("label") or ""))
         # A search box clicked by its written line (no tree to tell focus) takes the keyboard as a person expects.
         written_box = clicked is None and last.get("ok") is True and not isinstance(last.get("index"), int)
+        # A field the receipt says was clicked keeps the caret when the next look no longer lists it (a pop-up of
+        # its suggestions or history came up over it): a person types now, never picks a suggestion as the search.
+        hidden_field = clicked is None and last.get("ok") is True and last.get("kind") in _FIELD_KINDS
         # A search button that changed the window opened its box (measured on Discord: «Buscar o iniciar una
         # conversación» opens the quick switcher, whose field the tree does not report focused): a person types now.
         opened_box = (
@@ -1421,7 +1429,7 @@ def _find_step(target: str, view: dict, history: list[dict], *, navigate: bool =
         )
         if _is_search_field({"name": last.get("label")}) and (
             _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS)
-            or written_box or opened_box
+            or written_box or opened_box or hidden_field
         ):
             return _type_into(view, history, target)
     searched = _typed_target(history, target)

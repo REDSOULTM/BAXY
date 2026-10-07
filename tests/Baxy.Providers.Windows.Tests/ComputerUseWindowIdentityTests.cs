@@ -92,4 +92,26 @@ public sealed class ComputerUseWindowIdentityTests
             Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 4, front: 0), Is.EqualTo((nint)20));
         });
     }
+
+    // A packaged app drawn inside an ApplicationFrameHost frame (measured live on a store's search): the click on its
+    // search field opened the history flyout, a titled top-level window of the app's own process, and the view moved
+    // to it and lost the field. The frame hosting the process is its window, even with the flyout in front; a process
+    // without a frame keeps the rules above.
+    [Test]
+    public void AFrameHostedProcessIsItsFrameNeverItsPopup()
+    {
+        VisibleControlSurface.TopLevelWindow[] windows =
+        [
+            new(30, 6, Usable: true, Area: 260_000),
+        ];
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 6, front: 0, frame: 31), Is.EqualTo((nint)31));
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 6, front: 30, frame: 31), Is.EqualTo((nint)31),
+                "the flyout in front is still a pop-up of the framed app");
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 6, front: 31, frame: 31), Is.EqualTo((nint)31));
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 6, front: 0), Is.EqualTo((nint)30),
+                "without a frame the process's own window stands");
+        });
+    }
 }

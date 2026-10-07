@@ -691,6 +691,12 @@ disculpa; en una cadena no lograda, primero lo que no se pudo y su causa, despu�
 - Un clic aprendido (procedimiento) se fija al único control de la vista actual con su nombre y se pulsa por
   identidad; tras un clic fallido el paso del objetivo se busca de nuevo en la vista, nunca el mismo acto.
 - Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
+- Una app empaquetada que se dibuja dentro de un marco `ApplicationFrameHost` tiene ese marco por ventana; sus
+  ventanas de nivel superior son sus emergentes (medido en vivo: el historial de una búsqueda, «Host de ventanas
+  emergentes», se tomó por la app, la vista perdió el campo y se pulsó una entrada del historial). Un control es
+  una búsqueda si lo dice su nombre antes de la ayuda que trae («speedtest. Presione la tecla Suprimir…» no lo es), y
+  un campo que el recibo del clic dice pulsado conserva el cursor aunque la vista siguiente ya no lo liste: se
+  escribe, y el Enter sin un campo de búsqueda visible con el teclado pregunta.
 - Una app abierta en frío se vuelve a mirar hasta 10 s mientras la ventana cambie o parezca de arranque (≤ 1 control
   accionable —un marco, un panel o una barra de dirección de sólo lectura no cuentan— y ≤ 5 líneas).
 - Una ventana de administrador (`window.elevated`) para la misión con `computer_use_window_elevated`, dicho con esa
