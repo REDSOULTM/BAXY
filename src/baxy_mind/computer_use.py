@@ -2004,33 +2004,9 @@ def describe_step(step: dict, language: str) -> str:
     return operation
 
 
-# The typed stop reasons as facts the final can state (the model words them;
-# «operación» is a forbidden term in finals, so no cause says it).
-_STOP_CAUSES: dict[str, dict[str, str]] = {
-    "computer_use_no_step_visible": {"es": "no vi en la pantalla un control con el que seguir", "en": "I did not see on the screen a control to go on with"},
-    "computer_use_no_document_open": {
-        "es": "la aplicación está en su pantalla de inicio, sin ningún documento abierto",
-        "en": "the application is on its start screen with no document open",
-    },
-    "computer_use_evidence_not_visible": {"es": "la pantalla no mostró la prueba de que se hubiera logrado", "en": "I did not find on the screen the proof that it was done"},
-    "computer_use_budget_exhausted": {"es": "se agotaron los pasos previstos sin llegar", "en": "the planned steps ran out before getting there"},
-    "computer_use_time_exhausted": {"es": "se agotó el tiempo previsto sin llegar", "en": "the planned time ran out before getting there"},
-    "computer_use_surface_unchanged": {"es": "la pantalla dejó de cambiar tras lo que hice", "en": "the screen stopped changing after what I did"},
-    "computer_use_view_unavailable": {"es": "la ventana no se dejó leer", "en": "I could not read the window"},
-    "computer_use_decision_unavailable": {"es": "el siguiente paso quedó sin decidir", "en": "I could not decide the next step"},
-    "computer_use_repeated_step": {"es": "el único paso que veía ya había fallado", "en": "the only step I could see had already failed"},
-    "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
-    "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
-    "computer_use_window_covered": {"es": "otra ventana tapa la aplicación", "en": "another window covers the application"},
-    "computer_use_window_not_application": {
-        "es": "la ventana de delante no era la de la aplicación, así que no pulsé ni escribí nada en ella",
-        "en": "the window in front was not the application's, so I pressed and typed nothing there",
-    },
-    "computer_use_window_elevated": {
-        "es": "esa aplicación corre como administrador y Windows no deja que otra aplicación la controle",
-        "en": "that application runs as administrator and Windows does not let another application control it",
-    },
-}
+# The typed stop reasons as facts the final can state (the model words them; «operación» is a forbidden term in finals,
+# so no cause says it). Data shared with the App's floor (operation_floor.v1.json «computerUse.causes»).
+_STOP_CAUSES: dict[str, dict[str, str]] = operation_floor.floor_data()["computerUse"]["causes"]
 
 
 def project_seen(observed: dict, language: str) -> dict[str, object]:
@@ -2075,11 +2051,9 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
             "en" if language == "en" else "es", str(observed.get("stoppedBy")).replace("_", " ")
         )
         if observed.get("stoppedBy") == "computer_use_window_covered" and seen.get("coveredBy"):
-            seen["stoppedBecause"] = (
-                f"the window «{seen['coveredBy']}» covers the application"
-                if language == "en"
-                else f"la ventana «{seen['coveredBy']}» tapa la aplicación"
-            )
+            seen["stoppedBecause"] = operation_floor.floor_data()["computerUse"]["coveredBy"][
+                "en" if language == "en" else "es"
+            ].format(window=seen["coveredBy"])
     if observed.get("procedure") in {"replayed", "learned", "relearned"}:
         seen["procedure"] = observed.get("procedure")
     raw_subgoals = observed.get("subgoals")
@@ -2231,7 +2205,7 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
             return "subgoal_claimed"
     if _invented_meridiem(folded_reply, seen):
         return "extra_claim"
-    if _only_went_somewhere(seen) and _claims_a_change(folded_reply):
+    if _only_went_somewhere(seen) and _claims_a_change(folded_reply, seen):
         return "extra_claim"
     return None
 
@@ -2283,7 +2257,14 @@ _GO_GOAL = re.compile(r"^ir\s+a\b")
 _CHANGE_CLAIM = re.compile(
     r"\b(?:puse|configure|cree|programe|cambie|ajuste|encendi|apague|inicie|borre|elimine|agregue|anadi|guarde|"
     r"(?:des)?active\s+(?:el|la|los|las|lo|un|una)|"
-    r"i\s+(?:have\s+|'ve\s+)?(?:set|created|started|turned|changed|scheduled|enabled|disabled|deleted|added|saved))\b"
+    r"pondre|configurare|creare|programare|cambiare|ajustare|encendere|apagare|borrare|eliminare|agregare|anadire|"
+    r"guardare|(?:des)?activare|"
+    r"voy\s+a\s+(?:poner|configurar|crear|programar|cambiar|ajustar|encender|apagar|borrar|eliminar|agregar|anadir|"
+    r"guardar|(?:des)?activar)|"
+    r"ahora\s+(?:pongo|configuro|programo|cambio|ajusto|enciendo|apago|borro|elimino|agrego|anado|guardo|(?:des)?activo)|"
+    r"i(?:\s+will|'ll|\s+am|'m)\s+(?:set|create|start|turn|change|schedule|enable|disable|delete|add|save|setting|"
+    r"creating|starting|turning|changing|scheduling|enabling|disabling|deleting|adding|saving)|"
+    r"i(?:\s+have|'ve)?\s+(?:set|created|started|turned|changed|scheduled|enabled|disabled|deleted|added|saved))\b"
 )
 _CHANGE_DENIED = re.compile(r"\b(?:no|nunca|ni|not|never|didn'?t)\s+(?:\w+\s+)?$")
 
@@ -2293,21 +2274,73 @@ def _only_went_somewhere(seen: dict) -> bool:
     return all(isinstance(goal, str) and _GO_GOAL.match(fold(goal)) for goal in goals)
 
 
-def _claims_a_change(folded_reply: str) -> bool:
+def _claims_a_change(folded_reply: str, seen: dict) -> bool:
     return any(
         _CHANGE_DENIED.search(folded_reply[max(0, found.start() - 20):found.start()]) is None
+        and _PICK_OFFERED.search(folded_reply[max(0, found.start() - 40):found.start()]) is None
         for found in _CHANGE_CLAIM.finditer(folded_reply)
-    )
+    ) or _claims_a_pick(folded_reply, seen)
+
+
+# Live 2026-10-07 (cu-r8, «en el Reloj andá a Alarma» → «Ya elegí la alarma de las 7:00»): a navigation selects the
+# place it goes to (the tab «Alarma»), nothing inside it. A first-person pick is what the mission went to or nothing:
+# its object must be a place the goals named, a name the steps clicked or a value the window marked, optionally «en»
+# the application; «elegí el lápiz» on a mission that picked it is not a navigation and is not judged here.
+# Live v6 («en Word andá a la pestaña Diseño» → «Ya estoy en la pestaña Diseño y ahora selecciono Títulos.»): an act
+# said in the present or the future beside the arrival is as invented as one in the past.
+_PICK_CLAIM = re.compile(
+    r"\b(?:elegi|escogi|seleccione|marque|opte\s+por|elijo|escojo|selecciono|elegire|escogere|seleccionare|marcare|"
+    r"voy\s+a\s+(?:elegir|escoger|seleccionar|marcar)|"
+    r"i(?:\s+have|'ve|\s+will|'ll|\s+am|'m)?\s+(?:chose|chosen|selected|picked|ticked|choose|select|pick|"
+    r"choosing|selecting|picking))\s+"
+    r"(?P<object>[^.,;:!?\n]+?)(?=\s+(?:y|e|pero|and|but|que|that|which)\b|[.,;:!?\n]|$)"
+)
+# «Si quieres, selecciono Títulos» offers the act; it does not claim it.
+_PICK_OFFERED = re.compile(r"\b(?:si\s+quieres|si\s+deseas|puedo|if\s+you\s+(?:want|like)|i\s+can|want\s+me\s+to)\b[^.;]{0,20}$")
+_PICK_HEAD = re.compile(
+    r"^(?:(?:el|la|los|las|lo|the|a|an)\s+)?(?:(?:pestana|seccion|opcion|pagina|vista|apartado|tab|section|option|"
+    r"page|view)\s+(?:(?:de|del|of)\s+)?(?:(?:el|la|los|las|the)\s+)?)?"
+)
+_PICK_WHERE = re.compile(
+    r"^(?:en|in|on|de|del|of)\s+(?:(?:el|la|the)\s+)?(?:(?:aplicacion|app|ventana|window)\s+(?:(?:de|del|of)\s+)?)?(?P<app>.+)$"
+)
+_QUOTED = re.compile(r"«([^«»]+)»")
+
+
+def _picked_places(seen: dict) -> set[str]:
+    goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)] + [seen.get("goal")]
+    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+    names = [
+        *(found.group(1) for goal in goals if isinstance(goal, str) for part in goal.split(";")
+          if (found := _PLACE_GOAL.match(re.sub(r"^\s*luego\s+", "", part.strip()))) is not None),
+        *(quoted for step in seen.get("stepsDone") or () if isinstance(step, str) for quoted in _QUOTED.findall(step)),
+        *(item.get("name") for item in screen.get("values") or () if isinstance(item, dict)),
+    ]
+    return {fold(_BIDI_MARKS.sub("", name)).strip(" .") for name in names if isinstance(name, str) and name.strip()}
+
+
+def _claims_a_pick(folded_reply: str, seen: dict) -> bool:
+    places = _picked_places(seen)
+    apps = {fold(name) for name in (seen.get("application"), seen.get("windowTitle")) if isinstance(name, str)}
+    for found in _PICK_CLAIM.finditer(folded_reply):
+        before = folded_reply[max(0, found.start() - 40):found.start()]
+        if _CHANGE_DENIED.search(before[-20:]) is not None or _PICK_OFFERED.search(before) is not None:
+            continue
+        picked = _PICK_HEAD.sub("", fold(found.group("object").replace("«", " ").replace("»", " "))).strip()
+        if picked in places:
+            continue
+        place = next((name for name in places if name and picked.startswith(name + " ")), None)
+        where = _PICK_WHERE.match(picked[len(place) + 1:]) if place is not None else None
+        if where is None or fold(where.group("app")) not in apps:
+            return True
+    return False
 
 
 # The floor of a mission (live 2026-10-07): when every draft was refused, «Lo hice en la aplicación «Reloj»; hay 2:
 # «Reloj mundial».» counted the steps as a list read. The floor says what the person asked about, from the facts only:
 # the place reached, or what could not be done and its cause.
-_PLACE_GOAL = re.compile(
-    r"^ir\s+a\s+(?:(?:la\s+)?(?:pesta[nñ]a|direcci[oó]n|secci[oó]n|p[aá]gina|parte)\s+(?:de\s+)?|el\s+|la\s+|los\s+|las\s+)?(.+)$",
-    re.IGNORECASE,
-)
-_LONGEST_FLOOR_NAME = 60
+_PLACE_GOAL = re.compile(operation_floor.floor_data()["computerUse"]["placeGoal"], re.IGNORECASE)
+_LONGEST_FLOOR_NAME: int = operation_floor.floor_data()["computerUse"]["longestName"]
 
 
 def _floor_name(value: object) -> str:
@@ -2350,6 +2383,9 @@ def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
         if place:
             return said["place"].format(place=quote.format(value=place)) + "."
         return said["app"].format(app=quote.format(value=app)) + "." if app else ""
+    if succeeded:
+        # A verified result that does not say it reached anything is never told as a failure.
+        return ""
     place = _place_of(seen.get("firstUnreached") or seen.get("goal"), names)
     if place:
         head = said["notPlace"].format(place=quote.format(value=place))

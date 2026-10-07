@@ -136,6 +136,11 @@ internal static class OperationFloor
     internal static string? Final(JsonObject situation, bool english, TimeProvider? clock = null)
     {
         ArgumentNullException.ThrowIfNull(situation);
+        if (ComputerUse(situation, english) is { } mission)
+        {
+            return Sentence(mission);
+        }
+
         JsonObject templates = Templates(english);
         string cause = (Text(situation, "cause") ?? string.Empty).Trim().ToLowerInvariant();
         string text;
@@ -155,6 +160,166 @@ internal static class OperationFloor
 
         return Sentence(text);
     }
+
+    // Windows writes bidi marks inside the names and clocks it shows («7‎:‎58»).
+    private static readonly Regex BidiMarks = new("[‎‏‪-‮⁦-⁩]", RegexOptions.CultureInvariant);
+
+    private static readonly Lazy<Regex> PlaceGoal = new(() => new Regex(
+        T((JsonObject)Data.Value["computerUse"]!, "placeGoal"),
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
+
+    /// <summary>
+    /// Live 2026-10-07 twin of the mind's computer_use.floor_sentence (data «computerUse»): a computer-use mission the
+    /// mind left without a final said «Lo hice en la aplicación «Reloj»; hay 2: «Reloj mundial».» (its steps counted
+    /// as a list read) or «No pude hacerlo en la aplicación «Configuración».» (no cause). It says the place reached
+    /// as the window writes it, or what was not reached and the typed stop cause. Null when the turn is no such
+    /// mission or its facts hold nothing to say (the plain clause then tells it).
+    /// </summary>
+    private static string? ComputerUse(JsonObject situation, bool english)
+    {
+        if (ComputerUseMission(situation) is not { } mission || mission["observed"] is not JsonObject observed)
+        {
+            return null;
+        }
+
+        var data = (JsonObject)Data.Value["computerUse"]!;
+        string language = english ? "en" : "es";
+        var said = (JsonObject)data[language]!;
+        string question = T(data, "questionMark");
+        string? goal = Text(observed, "goal");
+        if (goal is not null && goal.Contains(question, StringComparison.Ordinal))
+        {
+            // «… y decime si el modo es claro u oscuro»: the answer is the mind's to read from the window.
+            return null;
+        }
+
+        var names = new List<string>();
+        IEnumerable<JsonObject> steps = (observed["steps"] as JsonArray ?? new JsonArray()).OfType<JsonObject>();
+        IEnumerable<JsonObject> values = ((observed["screen"] as JsonObject)?["values"] as JsonArray ?? new JsonArray())
+            .OfType<JsonObject>();
+        foreach (JsonNode? candidate in steps.Where(step => Flag(step, "ok") == true).Select(step => step["name"])
+            .Concat(values.Select(item => item["name"])))
+        {
+            if (FloorName(candidate, data) is { Length: > 0 } name)
+            {
+                names.Add(name);
+            }
+        }
+
+        var window = observed["window"] as JsonObject;
+        string app = FloorName(observed["application"], data) is { Length: > 0 } application
+            ? application
+            : FloorName(window?["title"], data);
+        List<JsonObject> subgoals = (observed["subgoals"] as JsonArray ?? new JsonArray())
+            .OfType<JsonObject>().Take(8).ToList();
+        string Quoted(string value) => Quote(value, Templates(english));
+        if (Flag(mission, "verified") == true && Flag(mission, "succeeded") == true)
+        {
+            if (Flag(observed, "reached") != true)
+            {
+                // A verified result that does not say it reached anything is never told as a failure.
+                return null;
+            }
+
+            string reached = Place(subgoals.Count > 0 ? Text(subgoals[^1], "goal") : goal, names, question, data);
+            if (reached.Length > 0)
+            {
+                return T(said, "place").Replace("{place}", Quoted(reached), StringComparison.Ordinal);
+            }
+
+            return app.Length > 0 ? T(said, "app").Replace("{app}", Quoted(app), StringComparison.Ordinal) : null;
+        }
+
+        JsonObject? unreached = subgoals.FirstOrDefault(item => Flag(item, "reached") != true);
+        string place = Place((unreached is null ? null : Text(unreached, "goal")) ?? goal, names, question, data);
+        string head = place.Length > 0
+            ? T(said, "notPlace").Replace("{place}", Quoted(place), StringComparison.Ordinal)
+            : app.Length > 0
+                ? T(said, "notApp").Replace("{app}", Quoted(app), StringComparison.Ordinal)
+                : T(said, "not");
+        string? stoppedBy = Text(observed, "stoppedBy");
+        if (stoppedBy is null || (data["causes"] as JsonObject)?[stoppedBy] is not JsonObject causes)
+        {
+            // An untyped stop code is never said as prose.
+            return head;
+        }
+
+        string cause = Text(causes, language) ?? string.Empty;
+        JsonObject? cover = window?["coveredBy"] as JsonObject;
+        string? coveredBy = cover is null ? null : (NonEmpty(cover, "title") ?? NonEmpty(cover, "process"));
+        if (stoppedBy == "computer_use_window_covered" && coveredBy is not null)
+        {
+            cause = T((JsonObject)data["coveredBy"]!, language).Replace("{window}", coveredBy, StringComparison.Ordinal);
+        }
+
+        return cause.Trim().Length > 0
+            ? T(said, "cause").Replace("{head}", head, StringComparison.Ordinal)
+                .Replace("{cause}", cause, StringComparison.Ordinal)
+            : head;
+    }
+
+    // The mission a turn tells: the result itself, the reason of a mission that failed on it alone, or the only step
+    // of a plan (the mind's llm._computer_use_mission).
+    private static JsonObject? ComputerUseMission(JsonObject situation)
+    {
+        const string Operation = "mission.computer.use";
+        if (Text(situation, "operation") == Operation)
+        {
+            return situation;
+        }
+
+        string cause = (Text(situation, "cause") ?? string.Empty).Trim().ToLowerInvariant();
+        List<JsonObject> steps = DecodedSteps(situation["steps"]);
+        if (cause == "mission_completed")
+        {
+            return steps.Count == 1 && Text(steps[0], "operation") == Operation ? steps[0] : null;
+        }
+
+        return cause == "mission_failed" && (situation["steps"] as JsonArray ?? new JsonArray()).Count == 0
+            && Decoded(situation["reason"]) is JsonObject reason && Text(reason, "operation") == Operation
+            ? reason
+            : null;
+    }
+
+    // The place a goal «ir a X» went to, spelled as the window wrote it when one of its names is X.
+    private static string Place(string? goal, List<string> names, string question, JsonObject data)
+    {
+        if (goal is null || goal.Contains(question, StringComparison.Ordinal)
+            || PlaceGoal.Value.Match(goal.Trim()) is not { Success: true } found)
+        {
+            return string.Empty;
+        }
+
+        string asked = FloorName(JsonValue.Create(found.Groups[1].Value), data);
+        return names.FirstOrDefault(name => Folded(name) == Folded(asked)) ?? asked;
+    }
+
+    private static string FloorName(JsonNode? node, JsonObject data)
+    {
+        if (node is not JsonValue value || !value.TryGetValue(out string? raw) || raw is null)
+        {
+            return string.Empty;
+        }
+
+        string text = Regex.Replace(BidiMarks.Replace(raw, string.Empty), @"\s+", " ", RegexOptions.CultureInvariant)
+            .Trim().Trim(' ', '.', ';', ':');
+        int longest = data["longestName"]!.GetValue<int>();
+        return text.Length > 0 && text.Length <= longest && !text.Contains('«') && !text.Contains('»')
+            ? text
+            : string.Empty;
+    }
+
+    // The mind's semantic.missions.fold: case and accents out, spaces collapsed.
+    private static string Folded(string value)
+    {
+        string decomposed = value.ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormKD);
+        string bare = string.Concat(decomposed.Where(character =>
+            CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark));
+        return Regex.Replace(bare, @"\s+", " ", RegexOptions.CultureInvariant).Trim();
+    }
+
+    private static string? NonEmpty(JsonObject node, string key) =>
+        Text(node, key) is { } text && text.Length > 0 ? text : null;
 
     private static string Mission(
         JsonObject situation, string cause, bool english, JsonObject templates, TimeProvider clock)
