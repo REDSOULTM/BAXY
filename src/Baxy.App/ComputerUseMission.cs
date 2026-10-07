@@ -1544,7 +1544,7 @@ internal static class ComputerUseSuccessCheck
         // for the channel while the Friends page was open).
         if (ComputerUseMission.ActionableCount(view) > 1)
         {
-            return false;
+            return ALastClickOpened(rest, view, steps);
         }
 
         if (AddressNames(view, rest))
@@ -1576,6 +1576,49 @@ internal static class ComputerUseSuccessCheck
         // (measured on Steam: the store was in front, «TIENDA» clicked twice and the mission ended unchanged).
         bool alreadyThere = kept == current.Count && baseline.Count == current.Count;
         return alreadyThere || kept * 2 < current.Count;
+    }
+
+    // Where controls exist, the last verified click went to a control named as the place itself, or as the act of
+    // opening it («Abre Tu biblioteca», «Ir a Inicio», «Open Settings»), and the place is still on screen (measured on
+    // Spotify: its library is a panel, never selected nor titled). A control that merely contains the name (an activity
+    // card «Choche Cotele!!!» on Discord's Friends page) does not count.
+    private static readonly string[] OpeningWords =
+        ["abre ", "abrir ", "ir a ", "ve a ", "ver ", "mostrar ", "muestra ", "open ", "go to ", "show ", "view "];
+
+    private static bool ALastClickOpened(string place, JsonObject view, JsonArray steps)
+    {
+        string target = Fold(place);
+        if (target.Length < 3 || !ViewContains(view, place))
+        {
+            return false;
+        }
+
+        for (int index = steps.Count - 1; index >= 0; index--)
+        {
+            if (steps[index] is not JsonObject step || (string?)step["operation"] is not "input.visible.click")
+            {
+                continue;
+            }
+
+            if ((bool?)step["ok"] != true)
+            {
+                return false;
+            }
+
+            string label = Fold((string?)step["label"]);
+            foreach (string opening in OpeningWords)
+            {
+                if (label.StartsWith(opening, StringComparison.Ordinal))
+                {
+                    label = label[opening.Length..];
+                    break;
+                }
+            }
+
+            return label == target;
+        }
+
+        return false;
     }
 
     // A written web address (scheme or www.) whose host or path has the place as one of its words.

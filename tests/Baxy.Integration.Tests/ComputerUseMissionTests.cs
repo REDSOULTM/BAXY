@@ -221,6 +221,29 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void AVerifiedClickOnTheControlThatOpensThePlaceReachesItWhereControlsExist()
+    {
+        JsonObject library = View("""
+            {"window": {"title": "Spotify - Reproductor web"}, "controls": [
+              {"i": 0, "kind": "Button", "name": "Comprimir Tu biblioteca"}, {"i": 1, "kind": "Button", "name": "Crear"},
+              {"i": 2, "kind": "Button", "name": "Playlists"}]}
+            """);
+        JsonArray opened = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Abre Tu biblioteca" }];
+        JsonArray missed = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Abre Tu biblioteca" }];
+        JsonObject friends = View("""
+            {"window": {"title": "Discord"},
+             "controls": [{"i": 0, "kind": "TreeItem", "name": "Amigos", "state": "selected"}, {"i": 1, "kind": "Button", "name": "Choche Cotele!!!"}]}
+            """);
+        JsonArray card = [new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Choche Cotele!!!" }];
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", library, opened, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", library, missed, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:cotele", friends, card, out _), Is.False);
+        });
+    }
+
+    [Test]
     public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
     {
         JsonObject starting = View("""
