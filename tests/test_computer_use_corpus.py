@@ -356,10 +356,14 @@ def test_searching_types_in_the_windows_search_then_submits() -> None:
     assert computer_use.deterministic_step(goal="buscar Hades", view=focused, history=typed)["arguments"] == {"key": "enter"}
 
 
-def test_an_address_is_the_bar_the_address_and_enter() -> None:
+def test_an_address_is_the_bar_the_address_delete_and_enter() -> None:
+    # Delete drops the page of the history the bar completes the address with (measured on Opera: Enter went to
+    # «…/wiki/Curicó»); ctrl_l put the keyboard on the bar, so it erases characters there and is not asked.
     view = {"window": {"title": "Opera"}, "controls": [], "text": {}}
     history: list[dict] = []
-    for wanted in ({"key": "ctrl_l"}, {"text": "es.wikipedia.org"}, {"key": "enter"}):
+    for wanted in (
+        {"key": "ctrl_l"}, {"text": "es.wikipedia.org"}, {"key": "delete", "target": "text_field"}, {"key": "enter"},
+    ):
         step = computer_use.deterministic_step(goal="ir a la direccion es.wikipedia.org", view=view, history=history)
         assert step["arguments"] == wanted
         history.append({"step": len(history) + 1, "operation": step["operation"], "ok": True, **wanted})

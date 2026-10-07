@@ -631,6 +631,105 @@ def test_a_click_on_the_whole_window_and_a_third_idle_repeat_are_refused() -> No
     assert moving["operation"] == "input.visible.click"
 
 
+# ------------------------------------------------------- el navegador: su marco y la página
+# Synthetic views shaped like the live failure of 2026-10-07 (Opera, «buscá Ñuñoa» on es.wikipedia.org): the
+# frame (tab strip with its tab search, address bar, bookmarks) above the page, the page a large document.
+
+def _rect(x: int, y: int, w: int, h: int) -> dict:
+    return {"x": x, "y": y, "w": w, "h": h}
+
+
+_FRAME = [
+    {"i": 0, "kind": "Button", "name": "Buscar pestañas", "rect": _rect(1420, 5, 37, 37)},
+    {"i": 1, "kind": "Edit", "name": "Barra de direcciones", "value": "", "rect": _rect(160, 54, 1200, 37)},
+    {"i": 2, "kind": "TabItem", "name": "Ciudad - Wikipedia, la enciclopedia libre", "state": "selected", "rect": _rect(100, 5, 240, 37)},
+    {"i": 3, "kind": "Button", "name": "Nueva pestaña", "rect": _rect(344, 13, 22, 22)},
+    {"i": 4, "kind": "Edit", "name": "Campo de dirección", "value": "https://es.wikipedia.org/wiki/Ciudad", "rect": _rect(210, 54, 970, 37)},
+    {"i": 5, "kind": "Button", "name": "Marcador uno", "rect": _rect(60, 95, 180, 37)},
+]
+BROWSER_LOADING = {
+    "window": {"title": "es.wikipedia.org/wiki/Ciudad - Navegador", "process": "browser", "rect": _rect(0, 0, 1575, 965), "focused": None},
+    "controls": [*_FRAME, {"i": 6, "kind": "Document", "name": "Cargando…", "rect": _rect(106, 13, 22, 22)}],
+    "text": {"TR": ["Q Buscar pestañas"]},
+}
+BROWSER_PAGE = {
+    "window": {
+        "title": "Ciudad - Wikipedia, la enciclopedia libre - Navegador", "process": "browser", "rect": _rect(0, 0, 1575, 965),
+        "focused": {"kind": "Document", "name": "Ciudad - Wikipedia, la enciclopedia libre", "value": "https://es.wikipedia.org/wiki/Ciudad"},
+    },
+    "controls": [
+        *_FRAME,
+        {"i": 6, "kind": "Document", "name": "Ciudad - Wikipedia, la enciclopedia libre", "state": "readonly focused", "rect": _rect(53, 136, 1519, 825)},
+        {"i": 7, "kind": "Edit", "name": "Buscar en Wikipedia", "value": "", "rect": _rect(435, 157, 506, 41)},
+        {"i": 8, "kind": "Button", "name": "Buscar", "rect": _rect(939, 157, 90, 41)},
+    ],
+    "text": {"TR": ["Q Buscar pestañas"], "T": ["Buscar en Wikipedia"]},
+}
+
+
+def test_a_search_in_a_browser_uses_the_pages_field_never_the_tab_search() -> None:
+    # The page is there: its own search field, never the tab strip's «Buscar pestañas» (measured: clicked first).
+    step = computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_PAGE, history=[])
+    assert step["operation"] == "input.visible.click" and step["arguments"] == {"label": "Buscar en Wikipedia", "index": 7}
+    clicked = [_ok(1, "input.visible.click", label="Buscar en Wikipedia", index=7)]
+    assert computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_PAGE, history=clicked)["arguments"] == {"text": "Ñuñoa"}
+    typed = clicked + [_ok(2, "input.text.type", text="Ñuñoa")]
+    assert computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_PAGE, history=typed)["arguments"]["key"] == "enter"
+    # The page still loading shows only the frame: nothing of it is the page's search, its written lines neither, and
+    # ctrl_k (the web search of the address bar) is not the page's: only the page's find.
+    loading = computer_use.deterministic_step(goal="buscar Ñuñoa", view=BROWSER_LOADING, history=[])
+    assert loading == {"operation": "input.key.press", "arguments": {"key": "ctrl_f"}, "reason": computer_use._REASON_FIND}
+
+
+def test_a_browser_result_is_the_one_in_the_page_that_is_exactly_the_name() -> None:
+    suggestions = {
+        **BROWSER_PAGE,
+        "controls": [
+            *BROWSER_PAGE["controls"][:2],
+            {"i": 2, "kind": "TabItem", "name": "Ñuñoa - Wikipedia", "rect": _rect(100, 5, 240, 37)},
+            *BROWSER_PAGE["controls"][3:],
+            {"i": 9, "kind": "ListItem", "name": "Festival Internacional de la Canción de Ñuñoa", "rect": _rect(435, 200, 506, 30)},
+            {"i": 10, "kind": "ListItem", "name": "Ñuñoa", "rect": _rect(435, 230, 506, 30)},
+        ],
+    }
+    typed = [_ok(1, "input.visible.click", label="Buscar en Wikipedia"), _ok(2, "input.text.type", text="Ñuñoa")]
+    picked = computer_use.deterministic_step(goal="ir a Ñuñoa", view=suggestions, history=typed)
+    assert picked["arguments"] == {"label": "Ñuñoa", "index": 10}
+
+
+def test_a_file_explorer_keeps_its_search_box_beside_the_address_bar() -> None:
+    explorer = {
+        "window": {"title": "Descargas - Explorador de archivos", "process": "explorer", "rect": _rect(0, 0, 1200, 800), "focused": None},
+        "controls": [
+            {"i": 0, "kind": "Edit", "name": "Barra de direcciones", "value": "C:\\Users\\persona\\Downloads", "rect": _rect(200, 60, 700, 30)},
+            {"i": 1, "kind": "Edit", "name": "Buscar en Descargas", "value": "", "rect": _rect(920, 60, 260, 30)},
+        ],
+        "text": {},
+    }
+    step = computer_use.deterministic_step(goal="buscar informe", view=explorer, history=[])
+    assert step["arguments"] == {"label": "Buscar en Descargas", "index": 1}
+
+
+def test_the_model_may_not_open_another_tab_unless_the_goal_says_so() -> None:
+    refused = computer_use.validate_decision(
+        {"act": "click", "i": 3}, view=BROWSER_PAGE, last_failed=None, application_names=APPS, goal="buscar Ñuñoa",
+    )
+    assert refused["operation"] == "none" and refused["code"] == "opens_elsewhere"
+    assert "opens_elsewhere" in computer_use._RETRIED
+    by_text = computer_use.validate_decision(
+        {"act": "click", "text": "Open in new tab"}, view={**BROWSER_PAGE, "text": {"C": ["Open in new tab"]}},
+        last_failed=None, application_names=APPS, goal="go to history",
+    )
+    assert by_text["code"] == "opens_elsewhere"
+    asked = computer_use.validate_decision(
+        {"act": "click", "i": 3}, view=BROWSER_PAGE, last_failed=None, application_names=APPS, goal="abrir una pestaña nueva",
+    )
+    assert asked["arguments"] == {"label": "Nueva pestaña", "index": 3}
+    # The page document covers most of the window: a click on it is no place to go.
+    body = computer_use.validate_decision({"act": "click", "i": 6}, view=BROWSER_PAGE, last_failed=None, application_names=APPS, goal="ir a historia")
+    assert body["code"] == "control_covers_window"
+
+
 # ------------------------------------------------------- misiones encadenadas
 
 CHAIN_SCHEMA = {
