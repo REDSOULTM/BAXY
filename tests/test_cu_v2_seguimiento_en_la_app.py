@@ -234,3 +234,61 @@ def test_a_follow_up_naming_another_application_uses_that_application() -> None:
     assert missions.follow_up_in_application(text, ["abrí la calculadora"], OPERATIONS, X12_APPS) is None
     mission = missions.mission_request(text, X12_APPS)
     assert mission is not None and mission.application == "Paint"
+
+
+# Review r10: the application is inherited from the request right before the follow-up only. A message in between
+# that does nothing on the screen («cuál es la capital de Francia», «gracias») ends the conversation's application;
+# a bare yes/no answer to BAXY's own question, or a step that itself inherited it, does not.
+@pytest.mark.parametrize(
+    ("conversation", "text"),
+    [
+        (["abrí la calculadora", "cuál es la capital de Francia"], "y ahora andá a historial"),
+        (["abrí la calculadora", "gracias"], "y ahora andá a historial"),
+        (["abrí la calculadora", "contame un chiste", "sí"], "y ahora andá a historial"),
+    ],
+)
+def test_a_message_in_between_ends_the_inherited_application(conversation: list[str], text: str) -> None:
+    assert missions.follow_up_in_application(text, conversation, OPERATIONS, X12_APPS) is None
+
+
+@pytest.mark.parametrize("answer", ["sí", "no", "dale"])
+def test_a_bare_answer_to_baxy_s_question_keeps_the_application(answer: str) -> None:
+    inherited = missions.follow_up_in_application(
+        "y ahora andá a historial", ["abrí la calculadora", answer], OPERATIONS, X12_APPS,
+    )
+
+    assert inherited is not None and inherited.startswith("en Calculadora, ")
+
+
+R10_APPS = (*X12_APPS, "Outlook")
+
+
+class _AnsweringDecider(_Decider):
+    """A decider whose talk, question or limit is then worded by the model."""
+
+    def chat(self, *_a, **_k):
+        return "¿Qué querés enviar?", []
+
+
+@pytest.mark.parametrize(
+    "decision",
+    [
+        ContextDecision("¿Qué querés enviar en Outlook?", "clarify", (), "¿Qué querés enviar?"),
+        ContextDecision("Hacé clic en enviar.", "talk", (), ""),
+        ContextDecision("No puedo enviar correos.", "limit", (), "¿Querés que abra Outlook?"),
+    ],
+)
+def test_the_inherited_step_never_replaces_a_decider_question_or_talk(decision: ContextDecision) -> None:
+    catalog = PlannerCatalog([_tool(name) for name in OPERATIONS])
+    text = "ahora hacé clic en enviar"
+    assert missions.follow_up_in_application(text, ["abrí Outlook"], OPERATIONS, R10_APPS) is not None
+    result = sidecar._context_decided_result(
+        {"id": "r10", "text": text, "history": [
+            {"role": "user", "content": "abrí Outlook"}, {"role": "assistant", "content": "Listo."},
+            {"role": "user", "content": text},
+        ]},
+        llm=_AnsweringDecider(decision), planner_catalog=catalog, application_names=R10_APPS,
+    )
+
+    assert result.get("operation") != "mission.computer.use"
+    assert "mission.computer.use" not in (result.get("effectOperations") or [])
