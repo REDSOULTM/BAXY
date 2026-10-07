@@ -1478,6 +1478,92 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // r8 (live missions: a label no stage found cost 4.2–4.4 s): a window that was already there and stays exactly the
+    // same while the click waits is not drawing the label, so «not found» comes after one look, before anything is
+    // pressed.
+    [Test]
+    public async Task VisibleClickOnAStillWindowAnswersNotFoundAfterOneLook()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        var ocr = new CountingLocator("ocr", hit: false);
+        int samples = 0;
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, ocr, vision: null, timing: StillTiming,
+            surfaceHash: _ => { samples++; return ValueTask.FromResult<string?>("same"); });
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(worker.Commands.Count, Is.EqualTo(1));
+            Assert.That(ocr.Calls, Is.EqualTo(1));
+            Assert.That(samples, Is.GreaterThanOrEqualTo(2));
+            Assert.That(clock.Elapsed, Is.LessThan(StillTiming.SettledLabel));
+            Assert.That(VisibleClickTiming.Default.StillFor, Is.LessThan(VisibleClickTiming.Default.Interval));
+        });
+    }
+
+    // A window that changes while the click waits may be drawing the label: it is looked at again at once and the
+    // label that appeared is pressed.
+    [Test]
+    public async Task VisibleClickOnAChangingWindowLooksAgainAndFindsTheLabel()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        var ocr = new CountingLocator("ocr", hit: true, hitFromCall: 2);
+        int samples = 0;
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, ocr, vision: null, timing: StillTiming,
+            surfaceHash: _ => ValueTask.FromResult<string?>("frame" + samples++));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
+            Assert.That(ocr.Calls, Is.EqualTo(2));
+        });
+    }
+
+    // A window that cannot be captured is waited on as before: the whole interval, then another look.
+    [Test]
+    public async Task VisibleClickWithoutASurfaceToWatchWaitsTheWholeInterval()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        var ocr = new CountingLocator("ocr", hit: false);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, ocr, vision: null, timing: StillTiming,
+            surfaceHash: _ => ValueTask.FromResult<string?>(null));
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(worker.Commands.Count, Is.GreaterThanOrEqualTo(2));
+            Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(StillTiming.Interval));
+        });
+    }
+
+    private static readonly VisibleClickTiming StillTiming = VisibleClickTiming.Default with
+    {
+        SettledLabel = TimeSpan.FromMilliseconds(900),
+        Interval = TimeSpan.FromMilliseconds(400),
+        StillSample = TimeSpan.FromMilliseconds(30),
+        StillFor = TimeSpan.FromMilliseconds(90),
+    };
+
     private const string NotFoundByUia =
         "{\"version\":1,\"ok\":false,\"effectObserved\":false," +
         "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
