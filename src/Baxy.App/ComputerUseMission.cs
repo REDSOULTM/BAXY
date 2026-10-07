@@ -618,6 +618,19 @@ internal static class ComputerUseMission
         if (!reached)
         {
             int failedIndex = (int?)state["subgoal"] ?? 0;
+            // Every way to find the place was spent and none named it (live n5: «Wi-Fi» on a PC without Wi-Fi, the
+            // window's own search typed it and listed no item called so): the window does not have it, said as such
+            // instead of «the screen stopped changing».
+            if (errorCode is not null && ScreenStops.Contains(errorCode) && errorCode != "computer_use_time_exhausted"
+                && lastView is not null
+                && OperationFloor.PlaceAsked((string?)plan[failedIndex]?["goal"]) is { Length: > 0 } asked
+                && ComputerUseSuccessCheck.SearchedAndNotFound(
+                    asked, SubgoalSteps(steps, (int?)state["subgoalStart"] ?? 0), lastView))
+            {
+                errorCode = "computer_use_place_not_found";
+                state["missingPlace"] = SpelledAsSeen(asked, steps);
+            }
+
             CloseSubgoal(context, state, (JsonObject)plan[failedIndex]!, steps, (int?)state["subgoalStart"] ?? 0,
                 reached: false, satisfiedBy: null, errorCode, procedureStepBroke);
         }
@@ -887,7 +900,17 @@ internal static class ComputerUseMission
     {
         "computer_use_surface_unchanged", "computer_use_no_step_visible", "computer_use_evidence_not_visible",
         "computer_use_repeated_step", "computer_use_budget_exhausted", "computer_use_time_exhausted",
+        "computer_use_place_not_found",
     };
+
+    // The place's name as a step of the mission read it on screen («Wi-Fi»), or as the person said it.
+    private static string SpelledAsSeen(string asked, JsonArray steps)
+    {
+        string folded = ComputerUseSuccessCheck.Fold(asked);
+        return steps.OfType<JsonObject>()
+            .Select(step => (string?)step["name"])
+            .FirstOrDefault(name => name is { Length: > 0 } && ComputerUseSuccessCheck.Fold(name) == folded) ?? asked;
+    }
 
     /// <summary>
     /// A learned sequence is kept only while it keeps reaching its goal: one that deviated, or whose replayed steps met
@@ -1541,6 +1564,11 @@ internal static class ComputerUseMission
         if (errorCode is not null)
         {
             observed["stoppedBy"] = errorCode;
+        }
+
+        if (errorCode == "computer_use_place_not_found" && (string?)state["missingPlace"] is { Length: > 0 } missing)
+        {
+            observed["missingPlace"] = missing;
         }
 
         return observed;
@@ -2818,6 +2846,27 @@ internal static class ComputerUseSuccessCheck
     {
         string named = Fold(into);
         return named.Length > 0 && SearchBox.IsMatch(named) && !AddressBox.IsMatch(named);
+    }
+
+    /// <summary>
+    /// The place <paramref name="asked"/> was searched by name in the window's own search box during this sub-goal and
+    /// the screen at the end lists no item a person clicks whose name holds it (a description that mentions it, the
+    /// box's own echo, are words only). Live n5: «Wi-Fi» on a PC without Wi-Fi.
+    /// </summary>
+    internal static bool SearchedAndNotFound(string asked, JsonArray subgoalSteps, JsonObject view)
+    {
+        string place = Fold(asked);
+        if (place.Length == 0)
+        {
+            return false;
+        }
+
+        bool searched = subgoalSteps.OfType<JsonObject>().Any(step =>
+            (string?)step["operation"] == "input.text.type" && (bool?)step["ok"] == true
+            && IsSearchBox((string?)step["into"]) && Fold((string?)step["text"]) == place);
+        return searched && !(view["controls"] as JsonArray ?? []).OfType<JsonObject>().Any(control =>
+            ((string?)control["kind"] is not { } kind || !WordsOnlyKinds.Contains(kind))
+            && Fold((string?)control["name"]).Contains(place, StringComparison.Ordinal));
     }
 
     private static bool EchoesItsQuery(JsonObject typedStep) =>
