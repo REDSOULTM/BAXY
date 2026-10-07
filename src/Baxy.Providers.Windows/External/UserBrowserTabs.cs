@@ -163,6 +163,7 @@ internal sealed partial class UserBrowserSurface
             };
         long started = System.Diagnostics.Stopwatch.GetTimestamp();
         int closed = 0;
+        var resisting = new HashSet<string>(StringComparer.Ordinal);
         while (frame.Tabs.Count > 1)
         {
             UserBrowserTab? active = frame.Tabs.FirstOrDefault(tab => tab.Selected);
@@ -170,8 +171,17 @@ internal sealed partial class UserBrowserSurface
                 return StoppedClosing(step, PageUnreadable, closed);
             if (closed >= CloseAllTabs || System.Diagnostics.Stopwatch.GetElapsedTime(started) > CloseAllTime)
                 return StoppedClosing(step, CloseAllIncomplete, closed);
-            UserBrowserFrame? after = await CloseActiveTabAsync(step, frame, active, cancellationToken)
-                .ConfigureAwait(false);
+            UserBrowserFrame? after = resisting.Contains(active.Title)
+                ? null
+                : await CloseActiveTabAsync(step, frame, active, cancellationToken).ConfigureAwait(false);
+            if (after is null)
+            {
+                // Measured on Opera GX: its «GX Corner» tab did not close as the active tab. Another tab on screen
+                // is closed instead, by the middle click that closes any tab of a Chromium strip without selecting it.
+                resisting.Add(active.Title);
+                after = await CloseAnotherTabAsync(step, frame, resisting, cancellationToken).ConfigureAwait(false);
+            }
+
             if (after is null)
                 return step.Boundary.WasCrossed
                     ? StoppedClosing(step, TabStepUnconfirmed, closed)
@@ -180,6 +190,26 @@ internal sealed partial class UserBrowserSurface
             frame = after;
         }
         return ExternalJson.Success(step.Operation, TabsClosed(step, closed, frame));
+    }
+
+    /// <summary>A shown tab other than the ones that resisted, closed by a middle click: one tab less, or null.</summary>
+    private async ValueTask<UserBrowserFrame?> CloseAnotherTabAsync(
+        TabStep step, UserBrowserFrame before, HashSet<string> resisting, CancellationToken cancellationToken)
+    {
+        int count = before.Tabs.Count;
+        foreach (UserBrowserTab other in before.Tabs.Where(tab => !tab.Selected && tab.Shown && !resisting.Contains(tab.Title)).Reverse())
+        {
+            if (!_platform.PostMiddleClick(step.Window, other.X, other.Y))
+                continue;
+            step.Boundary.Cross(CancellationToken.None);
+            UserBrowserFrame? after = await AwaitFrameAsync(
+                step.Window, frame => frame.Tabs.Count == count - 1, cancellationToken).ConfigureAwait(false);
+            if (after is not null)
+                return after;
+            resisting.Add(other.Title);
+        }
+
+        return null;
     }
 
     /// <summary>

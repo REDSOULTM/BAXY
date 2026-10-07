@@ -5947,7 +5947,9 @@ _CAUSE_FACT = {
     # browser; what it could not do or could not confirm there is told as such.
     "user_browser_tab_step_unconfirmed": (
         "the step was sent to the person's own web browser, but afterwards its tabs and page did not show the change, "
-        "so it is not confirmed; say it may not have happened and that they can check it there"
+        "so it is not confirmed; say it may not have happened and that they can check it there. When seen.closedTabs "
+        "is a number above zero, that many tabs WERE closed (each seen gone) before one close was not seen: say how "
+        "many you closed and that the others stayed open"
     ),
     "user_browser_tab_step_unavailable": (
         "the person's own web browser did not offer a way to do that step right now (the tab was not on screen or "
@@ -8819,6 +8821,17 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
         and (closed_final := _closed_tabs_final(seen, english))
     ):
         return closed_final
+    if (
+        operation == "browser.control"
+        and situation.get("succeeded") is not True
+        and seen.get("action") == "close_all"
+        and type(seen.get("closedTabs")) is int
+        and seen["closedTabs"] > 0
+    ):
+        closed = seen["closedTabs"]
+        if english:
+            return f"I closed {closed} {'tab' if closed == 1 else 'tabs'}; I couldn't close the rest, they're still open."
+        return f"Cerré {closed} {'pestaña' if closed == 1 else 'pestañas'}; no pude cerrar las demás, siguen abiertas."
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         reason = situation.get("reason")
         if isinstance(reason, str) and reason.lstrip().startswith("{"):
@@ -17031,6 +17044,24 @@ def compose_visible_defect(
         negated_join = re.search(r"\b(?:no|not|sin|didn't|did\s+not|without|todavia\s+no|aun\s+no)\s+(?:\w+\s+){0,2}(?:uni\w*|unir\w*|join\w*|entr\w*)\b", folded_reply)
         if claims_joined is not None and negated_join is None:
             return "joined_claimed"
+    if (
+        kind == "operation"
+        and situation.get("operation") == "browser.control"
+        and _merged_observed(situation).get("action") == "close_all"
+        and situation.get("succeeded") is not True
+        and type(_merged_observed(situation).get("closedTabs")) is int
+        and _merged_observed(situation)["closedTabs"] > 0
+    ):
+        # Measured live (Opera GX): three tabs closed, the fourth close not seen, and the final said «No se cerraron
+        # las pestañas». The tabs seen closed are said, with their number.
+        closed = _merged_observed(situation)["closedTabs"]
+        words = ("", "una|uno|one", "dos|two", "tres|three", "cuatro|four", "cinco|five", "seis|six", "siete|seven",
+                 "ocho|eight", "nueve|nine", "diez|ten")
+        said_word = closed < len(words) and re.search(
+            r"\b(?:" + words[closed] + r")\b", _accent_folded_with_punctuation(stripped),
+        )
+        if closed not in _numbers_in_figures(stripped) and not said_word:
+            return "extra_claim"
     if (
         kind == "operation"
         and situation.get("operation") == "browser.control"

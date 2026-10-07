@@ -1055,7 +1055,9 @@ def compose_instruction(seen: dict, language: str) -> str:
             "never «Abrió…» nor «BAXY…») and in the past tense, what you did and what you saw; when the goal was a "
             "result, lead with it («12 × 7 da 84»); quote seen.evidence "
             "exactly when it exists. seen.joined says whether a voice channel or call was joined: say you "
-            "joined only if it is true. Never add steps, times or results that are not in seen."
+            "joined only if it is true. Never add steps, times or results that are not in seen: when the goal was "
+            "pressing a key or typing, say only that you did it in that app («Pulsé Enter en Discord.»), never that "
+            "something «se completó» or what it caused."
         )
     return (
         "This result is a computer-use mission that did NOT reach its goal: seen.goal is what was asked, "
