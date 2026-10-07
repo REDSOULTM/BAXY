@@ -1158,6 +1158,10 @@ _STOP_CAUSES: dict[str, dict[str, str]] = {
     "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
     "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
     "computer_use_window_covered": {"es": "otra ventana tapa la aplicación", "en": "another window covers the application"},
+    "computer_use_window_not_application": {
+        "es": "la ventana de delante no era la de la aplicación, así que no pulsé ni escribí nada en ella",
+        "en": "the window in front was not the application's, so I pressed and typed nothing there",
+    },
     "computer_use_window_elevated": {
         "es": "esa aplicación corre como administrador y Windows no deja que otra aplicación la controle",
         "en": "that application runs as administrator and Windows does not let another application control it",
