@@ -46,38 +46,54 @@ ACTS = ("click", "type", "key", "scroll", "open", "done", "none")
 STEP_PROMPT = (
     "Sos el motor de computer use de BAXY. Ves la ventana de delante como texto: una "
     "lista de controles (índice · tipo · nombre · estado · zona · color) y el texto leído "
-    "por zonas. Tenés un objetivo y devolvés EXACTAMENTE UN acto en JSON: "
-    "click (i = índice del control y label = su nombre tal cual aparece), "
-    "type (text), key (una tecla del catálogo), scroll (direction), open (application), "
-    "done (evidence = texto que está en la vista y prueba el objetivo) o none (no ves por dónde seguir). "
-    "Reglas: elegí sólo controles que están en la lista; no inventes nombres; si el objetivo "
-    "ya se ve cumplido devolvé done con la evidencia literal; si el último paso falló, elegí otro "
-    "control o otro acto, nunca el mismo; para escribir texto primero hace falta un campo enfocado; "
-    "nunca escribas en un campo de contraseña; para enviar un mensaje o entrar a un canal de voz "
-    "usá click en el control que lo nombra. Para escribir números, una expresión o un texto usá "
-    "type con el texto completo (no clics dígito a dígito) y después key enter si hace falta. "
-    "Si el destino no está en la vista, buscá un campo de búsqueda (click) o abrí el buscador "
-    "con key ctrl_k o ctrl_f, escribí el nombre y elegí el resultado. Si un clic abrió un menú, elegí la opción "
-    "que lleva al destino. done sólo cuando ves la página o sección pedida: citá algo de ella, no sólo su nombre "
-    "(el nombre de un menú ya estaba en pantalla antes). why: una frase corta."
+    "por zonas. Devolvés EXACTAMENTE UN acto en JSON compacto: "
+    '{"act":"click","i":N} (N = índice del control), {"act":"click","text":"…"} (un texto escrito en '
+    'pantalla que no es control), {"act":"type","text":"…"}, {"act":"key","key":"…"}, '
+    '{"act":"scroll","direction":"down|up"}, {"act":"open","application":"…"}, '
+    '{"act":"done","evidence":"…"} (texto de la vista que prueba el objetivo) o {"act":"none"}. '
+    "Reglas: sólo controles o textos que están en la vista; si el objetivo ya se ve cumplido, done con "
+    "la evidencia literal; si el último paso falló, otro control u otro acto; para escribir hace falta "
+    "un campo enfocado; nunca en una contraseña; números, expresiones o textos con type completo y "
+    "después key enter si hace falta. Si el destino no está en la vista: un campo de búsqueda (click), "
+    "o key ctrl_k / ctrl_f, escribí el nombre y elegí el resultado; si no, scroll. Si un clic abrió un "
+    "menú, elegí la opción que lleva al destino. done sólo cuando ves la página o sección pedida: citá "
+    "algo de ella, no sólo su nombre."
 )
 
-_STEP_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "act": {"type": "string", "enum": list(ACTS)},
-        "i": {"type": "integer", "minimum": -1, "maximum": 59},
-        "label": {"type": "string", "maxLength": 80},
-        "text": {"type": "string", "maxLength": 512},
-        "key": {"type": "string", "enum": [*KEYS, ""]},
-        "direction": {"type": "string", "enum": ["", "down", "up"]},
-        "application": {"type": "string", "maxLength": 80},
-        "evidence": {"type": "string", "maxLength": 120},
-        "why": {"type": "string", "maxLength": 160},
-    },
-    "required": ["act", "i", "label", "text", "key", "direction", "application", "evidence", "why"],
-    "additionalProperties": False,
-}
+
+def _gbnf_quoted(value: str) -> str:
+    """A GBNF literal that matches the JSON text ``"value"``."""
+
+    return '"\\"' + value + '\\""'
+
+
+def _gbnf_string(name: str, limit: int) -> str:
+    """A JSON string of at most ``limit`` plain characters (no control characters, simple escapes)."""
+
+    return (
+        f'{name} ::= "\\"" {name}-char{{0,{limit}}} "\\""\n'
+        f'{name}-char ::= [^"\\\\\\x00-\\x1F] | "\\\\" ["\\\\/bfnrt]'
+    )
+
+
+# The act first and only the fields it needs (measured: the nine-field reply cost ≈148 tokens, ≈3.2 s of the
+# ≈4 s model step). Compact JSON, no whitespace: every character is a model pass.
+STEP_GRAMMAR = "\n".join([
+    'root ::= "{" ' + _gbnf_quoted("act") + ' ":" (click | type | key | scroll | open | done | none) "}"',
+    "click ::= " + _gbnf_quoted("click") + ' "," (' + _gbnf_quoted("i") + ' ":" index | '
+    + _gbnf_quoted("text") + ' ":" short)',
+    "type ::= " + _gbnf_quoted("type") + ' "," ' + _gbnf_quoted("text") + ' ":" long',
+    "key ::= " + _gbnf_quoted("key") + ' "," ' + _gbnf_quoted("key") + ' ":" ('
+    + " | ".join(_gbnf_quoted(key) for key in KEYS) + ")",
+    "scroll ::= " + _gbnf_quoted("scroll") + ' "," ' + _gbnf_quoted("direction") + ' ":" ('
+    + _gbnf_quoted("down") + " | " + _gbnf_quoted("up") + ")",
+    "open ::= " + _gbnf_quoted("open") + ' "," ' + _gbnf_quoted("application") + ' ":" short',
+    "done ::= " + _gbnf_quoted("done") + ' "," ' + _gbnf_quoted("evidence") + ' ":" short',
+    "none ::= " + _gbnf_quoted("none"),
+    "index ::= [0-9] | [1-5] [0-9]",
+    _gbnf_string("short", 80),
+    _gbnf_string("long", 400),
+])
 
 
 def compact_view_text(view: dict, limit_controls: int = 60, limit_lines: int = 40) -> str:
@@ -445,9 +461,10 @@ def decide_step(
             {"role": "system", "content": STEP_PROMPT},
             {"role": "user", "content": user},
         ],
-        "response_format": {"type": "json_schema", "json_schema": {"name": "baxy_computer_use_step", "schema": _STEP_SCHEMA}},
+        "grammar": STEP_GRAMMAR,
         "temperature": 0.0,
-        "max_tokens": 256,
+        "max_tokens": 160,
+        "cache_prompt": True,
         "seed": 0,
         "chat_template_kwargs": {"enable_thinking": False},
     }
@@ -523,7 +540,7 @@ def validate_decision(
             return {"operation": "done", "arguments": {"evidence": evidence}, "reason": why}
         return _none("la evidencia citada no está en la vista", code="evidence_not_visible")
     if act == "click":
-        label = str(raw.get("label") or "").strip()
+        label = str(raw.get("label") or raw.get("text") or "").strip()
         index = raw.get("i") if isinstance(raw.get("i"), int) and not isinstance(raw.get("i"), bool) else None
         if not label and index is not None:
             controls = view.get("controls") if isinstance(view, dict) else None
