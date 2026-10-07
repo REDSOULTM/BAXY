@@ -8097,6 +8097,18 @@ def _opened_search_in_navigation(situation: dict) -> tuple[str, str] | None:
 def _compose_shape_instruction(situation: dict, language: str, user_text: str) -> str:
     """Describe what to name. Never the sentence the person should read."""
 
+    failed_mission = _computer_use_mission(situation)
+    if failed_mission is not None and str(situation.get("polarity") or "").strip().lower() == "failure":
+        # Live 2026-10-07 (v2-n5, v2-e2, v2-g1, v2-n1, v2-v6): a failed computer-use mission got no voice of its own;
+        # eight drafts said «No pudiste…» or told the cause with no failure («La pantalla dejó de cambiar…») and died
+        # as missing_failure. The mission's failure voice is the one its success has (computer_use._result_instruction).
+        from . import computer_use as _computer_use
+
+        observed = _merged_observed(failed_mission)
+        if observed:
+            return _computer_use.compose_instruction(_computer_use.project_seen(observed, language), language) + (
+                "" if failed_mission is situation else " Those facts are in reason.seen."
+            )
     if str(situation.get("polarity") or "").strip().lower() != "success":
         return ""
     kind = str(situation.get("kind") or "").strip().lower()
@@ -8778,6 +8790,39 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
     )
 
 
+def _computer_use_mission(situation: dict) -> dict | None:
+    """The computer-use result a turn tells: the situation itself, or the reason of a mission that failed on it alone."""
+
+    if situation.get("operation") == "mission.computer.use":
+        return situation
+    if str(situation.get("cause") or "").strip().lower() != "mission_failed" or situation.get("steps"):
+        # Steps of other operations beside it are told by the generic floor, each its own clause.
+        return None
+    reason = situation.get("reason")
+    if isinstance(reason, str) and reason.lstrip().startswith("{"):
+        try:
+            reason = json.loads(reason)
+        except json.JSONDecodeError:
+            return None
+    return reason if isinstance(reason, dict) and reason.get("operation") == "mission.computer.use" else None
+
+
+def _computer_use_floor(situation: dict, english: bool) -> str:
+    """Live 2026-10-07 (v2-v9, v2-u7, v2-w1, v2-n5, v2-e2): every draft of a computer-use final refused, the generic
+    floor said «Lo hice en la aplicación «Reloj»; hay 2: «Reloj mundial».» (the steps counted as a list read) or «No pude
+    hacerlo en la aplicación «Configuración».» (no cause). The mission's own floor says the place reached, or what
+    could not be done and why, from the observed facts alone."""
+
+    from . import computer_use as _computer_use
+
+    mission = _computer_use_mission(situation)
+    observed = _merged_observed(mission) if mission is not None else {}
+    if not observed:
+        return ""
+    succeeded = mission.get("verified") is True and mission.get("succeeded") is True
+    return _computer_use.floor_sentence(observed, english, succeeded)
+
+
 # D59 §7 (owner, 2026-10-02; supersedes the owner's review of M75 that left D-w02-t2 with no final): a turn not
 # understood, or a question about it that no draft could write, is asked with the person's own words.
 _NOT_UNDERSTOOD_CAUSES = frozenset({"turn_runtime_failure", "turn_contract_failure"})
@@ -8799,6 +8844,9 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
     english = language == "en"
     operation = str(situation.get("operation") or payload.get("operation") or "")
     seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    mission_final = _computer_use_floor(situation, english)
+    if mission_final:
+        return mission_final
     if (
         operation == "browser.page.read"
         and situation.get("verified") is True
@@ -10379,6 +10427,15 @@ def _observed_local_clocks(situation: dict) -> frozenset[str]:
             if isinstance(item, dict)
             for key in ("title", "snippet")
             for hour, minute in re.findall(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)", str(item.get(key) or ""))
+        )
+    if situation.get("operation") == "mission.computer.use":
+        # Live 2026-10-07 (v2-v9 «en el Reloj andá a Reloj mundial» → «Ya estoy en Reloj mundial, que marca las 7:58.»;
+        # v2-u7/v2-w1 «… andá a Alarma» → «… la alarma de las 7:00»): nine drafts died as invented clocks and the
+        # turns ended in the floor. A clock the window wrote at the end of the mission is what the loop observed.
+        from . import computer_use as _computer_use
+
+        return _computer_use.screen_clocks(_computer_use.project_seen(observed, "es")) | (
+            _clocks_written_in_observed_titles(observed)
         )
     return _clocks_written_in_observed_titles(observed)
 
