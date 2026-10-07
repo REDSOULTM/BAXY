@@ -672,6 +672,53 @@ internal static partial class VisibleControlSurface
         catch (UnauthorizedAccessException) { }
     }
 
+    /// <summary>
+    /// Whether a window's process runs with more rights than this one (an elevated app such as Task Manager):
+    /// Windows refuses UI Automation patterns and input from a lower process (UIPI), so nothing can be done there.
+    /// Measured: Task Manager showed four controls and every click failed.
+    /// </summary>
+    internal static bool RunsAboveUs(int processId)
+    {
+        if (processId <= 0 || Elevated(Environment.ProcessId) == true)
+            return false;
+        return Elevated(processId) != false;
+    }
+
+    private static bool? Elevated(int processId)
+    {
+        nint process = OpenProcess(0x1000, false, unchecked((uint)processId));
+        if (process == 0)
+            return null;
+        try
+        {
+            if (!OpenProcessToken(process, 0x0008, out nint token))
+                return null;
+            try
+            {
+                return GetTokenInformation(token, 20, out int elevation, sizeof(int), out _) ? elevation != 0 : null;
+            }
+            finally
+            {
+                _ = CloseHandle(token);
+            }
+        }
+        finally
+        {
+            _ = CloseHandle(process);
+        }
+    }
+
+    [LibraryImport("kernel32.dll")]
+    private static partial nint OpenProcess(uint access, [MarshalAs(UnmanagedType.Bool)] bool inherit, uint processId);
+
+    [LibraryImport("advapi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool OpenProcessToken(nint process, uint access, out nint token);
+
+    [LibraryImport("advapi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetTokenInformation(nint token, int informationClass, out int information, int length, out int returned);
+
     internal static bool IsAlive(nint hwnd) => hwnd != 0 && IsWindow(hwnd) && IsWindowVisible(hwnd);
 
     internal static string WindowTitle(nint hwnd)

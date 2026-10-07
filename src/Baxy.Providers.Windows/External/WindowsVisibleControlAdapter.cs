@@ -616,6 +616,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     writer.WriteNumber("processId", ownerProcessId);
                     writer.WriteNumber("hwnd", hwnd);
                     writer.WriteBoolean("requested", requested);
+                    if (VisibleControlSurface.RunsAboveUs(ownerProcessId))
+                        writer.WriteBoolean("elevated", true);
                     WriteRect(writer, "rect", windowRect);
                     if (cover != 0)
                     {

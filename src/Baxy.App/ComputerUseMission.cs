@@ -46,6 +46,7 @@ internal static class ComputerUseMission
     // right after app.open on the Calculator; a fixed 1.2 s was paid always).
     internal static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(150);
     private static readonly TimeSpan WindowWait = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan StartWait = TimeSpan.FromSeconds(10);
 
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
@@ -225,6 +226,14 @@ internal static class ComputerUseMission
                         }
 
                         errorCode = "computer_use_window_covered";
+                        break;
+                    }
+
+                    if ((bool?)lastView["window"]?["elevated"] == true)
+                    {
+                        // The application runs as administrator: Windows does not let a lower process read or press
+                        // its controls (measured on Task Manager). Said as such instead of clicking without effect.
+                        errorCode = "computer_use_window_elevated";
                         break;
                     }
 
@@ -419,8 +428,11 @@ internal static class ComputerUseMission
                             $"step.{steps.Count}.{ShellTrace.SanitizeLabel(decision.Operation)}.ok.{((bool?)record["ok"] == true ? "true" : "false")}.ms.{stepWatch.ElapsedMilliseconds}");
                         if (decision.Operation == "app.open")
                         {
-                            // The next look waits, bounded, for the application's window.
+                            // The next look waits, bounded, for the application's window; an application launched
+                            // now also gets time to replace its start-up window (measured: Steam's «Iniciar sesión en
+                            // Steam» splash was searched for the library until every way to find it was spent).
                             state["awaitWindow"] = true;
+                            state["openedCold"] = (bool?)record["alreadyRunning"] != true;
                         }
                         else
                         {
@@ -780,13 +792,21 @@ internal static class ComputerUseMission
                     .ConfigureAwait(true);
                 if (early is not null && ShowsTheApplication(state, early))
                 {
-                    return includeText && TextCount(early) == 0 && ControlCount(early) > 1
+                    // A window without an accessible tree (CEF) is judged by what is written on it.
+                    bool cold = (bool?)state["openedCold"] == true;
+                    JsonObject seen = (includeText || cold) && TextCount(early) == 0 && (ControlCount(early) > 1 || cold)
                         ? await ReadViewAsync(context, state, application, includeText: true, cancellationToken)
                             .ConfigureAwait(true) ?? early
                         : early;
+                    if (!cold || !StillStarting(state, seen, watch.Elapsed))
+                    {
+                        state.Remove("openedCold");
+                        state.Remove("startingWindow");
+                        return seen;
+                    }
                 }
 
-                if (watch.Elapsed >= WindowWait)
+                if (watch.Elapsed >= ((bool?)state["openedCold"] == true ? StartWait : WindowWait))
                 {
                     break;
                 }
@@ -796,6 +816,26 @@ internal static class ComputerUseMission
         }
 
         return await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+    }
+
+    // A window of an application launched moment ago is still starting while it is not the same window for a second
+    // look or still reads like a splash (≤1 control and ≤5 written lines, read with OCR).
+    private static bool StillStarting(JsonObject state, JsonObject view, TimeSpan waited)
+    {
+        long hwnd = (long?)view["window"]?["hwnd"] ?? 0;
+        bool sameWindow = hwnd == 0 || hwnd == ((long?)state["startingWindow"] ?? 0);
+        state["startingWindow"] = hwnd;
+        if (waited >= StartWait)
+        {
+            return false;
+        }
+
+        if (!sameWindow)
+        {
+            return true;
+        }
+
+        return ControlCount(view) <= 1 && TextCount(view) <= 5;
     }
 
     private static bool ShowsTheApplication(JsonObject state, JsonObject view) =>
