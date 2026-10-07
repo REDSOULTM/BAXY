@@ -2504,6 +2504,30 @@ _SUCCESS_CLAIM = re.compile(
 )
 
 
+# Live 2026-10-07 (cu-r19): «Llegué al modo Oscuro.», «Llegué a la zona horaria y es …»: an arrival is told only at a
+# place of the mission (a place goal, its application or its window), never at a value or an option the window shows.
+_ARRIVAL = re.compile(
+    r"\b(?:llegue|llegamos|i\s+reached|we\s+reached|i\s+got\s+to|i\s+made\s+it\s+to)\s+"
+    r"(?:a\s+(?:la|las|los|el)\s+|al\s+|a\s+|the\s+)?([^.;:!?,]+)"
+)
+_ARRIVAL_FUNCTION = {"del", "los", "las", "the", "and", "seccion", "pagina", "pestana", "section", "page", "tab", "parte"}
+_ARRIVAL_END = re.compile(r"\s+(?:y|e|and|donde|where|que|that|con|with|para|to)\s+.*$")
+
+
+def _arrived_off_mission(folded_reply: str, seen: dict) -> bool:
+    goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)]
+    goals = goals or str(seen.get("goal") or "").split(_PARTS["chain"])
+    places = {fold(found.group(1)) for goal in goals if isinstance(goal, str) and (found := _PLACE_GOAL.match(goal.strip()))}
+    places |= {fold(seen.get(key)) for key in ("application", "windowTitle") if isinstance(seen.get(key), str)}
+    # A place told short («la sección de Bluetooth» for «Bluetooth y dispositivos») shares a word with it.
+    words = {word for place in places for word in re.findall(r"[a-z0-9]+", place) if len(word) >= 3} - _ARRIVAL_FUNCTION
+    for found in _ARRIVAL.finditer(folded_reply):
+        head = set(re.findall(r"[a-z0-9]+", _ARRIVAL_END.sub("", found.group(1)))) - _ARRIVAL_FUNCTION
+        if head and not head & words:
+            return True
+    return False
+
+
 def mission_defect(folded_reply: str, seen: dict) -> str | None:
     """Vetos of a mission final: a join never observed, a false past time, a
     failed mission told as a success (contract §4.5)."""
@@ -2521,6 +2545,8 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
         if isinstance(subgoal, dict) and subgoal.get("reached") is not True and _claims_part(folded_reply, str(subgoal.get("goal") or "")):
             return "subgoal_claimed"
     if _invented_meridiem(folded_reply, seen):
+        return "extra_claim"
+    if _arrived_off_mission(folded_reply, seen):
         return "extra_claim"
     shade = seen.get("chosenShade")
     if isinstance(shade, dict) and fold(shade.get("chosen")) not in folded_reply:
@@ -3179,6 +3205,70 @@ def _floor_said(english: bool) -> dict:
     return operation_floor.floor_data()["computerUse"]["en" if english else "es"]
 
 
+# Live 2026-10-07 (cu-r19): «Llegué al modo Oscuro.», «Llegué a la zona horaria y es (UTC-04:00) Santiago.» A reached
+# mission whose question one fact of the window answers alone is answered from that fact (data «computerUse.answer»):
+# the option the question names that the window shows selected, or the one value its noun names. Mind only: the App
+# leaves every mission with a question to the mind.
+_ANSWER: dict = operation_floor.floor_data()["computerUse"]["answer"]
+_ANSWER_OPTIONS = re.compile(_ANSWER["options"], re.IGNORECASE)
+_ANSWER_NOUN = re.compile(_ANSWER["noun"], re.IGNORECASE)
+_ANSWER_NUMBER = re.compile(_ANSWER["number"])
+_ANSWER_SHAPES = [
+    (re.compile(shape["noun"], re.IGNORECASE), re.compile(shape["value"], re.IGNORECASE)) for shape in _ANSWER["shapes"]
+]
+
+
+def _answer_words(text: str) -> list[str]:
+    return [word for word in re.findall(r"[a-z0-9]+", fold(text)) if word not in _ANSWER["articles"]]
+
+
+def question_answer(seen: dict, english: bool) -> str:
+    """The answer to a reached mission's question when exactly one fact of the window gives it; "" otherwise."""
+
+    question = " ".join(str(seen.get("question") or "").split()).strip(" .?¿!¡")
+    screen = seen.get("screen") if isinstance(seen.get("screen"), dict) else {}
+    if seen.get("reached") is not True or not question:
+        return ""
+    values = [item for item in screen.get("values") or () if isinstance(item, dict)]
+    said = _ANSWER["en" if english else "es"]
+    quote = operation_floor.floor_data()["templates"]["en" if english else "es"]["quote"]
+    asked = _ANSWER_OPTIONS.match(question)
+    if asked is not None:
+        options = {fold(asked.group("first")), fold(asked.group("second"))}
+        chosen = {
+            _floor_name(item.get("name")) for item in values
+            if str(item.get("state") or "").casefold() in _ANSWER["selectedStates"] and fold(item.get("name")) in options
+        } - {""}
+        if len(chosen) != 1:
+            return ""
+        return said["option"].format(noun=asked.group("noun"), value=quote.format(value=next(iter(chosen)))) + "."
+    asked = _ANSWER_NOUN.match(question)
+    if asked is None:
+        return ""
+    noun = asked.group("noun")
+    words = _answer_words(noun)
+    if not words:
+        return ""
+    named = {
+        _floor_name(item.get("value")) for item in values
+        if isinstance(item.get("value"), str) and set(words) <= set(_answer_words(str(item.get("name") or "")))
+    }
+    if not named:
+        bare = " ".join(words)
+        shapes = [value for noun_shape, value in _ANSWER_SHAPES if noun_shape.match(bare)]
+        texts = [
+            " ".join(_BIDI_MARKS.sub("", text).split()) for key in ("numbers", "lines")
+            for text in screen.get(key) or () if isinstance(text, str)
+        ]
+        named = {_floor_name(text) for text in texts if any(shape.match(text) for shape in shapes)}
+    if len(named) != 1 or "" in named:
+        return ""
+    value = next(iter(named))
+    if _ANSWER_NUMBER.match(value):
+        return said["number"].format(noun=noun, value=value) + "."
+    return said["text"].format(noun=noun, value=quote.format(value=value)) + "."
+
+
 def floor_first(observed: dict, english: bool, succeeded: bool) -> str:
     """The final a mission without a question is told with before any draft (voice audit 2026-10-07): its parts
     from the facts when every name in them is the window's or the person's own, or a failure with its typed cause;
@@ -3186,7 +3276,7 @@ def floor_first(observed: dict, english: bool, succeeded: bool) -> str:
 
     seen = project_seen(observed, "en" if english else "es")
     if seen.get("question"):
-        return ""
+        return question_answer(seen, english) if succeeded else ""
     if succeeded:
         if seen.get("reached") is not True:
             return ""
@@ -3221,7 +3311,7 @@ def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
 
     seen = project_seen(observed, "en" if english else "es")
     if seen.get("question"):
-        return ""
+        return question_answer(seen, english) if succeeded else ""
     if succeeded and seen.get("reached") is True:
         told, _ = _parts_final(observed, seen, english, _window_names(observed, seen), _mission_app(seen))
         if told:
