@@ -618,7 +618,9 @@ def _text_line_with(view: dict, label: str) -> str | None:
             for line in zone_lines:
                 if label_names(label, str(line)):
                     hits.append(str(line))
-    return hits[0] if len(hits) == 1 else None
+    # The OCR reads the window twice (plain and darkened), so a word on screen once is often in two lines; where it
+    # is, and whether it is one place, is the click cascade's business (it refuses an ambiguous word).
+    return hits[0] if hits else None
 
 
 def _focused(view: dict) -> dict | None:
@@ -764,7 +766,11 @@ def _menu_opened_by(view: dict, history: list[dict], target: str) -> str | None:
         return None
     if not label_names(target, str(last.get("label") or "")):
         return None
-    appeared = [str(line) for line in (view.get("newText") or []) if str(line).strip()]
+    # A menu's entries are short new lines; the OCR also rereads, garbled, the long lines the menu now covers.
+    appeared = [
+        str(line).strip() for line in (view.get("newText") or [])
+        if str(line).strip() and len(str(line).split()) <= 3 and len(str(line)) <= 30
+    ]
     if not 1 < len(appeared) <= 6:
         return None
     first = appeared[0]
@@ -812,19 +818,35 @@ def decide_step(
         ],
         "response_format": {"type": "json_schema", "json_schema": {"name": "baxy_computer_use_step", "schema": _STEP_SCHEMA}},
         "temperature": 0.0,
-        "max_tokens": 160,
+        "max_tokens": 256,
         "seed": 0,
         "chat_template_kwargs": {"enable_thinking": False},
     }
-    raw = llm._post_schema_object(payload, "el paso de computer use")
+    raw = _model_step(llm, payload)
+    if raw is None:
+        return _none("el modelo no dio un paso legible", code="decision_unreadable")
     decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names, goal=goal)
     if decision["operation"] == "none" and decision.get("code") in {"label_not_visible", "evidence_not_visible", "already_open", "application_unknown"}:
         # One more try with the rejection in front of the model (contract §4.4).
         payload["messages"].append({"role": "assistant", "content": as_json(raw)})
         payload["messages"].append({"role": "user", "content": f"Ese paso no vale: {decision['reason']}. Elegí otro acto de la vista, o none si no hay ninguno."})
-        raw = llm._post_schema_object(payload, "el paso de computer use")
+        raw = _model_step(llm, payload)
+        if raw is None:
+            return _none("el modelo no dio un paso legible", code="decision_unreadable")
         decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names, goal=goal)
     return decision
+
+
+def _model_step(llm: Any, payload: dict) -> Any:
+    """One strict-JSON step from the model; one more try when the reply cannot be read (measured live: a reply cut
+    short left the shell without any step)."""
+
+    for _ in range(2):
+        try:
+            return llm._post_schema_object(payload, "el paso de computer use")
+        except (ValueError, RuntimeError, KeyError, TypeError, OSError):
+            continue
+    return None
 
 
 def _history_line(step: dict) -> str:
