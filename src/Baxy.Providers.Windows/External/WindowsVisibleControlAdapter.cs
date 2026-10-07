@@ -114,6 +114,13 @@ internal sealed record VisibleClickTiming(
         ControlPostread: TimeSpan.FromMilliseconds(500),
         SurfaceFirstSample: TimeSpan.FromMilliseconds(150),
         SurfacePostread: TimeSpan.FromMilliseconds(1500));
+
+    // r8: between two looks for a label on a window that was already there, the window is sampled every StillSample;
+    // one that did not change at all for StillFor is not drawing anything new, so the label that no stage found will
+    // not appear and «not found» is answered then instead of after the whole SettledLabel stretch (measured on ~50
+    // live missions: 13 such clicks at 4.2–4.4 s each).
+    internal TimeSpan StillSample { get; init; } = TimeSpan.FromMilliseconds(200);
+    internal TimeSpan StillFor { get; init; } = TimeSpan.FromMilliseconds(750);
 }
 
 /// <summary>
@@ -161,6 +168,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
     private readonly IOpenedApplicationFocus _focus;
     private readonly VisibleClickTiming _timing;
     private readonly IUserBrowserWindowLocator _browserWindow;
+    private readonly Func<CancellationToken, ValueTask<string?>>? _surfaceHash;
     private readonly object _viewLock = new();
     private LastView? _lastView;
 
@@ -171,7 +179,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             new WindowsVisibleVisionLocator(),
             new OpenedApplicationFocus(),
             VisibleClickTiming.Default,
-            new UserBrowserSurface(new WindowsUserBrowserPlatform()))
+            new UserBrowserSurface(new WindowsUserBrowserPlatform()),
+            ForegroundSurfaceHashAsync)
     {
     }
 
@@ -181,9 +190,11 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         IVisibleControlLocator? vision,
         IOpenedApplicationFocus? focus = null,
         VisibleClickTiming? timing = null,
-        IUserBrowserWindowLocator? browserWindow = null)
+        IUserBrowserWindowLocator? browserWindow = null,
+        Func<CancellationToken, ValueTask<string?>>? surfaceHash = null)
     {
         _worker = worker ?? throw new ArgumentNullException(nameof(worker));
+        _surfaceHash = surfaceHash;
         _ocr = ocr;
         _vision = vision;
         _focus = focus ?? new NoOpenedApplicationFocus();
@@ -348,6 +359,14 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             if ((look && uia?.ErrorCode is { } code && !CascadeAfter.Contains(code))
                 || (lookingSince is { } since && DateTime.UtcNow >= since + labelBudget))
                 break;
+            if (opened is null && _surfaceHash is not null)
+            {
+                // A window that was already there and stays still is not drawing the label: answer now. One that
+                // changes is looked at again at once.
+                if (await StaysStillAsync(_surfaceHash, cancellationToken).ConfigureAwait(false))
+                    break;
+                continue;
+            }
             await Task.Delay(_timing.Interval, cancellationToken).ConfigureAwait(false);
         }
 
@@ -358,6 +377,39 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             ? ExternalJson.Failure(operation, "visible_button_not_found")
             : uia;
     }
+
+    // Watches the window in front for up to Interval: true when it stayed exactly the same for StillFor, false as soon
+    // as it changes, when it cannot be captured (then the whole interval is waited, as before) or at the interval.
+    private async ValueTask<bool> StaysStillAsync(
+        Func<CancellationToken, ValueTask<string?>> surfaceHash,
+        CancellationToken cancellationToken)
+    {
+        var watch = Stopwatch.StartNew();
+        string? first = await surfaceHash(cancellationToken).ConfigureAwait(false);
+        if (first is null)
+        {
+            TimeSpan rest = _timing.Interval - watch.Elapsed;
+            if (rest > TimeSpan.Zero)
+                await Task.Delay(rest, cancellationToken).ConfigureAwait(false);
+            return false;
+        }
+
+        var still = Stopwatch.StartNew();
+        while (watch.Elapsed < _timing.Interval)
+        {
+            await Task.Delay(_timing.StillSample, cancellationToken).ConfigureAwait(false);
+            string? now = await surfaceHash(cancellationToken).ConfigureAwait(false);
+            if (now is null || !string.Equals(now, first, StringComparison.Ordinal))
+                return false;
+            if (still.Elapsed >= _timing.StillFor)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static async ValueTask<string?> ForegroundSurfaceHashAsync(CancellationToken cancellationToken) =>
+        (await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false))?.Sha256;
 
     // ---------------------------------------------------------------- view
 

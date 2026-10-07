@@ -204,6 +204,100 @@ public sealed class ComputerUseLoopTests
         });
     }
 
+    // r8 (measured live: 11 of 27 chained transitions looked again at once, ~600 ms each): the look that proved a
+    // sub-goal reached is the next sub-goal's first look when nothing was done in between on the same application; the
+    // next sub-goal's notes start from that view as read, not from the first sub-goal's.
+    [Test]
+    public async Task TheLookThatReachedASubgoalIsTheNextSubgoalsFirstLookOnTheSameApplication()
+    {
+        string selected = string.Empty;
+        var harness = new Harness
+        {
+            Screen = _ => Window("Steam", "steamwebhelper", 12, true,
+                [Control(0, "Button", "Biblioteca", selected == "Biblioteca" ? "selected" : ""),
+                 Control(1, "Button", "Tienda", selected == "Tienda" ? "selected" : "")]),
+            Mind = request => request.Subgoal == 0
+                ? Step("input.visible.click", new JsonObject { ["label"] = "Biblioteca" })
+                : Step("input.visible.click", new JsonObject { ["label"] = "Tienda" }),
+        };
+        harness.Receipt = (_, arguments) =>
+        {
+            selected = (string?)arguments["label"] ?? string.Empty;
+            return new JsonObject { ["selected"] = true };
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "ve a la biblioteca y después a la tienda",
+            ["steps"] = new JsonArray
+            {
+                new JsonObject { ["goal"] = "ir a la biblioteca", ["application"] = "Steam", ["successCheck"] = "control:Biblioteca:selected" },
+                new JsonObject { ["goal"] = "ir a la tienda", ["application"] = "Steam", ["successCheck"] = "control:Tienda:selected" },
+            },
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("ve a la biblioteca y después a la tienda", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True);
+            Assert.That(observed["subgoals"]!.AsArray().Select(item => (bool?)item!["reached"]), Is.EqualTo(new bool?[] { true, true }));
+            // Look, click, look (reached and reused), click, look: three looks, not four.
+            Assert.That(harness.Looks, Has.Count.EqualTo(3));
+            Assert.That(harness.Acts.Select(act => (string?)act.Arguments["label"]), Is.EqualTo(new[] { "Biblioteca", "Tienda" }));
+            // The second sub-goal's mind saw the reused view without the first sub-goal's notes.
+            Assert.That(harness.Requests[1].History, Is.Empty);
+            Assert.That(harness.Requests[1].View["textBeforeClick"], Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task TheNextSubgoalLooksAgainWhenItsApplicationIsAnother()
+    {
+        bool clicked = false;
+        bool typed = false;
+        var harness = new Harness
+        {
+            Screen = look => (string?)look["application"] switch
+            {
+                "Steam" => Window("Steam", "steamwebhelper", 12, true,
+                    [Control(0, "Button", "Biblioteca", clicked ? "selected" : ""), Control(1, "Button", "Tienda")]),
+                "Bloc de notas" => Window("Sin título - Bloc de notas", "Notepad", 30, true,
+                    [Control(0, "Edit", "Texto", value: typed ? "hola" : ""), Control(1, "MenuItem", "Archivo")]),
+                _ => null,
+            },
+            Mind = request => request.Subgoal == 0
+                ? Step("input.visible.click", new JsonObject { ["label"] = "Biblioteca" })
+                : Step("input.text.type", new JsonObject { ["text"] = "hola" }),
+        };
+        harness.Receipt = (operation, _) =>
+        {
+            clicked |= operation == "input.visible.click";
+            typed |= operation == "input.text.type";
+            return new JsonObject { ["selected"] = true };
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "abre la biblioteca de Steam y escribe hola en el Bloc de notas",
+            ["steps"] = new JsonArray
+            {
+                new JsonObject { ["goal"] = "ir a la biblioteca", ["application"] = "Steam", ["successCheck"] = "control:Biblioteca:selected" },
+                new JsonObject { ["goal"] = "escribir hola", ["application"] = "Bloc de notas", ["successCheck"] = "value:Texto=hola" },
+            },
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("abre la biblioteca y escribe hola", arguments), arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)Observed(result)["reached"], Is.True);
+            Assert.That(harness.Looks.Select(look => (string?)look["application"]),
+                Is.EqualTo(new[] { "Steam", "Steam", "Bloc de notas", "Bloc de notas" }));
+        });
+    }
+
     [Test]
     public async Task AChainStopsAtTheFirstSubgoalThatFailsAndSaysWhichOnesWereReached()
     {

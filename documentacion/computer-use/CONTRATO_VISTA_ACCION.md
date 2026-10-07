@@ -626,7 +626,7 @@ con la nota «N de M»; teclas por `SendInput` desde el propio proceso (46 ms la
 sale la última repetida —«lista: pan» → «lista:nnnn» a 3 ms, «lista:ppan» a 20 ms— y las teclas virtuales pierden
 el Shift; desde 25 ms sale íntegro; un «escribí X» sólo cuenta si el campo enfocado que expone su valor muestra X); clic sin esperas fijas: el worker responde al
 invocar y la postlectura pregunta el estado UIA cada 50 ms hasta 500 ms y compara la superficie desde 150 ms;
-vista con captura y OCR en paralelo al árbol y OCR sólo cuando hace falta; 150 ms de asentamiento entre pasos (antes
+vista con captura y OCR en paralelo al árbol y OCR sólo cuando hace falta; un clic por etiqueta que ninguna etapa encuentra en una ventana que ya estaba vigila la ventana cada 200 ms y, si no cambió nada en 750 ms, responde «no está» sin otra pasada (antes 4,2–4,4 s; si cambia, mira otra vez enseguida); la vista que dio por cumplido un sub-objetivo es la primera del siguiente si no se hizo nada entre medio y es la misma aplicación (r8); 150 ms de asentamiento entre pasos (antes
 400/1 200 ms); apertura de apps UWP verificada en su marco `ApplicationFrameHost` (antes agotaba 30 s); worker UIA
 arrancado en segundo plano al iniciar el Core; sin rótulos de progreso escritos por el LLM durante una misión (el
 estado se publica como «acting»); la ventana de un proceso se elige entre las usables (antes una vista atada al

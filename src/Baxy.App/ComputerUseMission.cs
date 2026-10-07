@@ -124,6 +124,12 @@ internal static class ComputerUseMission
         JsonObject? subgoalView = null;
         // The step decided in this pass came from the learned procedure: a stop that follows in the same pass is its.
         bool procedureStepBroke = false;
+        // r8: the look that proved a sub-goal reached is, untouched, the next sub-goal's first look when nothing was done
+        // in between and it reads the same application (measured live: 11 of 27 transitions looked again at once,
+        // ~600 ms each).
+        JsonObject? reusableView = null;
+        string? reusableApplication = null;
+        bool reusableHasText = false;
         ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.start",
             $"budget.{budget}.steps_done.{steps.Count}.subgoals.{plan.Count}");
         for (int item = 0; item < plan.Count; item++)
@@ -172,14 +178,32 @@ internal static class ComputerUseMission
             else
             {
                 bool lastLook = done >= subgoalBudget || steps.Count >= budget;
-                context.SetStatus("Mirando la pantalla");
-                bool includeText = NeedsText(goal, application, successCheck, subgoalView);
-                lastView = await LookAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+                bool reusable = reusableView is not null && done == 0
+                    && string.Equals(reusableApplication, application, StringComparison.Ordinal);
+                // Whether the text is needed is judged, as for any later look, on the controls already seen.
+                bool includeText = NeedsText(goal, application, successCheck, subgoalView ?? (reusable ? reusableView : null));
+                bool lookedWithText = includeText;
+                if (reusable && (!includeText || reusableHasText))
+                {
+                    lastView = reusableView;
+                    lookedWithText = reusableHasText;
+                    ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.view_reused", $"subgoal.{index + 1}");
+                }
+                else
+                {
+                    context.SetStatus("Mirando la pantalla");
+                    lastView = await LookAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+                }
+
+                reusableView = null;
                 if (lastView is null)
                 {
                     errorCode = "computer_use_view_unavailable";
                     break;
                 }
+
+                // The view as read, before this sub-goal's notes are added to it: what the next sub-goal may start from.
+                JsonObject? pristineView = index + 1 < plan.Count ? lastView.DeepClone() as JsonObject : null;
 
                 subgoalView = lastView;
                 state["window"] = lastView["window"]?.DeepClone();
@@ -218,6 +242,9 @@ internal static class ComputerUseMission
                 if (ComputerUseSuccessCheck.Evaluate(successCheck, lastView, SubgoalSteps(steps, start), out subgoalBy))
                 {
                     subgoalReached = true;
+                    reusableView = pristineView;
+                    reusableApplication = application;
+                    reusableHasText = lookedWithText || TextCount(lastView) > 0;
                 }
                 else if (lastLook)
                 {
