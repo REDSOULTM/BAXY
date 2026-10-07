@@ -114,6 +114,13 @@ internal sealed record VisibleClickTiming(
         ControlPostread: TimeSpan.FromMilliseconds(500),
         SurfaceFirstSample: TimeSpan.FromMilliseconds(150),
         SurfacePostread: TimeSpan.FromMilliseconds(1500));
+
+    // r8: between two looks for a label on a window that was already there, the window is sampled every StillSample;
+    // one that did not change at all for StillFor is not drawing anything new, so the label that no stage found will
+    // not appear and «not found» is answered then instead of after the whole SettledLabel stretch (measured on ~50
+    // live missions: 13 such clicks at 4.2–4.4 s each).
+    internal TimeSpan StillSample { get; init; } = TimeSpan.FromMilliseconds(200);
+    internal TimeSpan StillFor { get; init; } = TimeSpan.FromMilliseconds(750);
 }
 
 /// <summary>
@@ -161,8 +168,16 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
     private readonly IOpenedApplicationFocus _focus;
     private readonly VisibleClickTiming _timing;
     private readonly IUserBrowserWindowLocator _browserWindow;
+    private readonly Func<nint, CancellationToken, ValueTask<string?>>? _surfaceHash;
     private readonly object _viewLock = new();
     private LastView? _lastView;
+
+    // Review r10: the window the last look by label read (the one its click targets) and when a click last changed
+    // the screen. A page the previous click navigated to may still be loading behind a still frame: the first click
+    // after it keeps the full wait instead of answering «not found» after one still look.
+    private static readonly TimeSpan ScreenChangeFreshness = TimeSpan.FromSeconds(30);
+    private nint _lookedWindow;
+    private DateTime _screenChangedUtc = DateTime.MinValue;
 
     internal WindowsVisibleControlAdapter()
         : this(
@@ -171,7 +186,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             new WindowsVisibleVisionLocator(),
             new OpenedApplicationFocus(),
             VisibleClickTiming.Default,
-            new UserBrowserSurface(new WindowsUserBrowserPlatform()))
+            new UserBrowserSurface(new WindowsUserBrowserPlatform()),
+            WindowSurfaceHashAsync)
     {
     }
 
@@ -181,9 +197,11 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         IVisibleControlLocator? vision,
         IOpenedApplicationFocus? focus = null,
         VisibleClickTiming? timing = null,
-        IUserBrowserWindowLocator? browserWindow = null)
+        IUserBrowserWindowLocator? browserWindow = null,
+        Func<nint, CancellationToken, ValueTask<string?>>? surfaceHash = null)
     {
         _worker = worker ?? throw new ArgumentNullException(nameof(worker));
+        _surfaceHash = surfaceHash;
         _ocr = ocr;
         _vision = vision;
         _focus = focus ?? new NoOpenedApplicationFocus();
@@ -202,6 +220,24 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         if (operation == "input.visible.controls")
             return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
 
+        ExternalCapabilityReceipt receipt = await ClickAsync(operation, arguments, cancellationToken)
+            .ConfigureAwait(false);
+        if (receipt.Verified
+            && receipt.Result is { ValueKind: JsonValueKind.Object } result
+            && result.TryGetProperty("surfaceChanged", out JsonElement changed)
+            && changed.ValueKind == JsonValueKind.True)
+        {
+            _screenChangedUtc = DateTime.UtcNow;
+        }
+
+        return receipt;
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> ClickAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
         string label;
         int? index = null;
         string? controlId = null;
@@ -278,6 +314,10 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         // meanwhile; then the label for a bounded stretch on each new main
         // window. Any other click looks two or three times and answers.
         VisibleControlSurface.OpenedApplication? opened = _focus.TakeOpened();
+        // The first click after one that changed the screen waits the whole stretch (review r10).
+        bool afterScreenChange = DateTime.UtcNow - _screenChangedUtc < ScreenChangeFreshness;
+        _screenChangedUtc = DateTime.MinValue;
+        _lookedWindow = 0;
         nint surfaceWindow = 0;
         DateTime? lookingSince = null;
         ExternalCapabilityReceipt? uia = null;
@@ -348,6 +388,16 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             if ((look && uia?.ErrorCode is { } code && !CascadeAfter.Contains(code))
                 || (lookingSince is { } since && DateTime.UtcNow >= since + labelBudget))
                 break;
+            if (opened is null && _surfaceHash is not null && !afterScreenChange && _lookedWindow != 0)
+            {
+                // A window that was already there and stays still is not drawing the label: answer now. One that
+                // changes is looked at again at once. The window watched is the one the look read and the click
+                // targets, never whatever holds the front meanwhile (review r10).
+                nint watched = _lookedWindow;
+                if (await StaysStillAsync(token => _surfaceHash(watched, token), cancellationToken).ConfigureAwait(false))
+                    break;
+                continue;
+            }
             await Task.Delay(_timing.Interval, cancellationToken).ConfigureAwait(false);
         }
 
@@ -357,6 +407,50 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         return uia.ErrorCode is null
             ? ExternalJson.Failure(operation, "visible_button_not_found")
             : uia;
+    }
+
+    // Watches the window in front for up to Interval: true when it stayed exactly the same for StillFor, false as soon
+    // as it changes, when it cannot be captured (then the whole interval is waited, as before) or at the interval.
+    private async ValueTask<bool> StaysStillAsync(
+        Func<CancellationToken, ValueTask<string?>> surfaceHash,
+        CancellationToken cancellationToken)
+    {
+        var watch = Stopwatch.StartNew();
+        string? first = await surfaceHash(cancellationToken).ConfigureAwait(false);
+        if (first is null)
+        {
+            TimeSpan rest = _timing.Interval - watch.Elapsed;
+            if (rest > TimeSpan.Zero)
+                await Task.Delay(rest, cancellationToken).ConfigureAwait(false);
+            return false;
+        }
+
+        var still = Stopwatch.StartNew();
+        while (watch.Elapsed < _timing.Interval)
+        {
+            await Task.Delay(_timing.StillSample, cancellationToken).ConfigureAwait(false);
+            string? now = await surfaceHash(cancellationToken).ConfigureAwait(false);
+            if (now is null || !string.Equals(now, first, StringComparison.Ordinal))
+                return false;
+            if (still.Elapsed >= _timing.StillFor)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static async ValueTask<string?> WindowSurfaceHashAsync(nint window, CancellationToken cancellationToken)
+    {
+        if (!VisibleControlSurface.IsAlive(window))
+            return null;
+        try
+        {
+            return (await VisibleControlSurface.CaptureAsync(window, cancellationToken).ConfigureAwait(false))?.Sha256;
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return null;
+        }
     }
 
     // ---------------------------------------------------------------- view
@@ -548,7 +642,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     : string.Empty;
             if (title.Length == 0)
                 title = VisibleControlSurface.WindowTitle(hwnd);
-            (int ownerProcessId, string processName) = VisibleControlSurface.WindowProcess(hwnd);
+            // A packaged app's frame names the app it hosts, never the frame host every packaged app shares.
+            (int ownerProcessId, string processName) = VisibleControlSurface.ViewProcess(hwnd);
             VisibleControlSurface.TryBounds(hwnd, out int left, out int top, out int right, out int bottom);
             var windowRect = new Rect(left, top, right - left, bottom - top);
 
@@ -860,6 +955,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
 
         if (hwnd == 0)
             return ExternalJson.FailureBeforeEffect(operation, "active_window_not_found");
+        _lookedWindow = hwnd;
 
         // The descriptor admits «surface changed» as post-read. A Calculator
         // digit stays enabled and unselected after Invoke, so the surface is

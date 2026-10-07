@@ -41,13 +41,14 @@ def test_verified_open_preserves_completion_and_previous_running_state(
 
     assert payload["outcome"] == "completed"
     assert payload["operation"] == "app.open"
+    # The window handle stays in the receipt for the checks; the narrator never sees it (live 2026-10-07, x12).
     assert payload["seen"] == {
         "appId": app_id,
         "displayName": name,
-        "windowHandle": window_handle,
         "was_running_before_open": already_running,
     }
     assert situation == original
+    assert situation["observed"]["windowHandle"] == window_handle
 
 
 @pytest.mark.parametrize(

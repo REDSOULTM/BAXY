@@ -1024,6 +1024,78 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Live v11 2026-10-07 on Settings: «hacer clic en «bluetooth y dispositivos»» typed the name into the search box and
+    // clicked the message «No hay resultados para «bluetooth y dispositivos»»; the containment of the click atom passed
+    // it and the mission learned that click as the way there.
+    [Test]
+    public void AClickOnATextThatRepeatsTheTypedQueryIsNoClickOnThatName()
+    {
+        JsonObject view = View("""{"window": {"title": "Configuración", "process": "ApplicationFrameHost"}, "controls": [], "text": {}}""");
+        JsonObject Typed(string text) => new()
+        {
+            ["operation"] = "input.text.type",
+            ["text"] = text,
+            ["into"] = "Cuadro de búsqueda, Buscar una opción",
+            ["ok"] = true,
+        };
+        JsonObject Click(string name, string kind) => new()
+        {
+            ["operation"] = "input.visible.click",
+            ["label"] = name,
+            ["name"] = name,
+            ["kind"] = kind,
+            ["ok"] = true,
+        };
+        JsonArray echo = new() { Typed("«bluetooth y dispositivos»"), Click("No hay resultados para «bluetooth y dispositivos»", "Text") };
+        JsonArray plain = new() { Typed("sistema"), Click("No hay resultados para «sistema»", "Text") };
+        // Counter-cases: a result (an item) that holds the query, the result that is the query, the navigation item
+        // clicked with nothing typed, and a message clicked when nothing was typed into a search.
+        JsonArray result = new() { Typed("sistema"), Click("Sistema", "ListItem") };
+        JsonArray resultText = new() { Typed("sistema"), Click("Sistema", "Text") };
+        JsonArray longerResult = new() { Typed("sonido"), Click("Configuración de sonido", "ListItem") };
+        JsonArray item = new() { Click("Bluetooth y dispositivos", "ListItem") };
+        JsonArray untyped = new() { Click("Sistema y seguridad", "Text") };
+        JsonArray typedAfter = new() { Click("Sistema y seguridad", "Text"), Typed("sistema") };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:«bluetooth y dispositivos»", view, echo, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:bluetooth y dispositivos", view, echo, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, plain, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=sistema", view, plain, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.EvaluateReceipts("stepDone:input.visible.click:sistema", plain, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, result, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, resultText, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sonido", view, longerResult, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:bluetooth y dispositivos", view, item, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, untyped, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, typedAfter, out _), Is.True);
+        });
+    }
+
+    // «stepDone:input.visible.click:=red»: the clicked name holds the word whole. Measured on Paint: «red» inside
+    // «Rectángulo redondeado» passed a click on that shape as the colour chosen. A bare «=» stays the equals key.
+    [Test]
+    public void AWholeNameClickAtomIgnoresAWordInsideALongerOne()
+    {
+        JsonObject view = View("""{"window": {"title": "Dibujo", "process": "dibujo"}, "controls": [], "text": {}}""");
+        JsonArray shape = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "Rectángulo redondeado", ["ok"] = true } };
+        JsonArray colour = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "red", ["name"] = "Red", ["ok"] = true } };
+        JsonArray darker = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "Rojo oscuro", ["ok"] = true } };
+        JsonArray equals = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "=", ["ok"] = true } };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:red", view, shape, out _), Is.True, "contains, as before");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=red", view, shape, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=red", view, colour, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=rojo", view, darker, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=", view, equals, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=red:on", View("""
+                {"window": {"title": "Dibujo", "process": "dibujo"},
+                 "controls": [{"i": 0, "kind": "Button", "name": "Rectángulo redondeado", "state": "on"}], "text": {}}
+                """), [], out _), Is.False);
+        });
+    }
+
     [Test]
     public void TheMindReceivesIndicesNamesStatesZonesColoursRectanglesAndTextButNoIdentitiesOrHashes()
     {
@@ -1044,6 +1116,8 @@ public sealed class ComputerUseMissionTests
             Assert.That((int?)compact["controls"]![0]!["rect"]!["w"], Is.EqualTo(60));
             Assert.That(compact["controls"]![2]!["rect"], Is.Null);
             Assert.That((string?)compact["text"]!["C"]![0], Is.EqualTo("12 × 7 ="));
+            // How many controls the tree holds: a name beyond the listing is told from one the window lacks.
+            Assert.That((int?)compact["controlCount"], Is.EqualTo(4));
         });
     }
 
@@ -1339,6 +1413,33 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Review 2026-10-07: a running packaged app found by its title showed the ApplicationFrameHost frame, and the
+    // frame host's pid (shared by Settings, the Store, the Calculator) was adopted; a later look could take the Store's
+    // frame and keys were allowed there. The shared host is never adopted; the provider names the hosted app instead,
+    // so two frames of the same host keep apart.
+    [Test]
+    public void TheSharedFrameHostIsNeverTheMissionsProcess()
+    {
+        var byHost = new JsonObject();
+        ComputerUseMission.AdoptWindow(byHost, "Configuración", View("""
+            {"window": {"title": "Configuración", "process": "ApplicationFrameHost", "processId": 3, "hwnd": 30, "requested": true}}
+            """));
+        var byHosted = new JsonObject();
+        ComputerUseMission.AdoptWindow(byHosted, "Configuración", View("""
+            {"window": {"title": "Configuración", "process": "SystemSettings", "processId": 40, "hwnd": 30, "requested": true}}
+            """));
+        JsonObject store = View("""{"window": {"title": "Microsoft Store", "process": "WinStore.App", "processId": 41, "hwnd": 31}}""");
+        JsonObject settings = View("""{"window": {"title": "Configuración", "process": "SystemSettings", "processId": 40, "hwnd": 30}}""");
+        Assert.Multiple(() =>
+        {
+            Assert.That(byHost["processId"], Is.Null, "the frame host every packaged app shares is no app's process");
+            Assert.That((int?)byHosted["processId"], Is.EqualTo(40));
+            Assert.That(ComputerUseMission.BindToMissionWindow("input.key.press", new JsonObject(), store, byHosted, "Configuración"), Is.False,
+                "another packaged app's frame of the same host gets no key");
+            Assert.That(ComputerUseMission.BindToMissionWindow("input.key.press", new JsonObject(), settings, byHosted, "Configuración"), Is.True);
+        });
+    }
+
     [Test]
     public void APointerStepIsNotBoundToAWindowHandle()
     {
@@ -1379,5 +1480,160 @@ public sealed class ComputerUseMissionTests
     public void ProcedureKeysFoldTheApplicationAndTheGoal(string? application, string goal, string expected)
     {
         Assert.That(ComputerUseProcedures.Key(application, goal), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ASearchTypedIntoABoxDrawnWithoutATreeIsProvedByItsResultsNeverByTheBoxAlone()
+    {
+        // Measured on Steam's library: the box holds «Cuphead» whether the library has it or not.
+        const string check = "stepDone:input.text.type&stepDone:input.key.press:enter&text:Cuphead";
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "ctrl_f" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "Cuphead" },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "enter" },
+        };
+        JsonObject onlyTheBox = View("""
+            {"window": {"title": "Steam", "process": "steamwebhelper", "focused": null},
+             "controls": [{"i": 0, "kind": "Pane", "name": "Chrome Legacy Window"}],
+             "text": {"TL": ["Juegos y Software", "Q Cuphead", "FAVORITOS (0)"]}}
+            """);
+        JsonObject withResult = View("""
+            {"window": {"title": "Steam", "process": "steamwebhelper", "focused": null},
+             "controls": [{"i": 0, "kind": "Pane", "name": "Chrome Legacy Window"}],
+             "text": {"TL": ["Juegos y Software", "Q Cuphead", "FAVORITOS (1)"], "L": ["Cuphead"]}}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, onlyTheBox, steps, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, withResult, steps, out _), Is.True);
+            // Text that was never typed reads the screen as before.
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.key.press:enter&text:FAVORITOS", onlyTheBox, steps, out _), Is.True);
+        });
+    }
+
+    // Spotify's web player as read at x7 (2026-10-07): the search box focused, with its recent searches, after the
+    // click on «Buscar»; the frame's read-only «Address and search bar» never counts.
+    private static JsonObject SearchView(string focusedKind, string focusedName, string? focusAtStart, string state = "expanded focused")
+    {
+        JsonObject view = View("""
+            {"window": {"title": "Spotify Premium", "process": "Spotify", "focused": null},
+             "controls": [
+               {"i": 0, "kind": "Edit", "name": "Address and search bar", "state": "readonly", "value": "xpui.app.spotify.com/index.html"},
+               {"i": 1, "kind": "Button", "name": "Buscar", "state": ""},
+               {"i": 2, "kind": "ComboBox", "name": "¿Qué quieres reproducir?", "state": ""},
+               {"i": 3, "kind": "Hyperlink", "name": "Viva Latino", "state": "readonly"}
+             ]}
+            """);
+        view["window"]!["focused"] = new JsonObject { ["kind"] = focusedKind, ["name"] = focusedName, ["value"] = "" };
+        foreach (JsonObject control in ((JsonArray)view["controls"]!).OfType<JsonObject>())
+        {
+            if ((string?)control["name"] == focusedName)
+            {
+                control["state"] = state;
+            }
+        }
+
+        if (focusAtStart is not null)
+        {
+            view["focusAtStart"] = focusAtStart;
+        }
+
+        return view;
+    }
+
+    [Test]
+    public void TheSearchIsReachedWhenThisMissionPutsTheKeyboardInItsField()
+    {
+        const string check = "control:search:current|title:search|control:buscar:current|title:buscar|focus:search";
+        var clicked = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+        };
+        var findKey = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Address and search bar" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "ctrl_f" },
+        };
+        JsonObject arrived = SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, arrived, clicked, out string? by), Is.True);
+            Assert.That(by, Is.EqualTo("focus:search"));
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, arrived, findKey, out _), Is.True);
+        });
+    }
+
+    [Test]
+    public void ASearchBoxShownOrFocusedWithoutThisMissionOrHoldingTypedTextIsNoArrival()
+    {
+        const string check = "focus:search";
+        var clicked = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+        };
+        var typed = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "search" },
+        };
+        var otherClick = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Inicio" },
+        };
+        var scrolled = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.scroll", ["ok"] = true, ["direction"] = "down" },
+        };
+        Assert.Multiple(() =>
+        {
+            // Present on every page, never focused: no arrival.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("Document", "Spotify", "Document|spotify", "collapsed"), clicked, out _), Is.False);
+            // It had the keyboard at the first look: not brought there by this mission.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "ComboBox|¿que quieres reproducir?"), clicked, out _), Is.False);
+            // No first look known: no proof.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", null), clicked, out _), Is.False);
+            // Text typed into it: an echo, never arriving.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify"), typed, out _), Is.False);
+            // The last verified act was not toward the search.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify"), otherClick, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify"), scrolled, out _), Is.False);
+            // The read-only address field is never the search.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("Edit", "Address and search bar", "Document|spotify", "readonly focused"), clicked, out _), Is.False);
+        });
+    }
+
+    [Test]
+    public void AClickRefusedTwiceInTheSubgoalIsCountedWhateverCameBetween()
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Address and search bar", ["index"] = 0 },
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "address and search bar", ["index"] = 2 },
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.RefusedClicks(steps, new JsonObject { ["label"] = "Address and search bar" }), Is.EqualTo(2));
+            Assert.That(ComputerUseSuccessCheck.RefusedClicks(steps, new JsonObject { ["label"] = "Buscar" }), Is.EqualTo(0));
+        });
+    }
+
+    // Live y9: a learned «mouse» typed right after Settings opened with its search box focused was replayed onto the
+    // side list; a learned text is replayed only where the keyboard is in a field.
+    [Test]
+    public void ALearnedTextIsReplayedOnlyWhereTheKeyboardIsInAField()
+    {
+        static JsonObject Focused(string kind) => View(
+            "{\"window\": {\"title\": \"Ajustes\", \"focused\": {\"kind\": \"" + kind + "\", \"name\": \"x\"}}, \"controls\": []}");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("Edit")), Is.True);
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("Document")), Is.True);
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("ListItem")), Is.False);
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("Button")), Is.False);
+            Assert.That(ComputerUseMission.FocusTakesText(View("{\"window\": {\"title\": \"Sin árbol\"}, \"controls\": []}")), Is.True);
+        });
     }
 }

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 
@@ -48,11 +49,14 @@ internal static class ComputerUseMission
     private static readonly TimeSpan WindowWait = TimeSpan.FromSeconds(3);
     // Measured: the Epic Games launcher still showed its «EPIC GAMES» splash 11 s after its window appeared.
     private static readonly TimeSpan StartWait = TimeSpan.FromSeconds(20);
+    // A blank document created from a start page replaces it in a moment (the mind marks that act
+    // «expects_title_change»): the next look waits, bounded, for the window's title to change.
+    internal static readonly TimeSpan TitleChangeWait = TimeSpan.FromSeconds(8);
 
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
     [
-        "baselineText", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow",
+        "baselineText", "focusAtStart", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow", "awaitTitleChange",
         "newTextAfterClick", "newTextAfterClickStep",
         "procedureKey", "procedureIndex", "procedureSteps", "procedureDeviated",
     ];
@@ -121,8 +125,21 @@ internal static class ComputerUseMission
         JsonObject? subgoalView = null;
         // The step decided in this pass came from the learned procedure: a stop that follows in the same pass is its.
         bool procedureStepBroke = false;
+        // r8: the look that proved a sub-goal reached is, untouched, the next sub-goal's first look when nothing was done
+        // in between and it reads the same application (measured live: 11 of 27 transitions looked again at once,
+        // ~600 ms each).
+        JsonObject? reusableView = null;
+        string? reusableApplication = null;
+        bool reusableHasText = false;
         ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.start",
             $"budget.{budget}.steps_done.{steps.Count}.subgoals.{plan.Count}");
+        for (int item = 0; item < plan.Count; item++)
+        {
+            // How many alternatives each sub-goal's check carries («none»: only the model's cited evidence can end it).
+            string? planned = (string?)plan[item]?["successCheck"];
+            ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.plan",
+                $"subgoal.{item + 1}.check.{(string.IsNullOrWhiteSpace(planned) ? "none" : "terms." + planned.Split('|').Length)}");
+        }
 
         while (true)
         {
@@ -162,14 +179,32 @@ internal static class ComputerUseMission
             else
             {
                 bool lastLook = done >= subgoalBudget || steps.Count >= budget;
-                context.SetStatus("Mirando la pantalla");
-                bool includeText = NeedsText(goal, application, successCheck, subgoalView);
-                lastView = await LookAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+                bool reusable = reusableView is not null && done == 0
+                    && string.Equals(reusableApplication, application, StringComparison.Ordinal);
+                // Whether the text is needed is judged, as for any later look, on the controls already seen.
+                bool includeText = NeedsText(goal, application, successCheck, subgoalView ?? (reusable ? reusableView : null));
+                bool lookedWithText = includeText;
+                if (reusable && (!includeText || reusableHasText))
+                {
+                    lastView = reusableView;
+                    lookedWithText = reusableHasText;
+                    ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.view_reused", $"subgoal.{index + 1}");
+                }
+                else
+                {
+                    context.SetStatus("Mirando la pantalla");
+                    lastView = await LookAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+                }
+
+                reusableView = null;
                 if (lastView is null)
                 {
                     errorCode = "computer_use_view_unavailable";
                     break;
                 }
+
+                // The view as read, before this sub-goal's notes are added to it: what the next sub-goal may start from.
+                JsonObject? pristineView = index + 1 < plan.Count ? lastView.DeepClone() as JsonObject : null;
 
                 subgoalView = lastView;
                 state["window"] = lastView["window"]?.DeepClone();
@@ -186,6 +221,18 @@ internal static class ComputerUseMission
                 if (state["baselineText"] is JsonArray baseline)
                 {
                     lastView["baselineText"] = baseline.DeepClone();
+                }
+
+                // Where the keyboard was at the application's own first look: a field that had it before any step is
+                // not one this mission brought it to (check atom focus:).
+                if (application is null || (bool?)lastView["window"]?["requested"] == true)
+                {
+                    state["focusAtStart"] ??= ComputerUseSuccessCheck.FocusSignature(lastView);
+                }
+
+                if (state["focusAtStart"] is JsonNode focusAtStart)
+                {
+                    lastView["focusAtStart"] = focusAtStart.DeepClone();
                 }
 
                 if (state["textBeforeClick"] is JsonObject beforeClicks)
@@ -208,6 +255,9 @@ internal static class ComputerUseMission
                 if (ComputerUseSuccessCheck.Evaluate(successCheck, lastView, SubgoalSteps(steps, start), out subgoalBy))
                 {
                     subgoalReached = true;
+                    reusableView = pristineView;
+                    reusableApplication = application;
+                    reusableHasText = lookedWithText || TextCount(lastView) > 0;
                 }
                 else if (lastLook)
                 {
@@ -244,8 +294,13 @@ internal static class ComputerUseMission
                     }
 
                     string signature = ViewSignature(lastView);
+                    // A click that found nothing to press changed nothing by nature: it is no act that «stopped changing
+                    // the screen» (live e2: «blue» and «azul» not found ended the mission before the palette's «Añil»).
+                    bool lastFoundNothing = steps.Count > start && steps[^1] is JsonObject lastStep
+                        && (bool?)lastStep["ok"] != true
+                        && (string?)lastStep["error"] is "visible_button_not_found" or "visible_control_label_mismatch";
                     int unchanged = string.Equals(signature, (string?)state["lastSignature"], StringComparison.Ordinal)
-                        ? ((int?)state["unchangedViews"] ?? 0) + 1
+                        ? ((int?)state["unchangedViews"] ?? 0) + (lastFoundNothing ? 0 : 1)
                         : 0;
                     state["lastSignature"] = signature;
                     state["unchangedViews"] = unchanged;
@@ -277,6 +332,14 @@ internal static class ComputerUseMission
                     MindComputerUseStep? decision = onTheApplication || NextProcedureOpens(state)
                         ? IdentifyOnView(NextProcedureStep(state, done), lastView)
                         : null;
+                    if (decision is { Operation: "input.text.type" } && !FocusTakesText(lastView))
+                    {
+                        // A learned text is typed only where the keyboard is in a field (live y9: «mouse» learned right
+                        // after Settings opened with its search box focused was replayed onto the side list).
+                        AbandonProcedure(state);
+                        decision = null;
+                    }
+
                     bool fromProcedure = decision is not null;
                     procedureStepBroke = fromProcedure;
                     if (decision is null)
@@ -331,7 +394,27 @@ internal static class ComputerUseMission
                     {
                         if (decision.Operation == "none" || !Primitives.Contains(decision.Operation))
                         {
-                            errorCode = "computer_use_no_step_visible";
+                            // A screen torn down by the act just taken and not built again yet is no screen without a
+                            // step (measured 2026-10-07 on a store: 185 ms after Enter its results page listed 17 of
+                            // 52 controls, a placeholder layout, and the model rightly saw nothing to press). Once
+                            // per act, looked at again, bounded, while it is redrawn; then the loop decides anew.
+                            if (decision.Operation == "none" && decision.Code is "" or "no_step_visible"
+                                && await RedrawnAfterActAsync(context, state, steps, start, application, lastView, signature, cancellationToken)
+                                    .ConfigureAwait(true))
+                            {
+                                ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.redrawn", $"step.{steps.Count}");
+                                continue;
+                            }
+
+                            // The application is on its start page with no document open and the place asked lives in
+                            // one (measured on Excel and Word: their tabs exist only with a document): said as such.
+                            // A search box written on screen that did not prove it took the keyboard: nothing was typed.
+                            errorCode = decision.Code switch
+                            {
+                                "no_document_open" => "computer_use_no_document_open",
+                                "search_focus_unproven" => "computer_use_search_focus_unproven",
+                                _ => "computer_use_no_step_visible",
+                            };
                             state["stopReason"] = decision.Reason;
                             break;
                         }
@@ -355,6 +438,15 @@ internal static class ComputerUseMission
                         if (done > 0 && steps[^1] is JsonObject previous
                             && (bool?)previous["ok"] == false
                             && SameStep(previous, decision.Operation, stepArguments))
+                        {
+                            errorCode = "computer_use_repeated_step";
+                            break;
+                        }
+
+                        // A click refused twice in this sub-goal is not tried a third time, whatever came between
+                        // (measured 2026-10-07: a read-only field clicked four times between other steps, 41 s spent).
+                        if (decision.Operation == "input.visible.click"
+                            && ComputerUseSuccessCheck.RefusedClicks(SubgoalSteps(steps, start), stepArguments) >= 2)
                         {
                             errorCode = "computer_use_repeated_step";
                             break;
@@ -424,6 +516,9 @@ internal static class ComputerUseMission
                             continue;
                         }
 
+                        // How much the screen listed when this act was taken: a look after it that lists less shows a
+                        // screen torn down (RedrawnAfterActAsync).
+                        state["actFromControls"] = lastView is null ? 0 : ControlCount(lastView);
                         context.SetStatus($"Paso {steps.Count + 1}: {Describe(decision.Operation, stepArguments)}");
                         PreparedOperation prepared = context.Registry.GetOrAdd(new RoutedOperation(decision.Operation, stepArguments));
                         var stepWatch = Stopwatch.StartNew();
@@ -481,6 +576,10 @@ internal static class ComputerUseMission
                             // Steam» splash was searched for the library until every way to find it was spent).
                             state["awaitWindow"] = true;
                             state["openedCold"] = (bool?)record["alreadyRunning"] != true;
+                        }
+                        else if (decision.Code == "expects_title_change" && (bool?)record["ok"] == true)
+                        {
+                            state["awaitTitleChange"] = (string?)lastView?["window"]?["title"] ?? string.Empty;
                         }
                         else
                         {
@@ -875,6 +974,12 @@ internal static class ComputerUseMission
     // A learned click names its control only by label (indices change between runs): it is pinned to the control of
     // the current view that carries that name, so the press goes by identity. Measured: a replayed «Alarma» click by
     // label right after opening the Clock waited 30 s for the application to finish drawing, by index it took 0.3 s.
+    // The focused element takes typed text: a field, a document or an editable box. A view that does not say where
+    // the keyboard is (a window without an accessible tree) says nothing either way.
+    internal static bool FocusTakesText(JsonObject? view) =>
+        view?["window"]?["focused"] is not JsonObject focused
+        || (string?)focused["kind"] is "Edit" or "Document" or "ComboBox" or "Text";
+
     internal static MindComputerUseStep? IdentifyOnView(MindComputerUseStep? step, JsonObject? view)
     {
         if (step is null || step.Operation != "input.visible.click" || step.Arguments["index"] is not null
@@ -929,14 +1034,17 @@ internal static class ComputerUseMission
     /// Once a view shows the window the provider resolved as the sub-goal's
     /// application (titled like it, or the person's browser for «the
     /// browser»), the mission keeps looking at that process (a later
-    /// foreground change does not move the surface).
+    /// foreground change does not move the surface). Never the frame host shared by the packaged apps
+    /// (ApplicationFrameHost): a look bound to it could take another app's frame (Settings vs the Store) and keys
+    /// would be allowed there; the provider names the hosted app's process instead.
     /// </summary>
     internal static void AdoptWindow(JsonObject state, string? application, JsonObject view)
     {
         if ((int?)state["processId"] is > 0 || application is not { Length: > 0 })
             return;
         if (view["window"] is JsonObject window && (bool?)window["requested"] == true
-            && (int?)window["processId"] is > 0 and int owner)
+            && (int?)window["processId"] is > 0 and int owner
+            && !string.Equals((string?)window["process"], "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
             state["processId"] = owner;
     }
 
@@ -1038,6 +1146,25 @@ internal static class ComputerUseMission
             }
         }
 
+        if ((string?)state["awaitTitleChange"] is { } titleBefore)
+        {
+            // Right after an act that creates a document from a start page: look without OCR until the window's
+            // title changes (the new document's window), bounded; then read it as asked.
+            state.Remove("awaitTitleChange");
+            var watch = Stopwatch.StartNew();
+            while (watch.Elapsed < TitleChangeWait)
+            {
+                await context.Delay(Settle, cancellationToken).ConfigureAwait(true);
+                JsonObject? early = await ReadViewAsync(context, state, application, includeText: false, cancellationToken)
+                    .ConfigureAwait(true);
+                if ((string?)early?["window"]?["title"] is { Length: > 0 } titleNow
+                    && !string.Equals(titleNow, titleBefore, StringComparison.Ordinal))
+                {
+                    break;
+                }
+            }
+        }
+
         JsonObject? view = await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
         // A web page still loading shows only the browser's frame (measured on Opera right after Enter: the tab
         // strip's search was taken for the page's): the look is repeated, bounded, until the page is exposed. A page
@@ -1064,6 +1191,60 @@ internal static class ComputerUseMission
 
     internal const int PageLooks = 6;
     internal static readonly TimeSpan PageLookInterval = TimeSpan.FromMilliseconds(400);
+
+    // The model saw no step on a look taken right after a verified act that changed the screen, and that look lists
+    // fewer controls than the screen the act was taken from: the act tore the screen down (a page being replaced) and
+    // it may not be drawn yet. Once per act, it is looked at again every PageLookInterval, at most PageLooks times,
+    // until it changes and then holds still; true when it changed, so the loop looks and decides again.
+    private static async Task<bool> RedrawnAfterActAsync(
+        Context context,
+        JsonObject state,
+        JsonArray steps,
+        int start,
+        string? application,
+        JsonObject seen,
+        string seenSignature,
+        CancellationToken cancellationToken)
+    {
+        if (steps.Count <= start || steps[^1] is not JsonObject act
+            || (bool?)act["ok"] != true || (bool?)act["changed"] != true
+            || (int?)state["redrawnAfterStep"] == steps.Count
+            || ControlCount(seen) >= ((int?)state["actFromControls"] ?? 0))
+        {
+            return false;
+        }
+
+        state["redrawnAfterStep"] = steps.Count;
+        // The signature of a window without an accessible tree is its text: it is read the same way here.
+        bool includeText = ControlCount(seen) <= 1;
+        string previous = seenSignature;
+        bool changed = false;
+        for (int looks = 0; looks < PageLooks; looks++)
+        {
+            await context.Delay(PageLookInterval, cancellationToken).ConfigureAwait(true);
+            JsonObject? view = await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+            if (view is null)
+            {
+                break;
+            }
+
+            string signature = ViewSignature(view);
+            if (string.Equals(signature, previous, StringComparison.Ordinal))
+            {
+                if (changed)
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            changed = true;
+            previous = signature;
+        }
+
+        return changed;
+    }
     private static readonly System.Text.RegularExpressions.Regex WebAddress = new(
         @"^(?:https?://)?(?:[\w-]+\.)+[^\W\d_]{2,}(?::\d+)?(?:[/?#]|$)",
         System.Text.RegularExpressions.RegexOptions.CultureInvariant);
@@ -1590,6 +1771,13 @@ internal static class ComputerUseMission
         }
 
         compact["controls"] = controls;
+        // How many controls the window's tree holds beside the listed ones (at most 60): the mind tells a name that
+        // lies beyond the listing (a click by label resolves it against the whole tree) from one the window lacks.
+        if (view["controlCount"] is JsonValue controlCount)
+        {
+            compact["controlCount"] = controlCount.DeepClone();
+        }
+
         if (view["text"] is JsonObject text)
         {
             compact["text"] = text.DeepClone();
@@ -1623,7 +1811,8 @@ internal static class ComputerUseMission
                 ["operation"] = step["operation"]?.DeepClone(),
                 ["ok"] = step["ok"]?.DeepClone(),
             };
-            foreach (string key in new[] { "label", "index", "text", "key", "direction", "appId", "error", "changed" })
+            // «kind»: what the click pressed, by its receipt (a field keeps the caret when a pop-up of it hides it).
+            foreach (string key in new[] { "label", "index", "text", "key", "direction", "appId", "error", "changed", "kind" })
             {
                 if (step[key] is JsonNode value)
                 {
@@ -1776,7 +1965,8 @@ internal static class ComputerUseSuccessCheck
         switch (kind)
         {
             case "text":
-                return ViewContains(view, rest);
+                // A search's own proof reads its results, never only the box that repeats the query.
+                return ViewContains(view, rest) && !(searchResultsProve && OnlyTheQueryShows(rest, view, steps));
             case "title":
                 return view["window"] is JsonObject titled
                     && Fold((string?)titled["title"]).Contains(Fold(rest), StringComparison.Ordinal)
@@ -1839,16 +2029,40 @@ internal static class ComputerUseSuccessCheck
                 return !QueryEchoNames(rest, view, steps, searchResultsProve) && PageAtom(rest, view, steps);
             case "header":
                 return HeaderAppeared(rest, view, steps);
+            case "focus":
+                return FocusBrought(rest, view, steps);
             case "stepdone":
                 {
                     string[] parts = rest.Split(':', 2);
                     string operation = parts[0].Trim();
                     string? argument = parts.Length > 1 ? Fold(parts[1]) : null;
+                    // «stepDone:input.visible.click:=red»: the clicked control's name holds the name whole, not
+                    // inside a longer word (measured on Paint: «red» inside «Rectángulo redondeado» passed a click on
+                    // that shape as the colour chosen). A bare «=» is the equals key's own name.
+                    bool wholeLabel = operation == "input.visible.click" && argument is { Length: > 1 } && argument[0] == '=';
+                    argument = wholeLabel ? argument![1..] : argument;
+                    // What this sub-goal typed so far into a search, an address bar or a field with no name.
+                    var queries = new List<string>();
                     foreach (JsonNode? node in steps)
                     {
+                        if (node is JsonObject typing && (bool?)typing["ok"] == true
+                            && (string?)typing["operation"] == "input.text.type" && EchoesItsQuery(typing)
+                            && Fold((string?)typing["text"]).Trim(QuoteMarks) is { Length: > 0 } query)
+                        {
+                            queries.Add(query);
+                        }
+
                         if (node is not JsonObject step || (bool?)step["ok"] != true
                             || (string?)step["operation"] != operation)
                         {
+                            continue;
+                        }
+
+                        if (operation == "input.visible.click" && ClickEchoesQuery(step, queries))
+                        {
+                            // A text that repeats what BAXY typed («No hay resultados para «X»») is no control named
+                            // X (measured 2026-10-07 on Settings: a click on that message passed «hacer clic en X»
+                            // and the mission learned it as the way there).
                             continue;
                         }
 
@@ -1861,6 +2075,16 @@ internal static class ComputerUseSuccessCheck
 
                         // The argument names the key pressed, the control clicked or what was typed
                         // («stepDone:input.text.type:=» is an expression typed with its equals sign).
+                        if (wholeLabel)
+                        {
+                            if (NamesWhole(Fold((string?)step["label"]), argument!) || NamesWhole(Fold((string?)step["name"]), argument!))
+                            {
+                                return true;
+                            }
+
+                            continue;
+                        }
+
                         if (argument is null
                             || Fold((string?)step["key"]) == argument
                             || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal)
@@ -1876,6 +2100,72 @@ internal static class ComputerUseSuccessCheck
                 return rest.Length > 0 && Path.IsPathRooted(rest) && File.Exists(rest);
             case "manifest":
                 return SteamManifestExists(rest);
+            default:
+                return false;
+        }
+    }
+
+    // «focus:search»: the window's keyboard is in a text field (not read-only, not a password, not an address bar) that
+    // this sub-goal brought it to: it did not have it at the application's first look, the last verified step was a
+    // click on a search control or on that field, or a find key, and nothing was typed (an echo of typed text is never
+    // arriving). A search box shown on every page proves nothing until the mission puts the keyboard in it (measured
+    // 2026-10-07: the search button focused the box and listed recent searches; no navigation item was chosen).
+    private static readonly Regex SearchWord = new(@"\b(?:busc\w*|busqueda|search\w*|find)\b", RegexOptions.CultureInvariant);
+    private static readonly Regex AddressWord = new(@"\b(?:direccion\w*|address|url)\b", RegexOptions.CultureInvariant);
+    private static readonly HashSet<string> FindKeys = new(StringComparer.Ordinal) { "ctrl_f", "ctrl_k", "ctrl_e", "f3" };
+
+    internal static string FocusSignature(JsonObject view) =>
+        view["window"]?["focused"] is JsonObject focused
+            ? $"{(string?)focused["kind"]}|{Fold((string?)focused["name"])}"
+            : string.Empty;
+
+    internal static int RefusedClicks(JsonArray steps, JsonObject arguments)
+    {
+        string label = Fold((string?)arguments["label"]);
+        return label.Length == 0
+            ? 0
+            : steps.OfType<JsonObject>().Count(step =>
+                (string?)step["operation"] == "input.visible.click" && (bool?)step["ok"] == false
+                && Fold((string?)step["label"]) == label);
+    }
+
+    private static bool FocusBrought(string rest, JsonObject view, JsonArray steps)
+    {
+        if (Fold(rest) != "search" || view["window"]?["focused"] is not JsonObject focused
+            || (string?)focused["kind"] is not ("Edit" or "ComboBox")
+            || view["focusAtStart"] is not JsonValue start || !start.TryGetValue(out string? atStart)
+            || FocusSignature(view) == atStart)
+        {
+            return false;
+        }
+
+        string name = Fold((string?)focused["name"]);
+        if (AddressWord.IsMatch(name))
+        {
+            return false;
+        }
+
+        JsonObject? listed = (view["controls"] as JsonArray)?.OfType<JsonObject>().FirstOrDefault(control =>
+            (string?)control["kind"] == (string?)focused["kind"] && Fold((string?)control["name"]) == name);
+        string[] states = Fold((string?)listed?["state"]).Split(' ');
+        if (states.Contains("readonly") || states.Contains("password"))
+        {
+            return false;
+        }
+
+        if (steps.OfType<JsonObject>().Any(step => (string?)step["operation"] == "input.text.type"))
+        {
+            return false;
+        }
+
+        JsonObject? last = steps.OfType<JsonObject>().LastOrDefault(step => (bool?)step["ok"] == true);
+        switch ((string?)last?["operation"])
+        {
+            case "input.key.press":
+                return FindKeys.Contains(Fold((string?)last!["key"]));
+            case "input.visible.click":
+                string label = Fold((string?)last!["label"]);
+                return !AddressWord.IsMatch(label) && (SearchWord.IsMatch(label) || (name.Length > 0 && label == name));
             default:
                 return false;
         }
@@ -2467,6 +2757,31 @@ internal static class ComputerUseSuccessCheck
                 return atoms.Any(atom => AtomKind(atom) == "stepdone") && atoms.Any(atom => AtomKind(atom) is "title" or "text");
             });
 
+    /// <summary>
+    /// The text a search's check reads is what the sub-goal typed into that search, and it shows in one place only: the
+    /// box repeating the query (a field's value never counts; a box drawn without a tree is one written line). A result
+    /// shows it somewhere else too (a list line, a control, the title); measured on Steam's library, a box drawn without
+    /// a tree holds «Cuphead» whether the library has it or not.
+    /// </summary>
+    internal static bool OnlyTheQueryShows(string needle, JsonObject view, JsonArray steps)
+    {
+        string folded = Fold(needle).Trim(QuoteMarks);
+        if (folded.Length == 0 || !steps.OfType<JsonObject>().Any(step => (bool?)step["ok"] == true
+            && (string?)step["operation"] == "input.text.type" && EchoesItsQuery(step)
+            && Fold((string?)step["text"]).Trim(QuoteMarks).Contains(folded, StringComparison.Ordinal)))
+        {
+            return false;
+        }
+
+        int places = view["window"] is JsonObject window && Fold((string?)window["title"]).Contains(folded, StringComparison.Ordinal) ? 1 : 0;
+        places += (view["controls"] as JsonArray ?? []).OfType<JsonObject>()
+            .Count(control => (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
+                && (Fold((string?)control["name"]).Contains(folded, StringComparison.Ordinal)
+                    || Fold((string?)control["value"]).Contains(folded, StringComparison.Ordinal)));
+        places += TextLines(view).Count(line => Fold((string?)line).Contains(folded, StringComparison.Ordinal));
+        return places < 2;
+    }
+
     private static bool AFieldHolds(JsonObject view, string? typed)
     {
         string query = Fold(typed);
@@ -2494,6 +2809,29 @@ internal static class ComputerUseSuccessCheck
 
     private static bool EchoesItsQuery(JsonObject typedStep) =>
         (string?)typedStep["into"] is not { Length: > 0 } into || SearchBox.IsMatch(Fold(into)) || AddressBox.IsMatch(Fold(into));
+
+    // The marks that delimit a query typed between quotes.
+    private static readonly char[] QuoteMarks = ['"', '\'', '«', '»', '“', '”', '‘', '’', ' '];
+
+    // The kinds that only show words (a message, a field): never a result or an item a person clicks to get somewhere.
+    private static readonly HashSet<string> WordsOnlyKinds = new(StringComparer.Ordinal) { "Text", "Edit", "ComboBox", "Document" };
+
+    /// <summary>
+    /// A verified click on a control that only shows words and holds a query typed before it inside a longer text
+    /// («No hay resultados para «sistema»», «Resultados de sistema»): the window repeating the query, not the control
+    /// that is named so. A result or an item (any other kind), and a text that is the query itself, still count.
+    /// </summary>
+    internal static bool ClickEchoesQuery(JsonObject click, IReadOnlyList<string> queries)
+    {
+        if (queries.Count == 0 || (string?)click["kind"] is not { } kind || !WordsOnlyKinds.Contains(kind))
+        {
+            return false;
+        }
+
+        string name = Fold((string?)click["name"] ?? (string?)click["label"]);
+        string bare = name.Trim(QuoteMarks);
+        return queries.Any(query => bare != query && name.Contains(query, StringComparison.Ordinal));
+    }
 
     internal static JsonArray TextLines(JsonObject view)
     {

@@ -91,10 +91,11 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The window of one process: the one in front when it is the process's and
-    /// has a usable surface, else its largest usable top-level window, or the
-    /// ApplicationFrameHost frame hosting it (a UWP app such as the Calculator
-    /// has no top-level window of its own). Brought to the front so keys and
+    /// The window of one process: the ApplicationFrameHost frame hosting it
+    /// when it draws inside one (a packaged app such as the Calculator has no
+    /// top-level window of its own, only its pop-ups), else the
+    /// one in front when it is the process's and has a usable surface, else
+    /// its largest usable top-level window. Brought to the front so keys and
     /// clicks land on it; 0 when the process shows nothing.
     /// </summary>
     internal static async ValueTask<nint> ResolveProcessWindowAsync(
@@ -102,15 +103,21 @@ internal static partial class VisibleControlSurface
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        // The shared frame host is no app's process: any packaged app's frame would do for it.
+        if (IsSharedFrameHost(ProcessIdentity(unchecked((uint)processId)).ProcessName))
+            return 0;
         nint found = 0;
         for (int attempt = 0; found == 0 && attempt < 8; attempt++)
         {
             if (attempt > 0)
                 await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             nint front = GetForegroundWindow();
-            found = ProcessWindow(processId, front == 0 ? 0 : GetAncestor(front, 2));
+            uint process = unchecked((uint)processId);
+            nint frame = FrameHosting(process);
+            found = ChooseProcessWindow(
+                TopLevelWindowsOf(process), process, front == 0 ? 0 : GetAncestor(front, 2), frame);
             if (found == 0 || !HasUsableSurface(found))
-                found = FrameHosting(unchecked((uint)processId));
+                found = frame;
         }
 
         if (found == 0)
@@ -205,8 +212,10 @@ internal static partial class VisibleControlSurface
         _ = GetWindowThreadProcessId(root, out uint coverOwner);
         _ = GetWindowThreadProcessId(hwnd, out uint owner);
         // A window of the same process (a dialog, a menu, a popup) and this
-        // product's own window are not covers.
-        if (coverOwner == owner || coverOwner == unchecked((uint)Environment.ProcessId))
+        // product's own window are not covers; nor is a pop-up of the app a
+        // frame hosts (its process is not the frame's).
+        if (coverOwner == owner || coverOwner == unchecked((uint)Environment.ProcessId)
+            || (IsVisibleFrame(hwnd) && FrameHosts(hwnd, hosted => hosted == coverOwner)))
             return 0;
         return root;
     }
@@ -350,6 +359,38 @@ internal static partial class VisibleControlSurface
         _ = EnumWindows(callback, nint.Zero);
         return frame;
     }
+
+    /// <summary>
+    /// The process a visible ApplicationFrameHost frame hosts; 0 when the window is no such frame or hosts nothing.
+    /// Review 2026-10-07: the frame's own process is one ApplicationFrameHost shared by every packaged app on screen
+    /// (Settings, the Store, the Calculator); a mission bound to it could take another app's frame on its next look.
+    /// </summary>
+    internal static uint HostedProcess(nint frame)
+    {
+        if (!IsVisibleFrame(frame))
+            return 0;
+        uint found = 0;
+        _ = FrameHosts(frame, owner =>
+        {
+            found = owner;
+            return true;
+        });
+        return found;
+    }
+
+    /// <summary>
+    /// The process a view names as its window's: the hosted app's for an ApplicationFrameHost frame (the shared host
+    /// is never a mission's process), else the window's own.
+    /// </summary>
+    internal static (int ProcessId, string ProcessName) ViewProcess(nint hwnd)
+    {
+        uint hosted = HostedProcess(hwnd);
+        return hosted == 0 ? WindowProcess(hwnd) : ProcessIdentity(hosted);
+    }
+
+    /// <summary>Whether a process name is the frame host shared by the packaged apps (never one app's process).</summary>
+    internal static bool IsSharedFrameHost(string? processName) =>
+        string.Equals(processName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Every visible frame by the process it hosts, read in one pass over the desktop.</summary>
     internal static Dictionary<uint, nint> HostedFrames()
@@ -868,6 +909,11 @@ internal static partial class VisibleControlSurface
     internal static (int ProcessId, string ProcessName) WindowProcess(nint hwnd)
     {
         _ = GetWindowThreadProcessId(hwnd, out uint processId);
+        return ProcessIdentity(processId);
+    }
+
+    private static (int ProcessId, string ProcessName) ProcessIdentity(uint processId)
+    {
         if (processId == 0)
             return (0, string.Empty);
         try
@@ -917,10 +963,18 @@ internal static partial class VisibleControlSurface
     /// taskbar and a cloaked untitled frame larger than its folder windows
     /// (taking it made every look bound to the process wait out its eight
     /// retries, ≈1.8 s), and with two folder windows open the largest is not
-    /// necessarily the one the person is looking at.
+    /// necessarily the one the person is looking at. A process drawn inside an
+    /// ApplicationFrameHost <paramref name="frame"/> has that frame as its
+    /// window: its own top-level windows are its pop-ups. Measured live on a
+    /// packaged app: a click on its search field opened the history flyout
+    /// («Host de ventanas emergentes»), the process's only titled window; it
+    /// was taken and brought over the frame, the view lost the search field,
+    /// and a history entry was clicked as if it were the search.
     /// </summary>
-    internal static nint ChooseProcessWindow(IEnumerable<TopLevelWindow> windows, uint processId, nint front)
+    internal static nint ChooseProcessWindow(IEnumerable<TopLevelWindow> windows, uint processId, nint front, nint frame = 0)
     {
+        if (frame != 0)
+            return frame;
         nint best = 0;
         long bestArea = 0;
         foreach (TopLevelWindow window in windows)

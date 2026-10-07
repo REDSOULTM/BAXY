@@ -80,12 +80,14 @@ public sealed class ComputerUseLoopTests
 
         private static OperationResponse Respond(PreparedOperation prepared, JsonObject? result)
         {
-            bool ok = result is not null;
-            using JsonDocument document = JsonDocument.Parse((result ?? new JsonObject()).ToJsonString());
+            // A receipt «failWith» answers the act as failed with that error (a label not found).
+            string? failWith = (string?)result?["failWith"];
+            bool ok = result is not null && failWith is null;
+            using JsonDocument document = JsonDocument.Parse((ok ? result! : new JsonObject()).ToJsonString());
             return new OperationResponse(
                 ProtocolTypes.OperationResponse, prepared.InvocationId, prepared.MissionId, prepared.InvocationId,
                 ok ? OperationStatuses.Completed : OperationStatuses.Failed, "{}", ok, false,
-                document.RootElement.Clone(), ok ? null : "view_unavailable");
+                document.RootElement.Clone(), ok ? null : failWith ?? "view_unavailable");
         }
     }
 
@@ -201,6 +203,135 @@ public sealed class ComputerUseLoopTests
             // Each sub-goal is learned under its own key.
             Assert.That(procedures.Find("Steam", "ir a la biblioteca"), Is.Not.Null);
             Assert.That(procedures.Find("Bloc de notas", "escribir hola"), Is.Not.Null);
+        });
+    }
+
+    // r8 (measured live: 11 of 27 chained transitions looked again at once, ~600 ms each): the look that proved a
+    // sub-goal reached is the next sub-goal's first look when nothing was done in between on the same application; the
+    // next sub-goal's notes start from that view as read, not from the first sub-goal's.
+    [Test]
+    public async Task TheLookThatReachedASubgoalIsTheNextSubgoalsFirstLookOnTheSameApplication()
+    {
+        string selected = string.Empty;
+        var harness = new Harness
+        {
+            Screen = _ => Window("Steam", "steamwebhelper", 12, true,
+                [Control(0, "Button", "Biblioteca", selected == "Biblioteca" ? "selected" : ""),
+                 Control(1, "Button", "Tienda", selected == "Tienda" ? "selected" : "")]),
+            Mind = request => request.Subgoal == 0
+                ? Step("input.visible.click", new JsonObject { ["label"] = "Biblioteca" })
+                : Step("input.visible.click", new JsonObject { ["label"] = "Tienda" }),
+        };
+        harness.Receipt = (_, arguments) =>
+        {
+            selected = (string?)arguments["label"] ?? string.Empty;
+            return new JsonObject { ["selected"] = true };
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "ve a la biblioteca y después a la tienda",
+            ["steps"] = new JsonArray
+            {
+                new JsonObject { ["goal"] = "ir a la biblioteca", ["application"] = "Steam", ["successCheck"] = "control:Biblioteca:selected" },
+                new JsonObject { ["goal"] = "ir a la tienda", ["application"] = "Steam", ["successCheck"] = "control:Tienda:selected" },
+            },
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("ve a la biblioteca y después a la tienda", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True);
+            Assert.That(observed["subgoals"]!.AsArray().Select(item => (bool?)item!["reached"]), Is.EqualTo(new bool?[] { true, true }));
+            // Look, click, look (reached and reused), click, look: three looks, not four.
+            Assert.That(harness.Looks, Has.Count.EqualTo(3));
+            Assert.That(harness.Acts.Select(act => (string?)act.Arguments["label"]), Is.EqualTo(new[] { "Biblioteca", "Tienda" }));
+            // The second sub-goal's mind saw the reused view without the first sub-goal's notes.
+            Assert.That(harness.Requests[1].History, Is.Empty);
+            Assert.That(harness.Requests[1].View["textBeforeClick"], Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task TheNextSubgoalLooksAgainWhenItsApplicationIsAnother()
+    {
+        bool clicked = false;
+        bool typed = false;
+        var harness = new Harness
+        {
+            Screen = look => (string?)look["application"] switch
+            {
+                "Steam" => Window("Steam", "steamwebhelper", 12, true,
+                    [Control(0, "Button", "Biblioteca", clicked ? "selected" : ""), Control(1, "Button", "Tienda")]),
+                "Bloc de notas" => Window("Sin título - Bloc de notas", "Notepad", 30, true,
+                    [Control(0, "Edit", "Texto", value: typed ? "hola" : ""), Control(1, "MenuItem", "Archivo")]),
+                _ => null,
+            },
+            Mind = request => request.Subgoal == 0
+                ? Step("input.visible.click", new JsonObject { ["label"] = "Biblioteca" })
+                : Step("input.text.type", new JsonObject { ["text"] = "hola" }),
+        };
+        harness.Receipt = (operation, _) =>
+        {
+            clicked |= operation == "input.visible.click";
+            typed |= operation == "input.text.type";
+            return new JsonObject { ["selected"] = true };
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "abre la biblioteca de Steam y escribe hola en el Bloc de notas",
+            ["steps"] = new JsonArray
+            {
+                new JsonObject { ["goal"] = "ir a la biblioteca", ["application"] = "Steam", ["successCheck"] = "control:Biblioteca:selected" },
+                new JsonObject { ["goal"] = "escribir hola", ["application"] = "Bloc de notas", ["successCheck"] = "value:Texto=hola" },
+            },
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("abre la biblioteca y escribe hola", arguments), arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)Observed(result)["reached"], Is.True);
+            Assert.That(harness.Looks.Select(look => (string?)look["application"]),
+                Is.EqualTo(new[] { "Steam", "Steam", "Bloc de notas", "Bloc de notas" }));
+        });
+    }
+
+    // Live e2 («pick the blue color» on a palette without «Azul»): «blue» and «azul» were not found and the mission
+    // stopped as «the screen stopped changing» before the palette's own shade was tried. A click that found nothing
+    // is no act that left the screen unchanged.
+    [Test]
+    public async Task LabelsNotFoundDoNotCountAsActsThatLeftTheScreenUnchanged()
+    {
+        var harness = new Harness
+        {
+            Screen = _ => Window("Sin título - Dibujo", "dibujo", 12, true, [Control(0, "Button", "Lápiz")]),
+        };
+        harness.Mind = request => Step("input.visible.click", new JsonObject
+        {
+            ["label"] = request.History.Count switch { 0 => "blue", 1 => "azul", _ => "Añil" },
+        });
+        harness.Receipt = (_, arguments) => (string?)arguments["label"] is "blue" or "azul"
+            ? new JsonObject { ["failWith"] = "visible_button_not_found" }
+            : new JsonObject { ["name"] = "Añil", ["kind"] = "ListItem", ["surfaceChanged"] = true };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "seleccionar blue",
+            ["application"] = "Dibujo",
+            ["successCheck"] = "stepDone:input.visible.click:=blue|stepDone:input.visible.click:=azul|stepDone:input.visible.click:=anil",
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("pick the blue color", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True);
+            Assert.That((int?)observed["stepCount"], Is.EqualTo(3));
         });
     }
 
@@ -386,6 +517,129 @@ public sealed class ComputerUseLoopTests
         });
     }
 
+    // Measured 2026-10-07 on a store: 185 ms after Enter in its search box the results page listed 17 of 52 controls
+    // (a placeholder layout) and the model rightly saw no step; the mission ended there instead of waiting for it.
+    private static JsonObject SearchBox() => Window("Tienda", "store", 21, true,
+    [
+        Control(0, "Edit", "Buscar", "focused", "Spotify"), Control(1, "ListItem", "spotify"), Control(2, "ListItem", "spotify lite"),
+        Control(3, "Button", "Perfil de usuario"), Control(4, "ListItem", "Inicio", "selected"), Control(5, "ListItem", "Juegos"),
+    ], "Tienda", "Inicio", "Juegos");
+
+    private static JsonObject TornDown() => Window("Tienda", "store", 21, true,
+        [Control(0, "Button", "Perfil de usuario", "focused"), Control(1, "Custom", "SearchPageLayout"), Control(2, "Text", "placeholder text")],
+        "Tienda");
+
+    private static JsonObject Results() => Window("Tienda", "store", 21, true,
+    [
+        Control(0, "Edit", "Buscar", "", "Spotify"), Control(1, "ListItem", "Spotify: musica y podcasts Aplicacion"),
+        Control(2, "Button", "Obtener"), Control(3, "Button", "Perfil de usuario"), Control(4, "ListItem", "Inicio", "selected"),
+    ], "Tienda", "Spotify: musica y podcasts", "Obtener");
+
+    private static readonly JsonObject SearchArguments = new()
+    {
+        ["goal"] = "buscar Spotify",
+        ["application"] = "Tienda",
+        ["successCheck"] = "stepDone:input.key.press:enter&text:podcasts",
+    };
+
+    [Test]
+    public async Task AScreenTornDownByTheActIsLookedAtAgainUntilItIsRedrawnBeforeSayingThereIsNoStep()
+    {
+        bool entered = false;
+        int looksAfterEnter = 0;
+        var harness = new Harness
+        {
+            Screen = _ => !entered ? SearchBox() : looksAfterEnter++ < 2 ? TornDown() : Results(),
+            Mind = request => request.View["controls"]!.AsArray().Any(control => (string?)control!["kind"] == "Edit")
+                ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
+                // The mind's «none» carries its default code (live v1: the redraw was never awaited because of it).
+                : new MindComputerUseStep("none", new JsonObject(), string.Empty, "no_step_visible"),
+        };
+        harness.Receipt = (_, _) =>
+        {
+            entered = true;
+            return new JsonObject();
+        };
+        JsonObject arguments = SearchArguments.DeepClone().AsObject();
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en la tienda buscá Spotify", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True, (string?)observed["stoppedBy"]);
+            Assert.That(harness.Acts, Has.Count.EqualTo(1), "only the Enter is acted; the wait presses nothing");
+            Assert.That(harness.Requests, Has.Count.EqualTo(2), "the model is asked once on the torn-down screen");
+            Assert.That(harness.Delays.Count(delay => delay == ComputerUseMission.PageLookInterval), Is.LessThanOrEqualTo(ComputerUseMission.PageLooks));
+        });
+    }
+
+    [Test]
+    public async Task AScreenThatDidNotShrinkAfterTheActIsNotWaitedForWhenTheModelSeesNoStep()
+    {
+        bool entered = false;
+        var harness = new Harness
+        {
+            // After the act the screen lists as much as before: nothing was torn down, the model's «none» stands.
+            Screen = _ => !entered ? SearchBox() : Window("Tienda", "store", 21, true,
+            [
+                Control(0, "Edit", "Buscar", "", "Spotify"), Control(1, "Text", "Sin conexión"), Control(2, "Button", "Reintentar"),
+                Control(3, "Button", "Perfil de usuario"), Control(4, "ListItem", "Inicio", "selected"), Control(5, "ListItem", "Juegos"),
+            ], "Tienda", "Sin conexión"),
+            Mind = request => request.History.Count == 0
+                ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
+                : Step("none", new JsonObject()),
+        };
+        harness.Receipt = (_, _) =>
+        {
+            entered = true;
+            return new JsonObject();
+        };
+        JsonObject arguments = SearchArguments.DeepClone().AsObject();
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en la tienda buscá Spotify", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed["stoppedBy"], Is.EqualTo("computer_use_no_step_visible"));
+            Assert.That(harness.Delays, Does.Not.Contain(ComputerUseMission.PageLookInterval));
+            Assert.That(harness.Looks, Has.Count.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public async Task AScreenTornDownThatIsNeverRedrawnIsWaitedForOnceBoundedAndThenTheModelsNoneStands()
+    {
+        bool entered = false;
+        var harness = new Harness
+        {
+            Screen = _ => !entered ? SearchBox() : TornDown(),
+            Mind = request => request.History.Count == 0
+                ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
+                : Step("none", new JsonObject()),
+        };
+        harness.Receipt = (_, _) =>
+        {
+            entered = true;
+            return new JsonObject();
+        };
+        JsonObject arguments = SearchArguments.DeepClone().AsObject();
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en la tienda buscá Spotify", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed["stoppedBy"], Is.EqualTo("computer_use_no_step_visible"));
+            Assert.That(harness.Requests, Has.Count.EqualTo(2), "the model is not asked again on a screen that did not change");
+            Assert.That(harness.Delays.Count(delay => delay == ComputerUseMission.PageLookInterval), Is.EqualTo(ComputerUseMission.PageLooks));
+        });
+    }
+
     // Measured on Steam: the editor in front before app.open is not the application; the page reached is measured
     // against the application's own first look, after a bounded wait that ends as soon as its window shows.
     [Test]
@@ -440,6 +694,88 @@ public sealed class ComputerUseLoopTests
 
     // Safety review 2026-10-07: a key or a text goes to the window the step was decided on, named in its arguments so
     // the provider brings it to the front or sends nothing (also after a «sí», with BAXY's own window in front).
+    // Live v5/v6 (2026-10-07): Excel and Word opened on their start page, «Libro en blanco» offered and focused.
+    private static JsonObject StartPage(bool created)
+    {
+        JsonObject view = created
+            ? Window("Libro1 - Excel", "EXCEL", 40, true,
+                [Control(0, "TabItem", "Inicio", "selected"), Control(1, "TabItem", "Insertar")])
+            : Window("Excel", "EXCEL", 40, true,
+                [Control(0, "ListItem", "Inicio", "selected"), Control(1, "ListItem", "Libro en blanco", "selected focused"),
+                 Control(2, "ListItem", "Presupuesto 2026")]);
+        view["window"]!["hwnd"] = created ? 5150 : 5140;
+        return view;
+    }
+
+    [Test]
+    public async Task ABlankDocumentCreatedFromAStartPageIsWaitedForUntilItsWindowReplacesThePage()
+    {
+        bool entered = false;
+        int looksAfterEnter = 0;
+        var harness = new Harness
+        {
+            // The new document's window takes two looks to replace the start page.
+            Screen = _ => StartPage(created: entered && ++looksAfterEnter > 2),
+        };
+        harness.Mind = request => harness.Acts.Count == 0
+            ? new MindComputerUseStep("input.key.press", new JsonObject { ["key"] = "enter" }, "creo el elemento en blanco", "expects_title_change")
+            : Step("input.visible.click", new JsonObject { ["label"] = "Insertar", ["index"] = 1 });
+        harness.Receipt = (operation, _) =>
+        {
+            entered |= operation == "input.key.press";
+            return operation == "input.visible.click"
+                ? new JsonObject { ["selected"] = true, ["surfaceChanged"] = true }
+                : new JsonObject { ["surfaceChanged"] = true };
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "ir a la pestaña insertar",
+            ["application"] = "Excel",
+            ["successCheck"] = "stepDone:input.visible.click:insertar",
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en Excel andá a la pestaña Insertar", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True);
+            Assert.That(harness.Acts.Select(act => act.Operation), Is.EqualTo(new[] { "input.key.press", "input.visible.click" }));
+            // The Enter goes to the start page it was decided on; the mind decides the next step on the new window.
+            Assert.That((long?)harness.Acts[0].Arguments["window"], Is.EqualTo(5140L));
+            Assert.That((string?)harness.Requests[1].View["window"]!["title"], Is.EqualTo("Libro1 - Excel"));
+            Assert.That(harness.Requests, Has.Count.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public async Task AStartPageWithNoDocumentOpenIsSaidAsTheCauseNotAsAMissingControl()
+    {
+        var harness = new Harness
+        {
+            Screen = _ => StartPage(created: false),
+            Mind = _ => new MindComputerUseStep("none", new JsonObject(), "la aplicación está en su página de inicio", "no_document_open"),
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "ir a la pestaña diseno",
+            ["application"] = "Excel",
+            ["successCheck"] = "control:diseno:selected|title:diseno",
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en Excel abrí presupuesto.xlsx y andá a la pestaña Diseño", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Response!.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That((string?)observed["stoppedBy"], Is.EqualTo("computer_use_no_document_open"));
+            Assert.That(harness.Acts, Is.Empty);
+        });
+    }
+
     [Test]
     public async Task KeysAndTextNameTheWindowOfTheViewTheyWereDecidedOn()
     {

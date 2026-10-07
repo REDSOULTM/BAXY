@@ -341,9 +341,79 @@ function Find-ById($root,[string]$controlId){
   }
   return $null
 }
+# El exterior contiene al interior: por la cadena de antecesores del interior
+# (sus RuntimeId) o, sin ella, por su rectangulo dentro del del exterior.
+function Test-Contains($outer,$inner){
+  $ancestors=@($inner.ancestors | Where-Object { ([string]$_).Length -gt 0 })
+  if($ancestors.Count -gt 0){ return (([string]$outer.key).Length -gt 0 -and ($ancestors -contains [string]$outer.key)) }
+  $a=$outer.rect;$b=$inner.rect
+  if($null -eq $a -or $null -eq $b -or $a.w -le 0 -or $a.h -le 0 -or $b.w -le 0 -or $b.h -le 0){ return $false }
+  return ($a.x -le $b.x -and $a.y -le $b.y -and ($a.x+$a.w) -ge ($b.x+$b.w) -and ($a.y+$a.h) -ge ($b.y+$b.h))
+}
+# Varios controles con el mismo nombre en una sola linea de descendencia (uno
+# contiene a los otros; medido en Paint: cada entrada de su galeria es un
+# ListItem con un Button dentro, los dos «Rectangulo redondeado») son un solo
+# objetivo: el que se invoca, si no el que se selecciona, si no el mas
+# interior. Devuelve su posicion, o -1 si son controles separados (ambiguo).
+# Cada entrada: name, key (RuntimeId), ancestors (RuntimeId de sus
+# antecesores; vacio si no se pudo leer), rect (x,y,w,h o nulo), invoke, select,
+# edit (toma texto) y kind (su ControlType: Group, ListItem...).
+function Select-LineageOne($entries){
+  $list=@($entries)
+  if($list.Count -lt 2){ return ($list.Count-1) }
+  $first=[string]$list[0].name
+  foreach($entry in $list){ if(-not [string]::Equals([string]$entry.name,$first,[StringComparison]::OrdinalIgnoreCase)){ return -1 } }
+  $depth=New-Object int[] $list.Count
+  $holders=@{}
+  for($i=0;$i -lt $list.Count;$i++){ $holders[$i]=@() }
+  for($i=0;$i -lt $list.Count;$i++){
+    for($j=$i+1;$j -lt $list.Count;$j++){
+      $ij=Test-Contains $list[$i] $list[$j]; $ji=Test-Contains $list[$j] $list[$i]
+      if(-not $ij -and -not $ji){ return -1 }
+      if($ij){ $depth[$j]++; $holders[$j]+=@($i) }
+      if($ji){ $depth[$i]++; $holders[$i]+=@($j) }
+    }
+  }
+  $all=@(0..($list.Count-1))
+  # A field that takes text inside a same-named control that invokes (a search box's Edit inside its Group) is what a
+  # person clicks: measured on a store's search, the Group took the click and the field never got the keyboard.
+  # Only inside a box (Group, Pane, Custom, ComboBox): in a row of Explorer's details view (ListItem, DataItem,
+  # TreeItem) the same-named Edit is the rename field, and clicking it would let the next typing rename the file.
+  $boxes=@('Group','Pane','Custom','ComboBox')
+  $fields=@($all | Where-Object {
+    $k=$_
+    $list[$k].edit -and $holders[$k].Count -gt 0 -and
+      @($holders[$k] | Where-Object { $boxes -notcontains [string]$list[$_].kind }).Count -eq 0
+  })
+  $pool=@($all | Where-Object { $list[$_].invoke -or $fields -contains $_ })
+  if($pool.Count -eq 0){ $pool=@($all | Where-Object { $list[$_].select }) }
+  if($pool.Count -eq 0){ $pool=$all }
+  $best=$pool[0]
+  foreach($k in $pool){ if($depth[$k] -ge $depth[$best]){ $best=$k } }
+  return $best
+}
+function Get-LineageEntry($el){
+  $ancestors=@()
+  try {
+    $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+    $node=$walker.GetParent($el);$steps=0
+    while($null -ne $node -and $steps -lt 40){ $ancestors+=@(Get-Id $node); $node=$walker.GetParent($node); $steps++ }
+  } catch { $ancestors=@() }
+  $pattern=$null
+  $invoke=$false;$select=$false
+  try { $invoke=$el.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern) } catch {}
+  try { $select=$el.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern) } catch {}
+  $kind=''
+  try { $kind=([string]$el.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+  return @{ name=(Get-Name $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; edit=($kind -eq 'Edit'); kind=$kind }
+}
 # Los controles con ese nombre; sin ninguno igual, los que lo llevan como
-# palabras (el clic solo sigue si es uno).
+# palabras (el clic solo sigue si es uno). Los iguales de una sola linea de
+# descendencia son uno (Select-LineageOne); los demas de esa linea quedan en
+# $script:NamedLineage para que el postread acepte su seleccion como prueba.
+$script:NamedLineage=@()
 function Find-Named($root,[string[]]$aliases){
+  $script:NamedLineage=@()
   $matches=@()
   $holding=@()
   foreach($item in (Get-Descendants $root)){
@@ -352,6 +422,13 @@ function Find-Named($root,[string[]]$aliases){
       $name=Get-Name $item
       if(Test-NameMatch $name $aliases){ $matches+=@($item) } elseif(Test-ItemHolds $item $aliases){ $holding+=@($item) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
+  }
+  if($matches.Count -gt 1){
+    $one=Select-LineageOne @($matches | ForEach-Object { Get-LineageEntry $_ })
+    if($one -ge 0){
+      $script:NamedLineage=@(for($k=0;$k -lt $matches.Count;$k++){ if($k -ne $one){ $matches[$k] } })
+      return @($matches[$one])
+    }
   }
   if($matches.Count -gt 0){ return $matches }
   return $holding
@@ -381,6 +458,7 @@ function Do-Postread($request){
     try {
       if(-not $button.Current.IsEnabled -or $button.Current.IsOffscreen){$absent=$true}
       elseif(Test-Selected $button){$selected=$true}
+      elseif(@($pending.lineage | Where-Object { Test-Selected $_ }).Count -gt 0){$selected=$true}
       elseif($null -ne $pending.toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $pending.toggleBefore){$toggled=$true} }
     }
     catch [System.Windows.Automation.ElementNotAvailableException] {$absent=$true}
@@ -397,6 +475,7 @@ function Do-Click($request){
   if($null -eq $target){ return (Click-Result $false $false 'active_window_not_found' '' '' $false $false $false '') }
   $root=$target.root
   $matches=@()
+  $script:NamedLineage=@()
   if(-not [string]::IsNullOrWhiteSpace($controlId)){
     $byId=Find-ById $root $controlId
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
@@ -424,9 +503,12 @@ function Do-Click($request){
   $button=$matches[0];$name=Get-Name $button;$identity=Get-Id $button
   $kind=$button.Current.ControlType.ProgrammaticName -replace '^ControlType\.',''
   $toggleBefore=Get-Toggle $button
+  # El mismo objetivo en su linea de descendencia (el ListItem del Button
+  # invocado): su seleccion tras el clic tambien lo prueba, si antes no lo estaba.
+  $lineage=@($script:NamedLineage | Where-Object { -not (Test-Selected $_) })
   try { Invoke-NamedControl $button | Out-Null }
   catch { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
-  $script:Pending=@{ native=$null; element=$button; toggleBefore=$toggleBefore; name=$name; identity=$identity; kind=$kind }
+  $script:Pending=@{ native=$null; element=$button; toggleBefore=$toggleBefore; lineage=$lineage; name=$name; identity=$identity; kind=$kind }
   return (Pending-Result $script:Pending)
 }
 # input.scroll con «index»: el control de la ultima vista se desplaza por su

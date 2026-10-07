@@ -585,6 +585,11 @@ def is_assent(text: str) -> bool:
     return _ASSENT.fullmatch(_fold(text).strip(" ¿?¡!.,")) is not None
 
 
+def is_refusal(text: str) -> bool:
+    """The whole message only says no («no», «mejor no», «no thanks»)."""
+    return _REFUSAL.fullmatch(_fold(text).strip(" ¿?¡!.,")) is not None
+
+
 def is_social(text: str) -> bool:
     """The whole message is thanks, praise, a reaction or a closing («gracias», «perfecto muy bien», «that's all»).
 
