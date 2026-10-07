@@ -96,12 +96,16 @@ internal sealed record MindComposedMessage(string? Text, bool Reproducible = fal
 /// One step of the computer-use loop chosen by the mind over the compact view
 /// (CONTRATO_VISTA_ACCION.md §4.4). <see cref="Operation"/> is a catalog
 /// primitive, or <c>done</c> when the success is visible (with its evidence),
-/// or <c>none</c> when the mind sees no way forward.
+/// or <c>none</c> when the mind sees no way forward. <see cref="Code"/> says why
+/// there is no step (<c>no_document_open</c>: the application is on its start
+/// page), or what the next look waits for (<c>expects_title_change</c>: the act
+/// creates a document whose window replaces the start page).
 /// </summary>
 internal sealed record MindComputerUseStep(
     string Operation,
     JsonObject Arguments,
-    string Reason);
+    string Reason,
+    string Code = "");
 
 /// <summary>
 /// What the mind is asked for one computer-use step: the person's whole
@@ -1206,7 +1210,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
 
         JsonObject arguments = reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject();
-        return new MindComputerUseStep(operation, arguments, (string?)reply["reason"] ?? string.Empty);
+        return new MindComputerUseStep(
+            operation, arguments, (string?)reply["reason"] ?? string.Empty, (string?)reply["code"] ?? string.Empty);
     }
 
     public async Task<MindComposedMessage?> ComposeUserMessageAsync(

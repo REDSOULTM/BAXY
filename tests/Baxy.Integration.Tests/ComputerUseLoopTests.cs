@@ -440,6 +440,88 @@ public sealed class ComputerUseLoopTests
 
     // Safety review 2026-10-07: a key or a text goes to the window the step was decided on, named in its arguments so
     // the provider brings it to the front or sends nothing (also after a «sí», with BAXY's own window in front).
+    // Live v5/v6 (2026-10-07): Excel and Word opened on their start page, «Libro en blanco» offered and focused.
+    private static JsonObject StartPage(bool created)
+    {
+        JsonObject view = created
+            ? Window("Libro1 - Excel", "EXCEL", 40, true,
+                [Control(0, "TabItem", "Inicio", "selected"), Control(1, "TabItem", "Insertar")])
+            : Window("Excel", "EXCEL", 40, true,
+                [Control(0, "ListItem", "Inicio", "selected"), Control(1, "ListItem", "Libro en blanco", "selected focused"),
+                 Control(2, "ListItem", "Presupuesto 2026")]);
+        view["window"]!["hwnd"] = created ? 5150 : 5140;
+        return view;
+    }
+
+    [Test]
+    public async Task ABlankDocumentCreatedFromAStartPageIsWaitedForUntilItsWindowReplacesThePage()
+    {
+        bool entered = false;
+        int looksAfterEnter = 0;
+        var harness = new Harness
+        {
+            // The new document's window takes two looks to replace the start page.
+            Screen = _ => StartPage(created: entered && ++looksAfterEnter > 2),
+        };
+        harness.Mind = request => harness.Acts.Count == 0
+            ? new MindComputerUseStep("input.key.press", new JsonObject { ["key"] = "enter" }, "creo el elemento en blanco", "expects_title_change")
+            : Step("input.visible.click", new JsonObject { ["label"] = "Insertar", ["index"] = 1 });
+        harness.Receipt = (operation, _) =>
+        {
+            entered |= operation == "input.key.press";
+            return operation == "input.visible.click"
+                ? new JsonObject { ["selected"] = true, ["surfaceChanged"] = true }
+                : new JsonObject { ["surfaceChanged"] = true };
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "ir a la pestaña insertar",
+            ["application"] = "Excel",
+            ["successCheck"] = "stepDone:input.visible.click:insertar",
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en Excel andá a la pestaña Insertar", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True);
+            Assert.That(harness.Acts.Select(act => act.Operation), Is.EqualTo(new[] { "input.key.press", "input.visible.click" }));
+            // The Enter goes to the start page it was decided on; the mind decides the next step on the new window.
+            Assert.That((long?)harness.Acts[0].Arguments["window"], Is.EqualTo(5140L));
+            Assert.That((string?)harness.Requests[1].View["window"]!["title"], Is.EqualTo("Libro1 - Excel"));
+            Assert.That(harness.Requests, Has.Count.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public async Task AStartPageWithNoDocumentOpenIsSaidAsTheCauseNotAsAMissingControl()
+    {
+        var harness = new Harness
+        {
+            Screen = _ => StartPage(created: false),
+            Mind = _ => new MindComputerUseStep("none", new JsonObject(), "la aplicación está en su página de inicio", "no_document_open"),
+        };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "ir a la pestaña diseno",
+            ["application"] = "Excel",
+            ["successCheck"] = "control:diseno:selected|title:diseno",
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en Excel abrí presupuesto.xlsx y andá a la pestaña Diseño", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Response!.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That((string?)observed["stoppedBy"], Is.EqualTo("computer_use_no_document_open"));
+            Assert.That(harness.Acts, Is.Empty);
+        });
+    }
+
     [Test]
     public async Task KeysAndTextNameTheWindowOfTheViewTheyWereDecidedOn()
     {

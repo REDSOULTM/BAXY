@@ -1509,3 +1509,61 @@ def engine_can_try(
     ):
         return False
     return free_form_arguments(text, application_names) is not None
+
+
+# --------------------------------------------------- la página de inicio de un editor
+
+# A start page's offer to create a new empty item: the words every application's interface uses for it («Documento en
+# blanco», «Libro en blanco», «Blank workbook», «Presentación en blanco», «Empty project»). «Nuevo»/«new» alone is not
+# one: «Nueva carpeta» creates on the disk, and the left column's «Nuevo» only opens a page of templates.
+_BLANK_ITEM = re.compile(r"(?<!\w)(?:en blanco|blank|vaci[oa]|empty)(?!\w)")
+# A file's own name carries its extension; an offer to create one never does.
+_FILE_EXTENSION = re.compile(r"\w\.[a-z0-9]{2,5}(?!\w)")
+# The lists of the person's own files on a start page: nothing in them is an offer to create.
+_OWN_FILES_LIST = re.compile(
+    r"^(?:(?:archivos|documentos|libros)\s+)?(?:recientes?|anclad[oa]s|favoritos|compartidos(?:\s+conmigo)?)$"
+    r"|^(?:recent|pinned|favorites|favourites|shared(?:\s+with\s+me)?)(?:\s+(?:files|documents|items))?$"
+    r"|^(?:abiert[oa]s\s+recientemente|recently\s+opened)$"
+)
+# The person names a file of their own: a name with its extension, or a file noun not said as a new or blank one
+# («el documento informe», «my budget workbook»; «un documento nuevo», «a blank document» name none).
+_FILE_NOUN = re.compile(
+    r"(?<!\w)(?:archivo|fichero|file|documento|document|libro|workbook|planilla|hoja\s+de\s+calculo|spreadsheet|"
+    r"presentacion|presentation)s?(?!\w)"
+)
+_NEW_OR_BLANK = re.compile(r"(?:nuev[oa]s?|new|en\s+blanco|blank|vaci[oa]s?|empty)")
+
+
+def names_a_blank_item(name: object) -> bool:
+    """A control named as a start page's offer to create a new empty item («Documento en blanco», «Blank workbook»):
+    the blank word, at most six words, never a file's name with its extension."""
+
+    folded = fold(name)
+    return (
+        bool(folded) and len(folded.split()) <= 6 and _BLANK_ITEM.search(folded) is not None
+        and _FILE_EXTENSION.search(folded) is None
+    )
+
+
+def names_own_files_list(name: object) -> bool:
+    """A list of the person's own files on a start page («Recientes», «Compartidos conmigo», «Recent»)."""
+
+    return _OWN_FILES_LIST.match(fold(name)) is not None
+
+
+def names_a_file(objective: object) -> bool:
+    """The person's words name a file of their own: a name with its extension, or a file noun that is not said as a
+    new or blank one. Then a start page's blank item is never what they meant."""
+
+    folded = fold(objective)
+    if _FILE_EXTENSION.search(folded) is not None:
+        return True
+    for found in _FILE_NOUN.finditer(folded):
+        before = folded[: found.start()].split()[-1:]
+        after = folded[found.end():].split()[:2]
+        if (before and _NEW_OR_BLANK.fullmatch(before[0])) or (
+            after and (_NEW_OR_BLANK.fullmatch(after[0]) or _NEW_OR_BLANK.fullmatch(" ".join(after)))
+        ):
+            continue
+        return True
+    return False
