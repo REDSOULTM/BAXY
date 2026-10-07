@@ -555,6 +555,21 @@ pulsa por su nombre el cuerpo de la ventana (un `Pane`/`Document`/`Window`/`Cust
 Legacy Window»). Sin árbol, una palabra del host que empieza o termina con el lugar (≥ 5 letras) lo nombra
 («steamcommunity»: comunidad/community).
 
+**Página de inicio de un editor** (live v5/v6: Excel y Word abrieron en «Buenos días», con «Libro/Documento en
+blanco», los recientes y «Buscar un archivo»; sus pestañas sólo existen con un documento abierto). Un objetivo de
+pestaña («ir a / hacer clic en la pestaña X», fuera del navegador) cuya pestaña no está en la vista, en una ventana cuyo
+título no nombra un documento (sin segmento « - ») y que ofrece **un** elemento para crear uno vacío (su nombre lleva
+en blanco / blank / vacío / empty, ≤ 6 palabras, sin extensión, de un tipo accionable, nunca dentro de una lista de
+archivos propios —recientes, anclados, compartidos—; palabras en `semantic/missions.names_a_blank_item`): la persona
+crea primero el documento en blanco y después va a la pestaña. Enter sobre la oferta cuando tiene el teclado (la página
+se lo da), si no un clic en ella; el paso lleva `code: expects_title_change` y la App vuelve a mirar, sin OCR y hasta
+8 s, hasta que cambia el título de la ventana. Crear un documento sin guardar es reversible y no toca ningún archivo;
+nunca un reciente, nunca dos veces y nunca cuando el pedido nombra un archivo propio (`names_a_file`: un nombre con
+extensión, o archivo/documento/libro/presentación no dichos como nuevos o en blanco). En esos casos, o si la página
+sigue tras crear, la mente devuelve `none` con `code: no_document_open` y la misión para con
+`computer_use_no_document_open` («la aplicación está en su pantalla de inicio, sin ningún documento abierto»), sin
+más clics. Sin oferta (o con dos) no se crea nada.
+
 **Modos.** «cambiá/pasá/switch to X» se leen como modo sólo con palabra de modo (modo, vista, mode, view) o con el
 nombre propio de un modo (científica, estándar, programador, gráfica, conversor y sus nombres en inglés): `ir a X`;
 lo demás lo lee el navegador, que quita el sustantivo de lugar («cambiá al canal general» → `ir a general`). «la vista

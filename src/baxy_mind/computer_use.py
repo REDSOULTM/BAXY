@@ -37,6 +37,7 @@ from typing import Any, Iterable
 
 from . import effect_intent
 from .semantic.missions import (
+    BROWSER_CATEGORY,
     KEYS,
     QUESTION_MARK,
     _key_from_words,
@@ -44,6 +45,9 @@ from .semantic.missions import (
     gender_twin,
     label_alternatives,
     mode_named as _mode_named,
+    names_a_blank_item,
+    names_a_file,
+    names_own_files_list,
 )
 
 OPERATION = "mission.computer.use"
@@ -548,6 +552,7 @@ def deterministic_step(
     view: dict,
     history: list[dict],
     application: str | None = None,
+    objective: str | None = None,
     _tried: tuple[str, ...] = (),
 ) -> dict[str, object] | None:
     """The step the goal itself dictates when the view shows it (contract §4.2):
@@ -579,7 +584,9 @@ def deterministic_step(
             # A click on the goal's own name by label alone that found nothing stays tried: the next name (the other
             # language's) is the step, never the same name once more.
             tried = (*_tried, str(last.get("label") or "")) if not isinstance(last.get("index"), int) else _tried
-            retried = deterministic_step(goal=goal, view=retry_view, history=history[:-1], application=application, _tried=tried)
+            retried = deterministic_step(
+                goal=goal, view=retry_view, history=history[:-1], application=application, objective=objective, _tried=tried,
+            )
             if retried is None or retried.get("operation") != "input.visible.click":
                 return retried
             arguments = retried.get("arguments") or {}
@@ -717,6 +724,12 @@ def deterministic_step(
         mode = _mode_named(target)
         if mode is not None:
             return deterministic_step(goal=f"ir a {mode}", view=view, history=history, application=application)
+    if control is None and kind == "TabItem" and wanted is None and _window_fold(application) != _window_fold(BROWSER_CATEGORY):
+        # A tab of an editor's workspace exists only with a document open; on the start page a person first creates
+        # the blank one it offers (live v5/v6: Excel and Word opened on «Libro/Documento en blanco» and recent files).
+        started = _start_page_step(view, history, objective)
+        if started is not None:
+            return started
     carrying = _controls_carrying(seen, names, kind, placing) if control is None and wanted is None else []
     if len(carrying) >= 2:
         # Two controls carry the name (measured on Discord: «Cotele» was a server and an activity card; on Explorer
@@ -756,6 +769,69 @@ def deterministic_step(
     if isinstance(control.get("i"), int):
         arguments["index"] = control["i"]
     return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
+
+
+# The kinds that can be a start page's offer to create a blank item (a template tile, a button, a link).
+_OFFER_KINDS = frozenset({"ListItem", "DataItem", "Button", "Hyperlink", "MenuItem", "SplitButton", "TreeItem"})
+REASON_CREATE_BLANK = "la ventana está en su página de inicio: creo el elemento en blanco que ofrece para llegar al lugar"
+REASON_NO_DOCUMENT = "la aplicación está en su página de inicio, sin ningún documento abierto"
+# A creation step's mark for the shell: the next look waits, bounded, for the window's title to change (the new
+# document's window takes a moment to replace the start page).
+EXPECTS_TITLE_CHANGE = "expects_title_change"
+NO_DOCUMENT_OPEN = "no_document_open"
+
+
+def _title_names_a_document(title: object) -> bool:
+    """A title with a « - » segment names what the window holds besides the application («Libro1 - Excel»); a start
+    page carries only the application's name («Excel»)."""
+
+    return re.search(r"\s+[-–—|]\s+", _window_fold(title)) is not None
+
+
+def _blank_item(view: dict) -> dict | None:
+    """The one control of the view named as an offer to create a new empty item («Documento en blanco», «Blank
+    workbook»): an actionable kind, never a switch, never inside a list of the person's own files (a recent file may be
+    called «Plantilla en blanco»). None when there is none or more than one (which one would be a guess)."""
+
+    controls = [control for control in view.get("controls") or [] if isinstance(control, dict)]
+    own_lists = [
+        control.get("rect") for control in controls
+        if str(control.get("kind")) in {"List", "Group", "Pane", "DataGrid", "Table", "Tree"} and names_own_files_list(control.get("name"))
+    ]
+    offers = [
+        control for control in controls
+        if str(control.get("kind")) in _OFFER_KINDS and not _is_switch(control) and names_a_blank_item(control.get("name"))
+        and not any(_inside(control.get("rect"), rect) for rect in own_lists)
+    ]
+    return offers[0] if len(offers) == 1 else None
+
+
+def _start_page_step(view: dict, history: list[dict], objective: str | None) -> dict[str, object] | None:
+    """A tab of the editor was asked and the window is a start page: no document named in its title, one offer to
+    create a blank item. A person creates the blank item first, then goes to the tab: Enter on the offer when it has
+    the keyboard (the start page gives it the focus), else one click on it. Creating an unsaved blank document is
+    reversible and touches no file; never when the person named a file of their own (opening a recent one is theirs to
+    say), and never twice: a start page still there after the creation is said as such, without more clicks."""
+
+    window = view.get("window") if isinstance(view, dict) else None
+    if not isinstance(window, dict) or _title_names_a_document(window.get("title")):
+        return None
+    offer = _blank_item(view)
+    if offer is None:
+        return None
+    if names_a_file(objective) or _steps_ok(history, "input.key.press", key="enter"):
+        return _none(REASON_NO_DOCUMENT, code=NO_DOCUMENT_OPEN)
+    name = fold(offer.get("name"))
+    focused = _focused(view)
+    has_keyboard = "focused" in str(offer.get("state") or "").split() or (
+        focused is not None and fold(focused.get("name")) == name and str(focused.get("kind")) == str(offer.get("kind"))
+    )
+    if has_keyboard:
+        return {"operation": "input.key.press", "arguments": key_arguments("enter", view, history),
+                "reason": REASON_CREATE_BLANK, "code": EXPECTS_TITLE_CHANGE}
+    if not any(fold(step.get("label")) == name for step in history if step.get("operation") == "input.visible.click"):
+        return {**_click(offer, REASON_CREATE_BLANK), "code": EXPECTS_TITLE_CHANGE}
+    return _none(REASON_NO_DOCUMENT, code=NO_DOCUMENT_OPEN)
 
 
 # The goals that name a control, with the state each one wants (None: a place to go or a control to press).
@@ -1604,7 +1680,7 @@ def decide_step(
         app_id = effect_intent.resolve_application_catalog_app_id(f"abre {application}", application_names)
         if app_id is not None:
             return {"operation": "app.open", "arguments": {"appId": app_id}, "reason": "la aplicación pedida no está delante"}
-    dictated = deterministic_step(goal=goal, view=view, history=history, application=application)
+    dictated = deterministic_step(goal=goal, view=view, history=history, application=application, objective=objective)
     if dictated is not None:
         return dictated
     last_failed = history[-1] if history and isinstance(history[-1], dict) and history[-1].get("ok") is False else None
@@ -1924,6 +2000,10 @@ def describe_step(step: dict, language: str) -> str:
 # «operación» is a forbidden term in finals, so no cause says it).
 _STOP_CAUSES: dict[str, dict[str, str]] = {
     "computer_use_no_step_visible": {"es": "no vi en la pantalla un control con el que seguir", "en": "I did not see on the screen a control to go on with"},
+    "computer_use_no_document_open": {
+        "es": "la aplicación está en su pantalla de inicio, sin ningún documento abierto",
+        "en": "the application is on its start screen with no document open",
+    },
     "computer_use_evidence_not_visible": {"es": "la pantalla no mostró la prueba de que se hubiera logrado", "en": "I did not find on the screen the proof that it was done"},
     "computer_use_budget_exhausted": {"es": "se agotaron los pasos previstos sin llegar", "en": "the planned steps ran out before getting there"},
     "computer_use_time_exhausted": {"es": "se agotó el tiempo previsto sin llegar", "en": "the planned time ran out before getting there"},

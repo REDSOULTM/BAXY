@@ -10548,6 +10548,9 @@ def _run_sidecar(
                         "operation": decision["operation"],
                         "arguments": decision["arguments"],
                         "reason": decision.get("reason", ""),
+                        # Why there is no step (a «none»), or what the shell
+                        # should wait for after this one.
+                        "code": decision.get("code", ""),
                     }
                 )
             elif kind == "arguments":

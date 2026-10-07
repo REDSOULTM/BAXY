@@ -48,11 +48,14 @@ internal static class ComputerUseMission
     private static readonly TimeSpan WindowWait = TimeSpan.FromSeconds(3);
     // Measured: the Epic Games launcher still showed its «EPIC GAMES» splash 11 s after its window appeared.
     private static readonly TimeSpan StartWait = TimeSpan.FromSeconds(20);
+    // A blank document created from a start page replaces it in a moment (the mind marks that act
+    // «expects_title_change»): the next look waits, bounded, for the window's title to change.
+    internal static readonly TimeSpan TitleChangeWait = TimeSpan.FromSeconds(8);
 
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
     [
-        "baselineText", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow",
+        "baselineText", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow", "awaitTitleChange",
         "newTextAfterClick", "newTextAfterClickStep",
         "procedureKey", "procedureIndex", "procedureSteps", "procedureDeviated",
     ];
@@ -331,7 +334,11 @@ internal static class ComputerUseMission
                     {
                         if (decision.Operation == "none" || !Primitives.Contains(decision.Operation))
                         {
-                            errorCode = "computer_use_no_step_visible";
+                            // The application is on its start page with no document open and the place asked lives in
+                            // one (measured on Excel and Word: their tabs exist only with a document): said as such.
+                            errorCode = decision.Code == "no_document_open"
+                                ? "computer_use_no_document_open"
+                                : "computer_use_no_step_visible";
                             state["stopReason"] = decision.Reason;
                             break;
                         }
@@ -481,6 +488,10 @@ internal static class ComputerUseMission
                             // Steam» splash was searched for the library until every way to find it was spent).
                             state["awaitWindow"] = true;
                             state["openedCold"] = (bool?)record["alreadyRunning"] != true;
+                        }
+                        else if (decision.Code == "expects_title_change" && (bool?)record["ok"] == true)
+                        {
+                            state["awaitTitleChange"] = (string?)lastView?["window"]?["title"] ?? string.Empty;
                         }
                         else
                         {
@@ -1035,6 +1046,25 @@ internal static class ComputerUseMission
                 }
 
                 await context.Delay(Settle, cancellationToken).ConfigureAwait(true);
+            }
+        }
+
+        if ((string?)state["awaitTitleChange"] is { } titleBefore)
+        {
+            // Right after an act that creates a document from a start page: look without OCR until the window's
+            // title changes (the new document's window), bounded; then read it as asked.
+            state.Remove("awaitTitleChange");
+            var watch = Stopwatch.StartNew();
+            while (watch.Elapsed < TitleChangeWait)
+            {
+                await context.Delay(Settle, cancellationToken).ConfigureAwait(true);
+                JsonObject? early = await ReadViewAsync(context, state, application, includeText: false, cancellationToken)
+                    .ConfigureAwait(true);
+                if ((string?)early?["window"]?["title"] is { Length: > 0 } titleNow
+                    && !string.Equals(titleNow, titleBefore, StringComparison.Ordinal))
+                {
+                    break;
+                }
             }
         }
 
