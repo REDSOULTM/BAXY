@@ -2805,7 +2805,7 @@ def _place_of(goal: object, names: list[str]) -> str:
     if found is None:
         return ""
     asked = _floor_name(found.group(1))
-    return next((name for name in names if fold(name) == fold(asked)), asked)
+    return _spelled(asked, names) or asked
 
 
 # Voice audit 2026-10-07 (cu-r16): a third of the published mission finals the model wrote had a defect («Ya te llevé a
@@ -2818,7 +2818,10 @@ _PART_GOALS: dict[str, re.Pattern[str]] = {
     kind: re.compile(_PARTS[kind], re.IGNORECASE) for kind in ("select", "type", "search", "calculate", "key")
 }
 _PART_QUOTES = "«»\"“”'"
-_CALC_TOKEN = re.compile(r"\d+(?:[.,]\d+)?|\S")
+# Live 2026-10-07: «calcular 1.500 + 500» read as 1,5 + 500. A «.» followed by exactly three digits groups thousands
+# (the Chilean writing); a comma after them is the decimal one.
+_CALC_TOKEN = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?(?![\d.])|\d+(?:[.,]\d+)?|\S")
+_GROUPED_NUMBER = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?")
 # What a window writes of the expression itself («La expresión es 144 ÷ 12=») never proves its value.
 _WRITTEN_EXPRESSION = re.compile(r"\d[\d.,]*(?:\s*[-+×÷*/xX]\s*\(?\s*\d[\d.,]*\)?)+\s*=?")
 _LONGEST_DECIMALS = 10
@@ -2829,7 +2832,21 @@ def _part_object(value: object) -> str:
 
 
 def _spelled(asked: str, names: list[str]) -> str | None:
-    return next((name for name in names if fold(name) == fold(asked)), None)
+    name = next((name for name in names if fold(name) == fold(asked)), None)
+    return None if name is None else _calm_caps(name)
+
+
+def _calm_caps(name: str) -> str:
+    """A name the window writes in capitals («TIENDA», read off the screen) told with only its first letter so; an
+    acronym («VPN», «HDMI») keeps them."""
+
+    letters = [char for char in name if char.isalpha()]
+    words = re.findall(r"[^\W\d_]+", name)
+    if not letters or any(not char.isupper() for char in letters):
+        return name
+    if not any(len(word) >= _PARTS["capsWord"] for word in words):
+        return name
+    return name[:1] + name[1:].lower()
 
 
 def _calculated(tokens: list[str]) -> Fraction | None:
@@ -2856,7 +2873,8 @@ def _calculated(tokens: list[str]) -> Fraction | None:
             return inner
         if token is not None and token[0].isdigit():
             position += 1
-            return Fraction(token.replace(",", "."))
+            plain = token.replace(".", "") if _GROUPED_NUMBER.fullmatch(token) else token
+            return Fraction(plain.replace(",", "."))
         return None
 
     def term() -> Fraction | None:
@@ -3022,7 +3040,12 @@ def _parts_final(observed: dict, seen: dict, english: bool, names: list[str], ap
             clauses.append(("search", search, where, True))
             continue
         found = _PART_GOALS["calculate"].match(part)
-        shown = _calculation_shown(found.group(1), texts) if found is not None else None
+        # Only the calculating window's own display proves the value: a chain that ends in another application shows
+        # that one's numbers («Línea 1, Columna 13» of the Bloc de notas).
+        window = observed.get("window") if isinstance(observed.get("window"), dict) else {}
+        title = window.get("title") if isinstance(window.get("title"), str) else ""
+        ends_here = bool(where) and (fold(where) == fold(app) or fold(where) in fold(title))
+        shown = _calculation_shown(found.group(1), texts) if found is not None and ends_here else None
         if shown is None:
             return "", False
         if len(parts) == 1:
@@ -3046,14 +3069,23 @@ def _parts_final(observed: dict, seen: dict, english: bool, names: list[str], ap
             index += 1
             run.append((clauses[index][1], clauses[index][3]))
         if kind == "place":
+            # Live 2026-10-07: «ir a cotele» in Discord then «ir a tienda» in Steam came out «estoy en «TIENDA»»; a
+            # mission across applications tells each place with its application.
+            crossed = len({fold(clause[2]) for clause in clauses}) > 1
             if index == len(clauses) - 1:
                 # Only the places the window spelled are told as passed through; the last is where the mission is.
                 passed = [name for name, ok in run[:-1] if ok]
                 if passed:
                     told.append(said["places"].format(places=_join(passed, english)))
-                told.append(said["lastPlace"].format(place=run[-1][0]))
+                last = said["lastPlaceIn"] if crossed and where else said["lastPlace"]
+                told.append(last.format(place=run[-1][0], app=quote.format(value=where)))
                 spelled_all = spelled_all and run[-1][1]
-            # A place passed on the way to another part is not told.
+            elif where and fold(where) != fold(clauses[index + 1][2]):
+                # A place in an application the mission then left is told with it.
+                told.append(said["placesIn"].format(
+                    places=_join([name for name, _ in run], english), app=quote.format(value=where)))
+                spelled_all = spelled_all and all(ok for _, ok in run)
+            # A place passed on the way to another part of the same application is not told.
             index += 1
             continue
         spelled_all = spelled_all and all(ok for _, ok in run)

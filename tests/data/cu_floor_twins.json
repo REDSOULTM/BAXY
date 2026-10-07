@@ -1257,6 +1257,233 @@
    },
    "es": "Listo, lo hice en «Bloc de notas».",
    "en": "Done, I did it in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-places-across-apps",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a cotele; luego ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Discord",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "cotele",
+       "name": "Cotele",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.visible.click",
+       "label": "TIENDA",
+       "name": "TIENDA",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a cotele",
+       "application": "Discord",
+       "reached": true
+      },
+      {
+       "goal": "ir a tienda",
+       "application": "Steam",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Cotele» en «Discord» y ya estoy en «Tienda» de «Steam».",
+   "en": "Done, I went through «Cotele» in «Discord» and I'm now in «Tienda» in «Steam»."
+  },
+  {
+   "id": "cu-parts-calculate-thousands",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 1.500 + 500",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "1500+500=",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 1.500 + 500=",
+       "Se muestra 2.000"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 1.500 + 500 = 2.000.",
+   "en": "Done: 1.500 + 500 = 2.000."
+  },
+  {
+   "id": "cu-parts-calculate-other-window",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 6 + 7; luego ir a archivo",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "6+7=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.visible.click",
+       "label": "Archivo",
+       "name": "Archivo",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*13: Bloc de notas",
+      "process": "Notepad"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*13: Bloc de notas",
+      "lines": [
+       "Línea 1, Columna 13"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "calcular 6 + 7",
+       "application": "Calculadora",
+       "reached": true
+      },
+      {
+       "goal": "ir a archivo",
+       "application": "Bloc de notas",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, estoy en «Archivo».",
+   "en": "Done, I'm in «Archivo»."
+  },
+  {
+   "id": "cu-parts-place-in-capitals",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "TIENDA",
+       "name": "TIENDA",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     }
+    }
+   },
+   "es": "Listo, estoy en «Tienda».",
+   "en": "Done, I'm in «Tienda»."
   }
  ]
 }

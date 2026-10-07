@@ -268,7 +268,12 @@ internal static class OperationFloor
             : head;
     }
 
-    private static readonly Regex CalcToken = new(@"[0-9]+(?:[.,][0-9]+)?|\S", RegexOptions.CultureInvariant);
+    // Live 2026-10-07: «calcular 1.500 + 500» read as 1,5 + 500. A «.» followed by exactly three digits groups
+    // thousands (the Chilean writing); a comma after them is the decimal one.
+    private static readonly Regex CalcToken = new(
+        @"[0-9]{1,3}(?:\.[0-9]{3})+(?:,[0-9]+)?(?![0-9.])|[0-9]+(?:[.,][0-9]+)?|\S", RegexOptions.CultureInvariant);
+
+    private static readonly Regex GroupedNumber = new(@"^[0-9]{1,3}(?:\.[0-9]{3})+(?:,[0-9]+)?$", RegexOptions.CultureInvariant);
 
     // What a window writes of the expression itself («La expresión es 144 ÷ 12=») never proves its value.
     private static readonly Regex WrittenExpression = new(
@@ -332,8 +337,11 @@ internal static class OperationFloor
         }
 
         string Quoted(string value) => Quote(value, templates);
-        string? Spelled(string asked) => names.FirstOrDefault(name => Folded(name) == Folded(asked));
-        var clauses = new List<(string Kind, string Said, string Where)>();
+        string? Spelled(string asked) => names.FirstOrDefault(name => Folded(name) == Folded(asked)) is { } name
+            ? CalmCaps(name)
+            : null;
+        var clauses = new List<(string Kind, string Said, string Where, bool Spelled)>();
+        string shownTitle = Text(observed["window"] as JsonObject ?? new JsonObject(), "title") ?? string.Empty;
         foreach ((string? rawPart, JsonNode? partApp) in parts)
         {
             string part = (rawPart ?? string.Empty).Trim();
@@ -357,7 +365,7 @@ internal static class OperationFloor
                     return null;
                 }
 
-                clauses.Add(("place", Quoted(Spelled(asked) ?? asked), where));
+                clauses.Add(("place", Quoted(Spelled(asked) ?? asked), where, Spelled(asked) is not null));
                 continue;
             }
 
@@ -369,7 +377,7 @@ internal static class OperationFloor
                     return null;
                 }
 
-                clauses.Add(("select", Quoted(Spelled(asked) ?? asked), where));
+                clauses.Add(("select", Quoted(Spelled(asked) ?? asked), where, Spelled(asked) is not null));
                 continue;
             }
 
@@ -381,7 +389,7 @@ internal static class OperationFloor
                     return null;
                 }
 
-                clauses.Add(("type", Quoted(text), where));
+                clauses.Add(("type", Quoted(text), where, true));
                 continue;
             }
 
@@ -395,11 +403,15 @@ internal static class OperationFloor
                 }
 
                 clauses.Add(("search", T(said, "search").Replace("{query}", Quoted(query), StringComparison.Ordinal)
-                    .Replace("{app}", Quoted(where), StringComparison.Ordinal), where));
+                    .Replace("{app}", Quoted(where), StringComparison.Ordinal), where, true));
                 continue;
             }
 
+            // Only the calculating window's own display proves the value: a chain that ends in another application
+            // shows that one's numbers («Línea 1, Columna 13» of the Bloc de notas).
             if (PartMatch(data, "calculate", part) is not { } expression
+                || where.Length == 0
+                || (Folded(where) != Folded(app) && !Folded(shownTitle).Contains(Folded(where), StringComparison.Ordinal))
                 || CalculationShown(expression, texts, data) is not { } shown)
             {
                 return null;
@@ -412,7 +424,7 @@ internal static class OperationFloor
             }
 
             clauses.Add(("calculate", T(said, "calculate").Replace("{expression}", shown.Expression, StringComparison.Ordinal)
-                .Replace("{value}", shown.Value, StringComparison.Ordinal), where));
+                .Replace("{value}", shown.Value, StringComparison.Ordinal), where, true));
         }
 
         if (clauses.Count == 0)
@@ -427,30 +439,41 @@ internal static class OperationFloor
         }
 
         var told = new List<string>();
+        // Live 2026-10-07: «ir a cotele» in Discord then «ir a tienda» in Steam came out «estoy en «TIENDA»»; a mission
+        // across applications tells each place with its application.
+        bool crossed = clauses.Select(clause => Folded(clause.Where)).Distinct().Count() > 1;
         for (int index = 0; index < clauses.Count; index++)
         {
-            (string kind, string text, string where) = clauses[index];
-            var run = new List<string> { text };
+            (string kind, string text, string where, bool spelled) = clauses[index];
+            var run = new List<(string Said, bool Spelled)> { (text, spelled) };
             while (index + 1 < clauses.Count && kind is "place" or "select" or "type"
                 && clauses[index + 1].Kind == kind && clauses[index + 1].Where == where)
             {
                 index++;
-                run.Add(clauses[index].Said);
+                run.Add((clauses[index].Said, clauses[index].Spelled));
             }
 
+            List<string> runSaid = run.Select(item => item.Said).ToList();
             if (kind == "place")
             {
                 if (index == clauses.Count - 1)
                 {
                     // Only the places the window spelled are told as passed through.
-                    List<string> passed = run.Take(run.Count - 1)
-                        .Where(name => names.Any(known => Quoted(known) == name)).ToList();
+                    List<string> passed = run.Take(run.Count - 1).Where(item => item.Spelled).Select(item => item.Said).ToList();
                     if (passed.Count > 0)
                     {
                         told.Add(T(said, "places").Replace("{places}", Joined(passed, templates), StringComparison.Ordinal));
                     }
 
-                    told.Add(T(said, "lastPlace").Replace("{place}", run[^1], StringComparison.Ordinal));
+                    told.Add(T(said, crossed && where.Length > 0 ? "lastPlaceIn" : "lastPlace")
+                        .Replace("{place}", run[^1].Said, StringComparison.Ordinal)
+                        .Replace("{app}", Quoted(where), StringComparison.Ordinal));
+                }
+                else if (where.Length > 0 && Folded(where) != Folded(clauses[index + 1].Where))
+                {
+                    // A place in an application the mission then left is told with it.
+                    told.Add(T(said, "placesIn").Replace("{places}", Joined(runSaid, templates), StringComparison.Ordinal)
+                        .Replace("{app}", Quoted(where), StringComparison.Ordinal));
                 }
 
                 continue;
@@ -458,8 +481,8 @@ internal static class OperationFloor
 
             told.Add(kind switch
             {
-                "select" => T(said, "select").Replace("{items}", Joined(run, templates), StringComparison.Ordinal),
-                "type" => T(said, "type").Replace("{texts}", Joined(run, templates), StringComparison.Ordinal)
+                "select" => T(said, "select").Replace("{items}", Joined(runSaid, templates), StringComparison.Ordinal),
+                "type" => T(said, "type").Replace("{texts}", Joined(runSaid, templates), StringComparison.Ordinal)
                     .Replace("{app}", Quoted(where), StringComparison.Ordinal),
                 _ => text,
             });
@@ -540,7 +563,8 @@ internal static class OperationFloor
             if (token is not null && char.IsAsciiDigit(token[0]))
             {
                 position++;
-                string[] pieces = token.Replace(',', '.').Split('.');
+                string plain = GroupedNumber.IsMatch(token) ? token.Replace(".", string.Empty, StringComparison.Ordinal) : token;
+                string[] pieces = plain.Replace(',', '.').Split('.');
                 System.Numerics.BigInteger scale = System.Numerics.BigInteger.Pow(10, pieces.Length > 1 ? pieces[1].Length : 0);
                 return Reduced(System.Numerics.BigInteger.Parse(string.Concat(pieces), CultureInfo.InvariantCulture), scale);
             }
@@ -701,7 +725,28 @@ internal static class OperationFloor
         }
 
         string asked = FloorName(JsonValue.Create(found.Groups[1].Value), data);
-        return names.FirstOrDefault(name => Folded(name) == Folded(asked)) ?? asked;
+        return names.FirstOrDefault(name => Folded(name) == Folded(asked)) is { } spelled ? CalmCaps(spelled) : asked;
+    }
+
+    // A name the window writes in capitals («TIENDA», read off the screen) told with only its first letter so; an
+    // acronym («VPN», «HDMI») keeps them. Twin of the mind's computer_use._calm_caps.
+    private static string CalmCaps(string name)
+    {
+        int longest = (int)((JsonObject)((JsonObject)Data.Value["computerUse"]!)["parts"]!)["capsWord"]!;
+        List<char> letters = name.Where(char.IsLetter).ToList();
+        int run = 0, widest = 0;
+        foreach (char letter in name)
+        {
+            run = char.IsLetter(letter) ? run + 1 : 0;
+            widest = Math.Max(widest, run);
+        }
+
+        if (letters.Count == 0 || letters.Any(letter => !char.IsUpper(letter)) || widest < longest)
+        {
+            return name;
+        }
+
+        return name[..1] + name[1..].ToLowerInvariant();
     }
 
     private static string FloorName(JsonNode? node, JsonObject data)
