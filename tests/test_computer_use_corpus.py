@@ -35,7 +35,6 @@ OPERATIONS = _catalog_operations()
 # Órdenes que son misiones del motor: (frase, número de sub-objetivos esperado).
 MISSIONS: tuple[tuple[str, int], ...] = (
     # --- rioplatense
-    ("en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba", 2),
     ("abrí Spotify, buscá Bad Bunny y poné la primera", 2),
     ("en Discord andá a general y escribí hola", 2),
     ("en Paint elegí el lápiz y después el color rojo", 2),
@@ -100,7 +99,6 @@ MISSIONS: tuple[tuple[str, int], ...] = (
     ("en Discord andá a general y después a memes", 2),
     ("abrí Steam, andá a la tienda, buscá Celeste y abrilo", 3),
     # --- neutro
-    ("En el explorador de archivos ve a Documentos y crea una carpeta llamada informes", 2),
     ("Abre Spotify, busca Shakira y reproduce la primera canción", 2),
     ("En Discord ve al canal general y escribe hola a todos", 2),
     ("En Paint selecciona el lápiz y luego el color negro", 2),
@@ -126,7 +124,6 @@ MISSIONS: tuple[tuple[str, int], ...] = (
     ("En el Explorador de archivos busca presupuesto", 1),
     ("En Spotify busca Queen y reproduce la primera", 2),
     # --- inglés
-    ("in File Explorer go to Documents and create a folder named baxy-test", 2),
     ("open Spotify, search for Bad Bunny and play the first one", 2),
     ("in Discord go to general and type hello", 2),
     ("in Paint pick the pencil and then the red color", 2),
@@ -165,7 +162,6 @@ MISSIONS: tuple[tuple[str, int], ...] = (
     ("open Discord, go to general, type hello and send it", 3),
     ("in Steam click Community", 1),
     ("in Paint choose the fill tool", 1),
-    ("go to Documents in File Explorer and create a folder called drafts", 2),
     ("in Explorer create a folder called reports and open it", 2),
     ("in Steam search for Portal and open it", 2),
     ("in Word click Insert and then Table", 2),
@@ -208,6 +204,11 @@ MISSIONS: tuple[tuple[str, int], ...] = (
 
 # Lo que el catálogo tipado ya hace entero sigue su operación (D21).
 TYPED: tuple[tuple[str, tuple[str, ...]], ...] = (
+    # The typed folder route covers going to a known folder and creating one in it (D21; v2 plan fix).
+    ("en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba", ("filesystem.folder.open", "filesystem.create.directory")),
+    ("En el explorador de archivos ve a Documentos y crea una carpeta llamada informes", ("filesystem.folder.open", "filesystem.create.directory")),
+    ("in File Explorer go to Documents and create a folder named baxy-test", ("filesystem.folder.open", "filesystem.create.directory")),
+    ("go to Documents in File Explorer and create a folder called drafts", ("filesystem.folder.open", "filesystem.create.directory")),
     ("abrí Configuración y activá el modo avión", ("system.settings.set",)),
     ("busca gatos en google", ("browser.navigate",)),
 )
