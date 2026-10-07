@@ -763,6 +763,33 @@ public sealed class ComputerUseMissionTests
         Assert.That(ComputerUseMission.ForgetsProcedure(false, errorCode, steps, procedureStepBroke), Is.EqualTo(forgotten));
     }
 
+    // Live n5: «Wi-Fi» on a PC without Wi-Fi. The window's own search typed the name and listed no item a person clicks
+    // called so (only a description that mentions it): the place is not in that window. A result that names it, a name
+    // never searched, or a text typed into a box that is no search keep the old stop.
+    [TestCase("Cuadro de búsqueda, Buscar una opción", "wi-fi", "Text", true)]
+    [TestCase("Cuadro de búsqueda, Buscar una opción", "wi-fi", "ListItem", false)]
+    [TestCase("Cuadro de búsqueda, Buscar una opción", "proxy", "Text", false)]
+    [TestCase("Nombre", "wi-fi", "Text", false)]
+    public void APlaceSearchedByNameAndNotListedIsNotFound(string into, string typed, string resultKind, bool notFound)
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "wi-fi", ["ok"] = true, ["name"] = "Wi-Fi" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["into"] = into, ["text"] = typed, ["ok"] = true },
+        };
+        var view = new JsonObject
+        {
+            ["controls"] = new JsonArray
+            {
+                new JsonObject { ["kind"] = "Edit", ["name"] = into, ["value"] = typed },
+                new JsonObject { ["kind"] = "ListItem", ["name"] = "Red e Internet" },
+                new JsonObject { ["kind"] = resultKind, ["name"] = "Usa un servidor proxy para conexiones Ethernet o Wi-Fi." },
+            },
+        };
+        Assert.That(OperationFloor.PlaceAsked("ir a wi-fi"), Is.EqualTo("wi-fi"));
+        Assert.That(ComputerUseSuccessCheck.SearchedAndNotFound("wi-fi", steps, view), Is.EqualTo(notFound));
+    }
+
     // The first look after a click can come before its effect is drawn: every look until the next step measures what
     // appeared against the text seen right before the click, and the next step keeps the last measure.
     [Test]

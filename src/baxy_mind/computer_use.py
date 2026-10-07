@@ -2337,6 +2337,14 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
             seen["stoppedBecause"] = operation_floor.floor_data()["computerUse"]["coveredBy"][
                 "en" if language == "en" else "es"
             ].format(window=seen["coveredBy"])
+        missing = _floor_name(observed.get("missingPlace"))
+        if observed.get("stoppedBy") == "computer_use_place_not_found" and missing:
+            # Searched by name in the window and not found (live n5: «Wi-Fi» on a PC without Wi-Fi).
+            floor = operation_floor.floor_data()
+            lang = "en" if language == "en" else "es"
+            seen["stoppedBecause"] = floor["computerUse"]["placeNotFound"][lang].format(
+                place=floor["templates"][lang]["quote"].format(value=missing)
+            )
     if observed.get("procedure") in {"replayed", "learned", "relearned"}:
         seen["procedure"] = observed.get("procedure")
     raw_subgoals = observed.get("subgoals")
