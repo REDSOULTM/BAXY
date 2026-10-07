@@ -1894,12 +1894,24 @@ internal static class ComputerUseSuccessCheck
 
         double middle = Number(rect["y"]) + (Number(rect["h"]) / 2);
         double reach = Number(rect["h"]) / 2;
+        // A tile of the same grid has the item's size; a card of the page beside a navigation list does not (measured
+        // on the Clock: the alarms of the page share a row with «Alarma» in the navigation).
         return controls.OfType<JsonObject>().Any(other =>
             !ReferenceEquals(other, control)
             && (string?)other["kind"] is "ListItem" or "DataItem"
             && (string?)other["zone"] is { Length: > 0 } otherZone && !otherZone.EndsWith('L')
             && other["rect"] is JsonObject otherRect && Number(otherRect["h"]) > 0
-            && Math.Abs(Number(otherRect["y"]) + (Number(otherRect["h"]) / 2) - middle) <= reach);
+            && Math.Abs(Number(otherRect["y"]) + (Number(otherRect["h"]) / 2) - middle) <= reach
+            && SameSize(rect, otherRect));
+    }
+
+    private static bool SameSize(JsonObject rect, JsonObject other)
+    {
+        double width = Number(rect["w"]);
+        double height = Number(rect["h"]);
+        return width > 0 && height > 0
+            && Math.Abs(Number(other["w"]) - width) <= width * 0.25
+            && Math.Abs(Number(other["h"]) - height) <= height * 0.25;
     }
 
     // The text a typing step sent, seen in the focused field when that field shows its content; a field that does

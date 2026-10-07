@@ -798,6 +798,26 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void ANavigationItemBesideACardOfThePageIsStillNavigation()
+    {
+        JsonObject clock = View("""
+            {"window": {"title": "Reloj"}, "controls": [
+              {"i": 0, "kind": "ListItem", "name": "Alarma", "state": "selected", "zone": "TL", "rect": {"x": 10, "y": 200, "w": 180, "h": 40}},
+              {"i": 1, "kind": "ListItem", "name": "7:00 Alarma", "zone": "C", "rect": {"x": 300, "y": 160, "w": 420, "h": 120}}]}
+            """);
+        JsonObject tiles = View("""
+            {"window": {"title": "Inicio - Explorador de archivos"}, "controls": [
+              {"i": 0, "kind": "ListItem", "name": "Descargas", "state": "selected", "zone": "TL", "rect": {"x": 200, "y": 200, "w": 160, "h": 60}},
+              {"i": 1, "kind": "ListItem", "name": "Documentos", "zone": "T", "rect": {"x": 380, "y": 200, "w": 160, "h": 60}}]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:alarma:current", clock, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:descargas:current", tiles, [], out _), Is.False, "a tile of a grid only chosen");
+        });
+    }
+
+    [Test]
     public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
     {
         JsonObject starting = View("""

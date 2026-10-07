@@ -795,9 +795,23 @@ def is_content_item(control: dict, view: dict | None = None) -> bool:
             continue
         other_zone = str(other.get("zone") or "")
         other_centre, _ = _vertical_centre(other.get("rect"))
-        if other_zone and not other_zone.endswith("L") and other_centre is not None and abs(other_centre - centre) <= height / 2:
+        if (
+            other_zone and not other_zone.endswith("L") and other_centre is not None
+            and abs(other_centre - centre) <= height / 2 and _same_size(control.get("rect"), other.get("rect"))
+        ):
             return True
     return False
+
+
+def _same_size(rect: object, other: object) -> bool:
+    """A tile of the same grid has the item's size; a card of the page beside a navigation list does not."""
+
+    try:
+        width, height = float(rect["w"]), float(rect["h"])  # type: ignore[index]
+        other_width, other_height = float(other["w"]), float(other["h"])  # type: ignore[index]
+    except (KeyError, TypeError, ValueError):
+        return False
+    return width > 0 and height > 0 and abs(other_width - width) <= width * 0.25 and abs(other_height - height) <= height * 0.25
 
 
 def _vertical_centre(rect: object) -> tuple[float | None, float]:
