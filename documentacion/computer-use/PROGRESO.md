@@ -218,3 +218,70 @@ Esta tabla es la de la primera revisión. c4 se volvió a correr en vivo a las 0
 direcciones (cadena de 4 sub-objetivos, 28 s). El banco final de 38 casos tras las rondas 2–4, con la compuerta Full,
 está en `MEDICIONES.md` §«v2 — banco final (rondas 2–4)». Epic (u4: carga larga) y WhatsApp (u6: el texto no llega
 al buscador) quedaban como límites medidos.
+
+### Rondas 5–11 (2026-10-07, 08:00–09:30)
+
+Corridas en vivo de casos nuevos (v1–v11, e2, g1, n1, x7, x12, y1) y revisiones adversariales r8 y r10 sobre
+`fable/cu-universal-v2` desde 86011aeae. Cada cambio con su prueba de unidad o su contracaso; la tabla del banco final
+la añade `MEDICIONES.md`.
+
+**Lectura del pedido**
+
+| Medido | Regla | Commit |
+|---|---|---|
+| v3 «… después a Sonido y decime el volumen»: la cola no se leía y el pedido fue entero al motor | un verbo de decir con la cosa sola («decime el X», «tell me the X») es la pregunta final; nunca dentro de comillas abiertas ni tras «escribí:» | 34637135f, c0de06ccd |
+| v11 «y después a Sistema»: la reformulación «haz clic en «Sistema»» buscaba el nombre con comillas | las comillas que delimitan un nombre se quitan en clic, ir a, activar/desactivar y seleccionar | 34637135f |
+| «poné el modo programador y después volvé a estándar» iba entera al modelo (55 s, pasos agotados) | volver a un modo o lugar es cambiar a él («volvé a abrir X» sigue siendo repetir); la cadena de modos son dos sub-metas con su comprobación | 443d05fbd |
+| «go to Settings, then Bluetooth & devices» quedaba sin leer | ir a una aplicación nombrada entera como primera cláusula es abrirla; el nombre con «&» tras «then» es el lugar (el clic va al ítem de navegación, nunca al interruptor «Bluetooth») | 443d05fbd |
+| x12 «abrí la calculadora» → «ahora ponela en modo científica»: el motor corrió sin aplicación | un seguimiento sin aplicación que se lee como paso con comprobación ocurre en la aplicación del pedido anterior (`follow_up_in_application`) | 5b87b5506 |
+| r10: «abrí la calculadora» → «cuál es la capital de Francia» → «andá a historial» heredaba Calculadora | hereda sólo del pedido inmediato (se saltan un sí/no pelado y un paso que ya heredó); nunca reemplaza una pregunta, una charla o un límite que pregunta del decisor | fca0a1c61 |
+| r8: «explorador de archivos» se leía como un archivo nombrado | `names_a_file` quita el nombre de la propia aplicación | c0de06ccd |
+
+**Llegada y verificación**
+
+| Medido | Regla | Commit |
+|---|---|---|
+| x7 «andá a search» | ir a la búsqueda añade `focus:search`: foco en un Edit/ComboBox editable que no lo tenía en la primera mirada, tras un clic o tecla de buscar y sin texto escrito; nunca un campo de sólo lectura o de dirección | e0f3b2f50 |
+| v1: 185 ms tras el Enter la página listaba 17 de 52 controles y el modelo respondió `none` | un `none` sobre una vista que se encogió tras un acto verificado se vuelve a mirar (400 ms × 6, una vez por acto); vale también para el `none` con su código por defecto | ab63d5219, 3417ca073 |
+| e2: «blue» y «azul» no encontrados pararon la misión por pantalla quieta antes de probar «Añil» | un clic que no encontró nada no cuenta como acto que dejó la pantalla igual | 0f33b81d7 |
+| e2 «pick the blue color»: la paleta de Paint no tiene «Azul», sólo «Añil», «Turquesa»… | un color básico se cumple con un clic verificado, por nombre entero, en un tono de su familia (`semantic/colours.py`); nunca un control que cambia la herramienta; el final nombra el tono elegido | 1f61746f5 |
+| n1/e2: la paleta quedaba fuera de los 60 controles listados; un «red» dentro de «Rectángulo redondeado» cumplía el check | el nombre fuera de la lista se busca por etiqueta en todo el árbol; elegir se prueba con el nombre entero (`control:=X`) | 0fd618ca7 |
+| Paint lista cada entrada de galería dos veces con un nombre (`visible_button_ambiguous`) | controles homónimos en una sola línea de descendencia son un objetivo (gana el que se invoca); la etiqueta prueba primero el nombre que la ventana escribe; en la Tienda el campo que recibe texto gana a su grupo | 04ff3b1f2, 7541da93c |
+| v11: un clic en «No hay resultados para «X»» se aprendió como procedimiento | un clic en un texto o campo que repite lo buscado dentro de una frase más larga no cuenta (`ClickEchoesQuery`) | 34637135f |
+| v5/v6: Excel y Word en su página de inicio; el modelo pulsó Inicio, Cuenta y «Agregar un servicio» | para una pestaña ausente sin documento abierto se crea el documento desde la única oferta «en blanco» (nunca un reciente, nunca dos veces); si el pedido nombra un archivo para con `computer_use_no_document_open` | bede4e390 |
+| «en la Microsoft Store buscá Spotify»: el historial emergente se tomó por la app y se pulsó una entrada | la ventana de una app en `ApplicationFrameHost` es su marco; un campo que el recibo dice pulsado conserva el cursor | a9905a3ac |
+
+El rastro dice cuántas alternativas trae el chequeo de cada sub-objetivo (fd5eeb144).
+
+**Seguridad**
+
+| Medido | Regla | Commit |
+|---|---|---|
+| r8: un archivo «Documento en blanco» del Explorador habría recibido Enter | la oferta «en blanco» sólo fuera de listas, cuadrículas y árboles (salvo el de plantillas) y nunca en una vista de archivos; Enter sólo con el foco en la oferta | c0de06ccd |
+| r10: en la vista de detalles una fila contiene el Edit de renombrar con su mismo nombre | el campo homónimo sólo gana dentro de una caja (Group, Pane, Custom, ComboBox), nunca dentro de una fila | ed3c2f99d |
+| r8: Configuración y la Tienda comparten el pid de `ApplicationFrameHost` | la vista nombra el proceso alojado (`ViewProcess`); la misión nunca adopta el pid del anfitrión | c0de06ccd |
+| y1 «poné el modo programador»: el modelo pulsó «Alternar grados» (DEG→RAD) | un objetivo que activa o elige una cosa nunca pulsa otro interruptor (`changes_a_setting`) | 3417ca073 |
+| g1 Steam «buscá Cuphead»: el cuadro es sólo una lupa, sin árbol | escribir tras el clic en la línea OCR de una búsqueda sólo con el foco probado y ningún campo ajeno con el teclado; si no, `computer_use_search_focus_unproven`, dicho como causa | e1415883d, 37c05f631 |
+
+**Velocidad**
+
+Medido sobre ~50 misiones en vivo: 250 s en total; vistas 43 %, apertura de apps 17 %, asentamiento y huecos 17 %,
+clics correctos 13 %, clics fallidos 7 %, modelo 1 %.
+
+| Medido | Regla | Commit |
+|---|---|---|
+| 13 clics `visible_button_not_found` a 4,2–4,4 s cada uno | fallo rápido: ventana quieta 750 ms (vigilada cada 200 ms) ⇒ «no está», ~1,3 s; mira la ventana del clic, no la del frente, y el primer clic tras un cambio de pantalla conserva la espera entera | 54409a25e, dac875b9c |
+| 11 de 27 transiciones entre sub-objetivos volvían a mirar | la vista que cumplió un sub-objetivo es la primera del siguiente si no se hizo nada y es la misma aplicación | 54409a25e |
+
+**Voz final**
+
+| Medido | Regla | Commit |
+|---|---|---|
+| 8 turnos con borradores vetados, 5 en el suelo rígido («Lo hice en la aplicación «Reloj»; hay 2: …») | la hora que la ventana escribió cuenta como observada; una misión fallida recibe voz de fallo en primera persona; suelo natural («Listo, estoy en «Reloj mundial».») | bac43fce0 |
+| la App seguía con el suelo rígido cuando la mente no daba final | un solo suelo para App y mente (`operation_floor.v1.json` «computerUse», gemelos en `tests/data/cu_floor_twins.json`); veto de elecciones inventadas al sólo navegar, también en presente o futuro | ea2fdcbb8, c34646d74 |
+| v6 «ahora selecciono Títulos» | un valor que la ventana marca sin que la misión lo pulsara no es su elección | a7a1490f7 |
+
+**Trampa de proceso.** El conductor de las corridas en vivo lanza la App de la compilación Release
+(`build_layout.ps1`); un `dotnet build -c Debug` no la toca, así que durante ~30 min las corridas en vivo midieron
+una App vieja. Tras cambiar código de la App hay que rehacer el layout Release, y tras cambiar el provider, volver a
+publicar Core.
