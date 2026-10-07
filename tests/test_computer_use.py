@@ -996,3 +996,19 @@ def test_no_way_into_the_engine_takes_an_undoing_paying_or_leaving_goal() -> Non
         assert missions.mission_request(said, apps) is None, said
     for said in ("en Paint dibujá un círculo", "sacá una captura de pantalla en Paint", "en el explorador creá una carpeta vacía"):
         assert missions.free_form_arguments(said, apps) is not None, said
+
+
+def test_a_menu_opened_by_the_place_survives_a_failed_learned_click() -> None:
+    # Measured on Steam: «BIBLIOTECA» opened its menu, the replayed entry was ambiguous, the model answered none.
+    menu = {
+        "window": {"title": "Steam", "process": "steamwebhelper", "focused": None},
+        "controls": [],
+        "newText": ["Página principal", "Colecciones", "Descargas"],
+        "text": {"TL": ["TIENDA", "BIBLIOTECA", "Página principal", "Colecciones", "Descargas"]},
+    }
+    history = [
+        _ok(1, "input.visible.click", label="BIBLIOTECA"),
+        {"step": 2, "operation": "input.visible.click", "label": "Inicio", "ok": False, "error": "visible_button_ambiguous"},
+    ]
+    step = computer_use.deterministic_step(goal="ir a biblioteca", view=menu, history=history)
+    assert step is not None and step["arguments"].get("label") == "Página principal"

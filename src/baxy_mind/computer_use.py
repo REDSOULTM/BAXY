@@ -496,7 +496,12 @@ def deterministic_step(
         # front (measured: the Calculator's hosted window is invisible to the
         # opener's inventory) does not stop what the goal dictates.
         if not (last.get("operation") == "app.open" and application_is_in_front(view, application)):
-            return None
+            # A failed click while the menu the place's own click opened is still on screen: its entry is the step.
+            place = folded_goal[len("ir a "):].strip() if folded_goal.startswith("ir a ") else ""
+            entry = _menu_opened_by(view, history, place, goal) if place and last.get("operation") == "input.visible.click" else None
+            if entry is None:
+                return None
+            return {"operation": "input.visible.click", "arguments": {"label": entry}, "reason": "el clic abrió un menú"}
     reason = "el objetivo lo dice"
     if folded_goal == "enviar":
         # «… y mandalo»: sending what was written is Enter in the message box, always marked so RiskPolicy asks first
@@ -934,8 +939,13 @@ def _menu_opened_by(view: dict, history: list[dict], target: str, goal: str = ""
     """The entry of the short menu the last click, made on ``target``, opened that the goal's words name best, else
     its first entry; None when no menu opened."""
 
-    last = history[-1] if history and isinstance(history[-1], dict) else None
-    if last is None or last.get("operation") != "input.visible.click" or last.get("ok") is not True:
+    # The last verified click: a failed step after it (a learned entry no longer on the menu, measured on Steam: the
+    # replayed click was ambiguous and the model answered none) leaves the menu it opened on screen.
+    verified = [step for step in history if isinstance(step, dict) and step.get("ok") is True]
+    last = verified[-1] if verified else None
+    if last is None or last.get("operation") != "input.visible.click":
+        return None
+    if any(isinstance(step, dict) and step.get("operation") != "input.visible.click" for step in history[history.index(last) + 1:]):
         return None
     clicked = str(last.get("label") or "")
     if not (label_names(target, clicked) or label_names(clicked, target)):
