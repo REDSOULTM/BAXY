@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.Json;
@@ -11,6 +11,8 @@ namespace Baxy.Providers.Windows.External;
 
 internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
 {
+    private const int PostReadLooks = 6;
+
     public string Stage => "ocr";
 
     public async ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
@@ -47,11 +49,17 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             if (!VisibleControlSurface.MayPress())
                 return null;
             VisibleControlSurface.Click(before.Left + hit.CenterX, before.Top + hit.CenterY);
-            await Task.Delay(400, cancellationToken).ConfigureAwait(false);
-            VisibleControlSurface.CapturedWindow? after =
-                await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            bool changed = after is not null && after.Value.Sha256 != before.Sha256;
+            // Looked at until it changes, up to 1.5 s: a web view redraws later than 400 ms (measured on the Epic Games
+            // launcher, whose «Biblioteca» click was judged unchanged at 400 ms).
+            VisibleControlSurface.CapturedWindow? after = null;
+            bool changed = false;
+            for (int look = 0; look < PostReadLooks && !changed; look++)
+            {
+                await Task.Delay(look == 0 ? 400 : 220, cancellationToken).ConfigureAwait(false);
+                after = await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+                changed = after is not null && after.Value.Sha256 != before.Sha256;
+            }
+
             bool surfaceObserved = false;
             string observedText = "";
             if (after is not null)
