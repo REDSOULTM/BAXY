@@ -91,19 +91,29 @@ internal sealed class NoUserBrowserWindow : IUserBrowserWindowLocator
 // elemento visible con ese nombre»): a label is waited on only while the surface may still be drawing — an
 // application opened moments ago — and then for a bounded stretch once its window is up; on a window that was
 // already there, a second look settles it and the honest «not there» comes at once.
+// The post-read of a pressed control: its UIA state is asked every PostreadPeriod for ControlPostread; its window is
+// captured from SurfaceFirstSample on, up to SurfacePostread when nothing has settled earlier.
 internal sealed record VisibleClickTiming(
     TimeSpan LaunchSurface,
     TimeSpan ReusedSurface,
     TimeSpan OpenedLabel,
     TimeSpan SettledLabel,
-    TimeSpan Interval)
+    TimeSpan Interval,
+    TimeSpan PostreadPeriod,
+    TimeSpan ControlPostread,
+    TimeSpan SurfaceFirstSample,
+    TimeSpan SurfacePostread)
 {
     internal static VisibleClickTiming Default { get; } = new(
         LaunchSurface: TimeSpan.FromSeconds(30),
         ReusedSurface: TimeSpan.FromSeconds(5),
         OpenedLabel: TimeSpan.FromSeconds(10),
         SettledLabel: TimeSpan.FromSeconds(3),
-        Interval: TimeSpan.FromMilliseconds(1500));
+        Interval: TimeSpan.FromMilliseconds(1500),
+        PostreadPeriod: TimeSpan.FromMilliseconds(50),
+        ControlPostread: TimeSpan.FromMilliseconds(500),
+        SurfaceFirstSample: TimeSpan.FromMilliseconds(150),
+        SurfacePostread: TimeSpan.FromMilliseconds(1500));
 }
 
 /// <summary>
@@ -348,9 +358,6 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        // M132: a look right after an opening reads the application opened, not what was in front before it.
-        if (_focus.PeekOpened() is { } opened)
-            _ = await _focus.FrontAsync(opened, judgeDrawn: false, cancellationToken).ConfigureAwait(false);
         int limit = 60;
         bool includeText = false;
         string? waitForLabel = null;
@@ -389,6 +396,11 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             }
         }
 
+        // M132: a look right after an opening reads the application opened, not what was in front before it. A look
+        // bound to the mission's process reads and fronts that process's window whatever is in front, so the opened
+        // application is not fronted first (about 275 ms on every view of a mission, measured).
+        if (processId == 0 && _focus.PeekOpened() is { } opened)
+            _ = await _focus.FrontAsync(opened, judgeDrawn: false, cancellationToken).ConfigureAwait(false);
         DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
         while (true)
         {
@@ -488,16 +500,29 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             ["hwnd"] = hwnd,
             ["limit"] = limit,
         }.ToJsonString();
+        // One capture serves the colours, the written text and the surface
+        // hash; a window without an accessible tree (CEF, SDL, canvas) is
+        // read from what is drawn, the case measured in a game launcher (UI1731).
+        // The capture, and the text when it is asked for, are read while the
+        // worker walks the accessible tree: they do not wait on each other.
+        Task<VisibleControlSurface.CapturedWindow?> captureTask = Task.Run(
+            () => CaptureQuietlyAsync(hwnd, cancellationToken), CancellationToken.None);
+        Task<WrittenText>? textTask = includeText ? ReadTextAsync(captureTask, limit, cancellationToken) : null;
         JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken)
             .ConfigureAwait(false);
         long uiaMs = stopwatch.ElapsedMilliseconds;
         if (answer is null)
+        {
+            await DiscardAsync(captureTask, textTask).ConfigureAwait(false);
             return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
+        }
+
         using (answer)
         {
             JsonElement root = answer.RootElement;
             if (!root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
             {
+                await DiscardAsync(captureTask, textTask).ConfigureAwait(false);
                 string code = root.TryGetProperty("error", out JsonElement error)
                     && error.ValueKind == JsonValueKind.String
                     && error.GetString() is { Length: > 0 } text
@@ -521,20 +546,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             VisibleControlSurface.TryBounds(hwnd, out int left, out int top, out int right, out int bottom);
             var windowRect = new Rect(left, top, right - left, bottom - top);
 
-            // One capture serves the colours, the written text and the surface
-            // hash; a window without an accessible tree (CEF, SDL, canvas) is
-            // read from what is drawn, the case measured in a game launcher (UI1731).
-            VisibleControlSurface.CapturedWindow? captured = null;
-            try
-            {
-                captured = await VisibleControlSurface.CaptureAsync(hwnd, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception exception) when (exception is IOException or InvalidOperationException)
-            {
-                captured = null;
-            }
-
+            VisibleControlSurface.CapturedWindow? captured = await captureTask.ConfigureAwait(false);
             long colorMs = 0;
             long ocrMs = 0;
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
@@ -547,15 +559,13 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     var colourWatch = Stopwatch.StartNew();
                     VisibleControlColors.Assign(capture, controls);
                     colorMs = colourWatch.ElapsedMilliseconds;
-                    bool needsText = includeText || controls.Count <= 1;
-                    if (needsText)
+                    // Not asked for, the text is still read when the tree shows nothing to act on.
+                    if (textTask is null && controls.Count <= 1)
+                        textTask = ReadTextAsync(captureTask, limit, cancellationToken);
+                    if (textTask is not null)
                     {
-                        var ocrWatch = Stopwatch.StartNew();
-                        IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines =
-                            await WindowsVisibleOcrLocator.ReadLayoutAsync(
-                                capture.Path, Math.Max(limit, 40), cancellationToken)
-                                .ConfigureAwait(false);
-                        ocrMs = ocrWatch.ElapsedMilliseconds;
+                        (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines, ocrMs) =
+                            await textTask.ConfigureAwait(false);
                         if (lines is not null)
                         {
                             textAuthority = "windows_media_ocr_lines";
@@ -686,9 +696,66 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             }
             finally
             {
-                VisibleControlSurface.Delete(captured?.Path);
+                await DiscardAsync(captureTask, textTask).ConfigureAwait(false);
             }
         }
+    }
+
+    private readonly record struct WrittenText(
+        IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? Lines,
+        long Milliseconds);
+
+    private static async Task<VisibleControlSurface.CapturedWindow?> CaptureQuietlyAsync(
+        nint hwnd,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await VisibleControlSurface.CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    private static async Task<WrittenText> ReadTextAsync(
+        Task<VisibleControlSurface.CapturedWindow?> captureTask,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        if (await captureTask.ConfigureAwait(false) is not { } capture)
+            return default;
+        var watch = Stopwatch.StartNew();
+        IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines = await WindowsVisibleOcrLocator.ReadLayoutAsync(
+            capture.Path, Math.Max(limit, 40), cancellationToken).ConfigureAwait(false);
+        return new WrittenText(lines, watch.ElapsedMilliseconds);
+    }
+
+    // The capture file goes once nothing reads it any more, whatever ended the view.
+    private static async Task DiscardAsync(
+        Task<VisibleControlSurface.CapturedWindow?> captureTask,
+        Task<WrittenText>? textTask)
+    {
+        VisibleControlSurface.CapturedWindow? captured = null;
+        try
+        {
+            if (textTask is not null)
+                _ = await textTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+
+        try
+        {
+            captured = await captureTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+
+        VisibleControlSurface.Delete(captured?.Path);
     }
 
     private static List<ViewControl> ParseControls(JsonElement root)
@@ -848,38 +915,14 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                 return effectBoundary.Failure(operation, "visible_click_no_receipt");
             using (answer)
             {
-                ExternalCapabilityReceipt receipt = ReceiptFromWorker(
-                    operation, answer.RootElement, effectBoundary);
-                if (receipt.ErrorCode == "visible_button_postread_unchanged" && before is { } captured)
+                if (answer.RootElement.TryGetProperty("pending", out JsonElement pending)
+                    && pending.ValueKind == JsonValueKind.True)
                 {
-                    VisibleControlSurface.CapturedWindow? after = null;
-                    try
-                    {
-                        after = await VisibleControlSurface.CaptureAsync(captured.Hwnd, cancellationToken)
-                            .ConfigureAwait(false);
-                    }
-                    catch (Exception exception) when (exception is IOException or InvalidOperationException)
-                    {
-                        after = null;
-                    }
-
-                    bool changed = after is { } later
-                        && later.Hwnd == captured.Hwnd
-                        && !string.Equals(later.Sha256, captured.Sha256, StringComparison.Ordinal);
-                    VisibleControlSurface.Delete(after?.Path);
-                    if (changed)
-                    {
-                        JsonObject node = JsonNode.Parse(answer.RootElement.GetRawText())!.AsObject();
-                        node["ok"] = true;
-                        node["error"] = "";
-                        node["surfaceChanged"] = true;
-                        node["cascadeStage"] = "uia_surface";
-                        using JsonDocument verified = JsonDocument.Parse(node.ToJsonString());
-                        return ExternalJson.Success(operation, verified.RootElement.Clone(), true);
-                    }
+                    return await PostreadAsync(operation, answer.RootElement, before, effectBoundary, cancellationToken)
+                        .ConfigureAwait(false);
                 }
 
-                return receipt;
+                return ReceiptFromWorker(operation, answer.RootElement, effectBoundary);
             }
         }
         catch (OperationCanceledException) when (
@@ -895,6 +938,98 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         {
             VisibleControlSurface.Delete(before?.Path);
         }
+    }
+
+    /// <summary>
+    /// The post-read of a click the worker has just invoked. The control's own state is asked every 50 ms for up to
+    /// half a second; meanwhile the window is captured from about 150 ms on, and two captures that agree with each
+    /// other and differ from the one before the click settle it at once (a Calculator digit stays enabled and
+    /// unselected after Invoke, so the surface is its only evidence, UI1273). A window still redrawing is watched up
+    /// to the surface budget; one that differed then counts as changed, one that never did leaves the click
+    /// unconfirmed.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> PostreadAsync(
+        string operation,
+        JsonElement clicked,
+        VisibleControlSurface.CapturedWindow? before,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        var watch = Stopwatch.StartNew();
+        bool askControl = true;
+        bool differed = false;
+        string? lastSurface = null;
+        TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
+        while (true)
+        {
+            if (askControl && watch.Elapsed < _timing.ControlPostread)
+            {
+                using JsonDocument? read = await _worker.SendAsync(
+                        "{\"cmd\":\"postread\"}", WorkerClickBudget, cancellationToken)
+                    .ConfigureAwait(false);
+                // The control was invoked already: a silence here is not a «not found» to look for again.
+                if (read is null)
+                    return effectBoundary.Failure(operation, "visible_click_postread_no_receipt");
+                JsonElement root = read.RootElement;
+                if (root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True)
+                    return ReceiptFromWorker(operation, root, effectBoundary);
+                // Anything but «not yet» ends the questions to the control; the surface may still answer.
+                askControl = root.TryGetProperty("error", out JsonElement error)
+                    && error.ValueKind == JsonValueKind.String
+                    && error.GetString() == "visible_button_postread_unchanged";
+            }
+
+            if (before is { } captured && watch.Elapsed >= _timing.SurfaceFirstSample)
+            {
+                string? surface = await SurfaceAsync(captured.Hwnd, cancellationToken).ConfigureAwait(false);
+                if (surface is not null && !string.Equals(surface, captured.Sha256, StringComparison.Ordinal))
+                {
+                    if (string.Equals(surface, lastSurface, StringComparison.Ordinal))
+                        return SurfaceChanged(operation, clicked);
+                    differed = true;
+                }
+
+                lastSurface = surface;
+            }
+
+            if (watch.Elapsed >= budget)
+                break;
+            await Task.Delay(_timing.PostreadPeriod, cancellationToken).ConfigureAwait(false);
+        }
+
+        return differed
+            ? SurfaceChanged(operation, clicked)
+            : effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);
+    }
+
+    private static async ValueTask<string?> SurfaceAsync(nint window, CancellationToken cancellationToken)
+    {
+        VisibleControlSurface.CapturedWindow? capture = null;
+        try
+        {
+            capture = await VisibleControlSurface.CaptureAsync(window, cancellationToken).ConfigureAwait(false);
+            return capture is { } taken && taken.Hwnd == window ? taken.Sha256 : null;
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return null;
+        }
+        finally
+        {
+            VisibleControlSurface.Delete(capture?.Path);
+        }
+    }
+
+    private static ExternalCapabilityReceipt SurfaceChanged(string operation, JsonElement clicked)
+    {
+        JsonObject node = JsonNode.Parse(clicked.GetRawText())!.AsObject();
+        node.Remove("pending");
+        node["ok"] = true;
+        node["error"] = "";
+        node["surfaceChanged"] = true;
+        node["cascadeStage"] = "uia_surface";
+        using JsonDocument verified = JsonDocument.Parse(node.ToJsonString());
+        return ExternalJson.Success(operation, verified.RootElement.Clone(), true);
     }
 
     internal static bool PostreadHolds(JsonElement root)
@@ -1021,6 +1156,44 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
 
     private static bool ShouldCascade(ExternalCapabilityReceipt receipt) =>
         receipt.ErrorCode is not null && CascadeAfter.Contains(receipt.ErrorCode);
+
+    internal ValueTask PrewarmAsync() => _worker.PrewarmAsync(CancellationToken.None);
+
+    /// <summary>The control the last view handed out at this index, and that view's window: what input.scroll's
+    /// «index» names. False when no view handed it out.</summary>
+    internal bool TryViewedControl(int index, out nint window, out string controlId, out Rect? rect)
+    {
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == index);
+        window = chosen is null ? 0 : view!.Hwnd;
+        controlId = chosen?.Id ?? string.Empty;
+        rect = chosen?.RectValue;
+        return chosen is not null;
+    }
+
+    /// <summary>Scrolls a viewed control through its UI Automation ScrollPattern; null when the worker did not answer.</summary>
+    internal ValueTask<JsonDocument?> ScrollControlAsync(
+        nint window,
+        string controlId,
+        string direction,
+        int amount,
+        CancellationToken cancellationToken) =>
+        _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "scroll",
+                ["hwnd"] = window,
+                ["controlId"] = controlId,
+                ["direction"] = direction,
+                ["amount"] = amount,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
 
     public void Dispose()
     {

@@ -1194,6 +1194,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             throw new ApplicationInventoryException("The installed executable identity is unavailable.");
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
+        Dictionary<uint, nint>? hostedFrames = null;
         try
         {
             foreach (Process process in processes)
@@ -1216,7 +1217,19 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     // app suspended in the background keeps a «visible» CoreWindow
                     // that DWM cloaks; nobody sees it, so it is not a running window
                     // to reuse — the launch below activates the app and its frame.
-                    if (window == 0 || !IsWindowVisible(window) || IsCloaked(window))
+                    bool usable = window != 0 && IsWindowVisible(window) && !IsCloaked(window);
+                    nint frame = 0;
+                    if (!usable && packaged && !strongIdentityOnly)
+                    {
+                        // Computer use (smoke run: app.open of a packaged app spent its whole
+                        // 30 s budget with the app on screen): a UWP app has no top-level
+                        // window of its own; the visible ApplicationFrameHost frame hosting
+                        // its process is what the person sees, so opening is verified there.
+                        hostedFrames ??= External.VisibleControlSurface.HostedFrames();
+                        usable = hostedFrames.TryGetValue(unchecked((uint)process.Id), out frame);
+                    }
+
+                    if (!usable)
                     {
                         continue;
                     }
@@ -1269,7 +1282,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
 
                     long creationTime = process.StartTime.ToUniversalTime().Ticks;
-                    foreach (nint operated in ownedWindows ?? VisibleTopLevelWindows(process.Id))
+                    foreach (nint operated in ownedWindows ?? (frame != 0 ? [frame] : VisibleTopLevelWindows(process.Id)))
                     {
                         observations.Add(new InstalledApplicationObservation(
                             process.Id,

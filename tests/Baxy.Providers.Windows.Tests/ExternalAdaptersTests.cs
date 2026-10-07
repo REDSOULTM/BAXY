@@ -1453,12 +1453,14 @@ public sealed class ExternalAdaptersTests
         "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
         "\"controlIdentity\":\"\",\"absentOrDisabled\":false}";
 
-    private static readonly VisibleClickTiming ShortTiming = new(
-        LaunchSurface: TimeSpan.FromMilliseconds(400),
-        ReusedSurface: TimeSpan.FromMilliseconds(100),
-        OpenedLabel: TimeSpan.FromMilliseconds(1500),
-        SettledLabel: TimeSpan.FromMilliseconds(50),
-        Interval: TimeSpan.FromMilliseconds(20));
+    private static readonly VisibleClickTiming ShortTiming = VisibleClickTiming.Default with
+    {
+        LaunchSurface = TimeSpan.FromMilliseconds(400),
+        ReusedSurface = TimeSpan.FromMilliseconds(100),
+        OpenedLabel = TimeSpan.FromMilliseconds(1500),
+        SettledLabel = TimeSpan.FromMilliseconds(50),
+        Interval = TimeSpan.FromMilliseconds(20),
+    };
 
     [Test]
     public async Task NamedSandboxFilesAppendDiffAndMoveWithHashPostreads()
@@ -1572,15 +1574,15 @@ public sealed class ExternalAdaptersTests
         await File.WriteAllTextAsync(fileScript, "# test fixture");
         await File.WriteAllTextAsync(selectScript, "# test fixture");
         await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner("{\"version\":1,\"ok\":true}");
+        var keyboard = new FakeDesktopKeyboard();
         var adapter = new WindowsDesktopInteractionAdapter(
-            new StubProcessRunner(
-                "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
-                "\"key\":\"escape\",\"acceptedEvents\":2," +
-                "\"authority\":\"win32_sendinput_return_count\"}"),
+            runner,
             folderScript,
             fileScript,
             selectScript,
-            keyScript);
+            keyScript,
+            keyboard);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.key.press",
@@ -1595,6 +1597,9 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("acceptedEvents").GetInt32(), Is.EqualTo(2));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("win32_sendinput_return_count"));
+            Assert.That(keyboard.Chords, Has.Count.EqualTo(1));
+            Assert.That(keyboard.Chords[0], Is.EqualTo(new ushort[] { 0x1B }));
+            Assert.That(runner.Arguments, Is.Empty, "a key is sent in-process, without a PowerShell");
         });
     }
 
@@ -1664,7 +1669,7 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
-    public async Task TextAndPointerInputUseTheVerifiedDesktopInputScript()
+    public async Task TextInputIsSentInProcessAndPointerInputUsesTheVerifiedDesktopInputScript()
     {
         using TemporaryDirectory temporary = new();
         string folderScript = Path.Combine(temporary.Path, "KnownFolderOpen.ps1");
@@ -1676,12 +1681,13 @@ public sealed class ExternalAdaptersTests
         var runner = new CapturingProcessRunner(
             "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
             "\"acceptedEvents\":2,\"authority\":\"win32_sendinput_return_count\"}");
+        var keyboard = new FakeDesktopKeyboard();
         var adapter = new WindowsDesktopInteractionAdapter(
-            runner, folderScript, fileScript, selectScript, keyScript);
+            runner, folderScript, fileScript, selectScript, keyScript, keyboard);
 
         ExternalCapabilityReceipt typed = await adapter.InvokeAsync(
             "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
-        string encodedText = runner.Arguments[^1];
+        string[] typingArguments = runner.Arguments.ToArray();
         ExternalCapabilityReceipt pointer = await adapter.InvokeAsync(
             "input.pointer.control", Json("""{"action":"move_center"}"""),
             CancellationToken.None);
@@ -1693,8 +1699,10 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(typed.Verified, Is.True);
-            Assert.That(Encoding.UTF8.GetString(Convert.FromBase64String(encodedText)),
-                Is.EqualTo("hola"));
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola" }));
+            Assert.That(typed.Result?.GetProperty("acceptedEvents").GetInt32(), Is.EqualTo(8));
+            Assert.That(typed.Result?.GetProperty("textLength").GetInt32(), Is.EqualTo(4));
+            Assert.That(typingArguments, Is.Empty, "typing starts no PowerShell");
             Assert.That(pointer.Verified, Is.True);
             Assert.That(layout.Verified, Is.True);
             Assert.That(pointerArguments, Does.Contain("-PointerAction"));

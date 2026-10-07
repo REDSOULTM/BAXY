@@ -30,6 +30,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     {
         string root = Path.GetFullPath(dataRoot);
         var browserSessionContext = new CdpBrowserSessionContext();
+        // input.scroll by «index» scrolls a control of the last computer-use view.
+        var visibleControls = new WindowsVisibleControlAdapter();
         return [
             new DesktopMessagingAdapter(),
             new WindowsMicrophoneAdapter(),
@@ -59,8 +61,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new ExplorerFolderAdapter(),
             new WindowsInventoryAdapter(),
             new WindowsDesktopInteractionAdapter(),
-            new WindowsVisibleControlAdapter(),
-            new WindowsScrollAdapter(),
+            visibleControls,
+            new WindowsScrollAdapter(visibleControls),
             new WindowsKnownFileAdapter(root),
             new WindowsSandboxNamedFileAdapter(root),
             new WindowsKnownBackupAdapter(root),
@@ -101,6 +103,18 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 Complete: false,
                 Array.Empty<InstalledGameCatalogEntry>());
         }
+    }
+
+    /// <summary>
+    /// Starts in the background what the first computer-use view would otherwise wait for: the UI Automation worker
+    /// (a PowerShell with its UI Automation assemblies, about a second). Never blocks the caller; a start that fails
+    /// leaves the first view to start it, as before.
+    /// </summary>
+    public void Prewarm()
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        foreach (WindowsVisibleControlAdapter adapter in _adapters.OfType<WindowsVisibleControlAdapter>())
+            _ = Task.Run(() => adapter.PrewarmAsync().AsTask(), CancellationToken.None);
     }
 
     /// <summary>

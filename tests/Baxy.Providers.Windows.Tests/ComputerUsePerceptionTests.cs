@@ -300,11 +300,22 @@ public sealed class ComputerUsePerceptionTests
 
         internal List<string> Commands { get; } = [];
 
+        internal int Prewarmed { get; private set; }
+
+        // After this many commands the worker answers nothing more.
+        internal int? FallSilentAfter { get; set; }
+
+        public ValueTask PrewarmAsync(CancellationToken cancellationToken)
+        {
+            Prewarmed++;
+            return ValueTask.CompletedTask;
+        }
+
         public ValueTask<JsonDocument?> SendAsync(string commandJson, TimeSpan timeout, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             Commands.Add(commandJson);
-            if (_answers.Count == 0)
+            if (_answers.Count == 0 || Commands.Count > FallSilentAfter)
                 return ValueTask.FromResult<JsonDocument?>(null);
             string answer = _answers.Count == 1 ? _answers.Peek() : _answers.Dequeue();
             return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(answer));

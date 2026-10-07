@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -105,15 +104,22 @@ internal interface IUserBrowserPlatform
 
 internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
 {
-    private readonly IExternalProcessRunner _runner;
+    // One persistent PowerShell for every browser script of the process (each platform instance shares it): computer
+    // use measured 3.1 s per tab closed while each frame read started its own PowerShell. It is not the computer-use
+    // worker, so a page that is waited on (PagePlay, up to 45 s) never holds a view or a click; it keeps the scaling
+    // of the per-call PowerShell it replaces. It ends with this process (end of its input).
+    private static readonly Lazy<UiaWorkerHost> SharedScripts = new(
+        () => new UiaWorkerHost(Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1"), "-DpiUnaware"));
+
+    private readonly IUiaWorker _scripts;
 
     internal WindowsUserBrowserPlatform()
-        : this(new ExternalProcessRunner())
+        : this(SharedScripts.Value)
     {
     }
 
-    internal WindowsUserBrowserPlatform(IExternalProcessRunner runner) =>
-        _runner = runner ?? throw new ArgumentNullException(nameof(runner));
+    internal WindowsUserBrowserPlatform(IUiaWorker scripts) =>
+        _scripts = scripts ?? throw new ArgumentNullException(nameof(scripts));
 
     public UserBrowserIdentity? ResolveDefault() => UserBrowserIdentityResolver.ResolveFromRegistry();
 
@@ -407,27 +413,33 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         TimeSpan timeout,
         CancellationToken cancellationToken)
     {
-        var arguments = new List<string>
+        var arguments = new System.Text.Json.Nodes.JsonArray();
+        foreach (string argument in scriptArguments)
+            arguments.Add((System.Text.Json.Nodes.JsonNode?)argument);
+        string command = new System.Text.Json.Nodes.JsonObject
         {
-            "-NoProfile", "-NonInteractive", "-Command", "& {\n" + script + "\n}",
-        };
-        arguments.AddRange(scriptArguments);
-        string powershell = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.System),
-            "WindowsPowerShell", "v1.0", "powershell.exe");
+            ["cmd"] = "script",
+            ["script"] = script,
+            ["args"] = arguments,
+        }.ToJsonString();
         try
         {
-            ExternalProcessResult run = await _runner.RunAsync(
-                powershell, arguments, timeout, cancellationToken).ConfigureAwait(false);
-            string line = run.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries
-                | StringSplitOptions.TrimEntries).LastOrDefault() ?? string.Empty;
-            if (run.ExitCode != 0 || !line.StartsWith('{'))
+            // A script that does not answer in time takes its worker with it; the next one starts a fresh worker.
+            using JsonDocument? answer = await _scripts.SendAsync(command, timeout, cancellationToken)
+                .ConfigureAwait(false);
+            if (answer is null
+                || !answer.RootElement.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+                || !answer.RootElement.TryGetProperty("line", out JsonElement written)
+                || written.ValueKind != JsonValueKind.String
+                || written.GetString() is not { } line || !line.StartsWith('{'))
+            {
                 return null;
+            }
+
             using JsonDocument document = JsonDocument.Parse(line);
             return document.RootElement.Clone();
         }
-        catch (Exception exception) when (exception is IOException or TimeoutException
-            or JsonException or Win32Exception)
+        catch (JsonException)
         {
             return null;
         }

@@ -97,6 +97,8 @@ internal static class Program
         var filesystemProvider = new LocalFilesystemProvider(
             Path.Combine(dataRoot, "filesystem-sandbox"));
         using var externalCapabilityProvider = new WindowsExternalCapabilityProvider(dataRoot);
+        // Computer use: the first view of a mission does not pay the UI Automation worker's start (about 1 s).
+        externalCapabilityProvider.Prewarm();
         var installedApplicationProvider = new WindowsInstalledApplicationOpenProvider();
         var routedApplicationOpenProvider = new ApplicationOpenProviderRouter(
             new WindowsCalculatorOpenProvider(),
