@@ -46,7 +46,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     discord = missions.mission_request("ve a Cotele en Discord", APPS).arguments()
     assert discord["application"] == "Discord"
     assert discord["goal"] == "ir a cotele"
-    assert discord["successCheck"] == "control:cotele:selected|title:cotele|page:cotele"
+    assert discord["successCheck"] == "control:cotele:current|title:cotele|page:cotele"
 
     # Closing every tab is browser.control close_all (confirmed by RiskPolicy), never a mission of loose keys.
     tabs = resolve_explicit_effects("cerrá todas las pestañas de chrome", AVAILABLE, application_names=APPS)
@@ -55,7 +55,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     steam = _mission("abre Steam y ve a la biblioteca")
     assert steam["application"] == "Steam"
     assert steam["goal"] == "ir a la biblioteca" or steam["goal"] == "ir a biblioteca"
-    assert steam["successCheck"] == "control:biblioteca:selected|title:biblioteca|page:biblioteca|control:library:selected|title:library|page:library"
+    assert steam["successCheck"] == "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library"
 
     enter = _mission("en Discord apretá enter")
     assert enter == {"application": "Discord", "goal": "apretar enter", "successCheck": "stepDone:input.key.press:enter"}
@@ -493,7 +493,7 @@ def test_reaching_a_place_needs_more_than_its_name_on_screen() -> None:
     )
     assert reached["operation"] == "done"
     # The text of the destination alone no longer satisfies a go-to: only the place selected or titled does.
-    assert missions.read_clause("andá a la biblioteca")[1] == "control:biblioteca:selected|title:biblioteca|page:biblioteca|control:library:selected|title:library|page:library"
+    assert missions.read_clause("andá a la biblioteca")[1] == "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library"
 
 
 # ------------------------------------------------ buscar lo que no está en pantalla
@@ -599,7 +599,7 @@ def test_an_english_goal_finds_the_spanish_control() -> None:
     step = computer_use.deterministic_step(goal="ir a library", view=VIEW, history=[])
     assert step["arguments"] == {"label": "Biblioteca", "index": 1}
     check = missions.read_clause("go to the library")[1]
-    assert "control:library:selected" in check and "control:biblioteca:selected" in check
+    assert "control:library:current" in check and "control:biblioteca:current" in check
 
 
 def test_a_menu_entry_named_by_the_goal_wins_over_the_first_one() -> None:
@@ -763,12 +763,12 @@ CHAIN_SCHEMA = {
 def test_a_chained_request_reads_its_sub_goals_in_order() -> None:
     chained = _mission_in("abre Steam y ve a la biblioteca y después en Discord andá a general")
     assert [(step["application"], step["goal"]) for step in chained["steps"]] == [("Steam", "ir a biblioteca"), ("Discord", "ir a general")]
-    assert chained["steps"][1]["successCheck"] == "control:general:selected|title:general|page:general"
+    assert chained["steps"][1]["successCheck"] == "control:general:current|title:general|page:general"
     assert chained["goal"] == "ir a biblioteca; luego ir a general"
     # Typing into a place: go to it, then type; the application is carried forward.
     typing = missions.mission_request("en Discord andá a general y escribí hola", MORE_APPS).arguments()
     assert typing["steps"] == [
-        {"goal": "ir a general", "application": "Discord", "successCheck": "control:general:selected|title:general|page:general"},
+        {"goal": "ir a general", "application": "Discord", "successCheck": "control:general:current|title:general|page:general"},
         {"goal": "escribir hola", "application": "Discord", "successCheck": "stepDone:input.text.type"},
     ]
     english = missions.mission_request("go to the library in Steam and then go to general in Discord", MORE_APPS)

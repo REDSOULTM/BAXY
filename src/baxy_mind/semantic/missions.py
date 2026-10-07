@@ -18,7 +18,7 @@ from dataclasses import dataclass, replace
 from typing import Iterable
 
 from .. import effect_intent
-from .catalog import _CATALOG_NAME_ALIASES
+from .catalog import _CATALOG_NAME_ALIASES, application_name_without_frame
 from .grammar import _head_is, imperative_rewrites
 
 # The application a mission names when the person names only a tab: the shell
@@ -110,9 +110,12 @@ _CALCULATE_CLAUSE = re.compile(
 _TYPE_CLAUSE = re.compile(
     r"^(?:escribi|escribe|escribime|tipea|tipeame|teclea|type|write)\s+(?P<text>\S.*?)[\s]*$"
 )
+# «in the Clock app go to …», «en la app de Configuración andá a …»: the word that says it is an application frames the
+# name, before or after it, and is no part of the clause.
 _APP_FRAME_FRONT = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:en|in|on|dentro\s+de)\s+"
-    r"(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)\s*[,;:]?\s+(?P<clause>.+)$"
+    r"(?:(?:la|el|the)\s+)?(?:(?:app|aplicacion|application)\s+(?:(?:de|del)\s+)?)?"
+    r"(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)(?:\s+(?:app|aplicacion|application))?\s*[,;:]?\s+(?P<clause>.+)$"
 )
 _APP_FRAME_BACK = re.compile(
     r"^(?P<clause>.+?)\s+(?:en|in|on|dentro\s+de)\s+(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)[\s.!?]*$"
@@ -178,7 +181,7 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"actualizaciones", "updates"}), frozenset({"aplicaciones", "apps"}),
     frozenset({"sistema", "system"}), frozenset({"personalizacion", "personalization"}),
     frozenset({"dispositivos", "devices"}), frozenset({"servidores", "servers"}),
-    frozenset({"buscar", "search"}), frozenset({"canciones", "songs"}), frozenset({"imagenes", "pictures"}),
+    frozenset({"buscar", "search"}), frozenset({"canciones", "songs"}), frozenset({"imagenes", "images", "pictures"}),
     frozenset({"calendario", "calendar"}), frozenset({"insertar", "insert"}), frozenset({"tabla", "table"}),
     frozenset({"elementos enviados", "sent items"}), frozenset({"escala", "scale"}),
     # Colours and drawing tools, said in either language («elegí el rojo» on an English Paint).
@@ -192,6 +195,38 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"rectangulo", "rectangle"}), frozenset({"texto", "text"}), frozenset({"linea", "line"}),
     frozenset({"circulo", "elipse", "ovalo", "circle", "ellipse", "oval"}),
     frozenset({"selector de color", "cuentagotas", "color picker"}),
+    # 2026-10-07 «in the Clock app go to Stopwatch» on a Spanish Windows («Cronómetro»): the places and items that
+    # Windows and its own apps show, by both of their names.
+    frozenset({"cronometro", "stopwatch"}), frozenset({"temporizador", "temporizadores", "timer", "timers"}),
+    frozenset({"alarma", "alarmas", "alarm", "alarms"}), frozenset({"reloj mundial", "world clock"}),
+    frozenset({"enfoque", "sesiones de enfoque", "focus", "focus sessions"}),
+    frozenset({"colores", "colors", "colours"}), frozenset({"temas", "themes"}), frozenset({"fondo", "background"}),
+    frozenset({"pantalla de bloqueo", "lock screen"}), frozenset({"inicio", "start"}),
+    frozenset({"barra de tareas", "taskbar"}), frozenset({"fuentes", "fonts"}),
+    frozenset({"hora e idioma", "hora y idioma", "time & language", "time and language"}),
+    frozenset({"accesibilidad", "accessibility"}), frozenset({"cuentas", "accounts"}),
+    frozenset({"energia", "power"}), frozenset({"energia y bateria", "power & battery", "power and battery"}),
+    frozenset({"bateria", "battery"}), frozenset({"almacenamiento", "storage"}),
+    frozenset({"portapapeles", "clipboard"}), frozenset({"acerca de", "about"}),
+    frozenset({"wi-fi", "wifi", "wlan"}), frozenset({"impresoras", "printers"}),
+    frozenset({"impresoras y escaneres", "printers & scanners", "printers and scanners"}),
+    frozenset({"raton", "mouse"}), frozenset({"teclado", "keyboard"}),
+    frozenset({"bluetooth y dispositivos", "bluetooth & devices", "bluetooth and devices"}),
+    frozenset({"privacidad y seguridad", "privacy & security", "privacy and security"}),
+    frozenset({"red e internet", "network & internet", "network and internet"}),
+    frozenset({"aplicaciones instaladas", "installed apps"}), frozenset({"modo oscuro", "dark mode"}),
+    frozenset({"cientifica", "scientific"}), frozenset({"estandar", "standard"}),
+    frozenset({"programador", "programmer"}), frozenset({"grafica", "graphing"}),
+    frozenset({"conversor", "convertidor", "converter"}), frozenset({"memoria", "memory"}),
+    frozenset({"rendimiento", "performance"}), frozenset({"procesos", "processes"}),
+    frozenset({"servicios", "services"}), frozenset({"aplicaciones de arranque", "aplicaciones de inicio", "startup apps"}),
+    frozenset({"usuarios", "users"}), frozenset({"detalles", "details"}),
+    frozenset({"galeria", "gallery"}), frozenset({"albumes", "albums"}), frozenset({"carpetas", "folders"}),
+    frozenset({"recientes", "recent"}), frozenset({"compartido", "compartidos", "shared"}),
+    frozenset({"este equipo", "this pc"}), frozenset({"papelera de reciclaje", "recycle bin"}),
+    frozenset({"vista", "view"}), frozenset({"archivo", "file"}), frozenset({"editar", "edicion", "edit"}),
+    frozenset({"formato", "format"}), frozenset({"diseno", "design"}), frozenset({"revisar", "review"}),
+    frozenset({"nuevo", "nueva", "new"}), frozenset({"abrir", "open"}),
 )
 
 
@@ -200,17 +235,39 @@ def label_alternatives(name: str) -> tuple[str, ...]:
     when none is known."""
 
     key = fold(name)
-    groups = (*_LABEL_ALIASES, *(aliases for aliases, _ in (*_EXTRA_ALIASES, *_CATALOG_NAME_ALIASES)))
-    found = {alias for group in groups if key in group for alias in group}
+    found = {alias for group in _LABEL_ALIASES if key in group for alias in group}
+    if not found:
+        # An application's names only for a word no place of a window carries: «alarmas» is the Clock's page, never
+        # its title «Reloj» (a check that accepted it would hold before any step).
+        found = {alias for aliases, _ in (*_EXTRA_ALIASES, *_CATALOG_NAME_ALIASES) if key in aliases for alias in aliases}
     found.discard(key)
     return tuple(sorted(found))
 
 
-def _with_alternatives(target: str, atoms: Iterable[str]) -> str:
-    """The check ``atoms`` (templates over ``{}``) for the target and each of its other names, OR-ed."""
+# The operation's successCheck holds at most this many bytes (ProductCatalog, mission.computer.use).
+_CHECK_BYTES = 512
 
-    names = (target, *label_alternatives(target))
-    return "|".join(atom.replace("{}", name) for name in names for atom in atoms)
+
+def _with_alternatives(target: str, atoms: Iterable[str]) -> str:
+    """The check ``atoms`` (templates over ``{}``) for the target and each of its other names, OR-ed; the other names
+    stop where the check would no longer fit the operation (the target's own atoms always stay)."""
+
+    terms: list[str] = []
+    names = dict.fromkeys(_check_name(name) for name in (target, *label_alternatives(target)))
+    for position, name in enumerate(name for name in names if name):
+        named = [atom.replace("{}", name) for atom in atoms]
+        if position and len("|".join((*terms, *named)).encode("utf-8")) > _CHECK_BYTES:
+            break
+        terms.extend(named)
+    return "|".join(terms)
+
+
+def _check_name(name: str) -> str:
+    """A name as a check can hold it: «&» and «|» join the check's atoms, so «Time & language» is checked by the part
+    before them («time»), which the place's name holds in either spelling."""
+
+    pieces = [piece.strip() for piece in re.split(r"[&|]", name)]
+    return pieces[0] or max(pieces, key=len)
 
 
 @dataclass(frozen=True, slots=True)
@@ -280,7 +337,11 @@ def _catalog_key(candidate: str, catalog: effect_intent.ApplicationCatalogIndex)
         return starts[0]
     # «Teams» for «Microsoft Teams»: the one catalog name that ends with it.
     ends = [entry_key for entry_key in catalog.keys if entry_key.endswith(" " + key)] if not starts else []
-    return ends[0] if len(ends) == 1 else None
+    if len(ends) == 1:
+        return ends[0]
+    # «in the Clock app», «la aplicación Reloj»: the name inside the word that says it is an application.
+    bare = application_name_without_frame(key)
+    return _catalog_key(bare, catalog) if bare is not None and bare != key else None
 
 
 def _display_name(key: str, catalog: effect_intent.ApplicationCatalogIndex) -> str:
@@ -564,7 +625,9 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
             continue
         target = _ENGLISH_PLACE_AFTER.sub("", target)
         if target:
-            atoms = ["control:{}:selected", "title:{}", "page:{}"]
+            # «current»: the place chosen in the window's navigation; an item merely selected in a content list (a
+            # folder clicked once in Explorer) is not arriving there (the shell's ComputerUseSuccessCheck).
+            atoms = ["control:{}:current", "title:{}", "page:{}"]
             if _SECTION_WORD.search(place.group(0)[: place.start("target")]):
                 # A section of a page is reached by its link: the verified click on it is arriving.
                 atoms.append("stepDone:input.visible.click:{}")
@@ -699,7 +762,7 @@ def check_fold(value: object) -> str:
     return " ".join(text.split())
 
 
-_CONTROL_STATES = frozenset({"selected", "on", "off", "expanded", "focused", "collapsed"})
+_CONTROL_STATES = frozenset({"selected", "current", "on", "off", "expanded", "focused", "collapsed"})
 
 
 def _check_as_said(check: str | None, said: str) -> str | None:

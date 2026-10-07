@@ -258,7 +258,62 @@ _CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
     (frozenset({"simbolo del sistema", "command prompt"}), ("simbolo del sistema", "command prompt")),
     (frozenset({"lupa", "magnifier"}), ("lupa", "magnifier")),
     (frozenset({"narrador", "narrator"}), ("narrador", "narrator")),
+    # 2026-10-07 «in the Clock app go to Stopwatch» on a Spanish Windows: more of the apps Windows brings, by their
+    # Spanish and English names, whichever the Start catalog carries.
+    (frozenset({"paint", "microsoft paint", "ms paint", "mspaint"}), ("paint",)),
+    (frozenset({"terminal", "windows terminal", "terminal de windows"}), ("terminal", "windows terminal")),
+    (frozenset({"powershell", "windows powershell"}), ("windows powershell", "powershell")),
+    (frozenset({"cmd", "consola de comandos"}), ("simbolo del sistema", "command prompt")),
+    (frozenset({"el tiempo", "msn weather", "msn el tiempo", "app del tiempo", "app del clima", "weather app"}),
+     ("el tiempo", "msn el tiempo", "weather", "msn weather")),
+    (frozenset({"correo y calendario", "mail and calendar", "app de correo", "mail app"}), ("correo", "mail")),
+    (frozenset({"vinculo movil", "enlace movil", "phone link", "tu telefono", "your phone"}),
+     ("vinculo movil", "enlace movil", "phone link")),
+    (frozenset({"asistencia rapida", "quick assist"}), ("asistencia rapida", "quick assist")),
+    (frozenset({"editor del registro", "registry editor", "regedit"}), ("editor del registro", "registry editor")),
+    (frozenset({"administrador de dispositivos", "device manager"}),
+     ("administrador de dispositivos", "device manager")),
+    (frozenset({"mapa de caracteres", "character map"}), ("mapa de caracteres", "character map")),
+    (frozenset({"teclado en pantalla", "on-screen keyboard", "on screen keyboard"}),
+     ("teclado en pantalla", "on-screen keyboard")),
+    (frozenset({"conexion a escritorio remoto", "escritorio remoto", "remote desktop connection", "remote desktop"}),
+     ("conexion a escritorio remoto", "remote desktop connection")),
+    (frozenset({"monitor de recursos", "resource monitor"}), ("monitor de recursos", "resource monitor")),
+    (frozenset({"visor de eventos", "event viewer"}), ("visor de eventos", "event viewer")),
+    (frozenset({"informacion del sistema", "system information"}), ("informacion del sistema", "system information")),
+    (frozenset({"seguridad de windows", "windows security", "windows defender"}),
+     ("seguridad de windows", "windows security")),
+    (frozenset({"obtener ayuda", "get help"}), ("obtener ayuda", "get help")),
+    (frozenset({"centro de opiniones", "feedback hub"}), ("centro de opiniones", "feedback hub")),
+    (frozenset({"peliculas y tv", "movies & tv", "movies and tv", "peliculas y television"}),
+     ("peliculas y tv", "movies & tv")),
+    (frozenset({"microsoft news", "app de noticias", "news app"}), ("noticias", "microsoft news", "news")),
+    (frozenset({"solitario", "solitaire", "microsoft solitaire collection", "microsoft solitaire"}),
+     ("microsoft solitaire collection",)),
+    (frozenset({"to do", "microsoft to do", "lista de tareas"}), ("microsoft to do", "to do")),
+    (frozenset({"barra de juegos", "game bar", "xbox game bar"}), ("xbox game bar", "game bar")),
+    (frozenset({"windows media player", "reproductor de windows media", "windows media player legacy"}),
+     ("reproductor multimedia", "media player", "reproductor de windows media", "windows media player legacy")),
 )
+
+
+# «in the Clock app», «open the Settings app», «la aplicación Reloj», «la app de Configuración»: the word that says
+# it is an application, before or after its name, is no part of the name.
+_APPLICATION_WORD_BEFORE = re.compile(
+    r"^(?:(?:la|el|the|an?|un|una|mi|my)\s+)?(?:app|aplicacion|application|programa|program)\s+"
+    r"(?:(?:de|del|of)\s+)?(?:(?:la|el|los|las|the)\s+)?(?P<name>\S.*)$"
+)
+_APPLICATION_WORD_AFTER = re.compile(r"^(?:(?:la|el|the)\s+)?(?P<name>\S.*?)\s+(?:app|application|aplicacion)$")
+
+
+def application_name_without_frame(target_key: str) -> str | None:
+    """The name inside «the X app», «la aplicación X», «la app de X»; None when nothing frames it."""
+
+    for frame in (_APPLICATION_WORD_BEFORE, _APPLICATION_WORD_AFTER):
+        found = frame.fullmatch(target_key.strip(" .!?"))
+        if found is not None:
+            return found.group("name")
+    return None
 
 
 # Tanda 6 «Abre el app para ver mis pics.» → «No se encontró la aplicación para ver mis pics»: a built-in app is
@@ -295,7 +350,8 @@ def _catalog_alias_key(target_key: str, keys: frozenset[str]) -> str | None:
             for name in catalog_names:
                 if name in keys:
                     return name
-    return None
+    bare = application_name_without_frame(target_key)
+    return _catalog_alias_key(bare, keys) if bare is not None and bare != target_key else None
 
 
 def _installed_game_named(name: str, game_catalog: GameCatalogIndex) -> str | None:
