@@ -82,6 +82,8 @@ def _decided(text: str, decision: ContextDecision) -> dict[str, Any]:
         ("En Discord, haz clic en Configuración.", "input.visible.click"),
         ("En Discord, ve a configuración.", "input.visible.click"),
         ("En Discord, ve a configuración.", "app.open"),
+        # the application said after the place: the last «en» frames it
+        ("Haz clic en Configuración en Discord.", "input.visible.click"),
     ],
 )
 def test_a_follow_up_restated_inside_the_application_is_the_mission(restated: str, chosen: str) -> None:
@@ -112,3 +114,17 @@ def test_a_typed_operation_the_decider_chose_is_never_replaced_by_the_engine() -
     result = _decided("y ahora andá a configuración", ContextDecision(restated, "action", ("web.search",), ""))
 
     assert result["operation"] == "web.search"
+
+
+@pytest.mark.parametrize(
+    ("text", "application", "goal"),
+    [
+        ("hacé clic en Ajustes en Steam", "Steam", "hacer clic en ajustes"),
+        ("andá a la biblioteca en Steam", "Steam", "ir a biblioteca"),
+    ],
+)
+def test_the_application_said_after_the_last_place_frames_the_mission(text: str, application: str, goal: str) -> None:
+    mission = missions.mission_request(text, APPS)
+
+    assert mission is not None
+    assert (mission.application, missions.fold(mission.goal)) == (application, goal)

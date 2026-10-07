@@ -117,6 +117,9 @@ _APP_FRAME_FRONT = re.compile(
 _APP_FRAME_BACK = re.compile(
     r"^(?P<clause>.+?)\s+(?:en|in|on|dentro\s+de)\s+(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)[\s.!?]*$"
 )
+_APP_FRAME_BACK_LAST = re.compile(
+    r"^(?P<clause>.+)\s+(?:en|in|on|dentro\s+de)\s+(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)[\s.!?]*$"
+)
 _APP_FRAME_OPEN = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:abri|abre|abrime|abra|open|launch|lanza|ejecuta|inicia|start)\s+"
     r"(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)\s*(?:,|\s+y\s+|\s+and\s+|\s+y\s+luego\s+|\s+and\s+then\s+|\s+then\s+|\s+luego\s+|\s+despues\s+)\s*(?P<clause>.+)$"
@@ -1203,6 +1206,12 @@ def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str
             continue
         clause = _LEADING_SEQUENCER.sub("", found.group("clause"), count=1)
         yield found.group("app"), clause
+        if pattern is _APP_FRAME_BACK:
+            # «hacé clic en Ajustes en Steam»: the application is after the last «en», the clause keeps the place it
+            # names (the first «en» split gave «ajustes en steam» as the application).
+            last = _APP_FRAME_BACK_LAST.match(folded)
+            if last is not None and last.group("app") != found.group("app"):
+                yield last.group("app"), _LEADING_SEQUENCER.sub("", last.group("clause"), count=1)
         if longer_names and pattern is _APP_FRAME_FRONT:
             # «en el bloc de notas escribí hola»: a name of several words ends where the clause begins.
             words = clause.split()
