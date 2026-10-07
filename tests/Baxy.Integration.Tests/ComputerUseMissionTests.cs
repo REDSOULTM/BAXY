@@ -273,6 +273,7 @@ public sealed class ComputerUseMissionTests
               {"i": 0, "kind": "Button", "name": "Comprimir Tu biblioteca"}, {"i": 1, "kind": "Button", "name": "Crear"},
               {"i": 2, "kind": "Button", "name": "Playlists"}]}
             """);
+        library["controlsBeforeClick"] = new JsonObject { ["2"] = new JsonArray("inicio", "abre tu biblioteca", "crear") };
         JsonArray opened = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Abre Tu biblioteca" }];
         JsonArray missed = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Abre Tu biblioteca" }];
         JsonObject friends = View("""
@@ -285,6 +286,40 @@ public sealed class ComputerUseMissionTests
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", library, opened, out _), Is.True);
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:tu biblioteca", library, missed, out _), Is.False);
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:cotele", friends, card, out _), Is.False);
+        });
+    }
+
+    [Test]
+    public void AClickNamedAsThePlaceThatMadeAnotherItemTheChosenOneDidNotArrive()
+    {
+        JsonObject pictures = View("""
+            {"window": {"title": "Imágenes - Explorador de archivos"}, "controls": [
+              {"i": 0, "kind": "TreeItem", "name": "Downloads"}, {"i": 1, "kind": "TreeItem", "name": "Imágenes", "state": "selected"},
+              {"i": 2, "kind": "TreeItem", "name": "Documentos"}]}
+            """);
+        pictures["selectedBeforeClick"] = new JsonObject { ["2"] = new JsonArray("documentos") };
+        JsonArray clicked = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Downloads" }];
+        JsonObject display = View("""
+            {"window": {"title": "Configuración"}, "controls": [
+              {"i": 0, "kind": "ListItem", "name": "Sistema", "state": "selected"}, {"i": 1, "kind": "Button", "name": "Pantalla"},
+              {"i": 2, "kind": "Button", "name": "Brillo"}, {"i": 3, "kind": "Button", "name": "Luz nocturna"},
+              {"i": 4, "kind": "Button", "name": "Escala"}, {"i": 5, "kind": "Button", "name": "HDR"}]}
+            """);
+        display["selectedBeforeClick"] = new JsonObject { ["3"] = new JsonArray("sistema") };
+        display["controlsBeforeClick"] = new JsonObject { ["3"] = new JsonArray("sistema", "pantalla", "sonido", "notificaciones") };
+        JsonObject stayed = View("""
+            {"window": {"title": "Configuración"}, "controls": [
+              {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected"}, {"i": 1, "kind": "Button", "name": "Colores"},
+              {"i": 2, "kind": "Button", "name": "Temas"}]}
+            """);
+        stayed["controlsBeforeClick"] = new JsonObject { ["2"] = new JsonArray("personalizacion", "colores", "temas") };
+        JsonArray card = [new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Colores" }];
+        JsonArray screen = [new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Pantalla" }];
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:downloads", pictures, clicked, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:pantalla", display, screen, out _), Is.True, "the section kept selected was chosen before");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", stayed, card, out _), Is.False, "the same controls: the click went nowhere");
         });
     }
 

@@ -52,7 +52,7 @@ internal static class ComputerUseMission
     // What belongs to the sub-goal being worked on and starts again with the next one.
     private static readonly string[] SubgoalFields =
     [
-        "baselineText", "textBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow",
+        "baselineText", "textBeforeClick", "selectedBeforeClick", "controlsBeforeClick", "lastText", "lastSignature", "unchangedViews", "coveredLooks", "waitForLabel", "awaitWindow",
         "procedureKey", "procedureIndex", "procedureSteps", "procedureDeviated",
     ];
 
@@ -189,6 +189,16 @@ internal static class ComputerUseMission
                     lastView["textBeforeClick"] = beforeClicks.DeepClone();
                 }
 
+                if (state["selectedBeforeClick"] is JsonObject chosenBefore)
+                {
+                    lastView["selectedBeforeClick"] = chosenBefore.DeepClone();
+                }
+
+                if (state["controlsBeforeClick"] is JsonObject namedBefore)
+                {
+                    lastView["controlsBeforeClick"] = namedBefore.DeepClone();
+                }
+
                 // What the last act made appear (a menu it opened, a page it loaded): the mind reads it apart.
                 if (currentText.Count > 0)
                 {
@@ -277,7 +287,7 @@ internal static class ComputerUseMission
                     // Calculator's procedure starts by typing, which would land on whatever window is in front.
                     bool onTheApplication = (bool?)lastView["window"]?["requested"] == true || (int?)state["processId"] is > 0;
                     MindComputerUseStep? decision = onTheApplication || NextProcedureOpens(state)
-                        ? NextProcedureStep(state, done)
+                        ? IdentifyOnView(NextProcedureStep(state, done), lastView)
                         : null;
                     bool fromProcedure = decision is not null;
                     if (decision is null)
@@ -372,6 +382,12 @@ internal static class ComputerUseMission
                             clickTexts[(steps.Count + 1).ToString(CultureInfo.InvariantCulture)] =
                                 ComputerUseSuccessCheck.TextLines(lastView);
                             state["textBeforeClick"] = clickTexts;
+                            var chosen = state["selectedBeforeClick"] as JsonObject ?? new JsonObject();
+                            chosen[(steps.Count + 1).ToString(CultureInfo.InvariantCulture)] = ComputerUseSuccessCheck.SelectedNames(lastView);
+                            state["selectedBeforeClick"] = chosen;
+                            var named = state["controlsBeforeClick"] as JsonObject ?? new JsonObject();
+                            named[(steps.Count + 1).ToString(CultureInfo.InvariantCulture)] = ComputerUseSuccessCheck.ControlNames(lastView);
+                            state["controlsBeforeClick"] = named;
                         }
                         if (decision.Operation == "input.text.type"
                             && lastView?["window"]?["focused"] is JsonObject typedInto)
@@ -741,6 +757,31 @@ internal static class ComputerUseMission
 
         state["procedureIndex"] = index + 1;
         return new MindComputerUseStep(operation, arguments.DeepClone() as JsonObject ?? new JsonObject(), "procedure");
+    }
+
+    // A learned click names its control only by label (indices change between runs): it is pinned to the control of
+    // the current view that carries that name, so the press goes by identity. Measured: a replayed «Alarma» click by
+    // label right after opening the Clock waited 30 s for the application to finish drawing, by index it took 0.3 s.
+    internal static MindComputerUseStep? IdentifyOnView(MindComputerUseStep? step, JsonObject? view)
+    {
+        if (step is null || step.Operation != "input.visible.click" || step.Arguments["index"] is not null
+            || (string?)step.Arguments["label"] is not { Length: > 0 } label
+            || view?["controls"] is not JsonArray controls)
+        {
+            return step;
+        }
+
+        string wanted = ComputerUseSuccessCheck.Fold(label);
+        JsonObject[] named = [.. controls.OfType<JsonObject>()
+            .Where(control => ComputerUseSuccessCheck.Fold((string?)control["name"]) == wanted && control["i"] is not null)];
+        if (named.Length != 1)
+        {
+            return step;
+        }
+
+        var arguments = step.Arguments.DeepClone() as JsonObject ?? new JsonObject();
+        arguments["index"] = named[0]["i"]!.DeepClone();
+        return step with { Arguments = arguments };
     }
 
     /// <summary>
@@ -1185,7 +1226,12 @@ internal static class ComputerUseMission
         }
 
         var values = new JsonArray();
-        foreach ((bool _, JsonObject said) in candidates.OrderByDescending(candidate => candidate.Related).Take(8))
+        // A related value first (a list showing what is set), then a related chosen item, then the rest: an item named
+        // like one of the answers asked about («Windows (claro)», a theme) is not the setting itself.
+        foreach ((bool _, JsonObject said) in candidates
+            .OrderByDescending(candidate => candidate.Related && candidate.Said["value"] is not null)
+            .ThenByDescending(candidate => candidate.Related)
+            .Take(8))
         {
             values.Add((JsonNode?)said);
         }
@@ -1719,10 +1765,76 @@ internal static class ComputerUseSuccessCheck
                 }
             }
 
-            return label == target;
+            if (label != target)
+            {
+                return false;
+            }
+
+            // The click made another item the chosen one: it landed elsewhere (measured on Explorer: «Downloads»
+            // clicked, «Imágenes» became selected and the mission said it was in Descargas).
+            string key = ((int?)step["step"] ?? index + 1).ToString(CultureInfo.InvariantCulture);
+            var before = new HashSet<string>(
+                (view["selectedBeforeClick"]?[key] as JsonArray ?? []).Select(node => (string?)node ?? string.Empty),
+                StringComparer.Ordinal);
+            if (SelectedNames(view).Select(node => (string?)node ?? string.Empty)
+                .Any(name => !before.Contains(name) && !name.Contains(target, StringComparison.Ordinal)))
+            {
+                return false;
+            }
+
+            // And the window shows something else than before the click: most of its controls are new (a panel opened,
+            // a page loaded). A click that left the same controls did not go anywhere (measured on Settings: the
+            // «Colores» card clicked, Personalización still shown, the mission said it was in Colores).
+            if (view["controlsBeforeClick"]?[key] is not JsonArray earlier)
+            {
+                return false;
+            }
+
+            var seenBefore = new HashSet<string>(earlier.Select(node => (string?)node ?? string.Empty), StringComparer.Ordinal);
+            JsonArray now = ControlNames(view);
+            int fresh = now.Count(node => !seenBefore.Contains((string?)node ?? string.Empty));
+            return now.Count > 0 && fresh * 10 >= now.Count * 4;
         }
 
         return false;
+    }
+
+    // The folded names of the listed controls, the window a click is measured against.
+    internal static JsonArray ControlNames(JsonObject view)
+    {
+        var names = new JsonArray();
+        if (view["controls"] is JsonArray controls)
+        {
+            foreach (JsonNode? node in controls)
+            {
+                if (node is JsonObject control && Fold((string?)control["name"]) is { Length: > 0 } name)
+                {
+                    names.Add((JsonNode?)JsonValue.Create(name));
+                }
+            }
+        }
+
+        return names;
+    }
+
+    // The folded names of the items shown chosen (selected), the list a click is judged against.
+    internal static JsonArray SelectedNames(JsonObject view)
+    {
+        var names = new JsonArray();
+        if (view["controls"] is JsonArray controls)
+        {
+            foreach (JsonNode? node in controls)
+            {
+                if (node is JsonObject control
+                    && ((string?)control["state"] ?? string.Empty).Split(' ').Contains("selected", StringComparer.Ordinal)
+                    && (string?)control["kind"] is "ListItem" or "TreeItem" or "TabItem" or "DataItem" or "MenuItem")
+                {
+                    names.Add((JsonNode?)JsonValue.Create(Fold((string?)control["name"])));
+                }
+            }
+        }
+
+        return names;
     }
 
     // A written web address (scheme or www.) whose host or path has the place as one of its words.
