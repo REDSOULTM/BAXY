@@ -8835,6 +8835,23 @@ def _computer_use_floor(situation: dict, english: bool) -> str:
     return _computer_use.floor_sentence(observed, english, succeeded)
 
 
+def _computer_use_floor_first(situation: dict, language: str) -> str:
+    """Voice audit 2026-10-07 (cu-r16): a third of the model's mission finals had a defect («Ya te llevé a la sección
+    de sonido», «Abrazé a la sección de Bluetooth», «mis playlists»). A mission whose request asks nothing about the
+    window is told from its facts first (computer_use.floor_first); "" leaves it to the model."""
+
+    from . import computer_use as _computer_use
+
+    mission = _computer_use_mission(situation)
+    if mission is None or str(situation.get("kind") or "") not in {"operation", "status", "failure", "error"}:
+        return ""
+    observed = _merged_observed(mission)
+    if not observed:
+        return ""
+    succeeded = mission.get("verified") is True and mission.get("succeeded") is True
+    return _computer_use.floor_first(observed, language == "en", succeeded)
+
+
 # D59 §7 (owner, 2026-10-02; supersedes the owner's review of M75 that left D-w02-t2 with no final): a turn not
 # understood, or a question about it that no draft could write, is asked with the person's own words.
 _NOT_UNDERSTOOD_CAUSES = frozenset({"turn_runtime_failure", "turn_contract_failure"})
@@ -25812,6 +25829,9 @@ class LlmRuntime:
             # M99 (DEV-D v3x D-w15-t3): a question back to the person is in their language, not the one they asked a
             # translation into; M134: so is the failure told.
             response_language = addressed_language(said or user_text, response_language)
+        if response_language in {"es", "en"} and (floor_first := _computer_use_floor_first(situation, response_language)):
+            # Voice audit 2026-10-07 (cu-r16): a mission without a question is told from its facts, not drafted.
+            return floor_first
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
             refused=consulted_refused, said=said,
