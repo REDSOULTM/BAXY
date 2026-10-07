@@ -107,7 +107,7 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
         {
             (int x, int y) = aim ?? (captured.Left + captured.Width / 2, captured.Top + captured.Height / 2);
             effectBoundary.Cross(cancellationToken);
-            _ = SetCursorPos(x, y);
+            _ = VisibleControlSurface.PointAt(x, y);
             int delta = direction == "down" ? -WheelDelta : WheelDelta;
             for (int step = 0; step < amount; step++)
             {
@@ -220,10 +220,6 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             writer.WriteString("authority", authority);
             writer.WriteEndObject();
         });
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetCursorPos(int x, int y);
 
     [LibraryImport("user32.dll")]
     private static partial void mouse_event(
