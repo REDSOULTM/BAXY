@@ -901,7 +901,13 @@ def test_find_clicks_a_written_search_box_when_the_window_has_no_tree_then_types
     assert step["operation"] == "input.visible.click"
     assert step["arguments"] == {"label": "Buscar un chat o iniciar uno nuevo"}
     clicked = [_ok(1, "input.visible.click", label="Buscar un chat o iniciar uno nuevo")]
-    assert computer_use.deterministic_step(goal="ir a ron92", view=written, history=clicked)["arguments"] == {"text": "ron92"}
+    # The next look must prove the box took the keyboard: the same lines after the click prove nothing, so nothing
+    # is typed and the mission says it could not.
+    unproven = computer_use.deterministic_step(goal="ir a ron92", view={**written, "newText": []}, history=clicked)
+    assert unproven["operation"] == "none" and unproven["code"] == "search_focus_unproven"
+    # Its placeholder cleared for the caret (the line is gone, the rest of the window stayed): the name is typed.
+    cleared = {**written, "text": {"TL": ["WhatsApp", "Chats", "Q,", "Todos"]}, "newText": ["Q,"]}
+    assert computer_use.deterministic_step(goal="ir a ron92", view=cleared, history=clicked)["arguments"] == {"text": "ron92"}
 
 
 # ------------------------------------------------- revisión de seguridad 2026-10-07

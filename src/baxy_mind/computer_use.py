@@ -669,7 +669,8 @@ def deterministic_step(
             # be read, measured on WhatsApp with a chat open) the name may be in a message box and Enter would send
             # it, so RiskPolicy asks first.
             field = _focused_field(view)
-            arguments = {"key": "enter"} if field is not None and _is_search_field(field) else {"key": "enter", "target": "message_composer"}
+            searching = (field is not None and _is_search_field(field)) or _typed_into_written_search(view, history)
+            arguments = {"key": "enter"} if searching else {"key": "enter", "target": "message_composer"}
             return {"operation": "input.key.press", "arguments": arguments, "reason": reason}
         return None
     parsed = _goal_target(goal)
@@ -1516,6 +1517,85 @@ def _type_into(view: dict, history: list[dict], target: str) -> dict[str, object
     return _key("ctrl_a")
 
 
+REASON_SEARCH_FOCUS_UNPROVEN = (
+    "hice clic en el cuadro de búsqueda escrito en pantalla, pero no pude comprobar que tomara el teclado, "
+    "así que no escribí nada"
+)
+SEARCH_FOCUS_UNPROVEN = "search_focus_unproven"
+
+
+def _search_line_appeared(view: dict, clicked: str = "") -> str | None:
+    """A written search prompt the last act made appear (a box that opened or took the caret: «Q Buscar por nombre»),
+    other than the line just clicked."""
+
+    for line in view.get("newText") or []:
+        line = str(line).strip()
+        if 0 < len(line.split()) <= 8 and _is_search_field({"name": line}) and fold(line) != fold(clicked):
+            return line
+    return None
+
+
+def _written_box_took_keyboard(view: dict, label: str) -> bool:
+    """The next look after a click on a search box's written line proves it took the keyboard: a written search prompt
+    appeared with the click, or the clicked line is gone (its placeholder cleared for the caret) while the rest of the
+    window stayed (a few new lines at most: a window that went elsewhere is no box with the caret)."""
+
+    if _search_line_appeared(view, label) is not None:
+        return True
+    appeared = view.get("newText")
+    if not isinstance(appeared, list) or not label.strip() or len(appeared) > 3:
+        return False
+    return _text_line_with(view, label) is None and bool(_view_lines(view))
+
+
+def _keyboard_on_another_field(view: dict) -> bool:
+    """The view reports the keyboard on a field that is not a search: a message box (whatever its kind), a password,
+    or a text field named otherwise. Typing a name there would write into it, or send it with the next Enter."""
+
+    focused = _focused(view)
+    candidates = [focused] if focused is not None else []
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if isinstance(controls, list):
+        candidates += [
+            control for control in controls
+            if isinstance(control, dict) and "focused" in str(control.get("state") or "").split()
+        ]
+    for control in candidates:
+        if "password" in str(control.get("state") or ""):
+            return True
+        name = fold(control.get("name"))
+        if _COMPOSER_NAME.search(name) and not _is_search_field(control):
+            return True
+        if control.get("kind") in _FIELD_KINDS and not _is_search_field(control):
+            return True
+    return False
+
+
+def _typed_into_written_search(view: dict, history: list[dict]) -> bool:
+    """The last step typed into a written search box whose keyboard was proven (the step before it was a search key or
+    a click on a search's written line) and the text now shows as that box's new line, with no other field reporting
+    the keyboard: the Enter that follows submits the search."""
+
+    if len(history) < 2 or _keyboard_on_another_field(view):
+        return False
+    typed, before = history[-1], history[-2]
+    if typed.get("operation") != "input.text.type" or typed.get("ok") is not True or before.get("ok") is not True:
+        return False
+    searched = (
+        (before.get("operation") == "input.key.press" and before.get("key") in _SEARCH_KEYS)
+        or (before.get("operation") == "input.visible.click" and _is_search_field({"name": before.get("label")})
+            and not isinstance(before.get("index"), int))
+    )
+    text = fold(typed.get("text")).strip(" «»\"'")
+    if not searched or not text:
+        return False
+    # The box's own line: the typed text alone, after at most a drawn magnifier («Q Cuphead»).
+    return any(
+        re.fullmatch(rf"(?:\S{{1,2}}\s+)?{re.escape(text)}", fold(line).strip()) is not None
+        for line in view.get("newText") or []
+    )
+
+
 def _type(target: str) -> dict[str, object]:
     return {"operation": "input.text.type", "arguments": {"text": typed_text(target)}, "reason": _REASON_FIND}
 
@@ -1586,7 +1666,15 @@ def _find_step(target: str, view: dict, history: list[dict], *, navigate: bool =
     if last is not None and last_operation == "input.key.press" and last.get("key") in _SEARCH_KEYS:
         if _focused_field(view) is not None:
             return _type_into(view, history, target)
-        return _key("escape")
+        if _search_line_appeared(view) is not None and not _keyboard_on_another_field(view):
+            # The key brought up a written search prompt (measured on Steam's library: ctrl_f wrote «Q Buscar por
+            # nombre» where only a magnifier was drawn, with no tree to report the focus): that box has the keyboard.
+            return _type_into(view, history, target)
+        if view.get("newText") != [] or _focused(view) is not None:
+            return _key("escape")
+        # The key changed nothing on screen (no line appeared): there is nothing to close, and an Escape would only
+        # spend a look that changes nothing (measured on Steam: ctrl_k and Escape left the screen still twice and the
+        # mission stopped before ctrl_f); the next way is tried.
     if last is not None and last_operation == "input.visible.click":
         clicked = find_control(view, str(last.get("label") or ""))
         # A search box clicked by its written line (no tree to tell focus) takes the keyboard as a person expects.
@@ -1602,8 +1690,14 @@ def _find_step(target: str, view: dict, history: list[dict], *, navigate: bool =
         )
         if _is_search_field({"name": last.get("label")}) and (
             _focused_field(view) is not None or (clicked is not None and clicked.get("kind") in _FIELD_KINDS)
-            or written_box or opened_box or hidden_field
+            or opened_box or hidden_field
         ):
+            return _type_into(view, history, target)
+        if _is_search_field({"name": last.get("label")}) and written_box:
+            # A box clicked by its written line (no tree to tell focus) takes the name only when the next look proves
+            # it has the keyboard (its line changed); otherwise the name could land in a message box or another field.
+            if _keyboard_on_another_field(view) or not _written_box_took_keyboard(view, str(last.get("label") or "")):
+                return _none(REASON_SEARCH_FOCUS_UNPROVEN, code=SEARCH_FOCUS_UNPROVEN)
             return _type_into(view, history, target)
     searched = _typed_target(history, target)
     if not searched:
@@ -2022,6 +2116,9 @@ def _checked_act(
             return _none("no hay texto que escribir")
         if _focused_is_password(view):
             return _none("el campo enfocado es una contraseña", code="password_field")
+        if fold(goal or "").startswith("buscar ") and _keyboard_on_another_field(view):
+            # A search's name never goes into a message box or another field that has the keyboard.
+            return _none("el teclado está en un campo que no es la búsqueda", code="search_focus_unproven")
         return _guard_repeat({"operation": "input.text.type", "arguments": {"text": text[:4096]}, "reason": why}, last_failed)
     if act == "key":
         key = str(raw.get("key") or "")
@@ -2126,6 +2223,10 @@ _STOP_CAUSES: dict[str, dict[str, str]] = {
     "computer_use_window_not_application": {
         "es": "la ventana de delante no era la de la aplicación, así que no pulsé ni escribí nada en ella",
         "en": "the window in front was not the application's, so I pressed and typed nothing there",
+    },
+    "computer_use_search_focus_unproven": {
+        "es": "no pude comprobar que el cuadro de búsqueda tomara el teclado, así que no escribí nada",
+        "en": "I could not confirm that the search box took the keyboard, so I typed nothing",
     },
     "computer_use_window_elevated": {
         "es": "esa aplicación corre como administrador y Windows no deja que otra aplicación la controle",

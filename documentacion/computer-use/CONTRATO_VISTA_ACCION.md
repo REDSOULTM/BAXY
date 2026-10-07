@@ -538,7 +538,9 @@ el objetivo es «ir a», el botón de navegación o menú de la ventana aún no 
 Navigation», «Menú principal», «Más opciones», «Main menu», «Hamburger menu»; por su nombre entero,
 `Button`/`MenuItem`/`SplitButton`, nunca un interruptor ni uno ya `expanded`; «Menú» o «More» solos no valen, y con
 campo de dirección sólo uno dentro de la página) y el destino se busca entre lo que apareció (los modos de la
-Calculadora, live n2); después `ctrl_k` y `ctrl_f` (sólo si aparece un campo con foco; si no, Escape); después
+Calculadora, live n2); después `ctrl_k` y `ctrl_f` (sólo si aparece un campo con foco o la tecla escribió un
+aviso de búsqueda nuevo, «Q Buscar por nombre» en la biblioteca de Steam; si apareció otra cosa, Escape; si no
+cambió nada, la siguiente tecla sin Escape); después
 desplazar hasta tres veces la lista con más ítems (`input.scroll {index}`: `ScrollPattern` de ese control o la rueda
 en su centro); sólo entonces el modelo. Un clic en algo visible que nombra el destino sin llegar (una tarjeta con su
 nombre) no cierra BUSCAR: sigue con el buscador; si el clic fallido fue en el control del propio lugar, el lugar se
@@ -554,6 +556,16 @@ entrada que actúa (jugar, instalar, iniciar, ejecutar, comprar, enviar, unirse,
 pulsa por su nombre el cuerpo de la ventana (un `Pane`/`Document`/`Window`/`Custom`/`Group` que cubre ≥ 80 %: «Chrome
 Legacy Window»). Sin árbol, una palabra del host que empieza o termina con el lugar (≥ 5 letras) lo nombra
 («steamcommunity»: comunidad/community).
+
+**Cuadro de búsqueda escrito (sin árbol).** Un clic en la línea OCR de una búsqueda no da por hecho el foco: se
+escribe sólo si la mirada siguiente lo prueba (apareció un aviso de búsqueda nuevo, o la línea pulsada desapareció
+con ≤ 3 líneas nuevas: el texto de ayuda se borró para el cursor) y ningún campo que no sea búsqueda informa el
+teclado (un cuadro de mensaje, una contraseña, otro `Edit`); si no, la misión para con
+`computer_use_search_focus_unproven` («no pude comprobar que el cuadro de búsqueda tomara el teclado, así que no
+escribí nada»). El modelo tampoco escribe en «buscar X» con el teclado en otro campo. El Enter tras escribir en un
+cuadro así va sin `target` sólo si lo tecleado se ve como la línea nueva del cuadro; si no, pregunta. En la
+comprobación de una búsqueda, `text:X` con X tecleado en ella necesita X en dos sitios (título, control que no es
+campo, líneas escritas): el cuadro que repite la consulta solo no prueba resultados (`OnlyTheQueryShows`).
 
 **Página de inicio de un editor** (live v5/v6: Excel y Word abrieron en «Buenos días», con «Libro/Documento en
 blanco», los recientes y «Buscar un archivo»; sus pestañas sólo existen con un documento abierto). Un objetivo de
