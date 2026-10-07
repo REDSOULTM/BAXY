@@ -1389,58 +1389,61 @@ def _question_instruction(seen: dict) -> str:
         return ""
     return (
         "seen.question is what the person asked about the window once the mission was done: answer it FIRST, "
-        "only from seen.screen and seen.evidence, quoting what is written there; when they do not show the answer, "
+        "only from seen.screen and seen.evidence, saying the value written there; when they do not show the answer, "
         "or the mission did not reach its goal, say you could not see it, never guess. Then: "
     )
+
+
+# The voice of a mission final is BAXY's own (documentacion/00_IDENTIDAD.md): a companion who confirms the observable
+# state, warm and brief, speaking informally to the person; a failure is said plainly with its cause, without apology.
+_VOICE = (
+    "Speak as the one who acted, in the FIRST PERSON (never the third person, never your own name, never «you» for "
+    "your own acts), informally and warmly, in the person's language, in ONE short sentence. Confirm the state the "
+    "window shows now (where it is, the value asked), not the clicks, keys or steps you took; never mention the "
+    "mission, the evidence, the check, the screen or the view as such. "
+)
 
 
 def _result_instruction(seen: dict) -> str:
     if seen.get("subgoals"):
         chained = (
             "This result is a computer-use mission of several parts done in order: seen.subgoals lists each part "
-            "(goal, application, reached true or false). Say in one or two short sentences, in the person's "
-            "language, in the FIRST PERSON (you are the one who acted; never the third person, never your own name) "
-            "and in the past tense, the parts you did, in order. "
+            "(goal, application, reached true or false). " + _VOICE
+            + "Name the parts briefly in their order only when there are several applications or places. "
         )
         if seen.get("reached"):
             return chained + (
-                "Every part was reached. Quote seen.evidence exactly when it exists. seen.joined says whether a voice "
-                "channel or call was joined: say you joined only if it is true. Never add parts, steps, times or "
-                "results that are not in seen."
+                "Every part was reached. When seen.evidence names the result, say its text as it is written. "
+                "seen.joined says whether a voice channel or call was joined: say you joined only if it is true. "
+                "Never add parts, steps, times or results that are not in seen."
             )
         return chained + (
-            "Not every part was reached: say which ones you did and that you could not do seen.firstUnreached, "
-            "giving seen.stoppedBecause as the cause (reword it lightly, never say «operación» or «operation»). "
-            "Never say that a part with reached false was done, never say the whole request succeeded, and never "
-            "invent a cause that is not in seen."
+            "Not every part was reached: lead with what you could not do (seen.firstUnreached) and its cause "
+            "(seen.stoppedBecause, reworded lightly, never «operación» or «operation»), plainly and without apology; "
+            "then, briefly, the parts that were done. Never say that a part with reached false was done, never say "
+            "the whole request succeeded, and never invent a cause that is not in seen."
         )
     if seen.get("reached"):
         return (
             "This result is a computer-use mission that REACHED its goal: seen.goal is what was asked, "
-            "seen.stepsDone the acts done in order (clicks, keys, typing) on the window seen.windowTitle, "
-            "seen.evidence the text on screen that proves it when present, seen.screen what the window showed "
-            "at the end (seen.screen.numbers: the controls and lines carrying a number, such as a display or a "
-            "counter; seen.screen.values: its fields; seen.screen.lines: a few lines). When the goal asked for a "
-            "calculation, a number or a value, quote the matching entry of seen.screen.numbers exactly; do not "
-            "list the other lines of the window. Say in one short sentence, in "
-            "the person's language, in the FIRST PERSON (you are the one who acted; never the third person, never "
-            "your own name) and in the past tense, what you did and what you saw; when the goal was a "
-            "result, lead with it; quote seen.evidence "
-            "exactly when it exists. seen.joined says whether a voice channel or call was joined: say you "
-            "joined only if it is true. Never add steps, times or results that are not in seen: when the goal was "
-            "pressing a key or typing, say only that you did it in that app, never that it completed something or "
-            "what it caused."
+            "seen.stepsDone the acts done in order on the window seen.windowTitle, seen.evidence the text on screen "
+            "that proves it when present, seen.screen what the window showed at the end (seen.screen.numbers: the "
+            "controls and lines carrying a number, such as a display or a counter; seen.screen.values: its fields "
+            "and chosen items; seen.screen.lines: a few lines). " + _VOICE
+            + "When the goal asked for a calculation, a number or a value, lead with it, said exactly as the matching "
+            "entry of seen.screen.numbers or seen.screen.values writes it; do not list the other lines of the window. "
+            "seen.joined says whether a voice channel or call was joined: say you joined only if it is true. Never "
+            "add steps, times or results that are not in seen: when the goal was pressing a key or typing, say only "
+            "that it is done in that app, never what it caused."
         )
     return (
         "This result is a computer-use mission that did NOT reach its goal: seen.goal is what was asked, "
         "seen.stepsDone what was done before stopping, seen.stepsFailed what could not be done, "
-        "seen.stoppedBecause the cause in the person's words. Say in one or two short sentences, in the person's "
-        "language and in the FIRST PERSON (you are the one who acted; never the third person), what was done and "
-        "that the goal was not reached, giving seen.stoppedBecause as the "
-        "cause (reword it lightly, never say «operación» or «operation»). Never say it succeeded and never "
-        "invent a cause that is not in seen."
+        "seen.stoppedBecause the cause in the person's words. In ONE short sentence, in the person's language and "
+        "in the FIRST PERSON, say plainly that you could not do it and why (seen.stoppedBecause, reworded lightly, "
+        "never «operación» or «operation»), without apology and without listing steps. Never say it succeeded and "
+        "never invent a cause that is not in seen."
     )
-
 
 _JOIN_CLAIM = re.compile(
     r"\b(?:me\s+uni|me\s+he\s+unido|nos\s+unimos|joined|entre\s+(?:a|al)\s+(?:el\s+)?canal\s+de\s+voz|estoy\s+en\s+el\s+canal\s+de\s+voz|te\s+uni|ya\s+estoy\s+en\s+la\s+llamada|in\s+the\s+call)\b"
