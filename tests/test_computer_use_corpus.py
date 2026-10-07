@@ -22,6 +22,8 @@ APPS = (
     "Steam", "Discord", "Google Chrome", "Calculadora", "Configuración", "Bloc de notas", "Paint", "Spotify",
     "WhatsApp", "Explorador de archivos", "Word", "Excel", "Opera GX Browser", "Microsoft Edge", "VLC media player",
     "Reloj", "Outlook", "Telegram", "Visual Studio Code", "OBS Studio", "Panel de control", "Microsoft Teams", "Zoom",
+    "Fotos", "Herramienta Recortes", "Administrador de tareas", "Microsoft Store", "Grabadora de sonido",
+    "Reproductor multimedia",
 )
 
 
@@ -200,6 +202,39 @@ MISSIONS: tuple[tuple[str, int], ...] = (
     ("abrí Paint, elegí el rectángulo y después el azul", 2),
     ("in Steam open the library and search for Terraria", 2),
     ("en el explorador andá a Documentos, creá la carpeta Proyectos y entrá", 3),
+    # --- 2026-10-07, Windows en español: las apps que trae Windows por su nombre inglés, con «app» delante o detrás,
+    # y los lugares de su ventana dichos en el otro idioma («Stopwatch» en el «Cronómetro» del Reloj).
+    ("in the Clock app go to Stopwatch", 1),
+    ("open the Clock app and go to Timer", 1),
+    ("en la app Reloj andá al cronómetro", 1),
+    ("open the Settings app and go to Bluetooth & devices", 1),
+    ("in Settings go to Time & Language", 1),
+    ("in the Calculator app switch to Scientific", 1),
+    ("in Photos go to Albums", 1),
+    ("open the Photos app and go to Favorites", 1),
+    ("in Task Manager go to Performance", 1),
+    ("open Task Manager and go to Startup apps", 1),
+    ("in the Microsoft Store app go to Library", 1),
+    ("in Snipping Tool click New", 1),
+    ("open Paint and pick the eraser", 1),
+    ("in Control Panel go to Sound", 1),
+    ("open File Explorer and go to Downloads", 1),
+    ("in File Explorer go to This PC", 1),
+    ("in the File Explorer app go to Pictures", 1),
+    ("in the Sound Recorder app press space", 1),
+    ("open Media Player and go to Music library", 1),
+    ("open the Settings app, go to Personalization and then to Colors", 2),
+    ("in the Clock app go to Timer and then to Stopwatch", 2),
+    ("in Settings go to Accessibility and turn on Magnifier", 2),
+    # spanglish
+    ("abrí el Clock y andá a Stopwatch", 1),
+    ("en Settings andá a Bluetooth", 1),
+    ("abre File Explorer y ve a Downloads", 1),
+    ("en la Calculator app cambiá a Scientific", 1),
+    ("en Task Manager andá a Performance", 1),
+    ("open Configuración and go to Pantalla", 1),
+    ("abrí la aplicación Fotos y andá a Carpetas", 1),
+    ("en la app de Configuración andá a Hora e idioma", 1),
 )
 
 # Lo que el catálogo tipado ya hace entero sigue su operación (D21).
@@ -321,7 +356,7 @@ def test_a_closing_question_is_split_off_and_answered_by_the_final() -> None:
     single = missions.mission_request("en Configuración andá a Colores y decime si el modo es claro u oscuro", APPS)
     assert single.steps == () and "steps" not in single.arguments()
     assert single.goal == "ir a colores" + missions.QUESTION_MARK + "decime si el modo es claro u oscuro"
-    assert single.success_check.startswith("control:colores:selected|")
+    assert single.success_check.startswith("control:colores:current|")
     seen = computer_use.project_seen({"goal": mission.goal, "reached": True, "steps": []}, "es")
     assert seen["goal"] == "ir a personalizacion; luego ir a colores"
     assert seen["question"] == "decime si el modo es claro u oscuro"
@@ -452,3 +487,107 @@ def test_a_check_names_what_was_said_as_the_shell_folds_it() -> None:
 def test_the_text_keeps_its_capitals_across_double_spaces_and_line_breaks() -> None:
     assert missions.mission_request("en el bloc de notas escribí  Hola  Mundo", APPS).goal == "escribir Hola Mundo"
     assert missions.mission_request("en el bloc de notas escribí Hola\nMundo", APPS).goal == "escribir Hola Mundo"
+
+
+# --- 2026-10-07, Windows en español: nombres de las apps de Windows y lugares de su ventana en el otro idioma
+
+
+def test_windows_own_apps_are_found_by_either_name_and_with_the_app_word() -> None:
+    for said, installed in (
+        ("Clock", "Reloj"), ("the Clock app", "Reloj"), ("Settings app", "Configuración"),
+        ("la aplicación Calculadora", "Calculadora"), ("la app de Fotos", "Fotos"),
+        ("Task Manager", "Administrador de tareas"), ("Snipping Tool", "Herramienta Recortes"),
+        ("Sound Recorder", "Grabadora de sonido"), ("the Media Player app", "Reproductor multimedia"),
+        ("Microsoft Store app", "Microsoft Store"), ("File Explorer", "Explorador de archivos"),
+        ("Control Panel", "Panel de control"),
+    ):
+        assert missions.catalog_application(said, APPS) == installed, said
+    # The app word alone names nothing installed.
+    assert missions.catalog_application("the app", APPS) is None
+
+
+def test_a_place_said_in_the_other_language_checks_the_windows_name() -> None:
+    check = missions.mission_request("in the Clock app go to Stopwatch", APPS).success_check
+    assert "control:cronometro:current" in check and "title:cronometro" in check
+    # «Alarmas» is a page of the Clock, never its title «Reloj»: a check that accepted the title would hold at once.
+    assert "reloj" not in missions.mission_request("en el Reloj andá a Alarmas", APPS).success_check
+    assert missions.label_alternatives("galeria") == ("gallery",)
+    assert set(missions.label_alternatives("explorador")) >= {"file explorer", "explorer"}
+
+
+def test_a_check_never_holds_the_conjunction_inside_a_name_and_fits_the_operation() -> None:
+    check = missions.mission_request("in Settings go to Time & Language", APPS).success_check
+    terms = check.split("|")
+    assert all("&" not in term for term in terms)
+    assert "control:time:current" in terms and "control:hora e idioma:current" in terms
+    long = missions.read_clause("andá a inicio")[1]
+    assert len(long.encode("utf-8")) <= 512 and long.startswith("control:inicio:current|")
+
+
+def _explorer_view(*, title: str, item_zone: str, selected: bool) -> dict:
+    return {
+        "window": {"title": title, "process": "explorer"},
+        "controls": [
+            {"i": 0, "kind": "TreeItem", "name": "Descargas", "zone": "L"},
+            {"i": 1, "kind": "ListItem", "name": "Descargas", "zone": item_zone, "state": "selected" if selected else ""},
+            {"i": 2, "kind": "ListItem", "name": "Documentos", "zone": "T"},
+            {"i": 3, "kind": "Edit", "name": "Buscar en Inicio", "zone": "TR"},
+        ],
+    }
+
+
+_CLICKED = [{"step": 1, "operation": "input.visible.click", "ok": True, "label": "Descargas", "index": 1}]
+
+
+def test_a_content_item_chosen_by_one_click_is_opened_with_enter() -> None:
+    view = _explorer_view(title="Inicio - Explorador de archivos", item_zone="T", selected=True)
+    step = computer_use.deterministic_step(
+        goal="ir a downloads", view=view, history=_CLICKED, application="Explorador de archivos"
+    )
+    # Enter on a list item sends nothing: no message_composer target for RiskPolicy.
+    assert step["operation"] == "input.key.press" and step["arguments"] == {"key": "enter"}
+    # Once pressed, Enter is not pressed again.
+    pressed = [*_CLICKED, {"step": 2, "operation": "input.key.press", "ok": True, "key": "enter"}]
+    again = computer_use.deterministic_step(
+        goal="ir a downloads", view=view, history=pressed, application="Explorador de archivos"
+    )
+    assert again is None or again.get("arguments", {}).get("key") != "enter"
+
+
+def test_enter_is_not_pressed_where_the_click_already_arrived() -> None:
+    # The window is titled with the place: the click opened it.
+    arrived = _explorer_view(title="Descargas - Explorador de archivos", item_zone="T", selected=True)
+    step = computer_use.deterministic_step(
+        goal="ir a descargas", view=arrived, history=_CLICKED, application="Explorador de archivos"
+    )
+    assert step is None or step["operation"] != "input.key.press"
+    # A navigation list in the side column: its selected item is the page shown.
+    side = _explorer_view(title="Inicio - Explorador de archivos", item_zone="L", selected=True)
+    step = computer_use.deterministic_step(
+        goal="ir a descargas", view=side, history=_CLICKED, application="Explorador de archivos"
+    )
+    assert step is None or step["operation"] != "input.key.press"
+    # Nothing was clicked yet: the item is clicked first.
+    fresh = _explorer_view(title="Inicio - Explorador de archivos", item_zone="T", selected=False)
+    step = computer_use.deterministic_step(
+        goal="ir a descargas", view=fresh, history=[], application="Explorador de archivos"
+    )
+    assert step is not None and step["operation"] == "input.visible.click"
+    # Choosing an item is the goal itself: no Enter after selecting it.
+    chosen = computer_use.deterministic_step(
+        goal="seleccionar descargas", view=arrived, history=_CLICKED, application="Explorador de archivos"
+    )
+    assert chosen is None or chosen["operation"] != "input.key.press"
+
+
+def test_content_items_are_list_items_out_of_the_side_column() -> None:
+    assert computer_use.is_content_item({"kind": "ListItem", "zone": "C"})
+    assert computer_use.is_content_item({"kind": "DataItem", "zone": "TR"})
+    assert not computer_use.is_content_item({"kind": "ListItem", "zone": "L"})
+    assert not computer_use.is_content_item({"kind": "ListItem", "zone": "TL"})
+    assert not computer_use.is_content_item({"kind": "TreeItem", "zone": "C"})
+    assert not computer_use.is_content_item({"kind": "ListItem"})
+
+
+def test_the_step_prompt_matches_controls_by_meaning_across_languages() -> None:
+    assert "otro idioma" in computer_use.STEP_PROMPT and "significado" in computer_use.STEP_PROMPT

@@ -1731,7 +1731,7 @@ internal static class ComputerUseSuccessCheck
                     string name = rest;
                     string? state = null;
                     int split = rest.LastIndexOf(':');
-                    if (split > 0 && rest[(split + 1)..] is "selected" or "on" or "off" or "expanded" or "focused" or "collapsed")
+                    if (split > 0 && rest[(split + 1)..] is "selected" or "current" or "on" or "off" or "expanded" or "focused" or "collapsed")
                     {
                         name = rest[..split];
                         state = rest[(split + 1)..];
@@ -1759,7 +1759,7 @@ internal static class ComputerUseSuccessCheck
                         (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
                         && !typed.Contains(Fold((string?)control["name"]))
                         && (!whole || NamesWhole(Fold((string?)control["name"]), Fold(name)))
-                        && (state is null || Fold((string?)control["state"]).Split(' ').Contains(state)));
+                        && (state is null || HasState(control, state)));
                 }
             case "value":
                 {
@@ -1820,6 +1820,24 @@ internal static class ComputerUseSuccessCheck
                 return false;
         }
     }
+
+    // «current» is the place the window shows now: the item chosen in its navigation (a side list or tree, a tab). An
+    // item merely selected in a content list is not (measured on Explorer: one click on the «Descargas» folder of the
+    // Home view selects it and opens nothing; Enter or a double click opens it).
+    private static bool HasState(JsonObject control, string state)
+    {
+        string[] states = Fold((string?)control["state"]).Split(' ');
+        return state == "current"
+            ? states.Contains("selected") && !IsContentItem(control)
+            : states.Contains(state);
+    }
+
+    // A ListItem or DataItem out of the window's left column (zones L, TL, BL), where content views list their items
+    // and navigation lists never sit.
+    internal static bool IsContentItem(JsonObject control) =>
+        (string?)control["kind"] is "ListItem" or "DataItem"
+        && (string?)control["zone"] is { Length: > 0 } zone
+        && !zone.EndsWith('L');
 
     // The text a typing step sent, seen in the focused field when that field shows its content; a field that does
     // not expose it (measured: Discord's editor) cannot be read and the accepted keys stand.

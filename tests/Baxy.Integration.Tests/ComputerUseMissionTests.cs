@@ -62,6 +62,41 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void APlaceIsCurrentWhenItsNavigationItemIsSelectedNeverAContentItemMerelyChosen()
+    {
+        // Explorer's Home view (measured 2026-10-07): one click on the «Descargas» folder of the content list selects
+        // it and opens nothing; the navigation tree in the side column is what tells the place shown.
+        JsonObject chosen = View("""
+            {"window": {"title": "Inicio - Explorador de archivos", "process": "explorer", "processId": 7},
+             "controls": [
+               {"i": 0, "kind": "TreeItem", "name": "Inicio", "state": "selected", "zone": "L"},
+               {"i": 1, "kind": "TreeItem", "name": "Descargas", "state": "", "zone": "L"},
+               {"i": 2, "kind": "ListItem", "name": "Descargas", "state": "selected", "zone": "T"},
+               {"i": 3, "kind": "DataItem", "name": "Imágenes", "state": "selected", "zone": "C"}
+             ]}
+            """);
+        JsonObject side = View("""
+            {"window": {"title": "Reloj", "process": "applicationframehost", "processId": 8},
+             "controls": [
+               {"i": 0, "kind": "ListItem", "name": "Cronómetro", "state": "selected", "zone": "L"},
+               {"i": 1, "kind": "ListItem", "name": "Alarma", "state": "", "zone": "TL"}
+             ]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:descargas:current", chosen, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:imagenes:current", chosen, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:inicio:current", chosen, [], out _), Is.True);
+            // Choosing an item is still «selected»: the state a choice asks for.
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:descargas:selected", chosen, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:cronometro:current", side, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:alarma:current", side, [], out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.IsContentItem((JsonObject)chosen["controls"]![2]!), Is.True);
+            Assert.That(ComputerUseSuccessCheck.IsContentItem((JsonObject)side["controls"]![0]!), Is.False);
+        });
+    }
+
+    [Test]
     public void ALongTabTitleIsNamedByTheSiteItEndsWith()
     {
         JsonObject view = View("""

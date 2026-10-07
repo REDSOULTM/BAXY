@@ -290,7 +290,9 @@ independientes; nunca por el modelo.
 check   := term ( "|" term )*          # OR de términos; un término con "&" es AND
 term    := atom ( "&" atom )*
 atom    := "text:" needle              # needle plegada dentro de algún control o línea OCR
-         | "control:" name [ ":" state ]   # control con ese nombre (plegado) y, si se da, ese estado (selected|on|off|expanded|focused)
+         | "control:" name [ ":" state ]   # control con ese nombre (plegado) y, si se da, ese estado (selected|current|on|off|expanded|focused)
+                                       # current: selected y no es un elemento de contenido (ListItem/DataItem fuera de la
+                                       # columna izquierda L/TL/BL); es el estado de «ir a X». Un nombre nunca lleva «&» ni «|».
          | "title:" needle              # título de la ventana de delante
          | "process:" name              # proceso de la ventana de delante
          | "count:" kind op N           # número de controles de ese kind (op: <= < == >= >)
@@ -583,6 +585,7 @@ cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y 
 |---|---|---|
 | creá una carpeta llamada X / create a folder named X | `crear carpeta X` | `control:X` |
 | renombrá A a B / rename A to B | `renombrar A a B` | `control:B` |
+| andá a X / go to X | `ir a X` | `control:X:current\|title:X\|page:X` (+ nombres en el otro idioma); un clic que sólo eligió un elemento de contenido sigue con Enter |
 | elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:X:selected\|control:X:on\|stepDone:input.visible.click:X` (+ nombres en el otro idioma) |
 | buscá X / search for X | `buscar X` | `title:X\|stepDone:input.text.type&stepDone:input.key.press:enter&text:X` |
 | poné la primera / play the first one / ponelo | `reproducir …` | `control:pausa&stepDone:input.visible.click` (y `pause`, y con tecla) |

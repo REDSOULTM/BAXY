@@ -69,7 +69,9 @@ STEP_PROMPT = (
     "después key enter si hace falta. Si el destino no está en la vista: un campo de búsqueda (click), "
     "o key ctrl_k / ctrl_f, escribí el nombre y elegí el resultado; si no, scroll. Si un clic abrió un "
     "menú, elegí la opción que lleva al destino. done sólo cuando ves la página o sección pedida: citá "
-    "algo de ella, no sólo su nombre."
+    "algo de ella, no sólo su nombre. El objetivo puede estar dicho en otro idioma que el de la ventana: "
+    "elegí el control por su significado, no por sus letras. Un clic en un elemento de una lista de "
+    "contenido sólo lo elige: para entrar en él, key enter."
 )
 
 
@@ -632,6 +634,11 @@ def deterministic_step(
             return _find_step(target, view, history, navigate=navigate)
         twin = gender_twin(target) if searching else None
         names = (target, *label_alternatives(target), *((twin,) if twin else ()))
+        if head == "ir a " and kind is None and _content_item_chosen(view, history, names) is not None:
+            # One click on an item of a content list chose it and opened nothing (measured on Explorer: «Descargas»
+            # in the Home view); a person then presses Enter. Enter on a list item sends nothing to anyone.
+            return {"operation": "input.key.press", "arguments": key_arguments("enter", view),
+                    "reason": "el clic sólo eligió el elemento: Enter lo abre"}
         # Going to a place looks among the controls that are not switches first («Bluetooth» as a switch and as the
         # navigation item: the item is the place).
         among = _without_switches(view) if placing else view
@@ -709,6 +716,39 @@ def _names_a_switch(view: dict, line: str) -> bool:
         and label_names(str(control.get("name") or ""), line) and label_names(line, str(control.get("name") or ""))
         for control in (controls if isinstance(controls, list) else [])
     )
+
+
+def is_content_item(control: dict) -> bool:
+    """A ListItem or DataItem out of the window's left column (zones L, TL, BL): an item of a content view (files,
+    pictures, results), where one click selects and does not open; navigation lists sit in the side column."""
+
+    zone = str(control.get("zone") or "")
+    return str(control.get("kind")) in {"ListItem", "DataItem"} and bool(zone) and not zone.endswith("L")
+
+
+def _content_item_chosen(view: dict, history: list[dict], names: tuple[str, ...]) -> dict | None:
+    """The content item named as the place that the last step, a verified click on it, left selected while the
+    window's title does not name the place yet; None otherwise."""
+
+    last = history[-1] if history and isinstance(history[-1], dict) else None
+    if last is None or last.get("operation") != "input.visible.click" or last.get("ok") is not True:
+        return None
+    if not any(label_names(name, str(last.get("label") or "")) for name in names):
+        return None
+    window = view.get("window") if isinstance(view, dict) else None
+    title = _window_fold(window.get("title")) if isinstance(window, dict) else ""
+    if any(re.search(rf"(?<!\w){re.escape(fold(name))}(?!\w)", title) for name in names if fold(name)):
+        return None
+    controls = view.get("controls") if isinstance(view, dict) else None
+    for control in controls if isinstance(controls, list) else ():
+        if (
+            isinstance(control, dict)
+            and is_content_item(control)
+            and "selected" in str(control.get("state") or "").split()
+            and any(fold(control.get("name")) == fold(name) for name in names)
+        ):
+            return control
+    return None
 
 
 # ------------------------------------------------------------- buscar el destino
