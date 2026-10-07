@@ -353,7 +353,7 @@ _UNNAMED_FIELD = re.compile(r"^(?:\((?:edit|document)\))?$")
 _EDITABLE_KINDS = frozenset({"Edit", "Document", "ComboBox"})
 
 
-def _composer_with_text(view: dict) -> bool:
+def _composer_with_text(view: dict, history: list[dict] | None = None) -> bool:
     """Whether Enter (or space) on the focused control may hand something to a person (contract §2.1), so the step
     is marked ``message_composer`` and RiskPolicy asks first. Conservative by design (safety review 2026-10-07):
 
@@ -361,11 +361,15 @@ def _composer_with_text(view: dict) -> bool:
       that value is empty (nothing to send);
     * a focused text field with no name of its own that does not expose its value asks too: what it is and what it
       holds cannot be read, and in a chat that is the message box (measured: Discord's editor exposes no value);
+    * a window whose focus cannot be read (none reported, or a bare pane or custom control: measured on WhatsApp,
+      drawn without a tree) right after this sub-goal typed a text asks: the text may sit in a chat's message box;
     * free: a search or address field (named so), a document editor that exposes its value (Notepad), and a window
-      with no focused editable (a calculator's buttons).
+      with no focused editable where nothing was just typed (a calculator's buttons).
     """
 
     focused = _focused(view)
+    if _last_verified_typed(history) and (focused is None or str(focused.get("kind")) in _OPAQUE_FOCUS_KINDS):
+        return True
     if focused is None:
         return False
     name = fold(focused.get("name"))
@@ -374,6 +378,17 @@ def _composer_with_text(view: dict) -> bool:
         # A message box whose content the screen does not expose may hold the text just typed: Enter there sends.
         return value is None or bool(str(value).strip())
     return str(focused.get("kind")) in _EDITABLE_KINDS and _UNNAMED_FIELD.match(name) is not None and value is None
+
+
+# A focused control that says nothing of what has the keyboard: a window's bare pane or a custom drawn control.
+_OPAQUE_FOCUS_KINDS = frozenset({"Pane", "Custom"})
+
+
+def _last_verified_typed(history: list[dict] | None) -> bool:
+    """The last verified step of this sub-goal typed a text."""
+
+    verified = [step for step in (history or []) if isinstance(step, dict) and step.get("ok") is True]
+    return bool(verified) and verified[-1].get("operation") == "input.text.type"
 
 
 def _focused_controls(view: dict) -> list[dict]:
@@ -413,13 +428,14 @@ def _focused_is_text_field(view: dict) -> bool:
     )
 
 
-def key_arguments(key: str, view: dict) -> dict[str, object]:
+def key_arguments(key: str, view: dict, history: list[dict] | None = None) -> dict[str, object]:
     """The arguments of a key press with the target RiskPolicy reads: Enter or space on a possible message composer
     is ``message_composer`` (it asks); Delete on a text field is ``text_field`` (it erases characters; anywhere else it
-    deletes what is selected, and RiskPolicy asks)."""
+    deletes what is selected, and RiskPolicy asks). ``history`` is the sub-goal's steps (a text just typed where the
+    focus cannot be read asks too)."""
 
     arguments: dict[str, object] = {"key": key}
-    if key in {"enter", "space"} and _composer_with_text(view):
+    if key in {"enter", "space"} and _composer_with_text(view, history):
         arguments["target"] = "message_composer"
     elif key == "delete" and _focused_is_text_field(view):
         arguments["target"] = "text_field"
@@ -563,9 +579,12 @@ def deterministic_step(
             same_label = isinstance(arguments, dict) and arguments.get("index") is None and fold(arguments.get("label")) == fold(last.get("label"))
             if same_index or same_label:
                 # The goal's own control is the one that failed (measured on Discord: «Cotele» clicked, nothing
-                # changed): the place is looked up the way the window offers, as a person would.
-                destination = _destination(goal)
-                return _find_step(destination, view, history) if destination else None
+                # changed): the place is looked up the way the window offers, as a person would; only a name said
+                # without a kind is looked up («la pestaña de Gmail» is never searched as «pestaña de Gmail»).
+                parsed = _goal_target(goal)
+                if parsed is None or parsed[1] is not None or parsed[3] is not None:
+                    return None
+                return _find_step(parsed[2], view, history, navigate=parsed[0] == "ir a ")
             return retried
     reason = "el objetivo lo dice"
     if folded_goal == "enviar":
@@ -578,7 +597,7 @@ def deterministic_step(
     if folded_goal.startswith("apretar "):
         key = _key_from_words(folded_goal[len("apretar "):])
         if key is not None and not _steps_ok(history, "input.key.press", key=key):
-            return {"operation": "input.key.press", "arguments": key_arguments(key, view), "reason": reason}
+            return {"operation": "input.key.press", "arguments": key_arguments(key, view, history), "reason": reason}
         return None
     if folded_goal.startswith("calcular "):
         expression = _expression_for_typing(goal[len("calcular "):])
@@ -628,98 +647,138 @@ def deterministic_step(
             step = _find_step(target, view, history, navigate=False)
             return None if step is None or step.get("operation") == "input.scroll" else step
         if not _steps_ok(history, "input.key.press", key="enter") and not _focused_is_password(view):
-            # The name went into a message box: Enter there would send it, so RiskPolicy asks first.
-            return {"operation": "input.key.press", "arguments": key_arguments("enter", view), "reason": reason}
+            # Enter submits the search only in a field the view shows is a search; anywhere else (a focus that cannot
+            # be read, measured on WhatsApp with a chat open) the name may be in a message box and Enter would send
+            # it, so RiskPolicy asks first.
+            field = _focused_field(view)
+            arguments = {"key": "enter"} if field is not None and _is_search_field(field) else {"key": "enter", "target": "message_composer"}
+            return {"operation": "input.key.press", "arguments": arguments, "reason": reason}
         return None
-    for head, wanted in (
-        ("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off"), ("seleccionar ", "selected"),
-    ):
+    parsed = _goal_target(goal)
+    if parsed is None:
+        return None
+    head, wanted, target, kind = parsed
+    searching = wanted is None and kind is None
+    # Going to a place (any «ir a», and a click on a name said without a kind) never changes a setting on the way.
+    placing = wanted is None and (head == "ir a " or kind is None)
+    navigate = head == "ir a "
+    typed = searching and _typed_target(history, target)
+    opened = None if typed else _menu_opened_by(view, history, target, goal)
+    if opened is not None:
+        # The click on the destination opened a short menu instead of going there (measured on Steam: «BIBLIOTECA»
+        # → «Página principal · Colecciones · Descargas»): the entry the goal names, else the destination's own
+        # page, else the first entry of a menu in the tree (``_menu_opened_by``).
+        return {"operation": "input.visible.click", "arguments": {"label": opened}, "reason": "el clic abrió un menú"}
+    if typed:
+        # The name was typed into a search: what to click is the result that names it, never the field's echo.
+        return _find_step(target, view, history, navigate=navigate)
+    # Only a mode's name has two genders on screen; a place keeps the gender said («partido» is no «partida»),
+    # neither as a second name nor as the one typo the loose match allows.
+    is_mode = _mode_named(target) is not None
+    twin = gender_twin(target) if searching and is_mode else None
+    names = (target, *label_alternatives(target), *((twin,) if twin else ()))
+    other_gender = None if is_mode else gender_twin(target)
+    seen = _without_name(view, other_gender) if other_gender else view
+    chosen = _content_item_chosen(view, history, names) if head == "ir a " and kind is None else None
+    if chosen is not None:
+        # One click on an item of a content list chose it and opened nothing (measured on Explorer: «Descargas»
+        # in the Home view); a person then presses Enter. Enter on a list item sends nothing to anyone, but on an
+        # application, a shortcut or a file it may start something: pressed only where the view shows the item is
+        # a folder or a drive (``_is_container``), never on a file that runs nor in a view that offers to remove
+        # what is chosen (a list of programs); anything else is the model's step.
+        if (
+            _runs_when_opened(chosen) or _offers_uninstall(view) or _REMOVAL_NAME.search(fold(chosen.get("name")))
+            or not _is_container(chosen, view)
+        ):
+            return None
+        return {"operation": "input.key.press", "arguments": key_arguments("enter", view),
+                "reason": "el clic sólo eligió el elemento: Enter lo abre"}
+    # Going to a place looks among the controls that are not switches first («Bluetooth» as a switch and as the
+    # navigation item: the item is the place).
+    among = _without_switches(seen) if placing else seen
+    control = next((found for name in names if (found := find_control(among, name, kind=kind)) is not None), None)
+    if control is None and placing:
+        control = next((found for name in names if (found := find_control(seen, name, kind=kind)) is not None), None)
+    if control is not None and placing and _is_switch(control):
+        # Going somewhere never changes a setting on the way: a switch named like the place is not the place, and
+        # neither is its written name; the place is looked up the way the window offers.
+        return _find_step(target, view, history, navigate=navigate) if searching else None
+    if control is None and wanted == "on":
+        # «poné el modo científico» where no switch is called so: the mode is chosen like a place (the
+        # Calculator's modes are items of its navigation).
+        mode = _mode_named(target)
+        if mode is not None:
+            return deterministic_step(goal=f"ir a {mode}", view=view, history=history, application=application)
+    carrying = _controls_carrying(seen, names, kind, placing) if control is None and wanted is None else []
+    if len(carrying) >= 2:
+        # Two controls carry the name (measured on Discord: «Cotele» was a server and an activity card; on Explorer
+        # «Descargas» is the side list's item and a tile of the Home view). The one navigation item among them (an
+        # item of a list in the window's left column, not content) is the place; otherwise neither is surely it,
+        # the written word is the same doubt, and the place is looked up instead.
+        navigation = [found for found in carrying if _navigation_item(found, view)]
+        if len(navigation) == 1 and not _steps_ok(history, "input.visible.click", label=str(navigation[0].get("name") or "")):
+            return _click(navigation[0], reason)
+        return _find_step(target, view, history, navigate=navigate) if searching else None
+    if control is None:
+        # A window drawn without an accessible tree (CEF, Electron, canvas: measured on Steam, one control and
+        # the navigation only in the OCR lines): the word written on screen is clicked by its label, and the
+        # click's cascade (UIA → OCR → vision) finds where it is. Never the written name of a switch.
+        written = next(
+            (name for name in names
+             if (line := _text_line_with(seen, name)) is not None and not (placing and _names_a_switch(view, line))),
+            None,
+        ) if kind is None else None
+        if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
+            return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": reason}
+        # Not on screen: looked up the way any window offers (search field, quick switcher, find, the list).
+        return _find_step(target, view, history, navigate=navigate) if searching and written is None else None
+    states = str(control.get("state") or "").split()
+    if wanted is not None and (wanted in states or (wanted == "selected" and "on" in states)):
+        # Already so; a tool or a colour chosen shows as selected or pressed.
+        return None
+    if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
+        # Clicked and not there yet (measured on Discord: the name was written in an activity card, not the
+        # channel): looked up the way the window offers, never clicked again.
+        return _find_step(target, view, history, navigate=navigate) if searching else None
+    arguments = {"label": str(control.get("name") or target)}
+    if isinstance(control.get("i"), int):
+        arguments["index"] = control["i"]
+    return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
+
+
+# The goals that name a control, with the state each one wants (None: a place to go or a control to press).
+_GOAL_HEADS: tuple[tuple[str, str | None], ...] = (
+    ("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off"), ("seleccionar ", "selected"),
+)
+
+
+def _goal_target(goal: str) -> tuple[str, str | None, str, str | None] | None:
+    """(head, wanted state, target, kind) of a goal that names a control: «ir a la pestaña YouTube» → («ir a », None,
+    «YouTube», «TabItem»); the kind said before the name narrows the controls to it (a tab's name is its whole title,
+    «Never Gonna Give You Up - YouTube»). None for any other goal."""
+
+    folded_goal = fold(goal)
+    for head, wanted in _GOAL_HEADS:
         if not folded_goal.startswith(head):
             continue
         target = re.sub(r"^(?:el|la|los|las|the|al|a\s+la|a\s+los|a\s+las)\s+", "", goal[len(head):].strip(), flags=re.IGNORECASE)
-        # «la pestaña YouTube», «el botón Guardar»: the kind said before the name narrows the controls to it
-        # (a tab's name is its whole title, «Never Gonna Give You Up - YouTube»).
         named_kind = re.match(r"(?P<word>[^\W\d_]+)\s+(?:(?:de|del|of)\s+)?(?P<name>\S.*)$", target)
         kind = _KIND_WORDS.get(fold(named_kind.group("word"))) if named_kind is not None else None
         if named_kind is not None and kind is not None:
             target = named_kind.group("name")
-        searching = wanted is None and kind is None
-        # Going to a place (any «ir a», and a click on a name said without a kind) never changes a setting on the way.
-        placing = wanted is None and (head == "ir a " or kind is None)
-        navigate = head == "ir a "
-        typed = searching and _typed_target(history, target)
-        opened = None if typed else _menu_opened_by(view, history, target, goal)
-        if opened is not None:
-            # The click on the destination opened a short menu instead of going there (measured on Steam: «BIBLIOTECA»
-            # → «Página principal · Colecciones · Descargas»): the entry the goal names, else the first one, which is
-            # the destination's own page.
-            return {"operation": "input.visible.click", "arguments": {"label": opened}, "reason": "el clic abrió un menú"}
-        if typed:
-            # The name was typed into a search: what to click is the result that names it, never the field's echo.
-            return _find_step(target, view, history, navigate=navigate)
-        # Only a mode's name has two genders on screen; a place keeps the gender said («partido» is no «partida»),
-        # neither as a second name nor as the one typo the loose match allows.
-        is_mode = _mode_named(target) is not None
-        twin = gender_twin(target) if searching and is_mode else None
-        names = (target, *label_alternatives(target), *((twin,) if twin else ()))
-        other_gender = None if is_mode else gender_twin(target)
-        seen = _without_name(view, other_gender) if other_gender else view
-        chosen = _content_item_chosen(view, history, names) if head == "ir a " and kind is None else None
-        if chosen is not None:
-            # One click on an item of a content list chose it and opened nothing (measured on Explorer: «Descargas»
-            # in the Home view); a person then presses Enter. Enter on a list item sends nothing to anyone. Never on
-            # a file that runs or in a view that offers to remove what is chosen (a list of programs): there Enter
-            # may start or uninstall something, so the step is the model's.
-            if _runs_when_opened(chosen) or _offers_uninstall(view) or _REMOVAL_NAME.search(fold(chosen.get("name"))):
-                return None
-            return {"operation": "input.key.press", "arguments": key_arguments("enter", view),
-                    "reason": "el clic sólo eligió el elemento: Enter lo abre"}
-        # Going to a place looks among the controls that are not switches first («Bluetooth» as a switch and as the
-        # navigation item: the item is the place).
-        among = _without_switches(seen) if placing else seen
-        control = next((found for name in names if (found := find_control(among, name, kind=kind)) is not None), None)
-        if control is None and placing:
-            control = next((found for name in names if (found := find_control(seen, name, kind=kind)) is not None), None)
-        if control is not None and placing and _is_switch(control):
-            # Going somewhere never changes a setting on the way: a switch named like the place is not the place, and
-            # neither is its written name; the place is looked up the way the window offers.
-            return _find_step(target, view, history, navigate=navigate) if searching else None
-        if control is None and wanted == "on":
-            # «poné el modo científico» where no switch is called so: the mode is chosen like a place (the
-            # Calculator's modes are items of its navigation).
-            mode = _mode_named(target)
-            if mode is not None:
-                return deterministic_step(goal=f"ir a {mode}", view=view, history=history, application=application)
-        if control is None and wanted is None and _controls_naming(seen, names, kind, placing) >= 2:
-            # Two controls carry the name (measured on Discord: «Cotele» was a server and an activity card): neither
-            # is surely the place, and the written word is the same doubt; the place is looked up instead.
-            return _find_step(target, view, history, navigate=navigate) if searching else None
-        if control is None:
-            # A window drawn without an accessible tree (CEF, Electron, canvas: measured on Steam, one control and
-            # the navigation only in the OCR lines): the word written on screen is clicked by its label, and the
-            # click's cascade (UIA → OCR → vision) finds where it is. Never the written name of a switch.
-            written = next(
-                (name for name in names
-                 if (line := _text_line_with(seen, name)) is not None and not (placing and _names_a_switch(view, line))),
-                None,
-            ) if kind is None else None
-            if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
-                return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": reason}
-            # Not on screen: looked up the way any window offers (search field, quick switcher, find, the list).
-            return _find_step(target, view, history, navigate=navigate) if searching and written is None else None
-        states = str(control.get("state") or "").split()
-        if wanted is not None and (wanted in states or (wanted == "selected" and "on" in states)):
-            # Already so; a tool or a colour chosen shows as selected or pressed.
-            return None
-        if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
-            # Clicked and not there yet (measured on Discord: the name was written in an activity card, not the
-            # channel): looked up the way the window offers, never clicked again.
-            return _find_step(target, view, history, navigate=navigate) if searching else None
-        arguments = {"label": str(control.get("name") or target)}
-        if isinstance(control.get("i"), int):
-            arguments["index"] = control["i"]
-        return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
+        return head, wanted, target, kind
     return None
+
+
+def _placing_goal(goal: str | None) -> bool:
+    """A goal that places the person somewhere or presses a named thing, never one that sets something: «ir a …»,
+    «buscar …», and «hacer clic en …» unless it names a switch's kind («la casilla …»)."""
+
+    folded = fold(goal or "")
+    if folded.startswith(("ir a ", "buscar ")):
+        return True
+    parsed = _goal_target(goal or "") if folded.startswith("hacer clic en ") else None
+    return parsed is not None and parsed[3] not in _SWITCH_KINDS
 
 
 def _without_switches(view: dict) -> dict:
@@ -741,19 +800,37 @@ def _carries_name(control_name: str, name: str) -> bool:
     return bool(wanted) and (folded == wanted or any(folded.startswith(wanted + mark) for mark in _NAME_SEPARATORS))
 
 
-def _controls_naming(view: dict, names: Iterable[str], kind: str | None, placing: bool) -> int:
-    """How many controls (of ``kind`` when given; never a switch while going to a place) carry one of the names as
+def _controls_carrying(view: dict, names: Iterable[str], kind: str | None, placing: bool) -> list[dict]:
+    """The controls (of ``kind`` when given; never a switch while going to a place) that carry one of the names as
     their own (``_carries_name``): a message that says «… en general …» does not make «general» two places."""
 
     names = tuple(names)
     controls = view.get("controls") if isinstance(view, dict) else None
-    named = [
+    return [
         control for control in (controls if isinstance(controls, list) else [])
         if isinstance(control, dict) and (kind is None or control.get("kind") == kind)
         and not (placing and _is_switch(control))
         and any(_carries_name(str(control.get("name") or ""), name) for name in names)
     ]
-    return len(named)
+
+
+def _controls_naming(view: dict, names: Iterable[str], kind: str | None, placing: bool) -> int:
+    """How many controls carry one of the names as their own (``_controls_carrying``)."""
+
+    return len(_controls_carrying(view, names, kind, placing))
+
+
+_NAVIGATION_ITEM_KINDS = frozenset({"TreeItem", "ListItem", "TabItem"})
+
+
+def _navigation_item(control: dict, view: dict) -> bool:
+    """An item of the window's navigation: a tree, list or tab item in the left column (zones L, TL, BL) that is not
+    an item of a content view (``is_content_item``)."""
+
+    return (
+        str(control.get("kind")) in _NAVIGATION_ITEM_KINDS and str(control.get("zone") or "").endswith("L")
+        and not is_content_item(control, view)
+    )
 
 
 def _without_name(view: dict, name: str) -> dict:
@@ -843,7 +920,11 @@ _REMOVAL_NAME = re.compile(
     r"(?<!\w)(?:desinstal\w*|uninstall\w*|elimin(?:ar|a)|delete|borr(?:ar|a)|quit(?:ar|a)|remove)(?!\w)"
 )
 # A file that runs, installs or launches something when opened.
-_RUNS_WHEN_OPENED = re.compile(r"\.(?:exe|msi|bat|cmd|ps1|vbs|js|lnk|appx|msix)(?!\w)")
+_RUNS_WHEN_OPENED = re.compile(r"\.(?:exe|msi|bat|cmd|ps1|vbs|js|lnk|appx|msix|reg|hta|scr|cpl|jar|com|pif)(?!\w)")
+# What a file view calls a folder or a drive: the item's own type (the App's ``itemType``), or the type cell of its
+# row in a details view.
+_CONTAINER_TYPE = re.compile(r"(?<!\w)(?:carpeta|folder|directorio|directory|unidad|drive)")
+_CONTAINER_CELL = frozenset({"carpeta de archivos", "file folder"})
 
 
 # Only an uninstall offered by the window vetoes Enter on a chosen item (a list of programs); delete-like commands are
@@ -861,6 +942,28 @@ def _offers_uninstall(view: dict) -> bool:
 
 def _runs_when_opened(control: dict) -> bool:
     return _RUNS_WHEN_OPENED.search(fold(control.get("name"))) is not None
+
+
+def _is_container(control: dict, view: dict) -> bool:
+    """Positive evidence that the item is a folder or a drive (opening it shows what it holds and starts nothing):
+    its ``itemType`` says so, or a control on its row (vertical centres within half the item's height) is the
+    type cell «Carpeta de archivos» / «File folder». Without it, nothing tells a folder from an application."""
+
+    if _CONTAINER_TYPE.search(fold(control.get("itemType"))) is not None:
+        return True
+    centre, height = _vertical_centre(control.get("rect"))
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if centre is None or not isinstance(controls, list):
+        return False
+    for other in controls:
+        if other is control or not isinstance(other, dict):
+            continue
+        other_centre, _ = _vertical_centre(other.get("rect"))
+        if other_centre is None or abs(other_centre - centre) > height / 2:
+            continue
+        if fold(other.get("name")).strip() in _CONTAINER_CELL or fold(other.get("value")).strip() in _CONTAINER_CELL:
+            return True
+    return False
 
 
 def _content_item_chosen(view: dict, history: list[dict], names: tuple[str, ...]) -> dict | None:
@@ -1318,7 +1421,8 @@ def _list_holding_items(view: dict) -> int | None:
 
 def _menu_opened_by(view: dict, history: list[dict], target: str, goal: str = "") -> str | None:
     """The entry of the short menu the last click, made on ``target``, opened that the goal's words name best, else
-    its first entry; None when no menu opened."""
+    the place's own page, else its first entry when the menu is in the tree; never an entry that does something
+    (play, install, send…). None when no menu opened or none of those holds."""
 
     # The last verified click: a failed step after it (a learned entry no longer on the menu, measured on Steam: the
     # replayed click was ambiguous and the model answered none) leaves the menu it opened on screen.
@@ -1355,6 +1459,7 @@ def _menu_opened_by(view: dict, history: list[dict], target: str, goal: str = ""
     entries = [
         entry for entry in appeared
         if not label_names(clicked, entry) and not _steps_ok(history, "input.visible.click", label=entry)
+        and _ACT_ENTRY.search(fold(entry)) is None
     ]
     # «colecciones de la biblioteca» after a click on «Biblioteca»: the goal's other words name the entry.
     words = [word for word in fold(goal).split() if len(word) >= 4 and not label_names(word, clicked)]
@@ -1364,8 +1469,37 @@ def _menu_opened_by(view: dict, history: list[dict], target: str, goal: str = ""
     )
     if scored and scored[0][0] > 0:
         return entries[scored[0][1]]
+    # No word of the goal names an entry: the destination's own page when the menu offers one by that name
+    # (measured on Steam: «BIBLIOTECA» → «Página principal»), else the first entry only when the menu is in the tree
+    # (its entries are menu or list items that appeared together); never a blind click on a written line.
+    home = next((entry for entry in entries if _HOME_ENTRY.fullmatch(fold(entry).strip()) is not None), None)
+    if home is not None:
+        return home
     first = appeared[0]
-    return None if label_names(clicked, first) or _steps_ok(history, "input.visible.click", label=first) else first
+    return first if first in entries and _menu_in_tree(view, appeared) else None
+
+
+# The entry of a place's menu that is the place's own page.
+_HOME_ENTRY = re.compile(
+    r"(?:pagina\s+principal|principal|inicio|home|home\s+page|main|main\s+page|overview|vista\s+general|resumen)"
+)
+# An entry that does something instead of going somewhere: never chosen by default.
+_ACT_ENTRY = re.compile(
+    r"(?<!\w)(?:jugar|play|instalar|install|iniciar|launch|ejecutar|run|comprar|buy|enviar|send|unirse|join|"
+    r"desinstalar|uninstall|eliminar|delete)(?!\w)"
+)
+_MENU_ENTRY_KINDS = frozenset({"MenuItem", "ListItem"})
+
+
+def _menu_in_tree(view: dict, appeared: list[str]) -> bool:
+    """Every appeared entry is a menu or list item of the view's controls: the menu is in the tree."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    named = {
+        fold(control.get("name")).strip() for control in (controls if isinstance(controls, list) else [])
+        if isinstance(control, dict) and str(control.get("kind")) in _MENU_ENTRY_KINDS
+    }
+    return bool(appeared) and all(fold(entry).strip() in named for entry in appeared)
 
 
 def decide_step(
@@ -1604,10 +1738,10 @@ def _checked_act(
         clicked = str(control.get("name") or label) if control is not None else label
         if _OPENS_ELSEWHERE.search(fold(clicked)) and not _ELSEWHERE_WORDS.search(fold(goal)):
             return _none(f"«{clicked[:40]}» abre otra pestaña o ventana y el objetivo no lo pide", code="opens_elsewhere")
-        if control is not None and _destination(goal) and _is_switch(control):
+        if control is not None and _placing_goal(goal) and _is_switch(control):
             # Going somewhere never changes a setting on the way (measured on Settings: looking for «Colores» the
             # model clicked «Invertir colores» of the Magnifier).
-            return _none(f"«{clicked[:40]}» cambia un ajuste y el objetivo sólo pide ir a un lugar", code="changes_a_setting")
+            return _none(f"«{clicked[:40]}» cambia un ajuste y el objetivo no pide cambiar ninguno", code="changes_a_setting")
         if control is not None:
             arguments: dict[str, object] = {"label": str(control.get("name") or label)}
             if isinstance(control.get("i"), int):
@@ -1628,7 +1762,9 @@ def _checked_act(
         key = str(raw.get("key") or "")
         if key not in KEYS:
             return _none("tecla fuera del catálogo")
-        return _guard_repeat({"operation": "input.key.press", "arguments": key_arguments(key, view), "reason": why}, last_failed)
+        # A calculation's Enter after typing the expression is the calculator's (no message box there).
+        typed = None if fold(goal or "").startswith("calcular ") else history
+        return _guard_repeat({"operation": "input.key.press", "arguments": key_arguments(key, view, typed), "reason": why}, last_failed)
     if act == "scroll":
         direction = str(raw.get("direction") or "down")
         if direction not in {"down", "up"}:

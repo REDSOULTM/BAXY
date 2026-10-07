@@ -1076,8 +1076,9 @@ def test_after_a_failed_learned_click_the_goal_step_is_found_again_by_identity()
     assert looked_up is None or looked_up["arguments"] != {"label": "Sistema", "index": 7}
 
 
-def test_a_menu_with_ocr_noise_still_gives_its_first_entry_and_the_window_body_is_never_clicked() -> None:
+def test_a_menu_with_ocr_noise_gives_its_first_entry_only_from_the_tree_and_the_window_body_is_never_clicked() -> None:
     # Measured on Steam: «COMUNIDAD» opened its menu among OCR noise; the model then clicked the web view itself.
+    # Written lines alone never make a blind first-entry click (safety review cu-z): that step is the model's.
     menu = {
         "window": {"title": "Steam", "process": "steamwebhelper", "focused": None,
                    "rect": {"x": 0, "y": 0, "w": 1000, "h": 800}},
@@ -1087,6 +1088,11 @@ def test_a_menu_with_ocr_noise_still_gives_its_first_entry_and_the_window_body_i
     }
     clicked = [_ok(1, "input.visible.click", label="COMUNIDAD")]
     step = computer_use.deterministic_step(goal="ir a comunidad", view=menu, history=clicked)
+    assert step is None or step["arguments"].get("label") != "Actividad"
+    # The same menu exposed in the tree as menu items that appeared together: its first entry.
+    entries = ["Actividad", "Perfil", "Amigos", "Grupos", "Contenido", "Insignias"]
+    in_tree = {**menu, "controls": [*menu["controls"], *({"i": n + 1, "kind": "MenuItem", "name": name} for n, name in enumerate(entries))]}
+    step = computer_use.deterministic_step(goal="ir a comunidad", view=in_tree, history=clicked)
     assert step is not None and step["arguments"].get("label") == "Actividad"
     refused = computer_use.validate_decision(
         {"act": "click", "label": "Chrome Legacy Window"}, view=menu, last_failed=None, application_names=(),
@@ -1455,7 +1461,7 @@ def test_a_file_views_delete_command_does_not_stop_opening_the_chosen_folder() -
         "controls": [
             {"i": 1, "kind": "Button", "name": "Eliminar (Supr)", "zone": "T"},
             {"i": 5, "kind": "ListItem", "name": "Descargas", "state": "selected", "zone": "C",
-             "rect": {"x": 600, "y": 300, "w": 120, "h": 40}},
+             "itemType": "Carpeta de archivos", "rect": {"x": 600, "y": 300, "w": 120, "h": 40}},
         ],
         "text": {},
     }

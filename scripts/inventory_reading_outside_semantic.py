@@ -190,6 +190,9 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("computer_use.py", "deterministic_step"): (
         "GROUNDING", "the goal is the sub-goal semantic.missions wrote; the article and the control kind said before "
         "a name only narrow which control of the view it names"),
+    ("computer_use.py", "_goal_target"): (
+        "GROUNDING", "the goal is the sub-goal semantic.missions wrote; the article and the control kind said before "
+        "a name only narrow which control of the view it names"),
     ("computer_use.py", "_destination"): (
         "GROUNDING", "the place of a sub-goal semantic.missions wrote («ir a X»), its article dropped"),
     ("computer_use.py", "_echoes_typing"): (
