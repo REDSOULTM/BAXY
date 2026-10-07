@@ -2330,7 +2330,8 @@ internal static class ComputerUseSuccessCheck
                 return false;
             }
 
-            string label = WithoutAppName(WithoutOpening(Fold((string?)step["label"])), view);
+            string clicked = Fold((string?)step["label"]);
+            string label = WithoutAppName(WithoutOpening(clicked), view);
             if (label != target)
             {
                 return false;
@@ -2362,7 +2363,19 @@ internal static class ComputerUseSuccessCheck
             var seenBefore = new HashSet<string>(earlier.Select(node => (string?)node ?? string.Empty), StringComparer.Ordinal);
             JsonArray now = ControlNames(view);
             int fresh = now.Count(node => !seenBefore.Contains((string?)node ?? string.Empty));
-            return now.Count > 0 && fresh * 10 >= now.Count * 4;
+            if (now.Count > 0 && fresh * 10 >= now.Count * 4)
+            {
+                return true;
+            }
+
+            // A side panel opened beside a full page leaves most controls where they were (measured 2026-10-07 on
+            // Spotify after «Inicio»: «Abre Tu biblioteca» clicked, the panel open, 8 of 60 controls new). The act of
+            // opening the place was clicked, that control is gone (it became the one that closes it: «Comprimir Tu
+            // biblioteca») and a new control names the place: the toggle flipped and the place is open.
+            return clicked != label
+                && seenBefore.Contains(clicked)
+                && !now.Any(node => (string?)node == clicked)
+                && now.Any(node => (string?)node is { } name && !seenBefore.Contains(name) && name.Contains(target, StringComparison.Ordinal));
         }
 
         return false;

@@ -36,6 +36,7 @@ import unicodedata
 from typing import Any, Iterable
 
 from . import effect_intent, operation_floor
+from .semantic.account_acts import account_act, goal_asks_for
 from .semantic.colours import changes_the_tool, colour_shades, is_basic_colour, screen_language, shade_of
 from .semantic.missions import (
     BROWSER_CATEGORY,
@@ -936,6 +937,11 @@ _SETTING_GOAL = re.compile(
     r"^(?:activar|desactivar|encender|apagar|seleccionar|elegir|turn\s+on|turn\s+off|enable|disable|select)\s+"
     r"(?:(?:el|la|los|las|the)\s+)?(?:(?:modo|mode)\s+)?(?P<what>\S.*)$"
 )
+
+
+# «ir a X»: the place a goal goes to; a control so named is the place («Tus me gusta», «Liked Songs»), not an act.
+_PLACE_NAMED = re.compile(r"^ir\s+a\s+(?:(?:el|la|los|las|tu|tus|the|my|your)\s+)?(?P<place>\S.*)$")
+_POSSESSIVE = re.compile(r"^(?:el|la|los|las|tu|tus|the|my|your)\s+")
 
 
 def _placing_goal(goal: str | None) -> bool:
@@ -2154,6 +2160,14 @@ def _checked_act(
         named_explicitly = fold(goal or "").startswith("hacer clic en ") and (
             label_names(_goal_target(goal or "")[2] if _goal_target(goal or "") else "", clicked)
         )
+        changes_the_account = account_act(clicked)
+        place = _PLACE_NAMED.match(fold(goal or ""))
+        # The control IS the place (its whole name), never a control that only mentions it («Seguir a Tu biblioteca»).
+        goes_there = place is not None and _POSSESSIVE.sub("", fold(clicked)).strip() == place.group("place").strip()
+        if changes_the_account is not None and not goes_there and not goal_asks_for(goal or "", changes_the_account):
+            # Live z7 (going to «Tu biblioteca» on a music app): the model followed a profile and saved a playlist in
+            # the person's account. Following, saving, liking, subscribing or installing is theirs to ask for.
+            return _none(f"«{clicked[:40]}» cambia tu cuenta y el objetivo no lo pide", code="changes_the_account")
         if colour_goal(goal) is not None and changes_the_tool(clicked):
             # Choosing a colour never picks a tool (live e2: the model clicked «Selector de colores», the eyedropper,
             # and the canvas's next click would have picked a colour from the drawing instead).
