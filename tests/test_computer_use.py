@@ -4,6 +4,7 @@ pedido, elección de un paso comprobada contra la vista, proyección y vetos."""
 from __future__ import annotations
 
 from baxy_mind import computer_use
+from baxy_mind.semantic import missions
 from baxy_mind.__main__ import _explicit_arguments_from_evidence
 from baxy_mind.effect_intent import (
     _is_direct_request,
@@ -42,7 +43,7 @@ def _mission(text: str):
 
 def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     # The reader reads the mission; the route is the catalog's typed channel read (test_the_mission_takes_over…).
-    discord = computer_use.mission_request("ve a Cotele en Discord", APPS).arguments()
+    discord = missions.mission_request("ve a Cotele en Discord", APPS).arguments()
     assert discord["application"] == "Discord"
     assert discord["goal"] == "ir a cotele"
     assert discord["successCheck"] == "control:cotele:selected|title:cotele|page:cotele"
@@ -69,7 +70,7 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
 
 
 def test_english_and_variant_phrasings_read_the_same_missions() -> None:
-    assert computer_use.mission_request("Go to Cotele in Discord", APPS).goal == "ir a cotele"
+    assert missions.mission_request("Go to Cotele in Discord", APPS).goal == "ir a cotele"
     assert _mission("Open Steam and go to the library")["goal"] in {"ir a the library", "ir a library"}
     assert _mission("In Discord press enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission("abrí configuración y desactivá el modo avión")["successCheck"] == "control:modo avion:off"
@@ -83,7 +84,7 @@ def test_requests_outside_an_installed_application_are_not_missions() -> None:
     intent = resolve_explicit_effects("abre Steam y decime la hora", AVAILABLE, application_names=APPS)
     assert intent is None or intent.operations != ("mission.computer.use",)
     # A prohibition is never a mission.
-    assert computer_use.mission_request("no vayas a Cotele en Discord", APPS) is None
+    assert missions.mission_request("no vayas a Cotele en Discord", APPS) is None
     # Without the operation served, the old routes stay.
     legacy = resolve_explicit_effects("ve a Cotele en Discord", AVAILABLE - {"mission.computer.use"}, application_names=APPS)
     assert legacy is not None and legacy.operations == ("client.channel.locate",)
@@ -97,12 +98,12 @@ def test_mission_shapes_pass_the_speech_act_gate() -> None:
 
 
 def test_read_clause_shapes() -> None:
-    assert computer_use.read_clause("apretá la tecla escape") == ("apretar escape", "stepDone:input.key.press:escape")
-    assert computer_use.read_clause("pulsá ctrl+w") == ("apretar ctrl+w", "stepDone:input.key.press:ctrl_w")
-    assert computer_use.read_clause("hacé clic en Biblioteca") == ("hacer clic en biblioteca", "stepDone:input.visible.click:biblioteca")
-    assert computer_use.read_clause("escribí hola mundo") == ("escribir hola mundo", "stepDone:input.text.type")
-    assert computer_use.read_clause("la biblioteca") is None
-    assert computer_use.read_clause("prendé el bluetooth") == ("activar bluetooth", "control:bluetooth:on")
+    assert missions.read_clause("apretá la tecla escape") == ("apretar escape", "stepDone:input.key.press:escape")
+    assert missions.read_clause("pulsá ctrl+w") == ("apretar ctrl+w", "stepDone:input.key.press:ctrl_w")
+    assert missions.read_clause("hacé clic en Biblioteca") == ("hacer clic en biblioteca", "stepDone:input.visible.click:biblioteca")
+    assert missions.read_clause("escribí hola mundo") == ("escribir hola mundo", "stepDone:input.text.type")
+    assert missions.read_clause("la biblioteca") is None
+    assert missions.read_clause("prendé el bluetooth") == ("activar bluetooth", "control:bluetooth:on")
 
 
 # ------------------------------------------------------------ elegir paso
@@ -334,7 +335,7 @@ def _mission_in(text: str, apps: tuple[str, ...] = MORE_APPS) -> dict:
 
 
 def test_the_already_good_requests_keep_their_routes() -> None:
-    assert computer_use.mission_request("ve a Cotele en Discord", MORE_APPS).goal == "ir a cotele"
+    assert missions.mission_request("ve a Cotele en Discord", MORE_APPS).goal == "ir a cotele"
     assert _mission_in("abre Steam y ve a la biblioteca")["application"] == "Steam"
     assert _mission_in("en Discord apretá enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission_in("abrí Configuración y activá el modo avión")["successCheck"] == "control:modo avion:on"
@@ -346,7 +347,7 @@ def test_the_already_good_requests_keep_their_routes() -> None:
 
 def test_going_to_a_tab_by_its_name_is_a_mission_in_the_persons_browser() -> None:
     wanted = {
-        "application": computer_use.BROWSER_CATEGORY,
+        "application": missions.BROWSER_CATEGORY,
         "goal": "ir a la pestaña youtube",
         "successCheck": "control:youtube:selected|title:youtube",
     }
@@ -372,10 +373,10 @@ def test_a_named_browser_wins_over_the_category() -> None:
 
 def test_a_tab_said_by_its_place_names_no_tab() -> None:
     for said in ("ve a la siguiente pestaña", "ve a la pestaña", "go to the next tab"):
-        assert computer_use.mission_request(said, MORE_APPS) is None, said
+        assert missions.mission_request(said, MORE_APPS) is None, said
     # Where to open a page, not which tab to go to.
     for said in ("ve a YouTube en otra pestaña", "go to youtube in a new tab", "ve a google en una pestaña"):
-        assert computer_use.mission_request(said, MORE_APPS) is None, said
+        assert missions.mission_request(said, MORE_APPS) is None, said
 
 
 def test_a_doing_clause_reads_in_any_person() -> None:
@@ -388,10 +389,10 @@ def test_a_doing_clause_reads_in_any_person() -> None:
         ("in Paint pick the red color", "pick the red color"),
     ):
         # The reader reads the act; with no check of its own the route is the decider's (test below).
-        arguments = computer_use.mission_request(said, MORE_APPS).arguments()
+        arguments = missions.mission_request(said, MORE_APPS).arguments()
         assert arguments["application"] == "Paint" and arguments["goal"] == goal, said
     assert _mission_in("en Steam vaya a la tienda")["goal"] == "ir a tienda"
-    assert computer_use.mission_request("en Steam ir a la tienda", MORE_APPS).goal == "ir a tienda"
+    assert missions.mission_request("en Steam ir a la tienda", MORE_APPS).goal == "ir a tienda"
     assert _mission_in("en Discord pulse enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission_in("en la calculadora calcule 12x7")["goal"] == "calcular 12x7"
     assert _mission_in("en Configuración active el modo avión")["successCheck"] == "control:modo avion:on"
@@ -412,8 +413,8 @@ def test_questions_statements_and_typed_requests_are_not_missions() -> None:
         "buscalo en google",
         "open paint then close it",
     ):
-        assert computer_use.mission_request(said, MORE_APPS) is None, said
-    assert not computer_use.mission_clause_is_direct("en la mañana tengo que ir al banco")
+        assert missions.mission_request(said, MORE_APPS) is None, said
+    assert not missions.mission_clause_is_direct("en la mañana tengo que ir al banco")
 
 
 def test_a_tab_is_clicked_by_a_part_of_its_title() -> None:
@@ -427,7 +428,7 @@ def test_a_tab_is_clicked_by_a_part_of_its_title() -> None:
         "text": {},
     }
     step = computer_use.deterministic_step(
-        goal="ir a la pestaña youtube", view=view, history=[], application=computer_use.BROWSER_CATEGORY,
+        goal="ir a la pestaña youtube", view=view, history=[], application=missions.BROWSER_CATEGORY,
     )
     assert step == {
         "operation": "input.visible.click",
@@ -486,4 +487,4 @@ def test_reaching_a_place_needs_more_than_its_name_on_screen() -> None:
     )
     assert reached["operation"] == "done"
     # The text of the destination alone no longer satisfies a go-to: only the place selected or titled does.
-    assert computer_use.read_clause("andá a la biblioteca")[1] == "control:biblioteca:selected|title:biblioteca|page:biblioteca"
+    assert missions.read_clause("andá a la biblioteca")[1] == "control:biblioteca:selected|title:biblioteca|page:biblioteca"

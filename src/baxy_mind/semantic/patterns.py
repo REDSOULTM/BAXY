@@ -394,9 +394,9 @@ def _computer_use_mission_is_direct(text: str) -> bool:
     """«en <app> apretá enter», «abre Steam y ve a la biblioteca», «cerrá todas las pestañas de chrome»: an app
     frame with a doing clause is a request."""
 
-    from .. import computer_use as _computer_use
+    from . import missions as _missions
 
-    return _computer_use.mission_clause_is_direct(text)
+    return _missions.mission_clause_is_direct(text)
 
 
 def client_channel_request(text: str) -> tuple[str, str] | None:
@@ -12706,9 +12706,9 @@ def resolve_explicit_effects(
         return None
     mission = None
     if "mission.computer.use" in available:
-        from .. import computer_use as _computer_use
+        from . import missions as _missions
 
-        mission = _computer_use.mission_request(text, application_names)
+        mission = _missions.mission_request(text, application_names)
         if mission is not None and mission.names_a_tab:
             # «ve a la pestaña de YouTube»: going to a tab is a step inside the browser no typed operation takes.
             return EffectIntent(("mission.computer.use",), (text,))

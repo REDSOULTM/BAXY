@@ -15,7 +15,8 @@ from fractions import Fraction
 from typing import Any, Iterable
 from urllib.parse import urlencode, urlsplit
 
-from .. import computer_use, effect_intent
+from .. import effect_intent
+from . import missions
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .decider import _edit_distance, _introduced_spans, _numbers_said
@@ -930,7 +931,7 @@ def _explicit_arguments_from_evidence(
     if operation == "mission.computer.use":
         # Computer use: application, goal and the deterministic success check
         # come from the request itself (CONTRATO_VISTA_ACCION.md §4.1, §6).
-        mission = computer_use.mission_request(evidence, application_names)
+        mission = missions.mission_request(evidence, application_names)
         return mission.arguments() if mission is not None else None
 
     if operation == "browser.control":

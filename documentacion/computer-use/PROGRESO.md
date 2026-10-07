@@ -13,6 +13,8 @@ Goal: `documentacion/GOAL_COMPUTER_USE_2026-10-06.md`. Rama `fable/computer-use-
 | Mente: ganchos del motor portados a `semantic/patterns.py`, `semantic/arguments.py`, `__main__.py` | hecho; `tests/test_computer_use.py` 16/16 | 6cb48f77 |
 | Enrutado: pestañas → misión en «navegador»; verbos en cualquier persona; `close_all` confirmado | hecho; Kernel 212, Providers 963, Integración 2430 (1 skip) | 444ebd47 |
 | CEF/Steam: tapada al abrir, menú, llegada `page:`, OCR multipalabra, paso robusto | hecho | 88ab1432, d33f709e |
+| Procedimientos: no se aprende con pasos fallidos; se reproduce sólo sobre la ventana de la app | hecho | 9afbef63 |
+| Contrato de paquete ordenado (Setup 477/477); MEDICIONES.md (cobertura, latencia, procedimientos) | hecho | 1425cf71 |
 | Prioridad: lo tipado gana salvo primitivas de la misión; verbo suelto → decisor; finales en 1.ª persona | hecho; pytest 9272 (84 ficheros) | c727f1cf |
 
 ## Decisiones (criterio por defecto)
@@ -41,5 +43,8 @@ Goal: `documentacion/GOAL_COMPUTER_USE_2026-10-06.md`. Rama `fable/computer-use-
 
 ## Falta
 
-- Misiones en vivo (≥ 8/9), compuerta Full, cobertura por tipo de app, latencia por paso, ahorro de procedimientos,
-  merge `--no-ff` a `codex/kiro-goal-c03`, push, informe.
+- Compuerta Full verde (1.ª corrida: todo verde salvo Setup por el orden del contrato de paquete → arreglado; 2.ª
+  en curso), merge `--no-ff` a `codex/kiro-goal-c03`, push, informe.
+
+Misiones: **9/9 logradas y verificadas** (más una Win32 extra: Panel de control → «Sistema y seguridad»).
+Mediciones: `MEDICIONES.md`.

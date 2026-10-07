@@ -141,7 +141,7 @@ function Get-Folded([string]$text){
 # El nombre lleva la etiqueta como palabras enteras: «Sitio» nombra la pestana
 # «Un titulo largo - Sitio». Solo cuenta cuando ningun nombre es igual a la etiqueta.
 # A long title names its item by a part of it («... - YouTube»): only items that carry a title (a tab, a list or tree
-# row, a link), never a pane or a document whose name is the whole page (measured on Steam's CEF window).
+# row, a link), never a pane or a document whose name is the whole page (measured on a CEF window).
 $script:TitledKinds=@('ControlType.TabItem','ControlType.ListItem','ControlType.TreeItem','ControlType.Hyperlink')
 function Test-ItemHolds($el,[string[]]$aliases){
   try { if($script:TitledKinds -notcontains $el.Current.ControlType.ProgrammaticName){ return $false } } catch { return $false }
