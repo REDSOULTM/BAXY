@@ -160,6 +160,11 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "GROUNDING",
         "cu-r16: a word of a mission final must be one of the facts, the person's own words or BAXY's vocabulary",
     ),
+    ("computer_use.py", "_preterites"): (
+        "GROUNDING",
+        "cu-r17/r18: the first-person past forms of the verbs the person and the goal said, so a final telling that "
+        "act («pegué», «envié») is grounded; decides no intention",
+    ),
     ("llm.py", "_said_misspelled"): (
         "GROUNDING",
         "A7 E1: a name in the reply checked against a word the person wrote with a typo",
