@@ -32,7 +32,7 @@ public sealed class ComputerUseTiposUiaTests
         FakeViewedFields fields = WorkerLeavesItToTheEditControl();
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
-            "input.text.type", Json("""{"text":"800","window":4660,"index":2,"replace":true,"field":"Ancho"}"""),
+            "input.text.type", Json("""{"text":"800","window":4660,"index":2,"replace":true}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -114,7 +114,7 @@ public sealed class ComputerUseTiposUiaTests
             $$"""{"ok":true,"error":"","kind":"Document","className":"RichEditD2DPT","nativeHwnd":4661,"valueLength":{{length}},"method":"","delivered":false}""");
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
-            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"replace":true,"field":"Contenido de la página 1"}"""),
+            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"replace":true}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -142,7 +142,7 @@ public sealed class ComputerUseTiposUiaTests
         var fields = new FakeViewedFields(worker);
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
-            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"replace":true,"field":"Cuerpo"}"""),
+            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"replace":true}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -177,7 +177,7 @@ public sealed class ComputerUseTiposUiaTests
             $$"""{"ok":true,"error":"","kind":"Document","className":"{{fieldClass}}","nativeHwnd":4661,"valueLength":0,"method":"","delivered":false}""");
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
-            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"replace":true,"field":"Cuerpo"}"""),
+            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"replace":true}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -207,7 +207,7 @@ public sealed class ComputerUseTiposUiaTests
             $$"""{"ok":true,"error":"","kind":"Edit","className":"TextBox","nativeHwnd":0,"focused":{{(focused ? "true" : "false")}},"valueLength":4,"method":"","delivered":false}""");
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
-            "input.text.type", Json("""{"text":"hola","window":4660,"index":0,"field":"Usuario"}"""), CancellationToken.None);
+            "input.text.type", Json("""{"text":"hola","window":4660,"index":0}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -249,20 +249,22 @@ public sealed class ComputerUseTiposUiaTests
         });
     }
 
-    // A field named by its label that the mission found in no view (no index): the text goes nowhere, never to the
-    // window's focus.
-    [Test]
-    public async Task ANamedFieldNotFoundTakesNothing()
+    // Auditoría final 2, fila 11: a text carries no control character, with or without a window. A line break that
+    // would send what was written is a key of its own (input.key.press) and goes through its confirmation.
+    [TestCase("""{"text":"hola\nmundo"}""")]
+    [TestCase("""{"text":"hola\r\n","window":4660}""")]
+    [TestCase("""{"text":"a\tb"}""")]
+    public async Task ATextWithAControlCharacterTakesNothing(string arguments)
     {
         var keyboard = new FakeDesktopKeyboard();
         FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "Edit", string.Empty);
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages).InvokeAsync(
-            "input.text.type", Json("""{"text":"800","window":4660,"field":"Alto"}"""), CancellationToken.None);
+            "input.text.type", Json(arguments), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("input_field_not_found"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("desktop_interaction_argument_invalid"));
             Assert.That(messages.Content[Edit], Is.Empty);
             Assert.That(keyboard.Texts, Is.Empty);
         });
@@ -307,7 +309,7 @@ public sealed class ComputerUseTiposUiaTests
             """{"ok":true,"error":"","kind":"ComboBox","className":"ComboBox","entry":true,"method":"select","delivered":true}""");
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, new FakeFieldMessages(), fields).InvokeAsync(
-            "input.text.type", Json("""{"text":"Wingdings","window":4660,"index":5,"replace":true,"entry":true,"field":"Fuente"}"""),
+            "input.text.type", Json("""{"text":"Wingdings","window":4660,"index":5,"replace":true,"entry":true}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>

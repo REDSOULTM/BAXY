@@ -98,8 +98,8 @@ public static class OperationVisibleFacts
             && result.ValueKind is JsonValueKind.Object or JsonValueKind.Array)
         {
             // Read from the element itself: a repeated key keeps its last value,
-            // as every other reader of the result does (JsonElement.GetProperty,
-            // the planner's projection), instead of failing the whole parse.
+            // as every other reader of the result does (JsonElement.GetProperty),
+            // instead of failing the whole parse.
             bool cut = false;
             sanitized = Sanitize(
                 result, ref cut,

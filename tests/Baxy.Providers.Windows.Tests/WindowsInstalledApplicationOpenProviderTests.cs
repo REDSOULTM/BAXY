@@ -1114,7 +1114,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
                 Has.Count.EqualTo(ApplicationCatalogContract.MaximumNames));
             Assert.That(
                 snapshot.Names
-                    .Select(ApplicationCatalogContract.NormalizeName)
+                    .Select(CatalogNames.Normalize)
                     .Distinct(StringComparer.Ordinal)
                     .Count(),
                 Is.EqualTo(snapshot.Names.Count));

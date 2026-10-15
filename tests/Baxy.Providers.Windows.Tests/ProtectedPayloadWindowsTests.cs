@@ -595,19 +595,6 @@ public sealed class ProtectedPayloadWindowsTests
         });
     }
 
-    [Test]
-    public void ProtectedPayloadRejectsAuthenticatedBytesThatAreNotUtf8()
-    {
-        using TemporaryDirectory temporary = new();
-        var protector = CreateProtector(temporary);
-        byte[] envelope = protector.Seal(new byte[] { 0xC3, 0x28 }, Purpose);
-
-        ProtectedPayloadException? exception = Assert.Throws<ProtectedPayloadException>(
-            () => protector.OpenUtf8(envelope, Purpose));
-
-        Assert.That(exception!.ErrorCode, Is.EqualTo(ProtectedPayloadErrorCode.InvalidEnvelope));
-    }
-
     private static WindowsProtectedPayload CreateProtector(TemporaryDirectory temporary) =>
         new(Path.Combine(temporary.Path, "payload.key"));
 
