@@ -274,24 +274,23 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return memory;
         }
 
-        if (method == "GET" && route == "/triggers")
-        {
-            return Json(new JsonObject { ["items"] = new JsonArray() });
-        }
-
-        if (route == "/triggers" || route.StartsWith("/triggers/", StringComparison.Ordinal))
-        {
-            return Error("routines_require_planner", 409);
-        }
-
         if (method == "GET" && route == "/tools")
         {
             return Json(new JsonObject
             {
                 ["mode"] = "trusted_v2",
                 ["direct_execution"] = false,
-                ["items"] = new JsonArray(),
-                ["tools"] = new JsonArray(),
+                // The tools the model is offered (the count the surface shows), as the mind receives them.
+                ["items"] = new JsonArray([.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
+                {
+                    Baxy.Contracts.OperationDescriptor tool = ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor));
+                    return (JsonNode)new JsonObject
+                    {
+                        ["name"] = tool.Name,
+                        ["description"] = tool.Description,
+                        ["schema"] = JsonNode.Parse(tool.ArgumentsSchema.GetRawText()),
+                    };
+                })]),
             });
         }
 
@@ -786,7 +785,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["sessions"] = 1,
         ["memory"] = _memory.Count,
         ["memory_revision"] = Volatile.Read(ref _memoryRevision),
-        ["triggers"] = 0,
         ["tools"] = ProductCatalog.ToolDescriptors.Count,
     };
 

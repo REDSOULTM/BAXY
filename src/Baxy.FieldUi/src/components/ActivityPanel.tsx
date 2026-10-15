@@ -3,7 +3,7 @@ import type { ActivityEntry, SourceTag } from '../types';
 import type { SessionInfo, SurfacesCount } from '../hooks/useEventStream';
 import { Icon } from './Icon';
 
-type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
+type SurfaceId = 'sessions' | 'memory' | 'tools';
 
 interface SurfaceCard {
   id: SurfaceId;
@@ -12,7 +12,7 @@ interface SurfaceCard {
 }
 
 // the redesign splits the four surfaces: sessions/memory live on the RIGHT
-// (activity); triggers/tools moved to the LEFT (substrate).
+// (activity); tools moved to the LEFT (substrate).
 const SURFACES: SurfaceCard[] = [
   { id: 'sessions', label: 'sessions', unit: 'cached' },
   { id: 'memory',   label: 'memoria',  unit: 'recuerdos' },

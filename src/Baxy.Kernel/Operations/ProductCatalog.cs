@@ -366,7 +366,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "desktop.wallpaper.set.spi.registry.postread.v1",
             ToolExposure.Public,
-            "Cambia el fondo de escritorio a un color liso nombrado o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
+            "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -1496,90 +1496,6 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Captura desde un escáner resuelto y devuelve una identidad privada verificable."),
         Descriptor(
-            "routine.delete",
-            Schema(
-                [
-                    Integer("expectedRevision", 1),
-                    String("reviewLabel", maximumUtf8Bytes: 640, nonWhitespace: true),
-                    String("routineId", maximumLength: 36, nonWhitespace: true),
-                ],
-                ["expectedRevision", "reviewLabel", "routineId"]),
-            OperationRisks.RecoverableDelete,
-            "routine.delete.local.postread.v1",
-            ToolExposure.Public,
-            "Elimina de forma recuperable una rutina ya seleccionada; nunca ejecuta sus pasos."),
-        Descriptor(
-            "routine.list",
-            Schema([Boolean("includeDeleted"), Integer("limit", 1, 50)], []),
-            OperationRisks.ReadOnly,
-            "routine.list.local.postread.v1",
-            ToolExposure.Public,
-            "Lista definiciones de rutina creadas por el controlador confiable."),
-        Descriptor(
-            "routine.phrase.create",
-            Schema(
-                [
-                    String("action", values: ["capture.screenshot", "media.control"]),
-                    String("name", maximumUtf8Bytes: 640, nonWhitespace: true),
-                    String("phrase", maximumUtf8Bytes: 640, nonWhitespace: true),
-                ],
-                ["name", "phrase"]),
-            OperationRisks.LowReversible,
-            "routine.phrase.create.local.postread.v1",
-            ToolExposure.Public,
-            "Crea una rutina local acotada de reproducción o captura al oir una frase exacta."),
-        Descriptor(
-            "routine.read",
-            Schema(
-                [
-                    Boolean("includeDeleted"),
-                    String("routineId", maximumLength: 36, nonWhitespace: true),
-                ],
-                ["routineId"]),
-            OperationRisks.ReadOnly,
-            "routine.read.local.identity.v1",
-            ToolExposure.Public,
-            "Lee metadatos de una rutina exacta sin ejecutarla."),
-        Descriptor(
-            "routine.resolve.exact",
-            Schema(
-                [
-                    Boolean("includeDeleted"),
-                    String("name", maximumUtf8Bytes: 640, nonWhitespace: true),
-                ],
-                ["name"]),
-            OperationRisks.ReadOnly,
-            "routine.resolve.exact.local.identity.v1",
-            ToolExposure.Internal,
-            "Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs."),
-        Descriptor(
-            "routine.restore",
-            RoutineCasSchema(),
-            OperationRisks.LowReversible,
-            "routine.restore.local.postread.v1",
-            ToolExposure.Public,
-            "Restaura deshabilitada una rutina eliminada; no la ejecuta."),
-        Descriptor(
-            "routine.set.enabled",
-            Schema(
-                [
-                    Boolean("enabled"),
-                    Integer("expectedRevision", 1),
-                    String("routineId", maximumLength: 36, nonWhitespace: true),
-                ],
-                ["enabled", "expectedRevision", "routineId"]),
-            OperationRisks.LowReversible,
-            "routine.set.enabled.local.postread.v1",
-            ToolExposure.Public,
-            "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
-        // Auditoría semántica 2026-09-20 (REOPEN1993, comandos; D11): «ejecuta ls»,
-        // «ejecuta pytest» se corren de verdad en una consola sin perfil, con plazo y
-        // salida acotados; lo destructivo no se corre por aquí (código propio).
-        // BAXY Renew (2026-10-15): una sola operación para lo que BAXY hace sonar después (alarmas y recordatorios), como
-        // cron de OpenClaw y la consolidación de herramientas que recomienda Anthropic. Sustituye a notification.* y a
-        // reminder.* (éstos sólo guardaban un registro que nadie hacía sonar). La hora es la de la persona: minutos
-        // desde ahora o una hora local; el modelo no escribe UTC (e2e E004: dueUtc mal escrito y 15 reintentos).
-        Descriptor(
             "schedule.alarms",
             Schema(
                 [
@@ -2380,13 +2296,6 @@ public static class ProductCatalog
             ["destinationRelativePath", "expectedSha256", "resourceId"]);
 
 
-    private static OperationArgumentsSchema RoutineCasSchema() =>
-        Schema(
-            [
-                Integer("expectedRevision", 1),
-                String("routineId", maximumLength: 36, nonWhitespace: true),
-            ],
-            ["expectedRevision", "routineId"]);
 
     private static OperationArgumentProperty Version() => Integer("version", 1, 1);
 

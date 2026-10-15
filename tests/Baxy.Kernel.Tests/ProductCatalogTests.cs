@@ -75,8 +75,8 @@ public sealed class ProductCatalogTests
     ];
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
-    // (reminder.* sólo guardaba un registro que nadie hacía sonar). Y la misión de pantalla, que el bucle nativo
-    // ya no aloja (auditoría K3), y app.status, que nadie invocaba (auditoría D-K9).
+    // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
+    // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9).
     internal static readonly string[] RenewRetired =
     [
         "app.status",
@@ -99,9 +99,16 @@ public sealed class ProductCatalogTests
         "filesystem.known.search",
         "filesystem.sandbox.append.named",
         "filesystem.write.text",
+        "routine.delete",
+        "routine.list",
+        "routine.phrase.create",
+        "routine.read",
+        "routine.resolve.exact",
+        "routine.restore",
+        "routine.set.enabled",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 20;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 27;
 
     // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
     // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).
@@ -118,11 +125,10 @@ public sealed class ProductCatalogTests
         "message.recipient.resolve",
         "package.install.commit",
         "package.install.prepare",
-        "routine.resolve.exact",
         "task.resolve.exact",
     ];
 
-    internal const int ExpectedTools = ExpectedDescriptors - 13;
+    internal const int ExpectedTools = ExpectedDescriptors - 12;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

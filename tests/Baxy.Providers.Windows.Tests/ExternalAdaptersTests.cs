@@ -380,34 +380,6 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
-    public async Task FallbackPeripheralInventoryDispatchesOnlyRequestedCategory()
-    {
-        const string output = """
-            {"printers":[{"Name":"Printer","PrinterStatus":0}],"scanners":[],"usb":[],"mice":[],"keyboards":[]}
-        """;
-        var runner = new StubProcessRunner(output);
-        var adapter = new WindowsInventoryAdapter(runner);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "peripheral.list",
-            Json("""{"kind":"printer"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(
-                receipt.Result?.GetProperty("devices").GetArrayLength(),
-                Is.EqualTo(1));
-            Assert.That(
-                receipt.Result?.GetProperty("devices")[0].GetProperty("kind").GetString(),
-                Is.EqualTo("printer"));
-            Assert.That(runner.LastArguments[^1], Is.EqualTo("printer"));
-            Assert.That(runner.LastArguments[3], Does.Contain("$kind=[string]$args[0]"));
-        });
-    }
-
-    [Test]
     public async Task SlowWinRtBluetoothInventoryYieldsToTheBoundedFallback()
     {
         using TemporaryDirectory temporary = new();

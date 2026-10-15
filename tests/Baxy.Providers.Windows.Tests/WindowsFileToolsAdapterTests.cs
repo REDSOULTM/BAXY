@@ -204,12 +204,16 @@ public sealed class WindowsFileToolsAdapterTests
         Assert.That(TwoFolders(documents, documents).LocateOpenTarget("documents", name).Error, Is.EqualTo("file_name_invalid"));
     }
 
-    [TestCase("azul", 0, 78, 152)]
-    [TestCase("Azul", 0, 78, 152)]
     [TestCase("#ff0000", 255, 0, 0)]
     [TestCase("00ff00", 0, 255, 0)]
-    public void ColoursAreNamedOrHex(string color, int r, int g, int b) =>
+    [TestCase("#004E98", 0, 78, 152)]
+    public void ColoursAreHex(string color, int r, int g, int b) =>
         Assert.That(WindowsFileToolsAdapter.ParseColor(color), Is.EqualTo(((byte)r, (byte)g, (byte)b)));
+
+    [TestCase("azul")]
+    [TestCase("blue")]
+    public void AColourNameIsNotParsedHere(string color) =>
+        Assert.That(WindowsFileToolsAdapter.ParseColor(color), Is.Null);
 
     [Test]
     public async Task AnUnknownColourAndANonImageAreRefusedBeforeAnyChange()
@@ -308,6 +312,8 @@ public sealed class WindowsFileToolsAdapterTests
             Assert.That(asked, Is.EqualTo(new[] { "https://wikipedia.org/", "https://upload.wikimedia.org/portada.png" }));
             Assert.That(receipt.Result!.Value.GetProperty("name").GetString(), Is.EqualTo("portada.png"));
             Assert.That(receipt.Result!.Value.GetProperty("sourceUrl").GetString(), Is.EqualTo("https://upload.wikimedia.org/portada.png"));
+            Assert.That(receipt.Result!.Value.GetProperty("pageUrl").GetString(), Is.EqualTo("https://wikipedia.org/"));
+            Assert.That(receipt.Result!.Value.GetProperty("imageAnnouncedByPage").GetBoolean(), Is.True);
             Assert.That(File.Exists(Path.Combine(_root, "portada.png")), Is.True);
         });
     }

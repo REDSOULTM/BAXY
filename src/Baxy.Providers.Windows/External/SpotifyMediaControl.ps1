@@ -147,6 +147,14 @@ try {
         [pscustomobject]@{ok=$false;effectObserved=$false;error='spotify_control_not_available';action=$Action}|ConvertTo-Json -Compress
         exit 2
     }
+    # toggle presses the one button that is there: «pausar» while it plays, «reproducir» while paused. That button
+    # says what the press does and what must show after it (BAXY Renew audit 2026-10-15: toggle looked for the same
+    # four names before and after, so it could never verify, and it reported «paused» either way).
+    $pressed=$Action
+    if($Action -eq 'toggle'){
+        if(@('pausar','pause') -contains $target.Name){$pressed='pause';$targets=@('pausar','pause');$opposites=@('reproducir','play')}
+        else{$pressed='play';$targets=@('reproducir','play');$opposites=@('pausar','pause')}
+    }
     $beforeTitle=Fold((Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle)
     $rect=$target.Rect
     $stage='click'
@@ -180,7 +188,8 @@ try {
     if(-not $verified -and $null -ne $postreadObservationError){
         throw $postreadObservationError
     }
-    $status=switch($Action){'pause'{'paused'};'play'{'playing'};'stop'{'stopped'};'toggle'{if($targets -contains 'pause'){'paused'}else{'playing'}};default{'playing'}}
+    # The state the post-read showed; next and previous show a new title, not a playback state.
+    $status=switch($pressed){'pause'{'paused'};'play'{'playing'};'stop'{'stopped'};default{$null}}
     $failure=if($verified){$null}else{'spotify_control_postread_not_verified'}
     [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;action=$Action;playbackStatus=$status;processId=$process.Id}|ConvertTo-Json -Compress
 } catch {

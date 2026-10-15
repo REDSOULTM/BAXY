@@ -6,7 +6,6 @@ import { TitleBar } from './components/TitleBar';
 import { SettingsPanel } from './components/SettingsPanel';
 import { SessionsPanel } from './components/SessionsPanel';
 import { MemoryPanel } from './components/MemoryPanel';
-import { TriggersPanel } from './components/TriggersPanel';
 import { ToolsPanel } from './components/ToolsPanel';
 import { ToastHost } from './components/ToastHost';
 import { useClock } from './hooks/useClock';
@@ -18,8 +17,8 @@ import type { ConvState } from './types';
 // truth for all cosmetic rules. additions live at the bottom of that file.
 import './styles/prototype.css';
 
-type OpenPanel = 'settings' | 'sessions' | 'memory' | 'triggers' | 'tools' | null;
-type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
+type OpenPanel = 'settings' | 'sessions' | 'memory' | 'tools' | null;
+type SurfaceId = 'sessions' | 'memory' | 'tools';
 
 /** Mic has three modes. `listening` = always-on wake word; `ptt` = push-to-talk
  *  (mic loop is up, but capture only fires on right-click trigger); `off` =
@@ -101,7 +100,7 @@ export default function App() {
   const [confirmation, setConfirmationState] = useState<ConfirmationPolicy>('normal');
   const [activeSurface, setActiveSurface] = useState<SurfaceId>(() => {
     const stored = localStorage.getItem('field.surface');
-    if (stored === 'sessions' || stored === 'memory' || stored === 'triggers' || stored === 'tools') {
+    if (stored === 'sessions' || stored === 'memory' || stored === 'tools') {
       return stored;
     }
     return 'memory';
@@ -114,8 +113,7 @@ export default function App() {
 
   // poll /surfaces every 5s for counts (WS event wins when present). Lifted here
   // from ActivityPanel so BOTH columns share the same live counts — the redesign
-  // splits the four surfaces: triggers/tools on the left, sessions/memory on the
-  // right.
+  // splits the surfaces: tools on the left, sessions/memory on the right.
   const [polledSurfaces, setPolledSurfaces] = useState<SurfacesCount | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -331,9 +329,6 @@ export default function App() {
       } else if (k === 's' && e.shiftKey) {
         e.preventDefault();
         setOpenPanel('sessions');
-      } else if (k === 't' && !e.shiftKey) {
-        e.preventDefault();
-        setOpenPanel('triggers');
       } else if (k === 'm' && !e.shiftKey) {
         e.preventDefault();
         setOpenPanel('memory');
@@ -482,8 +477,8 @@ export default function App() {
   }, [micMode, setMicModeAsync]);
 
   // clicking a surface card BOTH marks it active (visual carmesí border) AND
-  // opens the matching modal — sessions opens SessionsPanel, memory/triggers/
-  // tools open the generic InfoPanel with the right endpoint.
+  // opens the matching modal — sessions opens SessionsPanel, memory/tools open
+  // the generic InfoPanel with the right endpoint.
   const onSurface = useCallback((id: SurfaceId) => {
     setActiveSurface(id);
     setOpenPanel(id);
@@ -663,7 +658,6 @@ export default function App() {
         )}
         {openPanel === 'sessions' && <SessionsPanel onClose={closePanel} />}
         {openPanel === 'memory' && <MemoryPanel onClose={closePanel} revision={liveSurfaces?.memory_revision ?? 0} />}
-        {openPanel === 'triggers' && <TriggersPanel onClose={closePanel} />}
         {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}
 
         <ToastHost />

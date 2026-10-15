@@ -5,12 +5,11 @@ import { LogoMark } from './LogoMark';
 import { Icon, type IconName } from './Icon';
 import type { AccessMode, ConfirmationPolicy } from '../App';
 
-type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
+type SurfaceId = 'sessions' | 'memory' | 'tools';
 
-// the redesign splits the four surfaces: triggers/tools live on the LEFT
-// (substrate), sessions/memory on the RIGHT (activity).
+// the redesign splits the surfaces: tools lives on the LEFT (substrate),
+// sessions/memory on the RIGHT (activity).
 const SURFACES_LEFT: { id: SurfaceId; label: string; unit: string }[] = [
-  { id: 'triggers', label: 'triggers', unit: 'active' },
   { id: 'tools', label: 'tools', unit: 'wired' },
 ];
 
@@ -257,7 +256,7 @@ export function SubstratePanel({
         </div>
       </div>
 
-      {/* ---- surfaces (triggers / tools — left half of the four) ---- */}
+      {/* ---- surfaces (tools — the left one) ---- */}
       <div className="surfaces-wrap">
         <div className="surfaces">
           {SURFACES_LEFT.map((s) => {

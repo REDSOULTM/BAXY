@@ -17,7 +17,6 @@ using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Memory;
 using Baxy.Providers.Windows.Network;
 using Baxy.Providers.Windows.Notes;
-using Baxy.Providers.Windows.Routines;
 using Baxy.Providers.Windows.SystemStatus;
 using Baxy.Providers.Windows.Tasks;
 using Baxy.Providers.Windows.Windows;
@@ -94,7 +93,6 @@ internal static class Program
     {
         var noteStore = new LocalNoteStore(Path.Combine(dataRoot, "notes-store"));
         var taskStore = new LocalTaskStore(Path.Combine(dataRoot, "tasks-store"));
-        var routineStore = new LocalRoutineStore(Path.Combine(dataRoot, "routines-store"));
         var clipboardProvider = new WindowsClipboardProvider();
         var screenshotProvider = new WindowsScreenshotProvider(Path.Combine(dataRoot, "captures"));
         var filesystemProvider = new LocalFilesystemProvider(
@@ -170,7 +168,6 @@ internal static class Program
             new SystemStatusHandler(systemStatusProvider, gpuStatusProvider),
             new ProcessListHandler(processStatusProvider),
             new TimeStatusHandler(timeStatusProvider, placeTimeZoneResolver),
-            .. RoutineHandlers.Create(routineStore),
             .. TaskHandlers.Create(taskStore),
             .. WindowControlHandlers.Create(windowControlProvider),
         ];

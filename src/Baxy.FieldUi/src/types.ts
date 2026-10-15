@@ -86,7 +86,6 @@ export type ServerEvent =
       sessions: number;
       memory: number;
       memory_revision?: number;
-      triggers: number;
       tools: number;
     }
   | { type: 'session'; id: string; label: string }
