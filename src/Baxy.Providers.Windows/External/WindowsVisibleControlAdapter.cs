@@ -545,13 +545,6 @@ internal sealed class NoOpenedApplicationFocus : IOpenedApplicationFocus
         bool bringToFront = false) => ValueTask.FromResult(default(VisibleControlSurface.OpenedSurface));
 }
 
-// The front window of the person's default browser, the window browser.control and browser.tabs.list act on; 0 when it
-// is not running.
-internal interface IUserBrowserWindowLocator
-{
-    nint FrontWindow();
-}
-
 // How long a click looks for its label. M132 (owner script t42 «En … ve a crash bandicoot», 28 s for «no hay ningún
 // elemento visible con ese nombre»): a label is waited on only while the surface may still be drawing — an
 // application opened moments ago — and then for a bounded stretch once its window is up; on a window that was

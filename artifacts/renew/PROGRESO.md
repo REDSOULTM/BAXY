@@ -251,3 +251,12 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   no pierde trabajo, así que no se pide el sí. Se queda.
 - Jueces de escenas: una escena cuyas operaciones esperadas se retiraron todas sin reemplazo queda fuera del recuento
   (P025 esperaba `message.send`), y un fallo no cuenta como molestia (sí como fallo).
+- Re-auditoría (agente del PC) del diff de proveedores: arreglados la identidad por descendencia (sólo ayudantes de la
+  propia app: misma carpeta y empresa), un solo plegado de nombres para resolvedor y lista del modelo, el código
+  `application_window_identity_unavailable`, el recibo de la consola (efecto posible, no observado), el olvido con tildes
+  y restos muertos. Decisiones: (D7) `protected_window` se queda: escribir o pulsar en un editor, una terminal o BAXY
+  exige que una mirada haya nombrado esa app antes, aunque el pedido sea sobre la ventana activa (protege el trabajo de
+  la persona; es más estricto que D1 sólo para esas ventanas). Gris aceptado: el buscador rápido de Discord abre la
+  fila que nombra al destinatario como palabras enteras y luego el título exacto decide si se escribe (la fila mezcla
+  nombre y usuario); el regex de `CardTitle` lee rótulos de la interfaz del servicio de streaming, no palabras de la
+  persona.
