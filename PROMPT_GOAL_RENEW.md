@@ -51,11 +51,18 @@ la inferencia y las herramientas de BAXY (voz que habla, computer use, latido y 
 <orden_de_trabajo>
 - **Primero, el marco** (antes de ajustar nada):
   1. Crea los ficheros de estado (ver `<estado>`).
-  2. Escribe y sella los bancos nuevos: el holdout, el de falsedades y el de escenas del instinto.
-  3. Deja un `scripts/renew_check.ps1` que lance el banco y mida VRAM, RAM y latencia en un solo paso.
+  2. **Reutiliza los bancos que ya existen** antes de escribir uno. Ninguno de estos se usó para ajustar Renew, así
+     que sirven de holdout si los sellas ahora (sha256 y fecha en `metas.json`) y no los abres mientras ajustas:
+     - En BAXY Definitivo:
+       - las 84 corridas `artifacts/comprobaciones/C03/cien-*`, con su oráculo de antes y después;
+       - los pedidos reales del dueño en `tests/data/historical_missions.jsonl`;
+       - el holdout público `tests/data/turn_evidence_public_holdout.v1.jsonl`, derivado de MASSIVE;
+       - las mediciones de `documentacion/computer-use/`.
+     - En `F:\BAXYeval`: los dos holdouts sellados del torneo, de 40 y 50 casos.
 
-  El holdout viejo ya se usó para ajustar: sólo un holdout escrito antes de tocar nada mide de verdad. Mientras
-  ajustas, no lo abres.
+     El holdout de 60 de `renew_bench` ya se usó y no vale. Escribe sólo lo que falte, como el banco de escenas del
+     instinto, y séllalo antes de ajustar.
+  3. Deja un `scripts/renew_check.ps1` que lance los bancos y mida VRAM, RAM y latencia en un solo paso.
 - **Después,** el orden de «Lo primero para el chat nuevo» en la nota: las falsedades, la ronda 1, la voz que habla,
   computer use, las herramientas de agente y el latido, la re-auditoría y las optimizaciones.
 - **Avance incremental:** cierra y mide una pieza antes de abrir la siguiente.
