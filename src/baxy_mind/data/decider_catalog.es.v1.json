@@ -165,7 +165,7 @@
   "weather.current": "Consultar el clima actual y el pronóstico de mañana, aquí o en un lugar nombrado.",
   "web.download": "Descargar un archivo o una imagen de internet a una carpeta, por su dirección o buscando la imagen.",
   "web.news.headlines": "Leer los titulares de noticias del día, en general o sobre un tema.",
-  "web.search": "Buscar en internet información o sitios cercanos y devolver los resultados.",
+  "web.search": "Buscar en una fuente pública (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) y devolver lo que esa fuente devolvió.",
   "web.fetch": "Leer una página web pública como texto y devolver su título, su dirección final y su contenido.",
   "wifi.connect": "Conectarse a una red Wi-Fi guardada que ya está identificada.",
   "wifi.connect.named": "Conectarse a una red Wi-Fi guardada por su nombre o por el lugar (casa, trabajo, oficina).",

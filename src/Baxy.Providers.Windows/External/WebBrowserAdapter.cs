@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Baxy.Providers.Windows.Applications;
-using Baxy.Security.Windows;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -26,9 +25,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly OpenStreetMapPlaceSource _places;
     private readonly FrankfurterRateSource _rates;
     private readonly EspnScheduleSource _sports;
-    private readonly WikimediaReferenceSource _references;
     private readonly SearchPageReader _pages;
-    private readonly string? _searchDiagnosticPath;
+    // Private diagnostics of a playback that failed; null in tests.
+    private readonly string? _capturesDirectory;
 
     // El perfil del navegador colgaba del directorio del turno, de modo que cada
     // turno estrenaba uno. Dos cosas no sobreviven a eso, y las dos hacen falta
@@ -65,7 +64,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
         _sessionContext = sessionContext;
         _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform());
-        _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
+        _capturesDirectory = Path.Combine(dataRoot, "captures");
         _http = new HttpClient(new SocketsHttpHandler
         {
             AutomaticDecompression = System.Net.DecompressionMethods.All,
@@ -77,7 +76,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
         _sports = new EspnScheduleSource(_http);
-        _references = new WikimediaReferenceSource(_http);
         _pages = new SearchPageReader();
     }
 
@@ -97,7 +95,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
         _sports = sports ?? new EspnScheduleSource(_http);
-        _references = new WikimediaReferenceSource(_http);
         _pages = new SearchPageReader(_http);
     }
 
@@ -277,7 +274,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         (Uri Final, string Html)? page = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
         if (page is not { } read)
             return ExternalJson.Failure(operation, "web_fetch_page_unreadable");
-        (string title, string text, bool truncated) = SearchPageExcerpt.Prose(read.Html, maximumCharacters);
+        (string title, string text, bool truncated) = PageText.Prose(read.Html, maximumCharacters);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -433,13 +430,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     private void RecordStreamingRejection(string title, CdpStreamingPlaybackResult playback)
     {
-        if (_searchDiagnosticPath is null)
+        if (_capturesDirectory is null)
             return;
         try
         {
-            string path = Path.Combine(
-                Path.GetDirectoryName(_searchDiagnosticPath)!,
-                "streaming-playback-rejections.jsonl");
+            string path = Path.Combine(_capturesDirectory, "streaming-playback-rejections.jsonl");
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             string line = ExternalJson.Create(writer =>
             {
@@ -615,522 +610,342 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    // web.search asks the source that fits the query and the first one that answers
-    // with something pertinent answers, with the receipt naming it («authority»).
-    //
-    // History of the general engine (WEB1831/H0060, WEB1877, H0463): Bing's RSS feed,
-    // then its HTML page, then DuckDuckGo lite in front of Bing, each one decaying on
-    // this machine. Since 2026-09-26 every engine answers this network with challenge
-    // pages or junk.
-    //
-    // D32 (owner, 2026-09-28): search works on its own, with no account or key of
-    // anybody's, and only the query leaves. M51 (2026-09-28, review of v3a-final) routes
-    // by what the query asks, each source open and keyless, with its terms of use in
-    // artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md:
-    //   1. a conversion between two currencies → Frankfurter (FrankfurterRateSource);
-    //   1b. M168 (D77): when a named team plays next, or how its last match went → ESPN's public calendar
-    //      (EspnScheduleSource); a team it does not know, or no answer, goes on to the sources below;
-    //   2. a kind of place in a named place or near this PC → OpenStreetMap Nominatim
-    //      (OpenStreetMapPlaceSource);
-    //   3. what changes by the day (news, prices, schedules, «hoy») → the search feed of
-    //      Google News (the same feed GoogleNewsHeadlinesAdapter reads);
-    //   3b. M53 (D35): a named dish's recipe or the plot of a named work, asked by the mind
-    //      with its class word («receta …», «resumen …») → Wikibooks' recipes or the plot
-    //      section of the work's Wikipedia article (WikimediaReferenceSource); the receipt
-    //      says «reference» so the reply keeps the recipe's form;
-    //   4. what an encyclopedia answers → Wikipedia's open API (WikipediaSearchSource),
-    //      Spanish or English first by the language of the query;
-    //   5. DuckDuckGo lite, the last attempt for everything. Its terms and policy say
-    //      nothing about automated queries, but the service throttles them and D32
-    //      prefers no loose HTTP requests to engines; it stays until the owner rules.
-    // Wikipedia and the news feed answer only with results that pass SearchPertinence
-    // (the query's proper names, or its content words in the title); DuckDuckGo keeps
-    // its own gate (PertinentResults). Bing's HTML page was retired: the Microsoft
-    // Services Agreement §14.f.i keeps Bing material «for your noncommercial, personal
-    // use only»; §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows
-    // /search.
-    //
-    // M98: a year said by its relation to today reaches every source as its number
-    // (SearchQueryYear); an article that only names what was asked about answers only
-    // when the general engine cannot; the general engine's first pages are read for
-    // the sentences that answer (SearchPageExcerpt), since its snippets stop before
-    // the fact.
-    //
-    // When nothing searched (all unreachable, blocked, or none fits the query) the
-    // receipt says web_search_unavailable, so the reply says it could not look it up
-    // and offers to open the search in the person's browser; when the general engine
-    // answered and nothing was pertinent, web_search_results_irrelevant.
+    // web.search (BAXY Renew, 2026-10-15): the model names the source (source) and fills its typed arguments; the
+    // provider asks only that source and returns what it returned, bounded by limit. Nothing here reads what the query
+    // says: no source is chosen by its words, no result is judged, no page is read for its sentences (the model calls
+    // web.fetch on the result it wants to read). Each source is open and keyless (D32, owner 2026-09-28: search works on
+    // its own, with no account or key of anybody's, and only the query leaves; terms of use in
+    // artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md):
+    //   web          → DuckDuckGo lite: title, url and snippet as the engine gave them;
+    //   news         → the search feed of Google News: title, outlet, url and time of each item;
+    //   encyclopedia → Wikipedia's open API in «language»: title, url and the article's opening as the API gives it;
+    //   currency     → Frankfurter, with the ISO 4217 codes «from» and «to» and «amount»: the rate, its date and the
+    //                  amount converted;
+    //   sports       → ESPN's public calendar, with «team» and «wants» (next|last): the match as ESPN gives it;
+    //   places       → OpenStreetMap Nominatim, with «kind» (written in English) inside «place»: names, addresses and
+    //                  distances from the place's centre.
+    // With nearby (web, news, encyclopedia, places), this PC's city and country, read from its public address
+    // (PublicPlaceLocator, https only), join the query or are the place: that is all of the PC that leaves, and the
+    // receipt says the query as it was sent. A source that did not answer is web_search_unavailable (the reply says
+    // it could not look it up); one that answered with nothing, web_search_no_results.
+    // Bing's HTML page is not a source: the Microsoft Services Agreement §14.f.i keeps Bing material «for your
+    // noncommercial, personal use only»; §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows
+    // /search. DuckDuckGo's terms and policy say nothing about automated queries, but the service throttles them.
     private const string GeneralSearchEndpoint = "https://lite.duckduckgo.com/lite/";
     private const string GeneralSearchAuthority = "duckduckgo_lite_https";
     private const string NewsSearchAuthority = "google_news_rss_search";
-
-    // A day-bound query that is about a place near the person or the weather is not
-    // the news feed's.
-    private static readonly HashSet<string> NotNewsWords = new(StringComparer.Ordinal)
-    {
-        "cerca", "near", "nearby", "clima", "weather", "forecast", "pronostico",
-    };
-
-    private readonly record struct SearchChannelReading(
-        List<SearchCandidate> Candidates,
-        bool IsResultsPage);
+    private const string SearchUnavailable = "web_search_unavailable";
+    private const string SearchNoResults = "web_search_no_results";
 
     private async ValueTask<ExternalCapabilityReceipt> SearchAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string query = SearchQueryYear.Anchor(
-            ExternalJson.RequiredString(arguments, "query").Trim(), DateTime.Now.Year);
-        string asked = query;
-        // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»
-        // buscó sin lugar y devolvió portales de otro país: lo que se busca cerca
-        // de la persona se busca con la ciudad de este PC, la misma que lee el
-        // clima. Sale sólo el nombre de la ciudad que el servicio público dedujo
-        // de la dirección de este PC; ni coordenadas ni nada de la persona.
-        string? near = null;
-        string? nearCountry = null;
-        if (arguments.ValueKind == JsonValueKind.Object
-            && arguments.TryGetProperty("nearby", out JsonElement nearby)
-            && nearby.ValueKind == JsonValueKind.True)
+        string query = ExternalJson.RequiredString(arguments, "query").Trim();
+        string source = OptionalText(arguments, "source") ?? "web";
+        string language = OptionalText(arguments, "language") ?? "es";
+        if (language is not ("es" or "en")) throw new InvalidDataException("The search language is es or en.");
+        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 10);
+        bool nearby = arguments.TryGetProperty("nearby", out JsonElement nearbyValue)
+            && nearbyValue.ValueKind == JsonValueKind.True;
+        switch (source)
         {
-            PublicPlace? place = await _locator.LocateAsync(cancellationToken).ConfigureAwait(false);
-            if (place is null)
-            {
-                return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
-            }
-            near = place.Value.Name;
-            nearCountry = place.Value.CountryCode;
-            // M81 (DEV-D v3m D-p12-t2 «Bring up 24/7 stores near me» → tiendas de Curico, Indiana): una ciudad
-            // sola tiene homónimas en otros países; el motor general recibe también el país de este PC.
-            string country = place.Value.Country.Trim();
-            query = country.Length > 0 && !near.Contains(country, StringComparison.OrdinalIgnoreCase)
-                ? query + " " + near + " " + country
-                : query + " " + near;
-        }
-        string[] queryTokens = SearchTokens(query);
-        if (queryTokens.Length == 0)
-        {
-            throw new InvalidDataException("The search query has no verifiable terms.");
-        }
-        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20);
-        string[] languages = WikipediaSearchSource.Languages(asked, CultureInfo.CurrentCulture);
-
-        if (FrankfurterRateSource.Parse(asked, RegionInfo.CurrentRegion) is { } currencies)
-        {
-            List<(string Title, string Url, string Snippet)>? rate = await _rates
-                .ReadAsync(currencies, cancellationToken).ConfigureAwait(false);
-            if (rate is { Count: > 0 })
-                return SearchReceipt(operation, query, near, rate, FrankfurterRateSource.Authority);
-        }
-
-        if (near is null && EspnScheduleSource.Parse(asked) is { } match)
-        {
-            List<(string Title, string Url, string Snippet)>? fixture = await _sports
-                .ReadAsync(match, cancellationToken).ConfigureAwait(false);
-            if (fixture is { Count: > 0 })
-                return SearchReceipt(operation, query, near, fixture, EspnScheduleSource.Authority);
-        }
-
-        if (OpenStreetMapPlaceSource.Parse(asked, near) is { } placeAsk)
-        {
-            // M54: this PC's city is looked up in this PC's country; a named place prefers the
-            // country of this PC's regional settings among places of the same name.
-            OpenStreetMapPlaceSource.PlaceReading? places = await _places
-                .SearchNearAsync(
-                    placeAsk, limit, languages[0], cancellationToken,
-                    nearCountry ?? RegionInfo.CurrentRegion.TwoLetterISORegionName,
-                    requireCountry: nearCountry is not null)
-                .ConfigureAwait(false);
-            if (places is { Places.Count: > 0 } read)
-            {
-                return SearchReceipt(operation, query, near,
-                    read.Places.Select(static place => (place.Title, place.Url, place.Snippet)).ToList(),
-                    OpenStreetMapPlaceSource.Authority,
-                    read.Places.Select(static place => place.DistanceMeters).ToList());
-            }
-            // M62 (v3e2-final F-p05-t1): sites of that kind exist only farther than the named
-            // place's surroundings; none is near it, and that is the answer.
-            if (places is { AllFar: true })
-                return ExternalJson.FailureBeforeEffect(operation, "web_search_places_not_found_near");
-        }
-
-        // M102: the general engine's reading for a recipe no book had, kept for the rest of the search (it is asked
-        // once), or whether it could not be reached.
-        SearchChannelReading? recipeSearch = null;
-        bool generalUnreachable = false;
-        if (near is null && WikimediaReferenceSource.Parse(asked) is { } reference)
-        {
-            string[] cueLanguages = WikimediaReferenceSource.CueLanguages(asked, languages);
-            WikimediaReferenceSource.ReferenceReading? read = await _references
-                .ReadAsync(reference, cueLanguages, cancellationToken)
-                .ConfigureAwait(false);
-            if (read is { } found)
-                return ReferenceReceipt(operation, query, reference.Kind, found);
-            if (reference.Kind == WikimediaReferenceSource.ReferenceKind.Recipe)
-            {
-                // M102 (DEV-D v3z D-s017, D-w10-t1): neither recipe book has the dish; the general engine's first
-                // pages are read for the recipe they publish as data (SearchPageRecipe), before any encyclopedia.
-                try
+            case "currency":
+                return await CurrencyAsync(operation, query, CurrencyArguments(arguments), cancellationToken)
+                    .ConfigureAwait(false);
+            case "sports":
+                return await SportsAsync(operation, query, SportsArguments(arguments), cancellationToken)
+                    .ConfigureAwait(false);
+            case "places":
+                string? place = OptionalText(arguments, "place");
+                if (place is null && !nearby) throw new InvalidDataException("A places search names its place.");
+                string kind = ExternalJson.RequiredString(arguments, "kind").Trim();
+                string? city = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
+                if (nearby && city is null)
+                    return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+                return await PlacesAsync(operation, query,
+                        new OpenStreetMapPlaceSource.PlaceAsk(kind, string.Join(", ", new[] { place, city }.OfType<string>())),
+                        limit, language, cancellationToken)
+                    .ConfigureAwait(false);
+            case "web" or "news" or "encyclopedia":
+                string? near = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
+                if (nearby && near is null)
+                    return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+                string sent = near is null ? query : query + " " + near;
+                return source switch
                 {
-                    recipeSearch = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
-                }
-                catch (HttpRequestException)
-                {
-                    generalUnreachable = true;
-                }
-                catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
-                {
-                    generalUnreachable = true;
-                }
-                if (recipeSearch is { } pages)
-                {
-                    List<(string Title, string Url, string Snippet)> recipePages =
-                        PertinentResults(queryTokens, pages.Candidates, limit, []);
-                    WikimediaReferenceSource.ReferenceReading? published = await ReadPageRecipeAsync(
-                            recipePages, reference.Named, cueLanguages[0], cancellationToken)
-                        .ConfigureAwait(false);
-                    if (published is { } recipe)
-                        return ReferenceReceipt(operation, query, reference.Kind, recipe);
-                }
-            }
+                    "web" => await WebAsync(operation, sent, limit, cancellationToken).ConfigureAwait(false),
+                    "news" => await NewsAsync(operation, sent, language, limit, cancellationToken).ConfigureAwait(false),
+                    _ => await EncyclopediaAsync(operation, sent, language, limit, cancellationToken)
+                        .ConfigureAwait(false),
+                };
+            default:
+                throw new InvalidDataException("Unknown search source.");
         }
+    }
 
-        // Uso real 2026-10-07 («un top 3 peliculas de suspenso del 2026» → el artículo de UNA película): un listado
-        // pedido (la mente lo marca con listing) no es una pregunta de enciclopedia; un artículo sobre una sola obra
-        // no lo responde. Revisión: un titular tampoco es un elemento del listado (tres noticias no son «el top 3»),
-        // así que un listado no pasa por noticias: va al buscador general, cuyas páginas contienen el listado.
-        bool listing = arguments.ValueKind == JsonValueKind.Object
-            && arguments.TryGetProperty("listing", out JsonElement listed)
-            && listed.ValueKind == JsonValueKind.True;
-        string[] answerWords = AnswerWords(arguments);
-        string[] notStated = AnswerWords(arguments, "answerWordsNot");
-        bool encyclopedic = !listing && WikipediaSearchSource.IsEncyclopedic(query);
-        string terms = string.Join(' ', SearchPertinence.ContentTerms(asked));
-        if (!listing && !encyclopedic && near is null && terms.Length > 0
-            && !WikipediaSearchSource.FoldedWords(asked).Any(NotNewsWords.Contains)
-            && !WikipediaSearchSource.AsksWhatIsShowing(asked))
+    // A string argument the model may leave out (absent, null or blank: null), trimmed.
+    private static string? OptionalText(JsonElement arguments, string name) =>
+        arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
+        && value.GetString() is { } text && !string.IsNullOrWhiteSpace(text)
+            ? text.Trim()
+            : null;
+
+    // Uso real tanda 4c: with nearby, this PC's city, read from its public address, and its country (M81: «Curico»
+    // alone is also in Indiana). Only their names leave; no coordinates, nothing of the person. Null without nearby, or
+    // when the PC's place could not be read.
+    private async Task<string?> NearAsync(bool nearby, CancellationToken cancellationToken)
+    {
+        if (!nearby) return null;
+        if (await _locator.LocateAsync(cancellationToken).ConfigureAwait(false) is not { } place) return null;
+        string country = place.Country.Trim();
+        return country.Length > 0 && !place.Name.Contains(country, StringComparison.OrdinalIgnoreCase)
+            ? place.Name + ", " + country
+            : place.Name;
+    }
+
+    private static FrankfurterRateSource.CurrencyAsk CurrencyArguments(JsonElement arguments)
+    {
+        string from = CurrencyCode(arguments, "from");
+        string to = CurrencyCode(arguments, "to");
+        if (from == to) throw new InvalidDataException("A conversion names two different currencies.");
+        decimal amount = 1m;
+        if (arguments.TryGetProperty("amount", out JsonElement value) && value.ValueKind != JsonValueKind.Null)
         {
-            List<(string Title, string Url, string Snippet)>? headlines = await ReadNewsAsync(
-                terms, languages[0], cancellationToken).ConfigureAwait(false);
-            List<(string Title, string Url, string Snippet)> pertinent = (headlines ?? [])
-                .Where(item => SearchPertinence.IsPertinent(asked, item.Title, item.Snippet))
-                .Take(Math.Min(limit, 5))
-                .ToList();
-            if (pertinent.Count > 0)
-                return SearchReceipt(operation, query, near, pertinent, NewsSearchAuthority);
+            if (value.ValueKind != JsonValueKind.Number || !value.TryGetDecimal(out amount) || amount <= 0)
+                throw new InvalidDataException("The amount is a positive number.");
         }
+        return new FrankfurterRateSource.CurrencyAsk(amount, from, to);
+    }
 
-        // What is looked for near the person is never an encyclopedia article. Wikipedia
-        // finds only pages that carry every word it is given, and the article that
-        // answers «who played in the movie directed by Kirill Mikhanovsky» says «film»:
-        // when the words found nothing pertinent, the proper names alone are asked once,
-        // in the query's language, and judged by the same whole query.
-        // M98: an article that only names what was asked about («Barcelona», «París» for their distance) is kept
-        // aside; it answers only when the general engine cannot be asked or has nothing about the query.
-        (List<(string Title, string Url, string Snippet)> Articles, string Authority)? namesOnly = null;
-        if (near is null && encyclopedic && terms.Length > 0)
+    private static string CurrencyCode(JsonElement arguments, string name)
+    {
+        string code = ExternalJson.RequiredString(arguments, name).Trim().ToUpperInvariant();
+        return code.Length == 3 && code.All(char.IsAsciiLetterUpper)
+            ? code
+            : throw new InvalidDataException("A currency is its ISO 4217 code.");
+    }
+
+    private static EspnScheduleSource.MatchAsk SportsArguments(JsonElement arguments) =>
+        new(ExternalJson.RequiredString(arguments, "team").Trim(), (OptionalText(arguments, "wants") ?? "next") switch
         {
-            string names = string.Join(' ', SearchPertinence.EntityTerms(asked));
-            var asks = languages.Select(language => (Language: language, Words: terms)).ToList();
-            if (names.Length > 0 && names != terms) asks.Add((languages[0], names));
-            // Ronda 19 (r17 t2-c01 T4 «cuantos discos de estudio tienen los bunkers?»): a count of an entity's works
-            // found only the page of one of them («Los Bunkers (álbum)»); the entity's own page («Los Bunkers») is
-            // asked by its name once, and it answers the count (its text is read below). Revisión r19: that page is
-            // taken only when it describes the maker the work's page names (SearchPertinence.OwnPageOfTheWork); a
-            // namesake that is something else is judged as any other result.
-            var ownArticles = new Dictionary<string, (string Title, string Snippet)>(StringComparer.Ordinal);
-            for (int ask = 0; ask < asks.Count; ask++)
-            {
-                (string language, string words) = asks[ask];
-                cancellationToken.ThrowIfCancellationRequested();
-                List<(string Title, string Url, string Snippet)>? articles = await _wikipedia
-                    .SearchAsync(language, words, limit, cancellationToken).ConfigureAwait(false);
-                if (articles is null) continue;
-                var judged = articles
-                    .Select(item => (Item: item, Pertinence: ownArticles.TryGetValue(string.Join(' ',
-                            WikipediaSearchSource.FoldedWords(item.Title)), out (string Title, string Snippet) work)
-                        && SearchPertinence.OwnPageOfTheWork(work.Title, work.Snippet, item.Title, item.Snippet)
-                        ? SearchPertinence.Pertinence.About
-                        : SearchPertinence.Judge(asked, item.Title, item.Snippet)))
-                    .ToList();
-                if (SearchPertinence.AsksACount(asked))
-                {
-                    foreach ((string Title, string Url, string Snippet) work in judged
-                        .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.NamesOnly)
-                        .Select(static judgement => judgement.Item))
-                    {
-                        if (SearchPertinence.WorkQualifiedEntity(work.Title) is { } entity
-                            && ownArticles.TryAdd(string.Join(' ', WikipediaSearchSource.FoldedWords(entity)),
-                                (work.Title, work.Snippet)))
-                        {
-                            asks.Add((language, entity));
-                        }
-                    }
-                }
-                List<(string Title, string Url, string Snippet)> pertinent = judged
-                    .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.About)
-                    .Select(static judgement => judgement.Item)
-                    .Take(limit)
-                    .ToList();
-                if (pertinent.Count > 0)
-                {
-                    pertinent = await WithArticleReadAsync(
-                            asked, answerWords, notStated, pertinent, language, cancellationToken)
-                        .ConfigureAwait(false);
-                    return SearchReceipt(operation, query, near, pertinent,
-                        WikipediaSearchSource.Authority(language));
-                }
-                List<(string Title, string Url, string Snippet)> named = judged
-                    .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.NamesOnly)
-                    .Select(static judgement => judgement.Item)
-                    .Take(limit)
-                    .ToList();
-                if (namesOnly is null && named.Count > 0)
-                    namesOnly = (named, WikipediaSearchSource.Authority(language));
-            }
-        }
+            "next" => EspnScheduleSource.Wanted.Next,
+            "last" => EspnScheduleSource.Wanted.Last,
+            _ => throw new InvalidDataException("wants is next or last."),
+        });
 
-        if (generalUnreachable) return NamesOnlyOr("web_search_unavailable");
-        SearchChannelReading reading;
+    private async Task<ExternalCapabilityReceipt> WebAsync(
+        string operation,
+        string query,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        (List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage) reading;
         try
         {
-            reading = recipeSearch ?? await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
+            reading = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
         }
         catch (HttpRequestException)
         {
-            return NamesOnlyOr("web_search_unavailable");
+            return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
         }
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            return NamesOnlyOr("web_search_unavailable");
+            return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
         }
-        if (reading.Candidates.Count == 0 && !reading.IsResultsPage)
-        {
-            // A block, a captcha or an error page: nothing was searched, and the
-            // reply must not pretend the web had no answer.
-            return NamesOnlyOr("web_search_unavailable");
-        }
-        var rejected = new List<(string Title, Uri Url, string Snippet)>();
-        List<(string Title, string Url, string Snippet)> results =
-            PertinentResults(queryTokens, reading.Candidates, limit, rejected);
-        if (results.Count > 0)
-        {
-            results = await WithPageExcerptsAsync(
-                    asked, results, answerWords, notStated, listing ? limit : 0, cancellationToken)
-                .ConfigureAwait(false);
-            return SearchReceipt(operation, query, near, results, GeneralSearchAuthority);
-        }
-        RecordSearchRejection(query, queryTokens, reading.Candidates.Count, rejected);
-        return NamesOnlyOr("web_search_results_irrelevant");
-
-        ExternalCapabilityReceipt NamesOnlyOr(string failure) => namesOnly is { } kept
-            ? SearchReceipt(operation, query, near, kept.Articles, kept.Authority)
-            : ExternalJson.FailureBeforeEffect(operation, failure);
+        // A block, a captcha or an error page: nothing was searched, and the reply must not pretend the web had no
+        // answer.
+        if (reading.Results.Count == 0 && !reading.IsResultsPage)
+            return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        return SearchReceipt(operation, "web", query, GeneralSearchAuthority, reading.Results.Take(limit).ToList(),
+            static (writer, result) =>
+            {
+                writer.WriteString("title", result.Title);
+                writer.WriteString("url", result.Url);
+                writer.WriteString("snippet", result.Snippet);
+            });
     }
 
-    // M98 (DEV-D v3x D-w01-t2, D-p34-t1): the engine's snippet is cut before what was asked. The pages of the first
-    // results are read at once, within a bound of their own, and the sentences of each that carry the most of the
-    // query (SearchPageExcerpt) follow its snippet. A query of one or two content words names a thing or a site, and
-    // its snippets already say what it is: no page is read. A page that does not answer in time, is not HTML or is
-    // not a public web address (SearchPageReader) keeps its snippet alone.
-    private const int ExcerptPages = 3;
-    private static readonly TimeSpan ExcerptBudget = TimeSpan.FromMilliseconds(1_500);
-
-    // Uso real v3 tanda 1: a question that asks a relation («quién ganó», «who directed») carries the mind's
-    // answerWords. When a fragment already states it, no page is read; when none does, the pages are read whatever
-    // the length of the query (the relation's verb is no content word), for the sentences that state it.
-    // Ronda 24 (r23 t1-c03 «dame el top 5»): a listing asked (listing, with limit = how many) reads the first pages
-    // whatever the length of the query, and the first ranking of each (SearchPageExcerpt.Rows) follows its snippet:
-    // «Anexo:Películas con las mayores recaudaciones» was the first result and its table never reached the reply.
-    private async Task<List<(string Title, string Url, string Snippet)>> WithPageExcerptsAsync(
-        string asked,
-        List<(string Title, string Url, string Snippet)> results,
-        string[] answerWords,
-        string[] notStated,
-        int listCount,
+    private async Task<ExternalCapabilityReceipt> NewsAsync(
+        string operation,
+        string query,
+        string language,
+        int limit,
         CancellationToken cancellationToken)
     {
-        if (listCount == 0 && answerWords.Length > 0)
-        {
-            if (FragmentsAnswer(asked, answerWords, notStated, results)) return results;
-        }
-        else if (listCount == 0 && SearchPertinence.ContentTerms(asked).Length < 3)
-        {
-            return results;
-        }
-        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        budget.CancelAfter(ExcerptBudget);
-        string[] excerpts = await Task.WhenAll(results.Take(ExcerptPages)
-                .Select(result => ReadPageExcerptAsync(
-                    asked, result, answerWords, notStated, listCount, budget.Token, cancellationToken)))
+        List<GoogleNewsHeadlinesAdapter.Headline>? items = await ReadNewsAsync(query, language, cancellationToken)
             .ConfigureAwait(false);
-        cancellationToken.ThrowIfCancellationRequested();
-        return results
-            .Select((result, index) => index < excerpts.Length && excerpts[index].Length > 0
-                ? (result.Title, result.Url, result.Snippet + " … " + excerpts[index])
-                : result)
-            .ToList();
+        if (items is null) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        return SearchReceipt(operation, "news", query, NewsSearchAuthority, items.Take(limit).ToList(),
+            static (writer, item) =>
+            {
+                writer.WriteString("title", item.Title);
+                writer.WriteString("source", item.Source);
+                writer.WriteString("url", item.Url);
+                writer.WriteString("published", item.PublishedAt);
+            });
     }
 
-    private async Task<string> ReadPageExcerptAsync(
-        string asked,
-        (string Title, string Url, string Snippet) result,
-        string[] answerWords,
-        string[] notStated,
-        int listCount,
-        CancellationToken budget,
+    private async Task<ExternalCapabilityReceipt> EncyclopediaAsync(
+        string operation,
+        string query,
+        string language,
+        int limit,
         CancellationToken cancellationToken)
     {
-        if (!Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? page)) return string.Empty;
-        try
-        {
-            string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
-            if (html is null) return string.Empty;
-            string excerpt = SearchPageExcerpt.Read(
-                html, asked, result.Title + " " + result.Snippet, answerWords, notStated);
-            string rows = listCount > 0 ? SearchPageExcerpt.Rows(html, asked, listCount) : string.Empty;
-            return rows.Length == 0 ? excerpt : excerpt.Length == 0 ? rows : excerpt + " … " + rows;
-        }
-        catch (HttpRequestException)
-        {
-            return string.Empty;
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return string.Empty;
-        }
+        List<(string Title, string Url, string Extract)>? articles = await _wikipedia
+            .SearchAsync(language, query, limit, cancellationToken).ConfigureAwait(false);
+        if (articles is null) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        return SearchReceipt(operation, "encyclopedia", query, WikipediaSearchSource.Authority(language),
+            articles.Take(limit).ToList(),
+            static (writer, article) =>
+            {
+                writer.WriteString("title", article.Title);
+                writer.WriteString("url", article.Url);
+                writer.WriteString("extract", article.Extract);
+            });
     }
 
-    // Uso real v3 tanda 1 («quien gano el mundial del 2014» → «Brasil ganó…»): the word beginnings with which a page
-    // states what was asked, as the mind gave them (web.search answerWords), folded; none when it gave none. With
-    // answerWordsNot, the whole words that begin so and name something else («campeonato», «championship»).
-    internal static string[] AnswerWords(JsonElement arguments, string property = "answerWords") =>
-        arguments.ValueKind == JsonValueKind.Object
-        && arguments.TryGetProperty(property, out JsonElement stated)
-        && stated.ValueKind == JsonValueKind.String
-            ? WikipediaSearchSource.FoldedWords(stated.GetString() ?? string.Empty)
-                .Where(static word => word.Length >= 3)
-                .Distinct(StringComparer.Ordinal)
-                .Take(40)
-                .ToArray()
-            : [];
+    private async Task<ExternalCapabilityReceipt> CurrencyAsync(
+        string operation,
+        string query,
+        FrankfurterRateSource.CurrencyAsk ask,
+        CancellationToken cancellationToken)
+    {
+        List<FrankfurterRateSource.Rate>? rates = await _rates.ReadAsync(ask, cancellationToken).ConfigureAwait(false);
+        if (rates is null) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        Uri asked = FrankfurterRateSource.RateUri(ask);
+        return SearchReceipt(operation, "currency", query, FrankfurterRateSource.Authority, rates,
+            (writer, rate) =>
+            {
+                writer.WriteString("from", rate.From);
+                writer.WriteString("to", rate.To);
+                writer.WriteNumber("amount", rate.Amount);
+                writer.WriteNumber("rate", rate.Value);
+                writer.WriteString("date", rate.Date);
+                writer.WriteNumber("converted", rate.Converted);
+                writer.WriteString("url", asked.AbsoluteUri);
+            },
+            sent: writer =>
+            {
+                writer.WriteString("from", ask.From);
+                writer.WriteString("to", ask.To);
+            });
+    }
 
-    internal static bool FragmentsAnswer(
-        string asked,
-        string[] answerWords,
-        string[] notStated,
-        IEnumerable<(string Title, string Url, string Snippet)> results) =>
-        results.Any(result => SearchPageExcerpt.FragmentAnswers(
-            result.Title + ". " + result.Snippet, asked, answerWords, notStated));
+    private async Task<ExternalCapabilityReceipt> SportsAsync(
+        string operation,
+        string query,
+        EspnScheduleSource.MatchAsk ask,
+        CancellationToken cancellationToken)
+    {
+        List<EspnScheduleSource.Match>? matches = await _sports.ReadAsync(ask, cancellationToken).ConfigureAwait(false);
+        if (matches is null) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        return SearchReceipt(operation, "sports", query, EspnScheduleSource.Authority, matches,
+            static (writer, match) =>
+            {
+                writer.WriteString("team", match.Team);
+                writer.WriteString("opponent", match.Opponent);
+                writer.WriteString("homeAway", match.Home ? "home" : "away");
+                writer.WriteString("start", match.Start.ToString("yyyy-MM-dd'T'HH:mmzzz", CultureInfo.InvariantCulture));
+                writer.WriteBoolean("startTimeAnnounced", match.StartTimeAnnounced);
+                writer.WriteString("state", match.State);
+                writer.WriteBoolean("completed", match.Completed);
+                writer.WriteString("statusDetail", match.StatusDetail);
+                writer.WriteString("teamScore", match.TeamScore);
+                writer.WriteString("opponentScore", match.OpponentScore);
+                writer.WriteString("competition", match.Competition);
+                writer.WriteString("venue", match.Venue);
+                writer.WriteString("url", match.Url);
+            },
+            sent: writer =>
+            {
+                writer.WriteString("team", ask.Team);
+                writer.WriteString("wants", ask.Wants == EspnScheduleSource.Wanted.Next ? "next" : "last");
+            });
+    }
 
-    // Uso real v3 tanda 1: the encyclopedia's snippet is the article's first three sentences («…se realizó en
-    // Brasil…»); who won is said further down. When no fragment states what was asked, the first pertinent article is
-    // read whole (its plain text, from the same open API) within the excerpts' bound, and its sentences that state it
-    // follow its snippet. When the article's own fragment already states it, it is answered as it is: no article is
-    // read. Only that fragment is judged (revisión adversarial, tanda 1 fila 82): the Conmebol qualification's «el
-    // repechaje contra el ganador de la quinta ronda» carries «ganador», «mundial» and «2014» and answers nothing.
-    private async Task<List<(string Title, string Url, string Snippet)>> WithArticleReadAsync(
-        string asked,
-        string[] answerWords,
-        string[] notStated,
-        List<(string Title, string Url, string Snippet)> results,
+    private async Task<ExternalCapabilityReceipt> PlacesAsync(
+        string operation,
+        string query,
+        OpenStreetMapPlaceSource.PlaceAsk ask,
+        int limit,
         string language,
         CancellationToken cancellationToken)
     {
-        if (answerWords.Length == 0 || results.Count == 0
-            || FragmentsAnswer(asked, answerWords, notStated, results.Take(1)))
-            return results;
-        (string Title, string Url, string Snippet) first = results[0];
-        string? article;
-        using (var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-        {
-            budget.CancelAfter(ExcerptBudget);
-            try
+        OpenStreetMapPlaceSource.PlaceReading? reading = await _places
+            .SearchNearAsync(ask, limit, language, cancellationToken).ConfigureAwait(false);
+        if (reading is not { } read) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        return SearchReceipt(operation, "places", query, OpenStreetMapPlaceSource.Authority, read.Places,
+            static (writer, place) =>
             {
-                article = await _wikipedia.ReadArticleAsync(language, first.Title, budget.Token).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                writer.WriteString("name", place.Name);
+                writer.WriteString("address", place.Address);
+                writer.WriteString("url", place.Url);
+                if (place.DistanceMeters is int meters)
+                    writer.WriteNumber("distanceMeters", meters);
+            },
+            sent: writer =>
             {
-                article = null;
+                writer.WriteString("kind", ask.Kind);
+                writer.WriteString("place", ask.Place);
+                if (read.Resolved is { } resolved)
+                    writer.WriteString("placeFound", resolved);
+            });
+    }
+
+    // The one receipt shape of web.search: the source asked, the query (as sent to a text source: web, news,
+    // encyclopedia), what a typed source was sent instead («sent»: currency, sports, places), the results as the source
+    // gave them and their count, and «authority», the source that answered (duckduckgo_lite_https,
+    // google_news_rss_search, wikipedia_es_api, wikipedia_en_api, frankfurter_reference_rates, espn_public_schedule,
+    // openstreetmap_nominatim). No result is web_search_no_results: the source answered with nothing.
+    private static ExternalCapabilityReceipt SearchReceipt<T>(
+        string operation,
+        string source,
+        string query,
+        string authority,
+        List<T> results,
+        Action<Utf8JsonWriter, T> writeResult,
+        Action<Utf8JsonWriter>? sent = null)
+    {
+        if (results.Count == 0) return ExternalJson.FailureBeforeEffect(operation, SearchNoResults);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("source", source);
+            writer.WriteString("query", query);
+            if (sent is not null)
+            {
+                writer.WriteStartObject("sent");
+                sent(writer);
+                writer.WriteEndObject();
             }
-        }
-        if (article is null) return results;
-        string excerpt = SearchPageExcerpt.Read(
-            article, asked, first.Title + " " + first.Snippet, answerWords, notStated);
-        if (excerpt.Length == 0) return results;
-        var read = new List<(string Title, string Url, string Snippet)>(results);
-        read[0] = (first.Title, first.Url, first.Snippet + " … " + excerpt);
-        return read;
+            writer.WriteStartArray("results");
+            foreach (T item in results)
+            {
+                writer.WriteStartObject();
+                writeResult(writer, item);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteNumber("resultCount", results.Count);
+            writer.WriteString("authority", authority);
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    // M102: the first pages of the results are read at once, within the excerpts' bound, and the first in the
-    // results' order that publishes the dish's recipe as data (SearchPageRecipe) is the recipe read; null when none
-    // does. Each page goes through SearchPageReader (public addresses only, no cookie, generic User-Agent).
-    private const int RecipePages = 3;
-    private static readonly TimeSpan RecipeBudget = TimeSpan.FromMilliseconds(2_500);
-
-    private async Task<WikimediaReferenceSource.ReferenceReading?> ReadPageRecipeAsync(
-        List<(string Title, string Url, string Snippet)> results,
-        string[] named,
-        string language,
-        CancellationToken cancellationToken)
-    {
-        if (results.Count == 0) return null;
-        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        budget.CancelAfter(RecipeBudget);
-        var pages = results.Take(RecipePages).ToList();
-        SearchPageRecipe.PageRecipe?[] read = await Task.WhenAll(pages
-                .Select(result => ReadOneRecipeAsync(result.Url, result.Title, named, budget.Token, cancellationToken)))
-            .ConfigureAwait(false);
-        cancellationToken.ThrowIfCancellationRequested();
-        for (int index = 0; index < read.Length; index++)
-        {
-            if (read[index] is not { } found) continue;
-            return new WikimediaReferenceSource.ReferenceReading(
-                found.Name,
-                pages[index].Url,
-                WikimediaReferenceSource.RecipeEvidence(found.Name, found.Recipe, language),
-                RecipePageAuthority,
-                found.Recipe.Servings);
-        }
-        return null;
-    }
-
-    internal const string RecipePageAuthority = "recipe_page_jsonld";
-
-    private async Task<SearchPageRecipe.PageRecipe?> ReadOneRecipeAsync(
-        string url,
-        string title,
-        string[] named,
-        CancellationToken budget,
-        CancellationToken cancellationToken)
-    {
-        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? page)) return null;
-        try
-        {
-            string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
-            return html is null ? null : SearchPageRecipe.Read(html, title, named);
-        }
-        catch (HttpRequestException)
-        {
-            return null;
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return null;
-        }
-    }
-
-    // The search feed of Google News: each headline with its outlet and time. Null when
-    // the feed did not answer with its RSS.
-    private async Task<List<(string Title, string Url, string Snippet)>?> ReadNewsAsync(
-        string terms,
+    // The search feed of Google News, in the edition of «language»: each item with its outlet and time. Null when the
+    // feed did not answer with its RSS.
+    private async Task<List<GoogleNewsHeadlinesAdapter.Headline>?> ReadNewsAsync(
+        string query,
         string language,
         CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get,
-            GoogleNewsHeadlinesAdapter.SearchUri(terms, language));
+            GoogleNewsHeadlinesAdapter.SearchUri(query, language));
         request.Headers.TryAddWithoutValidation("User-Agent", WikipediaSearchSource.UserAgent);
         try
         {
@@ -1143,10 +958,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             return GoogleNewsHeadlinesAdapter.Parse(feed, 20)
                 .Where(static headline => Uri.TryCreate(headline.Url, UriKind.Absolute, out Uri? link)
                     && link.Scheme == Uri.UriSchemeHttps)
-                .Select(static headline => (
-                    headline.Title,
-                    headline.Url.Split('?')[0],
-                    string.Join(", ", new[] { headline.Source, headline.PublishedAt }.Where(static part => part.Length > 0))))
+                .Select(static headline => headline with { Url = headline.Url.Split('?')[0] })
                 .ToList();
         }
         catch (HttpRequestException)
@@ -1163,130 +975,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    // The receipt contract the mind reads (seen.results[].title/url/snippet): one
-    // shape whatever source answered; «authority» names that source
-    // (frankfurter_reference_rates, espn_public_schedule, openstreetmap_nominatim, google_news_rss_search,
-    // wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
-    // M62: a place read also carries each site's «distanceMeters» from the named place.
-    private static ExternalCapabilityReceipt SearchReceipt(
-        string operation,
-        string query,
-        string? near,
-        List<(string Title, string Url, string Snippet)> results,
-        string authority,
-        List<int?>? distances = null)
-    {
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            writer.WriteString("query", query);
-            if (near is not null)
-                writer.WriteString("near", near);
-            writer.WriteNumber("count", results.Count);
-            writer.WriteStartArray("results");
-            for (int index = 0; index < results.Count; index++)
-            {
-                (string title, string url, string snippet) = results[index];
-                writer.WriteStartObject();
-                writer.WriteString("title", title);
-                writer.WriteString("url", url);
-                writer.WriteString("snippet", snippet);
-                if (distances is not null && index < distances.Count && distances[index] is int meters)
-                    writer.WriteNumber("distanceMeters", meters);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-            writer.WriteString("authority", authority);
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: false);
-    }
-
-    // M53: the same receipt with the one page read and what it is («reference»: recipe or
-    // plot) and, for a recipe, the servings its page states.
-    private static ExternalCapabilityReceipt ReferenceReceipt(
-        string operation,
-        string query,
-        WikimediaReferenceSource.ReferenceKind kind,
-        WikimediaReferenceSource.ReferenceReading reading)
-    {
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            writer.WriteString("query", query);
-            writer.WriteNumber("count", 1);
-            writer.WriteStartArray("results");
-            writer.WriteStartObject();
-            writer.WriteString("title", reading.Title);
-            writer.WriteString("url", reading.Url);
-            writer.WriteString("snippet", reading.Evidence);
-            writer.WriteEndObject();
-            writer.WriteEndArray();
-            writer.WriteString("reference", WikimediaReferenceSource.KindName(kind));
-            if (reading.Servings is int servings)
-                writer.WriteNumber("servings", servings);
-            writer.WriteString("authority", reading.Authority);
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: false);
-    }
-
-    private static List<SearchCandidate> SearchCandidates(
-        IEnumerable<(string Title, string Url, string Snippet)> items,
-        string? excludedHost)
-    {
-        var candidates = new List<SearchCandidate>();
-        foreach ((string title, string url, string snippet) in items)
-        {
-            if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
-                && parsed.Scheme is "http" or "https"
-                && (excludedHost is null
-                    || !parsed.Host.EndsWith(excludedHost, StringComparison.OrdinalIgnoreCase))
-                && title.Length is > 0 and <= 4_096
-                && snippet.Length <= 16_384)
-            {
-                candidates.Add(new SearchCandidate(title, parsed, snippet, ObservedSearchTokens(title, parsed, snippet)));
-            }
-        }
-        return candidates;
-    }
-
-    private List<(string Title, string Url, string Snippet)> PertinentResults(
-        string[] queryTokens,
-        List<SearchCandidate> candidates,
-        int limit,
-        List<(string Title, Uri Url, string Snippet)> rejected)
-    {
-        var results = new List<(string Title, string Url, string Snippet)>();
-        if (candidates.Count == 0) return results;
-        string[] verifiableTerms = VerifiableSearchTerms(queryTokens, candidates);
-        if (!SearchPageSharesEnough(queryTokens, verifiableTerms))
-        {
-            verifiableTerms = [];
-        }
-        foreach (SearchCandidate candidate in candidates)
-        {
-            if (results.Count >= limit) break;
-            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed)
-                && !SearchPertinence.OfAnotherYear(queryTokens, candidate.Observed))
-            {
-                results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
-            }
-            else if (_searchDiagnosticPath is not null && rejected.Count < 20)
-            {
-                rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
-            }
-        }
-        return results;
-    }
-
-    // The lite endpoint answers only a form post (a GET returns its search form with
-    // no results). The engine's own links are discarded.
-    private async Task<SearchChannelReading> ReadGeneralSearchAsync(
-        string query,
-        CancellationToken cancellationToken)
+    // The lite endpoint answers only a form post (a GET returns its search form with no results). Each result is kept
+    // as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
+    // title and bounded lengths.
+    private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)>
+        ReadGeneralSearchAsync(string query, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, GeneralSearchEndpoint)
         {
@@ -1300,9 +993,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             .ConfigureAwait(false);
         string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
             .ConfigureAwait(false);
-        List<SearchCandidate> candidates = SearchCandidates(
-            ParseDuckDuckGoLitePage(page), excludedHost: "duckduckgo.com");
-        return new SearchChannelReading(candidates, IsDuckDuckGoResultsPage(response, page));
+        var results = new List<(string Title, string Url, string Snippet)>();
+        foreach ((string title, string url, string snippet) in ParseDuckDuckGoLitePage(page))
+        {
+            if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
+                && parsed.Scheme is "http" or "https"
+                && !parsed.Host.EndsWith("duckduckgo.com", StringComparison.OrdinalIgnoreCase)
+                && title.Length is > 0 and <= 4_096
+                && snippet.Length <= 16_384)
+            {
+                results.Add((title, parsed.AbsoluteUri, snippet));
+            }
+        }
+        return (results, IsDuckDuckGoResultsPage(response, page));
     }
 
     internal static async Task<string> ReadBoundedTextAsync(
@@ -1384,190 +1087,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         response.IsSuccessStatusCode
         && (page.Contains("Web results are present", StringComparison.Ordinal)
             || DuckDuckGoResultLink.IsMatch(page));
-
-    private void RecordSearchRejection(
-        string query,
-        string[] queryTokens,
-        int structurallyValidItems,
-        List<(string Title, Uri Url, string Snippet)> rejected)
-    {
-        if (_searchDiagnosticPath is null) return;
-        try
-        {
-            // These unverified search items stay in private diagnostics, never receipts.
-            JsonElement diagnostic = ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject();
-                writer.WriteString("schema", "baxy.web-search-rejection.v1");
-                writer.WriteString("timestampUtc", DateTimeOffset.UtcNow);
-                writer.WriteBoolean("verified", false);
-                writer.WriteString("query", query);
-                writer.WriteStartArray("queryTerms");
-                foreach (string term in queryTokens) writer.WriteStringValue(term);
-                writer.WriteEndArray();
-                writer.WriteNumber("structurallyValidItems", structurallyValidItems);
-                writer.WriteNumber("omittedItems", structurallyValidItems - rejected.Count);
-                writer.WriteStartArray("rejectedItems");
-                foreach ((string title, Uri url, string snippet) in rejected)
-                {
-                    HashSet<string> observed = ObservedSearchTokens(title, url, snippet);
-                    writer.WriteStartObject();
-                    writer.WriteString("title", title);
-                    writer.WriteString("url", url.AbsoluteUri[..Math.Min(url.AbsoluteUri.Length, 4096)]);
-                    writer.WriteString("snippet", snippet[..Math.Min(snippet.Length, 4096)]);
-                    writer.WriteBoolean("textTruncated", url.AbsoluteUri.Length > 4096 || snippet.Length > 4096);
-                    writer.WriteStartArray("missingTerms");
-                    foreach (string term in queryTokens)
-                        if (!MatchesSearchTerm(term, observed)) writer.WriteStringValue(term);
-                    writer.WriteEndArray();
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
-                writer.WriteEndObject();
-            });
-            byte[] line = Encoding.UTF8.GetBytes(diagnostic.GetRawText() + "\n");
-            if (line.Length > 1024 * 1024) return;
-            using WindowsPrivateDirectoryLease directory = WindowsPrivateStorage.AcquireDirectory(
-                Path.GetDirectoryName(_searchDiagnosticPath)!, createMissing: true, protectLeaf: true);
-            WindowsPrivateFileLease file;
-            if (WindowsPrivateStorage.TryOpenFile(
-                    _searchDiagnosticPath, FileAccess.ReadWrite, FileShare.None,
-                    deleteAccess: false, out WindowsPrivateFileLease? existing))
-                file = existing;
-            else
-                file = WindowsPrivateStorage.CreateFile(_searchDiagnosticPath);
-            using (file)
-            {
-                if (file.Stream.Length + line.Length > 16 * 1024 * 1024) return;
-                file.Stream.Position = file.Stream.Length;
-                file.Stream.Write(line);
-                file.Stream.Flush(flushToDisk: true);
-            }
-        }
-        catch (Exception exception) when (exception is IOException
-            or UnauthorizedAccessException or ArgumentException
-            or NotSupportedException or System.Security.SecurityException)
-        {
-            // A missing diagnostic must not change the failed search into success.
-        }
-    }
-
-    internal static string[] SearchTokens(string value) =>
-        WikipediaSearchSource.FoldedWords(value)
-            .Where(static token => token.Length >= 2 && !IsSearchStopWord(token))
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-
-    private readonly record struct SearchCandidate(
-        string Title,
-        Uri Url,
-        string Snippet,
-        HashSet<string> Observed);
-
-    private static HashSet<string> ObservedSearchTokens(string title, Uri uri, string snippet) =>
-        new(SearchTokens(string.Concat(
-            title, " ", uri.Host, " ", SafeUnescapedPath(uri), " ", snippet)), StringComparer.Ordinal);
-
-    // The person's words reach the engine as typed («porqeu», «suele», «mucho»); a
-    // term that no result on the page repeats, even inflected, cannot be verified
-    // against that page and does not count against any result. The terms that at
-    // least one result repeats are the ones a result is judged by.
-    private static string[] VerifiableSearchTerms(string[] queryTokens, List<SearchCandidate> candidates) =>
-        queryTokens
-            .Where(token => candidates.Any(candidate => MatchesSearchTerm(token, candidate.Observed)))
-            .ToArray();
-
-    // A result is pertinent when it repeats at least half (rounded up) of the
-    // verifiable terms; with no verifiable term at all, every result is rejected,
-    // because nothing on the page shares a content word with the request.
-    private static bool IsSearchResultRelevant(string[] verifiableTerms, HashSet<string> observed)
-    {
-        if (verifiableTerms.Length == 0)
-        {
-            return false;
-        }
-
-        int matched = verifiableTerms.Count(term => MatchesSearchTerm(term, observed));
-        return matched >= (verifiableTerms.Length + 1) / 2;
-    }
-
-    // The verifiable terms are the request words that SOME candidate repeats, so a
-    // page of junk that shares one generic word («app») with an eight-word request
-    // makes that one word the whole yardstick and every junk item passes it. A
-    // request of three content words or more needs at least two of them found on
-    // the page before its results are judged at all; shorter requests keep the rule
-    // above, since «capital de francia» has only two words to share.
-    private static bool SearchPageSharesEnough(string[] queryTokens, string[] verifiableTerms) =>
-        queryTokens.Length < 3 || verifiableTerms.Length >= 2;
-
-    internal static bool MatchesSearchTerm(string token, HashSet<string> observed) =>
-        observed.Contains(token)
-        || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains))
-        || SharesInflectedStem(token, observed);
-
-    // «fallar» and «fallas» share the stem «fall»; «suele» and «suelen» share «suel».
-    // Only words of five letters or more take part, and the shared prefix must keep
-    // all but the last two letters of the query word, so «casa» never matches «caso».
-    private static bool SharesInflectedStem(string queryToken, HashSet<string> observed)
-    {
-        if (queryToken.Length < 5) return false;
-        string stem = queryToken[..(queryToken.Length - 2)];
-        if (stem.Length < 4) return false;
-        foreach (string candidate in observed)
-        {
-            if (candidate.Length >= 4 && candidate.StartsWith(stem, StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // WEB1445 «qué clima hace hoy»: the engine's local forecast says «tiempo» or
-    // «weather» where the person said «clima»; the words name one concept.
-    private static readonly string[][] WeatherSynonyms =
-    [
-        ["clima", "tiempo", "weather", "meteo", "meteorologico", "meteorologica", "pronostico", "forecast"],
-        ["lluvia", "lluvias", "llueve", "llover", "llovera", "rain", "raining"],
-        ["manana", "tomorrow"],
-        ["temperatura", "temperature", "temperaturas", "temperatures"],
-        // M51 F-p09 «the movie directed by Kirill Mikhanovsky»: the article says «film».
-        ["movie", "movies", "film", "films", "pelicula", "peliculas", "filme"],
-    ];
-
-    private static string SafeUnescapedPath(Uri uri)
-    {
-        try
-        {
-            return Uri.UnescapeDataString(uri.AbsolutePath);
-        }
-        catch (UriFormatException)
-        {
-            return uri.AbsolutePath;
-        }
-    }
-
-    private static bool IsSearchStopWord(string token) => token is
-        "a" or "an" or "and" or "the" or "to" or "for" or "from" or "in" or "of" or "on"
-        or "search" or "find"
-        or "de" or "del" or "el" or "en" or "la" or "las" or "los" or "para" or "por"
-        or "un" or "una" or "y" or "busca" or "buscar"
-        // WEB1267: «hoy»/«today» name the moment of the request, not a word the
-        // result must repeat («noticias de hoy» found nothing; «today's news»
-        // matched the TV show TODAY).
-        or "hoy" or "today" or "ahora" or "now" or "todays"
-        // H0060: a question asked in the person's words carries interrogatives and
-        // auxiliaries («por qué suele fallar», «why does it fail») that name the
-        // question, not the answer; the page is judged by its content words.
-        or "que" or "porque" or "como" or "cual" or "cuales" or "cuando" or "donde"
-        or "quien" or "quienes" or "es" or "son" or "esta" or "estan" or "hay" or "se"
-        or "me" or "mi" or "mis" or "tu" or "su" or "sus" or "lo" or "le" or "les"
-        or "al" or "con" or "sin" or "sobre" or "si" or "no" or "ya" or "muy" or "mas"
-        or "why" or "how" or "what" or "which" or "when" or "where" or "who" or "whom"
-        or "is" or "are" or "was" or "were" or "do" or "does" or "did" or "can" or "could"
-        or "should" or "would" or "will" or "it" or "its" or "my" or "your" or "this"
-        or "that" or "with" or "without" or "about" or "at" or "by" or "or" or "not"
-        or "so" or "very" or "more" or "please";
 
     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
         ExternalJson.Create(writer =>

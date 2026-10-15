@@ -42,7 +42,7 @@ public sealed class WindowsScreenshotProviderTests
         string[] seeded = Enumerable.Range(0, 20)
             .Select(index => Seed(temporary.Path, index, now.AddHours(index - 20)))
             .ToArray();
-        string diagnostic = Path.Combine(temporary.Path, "web-search-rejections.jsonl");
+        string diagnostic = Path.Combine(temporary.Path, "streaming-playback-rejections.jsonl");
         File.WriteAllText(diagnostic, "{}\n");
         File.SetLastWriteTimeUtc(diagnostic, now.AddDays(-30));
         var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());

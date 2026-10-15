@@ -3,17 +3,15 @@ using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
-// M168 (D77, dueño 2026-10-05; DEV-G v4y G-w42-t1 «when do the Lakers play next?», DEV-H H-w44-t1 «what time does the
-// arsenal match kick off tonight», DEV-I I-w12-t3 «y cuando jeuga de nuevo», I-w26-t1 «a que hora juega chile el
-// martes» → «no encontré»/«no pude buscarlo»): Wikipedia no sabe cuándo juega un equipo, y sin esa hora fallaba también
-// el aviso «una hora antes» que la sigue. Contesta la API pública de ESPN (site.api.espn.com), sin clave ni cuenta: no es
-// una API oficial documentada, se usa para uso personal no comercial (D32) y, si no responde o no cubre al equipo, la
-// búsqueda sigue como antes (noticias, enciclopedia, motor general) y BAXY dice que no lo encontró.
+// M168 (D77, dueño 2026-10-05): Wikipedia no sabe cuándo juega un equipo. web.search con source=sports pregunta a la
+// API pública de ESPN (site.api.espn.com), sin clave ni cuenta: no es una API oficial documentada, se usa para uso
+// personal no comercial (D32). El equipo y si se pide el próximo partido o el último los escribe el modelo (team,
+// wants); si ESPN no responde, el recibo dice que no se pudo buscar, y si no conoce al equipo, que no hubo resultados.
 //
-// Dos peticiones por pregunta y nada más: la búsqueda de ESPN resuelve el nombre que dijo la persona al equipo (una
-// petición en vez de recorrer las listas de equipos de cada liga) y su calendario da el partido. Sale sólo el nombre del
-// equipo; el User-Agent es el de BAXY con la URL del repositorio; cada respuesta se guarda poco tiempo (el equipo medio
-// día, el calendario diez minutos) y cada petición espera como mucho unos segundos.
+// Dos peticiones por pregunta y nada más: la búsqueda de ESPN resuelve el nombre al equipo (una petición en vez de
+// recorrer las listas de equipos de cada liga) y su calendario da el partido. Sale sólo el nombre del equipo; el
+// User-Agent es el de BAXY con la URL del repositorio; cada respuesta se guarda poco tiempo (el equipo medio día, el
+// calendario diez minutos) y cada petición espera como mucho unos segundos.
 internal sealed class EspnScheduleSource
 {
     internal const string Authority = "espn_public_schedule";
@@ -44,231 +42,11 @@ internal sealed class EspnScheduleSource
         Last,
     }
 
-    internal enum SportHint
-    {
-        Any,
-        Soccer,
-        Basketball,
-    }
-
-    // «Team»: the name as the person said it (folded words, an alias already turned into the name ESPN knows); «Rival»:
-    // the one named after «contra», «vs», «against» (to pick that match among the next ones), or null.
-    internal sealed record MatchAsk(string Team, string? Rival, Wanted Wants, SportHint Sport);
+    // What the model asked (web.search source=sports): the team as it wrote it, and whether the next match or the last
+    // one played.
+    internal sealed record MatchAsk(string Team, Wanted Wants);
 
     internal readonly record struct TeamHit(string Id, string Name, string Sport, string League);
-
-    // --- What the person asked -------------------------------------------------------------------------------------
-
-    // The verb or noun of a match.
-    private static readonly HashSet<string> PlayWords = new(StringComparer.Ordinal)
-    {
-        "juega", "juegan", "jugara", "jugaran", "juegue", "jueguen", "jugamos", "play", "plays", "playing",
-        "partido", "partidos", "match", "game", "kick", "kickoff", "tip", "tipoff",
-    };
-
-    // What asks for the next match: when, at what time, against whom, tonight.
-    private static readonly HashSet<string> NextWords = new(StringComparer.Ordinal)
-    {
-        "cuando", "hora", "when", "time", "next", "proximo", "proxima", "siguiente", "tonight", "hoy", "manana",
-        "tomorrow", "contra", "against", "who", "quien", "kick", "kickoff", "tip", "tipoff", "ahora", "now",
-        "empieza", "comienza", "start", "starts", "upcoming", "weekend", "finde",
-    };
-
-    // What asks for the result of the last one.
-    private static readonly HashSet<string> ResultWords = new(StringComparer.Ordinal)
-    {
-        "gano", "ganaron", "gane", "perdio", "perdieron", "empato", "empataron", "salio", "quedo", "quedaron",
-        "resultado", "marcador", "won", "win", "beat", "lost", "score", "result",
-    };
-
-    // The words that place it in the past.
-    private static readonly HashSet<string> PastWords = new(StringComparer.Ordinal)
-    {
-        "anoche", "ayer", "yesterday", "last", "night", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado",
-        "domingo", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "finde", "weekend",
-    };
-
-    // The words that ask only for the next one, even beside a result word («who won and when do they play next»).
-    private static readonly HashSet<string> OnlyNextWords = new(StringComparer.Ordinal)
-    {
-        "cuando", "when", "next", "proximo", "proxima", "siguiente", "hora", "time",
-    };
-
-    private static readonly HashSet<string> RivalMarkers = new(StringComparer.Ordinal)
-    {
-        "contra", "vs", "versus", "against", "ante", "frente",
-    };
-
-    // A connector inside a name («Universidad de Chile»), kept only between two words of it.
-    private static readonly HashSet<string> NameConnectors = new(StringComparer.Ordinal) { "de", "del" };
-
-    // Everything of the question that is not the team's name.
-    private static readonly HashSet<string> FrameWords = new(StringComparer.Ordinal)
-    {
-        // Spanish
-        "a", "al", "el", "la", "los", "las", "lo", "de", "del", "d", "en", "y", "e", "o", "u", "que", "q", "aq", "k",
-        "con", "por", "para", "pa", "un", "una", "uno", "se", "le", "les", "me", "mi", "mis", "su", "sus", "tu", "te",
-        "nos", "este", "esta", "ese", "esa", "eso", "esto", "ahora", "hoy", "manana", "anoche", "ayer", "noche",
-        "tarde", "semana", "finde", "fin", "proximo", "proxima", "siguiente", "nuevo", "nueva", "otra", "otro", "vez",
-        "cuando", "hora", "horas", "juega", "juegan", "jugara", "jugaran", "juegue", "jueguen", "jugamos", "jugo",
-        "jugaron", "partido", "partidos", "contra", "vs", "versus", "ante", "frente", "como", "salio", "salieron",
-        "quedo", "quedaron", "gano", "ganaron", "gane", "perdio", "perdieron", "empato", "empataron", "resultado",
-        "marcador", "quien", "quienes", "cual", "sabes", "sabe", "sabias", "che", "oye", "oe", "oiga", "hey", "baxy",
-        "wey", "guey", "po", "pues", "mira", "dime", "decime", "digame", "porfa", "favor", "sera", "es", "son", "fue",
-        "va", "van", "hay", "viene", "empieza", "comienza", "equipo", "mi", "parce", "parcero", "compa", "pana",
-        "clasico", "superclasico", "derbi", "local", "visitante", "casa", "lunes", "martes", "miercoles", "jueves",
-        "viernes", "sabado", "domingo", "futbol", "liga", "copa", "nba", "basquet", "baloncesto", "donde", "canal",
-        // English
-        "when", "what", "whats", "time", "does", "do", "did", "is", "are", "was", "were", "the", "an", "at", "on",
-        "in", "of", "for", "to", "next", "game", "games", "match", "matches", "play", "plays", "playing", "played",
-        "kick", "kickoff", "off", "tip", "tipoff", "tonight", "today", "tomorrow", "yesterday", "last", "night",
-        "this", "weekend", "week", "who", "whos", "won", "win", "wins", "beat", "lost", "score", "scores", "result",
-        "results", "against", "they", "them", "their", "it", "my", "i", "you", "know", "ok", "okay", "so", "and",
-        "up", "start", "starts", "will", "gonna", "going", "how", "go", "went", "again", "upcoming", "s", "team",
-        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "soccer", "basketball",
-        "dude", "bro", "mate", "man", "please", "now", "about", "there", "any", "get", "pull",
-    };
-
-    // Words that tell the sport.
-    private static readonly HashSet<string> SoccerWords = new(StringComparer.Ordinal)
-    {
-        "match", "kick", "kickoff", "futbol", "soccer", "gol", "goles", "goal", "goals", "liga", "copa", "champions",
-        "libertadores", "premier",
-    };
-
-    private static readonly HashSet<string> BasketballWords = new(StringComparer.Ordinal)
-    {
-        "tip", "tipoff", "nba", "basquet", "baloncesto", "basketball",
-    };
-
-    // How people call a team or a national side and ESPN does not (folded words → the name ESPN knows). A national side
-    // said in Spanish is searched by its English name. «spurs» said of football is Tottenham, not San Antonio.
-    private static readonly (string[] Said, string Name, SportHint Sport)[] Aliases =
-    [
-        (["barca"], "barcelona", SportHint.Any),
-        (["barsa"], "barcelona", SportHint.Any),
-        (["la", "u"], "universidad de chile", SportHint.Any),
-        (["la", "roja"], "chile", SportHint.Any),
-        (["la", "albiceleste"], "argentina", SportHint.Any),
-        (["la", "celeste"], "uruguay", SportHint.Any),
-        (["el", "tri"], "mexico", SportHint.Any),
-        (["la", "vinotinto"], "venezuela", SportHint.Any),
-        (["la", "seleccion", "chilena"], "chile", SportHint.Any),
-        (["la", "seleccion", "argentina"], "argentina", SportHint.Any),
-        (["la", "seleccion", "mexicana"], "mexico", SportHint.Any),
-        (["la", "seleccion", "colombiana"], "colombia", SportHint.Any),
-        (["la", "seleccion", "peruana"], "peru", SportHint.Any),
-        (["la", "seleccion", "uruguaya"], "uruguay", SportHint.Any),
-        (["la", "seleccion", "espanola"], "spain", SportHint.Any),
-        (["el", "cacique"], "colo colo", SportHint.Any),
-        (["el", "xeneize"], "boca juniors", SportHint.Any),
-        (["el", "millonario"], "river plate", SportHint.Any),
-        (["el", "atleti"], "atletico madrid", SportHint.Any),
-        (["atleti"], "atletico madrid", SportHint.Any),
-        (["juve"], "juventus", SportHint.Any),
-        (["man", "u"], "manchester united", SportHint.Any),
-        (["man", "utd"], "manchester united", SportHint.Any),
-        (["man", "united"], "manchester united", SportHint.Any),
-        (["man", "city"], "manchester city", SportHint.Any),
-        (["the", "gunners"], "arsenal", SportHint.Any),
-        (["spurs"], "tottenham hotspur", SportHint.Soccer),
-        (["the", "sixers"], "76ers", SportHint.Any),
-        (["sixers"], "76ers", SportHint.Any),
-        (["cavs"], "cavaliers", SportHint.Any),
-        (["mavs"], "mavericks", SportHint.Any),
-        (["the", "dubs"], "warriors", SportHint.Any),
-        (["blazers"], "trail blazers", SportHint.Any),
-        (["brasil"], "brazil", SportHint.Any),
-        (["espana"], "spain", SportHint.Any),
-        (["alemania"], "germany", SportHint.Any),
-        (["inglaterra"], "england", SportHint.Any),
-        (["francia"], "france", SportHint.Any),
-        (["italia"], "italy", SportHint.Any),
-        (["holanda"], "netherlands", SportHint.Any),
-        (["paises", "bajos"], "netherlands", SportHint.Any),
-        (["estados", "unidos"], "united states", SportHint.Any),
-        (["belgica"], "belgium", SportHint.Any),
-        (["marruecos"], "morocco", SportHint.Any),
-        (["japon"], "japan", SportHint.Any),
-    ];
-
-    // Null when the query does not ask when a named team plays, nor how its last match went.
-    internal static MatchAsk? Parse(string query)
-    {
-        string[] words = WikipediaSearchSource.FoldedWords(query);
-        if (words.Length == 0) return null;
-        bool play = words.Any(PlayWords.Contains);
-        bool next = words.Any(NextWords.Contains);
-        bool result = words.Any(ResultWords.Contains);
-        bool past = words.Any(PastWords.Contains);
-        SportHint sport = words.Any(BasketballWords.Contains) ? SportHint.Basketball
-            : words.Any(SoccerWords.Contains) ? SportHint.Soccer
-            : SportHint.Any;
-        Wanted wants;
-        if (result && (play || past) && !words.Any(OnlyNextWords.Contains)) wants = Wanted.Last;
-        else if (play && next) wants = Wanted.Next;
-        else return null;
-
-        List<string> tokens = Aliased(words, sport);
-        var runs = new List<(List<string> Words, bool AfterRival)>();
-        List<string>? current = null;
-        bool rivalPending = false;
-        for (int index = 0; index < tokens.Count; index++)
-        {
-            string token = tokens[index];
-            bool connector = NameConnectors.Contains(token) && current is { Count: > 0 }
-                && index + 1 < tokens.Count && IsNameWord(tokens[index + 1]);
-            if (IsNameWord(token) || connector)
-            {
-                if (current is null)
-                {
-                    current = [];
-                    runs.Add((current, rivalPending));
-                    rivalPending = false;
-                }
-                current.Add(token);
-                continue;
-            }
-            current = null;
-            if (RivalMarkers.Contains(token)) rivalPending = true;
-        }
-        if (runs.Count == 0) return null;
-        string team = string.Join(' ', runs[0].Words);
-        string? rival = runs.Skip(1).Where(static run => run.AfterRival).Select(static run => string.Join(' ', run.Words))
-            .FirstOrDefault();
-        // «América contra Chivas» names the team first; «contra Chivas, el América» is rare enough to read as said.
-        return new MatchAsk(team, rival, wants, sport);
-    }
-
-    // A year («this year» reaches the search as 2026, SearchQueryYear) or any number is no name.
-    private static bool IsNameWord(string token) =>
-        token.Contains(' ', StringComparison.Ordinal)
-        || !FrameWords.Contains(token) && token.Length > 1 && !token.All(char.IsAsciiDigit);
-
-    // The words with each alias turned into one token carrying the name ESPN knows (kept whole, so its «de» is no
-    // frame word).
-    private static List<string> Aliased(string[] words, SportHint sport)
-    {
-        var tokens = new List<string>(words.Length);
-        for (int index = 0; index < words.Length;)
-        {
-            (string[] Said, string Name, SportHint Sport)? alias = Aliases
-                .Where(candidate => (candidate.Sport == SportHint.Any || candidate.Sport == sport)
-                    && index + candidate.Said.Length <= words.Length
-                    && candidate.Said.AsSpan().SequenceEqual(words.AsSpan(index, candidate.Said.Length)))
-                .Cast<(string[] Said, string Name, SportHint Sport)?>()
-                .FirstOrDefault();
-            if (alias is { } found)
-            {
-                tokens.Add(found.Name);
-                index += found.Said.Length;
-                continue;
-            }
-            tokens.Add(words[index]);
-            index++;
-        }
-        return tokens;
-    }
 
     // --- Which team that is ----------------------------------------------------------------------------------------
 
@@ -279,14 +57,13 @@ internal sealed class EspnScheduleSource
         "per.1", "por.1", "ned.1", "uefa.champions", "uefa.europa", "conmebol.libertadores", "conmebol.sudamericana",
     };
 
-    private static readonly string[] YouthOrWomen = ["women", "u17", "u19", "u20", "u21", "u23"];
-
     internal static Uri SearchUri(string team) =>
         new(SearchEndpoint + "?query=" + Uri.EscapeDataString(team) + "&limit=8&type=team");
 
-    // The first team ESPN ranks for the name, of a league read here, whose name carries every word said (a word of
-    // five letters or more may be the start of one: «nugget»); null when none.
-    internal static TeamHit? PickTeam(string body, MatchAsk ask)
+    // The first team ESPN ranks for the name whose calendar this source reads (an NBA team, or a football team of a
+    // league above, or a national side), as ESPN names it; null when ESPN lists none of those. The receipt says which
+    // team it was, so a team ESPN ranked first that is not the one meant is seen as such.
+    internal static TeamHit? PickTeam(string body)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (!document.RootElement.TryGetProperty("results", out JsonElement results)
@@ -294,7 +71,6 @@ internal sealed class EspnScheduleSource
         {
             return null;
         }
-        string[] said = WikipediaSearchSource.FoldedWords(ask.Team);
         foreach (JsonElement group in results.EnumerateArray())
         {
             if (Text(group, "type") != "team" || !group.TryGetProperty("contents", out JsonElement contents)
@@ -313,38 +89,24 @@ internal sealed class EspnScheduleSource
                 if (name.Length == 0 || id.Length == 0 || !id.All(char.IsAsciiDigit)) continue;
                 bool read = sport switch
                 {
-                    "basketball" => league == "nba" && ask.Sport != SportHint.Soccer,
-                    "soccer" => ask.Sport != SportHint.Basketball && IsReadSoccer(league, name, Text(content, "subtitle")),
+                    "basketball" => league == "nba",
+                    "soccer" => IsReadSoccer(league),
                     _ => false,
                 };
-                if (!read || !NameCarries(name, said)) continue;
-                return new TeamHit(id, name, sport, league);
+                if (read) return new TeamHit(id, name, sport, league);
             }
         }
         return null;
     }
 
-    private static bool IsReadSoccer(string league, string name, string subtitle)
-    {
-        string described = (name + " " + subtitle).ToLowerInvariant();
-        if (YouthOrWomen.Any(described.Contains) || league.Contains(".w.", StringComparison.Ordinal)
-            || league.EndsWith(".w", StringComparison.Ordinal))
-        {
-            return false;
-        }
-        return SoccerLeagues.Contains(league)
+    // ESPN's league codes: a women's league is coded «.w.» or «.w».
+    private static bool IsReadSoccer(string league) =>
+        !league.Contains(".w.", StringComparison.Ordinal)
+        && !league.EndsWith(".w", StringComparison.Ordinal)
+        && (SoccerLeagues.Contains(league)
             || league.StartsWith("fifa.", StringComparison.Ordinal)
             || league is "uefa.nations" or "uefa.euro" or "conmebol.america"
-            || league.StartsWith("concacaf.nations", StringComparison.Ordinal);
-    }
-
-    internal static bool NameCarries(string name, string[] said)
-    {
-        string[] words = WikipediaSearchSource.FoldedWords(name);
-        return said.Length > 0 && said.All(asked => words.Any(word =>
-            word == asked || asked.Length >= 5 && word.Length > asked.Length && word.StartsWith(asked, StringComparison.Ordinal)
-            || word.Length >= 5 && asked.Length > word.Length && asked.StartsWith(word, StringComparison.Ordinal)));
-    }
+            || league.StartsWith("concacaf.nations", StringComparison.Ordinal));
 
     // The team's calendar: football across every competition it plays (its fixtures, or its results), basketball the
     // NBA season in course (and the regular season, when the one in course has nothing left).
@@ -357,7 +119,25 @@ internal sealed class EspnScheduleSource
 
     // --- The match -------------------------------------------------------------------------------------------------
 
-    internal async Task<List<(string Title, string Url, string Snippet)>?> ReadAsync(
+    // One match as ESPN's calendar gives it, its start in this PC's time zone.
+    internal readonly record struct Match(
+        string Team,
+        string Opponent,
+        bool Home,
+        DateTimeOffset Start,
+        bool StartTimeAnnounced,
+        string State,
+        bool Completed,
+        string StatusDetail,
+        string TeamScore,
+        string OpponentScore,
+        string Competition,
+        string Venue,
+        string Url);
+
+    // Null when ESPN did not answer (network, status, a body that is not its JSON); empty when it answered and has no
+    // team of the name whose calendar is read here, or no match of what was asked.
+    internal async Task<List<Match>?> ReadAsync(
         MatchAsk ask,
         CancellationToken cancellationToken)
     {
@@ -366,27 +146,27 @@ internal sealed class EspnScheduleSource
         TeamHit? team;
         try
         {
-            team = PickTeam(found, ask);
+            team = PickTeam(found);
         }
         catch (JsonException)
         {
             return null;
         }
-        if (team is not { } hit) return null;
+        if (team is not { } hit) return [];
         foreach (Uri uri in ScheduleUris(hit, ask.Wants))
         {
             string? body = await GetAsync(uri, ScheduleCacheLife, cancellationToken).ConfigureAwait(false);
             if (body is null) return null;
             try
             {
-                if (Answer(body, hit, ask, _now(), _zone, uri) is { } answer) return answer;
+                if (Answer(body, hit, ask.Wants, _now(), _zone, uri) is { } answer) return [answer];
             }
             catch (JsonException)
             {
                 return null;
             }
         }
-        return null;
+        return [];
     }
 
     private async Task<string?> GetAsync(Uri uri, TimeSpan life, CancellationToken cancellationToken)
@@ -441,12 +221,12 @@ internal sealed class EspnScheduleSource
         string Venue,
         string Link);
 
-    // The receipt's one result: the next match (or the one being played), or the last one played, with its moment in
-    // this PC's time zone. Null when the calendar has none of what was asked: nothing is invented.
-    internal static List<(string Title, string Url, string Snippet)>? Answer(
+    // The next match (or the one being played), or the last one played, as the calendar gives it, its start in this
+    // PC's time zone. Null when the calendar has none of what was asked: nothing is invented.
+    internal static Match? Answer(
         string body,
         TeamHit team,
-        MatchAsk ask,
+        Wanted wants,
         DateTimeOffset now,
         TimeZoneInfo zone,
         Uri uri)
@@ -463,78 +243,30 @@ internal sealed class EspnScheduleSource
             if (Read(item, team) is { } fixture) fixtures.Add(fixture);
         }
         fixtures.Sort(static (left, right) => left.Start.CompareTo(right.Start));
-        string[] rival = ask.Rival is null ? [] : WikipediaSearchSource.FoldedWords(ask.Rival);
-        bool AgainstRival(Fixture fixture) => rival.Length > 0 && NameCarries(fixture.Opponent, rival);
-        Fixture? chosen;
-        if (ask.Wants == Wanted.Next)
-        {
-            List<Fixture> coming = fixtures
+        Fixture? chosen = wants == Wanted.Next
+            ? fixtures
                 .Where(fixture => fixture.State == "in" || fixture.State == "pre" && fixture.Start >= now.AddHours(-3))
-                .ToList();
-            chosen = coming.Where(AgainstRival).Cast<Fixture?>().FirstOrDefault()
-                ?? coming.Cast<Fixture?>().FirstOrDefault();
-        }
-        else
-        {
-            List<Fixture> played = fixtures.Where(fixture => fixture.Completed && fixture.Start <= now).ToList();
-            chosen = played.Where(AgainstRival).Cast<Fixture?>().LastOrDefault()
-                ?? played.Cast<Fixture?>().LastOrDefault();
-        }
+                .Cast<Fixture?>()
+                .FirstOrDefault()
+            : fixtures
+                .Where(fixture => fixture.Completed && fixture.Start <= now)
+                .Cast<Fixture?>()
+                .LastOrDefault();
         if (chosen is not { } match) return null;
-        string noun = team.Sport == "basketball" ? "game" : "match";
-        string title = team.Name + " vs " + match.Opponent;
-        string where = match.Home ? "at home against " : "away against ";
-        string moment = Moment(match, zone);
-        string tail = (match.Competition.Length > 0 ? ", " + match.Competition : string.Empty)
-            + (match.Venue.Length > 0 ? ", at " + match.Venue : string.Empty) + ".";
-        string snippet;
-        if (match.State == "in")
-        {
-            snippet = "Playing now: " + team.Name + " " + match.OwnScore + ", " + match.Opponent + " "
-                + match.OpponentScore + (match.Detail.Length > 0 ? " (" + match.Detail + ")" : string.Empty)
-                + ", started " + moment + tail;
-        }
-        else if (ask.Wants == Wanted.Next)
-        {
-            snippet = "Next " + noun + ": " + team.Name + " play " + where + match.Opponent + " " + moment + tail;
-        }
-        else
-        {
-            string verdict = Verdict(match.OwnScore, match.OpponentScore);
-            string opponent = verdict switch
-            {
-                "beat" => " " + match.Opponent,
-                "lost to" => " " + match.Opponent,
-                _ => " with " + match.Opponent,
-            };
-            snippet = "Last " + noun + ": " + team.Name + " " + verdict + opponent + " " + match.OwnScore + "-"
-                + match.OpponentScore + (match.Home ? " at home" : " away") + ", " + moment + tail;
-        }
-        return [(title, match.Link.Length > 0 ? match.Link : uri.AbsoluteUri, snippet)];
-    }
-
-    // «on Friday 2026-10-09 at 19:30 local time (UTC-03:00)»; without a confirmed time, only the day, said so (in words
-    // that a report repeats without reading as a failure: «aún no se ha anunciado», not «no está confirmada»).
-    private static string Moment(Fixture match, TimeZoneInfo zone)
-    {
-        DateTimeOffset local = TimeZoneInfo.ConvertTime(match.Start, zone);
-        string day = "on " + local.ToString("dddd yyyy-MM-dd", CultureInfo.InvariantCulture);
-        if (!match.TimeKnown)
-            return day + " (the start time is still to be announced, TBD)";
-        TimeSpan offset = local.Offset;
-        string sign = offset < TimeSpan.Zero ? "-" : "+";
-        return day + " at " + local.ToString("HH:mm", CultureInfo.InvariantCulture) + " local time (UTC" + sign
-            + offset.Duration().ToString(@"hh\:mm", CultureInfo.InvariantCulture) + ")";
-    }
-
-    private static string Verdict(string own, string opponent)
-    {
-        if (!decimal.TryParse(own, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal mine)
-            || !decimal.TryParse(opponent, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal theirs))
-        {
-            return "played";
-        }
-        return mine > theirs ? "beat" : mine < theirs ? "lost to" : "drew";
+        return new Match(
+            team.Name,
+            match.Opponent,
+            match.Home,
+            TimeZoneInfo.ConvertTime(match.Start, zone),
+            match.TimeKnown,
+            match.State,
+            match.Completed,
+            match.Detail,
+            match.OwnScore,
+            match.OpponentScore,
+            match.Competition,
+            match.Venue,
+            match.Link.Length > 0 ? match.Link : uri.AbsoluteUri);
     }
 
     private static Fixture? Read(JsonElement item, TeamHit team)
