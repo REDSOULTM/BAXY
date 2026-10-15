@@ -918,9 +918,9 @@ internal sealed class WindowsVisibleControlAdapter
         // (by identity, by its manner, by a label of the last view) may reopen what it showed, and any other click takes it
         // away. A click by a label alone right after an opener presses the one control of the mission's last view that the
         // label names by its identity, so an item of the opening that closed is answered stale and reopened, never looked
-        // for by a cascade on a closed menu. It names it by the mind's own rule (NamedInView), never a descriptive
-        // sentence that merely mentions it, and a press of that identity that failed before any effect leaves the label
-        // to its cascade (revision 1 of the branch).
+        // for by a cascade on a closed menu. It names it by its exact name (NamedInView), never a sentence that merely
+        // mentions it, and a press of that identity that failed before any effect leaves the label to its cascade
+        // (revision 1 of the branch).
         (nint Window, string Id, string Label, HashSet<string> NamesBefore, string? Manner)? opener = TakeOpener();
         bool namedByLabel = false;
         if (controlId is null && index is null && search is null && manner is null && opener is not null)
@@ -3347,35 +3347,6 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteEndArray();
                 writer.WriteEndObject();
             }), error);
-
-    internal static int EditDistance(string left, string right, int cap)
-    {
-        if (Math.Abs(left.Length - right.Length) > cap)
-            return cap + 1;
-        int[] previous = new int[right.Length + 1];
-        int[] current = new int[right.Length + 1];
-        for (int column = 0; column <= right.Length; column++)
-            previous[column] = column;
-        for (int row = 1; row <= left.Length; row++)
-        {
-            current[0] = row;
-            int best = current[0];
-            for (int column = 1; column <= right.Length; column++)
-            {
-                int cost = left[row - 1] == right[column - 1] ? 0 : 1;
-                current[column] = Math.Min(
-                    Math.Min(previous[column] + 1, current[column - 1] + 1),
-                    previous[column - 1] + cost);
-                best = Math.Min(best, current[column]);
-            }
-
-            if (best > cap)
-                return cap + 1;
-            (previous, current) = (current, previous);
-        }
-
-        return previous[right.Length];
-    }
 
     // What the worker must not press without its name in the invocation (the worker's Test-AsksMore), RiskPolicy's own.
     private static JsonObject AsksRequest() => new()
