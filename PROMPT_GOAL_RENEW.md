@@ -166,9 +166,9 @@ parchea con código.
   - los modelos de wake word y de transcripción.
 
   En el Python compartido del runtime instala sólo lo imprescindible, y anótalo en `PROGRESO.md`.
-- **El dueño usa este PC y autorizó usarlo siempre:** los bancos de GPU y las sondas que abren apps corren aunque él
-  esté presente. Las sondas nunca escriben ni hacen click en sus ventanas, y nunca hay dos instancias del producto a la
-  vez en la misma máquina.
+- **Las dos máquinas quedan dedicadas por completo:** el dueño no las usa mientras trabajas. Usa toda la CPU, la GPU
+  y la RAM sin esperar a que estén libres. Los bancos pueden ir en paralelo si caben en la VRAM: en el PC, de 16 GB,
+  caben dos llama-server. Nunca corren dos instancias del producto (Baxy.exe) a la vez en la misma máquina.
 - **Acciones que piden confirmación del dueño:** borrar fuera del worktree, cerrar sus apps o enviar algo a un
   servicio externo.
 </autonomia_y_seguridad>

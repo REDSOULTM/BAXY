@@ -54,11 +54,10 @@ al máximo para Qwen3.5-4B.
 | Ritmo | **Lo más rápido posible, sin perder calidad**: hay que entregarlo pronto. Agentes en paralelo y nada de esperas inútiles |
 | Dos máquinas | Dos sesiones de Claude Code, una por máquina, cada una con su propia cuenta (las dos en el plan de 200 dólares). Se coordinan con un buzón por SSH (vía Tailscale) y con git |
 | Quién dirige | **El PC** (redpc): integra las ramas en `baxy-renew`, decide el reparto y hace la medición final. El notebook (rednote) apoya con las piezas que corren aparte |
-| Uso del PC | **Siempre**: el agente puede usar la GPU y abrir apps aunque el dueño esté usando el PC. Sigue pidiendo confirmación antes de cerrar sus apps o tocar trabajo sin guardar |
-| Uso del notebook | Queda dedicado: su agente usa toda la CPU, la GPU y la RAM sin esperar |
+| Uso de las máquinas | **Las dos quedan dedicadas por completo** (el dueño no las usa mientras se trabaja). Cada agente usa toda la CPU, GPU y RAM de su máquina sin esperar, y abre o maneja apps cuando lo necesite. Se sigue pidiendo confirmación antes de borrar fuera del worktree, cerrar apps con trabajo sin guardar o enviar algo fuera |
 | Decisiones del dueño | Pregunta con opciones y además le manda una notificación push al celular. Mientras espera, sigue con lo que no depende de la respuesta |
 | Uso agotado | Un recordatorio cada hora retoma el goal si quedó parado. Las dos sesiones quedan abiertas |
-| Hardware | **PC (redpc):** RTX 4060 Ti 16 GB, i9-12900HX, 32 GB de RAM, modelos en el M.2 `F:`. **Notebook (rednote):** RTX 3060 Laptop (6 GB por confirmar), Ryzen 7 5800H, 16 GB de RAM |
+| Hardware | **PC (redpc):** RTX 4060 Ti 16 GB, i9-12900HX, 32 GB de RAM, modelos en el M.2 `F:`. **Notebook (rednote):** RTX 3060 Laptop de 6 GB, Ryzen 7 5800H, 16 GB de RAM |
 | Reparto según rendimiento | **PC:** el arnés nuevo, computer use (las apps reales del dueño), el latido, la integración y la medición final. Con 16 GB caben dos llama-server a la vez, así que puede correr dos bancos en paralelo. **Notebook:** la voz que habla (Piper, CPU), las herramientas de agente, la limpieza de código muerto, el banco de escenas y la investigación. Con su GPU cerca del límite de 4 GB, mide el perfil de 4 GB (IQ4_XS con un hueco) en hardware real |
 
 ## Qué es Renew hoy
