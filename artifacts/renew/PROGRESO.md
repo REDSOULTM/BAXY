@@ -63,3 +63,21 @@ modelo los puede leer con sus herramientas.
 
 **Pruebas de Providers:** 5 de `VisibleClick…` fallan en este escritorio (dependen de la ventana real al frente; no
 tocan lo cambiado; en el notebook pasan).
+
+**Tarde (2026-10-15).**
+- Fusionado del notebook: `web.fetch`, terminal que confirma lo que no sólo lee, `file.find/read/write/edit` (sustituyen
+  6 operaciones), `schedule.alarms` (17 → 1, hora local o minutos), limpieza de JSON. Catálogo 194 herramientas.
+- Tabla de equivalencias del catálogo (`scripts/renew/catalog_equivalence.json`): los jueces aceptan la operación que
+  sustituye a una retirada, con sus argumentos fijos y renombrados; los bancos no se editan.
+- Limpieza de la App por análisis Roslyn del notebook (−1 310 líneas, cadena «fuente» fuera, contexto bien informado).
+- Prompt v2 (decision2 270: v1 226, v2 227; una instrucción de «nota de progreso» no produjo ninguna nota y se retiró).
+  Resumen del turno al final de cada resultado (el modelo ve juntos los pasos completados y fallidos).
+- Latido: dos pasos con lista de motivos, avisar sin herramientas, memoria y avisos pendientes en el momento.
+  Escenas de práctica 29 → 35/40 (87,5 %), molestas 0.
+- Juez de falsedades: Qwen3.6-35B-A3B razonando, afirmación por afirmación, con la trampa del caso como foco. Sobre las
+  transcripciones de práctica p1 coincide con la revisión a mano (F001, F013, F015, F019) y es más estricto (F009, F014).
+- e2e práctica p2: 11/30. Causas: el sandbox `%USERPROFILE%\BAXY-bench` no es carpeta conocida (pedida la carpeta
+  `home` al notebook); dos CalculatorApp colgados por cierres forzados (míos) rompieron 3 casos; «sube a 40» → +40
+  (descripción ajustada); la terminal que pide confirmación no se preguntó (el resultado ahora dice «pregúntale»).
+- Desajustes banco/protocolo anotados (no se editan casos): «qué fecha es» se responde con el reloj del contexto; «haz
+  clic en Aceptar» mira primero (regla 9); las operaciones de ventana piden su id antes (el caso espera la directa).

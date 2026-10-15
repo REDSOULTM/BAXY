@@ -192,14 +192,16 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
                 continue
             stop = next((e for e in every[i + 1:] if e["type"] == "speech.end"), None)
             stop_ms = stop["t_ms"] if stop else 10**12
-            interrupted = any(e["type"] == "message" and e["speaker"] == "person" and event["t_ms"] <= e["t_ms"] <= stop_ms
-                              for e in every[i + 1:])
+            # The person's words that arrived while it sounded cut it; the cut took from them to the audio's end.
+            cut_by = next((e for e in every[i + 1:] if e["type"] == "message" and e["speaker"] == "person"
+                           and event["t_ms"] <= e["t_ms"] <= stop_ms), None)
+            interrupted = cut_by is not None
             asked = replies[number - 1]["confirmation_text"]
             kind = "confirmation" if asked and norm(event.get("text")) == norm(asked) else "final"
             speech.append({"turn": number, "kind": kind, "spoken": True, "spoken_text": event.get("text", ""),
                            "first_audio_ms": event["t_ms"] - turn_start if turn_start is not None else None,
                            "completed": stop is not None and not interrupted, "cancelled": interrupted,
-                           "stop_latency_ms": None})
+                           "stop_latency_ms": (stop_ms - cut_by["t_ms"]) if cut_by and stop else None})
 
     (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
     (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
