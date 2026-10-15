@@ -238,3 +238,11 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
 - PC (producto real, mi escritorio): `powershell -ExecutionPolicy Bypass -File scripts\renew_check.ps1 -Label final
   -Holdout -Only e2e,falsedades,recursos`.
 - Cierre: `py -3.12 -X utf8 scripts\renew\summarize.py final --holdout` en el PC con las cinco partes.
+- Proveedores 2.ª ronda (24 commits, fusionada e05994863): client.channel.locate por el proceso de Discord y fila
+  exacta; terminar un proceso sin su árbol; diff/move del sandbox exactos; Outlook por dirección exacta con recibo
+  leído; Spotify sólo por SMTC (fuera UIA, script y API web); «ya estaba así» sin efecto; winget con candidatos y código
+  de salida; un solo backend de avisos (nativo, corre con batería y despierta el PC); WindowsInventoryAdapter fuera;
+  file.open no busca en otras carpetas; shell con salida ≠ 0 es fallo; night_light fuera; calculadora sólo + - * /;
+  web.fetch dice `bodyTruncated` y un código por causa; `protected_window` al actuar sobre un editor, una terminal o
+  BAXY (salvo que una mirada nombrara esa app); fuera MissionFrontSignal. Suite de Providers 2086/2091: los 5 que
+  fallan son pruebas con identidad por palabras (las arregla el notebook).
