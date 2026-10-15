@@ -150,8 +150,6 @@ function Confirm-BaxySpotifyForeground([IntPtr]$Handle){
     } while((Wait-BaxyPoll $foregroundDeadline 25))
     return $false
 }
-# BEGIN playback-evidence (pure; exercised with plain data by
-# tests/test_spotify_desktop_automation_latency.py)
 function Fold([string]$value){
     # Lower case, accents dropped, every run of what is not a letter or a digit one space («Lo-Fi» is «lo fi»). Two
     # regular expressions over the string: the former loop of PowerShell over each character, run for every element
@@ -335,7 +333,6 @@ function Get-BaxySpotifyNotFoundDetail($Rows,$PageBefore,[int]$Shown,[int]$Searc
     $fresh=@(foreach($row in $plays){if(-not $PageBefore.Contains((Get-BaxySpotifyRowKey $row))){$row}})
     return "spotify_exact_result_not_found;searches=$Searches;cold=$([int]$ColdStart);rows=$($Rows.Count);before=$($before.Count);plays=$($plays.Count);fresh=$($fresh.Count);shown=$Shown;box=$([int]$BoxHoldsQuery);iconic=$([int]$Iconic);front=$([int]$Front);covered=$(if($CoveredBy){$CoveredBy}else{0})"
 }
-# END playback-evidence
 function Get-BaxySpotifySnapshot([Windows.Automation.AutomationElement]$Root,[Windows.Automation.Condition]$Condition=$null){
     # Ronda 23 (t1-c07 «pon lo-fi para estudiar en spotify plis», 34 s inside the search): every phase walked the
     # whole tree with TrueCondition and then read Name, ControlType, BoundingRectangle and IsOffscreen of each element
