@@ -20,7 +20,7 @@ public sealed class WindowsCalculatorOpenProviderTests
         {
             Assert.That(result.Succeeded, Is.True);
             Assert.That(result.Verified, Is.True);
-            Assert.That(result.DisplayName, Is.EqualTo("Calculadora"));
+            Assert.That(result.DisplayName, Is.EqualTo("Calculator"), "auditoría D9: the title read, not a literal");
             Assert.That(result.ProcessId, Is.EqualTo(52));
             Assert.That(result.WindowHandle, Is.EqualTo(91));
             Assert.That(platform.LaunchCount, Is.EqualTo(1));
@@ -233,6 +233,7 @@ public sealed class WindowsCalculatorOpenProviderTests
                 : Prelaunched ? [new CalculatorSnapshot(52, 638_880_000_000_000_000, 0, false, false)] : [];
         }
         public bool Launch() { LaunchCount++; _launched = true; _focused = WindowsActivates; return true; }
+        public string WindowTitle(long windowHandle) => windowHandle == 91 ? "Calculator" : string.Empty;
         public void RequestForeground(long windowHandle)
         {
             Assert.That(windowHandle, Is.EqualTo(91));

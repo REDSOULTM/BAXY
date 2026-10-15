@@ -83,14 +83,17 @@ public sealed class WindowsCalculatorOpenProvider : IApplicationOpenProvider
             request.InvocationId, request.ApplicationId, !reused, reused,
             verified.ProcessId, verified.CreationTimeUtcTicks, executable,
             null, null, verified.WindowHandle, null);
-        return new ApplicationOpenResult(true, true, "Calculadora", reused,
+        // Auditoría D9: the name the verified window has, as Windows wrote it; without one, the id asked for (never a
+        // name nobody read).
+        string title = _platform.WindowTitle(verified.WindowHandle).Trim();
+        return new ApplicationOpenResult(true, true, title.Length > 0 ? title : request.ApplicationId, reused,
             verified.ProcessId, verified.WindowHandle, null, receipt, windowsActivation, frontRestored,
             ShownWithoutFocus: shown);
     }
 
     private static ApplicationOpenResult Failure(
         ApplicationOpenRequest request, string error, bool effect) => new(
-        effect, false, "Calculadora", false, null, null, error,
+        effect, false, request.ApplicationId, false, null, null, error,
         new ApplicationLaunchReceipt(request.InvocationId, request.ApplicationId,
             effect, false, null, null, null, null, null, null, error));
 }
@@ -107,6 +110,9 @@ internal interface ICalculatorPlatform : IOpeningFront
 
     // Whether the front is back at «previous».
     bool ReturnForeground(long previous, long opened) => false;
+
+    // The window's title as Windows has it (empty when it has none or is gone).
+    string WindowTitle(long windowHandle) => string.Empty;
 }
 
 internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
@@ -154,6 +160,8 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
     public long ForegroundWindow() => ForegroundHandBack.Foreground();
 
     public bool ReturnForeground(long previous, long opened) => ForegroundHandBack.Return(previous, opened);
+
+    public string WindowTitle(long windowHandle) => External.VisibleControlSurface.WindowTitle(checked((nint)windowHandle));
 
     public long PersonWorkingIn(long window) => ForegroundHandBack.PersonWorkingIn(window);
 
