@@ -25,10 +25,19 @@ function Want([string]$name) { return $Only.Count -eq 0 -or $Only -contains $nam
 
 if ($Holdout) {
     $metas = Get-Content (Join-Path $repo "artifacts\renew\metas.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+    # The seals name the PC's paths; each machine checks its own copy of the banks under BAXY_RENEW_BANKS (the
+    # notebook keeps them in D:).
     foreach ($entry in $metas.bancos.sellados.PSObject.Properties) {
-        $file = $entry.Value.archivo -replace '/', '\'
+        $file = ($entry.Value.archivo -replace '^F:/BAXYeval/renew_v1', $banks) -replace '/', '\'
+        if (-not (Test-Path $file)) { continue }  # a bank this machine does not run (the -Only split)
         $actual = (Get-FileHash -Algorithm SHA256 $file).Hash.ToLowerInvariant()
         if ($actual -ne $entry.Value.sha256) { throw "sello roto: $($entry.Name) ($file)" }
+        if ($entry.Value.lib_bench_ps1_sha256) {
+            $lib = Join-Path $banks "e2e\lib\bench.ps1"
+            if ((Get-FileHash -Algorithm SHA256 $lib).Hash.ToLowerInvariant() -ne $entry.Value.lib_bench_ps1_sha256) {
+                throw "sello roto: librería del e2e ($lib)"
+            }
+        }
     }
     Write-Host "sellos intactos"
     $sets = @{

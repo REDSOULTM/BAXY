@@ -212,3 +212,29 @@ streaming por «contiene», OCR que acepta la etiqueta dentro de una línea más
 sin leer en WhatsApp, lugar del clima por palabra compartida). Más zonas grises y código muerto (ruta Notepad heredada,
 cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emisor, `message.send` y
 `filesystem.trash.restore` inalcanzables). Cuatro subagentes los arreglan en worktrees.
+- **Arreglos de la ronda final, fusionados.** Primera ronda (4 subagentes): App (latido retiene clipboard.copy, avisos y
+  ajustes sólo con lo observado, cadenas muertas de diagnóstico, presencia y reintentos fuera), proveedores (identidad de
+  ventana por ejecutable o AUMID más árbol de procesos —Steam dibuja en steamwebhelper—, nombres exactos con puntuación,
+  VisibleControlSurface sin listas, ScreenStateLines y ruta Notepad fuera), externos (Spotify API, Netflix/Disney,
+  streaming, OCR de línea entera, mensajería exacta con lectura OCR de filas en WhatsApp, clima exacto con candidatos,
+  web.download público, web.news.headlines retirado), kernel (descripciones sin confirmaciones falsas, listas cortadas
+  con marca, copias verificadas contra su hash, 11 operaciones retiradas, significado de los argumentos de riesgo).
+  Cruce con la auditoría independiente del notebook (`investigacion/auditoria-final-nb.md`, 38 violaciones) y segunda
+  ronda: mente y jueces (yo), App (latido sin descartar la confirmación pendiente, fallos visibles con su código, Setup
+  sin nombres de recursos fijos), kernel (calendar.event.create y Ctrl+W confirman, input.text.type sin caracteres de
+  control, recall exacto, olvido releído con su criterio, browser.* dicen qué navegador). Proveedores 2.ª ronda en curso.
+  Pruebas tras las fusiones: Kernel 534, Contracts 70, Setup 477.
+- Decisiones que se mantienen frente a las auditorías: D1 (sin compuerta por procedencia ni `window` obligatorio),
+  `system.power` directo en modo Normal, el navegador de la persona como objetivo, K8 revertido (Enter/Espacio confirman
+  según los argumentos declarados, ahora descritos al modelo), `HonestyCorrectionTrace` en el contrato.
+- **Límites que quedan abiertos (para metas.json):** el latido puede usar herramientas de red o consola sin que nadie lo
+  pida (falta un atributo tipado en el catálogo para retenerlas); Renew no tiene instalador (el empaquetado no lleva la
+  mente ni el modelo); «sube el volumen a N» y la ruta completa en `file.write` (medidos, el 4B falla).
+
+**Sellados, reparto (sin esperas entre máquinas).** Sellos comprobados en el PC (5 bancos + librería del e2e: intactos).
+- Notebook (decisión y escenas, su GPU): `$env:BAXY_RENEW_BANKS='D:\BAXYeval\renew_v1'; powershell -ExecutionPolicy
+  Bypass -File scripts\renew_check.ps1 -Label final -Holdout -Only decision,escenas,latido` y copiar
+  `final-decision.jsonl`, `final-escenas.jsonl` y `final-latido-escenas.jsonl` a `F:\BAXYeval\renew_v1\runs` del PC.
+- PC (producto real, mi escritorio): `powershell -ExecutionPolicy Bypass -File scripts\renew_check.ps1 -Label final
+  -Holdout -Only e2e,falsedades,recursos`.
+- Cierre: `py -3.12 -X utf8 scripts\renew\summarize.py final --holdout` en el PC con las cinco partes.
