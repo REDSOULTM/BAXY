@@ -76,8 +76,8 @@ public sealed class ProductCatalogTests
         "schedule.alarms",
     ];
 
-    // Lo que esas operaciones sustituyen, retirado en el mismo cambio (reminder.* sólo guardaba un registro que nadie
-    // hacía sonar).
+    // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
+    // (reminder.* sólo guardaba un registro que nadie hacía sonar).
     internal static readonly string[] RenewRetired =
     [
         "notification.cancel.at",
@@ -92,11 +92,6 @@ public sealed class ProductCatalogTests
         "reminder.list",
         "reminder.resolve.exact",
         "reminder.restore",
-    ];
-
-
-    internal static readonly string[] RenewAgentRetirements =
-    [
         "document.pdf.read",
         "document.text.read",
         "filesystem.known.list",
@@ -105,8 +100,7 @@ public sealed class ProductCatalogTests
         "filesystem.write.text",
     ];
 
-
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 12 - 6;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 18;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -378,9 +372,6 @@ public sealed class ProductCatalogTests
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
                     .And.SupersetOf(RenewAgentAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
-                Has.None.AnyOf(RenewRetired));
-            Assert.That(
-                descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),

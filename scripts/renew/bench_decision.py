@@ -43,13 +43,38 @@ def arg_ok(want, got):
     return norm(want) in norm(got)
 
 
+# BAXY Renew (2026-10-15): operations replaced in the catalog by one that does the same. An expectation written with
+# the old name is met by the new operation with the arguments that make it the same request; the cases, sealed or
+# open, are never edited.
+RENAMED = {
+    "notification.schedule": ("schedule.alarms", {"action": "create"}),
+    "reminder.create": ("schedule.alarms", {"action": "create"}),
+    "notification.list": ("schedule.alarms", {"action": "list"}),
+    "reminder.list": ("schedule.alarms", {"action": "list"}),
+    "notification.cancel.latest": ("schedule.alarms", {"action": "cancel"}),
+    "notification.cancel.at": ("schedule.alarms", {"action": "cancel"}),
+    "notification.diagnose": ("schedule.alarms", {"action": "diagnose"}),
+    "document.text.read": ("file.read", {}),
+    "document.pdf.read": ("file.read", {}),
+    "filesystem.known.list": ("file.find", {}),
+    "filesystem.known.search": ("file.find", {}),
+    "filesystem.write.text": ("file.write", {}),
+    "filesystem.sandbox.append.named": ("file.write", {"append": True}),
+}
+
+
+def called(result, arguments, op, args):
+    new_op, implied = RENAMED.get(op, (op, {}))
+    return (result.get("kind") == "action" and result.get("operation") == new_op
+            and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**implied, **(args or {})}.items()))
+
+
 def judge(expect, result, arguments):
     kind = result.get("kind")
     if expect["kind"] == "call":
-        return (kind == "action" and result.get("operation") == expect["op"]
-                and all(arg_ok(v, (arguments or {}).get(k)) for k, v in (expect.get("args") or {}).items()))
+        return called(result, arguments, expect["op"], expect.get("args"))
     if expect["kind"] == "call_any":
-        return kind == "action" and result.get("operation") in expect["ops"]
+        return any(called(result, arguments, op, None) for op in expect["ops"])
     if expect["kind"] == "ask":
         return kind == "clarify" or (kind == "conversation" and str(result.get("reply", "")).strip().endswith("?"))
     if expect["kind"] == "text":
