@@ -402,7 +402,14 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 writer.WriteStartObject();
                 writer.WriteString("kind", item.Kind);
                 if (item.Title is not null) writer.WriteString("title", item.Title);
-                if (item.NextRunUtc is not null) writer.WriteString("nextRunUtc", item.NextRunUtc);
+                if (item.NextRunUtc is not null)
+                {
+                    writer.WriteString("nextRunUtc", item.NextRunUtc);
+                    if (DateTimeOffset.TryParse(item.NextRunUtc, System.Globalization.CultureInfo.InvariantCulture,
+                            System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset next))
+                        writer.WriteString("nextRunLocal", next.ToLocalTime().ToString(
+                            "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
+                }
                 writer.WriteString("state", item.State);
                 writer.WriteEndObject();
             }
