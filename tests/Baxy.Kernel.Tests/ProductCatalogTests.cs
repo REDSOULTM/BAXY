@@ -12,7 +12,7 @@ public sealed class ProductCatalogTests
     // C03 (2026-09-12 … 2026-09-20) creció el catálogo de 170 a 191 descriptores con estas 21
     // operaciones, cada una sellada por su tanda; la cifra se re-pina aquí junto a la lista nominal
     // (plan post-goal 2026-09-20, Fase 1 grupo B). document.pdf.read y filesystem.known.list se
-    // retiraron en BAXY Renew (RenewAgentRetirements).
+    // retiraron en BAXY Renew (RenewRetired).
     internal static readonly string[] C03CatalogAdditions =
     [
         "audio.app.volume.adjust",
@@ -381,7 +381,7 @@ public sealed class ProductCatalogTests
                 Has.None.AnyOf(RenewRetired));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
-                Has.None.AnyOf(RenewAgentRetirements));
+                Has.None.AnyOf(RenewRetired));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)
