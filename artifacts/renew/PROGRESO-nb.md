@@ -338,7 +338,19 @@ computer use, la App y la mente.
 | `c4491571f` | `web.fetch` por páginas (`offset`, `hasMore`, `nextOffset`), en tramos de 4 000 caracteres | Providers 2121 |
 | `fe7335a61` | La terminal pide confirmación para `git` (`log --output` escribe, `diff` corre programas del repositorio); `cwd` sólo con las claves del catálogo | Kernel 606 |
 | `d631ccb8a` | `due` de una tarea sin zona es hora local, como se le dice al modelo (antes se tomaba como UTC) | tareas 4/4 |
-| (este) | Una ruta absoluta dentro de la carpeta nombrada es su ruta relativa (`file.read/edit/find/write`, `subdirectory` de `folder.open` y `trash.named`); fuera, falla antes de efecto (`known_path_outside_folder`). `folder.open` dice el código de su rechazo | Providers 2124/2124; `.ps1` en vivo, 4 rechazos sin abrir nada |
+| `0075c505f` | Una ruta absoluta dentro de la carpeta nombrada es su ruta relativa (`file.read/edit/find/write`, `subdirectory` de `folder.open` y `trash.named`); fuera, falla antes de efecto (`known_path_outside_folder`). `folder.open` dice el código de su rechazo | Providers 2124/2124; `.ps1` en vivo, 4 rechazos sin abrir nada |
+| `24765b5ed` | `package.install` en una llamada (resuelve, instala y verifica tras el sí del núcleo); un nombre que no es de un solo paquete falla antes de efecto con los candidatos de winget. Se retiran `package.install.prepare/commit`. La tabla de winget se lee por columnas de pantalla (un nombre con caracteres anchos corría el Id) | Providers 2141/2141 |
+| `2ed56c86b` | `filesystem.explorer.count` cuenta en la carpeta conocida que se nombra (`folder`) o en el Explorador de delante; sin ninguno, `no_explorer_in_front` (antes tomaba el Escritorio sin decirlo) | Providers 2141/2141 |
+| `6c8389ee2` | O1: `web.download` sólo con `url`; fuera `query`, que raspaba la página de imágenes de Bing | WindowsFileTools 26/26 |
+| `4539be234` | O3: fuera `MicrosoftGraphCalendarAdapter`, apilado sobre Outlook y activado sólo por una variable que nadie fija | Providers 2139/2139 |
+| `f690c0c75` | `filesystem.known.trash.named` manda archivo o carpeta a la Papelera de reciclaje de Windows (la papelera privada no tenía vuelta); `WindowsRecycleBin` acepta carpetas; se retira `filesystem.path.ensure.absent` (interno, nada lo invocaba) | Providers 2139/2139; carpeta a la Papelera real en vivo |
+| `1e48afdb6` | Spotify S1-S7 (agente en rama `nb-spotify`): sin listas de palabras ni ranking; el modo búsqueda pulsa el primer resultado de Spotify sólo con la página de resultados a la vista (grupo «Spotify – Buscar», leído en vivo); el recibo dice lo observado; ya sonando, `alreadyPlaying` sin efecto | Providers 2143/2143; sin reproducir en vivo (cuenta compartida con el PC) |
+| `d889976a8` | Fusión de `baxy-renew`: descripciones clave a clave contra la base; fuera un `web.fetch` duplicado | Kernel 537 |
+| `23111a347` | `file.read`: `totalLines` y `lines` contados bien (un salto final contaba una línea de más: E018 137 → 138 era nuestro); `file.find`: `order` `size` y el recorrido acotado a 8 s con `timeLimitReached` | Providers 2152/2152 |
+| `489135edc` | `media.control`: `sourceApp` es el id que dio `media.status`, comparado entero en los cuatro reproductores (mpv, primero, ignoraba `sourceApp` y se pausaba con «pausa Spotify») | Providers 2158/2158 |
+| `e0d22fd43` | El diagnóstico de cierres lee la aplicación según el esquema de cada evento (1026 daba el mensaje entero; 1001, el bucket) | en vivo: catdump.exe, Sunshine.exe/KERNELBASE.dll, Baxy.exe |
+| `c842a4e7a` | `network.status`: `online` según la conectividad de Windows y `connectivity` internet/constrained/local/none (antes bastaba una interfaz arriba, como Tailscale) | Providers 2159/2159; en vivo: Ethernet → InternetAccess |
+| `bd8ab336c` | D-P3: fuera las marcas del script de Spotify que citaban una prueba inexistente | parse 0 errores |
 
 **Producto completo en el notebook (conductor, 13:01).**
 

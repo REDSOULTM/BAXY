@@ -10,8 +10,8 @@ public sealed class WindowsNetworkStatusProviderTests
     public async Task ReadReturnsOnlyASecondReadVerifiedPrivacySafeProjection()
     {
         var probe = new FakeProbe(
-            new NetworkStatusSnapshot(true, 2, ["ethernet", "wireless80211"]),
-            new NetworkStatusSnapshot(true, 2, ["ethernet", "wireless80211"]));
+            new NetworkStatusSnapshot(true, 2, ["ethernet", "wireless80211"], "internet"),
+            new NetworkStatusSnapshot(true, 2, ["ethernet", "wireless80211"], "internet"));
         var provider = new WindowsNetworkStatusProvider(probe);
         NetworkStatusSnapshot? result = await provider.ReadVerifiedAsync(CancellationToken.None);
         Assert.Multiple(() =>
@@ -27,10 +27,29 @@ public sealed class WindowsNetworkStatusProviderTests
     public async Task ChangedSecondReadFailsVerification()
     {
         var probe = new FakeProbe(
-            new NetworkStatusSnapshot(true, 1, ["ethernet"]),
-            new NetworkStatusSnapshot(false, 0, []));
+            new NetworkStatusSnapshot(true, 1, ["ethernet"], "internet"),
+            new NetworkStatusSnapshot(false, 0, [], "none"));
         var provider = new WindowsNetworkStatusProvider(probe);
         Assert.That(await provider.ReadVerifiedAsync(CancellationToken.None), Is.Null);
+    }
+
+    // An adapter that is up is not internet: online is what Windows' own connectivity check says.
+    [Test]
+    public async Task AnInterfaceUpWithoutInternetIsNotOnline()
+    {
+        var probe = new FakeProbe(
+            new NetworkStatusSnapshot(false, 1, ["ethernet"], "local"),
+            new NetworkStatusSnapshot(false, 1, ["ethernet"], "local"));
+        var provider = new WindowsNetworkStatusProvider(probe);
+
+        NetworkStatusSnapshot? result = await provider.ReadVerifiedAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.Online, Is.False);
+            Assert.That(result.Connectivity, Is.EqualTo("local"));
+        });
     }
 
     [Test]

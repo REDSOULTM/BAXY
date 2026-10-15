@@ -19,6 +19,7 @@ internal sealed class NetworkStatusHandler(INetworkStatusProvider provider) : IO
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("online", snapshot.Online);
+            writer.WriteString("connectivity", snapshot.Connectivity);
             writer.WriteNumber("connectedInterfaceCount", snapshot.ConnectedInterfaceCount);
             writer.WritePropertyName("interfaceTypes");
             writer.WriteStartArray();

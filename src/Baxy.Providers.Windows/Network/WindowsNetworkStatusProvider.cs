@@ -1,8 +1,16 @@
 using System.Net.NetworkInformation;
+using Windows.Networking.Connectivity;
 
 namespace Baxy.Providers.Windows.Network;
 
-public sealed record NetworkStatusSnapshot(bool Online, int ConnectedInterfaceCount, IReadOnlyList<string> InterfaceTypes);
+/// <summary>
+/// «Online» is Windows' own check of internet access on the profile it uses for the internet (connectivity
+/// «internet»; «constrained» is a portal or limited access, «local» a network without internet, «none» no network).
+/// BAXY Renew audit 2026-10-15: it was «some interface other than loopback is up», which a virtual or VPN adapter
+/// is without any internet, and «¿tengo internet?» was answered by it.
+/// </summary>
+public sealed record NetworkStatusSnapshot(
+    bool Online, int ConnectedInterfaceCount, IReadOnlyList<string> InterfaceTypes, string Connectivity);
 
 public interface INetworkStatusProvider
 {
@@ -37,9 +45,10 @@ internal sealed class WindowsNetworkStatusVerifier(INetworkStatusProbe probe)
     {
         NetworkStatusSnapshot observed = probe.Read();
         return supplied.Online == observed.Online
+            && string.Equals(supplied.Connectivity, observed.Connectivity, StringComparison.Ordinal)
             && supplied.ConnectedInterfaceCount == observed.ConnectedInterfaceCount
             && supplied.InterfaceTypes.SequenceEqual(observed.InterfaceTypes, StringComparer.Ordinal)
-            && supplied.Online == (supplied.ConnectedInterfaceCount > 0);
+            && supplied.Online == (supplied.Connectivity == "internet");
     }
 }
 
@@ -56,6 +65,13 @@ internal sealed class NetworkInformationStatusProbe : INetworkStatusProbe
             .Select(static item => item.NetworkInterfaceType.ToString().ToLowerInvariant())
             .Order(StringComparer.Ordinal)
             .ToArray();
-        return new NetworkStatusSnapshot(types.Length > 0, types.Length, types);
+        string connectivity = NetworkInformation.GetInternetConnectionProfile()?.GetNetworkConnectivityLevel() switch
+        {
+            NetworkConnectivityLevel.InternetAccess => "internet",
+            NetworkConnectivityLevel.ConstrainedInternetAccess => "constrained",
+            NetworkConnectivityLevel.LocalAccess => "local",
+            _ => "none",
+        };
+        return new NetworkStatusSnapshot(connectivity == "internet", types.Length, types, connectivity);
     }
 }
