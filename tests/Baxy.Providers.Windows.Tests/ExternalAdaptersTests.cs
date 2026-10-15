@@ -1762,7 +1762,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt diff = await adapter.InvokeAsync(
             "filesystem.sandbox.diff.named",
-            Json("""{"leftQuery":"README.md","rightQuery":"backup"}"""),
+            Json("""{"leftFileName":"README.md","rightFileName":"README.backup.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt moved = await adapter.InvokeAsync(
             "filesystem.sandbox.move.named",
@@ -1777,6 +1777,28 @@ public sealed class ExternalAdaptersTests
             Assert.That(moved.Verified, Is.True);
             Assert.That(File.Exists(Path.Combine(sandbox, "logs", "backup.txt")), Is.True);
             Assert.That(File.Exists(Path.Combine(sandbox, "backup.txt")), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task NamedSandboxDiffResolvesOnlyTheExactFileName()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "filesystem-sandbox");
+        Directory.CreateDirectory(sandbox);
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "README.md"), "uno\n");
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "README.backup.md"), "dos\n");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path);
+
+        ExternalCapabilityReceipt diff = await adapter.InvokeAsync(
+            "filesystem.sandbox.diff.named",
+            Json("""{"leftFileName":"README.md","rightFileName":"backup"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(diff.Verified, Is.False);
+            Assert.That(diff.ErrorCode, Is.EqualTo("sandbox_named_file_not_found"));
         });
     }
 

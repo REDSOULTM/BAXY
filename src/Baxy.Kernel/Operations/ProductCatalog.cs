@@ -587,13 +587,13 @@ public static class ProductCatalog
             "filesystem.sandbox.diff.named",
             Schema(
                 [
-                    String("leftQuery", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("rightQuery", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("leftFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("rightFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
-                ["leftQuery", "rightQuery"]),
+                ["leftFileName", "rightFileName"]),
             OperationRisks.ReadOnly,
             "filesystem.sandbox.diff.named.hash.snapshot.v1",
-            "Compara dos archivos de texto resueltos de forma única y devuelve hashes y líneas diferentes."),
+            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes."),
         Descriptor(
             "filesystem.sandbox.move.named",
             Schema(
