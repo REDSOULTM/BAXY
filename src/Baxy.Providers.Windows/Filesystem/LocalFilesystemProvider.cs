@@ -20,8 +20,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static readonly ConcurrentDictionary<string, object> RootLocks =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly string _root;
-    // Where the retired sandbox trash (filesystem.trash.commit) left what it moved: kept out of listings and searches.
-    private readonly string _trash;
     private readonly string _backups;
     private readonly object _gate;
     private readonly Dictionary<string, Handle> _handles = new(StringComparer.Ordinal);
@@ -38,7 +36,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         ArgumentException.ThrowIfNullOrWhiteSpace(rootDirectory);
         _recycleBin = recycleBin ?? throw new ArgumentNullException(nameof(recycleBin));
         _root = Path.GetFullPath(rootDirectory);
-        _trash = Path.Combine(_root, ".trash");
         _backups = Path.Combine(_root, ".backups");
         Directory.CreateDirectory(_root);
         Directory.CreateDirectory(_backups);
@@ -214,7 +211,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     /// <summary>
     /// The sandbox root, or one of the person's known folders when the
     /// catalog argument names it. Known folders never use the sandbox's
-    /// trash or backups; the same reparse-point and traversal checks apply.
+    /// backups; the same reparse-point and traversal checks apply.
     /// </summary>
     private string RootFor(string? folder)
     {
@@ -442,12 +439,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             .Select(static pair => pair.Key).ToArray()) _handles.Remove(key);
     }
 
-    private bool IsUnderTrash(string path) => path.StartsWith(
-        _trash + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
-        || string.Equals(path, _trash, StringComparison.OrdinalIgnoreCase);
-
-    private bool IsReserved(string path) => IsUnderTrash(path)
-        || path.StartsWith(_backups + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+    private bool IsReserved(string path) =>
+        path.StartsWith(_backups + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
         || string.Equals(path, _backups, StringComparison.OrdinalIgnoreCase);
 
     private static void ValidateLimit(int limit)
