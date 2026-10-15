@@ -3623,6 +3623,52 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task SpotifyApiExactTitleSharedByTwoTracksPlaysNothingAndReturnsBoth()
+    {
+        var handler = new SpotifyHttpHandler
+        {
+            SearchBody = """{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Yellow","popularity":10,"artists":[{"name":"Coldplay"}]},{"id":"track-2","uri":"spotify:track:track-2","name":"yellow","popularity":90,"artists":[{"name":"Other"}]}]}}""",
+        };
+        using var http = new HttpClient(handler);
+        using var adapter = new WindowsMediaSessionAdapter(http, () => "token");
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.exact",
+            Json("""{"provider":"spotify","title":"Yellow"}"""),
+            CancellationToken.None);
+
+        JsonElement candidates = receipt.Result!.Value.GetProperty("candidates");
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_exact_track_ambiguous"));
+            Assert.That(handler.PlayCalls, Is.Zero);
+            Assert.That(candidates.GetArrayLength(), Is.EqualTo(2));
+            Assert.That(candidates[0].GetProperty("artist").GetString(), Is.EqualTo("Coldplay"));
+            Assert.That(candidates[1].GetProperty("trackId").GetString(), Is.EqualTo("track-2"));
+        });
+    }
+
+    [Test]
+    public async Task SpotifyApiQueryPlaysSpotifysFirstResultNotTheMostPopular()
+    {
+        var handler = new SpotifyHttpHandler
+        {
+            SearchBody = """{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Billie Jean","popularity":1,"artists":[{"name":"Michael Jackson"}]},{"id":"track-2","uri":"spotify:track:track-2","name":"Thriller","popularity":99,"artists":[{"name":"Michael Jackson"}]}]}}""",
+        };
+        using var http = new HttpClient(handler);
+        using var adapter = new WindowsMediaSessionAdapter(http, () => "token");
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query",
+            Json("""{"provider":"spotify","query":"Michael Jackson"}"""),
+            CancellationToken.None);
+
+        Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Billie Jean"));
+    }
+
+    [Test]
     public async Task SpotifyApiPostreadFailureRetainsTenSecondRetryHorizon()
     {
         var handler = new SpotifyHttpHandler
@@ -4697,6 +4743,9 @@ public sealed class ExternalAdaptersTests
 
         internal bool FirstCurrentlyPlayingThrows { get; init; }
 
+        internal string SearchBody { get; init; } =
+            """{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Billie Jean","popularity":99,"artists":[{"name":"Michael Jackson"}]}]}}""";
+
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -4708,7 +4757,7 @@ public sealed class ExternalAdaptersTests
             }
             if (path.EndsWith("/search", StringComparison.Ordinal))
             {
-                return Response("""{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Billie Jean","popularity":99,"artists":[{"name":"Michael Jackson"}]}]}}""");
+                return Response(SearchBody);
             }
             if (path.EndsWith("/devices", StringComparison.Ordinal))
             {
