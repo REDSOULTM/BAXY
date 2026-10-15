@@ -300,6 +300,23 @@ public static class OperationVisibleFacts
                     }
                 }
 
+                // A page of a text read by offset (file.read, web.fetch) whose text was cut here goes on from where
+                // its shown text ends, not from where the provider's page ended: the model never skips text it did
+                // not see (audit 2026-10-15, R2).
+                if (obj["text"] is JsonValue whole && whole.TryGetValue(out string? read)
+                    && projected["text"] is JsonValue part && part.TryGetValue(out string? shown)
+                    && shown.Length < read.Length
+                    && obj["offset"] is JsonValue offset && offset.TryGetValue(out int start))
+                {
+                    int shownCharacters = shown.Length - 1; // without the «…» that marks the cut
+                    projected["hasMore"] = true;
+                    projected["nextOffset"] = start + shownCharacters;
+                    if (obj.ContainsKey("returnedCharacters"))
+                    {
+                        projected["returnedCharacters"] = shownCharacters;
+                    }
+                }
+
                 return projected;
             case JsonArray array:
                 var kept = new JsonArray();

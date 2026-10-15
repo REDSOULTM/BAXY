@@ -63,6 +63,36 @@ public sealed class OperationOutcomeNarrationTests
         Assert.That(keys, Is.EquivalentTo(new[] { "id", "noteId", "deviceId", "sha256", "hash", "recordId" }));
     }
 
+    // Audit 2026-10-15 R2: a page of a text read by offset whose text the message cuts goes on from where the shown
+    // text ends, so the model never pages past text it did not see.
+    [Test]
+    public void APageWhoseTextIsCutGoesOnFromWhereItsShownTextEnds()
+    {
+        string page = string.Join(' ', Enumerable.Range(0, 3_000).Select(static index => "w" + index));
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            offset = 1_000,
+            returnedCharacters = page.Length,
+            hasMore = false,
+            text = page,
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("file.read", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+        string shown = observed.GetProperty("text").GetString()!;
+        int kept = shown.Length - 1;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown, Does.EndWith("…"));
+            Assert.That(page, Does.StartWith(shown[..kept]));
+            Assert.That(observed.GetProperty("returnedCharacters").GetInt32(), Is.EqualTo(kept));
+            Assert.That(observed.GetProperty("nextOffset").GetInt32(), Is.EqualTo(1_000 + kept));
+            Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
+        });
+    }
+
     // Auditoría final V2: a list cut to what the observation shows says how many it shows, and the observation says
     // something was left out, where the model reads it (window.resolve with limit 50 showed 20 under count 50).
     [Test]
