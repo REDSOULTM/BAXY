@@ -44,13 +44,13 @@ public sealed class R19ClienteCerradoSeAbreTests
         {
             Steps.Add($"resolve:{channel}:{recipient}");
             return ValueTask.FromResult(_running.Contains(channel)
-                ? new DesktopRecipientObservation(true, true, (nint)42, 7, null)
+                ? new DesktopRecipientObservation(true, true, (nint)42, 7, null, recipient)
                 : new DesktopRecipientObservation(false, false, 0, 0, channel + "_client_not_running"));
         }
 
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
-            Steps.Add("send:" + recipient.DisplayName);
+            Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
     }

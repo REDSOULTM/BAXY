@@ -30,12 +30,12 @@ public sealed class M120ClienteCerradoTests
         public ValueTask<DesktopRecipientObservation> ResolveAsync(string channel, string recipient, CancellationToken cancellationToken)
         {
             Steps.Add("resolve:" + recipient);
-            return ValueTask.FromResult(new DesktopRecipientObservation(true, true, (nint)42, 7, null));
+            return ValueTask.FromResult(new DesktopRecipientObservation(true, true, (nint)42, 7, null, recipient));
         }
 
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
-            Steps.Add("send:" + recipient.DisplayName);
+            Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
 

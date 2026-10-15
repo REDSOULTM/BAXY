@@ -21,6 +21,71 @@ public sealed class DesktopMessagingAdapterTests
             WindowsDesktopMessagingAutomation.ContainsPhrase(source, expected),
             Is.EqualTo(result));
 
+    // C1: a shown name (title, search row, header line) names the recipient only with its whole words, folded.
+    [TestCase("Ron92", "ron", false)]
+    [TestCase("Juana", "ana", false)]
+    [TestCase("Discord | @Ron92", "ron92", true)]
+    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("Ana María", "ana maria", true)]
+    [TestCase("María Ana", "ana maria", false)]
+    [TestCase("Mario", "Maria", false)]
+    [TestCase("Ron92", "!!!", false)]
+    public void ARecipientIsNamedOnlyByItsWholeWords(string shown, string recipient, bool named) =>
+        Assert.That(WindowsDesktopMessagingAutomation.NamesRecipient(shown, recipient), Is.EqualTo(named));
+
+    // C2: the header line that names the recipient is what is said, with no letter of tolerance.
+    [Test]
+    public void TheHeaderLineThatNamesTheRecipientIsTheOneSaid()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsDesktopMessagingAutomation.HeaderLine("Misica\nMúsica  \nMusica", "Música"), Is.EqualTo("Música"));
+            Assert.That(WindowsDesktopMessagingAutomation.HeaderLine("Misica\nMarios", "Música"), Is.Null);
+            Assert.That(WindowsDesktopMessagingAutomation.HeaderLine("Mario\nMario", "Maria"), Is.Null);
+        });
+    }
+
+    // C3: a search whose rows never named the recipient is «recipient_not_found» with the row it showed; text that may
+    // have reached a composer keeps its possible effect and code.
+    [Test]
+    public void ASearchThatNamedNobodySaysTheRowItShowed()
+    {
+        DesktopRecipientObservation untouched = WindowsDesktopMessagingAutomation.NotNamedInSearch(
+            WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: true), "Ronaldo");
+        DesktopRecipientObservation touched = WindowsDesktopMessagingAutomation.NotNamedInSearch(
+            WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: false), null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(untouched.ErrorCode, Is.EqualTo(WindowsDesktopMessagingAutomation.RecipientNotFound));
+            Assert.That(untouched.EffectObserved, Is.False);
+            Assert.That(untouched.Shown, Is.EqualTo("Ronaldo"));
+            Assert.That(touched.ErrorCode, Is.EqualTo("recipient_identity_not_verified"));
+            Assert.That(touched.EffectObserved, Is.True);
+            Assert.That(touched.Shown, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task AFailedLookupCarriesTheRowItSaw()
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(false, false, (nint)42, 7, "recipient_not_found", "Ronaldo"),
+            new DesktopMessageObservation(true, true, "hash", null));
+        using var adapter = new DesktopMessagingAdapter(automation);
+
+        ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
+            "message.recipient.resolve",
+            Json("""{"channel":"discord","recipient":"Ron"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolved.Verified, Is.False);
+            Assert.That(resolved.ErrorCode, Is.EqualTo("recipient_not_found"));
+            Assert.That(resolved.Result?.GetProperty("observed").GetString(), Is.EqualTo("Ronaldo"));
+        });
+    }
+
     // G1 (2026-10-11): the typed draft is read only once the composer band's
     // content changed; a blinking caret (one or two columns) is not a change, so
     // it never starts an OCR pass that holds the CPU the client needs to draw.
@@ -102,7 +167,7 @@ public sealed class DesktopMessagingAdapterTests
     public async Task ResolveThenSendUsesObservedOpaqueIdentityAndVerifiedReceipt()
     {
         var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null),
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Discord | @CbaYeah"),
             new DesktopMessageObservation(true, true, "evidence_hash", null));
         using var adapter = new DesktopMessagingAdapter(automation);
 
@@ -120,11 +185,15 @@ public sealed class DesktopMessagingAdapterTests
         {
             Assert.That(resolved.Verified, Is.True);
             Assert.That(recipientId, Does.StartWith("recipient_"));
+            // C2: what the client showed is said, next to what was asked for.
+            Assert.That(resolved.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
+            Assert.That(resolved.Result?.GetProperty("recipient").GetString(), Is.EqualTo("CbaYeah"));
+            Assert.That(sent.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
             Assert.That(sent.Verified, Is.True);
             Assert.That(sent.EffectObserved, Is.True);
             Assert.That(sent.Result?.GetProperty("delivery").GetString(),
                 Is.EqualTo("visible_postcondition"));
-            Assert.That(automation.SentRecipient?.DisplayName, Is.EqualTo("CbaYeah"));
+            Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
             Assert.That(automation.SentText, Is.EqualTo("Hola"));
         });
     }
@@ -133,7 +202,7 @@ public sealed class DesktopMessagingAdapterTests
     public async Task ExpiredIdentityFailsBeforeAnyPhysicalSend()
     {
         var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null),
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
             new DesktopMessageObservation(true, true, "hash", null));
         using var adapter = new DesktopMessagingAdapter(automation);
 
@@ -155,7 +224,7 @@ public sealed class DesktopMessagingAdapterTests
     public async Task AmbiguousPostSendEvidencePreservesPossibleEffect()
     {
         var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null),
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
             new DesktopMessageObservation(
                 false,
                 true,

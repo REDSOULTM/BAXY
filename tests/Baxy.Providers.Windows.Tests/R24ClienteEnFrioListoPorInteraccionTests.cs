@@ -386,7 +386,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
 
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
-            Steps.Add("send:" + recipient.DisplayName);
+            Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
     }
@@ -418,7 +418,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     [Test]
     public async Task AVerifiedChatStillResolves()
     {
-        var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null));
+        var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null, "Ron92"));
         using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.recipient.resolve",

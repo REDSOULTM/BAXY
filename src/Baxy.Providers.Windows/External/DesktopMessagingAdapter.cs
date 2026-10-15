@@ -139,12 +139,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             channel,
             recipient,
             cancellationToken).ConfigureAwait(false);
-        if (!observation.Verified)
+        if (Unresolved("message.recipient.resolve", observation) is { } unresolved)
         {
-            return Failure(
-                "message.recipient.resolve",
-                observation.ErrorCode ?? "recipient_identity_not_verified",
-                observation.EffectObserved);
+            return unresolved;
         }
 
         string recipientId = "recipient_" + Guid.NewGuid().ToString("N");
@@ -152,6 +149,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             recipientId,
             channel,
             recipient,
+            observation.Shown!,
             observation.WindowHandle,
             observation.ProcessId);
         _recipients[recipientId] = resolved;
@@ -161,7 +159,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("version", 1),
                 ("recipientId", recipientId),
                 ("channel", channel),
-                ("displayName", recipient),
+                ("recipient", recipient),
+                ("displayName", resolved.Shown),
                 ("verified", true)));
     }
 
@@ -197,7 +196,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("messageId", "message_" + fingerprint[..24]),
                 ("recipientId", recipientId),
                 ("channel", recipient.Channel),
-                ("displayName", recipient.DisplayName),
+                ("displayName", recipient.Shown),
                 ("contentSha256", Convert.ToHexStringLower(SHA256.HashData(
                     Encoding.UTF8.GetBytes(text)))),
                 ("delivery", "visible_postcondition")));
@@ -229,18 +228,16 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             channel,
             recipient,
             cancellationToken).ConfigureAwait(false);
-        if (!observation.Verified)
+        if (Unresolved("message.draft", observation) is { } unresolved)
         {
-            return Failure(
-                "message.draft",
-                observation.ErrorCode ?? "recipient_identity_not_verified",
-                observation.EffectObserved);
+            return unresolved;
         }
 
         var resolved = new ResolvedRecipient(
             "draft_" + Guid.NewGuid().ToString("N"),
             channel,
             recipient,
+            observation.Shown!,
             observation.WindowHandle,
             observation.ProcessId);
         DesktopMessageObservation draft = await _automation.DraftAsync(
@@ -260,7 +257,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             JsonObject(
                 ("version", 1),
                 ("channel", channel),
-                ("displayName", recipient),
+                ("recipient", recipient),
+                ("displayName", resolved.Shown),
                 ("text", text),
                 ("draftVisible", true),
                 ("sent", false),
@@ -307,18 +305,16 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             channel,
             forced,
             cancellationToken).ConfigureAwait(false);
-        if (!observation.Verified)
+        if (Unresolved("message.send.test", observation) is { } unresolved)
         {
-            return Failure(
-                "message.send.test",
-                observation.ErrorCode ?? "recipient_identity_not_verified",
-                observation.EffectObserved);
+            return unresolved;
         }
 
         var resolved = new ResolvedRecipient(
             "sendtest_" + Guid.NewGuid().ToString("N"),
             channel,
             forced,
+            observation.Shown!,
             observation.WindowHandle,
             observation.ProcessId);
         DesktopMessageObservation sent = await _automation.SendAsync(
@@ -340,6 +336,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("channel", channel),
                 ("requestedRecipient", requestedRecipient),
                 ("forcedDestination", forced),
+                ("displayName", resolved.Shown),
                 ("text", text),
                 ("sent", true),
                 ("clientOpened", client.Opened),
@@ -439,6 +436,18 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         bool effectObserved = false) =>
         new(operation, effectObserved, false, null, error);
 
+    // C2, C3: a recipient is resolved only with what the client showed naming it; a lookup that did not end on the
+    // recipient fails with its cause and, when a search row was read, that row as «observed».
+    private static ExternalCapabilityReceipt? Unresolved(string operation, DesktopRecipientObservation observation) =>
+        observation.Verified && observation.Shown is not null
+            ? null
+            : new(
+                operation,
+                observation.EffectObserved,
+                false,
+                observation.Shown is null ? null : JsonObject(("version", 1), ("observed", observation.Shown)),
+                observation.ErrorCode ?? "recipient_identity_not_verified");
+
     private static JsonElement JsonObject(params (string Name, object Value)[] values)
     {
         var buffer = new ArrayBufferWriter<byte>();
@@ -481,19 +490,24 @@ internal interface IExternalOperationAdapter
         CancellationToken cancellationToken);
 }
 
+// Name: the recipient the model asked for, matched as whole words against what the client shows. Shown: what the
+// client showed for it when it was resolved (its window title or conversation header).
 internal sealed record ResolvedRecipient(
     string RecipientId,
     string Channel,
-    string DisplayName,
+    string Name,
+    string Shown,
     nint WindowHandle,
     int ProcessId);
 
+// Shown: the title or header line that names the recipient when Verified; otherwise the search row read last, if any.
 internal sealed record DesktopRecipientObservation(
     bool Verified,
     bool EffectObserved,
     nint WindowHandle,
     int ProcessId,
-    string? ErrorCode);
+    string? ErrorCode,
+    string? Shown = null);
 
 internal sealed record DesktopMessageObservation(
     bool Verified,
@@ -741,16 +755,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // The header is read twice because the first frame after a resize or
         // focus change may still be transitional. (Escape must not be sent here:
         // in WhatsApp it closes the open conversation.)
-
-        ValueTask<bool> ObserveRecipientAsync(CancellationToken token) =>
-            string.Equals(channel, "discord", StringComparison.Ordinal)
-                ? ValueTask.FromResult(TitleNamesMatch(WindowTitle(handle), channel, recipient))
-                : HeaderContainsAsync(handle, recipient, token);
         for (int attempt = 0; attempt < 2; attempt++)
         {
-            if (await ObserveRecipientAsync(cancellationToken).ConfigureAwait(false))
+            if (await ShownRecipientAsync(handle, channel, recipient, cancellationToken).ConfigureAwait(false)
+                is { } shownAlready)
             {
-                return new(true, false, handle, processId, null);
+                return new(true, false, handle, processId, null, shownAlready);
             }
 
             await Task.Delay(500, cancellationToken).ConfigureAwait(false);
@@ -796,16 +806,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
         else
         {
-            // DISCORD1839 inherited: the switcher needs about 1.4 s to open and its
-            // rows are read by UI Automation before Enter; the row that names the
-            // recipient is selected with Down, and nothing is opened when no row
-            // names it.
             // DISCORD1839 inherited, driven from here: Escape closes anything open
             // (Ctrl+K toggles an already open switcher shut), Ctrl+K opens the
-            // switcher, the name is typed and Enter confirms the first result. The
-            // keys travel through the same SendInput path that already sends
-            // WhatsApp messages; a PowerShell helper stole the foreground, which
-            // closes the switcher, and its Enter never reached the row.
+            // switcher and the name is typed; its active result is opened only when
+            // it names the recipient (C3). The keys travel through the same
+            // SendInput path that already sends WhatsApp messages; a PowerShell
+            // helper stole the foreground, which closes the switcher.
             // Ronda 24 (t1-c09, t2-c07, t3-c07, client opened cold): the switcher is used only once it is there. After
             // the shortcut, a new editable field (or a result row of its list) must hold the focus (the composer keeps
             // its own); the old fixed 1.4 s is now the most it waits. Nothing seen on a client started just now:
@@ -848,49 +854,65 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendKey(VirtualKeyBack);
             await Task.Delay(120, cancellationToken).ConfigureAwait(false);
             SendText(recipient);
-            bool named = await AwaitNamedResultAsync(
-                Read, name => TitleNamesMatch(name, channel, recipient), InteractionPoll, cancellationToken).ConfigureAwait(false);
+            (bool named, string? row) = await AwaitNamedResultAsync(
+                Read, name => NamesRecipient(name, recipient), InteractionPoll, cancellationToken).ConfigureAwait(false);
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}», named {named}");
-            // No stray modifier key-up is sent here: a lone Alt release activates
-            // the window menu in Chromium and closed the switcher, so the click
-            // below landed on the conversation behind it.
-            // The first result is opened with the mouse: Enter only dismisses the
-            // switcher on this client (the capture after typing shows the row
-            // highlighted, the one after Enter shows the previous chat with the
-            // composer focused). The switcher is centred in the window and its
-            // first row sits just below the input.
-            ClickAtRelative(handle, 0.5, DiscordSwitcherFirstRowHeightFraction);
-            // The title is read for up to 3 s from the click (r23 c07: one read at 900 ms missed a title that came
-            // later), and the first read that names the recipient ends the wait.
-            bool opened = await PollUntilAsync(
-                ObserveRecipientAsync, ChatTitleBudget, ChatTitlePoll, cancellationToken).ConfigureAwait(false);
-            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after click, title " + WindowTitle(handle));
-            if (opened)
+            if (named)
             {
-                return new(true, true, handle, processId, null);
+                // No stray modifier key-up is sent here: a lone Alt release activates
+                // the window menu in Chromium and closed the switcher, so the click
+                // below landed on the conversation behind it.
+                // The result is opened with the mouse: Enter only dismisses the
+                // switcher on this client (the capture after typing shows the row
+                // highlighted, the one after Enter shows the previous chat with the
+                // composer focused). The switcher is centred in the window and its
+                // first row, the active one that named the recipient, sits just below the input.
+                ClickAtRelative(handle, 0.5, DiscordSwitcherFirstRowHeightFraction);
+                // The title is read for up to 3 s from the click (r23 c07: one read at 900 ms missed a title that came
+                // later), and the first read that names the recipient ends the wait.
+                string? shown = null;
+                bool opened = await PollUntilAsync(
+                    async token => (shown = await ShownRecipientAsync(handle, channel, recipient, token)
+                        .ConfigureAwait(false)) is not null,
+                    ChatTitleBudget,
+                    ChatTitlePoll,
+                    cancellationToken).ConfigureAwait(false);
+                AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after click, title " + WindowTitle(handle));
+                if (opened)
+                {
+                    return new(true, true, handle, processId, null, shown);
+                }
+            }
+
+            // C3: no result named the recipient, so nothing was clicked; the switcher (open even when it was not seen)
+            // is closed. After a named row that did not open the chat, the search is closed only when it was seen
+            // open. The name should have gone only into the switcher's own input: the composer is pictured again; a
+            // composer that changed (or cannot be read) may hold the name.
+            if (!named || input == InputWait.Opened)
+            {
+                SendKey(VirtualKeyEscape);
+                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
             }
 
             bool composerChanged = true;
             if (input == InputWait.Opened)
             {
-                // The name should have gone only into the switcher's own input: it is closed and the composer is
-                // pictured again; a composer that changed (or cannot be read) may hold the name.
-                SendKey(VirtualKeyEscape);
-                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
                 composerChanged = ComposerChanged(handle, channel, composerBefore);
             }
 
-            return UnverifiedChat(handle, processId, ComposerUntouched(input, composerChanged));
+            DesktopRecipientObservation unverified = UnverifiedChat(handle, processId, ComposerUntouched(input, composerChanged));
+            return named ? unverified : NotNamedInSearch(unverified, row);
         }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
-        bool verified = await ObserveRecipientAsync(cancellationToken).ConfigureAwait(false);
+        string? header = await ShownRecipientAsync(handle, channel, recipient, cancellationToken).ConfigureAwait(false);
         return new(
-            verified,
+            header is not null,
             true,
             handle,
             processId,
-            verified ? null : "recipient_identity_not_verified");
+            header is not null ? null : "recipient_identity_not_verified",
+            header);
     }
 
     public async ValueTask<DesktopMessageObservation> SendAsync(
@@ -919,15 +941,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
             .ConfigureAwait(false);
 
-        bool targetVerified = string.Equals(
+        bool targetVerified = await ShownRecipientAsync(
+            recipient.WindowHandle,
             recipient.Channel,
-            "discord",
-            StringComparison.Ordinal)
-                ? TitleNamesMatch(WindowTitle(recipient.WindowHandle), recipient.Channel, recipient.DisplayName)
-                : await HeaderContainsAsync(
-                    recipient.WindowHandle,
-                    recipient.DisplayName,
-                    cancellationToken).ConfigureAwait(false);
+            recipient.Name,
+            cancellationToken).ConfigureAwait(false) is not null;
         if (!targetVerified)
         {
             return new(false, false, string.Empty, "recipient_identity_changed");
@@ -1004,12 +1022,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             }
         }
 
-        bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
-            ? TitleNamesMatch(WindowTitle(recipient.WindowHandle), recipient.Channel, recipient.DisplayName)
-            : await HeaderContainsAsync(
-                recipient.WindowHandle,
-                recipient.DisplayName,
-                cancellationToken).ConfigureAwait(false);
+        bool stillTarget = await ShownRecipientAsync(
+            recipient.WindowHandle,
+            recipient.Channel,
+            recipient.Name,
+            cancellationToken).ConfigureAwait(false) is not null;
         return new(
             changed && visible && stillTarget,
             true,
@@ -1044,15 +1061,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
             .ConfigureAwait(false);
 
-        bool targetVerified = string.Equals(
+        bool targetVerified = await ShownRecipientAsync(
+            recipient.WindowHandle,
             recipient.Channel,
-            "discord",
-            StringComparison.Ordinal)
-                ? TitleNamesMatch(WindowTitle(recipient.WindowHandle), recipient.Channel, recipient.DisplayName)
-                : await HeaderContainsAsync(
-                    recipient.WindowHandle,
-                    recipient.DisplayName,
-                    cancellationToken).ConfigureAwait(false);
+            recipient.Name,
+            cancellationToken).ConfigureAwait(false) is not null;
         if (!targetVerified)
         {
             return new(false, false, string.Empty, "recipient_identity_changed");
@@ -1175,20 +1188,46 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return right >= 0 && right - left + 1 > CaretMaxWidthPixels;
     }
 
-    private static async ValueTask<bool> HeaderContainsAsync(
+    // What the open conversation shows when it names the recipient: Discord's window title, or the line of
+    // WhatsApp's header that does; null when it names someone else or nothing.
+    private static async ValueTask<string?> ShownRecipientAsync(
         nint handle,
-        string target,
+        string channel,
+        string recipient,
         CancellationToken cancellationToken)
     {
+        if (string.Equals(channel, "discord", StringComparison.Ordinal))
+        {
+            string title = WindowTitle(handle);
+            return NamesRecipient(title, recipient) ? title : null;
+        }
+
         byte[] header = CaptureRegion(handle, CaptureArea.Header, "whatsapp");
-        string text = await ReadTextAsync(header, cancellationToken).ConfigureAwait(false);
-        return HeaderMatches(text, target);
+        return HeaderLine(await ReadTextAsync(header, cancellationToken).ConfigureAwait(false), recipient);
     }
 
-    // The header crop excludes the search box and the chat list, so the only
-    // chat name in it is the open conversation's; Tesseract still misreads one
-    // letter of it now and then («Misica» for «Música»), so a word of five or
-    // more letters is accepted at one edit of distance.
+    // C1: a shown name (a window title, a search row, a header line) names the recipient when it holds the recipient's
+    // whole words in order, case and accents folded: «ron» is not «Ron92», «ana» is not «Juana».
+    internal static bool NamesRecipient(string shown, string recipient) =>
+        Fold(recipient).Length > 0 && ContainsPhrase(shown, recipient);
+
+    // C2: the header crop excludes the search box and the chat list, so the only chat name in it is the open
+    // conversation's; the line of its reading that names the recipient is what the client showed. No letter is
+    // tolerated: an OCR slip fails the read (the six readings of ReadTextAsync give the name more than one chance),
+    // and «Mario» never passes for «Maria».
+    internal static string? HeaderLine(string observed, string target)
+    {
+        foreach (string line in observed.Split('\n'))
+        {
+            if (NamesRecipient(line, target))
+            {
+                return line.Trim();
+            }
+        }
+
+        return null;
+    }
+
     // A sent bubble may wrap («prueba 1 de WhatsApp, ya funciona de nuevo») and
     // its short words («1», «de», «ya») take the most OCR noise, so the delivery
     // read requires every word of four or more letters (one edit tolerated from
@@ -1266,42 +1305,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         return anyLong;
-    }
-
-    internal static bool HeaderMatches(string observed, string target)
-    {
-        string foldedObserved = Fold(observed);
-        string foldedTarget = Fold(target);
-        if (foldedTarget.Length == 0)
-        {
-            return false;
-        }
-
-        if (foldedObserved.Contains(foldedTarget, StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        string[] words = foldedObserved.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        foreach (string token in foldedTarget.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-        {
-            bool matched = false;
-            foreach (string word in words)
-            {
-                if (word == token || (token.Length >= 5 && WithinOneEdit(word, token)))
-                {
-                    matched = true;
-                    break;
-                }
-            }
-
-            if (!matched)
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private static bool WithinOneEdit(string left, string right)
@@ -1677,31 +1680,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendVirtualKey(key, keyUp: false);
         SendVirtualKey(key, keyUp: true);
         SendVirtualKey(modifier, keyUp: true);
-    }
-
-    // DISCORD1869: the client shows this account under two names. The owner's test
-    // user is «Valeria» (username ron.91) in the search, while the direct message
-    // list and the window title call the same conversation «Julia», so a send is
-    // searched by the first name and verified by either. A channel absent from this
-    // map verifies by its own name alone.
-    private static readonly Dictionary<string, string> ForcedTestDestinationTitle =
-        new(StringComparer.Ordinal)
-        {
-            // D22: the Ron92 direct message is titled by that same name; the
-            // username is the search fallback.
-            ["discord"] = ".wolfsoultm.4191",
-        };
-
-    private static bool TitleNamesMatch(string title, string channel, string name)
-    {
-        string folded = Fold(title);
-        if (folded.Contains(Fold(name), StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        return ForcedTestDestinationTitle.TryGetValue(channel, out string? shown)
-            && folded.Contains(Fold(shown), StringComparison.Ordinal);
     }
 
     private static void SendKey(ushort key)
