@@ -63,7 +63,7 @@ internal sealed class MemoryOperationProtector
     internal ProtectedMemoryOperation Prepare(MemoryRoutedOperation privateOperation)
     {
         ArgumentNullException.ThrowIfNull(privateOperation);
-        EnsureParserMemoryOperation(privateOperation.Name);
+        EnsureMemoryOperation(privateOperation.Name);
         JsonObject privateArguments = privateOperation.PrivateArguments;
         EnsureNoReservedPayloadProperties(privateArguments);
 
@@ -201,9 +201,6 @@ internal sealed class MemoryOperationProtector
         JsonObject arguments) =>
         operationName switch
         {
-            "memory.configure" => RequiredBoolean(arguments, "enabled")
-                ? "memory.enable"
-                : "memory.disable",
             "memory.save" when RequiredString(arguments, "sensitivity")
                 is "sensitive" or "secret" => "memory.sensitive.save",
             "memory.save" => "memory.save",
@@ -413,22 +410,6 @@ internal sealed class MemoryOperationProtector
             || arguments.ContainsKey("payload"))
         {
             throw new InvalidDataException("La peticion privada contiene estado reservado.");
-        }
-    }
-
-    private static void EnsureParserMemoryOperation(string operationName)
-    {
-        if (operationName is not (
-            "memory.configure"
-            or "memory.correct"
-            or "memory.export"
-            or "memory.forget"
-            or "memory.list"
-            or "memory.recall"
-            or "memory.save"
-            or "memory.status"))
-        {
-            throw new InvalidDataException("La operacion no pertenece al parser de memoria.");
         }
     }
 

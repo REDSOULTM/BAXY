@@ -812,27 +812,36 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["last_error"] = _viewModel.IsMicAvailable ? null : "voice_unavailable",
     };
 
-    private JsonObject VoiceInventory() => new()
+    // The voice models are the launcher's (BAXY_RENEW_STT_DIR, _TTS_MODEL, _WAKE_DIR): each is named by its path and
+    // shown as on disk only when the file the mind loads is there (voice.py, voice_output.py).
+    private static JsonObject VoiceInventory()
     {
-        ["stt_default"] = "parakeet-tdt-0.6b-v3-int8",
-        ["stt"] = new JsonArray(new JsonObject
+        string stt = Environment.GetEnvironmentVariable("BAXY_RENEW_STT_DIR") ?? string.Empty;
+        string tts = Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_MODEL") ?? string.Empty;
+        string wake = Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR") ?? string.Empty;
+        string sttName = Path.GetFileName(stt.TrimEnd('\\', '/'));
+        return new JsonObject
         {
-            ["name"] = "parakeet-tdt-0.6b-v3-int8",
-            ["size_label"] = "int8 · local",
-            ["downloaded"] = _viewModel.IsMicAvailable,
-        }),
-        ["tts"] = new JsonArray(new JsonObject
-        {
-            ["name"] = "es_MX-claude-high",
-            ["downloaded"] = _viewModel.IsMicAvailable,
-        }),
-        ["wake"] = new JsonObject
-        {
-            ["name"] = "Baxy",
-            ["downloaded"] = _viewModel.IsMicAvailable,
-        },
-        ["languages"] = new JsonArray("es", "en"),
-    };
+            ["stt_default"] = sttName,
+            ["stt"] = new JsonArray(new JsonObject
+            {
+                ["name"] = sttName,
+                ["size_label"] = "local",
+                ["downloaded"] = stt.Length > 0 && File.Exists(Path.Combine(stt, "tokens.txt")),
+            }),
+            ["tts"] = new JsonArray(new JsonObject
+            {
+                ["name"] = Path.GetFileNameWithoutExtension(tts),
+                ["downloaded"] = tts.Length > 0 && File.Exists(tts) && File.Exists(tts + ".json"),
+            }),
+            ["wake"] = new JsonObject
+            {
+                ["name"] = Path.GetFileName(wake.TrimEnd('\\', '/')),
+                ["downloaded"] = wake.Length > 0 && File.Exists(Path.Combine(wake, "config.json")),
+            },
+            ["languages"] = new JsonArray("es", "en"),
+        };
+    }
 
     private JsonObject CurrentSettings()
     {

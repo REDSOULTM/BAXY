@@ -629,7 +629,6 @@ export default function App() {
             <FieldCenter
               convState={effectiveState}
               onDebugState={debugOn ? setDebugState : null}
-              ctx={stream.ctx}
               micMode={micMode}
               micLoading={micLoading}
               onMicLeftClick={onMicLeftClick}

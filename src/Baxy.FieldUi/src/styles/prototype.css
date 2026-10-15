@@ -492,11 +492,6 @@ body {
   color: var(--t-muted);
   font-style: italic;
 }
-.chat .tokens {
-  font-family: var(--mono); font-size: 10px;
-  color: var(--t-muted); font-feature-settings: "tnum";
-}
-
 .chat-actions {
   display: inline-flex;
   align-items: center;
@@ -2139,11 +2134,6 @@ html[data-maximized="true"] .window-root {
   color: var(--t-muted);
   font-style: italic;
 }
-.chat .tokens {
-  font-family: var(--mono); font-size: 10px;
-  color: var(--t-muted); font-feature-settings: "tnum";
-}
-
 .chat-actions {
   display: inline-flex;
   align-items: center;
