@@ -250,7 +250,7 @@ internal sealed class NativeTurnLoop
 
     private static bool WritesInThePersonsWindow(string operation) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
-            or "input.select.all" or "input.scroll" or "clipboard.paste" or "message.draft";
+            or "input.select.all" or "input.scroll" or "clipboard.copy" or "clipboard.paste" or "message.draft";
 
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
