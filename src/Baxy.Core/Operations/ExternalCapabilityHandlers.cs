@@ -103,7 +103,6 @@ internal static class ExternalCapabilityHandlers
         "filesystem.folder.open",
         "filesystem.known.duplicates",
         "filesystem.known.trash.named",
-        "filesystem.path.ensure.absent",
         "filesystem.sandbox.diff.named",
         "filesystem.sandbox.move.named",
         "weather.current",

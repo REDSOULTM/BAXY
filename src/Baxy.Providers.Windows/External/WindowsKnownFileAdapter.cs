@@ -8,28 +8,25 @@ namespace Baxy.Providers.Windows.External;
 
 internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 {
-    private readonly string _trashRoot;
     private readonly IReadOnlyDictionary<string, string[]> _configuredRoots;
     private readonly IRecycleBin _recycleBin;
 
-    internal WindowsKnownFileAdapter(string dataRoot)
-        : this(dataRoot, DefaultRoots())
+    internal WindowsKnownFileAdapter()
+        : this(DefaultRoots())
     {
     }
 
     internal WindowsKnownFileAdapter(
-        string dataRoot,
         IReadOnlyDictionary<string, string[]> configuredRoots,
         IRecycleBin? recycleBin = null)
     {
-        _trashRoot = Path.Combine(Path.GetFullPath(dataRoot), "known-file-trash");
         _configuredRoots = configuredRoots;
         _recycleBin = recycleBin ?? WindowsRecycleBin.Instance;
     }
 
     public bool CanHandle(string operation) => operation is
         "file.edit" or "file.find" or "file.read"
-        or "filesystem.known.duplicates" or "filesystem.known.trash.named" or "filesystem.path.ensure.absent";
+        or "filesystem.known.duplicates" or "filesystem.known.trash.named";
 
     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -40,8 +37,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
-            if (operation == "filesystem.path.ensure.absent")
-                return ValueTask.FromResult(EnsureAbsent(operation, arguments, effectBoundary));
             string folder = ExternalJson.RequiredString(arguments, "folder");
             (string Label, string Root)[] roots = Roots(folder);
             bool inSubdirectory = arguments.TryGetProperty("subdirectory", out JsonElement subdirectoryElement);
@@ -79,61 +74,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ValueTask.FromResult(effectBoundary.Failure(
                 operation, "known_folder_filesystem_unavailable"));
         }
-    }
-
-    private ExternalCapabilityReceipt EnsureAbsent(
-        string operation,
-        JsonElement arguments,
-        ExternalEffectBoundary effectBoundary)
-    {
-        string requested = ExternalJson.RequiredString(arguments, "path").Trim()
-            .Replace('/', Path.DirectorySeparatorChar);
-        requested = Environment.ExpandEnvironmentVariables(requested);
-        if (!Path.IsPathFullyQualified(requested))
-            return ExternalJson.Failure(operation, "absolute_file_path_required");
-        string path = Path.GetFullPath(requested);
-        if (!File.Exists(path) && !Directory.Exists(path))
-        {
-            return ExternalJson.Success(operation, ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                writer.WriteString("reviewLabel", Path.GetFileName(path));
-                writer.WriteBoolean("alreadyAbsent", true);
-                writer.WriteString("authority", "windows_absolute_path_absence_postread");
-                writer.WriteEndObject();
-            }), effectObserved: false);
-        }
-        if (Directory.Exists(path))
-            return ExternalJson.Failure(operation, "absolute_path_is_directory");
-        string profile = Path.GetFullPath(Environment.GetFolderPath(
-            Environment.SpecialFolder.UserProfile)).TrimEnd(Path.DirectorySeparatorChar);
-        string temporary = Path.GetFullPath(Path.GetTempPath())
-            .TrimEnd(Path.DirectorySeparatorChar);
-        bool allowed = path.StartsWith(profile + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase)
-            || path.StartsWith(temporary + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase);
-        if (!allowed) return ExternalJson.Failure(operation, "absolute_file_outside_recoverable_roots");
-        if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
-            return ExternalJson.Failure(operation, "absolute_file_reparse_point_rejected");
-        effectBoundary.Cross();
-        Directory.CreateDirectory(_trashRoot);
-        string restoreId = "restore_" + Guid.NewGuid().ToString("N");
-        string destination = Path.Combine(_trashRoot, restoreId + "_" + Path.GetFileName(path));
-        string hash = Hash(path);
-        File.Move(path, destination);
-        if (File.Exists(path) || !File.Exists(destination)
-            || !string.Equals(Hash(destination), hash, StringComparison.Ordinal))
-            return ExternalJson.Failure(operation, "absolute_file_trash_postread_failed", true);
-        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("reviewLabel", Path.GetFileName(path));
-            writer.WriteString("restoreId", restoreId); writer.WriteString("sha256", hash);
-            writer.WriteBoolean("alreadyAbsent", false);
-            writer.WriteString("authority", "windows_absolute_file_private_trash_postread");
-            writer.WriteEndObject();
-        }), effectObserved: true);
     }
 
     private static ExternalCapabilityReceipt Duplicates(
@@ -464,39 +404,25 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (matches.Length > 1) return ExternalJson.Failure(operation, "known_file_ambiguous");
         (string label, _, string source) = matches[0];
         bool isFolder = Directory.Exists(source);
-        effectBoundary.Cross();
-        Directory.CreateDirectory(_trashRoot);
-        string restoreId = "restore_" + Guid.NewGuid().ToString("N");
-        string destination = Path.Combine(_trashRoot, restoreId + "_" + fileName);
-        if (isFolder) MoveDirectory(source, destination); else File.Move(source, destination);
-        bool gone = isFolder ? !Directory.Exists(source) : !File.Exists(source);
-        bool arrived = isFolder ? Directory.Exists(destination) : File.Exists(destination);
-        if (!gone || !arrived)
-            return ExternalJson.Failure(operation, "known_file_trash_postread_failed", true);
         int entries = isFolder
-            ? Directory.EnumerateFileSystemEntries(destination, "*", SearchOption.AllDirectories).Count()
+            ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
             : 0;
+        // To the Windows Recycle Bin, where the person restores it (BAXY Renew audit 2026-10-15: it went to a private
+        // trash that nothing restored from; filesystem.trash.restore only knows the sandbox's). When the bin cannot
+        // take it, it stays where it was.
+        effectBoundary.Cross();
+        if (!_recycleBin.Recycle(source))
+            return ExternalJson.Failure(operation, "known_file_not_recycled");
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
-            writer.WriteString("restoreId", restoreId); writer.WriteBoolean("sourceAbsent", true);
+            writer.WriteBoolean("sourceAbsent", true);
+            writer.WriteBoolean("inRecycleBin", true);
             writer.WriteBoolean("isFolder", isFolder);
             if (isFolder)
-            {
                 writer.WriteNumber("entries", entries);
-                writer.WriteString("sha256", Convert.ToHexStringLower(SHA256.HashData(
-                    Encoding.UTF8.GetBytes(string.Join("\n", Directory
-                        .EnumerateFileSystemEntries(destination, "*", SearchOption.AllDirectories)
-                        .Select(path => Path.GetRelativePath(destination, path))
-                        .OrderBy(static path => path, StringComparer.Ordinal))))));
-            }
-            else
-            {
-                writer.WriteString("sha256", Convert.ToHexStringLower(
-                    SHA256.HashData(File.ReadAllBytes(destination))));
-            }
-            writer.WriteString("authority", "windows_known_file_private_trash_postread");
+            writer.WriteString("authority", "windows_recycle_bin_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
@@ -1011,36 +937,6 @@ if __name__ == "__main__":
                 return file.FullName;
         }
         return null;
-    }
-
-    // FILES1603: Directory.Move refuses another volume (the redirected Desktop
-    // lives on D:, the private trash under the profile on C:); copy the tree
-    // and remove the source only once every entry arrived.
-    private static void MoveDirectory(string source, string destination)
-    {
-        if (string.Equals(Path.GetPathRoot(source), Path.GetPathRoot(destination),
-                StringComparison.OrdinalIgnoreCase))
-        {
-            Directory.Move(source, destination);
-            return;
-        }
-        var options = new EnumerationOptions
-        {
-            RecurseSubdirectories = true,
-            IgnoreInaccessible = false,
-            AttributesToSkip = FileAttributes.ReparsePoint,
-            MaxRecursionDepth = 12,
-        };
-        Directory.CreateDirectory(destination);
-        foreach (string directory in Directory.EnumerateDirectories(source, "*", options))
-            Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, directory)));
-        foreach (string file in Directory.EnumerateFiles(source, "*", options))
-            File.Copy(file, Path.Combine(destination, Path.GetRelativePath(source, file)), overwrite: false);
-        int expected = Directory.EnumerateFileSystemEntries(source, "*", options).Count();
-        int arrived = Directory.EnumerateFileSystemEntries(destination, "*", options).Count();
-        if (arrived < expected)
-            throw new IOException("The folder did not arrive whole in the private trash.");
-        Directory.Delete(source, recursive: true);
     }
 
     // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps

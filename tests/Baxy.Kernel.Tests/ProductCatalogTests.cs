@@ -79,7 +79,8 @@ public sealed class ProductCatalogTests
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
     // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
     // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9). Y la
-    // pareja preparar/confirmar de winget, que package.install sustituye.
+    // pareja preparar/confirmar de winget, que package.install sustituye. Y el paso interno que mandaba una ruta a una
+    // papelera privada sin vuelta, que nada invocaba.
     internal static readonly string[] RenewRetired =
     [
         "app.status",
@@ -111,16 +112,16 @@ public sealed class ProductCatalogTests
         "routine.set.enabled",
         "package.install.commit",
         "package.install.prepare",
+        "filesystem.path.ensure.absent",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 29;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30;
 
     // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
     // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).
     internal static readonly string[] InternalSteps =
     [
         "filesystem.hash",
-        "filesystem.path.ensure.absent",
         "filesystem.trash.commit",
         "filesystem.trash.prepare",
         "game.install.commit",
@@ -131,7 +132,7 @@ public sealed class ProductCatalogTests
         "task.resolve.exact",
     ];
 
-    internal const int ExpectedTools = ExpectedDescriptors - 10;
+    internal const int ExpectedTools = ExpectedDescriptors - 9;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

@@ -49,7 +49,7 @@ public sealed class KnownTextAndExplorerCountTests
         await File.WriteAllTextAsync(Path.Combine(project, "ROADMAP.md"), content, new UTF8Encoding(true));
         await File.WriteAllBytesAsync(Path.Combine(desktop, "binario.md"), [0, 1, 2, 3, 0, 0, 0, 5, 6, 0]);
         var roots = new Dictionary<string, string[]> { ["desktop"] = [desktop] };
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, roots);
+        var adapter = new WindowsKnownFileAdapter(roots);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "file.read",
@@ -107,8 +107,7 @@ public sealed class KnownTextAndExplorerCountTests
         Directory.CreateDirectory(documents);
         string content = string.Concat(Enumerable.Range(0, 120).Select(index => $"línea {index:D3} del informe\n"));
         await File.WriteAllTextAsync(Path.Combine(documents, "informe.txt"), content, new UTF8Encoding(false));
-        var adapter = new WindowsKnownFileAdapter(
-            temporary.Path, new Dictionary<string, string[]> { ["documents"] = [documents] });
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["documents"] = [documents] });
 
         var pages = new List<JsonElement>();
         int offset = 0;
@@ -154,7 +153,7 @@ public sealed class KnownTextAndExplorerCountTests
         await File.WriteAllTextAsync(Path.Combine(desktop, "procesos.txt"), "Name  Id\nbaxy  42\n", new UnicodeEncoding(false, true));
         await File.WriteAllTextAsync(Path.Combine(desktop, "viejo", "notas.txt"), "viejas");
         await File.WriteAllTextAsync(Path.Combine(documents, "notas.txt"), "nuevas");
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
         {
             ["desktop"] = [desktop],
             ["documents"] = [documents],

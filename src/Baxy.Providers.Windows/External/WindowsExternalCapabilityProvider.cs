@@ -86,7 +86,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             desktopInteraction,
             visibleControls,
             new WindowsScrollAdapter(visibleControls),
-            new WindowsKnownFileAdapter(root),
+            new WindowsKnownFileAdapter(),
             new WindowsSandboxNamedFileAdapter(root),
             new WindowsKnownBackupAdapter(root),
             new WindowsScheduledNotificationAdapter(root),
@@ -378,7 +378,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "file.edit" or "file.find" or "file.read" or "filesystem.known.duplicates"
                 or "filesystem.known.trash.named" =>
                 "windows_known_folder_authority_required",
-            "filesystem.path.ensure.absent" => "windows_absolute_path_absence_authority_required",
             "filesystem.explorer.count" => "windows_shell_explorer_folder_authority_required",
             "filesystem.sandbox.diff.named" or "filesystem.sandbox.move.named" =>
                 "sandbox_named_file_authority_required",

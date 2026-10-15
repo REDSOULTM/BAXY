@@ -1146,7 +1146,7 @@ public sealed class ExternalAdaptersTests
         await File.WriteAllTextAsync(Path.Combine(downloads, "two.bin"), "same");
         await File.WriteAllTextAsync(Path.Combine(downloads, "other.bin"), "else");
         var roots = new Dictionary<string, string[]> { ["downloads"] = [downloads] };
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, roots);
+        var adapter = new WindowsKnownFileAdapter(roots);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.known.duplicates", Json("""{"folder":"downloads","limit":10}"""),
@@ -1160,36 +1160,6 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("groups")[0].GetProperty("files")
                 .GetArrayLength(), Is.EqualTo(2));
             Assert.That(File.ReadAllText(Path.Combine(downloads, "one.bin")), Is.EqualTo("same"));
-        });
-    }
-
-    [Test]
-    public async Task AbsoluteFileDeleteIsIdempotentAndUsesPrivateTrashInsideTemp()
-    {
-        using TemporaryDirectory temporary = new();
-        string source = Path.Combine(temporary.Path, "delete-me.txt");
-        await File.WriteAllTextAsync(source, "recoverable");
-        var adapter = new WindowsKnownFileAdapter(
-            temporary.Path, new Dictionary<string, string[]>());
-
-        ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
-            "filesystem.path.ensure.absent",
-            Json("""{"path":"C:/no/existe/zzz_fake.txt"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt removed = await adapter.InvokeAsync(
-            "filesystem.path.ensure.absent",
-            Json(JsonSerializer.Serialize(new { path = source })), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(missing.Verified, Is.True);
-            Assert.That(missing.EffectObserved, Is.False);
-            Assert.That(missing.EffectMayHaveOccurred, Is.False);
-            Assert.That(missing.Result?.GetProperty("alreadyAbsent").GetBoolean(), Is.True);
-            Assert.That(removed.Verified, Is.True);
-            Assert.That(removed.EffectObserved, Is.True);
-            Assert.That(File.Exists(source), Is.False);
-            Assert.That(Directory.GetFiles(Path.Combine(temporary.Path, "known-file-trash")),
-                Has.Length.EqualTo(1));
         });
     }
 

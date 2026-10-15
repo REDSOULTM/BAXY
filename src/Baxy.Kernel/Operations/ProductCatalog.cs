@@ -617,7 +617,7 @@ public static class ProductCatalog
             OperationRisks.RecoverableDelete,
             "filesystem.known.trash.named.windows.absence.v1",
             ToolExposure.Public,
-            "Resuelve un archivo nombrado de forma única y lo mueve a una papelera privada después de confirmar."),
+            "Resuelve un archivo nombrado de forma única y lo envía a la Papelera de reciclaje de Windows después de confirmar."),
         Descriptor(
             "filesystem.list",
             Schema(
@@ -637,13 +637,6 @@ public static class ProductCatalog
             "filesystem.move.sandbox.hash.absence.v1",
             ToolExposure.Public,
             "Mueve un archivo identificado y verifica hash de destino y ausencia de origen."),
-        Descriptor(
-            "filesystem.path.ensure.absent",
-            Schema([String("path", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["path"]),
-            OperationRisks.RecoverableDelete,
-            "filesystem.path.ensure.absent.windows.private.trash.postread.v1",
-            ToolExposure.Internal,
-            "Verifica la ausencia de una ruta absoluta; si existe, solo mueve archivos del perfil o TEMP a una papelera privada recuperable."),
         Descriptor(
             "filesystem.read.text",
             Schema(
