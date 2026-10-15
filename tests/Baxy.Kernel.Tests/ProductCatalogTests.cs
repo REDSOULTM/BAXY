@@ -77,7 +77,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
-    // (reminder.* sólo guardaba un registro que nadie hacía sonar).
+    // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba.
     internal static readonly string[] RenewRetired =
     [
         "notification.cancel.at",
@@ -98,9 +98,16 @@ public sealed class ProductCatalogTests
         "filesystem.known.search",
         "filesystem.sandbox.append.named",
         "filesystem.write.text",
+        "routine.delete",
+        "routine.list",
+        "routine.phrase.create",
+        "routine.read",
+        "routine.resolve.exact",
+        "routine.restore",
+        "routine.set.enabled",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 18;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 25;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
