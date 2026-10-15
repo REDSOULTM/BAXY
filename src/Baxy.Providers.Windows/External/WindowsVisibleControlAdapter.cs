@@ -1921,7 +1921,7 @@ internal sealed class WindowsVisibleControlAdapter
                         }
 
                         textAuthority = "windows_media_ocr_lines";
-                        foreach (WindowsVisibleOcrLocator.LayoutLine line in ScreenStateLines.Grouped(read))
+                        foreach (WindowsVisibleOcrLocator.LayoutLine line in read)
                         {
                             string zone = Zone(
                                 line.X + line.Width / 2, line.Y + line.Height / 2,
