@@ -47,6 +47,35 @@ public sealed class OperationOutcomeNarrationTests
     }
 
     [Test]
+    public void ObservationCarriesTheIdsTypedArgumentsAskForAndHoldsBackSecretsAndBookkeeping()
+    {
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            id = "a1",
+            noteId = "8f0c7c56-6a3e-4c55-9a4b-2f1f4c5a9d10",
+            deviceId = "bluetooth.4f2a",
+            sha256 = "ab12",
+            hash = "cd34",
+            recordId = "r1",
+            token = "secret-token",
+            fingerprint = "fp",
+            invocationId = "inv",
+            requestId = "req",
+            missionId = "mis",
+            hwnd = 42,
+            handle = 43,
+            processId = 44,
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("note.read", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+        string[] keys = [.. observed.EnumerateObject().Select(static property => property.Name)];
+
+        Assert.That(keys, Is.EquivalentTo(new[] { "id", "noteId", "deviceId", "sha256", "hash", "recordId" }));
+    }
+
+    [Test]
     public void OperationOutcomeDoesNotExposeNaturalLanguageMessage()
     {
         Assert.That(typeof(OperationOutcome).GetProperty("Message"), Is.Null);

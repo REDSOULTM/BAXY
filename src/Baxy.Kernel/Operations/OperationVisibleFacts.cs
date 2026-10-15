@@ -21,13 +21,10 @@ public static class OperationVisibleFacts
     // in ObservedLimitKey, which the trace counts.
     private const int MaximumMessageChars = 8_192;
 
-    // Encargo WA-LEER (war1-war3, wac1-wac3 imp-wa-leer: the mind got the first 20 of a chat's lines, the top of the
-    // window, and the newest bubbles at its bottom never reached «lo último que me escribió»): the lines a chat drawn
-    // without an accessible tree is read from (observed.screen.chatLines, ComputerUseMission.NoteTheChatLinesAsync)
-    // travel whole, as many as a look keeps with their places, within the budget of the App's operation message.
+    // How many placed lines a look at a chat drawn without an accessible tree keeps
+    // (WindowsVisibleControlAdapter.PlacedLinesRead). Nothing here reads them apart:
+    // they travel under the same budget as any other observation.
     public const int ChatLines = 200;
-    private const string ChatLinesKey = "chatLines";
-    private const int MaximumChatReadingChars = 16_384;
     public const string ObservedLimitKey = "observedLimit";
     public const string ObservedProjected = "projected";
     public const string ObservedOmitted = "omitted";
@@ -66,12 +63,6 @@ public static class OperationVisibleFacts
         // dropped whole and the final could say nothing of what came out.
         bool consoleOutput = operation == "shell.command.run";
         int messageLimit = processInventory || ocrObservation || consoleOutput ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
-        if (outcome.Result is { ValueKind: JsonValueKind.Object } read
-            && read.TryGetProperty("screen", out JsonElement screen) && screen.ValueKind == JsonValueKind.Object
-            && screen.TryGetProperty(ChatLinesKey, out JsonElement chatLines) && chatLines.ValueKind == JsonValueKind.Array)
-        {
-            messageLimit = MaximumChatReadingChars;
-        }
 
         var payload = new JsonObject
         {
@@ -325,12 +316,9 @@ public static class OperationVisibleFacts
         }
     }
 
-    /// <summary>
-    /// A text cut to <paramref name="length"/> at a word boundary near the bound, never inside a surrogate pair,
-    /// marked with «…». M116: the App bounds the arguments a failed step carries (Baxy.App.AttemptedArguments) the
-    /// same way.
-    /// </summary>
-    public static string Shortened(string value, int length)
+    // A text cut to «length» at a word boundary near the bound, never inside a
+    // surrogate pair, marked with «…».
+    private static string Shortened(string value, int length)
     {
         ArgumentNullException.ThrowIfNull(value);
         ArgumentOutOfRangeException.ThrowIfLessThan(length, 2);
@@ -354,9 +342,17 @@ public static class OperationVisibleFacts
         return string.Concat(value.AsSpan(0, keep).TrimEnd(), "…");
     }
 
+    // Held back from the model is only what is a secret or the kernel's own
+    // bookkeeping: the confirmation «token», the request «fingerprint», the
+    // invocation, request and mission ids, and window and process handles
+    // («hwnd», «handle», «pid», «processId»), which no public operation takes.
+    // An id a typed argument asks for travels: «id», «noteId» (note.update),
+    // «deviceId» (peripheral.print, peripheral.scan, bluetooth.device.pair),
+    // «sha256»/«hash» (expectedSha256 of filesystem.copy and filesystem.move)
+    // and «recordId».
     private static JsonNode? Sanitize(
         JsonElement element, int depth = 0, bool processInventory = false, bool ocrObservation = false,
-        bool captureObservation = false, string? parentKey = null)
+        bool captureObservation = false)
     {
         if (!ocrObservation && depth > 4)
         {
@@ -370,17 +366,16 @@ public static class OperationVisibleFacts
                 foreach (JsonProperty property in element.EnumerateObject())
                 {
                     string key = property.Name;
-                    if ((key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
-                        or "hash" or "sha256" or "pid" or "processId" or "invocationId"
-                        or "requestId" or "missionId" or "token" or "recordId"
-                        or "deviceId") && !(processInventory && key == "processId")
-                        && !(ocrObservation && key is "sha256" or "hash" or "pid" or "processId" or "hwnd" or "handle")
-                        && !(captureObservation && key is "sha256" or "processId"))
+                    if ((key is "hwnd" or "handle" or "pid" or "processId" or "fingerprint"
+                        or "invocationId" or "requestId" or "missionId" or "token")
+                        && !(processInventory && key == "processId")
+                        && !(ocrObservation && key is "pid" or "processId" or "hwnd" or "handle")
+                        && !(captureObservation && key == "processId"))
                     {
                         continue;
                     }
 
-                    JsonNode? sanitized = Sanitize(property.Value, depth + 1, processInventory, ocrObservation, captureObservation, key);
+                    JsonNode? sanitized = Sanitize(property.Value, depth + 1, processInventory, ocrObservation, captureObservation);
                     if (sanitized is not null)
                     {
                         clean[key] = sanitized;
@@ -391,7 +386,7 @@ public static class OperationVisibleFacts
             case JsonValueKind.Array:
                 var cleanArray = new JsonArray();
                 foreach (JsonElement item in element.EnumerateArray().Take(
-                    ocrObservation ? int.MaxValue : processInventory ? 50 : parentKey == ChatLinesKey ? ChatLines : 20))
+                    ocrObservation ? int.MaxValue : processInventory ? 50 : 20))
                 {
                     cleanArray.Add(Sanitize(item, depth + 1, processInventory, ocrObservation, captureObservation));
                 }
