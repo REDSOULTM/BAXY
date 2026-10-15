@@ -258,10 +258,14 @@ public sealed class ProductCatalogTests
     [TestCase("input.visible.controls", """{"limit":60,"wanted":[3]}""", false)]
     [TestCase("input.visible.controls", """{"limit":60,"wanted":"aplicacion"}""", false)]
     [TestCase("input.visible.controls", """{"wanted":["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y"]}""", false)]
-    // Ronda 26: the mission's first look asks only who is in front when the application named has no window.
-    [TestCase("input.visible.controls", """{"limit":60,"application":"Calculadora","identityIfAbsent":true}""", true)]
-    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":null}""", true)]
-    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":"si"}""", false)]
+    // Auditoría K9: what only the retired mission sent to its look is no argument; a look may name the windows it
+    // reads by the number an earlier look gave, and ask for the newest entries of a conversation.
+    [TestCase("input.visible.controls", """{"limit":60,"application":"Calculadora","identityIfAbsent":true}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"candidates":true}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"known":[4660]}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"processId":4242}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"starting":true}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"windows":[4660],"tail":true}""", true)]
     public void TheTypesOfTaskOfV3AreArgumentsOfThePrimitives(string operation, string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);

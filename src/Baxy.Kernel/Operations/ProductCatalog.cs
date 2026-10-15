@@ -999,15 +999,9 @@ public static class ProductCatalog
                     // ExpandCollapse (la flecha de un botón dividido, un desplegable),
                     // nunca su Invoke; menu: su menú contextual (ShowContextMenu o
                     // WM_CONTEXTMENU); double: doble clic por mensaje. Sin él, el clic
-                    // de siempre. Los mismos guards de etiqueta y confirmación.
-                    // Ronda 20b, palanca 6 (revisión, hallazgo 1, v3-40 b): collapse cierra
-                    // por su ExpandCollapse la lista que la misión abrió y dejó abierta
-                    // al no llegar; sólo la manda la App, nunca el modelo. Revisión 2
-                    // (hallazgo 3): sin ExpandCollapse abierto, el popup nacido en la
-                    // misión junto al control se cierra con Escape a su propia ventana.
-                    // Revisión 3 (hallazgo 1): ese cierre es dismiss, que nunca toca el
-                    // ExpandCollapse del control; collapse nunca pliega una rama de árbol.
-                    String("manner", types: NullableString, values: ["collapse", "dismiss", "double", "menu", "open"]),
+                    // de siempre. Los mismos guards de etiqueta y confirmación. (collapse y
+                    // dismiss, que sólo mandaba la misión retirada, salieron: auditoría K9.)
+                    String("manner", types: NullableString, values: ["double", "menu", "open"]),
                     // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el destino que se
                     // escribe en lo que el clic abre y cuyo resultado se elige por su
                     // nombre, en una sola ráfaga dentro de una pausa de la persona.
@@ -1030,41 +1024,20 @@ public static class ProductCatalog
             // una etiqueta que la aplicación aún no dibujó.
             Schema(
                 [
-                    // La aplicación de la misión: la ventana cuyo título la nombra es
-                    // la superficie mientras su proceso no se conoce o no muestra
+                    // La aplicación a mirar: la ventana cuyo título la nombra es la
+                    // superficie mientras su proceso no se conoce o no muestra
                     // ventana; «el navegador», la de delante del navegador de la persona.
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
-                    // Ronda 21, destino por contenido: sin aplicación ni ventana de la misión, las ventanas del
-                    // escritorio (de arriba abajo) con la firma de su árbol; la App busca en cuál está lo que el
-                    // pedido nombra. No se trae nada al frente ni se captura nada.
-                    Boolean("candidates", types: NullableBoolean),
-                    // Ronda 26: si la aplicación nombrada no tiene ventana, la mirada sólo dice qué ventana está
-                    // delante (título, proceso), sin árbol, captura ni texto: sobre eso se decide abrirla.
-                    Boolean("identityIfAbsent", types: NullableBoolean),
                     Boolean("includeText", types: NullableBoolean),
-                    // Goal v3 ventana-misión: las ventanas que la misión sabe que no son suyas (otras del
-                    // mismo proceso, vistas al atarse); la mirada nunca las toma por la superficie.
-                    new OperationArgumentProperty(
-                        "known",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        itemTypes: OperationJsonType.Integer,
-                        maximumItems: 256),
                     Integer("limit", 1, VisibleViewNumbering.Cap),
                     // Encargo IMP4: the written lines with their boxes, read from the window's own drawing.
                     Boolean("lines", types: NullableBoolean),
-                    // El proceso de la aplicación que la misión acaba de abrir: su
-                    // ventana es la superficie aunque otra tenga el foco.
-                    Integer("processId", 1, int.MaxValue, types: NullableInteger),
-                    // La app abierta en frío todavía arranca: si se activó sola, el frente vuelve a la
-                    // ventana de la persona (computer use v3, punto 1).
-                    Boolean("starting", types: NullableBoolean),
                     // Encargo IMP3: the cut of a look keeps the last entries of the window's tree (a conversation's
-                    // newest messages), read once at the end of a mission that answers a question.
+                    // newest messages).
                     Boolean("tail", types: NullableBoolean),
                     String("waitForLabel", types: NullableString, maximumUtf8Bytes: 256),
-                    // Ronda 21: las palabras del objetivo del paso (y sus otros nombres) que la mente ya usa para
-                    // ordenar la vista; con ellas el corte de los sesenta guarda un cupo acotado para los controles que
-                    // las nombran. Sin ellas (las lecturas que no son de una misión) la vista es la de siempre.
+                    // Ronda 21: las palabras de lo que se busca en la ventana; con ellas el corte de los sesenta
+                    // guarda un cupo acotado para los controles que las nombran. Sin ellas la vista es la de siempre.
                     new OperationArgumentProperty(
                         "wanted",
                         OperationJsonType.Array | OperationJsonType.Null,
@@ -1072,8 +1045,8 @@ public static class ProductCatalog
                         maximumItems: 24,
                         itemMaximumUtf8Bytes: 64,
                         itemNonWhitespace: true),
-                    // Goal v3 ventana-misión: las ventanas a las que la misión está atada (la que abrió,
-                    // creó o nombró la persona, y las que nacieron de ella); la mirada sólo lee ésas.
+                    // Las ventanas a mirar por su número (el «window N» que dio una vista anterior); la
+                    // mirada sólo lee ésas.
                     new OperationArgumentProperty(
                         "windows",
                         OperationJsonType.Array | OperationJsonType.Null,
