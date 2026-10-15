@@ -496,33 +496,26 @@ public sealed class ComputerUseSpeedTests
     }
 
     [Test]
-    public async Task ALookNeverFrontsTheOpenedApplicationAndABoundOneDoesNotLookForIt()
+    public async Task ALookNeverFrontsTheOpenedApplication()
     {
         const long front = 0x7FFF_0F1E;
         string view =
             "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Inicio\",\"controls\":[" +
             "{\"i\":0,\"kind\":\"Button\",\"name\":\"Aceptar\",\"id\":\"4.2\",\"state\":\"\",\"value\":null," +
             "\"rect\":null,\"repeated\":0}],\"controlCount\":1,\"focused\":null}";
-        var bound = new CountingFocus();
-        var unbound = new CountingFocus();
+        var focus = new CountingFocus();
 
         _ = await new WindowsVisibleControlAdapter(
-                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, bound, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front))
-            .InvokeAsync("input.visible.controls", Json("""{"application":"el navegador","processId":4242}"""),
-                CancellationToken.None);
-        _ = await new WindowsVisibleControlAdapter(
-                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, unbound, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front))
+                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, focus, requestedWindow: (_, _) => ValueTask.FromResult((nint)front))
             .InvokeAsync("input.visible.controls", Json("""{"application":"el navegador"}"""),
                 CancellationToken.None);
 
-        // v3 point 0: a look never brings a window to the front. The look bound to the mission's process does not
-        // even look for the opened application; the unbound one finds it (to read it) and leaves it where it is.
+        // v3 point 0: a look never brings a window to the front. It finds the opened application (to read it) and
+        // leaves it where it is.
         Assert.Multiple(() =>
         {
-            Assert.That(bound.Located, Is.Zero);
-            Assert.That(unbound.Located, Is.EqualTo(1));
-            Assert.That(bound.Fronted, Is.Zero);
-            Assert.That(unbound.Fronted, Is.Zero);
+            Assert.That(focus.Located, Is.EqualTo(1));
+            Assert.That(focus.Fronted, Is.Zero);
         });
     }
 
@@ -657,7 +650,7 @@ public sealed class ComputerUseSpeedTests
             "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Lista\",\"controls\":[" +
             "{\"i\":0,\"kind\":\"List\",\"name\":\"Canciones\",\"id\":\"7.1\",\"state\":\"\",\"value\":null," +
             "\"rect\":{\"x\":10,\"y\":10,\"w\":200,\"h\":300},\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
-        var controls = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front));
+        var controls = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult((nint)front));
         _ = await controls.InvokeAsync(
             "input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None);
         var scroll = new WindowsScrollAdapter(controls);

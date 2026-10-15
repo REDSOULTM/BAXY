@@ -103,41 +103,6 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The window of one process: the ApplicationFrameHost frame hosting it
-    /// when it draws inside one (a packaged app such as the Calculator has no
-    /// top-level window of its own, only its pop-ups), else the
-    /// one in front when it is the process's and has a usable surface, else
-    /// its largest usable top-level window, read where it is (never brought to
-    /// the front: the acts that need the front take it themselves); 0 when the
-    /// process shows nothing.
-    /// </summary>
-    internal static async ValueTask<nint> ResolveProcessWindowAsync(
-        int processId,
-        CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        // The shared frame host is no app's process: any packaged app's frame would do for it.
-        if (IsSharedFrameHost(ProcessIdentity(unchecked((uint)processId)).ProcessName))
-            return 0;
-        nint found = 0;
-        for (int attempt = 0; found == 0 && attempt < 8; attempt++)
-        {
-            if (attempt > 0)
-                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
-            nint front = GetForegroundWindow();
-            uint process = unchecked((uint)processId);
-            nint frame = FrameHosting(process);
-            found = ChooseProcessWindow(
-                TopLevelWindowsOf(process), process, front == 0 ? 0 : GetAncestor(front, 2), frame);
-            if (found == 0 || !(HasUsableSurface(found) || MinimizedDocumentWindow(found)))
-                found = frame;
-        }
-
-        // v3 point 1: content drawn by a process the application started (WebView2, CEF) is its surface.
-        return FamilySurface(found);
-    }
-
-    /// <summary>
     /// The application's window when its process is unknown (app.open did not
     /// verify, or the application was already there). Auditoría final V3: the name is compared exactly, folded (case,
     /// accents, whitespace), with what Windows says of each window; never a word of it, an alias or a part. The topmost
@@ -1457,11 +1422,6 @@ internal static partial class VisibleControlSurface
         return Elevated(processId) != false;
     }
 
-    /// <summary>r29: <see cref="RunsAboveUs"/> of a process that is still running (a process that already ended
-    /// cannot be opened either, and is not «raised»).</summary>
-    internal static bool LiveProcessRunsAboveUs(int processId) =>
-        processId > 0 && ProcessIdentity(unchecked((uint)processId)).ProcessName.Length > 0 && RunsAboveUs(processId);
-
     internal static bool? Elevated(int processId)
     {
         nint process = OpenProcess(0x1000, false, unchecked((uint)processId));
@@ -1594,9 +1554,8 @@ internal static partial class VisibleControlSurface
     /// process's and usable, else the process's largest usable window; 0 when
     /// it has none. Usable is visible, titled, uncloaked, of a real size and
     /// not a shell surface. Measured live: explorer.exe holds the desktop, the
-    /// taskbar and a cloaked untitled frame larger than its folder windows
-    /// (taking it made every look bound to the process wait out its eight
-    /// retries, ≈1.8 s), and with two folder windows open the largest is not
+    /// taskbar and a cloaked untitled frame larger than its folder windows,
+    /// and with two folder windows open the largest is not
     /// necessarily the one the person is looking at. A process drawn inside an
     /// ApplicationFrameHost <paramref name="frame"/> has that frame as its
     /// window: its own top-level windows are its pop-ups. Measured live on a
