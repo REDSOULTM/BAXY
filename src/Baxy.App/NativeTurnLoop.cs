@@ -180,7 +180,10 @@ internal sealed class NativeTurnLoop
 
             _moves++;
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
-            step = await mind.ContinueAsync(observation, final: calls >= MaximumModelCalls, _beat, cancellationToken);
+            // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
+            // so the model answers from what it has, as at the call budget.
+            bool final = calls >= MaximumModelCalls || _host.Core() is not { IsReady: true };
+            step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
 

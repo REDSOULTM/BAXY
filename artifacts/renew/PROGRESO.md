@@ -98,3 +98,14 @@ tocan lo cambiado; en el notebook pasan).
   la biblioteca»). Decisión: no se añade la compuerta por procedencia; un pedido explícito sobre la ventana activa
   («escribe hola», «pega aquí») la designa como objetivo. Lo que sí se cierra: el latido retiene toda operación de
   entrada como propuesta (ya estaba) y el modelo ahora puede nombrar la ventana en la que actúa.
+- `browser.control` y `PagePlay` actúan en el navegador que la persona nombró como objetivo (misma lectura de la
+  identidad); `close_all` ya confirma en el kernel (`LosesTheSession`). Se quedan.
+- Expuestas al modelo `window.resolve`, `message.recipient.resolve` y `package.install.prepare/commit` (antes «Paso
+  interno»): en p2 el modelo inventaba `windowId` «4» trece veces porque nada se lo daba. Mente: fuera `protocol.hello`,
+  `_decided` y el parámetro muerto de `startup_failure`.
+- Subagentes en worktrees: clic/apertura/ventanas (P3, B1-B2, C8-C10, D1-D9), mensajería (C1-C7, C11, C14) y kernel
+  (K1, K3-K12, D-K*).
+- e2e p3 (en curso) muestra: `app.open` devuelve `windowHandle` y el modelo lo usa como `windowId` (los ids son de un
+  solo uso y salen sólo de `window.resolve`/`window.active`); el error `invalid_or_expired_window_id` lo contó como «ya no
+  está abierto» (falsedad). Arreglo en cola: `app.open` devuelve un `windowId` y el id vale mientras la identidad de la
+  ventana sea la misma.
