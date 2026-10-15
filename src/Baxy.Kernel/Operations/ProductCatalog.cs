@@ -1292,7 +1292,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "message.send.test.forced.destination.ocr.postread.v1",
             ToolExposure.Public,
-            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al canal seguro del dueño (WhatsApp grupo Música, Discord mensaje directo Ron92, correo a la casilla de pruebas del dueño), nunca al destinatario nombrado; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
+            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El proveedor fuerza SIEMPRE el destino al canal de pruebas del dueño en ese medio, nunca al destinatario nombrado; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
         Descriptor(
             "network.dns.status",
             EmptySchema(),
