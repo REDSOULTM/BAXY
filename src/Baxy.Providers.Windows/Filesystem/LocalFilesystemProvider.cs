@@ -395,7 +395,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     {
         FilesystemEntry entry = Entry(id, path, includeHash: File.Exists(path));
         return new FilesystemMutationResult(
-            entry.ResourceId, entry.Name, entry.Kind, entry.Size, entry.Sha256, reachedState, previousVersionRecycled);
+            entry.ResourceId, entry.Name, entry.Kind, entry.Size, entry.Sha256, reachedState, previousVersionRecycled,
+            Path.GetFullPath(path));
     }
 
     private string Issue(string path) => Issue(path, _root);

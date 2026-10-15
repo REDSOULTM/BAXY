@@ -25,7 +25,10 @@ public sealed record FilesystemMutationResult(
     long Size,
     string? Sha256,
     bool ReachedState,
-    bool? PreviousVersionRecycled = null);
+    bool? PreviousVersionRecycled = null,
+    // Where it is now, as the provider resolved it: what the result can say of the place (falsedades p4 F013: without
+    // it the model told the folder it had been asked for, not the one written).
+    string? FullPath = null);
 
 public sealed record FilesystemTrashPreparation(
     string TrashId,

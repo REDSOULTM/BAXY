@@ -179,6 +179,7 @@ internal static class FilesystemResultJson
         // BAXY Renew (file.write): whether the version it replaced went to the Recycle Bin, as observed.
         if (result.PreviousVersionRecycled is bool recycled) writer.WriteBoolean("previousVersionRecycled", recycled);
         if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
+        if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
     });
 
     public static JsonElement TrashPreparation(FilesystemTrashPreparation result) => Write(writer =>

@@ -190,3 +190,10 @@ tocan lo cambiado; en el notebook pasan).
   sistema, así que no rompe la caché compartida) y decide si interviene de forma voraz. Resultado p13: 32/40 (80 %),
   molestas 0, riesgo solo 0. Ruido entre corridas iguales: ±2 escenas incluso voraz (la caché de prefijo cambia el
   camino numérico: 25 de 40 decisiones con texto distinto).
+- Falsedades práctica p4: **1** en 26 líneas (F015 arreglada). F013: el recibo de `file.write` decía nombre y carpeta
+  conocida pero no dónde quedó, y el modelo repetía la ruta pedida. Ahora los recibos de escritura y creación del
+  sistema de archivos dicen `fullPath`; probado en el producto: «se creó en C:\Users\usuario\prueba-fullpath.txt» (la
+  verdad, aunque no sea el sitio pedido).
+- **Para el dueño (no borrado sin su permiso):** los bancos dejaron en `C:\Users\usuario` ficheros que BAXY escribió en la
+  raíz del perfil en vez de en `BAXY-bench`: `compras.txt`, `lista.txt`, `notas.txt`, `prueba.txt`,
+  `prueba-fullpath.txt` (2026-10-15, 12:38–15:56).
