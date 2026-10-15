@@ -232,9 +232,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         if (_actRefused?.Invoke(operation, arguments) == true)
             return ExternalJson.FailureBeforeEffect(operation, "protected_window");
         // The owner's decision of 2026-10-10 («no molestar», simple form): an act of a mission is done with the mission's
-        // window in front, brought after the person's pause; the lease gives the front back at the person's first input,
-        // after a text and once the mission ended. Nothing is sent when the person does not pause, Windows does not give
-        // the front or the mission already ended: never behind their window.
+        // window in front, brought after the person's pause; the lease gives the front back at the person's first input
+        // and after a text. Nothing is sent when the person does not pause or Windows does not give the front: never
+        // behind their window.
         nint missionWindow = MissionWindow(arguments);
         if (_missionFront is not null && missionWindow != 0)
         {

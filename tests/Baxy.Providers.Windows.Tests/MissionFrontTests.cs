@@ -40,7 +40,6 @@ public sealed class MissionFrontTests
     // Nothing is sent when the person does not pause or the window does not come to the front: never behind them.
     [TestCase("input_user_not_paused")]
     [TestCase("input_window_not_in_front")]
-    [TestCase("input_mission_ended")]
     public async Task AnActWhoseFrontIsRefusedIsNeverSent(string refusal)
     {
         var lease = new TakingLease { Refusal = refusal };

@@ -46,12 +46,11 @@ internal interface IForegroundLease
     /// <summary>
     /// An act of a computer-use mission on its own window (the owner's decision of 2026-10-10, «no molestar» in its
     /// simple form: BAXY never types nor clicks in the person's window; for the rest it brings the mission's window to
-    /// the front while it acts and gives the front back when the mission ends). After the person's pause, as
+    /// the front while it acts and gives the front back). After the person's pause, as
     /// <see cref="AcquireAsync"/> waits for it, the window is brought to the front and kept there while the person stays
-    /// still; the lease gives the person's window the front back at their first input, after a text, and once the
-    /// mission ended (<see cref="IMissionFrontSignal"/>), behind the act in flight. Null when the window holds the front;
-    /// otherwise why nothing may be sent (<c>input_user_not_paused</c>, <c>input_window_not_in_front</c>, or
-    /// <c>input_mission_ended</c> for an act of a mission that already ended).
+    /// still; the lease gives the person's window the front back at their first input, and after a text (or after any
+    /// act when their own input cannot be told apart). Null when the window holds the front; otherwise why nothing may
+    /// be sent (<c>input_user_not_paused</c>, <c>input_window_not_in_front</c>).
     /// </summary>
     ValueTask<string?> TakeForMissionAsync(nint window, CancellationToken cancellationToken) =>
         ValueTask.FromResult<string?>(null);
@@ -252,40 +251,28 @@ internal sealed class ForegroundLease : IForegroundLease
     private const int KeysReadyPollMs = 15;
 
     private static readonly Lazy<ForegroundLease> SharedInstance = new(() => new ForegroundLease(
-        WindowsUserInputPause.Shared, new SystemLeaseClock(), WindowsLeaseDesktop.Instance, ConfiguredMaxWait(),
-        WindowsMissionFrontSignal.Instance));
+        WindowsUserInputPause.Shared, new SystemLeaseClock(), WindowsLeaseDesktop.Instance, ConfiguredMaxWait()));
 
     private readonly IUserInputPause _pause;
     private readonly ILeaseClock _clock;
     private readonly ILeaseDesktop _desktop;
     private readonly int _maxWaitMs;
-    private readonly IMissionRunning _missions;
     private readonly bool _watchMission;
     private readonly Lock _missionGate = new();
     private MissionFront? _mission;
     private bool _watching;
-    private bool _missionActInFlight;
 
-    /// <param name="missions">What the App says of its missions; null: one always runs (generation 0).</param>
     /// <param name="watchMission">Whether a mission's front is watched by a task of its own (tests drive
     /// <see cref="CheckMissionFront"/> by hand on their fake clock).</param>
     internal ForegroundLease(
         IUserInputPause pause, ILeaseClock clock, ILeaseDesktop desktop, int maxWaitMs = DefaultMaxWaitMs,
-        IMissionRunning? missions = null, bool watchMission = true)
+        bool watchMission = true)
     {
         _pause = pause ?? throw new ArgumentNullException(nameof(pause));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _desktop = desktop ?? throw new ArgumentNullException(nameof(desktop));
         _maxWaitMs = Math.Max(0, maxWaitMs);
-        _missions = missions ?? AlwaysRunning.Instance;
         _watchMission = watchMission;
-    }
-
-    private sealed class AlwaysRunning : IMissionRunning
-    {
-        internal static readonly AlwaysRunning Instance = new();
-
-        public (long Generation, bool Running) Read() => (0, true);
     }
 
     /// <summary>The lease of the Core process, on its pause detector.</summary>
@@ -299,12 +286,8 @@ internal sealed class ForegroundLease : IForegroundLease
 
     public async ValueTask<string?> TakeForMissionAsync(nint window, CancellationToken cancellationToken)
     {
-        (long generation, bool running) = _missions.Read();
-        if (!running)
-            return "input_mission_ended";
         if (window == 0 || !_desktop.IsAlive(window))
             return "input_window_not_in_front";
-        Volatile.Write(ref _missionActInFlight, true);
         if (_desktop.Holds(window))
         {
             lock (_missionGate)
@@ -317,17 +300,14 @@ internal sealed class ForegroundLease : IForegroundLease
         nint person = paused ? _desktop.Foreground() : 0;
         bool fronted = paused && await TakeFrontAsync(window, cancellationToken).ConfigureAwait(false);
         if (!fronted)
-        {
-            Volatile.Write(ref _missionActInFlight, false);
             return paused ? "input_window_not_in_front" : "input_user_not_paused";
-        }
 
         bool watch;
         lock (_missionGate)
         {
-            if (_mission is not { } held || held.Generation != generation)
+            if (_mission is not { } held)
             {
-                _mission = new MissionFront(person, [window], _clock.NowMs, generation);
+                _mission = new MissionFront(person, [window], _clock.NowMs);
             }
             else
             {
@@ -354,7 +334,6 @@ internal sealed class ForegroundLease : IForegroundLease
 
     public void MissionActEnded(string operation)
     {
-        Volatile.Write(ref _missionActInFlight, false);
         // Revisión D (H1): a text never leaves its window in front while the next act is decided (an Enter of the
         // person's would send what BAXY wrote); without telling the person's input apart, no front stays after any act.
         if (operation == "input.text.type" || !_pause.TellsOwnInput)
@@ -363,9 +342,8 @@ internal sealed class ForegroundLease : IForegroundLease
 
     /// <summary>
     /// The watcher's look at a mission's front (tests call it on their fake clock): given back at once when the person's
-    /// input that can reach a window (a key, a mouse button, the wheel) came after the take; given back when the mission
-    /// ended or another began, once no act of it is in flight; forgotten, never fought, when the person or anything else
-    /// brought another window up. Whether nothing is held any more.
+    /// input that can reach a window (a key, a mouse button, the wheel) came after the take; forgotten, never fought, when
+    /// the person or anything else brought another window up. Whether nothing is held any more.
     /// </summary>
     internal bool CheckMissionFront()
     {
@@ -386,13 +364,6 @@ internal sealed class ForegroundLease : IForegroundLease
         }
 
         if (_pause.TellsOwnInput && _pause.LastReachingInputMs > held.TakenAt)
-        {
-            GiveMissionFrontBack();
-            return true;
-        }
-
-        (long generation, bool running) = _missions.Read();
-        if ((!running || generation != held.Generation) && !Volatile.Read(ref _missionActInFlight))
         {
             GiveMissionFrontBack();
             return true;
@@ -441,16 +412,14 @@ internal sealed class ForegroundLease : IForegroundLease
     }
 
     // The front a mission took: the person's window it came from, the mission's windows brought or acted on in front,
-    // when it was last taken, and the mission's generation.
-    private sealed class MissionFront(nint person, HashSet<nint> windows, long takenAt, long generation)
+    // and when it was last taken.
+    private sealed class MissionFront(nint person, HashSet<nint> windows, long takenAt)
     {
         internal nint Person { get; set; } = person;
 
         internal HashSet<nint> Windows { get; } = windows;
 
         internal long TakenAt { get; set; } = takenAt;
-
-        internal long Generation { get; } = generation;
     }
 
     private async ValueTask<IInputBurst> AcquireAsync(nint window, bool typedFlow, CancellationToken cancellationToken)
