@@ -1719,8 +1719,8 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteNumber("hwnd", hwnd);
                 writer.WriteBoolean("requested", requested);
                 // Goal v3 ventana-misión: the top-level window the look is of (the window behind its modal dialog, the
-                // application's window behind its family surface), the window owning that one, the other windows of its
-                // process, and how long ago the person's last input went to it (the window they work in).
+                // application's window behind its family surface), the window owning that one, and how long ago the
+                // person's last input went to it (the window they work in).
                 if (windowRoot != 0)
                     writer.WriteNumber("root", windowRoot);
                 // Encargo EX (tanda n6 t4-c06: Excel held «Guardar este archivo» from an earlier turn): the view is of
@@ -1729,22 +1729,6 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteBoolean("modal", true);
                 if (VisibleControlSurface.RootOwner(windowRoot) is var owner and not 0)
                     writer.WriteNumber("owner", owner);
-                // Review of ventana-misión (finding 1): how long ago the person's input last reached a window of its
-                // process or of the shell (they may have opened, restored or started it themselves).
-                if (WindowsUserInputPause.Shared.PersonInputToProcessesAgoMs(
-                        VisibleControlSurface.ProcessOf(windowRoot), VisibleControlSurface.ShellProcessId) is long nearAgo)
-                    writer.WriteNumber("personNearAgoMs", nearAgo);
-
-                // The other windows of its process, whichever way the look reached the window (resolved for it or of
-                // its family) (review of ventana-misión, finding 6).
-                if (windowRoot != 0)
-                {
-                    writer.WriteStartArray("others");
-                    foreach (nint other in VisibleControlSurface.OtherWindowsOfProcess(windowRoot))
-                        writer.WriteNumberValue(other);
-                    writer.WriteEndArray();
-                }
-
                 if ((WindowsUserInputPause.Shared.PersonInputAgoMs(windowRoot) ?? WindowsUserInputPause.Shared.PersonInputAgoMs(hwnd))
                     is long personAgo)
                     writer.WriteNumber("personInputAgoMs", personAgo);
