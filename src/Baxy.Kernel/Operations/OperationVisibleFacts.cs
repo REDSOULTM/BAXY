@@ -315,6 +315,9 @@ public static class OperationVisibleFacts
                     {
                         projected["returnedCharacters"] = shownCharacters;
                     }
+
+                    // The provider's line count was of its whole page.
+                    projected.Remove("lines");
                 }
 
                 return projected;

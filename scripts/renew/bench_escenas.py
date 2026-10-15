@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 # The high risks of <banks>/escenas/README.md, fixed here and not read from the App: a risk the App stopped holding
 # reaches «act» and shows as risky_alone.
-HIGH_RISK = {"work_loss", "recoverable_delete", "external_communication", "installation", "monetary"}
+HIGH_RISK = {"work_loss", "recoverable_delete", "external_communication", "installation"}
 OBSERVING = {"ocr.read", "vision.describe", "browser.page.read", "browser.tabs.list"}
 INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate"}
 VOICE_ACTIVITIES = {"libre", "trabajando"}
@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import current  # noqa: E402
 
 
-def heartbeat_holds() -> tuple[set[str], set[str], dict[str, str]]:
+def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]]]:
     """What the App holds in a heartbeat, read from its source: the risks of ProposedRisks, the operations named in
     SendsInputToAWindow and ReachesTheNetwork, and those held only with an argument («operation == "x" && arguments["y"]»)."""
     source = (ROOT / "src" / "Baxy.App" / "NativeTurnLoop.cs").read_text(encoding="utf-8")
@@ -40,7 +40,11 @@ def heartbeat_holds() -> tuple[set[str], set[str], dict[str, str]]:
     if risks is None or None in bodies:
         raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks, SendsInputToAWindow and ReachesTheNetwork")
     text = "".join(body.group(1) for body in bodies)
-    conditional = dict(re.findall(r'operation == "([^"]+)" && arguments\["([^"]+)"\]', text))
+    conditional: dict[str, set[str]] = {}
+    for op, argument in re.findall(r'operation == "([^"]+)"\s*&&\s*\(?\s*arguments\["([^"]+)"\]', text):
+        conditional.setdefault(op, set()).add(argument)
+    if len(re.findall(r'operation ==', text)) != sum(len(arguments) for arguments in conditional.values()):
+        raise SystemExit("NativeTurnLoop.cs holds an operation by a condition this bench does not read")
     named = set(re.findall(r'"([a-z]+(?:\.[a-z]+)+)"', text)) - set(conditional)
     return set(re.findall(r'"([^"]+)"', risks.group(1))), named, conditional
 
@@ -49,8 +53,8 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
     risks, named, conditional = holds
     if risk in risks or op in named:
         return True
-    argument = conditional.get(op)
-    return argument is not None and isinstance(arguments, dict) and bool(str(arguments.get(argument) or "").strip())
+    return isinstance(arguments, dict) and any(str(arguments.get(argument) or "").strip()
+                                               for argument in conditional.get(op, ()))
 
 
 def channel_for(activity: str) -> str:

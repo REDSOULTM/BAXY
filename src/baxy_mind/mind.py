@@ -290,6 +290,8 @@ class Mind:
     def warm(self) -> None:
         """Process the tools and the system prompt once, so every turn starts from a cached prefix."""
         self.call_tokens = self.server.tokenize("<tool_call>")
+        if len(self.call_tokens) != 1:
+            raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
         self.server.chat({"messages": [{"role": "system", "content": self._system()},
                                            {"role": "user", "content": "hola"}],
                               "tools": self.tools, "max_tokens": 1,
@@ -328,7 +330,9 @@ class Mind:
             # the steps already run stay in the conversation and are never run again. A new request instead of an
             # answer reaches the model the same way, and the model reads it as what it is.
             turn["conv"].append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
-            turn["text"] = text
+            for later in turn.pop("after_asked", []):
+                turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
+            turn["text"], turn["private"] = text, False
             return self._next(request_id, "turn.decide", turn)
         self._close_open_calls()
         self.conversation.append({"role": "user", "content": self._clock()})
@@ -384,7 +388,7 @@ class Mind:
         if beat.get("awaiting"):
             beat["conv"].append({"role": "tool", "tool_call_id": beat["awaiting"], "content": NO_RESULT})
         pending = [c["id"] for c in beat.get("queue") or []]
-        for call_id in [beat.get("asked"), *pending]:
+        for call_id in [beat.get("asked"), *beat.get("after_asked", []), *pending]:
             if call_id:
                 beat["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._close_open_calls()
@@ -398,7 +402,7 @@ class Mind:
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
         pending = [c["id"] for c in turn.get("queue") or []]
-        for call_id in [turn.get("asked"), *pending]:
+        for call_id in [turn.get("asked"), *turn.get("after_asked", []), *pending]:
             if call_id:
                 self.conversation.append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._turn = None
@@ -428,7 +432,9 @@ class Mind:
         # answer, the facts it may tell are together (it told «no pude abrir Steam» after Steam opened, «lo guardé»
         # after the typing failed, 2026-10-15 falsehood bench).
         done = turn.setdefault("done", [])
-        done.append(f"{str(turn.get('calling', '?')).replace('.', '_')} → {_outcome(observation)}")
+        calling = str(turn.get("calling", "?"))
+        calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
+        done.append(f"{calling} → {_outcome(observation)}")
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
@@ -511,14 +517,18 @@ class Mind:
                                   "arguments": None, "question": "", "reply": ""}
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
-            for later in turn.get("queue") or []:
-                turn["conv"].append({"role": "tool", "tool_call_id": later["id"], "content": NOT_RUN})
+            later = [c["id"] for c in turn.get("queue") or []]
             turn["queue"], turn["awaiting"] = [], None
             if question:
-                turn["asked"] = call["id"]
+                turn["asked"], turn["after_asked"] = call["id"], later
                 result.update(kind="clarify", question=question)
             else:
-                turn["conv"].append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN})
+                # An empty question asks nothing: it and the calls after it did not run, and what the model wrote
+                # beside it is its answer.
+                for call_id in [call["id"], *later]:
+                    turn["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
+                if content:
+                    result.update(reply=content)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
@@ -528,9 +538,11 @@ class Mind:
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)
-        private = str(result["operation"] or "").startswith("memory.")
-        # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop): their words, the
-        # call's arguments and the model's text.
+        if str(result["operation"] or "").startswith("memory."):
+            turn["private"] = True
+        private = bool(turn.get("private"))
+        # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop): from the memory
+        # call on, their words, the calls' arguments and the model's text.
         self._log(stage, started, reply, text=None if private else turn["text"], kind=result["kind"],
                   operation=result["operation"], arguments=call["arguments"] if call and not private else None,
                   content=None if private else content)

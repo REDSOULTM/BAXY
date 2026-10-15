@@ -72,6 +72,7 @@ public sealed class OperationOutcomeNarrationTests
         JsonElement result = JsonSerializer.SerializeToElement(new
         {
             offset = 1_000,
+            lines = 1,
             returnedCharacters = page.Length,
             hasMore = false,
             text = page,
@@ -90,6 +91,7 @@ public sealed class OperationOutcomeNarrationTests
             Assert.That(observed.GetProperty("returnedCharacters").GetInt32(), Is.EqualTo(kept));
             Assert.That(observed.GetProperty("nextOffset").GetInt32(), Is.EqualTo(1_000 + kept));
             Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(observed.TryGetProperty("lines", out _), Is.False, "the page's line count is not the shown text's");
         });
     }
 
