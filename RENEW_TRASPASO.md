@@ -52,6 +52,12 @@ al máximo para Qwen3.5-4B.
 | Destino | Queda como rama aparte; no se fusiona a main |
 | Modo de trabajo | `/goal` autónomo: lanza agentes, investiga, mide y hace commits en `baxy-renew`. Pregunta con opciones sólo ante una decisión del dueño |
 | Ritmo | **Lo más rápido posible, sin perder calidad**: hay que entregarlo pronto. Agentes en paralelo y nada de esperas inútiles |
+| Dos máquinas | Dos sesiones de Claude Code, una por máquina, cada una con su propia cuenta (las dos en el plan de 200 dólares). Se coordinan con un buzón por SSH (vía Tailscale) y con git |
+| Quién dirige | **El PC** (redpc): integra las ramas en `baxy-renew`, decide el reparto y hace la medición final. El notebook (rednote) apoya con las piezas que corren aparte |
+| Uso del PC | **Siempre**: el agente puede usar la GPU y abrir apps aunque el dueño esté usando el PC. Sigue pidiendo confirmación antes de cerrar sus apps o tocar trabajo sin guardar |
+| Uso del notebook | Queda dedicado: su agente usa toda la CPU, la GPU y la RAM sin esperar |
+| Decisiones del dueño | Pregunta con opciones y además le manda una notificación push al celular. Mientras espera, sigue con lo que no depende de la respuesta |
+| Uso agotado | Un recordatorio cada hora retoma el goal si quedó parado. Las dos sesiones quedan abiertas |
 
 ## Qué es Renew hoy
 

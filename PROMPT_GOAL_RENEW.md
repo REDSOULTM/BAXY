@@ -158,15 +158,17 @@ parchea con código.
 - **Acciones locales y reversibles** en el worktree: hazlas sin preguntar. Esto incluye editar, compilar, medir y
   hacer commits.
 - **Pregunta al dueño, con casillas de opciones (AskUserQuestion),** sólo ante una decisión que de verdad es suya.
-  Mientras tanto, sigue con lo que no dependa de su respuesta.
+  Mándale también una notificación push al celular (`PushNotification`), para que la vea aunque no esté mirando, y
+  mientras tanto sigue con lo que no dependa de su respuesta.
 - **No toques:**
   - el worktree principal de BAXY Definitivo;
   - el manifiesto `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json`;
   - los modelos de wake word y de transcripción.
 
   En el Python compartido del runtime instala sólo lo imprescindible, y anótalo en `PROGRESO.md`.
-- **El dueño usa este PC.** Las sondas de computer use y las que abren apps corren sólo con el PC desocupado (la
-  lección `idle_gate` está en la memoria), y nunca hay dos instancias del producto a la vez.
+- **El dueño usa este PC y autorizó usarlo siempre:** los bancos de GPU y las sondas que abren apps corren aunque él
+  esté presente. Las sondas nunca escriben ni hacen click en sus ventanas, y nunca hay dos instancias del producto a la
+  vez en la misma máquina.
 - **Acciones que piden confirmación del dueño:** borrar fuera del worktree, cerrar sus apps o enviar algo a un
   servicio externo.
 </autonomia_y_seguridad>
