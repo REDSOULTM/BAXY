@@ -121,3 +121,18 @@ tocan lo cambiado; en el notebook pasan).
   que recordaba canales, destinos de prueba en un fichero privado del perfil
   (`%LOCALAPPDATA%\BAXY\development\messaging\test-destinations.v1.json`, creado en el PC; fuera del repo). Mensajería
   101/101, Kernel 606/606. No restaurado: la vista lateral y la búsqueda de WhatsApp.
+- Clic, apertura y ventanas (subagente, fusionado): etiqueta sólo por igualdad plegada, sin alias ni erratas; lo que
+  sólo contiene la etiqueta vuelve como candidato sin pulsarse; la búsqueda en ráfaga pulsa sólo el nombre exacto; la
+  entrada de una lista por su nombre; el worker no actúa en el frente sin ventana; `app.open` sólo por nombre exacto
+  (si no, candidatos), sin alias, sin contar una ventana previa como lanzamiento, documento nuevo sin Ctrl+N en una
+  ventana ajena y sin cerrar «¿Guardar cambios?»; `app.close` distingue cerrada, ya no estaba y oculta. Límite anotado:
+  el clic por OCR comprueba el punto con un control cuyo nombre puede sólo contener la etiqueta (es verificación del
+  punto, no elección).
+- Kernel (subagente, fusionado): el modelo ve noteId, deviceId, sha256 e id (K1); fuera la misión de pantalla, el
+  validador de planes, HonestyCorrection del motor, FirstSignal, capturas consentidas y código de prueba en producto;
+  10 pasos y luego 13 operaciones `Internal`. K8 revertido (ver commit). Kernel 536/536, Contracts 70/70, Providers
+  2197/2197 (el de PDF pasó tras instalar pypdf).
+- **Python compartido del runtime:** instalado `pypdf==6.18.1` (sin dependencias) en
+  `%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1`: `file.read` de un PDF lo usa y faltaba en el PC.
+- `app.open` devuelve `windowId` de la ventana que verificó; probado: abrir, minimizar y maximizar el Bloc de notas
+  encadenando el id que devuelve cada acción.

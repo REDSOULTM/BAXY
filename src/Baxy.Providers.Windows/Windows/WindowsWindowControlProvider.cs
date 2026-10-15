@@ -56,6 +56,25 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         _verifier = new WindowsWindowControlVerifier(platform);
     }
 
+    /// <summary>
+    /// The windowId of a window another verified operation already identified (the window app.open verified), so the
+    /// window operations can act on it without resolving it again; null when it is not on the desktop now.
+    /// </summary>
+    public string? IssueFor(nint handle)
+    {
+        WindowSnapshot? snapshot;
+        try
+        {
+            snapshot = _platform.DesktopWindows().FirstOrDefault(window => window.Identity.Handle == handle);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return null;
+        }
+
+        return snapshot is null ? null : Issue(snapshot.Identity);
+    }
+
     public ValueTask<WindowResolveResult> ResolveForegroundAsync(
         CancellationToken cancellationToken)
     {

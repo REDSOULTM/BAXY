@@ -6,7 +6,10 @@ using Baxy.Providers.Windows.Windows;
 namespace Baxy.Core.Operations;
 
 internal sealed class AppOpenHandler(
-    IApplicationOpenProvider provider, LaunchProvenance? provenance = null, IApplicationPlaceOpener? places = null)
+    IApplicationOpenProvider provider,
+    LaunchProvenance? provenance = null,
+    IApplicationPlaceOpener? places = null,
+    Func<nint, string?>? windowIdFor = null)
     : IOperationHandler
 {
     private readonly IApplicationOpenProvider _provider =
@@ -116,7 +119,8 @@ internal sealed class AppOpenHandler(
             providerResult.NewDocument,
             providerResult.ShownWithoutFocus,
             PlaceRequested: place is not null,
-            FrontChanged: place?.FrontChanged == true);
+            FrontChanged: place?.FrontChanged == true,
+            WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()));
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.OpenApplicationResult);

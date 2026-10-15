@@ -136,7 +136,7 @@ internal static class Program
         [
             new AppInstalledHandler(installedApplicationProvider),
             new ApplicationWindowStatusHandler(installedApplicationProvider),
-            new AppOpenHandler(routedApplicationOpenProvider),
+            new AppOpenHandler(routedApplicationOpenProvider, windowIdFor: windowControlProvider.IssueFor),
             new ExternalCapabilityHandler("audio.app.volume.adjust", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.microphone.mute", externalCapabilityProvider),

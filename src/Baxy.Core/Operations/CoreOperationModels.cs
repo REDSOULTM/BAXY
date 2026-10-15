@@ -52,7 +52,10 @@ internal sealed record OpenApplicationResult(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceRequested = false,
     // FrontChanged (review H2): the place's handler raised the application above the person's window; FrontRestored
     // then says whether the front went back to them.
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false,
+    // WindowId: the id the window operations take for the window this opening verified (e2e p3 E007: the model passed
+    // windowHandle as windowId and read the refusal as «it is no longer open»).
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null);
 
 internal sealed record AudioVolumeArguments(
     [property: JsonRequired] int Level);
