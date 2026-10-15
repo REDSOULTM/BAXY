@@ -505,14 +505,13 @@ public sealed class ComputerUseSpeedTests
             "\"rect\":null,\"repeated\":0}],\"controlCount\":1,\"focused\":null}";
         var bound = new CountingFocus();
         var unbound = new CountingFocus();
-        var browser = new FixedWindow(front);
 
         _ = await new WindowsVisibleControlAdapter(
-                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, bound, browserWindow: browser)
+                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, bound, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front))
             .InvokeAsync("input.visible.controls", Json("""{"application":"el navegador","processId":4242}"""),
                 CancellationToken.None);
         _ = await new WindowsVisibleControlAdapter(
-                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, unbound, browserWindow: browser)
+                new ComputerUsePerceptionTests.ScriptedUiaWorker(view), null, null, unbound, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front))
             .InvokeAsync("input.visible.controls", Json("""{"application":"el navegador"}"""),
                 CancellationToken.None);
 
@@ -660,7 +659,7 @@ public sealed class ComputerUseSpeedTests
             "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Lista\",\"controls\":[" +
             "{\"i\":0,\"kind\":\"List\",\"name\":\"Canciones\",\"id\":\"7.1\",\"state\":\"\",\"value\":null," +
             "\"rect\":{\"x\":10,\"y\":10,\"w\":200,\"h\":300},\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
-        var controls = new WindowsVisibleControlAdapter(worker, null, null, browserWindow: new FixedWindow(front));
+        var controls = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front));
         _ = await controls.InvokeAsync(
             "input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None);
         var scroll = new WindowsScrollAdapter(controls);
@@ -734,11 +733,6 @@ public sealed class ComputerUseSpeedTests
             string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
             CancellationToken cancellationToken) =>
             throw new AssertionException("keys and text start no process");
-    }
-
-    private sealed class FixedWindow(long handle) : IUserBrowserWindowLocator
-    {
-        public nint FrontWindow() => (nint)handle;
     }
 
     private sealed class CountingFocus : IOpenedApplicationFocus

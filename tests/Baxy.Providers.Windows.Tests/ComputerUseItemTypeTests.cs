@@ -25,7 +25,7 @@ public sealed class ComputerUseItemTypeTests
             "\"itemType\":\"\",\"rect\":null,\"repeated\":0}," +
             "{\"i\":2,\"kind\":\"Button\",\"name\":\"Atrás\",\"id\":\"4.3\",\"state\":\"\",\"value\":null," +
             "\"rect\":null,\"repeated\":0}],\"controlCount\":3,\"focused\":null}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, browserWindow: new FixedFront(front));
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front));
 
         ExternalCapabilityReceipt view = await adapter.InvokeAsync(
             "input.visible.controls", JsonDocument.Parse("""{"application":"el navegador"}""").RootElement.Clone(),
@@ -53,10 +53,5 @@ public sealed class ComputerUseItemTypeTests
             Assert.That(script, Does.Contain("$item.Cached.ItemType"));
             Assert.That(script, Does.Contain("itemType=$entry.itemType"), "emitted with each control");
         });
-    }
-
-    private sealed class FixedFront(long handle) : IUserBrowserWindowLocator
-    {
-        public nint FrontWindow() => (nint)handle;
     }
 }

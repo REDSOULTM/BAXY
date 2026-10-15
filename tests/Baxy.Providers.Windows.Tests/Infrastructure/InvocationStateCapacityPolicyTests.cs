@@ -181,7 +181,7 @@ internal sealed class InvocationStateCapacityPolicyTests
     }
 
     [Test]
-    public void JsonReparsePointIsReportedAndTranslatedByBothStores()
+    public void JsonReparsePointIsReportedAndTranslatedByTheStore()
     {
         string targetDirectory = Path.Combine(_stateDirectory, "target");
         string targetPath = Path.Combine(targetDirectory, "outside.txt");
@@ -199,12 +199,6 @@ internal sealed class InvocationStateCapacityPolicyTests
                 replacementBytes: 1,
                 maximumInvocationCount: 2,
                 maximumTotalStateBytes: 1024);
-            var applicationState = new ApplicationInvocationState(
-                Guid.NewGuid().ToString("D"),
-                ApplicationIds.Notepad,
-                DateTime.UtcNow.Ticks,
-                [],
-                Receipt: null);
             var audioState = new AudioInvocationState(
                 Guid.NewGuid().ToString("D"),
                 AudioOperationIds.Volume,
@@ -217,12 +211,8 @@ internal sealed class InvocationStateCapacityPolicyTests
                 DateTime.UtcNow.Ticks,
                 Receipt: null,
                 FinalVolumeScalar: null);
-            var applicationStore = new ApplicationInvocationStore(_stateDirectory);
             var audioStore = new AudioInvocationStore(_stateDirectory);
 
-            ApplicationStateCorruptException? applicationException =
-                Assert.Throws<ApplicationStateCorruptException>(
-                    () => applicationStore.EnsureCompletionCapacity(applicationState));
             AudioStateCorruptException? audioException =
                 Assert.Throws<AudioStateCorruptException>(
                     () => audioStore.EnsureCompletionCapacity(audioState));
@@ -232,9 +222,6 @@ internal sealed class InvocationStateCapacityPolicyTests
                 Assert.That(
                     violation,
                     Is.EqualTo(InvocationStateCapacityViolation.ReparsePoint));
-                Assert.That(
-                    applicationException!.Message,
-                    Is.EqualTo("A durable invocation entry is a reparse point."));
                 Assert.That(
                     audioException!.Message,
                     Is.EqualTo("A durable invocation entry is a reparse point."));

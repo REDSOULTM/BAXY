@@ -2,15 +2,7 @@ namespace Baxy.Providers.Windows.Applications;
 
 public static class ApplicationIds
 {
-    public const string Notepad = "windows.notepad";
     public const string Calculator = "windows.calculator";
-
-    public static string? DisplayName(string id) => id switch
-    {
-        Notepad => "Bloc de notas",
-        Calculator => "Calculadora",
-        _ => null,
-    };
 
     public static bool IsValidRequest(string id)
     {
@@ -36,7 +28,6 @@ public static class ApplicationIds
 public static class ApplicationOpenErrorCodes
 {
     public const string InvalidApplication = "invalid_application";
-    public const string InvalidInvocation = "invalid_invocation";
     public const string ApplicationNotFound = "app_not_found";
     public const string ApplicationAmbiguous = "app_ambiguous";
     public const string InventoryFailed = "inventory_failed";
@@ -50,9 +41,9 @@ public static class ApplicationOpenErrorCodes
     // cu-v3-documento-nuevo: the person asked for a new document and the application's New command (Ctrl+N, sent only
     // to its window in front) showed no new window nor a new document in it; nothing is written anywhere.
     public const string NewDocumentNotCreated = "new_document_not_created";
-    public const string StateCorrupt = "state_corrupt";
-    public const string StateCapacityReached = "state_capacity_reached";
-    public const string StateUnavailable = "state_unavailable";
+    // Auditoría final V1: Windows gives the application no identity its windows can be told by (no package, no
+    // executable behind its shortcut); nothing is launched nor said about its windows.
+    public const string WindowIdentityUnavailable = "application_window_identity_unavailable";
 }
 
 // Foreground: the person asked for the application in front (or opened it outside a computer-use mission). Without
@@ -89,12 +80,6 @@ public record ApplicationLaunchReceipt(
     long? WindowHandle,
     string? ErrorCode);
 
-public record ApplicationVerificationResult(
-    bool Verified,
-    int? ProcessId,
-    long? WindowHandle,
-    string? ErrorCode);
-
 public record ApplicationOpenResult(
     bool Succeeded,
     bool Verified,
@@ -114,21 +99,6 @@ public record ApplicationOpenResult(
     bool ShownWithoutFocus = false,
     // Auditoría D1: no installed application is called so; the closest installed names, none of them opened.
     IReadOnlyList<string>? Candidates = null);
-
-public interface IApplicationLauncher
-{
-    ValueTask<ApplicationLaunchReceipt> LaunchAsync(
-        ApplicationOpenRequest request,
-        CancellationToken cancellationToken);
-}
-
-public interface IApplicationOpenVerifier
-{
-    ValueTask<ApplicationVerificationResult> VerifyAsync(
-        ApplicationOpenRequest request,
-        ApplicationLaunchReceipt receipt,
-        CancellationToken cancellationToken);
-}
 
 public interface IApplicationOpenProvider
 {

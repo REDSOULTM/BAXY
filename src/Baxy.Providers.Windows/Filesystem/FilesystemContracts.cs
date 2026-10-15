@@ -57,15 +57,12 @@ public interface IFilesystemProvider
     FilesystemListResult Search(string query, int limit);
     FilesystemTextResult ReadText(string resourceId, int maximumBytes);
     FilesystemEntry Hash(string resourceId);
-    FilesystemMutationResult CreateDirectory(string relativePath);
 
     /// <summary>
-    /// Same contract rooted at a known folder ("desktop", "documents",
-    /// "downloads") instead of the sandbox; null keeps the sandbox root.
-    /// Default implementations keep older providers compiling.
+    /// Creates a directory in the sandbox, or rooted at a known folder ("desktop", "documents", "downloads"); null
+    /// keeps the sandbox root.
     /// </summary>
-    FilesystemMutationResult CreateDirectory(string relativePath, string? folder) =>
-        folder is null ? CreateDirectory(relativePath) : throw new FilesystemProviderException("known_folder_unsupported");
+    FilesystemMutationResult CreateDirectory(string relativePath, string? folder);
 
     /// <summary>
     /// Writes a text file in the sandbox or in a known folder: replacing an existing one takes its current SHA-256 and

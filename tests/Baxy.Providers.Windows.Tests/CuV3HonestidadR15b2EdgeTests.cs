@@ -32,8 +32,8 @@ public sealed class CuV3HonestidadR15b2EdgeTests
         Assert.Multiple(() =>
         {
             Assert.That(
-                request.CreationFlags & WindowsApplicationLauncher.CreateBreakawayFromJob,
-                Is.EqualTo(WindowsApplicationLauncher.CreateBreakawayFromJob));
+                request.CreationFlags & InvokerLaunch.CreateBreakawayFromJob,
+                Is.EqualTo(InvokerLaunch.CreateBreakawayFromJob));
             Assert.That(request.InheritHandles, Is.False);
             Assert.That(request.WorkingDirectory, Is.EqualTo(@"C:\Program Files (x86)\Microsoft\Edge\Application"));
             Assert.That(request.EnvironmentBlock, Is.EqualTo("Path=C:\\Windows\0TEMP=C:\\Temp\0\0"),
