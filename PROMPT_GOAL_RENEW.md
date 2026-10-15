@@ -120,9 +120,9 @@ parchea con código.
 - **Rapidez:** el tiempo importa. No gastes tiempo que se pueda evitar; cuanto antes llegue un resultado correcto,
   mejor.
   - Lanza en paralelo las llamadas independientes.
-  - Usa subagentes cuando el trabajo se pueda repartir: investigación, auditorías, bancos y piezas que no comparten
-    estado.
-  - Trabaja directo en lo simple o secuencial.
+  - Usa subagentes con libertad cuando el trabajo se pueda repartir: investigación, auditorías, bancos y piezas que no
+    comparten estado. El dueño paga el plan de 200 dólares para eso, así que lanza todos los que acorten el camino.
+  - Trabaja directo en lo simple o secuencial, como un grep o una edición de un archivo.
 - **Decide y sigue:** elige un enfoque y llévalo hasta el final. Cambia sólo si aparece información nueva que lo
   contradiga.
 - **Antes de opinar sobre código, ábrelo:** nunca especules sobre código que no hayas leído.
@@ -143,6 +143,15 @@ parchea con código.
   por falta de tokens. Antes de que se compacte, guarda el progreso en los dos ficheros y en un commit.
 - **Al empezar cada ventana de contexto:** lee `PROGRESO.md`, `metas.json` y `git log`, y sigue por la primera tarea
   abierta.
+- **Si se acaba el uso del plan:** el límite se repone 5 horas después de empezar a gastarlo, y el dueño no quiere que
+  el goal se quede parado esperando.
+  - Al empezar la sesión, crea con `CronCreate` un recordatorio cada hora, con `recurring: true` y en un minuto que no
+    sea :00 ni :30. Su texto: «Si el goal de BAXY Renew está detenido, lee `PROGRESO.md` y `metas.json` y sigue con la
+    primera tarea abierta. Si ya se cumplieron los criterios de término, borra este recordatorio.»
+  - Sólo se dispara cuando estás detenido, así que no estorba mientras trabajas.
+  - Vive sólo en esta sesión y caduca a los 7 días: si la sesión se reinicia o pasan 7 días, vuelve a crearlo
+    (compruébalo con `CronList`).
+  - Antes de que se acabe el uso, deja el estado guardado y en un commit.
 </estado>
 
 <autonomia_y_seguridad>
