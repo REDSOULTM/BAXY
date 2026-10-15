@@ -151,7 +151,15 @@ public static class OperationVisibleFacts
             : json[..messageLimit];
     }
 
-    public static string FromStatus(string operation, string status, string? errorCode)
+    public static string FromStatus(string operation, string status, string? errorCode) =>
+        FromStatus(operation, status, errorCode, problems: null);
+
+    /// <summary>The same facts, with the arguments a refused call got wrong (name and what it takes) when known.</summary>
+    public static string FromStatus(
+        string operation,
+        string status,
+        string? errorCode,
+        IReadOnlyList<ArgumentProblem>? problems)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(operation);
         ArgumentException.ThrowIfNullOrWhiteSpace(status);
@@ -168,8 +176,21 @@ public static class OperationVisibleFacts
             payload["error"] = errorCode;
         }
 
+        if (problems is { Count: > 0 })
+        {
+            payload["argumentProblems"] = ArgumentProblemsJson(problems);
+        }
+
         return payload.ToJsonString(JsonOptions);
     }
+
+    /// <summary>The arguments a call got wrong as the model reads them: one object per argument, name and problem.</summary>
+    public static JsonArray ArgumentProblemsJson(IReadOnlyList<ArgumentProblem> problems) =>
+        new([.. problems.Select(static problem => (JsonNode?)new JsonObject
+        {
+            ["argument"] = problem.Name,
+            ["problem"] = problem.Problem,
+        })]);
 
     /// <summary>
     /// The bound an operation message records for its observation

@@ -231,22 +231,43 @@ internal sealed class NativeTurnLoop
         }
         catch (MemoryValueNeedsSensitiveChannelException)
         {
-            // The result says why: memory.save keeps a value that looks like a secret only as sensitive.
+            // The result says why and what to call: memory.save keeps a value that looks like a secret only as sensitive.
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
-                "memory_value_needs_sensitive_channel"));
+                "memory_value_needs_sensitive_channel",
+                new JsonObject { ["detail"] = "This value looks like a secret: save it with memory_sensitive_save." }));
         }
         catch (MemoryRequestRefusedException refused)
         {
-            // The protector's own reason, by its code; the call's values stay out of the observation.
-            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code));
+            // The protector's own reason, by its code and its words; the call's values stay out of the observation.
+            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code,
+                new JsonObject { ["detail"] = refused.Message }));
+        }
+        catch (InvalidOperationException unavailable)
+            when (unavailable.Message is "outbox_unavailable" or "memory_protection_unavailable")
+        {
+            // BAXY's own part that was not ready, never the model's arguments (audit 2026-10-15: it read as
+            // arguments_invalid and the model blamed its call).
+            return Record(operation, arguments, started, Observation(operation, "failed", false, unavailable.Message));
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
-            // Arguments that do not fit the operation are a result the model reads, with what it gave, so it can call
-            // again with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
+            // Arguments that do not fit the operation are a result the model reads, with what it gave and, by the
+            // catalog's schema, which arguments and what each takes (the kernel's code and shape), so it can call again
+            // with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
+            var facts = new JsonObject();
+            using (System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString()))
+            {
+                IReadOnlyList<ArgumentProblem> problems =
+                    OperationArgumentValidator.Problems(given.RootElement, descriptor.ArgumentsSchema);
+                if (problems.Count > 0)
+                {
+                    facts["argumentProblems"] = OperationVisibleFacts.ArgumentProblemsJson(problems);
+                }
+            }
+
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
-                "arguments_invalid", WithArguments(new JsonObject(), "argumentsGiven", operation, arguments)));
+                "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
         if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation)
