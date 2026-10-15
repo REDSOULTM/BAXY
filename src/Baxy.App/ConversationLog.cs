@@ -39,10 +39,6 @@ internal sealed class ConversationLog
         _file = new BoundedJsonlFile(Path.Combine(directory, "conversation.v1.jsonl"), maximumBytes);
     }
 
-    internal string FilePath => _file.FilePath;
-
-    internal string ArchivePath => _file.ArchivePath;
-
     internal static ConversationLog? CreateDefault()
     {
         if (string.Equals(Environment.GetEnvironmentVariable("BAXY_CONVERSATION_LOG"), "0", StringComparison.Ordinal))

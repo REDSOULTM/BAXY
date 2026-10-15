@@ -38,24 +38,11 @@ internal static class ShellTraceStages
 
     internal const string SubmitReceived = "submit.received";
     internal const string BridgeCrossed = "bridge.crossed";
-    internal const string DecisionStart = "decision.start";
-    internal const string QueueWaitStart = "queue.wait.start";
     internal const string QueueWaitEnd = "queue.wait.end";
-    internal const string DecisionReady = "decision.ready";
-    internal const string NarrationStart = "narration.start";
-    internal const string NarrationReady = "narration.ready";
 
     /// <summary>Envío al Core hasta su respuesta verificada (incluye provider).</summary>
     internal const string CoreCallStart = "core.call.start";
     internal const string CoreCallEnd = "core.call.end";
-
-    /// <summary>Grounding de argumentos contra el schema.</summary>
-    internal const string ArgumentsStart = "arguments.start";
-    internal const string ArgumentsEnd = "arguments.end";
-
-    /// <summary>Composición final del mensaje visible por el LLM.</summary>
-    internal const string ComposeStart = "compose.start";
-    internal const string ComposeEnd = "compose.end";
 
     /// <summary>Pulsación real de la persona, reportada por el documento.</summary>
     internal const string KeyEnter = "key.enter";
@@ -71,7 +58,6 @@ internal static class ShellTraceStages
     internal const string ResponseFinal = "response.final";
     internal const string TurnCancelled = "turn.cancelled";
     internal const string TurnError = "turn.error";
-    internal const string TurnRecovered = "turn.recovered";
     internal const string TraceTruncated = "trace.truncated";
 
     /// <summary>Marcas que sólo puede emitir el observador del documento.</summary>
@@ -89,49 +75,6 @@ internal static class ShellTraceStages
         PaintObserved,
         KeyEnter,
     ];
-
-    internal static readonly string[] All =
-    [
-        ProcessStart,
-        ProcessYielded,
-        WindowCreated,
-        WindowShown,
-        StartupBegin,
-        StartupFieldBegin,
-        StartupFieldReady,
-        StartupShellBegin,
-        StartupShellReady,
-        StartupReady,
-        StartupFailed,
-        StartupCoreReady,
-        StartupMindVerified,
-        StartupMindReady,
-        StartupMindFailed,
-        SubmitReceived,
-        BridgeCrossed,
-        DecisionStart,
-        QueueWaitStart,
-        QueueWaitEnd,
-        DecisionReady,
-        NarrationStart,
-        NarrationReady,
-        CoreCallStart,
-        CoreCallEnd,
-        ArgumentsStart,
-        ArgumentsEnd,
-        ComposeStart,
-        ComposeEnd,
-        KeyEnter,
-        VisibleIndication,
-        VisibleText,
-        ResponseFinal,
-        TurnCancelled,
-        TurnError,
-        TurnRecovered,
-        TraceTruncated,
-        DomApplied,
-        PaintObserved,
-    ];
 }
 
 internal static class ShellTraceScopes
@@ -139,7 +82,6 @@ internal static class ShellTraceScopes
     internal const string Startup = "startup";
     internal const string Bridge = "bridge";
     internal const string Turn = "turn";
-    internal const string Recovery = "recovery";
 }
 
 /// <summary>
@@ -369,13 +311,12 @@ internal sealed class ShellTrace : IDisposable
 
 /// <summary>
 /// Punto de acceso único al registro opcional. Se resuelve una sola vez desde
-/// el entorno; las pruebas pueden sustituirlo de forma acotada.
+/// el entorno.
 /// </summary>
 internal static class ShellTraceSink
 {
     private static readonly object Gate = new();
     private static ShellTrace? _current;
-    private static ShellTrace? _override;
     private static bool _resolved;
 
     private static string _turnId = "t0";
@@ -395,12 +336,6 @@ internal static class ShellTraceSink
     {
         get
         {
-            ShellTrace? overridden = Volatile.Read(ref _override);
-            if (overridden is not null)
-            {
-                return overridden;
-            }
-
             if (Volatile.Read(ref _resolved))
             {
                 return Volatile.Read(ref _current);
@@ -425,31 +360,4 @@ internal static class ShellTraceSink
         string stage,
         string? detail = null) =>
         Current?.Record(scope, id, stage, detail);
-
-    /// <summary>
-    /// Sustituye el registro activo mientras dura el ámbito devuelto. Es la
-    /// única vía por la que una prueba observa el instrumental.
-    /// </summary>
-    internal static IDisposable Use(ShellTrace trace)
-    {
-        ArgumentNullException.ThrowIfNull(trace);
-        ShellTrace? previous = Interlocked.Exchange(ref _override, trace);
-        return new OverrideScope(previous);
-    }
-
-    private sealed class OverrideScope(ShellTrace? previous) : IDisposable
-    {
-        private bool _disposed;
-
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-            Volatile.Write(ref _override, previous);
-        }
-    }
 }

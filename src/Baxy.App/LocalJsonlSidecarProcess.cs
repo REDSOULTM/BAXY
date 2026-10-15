@@ -63,7 +63,6 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
     private readonly CancellationTokenSource _standardErrorPumpCancellation = new();
     private readonly Task _standardErrorPump;
     private SafeFileHandle? _job;
-    private long _standardErrorBytesObserved;
     private int _stopped;
 
     private LocalJsonlSidecarProcess(
@@ -84,11 +83,6 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
     internal LocalJsonlSidecarDefinition Definition { get; }
 
     internal Process Process => _process;
-
-    internal long StandardErrorBytesObserved =>
-        Interlocked.Read(ref _standardErrorBytesObserved);
-
-    internal bool IsStandardErrorPumpCompleted => _standardErrorPump.IsCompleted;
 
     internal ValueTask WriteUtf8LineAsync(
         ReadOnlyMemory<byte> utf8Line,
@@ -235,7 +229,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
     private static UTF8Encoding StrictUtf8 { get; } =
         new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
-    private async Task PumpStandardErrorAsync(
+    private static async Task PumpStandardErrorAsync(
         Stream standardError,
         CancellationToken cancellationToken)
     {
@@ -252,7 +246,6 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
                     return;
                 }
 
-                Interlocked.Add(ref _standardErrorBytesObserved, read);
                 CryptographicOperations.ZeroMemory(buffer.AsSpan(0, read));
             }
         }

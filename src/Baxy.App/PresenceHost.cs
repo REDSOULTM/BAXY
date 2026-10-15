@@ -55,10 +55,6 @@ internal sealed class PresenceHost : IDisposable
 
     internal string? AutostartCommand { get; private set; }
 
-    internal string StatusPath => _store.StatusPath;
-
-    internal IReadOnlyList<PresenceIdleSnapshot> IdleSamples => _sampler.Samples;
-
     internal void Start(IReadOnlyList<string> arguments)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);

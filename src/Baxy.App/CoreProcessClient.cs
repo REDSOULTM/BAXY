@@ -40,19 +40,6 @@ internal sealed class CoreProcessClient : IAsyncDisposable
     private bool _ready;
     private bool _disposed;
     private int _disconnectSignaled;
-    private readonly string? _executableOverride;
-    private readonly IReadOnlyList<string>? _argumentsOverride;
-
-    public CoreProcessClient()
-    {
-    }
-
-    internal CoreProcessClient(string executablePath, IReadOnlyList<string>? arguments = null)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
-        _executableOverride = Path.GetFullPath(executablePath);
-        _argumentsOverride = arguments;
-    }
 
     public event Action? Disconnected;
 
@@ -77,12 +64,11 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 throw new InvalidOperationException("El cliente del core ya fue iniciado.");
             }
 
-            var executable = _executableOverride ?? ResolveCoreExecutable();
+            var executable = ResolveCoreExecutable();
             var sidecar = LocalJsonlSidecarProcess.Start(new LocalJsonlSidecarDefinition(
                 "core",
                 executable,
                 Path.GetDirectoryName(executable)!,
-                _argumentsOverride,
                 drainStandardError: false));
             Process process = sidecar.Process;
             _process = process;

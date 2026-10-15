@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
-using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
@@ -24,35 +23,14 @@ internal sealed record FieldProgressNotice(string Stage, string? Label)
 }
 
 /// <summary>
-/// Contrato versionado entre <c>field-native-bridge.js</c> y el shell WPF.
-///
-/// El canal sigue siendo <c>baxy.field.v1</c>. Cada envelope declara ahora
-/// <c>minReader</c>: un lector antiguo que no conoce el campo sigue leyendo
-/// exactamente los mensajes de la revisión 1, y un lector nuevo descarta de
-/// forma explícita cualquier envelope que exija una revisión superior a la
-/// suya. Nada se reinterpreta: o se entiende, o se descarta por versión.
-///
-/// El shell no emite un mensaje de revisión 2 hasta que el lector anuncia su
-/// propia revisión con <c>reader_hello</c>.
+/// Contract between the Field view and the WPF shell: when a turn or a voice
+/// control is admitted, and the visible progress payload (<c>boot_stage</c>).
 /// </summary>
 internal static class FieldBridgeContract
 {
-    internal const string Channel = "baxy.field.v1";
-
-    /// <summary>Revisión que implementa este shell nativo.</summary>
-    internal const int NativeRevision = 2;
-
-    /// <summary>Revisión asumida mientras el lector no se anuncia.</summary>
-    internal const int LegacyReaderRevision = 1;
-
     /// <summary>Revisión mínima que exige el progreso visible de turno.</summary>
     internal const int TurnProgressRevision = 2;
 
-    internal const int MaximumReaderRevision = 64;
-
-    internal const string ReaderHelloKind = "reader_hello";
-    internal const string ContractKind = "contract";
-    internal const string MinimumReaderProperty = "minReader";
     internal const string ProgressPayloadType = "boot_stage";
 
     internal const string AgentNotReadyError = "agent_not_ready";
@@ -71,11 +49,6 @@ internal static class FieldBridgeContract
     /// skip from t=2 (still under budget) to t=4 (first check over 3 s).
     /// </summary>
     internal static readonly TimeSpan ProgressPulse = TimeSpan.FromSeconds(1);
-
-    /// <summary>
-    /// When the next formulated hito is due if nothing visible has appeared.
-    /// </summary>
-    internal static readonly TimeSpan MilestoneDue = FirstSignal.MilestoneDueDelay;
 
     /// <summary>
     /// Descripciones internas que NO deben producir una indicación visible.
@@ -125,18 +98,6 @@ internal static class FieldBridgeContract
                 FieldProgressNotice.StageUnavailable,
             ["Conexión interrumpida"] = FieldProgressNotice.StageUnavailable,
         };
-
-    /// <summary>Vocabulario cerrado de etapas publicables.</summary>
-    internal static readonly string[] ProgressStages =
-    [
-        FieldProgressNotice.StageStarting,
-        FieldProgressNotice.StageUnderstanding,
-        FieldProgressNotice.StagePreparingSteps,
-        FieldProgressNotice.StageActing,
-        FieldProgressNotice.StageWorking,
-        FieldProgressNotice.StageAwaitingReply,
-        FieldProgressNotice.StageUnavailable,
-    ];
 
     /// <summary>
     /// Chat and voice stay closed until the shell has a verified ready
@@ -282,24 +243,6 @@ internal static class FieldBridgeContract
         DateTimeOffset nowUtc) =>
         lastPublishedUtc is null || nowUtc - lastPublishedUtc.Value >= ProgressPulse;
 
-    internal static DateTimeOffset FirstHitoDueAt(DateTimeOffset lastVisibleUtc) =>
-        lastVisibleUtc + MilestoneDue;
-
-    /// <summary>
-    /// First 1 s pulse tick whose elapsed time is strictly over the 3 s bar.
-    /// With a 1 s pulse that is 4 s — why the due timer exists.
-    /// </summary>
-    internal static DateTimeOffset FirstPulseAfterSilenceBudget(DateTimeOffset lastVisibleUtc)
-    {
-        TimeSpan elapsed = TimeSpan.Zero;
-        while (elapsed.TotalSeconds <= FirstSignal.SilenceBudgetSeconds)
-        {
-            elapsed += ProgressPulse;
-        }
-
-        return lastVisibleUtc + elapsed;
-    }
-
     internal static JsonObject CreateProgressPayload(
         FieldProgressNotice? notice,
         DateTimeOffset? atUtc = null)
@@ -331,45 +274,4 @@ internal static class FieldBridgeContract
                 ["v"] = TurnProgressRevision,
             };
     }
-
-    /// <summary>
-    /// Marca el envelope con la revisión mínima de lector que puede
-    /// interpretarlo. La revisión 1 se omite para conservar byte a byte el
-    /// contrato histórico.
-    /// </summary>
-    internal static JsonObject StampEnvelope(JsonObject envelope, int minimumReader)
-    {
-        ArgumentNullException.ThrowIfNull(envelope);
-        if (minimumReader > LegacyReaderRevision)
-        {
-            envelope[MinimumReaderProperty] = minimumReader;
-        }
-
-        return envelope;
-    }
-
-    /// <summary>
-    /// Regla de compatibilidad del lector: un envelope se entrega sólo si la
-    /// revisión declarada del lector alcanza la que exige el mensaje.
-    /// </summary>
-    internal static bool CanDeliver(int minimumReader, int readerRevision) =>
-        minimumReader <= readerRevision;
-
-    /// <summary>
-    /// Lee la revisión anunciada por el lector. Un valor ausente, no numérico o
-    /// fuera de rango conserva la revisión histórica.
-    /// </summary>
-    internal static int ReadReaderRevision(JsonObject? message)
-    {
-        if (message?["revision"] is not JsonValue value
-            || !value.TryGetValue(out int revision)
-            || revision < LegacyReaderRevision
-            || revision > MaximumReaderRevision)
-        {
-            return LegacyReaderRevision;
-        }
-
-        return revision;
-    }
-
 }

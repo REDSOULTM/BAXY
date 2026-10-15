@@ -12,12 +12,8 @@ internal sealed record MindRuntimeConfiguration(
     string PythonPath,
     string Gguf,
     string LlamaServer,
-    string? SttDirectory,
-    string? WakeManifest,
     int GpuLayers,
-    bool WakeOnStart,
-    string? CpuProseAdapter = null,
-    string? DeciderAdapter = null);
+    bool WakeOnStart);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
     string? Disabled,
@@ -25,15 +21,10 @@ internal sealed record MindRuntimeEnvironmentSnapshot(
     string? PythonPath,
     string? Gguf,
     string? LlamaServer,
-    string? SttDirectory,
     string? GpuLayers,
-    string? WakeManifest,
-    string? WakeCascadeManifest,
     string? WakeOnStart,
     string? Offline,
-    string? AssetDescriptor,
-    string? CpuProseAdapter = null,
-    string? DeciderAdapter = null);
+    string? AssetDescriptor);
 
 internal sealed record MindRuntimeDiscoveryResult(
     MindRuntimeEnvironmentSnapshot Environment,
@@ -84,12 +75,6 @@ internal static class MindRuntimeDiscovery
     private static readonly object ApplyLock = new();
 
     internal static AssetManifestDiagnostic? LastAssetDiagnostic { get; private set; }
-
-    internal static bool TryConfigureCurrentProcess() =>
-        TryConfigureCurrentProcess(DefaultRegistrationPath());
-
-    internal static bool TryConfigureCurrentProcess(string registrationPath) =>
-        ApplyVerified(DiscoverVerified(registrationPath));
 
     internal static MindRuntimeDiscoveryResult DiscoverVerified() =>
         DiscoverVerified(DefaultRegistrationPath());
@@ -183,51 +168,12 @@ internal static class MindRuntimeDiscovery
             SetIfMissing(MindSidecarClient.PythonPathEnvironmentVariable, runtime.PythonPath);
             SetIfMissing("BAXY_MIND_LLM_GGUF", runtime.Gguf);
             SetIfMissing("BAXY_MIND_LLAMA_SERVER", runtime.LlamaServer);
-            if (runtime.CpuProseAdapter is not null
-                && string.Equals(
-                    Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
-                    runtime.Gguf,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                SetIfMissing("BAXY_MIND_CPU_PROSE_ADAPTER", runtime.CpuProseAdapter);
-            }
-            if (runtime.DeciderAdapter is not null
-                && string.Equals(
-                    Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
-                    runtime.Gguf,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                SetIfMissing("BAXY_MIND_DECIDER_ADAPTER", runtime.DeciderAdapter);
-            }
             SetIfMissing(
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
-            if (!string.IsNullOrWhiteSpace(runtime.SttDirectory))
-            {
-                SetIfMissing("BAXY_MIND_STT_DIR", runtime.SttDirectory);
-            }
-
-            if (!string.IsNullOrWhiteSpace(runtime.WakeManifest))
-            {
-                if (string.IsNullOrWhiteSpace(
-                        Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_MANIFEST"))
-                    && string.IsNullOrWhiteSpace(
-                        Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST")))
-                {
-                    // Hash-declared wake is published even when boot listen is
-                    // off, so the visible switch can start it without a click
-                    // that first installs the path.
-                    SetIfMissing("BAXY_VOICE_WAKE_MANIFEST", runtime.WakeManifest);
-                    SetIfMissing(
-                        "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
-                        runtime.WakeManifest);
-                }
-
-                // The FAR gate did not promote this head (see costuras). The
-                // runtime still names it; loading requires this explicit seam.
-                SetIfMissing("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED", "1");
-            }
-
+            // The voice models (BAXY_RENEW_STT_DIR, _WAKE_DIR, _TTS_MODEL, _PIPER_DIR) are the
+            // launcher's (scripts/run_renew.cmd); the registration's stt, wake and adapter
+            // entries are still verified by hash, but nothing of them is published.
             if (runtime.WakeOnStart)
             {
                 SetIfMissing("BAXY_VOICE_WAKE_ON_START", "1");
@@ -361,7 +307,6 @@ internal static class MindRuntimeDiscovery
             bool wakeOnStart = wakeElement.GetBoolean();
             JsonElement wakeManifestElement = root.GetProperty("wake_manifest");
             JsonElement wakeHashElement = root.GetProperty("wake_manifest_sha256");
-            string? wakeManifest = null;
             if (wakeManifestElement.ValueKind == JsonValueKind.Null
                 && wakeHashElement.ValueKind == JsonValueKind.Null)
             {
@@ -378,7 +323,7 @@ internal static class MindRuntimeDiscovery
                     return null;
                 }
 
-                wakeManifest = ExistingFile(
+                string? wakeManifest = ExistingFile(
                     hashes,
                     wakeManifestElement.GetString(),
                     expectedName: null,
@@ -407,8 +352,8 @@ internal static class MindRuntimeDiscovery
                 return null;
             }
 
-            if (!TryReadBoundAdapter(hashes, root, "cpu_prose_adapter", "baxy-cpu-prose-adapter-v1", out string? cpuProseAdapter)
-                || !TryReadBoundAdapter(hashes, root, "decider_adapter", "baxy-decider-adapter-v1", out string? deciderAdapter))
+            if (!IsBoundAdapter(hashes, root, "cpu_prose_adapter", "baxy-cpu-prose-adapter-v1")
+                || !IsBoundAdapter(hashes, root, "decider_adapter", "baxy-decider-adapter-v1"))
             {
                 return null;
             }
@@ -419,12 +364,8 @@ internal static class MindRuntimeDiscovery
                 pythonPath,
                 gguf,
                 server,
-                stt,
-                wakeManifest,
                 ngl,
-                wakeOnStart,
-                cpuProseAdapter,
-                deciderAdapter);
+                wakeOnStart);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -439,9 +380,8 @@ internal static class MindRuntimeDiscovery
     private static readonly string[] OptionalAdapterProperties = ["cpu_prose_adapter", "decider_adapter"];
 
     // A LoRA the manifest binds by hash to its own base GGUF; absent is valid, malformed rejects the manifest.
-    private static bool TryReadBoundAdapter(RuntimeFileHashCache hashes, JsonElement root, string property, string schema, out string? serialized)
+    private static bool IsBoundAdapter(RuntimeFileHashCache hashes, JsonElement root, string property, string schema)
     {
-        serialized = null;
         if (!root.TryGetProperty(property, out JsonElement adapter))
         {
             return true;
@@ -458,18 +398,7 @@ internal static class MindRuntimeDiscovery
             RequiredString(adapter, "gguf"),
             expectedName: null,
             RequiredString(adapter, "gguf_sha256"));
-        if (adapterFile is null || !adapterFile.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-        serialized = JsonSerializer.Serialize(new
-        {
-            schema,
-            gguf = adapterFile,
-            gguf_sha256 = RequiredString(adapter, "gguf_sha256"),
-            base_gguf_sha256 = RequiredString(adapter, "base_gguf_sha256"),
-        });
-        return true;
+        return adapterFile is not null && adapterFile.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string? ExistingFile(
@@ -663,15 +592,10 @@ internal static class MindRuntimeDiscovery
             Environment.GetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable),
             Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
             Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER"),
-            Environment.GetEnvironmentVariable("BAXY_MIND_STT_DIR"),
             Environment.GetEnvironmentVariable("BAXY_MIND_NGL"),
-            Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_MANIFEST"),
-            Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST"),
             Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
             Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
-            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),
-            Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER"),
-            Environment.GetEnvironmentVariable("BAXY_MIND_DECIDER_ADAPTER"));
+            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"));
 
     private static bool EnvironmentMatches(MindRuntimeEnvironmentSnapshot expected) =>
         string.Equals(
@@ -695,20 +619,8 @@ internal static class MindRuntimeDiscovery
             expected.LlamaServer,
             StringComparison.Ordinal)
         && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_MIND_STT_DIR"),
-            expected.SttDirectory,
-            StringComparison.Ordinal)
-        && string.Equals(
             Environment.GetEnvironmentVariable("BAXY_MIND_NGL"),
             expected.GpuLayers,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_MANIFEST"),
-            expected.WakeManifest,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST"),
-            expected.WakeCascadeManifest,
             StringComparison.Ordinal)
         && string.Equals(
             Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
@@ -717,14 +629,6 @@ internal static class MindRuntimeDiscovery
         && string.Equals(
             Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
             expected.Offline,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER"),
-            expected.CpuProseAdapter,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_MIND_DECIDER_ADAPTER"),
-            expected.DeciderAdapter,
             StringComparison.Ordinal)
         && string.Equals(
             Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),
