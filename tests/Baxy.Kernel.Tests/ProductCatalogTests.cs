@@ -115,11 +115,14 @@ public sealed class ProductCatalogTests
         "game.install.prepare",
         "game.purchase.commit",
         "game.purchase.prepare",
+        "message.recipient.resolve",
+        "package.install.commit",
+        "package.install.prepare",
         "routine.resolve.exact",
         "task.resolve.exact",
     ];
 
-    internal const int ExpectedTools = ExpectedDescriptors - 10;
+    internal const int ExpectedTools = ExpectedDescriptors - 13;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

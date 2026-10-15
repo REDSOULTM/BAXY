@@ -258,6 +258,11 @@ public static partial class RiskPolicy
             ? key.GetString()
             : null;
 
+    private static string? OntoOf(JsonElement arguments) =>
+        arguments.TryGetProperty("onto", out JsonElement onto) && onto.ValueKind == JsonValueKind.String
+            ? onto.GetString()
+            : null;
+
     private static string? TargetOf(JsonElement arguments) =>
         arguments.TryGetProperty("target", out JsonElement target) && target.ValueKind == JsonValueKind.String
             ? target.GetString()
