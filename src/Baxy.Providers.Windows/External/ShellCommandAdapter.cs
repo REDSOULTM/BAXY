@@ -132,10 +132,8 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
 
         (string stdout, bool stdoutTruncated) = Bound(process.Output);
         (string stderr, bool stderrTruncated) = Bound(process.Error);
-        string[] lines = stdout.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(line => line.TrimEnd('\r'))
-            .Where(line => line.Trim().Length > 0)
-            .ToArray();
+        // Auditoría final: the output goes once, as stdout; its lines are counted, not repeated beside it.
+        int lineCount = stdout.Split('\n').Count(line => line.Trim().Length > 0);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -146,11 +144,7 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
             writer.WriteBoolean("succeeded", process.ExitCode == 0);
             writer.WriteString("stdout", stdout);
             writer.WriteString("stderr", stderr);
-            writer.WriteNumber("lineCount", lines.Length);
-            writer.WriteStartArray("lines");
-            foreach (string line in lines.Take(60))
-                writer.WriteStringValue(line);
-            writer.WriteEndArray();
+            writer.WriteNumber("lineCount", lineCount);
             writer.WriteBoolean("truncated", stdoutTruncated || stderrTruncated);
             writer.WriteNumber("durationMs", (long)(DateTime.UtcNow - started).TotalMilliseconds);
             writer.WriteString("shell", "powershell_noprofile_noninteractive");
