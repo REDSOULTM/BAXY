@@ -337,9 +337,13 @@ internal sealed class NativeTurnLoop
         PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
         if (pending is null)
         {
+            // A call that waited and ran out of time is not «nothing was asked» (audit 2026-10-15, App 3): the model
+            // says the question expired and can ask again.
+            string? expired = _pending?.Prepared.OperationName ?? _proposal?.OperationName;
             DropPending();
-            return Record(MindStep.ConfirmationAnswer, arguments, started,
-                Observation(MindStep.ConfirmationAnswer, "failed", false, "nothing_pending"));
+            return Record(MindStep.ConfirmationAnswer, arguments, started, expired is null
+                ? Observation(MindStep.ConfirmationAnswer, "failed", false, "nothing_pending")
+                : Observation(expired, "failed", false, "confirmation_expired"));
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
