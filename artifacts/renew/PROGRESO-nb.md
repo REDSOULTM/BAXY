@@ -60,3 +60,45 @@ recientes. Investigación en curso (BFCL multiturno, documentación de Qwen y Op
 
 **El arreglo espera a que el líder selle los holdouts:** ajustar el prompt o el protocolo antes del sello
 contaminaría el marco.
+
+## Limpieza de código muerto (commit `cb1c92486`)
+
+- Se borraron las 546 pruebas de Python, `tests/data`, `tests/fixtures`, `Baxy.Integration.Tests`, los 27 JSON
+  huérfanos de `src/baxy_mind/data` y 16 scripts sin uso. En total, 858 ficheros y 321 mil líneas.
+- Siguen pasando las suites de Contracts (70), Kernel (559), Setup (477) y Providers (2170). La solución compila en
+  Release.
+- No se tocó ningún `.cs` del arnés: el líder lo retira con el arnés nuevo.
+
+## Voz que habla, paso A: Piper (`voice_output.py`)
+
+- **Piper residente:** un solo `piper.exe` con `--json-input`, una línea por frase con `output_file` (CLI
+  documentada de Piper).
+  - Sintetizar una frase tarda 0,19 s p50 (máximo 0,27 s), contra 0,82 s lanzando un proceso por frase como
+    Definitivo.
+  - La voz carga al arrancar la mente en 0,65 s.
+- **Salida:** se abre el dispositivo por defecto en cada frase, para seguir el cambio entre audífonos y parlantes.
+  Con `latency="low"`, la latencia del dispositivo baja de 183 a 91 ms.
+- **De `voice.speak` al primer sonido:** 365 ms p50 (325–528 ms), medido sola. Con llama-server cargando en
+  paralelo, 466 y 576 ms. La traza `turns.jsonl` anota cada frase (`stage: voice.speak`, `sound_ms`, `sound_at`),
+  para medir del texto al primer sonido.
+- **Cancelación:** silencio en 47–63 ms. No queda ningún WAV en disco.
+- **RAM de Piper:** 97 MB privados (105 MB de working set).
+- **Mientras BAXY habla no se escucha el micrófono** (como Definitivo), para que su propia voz no lo despierte ni
+  entre en un pedido. La interrupción por voz es el paso B: la evidencia de Definitivo (`PRUEBAS_AEC129_134.md`) da
+  8/8 interrupciones falsas sin cancelación de eco en parlantes, y 0/8 con ella.
+- Pendiente: con respuestas largas, sintetizar frase por frase adelantaría el primer sonido. Hoy son 1–2 frases.
+
+## Perfil de 4 GB (VRAM medida con `nvidia-smi`, notebook RTX 3060 6 GB)
+
+| Modelo | Huecos y contexto | KV | VRAM | RAM (working set / privada) |
+|---|---|---|---|---|
+| Q4_K_M | 2, `-kvu`, `-c 81920` (el de hoy) | q8_0 | **4648 MiB** | 3166 / 5688 MB |
+| Q4_K_M | 2, `-kvu`, `-c 49152` | q8_0 | 3944 MiB | 3133 / 4979 MB |
+| Q4_K_M | 1, `-c 40960` | q8_0 | 3718 MiB | 3124 / 4690 MB |
+| Q4_K_M | 2, `-kvu`, `-c 81920` | q4_0 | 4008 MiB | 3166 / 5046 MB |
+
+- **El perfil de hoy pasa de 4 GB.** Con `-kvu` el pool es compartido, así que bastan ~49k tokens en total: la
+  decisión ocupa ~39k y la redacción unos cientos. Eso deja el Q4_K_M con dos huecos en 3944 MiB, sin cambiar de
+  modelo.
+- El IQ4_XS de unsloth (sha `658a9e7e…`, la misma familia que el Q4_K_M en uso) está en
+  `D:\BAXYeval\models\Qwen3.5-4B-IQ4_XS.gguf` para medirlo.

@@ -1,8 +1,9 @@
-"""Voice for BAXY Renew: the microphone, the k4 wake word and Parakeet Ultra (sherpa-onnx, CPU).
+"""Voice for BAXY Renew: the microphone, the k4 wake word and Parakeet Ultra (sherpa-onnx, CPU), and Piper speaking.
 
 Only the connection: what the person says after «Baxy» reaches the App as voice.transcript, the same as a typed
 message. The segmentation is WakewordBaxy/probar_baxy.py's, measured there with the owner's voice; the recognizer is
-TranscripcionBaxy's winner with its configuration. There is no text to speech yet, so the hello offers no voice.speak.
+TranscripcionBaxy's winner with its configuration. While BAXY speaks the microphone is not heard, as in Definitivo,
+so its own voice («Hola, soy BAXY») never wakes it or enters a request.
 
 Paths (per PC): BAXY_RENEW_WAKE_DIR (the baxy-wake-k4 package), BAXY_RENEW_STT_DIR (parakeet-ultra-sherpa-int8-oli),
 BAXY_RENEW_MIC (an input device index; the default microphone otherwise).
@@ -17,6 +18,8 @@ import sys
 import threading
 from pathlib import Path
 from typing import Any, Callable
+
+from .voice_output import Speech
 
 for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(_var, "1")
@@ -39,7 +42,8 @@ KEEP_S = 30.0
 class Voice:
     """Listens on its own thread; the mind's request loop only starts, stops and reads it."""
 
-    def __init__(self, write: Callable[[dict[str, Any]], None]) -> None:
+    def __init__(self, write: Callable[[dict[str, Any]], None],
+                 on_spoken: Callable[[float, float], None] = lambda _queued, _sounded: None) -> None:
         self._write = write
         self._loaded = threading.Event()
         self._lock = threading.Lock()
@@ -52,6 +56,7 @@ class Voice:
         self._stream: Any = None
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._reset()
+        self.speech = Speech(self._speaking, on_spoken)
         threading.Thread(target=self._load, name="voice-load", daemon=True).start()
         threading.Thread(target=self._listen, name="voice", daemon=True).start()
 
@@ -59,9 +64,10 @@ class Voice:
 
     def status(self) -> dict[str, Any]:
         stt = self._recognizer is not None
-        return {"available": stt and self._input, "input": self._input, "stt": stt, "vad": False, "tts": False,
-                "aec": False, "ducking": False, "mode": self._mode, "listening": self._mode != "off",
-                "speaking": False, "pending": not self._loaded.is_set()}
+        return {"available": stt and self._input, "input": self._input, "stt": stt, "vad": False,
+                "tts": self.speech.ready, "aec": False, "ducking": False, "mode": self._mode,
+                "listening": self._mode != "off", "speaking": self.speech.speaking,
+                "pending": not self._loaded.is_set()}
 
     def start(self, mode: str) -> bool:
         self._loaded.wait(60)
@@ -86,6 +92,12 @@ class Voice:
         with self._lock:
             self._mode = self._resume = "off"
             self._close()
+        self._state()
+
+    def _speaking(self, speaking: bool) -> None:
+        if speaking:
+            with self._lock:
+                self._reset()  # what was heard up to now is not mixed with what is said after BAXY speaks
         self._state()
 
     # --- loading --------------------------------------------------------------------------------------------------
@@ -169,7 +181,7 @@ class Voice:
             block = self._blocks.get()
             try:
                 with self._lock:
-                    if self._mode != "off":
+                    if self._mode != "off" and not self.speech.speaking:
                         self._feed(block)
             except Exception as error:  # noqa: BLE001 - one bad block never ends the voice
                 sys.stderr.write(f"baxy_mind_renew_voice: {error!r}\n")
@@ -258,4 +270,5 @@ class Voice:
         self._write({"type": "voice.event", "event": name, "mode": self._mode})
 
     def _state(self) -> None:
-        self._write({"type": "voice.event", "event": "state", "mode": self._mode, "speaking": False})
+        self._write({"type": "voice.event", "event": "state", "mode": self._mode,
+                     "speaking": self.speech.speaking})

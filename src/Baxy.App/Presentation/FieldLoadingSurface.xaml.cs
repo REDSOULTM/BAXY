@@ -2,7 +2,7 @@ using System.Windows.Controls;
 
 namespace Baxy.App.Presentation;
 
-internal partial class FieldLoadingSurface : UserControl
+internal sealed partial class FieldLoadingSurface : UserControl
 {
     internal FieldLoadingSurface()
     {
