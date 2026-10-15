@@ -13,6 +13,11 @@ from typing import Any
 
 
 class LlmServer:
+    # Two pinned slots: slot 0 always holds the decision prefix (system + whole catalog, ~23k tokens), slot 1 the
+    # short prompts (composition, forced arguments). One shared slot evicted the catalog after every composition and
+    # the next turn re-read it whole (7,5 s on 2026-10-15). The context is per slot.
+    DECIDE, SHORT = 0, 1
+
     def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768) -> None:
         self.gguf = gguf
         self.server = server
@@ -31,7 +36,7 @@ class LlmServer:
     def start(self) -> None:
         command = [
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
-            "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
+            "-ngl", self.gpu_layers, "-c", str(self.context * 2), "-np", "2", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
         ]
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
@@ -60,15 +65,15 @@ class LlmServer:
         if not self._ready.wait(timeout):
             raise RuntimeError(self._failure or "llama-server is not ready")
 
-    def chat(self, body: dict[str, Any], timeout: float = 120.0) -> dict[str, Any]:
-        """One chat completion; the single slot keeps the shared prefix (system + tools) cached between turns."""
+    def chat(self, body: dict[str, Any], *, slot: int, timeout: float = 120.0) -> dict[str, Any]:
+        """One chat completion on a pinned slot, so each slot keeps its own prefix cached between turns."""
         self.wait_ready(timeout)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
-            data=json.dumps(body).encode("utf-8"),
+            data=json.dumps({**body, "id_slot": slot, "cache_prompt": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with self._lock, urllib.request.urlopen(request, timeout=timeout) as reply:
+        with urllib.request.urlopen(request, timeout=timeout) as reply:
             return json.loads(reply.read())
 
     def close(self) -> None:

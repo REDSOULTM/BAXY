@@ -95,7 +95,7 @@ class Mind:
             self.server.chat({"messages": [{"role": "system", "content": self._system()},
                                            {"role": "user", "content": "hola"}],
                               "tools": self.tools, "max_tokens": 1,
-                              "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+                              "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.DECIDE, timeout=600)
         except Exception:  # noqa: BLE001 - warming is an optimization only
             pass
 
@@ -115,7 +115,8 @@ class Mind:
                 messages.append({"role": role, "content": item["content"]})
         messages.append({"role": "user", "content": f"{text}\n\n(hora actual {now})"})
         reply = self.server.chat({"messages": messages, "tools": self.tools, "max_tokens": 512,
-                                  "chat_template_kwargs": {"enable_thinking": False}, **SAMPLING})
+                                  "chat_template_kwargs": {"enable_thinking": False}, **SAMPLING},
+                                 slot=LlmServer.DECIDE)
         message = reply["choices"][0]["message"]
         calls = message.get("tool_calls") or []
         content = (message.get("content") or "").strip()
@@ -161,7 +162,8 @@ class Mind:
         messages.append({"role": "user", "content": text})
         reply = self.server.chat({"messages": messages, "tools": [tool], "max_tokens": 256,
                                   "tool_choice": {"type": "function", "function": {"name": tool["function"]["name"]}},
-                                  "chat_template_kwargs": {"enable_thinking": False}, "temperature": 0.0})
+                                  "chat_template_kwargs": {"enable_thinking": False}, "temperature": 0.0},
+                                 slot=LlmServer.SHORT)
         calls = reply["choices"][0]["message"].get("tool_calls") or []
         arguments: dict[str, Any] = {}
         if calls:
@@ -180,7 +182,7 @@ class Mind:
         reply = self.server.chat({"messages": [{"role": "system", "content": COMPOSE},
                                                {"role": "user", "content": data[:12000]}],
                                   "max_tokens": 200, "temperature": 0.3, "top_p": 0.8,
-                                  "chat_template_kwargs": {"enable_thinking": False}})
+                                  "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.SHORT)
         text = (reply["choices"][0]["message"].get("content") or "").strip()
         self._log("message.compose", started, reply, intent=intent, text=text)
         return {"type": "message.compose.result", "id": request_id, "text": text}
