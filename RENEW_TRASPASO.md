@@ -188,7 +188,12 @@ regla vital.
   - Como máximo una acción molesta cada 20 escenas.
 - **Velocidad (p50):**
   - La decisión, en ≤ 1 s.
-  - Desde que el dueño se calla hasta que BAXY empieza a hablar, ≤ 2,5 s.
+  - Desde que el texto de una orden llega a la mente hasta que Piper empieza a sonar, ≤ 2,5 s.
+- **Alcance de la medición (decisión del dueño):** sólo se mide y optimiza el arnés.
+  - La wake word k4 y la transcripción Parakeet Ultra son piezas fijas: no se miden, no se ajustan y sus errores no
+    cuentan. Los bancos entran como texto.
+  - La meta de 4 GB de VRAM y 4 GB de RAM es para llama-server y la mente, sin k4 ni Ultra. Se anota también el total
+    con la voz.
 - **Si una meta no se alcanza por el límite del modelo:** se documenta como límite honesto, con su evidencia, y se
   cierra. Nunca se parchea con código.
 
