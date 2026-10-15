@@ -33,7 +33,7 @@ public sealed class MissionEngine : IDisposable
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _journal = journal ?? throw new ArgumentNullException(nameof(journal));
         _confirmationAuthority = options?.ConfirmationAuthority
-            ?? new InMemoryConfirmationAuthority(options?.TimeProvider);
+            ?? new InMemoryConfirmationAuthority();
         _privateEnvelopeAuthenticator = options?.PrivateEnvelopeAuthenticator;
         _confirmationMode = options?.ConfirmationMode
             ?? (() => ConfirmationMode.Normal);

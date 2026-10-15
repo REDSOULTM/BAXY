@@ -1,8 +1,10 @@
 using Baxy.Contracts;
+using Baxy.Kernel.Journal;
 
-namespace Baxy.Kernel.Journal;
+namespace Baxy.Kernel.Tests;
 
-public sealed class InMemoryInvocationJournal : IInvocationJournal, IDisposable
+// The journal the kernel's tests run the engine on; the product always opens a FileInvocationJournal.
+internal sealed class InMemoryInvocationJournal : IInvocationJournal, IDisposable
 {
     private readonly Dictionary<string, CompletedInvocation> _completed =
         new(StringComparer.Ordinal);

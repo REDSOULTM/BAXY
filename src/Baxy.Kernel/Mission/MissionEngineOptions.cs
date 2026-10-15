@@ -17,12 +17,6 @@ public sealed class MissionEngineOptions
     public IPrivateOperationEnvelopeAuthenticator? PrivateEnvelopeAuthenticator { get; init; }
 
     /// <summary>
-    /// Reloj con el que caducan los retos de confirmación. Por defecto, el del
-    /// sistema.
-    /// </summary>
-    public TimeProvider? TimeProvider { get; init; }
-
-    /// <summary>
     /// Autoridad de confirmación ya construida. Sólo la usan las pruebas del
     /// kernel para observar la emisión y revocación de retos.
     /// </summary>
