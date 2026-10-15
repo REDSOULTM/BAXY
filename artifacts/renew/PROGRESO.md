@@ -246,3 +246,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   web.fetch dice `bodyTruncated` y un código por causa; `protected_window` al actuar sobre un editor, una terminal o
   BAXY (salvo que una mirada nombrara esa app); fuera MissionFrontSignal. Suite de Providers 2086/2091: los 5 que
   fallan son pruebas con identidad por palabras (las arregla el notebook).
+- Decisión (re-auditoría del notebook): `app.close` baja a reversible sólo para una ventana sin documento o cuyo
+  contenido vive en la cuenta (datos `documentless_applications`, riesgo del kernel sobre la ventana exacta): cerrarla
+  no pierde trabajo, así que no se pide el sí. Se queda.
+- Jueces de escenas: una escena cuyas operaciones esperadas se retiraron todas sin reemplazo queda fuera del recuento
+  (P025 esperaba `message.send`), y un fallo no cuenta como molestia (sí como fallo).

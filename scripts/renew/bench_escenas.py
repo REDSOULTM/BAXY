@@ -102,6 +102,10 @@ def main() -> None:
         effect = next((op for op in reversed(ops) if not (risk.get(op) == "read_only" or op in OBSERVING
                                                          or str(op).startswith("capture."))), None)
         channel = None if verdict == "silence" else channel_for(context.get("owner_activity", ""))
+        # A scene whose expected operations were all retired with nothing in their place (op null) is left out of the
+        # count, as in the decision bench: no answer can meet an action BAXY no longer has.
+        excluded = expect["kind"] in {"act", "propose"} and bool(expect.get("ops_any")) and all(
+            current(op)[0] is None for op in expect["ops_any"])
         ok = verdict == expect["kind"]
         if ok and verdict in {"act", "propose"}:
             # Operations named before the catalog changed are met by the ones that replaced them.
@@ -109,9 +113,11 @@ def main() -> None:
         if ok and expect.get("channel"):
             ok = channel == expect["channel"]
         intrusive = any(str(op).startswith("input.") or op in INTRUSIVE for op in ops)
-        annoying = (expect["kind"] == "silence" and verdict != "silence") or intrusive or (
+        # A failure is counted as a failure, not as an intervention that bothered anyone.
+        annoying = (expect["kind"] == "silence" and verdict not in {"silence", "failure"}) or intrusive or (
             channel == "voz" and context.get("owner_activity") in {"jugando", "llamada", "viendo"})
         rows.append({"id": scene["id"], "category": scene.get("category"), "expect": expect["kind"], "got": verdict,
+                     "excluded": excluded,
                      "ops": ops, "ok": ok, "annoying": annoying,
                      # A high-risk call that would run with no one's yes: the App holds the HIGH_RISK ones as proposals,
                      # so this counts any that reached «act» (a held risk missing from that list would show here).
@@ -120,14 +126,17 @@ def main() -> None:
         print(f"{scene['id']} {'ok ' if ok else 'BAD'} want={expect['kind']:<8} got={verdict:<8} {ops} "
               f"{(result.get('reply') or result.get('question') or '')[:70]!r}", flush=True)
     server.close()
-    n = len(rows)
-    summary = {"label": args.label, "scenes": args.scenes, "ok": sum(r["ok"] for r in rows), "n": n,
-               "accuracy": round(sum(r["ok"] for r in rows) / max(1, n), 4),
-               "annoying": sum(r["annoying"] for r in rows),
-               "annoying_per_20": round(20 * sum(r["annoying"] for r in rows) / max(1, n), 2),
-               "risky_alone": sum(r["risky_alone"] for r in rows),
-               "failures": sum(r["got"] == "failure" for r in rows),
-               "by_kind": {k: [sum(r["ok"] for r in rows if r["expect"] == k), sum(r["expect"] == k for r in rows)]
+    counted = [r for r in rows if not r["excluded"]]
+    n = len(counted)
+    summary = {"label": args.label, "scenes": args.scenes, "ok": sum(r["ok"] for r in counted), "n": n,
+               "accuracy": round(sum(r["ok"] for r in counted) / max(1, n), 4),
+               "excluded_retired": [r["id"] for r in rows if r["excluded"]],
+               "annoying": sum(r["annoying"] for r in counted),
+               "annoying_per_20": round(20 * sum(r["annoying"] for r in counted) / max(1, n), 2),
+               "risky_alone": sum(r["risky_alone"] for r in counted),
+               "failures": sum(r["got"] == "failure" for r in counted),
+               "by_kind": {k: [sum(r["ok"] for r in counted if r["expect"] == k),
+                               sum(r["expect"] == k for r in counted)]
                            for k in ("silence", "act", "propose", "say")},
                "p50_s": round(statistics.median(r["latency_s"] for r in rows), 3) if rows else None}
     with (runs / f"{args.label}-escenas.jsonl").open("w", encoding="utf-8") as out:

@@ -121,7 +121,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         }
 
         var resolved = new ResolvedRecipient(
-            "draft_" + Guid.NewGuid().ToString("N"),
             channel,
             recipient,
             observation.Shown!,
@@ -200,7 +199,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         }
 
         var resolved = new ResolvedRecipient(
-            "sendtest_" + Guid.NewGuid().ToString("N"),
             channel,
             forced,
             observation.Shown!,
@@ -401,7 +399,6 @@ internal interface IExternalOperationAdapter
 // Name: the recipient the model asked for, matched (folded, whole) against what the client shows. Shown: what the
 // client showed for it when it was resolved (its window title or conversation header).
 internal sealed record ResolvedRecipient(
-    string RecipientId,
     string Channel,
     string Name,
     string Shown,

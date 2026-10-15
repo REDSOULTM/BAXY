@@ -164,7 +164,7 @@
   "wifi.status": "Check whether the PC is connected to a Wi-Fi network right now. Use when: estoy conectado al wifi. Do not use when: general internet (use network.status), radio on or off (use wifi.radio.status). Examples: «¿estoy conectado al wifi?», «¿tengo wifi?», «wifi status».",
   "window.active": "Tell which window or application is in the foreground now. Use when: qué ventana está activa or al frente. Do not use when: whether a named app is open (use window.application.status). Examples: «¿qué ventana tengo activa?», «¿qué programa está al frente?», «what window is this?».",
   "window.application.status": "Check whether a named application is open with a visible window, without opening it. Use when: está abierto X. Do not use when: opening it (use app.open), whether it is installed (use app.installed), which window is in front (use window.active). Examples: «¿está abierto el spotify?», «¿tengo el chrome abierto?», «is discord open?».",
-  "window.close.all": "Close all open windows at once, except VS Code, the terminal and BAXY; never forces. Use when: cierra todo or todas las ventanas. Do not use when: one app (use app.close), only hiding windows to see the desktop (use window.minimize.all). Examples: «cierra todas las ventanas», «cierra todo», «close everything».",
+  "window.close.all": "Close all open windows at once (the person's editors and terminals too), except BAXY's own, after the person's yes; never forces, so a window that asks to save stays open. Use when: cierra todo or todas las ventanas. Do not use when: one app (use app.close), only hiding windows to see the desktop (use window.minimize.all). Examples: «cierra todas las ventanas», «cierra todo», «close everything».",
   "window.focus": "Bring an open window to the front by the windowId that window.resolve, window.active or app.open returned, or the one the last window action gave back (never windowHandle or another number). Use when: cambia a, ve a or trae al frente an open app. Do not use when: the app is not open (use app.open), maximizing (use window.maximize). Examples: «tráeme al frente el chrome», «cambia a la ventana de word», «focus spotify».",
   "window.maximize": "Maximize an already identified window. Use when: maximiza or agranda la ventana. Do not use when: back to normal size (use window.restore), fullscreen video in the browser (use browser.control). Examples: «maximiza el chrome», «agranda la ventana», «maximize word». Its windowId comes from window.resolve, window.active or app.open (never windowHandle); each window action returns a fresh windowId for the next one.",
   "window.minimize": "Minimize one already identified window, not all. Use when: minimiza X or esta ventana. Do not use when: minimizing everything to show the desktop (use window.minimize.all), closing it (use app.close). Examples: «minimiza el spotify», «minimiza esta ventana», «minimize chrome». Its windowId comes from window.resolve, window.active or app.open (never windowHandle); each window action returns a fresh windowId for the next one.",
@@ -183,7 +183,8 @@
    "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works."
   },
   "file.read": {
-   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
+   "offset": "Where to go on reading the same file: the nextOffset its last result gave (hasMore true). Without it the file starts again from the beginning."
   },
   "file.find": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
@@ -219,6 +220,9 @@
    "wanted": "Words of what you look for in that window (a name, a button). The view keeps sixty controls; with these words, up to ten more whose names contain one of them are added after those. Leave it out for the usual view.",
    "windows": "The window numbers your earlier look gave (window N): the look reads only those windows.",
    "tail": "true to keep the last entries of a long window (a conversation's newest messages) when the view is cut, instead of the first ones."
+  },
+  "web.fetch": {
+   "offset": "Where to go on reading the same page: the nextOffset its last result gave (hasMore true). Without it the page starts again from the beginning."
   }
  }
 }

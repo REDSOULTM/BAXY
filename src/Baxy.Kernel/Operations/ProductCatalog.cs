@@ -1590,9 +1590,6 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
             "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad donde está este PC cuando no se nombra ninguno)."),
-        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): la encuesta pide las
-        // noticias, no nombres de portales. Titulares del día o de un tema nombrado
-        // desde un canal RSS público, cada uno con su medio y su hora.
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
         // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
         // archivo o imagen de una dirección a una carpeta conocida, verificado por el
@@ -1738,7 +1735,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.WorkLoss,
             "window.close.all.desktop.postread.v1",
-            "Pide el cierre de todas las ventanas visibles del escritorio salvo Visual Studio Code, la terminal y la propia, verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
+            "Pide el cierre de todas las ventanas visibles del escritorio salvo las de BAXY, verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
         Descriptor(
             "window.focus",
             WindowIdSchema(),
