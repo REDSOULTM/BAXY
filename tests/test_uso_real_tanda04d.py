@@ -11,7 +11,8 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
 from baxy_mind.semantic import levels
 
 
@@ -41,7 +42,7 @@ def _situation(*titles: tuple[str, str]) -> dict:
     ],
 )
 def test_the_narrator_sees_the_page_the_window_shows(process, title, shown):
-    payload = llm._compose_situation_payload(_situation((process, title)), "es", "muéstrame las ventanas")
+    payload = compose_payload._compose_situation_payload(_situation((process, title)), "es", "muéstrame las ventanas")
     assert [window["title"] for window in payload["seen"]["windows"]] == [shown]
     assert "​" not in json.dumps(payload, ensure_ascii=False)
 
@@ -52,11 +53,11 @@ def test_a_draft_naming_the_page_is_not_refused_for_the_browser_suffix():
         ("msedge", "Receta de lentejas - Personal: Microsoft​ Edge"),
     )
     user_text = "muéstrame las ventanas abiertas"
-    payload = llm._compose_situation_payload(situation, "es", user_text)
+    payload = compose_payload._compose_situation_payload(situation, "es", user_text)
     draft = "Tienes abiertas estas ventanas:\n- Administrador de tareas\n- Receta de lentejas (Microsoft Edge)"
-    assert llm._payload_fact_defect(draft, payload, user_text) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, payload, user_text) == ""
     # A window left out of the answer is still refused.
-    assert llm._payload_fact_defect("Tienes abierto el Administrador de tareas.", payload, user_text) != ""
+    assert payload_fact_checks._payload_fact_defect("Tienes abierto el Administrador de tareas.", payload, user_text) != ""
 
 
 # «Incrementa el brightness al level 8» (brightness at 100) was stepped up by 8 and stayed at 100: a level said
@@ -94,8 +95,8 @@ def test_applications_are_named_by_program_windows_by_title():
     )
     draft = "Tienes abiertos el Administrador de tareas y Microsoft Edge (dos pestañas: recetas y horarios)."
     for asked in ("show me las aplicaciones", "¿qué programas tengo abiertos?", "which apps are open"):
-        payload = llm._compose_situation_payload(situation, "es", asked)
-        assert llm._payload_fact_defect(draft, payload, asked) == ""
+        payload = compose_payload._compose_situation_payload(situation, "es", asked)
+        assert payload_fact_checks._payload_fact_defect(draft, payload, asked) == ""
     for asked in ("muéstrame las ventanas abiertas", "list the open windows"):
-        payload = llm._compose_situation_payload(situation, "es", asked)
-        assert llm._payload_fact_defect(draft, payload, asked) == "missing_fact"
+        payload = compose_payload._compose_situation_payload(situation, "es", asked)
+        assert payload_fact_checks._payload_fact_defect(draft, payload, asked) == "missing_fact"

@@ -14,9 +14,12 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from baxy_mind import __main__ as mind_main  # noqa: E402
 from baxy_mind import llm as llm_module  # noqa: E402
-from baxy_mind.__main__ import _prepare_turn_result  # noqa: E402
+from baxy_mind import conversation_contract
+from baxy_mind import conversation_shape
+from baxy_mind import llm_prompts
+from baxy_mind import unsupported_answers
+from baxy_mind.turn_decide import _prepare_turn_result  # noqa: E402
 from baxy_mind.effect_intent import (  # noqa: E402
     known_unsupported_effect_request,
     operation_domain_is_grounded,
@@ -33,6 +36,10 @@ from baxy_mind.semantic.web import (  # noqa: E402
     person_fact_subject,
     record_fact_query,
 )
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import turn_decisions
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
+from baxy_mind.semantic.normalize import _policy_guard_text
 
 
 def _tool(operation: str, properties: dict | None = None) -> dict:
@@ -114,16 +121,16 @@ def test_the_clock_of_another_place_is_read_with_that_place(text: str) -> None:
     # Tanda 4 supersedes the web lookup: the time somewhere else is this PC's
     # clock read together with that place's zone, so system.time is grounded only
     # because the place is read, and it always carries that place.
-    folded = llm_module._policy_guard_text(text)
+    folded = _policy_guard_text(text)
     assert other_place_clock_question(folded)
     assert clock_elsewhere(folded) is not None
     assert operation_domain_is_grounded(text, "system.time") is True
-    assert mind_main._explicit_arguments_from_evidence("system.time", text)["place"]
+    assert semantic_arguments._explicit_arguments_from_evidence("system.time", text)["place"]
 
 
 @pytest.mark.parametrize("text", _THIS_CLOCK)
 def test_this_clock_and_clock_idioms_are_not_another_place(text: str) -> None:
-    folded = llm_module._policy_guard_text(text)
+    folded = _policy_guard_text(text)
     assert not other_place_clock_question(folded)
     assert clock_elsewhere(folded) is None
 
@@ -138,8 +145,8 @@ def test_the_time_elsewhere_is_this_clock_read_before_the_model_speaks(text: str
 
 def test_a_clock_of_another_place_that_names_no_single_place_is_never_this_clock() -> None:
     text = "what time is it in london and in paris"
-    assert other_place_clock_question(llm_module._policy_guard_text(text))
-    assert clock_elsewhere(llm_module._policy_guard_text(text)) is None
+    assert other_place_clock_question(_policy_guard_text(text))
+    assert clock_elsewhere(_policy_guard_text(text)) is None
     assert operation_domain_is_grounded(text, "system.time") is False
 
 
@@ -178,7 +185,7 @@ _NOT_ABOUT_BAXY = [
 def test_questions_about_the_one_answering_read_as_identity(text: str) -> None:
     assert read_request(text).has(INTENT_IDENTITY)
     assert (
-        llm_module._conversation_presentation_shape(
+        _conversation_presentation_shape(
             text, conversation_kind="knowledge", has_history=False,
         )
         == "identity"
@@ -205,9 +212,9 @@ class _GuardSaysPublic:
 def test_identity_is_never_a_public_lookup_whatever_the_guard_reads(text: str) -> None:
     guard = _GuardSaysPublic()
     catalog = PlannerCatalog([_WEB_SEARCH])
-    assert not mind_main._public_lookup_applies(text, text, guard, ("web.search",), catalog)
+    assert not turn_decisions._public_lookup_applies(text, text, guard, ("web.search",), catalog)
     # The same guard reading still searches public information.
-    assert mind_main._public_lookup_applies(
+    assert turn_decisions._public_lookup_applies(
         "cuál es la tasa de cambio del yen", "cuál es la tasa de cambio del yen",
         guard, ("web.search",), catalog,
     )
@@ -263,9 +270,9 @@ def test_an_identity_turn_answers_without_a_web_search(text: str) -> None:
 
 def test_the_identity_answer_sees_the_question_and_never_invents_an_origin() -> None:
     text = "who made you"
-    payload = llm_module._shaped_presentation_text(text, "identity", response_language="en")
+    payload = conversation_shape._shaped_presentation_text(text, "identity", response_language="en")
     assert '"asked": "who made you"' in payload
-    violates = llm_module._shaped_conversation_answer_violates_contract
+    violates = conversation_contract._shaped_conversation_answer_violates_contract
     assert violates("I'm BAXY and OpenAI made me.", text, "identity")
     assert violates("I'm BAXY, built on Qwen.", text, "identity")
     assert violates("I'm BAXY and I was born in 2024.", text, "identity")
@@ -339,7 +346,7 @@ def test_a_desired_timer_without_its_duration_asks_for_it(text: str) -> None:
     ],
 )
 def test_would_like_is_a_desire_not_a_hypothesis(text: str, hypothetical: bool) -> None:
-    assert _is_past_or_hypothetical_state(llm_module._policy_guard_text(text)) is hypothetical
+    assert _is_past_or_hypothetical_state(_policy_guard_text(text)) is hypothetical
 
 
 _ERRANDS = [
@@ -391,8 +398,8 @@ def test_a_coffee_order_is_a_plain_limit_not_a_question_about_the_pc() -> None:
 # --- 5. The limit sentence is plain, short and never echoes the request --------------
 
 def test_courtesy_is_never_the_anchor_of_a_limit() -> None:
-    assert llm_module._unsupported_request_anchor_token("Stop listening por favor") == "listening"
-    assert llm_module._unsupported_request_anchor_token("abre el portal, porfa") == "portal"
+    assert unsupported_answers._unsupported_request_anchor_token("Stop listening por favor") == "listening"
+    assert unsupported_answers._unsupported_request_anchor_token("abre el portal, porfa") == "portal"
 
 
 @pytest.mark.parametrize(
@@ -411,13 +418,13 @@ def test_courtesy_is_never_the_anchor_of_a_limit() -> None:
     ],
 )
 def test_limit_prose_contract(request_text: str, reply: str, reason: str) -> None:
-    assert llm_module._unsupported_answer_contract_failure(reply, request_text) == reason
+    assert unsupported_answers._unsupported_answer_contract_failure(reply, request_text) == reason
 
 
 def test_the_limit_instructions_no_longer_dictate_the_robotic_formula() -> None:
-    assert "tal como fue" not in llm_module.UNSUPPORTED_PRESENTATION_PROMPT
-    assert "como se pidió" not in llm_module.UNSUPPORTED_PRESENTATION_PROMPT
-    assert "no lo haces" in llm_module.UNSUPPORTED_PRESENTATION_PROMPT
+    assert "tal como fue" not in llm_prompts.UNSUPPORTED_PRESENTATION_PROMPT
+    assert "como se pidió" not in llm_prompts.UNSUPPORTED_PRESENTATION_PROMPT
+    assert "no lo haces" in llm_prompts.UNSUPPORTED_PRESENTATION_PROMPT
     source = Path(llm_module.__file__).read_text(encoding="utf-8")
     assert "tal como fue pedido" not in source
     assert "tal como fue solicitado" not in source

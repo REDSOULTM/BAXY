@@ -1,6 +1,7 @@
 """Live y1 (2026-10-07): «poné el modo programador» clicked the Calculator's «Alternar grados» on the way."""
 
-from baxy_mind import computer_use
+from baxy_mind import cu_rules
+from baxy_mind import cu_validate
 
 
 def _view() -> dict:
@@ -15,7 +16,7 @@ def _view() -> dict:
 
 def _decide(goal: str, label: str, index: int) -> dict:
     raw = {"act": "click", "label": label, "i": index, "why": "probar"}
-    return computer_use.validate_decision(raw, view=_view(), last_failed=None, application_names=[], goal=goal, history=[])
+    return cu_validate.validate_decision(raw, view=_view(), last_failed=None, application_names=[], goal=goal, history=[])
 
 
 def test_a_setting_goal_never_flips_a_switch_it_does_not_name() -> None:
@@ -42,7 +43,7 @@ def test_put_mode_without_a_switch_of_that_name_goes_to_the_mode() -> None:
         ],
         "text": {},
     }
-    step = computer_use.deterministic_step(goal="activar modo programador", view=view, history=[])
+    step = cu_rules.deterministic_step(goal="activar modo programador", view=view, history=[])
     assert step is not None and step["operation"] == "input.visible.click"
     assert step["arguments"]["label"] == "Abrir navegación"
 
@@ -53,7 +54,7 @@ def test_put_mode_with_a_switch_of_that_name_is_left_to_the_switch_rules() -> No
         "controls": [{"i": 0, "kind": "Button", "name": "Modo oscuro", "state": "off", "toggle": True}],
         "text": {},
     }
-    step = computer_use.deterministic_step(goal="activar modo oscuro", view=view, history=[])
+    step = cu_rules.deterministic_step(goal="activar modo oscuro", view=view, history=[])
     assert step is None or step["arguments"].get("label") != "Abrir navegación"
 
 
@@ -61,8 +62,8 @@ def test_the_navigation_button_goes_before_a_name_clicked_by_label_alone() -> No
     controls = [{"i": 0, "kind": "Button", "name": "Abrir navegación", "state": ""}]
     controls += [{"i": i, "kind": "Button", "name": f"Tecla {i}", "state": ""} for i in range(1, 60)]
     view = {"window": {"title": "Calculadora", "process": "calc"}, "controls": controls, "text": {}, "controlCount": 90}
-    step = computer_use.deterministic_step(goal="ir a programador", view=view, history=[])
+    step = cu_rules.deterministic_step(goal="ir a programador", view=view, history=[])
     assert step is not None and step["arguments"]["label"] == "Abrir navegación"
     opened = [{"step": 1, "operation": "input.visible.click", "label": "Abrir navegación", "ok": True}]
-    after = computer_use.deterministic_step(goal="ir a programador", view=view, history=opened)
+    after = cu_rules.deterministic_step(goal="ir a programador", view=view, history=opened)
     assert after is not None and after["arguments"].get("label") == "programador"

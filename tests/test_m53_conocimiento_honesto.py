@@ -18,11 +18,13 @@ from fractions import Fraction
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind.llm import LlmRuntime, _shaped_conversation_answer_violates_contract
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.conversation_contract import _shaped_conversation_answer_violates_contract
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import knowledge, quantities
 from baxy_mind.semantic.decider import ContextDecision
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
 
 S002 = "¿Qué ingredientes hacen faltan para el pan de banana"
 W01_T1 = (
@@ -167,7 +169,7 @@ class _Talk:
 
 def _turn(text: str, llm: _Talk, history: list[dict[str, str]] | None = None) -> dict[str, object]:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m53", "text": text, "history": [*(history or []), {"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -218,7 +220,7 @@ WEB_SEARCH_SCHEMA = {
 
 
 def test_the_arguments_step_reads_the_same_query_back() -> None:
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "web.search", "Dame una receta simple de pastel de choclo para 6 personas.", WEB_SEARCH_SCHEMA,
     ) == {"query": "receta pastel de choclo"}
     # The follow-up reads the work from the conversation the App sends back.
@@ -227,7 +229,7 @@ def test_the_arguments_step_reads_the_same_query_back() -> None:
         {"role": "assistant", "content": "Bilbo acompaña a trece enanos a recuperar el tesoro de Smaug."},
         {"role": "user", "content": P11_T2},
     ]
-    assert sidecar._ground_explicit_arguments("web.search", P11_T2, WEB_SEARCH_SCHEMA, history=history) == {
+    assert argument_grounding._ground_explicit_arguments("web.search", P11_T2, WEB_SEARCH_SCHEMA, history=history) == {
         "query": "resumen libro hobbit: peligroso anillo"
     }
 

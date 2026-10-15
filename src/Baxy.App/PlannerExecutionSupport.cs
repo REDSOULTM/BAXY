@@ -1,4 +1,6 @@
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
@@ -42,6 +44,20 @@ internal sealed class PendingMindPlanExecution
     /// never resumes across sessions.
     /// </summary>
     internal string? DeferredFailure { get; init; }
+
+    /// <summary>
+    /// Ronda 19: the ids of the app.open steps the shell itself put before a window.resolve that found no window of
+    /// an installed application (<see cref="MindPlanBoundary.OpenBeforeResolvingAgain"/>). Such an open is tried
+    /// once and never replanned; its failure ends only its own chain. Not persisted, like the deferred failure.
+    /// </summary>
+    internal IReadOnlySet<string> InsertedOpens { get; init; } = new HashSet<string>(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Ronda 19 (revisión): the mind marked the plan as conditioned on an application being open now
+    /// (<see cref="MindPlanResult.PresentStateCondition"/>). Its window reads check that condition, so the shell never
+    /// opens an absent application before them. Kept across replans and persisted with the plan.
+    /// </summary>
+    internal bool PresentStateCondition { get; init; }
 
     /// <summary>
     /// Live state of the computer-use loop while the current step is a
@@ -188,7 +204,9 @@ internal static class MindPlanBoundary
             || response.Status == OperationStatuses.Completed
             || execution.NextIndex < 0
             || execution.NextIndex >= execution.Steps.Count
-            || !IsReadOnly(execution.CurrentStep.Operation))
+            || !(IsReadOnly(execution.CurrentStep.Operation)
+                // Ronda 19: an open the shell put first and that changed nothing ends only its own chain.
+                || execution.InsertedOpens.Contains(execution.CurrentStep.Id)))
         {
             return null;
         }
@@ -351,6 +369,89 @@ internal static class MindPlanBoundary
         return facts.ToJsonString();
     }
 
+    /// <summary>
+    /// Estabilización F: the facts of the step whose effect may have happened and was not confirmed, as a failed
+    /// step's (<see cref="WithStepFacts"/>): its operation, what it was about — its own target, or the name the step
+    /// that resolved its identifier observed («recipientId» → «Ron92») — and what it attempted. Null with no step.
+    /// </summary>
+    internal static JsonObject? UncertainStep(PendingMindPlanExecution execution)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        if (execution.NextIndex < 0 || execution.NextIndex >= execution.Steps.Count)
+        {
+            return null;
+        }
+
+        PreparedOperation? prepared = execution.Confirmation?.Prepared ?? execution.PendingOperation;
+        JsonObject? arguments = prepared is null
+            ? execution.CurrentStep.Arguments?.DeepClone() as JsonObject
+            : JsonNode.Parse(prepared.Arguments.GetRawText()) as JsonObject;
+        JsonObject? step = ParsedFacts(WithStepFacts(new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = prepared?.OperationName ?? execution.CurrentStep.Operation,
+            ["polarity"] = "failure",
+            ["verified"] = false,
+            ["succeeded"] = false,
+            ["effectUncertain"] = true,
+        }.ToJsonString(), arguments));
+        if (step is not null && step["target"] is null && ResolvedName(execution, arguments) is { } name)
+        {
+            step["target"] = name;
+        }
+
+        return step;
+    }
+
+    private static string? ResolvedName(PendingMindPlanExecution execution, JsonObject? arguments)
+    {
+        foreach ((string key, JsonNode? value) in arguments ?? new JsonObject())
+        {
+            if (!key.EndsWith("Id", StringComparison.Ordinal) || value is not JsonValue id
+                || !id.TryGetValue(out string? wanted))
+            {
+                continue;
+            }
+
+            foreach (string message in execution.CompletedMessages)
+            {
+                if (ParsedFacts(message)?["observed"] is JsonObject observed
+                    && observed[key] is JsonValue seen && seen.TryGetValue(out string? found) && found == wanted
+                    && observed["displayName"] is JsonValue named && named.TryGetValue(out string? name)
+                    && !string.IsNullOrWhiteSpace(name))
+                {
+                    return name.Trim();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Estabilización F (tanda estab2 t2-c07 t1: «…diciendo: "Llego en 10 min y llevo el cargador"» over a receipt
+    /// that carried only the text's hash): a receipt that proves the text it acted on by its SHA-256
+    /// (<c>contentSha256</c>) goes with that text when the step's own <c>text</c> hashes the same, so the floor says
+    /// it as sent and no draft has to retell it.
+    /// </summary>
+    internal static string WithVerifiedContent(string message, JsonObject? arguments)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        if (arguments?["text"] is not JsonValue value || !value.TryGetValue(out string? text)
+            || ParsedFacts(message) is not { } facts || facts["observed"] is not JsonObject observed
+            || observed["text"] is not null
+            || observed["contentSha256"] is not JsonValue hash || !hash.TryGetValue(out string? sha256)
+            || !string.Equals(
+                sha256, Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text))),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return message;
+        }
+
+        observed["text"] = text;
+        return facts.ToJsonString();
+    }
+
     private static string? StepTarget(JsonObject? arguments)
     {
         foreach (string key in TargetArguments)
@@ -484,8 +585,202 @@ internal static class MindPlanBoundary
         ArgumentNullException.ThrowIfNull(response);
         return !response.EffectMayHaveOccurred
             && execution.ReplanCount < 2
-            && execution.Steps.Count > 1;
+            && execution.Steps.Count > 1
+            && !execution.InsertedOpens.Contains(execution.CurrentStep.Id)
+            && !LeavesOnlyClosingAnAbsentTarget(execution, response)
+            && !LeavesOnlyPlacingAnAbsentTarget(execution, response)
+            && !LeavesOnlyStepsOnAnUnopenedTarget(execution, response);
     }
+
+    /// <summary>
+    /// Revisión 2 de r24 (bloqueante 2): a step that searched for its target in the person's window, did not open it
+    /// and wrote nothing (a code ending in «_not_opened», without effect: «recipient_not_opened» after the chat search
+    /// already retried once inside the step) ends the chain that hangs on it. A replan may only repeat the pending
+    /// suffix exactly, so it would run the same search again over the person's window (Escape, shortcut, typing,
+    /// click, up to twice more, about 3.8 s of planning each) to end in the same failure; that was never measured to
+    /// help, so it is not done. A rest that does not hang on that step, or a failure that may have had an effect,
+    /// keeps its own path.
+    /// </summary>
+    internal static bool LeavesOnlyStepsOnAnUnopenedTarget(
+        PendingMindPlanExecution execution,
+        OperationResponse response) =>
+        RestHangingOnTheFailedStep(execution, response, IsTargetNotOpened) is { Length: > 0 };
+
+    private static bool IsTargetNotOpened(string? code) =>
+        code is not null && code.EndsWith("_not_opened", StringComparison.Ordinal);
+
+    /// <summary>
+    /// Ronda 19 «app-cerrada-se-abre» (uso real r17 t2-c18 «pon el Word y el Edge uno al lado del otro» with Edge
+    /// closed, t3-c15 «poné el word a la izquierda y el chrome a la derecha», 27 s): the window.resolve of an
+    /// installed application (selected by applicationName, so an uninstalled one answers app_not_found instead) found
+    /// no window, and every step that hangs on it places a window (data: open_window_operations.v1.json). The
+    /// application is opened (app.open by that name) and resolved once more, instead of a replan that neither opened
+    /// it nor offered to. Returns the execution to go on with, or null when this does not apply: another failure,
+    /// another selector, a rest that minimizes, closes or focuses («minimiza Word», «cierra Discord» open nothing),
+    /// or a resolve that already hangs on an open (this shell's or the plan's own), so it is tried once. Nor in a
+    /// plan the mind marked as conditioned on an application being open now
+    /// (<see cref="PendingMindPlanExecution.PresentStateCondition"/>: «si tengo word abierto, ponelo a la izquierda»,
+    /// «snap chrome to the right if it's open»): there no window means the condition is false, and the turn ends in
+    /// that absence.
+    /// </summary>
+    internal static PendingMindPlanExecution? OpenBeforeResolvingAgain(
+        PendingMindPlanExecution execution,
+        OperationResponse response,
+        JsonObject? arguments)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        ArgumentNullException.ThrowIfNull(response);
+        if (execution.PresentStateCondition
+            || response.EffectMayHaveOccurred
+            || response.Status == OperationStatuses.Completed
+            || !string.Equals(response.ErrorCode, WindowNotFound, StringComparison.Ordinal)
+            || execution.NextIndex < 0
+            || execution.NextIndex >= execution.Steps.Count
+            || !string.Equals(execution.CurrentStep.Operation, WindowResolve, StringComparison.Ordinal)
+            || arguments?["applicationName"] is not JsonValue nameValue
+            || !nameValue.TryGetValue(out string? applicationName)
+            || string.IsNullOrWhiteSpace(applicationName))
+        {
+            return null;
+        }
+
+        MindPlanStep resolve = execution.CurrentStep;
+        if (resolve.DependsOn.Any(id => execution.InsertedOpens.Contains(id)
+                || execution.Steps.Any(step => step.Id == id
+                    && string.Equals(step.Operation, ApplicationOpen, StringComparison.Ordinal))))
+        {
+            return null;
+        }
+
+        MindPlanStep[] rest = execution.Steps.Skip(execution.NextIndex + 1).ToArray();
+        MindPlanStep[] dependents = rest.Where(step => step.DependsOn.Contains(resolve.Id, StringComparer.Ordinal)).ToArray();
+        if (dependents.Length == 0
+            || !dependents.All(static step => OpenWindowOperations.PlacesAnOpenWindow(step.Operation)))
+        {
+            return null;
+        }
+
+        var ids = new HashSet<string>(execution.Steps.Select(static step => step.Id), StringComparer.Ordinal);
+        ids.UnionWith(execution.InsertedOpens);
+        string openId = resolve.Id + "_open";
+        for (int suffix = 2; ids.Contains(openId); suffix++)
+        {
+            openId = $"{resolve.Id}_open{suffix}";
+        }
+
+        var open = new MindPlanStep(
+            openId,
+            ApplicationOpen,
+            resolve.Purpose,
+            [],
+            "literal",
+            new JsonObject { ["appId"] = applicationName.Trim() });
+        MindPlanStep again = resolve with
+        {
+            DependsOn = [openId],
+            ArgumentsMode = "literal",
+            Arguments = arguments.DeepClone().AsObject(),
+        };
+        var opened = new HashSet<string>(execution.InsertedOpens, StringComparer.Ordinal) { openId };
+        var next = new PendingMindPlanExecution(
+            execution.Objective,
+            [open, again, .. rest],
+            execution.ReplanCount)
+        {
+            DeferredFailure = execution.DeferredFailure,
+            InsertedOpens = opened,
+            PresentStateCondition = execution.PresentStateCondition,
+        };
+        foreach (JsonNode? observation in execution.Observations)
+        {
+            next.Observations.Add(observation?.DeepClone());
+        }
+
+        next.CompletedMessages.AddRange(execution.CompletedMessages);
+        return next;
+    }
+
+    /// <summary>
+    /// Ronda 19: an absent target (no window, its client not running, the application not installed) before steps
+    /// that only place its window is final, like one before steps that only close it: what could open it already ran
+    /// (<see cref="OpenBeforeResolvingAgain"/>) or cannot (not installed, no installed identity), and another plan
+    /// only spends seconds to end in the same absence. A rest that also does anything else still replans.
+    /// </summary>
+    internal static bool LeavesOnlyPlacingAnAbsentTarget(
+        PendingMindPlanExecution execution,
+        OperationResponse response) =>
+        RestHangingOnAnAbsentTarget(execution, response) is { Length: > 0 } rest
+        && rest.All(static step => OpenWindowOperations.PlacesAnOpenWindow(step.Operation));
+
+    private const string WindowNotFound = "window_not_found";
+    private const string WindowResolve = "window.resolve";
+    private const string ApplicationOpen = "app.open";
+
+    /// <summary>
+    /// Uso real t2-r4 c03-1 («cierra chrome» with Chrome not open): window.resolve answered window_not_found and the
+    /// plan's rest only closed that target, yet the planner ran twice more (5.6 + 4.6 s) to end in the same failure.
+    /// What is not open cannot be closed by another plan: an absence of the target (no window, the client not
+    /// running) before steps that only close is final. Any other rest (open it, focus it) and any other failure still
+    /// replan.
+    /// </summary>
+    internal static bool LeavesOnlyClosingAnAbsentTarget(
+        PendingMindPlanExecution execution,
+        OperationResponse response)
+    {
+        return RestHangingOnAnAbsentTarget(execution, response) is { Length: > 0 } rest
+            && rest.All(static step => Closes(step.Operation));
+    }
+
+    // The rest of the plan when the current step found its target absent and every step after it hangs on that
+    // target; null otherwise. Only the rest that hangs on the absent target ends with it: «cierra chrome y spotify»
+    // with Chrome's window gone still has Spotify's close, which another plan may do.
+    private static MindPlanStep[]? RestHangingOnAnAbsentTarget(
+        PendingMindPlanExecution execution,
+        OperationResponse response) =>
+        RestHangingOnTheFailedStep(execution, response, IsTargetAbsence);
+
+    private static MindPlanStep[]? RestHangingOnTheFailedStep(
+        PendingMindPlanExecution execution,
+        OperationResponse response,
+        Func<string?, bool> endsTheChain)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        ArgumentNullException.ThrowIfNull(response);
+        if (!endsTheChain(response.ErrorCode)
+            || execution.NextIndex < 0
+            || execution.NextIndex >= execution.Steps.Count)
+        {
+            return null;
+        }
+
+        var ended = new HashSet<string>(StringComparer.Ordinal) { execution.CurrentStep.Id };
+        MindPlanStep[] rest = execution.Steps.Skip(execution.NextIndex + 1).ToArray();
+        foreach (MindPlanStep step in rest)
+        {
+            if (!step.DependsOn.Any(ended.Contains))
+            {
+                return null;
+            }
+
+            ended.Add(step.Id);
+        }
+
+        return rest;
+    }
+
+    // The provider codes that say the target is not there: no window of it (window control), its client not running
+    // (the media, messaging, game and browser adapters' «<client>_not_running»), the application not installed
+    // (app_not_found, the installed-application selector's and app.open's answer).
+    private static bool IsTargetAbsence(string? code) =>
+        code is not null
+        && (string.Equals(code, WindowNotFound, StringComparison.Ordinal)
+            || string.Equals(code, "app_not_found", StringComparison.Ordinal)
+            || code.EndsWith("_not_running", StringComparison.Ordinal));
+
+    // An operation whose effect is closing something: «close» is one of its name's segments (app.close,
+    // window.close.all).
+    private static bool Closes(string operation) =>
+        operation.Split('.').Contains("close", StringComparer.Ordinal);
 
     internal static bool CanRefreshConfirmationChallenge(
         PendingMindPlanExecution execution)
@@ -652,6 +947,32 @@ internal static class MindPlanBoundary
 
         using JsonDocument document = JsonDocument.Parse(arguments.ToJsonString());
         return Baxy.Kernel.Operations.OperationArgumentValidator.IsValid(
+            document.RootElement,
+            descriptor.ArgumentsSchema);
+    }
+
+    /// <summary>
+    /// Ronda 23 (índices de vista y esquema): the arguments of a step the exact schema refuses, by name (the cause a
+    /// refused act is handed back with). Empty when the operation is not a public one of the catalog: there is no
+    /// argument to blame, the operation itself is refused.
+    /// </summary>
+    internal static IReadOnlyList<string> ArgumentsOutsideExactSchema(
+        string operation,
+        JsonObject arguments)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(operation);
+        ArgumentNullException.ThrowIfNull(arguments);
+        if (!Baxy.Kernel.Operations.ProductCatalog.TryGet(
+                operation,
+                out Baxy.Kernel.Operations.ProductOperationDescriptor? descriptor)
+            || descriptor.ToolExposure != Baxy.Kernel.Operations.ToolExposure.Public
+            || operation.StartsWith("memory.", StringComparison.Ordinal))
+        {
+            return [];
+        }
+
+        using JsonDocument document = JsonDocument.Parse(arguments.ToJsonString());
+        return Baxy.Kernel.Operations.OperationArgumentValidator.InvalidArguments(
             document.RootElement,
             descriptor.ArgumentsSchema);
     }
@@ -851,6 +1172,10 @@ internal static class PlanObservationProjector
                 .GroupBy(static value => value.ToJsonString(), StringComparer.Ordinal)
                 .Select(static group => group.First())
                 .ToArray();
+            if (values.Length > 1 && field == "windowId" && ArrangesAWindow(step.Operation))
+            {
+                values = MainFrameWindowIds(producerResults, step.Operation) is [JsonNode frame] ? [frame] : values;
+            }
             if (values.Length == 1)
             {
                 grounded[field] = values[0].DeepClone();
@@ -930,6 +1255,173 @@ internal static class PlanObservationProjector
             .Where(static result => result is not null)
             .Cast<JsonObject>()
             .ToArray();
+    }
+
+    // Tanda t4-r6 «ponme el navegador y el word uno al lado del otro»: Word's resolve listed «Documento1 - Word» and
+    // an untitled 460×443 dialog, so the snap found two ids and the plan ended in step_data_missing. Placing, sizing or
+    // focusing acts on what the person calls the application's window: its one titled frame that no other window
+    // owns. Closing keeps every window it was given (a dialog closes with its application).
+    private static bool ArrangesAWindow(string operation) =>
+        operation is "window.focus" or "window.maximize" or "window.minimize" or "window.move"
+            or "window.resize" or "window.restore" or "window.snap";
+
+    // Ronda 22 (r18 t4-c19): the browser's resolve listed three titled frames (one a 365×206 picture-in-picture),
+    // so the snap still found three ids. Each application keeps the frame the act is for (owner rule D71, data
+    // open_window_operations «persons_frame»). Revisión 1: the order a read lists frames in proves nothing (the
+    // application read lists them by area); only the z rank the provider publishes per window does.
+    private static JsonNode[] MainFrameWindowIds(IEnumerable<JsonObject> producerResults, string operation)
+    {
+        PersonsFrameThresholds thresholds = OpenWindowOperations.PersonsFrame;
+        var picked = new List<JsonNode>();
+        foreach (JsonObject result in producerResults)
+        {
+            JsonObject[] frames = WindowObjects(result)
+                .Where(static window =>
+                    window["title"] is JsonValue title && title.TryGetValue(out string? text)
+                    && !string.IsNullOrWhiteSpace(text)
+                    && !(window["owned"] is JsonValue owned && owned.TryGetValue(out bool isOwned) && isOwned))
+                .GroupBy(static window => window["windowId"]!.ToJsonString(), StringComparer.Ordinal)
+                .Select(static group => group.First())
+                .ToArray();
+            foreach (IGrouping<string, JsonObject> application in frames.GroupBy(ApplicationKey, StringComparer.Ordinal))
+            {
+                if (PersonsFrame(application.ToArray(), operation, thresholds) is not { } frame)
+                {
+                    return [];
+                }
+
+                picked.Add(frame["windowId"]!);
+            }
+        }
+
+        return picked
+            .GroupBy(static value => value.ToJsonString(), StringComparer.Ordinal)
+            .Select(static group => group.First())
+            .ToArray();
+    }
+
+    private static string ApplicationKey(JsonObject window) =>
+        WindowNumber(window["processId"]) is { } processId
+            ? "pid:" + processId.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            : "name:" + (((string?)window["processName"]) ?? string.Empty).ToLowerInvariant();
+
+    // The order: (1) a frame already in the state the act leaves («restaura» over a normal window) is not its target
+    // while the frames left are minimized ones, or «restauré» would be said of a window nothing happened to; a
+    // minimized frame has no place in front for the foreground or the z rank to speak of. Revisión 2: never when the
+    // frame left stands on the desktop: «maximiza el explorador» with the foreground frame already maximized is for
+    // that frame (D71, «ya estaba maximizada»), never for the one behind it, which would cover it; (2) the foreground
+    // frame, which no size rule overrides; (3) topmost tool-sized frames (picture-in-picture, a floating player) are
+    // not the window, measured against their monitor's work area, and a minimized frame has no size; (4) the frame
+    // first in the desktop's z-order, when the provider ranked every frame left and none is minimized (where a
+    // minimized window stands says nothing of use); (5) the one clearly larger than the rest. Otherwise ambiguous.
+    internal static JsonObject? PersonsFrame(JsonObject[] frames, string operation, PersonsFrameThresholds thresholds)
+    {
+        if (frames.Length <= 1)
+        {
+            return frames.FirstOrDefault();
+        }
+
+        JsonObject[] windows = frames;
+        if (thresholds.ActEndState.TryGetValue(operation, out string? endState))
+        {
+            JsonObject[] changing = windows.Where(window => !string.Equals(State(window), endState,
+                StringComparison.Ordinal)).ToArray();
+            if (changing.Length > 0 && changing.All(static window => State(window) == "minimized"))
+            {
+                windows = changing;
+            }
+        }
+
+        if (windows.Length == 1)
+        {
+            return windows[0];
+        }
+
+        JsonObject[] foreground = windows
+            .Where(static window => window["foreground"] is JsonValue flag && flag.TryGetValue(out bool isForeground)
+                && isForeground)
+            .ToArray();
+        if (foreground.Length == 1)
+        {
+            return foreground[0];
+        }
+
+        JsonObject[] notTools = windows.Where(window => !IsToolSized(window, thresholds)).ToArray();
+        if (notTools.Length > 0)
+        {
+            windows = notTools;
+        }
+
+        if (windows.Length == 1)
+        {
+            return windows[0];
+        }
+
+        if (windows.All(window => WindowNumber(window["zOrder"]) is not null && State(window) != "minimized"))
+        {
+            double top = windows.Min(window => WindowNumber(window["zOrder"])!.Value);
+            JsonObject[] first = windows.Where(window => WindowNumber(window["zOrder"]) == top).ToArray();
+            if (first.Length == 1)
+            {
+                return first[0];
+            }
+        }
+
+        double? largest = windows.Select(Area).Max();
+        if (largest is > 0 && windows.All(window => Area(window) is not null))
+        {
+            JsonObject[] dominant = windows.Where(window => Area(window) == largest).ToArray();
+            if (dominant.Length == 1
+                && windows.All(window => ReferenceEquals(window, dominant[0])
+                    || Area(window)!.Value < thresholds.ComparableAreaFraction * largest.Value))
+            {
+                return dominant[0];
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsToolSized(JsonObject window, PersonsFrameThresholds thresholds) =>
+        window["topmost"] is JsonValue flag && flag.TryGetValue(out bool topmost) && topmost
+        && Area(window) is { } area
+        && WindowNumber(window["workAreaWidth"]) is { } workWidth && WindowNumber(window["workAreaHeight"]) is { } workHeight
+        && workWidth > 0 && workHeight > 0
+        && area < thresholds.ToolSizedWorkAreaFraction * workWidth * workHeight;
+
+    private static string? State(JsonObject window) =>
+        window["state"] is JsonValue value && value.TryGetValue(out string? state) ? state : null;
+
+    // A minimized window's rectangle is its caption stub (160×28), not its size.
+    private static double? Area(JsonObject window) =>
+        State(window) != "minimized"
+        && WindowNumber(window["width"]) is { } w && WindowNumber(window["height"]) is { } h && w > 0 && h > 0
+            ? w * h
+            : null;
+
+    private static double? WindowNumber(JsonNode? node) =>
+        node is JsonValue value && value.GetValueKind() == System.Text.Json.JsonValueKind.Number
+        && double.TryParse(value.ToJsonString(), System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out double number)
+            ? number
+            : null;
+
+    private static IEnumerable<JsonObject> WindowObjects(JsonNode? node)
+    {
+        if (node is JsonObject objectNode)
+        {
+            if (objectNode["windowId"] is JsonValue)
+                yield return objectNode;
+            foreach ((string _, JsonNode? child) in objectNode)
+                foreach (JsonObject nested in WindowObjects(child))
+                    yield return nested;
+        }
+        else if (node is JsonArray arrayNode)
+        {
+            foreach (JsonNode? child in arrayNode)
+                foreach (JsonObject nested in WindowObjects(child))
+                    yield return nested;
+        }
     }
 
     private static string[] DeterministicDependencyFields(string operation) =>

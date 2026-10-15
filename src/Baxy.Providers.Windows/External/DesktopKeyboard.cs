@@ -24,11 +24,21 @@ internal interface IDesktopKeyboard
     /// </summary>
     uint TypeText(string text, Func<bool> keepGoing);
 
-    /// <summary>Whether this window (or one of its own process) holds the foreground.</summary>
+    /// <summary>Whether this window, a window inside it or a window it owns holds the foreground.</summary>
     bool Holds(nint window);
 
-    /// <summary>Brings this window to the front; whether it holds the foreground afterwards.</summary>
-    ValueTask<bool> FrontAsync(nint window, CancellationToken cancellationToken);
+    /// <summary>
+    /// Brings this window to the front inside a burst of the foreground lease (<see cref="IForegroundLease"/>): after
+    /// a pause of the person, with what was in front saved. Keys go only while the burst may act, and the burst is
+    /// restored once they are sent.
+    /// </summary>
+    ValueTask<IInputBurst> FrontAsync(nint window, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Hands the front back to a window that had it (the person's) after something of the mission took it: nothing is
+    /// taken, so no lease and no pause; whether that window holds the front afterwards.
+    /// </summary>
+    bool GiveFront(nint window);
 
     /// <summary>The size of one native INPUT record (40 on x64), checked before anything is sent.</summary>
     int InputSize { get; }
@@ -50,6 +60,14 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 
     // What the PowerShell path waited before reading the foreground again.
     private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(40);
+
+    // The Core's lease (and its pause detector) starts with the first mission key, not with the adapter.
+    private readonly IForegroundLease? _lease;
+
+    internal WindowsDesktopKeyboard(IForegroundLease? lease = null)
+    {
+        _lease = lease;
+    }
 
     public int InputSize => Marshal.SizeOf<Input>();
 
@@ -89,37 +107,26 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
             if (!keepGoing())
                 break;
             accepted += Send([Key(0, text[index], Unicode), Key(0, text[index], Unicode | KeyUp)]);
+            // Raw Input never delivers a Unicode key: the pause detector is told it was BAXY's.
+            WindowsUserInputPause.NoteOwnUndelivered();
             Thread.Sleep(KeyPace);
         }
 
         return accepted;
     }
 
-    public bool Holds(nint window)
-    {
-        if (window == 0)
-            return false;
-        if (VisibleControlSurface.ForegroundIs(window))
-            return true;
-        // A window of the same process in front (its own pop-up or dialog) still takes the keys for it.
-        nint foreground = GetForegroundWindow();
-        if (foreground == 0)
-            return false;
-        _ = GetWindowThreadProcessId(foreground, out uint foregroundProcess);
-        _ = GetWindowThreadProcessId(window, out uint windowProcess);
-        return windowProcess != 0 && foregroundProcess == windowProcess;
-    }
+    // Its own pop-up or dialog (a window it owns) still takes the keys for it; another top-level window of the same
+    // process does not (review of fable/cu-v3-pausa: a second folder window, the shell's taskbar or another browser
+    // window is the person's, and the keys of the mission must never land there).
+    public bool Holds(nint window) => VisibleControlSurface.ForegroundIsOrOwnedBy(window);
 
-    public async ValueTask<bool> FrontAsync(nint window, CancellationToken cancellationToken)
+    public ValueTask<IInputBurst> FrontAsync(nint window, CancellationToken cancellationToken) =>
+        (_lease ?? ForegroundLease.Shared).AcquireAsync(window, cancellationToken);
+
+    public bool GiveFront(nint window)
     {
-        if (Holds(window))
-            return true;
-        if (!VisibleControlSurface.IsAlive(window))
-            return false;
-        _ = VisibleControlSurface.BringToFront(window);
-        for (int attempt = 0; attempt < 4 && !Holds(window); attempt++)
-            await Task.Delay(50, cancellationToken).ConfigureAwait(false);
-        return Holds(window);
+        WindowsLeaseDesktop.Instance.GiveFront(window);
+        return GetForegroundWindow() == window;
     }
 
     public int LastError() => Marshal.GetLastPInvokeError();
@@ -135,7 +142,13 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
         Type = InputKeyboard,
         Data = new InputUnion
         {
-            Keyboard = new KeyboardInput { VirtualKey = virtualKey, ScanCode = scanCode, Flags = flags },
+            Keyboard = new KeyboardInput
+            {
+                VirtualKey = virtualKey,
+                ScanCode = scanCode,
+                Flags = flags,
+                ExtraInfo = BaxyInputMark.Value,
+            },
         },
     };
 

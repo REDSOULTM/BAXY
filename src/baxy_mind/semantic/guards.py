@@ -7,6 +7,7 @@ import re
 from typing import Iterable
 from .. import effect_intent
 from .. import corrector
+from .conversation import social_act
 from .grammar import imperative_rewrites
 from .reading import _OVERHEARD_ACTION_WORDS
 
@@ -263,7 +264,12 @@ def _unresolved_input_kind(
         # language; the model answered as if it were a question about BAXY.
         # The honest turn says it does not know what that refers to and asks.
         return "bare_phrase_question"
-    if corrector.unintelligible_input(objective, known_names):
+    if (
+        corrector.unintelligible_input(objective, known_names)
+        # MASSIVE general_joke «toc toc»: words the dictionaries lack but the social reader reads whole (the opening of
+        # a knock-knock joke) came through; the reader answers them, never a request to repeat.
+        and social_act(objective) is None
+    ):
         # UNRES1941 H0210 «¡Habristín!»: every content word of the message is
         # unknown to the Spanish and English dictionaries, the catalog and the
         # product's own terms. The honest turn says that word did not come

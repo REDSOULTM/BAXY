@@ -14,12 +14,14 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import conversation_contract
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.conversation import social_act
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.web import _entity_lookup_query, common_concept_definition
+from baxy_mind import turn_decide
+from baxy_mind import turn_decisions
 
 OPERATIONS = ("window.application.status", "app.open", "web.search", "system.time", "audio.status")
 
@@ -84,7 +86,7 @@ class _Decider:
 def _turn(text: str, model: _Decider, history: list[tuple[str, str]]) -> dict[str, object]:
     tools = {name: _tool(name) for name in OPERATIONS}
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m90", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -164,7 +166,7 @@ def test_029_sigues_ahi_is_the_same_act_in_spanish() -> None:
 )
 def test_a_presence_check_is_a_social_act_in_both_languages(text: str, language: str) -> None:
     assert social_act(text, []) == ("social", language)
-    decision = sidecar._explicit_social_turn_decision(text, [])
+    decision = turn_decisions._explicit_social_turn_decision(text, [])
     assert decision is not None and decision["effect_operations"] == []
 
 
@@ -184,7 +186,7 @@ def test_a_presence_check_is_a_social_act_in_both_languages(text: str, language:
     ],
 )
 def test_a_named_thing_or_another_request_is_no_presence_check(text: str) -> None:
-    assert sidecar._explicit_social_turn_decision(text, []) is None
+    assert turn_decisions._explicit_social_turn_decision(text, []) is None
 
 
 def test_a_presence_check_defers_to_a_pending_question() -> None:
@@ -272,8 +274,8 @@ RECORDED_079 = {
 
 @pytest.mark.parametrize("run", sorted(RECORDED_079))
 def test_079_denying_a_name_breaks_the_identity_contract(run: str) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(RECORDED_079[run], "quién eres", "identity")
-    assert llm._identity_answer_head(RECORDED_079[run], "quién eres") == (
+    assert conversation_contract._shaped_conversation_answer_violates_contract(RECORDED_079[run], "quién eres", "identity")
+    assert conversation_contract._identity_answer_head(RECORDED_079[run], "quién eres") == (
         "Soy BAXY, un programa que vive y corre en este PC."
     )
 
@@ -287,7 +289,7 @@ def test_079_denying_a_name_breaks_the_identity_contract(run: str) -> None:
     ],
 )
 def test_any_denial_of_his_name_is_vetoed(request_text: str, draft: str) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(draft, request_text, "identity")
+    assert conversation_contract._shaped_conversation_answer_violates_contract(draft, request_text, "identity")
 
 
 @pytest.mark.parametrize(
@@ -300,8 +302,8 @@ def test_any_denial_of_his_name_is_vetoed(request_text: str, draft: str) -> None
     ],
 )
 def test_his_name_and_the_facts_he_lacks_still_pass(request_text: str, draft: str) -> None:
-    assert not llm._shaped_conversation_answer_violates_contract(draft, request_text, "identity")
-    assert llm._identity_answer_head(draft, request_text) == draft
+    assert not conversation_contract._shaped_conversation_answer_violates_contract(draft, request_text, "identity")
+    assert conversation_contract._identity_answer_head(draft, request_text) == draft
 
 
 class _Writer(llm.LlmRuntime):

@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
+from baxy_mind.semantic import arguments as semantic_arguments
 
 APPS = ("Spotify", "Discord", "Steam", "7-Zip")
 GAMES = (
@@ -36,7 +36,7 @@ def test_an_installed_title_named_without_its_edition_or_by_go_to_is_launched(te
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
     assert intent is not None and intent.operations == ("game.launch",)
     catalog = effect_intent.build_game_catalog_index(GAMES)
-    assert mind._explicit_arguments_from_evidence("game.launch", text, APPS, catalog) == {"appId": app_id}
+    assert semantic_arguments._explicit_arguments_from_evidence("game.launch", text, APPS, catalog) == {"appId": app_id}
 
 
 @pytest.mark.parametrize("text", ["lanzá Mortal Kombat en Steam", "lanzá Mortal Kombat"])

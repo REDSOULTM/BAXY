@@ -26,6 +26,8 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.temporal import clock_named_cancellation
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
 
 CANCEL_AT = {"type": "object", "properties": {
     "hour": {"type": "integer", "minimum": 0, "maximum": 23}, "kind": {"type": "string", "enum": ["alarm", "reminder"]},
@@ -126,7 +128,7 @@ def _turn(said: list[str], decision: ContextDecision, state: DialogueState | Non
     tools = {name: _tool(name) for name in OPERATIONS}
     tools["notification.cancel.at"] = _tool("notification.cancel.at", CANCEL_AT)
     tools["notification.cancel.latest"] = _tool("notification.cancel.latest", CANCEL_LATEST)
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m158", "text": said[-1], "history": history},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=state or DialogueState(),
@@ -136,7 +138,7 @@ def _turn(said: list[str], decision: ContextDecision, state: DialogueState | Non
 def _cancelled_at(result: dict) -> dict | None:
     """The arguments ``notification.cancel.at`` takes from the turn's objective, as the arguments step grounds them."""
 
-    return sidecar._ground_explicit_arguments("notification.cancel.at", result["objective"], CANCEL_AT)
+    return argument_grounding._ground_explicit_arguments("notification.cancel.at", result["objective"], CANCEL_AT)
 
 
 LATEST_ALARM = ContextDecision("cancela la última alarma", "action", ("notification.cancel.latest",), "")

@@ -29,12 +29,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.llm import DirectArgumentExtraction, LlmRuntime
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.notes import task_change
 from baxy_mind.semantic.patterns import known_unsupported_effect_request, resolve_explicit_clarification_intent
 from baxy_mind.semantic.temporal import UnschedulableTime, unschedulable_time
+from baxy_mind import direct_arguments
 
 
 def _schema(properties: dict, required: list[str]) -> dict:
@@ -104,7 +104,7 @@ def test_todays_clock_already_past_and_several_days_are_read() -> None:
 def test_only_when_is_asked_saying_why(row: str, text: str, language: str, said: tuple[str, ...]) -> None:
     runtime = object.__new__(LlmRuntime)
     runtime.formulate_missing_argument_question = MagicMock(return_value="¿Cuándo?")
-    question = sidecar._unschedulable_time_question(
+    question = direct_arguments._unschedulable_time_question(
         runtime, "notification.schedule", text, text, _tool("notification.schedule", SCHEDULE), language, now=RUN_NOW,
     )
     assert question == "¿Cuándo?", row
@@ -120,10 +120,10 @@ def test_a_moment_a_notification_holds_asks_nothing_here() -> None:
     runtime = object.__new__(LlmRuntime)
     runtime.formulate_missing_argument_question = MagicMock(side_effect=AssertionError("asked"))
     tool = _tool("notification.schedule", SCHEDULE)
-    assert sidecar._unschedulable_time_question(
+    assert direct_arguments._unschedulable_time_question(
         runtime, "notification.schedule", "pon una alarma a las 21:00 hoy", "", tool, "es", now=RUN_NOW,
     ) == ""
-    assert sidecar._unschedulable_time_question(runtime, "task.create", S104, S104, tool, "es", now=RUN_NOW) == ""
+    assert direct_arguments._unschedulable_time_question(runtime, "task.create", S104, S104, tool, "es", now=RUN_NOW) == ""
 
 
 # ------------------------------------------------------------------ 2. a music service not offered
@@ -212,7 +212,7 @@ def test_a_change_keeps_what_was_not_changed(row: str, created: dict, person: st
     runtime = object.__new__(LlmRuntime)
     runtime.extract_direct_arguments = MagicMock(side_effect=AssertionError(f"{row} extracted"))
     runtime.formulate_missing_argument_question = MagicMock(side_effect=AssertionError(f"{row} asked"))
-    arguments, question = sidecar._edited_task_arguments(
+    arguments, question = direct_arguments._edited_task_arguments(
         runtime, objective, person, _tool("task.update", TASK_UPDATE), state.edited_task(), f"{objective}\n{person}",
         "en",
     )
@@ -234,7 +234,7 @@ def test_the_model_reads_only_the_fields_that_change_and_each_must_be_said() -> 
 
     runtime.extract_direct_arguments = extract
     runtime.formulate_missing_argument_question = MagicMock(side_effect=AssertionError("asked"))
-    arguments, question = sidecar._edited_task_arguments(
+    arguments, question = direct_arguments._edited_task_arguments(
         runtime, "Make it turkey bacon.", "make it turkey bacon", _tool("task.update", TASK_UPDATE),
         state.edited_task(), "Make it turkey bacon.\nmake it turkey bacon", "en",
     )
@@ -249,7 +249,7 @@ def test_nothing_changed_asks_what_to_change_never_which_task() -> None:
     runtime = object.__new__(LlmRuntime)
     runtime.extract_direct_arguments = MagicMock(return_value=DirectArgumentExtraction({}, (), ""))
     runtime.formulate_missing_argument_question = MagicMock(return_value="What should I change in bacon?")
-    arguments, question = sidecar._edited_task_arguments(
+    arguments, question = direct_arguments._edited_task_arguments(
         runtime, "Change it.", "change it", _tool("task.update", TASK_UPDATE), state.edited_task(), "change it", "en",
     )
     assert (arguments, question) == (None, "What should I change in bacon?")

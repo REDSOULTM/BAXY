@@ -18,14 +18,16 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import agenda_facts
+from baxy_mind import deterministic_finals
+from baxy_mind import visible_defect
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.semantic import knowledge
 from baxy_mind.semantic.media import purpose_music_query
 from baxy_mind.semantic.notes import new_list_title
 from baxy_mind.semantic.patterns import known_unsupported_effect_request, resolve_explicit_effects
 from baxy_mind.semantic.reading import read
+from baxy_mind import argument_grounding
 
 OPERATIONS = (
     "media.control", "media.play.query", "media.play.youtube", "task.create", "task.list", "task.search",
@@ -64,7 +66,7 @@ def test_music_for_a_purpose_is_searched_and_played(text: str, query: str) -> No
     reading = read(text, available_operations=OPERATIONS)
     assert reading.clarification is None, text
     assert reading.effects is not None and reading.effects.operations == ("media.play.youtube",), text
-    assert sidecar._ground_explicit_arguments("media.play.youtube", text, YOUTUBE) == {"query": query}
+    assert argument_grounding._ground_explicit_arguments("media.play.youtube", text, YOUTUBE) == {"query": query}
     assert not known_unsupported_effect_request(text, OPERATIONS), text
 
 
@@ -72,7 +74,7 @@ def test_music_for_a_purpose_on_spotify_is_searched_there() -> None:
     text = "pon mi playlist de pesas en spotify"
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == ("media.play.query",)
-    assert sidecar._ground_explicit_arguments("media.play.query", text, SPOTIFY) == {
+    assert argument_grounding._ground_explicit_arguments("media.play.query", text, SPOTIFY) == {
         "provider": "spotify", "query": "música para entrenar",
     }
 
@@ -125,7 +127,7 @@ def test_a_new_list_is_made_empty_with_its_name(text: str, title: str) -> None:
     reading = read(text, available_operations=OPERATIONS)
     assert reading.clarification is None, text
     assert reading.effects is not None and reading.effects.operations == ("task.create",), text
-    assert sidecar._ground_explicit_arguments("task.create", text, TASK) == {"title": title}
+    assert argument_grounding._ground_explicit_arguments("task.create", text, TASK) == {"title": title}
 
 
 @pytest.mark.parametrize(
@@ -146,7 +148,7 @@ def test_an_entry_that_names_nothing_is_still_asked() -> None:
 def test_what_the_person_names_after_the_offer_goes_on_the_new_list() -> None:
     effects = resolve_explicit_effects("sí, tomates y arroz", OPERATIONS, previous_user_text="crea una lista para el súper")
     assert effects is not None and effects.operations == ("task.create", "task.create")
-    assert [sidecar._ground_explicit_arguments("task.create", said, TASK) for said in effects.evidence] == [
+    assert [argument_grounding._ground_explicit_arguments("task.create", said, TASK) for said in effects.evidence] == [
         {"title": "tomates", "details": "lista para el súper"}, {"title": "arroz", "details": "lista para el súper"},
     ]
     for said in ("gracias", "sí", "ok, perfecto", "qué hora es"):
@@ -177,17 +179,17 @@ def _created(title: str) -> dict:
 
 def test_the_final_of_a_new_list_offers_to_add_things() -> None:
     situation = _created("Lista para el súper")
-    assert llm._new_empty_list("crea una lista para el súper", situation) == "Lista para el súper"
-    assert llm._new_empty_list("añade tomates a la lista para el súper", situation) is None
+    assert agenda_facts._new_empty_list("crea una lista para el súper", situation) == "Lista para el súper"
+    assert agenda_facts._new_empty_list("añade tomates a la lista para el súper", situation) is None
     offer = "Creé la lista «Lista para el súper», vacía. ¿Quieres que le añada algo?"
     claimed = "Añadí leche a la lista «Lista para el súper». ¿Algo más?"
-    assert llm.compose_visible_defect(claimed, "status", "crea una lista para el súper", {"situation": situation})
+    assert visible_defect.compose_visible_defect(claimed, "status", "crea una lista para el súper", {"situation": situation})
     writer = _Drafts([offer, offer, offer])
     assert writer.compose_user_message("crea una lista para el súper", "status", {"situation": situation}) == offer
     prompt = json.dumps(writer.requests[0]["messages"], ensure_ascii=False)
     assert "ofrezca añadirle cosas" in prompt
     # The floor, when no draft could be written, says the list was created, not that something was added.
-    floor = llm._told_result_final(situation, {"seen": situation["observed"]}, "crea una lista para el súper", "es")
+    floor = deterministic_finals._told_result_final(situation, {"seen": situation["observed"]}, "crea una lista para el súper", "es")
     assert floor == "Creé la lista «Lista para el súper»."
 
 

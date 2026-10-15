@@ -21,6 +21,12 @@ import json
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import compose_instructions
+from baxy_mind import payload_fact_checks
+from baxy_mind import conversation_shape
+from baxy_mind import reply_budget
+from baxy_mind import weather_facts
+from baxy_mind import llm_prompts
 from baxy_mind.semantic.web import weather_asked_measures
 
 SEEN = {
@@ -80,8 +86,8 @@ def test_the_measures_a_weather_question_names(text: str, measures: set[str]) ->
     ],
 )
 def test_a_narrow_question_is_answered_by_its_value_alone(asked: str, reply: str) -> None:
-    assert llm._weather_fact_defect(reply, PAYLOAD, asked) == ""
-    assert llm._payload_fact_defect(reply, PAYLOAD, asked) == ""
+    assert weather_facts._weather_fact_defect(reply, PAYLOAD, asked) == ""
+    assert payload_fact_checks._payload_fact_defect(reply, PAYLOAD, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -95,24 +101,24 @@ def test_a_narrow_question_is_answered_by_its_value_alone(asked: str, reply: str
     ],
 )
 def test_the_asked_fact_is_still_demanded(asked: str, reply: str) -> None:
-    assert llm._weather_fact_defect(reply, PAYLOAD, asked) == "missing_state"
+    assert weather_facts._weather_fact_defect(reply, PAYLOAD, asked) == "missing_state"
 
 
 def test_a_narrow_answer_still_carries_only_observed_numbers() -> None:
-    assert llm._weather_fact_defect("La humedad está en 50 %.", PAYLOAD, "¿qué tan húmedo está afuera?") == "invented_number"
+    assert weather_facts._weather_fact_defect("La humedad está en 50 %.", PAYLOAD, "¿qué tan húmedo está afuera?") == "invented_number"
 
 
 def test_a_place_the_person_named_is_still_named_in_a_narrow_answer() -> None:
     asked = "what's the humidity like in Rosario"
-    assert llm._weather_fact_defect("Humidity is 71%.", PAYLOAD, asked) == "missing_state"
-    assert llm._weather_fact_defect("In Rosario the humidity is 71%.", PAYLOAD, asked) == ""
+    assert weather_facts._weather_fact_defect("Humidity is 71%.", PAYLOAD, asked) == "missing_state"
+    assert weather_facts._weather_fact_defect("In Rosario the humidity is 71%.", PAYLOAD, asked) == ""
 
 
 @pytest.mark.parametrize("asked", ["¿qué tiempo hace hoy?", "how's the weather looking", "dime el clima de hoy porfa"])
 def test_a_general_question_still_gets_the_temperature_and_the_place(asked: str) -> None:
-    assert llm._weather_fact_defect("En Rosario hay 17 °C y está nublado.", PAYLOAD, asked) == ""
-    assert llm._weather_fact_defect("Está nublado en Rosario.", PAYLOAD, asked) == "missing_state"
-    assert llm._weather_fact_defect("Hay 17 °C y está nublado.", PAYLOAD, asked) == "missing_state"
+    assert weather_facts._weather_fact_defect("En Rosario hay 17 °C y está nublado.", PAYLOAD, asked) == ""
+    assert weather_facts._weather_fact_defect("Está nublado en Rosario.", PAYLOAD, asked) == "missing_state"
+    assert weather_facts._weather_fact_defect("Hay 17 °C y está nublado.", PAYLOAD, asked) == "missing_state"
 
 
 # --- the instruction asks for the one thing asked, and names no service --------------------------------------------
@@ -132,7 +138,7 @@ def test_a_general_question_still_gets_the_temperature_and_the_place(asked: str)
 def test_the_weather_instruction_names_only_the_asked_focus(
     asked: str, language: str, named: str, not_named: str,
 ) -> None:
-    instruction = llm._weather_answer_instruction(asked, language)
+    instruction = weather_facts._weather_answer_instruction(asked, language)
     assert named in instruction
     assert not_named not in instruction
     assert "one short sentence" in instruction or "una oración corta" in instruction
@@ -141,7 +147,7 @@ def test_the_weather_instruction_names_only_the_asked_focus(
 @pytest.mark.parametrize("asked", ["where am i right now", "¿en qué ciudad estoy?", "qué tiempo hace", "humidity?"])
 @pytest.mark.parametrize("language", ["es", "en"])
 def test_the_weather_instruction_never_invites_naming_the_lookup(asked: str, language: str) -> None:
-    folded = llm._weather_answer_instruction(asked, language).casefold()
+    folded = weather_facts._weather_answer_instruction(asked, language).casefold()
     for narration in ("public forecast service", "servicio público", "internet address", "dirección pública",
                       "public news feed", "canal público"):
         assert narration not in folded
@@ -177,7 +183,7 @@ def test_the_composer_sends_the_focused_weather_instruction() -> None:
 def test_minimizing_the_windows_does_not_demand_saying_nothing_was_closed() -> None:
     situation = {"kind": "operation", "operation": "window.minimize.all", "polarity": "success",
                  "verified": True, "succeeded": True, "observed": {"minimized": 6}}
-    shape = llm._compose_shape_instruction(situation, "es", "ve al escritorio")
+    shape = compose_instructions._compose_shape_instruction(situation, "es", "ve al escritorio")
     assert "that nothing was closed" not in shape
     assert "never say any was closed" in shape
 
@@ -212,7 +218,7 @@ def test_news_headlines_are_quoted_without_outlets() -> None:
 )
 @pytest.mark.parametrize("kind", ["knowledge", None])
 def test_a_plain_answer_has_a_one_or_two_sentence_budget(text: str, kind: str | None) -> None:
-    assert llm._conversation_max_tokens(None, kind, text) == 128
+    assert reply_budget._conversation_max_tokens(None, kind, text) == 128
 
 
 @pytest.mark.parametrize(
@@ -222,19 +228,19 @@ def test_a_plain_answer_has_a_one_or_two_sentence_budget(text: str, kind: str | 
      "tell me a short story about a robot", "write me a poem pa' mi amiga"],
 )
 def test_a_request_for_more_keeps_room_for_it(text: str) -> None:
-    assert llm._conversation_max_tokens(None, "knowledge", text) == 256
+    assert reply_budget._conversation_max_tokens(None, "knowledge", text) == 256
 
 
 def test_budgets_by_shape_and_kind() -> None:
-    assert llm._conversation_max_tokens("content_draft", "knowledge", "haz un relato del año 2090") == 320
-    assert llm._conversation_max_tokens("roleplay_draft", None, "simula una charla", retry=True) == 320
-    assert llm._conversation_max_tokens("free_content", "social", "tell me a joke") == 160
-    assert llm._conversation_max_tokens("identity", None, "quién eres") == 128
-    assert llm._conversation_max_tokens(None, "social", "epa, qué tal") == 64
-    assert llm._conversation_max_tokens(None, "unsupported", "pide un uber") == 96
+    assert reply_budget._conversation_max_tokens("content_draft", "knowledge", "haz un relato del año 2090") == 320
+    assert reply_budget._conversation_max_tokens("roleplay_draft", None, "simula una charla", retry=True) == 320
+    assert reply_budget._conversation_max_tokens("free_content", "social", "tell me a joke") == 160
+    assert reply_budget._conversation_max_tokens("identity", None, "quién eres") == 128
+    assert reply_budget._conversation_max_tokens(None, "social", "epa, qué tal") == 64
+    assert reply_budget._conversation_max_tokens(None, "unsupported", "pide un uber") == 96
     # Verification 2026-09-25: the JSON-wrapped repair holds two sentences (96 cut «Por dios, odio estos fallos»).
-    assert llm._conversation_max_tokens(None, "knowledge", "qué es un átomo", retry=True) == 160
-    assert llm._conversation_max_tokens(None, "social", "por dios, odio estos fallos", retry=True) == 160
+    assert reply_budget._conversation_max_tokens(None, "knowledge", "qué es un átomo", retry=True) == 160
+    assert reply_budget._conversation_max_tokens(None, "social", "por dios, odio estos fallos", retry=True) == 160
 
 
 @pytest.mark.parametrize(
@@ -247,7 +253,7 @@ def test_budgets_by_shape_and_kind() -> None:
     ],
 )
 def test_a_cut_decode_keeps_its_finished_sentences(text: str, kept: str) -> None:
-    assert llm._complete_sentences(text) == kept
+    assert conversation_shape._complete_sentences(text) == kept
 
 
 class ChatRecorder(llm.LlmRuntime):
@@ -282,7 +288,7 @@ def test_a_cut_reply_with_no_finished_sentence_is_written_again() -> None:
 # --- the prompts carry the rule, and write no visible sentence ----------------------------------------------------
 
 def test_the_conversation_prompt_asks_for_a_concise_direct_answer() -> None:
-    prompt = llm.SYSTEM_PROMPT
+    prompt = llm_prompts.SYSTEM_PROMPT
     assert "una o dos oraciones" in prompt
     assert "no cierres ofreciendo ayuda" in prompt
     assert "no uses emojis" in prompt
@@ -301,15 +307,15 @@ def test_a_social_turn_is_one_sentence_without_an_offer() -> None:
 
 
 def test_the_report_prompt_asks_for_the_asked_thing_only() -> None:
-    prompt = llm.USER_MESSAGE_PROMPT
+    prompt = llm_prompts.USER_MESSAGE_PROMPT
     assert "una o dos frases" in prompt and "sólo lo pedido" in prompt
     assert "sin ofertas ni emojis" in prompt
     # The failure cause is never cut for brevity.
     assert "Conserva la causa de un fallo" in prompt
 
 
-@pytest.mark.parametrize("prompt", [llm.FREE_CONTENT_PRESENTATION_PROMPT, llm.CONTENT_DRAFT_PRESENTATION_PROMPT,
-                                    llm.ROLEPLAY_DRAFT_PRESENTATION_PROMPT])
+@pytest.mark.parametrize("prompt", [llm_prompts.FREE_CONTENT_PRESENTATION_PROMPT, llm_prompts.CONTENT_DRAFT_PRESENTATION_PROMPT,
+                                    llm_prompts.ROLEPLAY_DRAFT_PRESENTATION_PROMPT])
 def test_written_content_starts_with_the_content(prompt: str) -> None:
     folded = prompt.casefold()
     assert "preamble" in folded or "preámbulo" in folded

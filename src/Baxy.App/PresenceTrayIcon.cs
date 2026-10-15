@@ -53,12 +53,9 @@ internal sealed class PresenceTrayIcon : IDisposable
 
     internal static bool TryFind(out nint hwnd)
     {
+        // Encargo I2: found by its class and its whole title; the window was titled «B» while DefWindowProc ran as
+        // the ANSI DefWindowProcA over a Unicode window (WM_NCCREATE read «BAXY.Presence» as one byte).
         hwnd = NativeMethods.FindWindow(PresenceLimits.WindowClassName, PresenceLimits.WindowTitle);
-        if (hwnd == 0)
-        {
-            hwnd = NativeMethods.FindWindow(PresenceLimits.WindowClassName, null);
-        }
-
         return hwnd != 0;
     }
 
@@ -366,7 +363,7 @@ internal sealed class PresenceTrayIcon : IDisposable
         internal static readonly nint HwndMessage = new(-3);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        internal static extern nint FindWindow(string lpClassName, string? lpWindowName);
+        internal static extern nint FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern nint RegisterClassEx(ref WindowClassEx windowClass);
@@ -386,13 +383,13 @@ internal sealed class PresenceTrayIcon : IDisposable
             nint hInstance,
             nint lpParam);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         internal static extern nint DefWindowProc(nint hWnd, uint msg, nint wParam, nint lParam);
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool DestroyWindow(nint hWnd);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern bool PostMessage(nint hWnd, uint msg, nint wParam, nint lParam);
 
         [DllImport("user32.dll")]

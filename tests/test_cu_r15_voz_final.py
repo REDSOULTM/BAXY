@@ -16,7 +16,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from baxy_mind import computer_use  # noqa: E402
+from baxy_mind import cu_reply_checks
 from baxy_mind.semantic.missions import fold  # noqa: E402
 
 CLOCK_THEN_SETTINGS = {
@@ -57,7 +57,7 @@ SWITCH = {**SEARCH, "goal": "activar Bluetooth", "stepsDone": ["clic en «Blueto
 
 
 def _defect(text: str, seen: dict) -> str | None:
-    return computer_use.mission_defect(fold(text), seen)
+    return cu_reply_checks.mission_defect(fold(text), seen)
 
 
 @pytest.mark.parametrize("draft, seen", [

@@ -54,6 +54,49 @@ public sealed class WindowsClipboardProviderTests
         });
     }
 
+    [Test]
+    public void OpenWaitsOutAnotherProcessHoldingTheClipboard()
+    {
+        int tries = 0;
+        var waits = new List<TimeSpan>();
+
+        Win32ClipboardPlatform.OpenRetrying(() => ++tries == 4, waits.Add);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tries, Is.EqualTo(4));
+            Assert.That(waits, Has.Count.EqualTo(3));
+        });
+    }
+
+    [Test]
+    public void OpenOnTheFirstTryNeverWaits()
+    {
+        var waits = new List<TimeSpan>();
+
+        Win32ClipboardPlatform.OpenRetrying(() => true, waits.Add);
+
+        Assert.That(waits, Is.Empty);
+    }
+
+    [Test]
+    public void ClipboardHeldLongerThanASecondIsBusy()
+    {
+        int tries = 0;
+        TimeSpan waited = TimeSpan.Zero;
+
+        Assert.That(
+            () => Win32ClipboardPlatform.OpenRetrying(() => { tries++; return false; }, pause => waited += pause),
+            Throws.TypeOf<ClipboardProviderException>()
+                .With.Property(nameof(ClipboardProviderException.Code))
+                .EqualTo("clipboard_busy"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(tries, Is.EqualTo(Win32ClipboardPlatform.OpenAttempts));
+            Assert.That(waited, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(1)));
+        });
+    }
+
     private sealed class FakeClipboardPlatform(string text, uint sequence) : IClipboardPlatform
     {
         public string Text { get; private set; } = text;

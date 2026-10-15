@@ -20,8 +20,7 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import compose_payload
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
 from baxy_mind.semantic.grammar import _is_past_or_hypothetical_state
@@ -37,6 +36,7 @@ from baxy_mind.semantic.patterns import (
     unserved_personal_request,
 )
 from baxy_mind.semantic.system import physical_world_request
+from baxy_mind import turn_decide
 
 TOOLS = (
     "calendar.event.list", "calendar.event.create", "email.latest.read", "task.create", "note.create",
@@ -66,7 +66,7 @@ WELCOME = [("assistant", "Hola, soy BAXY. ¿En qué puedo ayudarte hoy?")]
 def test_the_failure_facts_keep_what_was_tried(reason: dict[str, object], target: str) -> None:
     situation = {"kind": "failure", "polarity": "failure", "cause": "mission_failed", "stepCount": 0, "steps": [],
                  "reason": {**reason, "target": target}}
-    payload = llm._compose_situation_payload(situation, "es")
+    payload = compose_payload._compose_situation_payload(situation, "es")
     assert payload["reason"]["target"] == target
     assert target.casefold() in json.dumps(payload, ensure_ascii=False).casefold()
 
@@ -261,7 +261,7 @@ def _tool(operation: str) -> dict[str, object]:
 def _turn(text: str, history: list[tuple[str, str]], model: _Decider) -> dict[str, object]:
     tools = {name: _tool(name) for name in TOOLS}
     turns = [{"role": role, "content": content} for role, content in WELCOME + history]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m94", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(tools.values())),

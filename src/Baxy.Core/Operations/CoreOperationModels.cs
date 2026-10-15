@@ -20,15 +20,39 @@ internal sealed record ListNotesArguments(
     int? Limit,
     int? Offset);
 
+// NewDocument (cu-v3-documento-nuevo): the person asked for a new document of the application, never one of theirs.
+// Place, PlaceValue (estabilización, encargo C): a place of the application whose address its data declare
+// (ApplicationPlaces), opened once the application is.
 internal sealed record OpenApplicationArguments(
-    [property: JsonRequired] string AppId);
+    [property: JsonRequired] string AppId,
+    bool? Foreground = null,
+    bool? ForControl = null,
+    bool? NewDocument = null,
+    string? Place = null,
+    string? PlaceValue = null);
 
+// WindowsActivation: Windows activated the opened application by itself (a packaged app, or one that ignores the
+// request to show without activating) and the front was handed back at once to the window that had it (v3 point 0).
+// FrontRestored: that hand-back was read back as held; with WindowsActivation and without it, the opened application
+// kept the front (cu-v3-foco-segunda: Windows may refuse it).
 internal sealed record OpenApplicationResult(
     string AppId,
     string DisplayName,
     bool AlreadyRunning,
     int ProcessId,
-    long WindowHandle);
+    long WindowHandle,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool WindowsActivation = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontRestored = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool NewDocument = false,
+    // ShownWithoutFocus (r20b palanca 4): asked in front while the person worked in another window, it was raised above
+    // that window without taking their keyboard.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool ShownWithoutFocus = false,
+    // PlaceOpened (estabilización, encargo C): the place's address was handed to Windows; the arrival is the mission's
+    // check to read on the window, never this receipt's.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceOpened = false,
+    // FrontChanged (review H2): the place's handler raised the application above the person's window; FrontRestored
+    // then says whether the front went back to them.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false);
 
 internal sealed record AudioVolumeArguments(
     [property: JsonRequired] int Level);

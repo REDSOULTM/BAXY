@@ -34,12 +34,12 @@ from datetime import date, datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import decider as semantic_decider
 from baxy_mind.semantic import temporal
 from baxy_mind.semantic.decider import ContextDecision
 from test_c03_m148_avisos_eso_y_cuentas import REMINDER, SCHEDULE, _arguments
 from test_c03_m152_aviso_antes_de_lo_dicho import _turn
+from baxy_mind import argument_grounding
 
 LOCAL = timezone(timedelta(hours=-3))
 # Monday 5 October 2026 at 22:36 in Chile (UTC-3), the evening of the v5d runs.
@@ -54,10 +54,17 @@ def _fixed_clock(monkeypatch: pytest.MonkeyPatch) -> None:
         temporal, "anchored_offset_request",
         lambda *args, **kwargs: counted(*args, **{"today": TODAY, **kwargs}),
     )
-    normalize = sidecar._normalize_grounded_operation_arguments
+    normalize = argument_grounding._normalize_grounded_operation_arguments
     monkeypatch.setattr(
-        sidecar, "_normalize_grounded_operation_arguments",
+        argument_grounding, "_normalize_grounded_operation_arguments",
         lambda *args, **kwargs: normalize(*args, **{**kwargs, "now_utc": kwargs.get("now_utc") or NOW}),
+    )
+    # The fidelity check of a restated date reads the clock too: once Saturday 10 October had passed, «el sábado 10 de
+    # octubre» was trimmed as a past date and the test failed on the calendar, not on the code (2026-10-11).
+    faithful = semantic_decider.faithful_request
+    monkeypatch.setattr(
+        semantic_decider, "faithful_request",
+        lambda *args, **kwargs: faithful(*args, **{**kwargs, "now": kwargs.get("now") or NOW.replace(tzinfo=None)}),
     )
 
 

@@ -5,12 +5,20 @@ import json
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import operation_floor
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import llm_chat
+from baxy_mind import llm_prompts
+from baxy_mind import reply_claims
+from baxy_mind import compose_situation
 from baxy_mind.semantic.request import read_request
 
 
 @pytest.mark.parametrize("text", ["no subas el volumen", "no silencies el audio"])
 def test_negative_real_log_request_is_conversation_not_a_capability_refusal(text: str) -> None:
-    from baxy_mind.__main__ import _explicit_stable_no_effect_turn_decision
+    from baxy_mind.turn_decisions import _explicit_stable_no_effect_turn_decision
 
     decision = _explicit_stable_no_effect_turn_decision(text)
     assert decision is not None
@@ -60,11 +68,11 @@ def test_audio_composition_uses_the_same_observations_as_its_fact_guard(
     client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
     facts = {"situation": situation}
 
-    assert llm.compose_visible_defect(reply, "status", user_text, facts) == ""
+    assert visible_defect.compose_visible_defect(reply, "status", user_text, facts) == ""
     assert client.compose_user_message(user_text, "status", facts) == reply
     content = client.payloads[0]["messages"][-1]["content"]
     assert "Do not mention mute: it is not in observed." not in content
-    assert llm._merged_observed(situation)["muted"] is muted
+    assert compose_situation._merged_observed(situation)["muted"] is muted
 
 
 @pytest.mark.parametrize("nested", [False, True])
@@ -79,7 +87,7 @@ def test_audio_composition_still_withholds_unobserved_mute_state(nested: bool) -
 
     client.compose_user_message(user_text, "status", facts)
     assert "Do not mention mute: it is not in observed." in client.payloads[0]["messages"][-1]["content"]
-    assert llm.compose_visible_defect("El sonido está silenciado.", "status", user_text, facts) == "extra_claim"
+    assert visible_defect.compose_visible_defect("El sonido está silenciado.", "status", user_text, facts) == "extra_claim"
 
 
 def test_optional_compose_budget_covers_retries_without_resetting_the_turn(monkeypatch) -> None:
@@ -115,7 +123,7 @@ def test_optional_compose_budget_covers_retries_without_resetting_the_turn(monke
     ("qué es una zona horaria", "No puedo."),
 ])
 def test_bare_failure_is_not_an_explanation(user_text: str, reply: str) -> None:
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         reply, "conversation", user_text,
         {"situation": {"kind": "conversation", "polarity": "success"}},
     ) == "asserted_failure"
@@ -126,7 +134,7 @@ def test_bare_failure_is_not_an_explanation(user_text: str, reply: str) -> None:
     "I couldn't read the file because it contained invalid UTF-8 characters.",
 ])
 def test_explanation_of_a_prior_failure_is_not_a_bare_refusal(reply: str) -> None:
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         reply, "conversation", "Why couldn't you read that file?",
         {"situation": {"kind": "conversation", "polarity": "success"}},
     ) == ""
@@ -158,7 +166,7 @@ def test_recovery_projection_keeps_all_and_only_available_decisions(
         "cause": "memory_recovery_pending",
         "choices": choices,
     }
-    payload = llm._compose_situation_payload(situation, language)
+    payload = compose_payload._compose_situation_payload(situation, language)
     assert payload["choices"] == (english if language == "en" else spanish)
     assert situation["choices"] == choices
 
@@ -179,12 +187,12 @@ def test_verified_audio_transition_is_not_rejected_as_a_read_or_truncated_key() 
     }
     reply = "I set the volume to 60%."
     facts = {"situation": json.dumps(situation)}
-    payload = llm._compose_situation_payload(situation, "en")
+    payload = compose_payload._compose_situation_payload(situation, "en")
     assert payload["effect"] == "applied"
     assert payload["seen"]["level"] == 60
-    assert not llm._truncated_fact_word(reply, payload)
-    assert not llm._payload_fact_defect(reply, payload)
-    assert llm._payload_fact_defect("I set the volume to 80%.", payload)
+    assert not visible_defect._truncated_fact_word(reply, payload)
+    assert not payload_fact_checks._payload_fact_defect(reply, payload)
+    assert payload_fact_checks._payload_fact_defect("I set the volume to 80%.", payload)
     recorder = Recorder([reply])
     assert recorder.compose_user_message("Set it to 60%.", "status", facts) == reply
     assert len(recorder.payloads) == 1
@@ -194,7 +202,7 @@ def test_verified_audio_transition_is_not_rejected_as_a_read_or_truncated_key() 
 def test_unverified_or_unapplied_transition_cannot_claim_a_change(
     verified: bool, applied: bool
 ) -> None:
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "operation",
             "operation": "audio.volume",
@@ -206,7 +214,7 @@ def test_unverified_or_unapplied_transition_cannot_claim_a_change(
         "en",
     )
     assert "effect" not in payload
-    assert llm._payload_fact_defect("I set the volume to 60%.", payload)
+    assert payload_fact_checks._payload_fact_defect("I set the volume to 60%.", payload)
 
 
 @pytest.mark.parametrize(
@@ -273,7 +281,7 @@ def test_useful_captured_drafts_survive_presentation_without_retries(
 
 def test_later_gerund_does_not_turn_a_completed_claim_into_progress() -> None:
     assert (
-        llm.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             "Encontré las aplicaciones instaladas. Puedo explicarlo manteniendo la claridad.",
             "status",
             "Find las aplicaciones instaladas; responde en spanglish.",
@@ -299,7 +307,7 @@ def test_progress_cannot_publish_invented_or_requested_measurements(
     user_text: str, reply: str,
 ) -> None:
     facts = {"situation": json.dumps({"kind": "status", "cause": "acting", "polarity": "success"})}
-    assert llm.compose_visible_defect(reply, "status", user_text, facts) == "acting_asserted"
+    assert visible_defect.compose_visible_defect(reply, "status", user_text, facts) == "acting_asserted"
 
 
 @pytest.mark.parametrize("user_text,reply", [
@@ -311,7 +319,7 @@ def test_progress_may_refer_to_literal_targets_without_claiming_results(
     user_text: str, reply: str,
 ) -> None:
     facts = {"situation": json.dumps({"kind": "status", "cause": "acting", "polarity": "success"})}
-    assert llm.compose_visible_defect(reply, "status", user_text, facts) == ""
+    assert visible_defect.compose_visible_defect(reply, "status", user_text, facts) == ""
 
 
 def test_progress_retry_keeps_narration_role_and_does_not_prescribe_visible_words() -> None:
@@ -328,7 +336,7 @@ def test_progress_retry_keeps_narration_role_and_does_not_prescribe_visible_word
     assert result == corrected
     assert len(client.payloads) == 2
     for payload in client.payloads:
-        assert llm._PROGRESS_MESSAGE_INSTRUCTION in payload["messages"][0]["content"]
+        assert llm_prompts._PROGRESS_MESSAGE_INSTRUCTION in payload["messages"][0]["content"]
         assert request not in payload["messages"][-1]["content"]
         assert "Sigo." not in payload["messages"][0]["content"]
         assert "Still working." not in payload["messages"][0]["content"]
@@ -363,7 +371,7 @@ def test_progress_language_scope_survives_retry_without_losing_phase(
         content = payload["messages"][-1]["content"]
         wire_text = "\n".join(message["content"] for message in payload["messages"])
         assert user_text not in wire_text
-        assert llm.MIXED_RESPONSE_LANGUAGE_POLICY not in wire_text
+        assert llm_prompts.MIXED_RESPONSE_LANGUAGE_POLICY not in wire_text
         language_instruction = (
             "Mandatory language: English" if language == "en"
             else "Idioma obligatorio: español"
@@ -386,7 +394,7 @@ def test_conversation_retains_mixed_language_policy_and_request() -> None:
     }) == reply
     content = client.payloads[0]["messages"][-1]["content"]
     assert request in content
-    assert llm.MIXED_RESPONSE_LANGUAGE_POLICY in content
+    assert llm_prompts.MIXED_RESPONSE_LANGUAGE_POLICY in content
 
 
 @pytest.mark.parametrize("phase,state", [
@@ -412,7 +420,7 @@ def test_progress_projects_actual_phase_instead_of_the_future_goal(phase: str, s
 
 
 def test_uncertain_effect_is_not_projected_as_completed_or_absent() -> None:
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "failure",
             "polarity": "failure",
@@ -445,7 +453,7 @@ def test_uncertain_effect_is_not_projected_as_completed_or_absent() -> None:
     ],
 )
 def test_response_language_wrapper_preserves_the_question(user_text: str) -> None:
-    from baxy_mind.__main__ import _explicit_stable_no_effect_turn_decision
+    from baxy_mind.turn_decisions import _explicit_stable_no_effect_turn_decision
 
     decision = _explicit_stable_no_effect_turn_decision(user_text)
     assert decision is not None
@@ -478,8 +486,8 @@ def test_language_wrapper_keeps_explanation_prompt_and_literal_request(
     messages = client.payloads[0]["messages"]
     # cien-42 003: a direct knowledge answer also carries the definition-contrast rule.
     assert messages[0]["content"] == (
-        llm.SYSTEM_PROMPT + " " + llm.CONVERSATION_FACT_PROVENANCE_PROMPT
-        + " " + llm.DEFINITION_CONTRAST_PROMPT
+        llm_prompts.SYSTEM_PROMPT + " " + llm_prompts.CONVERSATION_FACT_PROVENANCE_PROMPT
+        + " " + llm_prompts.DEFINITION_CONTRAST_PROMPT
     )
     assert messages[-1]["content"] == user_text
 
@@ -492,7 +500,7 @@ def test_truncated_structured_chat_retry_cannot_be_published_as_prose() -> None:
             '{"answer":"La caché guarda datos temporales so you can access them quickly',
         ]
     )
-    with pytest.raises(llm.ConversationReplyContractError):
+    with pytest.raises(llm_chat.ConversationReplyContractError):
         client.chat(request, conversation_kind="knowledge", response_language="mixed")
 
 
@@ -610,7 +618,7 @@ def test_owner_approved_mixed_responses_do_not_require_language_alternation(
     )
     assert len(client.payloads) == 1
     sent = client.payloads[0]["messages"][-1]["content"]
-    assert llm.MIXED_RESPONSE_LANGUAGE_POLICY in sent
+    assert llm_prompts.MIXED_RESPONSE_LANGUAGE_POLICY in sent
     assert "No lo conviertas por completo a un solo idioma" not in sent
 
 
@@ -644,7 +652,7 @@ def test_mixed_style_does_not_gate_publication_or_neutral_facts(
 ) -> None:
     intent = "welcome" if read_request(user_text).greeting_only else "conversation"
     assert (
-        llm.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             reply,
             intent,
             user_text,
@@ -718,28 +726,21 @@ def test_status_composition_preserves_that_the_transition_already_happened(
     user_text: str,
     response: str,
 ) -> None:
+    # Estabilización M3 (live 2026-10-12, «No, cancelá» → «No pude contarte cómo salió lo que pediste.»): the dropped
+    # question is said by the floor (data clarificationCancelled), never drafted; no writer is asked.
     client = Recorder([response])
-    assert (
-        client.compose_user_message(
-            user_text,
-            "status",
-            {
-                "situation": json.dumps(
-                    {
-                        "kind": "status",
-                        "polarity": "success",
-                        "cause": "clarification_cancelled",
-                    }
-                ),
-            },
-        )
-        == response
+    situation = {"kind": "status", "polarity": "success", "cause": "clarification_cancelled"}
+    english = user_text.startswith("cancel ")
+    assert client.compose_user_message(user_text, "status", {"situation": json.dumps(situation)}) == (
+        operation_floor.floor_data()["clarificationCancelled"]["en" if english else "es"]
     )
-    content = client.payloads[0]["messages"][-1]["content"]
-    # M45 (FINAL t22): «completed» made the writer finish the cancelled request; the drop ran nothing.
-    assert '"outcome": "cancelled"' in content
-    assert '"state": "the pending question was dropped as the person asked; nothing was done"' in content
-    assert '"cause":' not in content
+    assert client.payloads == []
+    # M45 (FINAL t22): «completed» made the writer finish the cancelled request; the drop ran nothing. The facts a
+    # writer would read still say so.
+    payload = compose_payload._compose_situation_payload(situation, "en" if english else "es", user_text)
+    assert payload["outcome"] == "cancelled"
+    assert payload["state"] == "the pending question was dropped as the person asked; nothing was done"
+    assert "cause" not in payload
 
 
 _CANCELLED_CLARIFICATION = {
@@ -761,22 +762,25 @@ _CANCELLED_CLARIFICATION = {
 def test_a_cancelled_clarification_never_states_the_cancelled_effect(
     user_text: str, invented: str, honest: str,
 ) -> None:
-    assert llm.cancelled_clarification_defect(invented) == "cancelled_effect_claim"
-    assert llm.cancelled_clarification_defect(honest) == ""
+    assert reply_claims.cancelled_clarification_defect(invented) == "cancelled_effect_claim"
+    assert reply_claims.cancelled_clarification_defect(honest) == ""
+    # Estabilización M3: no draft is asked at all; the floor says the drop (see the test below).
     client = Recorder([invented, honest])
-    assert client.compose_user_message(user_text, "status", dict(_CANCELLED_CLARIFICATION)) == honest
-    assert len(client.payloads) == 2
+    assert client.compose_user_message(user_text, "status", dict(_CANCELLED_CLARIFICATION)) not in {invented, honest}
+    assert client.payloads == []
 
 
 @pytest.mark.parametrize(
     "user_text, expected",
-    [("cancelar", "Vale, lo dejo."), ("cancel", "OK, cancelled.")],
+    [("cancelar", "Vale, lo dejo: no hice nada."), ("cancel", "OK, I'll leave it: I didn't do anything.")],
 )
 def test_a_cancelled_clarification_says_the_drop_when_no_draft_can(user_text: str, expected: str) -> None:
+    # Estabilización M3 (live 2026-10-12: «No, cancelá» to a pending question → «No pude contarte cómo salió lo que
+    # pediste.»): the drop is the floor's sentence before any draft, never the composition-failure line.
     client = Recorder(["Reanudaré el ejercicio en 10 minutos."] * 3 if user_text == "cancelar"
                       else ["I'll remind you in 10 minutes."] * 3)
     assert client.compose_user_message(user_text, "status", dict(_CANCELLED_CLARIFICATION)) == expected
-    assert len(client.payloads) == 3
+    assert client.payloads == []
 
 
 @pytest.mark.parametrize(
@@ -791,13 +795,13 @@ def test_a_cancelled_clarification_says_the_drop_when_no_draft_can(user_text: st
     ],
 )
 def test_an_honest_cancellation_is_publishable(user_text: str, draft: str) -> None:
-    assert llm.cancelled_clarification_defect(draft) == ""
-    assert llm.compose_visible_defect(draft, "status", user_text, dict(_CANCELLED_CLARIFICATION)) == ""
+    assert reply_claims.cancelled_clarification_defect(draft) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", user_text, dict(_CANCELLED_CLARIFICATION)) == ""
 
 
 def test_a_cancellation_offer_is_not_an_effect_claim() -> None:
     # A question offers; it never states the cancelled effect.
-    assert llm.cancelled_clarification_defect("Vale, lo dejamos aquí. ¿Quieres otra hora?") == ""
+    assert reply_claims.cancelled_clarification_defect("Vale, lo dejamos aquí. ¿Quieres otra hora?") == ""
 
 
 @pytest.mark.parametrize(
@@ -811,13 +815,13 @@ def test_a_cancellation_offer_is_not_an_effect_claim() -> None:
     ],
 )
 def test_a_cancellation_draft_that_claims_or_promises_is_vetoed(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", "cancelar", dict(_CANCELLED_CLARIFICATION)) == (
+    assert visible_defect.compose_visible_defect(draft, "status", "cancelar", dict(_CANCELLED_CLARIFICATION)) == (
         "cancelled_effect_claim"
     )
 
 
 def test_progress_is_not_projected_as_a_completed_transition() -> None:
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "status",
             "polarity": "success",
@@ -869,7 +873,7 @@ def test_progress_composition_preserves_language_without_replaying_the_goal(
 def test_message_purpose_survives_projection_without_observed_facts(kind: str) -> None:
     # Empty observations do not mean the message has no purpose. Losing this
     # discriminator made welcome acknowledge the language instruction instead.
-    payload = llm._compose_situation_payload({"kind": kind}, "es", "")
+    payload = compose_payload._compose_situation_payload({"kind": kind}, "es", "")
     assert payload["kind"] == kind
     assert "seen" not in payload
     assert "outcome" not in payload
@@ -898,7 +902,7 @@ def test_equivalent_useful_prose_is_not_rejected_for_sentence_count(
     intent: str,
 ) -> None:
     assert (
-        llm.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             answer,
             intent,
             user_text,
@@ -941,7 +945,7 @@ def test_sentence_count_does_not_replace_fact_and_question_contracts(
     intent: str,
     situation: dict,
 ) -> None:
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         answer,
         intent,
         "hola" if intent == "welcome" else "borra el archivo",
@@ -1070,7 +1074,7 @@ def test_greeting_does_not_exempt_language_claims_or_the_actual_question(
     user_text: str,
     reply: str,
 ) -> None:
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         reply,
         "welcome",
         user_text,
@@ -1113,7 +1117,7 @@ def test_clock_equivalence_preserves_the_actual_half_of_the_day(
     reply: str,
     expected: bool,
 ) -> None:
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "status",
             "polarity": "success",
@@ -1122,7 +1126,7 @@ def test_clock_equivalence_preserves_the_actual_half_of_the_day(
         },
         "en",
     )
-    assert (not llm._payload_fact_defect(reply, payload)) is expected
+    assert (not payload_fact_checks._payload_fact_defect(reply, payload)) is expected
 
 
 def test_observed_spoken_clock_draft_does_not_exhaust_valid_composition() -> None:
@@ -1170,7 +1174,7 @@ def test_exact_named_clock_draft_survives_without_a_repair(clock: str, draft: st
 def test_a_correct_numeric_clock_does_not_hide_a_contradictory_word_clock(
     draft: str,
 ) -> None:
-    assert llm._payload_fact_defect(draft, {"clock": "13:23"}) == "reversed_result"
+    assert payload_fact_checks._payload_fact_defect(draft, {"clock": "13:23"}) == "reversed_result"
 
 
 @pytest.mark.parametrize(
@@ -1186,7 +1190,7 @@ def test_a_correct_numeric_clock_does_not_hide_a_contradictory_word_clock(
 def test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks(
     draft: str,
 ) -> None:
-    assert llm._payload_fact_defect(draft, {"clock": "13:23"}) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, {"clock": "13:23"}) == ""
 
 
 def test_contradictory_word_clock_is_recomposed_without_cropping_the_draft() -> None:
@@ -1245,7 +1249,7 @@ def test_instruction_verbs_are_language_evidence(user_text: str, expected: str) 
 @pytest.mark.parametrize("language", ["es", "en", "mixed"])
 def test_mission_failure_keeps_the_nested_step_cause(language: str) -> None:
     # Shape emitted by MindPlanSession -> MissionNarration.CreateFailureMessage.
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "failure",
             "polarity": "failure",
@@ -1273,7 +1277,7 @@ def test_mission_failure_keeps_the_nested_step_cause(language: str) -> None:
 def test_a_malformed_failure_reason_does_not_become_a_success_or_raw_prose(
     reason: str,
 ) -> None:
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "failure",
             "polarity": "failure",
@@ -1290,7 +1294,7 @@ def test_typed_operation_error_survives_nested_mission_projection(language: str,
     operation_result = {"kind": "operation", "operation": "filesystem.read.text",
                         "polarity": "failure", "verified": False, "succeeded": False,
                         "error": error}
-    projected = llm._compose_situation_payload(
+    projected = compose_payload._compose_situation_payload(
         {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
          "reason": operation_result}, language)
     assert projected["reason"] == {
@@ -1305,13 +1309,13 @@ def test_operation_error_cannot_override_a_cause_or_turn_success_into_failure() 
     for kind, polarity, error in (("operation", "success", "invalid_utf8"),
                                   ("status", "failure", "invalid_utf8"),
                                   ("operation", "failure", {"private": "value"})):
-        projected = llm._compose_situation_payload(
+        projected = compose_payload._compose_situation_payload(
             {"kind": kind, "polarity": polarity, "error": error}, "en")
         assert "cause" not in projected
-    projected = llm._compose_situation_payload(
+    projected = compose_payload._compose_situation_payload(
         {"kind": "operation", "polarity": "failure", "cause": "timeout",
          "error": "invalid_utf8"}, "en")
-    assert projected["cause"] == llm._cause_in_prose("timeout", "en")
+    assert projected["cause"] == compose_situation._cause_in_prose("timeout", "en")
 
 
 @pytest.mark.parametrize(
@@ -1342,7 +1346,7 @@ def test_verified_mission_prose_is_not_a_prescribed_sentence(intro: str) -> None
 def test_confirmation_keeps_original_request_and_exact_pending_action(
     language: str,
 ) -> None:
-    from baxy_mind.llm import _compose_situation_payload
+    from baxy_mind.compose_payload import _compose_situation_payload
 
     action = {
         "operation": "app.close",
@@ -1374,7 +1378,7 @@ def test_confirmation_keeps_original_request_and_exact_pending_action(
 def test_cancellation_preserves_what_was_stopped_without_turning_it_into_an_effect(
     language: str,
 ) -> None:
-    from baxy_mind.llm import _compose_situation_payload
+    from baxy_mind.compose_payload import _compose_situation_payload
 
     action = {"operation": "app.close", "arguments": {"windowId": "12345"}}
     payload = _compose_situation_payload(
@@ -1442,7 +1446,7 @@ def test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabil
             },
         ],
     }
-    payload = llm._compose_situation_payload(situation, language, "cancelar")
+    payload = compose_payload._compose_situation_payload(situation, language, "cancelar")
     assert payload["outcome"] == "cancelled"
     steps = payload["completedStepsInOrder"]
     assert steps[0]["resultAtThisStep"] == {
@@ -1462,7 +1466,7 @@ def test_mission_keeps_observations_at_the_step_that_verified_them(
     language: str,
 ) -> None:
     import json
-    from baxy_mind.llm import _compose_situation_payload
+    from baxy_mind.compose_payload import _compose_situation_payload
 
     def result(operation, observed):
         return json.dumps(
@@ -1500,7 +1504,8 @@ def test_mission_keeps_observations_at_the_step_that_verified_them(
         language,
     )
     assert "seen" not in payload
-    assert payload["completedRequest"] == "Cierra la ventana titulada 'Proyecto Ámbar'"
+    # Falsos éxitos v3 M4: the request travels as what was asked («requested»), never as a fact.
+    assert payload["requested"] == "Cierra la ventana titulada 'Proyecto Ámbar'"
     steps = payload["completedStepsInOrder"]
     assert steps[0]["operation"] == "window.resolve"
     assert steps[0]["resultAtThisStep"]["seen"]["windows"][0]["state"] == "maximized"
@@ -1530,7 +1535,7 @@ def test_mission_keeps_observations_at_the_step_that_verified_them(
 
 
 def test_a_verified_window_name_is_not_an_invented_word() -> None:
-    from baxy_mind.llm import compose_visible_defect
+    from baxy_mind.visible_defect import compose_visible_defect
 
     facts = {
         "situation": {
@@ -1557,7 +1562,7 @@ def test_a_verified_window_name_is_not_an_invented_word() -> None:
 
 
 def test_read_only_observation_remains_a_read_in_the_compose_payload() -> None:
-    from baxy_mind.llm import _compose_situation_payload
+    from baxy_mind.compose_payload import _compose_situation_payload
 
     payload = _compose_situation_payload(
         {
@@ -1584,7 +1589,7 @@ def test_direct_answer_retries_the_same_wrong_language_that_compose_rejects() ->
     assert actions == []
     assert len(runtime.payloads) == 2
     assert (
-        llm.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             incorrect, "conversation", question, {"situation": {"kind": "conversation"}}
         )
         == "wrong_language"
@@ -1594,7 +1599,7 @@ def test_direct_answer_retries_the_same_wrong_language_that_compose_rejects() ->
 def test_direct_answer_cannot_publish_a_second_opposite_language_reply() -> None:
     incorrect = "La capital de Perú es Lima."
     runtime = Recorder([incorrect, json.dumps({"answer": incorrect})])
-    with pytest.raises(llm.ConversationReplyContractError) as error:
+    with pytest.raises(llm_chat.ConversationReplyContractError) as error:
         runtime.chat(
             "what is the capital of Peru",
             conversation_kind="knowledge",
@@ -1680,11 +1685,11 @@ def test_foreign_sentence_after_a_spanish_opening_gets_language_only_repair() ->
 
 def test_a_neutral_proper_name_is_a_complete_answer_in_either_language() -> None:
     for language in ("es", "en"):
-        assert not llm._reply_uses_opposite_language("Lima", language)
+        assert not visible_defect._reply_uses_opposite_language("Lima", language)
 
 
 def test_recovery_failure_keeps_cause_and_absence_of_attempted_operations() -> None:
-    payload = llm._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         {
             "kind": "failure",
             "polarity": "failure",

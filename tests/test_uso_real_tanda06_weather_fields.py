@@ -25,8 +25,13 @@ import json
 
 import pytest
 
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import weather_facts
 from baxy_mind.semantic.web import weather_asked_measures
+from baxy_mind.semantic.web import weather_asks_coming_days
+from baxy_mind.semantic.web import weather_asks_week
 from test_c03_cpu_actor import Recorder
 
 AVAILABLE = ("weather.current", "web.search", "system.time", "note.create", "app.open")
@@ -135,8 +140,8 @@ def test_the_uv_index_and_the_dew_point_are_measures_the_question_names(text: st
     ],
 )
 def test_the_uv_and_dew_point_replies_say_the_observed_value(asked: str, reply: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEATHER, asked) == ""
-    assert llm._payload_fact_defect(reply, _WEATHER, asked) == ""
+    assert weather_facts._weather_fact_defect(reply, _WEATHER, asked) == ""
+    assert payload_fact_checks._payload_fact_defect(reply, _WEATHER, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -154,7 +159,7 @@ def test_the_uv_and_dew_point_replies_say_the_observed_value(asked: str, reply: 
     ],
 )
 def test_a_uv_or_dew_point_reply_without_the_observed_value_falls(asked: str, reply: str, defect: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEATHER, asked) == defect
+    assert weather_facts._weather_fact_defect(reply, _WEATHER, asked) == defect
 
 
 @pytest.mark.parametrize(
@@ -167,7 +172,7 @@ def test_a_uv_or_dew_point_reply_without_the_observed_value_falls(asked: str, re
     ],
 )
 def test_the_instruction_asks_for_the_uv_or_dew_point_value(asked: str, language: str, named: str) -> None:
-    instruction = llm._weather_answer_instruction(asked, language)
+    instruction = weather_facts._weather_answer_instruction(asked, language)
     assert named in instruction
     assert "Di la temperatura actual y el cielo" not in instruction
     assert "Say the current temperature and sky" not in instruction
@@ -218,8 +223,8 @@ _WEEK = {"operation": "weather.current", "seen": _WEEK_SEEN}
 )
 def test_the_week_is_asked_as_the_coming_days(text: str) -> None:
     assert _operations(text) == ("weather.current",), text
-    assert llm.weather_asks_week(text)
-    assert llm.weather_asks_coming_days(text)
+    assert weather_asks_week(text)
+    assert weather_asks_coming_days(text)
 
 
 @pytest.mark.parametrize(
@@ -237,8 +242,8 @@ def test_the_week_is_asked_as_the_coming_days(text: str) -> None:
     ],
 )
 def test_a_day_after_tomorrow_is_one_of_the_coming_days(text: str, coming: bool) -> None:
-    assert llm.weather_asks_coming_days(text) is coming
-    assert llm.weather_asks_week(text) is False
+    assert weather_asks_coming_days(text) is coming
+    assert weather_asks_week(text) is False
 
 
 @pytest.mark.parametrize(
@@ -256,7 +261,7 @@ def test_a_day_after_tomorrow_is_one_of_the_coming_days(text: str, coming: bool)
     ],
 )
 def test_the_coming_days_are_answered_from_the_days_read(asked: str, reply: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEEK, asked) == ""
+    assert weather_facts._weather_fact_defect(reply, _WEEK, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -271,7 +276,7 @@ def test_the_coming_days_are_answered_from_the_days_read(asked: str, reply: str)
     ],
 )
 def test_the_coming_days_are_not_answered_with_today_or_an_unread_figure(asked: str, reply: str, defect: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEEK, asked) == defect
+    assert weather_facts._weather_fact_defect(reply, _WEEK, asked) == defect
 
 
 @pytest.mark.parametrize(
@@ -287,16 +292,16 @@ def test_the_coming_days_are_not_answered_with_today_or_an_unread_figure(asked: 
 )
 def test_a_weekday_that_is_today_is_answered_with_the_weather_now(asked: str, reply: str, defect: str) -> None:
     seen = {**_WEEK_SEEN, "today": {**_SEEN["today"], "date": "2026-09-24", "weekday": "jueves"}}
-    assert llm._weather_fact_defect(reply, {"operation": "weather.current", "seen": seen}, asked) == defect
+    assert weather_facts._weather_fact_defect(reply, {"operation": "weather.current", "seen": seen}, asked) == defect
 
 
 def test_the_week_instruction_sums_up_the_days_after_tomorrow() -> None:
-    instruction = llm._weather_answer_instruction("cuál es el pronóstico del tiempo para la semana", "es")
+    instruction = weather_facts._weather_answer_instruction("cuál es el pronóstico del tiempo para la semana", "es")
     assert "seen.laterDays" in instruction
     assert "sin enumerar cada día" in instruction
     assert "La lectura cubre sólo hoy y mañana" not in instruction
     # A question about today still says the read it has.
-    today = llm._weather_answer_instruction("¿qué tiempo hace hoy?", "es")
+    today = weather_facts._weather_answer_instruction("¿qué tiempo hace hoy?", "es")
     assert "seen.laterDays" not in today
     assert "La lectura cubre sólo hoy y mañana" in today
 
@@ -311,7 +316,7 @@ def test_the_week_instruction_sums_up_the_days_after_tomorrow() -> None:
     ],
 )
 def test_the_days_after_tomorrow_are_sent_only_when_asked(asked: str, sent: bool) -> None:
-    payload = llm._compose_situation_payload(_weather_situation(_WEEK_SEEN), "es", asked)
+    payload = compose_payload._compose_situation_payload(_weather_situation(_WEEK_SEEN), "es", asked)
     assert ("laterDays" in payload["seen"]) is sent
     assert payload["seen"]["temperatureC"] == 16.4
 
@@ -329,7 +334,7 @@ def test_the_days_after_tomorrow_are_sent_only_when_asked(asked: str, sent: bool
     ],
 )
 def test_the_place_reply_is_the_place_alone(asked: str, reply: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEATHER, asked) == ""
+    assert weather_facts._weather_fact_defect(reply, _WEATHER, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -344,7 +349,7 @@ def test_the_place_reply_is_the_place_alone(asked: str, reply: str) -> None:
     ],
 )
 def test_the_weather_added_to_the_place_is_an_extra_claim(asked: str, reply: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEATHER, asked) == "extra_claim"
+    assert weather_facts._weather_fact_defect(reply, _WEATHER, asked) == "extra_claim"
 
 
 def test_a_place_reply_with_the_weather_is_repaired_with_the_place_focus() -> None:
@@ -391,5 +396,5 @@ def test_the_clock_now_or_an_order_is_not_the_sun_time(text: str) -> None:
 
 def test_the_sun_time_told_is_answered_with_tomorrows_clock() -> None:
     asked = "he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?"
-    assert llm._weather_fact_defect("Mañana el sol sale a las 07:31.", _WEATHER, asked) == ""
-    assert llm._weather_fact_defect("Mañana el sol sale a las 07:33.", _WEATHER, asked) == "missing_state"
+    assert weather_facts._weather_fact_defect("Mañana el sol sale a las 07:31.", _WEATHER, asked) == ""
+    assert weather_facts._weather_fact_defect("Mañana el sol sale a las 07:33.", _WEATHER, asked) == "missing_state"

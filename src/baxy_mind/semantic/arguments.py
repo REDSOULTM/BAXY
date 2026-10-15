@@ -2,7 +2,7 @@
 
 It moved from ``__main__`` with the unification of the reading (owner, 2026-09-24: every reading of the request
 lives in ``semantic/``). A value is returned only when the words say it; otherwise the binder abstains and the
-turn asks the model or the person. ``__main__._ground_explicit_arguments`` checks what it returns against the
+turn asks the model or the person. ``argument_grounding._ground_explicit_arguments`` checks what it returns against the
 catalog schema; nothing here grants an operation.
 """
 
@@ -18,20 +18,25 @@ from urllib.parse import urlencode, urlsplit
 from .. import effect_intent
 from . import missions
 from . import lexicon as semantic_lexicon
+from .apps import asks_new_document, bare_close_pronoun
+from .captures import CAPTURE_OPERATIONS, capture_save_arguments
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .decider import _edit_distance, _introduced_spans, _numbers_said
 from .dialogue import followup
 from .files import _TEXT_FILE_EXTENSIONS, files_named_in_reply
 from .grammar import titled_note_with_content
+from .system import dialect_country, official_place_name
 from .notes import agenda_event_request, new_list_title, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
     _KNOWN_FOLDER_NAVIGATION,
     _MUSIC_GENERIC_WORDS,
     _MUSIC_QUERY_FILLER,
+    _authenticated_close_key,
     application_shown_media_name,
     folder_then_directory_request,
     resolve_application_catalog_app_id,
     resolve_application_installed_name,
+    window_order_application,
 )
 from .temporal import (
     SpokenClock, agenda_window, alarm_for_hour, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation,
@@ -934,6 +939,10 @@ def _explicit_arguments_from_evidence(
         # Computer use: application, goal and the deterministic success check
         # come from the request itself (CONTRATO_VISTA_ACCION.md §4.1, §6).
         mission = missions.mission_request(evidence, application_names)
+        if mission is None and (alone := missions.without_spoken_link(evidence)) != evidence.strip():
+            # Revisión 1 de r28: the mission is already decided; the words that link it to the turn before («vale y
+            # ahora …») never leave it without its goal and its check.
+            mission = missions.mission_request(alone, application_names)
         return mission.arguments() if mission is not None else None
 
     if operation == "browser.control":
@@ -943,6 +952,12 @@ def _explicit_arguments_from_evidence(
                 or effect_intent.browser_close_tab_arguments(evidence)
                 or effect_intent.browser_page_step_arguments(evidence))
 
+    if operation in CAPTURE_OPERATIONS:
+        # Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09): the folder a capture is kept in is the one the person said
+        # after a verb of keeping (Pictures when none); with no such verb it stays private. Never the model's: «una
+        # captura del escritorio» is a capture of the screen, not one saved to the Desktop.
+        return capture_save_arguments(evidence)
+
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)
 
@@ -950,8 +965,9 @@ def _explicit_arguments_from_evidence(
         # The clock takes no argument; the time of another place or zone takes
         # that place, as said or as the zone the person named. Never asked of the
         # model: a place it guessed would be read as the person's.
+        # Ronda 19: a place said by its colloquial form («valpo») is resolved by its official name, as the weather's.
         elsewhere = clock_elsewhere(folded)
-        return {"place": elsewhere.place} if elsewhere is not None else {}
+        return {"place": official_place_name(elsewhere.place)} if elsewhere is not None else {}
 
     if operation == "clipboard.write.text":
         # CLIPBOARD1359: the quoted or colon-introduced fragment is the
@@ -1005,13 +1021,7 @@ def _explicit_arguments_from_evidence(
         return {"side": snap[1]}
 
     if operation == "window.resolve":
-        application_name = effect_intent.resolve_application_snap_name(
-            evidence, application_names,
-        ) or effect_intent.resolve_application_close_name(
-            evidence, application_names,
-        ) or effect_intent.resolve_application_focus_name(
-            evidence, application_names,
-        ) or effect_intent.resolve_application_minimize_name(
+        application_name = window_order_application(
             evidence, application_names,
         ) or effect_intent.conditional_open_pause_app(
             evidence, application_names,
@@ -1046,15 +1056,26 @@ def _explicit_arguments_from_evidence(
             near = effect_intent.near_single_open_candidate(evidence, application_names, game_catalog)
             if near is not None and near[0] == "app.open":
                 app_id = resolve_application_catalog_app_id(near[1], application_names)
-        if app_id is None:
+        # Independent review M1: «si se cierra steam, abre discord» is a condition, not an order to open now.
+        conditional = re.search(
+            r"\b(?:si|cuando|apenas|en\s+cuanto|if|when|once|as\s+soon\s+as)\b", effect_intent._fold(evidence)
+        )
+        if app_id is None and conditional is None:
+            # Erratas r9 (v3-19 «abre el adminsitrador de tareas y ordena los procesos por memoria» asked which
+            # application; owner rule «lo mal dicho lo arregla BAXY»): the open verb's slot up to the next clause, read
+            # by the one resolver (semantic.missions.opened_application): the application's name or another name of
+            # it, said whole or with a typing slip that reaches only it. Never a place said before the verb, one
+            # word of a name or a name's first words with more said after them (revisión: «open reset this pc»,
+            # «abre el panel de nvidia», «abre el uninstall de deskflow» ask which). It goes before any clause's
+            # words: «…, luego a memoria» is no «Diagnóstico de memoria».
+            opened = missions.opened_application(evidence, application_names)
+            if opened is not None:
+                app_id = resolve_application_catalog_app_id(f"abre {opened}", application_names)
+        if app_id is None and conditional is None:
             # Owner script t36 «abre steam y ve a la biblioteca»: the decider opens Steam and the second clause is
             # said, not done; the whole text is no application name, its opening clause is.
             clauses = effect_intent._request_clauses(effect_intent._fold(evidence))
-            # Independent review M1: «si se cierra steam, abre discord» is a condition, not an order to open now.
-            conditional = re.search(
-                r"\b(?:si|cuando|apenas|en\s+cuanto|if|when|once|as\s+soon\s+as)\b", effect_intent._fold(evidence)
-            )
-            if len(clauses) > 1 and conditional is None:
+            if len(clauses) > 1:
                 app_id = next(
                     (found for clause in clauses
                      if (found := resolve_application_catalog_app_id(clause, application_names)) is not None),
@@ -2066,7 +2087,14 @@ def _explicit_arguments_from_evidence(
 
     if operation == "weather.current":
         if effect_intent._weather_lookup_query(evidence) is not None:
-            return {"location": effect_intent._weather_location(evidence)}
+            location = effect_intent._weather_location(evidence)
+            # Ronda 19 (r17 t2-c13 «¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?» → Valencia,
+            # Venezuela): the country the person's way of speaking marks goes with a named place, declared as a hint;
+            # the adapter uses it only among namesakes of comparable size and never over a region said (a region that
+            # places the town returns before the hint is read; revisión r19: a comma part that places nothing, a name
+            # the reader could not tell from a vocative, «Madrid, Juan», keeps the hint working).
+            hint = dialect_country(evidence) if location is not None else None
+            return {"location": location, "dialectCountry": hint} if hint is not None else {"location": location}
 
     if operation in {"game.install.named", "game.uninstall.named"}:
         library_title = effect_intent.steam_library_title(evidence)
@@ -2227,7 +2255,7 @@ def _explicit_arguments_from_evidence(
 
     if operation == "audio.app.volume.adjust":
         # AUDIO1787: the application, direction and amount are the person's literal.
-        app_volume = effect_intent.app_volume_request(evidence, application_names)
+        app_volume = effect_intent.app_volume_request(evidence, application_names, as_decided=True)
         if app_volume is None or app_volume[2] is None:
             return None
         return {"app": app_volume[0], "amount": app_volume[2], "direction": app_volume[1]}
@@ -2598,6 +2626,73 @@ def due_before_said_moment(
     return due.isoformat().replace("+00:00", "Z"), title
 
 
+def with_new_document(
+    arguments: dict[str, object],
+    said: Iterable[str],
+    application_names: Any,
+    *,
+    nouns: frozenset[str] | None = None,
+) -> dict[str, object]:
+    """cu-v3-documento-nuevo (uso real t4-r6 c14, c06): an app.open of a request that asked for a new document
+    («un bloc de notas nuevo», «un blank workbook») carries ``newDocument``: the provider makes the document and sees it
+    made, never reusing the person's open one as it is. ``said``: the person's own words (review of
+    cu-v3-documento-nuevo, finding 8: never a rewrite or a step's purpose, which are no words of theirs, to decide on
+    keys sent). Review finding 2: the document is the step's own application's: its name next to the marker, or a
+    document noun with no other application named (``asks_new_document``); «copia de chrome y pegalo en un bloc de notas
+    nuevo» marks the opening of Notepad, never Chrome's. Each name is resolved once (finding 8: latency). ``nouns``:
+    the document kinds that count (``asks_new_document``; revisión 2 de r24b, B1)."""
+
+    app_id = arguments.get("appId")
+    if not isinstance(app_id, str) or not app_id or arguments.get("newDocument") is True:
+        return arguments
+    catalog = effect_intent.build_application_catalog_index(application_names)
+    known: dict[str, str | None] = {}
+
+    def identity(name: str | None) -> str | None:
+        """The catalog key of an application name or id («windows.notepad», «Bloc de notas» and «notepad» are one)."""
+
+        if not name:
+            return None
+        key = _authenticated_close_key(name, catalog)
+        if key is None and "." in name:
+            key = _authenticated_close_key(name.rsplit(".", 1)[-1], catalog)
+        return key or effect_intent._fold(name)
+
+    def named(span: str) -> str | None:
+        if span not in known:
+            known[span] = identity(resolve_application_catalog_app_id(f"abre {span}", catalog))
+        return known[span]
+
+    step = identity(app_id)
+
+    def elsewhere(text: str) -> bool:
+        """The text names another application, or names this one only as where something comes from («de chrome»)."""
+
+        pattern = catalog.occurrence_pattern
+        folded = effect_intent._fold(text)
+        found = [
+            (named(match.group("target")), folded[:match.start()].split()[-1:])
+            for match in (pattern.finditer(folded) if pattern is not None else ())
+        ]
+        # A name said by one word of it («chrome» for Google Chrome) is no whole catalog name.
+        words = re.findall(r"[a-z0-9]+", folded)
+        found += [
+            (named(word), words[index - 1:index])
+            for index, word in enumerate(words)
+            if word not in semantic_lexicon.NEW_DOCUMENT_GRAMMAR_WORDS and len(word) > 2
+        ]
+        found = [(key, lead) for key, lead in found if key is not None]
+        if any(key != step for key, _ in found):
+            return True
+        return bool(found) and all(
+            lead and lead[0] in semantic_lexicon.NEW_DOCUMENT_SOURCE_LEAD for _, lead in found
+        )
+
+    if any(asks_new_document(text, lambda span: named(span) == step, elsewhere, nouns) for text in said if text):
+        return {**arguments, "newDocument": True}
+    return arguments
+
+
 def window_snap_plan_split(
     operations: tuple[str, ...],
     evidence: tuple[str, ...],
@@ -2758,11 +2853,13 @@ _FOR_WHOM_AFTER_TITLE = re.compile(
 # streaming y qué título exacto deseas buscar?»): the service may be said before the title. The title is what follows
 # it, as said (the service's own search forgives the ear's typo, and the receipt names what was put), up to why or for
 # whom it is wanted («q la quieren ver…», «porque…», «because…», «so the kids…»); a kind of thing («una peli de
-# terror», «something») is no title and is still asked.
+# terror», «something») is no title and is still asked. Why: the title's view of the one list
+# (``lexicon.REASONS_AFTER_A_TITLE``, the openers it read before r31: a title may hold «as it», «pues»); for whom or
+# which one, said after a title only: the clauses below.
 _WHY_AFTER_TITLE = (
-    r"(?:(?:q|que|k)\s+(?:la|las|lo|los|le|les|me|te|se|nos|ya|mis?|tus?|sus?)\b|porque|porq|pq|xq|ya\s+que|"
-    r"pa\s+que|para\s+que|because|cause|since|so\s+(?:that\s+)?(?:i|we|they|the|my|our)\b|"
-    r"(?:that|which)\s+(?:the|my|our|i|we|they)\b)"
+    rf"(?:{semantic_lexicon.reason_opening(semantic_lexicon.REASONS_AFTER_A_TITLE)}|"
+    r"(?:q|que|k)\s+(?:la|las|lo|los|le|les|se|ya|mis?|tus?|sus?)\b|"
+    r"so\s+(?:that\s+)?(?:i|we|they|the|my|our)\b|(?:that|which)\s+(?:the|my|our|i|we|they)\b)"
 )
 _SERVICE_THEN_TITLE = (
     _STREAMING_PLAY_HEAD
@@ -2832,7 +2929,14 @@ _REJECTED_PLAYING = re.compile(
 )
 _NAMED_FIELDS = ("query", "title")
 _QUERY_FILLER = re.compile(_MUSIC_QUERY_FILLER)
-_NAMED_CLAUSE_END = re.compile(r"\s*[,;]\s*|\s+(?:mientras|while|porque|because)\s+", re.IGNORECASE)
+# Uso real v3 tanda 4 c01-3 «y ponme cumbia mientras» → Spotify looked for «cumbia mientras» and nothing played: a
+# nexus of simultaneity («mientras», «mientras tanto», «de mientras», «en lo que», «while», «meanwhile») ends what to
+# play also when it closes the message, the rest of the clause left unsaid. «porque/because» still needs its clause.
+_NAMED_CLAUSE_END = re.compile(
+    r"\s*[,;]\s*|\s+(?:porque|because)\s+"
+    r"|\s+(?:(?:de\s+)?mientras(?:\s+tanto)?|en\s+lo\s+que|while|meanwhile)(?:\s+|\s*[.!?…]*\s*$)",
+    re.IGNORECASE,
+)
 _NOT_A_NAME = frozenset(
     "el|ella|ellos|ellas|eso|esa|ese|esto|esta|este|him|her|them|it|they|he|she|su|sus|his|their|version|versiones|"
     "vivo|live|acustica|acustico|acoustic|estudio|studio|remix|remasterizada|remasterizado|remastered|unplugged|cover|"
@@ -2933,8 +3037,21 @@ def as_the_person_named(
         value = arguments.get(field)
         if not isinstance(value, str) or not value.strip() or _fold_text(value).strip() == _fold_text(person):
             continue
-        kept = re.findall(r"[a-z0-9ñ]+", _fold_text(value))
         exact = operation == "media.play.exact"
+        nexus = _NAMED_CLAUSE_END.search(value)
+        cut = value[: nexus.start()].strip(" .") if nexus is not None else value.strip(" .")
+        # Only a spoken nexus is cut: a comma in a decided value sets a title apart from its artist («El Detenido,
+        # Los Bunkers»), which may be one the person said earlier (``_with_the_artist_said_before``).
+        if nexus is not None and nexus.group(0).strip()[:1] not in {",", ";"} and _named_words(cut) and all(
+            _word_kept(word, re.findall(r"[a-z0-9ñ]+", _fold_text(cut)), _numbers_said(_fold_text(cut)))
+            for word in _named_words(person)
+        ):
+            # Tanda 4 c01-3: the decided value carried the clause after «mientras» («cumbia mientras cocino») that
+            # the person's own reading leaves out; what is played is what the person named.
+            value = result[field] = cut
+            if _fold_text(value).strip() == _fold_text(person):
+                continue
+        kept = re.findall(r"[a-z0-9ñ]+", _fold_text(value))
         # An exact title said in lower case keeps its artist («bohemian rapsodi de queen»): the song's own title
         # («Bohemian Rhapsody») loses nothing of it while it keeps one of its words.
         lost = not (any if exact else all)(
@@ -3107,15 +3224,13 @@ def names_spotify(clause: str) -> bool:
 
 
 def closes_the_active_window(clause: str) -> bool:
-    """«cierra la ventana activa», «close it», «cerralo»: the close acts on the active window, read first."""
+    """«cierra la ventana activa», «close it», «cerralo»: the close acts on the active window, read first. A pointer
+    reaches a plan only past the M19/M118 guard (``context_decision``); here it still reads the window in front, never
+    a window named «eso»."""
 
+    bare = effect_intent._strip_request_envelope(effect_intent._fold(clause))
     return bool(
-        re.search(
-            r"\b(?:activa|active|actual|current|cierralo|cierrala|"
-            r"close it|cerrala|cerralo)\b",
-            effect_intent._fold(clause),
-        )
-        or effect_intent.deictic_close_request(
-            effect_intent._strip_request_envelope(effect_intent._fold(clause))
-        )
+        re.search(r"\b(?:activa|active|actual|current|cierralo|cierrala|close it|cerrala|cerralo)\b", effect_intent._fold(clause))
+        or effect_intent.deictic_close_request(bare)
+        or bare_close_pronoun(bare)[0]
     )

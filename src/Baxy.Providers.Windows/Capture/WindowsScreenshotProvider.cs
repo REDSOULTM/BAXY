@@ -41,6 +41,15 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         return ValueTask.FromResult(CaptureAndStore(_platform.CaptureActiveWindow()));
     }
 
+    /// <summary>The known folders a copy is saved to (WindowsFileToolsAdapter's resolver); replaceable in tests.</summary>
+    internal Func<string, string?> KnownFolder { get; init; } = External.WindowsFileToolsAdapter.KnownFolderPath;
+
+    public ValueTask<SavedCaptureCopy> SaveCopyAsync(string captureId, string folder, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(CaptureCopies.Save(_directory, captureId, folder, KnownFolder, _time.GetUtcNow()));
+    }
+
     public ValueTask<CaptureResult> CaptureWindowAsync(nint window, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -55,6 +64,70 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
     /// </summary>
     internal static WindowImage CaptureWindowImage(nint window) =>
         Image(new GdiScreenshotPlatform().CaptureWindow(window));
+
+    /// <summary>
+    /// A window looked at behind other windows (v3 point 0: a look never brings it to the front). The screen there
+    /// shows what covers it, so the window draws itself: PrintWindow with PW_RENDERFULLCONTENT, the content DWM
+    /// composes for it, on a thread of its own with a time limit (a hung application never answers and would hold
+    /// the look). A frame that comes back black (a surface the window did not hand over) is no image of it: the
+    /// look goes on with its accessible tree only, never with the cover's pixels.
+    /// </summary>
+    internal static WindowImage CaptureCoveredWindowImage(nint window) =>
+        Image(CaptureWithin(() => new GdiScreenshotPlatform().CaptureWindowContent(window), WindowContentBudget));
+
+    internal static readonly TimeSpan WindowContentBudget = TimeSpan.FromMilliseconds(1000);
+
+    internal static ScreenshotFrame CaptureWithin(Func<ScreenshotFrame> capture, TimeSpan budget)
+    {
+        ScreenshotFrame? frame = null;
+        Exception? failure = null;
+        var done = new ManualResetEventSlim(false);
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                frame = capture();
+            }
+            catch (Exception exception) when (exception is IOException or InvalidOperationException
+                or OverflowException or ArgumentException or ExternalException)
+            {
+                failure = exception;
+            }
+            finally
+            {
+                done.Set();
+            }
+        })
+        {
+            IsBackground = true,
+            Name = "baxy-window-content",
+        };
+        thread.Start();
+        // The event is not disposed on a timeout: the capture thread still sets it when the window finally answers.
+        if (!done.Wait(budget))
+            throw new IOException("Window content capture timed out.");
+        done.Dispose();
+        if (failure is not null)
+            throw new IOException("Window content capture failed.", failure);
+        ScreenshotFrame captured = frame ?? throw new IOException("Window content capture failed.");
+        if (IsBlack(captured))
+            throw new IOException("Window content capture came back black.");
+        return captured;
+    }
+
+    // Every pixel this dark on all three channels: the empty frame PrintWindow returns for a surface it did not get,
+    // never a drawn page (its text and borders are lighter).
+    internal static bool IsBlack(ScreenshotFrame frame)
+    {
+        ReadOnlySpan<byte> pixels = frame.BgraBottomUp;
+        for (int offset = 0; offset + 2 < pixels.Length; offset += 4)
+        {
+            if (pixels[offset] > 8 || pixels[offset + 1] > 8 || pixels[offset + 2] > 8)
+                return false;
+        }
+
+        return true;
+    }
 
     internal static WindowImage Image(ScreenshotFrame frame)
     {
@@ -92,7 +165,44 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         if (!File.Exists(final)
             || !string.Equals(Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(final))),
                 hash, StringComparison.Ordinal)) throw new IOException("Screenshot verification failed.");
+        PruneOlderCaptures(final);
         return new CaptureResult(id, frame.Width, frame.Height, hash, _time.GetUtcNow(), frame.ActiveWindow);
+    }
+
+    /// <summary>
+    /// The private capture folder keeps the latest captures only (auditoría de estabilidad r19, hallazgo 4: a
+    /// profile held 64 MB of 8 MB bitmaps nobody read again). A capture is read back by the reads that follow it in
+    /// the same request (OCR, vision); the oldest ones beyond the cap are removed when a new one is stored. A file
+    /// that cannot be removed now stays for the next capture.
+    /// </summary>
+    internal const int RetainedCaptures = 16;
+
+    private void PruneOlderCaptures(string kept)
+    {
+        FileInfo[] captures;
+        try
+        {
+            captures = new DirectoryInfo(_directory).GetFiles("capture_*.bmp");
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return;
+        }
+
+        foreach (FileInfo old in captures
+            .Where(capture => !string.Equals(capture.FullName, kept, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(static capture => capture.LastWriteTimeUtc)
+            .Skip(RetainedCaptures - 1))
+        {
+            try
+            {
+                old.Delete();
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // Still open by a reader: it goes with a later capture.
+            }
+        }
     }
 
     private static byte[] EncodeBmp(ScreenshotFrame frame)
@@ -187,6 +297,123 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
                 (long)window, processId, DateTimeOffset.FromFileTime(created),
                 bounds, crop, started, _time.GetUtcNow()),
         };
+    }
+
+    /// <summary>
+    /// The window as it draws itself (PrintWindow, PW_RENDERFULLCONTENT), whatever covers it on screen, cut to the
+    /// same bounds the screen capture takes (its frame bounds on the visible desktop), so a point read on it is the
+    /// same screen point either way.
+    /// </summary>
+    internal ScreenshotFrame CaptureWindowContent(nint window) =>
+        CaptureInPhysicalPixels(() => CaptureWindowContentCore(window));
+
+    private ScreenshotFrame CaptureWindowContentCore(nint window)
+    {
+        DateTimeOffset started = _time.GetUtcNow();
+        if (window == 0) throw new IOException("Window unavailable.");
+        if (GetWindowThreadProcessId(window, out uint processId) == 0 || processId == 0)
+            throw new IOException("Window process unavailable.");
+        using SafeProcessHandle process = OpenProcess(0x1000, false, processId);
+        if (process.IsInvalid || !GetProcessTimes(process, out long created, out _, out _, out _)
+            || created <= 0)
+            throw new IOException("Window process creation identity unavailable.");
+        if (!GetWindowRect(window, out Rectangle whole))
+            throw new IOException("Window bounds unavailable.");
+        Rectangle rectangle;
+        if (DwmGetWindowAttribute(window, 9, out rectangle, Marshal.SizeOf<Rectangle>()) != 0)
+            rectangle = whole;
+        var bounds = new CaptureBounds(rectangle.Left, rectangle.Top,
+            checked(rectangle.Right - rectangle.Left), checked(rectangle.Bottom - rectangle.Top));
+        var crop = ContentCrop(bounds, _readDesktopBounds(), whole);
+        int wholeWidth = checked(whole.Right - whole.Left);
+        int wholeHeight = checked(whole.Bottom - whole.Top);
+        byte[] drawn = PrintWindowPixels(window, wholeWidth, wholeHeight);
+        byte[] pixels = CropBottomUp(drawn, wholeWidth, wholeHeight, whole.Left, whole.Top, crop);
+        return new ScreenshotFrame(crop.Width, crop.Height, pixels)
+        {
+            ActiveWindow = new ActiveWindowCaptureProvenance(
+                (long)window, processId, DateTimeOffset.FromFileTime(created),
+                bounds, crop, started, _time.GetUtcNow()),
+        };
+    }
+
+    // The frame bounds on the visible desktop, inside what the window drew (its whole rectangle).
+    private static CaptureBounds ContentCrop(CaptureBounds bounds, CaptureBounds screen, Rectangle whole)
+    {
+        int left = Math.Max(Math.Max(bounds.Left, screen.Left), whole.Left);
+        int top = Math.Max(Math.Max(bounds.Top, screen.Top), whole.Top);
+        int right = Math.Min(Math.Min(checked(bounds.Left + bounds.Width), checked(screen.Left + screen.Width)), whole.Right);
+        int bottom = Math.Min(Math.Min(checked(bounds.Top + bounds.Height), checked(screen.Top + screen.Height)), whole.Bottom);
+        if (right <= left || bottom <= top)
+            throw new IOException("Window is outside the visible desktop.");
+        return new CaptureBounds(left, top, right - left, bottom - top);
+    }
+
+    /// <summary>
+    /// The part <paramref name="crop"/> (screen coordinates) of a bottom-up 32-bit image drawn at
+    /// (<paramref name="originLeft"/>, <paramref name="originTop"/>), as a bottom-up image of its own.
+    /// </summary>
+    internal static byte[] CropBottomUp(
+        byte[] drawn, int width, int height, int originLeft, int originTop, CaptureBounds crop)
+    {
+        if (crop.Left < originLeft || crop.Top < originTop
+            || crop.Left + crop.Width > originLeft + width || crop.Top + crop.Height > originTop + height
+            || drawn.Length != checked(width * height * 4))
+            throw new IOException("Window crop is outside what was drawn.");
+        byte[] pixels = new byte[checked(crop.Width * crop.Height * 4)];
+        int rowBytes = crop.Width * 4;
+        for (int row = 0; row < crop.Height; row++)
+        {
+            // Row 0 of a bottom-up array is the lowest line.
+            int screenY = crop.Top + row;
+            int source = ((height - 1 - (screenY - originTop)) * width + (crop.Left - originLeft)) * 4;
+            int target = (crop.Height - 1 - row) * rowBytes;
+            Buffer.BlockCopy(drawn, source, pixels, target, rowBytes);
+        }
+
+        return pixels;
+    }
+
+    private static byte[] PrintWindowPixels(nint window, int width, int height)
+    {
+        if (width is < 1 or > 32_768 || height is < 1 or > 32_768)
+            throw new IOException("Window bounds are invalid.");
+        nint screen = GetDC(0);
+        if (screen == 0) throw new IOException("Screen DC unavailable.");
+        nint memory = 0, bitmap = 0, previous = 0;
+        try
+        {
+            memory = CreateCompatibleDC(screen);
+            bitmap = CreateCompatibleBitmap(screen, width, height);
+            if (memory == 0 || bitmap == 0) throw new IOException("Window capture allocation failed.");
+            previous = SelectObject(memory, bitmap);
+            // PW_RENDERFULLCONTENT (2): the content DWM composes for the window, DirectX and browsers included.
+            if (previous == 0 || !PrintWindow(window, memory, 2))
+                throw new IOException("Window content copy failed.");
+            var info = new BitmapInfo
+            {
+                Header = new BitmapInfoHeader
+                {
+                    Size = (uint)Marshal.SizeOf<BitmapInfoHeader>(),
+                    Width = width,
+                    Height = height,
+                    Planes = 1,
+                    BitCount = 32,
+                    Compression = 0,
+                }
+            };
+            byte[] pixels = new byte[checked(width * height * 4)];
+            if (GetDIBits(memory, bitmap, 0, (uint)height, pixels, ref info, 0) != height)
+                throw new IOException("Window content pixels unavailable.");
+            return pixels;
+        }
+        finally
+        {
+            if (previous != 0 && memory != 0) _ = SelectObject(memory, previous);
+            if (bitmap != 0) _ = DeleteObject(bitmap);
+            if (memory != 0) _ = DeleteDC(memory);
+            _ = ReleaseDC(0, screen);
+        }
     }
 
     private ScreenshotFrame CaptureInPhysicalPixels(Func<ScreenshotFrame> capture)
@@ -415,4 +642,8 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
     [LibraryImport("gdi32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool DeleteDC(nint dc);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool PrintWindow(nint window, nint dc, uint flags);
 }

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 
-from baxy_mind.llm import compose_visible_defect
+from baxy_mind.visible_defect import compose_visible_defect
 
 OBSERVED = {"version": 1, "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
             "title": "U Can't Touch This", "artist": "MC Hammer", "playbackStatus": "playing", "authority": "windows_smtc"}

@@ -61,6 +61,7 @@ internal sealed class DurablePlanStore
                 steps,
                 document.ReplanCount)
             {
+                PresentStateCondition = document.PresentStateCondition,
                 NextIndex = document.NextIndex,
                 PendingEffectMayHaveOccurred = document.PendingEffectMayHaveOccurred,
             };
@@ -113,6 +114,7 @@ internal sealed class DurablePlanStore
             Observations = SerializeNodeToElement(execution.Observations),
             CompletedMessages = execution.CompletedMessages.ToList(),
             PendingEffectMayHaveOccurred = execution.PendingEffectMayHaveOccurred,
+            PresentStateCondition = execution.PresentStateCondition,
             ComputerUse = execution.ComputerUse is null
                 ? null
                 : SerializeNodeToElement(execution.ComputerUse),
@@ -405,6 +407,10 @@ internal sealed class DurablePlanDocument
     public bool PendingEffectMayHaveOccurred { get; init; }
 
     public DurablePreparedOperation? PendingOperation { get; init; }
+
+    // Ronda 19 (revisión): the plan is conditioned on an application being open now; absent (false) in older files.
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool PresentStateCondition { get; init; }
 
     // Computer use (CONTRATO_VISTA_ACCION.md §4): the loop's state while the
     // current step is mission.computer.use; absent for every other plan.

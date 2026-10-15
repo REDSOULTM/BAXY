@@ -30,11 +30,12 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import context_rewrite
 from baxy_mind.semantic import dialogue, levels
 from baxy_mind.semantic.normalize import spelled_out
 from baxy_mind.semantic.reading import read
+from baxy_mind import turn_followups
 
 OPERATIONS = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "system.settings.set", "system.settings.adjust",
@@ -66,7 +67,7 @@ def _message(*turns: str) -> dict:
 
 
 def _rearm(message: dict, model: _Scripted, state: dialogue.DialogueState | None):
-    return sidecar._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
+    return turn_followups._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
 
 
 def _verified(operation: str, observed: dict | None = None) -> dict:
@@ -313,5 +314,5 @@ def test_a_rewrite_is_shown_only_the_worked_conversations_of_its_shape():
                                dependency="followup", shape="amount")
     shown = [json.loads(message["content"])["request"] for message in seen[0]["messages"]
              if message["role"] == "assistant"]
-    expected = [example[4] for example in llm._REWRITE_EXAMPLES if "amount" in example[0]]
-    assert shown == expected[: llm._REWRITE_EXAMPLES_SHOWN] and len(shown) < len(llm._REWRITE_EXAMPLES)
+    expected = [example[4] for example in context_rewrite._REWRITE_EXAMPLES if "amount" in example[0]]
+    assert shown == expected[: context_rewrite._REWRITE_EXAMPLES_SHOWN] and len(shown) < len(context_rewrite._REWRITE_EXAMPLES)

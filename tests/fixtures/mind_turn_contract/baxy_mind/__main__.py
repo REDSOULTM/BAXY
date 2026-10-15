@@ -11,15 +11,42 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Any
 
+_WRITE_LOCK = threading.Lock()
+
 
 def _write(value: dict[str, Any]) -> None:
-    sys.stdout.write(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
-    sys.stdout.write("\n")
-    sys.stdout.flush()
+    line = json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n"
+    with _WRITE_LOCK:
+        sys.stdout.write(line)
+        sys.stdout.flush()
+
+
+def _voice_reply(value: dict[str, Any], *, serial: bool) -> None:
+    """Answer a voice request, late when the test asks for a slow voice runtime.
+
+    ``BAXY_MIND_CONTRACT_VOICE_DELAY_MS`` delays the reply. A ``serial`` reply
+    holds the loop, as the real sidecar's single request lane does for every
+    voice request (``_BLOCKING_REQUEST_TYPES``): what arrives meanwhile waits.
+    Otherwise it answers from a timer so the loop can still acknowledge
+    ``shutdown``, as the real control plane does beside a request in flight.
+    """
+
+    delay = float(os.environ.get("BAXY_MIND_CONTRACT_VOICE_DELAY_MS", "0") or 0)
+    if delay <= 0:
+        _write(value)
+        return
+    if serial:
+        time.sleep(delay / 1000)
+        _write(value)
+        return
+    timer = threading.Timer(delay / 1000, _write, args=(value,))
+    timer.daemon = True
+    timer.start()
 
 
 def _trace(message: dict[str, Any]) -> None:
@@ -354,6 +381,16 @@ def _plan(message: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> int:
+    # Ronda 22: a mind still reading its model says no hello until the test opens the gate (a file); one whose start
+    # fails ends before it.
+    if os.environ.get("BAXY_MIND_CONTRACT_EXIT_BEFORE_HELLO", "").strip() == "1":
+        return 3
+    gate = os.environ.get("BAXY_MIND_CONTRACT_HELLO_GATE", "").strip()
+    if gate:
+        # The test knows this mind started (and read its gate) before it starts another with a different one.
+        Path(gate + ".waiting").write_text("", encoding="utf-8")
+    while gate and not Path(gate).exists():
+        time.sleep(0.02)
     _write(
         {
             "type": "hello",
@@ -385,6 +422,17 @@ def main() -> int:
         if kind == "catalog.configure":
             capabilities = message.get("capabilities")
             count = len(capabilities) if isinstance(capabilities, list) else 0
+            startup_cause = os.environ.get("BAXY_MIND_CONTRACT_STARTUP_FAILURE")
+            if startup_cause:
+                # r22: the model's server could not come up; the reply carries why.
+                _write({
+                    "type": "error",
+                    "id": request_id,
+                    "code": "request_failed",
+                    "message": "request_runtime_failure",
+                    "startup": {"cause": startup_cause, "exitCode": 1, "tail": ["cudaMalloc failed: out of memory"]},
+                })
+                continue
             _write({"type": "catalog.ready", "id": request_id, "count": count})
         elif kind == "turn.decide":
             if os.environ.get("BAXY_MIND_CONTRACT_DECISION_UNAVAILABLE") == "1":
@@ -392,6 +440,15 @@ def main() -> int:
             else:
                 _write(_turn(message))
         elif kind == "arguments":
+            forced_arguments = os.environ.get("BAXY_MIND_CONTRACT_ARGUMENTS_RESULT")
+            if forced_arguments:
+                # Estabilización M: the arguments the real mind's reader grounds (semantic.memory), forced per test.
+                arguments = json.loads(forced_arguments)
+                _write({
+                    "type": "arguments.result", "id": request_id, "operation": message.get("operation"),
+                    "arguments": arguments, "ok": True, "question": "",
+                })
+                continue
             if message.get("text") == "Set the speaker volume, please.":
                 _write({
                     "type": "arguments.result", "id": request_id, "arguments": None,
@@ -435,8 +492,13 @@ def main() -> int:
             )
         elif kind == "plan":
             _write(_plan(message))
+        elif kind == "voice.speak" and os.environ.get("BAXY_MIND_CONTRACT_VOICE_DELAY_MS"):
+            _voice_reply(
+                {"type": "voice.speak.result", "id": request_id, "accepted": True},
+                serial=False,
+            )
         elif kind == "voice.status":
-            _write(
+            _voice_reply(
                 {
                     "type": "voice.status.result",
                     "id": request_id,
@@ -452,7 +514,8 @@ def main() -> int:
                         "listening": False,
                         "speaking": False,
                     },
-                }
+                },
+                serial=True,
             )
         elif kind == "message.compose":
             facts = message.get("facts")

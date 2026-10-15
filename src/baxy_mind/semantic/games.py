@@ -294,6 +294,26 @@ def _steam_install_cancel_active_intent(
     )
 
 
+# Uso real v3 tanda 3 c03 «dame 5 juegos cooperativos pa jugar con mis primos en la pc que no pidan mucha compu» → the
+# Steam library listed: games asked for by kind are knowledge to recommend; the library is read only when the games
+# are the person's or this PC's — possessed («mis juegos», «what games do I have»), installed or downloaded, in a
+# library, catalog or store («biblioteca de Steam»), or on this machine («en mi pc»). Folded.
+_GAMES_OF_THIS_PC = re.compile(
+    r"\b(?:mis|my|our|nuestros|tus|your)\s+(?:[a-z]+\s+){0,2}(?:juegos|games|videojuegos|titulos|titles)\b|"
+    r"\b(?:tengo|tenemos|tienes|tenes|instalad[oa]s?|installed|descargad[oa]s?|downloaded|"
+    r"biblioteca|library|catalogo|catalog|coleccion|collection|locales?|local|steam|epic|gog|playable)\b|"
+    r"\b(?:i|we|you)\s+(?:have|own|got)\b|\bdo\s+(?:i|we)\s+have\b|"
+    r"\b(?:en|on|in)\s+(?:mi|este|esta|my|this)\s+(?:pc|computador[a]?|equipo|maquina|ordenador|laptop|notebook|"
+    r"computer|machine)\b"
+)
+
+
+def games_of_this_pc(text: str) -> bool:
+    """The games asked about are the person's or this PC's (``_GAMES_OF_THIS_PC``), not games of a kind to recommend."""
+
+    return _GAMES_OF_THIS_PC.search(_fold(text)) is not None
+
+
 def _steam_catalog_list_intent(
     text: str,
     available: frozenset[str],

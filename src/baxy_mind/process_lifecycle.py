@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import ctypes
 import math
+import struct
 import subprocess
 import sys
+import threading
 import time
+from ctypes import wintypes
 from enum import Enum
 
 from .time_budget import remaining_seconds
@@ -154,3 +158,62 @@ def report_incomplete_reap(
         sys.stderr.flush()
     except Exception:  # noqa: BLE001 - diagnostics cannot change shutdown
         pass
+
+
+# Encargo I2 (tanda fin2 t4 en redpc: llama-server 12764 sobrevivió a su mente): the mind runs under the runtime's
+# venv launcher, whose job lets its children break away silently (JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK), and the App's
+# own job allows breakaway, so a llama-server spawned here belongs to no job at all. A mind ended without its
+# ``close`` (killed with the App's job, the launcher's, or a crash) left the server running with the model in memory.
+# The mind's own kill-on-close job holds what it must never outlive: the job dies with the mind's last handle.
+_JOB_OBJECT_EXTENDED_LIMIT_INFORMATION = 9
+_JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+# JOBOBJECT_EXTENDED_LIMIT_INFORMATION on x64 (the runtime's only target): 144 bytes, with
+# BasicLimitInformation.LimitFlags at offset 16; every other limit stays zero.
+_EXTENDED_LIMITS_SIZE = 144
+_LIMIT_FLAGS_OFFSET = 16
+
+
+_owner_job: int | None = None
+_owner_job_lock = threading.Lock()
+
+
+def _kill_on_close_job() -> int | None:
+    global _owner_job
+    with _owner_job_lock:
+        if _owner_job is None:
+            kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+            kernel32.CreateJobObjectW.restype = wintypes.HANDLE
+            kernel32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
+            kernel32.SetInformationJobObject.argtypes = [
+                wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD,
+            ]
+            # Not inheritable (no security attributes): a child holding it would keep its own job alive.
+            job = kernel32.CreateJobObjectW(None, None)
+            if not job:
+                return None
+            limits = ctypes.create_string_buffer(_EXTENDED_LIMITS_SIZE)
+            struct.pack_into("<I", limits, _LIMIT_FLAGS_OFFSET, _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE)
+            if not kernel32.SetInformationJobObject(
+                job, _JOB_OBJECT_EXTENDED_LIMIT_INFORMATION, limits, _EXTENDED_LIMITS_SIZE,
+            ):
+                kernel32.CloseHandle(job)
+                return None
+            _owner_job = job
+        return _owner_job
+
+
+def end_with_this_process(process: subprocess.Popen) -> bool:
+    """Ties ``process`` to the mind's kill-on-close job: it ends when the mind ends, however the mind ends. False
+    off Windows or when the system refuses (the child then lives as before, closed only by ``close``)."""
+
+    if sys.platform != "win32":
+        return False
+    try:
+        job = _kill_on_close_job()
+        if job is None:
+            return False
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+        return bool(kernel32.AssignProcessToJobObject(job, int(process._handle)))  # noqa: SLF001 - the OS handle
+    except (AttributeError, OSError, TypeError, ValueError):
+        return False

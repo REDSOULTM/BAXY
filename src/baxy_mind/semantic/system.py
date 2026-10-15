@@ -3,10 +3,14 @@
 
 from __future__ import annotations
 
+import functools
+import json
 import re
+from pathlib import Path
 from typing import Iterable
-from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER, _COVERAGE_ACTION_HEAD
+from .grammar import _ASSISTANT_NAME, _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER, _COVERAGE_ACTION_HEAD
 from .intent import EffectIntent
+from .lexicon import ADDRESS_VOCATIVE
 from .temporal import is_window_phrase
 from .web import AIR_QUALITY_WORDS, _SKY_MEASURE_WORDS, _WEATHER_SUN_TIME, _WEATHER_WORDS, _names_weather, _weather_lookup_query, asks_own_place, weather_asks_sun_time
 
@@ -25,12 +29,62 @@ _PART_OF_TOWN = (
 )
 
 
+# Uso real v3 ronda 19 (r17 t1-c05 «va a llover mañana en valpo?» → weather_place_not_found: the geocoder knows
+# Valpovo and Valpoi, not «valpo»): a place said by its colloquial short form is looked up by its official name. The
+# forms and the regional words are data (``data/place_words.v1.json``); only a whole place equal to a form is
+# rewritten, so a town whose name merely starts like one («Valpovo») is asked as said.
+@functools.lru_cache(maxsize=1)
+def _place_words() -> dict:
+    path = Path(__file__).resolve().parent.parent / "data" / "place_words.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def official_place_name(place: str | None) -> str | None:
+    """The official name of a place said by its colloquial form («valpo» → «Curicó»); any other place as said."""
+
+    if place is None:
+        return None
+    forms = {" ".join(_fold(form).split()): name for form, name in _place_words()["colloquialPlaces"].items()}
+    return forms.get(" ".join(_fold(place).split()), place)
+
+
+@functools.lru_cache(maxsize=1)
+def _dialect_patterns() -> tuple[tuple[str, re.Pattern[str]], ...]:
+    patterns = []
+    for country, words in sorted(_place_words()["dialectCountries"].items()):
+        alternation = "|".join(r"\s+".join(map(re.escape, _fold(word).split())) for word in words)
+        patterns.append((country, re.compile(rf"\b(?:{alternation})\b")))
+    return tuple(patterns)
+
+
+def dialect_country(text: str) -> str | None:
+    """The country (ISO code) a regional way of speaking marks in the message («¿cojo paraguas?» → ES), when the
+    words mark exactly one; None otherwise. A tie-break among namesake towns, never a place by itself."""
+
+    folded = _fold(text)
+    marked = [country for country, pattern in _dialect_patterns() if pattern.search(folded)]
+    return marked[0] if len(marked) == 1 else None
+
+
 def _weather_location(text: str) -> str | None:
     """REOPEN1993 (grupo W): the place the person named for the weather («en
-    Buenos Aires», «in Madrid»), with their own spelling; None when no place is
-    named (the read then uses this PC's own location) or the words after the
-    preposition are a medium («en google», «en internet»)."""
+    Buenos Aires», «in Madrid»), with their own spelling (a colloquial form by its
+    official name); None when no place is named (the read then uses this PC's own
+    location) or the words after the preposition are a medium («en google», «en
+    internet»)."""
 
+    return official_place_name(_weather_location_said(text))
+
+
+_SAID_REGION = re.compile(
+    r"^\s*,\s*(?P<region>[A-ZÁÉÍÓÚÑ][\w'’-]*(?:\s+(?:(?:de|del|de\s+la)\s+)?[A-ZÁÉÍÓÚÑ][\w'’-]*){0,3})\s*(?:[?.!;]|$)"
+)
+# Revisión r19 («¿Cómo está el clima en Curicó, Baxy?» → «Curicó, Baxy»): the name the person calls the
+# assistant by, or an address word, closing the sentence after a comma is a vocative, never a region.
+_VOCATIVE_AFTER_PLACE = rf"^(?:{_ASSISTANT_NAME}|{ADDRESS_VOCATIVE})$"
+
+
+def _weather_location_said(text: str) -> str | None:
     query = _weather_lookup_query(text)
     if query is None or asks_own_place(text):
         return None
@@ -90,6 +144,15 @@ def _weather_location(text: str) -> str | None:
             or len(place.encode("utf-8")) > 128
         ):
             continue
+        # Ronda 19 contracase «Valencia, Carabobo»: the region named after a comma goes with the town (the adapter
+        # reads «Lugar, Región» as the town of that name in that region), when it is a name and ends the clause.
+        region = _SAID_REGION.match(query[match.end("place"):]) if place == candidate else None
+        if (
+            region is not None
+            and not _names_a_time(_fold(region.group("region")))
+            and not _has(_fold(region.group("region")), _VOCATIVE_AFTER_PLACE)
+        ):
+            return f"{place}, {region.group('region')}"
         return place
     return _place_before_the_weather(text) or weather_destination_there(text)
 

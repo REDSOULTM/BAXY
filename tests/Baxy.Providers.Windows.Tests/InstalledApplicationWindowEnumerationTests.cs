@@ -55,6 +55,84 @@ public sealed class InstalledApplicationWindowEnumerationTests
         }
     }
 
+    // r27u (tandas v3b1 y r23q, t2-c04 t5 «ya quedo, cierra configuracion porfa»): window.resolve of Configuración gave
+    // only SystemSettings' 71×41 «Host de ventanas emergentes» (owned); app.close closed it, the Settings frame stayed
+    // and the reply said it was closed. Fake windows: handles and who owns them.
+    private const long Frame = 100;
+    private const long Main = 110;
+    private const long Popup = 200;
+    private const long Dialog = 210;
+
+    [Test]
+    public void APackagedApplicationsPopupGivesWayToItsFrame()
+    {
+        // SystemSettings shows only the popup host of its own; the frame that hosts it is the window.
+        var observations = new List<InstalledApplicationObservation> { Observation(Popup, "SystemSettings") };
+
+        WindowsInstalledApplicationPlatform.KeepOwnWindows(
+            observations, static window => window == Popup, static found => found.Add(Observation(Frame, "ApplicationFrameHost")));
+
+        Assert.That(observations.Select(static item => item.WindowHandle), Is.EqualTo(new[] { Frame }));
+    }
+
+    [Test]
+    public void AnApplicationSeenOnlyThroughOwnedPopupsHasNoWindow()
+    {
+        // Classic (no frames to look for) and packaged with no frame on screen: nothing is offered as its window.
+        var classic = new List<InstalledApplicationObservation> { Observation(Popup, "App"), Observation(Dialog, "App") };
+        var packaged = new List<InstalledApplicationObservation> { Observation(Popup, "SystemSettings") };
+
+        WindowsInstalledApplicationPlatform.KeepOwnWindows(classic, static _ => true, null);
+        WindowsInstalledApplicationPlatform.KeepOwnWindows(packaged, static _ => true, static _ => { });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(classic, Is.Empty);
+            Assert.That(packaged, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void AModalDialogGoesWithTheWindowThatOwnsIt()
+    {
+        var observations = new List<InstalledApplicationObservation> { Observation(Dialog, "App"), Observation(Main, "App") };
+        bool framesLookedFor = false;
+
+        WindowsInstalledApplicationPlatform.KeepOwnWindows(
+            observations, static window => window == Dialog, _ => framesLookedFor = true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observations.Select(static item => item.WindowHandle), Is.EqualTo(new[] { Main }));
+            Assert.That(framesLookedFor, Is.False);
+        });
+    }
+
+    [Test]
+    public void APackagedApplicationWithNoWindowOfItsOwnIsItsFrameAsBefore()
+    {
+        var observations = new List<InstalledApplicationObservation>();
+
+        WindowsInstalledApplicationPlatform.KeepOwnWindows(
+            observations, static _ => false, static found => found.Add(Observation(Frame, "ApplicationFrameHost")));
+
+        Assert.That(observations.Select(static item => item.WindowHandle), Is.EqualTo(new[] { Frame }));
+    }
+
+    // Contracaso: two windows nobody owns both stay (which one is asked, never guessed).
+    [Test]
+    public void WindowsNoOtherWindowOwnsAllStay()
+    {
+        var observations = new List<InstalledApplicationObservation> { Observation(1, "App"), Observation(2, "App") };
+
+        WindowsInstalledApplicationPlatform.KeepOwnWindows(observations, static _ => false, null);
+
+        Assert.That(observations.Select(static item => item.WindowHandle), Is.EqualTo(new long[] { 1, 2 }));
+    }
+
+    private static InstalledApplicationObservation Observation(long window, string process) =>
+        new(77, 7, @"C:\Windows\System32\" + process + ".exe", window, Visible: true, Foreground: false, process);
+
     [DllImport("user32.dll", EntryPoint = "CreateWindowExW",
         CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
     private static extern nint CreateWindowEx(uint extendedStyle, string className,

@@ -264,7 +264,7 @@ def _audio_mute_domain(text: str) -> bool:
 
 
 _APP_VOLUME_AMOUNT = (
-    r"(?:\s+(?:en|by|a|al|to)\s+(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?)?"
+    r"(?:\s+(?P<prep>en|by|a|al|to)\s+(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|(?P<points>puntos?|points?))?"
     r"|\s+(?P<amount2>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?))?"
 )
 
@@ -314,6 +314,32 @@ _APP_VOLUME_SET_ENGLISH = re.compile(
     r"(?:\s+(?:volume|audio|sound)(?:\s+level)?)?"
     rf"\s+(?:to|at)\s+(?:{_APP_VOLUME_SET_LEVEL})(?:\s*,?\s*please)?[\s.!?]*$",
 )
+
+
+# Ruta tipada en app (auditoría 2026-10-08; owner rule «en Spotify subí el volumen» → that application's volume,
+# decider.asks_for_the_application_itself): a volume order said inside one application («en Spotify subí el volumen al
+# 80», «in Spotify turn the volume down») names that application's volume. Folded; the application is checked against
+# the catalog by the readers, the same as when it is said after the volume.
+_VOLUME_SAID_IN_PLACE = re.compile(
+    r"^[¿?¡!\s]*(?P<frame>en|in|on|dentro\s+de)\s+(?:(?:la|el|the)\s+)?(?:app\s+|aplicacion\s+|application\s+)?"
+    r"(?P<app>[a-z0-9][a-z0-9 .+_-]{0,60}?)\s*,?\s+"
+    rf"(?P<order>(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|{_SET_VOLUME_VERB}|turn|bump|crank)\s.*)$"
+)
+_THE_VOLUME = re.compile(r"\b(?:(?:el|la|the)\s+)?(volumen|volume|sonido|sound|audio)\b")
+
+
+def app_volume_named_in_place(folded: str) -> tuple[str, ...]:
+    """The volume order said inside one application written with that application as its volume's owner, in the
+    surface the app-volume readers read in the frame's language («en» → «subí el volumen de spotify al 80», «in» →
+    «turn down spotify volume»); () when the order is no volume said in place."""
+
+    found = _VOLUME_SAID_IN_PLACE.match(folded)
+    if found is None or _THE_VOLUME.search(found.group("order")) is None:
+        return ()
+    app, order = found.group("app"), found.group("order")
+    if found.group("frame") in {"in", "on"}:
+        return (_THE_VOLUME.sub(lambda noun: f"{app} {noun.group(1)}", order, count=1),)
+    return (_THE_VOLUME.sub(lambda noun: f"el {noun.group(1)} de {app}", order, count=1),)
 
 
 _APP_VOLUME_LEVEL_WORDS = {"maximo": 100, "max": 100, "tope": 100, "full": 100, "minimo": 0, "min": 0, "cero": 0, "zero": 0, "mitad": 50, "half": 50}

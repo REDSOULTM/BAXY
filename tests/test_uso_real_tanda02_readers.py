@@ -11,8 +11,9 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import _explicit_arguments_from_evidence, _prepare_turn_result
-from baxy_mind.llm import _weather_fact_defect
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.turn_decide import _prepare_turn_result
+from baxy_mind.weather_facts import _weather_fact_defect
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.guards import cut_request_tail

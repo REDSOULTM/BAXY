@@ -10,8 +10,11 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_situation
+from baxy_mind import argument_grounding
+from baxy_mind import plan_dependencies
+from baxy_mind import plan_shape
 
 AVAILABLE = frozenset({"message.send.test", "message.recipient.resolve", "message.send", "message.draft", "client.channel.locate", "app.open"})
 RESOLVE_SCHEMA = {
@@ -42,10 +45,10 @@ def test_a_named_recipient_without_a_client_is_looked_up_and_sent(text: str, rec
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == ("message.recipient.resolve", "message.send")
     assert effect_intent.resolve_explicit_clarification_intent(text, AVAILABLE) is None
-    assert mind._ground_explicit_arguments("message.recipient.resolve", text, RESOLVE_SCHEMA) == {"channel": "any", "recipient": recipient}
+    assert argument_grounding._ground_explicit_arguments("message.recipient.resolve", text, RESOLVE_SCHEMA) == {"channel": "any", "recipient": recipient}
     observations = [{"operation": "message.recipient.resolve", "verified": True, "status": "completed", "result": {"recipientId": "recipient_1", "channel": "whatsapp", "displayName": recipient}}]
-    assert mind._verified_message_send_arguments(text, observations) == {"recipientId": "recipient_1", "text": body}
-    skeleton = mind._explicit_plan_skeleton(("message.recipient.resolve", "message.send"), (text, text))
+    assert plan_dependencies._verified_message_send_arguments(text, observations) == {"recipientId": "recipient_1", "text": body}
+    skeleton = plan_shape._explicit_plan_skeleton(("message.recipient.resolve", "message.send"), (text, text))
     assert skeleton["steps"][1]["argumentsMode"] == "after_dependencies"
     assert effect_intent.operation_domain_is_grounded(text, "message.recipient.resolve") is True
 
@@ -53,7 +56,7 @@ def test_a_named_recipient_without_a_client_is_looked_up_and_sent(text: str, rec
 def test_a_client_at_the_end_of_the_text_is_the_client_and_one_before_stays_the_test_send() -> None:
     trailing = "dile a Ana que llegare tarde por WhatsApp"
     assert effect_intent.message_request_any_channel(trailing) == ("Ana", "llegare tarde", "whatsapp")
-    assert mind._ground_explicit_arguments("message.recipient.resolve", trailing, RESOLVE_SCHEMA) == {"channel": "whatsapp", "recipient": "Ana"}
+    assert argument_grounding._ground_explicit_arguments("message.recipient.resolve", trailing, RESOLVE_SCHEMA) == {"channel": "whatsapp", "recipient": "Ana"}
     leading = "mandale por whatsapp a Música que ya voy"
     assert effect_intent.message_request_any_channel(leading) is None
     # Owner 2026-09-21: a client named before the text is the named-client send (looked up there, confirmed).
@@ -77,7 +80,7 @@ def test_without_the_resolve_pair_the_client_is_still_asked() -> None:
 
 def test_the_absences_have_their_cause_facts_and_the_final_names_chat_and_client() -> None:
     for code in ("recipient_not_found_in_clients", "recipient_channel_ambiguous"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT
     situation = {
         "kind": "status",
         "cause": "mission_completed",
@@ -86,5 +89,5 @@ def test_the_absences_have_their_cause_facts_and_the_final_names_chat_and_client
             '{"kind":"operation","operation":"message.send","polarity":"success","verified":true,"succeeded":true,"observed":{"messageId":"message_1","recipientId":"recipient_1","channel":"whatsapp","displayName":"Música","delivery":"visible_postcondition"}}',
         ],
     }
-    steps = llm._situation_steps(situation)
+    steps = compose_situation._situation_steps(situation)
     assert [step["operation"] for step in steps] == ["message.recipient.resolve", "message.send"]

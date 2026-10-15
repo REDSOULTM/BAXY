@@ -67,30 +67,68 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
     }
 }
 
-internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperationHandler
+internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperationHandler, IInvocationRiskAssessor
 {
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.close");
+
+    // v3 r6 lectores (t2-r4 c04-5 «ya quedó, cierra configuración porfa» → «¿Quieres confirmar…?»): a window that holds
+    // no document of the person (data: documentless_applications.v1.json) closes as a low reversible act; any other
+    // window, or one the provider cannot place, keeps work_loss and asks. v3 r22 uso real: the provider also counts
+    // an application whose content lives in the person's account and a window BAXY launched and never wrote into.
+    public OperationRisk? AssessInvocationRisk(JsonElement arguments) =>
+        arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty("windowId", out JsonElement windowId)
+        && windowId.ValueKind == JsonValueKind.String
+        && provider.HoldsNoDocument(windowId.GetString()!)
+            ? OperationRisk.Reversible
+            : null;
 
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {
         string windowId = invocation.Arguments.GetProperty("windowId").GetString()!;
         WindowCloseResult result = await provider.CloseAsync(windowId, cancellationToken).ConfigureAwait(false);
+        if (result.ClosePrompted && result.Verified && result.ProcessId is not null)
+        {
+            // v3 r22 uso real: the application answered the polite close with a dialog of its own (it asks whether
+            // to save). The window is still there and BAXY never answers that dialog; the receipt says so.
+            return OperationOutcome.Failure(
+                WindowControlErrorCodes.ClosePrompted,
+                result: Receipt(result.ProcessId.Value, windowClosed: false, closePrompted: true));
+        }
+
         if (!result.Succeeded || !result.Verified || result.ProcessId is null)
         {
             return OperationOutcome.Failure(result.ErrorCode ?? "app_close_failed");
         }
 
+        return OperationOutcome.Success(Receipt(result.ProcessId.Value, windowClosed: true, closePrompted: false, result.Title));
+    }
+
+    private static JsonElement Receipt(int processId, bool windowClosed, bool closePrompted, string? title = null)
+    {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
-            writer.WriteNumber("processId", result.ProcessId.Value);
-            writer.WriteBoolean("windowClosed", true);
+            writer.WriteNumber("processId", processId);
+            writer.WriteBoolean("windowClosed", windowClosed);
+            // Encargo H1 (tandas fin1/fin2 t2-c03 t2): what it closed, as Windows wrote the window's title; the final
+            // names it from here, never from the request.
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                writer.WriteString("title", title);
+            }
+
+            if (closePrompted)
+            {
+                writer.WriteBoolean("closePrompted", true);
+            }
+
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
-        return OperationOutcome.Success(document.RootElement.Clone());
+        return document.RootElement.Clone();
     }
 }
 
@@ -315,6 +353,17 @@ internal static class WindowControlResultJson
         writer.WriteNumber("y", window.Y);
         writer.WriteNumber("width", window.Width);
         writer.WriteNumber("height", window.Height);
+        if (window.Owned)
+            writer.WriteBoolean("owned", true);
+        if (window.ZOrder is int zOrder)
+            writer.WriteNumber("zOrder", zOrder);
+        if (window.Topmost)
+            writer.WriteBoolean("topmost", true);
+        if (window.WorkAreaWidth is int workWidth && window.WorkAreaHeight is int workHeight)
+        {
+            writer.WriteNumber("workAreaWidth", workWidth);
+            writer.WriteNumber("workAreaHeight", workHeight);
+        }
         writer.WriteEndObject();
     }
 }

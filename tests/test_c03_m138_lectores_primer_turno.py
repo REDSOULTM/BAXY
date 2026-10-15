@@ -37,6 +37,9 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
 )
+from baxy_mind import turn_decide
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import argument_grounding
 
 OPERATIONS = tuple(
     json.loads(
@@ -104,7 +107,7 @@ def _tool(name: str) -> dict:
 
 def _turn(text: str, model: _Decider) -> dict:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m138", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),
@@ -300,7 +303,7 @@ def test_pa_las_is_the_hour_of_the_alarm(text: str) -> None:
 
 
 def test_the_alarm_pa_las_7_before_an_early_morning_rings_at_seven() -> None:
-    due = sidecar._canonical_due_utc(
+    due = semantic_arguments._canonical_due_utc(
         "pa las 7", "programame una alarma pa las 7 que manana madrugo",
         now_utc=datetime(2026, 10, 3, 4, 44, tzinfo=LOCAL),
     )
@@ -361,7 +364,7 @@ _SPOTIFY_QUERY = {
 )
 def test_in_spotify_plays_on_spotify(text: str, said: str) -> None:
     assert _read(text) == ("media.play.query",)
-    arguments = sidecar._ground_explicit_arguments("media.play.query", text, _SPOTIFY_QUERY)
+    arguments = argument_grounding._ground_explicit_arguments("media.play.query", text, _SPOTIFY_QUERY)
     assert arguments["provider"] == "spotify" and said in arguments["query"].lower()
     assert "spotify" not in arguments["query"].lower()
 

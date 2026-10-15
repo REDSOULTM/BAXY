@@ -77,6 +77,23 @@ def _accented(infinitive: str) -> str:
     return infinitive.replace("anad", "añad").replace("oir", "oír")
 
 
+def preterite_ar(infinitive: str) -> str:
+    """The first person singular preterite of a regular -ar verb, spelled right («buscar» -> «busqué»)."""
+
+    return _preterite_ar(infinitive)
+
+
+def act_preterite_lemmas() -> dict[str, str]:
+    """Each first person singular preterite of the acts a report tells -> its infinitive (semantic.claims)."""
+
+    lemmas = {_preterite_ar(item): item for item in _ACT_INFINITIVES_AR}
+    for item in _ACT_INFINITIVES_ER_IR:
+        if item not in {"oir", "leer"}:
+            lemmas.setdefault(_accented(item)[:-2] + "í", _accented(item))
+    lemmas.update({"oí": "oír", "leí": "leer", "incluí": "incluir", "excluí": "excluir"})
+    return lemmas
+
+
 ACT_PRETERITES_1SG = frozenset(
     {_preterite_ar(item) for item in _ACT_INFINITIVES_AR}
     | {_accented(item)[:-2] + "í" for item in _ACT_INFINITIVES_ER_IR if item not in {"oir", "leer"}}

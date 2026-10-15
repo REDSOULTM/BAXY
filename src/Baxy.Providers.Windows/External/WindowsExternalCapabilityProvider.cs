@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
@@ -11,6 +12,7 @@ namespace Baxy.Providers.Windows.External;
 public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvider, IDisposable
 {
     private readonly IExternalOperationAdapter[] _adapters;
+    private readonly IForegroundLease? _missionFront;
     private int _disposed;
 
     public WindowsExternalCapabilityProvider()
@@ -22,7 +24,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     }
 
     public WindowsExternalCapabilityProvider(string dataRoot)
-        : this(CreateDefaultAdapters(dataRoot))
+        : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared)
     {
     }
 
@@ -30,10 +32,31 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     {
         string root = Path.GetFullPath(dataRoot);
         var browserSessionContext = new CdpBrowserSessionContext();
-        // input.scroll by «index» scrolls a control of the last computer-use view.
-        var visibleControls = new WindowsVisibleControlAdapter();
+        // input.scroll by «index» scrolls a control of the last computer-use view; input.text.type by «index» writes
+        // into a field of it.
+        // TZ-DC2 (z3 t1-c09 «mandale a Ron92 por discord…»): one UI Automation worker for the Core, started by its
+        // prewarm. The messaging clients' probe had its own, started by each Core's first search, which read nothing
+        // until it was up: that search clicked its first row after fixed waits and the recipient's chat never opened.
+        var uia = new UiaWorkerHost();
+        var visibleControls = new WindowsVisibleControlAdapter(uia);
+        // Ronda 20 P2 (t-drag-2): the pause detector starts with the provider, off the caller's thread and without
+        // waiting for it (its own wait for Raw Input happens there), so the first look of a mission already knows the
+        // window the person works in. Started lazily at that look, it knew nothing that came before.
+        _ = Task.Run(() => WindowsUserInputPause.Shared);
+        var desktopInteraction = new WindowsDesktopInteractionAdapter(visibleControls);
+        // A search burst (goal v3 point 0, fix 3) types its destination as input.text.type does, bound to the window.
+        visibleControls.TypeInWindow = (window, text, token) => desktopInteraction.InvokeAsync(
+            "input.text.type",
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("text", text);
+                writer.WriteNumber("window", (long)window);
+                writer.WriteEndObject();
+            }),
+            token);
         return [
-            new DesktopMessagingAdapter(),
+            new DesktopMessagingAdapter(new UiaClientInteractionProbe(uia)),
             new WindowsMicrophoneAdapter(),
             new WindowsAudioAdjustmentAdapter(),
             new WindowsAppVolumeAdapter(),
@@ -49,7 +72,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             // a player that is not running.
             new WebBrowserAdapter(root, browserSessionContext),
             new SpotifyDesktopAdapter(),
-            new SteamLocalAdapter(),
+            new SteamLocalAdapter(visibleControls),
             new WindowsGameInstallationAdapter(),
             new WindowsDeviceControlAdapter(
                 root,
@@ -60,7 +83,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new PresentationDocumentAdapter(),
             new ExplorerFolderAdapter(),
             new WindowsInventoryAdapter(),
-            new WindowsDesktopInteractionAdapter(),
+            desktopInteraction,
             visibleControls,
             new WindowsScrollAdapter(visibleControls),
             new WindowsKnownFileAdapter(root),
@@ -80,8 +103,25 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         ];
     }
 
-    internal WindowsExternalCapabilityProvider(IExternalOperationAdapter[] adapters) =>
+    /// <param name="missionFront">The lease that brings a mission's window to the front before its act
+    /// (<see cref="IForegroundLease.TakeForMissionAsync"/>); null (the test seams that name none) brings nothing.</param>
+    internal WindowsExternalCapabilityProvider(IExternalOperationAdapter[] adapters, IForegroundLease? missionFront = null)
+    {
         _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
+        _missionFront = missionFront;
+    }
+
+    /// <summary>
+    /// The mission's window an act names (its «window» argument: the catalog gives it only to the acts of a computer-use
+    /// mission, the hwnd of the view the act was decided on), or 0.
+    /// </summary>
+    internal static nint MissionWindow(JsonElement arguments) =>
+        arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty("window", out JsonElement window)
+        && window.ValueKind == JsonValueKind.Number
+        && window.TryGetInt64(out long hwnd) && hwnd > 0
+            ? checked((nint)hwnd)
+            : 0;
 
     public InstalledGameCatalogSnapshot GetInstalledGameCatalogSnapshot()
     {
@@ -107,7 +147,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
 
     /// <summary>
     /// Starts in the background what the first computer-use view would otherwise wait for: the UI Automation worker
-    /// (a PowerShell with its UI Automation assemblies, about a second). Never blocks the caller; a start that fails
+    /// (a PowerShell with its UI Automation assemblies, about a second) and its first look
+    /// (<see cref="WindowsVisibleControlAdapter.PrewarmAsync"/>). Never blocks the caller; a start that fails
     /// leaves the first view to start it, as before.
     /// </summary>
     public void Prewarm()
@@ -164,6 +205,134 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        // The owner's decision of 2026-10-10 («no molestar», simple form): an act of a mission is done with the mission's
+        // window in front, brought after the person's pause; the lease gives the front back at the person's first input,
+        // after a text and once the mission ended. Nothing is sent when the person does not pause, Windows does not give
+        // the front or the mission already ended: never behind their window.
+        nint missionWindow = MissionWindow(arguments);
+        if (_missionFront is not null && missionWindow != 0)
+        {
+            if (await _missionFront.TakeForMissionAsync(missionWindow, cancellationToken).ConfigureAwait(false) is { } refusal)
+                return ExternalJson.FailureBeforeEffect(operation, refusal);
+            try
+            {
+                return await InvokeOnceAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                _missionFront.MissionActEnded(operation);
+            }
+        }
+
+        return await InvokeOnceAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// One operation, watched: a failure in which a media session went unanswered says so (MS: the reads of Windows'
+    /// media sessions are bounded, an unanswered one is left out and the operation goes on).
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> InvokeOnceAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        StrongBox<bool> unanswered = MediaSessionCalls.Watch();
+        return MediaSessionCalls.Diagnosed(
+            await InvokeWatchedAsync(operation, arguments, cancellationToken).ConfigureAwait(false), unanswered);
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> InvokeWatchedAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        IReadOnlyList<(string Source, string Title, bool Playing)>? sessionsBefore = null;
+        var paused = new List<(WindowsMediaSessionAdapter Media, (string Source, string Title) Session)>();
+        if (IsPlayback(operation)
+            && _adapters.OfType<WindowsMediaSessionAdapter>().FirstOrDefault() is { } sessions)
+        {
+            foreach (WindowsMediaSessionAdapter media in _adapters.OfType<WindowsMediaSessionAdapter>())
+            {
+                if (await media.PauseAssistantPlaybackBeforeAsync(operation).ConfigureAwait(false) is { } session)
+                {
+                    paused.Add((media, session));
+                }
+            }
+
+            sessionsBefore = await sessions.SessionsAsync().ConfigureAwait(false);
+        }
+
+        if (paused.Count == 0)
+        {
+            return await DispatchAsync(operation, arguments, sessionsBefore, cancellationToken).ConfigureAwait(false);
+        }
+
+        ExternalCapabilityReceipt dispatched;
+        try
+        {
+            dispatched = await DispatchAsync(operation, arguments, sessionsBefore, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // The new playback never answered: what BAXY paused for it plays again, best effort.
+            foreach ((WindowsMediaSessionAdapter media, (string Source, string Title) session) in paused)
+            {
+                _ = await media.ResumeAssistantPlaybackAsync(session).ConfigureAwait(false);
+            }
+
+            throw;
+        }
+
+        return await SettlePausedPlaybackAsync(dispatched, paused).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Revisión 2 de la ronda 19: the session BAXY paused before a new playback stays paused only when that playback
+    /// crossed its effect. When it failed before any effect (no search result, the person using the PC, no browser)
+    /// the session is resumed, so a failure never silences the music. Either way the receipt carries the pause; a
+    /// pause that could not be undone is an effect of the turn, never «nothing happened».
+    /// </summary>
+    private static async ValueTask<ExternalCapabilityReceipt> SettlePausedPlaybackAsync(
+        ExternalCapabilityReceipt receipt,
+        IReadOnlyList<(WindowsMediaSessionAdapter Media, (string Source, string Title) Session)> paused)
+    {
+        bool effectCrossed = receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred;
+        var pauses = new List<AssistantPlaybackPause>();
+        foreach ((WindowsMediaSessionAdapter media, (string Source, string Title) session) in paused)
+        {
+            bool resumed = !effectCrossed
+                && await media.ResumeAssistantPlaybackAsync(session).ConfigureAwait(false);
+            pauses.Add(new AssistantPlaybackPause(session.Source, session.Title, resumed));
+        }
+
+        if (effectCrossed || pauses.All(pause => pause.Resumed))
+        {
+            return receipt with { AssistantPlaybackPauses = pauses };
+        }
+
+        JsonElement result = ExternalJson.Extended(receipt.Result, writer =>
+        {
+            writer.WriteStartArray("pausedAssistantPlayback");
+            foreach (AssistantPlaybackPause pause in pauses.Where(pause => !pause.Resumed))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourceAppUserModelId", pause.SourceAppUserModelId);
+                writer.WriteString("title", pause.Title);
+                writer.WriteBoolean("resumed", false);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+        });
+        return receipt with { EffectObserved = true, Result = result, AssistantPlaybackPauses = pauses };
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> DispatchAsync(
+        string operation,
+        JsonElement arguments,
+        IReadOnlyList<(string Source, string Title, bool Playing)>? sessionsBefore,
+        CancellationToken cancellationToken)
+    {
         ExternalCapabilityReceipt? lastFailure = null;
         foreach (IExternalOperationAdapter adapter in _adapters.Where(
             candidate => candidate.CanHandle(operation)))
@@ -175,7 +344,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 || receipt.EffectObserved
                 || receipt.EffectMayHaveOccurred)
             {
-                RememberAssistantPlayback(operation, receipt);
+                await RememberAssistantPlaybackAsync(operation, receipt, sessionsBefore).ConfigureAwait(false);
                 return receipt;
             }
             // Tanda 5: a failure that read its player's state (Result: the YouTube tab's video was not playing) is
@@ -281,21 +450,50 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     }
 
     /// <summary>A verified playback BAXY started tells the media session adapter which session is its own.</summary>
-    private void RememberAssistantPlayback(string operation, ExternalCapabilityReceipt receipt)
+    private static bool IsPlayback(string operation) => operation is "media.play.youtube" or "media.play.exact"
+        or "media.play.query" or "streaming.play.named";
+
+    /// <summary>
+    /// A playback BAXY started tells the media session adapter which session is its own: the one a verified receipt
+    /// names, or (ronda 19: the desktop client's receipt names none) the one that started playing during it. Ronda 19
+    /// (t2-c01 T1 then T2): a press that failed after its effect was observed (the client resumed what it had loaded,
+    /// not confirmed as the search) still left that music playing by BAXY's hand, so the session that started playing
+    /// during it is BAXY's too, and «no, mejor en youtube» pauses it. A session already playing before the operation
+    /// (the person's) never is.
+    /// </summary>
+    private async ValueTask RememberAssistantPlaybackAsync(
+        string operation,
+        ExternalCapabilityReceipt receipt,
+        IReadOnlyList<(string Source, string Title, bool Playing)>? sessionsBefore)
     {
-        if (!receipt.Verified
-            || operation is not ("media.play.youtube" or "media.play.exact" or "media.play.query"
-                or "streaming.play.named")
-            || receipt.Result is not { ValueKind: JsonValueKind.Object } result
-            || !result.TryGetProperty("sourceAppUserModelId", out JsonElement source)
-            || source.ValueKind != JsonValueKind.String
-            || string.IsNullOrWhiteSpace(source.GetString()))
+        if (!(receipt.Verified || receipt.EffectObserved) || !IsPlayback(operation))
+        {
+            return;
+        }
+        string? named = receipt.Verified && receipt.Result is { ValueKind: JsonValueKind.Object } result
+            && result.TryGetProperty("sourceAppUserModelId", out JsonElement source)
+            && source.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(source.GetString())
+                ? source.GetString()
+                : null;
+        // Revisión 2: what BAXY left playing is a source and the title it started there, so a later session of the
+        // person's in the same app (another title) is never taken for BAXY's.
+        string? title = null;
+        if (sessionsBefore is not null
+            && _adapters.OfType<WindowsMediaSessionAdapter>().FirstOrDefault() is { } sessions)
+        {
+            IReadOnlyList<(string Source, string Title, bool Playing)> after =
+                await sessions.SessionsAsync().ConfigureAwait(false);
+            named ??= WindowsMediaSessionAdapter.NewlyPlayingSource(sessionsBefore, after);
+            title = named is null ? null : WindowsMediaSessionAdapter.NewlyPlayingTitle(sessionsBefore, after, named);
+        }
+        if (named is null)
         {
             return;
         }
         foreach (WindowsMediaSessionAdapter media in _adapters.OfType<WindowsMediaSessionAdapter>())
         {
-            media.RememberAssistantPlayback(source.GetString()!);
+            media.RememberAssistantPlayback(named, title, operation);
         }
     }
 

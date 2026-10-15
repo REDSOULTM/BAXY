@@ -36,13 +36,13 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.effect_intent import _fold
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.conversation import asks_for_code
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.guards import _overheard_speech, _unresolved_input_kind
+from baxy_mind import turn_decide
 
 
 def _overheard(text: str) -> bool:
@@ -179,7 +179,7 @@ def _turn(text: str, model: _Decider) -> dict:
     tool = {"type": "function", "function": {
         "name": "web_search", "canonical_name": "web.search", "description": "web.search", "risk": "read_only",
         "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False}}}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m161", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog([tool]), encoder=lambda _t: (), tool_by_name={"web.search": tool},
         dialogue_state=DialogueState(),

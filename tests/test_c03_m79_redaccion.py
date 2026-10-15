@@ -33,6 +33,13 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import search_report
 from baxy_mind.semantic.request import read_request
 from baxy_mind.semantic.web import (
     searched_clause,
@@ -54,7 +61,7 @@ def _situation(case: str) -> dict:
 
 
 def _payload(case: str, user_text: str, language: str = "es") -> dict:
-    return llm._compose_situation_payload(_situation(case), language, user_text)
+    return compose_payload._compose_situation_payload(_situation(case), language, user_text)
 
 
 class _Drafts(llm.LlmRuntime):
@@ -113,8 +120,8 @@ def test_the_sunset_read_answers_and_the_temperature_does_not(case: str, user_te
     assert payload["seen"]["today"] == {
         "date": "2026-09-29", "weekday": "martes", "sunset": "19:47", "sunsetPassed": False,
     }
-    assert llm._payload_fact_defect(_stage(case)["draft"], payload, user_text) != ""
-    assert llm._payload_fact_defect("Hoy oscurece a las 19:47 en Curicó.", payload, user_text) == ""
+    assert payload_fact_checks._payload_fact_defect(_stage(case)["draft"], payload, user_text) != ""
+    assert payload_fact_checks._payload_fact_defect("Hoy oscurece a las 19:47 en Curicó.", payload, user_text) == ""
 
 
 def test_a_projected_weather_read_gets_its_focus() -> None:
@@ -141,10 +148,10 @@ def test_a_past_day_is_before_the_read() -> None:
     payload = _payload("D-s003", user_text)
     assert payload["seen"]["outOfReach"] == {"read": "forecast", "askedTime": "past", "readFrom": "2026-09-29"}
     assert "temperatureC" not in payload["seen"] and "today" not in payload["seen"]
-    assert llm._payload_fact_defect(_stage("D-s003")["draft"], payload, user_text) == "invented_number"
-    final = llm._deterministic_final(_situation("D-s003"), payload, user_text, "es")
+    assert payload_fact_checks._payload_fact_defect(_stage("D-s003")["draft"], payload, user_text) == "invented_number"
+    final = deterministic_finals._deterministic_final(_situation("D-s003"), payload, user_text, "es")
     assert final == "El tiempo de Curico sólo lo leo desde hoy, no el de días pasados."
-    assert llm._payload_fact_defect(final, payload, user_text) == ""
+    assert payload_fact_checks._payload_fact_defect(final, payload, user_text) == ""
 
 
 # ------------------------------------------------------------------ the conversation's language
@@ -169,13 +176,13 @@ def test_spanish_words_and_marks_still_count(text: str) -> None:
 def test_a_humidity_read_now_is_not_said_for_tomorrow() -> None:
     user_text = "How humid is it expected to be in Martínez?"
     payload = _payload("D-p25-t3", user_text, "en")
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "The humidity in Martínez is 22% today and 22% tomorrow.", payload, user_text,
     ) == "extra_claim"
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "In Martínez the humidity is 22% right now; tomorrow's is not read.", payload, user_text,
     ) == ""
-    assert "never give it for tomorrow" in llm._weather_answer_instruction(user_text, "en")
+    assert "never give it for tomorrow" in weather_facts._weather_answer_instruction(user_text, "en")
 
 
 # ------------------------------------------------------------------ where the forecast ends
@@ -184,13 +191,13 @@ def test_a_humidity_read_now_is_not_said_for_tomorrow() -> None:
 def test_the_reach_names_the_last_day_read() -> None:
     user_text = "The city is Palo Alto, and weather info for March 2nd."
     payload = _payload("D-p20-t2", user_text, "en")
-    assert llm._payload_fact_defect(_stage("D-p20-t2", 1)["draft"], payload, user_text) == "extra_claim"
+    assert payload_fact_checks._payload_fact_defect(_stage("D-p20-t2", 1)["draft"], payload, user_text) == "extra_claim"
     for reply in (
         "The forecast for Palo Alto only goes up to October 5; March 2 is beyond it.",
         "The forecast for Palo Alto only covers September 29 up to October 5, so March 2 is beyond it.",
         "The forecast doesn't reach March 2nd yet.",
     ):
-        assert llm._payload_fact_defect(reply, payload, user_text) == ""
+        assert payload_fact_checks._payload_fact_defect(reply, payload, user_text) == ""
 
 
 # ------------------------------------------------------------------ whole sentences
@@ -198,13 +205,13 @@ def test_the_reach_names_the_last_day_read() -> None:
 
 def test_a_reflexive_estar_with_a_participle_is_vetoed() -> None:
     draft = _stage("D-s047")["draft"]  # «Ahora se está pausado la canción "Noc turne" de Zeitgeister.»
-    assert llm.compose_visible_defect(draft, "status", "cuál es el nombre de la música", {}) == "broken_estar_participle"
+    assert visible_defect.compose_visible_defect(draft, "status", "cuál es el nombre de la música", {}) == "broken_estar_participle"
     for reply in (
         'La canción "Noc turne" de Zeitgeister está pausada.',
         "Se está reproduciendo «Noc turne» de Zeitgeister.",
         'Suena "Se está acabado" de Nadie.',
     ):
-        assert llm.compose_visible_defect(reply, "status", "cuál es el nombre de la música", {}) == ""
+        assert visible_defect.compose_visible_defect(reply, "status", "cuál es el nombre de la música", {}) == ""
 
 
 def test_a_quoted_title_is_the_subject_of_the_search() -> None:
@@ -212,7 +219,7 @@ def test_a_quoted_title_is_the_subject_of_the_search() -> None:
     user_text = "Who's in the movie 'After the Wedding'?"
     assert [stage["reason"] for stage in stages[:3]] == ["search_report_off_subject"] * 3
     for stage in stages[1:3]:  # «The 2006 film *After the Wedding* stars Mads Mikkelsen…», «The movie '…' stars…»
-        assert not llm._search_report_off_subject(stage["draft"], stage["payload"], user_text)
+        assert not search_report._search_report_off_subject(stage["draft"], stage["payload"], user_text)
     assert searched_clause(user_text, "en") == ("who is in the movie 'After the Wedding'", True)
     assert searched_clause("What's the capital of Peru?", "en") == ("what the capital of Peru is", True)
 
@@ -231,14 +238,14 @@ def test_a_quoted_title_is_the_subject_of_the_search() -> None:
     ],
 )
 def test_a_settled_plan_or_an_own_database_is_invented(reply: str, request_text: str, claim: str) -> None:
-    assert llm.conversation_world_claim(reply, request_text, ()) == claim
+    assert reply_claims.conversation_world_claim(reply, request_text, ()) == claim
 
 
 @pytest.mark.parametrize(
     "reply", ["The movie is set in Paris.", "Is the plan confirmed?", "If you want, the plan is confirmed once you say so."],
 )
 def test_knowledge_and_questions_claim_nothing(reply: str) -> None:
-    assert llm.conversation_world_claim(reply, "x", ()) == ""
+    assert reply_claims.conversation_world_claim(reply, "x", ()) == ""
 
 
 # ------------------------------------------------------------------ a failure said without its code
@@ -246,7 +253,7 @@ def test_knowledge_and_questions_claim_nothing(reply: str) -> None:
 
 def test_an_ambiguous_external_effect_reaches_the_writer_as_its_fact() -> None:
     situation = json.loads(_stage("D-w19-t4")["situation"])
-    payload = llm._compose_situation_payload(situation, "es", "ok entonces ponme una alarma a las 8:40 para pedirlo yo")
+    payload = compose_payload._compose_situation_payload(situation, "es", "ok entonces ponme una alarma a las 8:40 para pedirlo yo")
     said = json.dumps(payload, ensure_ascii=False)
     assert "external effect ambiguous" not in said and "could not be confirmed" in said
 
@@ -259,7 +266,7 @@ def test_an_ambiguous_external_effect_reaches_the_writer_as_its_fact() -> None:
     ],
 )
 def test_the_code_said_in_words_is_still_the_code(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", "ponlo", {}) == "internal_code"
+    assert visible_defect.compose_visible_defect(draft, "error", "ponlo", {}) == "internal_code"
 
 
 def test_a_failures_clocks_are_the_persons_own() -> None:
@@ -267,8 +274,8 @@ def test_a_failures_clocks_are_the_persons_own() -> None:
     facts = {"situation": stage["situation"]}
     understood = "Cambia el recordatorio de cargar el termo y el mate de mañana a las 6:15 a las 6:00."
     said = "Mejor a las 6 en punto, que si no no llego al micro"
-    assert llm.compose_visible_defect(stage["draft"], "error", understood, facts) == ""
-    assert llm.compose_visible_defect(stage["draft"], "error", understood, facts, said=said) == "extra_claim"
+    assert visible_defect.compose_visible_defect(stage["draft"], "error", understood, facts) == ""
+    assert visible_defect.compose_visible_defect(stage["draft"], "error", understood, facts, said=said) == "extra_claim"
 
 
 def test_the_access_refusal_is_told_what_to_say() -> None:

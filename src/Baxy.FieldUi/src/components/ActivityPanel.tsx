@@ -15,7 +15,7 @@ interface SurfaceCard {
 // (activity); triggers/tools moved to the LEFT (substrate).
 const SURFACES: SurfaceCard[] = [
   { id: 'sessions', label: 'sessions', unit: 'cached' },
-  { id: 'memory',   label: 'memory',   unit: 'pinned' },
+  { id: 'memory',   label: 'memoria',  unit: 'recuerdos' },
 ];
 
 interface Props {

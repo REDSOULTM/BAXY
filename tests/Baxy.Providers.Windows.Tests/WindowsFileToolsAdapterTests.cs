@@ -92,6 +92,118 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // v3 ronda 3 (lugar M6): v3-15 «paisaje.jpg que está en Documentos\baxy-prueba-v3» terminó en file_not_found y
+    // v3-18 lo buscó sólo en Imágenes. Se resuelve sin abrir nada: la ubicación es una lectura del disco.
+    private static WindowsFileToolsAdapter TwoFolders(string documents, string pictures) =>
+        new(folder => folder switch { "documents" => documents, "pictures" => pictures, _ => null }, null);
+
+    [Test]
+    public void AFileInASubfolderOfTheKnownFolderIsFoundByItsRelativePath()
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
+        string sub = Directory.CreateDirectory(Path.Combine(documents, "baxy-prueba-v3")).FullName;
+        File.WriteAllText(Path.Combine(sub, "paisaje.jpg"), "x");
+
+        (string? path, string folder, string? error) = TwoFolders(documents, pictures)
+            .LocateOpenTarget("documents", "baxy-prueba-v3\\paisaje.jpg");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(error, Is.Null);
+            Assert.That(folder, Is.EqualTo("documents"));
+            Assert.That(path, Is.EqualTo(Path.Combine(sub, "paisaje.jpg")));
+        });
+    }
+
+    [Test]
+    public void AFileNotInTheFolderSaidIsFoundWhenOnlyOneKnownFolderHasIt()
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
+        string sub = Directory.CreateDirectory(Path.Combine(documents, "baxy-prueba-v3")).FullName;
+        File.WriteAllText(Path.Combine(sub, "paisaje.jpg"), "x");
+
+        (string? path, string folder, string? error) = TwoFolders(documents, pictures)
+            .LocateOpenTarget("pictures", "paisaje.jpg");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(error, Is.Null);
+            Assert.That(folder, Is.EqualTo("documents"));
+            Assert.That(path, Is.EqualTo(Path.Combine(sub, "paisaje.jpg")));
+        });
+    }
+
+    [Test]
+    public void TwoFilesWithTheNameAreNotGuessedAndNoneIsAnHonestAbsence()
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(documents, "a")).FullName, "foto.png"), "x");
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(pictures, "b")).FullName, "foto.png"), "x");
+        WindowsFileToolsAdapter adapter = TwoFolders(documents, pictures);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(adapter.LocateOpenTarget("documents", "foto.png"), Is.EqualTo(((string?)null, "documents", (string?)"file_ambiguous")));
+            Assert.That(adapter.LocateOpenTarget("documents", "nada.png"), Is.EqualTo(((string?)null, "documents", (string?)"file_not_found")));
+        });
+    }
+
+    // Revisión de la rama ruta: con subcarpetas en el nombre la persona dijo dónde
+    // está; si no está ahí, otro archivo con el mismo nombre no lo reemplaza.
+    [Test]
+    public void ANameWithSubfoldersIsNotSearchedElsewhere()
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(pictures, "otra")).FullName, "informe.docx"), "x");
+
+        Assert.That(
+            TwoFolders(documents, pictures).LocateOpenTarget("documents", "proyectoA\\informe.docx"),
+            Is.EqualTo(((string?)null, "documents", (string?)"file_not_found")));
+    }
+
+    // Revisión de la rama ruta: una búsqueda cortada (tiempo o cancelación) no
+    // prueba que el archivo hallado primero sea el único; el duplicado de una
+    // carpeta posterior nunca se vio, así que no se abre ninguno.
+    [Test]
+    public void ASearchCutShortOpensNothingEvenWithOneMatchSeen()
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(documents, "a")).FullName, "foto.png"), "x");
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(pictures, "b")).FullName, "foto.png"), "x");
+        WindowsFileToolsAdapter adapter = TwoFolders(documents, pictures);
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                adapter.LocateOpenTarget("pictures", "foto.png", budget: TimeSpan.Zero),
+                Is.EqualTo(((string?)null, "pictures", (string?)"file_search_incomplete")));
+            Assert.That(
+                adapter.LocateOpenTarget("pictures", "foto.png", cancellationToken: cancelled.Token),
+                Is.EqualTo(((string?)null, "pictures", (string?)"file_search_incomplete")));
+            // With time to look, both are seen and none is guessed.
+            Assert.That(
+                adapter.LocateOpenTarget("pictures", "foto.png").Error, Is.EqualTo("file_ambiguous"));
+        });
+    }
+
+    [TestCase("..\\secreto.txt")]
+    [TestCase("baxy\\..\\..\\secreto.txt")]
+    [TestCase("C:\\Windows\\win.ini")]
+    [TestCase("\\Windows\\win.ini")]
+    [TestCase("a:b.txt")]
+    public void ARelativePathNeverLeavesTheKnownFolder(string name)
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        Assert.That(TwoFolders(documents, documents).LocateOpenTarget("documents", name).Error, Is.EqualTo("file_name_invalid"));
+    }
+
     [TestCase("azul", 0, 78, 152)]
     [TestCase("Azul", 0, 78, 152)]
     [TestCase("#ff0000", 255, 0, 0)]

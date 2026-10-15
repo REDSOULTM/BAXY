@@ -13,9 +13,9 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import effect_intent
-from baxy_mind import __main__ as mind_main
-from baxy_mind.__main__ import _explicit_arguments_from_evidence
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
 from baxy_mind.semantic.conversation import catalog_unavailable
+from baxy_mind import turn_decisions
 
 APPLICATIONS = ("Steam", "Spotify", "Google Chrome", "Discord", "Calculadora", "Bloc de notas")
 GAMES = effect_intent.build_game_catalog_index([("steam", "2767030", "Marvel Rivals")])
@@ -68,7 +68,7 @@ def test_a_named_application_the_catalog_holds_is_never_read_for_presence(text: 
 def test_what_is_no_application_of_this_pc_keeps_the_limit(text: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, OPERATIONS, APPLICATIONS, effect_intent.build_game_catalog_index(()))
     assert intent is None or "app.installed" not in intent.operations
-    decision = mind_main._catalog_unavailable_turn_decision(
+    decision = turn_decisions._catalog_unavailable_turn_decision(
         text, None, APPLICATIONS, effect_intent.build_game_catalog_index(()),
     )
     assert decision is not None

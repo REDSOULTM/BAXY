@@ -3,7 +3,7 @@ import copy
 
 import pytest
 
-from baxy_mind.llm import _compose_situation_payload
+from baxy_mind.compose_payload import _compose_situation_payload
 
 
 @pytest.mark.parametrize("language", ["es", "en", "mixed"])

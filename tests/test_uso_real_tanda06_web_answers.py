@@ -32,7 +32,9 @@ import json
 
 import pytest
 
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 from test_c03_cpu_actor import Recorder
 
 AVAILABLE = ("web.news.headlines", "web.search", "weather.current", "system.time", "note.create", "app.open",
@@ -111,8 +113,8 @@ def _search_payload(results: list[dict]) -> dict:
     ],
 )
 def test_saying_it_was_not_found_is_no_unsourced_claim(asked: str, answer: str) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(_SUN_PAGES), asked) == ""
-    assert llm.compose_visible_defect(answer, "status", asked, {"situation": _search_situation(_SUN_PAGES)}) == ""
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_SUN_PAGES), asked) == ""
+    assert visible_defect.compose_visible_defect(answer, "status", asked, {"situation": _search_situation(_SUN_PAGES)}) == ""
 
 
 @pytest.mark.parametrize(
@@ -125,7 +127,7 @@ def test_saying_it_was_not_found_is_no_unsourced_claim(asked: str, answer: str) 
     ],
 )
 def test_a_claim_said_with_a_negation_is_still_judged(answer: str) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(_SUN_PAGES), "¿a qué hora amanece en Cádiz?") == (
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_SUN_PAGES), "¿a qué hora amanece en Cádiz?") == (
         "search_report_unsourced_claim"
     )
 
@@ -139,7 +141,7 @@ def test_a_claim_said_with_a_negation_is_still_judged(answer: str) -> None:
     ],
 )
 def test_not_found_in_the_results_shows_the_search(answer: str) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(_SUN_PAGES), "¿a qué hora amanece en Cádiz?") == (
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_SUN_PAGES), "¿a qué hora amanece en Cádiz?") == (
         "search_report_shows_the_search"
     )
 
@@ -147,7 +149,7 @@ def test_not_found_in_the_results_shows_the_search(answer: str) -> None:
 def test_having_no_information_is_still_denied_and_repaired_without_naming_pages() -> None:
     asked = "¿a qué hora amanece en Cádiz?"
     denied = "No hay datos del sol hoy."
-    assert llm._payload_fact_defect(denied, _search_payload(_SUN_PAGES), asked) == "search_result_denied"
+    assert payload_fact_checks._payload_fact_defect(denied, _search_payload(_SUN_PAGES), asked) == "search_result_denied"
     answer = "No encontré la hora del amanecer en Cádiz."
     client = Recorder([denied, answer])
     assert client.compose_user_message(asked, "status", {"situation": _search_situation(_SUN_PAGES)}) == answer
@@ -191,7 +193,7 @@ _STOCKS = [
     ],
 )
 def test_a_pages_name_is_not_the_answer(asked: str, answer: str, results: list[dict]) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_names_a_page"
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_names_a_page"
 
 
 @pytest.mark.parametrize(
@@ -205,13 +207,13 @@ def test_a_pages_name_is_not_the_answer(asked: str, answer: str, results: list[d
     ],
 )
 def test_a_pages_call_to_the_reader_is_page_voice(asked: str, answer: str, results: list[dict]) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_page_voice"
 
 
 @pytest.mark.parametrize("answer", ["Consulté varias páginas sobre restaurantes.", "Busqué restaurantes abiertos."])
 def test_baxys_own_past_is_not_the_pages_call(answer: str) -> None:
     # «consulté», «busqué» fold to «consulte», «busque»: read with their accents they are BAXY telling the search.
-    assert llm._payload_fact_defect(answer, _search_payload(_OPEN_NEAR), "any restaurants open now") == (
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_OPEN_NEAR), "any restaurants open now") == (
         "search_report_shows_the_search"
     )
 
@@ -219,7 +221,7 @@ def test_baxys_own_past_is_not_the_pages_call(answer: str) -> None:
 def test_a_pages_list_cited_shows_the_search() -> None:
     # The t41 final.
     answer = "El precio de las acciones puede ser alto según la lista de las acciones más caras del mundo."
-    assert llm._payload_fact_defect(answer, _search_payload(_STOCKS), "alto precio de las acciones") == (
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_STOCKS), "alto precio de las acciones") == (
         "search_report_shows_the_search"
     )
 
@@ -239,7 +241,7 @@ def test_a_pages_list_cited_shows_the_search() -> None:
     ],
 )
 def test_a_concrete_answer_or_not_finding_it_passes(asked: str, answer: str, results: list[dict]) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == ""
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(results), asked) == ""
 
 
 def test_a_pages_name_is_repaired_with_its_own_hint() -> None:

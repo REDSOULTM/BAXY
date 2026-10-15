@@ -18,10 +18,17 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind_main
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import unsupported_answers
+from baxy_mind import limit_voice
+from baxy_mind import media_facts
 from baxy_mind.semantic.request import read_request
 from test_c03_cpu_actor import Recorder
+from baxy_mind import turn_history
+from baxy_mind import turn_decide
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 
 # --- web.search reports ----------------------------------------------------------
 
@@ -91,7 +98,7 @@ def test_the_report_instruction_asks_for_the_answer_itself_never_its_sources() -
     ],
 )
 def test_an_answer_that_shows_the_search_falls(shown: str) -> None:
-    assert llm._payload_fact_defect(shown, _payload(_PARK_RESULTS), _PARK_ASK) == "search_report_shows_the_search"
+    assert payload_fact_checks._payload_fact_defect(shown, _payload(_PARK_RESULTS), _PARK_ASK) == "search_report_shows_the_search"
 
 
 def test_an_honest_answer_that_the_pages_do_not_answer_publishes() -> None:
@@ -104,11 +111,11 @@ def test_an_honest_answer_that_the_pages_do_not_answer_publishes() -> None:
     asked = "¿me pongo bufanda esta noche?"
     honest = "No encontré si debes ponerte bufanda esta noche."
     facts = {"situation": _situation(results, asked)}
-    assert llm.compose_visible_defect(honest, "status", asked, facts) == ""
-    assert llm._payload_fact_defect(honest, _payload(results, asked), asked) == ""
+    assert visible_defect.compose_visible_defect(honest, "status", asked, facts) == ""
+    assert payload_fact_checks._payload_fact_defect(honest, _payload(results, asked), asked) == ""
     # Answering the question anyway is still a claim no page makes.
     invented = "Esta noche hará frío, así que sí, ponte la bufanda."
-    assert llm._payload_fact_defect(invented, _payload(results, asked), asked) == "search_report_unsourced_claim"
+    assert payload_fact_checks._payload_fact_defect(invented, _payload(results, asked), asked) == "search_report_unsourced_claim"
 
 
 def test_a_question_quoted_verbatim_from_a_page_is_not_the_assistant_asking() -> None:
@@ -117,29 +124,29 @@ def test_a_question_quoted_verbatim_from_a_page_is_not_the_assistant_asking() ->
         "Según viajeroslibres.com, la guía dice «¿Vale la pena tomar el tren a Parquelandia?» y "
         "ayuda a realizar el traslado de la forma más fácil."
     )
-    assert llm.compose_visible_defect(quoted, "status", _PARK_ASK, facts) == ""
+    assert visible_defect.compose_visible_defect(quoted, "status", _PARK_ASK, facts) == ""
     # The same question unquoted is BAXY asking the person.
     asked = "Según viajeroslibres.com, ¿vale la pena tomar el tren a Parquelandia?"
-    assert llm.compose_visible_defect(asked, "status", _PARK_ASK, facts) == "extra_claim"
+    assert visible_defect.compose_visible_defect(asked, "status", _PARK_ASK, facts) == "extra_claim"
     # A quotation the pages do not carry is not the page's either.
     invented = "Según viajeroslibres.com, la guía pregunta «¿Quieres que te reserve el tren?»."
-    assert llm.compose_visible_defect(invented, "status", _PARK_ASK, facts) == "extra_claim"
+    assert visible_defect.compose_visible_defect(invented, "status", _PARK_ASK, facts) == "extra_claim"
 
 
 def test_a_bracketed_result_title_is_observed_text_not_a_template_hole() -> None:
     facts = {"situation": _situation(_PARK_RESULTS)}
     answer = "Hay una guía [GRATIS] para hacer el traslado a Parquelandia de la forma más fácil."
-    assert llm._bracket_is_observed("[GRATIS]", facts) is True
-    assert llm.compose_visible_defect(answer, "status", _PARK_ASK, facts) == ""
-    assert llm.compose_visible_defect(
+    assert media_facts._bracket_is_observed("[GRATIS]", facts) is True
+    assert visible_defect.compose_visible_defect(answer, "status", _PARK_ASK, facts) == ""
+    assert visible_defect.compose_visible_defect(
         "La guía cuesta [precio del tren].", "status", _PARK_ASK, facts
     ) == "copied_instruction"
 
 
 def test_a_host_label_that_prefixes_a_query_word_is_the_page_name_not_a_cut() -> None:
-    assert llm._truncated_fact_word("Parquelandia.parque.com da indicaciones de manejo.", _payload(_PARK_RESULTS)) is False
+    assert visible_defect._truncated_fact_word("Parquelandia.parque.com da indicaciones de manejo.", _payload(_PARK_RESULTS)) is False
     # A word the model cut from the query is still a cut.
-    assert llm._truncated_fact_word("Busqué cómo llegar a parquelan.", _payload(_PARK_RESULTS)) is True
+    assert visible_defect._truncated_fact_word("Busqué cómo llegar a parquelan.", _payload(_PARK_RESULTS)) is True
 
 
 def test_three_rejected_drafts_no_longer_end_in_a_list_of_pages() -> None:
@@ -167,12 +174,23 @@ class _SlowRecorder(Recorder):
 
 
 @pytest.mark.parametrize("fail_at", [2, 3])
-def test_a_budget_run_out_before_the_last_draft_raises_instead_of_listing_pages(fail_at: int) -> None:
-    # Owner rule 2026-09-24: the verified pages are no final of their own any more.
+def test_a_budget_run_out_before_the_last_draft_says_the_cause_instead_of_listing_pages(fail_at: int) -> None:
+    # Owner rule 2026-09-24: the verified pages are no final of their own any more. Ronda 19b (r17 t3-c14): nor is
+    # nothing, which the App told as «No pude contarte cómo salió lo que pediste.»; the time that ran out is said,
+    # with no page and no search shown (data: operation_floor «searchUntold»). Ronda 22 (r18 t2-c01 t4): here a draft
+    # was already refused before the time ran out, so what no draft could say from the pages is the not-found that
+    # names what was asked, never «se me acabó el tiempo» (test_cu_v3_r22_vetos_que_reparan keeps the time sentence
+    # for a writer that drafted nothing).
+    from baxy_mind import operation_floor
+
     shown = "En ese sitio dice que hay indicaciones de manejo."
     client = _SlowRecorder([shown] * 3, fail_at)
-    with pytest.raises(TimeoutError):
-        client.compose_user_message(_PARK_ASK, "status", {"situation": _situation(_PARK_RESULTS)}, timeout=20)
+    reply = client.compose_user_message(_PARK_ASK, "status", {"situation": _situation(_PARK_RESULTS)}, timeout=20)
+    untold = operation_floor.floor_data()["searchUntold"]["es"]
+    assert reply.startswith("No encontré ") or reply == "No lo encontré.", reply
+    assert reply != untold["bare"] and "tiempo" not in reply
+    assert "encontré estas páginas" not in reply
+    assert "parquelandia.parque.com" not in reply
     assert len(client.payloads) == fail_at
 
 
@@ -199,7 +217,7 @@ def test_a_budget_run_out_with_nothing_verified_to_report_still_raises() -> None
     ],
 )
 def test_a_limit_that_echoes_the_request_is_not_baxys_no(limit: str) -> None:
-    assert llm.limit_voice_defect(limit, "x") == "limit_echoes_request"
+    assert limit_voice.limit_voice_defect(limit, "x") == "limit_echoes_request"
 
 
 @pytest.mark.parametrize(
@@ -211,7 +229,7 @@ def test_a_limit_that_echoes_the_request_is_not_baxys_no(limit: str) -> None:
     ],
 )
 def test_a_limit_that_speaks_of_baxy_in_the_third_person_is_not_his_no(limit: str) -> None:
-    assert llm.limit_voice_defect(limit, "activa el modo pirata") == "limit_third_person"
+    assert limit_voice.limit_voice_defect(limit, "activa el modo pirata") == "limit_third_person"
 
 
 @pytest.mark.parametrize(
@@ -225,23 +243,23 @@ def test_a_limit_that_speaks_of_baxy_in_the_third_person_is_not_his_no(limit: st
     ],
 )
 def test_a_first_person_limit_is_baxys_own(limit: str) -> None:
-    assert llm.limit_voice_defect(limit, "x") == ""
+    assert limit_voice.limit_voice_defect(limit, "x") == ""
 
 
 def test_the_self_close_limit_may_name_how_baxy_closes() -> None:
     reply = "No me cierro desde el chat; BAXY se cierra con la X de su ventana o con Alt+F4."
-    assert llm.limit_voice_defect(reply, "ciérrate") == ""
+    assert limit_voice.limit_voice_defect(reply, "ciérrate") == ""
 
 
 def test_the_unsupported_contract_rejects_an_echoed_or_third_person_limit() -> None:
     request = "activa el modo pirata"
-    assert llm._unsupported_answer_contract_failure(
+    assert unsupported_answers._unsupported_answer_contract_failure(
         "Eso no lo hago: activar el modo pirata no es una acción que realice BAXY.", request
     ) == "unsupported_limit_echoes_request"
-    assert llm._unsupported_answer_contract_failure(
+    assert unsupported_answers._unsupported_answer_contract_failure(
         "Eso no lo hago: el modo pirata no lo tiene BAXY.", request
     ) == "unsupported_limit_third_person"
-    assert llm._unsupported_answer_contract_failure("Eso no lo hago: no tengo un modo pirata.", request) == ""
+    assert unsupported_answers._unsupported_answer_contract_failure("Eso no lo hago: no tengo un modo pirata.", request) == ""
 
 
 def _out_of_catalog() -> dict:
@@ -297,12 +315,12 @@ def test_a_bare_content_noun_is_language_evidence(text: str, language: str) -> N
     reading = read_request(text)
     assert reading.language == language
     assert tuple(reading.evidence) != (0, 0)
-    assert mind_main._decisive_request_language(text) == language
+    assert turn_history._decisive_request_language(text) == language
 
 
 def test_a_proper_name_alone_is_still_no_language_evidence() -> None:
     assert tuple(read_request("Minecraft").evidence) == (0, 0)
-    assert mind_main._decisive_request_language("Minecraft") is None
+    assert turn_history._decisive_request_language("Minecraft") is None
 
 
 def test_only_an_answer_to_baxys_question_is_read_as_an_answer() -> None:
@@ -316,10 +334,10 @@ def test_only_an_answer_to_baxys_question_is_read_as_an_answer() -> None:
         {"role": "assistant", "content": "It is 10:24."},
         {"role": "user", "content": "Minecraft"},
     ]
-    assert mind_main._answers_the_last_question(asked, "Queen") is True
-    assert mind_main._answers_the_last_question(told, "Minecraft") is False
-    assert mind_main._answers_the_last_question([], "Minecraft") is False
-    assert mind_main._answers_the_last_question(None, "Minecraft") is False
+    assert turn_history._answers_the_last_question(asked, "Queen") is True
+    assert turn_history._answers_the_last_question(told, "Minecraft") is False
+    assert turn_history._answers_the_last_question([], "Minecraft") is False
+    assert turn_history._answers_the_last_question(None, "Minecraft") is False
 
 
 class _LanguageLlm:
@@ -371,7 +389,7 @@ def _conversation_language(text: str, history: list[dict]) -> str:
             "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False},
         },
     }
-    result = mind_main._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "tanda02-language", "text": text, "history": history},
         llm=_LanguageLlm(),
         planner_catalog=PlannerCatalog([tool]),
@@ -387,25 +405,25 @@ def _conversation_language(text: str, history: list[dict]) -> str:
 @pytest.mark.parametrize("text", ["chistes", "un chiste", "otro chiste", "jokes", "a joke", "cuéntame un chiste"])
 @pytest.mark.parametrize("has_history", [False, True])
 def test_a_bare_request_for_jokes_is_free_content_with_or_without_history(text: str, has_history: bool) -> None:
-    assert llm._conversation_presentation_shape(
+    assert _conversation_presentation_shape(
         text, conversation_kind="knowledge", has_history=has_history
     ) == "free_content"
 
 
 def test_open_content_stays_a_first_turn_reading() -> None:
-    assert llm._conversation_presentation_shape(
+    assert _conversation_presentation_shape(
         "contame algo", conversation_kind="knowledge", has_history=False
     ) == "free_content"
-    assert llm._conversation_presentation_shape(
+    assert _conversation_presentation_shape(
         "contame algo", conversation_kind="knowledge", has_history=True
     ) != "free_content"
-    assert llm._conversation_presentation_shape(
+    assert _conversation_presentation_shape(
         "chistes de programadores sobre bases de datos antiguas", conversation_kind="knowledge", has_history=True
     ) != "free_content"
 
 
 def test_asking_which_topic_misses_the_free_content_contract() -> None:
-    assert llm._shaped_conversation_answer_violates_contract(
+    assert conversation_contract._shaped_conversation_answer_violates_contract(
         "¡Claro! ¿Quieres un chiste de algún tema? Por ejemplo, de trabajo o de amor.", "chistes", "free_content"
     )
 
@@ -436,5 +454,5 @@ def test_the_clarification_rewording_asks_only_what_is_missing() -> None:
     ],
 )
 def test_a_limit_is_said_without_a_reason_nobody_checked(asked: str, limit: str, defect: str) -> None:
-    assert llm.limit_voice_defect(limit, asked) == defect
-    assert bool(llm._unsupported_answer_contract_failure(limit, asked)) is bool(defect)
+    assert limit_voice.limit_voice_defect(limit, asked) == defect
+    assert bool(unsupported_answers._unsupported_answer_contract_failure(limit, asked)) is bool(defect)

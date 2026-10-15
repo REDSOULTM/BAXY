@@ -12,6 +12,8 @@ using System.Runtime.InteropServices;
 public static class BaxySpotifyControlNative
 {
     const uint LeftDown=0x0002, LeftUp=0x0004;
+    // BAXY's input mark (BaxyInputMark.cs): the pause detector and the live harness tell BAXY's input by it.
+    static readonly UIntPtr Mark=new UIntPtr(0x42415859u);
     [DllImport("user32.dll")] static extern bool SetCursorPos(int x,int y);
     [DllImport("user32.dll")] static extern void mouse_event(uint flags,uint x,uint y,uint data,UIntPtr extra);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr handle);
@@ -19,7 +21,7 @@ public static class BaxySpotifyControlNative
     public static void Click(int x,int y)
     {
         if(!SetCursorPos(x,y))throw new InvalidOperationException("SetCursorPos failed.");
-        mouse_event(LeftDown,0,0,0,UIntPtr.Zero);mouse_event(LeftUp,0,0,0,UIntPtr.Zero);
+        mouse_event(LeftDown,0,0,0,Mark);mouse_event(LeftUp,0,0,0,Mark);
     }
 }
 '@

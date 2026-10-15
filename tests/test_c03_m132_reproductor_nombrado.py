@@ -12,11 +12,11 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.patterns import application_shown_media_name, resolve_application_catalog_app_id
+from baxy_mind import context_decision
 
 # The owner's Start menu, as listed on this PC (uninstallers included).
 APPS = (
@@ -91,7 +91,7 @@ def test_the_media_session_choice_becomes_the_player_window_read() -> None:
     # What the decider chose in v4j, v4k and v4l.
     decision = ContextDecision("¿Qué película estoy viendo en PotPlayer?", "action", ("media.status",), "")
 
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m132", "text": text, "history": [{"role": "user", "content": text}]},
         llm=_Decider(decision),
         planner_catalog=PlannerCatalog([_tool(name) for name in sorted(READS)]),

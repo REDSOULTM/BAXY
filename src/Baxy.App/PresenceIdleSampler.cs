@@ -2,24 +2,31 @@ namespace Baxy.App;
 
 /// <summary>
 /// Attributed idle samples for the BAXY process tree. Unit tests inject the
-/// reader and never wait 15 minutes.
+/// reader and never wait 15 minutes. Only the latest samples stay in memory
+/// (one hour at the 15 s period): the growth checks look at that window and the
+/// App's own memory does not grow with the time it stays open.
 /// </summary>
 internal sealed class PresenceIdleSampler
 {
     internal const long DefaultWorkingSetGrowthBytes = 8L * 1024 * 1024;
     internal const long DefaultHandleGrowth = 100;
     internal const double DefaultProcessTreeCpuPercent = 5;
+    internal const int DefaultRetainedSamples = 240;
 
     private readonly IPresenceProcessReader _reader;
     private readonly IPresenceClock _clock;
+    private readonly int _retainedSamples;
     private readonly List<PresenceIdleSnapshot> _samples = [];
 
     internal PresenceIdleSampler(
         IPresenceProcessReader reader,
-        IPresenceClock? clock = null)
+        IPresenceClock? clock = null,
+        int retainedSamples = DefaultRetainedSamples)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _clock = clock ?? new SystemPresenceClock();
+        ArgumentOutOfRangeException.ThrowIfLessThan(retainedSamples, 1);
+        _retainedSamples = retainedSamples;
     }
 
     internal IReadOnlyList<PresenceIdleSnapshot> Samples => _samples;
@@ -29,7 +36,32 @@ internal sealed class PresenceIdleSampler
         bool inputEnabled,
         bool listening,
         DateTimeOffset? firstWakeUtc,
+        string terminal) =>
+        Record(ready, inputEnabled, listening, firstWakeUtc, terminal, _reader.ReadOwned());
+
+    /// <summary>
+    /// The process read (toolhelp walk, handle counts and the GPU tool) runs on
+    /// the thread pool; the caller's context only records the finished sample,
+    /// so a slow read never holds the window's thread.
+    /// </summary>
+    internal async Task<PresenceIdleSnapshot> CaptureAsync(
+        bool ready,
+        bool inputEnabled,
+        bool listening,
+        DateTimeOffset? firstWakeUtc,
         string terminal)
+    {
+        IReadOnlyList<PresenceProcessSample> processes = await Task.Run(_reader.ReadOwned);
+        return Record(ready, inputEnabled, listening, firstWakeUtc, terminal, processes);
+    }
+
+    private PresenceIdleSnapshot Record(
+        bool ready,
+        bool inputEnabled,
+        bool listening,
+        DateTimeOffset? firstWakeUtc,
+        string terminal,
+        IReadOnlyList<PresenceProcessSample> processes)
     {
         var snapshot = new PresenceIdleSnapshot(
             _clock.UtcNow,
@@ -38,8 +70,13 @@ internal sealed class PresenceIdleSampler
             listening,
             firstWakeUtc,
             terminal,
-            _reader.ReadOwned());
+            processes);
         _samples.Add(snapshot);
+        if (_samples.Count > _retainedSamples)
+        {
+            _samples.RemoveRange(0, _samples.Count - _retainedSamples);
+        }
+
         return snapshot;
     }
 

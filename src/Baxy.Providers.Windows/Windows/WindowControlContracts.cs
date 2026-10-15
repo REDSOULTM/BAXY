@@ -9,6 +9,9 @@ public static class WindowControlErrorCodes
     public const string ActionFailed = "action_failed";
     public const string VerificationFailed = "verification_failed";
     public const string InventoryFailed = "inventory_failed";
+    // v3 r22 uso real: the close was asked politely and the application answered with a dialog of its own (it asks
+    // whether to save); the window stays, and BAXY never answers that dialog.
+    public const string ClosePrompted = "close_prompted";
 }
 
 public enum WindowControlAction
@@ -29,7 +32,16 @@ public sealed record WindowCandidate(
     int Y,
     int Width,
     int Height,
-    string? Title = null);
+    string? Title = null,
+    // A dialog or tool window an application window owns («Guardar como»): never the frame a person arranges.
+    bool Owned = false,
+    // Ronda 22 (revisión 1): where the window stands on the desktop when it was read. ZOrder counts the top-level
+    // windows above it (0 = the top; the smallest is the one used last), Topmost is WS_EX_TOPMOST, and the work area
+    // is that of the monitor that shows it. Null or false when the platform cannot tell.
+    int? ZOrder = null,
+    bool Topmost = false,
+    int? WorkAreaWidth = null,
+    int? WorkAreaHeight = null);
 
 public sealed record WindowResolveResult(
     bool Succeeded,
@@ -62,7 +74,12 @@ public sealed record WindowCloseResult(
     bool Succeeded,
     bool Verified,
     int? ProcessId,
-    string? ErrorCode);
+    string? ErrorCode,
+    // v3 r22 uso real: the window survived the polite close with a new dialog of its own application (closePrompted).
+    bool ClosePrompted = false,
+    // Encargo H1 (tandas fin1/fin2 t2-c03 t2: «He cerrado la ventana de Configuración de Valorant»): the title the
+    // closed window had, as Windows wrote it, read right before the close; the receipt names what it closed.
+    string? Title = null);
 
 // MINALL1687 «minimizá todas las ventanas»: the desktop windows found before,
 // how many were minimized and verified iconic, how many stayed visible.
@@ -143,4 +160,8 @@ public interface IWindowControlProvider
     ValueTask<WindowCloseResult> CloseAsync(
         string windowId,
         CancellationToken cancellationToken);
+
+    // v3 r6 lectores: whether the issued window holds no document of the person (closing it loses nothing), read
+    // without consuming the id. Fail-closed: a provider that cannot tell says it may hold one.
+    bool HoldsNoDocument(string windowId) => false;
 }

@@ -23,14 +23,20 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import llm
-from baxy_mind.__main__ import _explicit_stable_no_effect_turn_decision, _general_factoid_prompt, _prepare_turn_result
+from baxy_mind import compose_payload
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import conversation_shape
+from baxy_mind.turn_decisions import _explicit_stable_no_effect_turn_decision
+from baxy_mind.semantic.conversation import _general_factoid_prompt
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.grammar import spoken_cardinal, spoken_number_request
 from baxy_mind.semantic.media import radio_station_query
 from baxy_mind.semantic.network import asks_calendar_part, calendar_parts_asked
 from baxy_mind.semantic.patterns import reported_own_schedule
 from baxy_mind.semantic.reading import read
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 from test_c03_cpu_actor import Recorder
 from test_c03_pointless_questions import _tool
 
@@ -88,10 +94,10 @@ def test_the_date_of_something_else_is_not_the_clock(text: str) -> None:
 
 def test_a_month_asked_is_carried_alone_and_an_hour_asked_is_the_clock() -> None:
     situation = _time_situation()
-    assert llm._compose_situation_payload(situation, "es", "decime el mes actual") == {
+    assert compose_payload._compose_situation_payload(situation, "es", "decime el mes actual") == {
         "month": "septiembre", "operation": "system.time",
     }
-    assert llm._compose_situation_payload(situation, "es", "dime hora que es") == {
+    assert compose_payload._compose_situation_payload(situation, "es", "dime hora que es") == {
         "clock": "13:25", "operation": "system.time",
     }
 
@@ -130,7 +136,7 @@ def test_which_part_of_the_week_today_is_reads_the_clock(text: str) -> None:
 
 @pytest.mark.parametrize("text", _WEEK_PERIOD_QUESTIONS[:3])
 def test_the_part_of_the_week_carries_the_weekday_not_the_clock(text: str) -> None:
-    payload = llm._compose_situation_payload(_time_situation(), "es", text)
+    payload = compose_payload._compose_situation_payload(_time_situation(), "es", text)
     assert payload == {"weekday": "jueves", "operation": "system.time"}
 
 
@@ -145,7 +151,7 @@ def test_the_part_of_the_week_carries_the_weekday_not_the_clock(text: str) -> No
 )
 def test_the_answer_names_the_observed_weekday_and_date(reply: str, defect: str) -> None:
     facts = {"situation": _time_situation()}
-    assert llm.compose_visible_defect(reply, "status", "¿estamos a mitad de semana?", facts) == defect
+    assert visible_defect.compose_visible_defect(reply, "status", "¿estamos a mitad de semana?", facts) == defect
 
 
 @pytest.mark.parametrize(
@@ -183,7 +189,7 @@ def _soon() -> datetime:
 
 def test_the_narrator_gets_the_local_time_and_no_utc_instant() -> None:
     due = _soon()
-    payload = llm._compose_situation_payload(_timer_situation(due), "en", "set 30 minute timer")
+    payload = compose_payload._compose_situation_payload(_timer_situation(due), "en", "set 30 minute timer")
     seen = payload["seen"]
     assert seen["scheduledLocalTime"] == due.astimezone().strftime("%H:%M")
     assert not {"dueUtc", "nextRunUtc", "taskName", "authority"} & set(seen)
@@ -194,7 +200,7 @@ def test_the_narrator_gets_the_local_time_and_no_utc_instant() -> None:
 
 def test_a_timer_for_another_day_carries_its_local_date() -> None:
     due = (datetime.now(timezone.utc) + timedelta(days=2)).replace(microsecond=0)
-    seen = llm._compose_situation_payload(_timer_situation(due), "es", "pon una alarma pasado mañana")["seen"]
+    seen = compose_payload._compose_situation_payload(_timer_situation(due), "es", "pon una alarma pasado mañana")["seen"]
     assert seen["scheduledLocalDate"] == due.astimezone().date().isoformat()
 
 
@@ -205,9 +211,9 @@ def test_the_scheduled_time_is_the_local_one(language: str) -> None:
     facts = {"situation": _timer_situation(due)}
     text = "set 30 minute timer" if language == "en" else "pon un temporizador de media hora"
     good = f"The 30-minute timer is set for {local}." if language == "en" else f"Listo, el temporizador suena a las {local}."
-    assert llm.compose_visible_defect(good, "status", text, facts) == ""
+    assert visible_defect.compose_visible_defect(good, "status", text, facts) == ""
     wrong = (due + timedelta(hours=1)).astimezone().strftime("%H:%M")
-    assert llm.compose_visible_defect(good.replace(local, wrong), "status", text, facts) == "missing_state"
+    assert visible_defect.compose_visible_defect(good.replace(local, wrong), "status", text, facts) == "missing_state"
 
 
 def test_the_retry_hint_names_the_local_time() -> None:
@@ -274,7 +280,7 @@ def test_words_that_are_not_one_number_are_not_read(words: str) -> None:
 def test_a_number_said_and_nothing_else_asked_is_written_in_figures(text: str, value: int) -> None:
     assert spoken_number_request(text) == value
     assert _general_factoid_prompt(text)
-    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) == "spoken_number"
+    assert _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) == "spoken_number"
 
 
 @pytest.mark.parametrize(
@@ -300,9 +306,9 @@ def test_a_lone_word_typing_arithmetic_and_amounts_are_not_that_request(text: st
 @pytest.mark.parametrize(("language", "figures"), [("es", "100.223"), ("en", "100,223")])
 def test_the_model_is_handed_the_figures(language: str, figures: str) -> None:
     text = "cien mil doscientas veintitrés"
-    shaped = json.loads(llm._shaped_presentation_text(text, "spoken_number", response_language=language))
+    shaped = json.loads(conversation_shape._shaped_presentation_text(text, "spoken_number", response_language=language))
     assert shaped == {"response_language": language, "said": text, "number": figures}
-    year = json.loads(llm._shaped_presentation_text("dos mil veintiséis", "spoken_number", response_language="es"))
+    year = json.loads(conversation_shape._shaped_presentation_text("dos mil veintiséis", "spoken_number", response_language="es"))
     assert year["number"] == "2026"
 
 
@@ -322,7 +328,7 @@ def test_the_model_is_handed_the_figures(language: str, figures: str) -> None:
 )
 def test_only_the_read_figures_pass(reply: str, accepted: bool) -> None:
     request = "cien mil doscientas veintitrés"
-    assert llm._shaped_conversation_answer_violates_contract(reply, request, "spoken_number") is (not accepted)
+    assert conversation_contract._shaped_conversation_answer_violates_contract(reply, request, "spoken_number") is (not accepted)
 
 
 @pytest.mark.parametrize(
@@ -362,7 +368,7 @@ def test_an_alarm_the_person_set_is_what_they_tell(text: str) -> None:
     assert _effects(text) is None
     decision = _explicit_stable_no_effect_turn_decision(text)
     assert decision is not None and decision["mode"] == "conversation" and decision["effect_operations"] == []
-    assert llm._conversation_presentation_shape(text, conversation_kind="social", has_history=True) == "observation_ack"
+    assert _conversation_presentation_shape(text, conversation_kind="social", has_history=True) == "observation_ack"
 
 
 @pytest.mark.parametrize(
@@ -400,7 +406,7 @@ def test_an_order_a_question_or_a_request_about_it_is_not_a_statement(text: str)
 )
 def test_the_acknowledgement_offers_nothing(reply: str, accepted: bool) -> None:
     request = "configuré una alarma para despertarme por la mañana"
-    assert llm._shaped_conversation_answer_violates_contract(reply, request, "observation_ack") is (not accepted)
+    assert conversation_contract._shaped_conversation_answer_violates_contract(reply, request, "observation_ack") is (not accepted)
 
 
 # ------------------------------------------------------------------ the whole turn

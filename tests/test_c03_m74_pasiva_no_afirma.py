@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from baxy_mind.llm import compose_visible_defect  # noqa: E402
+from baxy_mind.visible_defect import compose_visible_defect  # noqa: E402
 
 _SITUATION = {
     "kind": "failure", "polarity": "failure", "cause": "mission_failed", "stepCount": 0, "steps": [],

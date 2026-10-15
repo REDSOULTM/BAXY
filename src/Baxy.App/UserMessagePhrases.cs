@@ -107,4 +107,10 @@ internal static class UserMessagePhrases
         "i don't do that", "i do not do that", "eso no lo hago",
         "no puedo ayudarte", "i can't help",
     ];
+
+    /// <summary>
+    /// Un pedido que nadie dijo: sólo lo lee el calentamiento de los lectores del shell al arrancar
+    /// (<see cref="MissionInputPipeline.WarmReadersAsync"/>). Texto de entrada, nunca se publica.
+    /// </summary>
+    internal const string ReadersWarmupRequest = "abre la aplicación de prueba y escribe hola";
 }

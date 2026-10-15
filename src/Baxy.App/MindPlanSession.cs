@@ -26,12 +26,16 @@ internal sealed class MindPlanSession
             get;
             init;
         }
+
+        /// <summary>The time the current turn has taken so far (<see cref="TurnBudget"/>); null: no budget.</summary>
+        internal Func<TimeSpan>? TurnElapsed { get; init; }
     }
 
     private readonly Host _host;
     private DurablePlanStore? _store;
     private PendingMindPlanExecution? _pending;
-    private ComputerUseProcedures? _procedures;
+    private ComputerUseLabelTranslations? _labelTranslations;
+    private readonly ComputerUseTypedLedger _typedInSession = new();
 
     internal MindPlanSession(Host host)
     {
@@ -150,6 +154,24 @@ internal sealed class MindPlanSession
                 break;
             }
 
+            if (execution.CompletedMessages.Count > 0 && TurnBudgetSpent())
+            {
+                // The turn's budget is spent and something is done: no further step starts. The end
+                // says what was done, this step and the effects after it as not done, and nothing
+                // stays pending to hold the conversation (ctx-dueno-01).
+                FinishWithFailure(
+                    execution,
+                    MindPlanBoundary.WithNotDone(
+                        MindPlanBoundary.WithStepFacts(
+                            TurnVisibleFacts.Failure(
+                                "turn_budget_exhausted",
+                                new JsonObject { ["operation"] = step.Operation }),
+                            step.Arguments),
+                        execution,
+                        []));
+                return;
+            }
+
             _host.SetStatus(
                 execution.Steps.Count == 1
                     ? "acting"
@@ -205,7 +227,18 @@ internal sealed class MindPlanSession
 
                 if (arguments is null)
                 {
-                    FinishWithFailure(execution, TurnVisibleFacts.Failure("step_data_missing"));
+                    // Ronda 22 (r18 t4-c19): the step that lacked a detail is named with the effects left
+                    // undone, so the end says «no pude colocar la ventana», never only the read before it.
+                    FinishWithFailure(
+                        execution,
+                        MindPlanBoundary.WithNotDone(
+                            MindPlanBoundary.WithStepFacts(
+                                TurnVisibleFacts.Failure(
+                                    "step_data_missing",
+                                    new JsonObject { ["operation"] = step.Operation }),
+                                step.Arguments),
+                            execution,
+                            []));
                     return;
                 }
 
@@ -221,7 +254,8 @@ internal sealed class MindPlanSession
             arguments = MindArgumentNormalization.Normalize(
                 step.Operation,
                 execution.Objective,
-                arguments);
+                arguments,
+                beforeComputerUse: execution.Steps.Any(planned => planned.Operation == "mission.computer.use"));
             if (string.Equals(
                     step.ArgumentsMode,
                     "after_dependencies",
@@ -245,11 +279,15 @@ internal sealed class MindPlanSession
                     new ComputerUseMission.Context
                     {
                         Execute = (prepared, timeout, token) => client.SendOperationAsync(prepared, timeout, token),
+                        ExecuteConfirmed = (prepared, confirmationToken, timeout, token) =>
+                            client.SendOperationAsync(prepared, timeout, token, confirmationToken),
                         Decide = mind.DecideComputerUseStepAsync,
                         Registry = registry,
                         MarkResolved = _host.TryMarkResolved,
                         SetStatus = _host.SetStatus,
-                        Procedures = _procedures ??= ComputerUseProcedures.CreateDefault(),
+                        LabelTranslations = _labelTranslations ??= ComputerUseLabelTranslations.CreateDefault(),
+                        TypedInSession = _typedInSession,
+                        Front = Providers.Windows.External.WindowsMissionFrontSignal.Instance,
                     },
                     execution,
                     arguments,
@@ -365,6 +403,16 @@ internal sealed class MindPlanSession
             Persist(execution);
             string failure = MindPlanBoundary.WithStepFacts(response.Message, arguments);
 
+            if (MindPlanBoundary.OpenBeforeResolvingAgain(execution, response, arguments) is { } reopened)
+            {
+                // Ronda 19 (t2-c18 «pon el Word y el Edge uno al lado del otro» with Edge closed): an installed
+                // application with no window, about to be placed, is opened and resolved once more.
+                _pending = reopened;
+                Persist(reopened);
+                execution = reopened;
+                continue;
+            }
+
             if (MindPlanBoundary.IndependentRemainder(execution, response) is { } remainder)
             {
                 // M56 (v3c-final F-w06-t1 «pon el word a la izquierda y el chrome a la derecha» with
@@ -379,6 +427,8 @@ internal sealed class MindPlanSession
                     DeferredFailure = MindPlanBoundary.MergeFailures(
                         execution.DeferredFailure,
                         MindPlanBoundary.WithNotDone(failure, execution, remainder)),
+                    InsertedOpens = execution.InsertedOpens,
+                    PresentStateCondition = execution.PresentStateCondition,
                 };
                 foreach (JsonNode? observation in execution.Observations)
                 {
@@ -392,7 +442,7 @@ internal sealed class MindPlanSession
                 continue;
             }
 
-            if (MindPlanBoundary.MayReplan(execution, response))
+            if (MindPlanBoundary.MayReplan(execution, response) && !TurnBudgetSpent())
             {
                 MindPlanResult? replacement = await TryReplanAsync(
                     execution,
@@ -418,6 +468,9 @@ internal sealed class MindPlanSession
                         execution.ReplanCount + 1)
                     {
                         DeferredFailure = execution.DeferredFailure,
+                        InsertedOpens = execution.InsertedOpens,
+                        PresentStateCondition = execution.PresentStateCondition
+                            || replacement.PresentStateCondition,
                     };
                     foreach (JsonNode? observation in execution.Observations)
                     {
@@ -503,9 +556,30 @@ internal sealed class MindPlanSession
                 case ConfirmationReplyKind.Confirm:
                     CoreProcessClient client = _host.Core()
                         ?? throw new InvalidOperationException("El motor local no está disponible.");
-                    OperationResponse response = await SendClosingOnCoreLossAsync(
-                        client, registry, confirmation.Prepared, cancellationToken,
-                        confirmation.Token);
+                    // A mission's act confirmed runs as part of its mission (the Core brings its window up only while
+                    // one runs), and the mission ends with it whatever happens next: the Core gives the person's window
+                    // the front back unless the loop resumes (IMissionFrontSignal).
+                    OperationResponse response;
+                    bool missionAct = execution.ComputerUse is not null;
+                    if (missionAct)
+                    {
+                        Providers.Windows.External.WindowsMissionFrontSignal.Instance.MissionBegins();
+                    }
+
+                    try
+                    {
+                        response = await SendClosingOnCoreLossAsync(
+                            client, registry, confirmation.Prepared, cancellationToken,
+                            confirmation.Token);
+                    }
+                    finally
+                    {
+                        if (missionAct)
+                        {
+                            Providers.Windows.External.WindowsMissionFrontSignal.Instance.MissionEnds();
+                        }
+                    }
+
                     execution.Confirmation = null;
                     if (execution.ComputerUse is not null
                         && execution.CurrentStep.Operation == ComputerUseMission.OperationName
@@ -684,8 +758,9 @@ internal sealed class MindPlanSession
         execution.PendingEffectMayHaveOccurred = false;
         execution.Observations.Add(
             PlanObservationProjector.Create(step.Id, step.Operation, response));
-        execution.CompletedMessages.Add(
-            OperationResponseProjection.Create(response, step.Operation).Message);
+        execution.CompletedMessages.Add(MindPlanBoundary.WithVerifiedContent(
+            OperationResponseProjection.Create(response, step.Operation).Message,
+            JsonNode.Parse(prepared.Arguments.GetRawText()) as JsonObject));
         execution.NextIndex++;
         if (execution.NextIndex < execution.Steps.Count)
         {
@@ -754,6 +829,9 @@ internal sealed class MindPlanSession
             throw;
         }
     }
+
+    private bool TurnBudgetSpent() =>
+        _host.TurnElapsed is { } elapsed && TurnBudget.IsSpent(elapsed());
 
     private void FinishWithFailure(PendingMindPlanExecution execution, string reason)
     {

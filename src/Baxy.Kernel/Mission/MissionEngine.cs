@@ -94,6 +94,16 @@ public sealed class MissionEngine : IDisposable
                 return replayed;
             }
 
+            if (await _journal
+                    .IsRetiredAsync(request.InvocationId, cancellationToken)
+                    .ConfigureAwait(false))
+            {
+                // It completed long ago and its response left the journal's
+                // retention: refused like any reuse of a completed id, never run
+                // again (JOURNAL_ROTACION.md).
+                return Rejected(request, "idempotency_conflict");
+            }
+
             string? startedFingerprint = await _journal
                 .FindStartedFingerprintAsync(request.InvocationId, cancellationToken)
                 .ConfigureAwait(false);
@@ -111,7 +121,7 @@ public sealed class MissionEngine : IDisposable
                 || HasValidArguments(request, handler);
             PolicyDecision? policy = knownOperation && handler is not null && validArguments
                 ? RiskPolicy.Evaluate(
-                    handler.Definition.Risk,
+                    InvocationRisk(handler, request.Arguments),
                     _confirmationMode(),
                     handler.Definition.Name,
                     // Computer use (CONTRATO_VISTA_ACCION.md §2.1): the step's
@@ -308,6 +318,29 @@ public sealed class MissionEngine : IDisposable
         }
 
         return response;
+    }
+
+    // v3 r6 lectores: the risk of the exact invocation when its handler can tell (IInvocationRiskAssessor), else the
+    // declared one. A forbidden operation stays forbidden, and a handler that fails to answer keeps the declared risk.
+    private static OperationRisk InvocationRisk(IOperationHandler handler, JsonElement arguments)
+    {
+        OperationRisk declared = handler.Definition.Risk;
+        if (declared == OperationRisk.Forbidden || handler is not IInvocationRiskAssessor assessor)
+        {
+            return declared;
+        }
+
+        try
+        {
+            return assessor.AssessInvocationRisk(arguments) is { } assessed && assessed != OperationRisk.Forbidden
+                ? assessed
+                : declared;
+        }
+        catch (Exception exception) when (exception is InvalidOperationException
+            or ArgumentException or JsonException or KeyNotFoundException)
+        {
+            return declared;
+        }
     }
 
     private bool AuthenticatePrivateArguments(OperationRequest request)

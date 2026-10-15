@@ -2,7 +2,8 @@
 
 import pytest
 
-from baxy_mind.__main__ import _ground_explicit_arguments, _SYSTEM_STATUS_SCOPES
+from baxy_mind.argument_grounding import _ground_explicit_arguments
+from baxy_mind.semantic.arguments import _SYSTEM_STATUS_SCOPES
 from baxy_mind.effect_intent import operation_domain_is_grounded, resolve_explicit_effects
 
 

@@ -51,6 +51,8 @@ public sealed class WindowActiveBehindBaxyTests
             Assert.That(closed.Succeeded, Is.True);
             Assert.That(closed.Verified, Is.True);
             Assert.That(platform.CloseRequests, Is.EqualTo(new[] { "opera" }));
+            // Encargo H1: the result names the window it closed, by the title it had right before the close.
+            Assert.That(closed.Title, Is.EqualTo("Opera"));
         });
     }
 

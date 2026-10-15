@@ -51,6 +51,29 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
         _workerArguments = workerArguments ?? [];
     }
 
+    /// <summary>
+    /// The window classes of a render surface the worker is handed in its first «ping» (fable/cu-v3-worker-sin-nombres):
+    /// the data's (<see cref="RenderSurfaceClasses"/>) unless a test sets others.
+    /// </summary>
+    internal IReadOnlyList<string> RenderClasses { get; init; } = RenderSurfaceClasses.All;
+
+    internal string HelloJson()
+    {
+        using var buffer = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("cmd", "ping");
+            writer.WriteStartArray("renderClasses");
+            foreach (string renderClass in RenderClasses)
+                writer.WriteStringValue(renderClass);
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        return Encoding.UTF8.GetString(buffer.ToArray());
+    }
+
     internal bool ScriptExists => File.Exists(_script);
 
     public async ValueTask<JsonDocument?> SendAsync(
@@ -167,7 +190,7 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
             cancellationToken, budget.Token);
         try
         {
-            await process.StandardInput.WriteLineAsync("{\"cmd\":\"ping\"}".AsMemory(), linked.Token)
+            await process.StandardInput.WriteLineAsync(HelloJson().AsMemory(), linked.Token)
                 .ConfigureAwait(false);
             await process.StandardInput.FlushAsync(linked.Token).ConfigureAwait(false);
             string? hello = await process.StandardOutput.ReadLineAsync(linked.Token)

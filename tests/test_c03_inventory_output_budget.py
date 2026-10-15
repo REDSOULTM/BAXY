@@ -5,7 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.llm import USER_MESSAGE_PROMPT, LlmRuntime
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.llm_prompts import USER_MESSAGE_PROMPT
 
 
 MODELS = ['Qwen3-4B-Instruct-2507-Q4_K_M.gguf', 'K2-Horizon-3.7B-Q4_K_M.gguf']

@@ -11,11 +11,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import (
-    _explicit_system_status_scope,
-    _ground_explicit_arguments,
-    _SYSTEM_STATUS_SCOPES,
-)
+from baxy_mind.semantic.arguments import _explicit_system_status_scope, _SYSTEM_STATUS_SCOPES
+from baxy_mind.argument_grounding import _ground_explicit_arguments
 
 
 @pytest.mark.parametrize(

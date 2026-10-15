@@ -30,10 +30,16 @@ from fractions import Fraction
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
-from baxy_mind.llm import ConversationReplyContractError, LlmRuntime
+from baxy_mind import consulted_answers
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import failure_wording
+from baxy_mind import reply_claims
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.semantic.request import INTENT_CAPABILITY, INTENT_REFUSE, read_request
+from baxy_mind import turn_audit
+from baxy_mind import turn_recovery
 
 TALK = json.dumps({"kind": "conversation", "polarity": "success"})
 PIZZA = "yo uh I'm starving, get a large pepperoni pie delivered from the Domino's on 5th for me"
@@ -88,9 +94,9 @@ def _system_text(payload: dict) -> str:
     ],
 )
 def test_a_promised_or_claimed_act_on_the_world_is_an_effect_claim(request_text: str, reply: str) -> None:
-    assert llm.conversation_world_claim(reply, request_text) == "effect_claim"
+    assert reply_claims.conversation_world_claim(reply, request_text) == "effect_claim"
     # The recovery and the App's fallback compose conversation through the same contract.
-    assert llm.compose_visible_defect(reply, "conversation", request_text, {"situation": TALK}) == "effect_claim"
+    assert visible_defect.compose_visible_defect(reply, "conversation", request_text, {"situation": TALK}) == "effect_claim"
 
 
 @pytest.mark.parametrize(
@@ -105,7 +111,7 @@ def test_a_promised_or_claimed_act_on_the_world_is_an_effect_claim(request_text:
     ],
 )
 def test_talk_that_promises_nothing_is_not_an_effect_claim(request_text: str, reply: str) -> None:
-    assert llm.conversation_world_claim(reply, request_text) == ""
+    assert reply_claims.conversation_world_claim(reply, request_text) == ""
 
 
 def test_the_recovered_conversation_no_longer_publishes_the_promise() -> None:
@@ -138,7 +144,7 @@ def test_the_recovered_conversation_no_longer_publishes_the_promise() -> None:
     ],
 )
 def test_a_present_inability_is_the_limit(reply: str, limit: bool) -> None:
-    assert llm.talk_reply_tells_a_limit(reply) is limit
+    assert failure_wording.talk_reply_tells_a_limit(reply) is limit
 
 
 def test_social_drafts_that_said_the_limit_end_as_a_limit_wording_failure() -> None:
@@ -150,7 +156,7 @@ def test_social_drafts_that_said_the_limit_end_as_a_limit_wording_failure() -> N
     with pytest.raises(ConversationReplyContractError) as refused:
         writer.chat(PIZZA, history=[], conversation_kind="social", response_language="en", temperature=0.0)
     assert refused.value.audit_reason == "told_limit"
-    assert sidecar._turn_failure_kind(refused.value) == sidecar.LIMIT_WORDING_FAILURE
+    assert turn_audit._turn_failure_kind(refused.value) == turn_audit.LIMIT_WORDING_FAILURE
 
 
 def test_a_failed_attempt_told_in_talk_stays_a_talk_failure() -> None:
@@ -162,7 +168,7 @@ def test_a_failed_attempt_told_in_talk_stays_a_talk_failure() -> None:
         writer.chat("Sounds good, carry on with that.", history=[], conversation_kind="knowledge",
                     response_language="en", temperature=0.0)
     assert refused.value.audit_reason == "told_failure"
-    assert sidecar._turn_failure_kind(refused.value) == sidecar.CONVERSATION_WORDING_FAILURE
+    assert turn_audit._turn_failure_kind(refused.value) == turn_audit.CONVERSATION_WORDING_FAILURE
 
 
 class _Composer:
@@ -185,11 +191,11 @@ def test_the_recovery_says_the_limit_the_drafts_saw() -> None:
         "conversation": "I will get a large pepperoni pie delivered from Domino's on 5th for you.",
         "error": "I don't order food or have it delivered.",
     })
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "843", "text": PIZZA, "history": []},
         composer,
         attempts=1,
-        failure_kinds=(sidecar.LIMIT_WORDING_FAILURE,),
+        failure_kinds=(turn_audit.LIMIT_WORDING_FAILURE,),
         conversation_kinds=("social",),
     )
     assert composer.asked == ["error"]
@@ -229,12 +235,13 @@ CALCULATOR_OPENED = json.dumps({
     ],
 )
 def test_an_app_already_running_is_told_already_open(said: str, first: str, kept: str) -> None:
+    # Estabilización F: the floor says it before any draft (data «unchanged» of app.open), so neither the draft that
+    # gave the opening to the person nor the hint that repaired it is needed: nobody is asked, nobody opened it.
     writer = _Drafts([first, kept])
-    assert writer.compose_user_message(said, "status", {"situation": NOTEPAD_ALREADY_RUNNING}) == kept
-    hint = _system_text(writer.requests[1])
-    # M142: the hint says it was already open, shows the sentence and says nobody opened it, BAXY nor the person.
-    assert "di sólo que ya estaba abierta" in hint and "Nadie la abrió" in hint
-    assert "Lo hiciste tú" not in hint and "la abriste" not in hint
+    final = writer.compose_user_message(said, "status", {"situation": NOTEPAD_ALREADY_RUNNING})
+    assert final == "La aplicación «Bloc de notas» ya estaba abierta."
+    assert writer.requests == []
+    assert "abriste" not in final.lower() and "abrió" not in final.lower()
 
 
 def test_an_app_opened_now_still_hears_that_it_did_it() -> None:
@@ -292,24 +299,24 @@ DISCORD = "bro abre Discord y mutea el micro, que viene mi roommate"
     ],
 )
 def test_the_mission_tells_the_state_that_already_held(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", DISCORD, {"situation": MIC_ALREADY_MUTED}) == ""
-    assert llm._payload_fact_defect(draft, DISCORD_PAYLOAD, DISCORD) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", DISCORD, {"situation": MIC_ALREADY_MUTED}) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, DISCORD_PAYLOAD, DISCORD) == ""
 
 
 def test_what_the_mission_tells_wrongly_is_still_refused() -> None:
     # No «ya estaba»: «no hubo cambio» alone tells a failed mission.
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Abrí Discord pero no hubo cambio.", "status", DISCORD, {"situation": MIC_ALREADY_MUTED},
     ) == "asserted_failure"
     # The microphone muted by this mission: nothing changed is false.
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Abrí Discord y el micrófono ya estaba silenciado, así que no hubo cambio.", "status", DISCORD,
         {"situation": MIC_MUTED_NOW},
     ) == "asserted_failure"
-    # The opening left out is still missing.
-    assert llm._payload_fact_defect(
-        "El micrófono ya estaba silenciado.", DISCORD_PAYLOAD, DISCORD,
-    ) == "missing_prior_open"
+    # Libro de cuentas del redactor (missing_prior_open: 6 de 6 incorrectos, «He colocado Word y Edge uno al lado del
+    # otro.» → the floor's «Coloqué la ventana: a la izquierda, abrí la aplicación…»): a true final that leaves the
+    # opening out is published; the opening is a means the person can see.
+    assert payload_fact_checks._payload_fact_defect("El micrófono ya estaba silenciado.", DISCORD_PAYLOAD, DISCORD) == ""
 
 
 @pytest.mark.parametrize(
@@ -367,10 +374,20 @@ SAID = ["y eso pa dos", "oye baxy cómo se hace la tortilla de patatas pa cuatro
     ],
 )
 def test_a_scaled_quantity_in_the_other_unit_is_the_pages(draft: str, ratio: Fraction | None) -> None:
-    assert llm._reference_unsourced_figures(draft, TORTILLA_PAGE, SAID, ratio) == []
+    assert consulted_answers._reference_unsourced_figures(draft, TORTILLA_PAGE, SAID, ratio) == []
 
 
 def test_a_quantity_the_page_does_not_give_is_still_unsourced() -> None:
-    assert llm._reference_unsourced_figures(
+    assert consulted_answers._reference_unsourced_figures(
         TORTILLA_FOR_TWO.replace("500 g", "700 g").replace("250 ml", "300 ml"), TORTILLA_PAGE, SAID, Fraction(1, 2),
     ) == ["700", "300"]
+
+
+def test_a_correction_over_an_app_already_running_is_never_told_as_opened() -> None:
+    # Revisión F (H2): the path the retired hint covered; the floor says the same result again, nobody is asked.
+    first = "La aplicación «Bloc de notas» ya estaba abierta."
+    corrected = {**json.loads(NOTEPAD_ALREADY_RUNNING), "correctedFinal": {"previousReply": first}}
+    writer = _Drafts(["Abrí el Bloc de notas.", "Abriste el Bloc de notas."])
+    final = writer.compose_user_message("ábrelo te dije", "status", {"situation": json.dumps(corrected)})
+    assert final == "El resultado es el mismo. " + first
+    assert writer.requests == []

@@ -6,9 +6,11 @@ namespace Baxy.Providers.Windows.External;
 /// <summary>
 /// Auditoría semántica 2026-09-20 (REOPEN1993 grupo S, D11): «Desinstala Worms
 /// Rumble en Steam» (H0039, H0612, H0620) es una desinstalación real: el
-/// título se resuelve a su AppID instalado, la consola de Steam recibe
-/// <c>app_uninstall</c> y el manifiesto local deja de decir «instalado».
-/// Nada se compra ni se descarga; lo que no está instalado se dice.
+/// título se resuelve a su AppID instalado, Steam recibe la dirección de
+/// desinstalar del dato (encargo imp-steam: ya no se teclea <c>app_uninstall</c>
+/// en su consola), su propio diálogo se confirma con el clic de la misión y el
+/// manifiesto local deja de decir «instalado». Nada se compra ni se descarga;
+/// lo que no está instalado se dice.
 /// </summary>
 internal sealed partial class SteamLocalAdapter
 {
@@ -25,23 +27,17 @@ internal sealed partial class SteamLocalAdapter
             && named.ValueKind == JsonValueKind.String ? named.GetString() ?? "steam" : "steam";
         if (store == "epic")
             return ExternalJson.FailureBeforeEffect(operation, "epic_uninstall_not_supported");
-        string folded = FoldTitle(title);
-        string? appId = KnownTitleAppIds.TryGetValue(folded, out string? known)
-            ? known
-            : ResolveSnapshotTitle(folded);
-        if (appId is null)
-            return ExternalJson.FailureBeforeEffect(operation, "steam_title_not_resolved");
-        SteamLocalGame? before = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
-        if (before is null || !before.Installed)
+        // An installed game is one of the manifests: a title none of them bears is no installed game.
+        string? appId = ResolveSnapshotTitle(FoldTitle(title));
+        SteamLocalGame? before = appId is null ? null : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
+        if (appId is null || before is null || !before.Installed)
             return ExternalJson.FailureBeforeEffect(operation, "steam_game_not_installed");
 
-        effectBoundary.Cross(cancellationToken);
-        // La consola de Steam ya desinstala descargas parciales (game.install.cancel);
-        // la misma orden quita un juego instalado.
-        SteamDispatchResult dispatch = await _automation.CancelPartialAsync(appId, cancellationToken)
-            .ConfigureAwait(false);
-        if (!dispatch.Accepted)
-            return effectBoundary.Failure(operation, "steam_uninstall_dispatch_rejected", dispatch.EffectObserved);
+        if (await ActAsync(operation, "uninstall", appId, effectBoundary, cancellationToken).ConfigureAwait(false)
+            is { } failed)
+        {
+            return failed;
+        }
 
         for (int observation = 0; observation <= UninstallObservationIntervals; observation++)
         {

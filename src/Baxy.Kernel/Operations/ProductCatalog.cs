@@ -33,7 +33,17 @@ public static class ProductCatalog
         Descriptor(
             "app.open",
             Schema(
-                [String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)],
+                [
+                    String("appId", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    Boolean("forControl"),
+                    Boolean("foreground"),
+                    Boolean("newDocument"),
+                    // Estabilización, encargo C: a place of the application with an address of its own, by its name in
+                    // the data (src/baxy_mind/data/app_places.v1.json, ApplicationPlaces), and the value of its one slot
+                    // (what is searched, a game's number). The address is composed by ApplicationPlaces alone.
+                    String("place", NullableString, values: ApplicationPlaces.PlaceNames),
+                    String("placeValue", NullableString, maximumUtf8Bytes: 128, nonWhitespace: true),
+                ],
                 ["appId"]),
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
@@ -287,20 +297,23 @@ public static class ProductCatalog
             "calendar.event.list.account.snapshot.v1",
             ToolExposure.Public,
             "Lista eventos acotados desde una cuenta autenticada sin modificarlos."),
+        // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture the person asks to
+        // keep is also saved as a PNG in the known folder named («folder»; pictures: its screenshots subfolder), with
+        // a dated name that never overwrites, read back against its hash. Without «folder» it stays private only.
         Descriptor(
             "capture.active.window",
-            EmptySchema(),
+            CaptureSchema(),
             OperationRisks.PrivacySensitive,
             "capture.active.window.gdi.foreground.bounds.bmp.hash.v1",
             ToolExposure.Public,
-            "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados."),
+            "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados; con folder guarda además una copia PNG verificada en esa carpeta conocida."),
         Descriptor(
             "capture.screenshot",
-            EmptySchema(),
+            CaptureSchema(),
             OperationRisks.PrivacySensitive,
             "capture.screenshot.gdi.bmp.hash.v1",
             ToolExposure.Public,
-            "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash."),
+            "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash; con folder guarda además una copia PNG verificada en esa carpeta conocida."),
         Descriptor(
             "client.channel.locate",
             Schema(
@@ -471,14 +484,20 @@ public static class ProductCatalog
             "file.open",
             Schema(
                 [
+                    // cu-v3-abrir-archivo: the installed application to open it with (as app.open's appId); without it,
+                    // the default one.
+                    String("application", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
+                    // molestia-ayudantes: the person asked to see it (set by the App, as app.open's), so the opened
+                    // application keeps the front; a mission's file.open goes without it and stays behind.
+                    Boolean("foreground"),
                     String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
                 ],
                 ["folder", "name"]),
             OperationRisks.LowReversible,
             "file.open.shell.window.process.postread.v1",
             ToolExposure.Public,
-            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada y verifica la ventana o el proceso que aparece."),
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -772,7 +791,7 @@ public static class ProductCatalog
             OperationRisks.Installation,
             "game.install.named.steam.manifest.postread.v1",
             ToolExposure.Public,
-            "Resuelve un título cerrado de Steam (o de Epic Games) a su identidad, exige entitlement autenticado, inicia la instalación y verifica la transición del manifiesto local."),
+            "Resuelve el título de un juego de Steam (sus manifiestos locales o la búsqueda pública de la tienda; o de Epic Games) a su identidad, abre la instalación por su dirección, confirma el diálogo propio de Steam y verifica la transición del manifiesto local."),
         Descriptor(
             "game.install.prepare",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -826,7 +845,8 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
-        // Rumble en Steam» es una desinstalación real por la consola de Steam,
+        // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
+        // dirección del dato y el diálogo propio de Steam, ya no por su consola),
         // verificada por el manifiesto local; pierde lo instalado, así que confirma.
         Descriptor(
             "game.uninstall.named",
@@ -839,10 +859,15 @@ public static class ProductCatalog
             OperationRisks.WorkLoss,
             "game.uninstall.named.steam.manifest.absence.postread.v1",
             ToolExposure.Public,
-            "Resuelve un título instalado de Steam a su AppID, lo desinstala por la consola del cliente y verifica que el manifiesto local ya no lo declare instalado."),
+            "Resuelve un título instalado de Steam a su AppID, abre su desinstalación por su dirección, confirma el diálogo propio de Steam y verifica que el manifiesto local ya no lo declare instalado."),
         Descriptor(
             "input.key.press",
-            Schema([String("key", values:
+            Schema([
+                // Goal v3 punto 2: Enter o Espacio sobre el «Sí» enfocado de un aviso de
+                // sobrescritura pisa el archivo igual que el clic; la misión lo marca
+                // desde la vista y RiskPolicy lo confirma.
+                String("consequence", types: NullableString, values: ["overwrite"]),
+                String("key", values:
                 [
                     "alt_tab", "arrow_down", "arrow_left", "arrow_right", "arrow_up",
                     // ctrl_l enfoca la barra de direcciones de cualquier navegador.
@@ -856,11 +881,18 @@ public static class ProductCatalog
                     // copiar, buscar, paleta de comandos, pestaña nueva, cerrar
                     // pestaña, deshacer, recargar—. Ninguno cierra una ventana ni un
                     // proceso: cerrar una pestaña deja el navegador abierto (D16).
-                    "backspace", "context_menu", "control", "ctrl_a", "ctrl_c", "ctrl_f", "ctrl_k",
-                    "ctrl_l", "ctrl_shift_escape", "ctrl_t", "ctrl_v", "ctrl_w", "ctrl_z",
-                    "delete", "end", "enter", "escape", "f5", "home", "page_down", "page_up",
-                    "shift", "space", "tab", "win",
+                    // Goal v3 punto 2: guardar, guardar como, abrir, reemplazar,
+                    // cortar, la barra de menús (F10) y el menú contextual del
+                    // control enfocado (Shift+F10); ninguno cierra nada.
+                    "backspace", "context_menu", "control", "ctrl_a", "ctrl_c", "ctrl_f", "ctrl_h", "ctrl_k",
+                    "ctrl_l", "ctrl_o", "ctrl_s", "ctrl_shift_escape", "ctrl_shift_s", "ctrl_t", "ctrl_v", "ctrl_w",
+                    "ctrl_x", "ctrl_z", "delete", "end", "enter", "escape", "f10", "f5", "home", "page_down", "page_up",
+                    "shift", "shift_f10", "space", "tab", "win",
                 ]),
+                // Revisión de V (H1): lo que Enter o Espacio pulsan según la vista del paso (el control
+                // enfocado o, desde un campo, el resultado elegido de su lista) cuando pide la palabra de la
+                // persona: lo marca la misión y RiskPolicy lo juzga como la etiqueta de un clic.
+                String("onto", types: NullableString, maximumUtf8Bytes: 256),
                 // El bucle de computer use declara cuándo Enter cae sobre un
                 // compositor de mensajes con texto: esa pulsación llega a una
                 // persona y el Kernel la confirma en modo normal (§2.1). Suprimir
@@ -875,7 +907,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
             ToolExposure.Public,
-            "Presiona una tecla o una combinación segura (Ctrl+A/C/F/K/L/T/W/Z, Ctrl+Shift+Escape, F5) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; con target message_composer la pulsación de Enter se trata como un envío."),
+            "Presiona una tecla o una combinación segura (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; con target message_composer la pulsación de Enter se trata como un envío."),
         Descriptor(
             "input.keyboard.layout",
             Schema([String("language", values: ["spanish"])], ["language"]),
@@ -915,13 +947,21 @@ public static class ProductCatalog
                     String("direction", values: ["down", "up"]),
                     // Un panel concreto de la última vista (una lista, una conversación):
                     // se desplaza ese control y no el centro de la ventana.
-                    Integer("index", 0, 59, types: NullableInteger),
+                    Integer("index", 0, VisibleViewNumbering.HighestIndex, types: NullableInteger),
+                    // Goal v3 punto 2 (revelar): el elemento con este nombre que la
+                    // ventana de la misión tiene fuera de vista se trae a la vista por
+                    // UI Automation, sin rueda ni puntero; la prueba es verlo.
+                    String("label", types: NullableString, maximumUtf8Bytes: 256),
+                    // La ventana de la misión (el hwnd de la vista sobre la que se
+                    // decidió): la vista ya no la trae al frente, así que la rueda
+                    // la trae ella; si Windows no se la da, no se mueve nada.
+                    Integer("window", 1, uint.MaxValue, types: NullableInteger),
                 ],
                 ["amount", "direction"]),
             OperationRisks.LowReversible,
             "input.scroll.win32.wheel.surface.postread.v1",
             ToolExposure.Public,
-            "Desplaza la ventana en primer plano, o el control de la última vista que nombra su índice, hacia arriba o hacia abajo la cantidad de pasos de rueda pedida y verifica que la superficie visible cambió."),
+            "Desplaza la ventana en primer plano, o el control de la última vista que nombra su índice, hacia arriba o hacia abajo la cantidad de pasos de rueda pedida y verifica que la superficie visible cambió; con label trae a la vista ese elemento de la ventana nombrada sin rueda ni puntero y verifica que se ve."),
         Descriptor(
             "input.select.all",
             EmptySchema(),
@@ -933,9 +973,27 @@ public static class ProductCatalog
             "input.text.type",
             Schema(
                 [
+                    // Revisión de combos-galerías (hallazgo 1): el texto sólo se elige
+                    // como una entrada de la propia lista del campo (un ComboBox), por
+                    // patrón; si la lista no tiene una entrada así, no cambia nada y
+                    // nunca se escribe como texto libre.
+                    Boolean("entry", types: NullableBoolean),
+                    // Goal v3 punto 2 (formularios): el rótulo del campo que recibe el
+                    // valor («Ancho», «Nombre de archivo»); la misión lo resuelve a su
+                    // índice en la vista y, si no lo encuentra, no se escribe nada.
+                    String("field", types: NullableString, maximumUtf8Bytes: 256),
+                    // El campo de la última vista que recibe el texto (goal v3,
+                    // punto 0): se le entrega sin teclado ni primer plano
+                    // (SetValue o mensajes a su ventana) cuando lo acepta.
+                    Integer("index", 0, VisibleViewNumbering.HighestIndex, types: NullableInteger),
+                    // Poner el campo en ese valor: su contenido se reemplaza (nunca
+                    // en un documento ni en una contraseña) y la prueba es el valor
+                    // releído; sin el campo mismo, por teclado no se envía nada.
+                    Boolean("replace", types: NullableBoolean),
                     String("text", maximumUtf8Bytes: 8_192, nonWhitespace: true),
-                    // La ventana de la misión: el texto se escribe sólo mientras
-                    // ella está delante; si deja de estarlo, se para.
+                    // La ventana de la misión: el texto va dirigido sólo a ella
+                    // (hwnd, proceso y hora de creación); por teclado, sólo
+                    // mientras ella está delante, y si deja de estarlo, se para.
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),
                 ],
                 ["text"]),
@@ -951,9 +1009,39 @@ public static class ProductCatalog
             // mismo control y es lo que el revisor ve.
             Schema(
                 [
+                    // Goal v3 punto 2: lo que el clic consuma y no se deshace según la
+                    // vista donde se decidió («¿Desea reemplazarlo?» → «Sí»): overwrite
+                    // pisa un archivo que ya existe y RiskPolicy lo confirma.
+                    // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el resultado exacto
+                    // que la búsqueda elige; RiskPolicy lo lee como la etiqueta (un canal
+                    // de voz pide confirmación ligada a esta invocación).
+                    String("choose", types: NullableString, maximumUtf8Bytes: 256),
+                    String("consequence", types: NullableString, values: ["overwrite"]),
                     String("controlId", types: NullableString, maximumLength: 128),
-                    Integer("index", 0, 59, types: NullableInteger),
+                    Integer("index", 0, VisibleViewNumbering.HighestIndex, types: NullableInteger),
                     String("label", maximumUtf8Bytes: 256, nonWhitespace: true),
+                    // Goal v3 B3 (órdenes en menús cerrados): cómo se pulsa el control de la
+                    // vista, sólo por su identidad y sin puntero. open: sólo su
+                    // ExpandCollapse (la flecha de un botón dividido, un desplegable),
+                    // nunca su Invoke; menu: su menú contextual (ShowContextMenu o
+                    // WM_CONTEXTMENU); double: doble clic por mensaje. Sin él, el clic
+                    // de siempre. Los mismos guards de etiqueta y confirmación.
+                    // Ronda 20b, palanca 6 (revisión, hallazgo 1, v3-40 b): collapse cierra
+                    // por su ExpandCollapse la lista que la misión abrió y dejó abierta
+                    // al no llegar; sólo la manda la App, nunca el modelo. Revisión 2
+                    // (hallazgo 3): sin ExpandCollapse abierto, el popup nacido en la
+                    // misión junto al control se cierra con Escape a su propia ventana.
+                    // Revisión 3 (hallazgo 1): ese cierre es dismiss, que nunca toca el
+                    // ExpandCollapse del control; collapse nunca pliega una rama de árbol.
+                    String("manner", types: NullableString, values: ["collapse", "dismiss", "double", "menu", "open"]),
+                    // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el destino que se
+                    // escribe en lo que el clic abre y cuyo resultado se elige por su
+                    // nombre, en una sola ráfaga dentro de una pausa de la persona.
+                    String("search", types: NullableString, maximumUtf8Bytes: 256),
+                    // La ventana de la misión (el hwnd de la vista sobre la que se
+                    // decidió): el clic la trae al frente y actúa sólo en ella; si
+                    // Windows no se la da, no se pulsa nada.
+                    Integer("window", 1, uint.MaxValue, types: NullableInteger),
                 ],
                 ["label"]),
             OperationRisks.ExternalCommunication,
@@ -972,12 +1060,51 @@ public static class ProductCatalog
                     // la superficie mientras su proceso no se conoce o no muestra
                     // ventana; «el navegador», la de delante del navegador de la persona.
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
+                    // Ronda 21, destino por contenido: sin aplicación ni ventana de la misión, las ventanas del
+                    // escritorio (de arriba abajo) con la firma de su árbol; la App busca en cuál está lo que el
+                    // pedido nombra. No se trae nada al frente ni se captura nada.
+                    Boolean("candidates", types: NullableBoolean),
+                    // Ronda 26: si la aplicación nombrada no tiene ventana, la mirada sólo dice qué ventana está
+                    // delante (título, proceso), sin árbol, captura ni texto: sobre eso se decide abrirla.
+                    Boolean("identityIfAbsent", types: NullableBoolean),
                     Boolean("includeText", types: NullableBoolean),
-                    Integer("limit", 1, 60),
+                    // Goal v3 ventana-misión: las ventanas que la misión sabe que no son suyas (otras del
+                    // mismo proceso, vistas al atarse); la mirada nunca las toma por la superficie.
+                    new OperationArgumentProperty(
+                        "known",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        itemTypes: OperationJsonType.Integer,
+                        maximumItems: 256),
+                    Integer("limit", 1, VisibleViewNumbering.Cap),
+                    // Encargo IMP4: the written lines with their boxes, read from the window's own drawing.
+                    Boolean("lines", types: NullableBoolean),
                     // El proceso de la aplicación que la misión acaba de abrir: su
                     // ventana es la superficie aunque otra tenga el foco.
                     Integer("processId", 1, int.MaxValue, types: NullableInteger),
+                    // La app abierta en frío todavía arranca: si se activó sola, el frente vuelve a la
+                    // ventana de la persona (computer use v3, punto 1).
+                    Boolean("starting", types: NullableBoolean),
+                    // Encargo IMP3: the cut of a look keeps the last entries of the window's tree (a conversation's
+                    // newest messages), read once at the end of a mission that answers a question.
+                    Boolean("tail", types: NullableBoolean),
                     String("waitForLabel", types: NullableString, maximumUtf8Bytes: 256),
+                    // Ronda 21: las palabras del objetivo del paso (y sus otros nombres) que la mente ya usa para
+                    // ordenar la vista; con ellas el corte de los sesenta guarda un cupo acotado para los controles que
+                    // las nombran. Sin ellas (las lecturas que no son de una misión) la vista es la de siempre.
+                    new OperationArgumentProperty(
+                        "wanted",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 24,
+                        itemMaximumUtf8Bytes: 64,
+                        itemNonWhitespace: true),
+                    // Goal v3 ventana-misión: las ventanas a las que la misión está atada (la que abrió,
+                    // creó o nombró la persona, y las que nacieron de ella); la mirada sólo lee ésas.
+                    new OperationArgumentProperty(
+                        "windows",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        itemTypes: OperationJsonType.Integer,
+                        maximumItems: 16),
                 ],
                 []),
             OperationRisks.ReadOnly,
@@ -1234,16 +1361,59 @@ public static class ProductCatalog
                 [
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
                     Integer("budgetSteps", 1, 30, types: NullableInteger),
+                    // Integración ronda 5 (seguridad): sin aplicación, la ventana de delante es de la persona y la
+                    // misión no actúa en ella, salvo que la persona la nombre («en esta ventana…»).
+                    Boolean("frontWindow"),
                     String("goal", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    // Ronda 21, destino por contenido: sin aplicación, lo que el pedido nombra de la ventana donde
+                    // ocurre (un menú, un cuadro, un panel por su nombre; una selección; un documento sin guardar).
+                    // La App busca la única ventana visible que lo muestra; con varias o ninguna, pregunta.
+                    // Ronda 24 (pasada r23 t-form-4, t-drag-2): los diálogos nombrados («el cuadro de diálogo de
+                    // Fuente») van aparte, porque uno todavía cerrado no se ve; los nombres citados («la diapositiva
+                    // «Tres»») son contenido: suman a una ventana que ya encaja y nunca la habilitan solos.
+                    new OperationArgumentProperty(
+                        "referentDialogs",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 8,
+                        itemMaximumUtf8Bytes: 64,
+                        itemNonWhitespace: true),
+                    new OperationArgumentProperty(
+                        "referentItems",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 8,
+                        itemMaximumUtf8Bytes: 64,
+                        itemNonWhitespace: true),
+                    new OperationArgumentProperty(
+                        "referentLabels",
+                        OperationJsonType.Array | OperationJsonType.Null,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 8,
+                        itemMaximumUtf8Bytes: 64,
+                        itemNonWhitespace: true),
+                    Boolean("referentSelection", types: NullableBoolean),
                     new OperationArgumentProperty(
                         "steps",
                         OperationJsonType.Array | OperationJsonType.Null,
                         minimumItems: 1,
-                        maximumItems: 8,
+                        // Goal v3 punto 2: tareas largas de diez sub-objetivos (semantic/missions.py MAX_STEPS,
+                        // fijados iguales en tests/test_cu_v3_tipos_lectura.py).
+                        maximumItems: 10,
                         itemSchema: Schema(
                             [
                                 String("application", types: NullableString, maximumUtf8Bytes: 128),
+                                // Ronda 20b, revisión 2: el formulario es una unidad. Sus campos vinculados y su botón
+                                // por defecto llevan la comprobación del formulario entero (semantic/missions.py
+                                // _with_form_checks), que la mente vuelve a evaluar antes de aceptar.
+                                String("formCheck", types: NullableString, maximumUtf8Bytes: 512),
                                 String("goal", maximumUtf8Bytes: 512, nonWhitespace: true),
+                                // Estabilización L (límites de partida): el sub-objetivo que es un límite declarado
+                                // (semantic/limits.py, leído sobre su acto) no se intenta: la App para al llegar.
+                                String("limit", types: NullableString, maximumUtf8Bytes: 32),
+                                // El dispositivo que necesita el lugar (data computerUse.limits.devices): la App lo lee
+                                // antes del sub-objetivo y para si el equipo no lo tiene.
+                                String("requires", types: NullableString, maximumUtf8Bytes: 32),
                                 String("successCheck", types: NullableString, maximumUtf8Bytes: 512),
                             ],
                             ["goal"])),
@@ -1557,13 +1727,16 @@ public static class ProductCatalog
             Schema(
                 [
                     Boolean("includeDeleted"),
+                    // r19b: the reminder this conversation just made, by the id its verified reminder.create returned;
+                    // the title must still be that reminder's own, so two of the same title never make it ambiguous.
+                    String("reminderId", maximumLength: 36, nonWhitespace: true),
                     String("title", maximumUtf8Bytes: 1_024, nonWhitespace: true),
                 ],
                 ["title"]),
             OperationRisks.ReadOnly,
             "reminder.resolve.exact.local.identity.v1",
             ToolExposure.Public,
-            "Resuelve un recordatorio por título literal y devuelve autoridad CAS."),
+            "Resuelve un recordatorio por título literal (o por su id verificado con ese título) y devuelve autoridad CAS."),
         Descriptor(
             "reminder.restore",
             ReminderCasSchema(),
@@ -1786,14 +1959,24 @@ public static class ProductCatalog
                     // REOPEN1957 H0107 «poneme el modo avión»: 1 apaga todas las
                     // radios (Wi-Fi, Bluetooth, móvil) por la API de radios y 0 las
                     // vuelve a encender; la postlectura mira cada radio.
-                    String("setting", values: ["airplane_mode", "brightness", "do_not_disturb", "night_light"]),
+                    // Estabilización U (identidad, accesibilidad y bypass): los dos ajustes
+                    // propios de BAXY en el mismo ajuste. accessible_mode cambia sólo la
+                    // presentación de su interfaz; confirmation_bypass desde el chat sólo
+                    // se apaga (0): encenderlo es un gesto consciente en la interfaz.
+                    String(
+                        "setting",
+                        values:
+                        [
+                            "accessible_mode", "airplane_mode", "brightness", "confirmation_bypass",
+                            "do_not_disturb", "night_light",
+                        ]),
                     Integer("value", 0, 100),
                 ],
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
             ToolExposure.Public,
-            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar, luz nocturna o modo avión sobre todas las radios) y verifica su postlectura."),
+            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar, luz nocturna o modo avión sobre todas las radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
         Descriptor(
             "system.settings.status",
             Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
@@ -1957,7 +2140,14 @@ public static class ProductCatalog
         Descriptor(
             "weather.current",
             Schema(
-                [String("location", types: NullableString, maximumUtf8Bytes: 128)],
+                [
+                    // Ronda 19 (r17 t2-c13 «… en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): el país que
+                    // marca el habla de la persona (código ISO de dos letras), una pista para desempatar entre
+                    // lugares homónimos de tamaño comparable; nunca elige un lugar mucho menor ni pasa sobre la
+                    // región dicha.
+                    String("dialectCountry", types: NullableString, values: ["AR", "CL", "CO", "ES", "MX", "VE"]),
+                    String("location", types: NullableString, maximumUtf8Bytes: 128),
+                ],
                 []),
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
@@ -2002,7 +2192,17 @@ public static class ProductCatalog
             "web.search",
             Schema(
                 [
+                    // Uso real v3 tanda 1 «quien gano el mundial del 2014» → «Brasil ganó…»: la mente
+                    // da los comienzos de palabra con que una página dice lo preguntado (quién ganó,
+                    // dirigió…); si ningún fragmento los trae, se lee la primera fuente pertinente.
+                    String("answerWords", types: NullableString, maximumUtf8Bytes: 512),
+                    // Y las palabras enteras que empiezan así pero nombran otra cosa («campeonato»,
+                    // «championship»): el fragmento que sólo las trae no dice quién ganó.
+                    String("answerWordsNot", types: NullableString, maximumUtf8Bytes: 256),
                     Integer("limit", 1, 20),
+                    // Uso real 2026-10-07 «un top 3 peliculas de suspenso del 2026»: la mente
+                    // dice que se pide un listado (limit = cuántos); el proveedor no lee palabras.
+                    Boolean("listing", types: NullableBoolean),
                     // Uso real tanda 4c: «cerca de mí», «en mi ciudad» se buscan con
                     // la ciudad de este PC (sólo su nombre) añadida a la consulta.
                     Boolean("nearby", types: NullableBoolean),
@@ -2295,10 +2495,12 @@ public static class ProductCatalog
     {
         OperationRisks.ReadOnly => OperationRisk.ReadOnly,
         OperationRisks.LowReversible or OperationRisks.RecoverableDelete => OperationRisk.Reversible,
-        OperationRisks.PrivacySensitive or OperationRisks.Installation => OperationRisk.Sensitive,
+        OperationRisks.PrivacySensitive => OperationRisk.Sensitive,
         OperationRisks.ExternalCommunication => OperationRisk.External,
-        OperationRisks.SessionDisruption or OperationRisks.WorkLoss or OperationRisks.Monetary =>
-            OperationRisk.Irreversible,
+        // Decisión 8 del dueño (2026-10-10, PROMPT_ESTABILIZACION): en Normal se confirma lo que destruye datos y lo
+        // que sale al mundo, también instalar; D3 (2026-09-20) lo dejaba directo.
+        OperationRisks.SessionDisruption or OperationRisks.WorkLoss or OperationRisks.Monetary
+            or OperationRisks.Installation => OperationRisk.Irreversible,
         OperationRisks.ForbiddenDestructive => OperationRisk.Forbidden,
         _ => OperationRisk.Forbidden,
     };
@@ -2314,6 +2516,10 @@ public static class ProductCatalog
         new(name, schema, risk, verifierContractId, exposure, description, requiresObservedEffect);
 
     private static OperationArgumentsSchema EmptySchema() => Schema([], []);
+
+    // The known folders a capture can also be saved to, as a PNG the person can find.
+    private static OperationArgumentsSchema CaptureSchema() =>
+        Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], []);
 
     private static OperationArgumentsSchema Schema(
         IReadOnlyList<OperationArgumentProperty> properties,

@@ -18,6 +18,12 @@ import json
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import llm_chat
+from baxy_mind import llm_prompts
+from baxy_mind import unsupported_answers
+from baxy_mind import compose_situation
 from baxy_mind.semantic.conversation import asks_for_code, asks_to_order
 
 AVERAGE = "baxy hazme una función en python que saque la media de una lista de números"
@@ -87,8 +93,8 @@ def test_a_function_asked_for_is_written_with_room_for_it() -> None:
     client = ChatRecorder([(reply, "stop")])
     answer, _ = client.chat(AVERAGE, history=[], conversation_kind="knowledge", response_language="es")
     assert answer == reply
-    assert client.payloads[0]["max_tokens"] == llm.CODE_REPLY_MAX_TOKENS
-    assert llm.CODE_REQUEST_PROMPT in _system_text(client.payloads[0])
+    assert client.payloads[0]["max_tokens"] == llm_prompts.CODE_REPLY_MAX_TOKENS
+    assert llm_prompts.CODE_REQUEST_PROMPT in _system_text(client.payloads[0])
 
 
 def test_a_sql_query_is_not_an_english_reply() -> None:
@@ -110,12 +116,12 @@ def test_a_follow_up_to_code_writes_the_code_again() -> None:
         history=history, conversation_kind="knowledge", response_language="es",
     )
     assert answer == reply
-    assert llm.CODE_REQUEST_PROMPT in _system_text(client.payloads[0])
+    assert llm_prompts.CODE_REQUEST_PROMPT in _system_text(client.payloads[0])
 
 
 def test_code_cut_by_its_budget_is_never_published() -> None:
     client = ChatRecorder([("```python\ndef calcular(montos):\n    total = sum(", "length")])
-    with pytest.raises(llm.ConversationReplyContractError) as rejected:
+    with pytest.raises(llm_chat.ConversationReplyContractError) as rejected:
         client.chat(AVERAGE, history=[], conversation_kind="knowledge", response_language="es")
     assert rejected.value.audit_reason == "truncated_code"
 
@@ -124,18 +130,18 @@ def test_a_plain_question_keeps_its_short_answer() -> None:
     client = ChatRecorder([("Un agujero negro es una región donde la gravedad no deja escapar la luz.", "stop")])
     client.chat("qué es un agujero negro", history=[], conversation_kind="knowledge", response_language="es")
     assert client.payloads[0]["max_tokens"] == 128
-    assert llm.CODE_REQUEST_PROMPT not in _system_text(client.payloads[0])
+    assert llm_prompts.CODE_REQUEST_PROMPT not in _system_text(client.payloads[0])
 
 
 def test_the_composer_keeps_the_code_asked_for() -> None:
     # F-w12-t1 compose-audit: the conversation fallback's first draft died as internal_code.
     draft = "Aquí tienes la función: `def calcular_gastos(montos): return sum(montos), sum(montos) / len(montos)`"
     facts = {"situation": json.dumps({"kind": "conversation"})}
-    assert llm.compose_visible_defect(draft, "conversation", EXPENSES, facts) == ""
-    assert llm.compose_visible_defect(draft, "conversation", "qué es un promedio", facts) == "internal_code"
+    assert visible_defect.compose_visible_defect(draft, "conversation", EXPENSES, facts) == ""
+    assert visible_defect.compose_visible_defect(draft, "conversation", "qué es un promedio", facts) == "internal_code"
     # Prose around the code is still judged.
     leaking = "Uso task.list para eso: `def media(l): return sum(l) / len(l)`"
-    assert llm.compose_visible_defect(leaking, "conversation", EXPENSES, facts) == "internal_code"
+    assert visible_defect.compose_visible_defect(leaking, "conversation", EXPENSES, facts) == "internal_code"
 
 
 def test_the_composer_is_told_to_write_the_code() -> None:
@@ -154,17 +160,17 @@ def test_the_composer_is_told_to_write_the_code() -> None:
         "Buenísimo. ¿Y me la pasás a JavaScript? Es para una paginita", "conversation",
         {"situation": json.dumps({"kind": "conversation"}), "priorRequests": [EXPENSES]},
     )
-    assert llm.CODE_REQUEST_PROMPT in client.requests[0]["messages"][-1]["content"]
+    assert llm_prompts.CODE_REQUEST_PROMPT in client.requests[0]["messages"][-1]["content"]
 
 
 # --- limits -------------------------------------------------------------------------------------------------------
 
 def test_a_limit_with_a_plural_verb_for_baxy_is_rewritten() -> None:
     # F-s007 (published by the mind's limit).
-    assert llm._unsupported_answer_contract_failure(
+    assert unsupported_answers._unsupported_answer_contract_failure(
         "Eso no lo hago: la función Smart Camera no la activan yo.", "Pon la función Smart Camera",
     ) == "unsupported_broken_person"
-    assert llm._unsupported_answer_contract_failure(
+    assert unsupported_answers._unsupported_answer_contract_failure(
         "Eso no lo hago: la función Smart Camera no la activo yo.", "Pon la función Smart Camera",
     ) == ""
 
@@ -173,21 +179,21 @@ def test_an_invented_first_person_is_not_published() -> None:
     # F-s077 compose-audit (retry draft, published): the limit's recovery composition.
     situation = json.dumps({"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"})
     asked = "Vas a leer los cuatro primeros SMSs"
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "No leeo SMS ni mensajes de texto.", "error", asked, {"situation": situation},
     ) == "broken_person_conjugation"
-    assert llm.compose_visible_defect("No leo SMS ni mensajes de texto.", "error", asked, {"situation": situation}) == ""
+    assert visible_defect.compose_visible_defect("No leo SMS ni mensajes de texto.", "error", asked, {"situation": situation}) == ""
 
 
 def test_ordering_food_is_not_making_it() -> None:
     # F-w11-t1 (published by the mind's limit).
     asked = "pideme unos tacos al pastor porfa q ya va a empesar el partido"
     assert asks_to_order(asked)
-    assert llm._unsupported_answer_contract_failure(
+    assert unsupported_answers._unsupported_answer_contract_failure(
         "Eso no lo hago: los tacos al pastor del partido no los preparo yo.", asked,
     ) == "unsupported_changed_act"
-    assert llm._unsupported_answer_contract_failure("Eso no lo hago: los tacos al pastor no los pido yo.", asked) == ""
-    assert "pedir o comprar algo no es prepararlo" in llm.UNSUPPORTED_PRESENTATION_PROMPT
+    assert unsupported_answers._unsupported_answer_contract_failure("Eso no lo hago: los tacos al pastor no los pido yo.", asked) == ""
+    assert "pedir o comprar algo no es prepararlo" in llm_prompts.UNSUPPORTED_PRESENTATION_PROMPT
 
 
 # --- the person is spoken to --------------------------------------------------------------------------------------
@@ -206,12 +212,12 @@ def test_ordering_food_is_not_making_it() -> None:
 def test_the_person_is_not_named_in_the_third_person(asked: str, draft: str) -> None:
     situation = json.dumps({"kind": "failure", "polarity": "failure", "operation": "calendar.event.list",
                             "cause": "outlook_profile_not_configured"})
-    assert llm.compose_visible_defect(draft, "error", asked, {"situation": situation}) == "third_person_addressee"
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(draft, "error", asked, {"situation": situation}) == "third_person_addressee"
+    assert visible_defect.compose_visible_defect(
         "I can't reach your Outlook calendar or mail because Outlook isn't set up on this PC.", "error", asked,
         {"situation": situation},
     ) == ""
-    assert "the person's" not in llm._CAUSE_FACT["outlook_profile_not_configured"]
+    assert "the person's" not in compose_situation._CAUSE_FACT["outlook_profile_not_configured"]
 
 
 # --- tasks are named by their titles ------------------------------------------------------------------------------
@@ -236,10 +242,10 @@ def _tasks(*titles: str) -> dict:
 )
 def test_a_task_is_named_by_its_title(payload: dict, draft: str) -> None:
     # F-w05-t4 / F-w14-t4 compose-audit (published first drafts).
-    assert llm._payload_fact_defect(draft, payload, "qué más tengo pendiente") == "task_title_not_named"
+    assert payload_fact_checks._payload_fact_defect(draft, payload, "qué más tengo pendiente") == "task_title_not_named"
     named = "Tienes pendientes " + ", ".join(f"«{title}»" for title in dict.fromkeys(
         task["title"] for task in payload["seen"]["tasks"])) + "; «ice cream» está dos veces."
-    assert llm._payload_fact_defect(named, payload, "qué más tengo pendiente") == ""
+    assert payload_fact_checks._payload_fact_defect(named, payload, "qué más tengo pendiente") == ""
 
 
 def test_the_composer_asks_for_the_titles_and_rewrites_a_translated_list() -> None:

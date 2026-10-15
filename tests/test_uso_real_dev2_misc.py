@@ -26,7 +26,6 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.effect_intent import operation_domain_is_grounded
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
@@ -34,6 +33,8 @@ from baxy_mind.semantic.guards import _overheard_speech
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.system import _weather_location
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
 
 OPERATIONS = (
     "audio.mute", "audio.volume", "audio.volume.adjust", "audio.status", "media.control", "media.play.query",
@@ -89,7 +90,7 @@ class _NoModel:
 
 def _turn(text: str) -> dict:
     tools = [_tool(name) for name in OPERATIONS]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "dev2-misc", "text": text, "history": []},
         llm=_NoModel(),
         planner_catalog=PlannerCatalog(tools),
@@ -326,7 +327,7 @@ def test_what_this_pc_plays_is_still_the_playback():
 def test_the_switch_state_and_the_mute_set_are_the_mute(text, state):
     assert _effects(text) == ("audio.mute",)
     assert operation_domain_is_grounded(text, "audio.mute", ())
-    assert sidecar._ground_explicit_arguments("audio.mute", text, SCHEMAS["audio.mute"]) == {"state": state}
+    assert argument_grounding._ground_explicit_arguments("audio.mute", text, SCHEMAS["audio.mute"]) == {"state": state}
 
 
 @pytest.mark.parametrize("text", ["the audio on the tv is broken", "audio on my headphones sounds bad"])
@@ -349,7 +350,7 @@ def test_the_volume_of_the_music_with_a_level_is_set(text, level):
     result = _turn(text)
     assert result["kind"] == "action"
     assert result["effectOperations"] == ["audio.volume"]
-    assert sidecar._ground_explicit_arguments("audio.volume", text, SCHEMAS["audio.volume"]) == {"level": level}
+    assert argument_grounding._ground_explicit_arguments("audio.volume", text, SCHEMAS["audio.volume"]) == {"level": level}
 
 
 def test_the_volume_of_the_music_without_a_level_asks_how_much():

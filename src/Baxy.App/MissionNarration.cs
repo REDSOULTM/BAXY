@@ -110,12 +110,26 @@ internal static class MissionNarration
             steps.Add(NormalizeOutcome(message));
         }
 
-        return TurnVisibleFacts.Status("remaining_steps_cancelled", new JsonObject
+        var facts = new JsonObject
         {
             ["steps"] = steps,
             ["cancelledRequest"] = execution.Objective,
             ["cancelledAction"] = DescribeCurrentAction(execution),
-        });
+        };
+        // C7Y5 (banco fp c7): the cancelled act of a computer-use mission ends the whole mission; the sub-goals after the
+        // one it belonged to are left undone, and the floor says them (operation_floor._goals_left).
+        int current = (int?)execution.ComputerUse?["subgoal"] ?? 0;
+        if (execution.ComputerUse?["subgoals"] is JsonArray subgoals && current + 1 < subgoals.Count)
+        {
+            facts["cancelledGoals"] = new JsonArray([.. subgoals.Skip(current + 1).OfType<JsonObject>()
+                .Select(subgoal => (JsonNode)new JsonObject
+                {
+                    ["goal"] = (string?)subgoal["goal"],
+                    ["application"] = (string?)subgoal["application"],
+                })]);
+        }
+
+        return TurnVisibleFacts.Status("remaining_steps_cancelled", facts);
     }
 
     internal static string CreateConfirmationMessage(
@@ -134,7 +148,7 @@ internal static class MissionNarration
     private static JsonObject DescribeCurrentAction(PendingMindPlanExecution execution)
     {
         PreparedOperation? prepared = execution.Confirmation?.Prepared ?? execution.PendingOperation;
-        return new JsonObject
+        var described = new JsonObject
         {
             ["operation"] = prepared?.OperationName ?? execution.CurrentStep.Operation,
             ["purpose"] = execution.CurrentStep.Purpose,
@@ -142,6 +156,16 @@ internal static class MissionNarration
                 ? execution.CurrentStep.Arguments?.DeepClone()
                 : JsonNode.Parse(prepared.Arguments.GetRawText()),
         };
+
+        // Encargo VZ: an act that goes out to the world is asked from its family and its name (operation_floor
+        // «worldActAsked»), in BAXY's first person, never in the person's words («que entres»).
+        if (prepared is not null && Kernel.Policy.RiskPolicy.WorldActOf(prepared.OperationName, prepared.Arguments) is { } act)
+        {
+            described["worldAct"] = act.Family;
+            described["actName"] = act.Name;
+        }
+
+        return described;
     }
 
     /// <summary>
@@ -151,8 +175,9 @@ internal static class MissionNarration
     /// </summary>
     internal static string CreateUncertainEffectMessage(
         PendingMindPlanExecution execution,
-        bool terminal = false) =>
-        TurnVisibleFacts.Failure("result_unverified", new JsonObject
+        bool terminal = false)
+    {
+        var facts = new JsonObject
         {
             ["step"] = execution.NextIndex + 1,
             ["pendingRequest"] = execution.Objective,
@@ -161,7 +186,25 @@ internal static class MissionNarration
             ["pending"] = !terminal,
             ["canRepeat"] = terminal,
             ["evidenceRetained"] = !terminal,
-        });
+        };
+
+        // Estabilización F (tandas estab t4-c03 t2, t3-c07 t1, t2-c07 t1): the step left unconfirmed was named only by
+        // the plan's objective, and the writer filled it with an act («Se le envió…», «No he enviado…»). It goes with
+        // its own facts and the steps made before it, so the floor says it as tried and not confirmed.
+        if (MindPlanBoundary.UncertainStep(execution) is { } reason)
+        {
+            var steps = new JsonArray();
+            foreach (string message in execution.CompletedMessages)
+            {
+                steps.Add(NormalizeOutcome(message));
+            }
+
+            facts["steps"] = steps;
+            facts["reason"] = reason;
+        }
+
+        return TurnVisibleFacts.Failure("result_unverified", facts);
+    }
 
     private static JsonObject? MergeObserved(IReadOnlyList<string> messages)
     {

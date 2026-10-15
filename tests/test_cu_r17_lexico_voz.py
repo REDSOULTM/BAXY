@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import visible_defect
 from baxy_mind.semantic import voice_register
 
 
@@ -24,7 +24,7 @@ def _mission(observed: dict) -> dict:
 
 
 def _defect(text: str, situation: dict, said: str = "") -> str:
-    return llm.compose_visible_defect(text, "status", said, {"situation": json.dumps(situation, ensure_ascii=False)})
+    return visible_defect.compose_visible_defect(text, "status", said, {"situation": json.dumps(situation, ensure_ascii=False)})
 
 
 @pytest.mark.parametrize(
@@ -40,9 +40,9 @@ def _defect(text: str, situation: dict, said: str = "") -> str:
 def test_the_screens_or_typed_words_are_theirs(draft: str, observed: dict) -> None:
     # as compose_visible_defect hears it: the request, the screen's words and the facts' texts
     heard = json.dumps({"situation": json.dumps(_mission(observed), ensure_ascii=False)}, ensure_ascii=False)
-    assert llm.own_voice_defect(draft, heard, act_report=True, preterite_floor=True) == ""
+    assert visible_defect.own_voice_defect(draft, heard, act_report=True, preterite_floor=True) == ""
     # without the facts the same words would read as BAXY's own perfect or plural
-    assert llm.own_voice_defect(draft, "", act_report=True, preterite_floor=True) != ""
+    assert visible_defect.own_voice_defect(draft, "", act_report=True, preterite_floor=True) != ""
 
 
 def test_the_persons_words_are_theirs() -> None:

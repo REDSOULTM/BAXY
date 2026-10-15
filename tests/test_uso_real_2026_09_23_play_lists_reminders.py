@@ -18,11 +18,12 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.patterns import resolve_explicit_effects
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.temporal import spoken_clock, spoken_day
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import arguments as semantic_arguments
 
 OPERATIONS = (
     "media.play.youtube", "media.play.query", "media.control", "streaming.play.named", "audio.volume",
@@ -94,7 +95,7 @@ def test_a_name_after_a_play_verb_is_played_on_youtube(text, query):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == ("media.play.youtube",)
     assert reading.clarification is None
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "media.play.youtube", reading.effects.evidence[0], SCHEMAS["media.play.youtube"],
     ) == {"query": query}
 
@@ -135,7 +136,7 @@ def test_a_transport_order_is_not_asked_what_to_play(text, action):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.clarification is None
     assert reading.effects is not None and reading.effects.operations == ("media.control",)
-    assert sidecar._ground_explicit_arguments("media.control", text, SCHEMAS["media.control"]) == {"action": action}
+    assert argument_grounding._ground_explicit_arguments("media.control", text, SCHEMAS["media.control"]) == {"action": action}
 
 
 def test_music_with_nothing_named_still_asks_what_to_play():
@@ -159,7 +160,7 @@ def test_music_with_nothing_named_still_asks_what_to_play():
 def test_a_list_entry_is_a_task_on_that_list(text, title, details):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == ("task.create",)
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "task.create", reading.effects.evidence[0], SCHEMAS["task.create"],
     ) == {"title": title, "details": details}
 
@@ -197,7 +198,7 @@ def test_the_answer_puts_the_entries_on_the_list_asked_for():
     # M113: each entry enumerated is a task of its own.
     assert effects is not None and effects.operations == ("task.create", "task.create")
     assert [
-        sidecar._ground_explicit_arguments("task.create", clause, SCHEMAS["task.create"]) for clause in effects.evidence
+        argument_grounding._ground_explicit_arguments("task.create", clause, SCHEMAS["task.create"]) for clause in effects.evidence
     ] == [{"title": "leche", "details": "lista de la compra"}, {"title": "pan", "details": "lista de la compra"}]
     assert resolve_explicit_effects("no, déjalo", OPERATIONS, previous_user_text="crea una lista de la compra") is None
 
@@ -267,7 +268,7 @@ LOCAL = timezone(timedelta(hours=-3))
 )
 def test_the_due_moment_is_the_one_said(value, context, now, expected_local):
     now_local = now.replace(tzinfo=LOCAL)
-    due = sidecar._canonical_due_utc(value, context, now_utc=now_local)
+    due = semantic_arguments._canonical_due_utc(value, context, now_utc=now_local)
     assert due == expected_local.replace(tzinfo=LOCAL).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
@@ -284,7 +285,7 @@ def test_the_due_moment_is_the_one_said(value, context, now, expected_local):
 )
 def test_a_moment_that_is_not_one_future_instant_is_not_invented(value, context):
     now_local = datetime(2026, 9, 23, 21, 0, tzinfo=LOCAL)
-    assert sidecar._canonical_due_utc(value, context, now_utc=now_local) is None
+    assert semantic_arguments._canonical_due_utc(value, context, now_utc=now_local) is None
 
 
 # ---------------------------------------------------------------- alarms and reminders
@@ -335,6 +336,6 @@ def test_reading_the_reminders_stays_a_read():
     ],
 )
 def test_the_literal_moment_and_title_are_kept(operation, text, due, title):
-    arguments = sidecar._explicit_arguments_from_evidence(operation, text)
+    arguments = semantic_arguments._explicit_arguments_from_evidence(operation, text)
     assert arguments is not None
     assert arguments["dueUtc"] == due and arguments["title"] == title

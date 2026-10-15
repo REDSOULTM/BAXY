@@ -25,13 +25,15 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import effect_intent
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, dialogue
 from baxy_mind.semantic.intent import EffectIntent
 from baxy_mind.semantic.notes import conversation_note_title
 from baxy_mind.semantic.patterns import _PAST_STATEMENT, known_unsupported_effect_request, unresolved_compound_contract
+from baxy_mind import argument_grounding
+from baxy_mind import context_decision
+from baxy_mind import direct_arguments
 
 MESSAGING = ("message.draft", "message.send", "message.recipient.resolve", "message.send.test")
 DRAFT_SCHEMA = {
@@ -100,7 +102,7 @@ class _Model:
 )
 def test_a_message_left_written_is_read_whole(text: str, draft: tuple[str, str, str]) -> None:
     assert effect_intent.message_left_written_request(text) == draft
-    assert sidecar._ground_explicit_arguments("message.draft", text, DRAFT_SCHEMA) == dict(
+    assert argument_grounding._ground_explicit_arguments("message.draft", text, DRAFT_SCHEMA) == dict(
         zip(("channel", "recipient", "text"), draft),
     )
 
@@ -172,7 +174,7 @@ def test_the_decider_limit_on_changing_a_draft_becomes_that_draft() -> None:
         {"role": "assistant", "content": "No pude dejar escrito el mensaje."},
         {"role": "user", "content": text},
     ]
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m111", "text": text, "history": history},
         llm=_Model("limit", request="Cambia el mensaje de WhatsApp a Rocío: «Llego a las diez»."),
         planner_catalog=PlannerCatalog([_tool("message.draft", DRAFT_SCHEMA)]),
@@ -219,7 +221,7 @@ def test_the_arguments_step_forwards_the_reply_asked_for() -> None:
         {"role": "assistant", "content": "Perdón por llegar tarde, se me complicó el tránsito."},
         {"role": "user", "content": "mándaselo a Tomás por WhatsApp"},
     ]
-    arguments, question = sidecar._direct_arguments_result(
+    arguments, question = direct_arguments._direct_arguments_result(
         {"operation": "message.draft", "text": "Deja escrito a Tomás por WhatsApp el mensaje.", "history": history},
         llm=_Model(),
         tool=_tool("message.draft", DRAFT_SCHEMA),
@@ -253,7 +255,7 @@ NOTE_SCHEMA = {
 def test_a_note_named_and_filled_is_one_note(text: str, note: tuple[str, str]) -> None:
     read = effect_intent.resolve_explicit_effects(text, ("note.create", "media.play.youtube", "media.play.query"))
     assert read is not None and read.operations == ("note.create",)
-    assert sidecar._ground_explicit_arguments("note.create", text, NOTE_SCHEMA) == {"title": note[0], "content": note[1]}
+    assert argument_grounding._ground_explicit_arguments("note.create", text, NOTE_SCHEMA) == {"title": note[0], "content": note[1]}
 
 
 CONVERSATION = [
@@ -308,7 +310,7 @@ def test_a_file_where_it_is_said_as_a_clause_is_opened() -> None:
     assert not known_unsupported_effect_request(text, {"file.open"})
     read = effect_intent.resolve_explicit_effects(text, ("file.open",))
     assert read is not None and read.operations == ("file.open",)
-    assert sidecar._ground_explicit_arguments("file.open", text, FILE_OPEN_SCHEMA) == {
+    assert argument_grounding._ground_explicit_arguments("file.open", text, FILE_OPEN_SCHEMA) == {
         "folder": "downloads", "name": "notas_clase.docx",
     }
 
@@ -333,7 +335,7 @@ SEARCH_SCHEMA = {
     ],
 )
 def test_the_name_a_file_is_said_to_have_is_searched(text: str, arguments: dict) -> None:
-    assert sidecar._ground_explicit_arguments("filesystem.known.search", text, SEARCH_SCHEMA) == arguments
+    assert argument_grounding._ground_explicit_arguments("filesystem.known.search", text, SEARCH_SCHEMA) == arguments
 
 
 EXACT_SCHEMA = {
@@ -354,7 +356,7 @@ EXACT_SCHEMA = {
 )
 def test_the_song_of_an_exact_play_is_its_title(text: str, title: str | None) -> None:
     expected = None if title is None else {"provider": "spotify", "title": title}
-    assert sidecar._ground_explicit_arguments("media.play.exact", text, EXACT_SCHEMA) == expected
+    assert argument_grounding._ground_explicit_arguments("media.play.exact", text, EXACT_SCHEMA) == expected
 
 
 @pytest.mark.parametrize(
@@ -383,7 +385,7 @@ def test_what_was_not_done_yet_is_said_not_ordered() -> None:
 
 def test_the_restatement_opens_each_application_it_names() -> None:
     text = "¿Me abrirías Paint y el Bloc de notas?"
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m111", "text": text, "history": [{"role": "user", "content": text}]},
         llm=_Model("action", ("app.open",), "Abre Paint y el Bloc de notas."),
         planner_catalog=PlannerCatalog([_tool("app.open")]),

@@ -6,8 +6,9 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_situation
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({"email.send", "message.send.test", "message.recipient.resolve", "message.send", "message.draft", "app.open"})
 SCHEMA = {"type": "object", "properties": {"subject": {"type": ["string", "null"]}, "text": {"type": "string"}, "to": {"type": "string"}}, "required": ["text", "to"], "additionalProperties": False}
@@ -27,7 +28,7 @@ def test_a_mail_to_an_address_is_sent_from_outlook(text: str, arguments: dict) -
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == ("email.send",)
     assert effect_intent.resolve_explicit_clarification_intent(text, AVAILABLE) is None
-    assert mind._ground_explicit_arguments("email.send", text, SCHEMA) == arguments
+    assert argument_grounding._ground_explicit_arguments("email.send", text, SCHEMA) == arguments
     assert effect_intent.operation_domain_is_grounded(text, "email.send") is True
 
 
@@ -51,4 +52,4 @@ def test_without_email_send_the_old_test_mailbox_send_stays_and_chats_are_untouc
     forced = effect_intent.resolve_explicit_effects("mandale por whatsapp a Música que ya voy", AVAILABLE - {"message.recipient.resolve"}, (), ())
     assert forced is not None and forced.operations == ("message.send.test",)
     for code in ("mail_address_invalid", "outlook_profile_not_configured", "outlook_mail_send_failed", "mail_delivery_not_verified"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT

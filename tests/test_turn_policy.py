@@ -17,12 +17,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind import __main__ as mind_main
 from baxy_mind import effect_intent as effect_intent_module
-from baxy_mind import llm as llm_module
+from baxy_mind import llm_chat
+from baxy_mind import llm_prompts
+from baxy_mind import unsupported_answers
+from baxy_mind import conversation_checks
 from baxy_mind import protocol
 from baxy_mind.semantic.conversation import _reads_as_an_observation
 from baxy_mind.first_signal import PendingTurnSignal
-from baxy_mind.__main__ import (
-    _recovery_question_is_valid,
+from baxy_mind.turn_recovery import _recovery_question_is_valid, _recover_failed_turn, _retry_side_effect_free_turn
+from baxy_mind.sidecar_budgets import (
     ARGUMENT_REQUEST_BUDGET_SECONDS,
     CATALOG_LLM_WARMUP_SECONDS,
     CATALOG_REQUEST_BUDGET_SECONDS,
@@ -31,22 +34,25 @@ from baxy_mind.__main__ import (
     TURN_DECIDE_NORMAL_BUDGET_SECONDS,
     TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
     TURN_DECIDE_TRANSPORT_SLA_SECONDS,
-    _closed_unsupported_request,
+)
+from baxy_mind.semantic.conversation import _closed_unsupported_request
+from baxy_mind.tool_catalog import (
     _create_planner_resources,
-    _explicit_arguments_from_evidence,
+    _require_catalog_llm_ready,
+    configure_application_catalog,
+    configure_game_catalog,
+)
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.turn_decisions import (
     _explicit_nonunderstanding_turn_decision,
-    _explicit_plan_skeleton,
     _explicit_social_turn_decision,
     _explicit_stable_no_effect_turn_decision,
     _explicit_turn_decision,
-    _ground_explicit_arguments,
-    _irrelevant_plan_operations,
-    _normalize_grounded_operation_arguments,
-    _prepare_plan_prompt_resources,
-    _prepare_turn_result,
-    _recover_failed_turn,
-    _require_catalog_llm_ready,
-    _retry_side_effect_free_turn,
+)
+from baxy_mind.plan_shape import _explicit_plan_skeleton, _irrelevant_plan_operations, _prepare_plan_prompt_resources
+from baxy_mind.argument_grounding import _ground_explicit_arguments, _normalize_grounded_operation_arguments
+from baxy_mind.turn_decide import _prepare_turn_result
+from baxy_mind.turn_gates import (
     apply_compound_effect_conservation_veto,
     apply_conversation_effect_presentation,
     apply_explicit_effect_contract,
@@ -55,8 +61,6 @@ from baxy_mind.__main__ import (
     apply_operation_domain_grounding_veto,
     apply_turn_action_grounding_gate,
     apply_turn_action_relevance_veto,
-    configure_application_catalog,
-    configure_game_catalog,
     validate_turn_decision,
 )
 from baxy_mind.effect_intent import (
@@ -70,23 +74,47 @@ from baxy_mind.llm import (
     DirectArgumentExtraction,
     LlmRuntime,
     _compact_structured_grammar,
-    _conversation_presentation_shape,
-    _INVENTED_INFINITIVES,
     _PreparedChat,
-    _shaped_conversation_answer_violates_contract,
-    _shaped_presentation_text,
-    _spanish_modal_is_malformed,
-    derive_semantic_effect_state,
-    visible_reply_asserts_an_unread_machine_state,
-    visible_reply_claims_an_effect,
+)
+from baxy_mind.conversation_checks import visible_text_leaks_internal_vocabulary
+from baxy_mind.effect_guard import derive_semantic_effect_state
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
+from baxy_mind.conversation_contract import _shaped_conversation_answer_violates_contract
+from baxy_mind.conversation_shape import _shaped_presentation_text
+from baxy_mind.reply_claims import visible_reply_asserts_an_unread_machine_state
+from baxy_mind.conversation_checks import (
     visible_reply_denies_a_served_capability,
+    visible_reply_restates_the_request,
+)
+from baxy_mind.reply_language_checks import (
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
-    visible_reply_restates_the_request,
-    visible_text_leaks_internal_vocabulary,
 )
+from baxy_mind.unsupported_answers import _spanish_modal_is_malformed
+from baxy_mind.reply_claims import visible_reply_claims_an_effect
+from baxy_mind.reply_language_checks import _INVENTED_INFINITIVES
 from baxy_mind.planner import PlannerCatalog, PlannerContractError
 from baxy_mind.semantic.decider import ContextDecision
+from baxy_mind import plan_shape
+from baxy_mind import engine_handoff
+from baxy_mind import send_offer
+from baxy_mind import turn_followups
+from baxy_mind import context_decision
+from baxy_mind import turn_decide
+from baxy_mind import turn_history
+from baxy_mind.semantic import conversation as semantic_conversation
+from baxy_mind import turn_audit
+from baxy_mind import turn_decisions
+from baxy_mind import planner as planner_module
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import turn_recovery as turn_recovery_module
+from baxy_mind import turn_gates
+from baxy_mind import sidecar_budgets
+from baxy_mind.semantic import dialogue as semantic_dialogue
+from baxy_mind import operation_contract
+from baxy_mind import argument_grounding
+from baxy_mind import llm_settings
+from baxy_mind import native_selection
 
 
 def _decider_talks(text: str, *_args: object, **_kwargs: object) -> ContextDecision:
@@ -155,7 +183,7 @@ def test_unresolved_catalog_identity_uses_typed_error_without_invented_observati
 def test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader(
     text: str,
 ) -> None:
-    assert mind_main._decisive_request_language(text) == "mixed"
+    assert turn_history._decisive_request_language(text) == "mixed"
 
 
 @pytest.mark.parametrize(
@@ -171,7 +199,7 @@ def test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reade
 def test_missing_referent_uses_the_shared_request_reading(
     text: str, absent: bool
 ) -> None:
-    assert mind_main._standalone_deictic_request(text) is absent
+    assert semantic_conversation._standalone_deictic_request(text) is absent
 
 
 @pytest.mark.parametrize(
@@ -391,8 +419,8 @@ def test_chat_authors_the_name_answer_with_conversation_context(reply: str) -> N
     assert dialogue[1:] == [{"role": "user", "content": "¿Cómo me llamo?"}]
     # cien-42 003: a direct knowledge answer also carries the definition-contrast rule.
     assert payloads[0]["messages"][0]["content"] == (
-        llm_module.SYSTEM_PROMPT + " " + llm_module.CONVERSATION_FACT_PROVENANCE_PROMPT
-        + " " + llm_module.DEFINITION_CONTRAST_PROMPT
+        llm_prompts.SYSTEM_PROMPT + " " + llm_prompts.CONVERSATION_FACT_PROVENANCE_PROMPT
+        + " " + llm_prompts.DEFINITION_CONTRAST_PROMPT
     )
 
 
@@ -941,7 +969,7 @@ def test_opt_in_turn_audit_records_raw_candidates_and_policy_stages(
     tmp_path: Path,
 ) -> None:
     audit_path = tmp_path / "turn-audit.jsonl"
-    monkeypatch.setenv(mind_main.TURN_AUDIT_ENV, str(audit_path))
+    monkeypatch.setenv(turn_audit.TURN_AUDIT_ENV, str(audit_path))
     decision = {
         "mode": "action",
         "operation": "app.open",
@@ -953,7 +981,7 @@ def test_opt_in_turn_audit_records_raw_candidates_and_policy_stages(
         "request_id": "audit-1",
         "candidate_operations": ["app.open", "web.search"],
         "raw_decision": {"mode": "action", "operation": "app.open"},
-        "stages": [mind_main._turn_audit_stage("validated_raw", decision)],
+        "stages": [turn_audit._turn_audit_stage("validated_raw", decision)],
         "final": {
             "kind": "action",
             "intent_operations": ["app.open"],
@@ -961,7 +989,7 @@ def test_opt_in_turn_audit_records_raw_candidates_and_policy_stages(
         },
     }
 
-    mind_main._append_turn_audit(record)
+    turn_audit._append_turn_audit(record)
 
     assert json.loads(audit_path.read_text(encoding="utf-8")) == record
 
@@ -970,8 +998,8 @@ def test_turn_audit_io_failure_never_changes_control_flow(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv(mind_main.TURN_AUDIT_ENV, str(tmp_path))
-    mind_main._append_turn_audit({"schema": "baxy.mind-turn-audit.v1"})
+    monkeypatch.setenv(turn_audit.TURN_AUDIT_ENV, str(tmp_path))
+    turn_audit._append_turn_audit({"schema": "baxy.mind-turn-audit.v1"})
 
 
 def test_turn_attempt_failure_audit_records_only_stable_error_class(
@@ -979,7 +1007,7 @@ def test_turn_attempt_failure_audit_records_only_stable_error_class(
     tmp_path: Path,
 ) -> None:
     audit_path = tmp_path / "turn-audit.jsonl"
-    monkeypatch.setenv(mind_main.TURN_AUDIT_ENV, str(audit_path))
+    monkeypatch.setenv(turn_audit.TURN_AUDIT_ENV, str(audit_path))
 
     mind_main._audit_turn_attempt_failure(
         {"id": "failed-attempt", "text": "private request"},
@@ -1007,11 +1035,11 @@ def test_turn_attempt_failure_audit_records_bounded_model_contract_reason(
     tmp_path: Path,
 ) -> None:
     audit_path = tmp_path / "turn-audit.jsonl"
-    monkeypatch.setenv(mind_main.TURN_AUDIT_ENV, str(audit_path))
+    monkeypatch.setenv(turn_audit.TURN_AUDIT_ENV, str(audit_path))
 
     mind_main._audit_turn_attempt_failure(
         {"id": "failed-reply", "text": "private request"},
-        llm_module.ConversationReplyContractError("unsupported_missing_anchor"),
+        llm_chat.ConversationReplyContractError("unsupported_missing_anchor"),
         "runtime",
     )
 
@@ -1026,7 +1054,7 @@ def test_failed_turn_audit_preserves_total_recovery_boundary(
     tmp_path: Path,
 ) -> None:
     audit_path = tmp_path / "turn-audit.jsonl"
-    monkeypatch.setenv(mind_main.TURN_AUDIT_ENV, str(audit_path))
+    monkeypatch.setenv(turn_audit.TURN_AUDIT_ENV, str(audit_path))
 
     result = _recover_failed_turn(
         {
@@ -1687,7 +1715,7 @@ def test_confirmed_stable_knowledge_cannot_be_reopened_by_catalog_candidates(
         @staticmethod
         def chat(*_args: object, **kwargs: object) -> tuple[str, list]:
             assert kwargs["conversation_kind"] == "knowledge"
-            assert kwargs["response_language"] == mind_main._explicit_response_language(
+            assert kwargs["response_language"] == turn_history._explicit_response_language(
                 text
             )
             return "Una explicación del concepto.", []
@@ -1717,9 +1745,9 @@ def test_confirmed_stable_knowledge_cannot_be_reopened_by_catalog_candidates(
 def test_actual_pending_clarification_keeps_the_dialogue_open(text: str) -> None:
     history = [{"role": "assistant", "content": "Indica cuál archivo quieres abrir."}]
     for classify in (
-        mind_main._explicit_stable_no_effect_turn_decision,
-        mind_main._explicit_social_turn_decision,
-        mind_main._explicit_nonunderstanding_turn_decision,
+        turn_decisions._explicit_stable_no_effect_turn_decision,
+        turn_decisions._explicit_social_turn_decision,
+        turn_decisions._explicit_nonunderstanding_turn_decision,
     ):
         assert classify(text, history, pending_clarification=True) is None
 
@@ -1842,7 +1870,7 @@ def test_identity_question_cannot_be_consumed_as_an_old_slot_value(user_text: st
     "don't open Chrome; tell me the time",
 ])
 def test_negative_opening_does_not_force_a_compound_turn_to_conversation(text: str) -> None:
-    assert mind_main._explicit_stable_no_effect_turn_decision(text) is None
+    assert turn_decisions._explicit_stable_no_effect_turn_decision(text) is None
 
 
 def test_content_drafting_closes_before_message_delivery_clarification() -> None:
@@ -2092,11 +2120,11 @@ def test_each_window_mutation_depends_on_the_verified_active_window() -> None:
     assert result["steps"][2]["dependsOn"] == ["step_1"]
 
 
-@pytest.mark.parametrize("consumer", sorted(mind_main._IDENTITY_CONSUMERS))
+@pytest.mark.parametrize("consumer", sorted(plan_shape._IDENTITY_CONSUMERS))
 def test_every_identity_consumer_gets_exactly_one_semantic_producer(
     consumer: str,
 ) -> None:
-    prerequisites = mind_main.required_predecessors(consumer)
+    prerequisites = planner_module.required_predecessors(consumer)
 
     assert prerequisites
     result = _explicit_plan_skeleton((consumer,))
@@ -2599,62 +2627,62 @@ def test_relative_and_clock_due_literals_become_future_utc_instants() -> None:
     now = datetime(2026, 8, 1, 12, 0, tzinfo=timezone.utc)
 
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "10 minutos",
             now_utc=now,
         )
         == "2026-08-01T12:10:00Z"
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "mañana 8am",
             now_utc=now,
         )
         == "2026-08-02T08:00:00Z"
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "a las 15:00",
             now_utc=now,
         )
         == "2026-08-01T15:00:00Z"
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "at 5pm",
             now_utc=now,
         )
         == "2026-08-01T17:00:00Z"
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "on the 30th at 3pm",
             now_utc=now,
         )
         == "2026-08-30T15:00:00Z"
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "April 30th at 3pm",
             now_utc=now,
         )
         == "2027-04-30T15:00:00Z"
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "April 31st at 3pm",
             now_utc=now,
         )
         is None
     )
     assert (
-        mind_main._canonical_due_utc(
+        semantic_arguments._canonical_due_utc(
             "in 2 days",
             now_utc=now,
         )
         == "2026-08-03T12:00:00Z"
     )
-    assert mind_main._explicit_notification_schedule_arguments(
+    assert semantic_arguments._explicit_notification_schedule_arguments(
         "pon una alarma a las 15:00",
     ) == {
         "dueUtc": "a las 15:00",
@@ -2662,7 +2690,7 @@ def test_relative_and_clock_due_literals_become_future_utc_instants() -> None:
         "title": "alarma a las 15:00",
     }
     assert (
-        mind_main._explicit_notification_schedule_arguments(
+        semantic_arguments._explicit_notification_schedule_arguments(
             "make an alarm for 0760h",
         )
         is None
@@ -2686,42 +2714,42 @@ def test_relative_and_clock_due_literals_become_future_utc_instants() -> None:
 def test_relative_calendar_windows_use_closed_local_civil_boundaries() -> None:
     now = datetime(2026, 8, 1, 12, 0, tzinfo=timezone.utc)
 
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "Cualquier cosa interesante que suceda este fin de semana",
         now_utc=now,
     ) == {
         "startUtc": "2026-08-01T00:00:00Z",
         "endUtc": "2026-08-03T00:00:00Z",
     }
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "Show my events next week",
         now_utc=now,
     ) == {
         "startUtc": "2026-08-03T00:00:00Z",
         "endUtc": "2026-08-10T00:00:00Z",
     }
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "Anything I should do after work today",
         now_utc=now,
     ) == {
         "startUtc": "2026-08-01T17:00:00Z",
         "endUtc": "2026-08-02T00:00:00Z",
     }
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "¿Tengo algo que hacer hoy después del trabajo?",
         now_utc=now,
     ) == {
         "startUtc": "2026-08-01T17:00:00Z",
         "endUtc": "2026-08-02T00:00:00Z",
     }
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "Eventos de esta noche",
         now_utc=now,
     ) == {
         "startUtc": "2026-08-01T18:00:00Z",
         "endUtc": "2026-08-02T00:00:00Z",
     }
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "Qué sucede en Año Nuevo",
         now_utc=now,
     ) == {
@@ -2729,7 +2757,7 @@ def test_relative_calendar_windows_use_closed_local_civil_boundaries() -> None:
         "endUtc": "2027-01-02T00:00:00Z",
     }
     assert (
-        mind_main._explicit_calendar_range_arguments(
+        semantic_arguments._explicit_calendar_range_arguments(
             "Show events today and tomorrow",
             now_utc=now,
         )
@@ -2740,7 +2768,7 @@ def test_relative_calendar_windows_use_closed_local_civil_boundaries() -> None:
 def test_absolute_calendar_range_includes_the_spoken_final_day() -> None:
     now = datetime(2026, 8, 1, 12, 0, tzinfo=timezone.utc)
 
-    assert mind_main._explicit_calendar_range_arguments(
+    assert semantic_arguments._explicit_calendar_range_arguments(
         "during the timeframe of february one and march sixteen what meetings occurred",
         now_utc=now,
     ) == {
@@ -2797,7 +2825,7 @@ def test_relative_reminders_keep_literal_time_and_title_without_reinference(
 
 
 def test_multiple_alarm_effects_keep_independent_literal_grounding() -> None:
-    intent = mind_main.resolve_explicit_effects(
+    intent = effect_intent_module.resolve_explicit_effects(
         "Record alarms for 3 and 4 in the afternoon.",
         {"notification.schedule"},
     )
@@ -3711,7 +3739,7 @@ def test_unresolved_live_read_retries_without_becoming_general_knowledge() -> No
         pytest.fail(f"An unobserved read reached presentation: {result}")
 
     with pytest.raises(PlannerContractError, match="unresolved_compound_effects"):
-        mind_main._retry_side_effect_free_turn(prepare)
+        turn_recovery_module._retry_side_effect_free_turn(prepare)
     assert attempts == 2
     assert proposal["effect_operations"] == ["system.time"]
 
@@ -3825,7 +3853,7 @@ def test_compound_clause_compatibility_runs_with_bounded_parallelism() -> None:
         barrier.wait(timeout=1.0)
         return True
 
-    assert mind_main._compound_compatibility_all(
+    assert turn_gates._compound_compatibility_all(
         compatible,
         [
             ("first", "app.open", {}),
@@ -3847,7 +3875,7 @@ def test_parallel_compound_verification_retires_unused_speculation() -> None:
             self.count_retired += 1
 
     runtime = Runtime()
-    assert mind_main._prepare_parallel_compound_verification(
+    assert turn_gates._prepare_parallel_compound_verification(
         runtime,
         [("one", "app.open", {}), ("two", "message.send", {})],
     )
@@ -4072,11 +4100,8 @@ def test_turn_resolves_explicit_effects_only_once(
         def operation_is_relevant(*args: object, **kwargs: object):
             raise AssertionError("recovered explicit effects do not need E5")
 
-    monkeypatch.setattr(
-        mind_main,
-        "resolve_explicit_effects",
-        counted_resolver,
-    )
+    for module in (plan_shape, engine_handoff, send_offer, turn_followups, context_decision, turn_decide):
+        monkeypatch.setattr(module, "resolve_explicit_effects", counted_resolver)
     monkeypatch.setattr(
         effect_intent_module,
         "resolve_explicit_effects",
@@ -4322,7 +4347,7 @@ def test_initial_planner_resources_do_not_touch_optional_encoder(
     sentinel_skills = object()
 
     monkeypatch.setattr(
-        "baxy_mind.__main__.SkillRegistry.load_default",
+        "baxy_mind.tool_catalog.SkillRegistry.load_default",
         lambda operations, encoder=None: sentinel_skills,
     )
     catalog, skills = _create_planner_resources(
@@ -4487,15 +4512,15 @@ def test_bare_deictic_conversation_requires_model_authored_referent_question(
     plan = {"mode": "plan"}
     action = {"mode": "action"}
 
-    assert mind_main._standalone_deictic_conversation_needs_clarification(
+    assert turn_decide._standalone_deictic_conversation_needs_clarification(
         text,
         conversation,
     )
-    assert mind_main._standalone_deictic_conversation_needs_clarification(
+    assert turn_decide._standalone_deictic_conversation_needs_clarification(
         text,
         plan,
     )
-    assert not mind_main._standalone_deictic_conversation_needs_clarification(
+    assert not turn_decide._standalone_deictic_conversation_needs_clarification(
         text,
         action,
     )
@@ -4553,7 +4578,7 @@ def test_cpu_bare_deictic_route_uses_its_measured_clarification_budget(
         tool_by_name={},
     )
 
-    assert observed == [mind_main.DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS]
+    assert observed == [sidecar_budgets.DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS]
     assert result["kind"] == "clarify"
     assert result["question"] == "¿Qué acción concreta quieres que haga?"
     assert result["reply"] == ""
@@ -4571,7 +4596,7 @@ def test_cpu_bare_deictic_route_uses_its_measured_clarification_budget(
 def test_specific_or_nonimperative_references_do_not_trigger_bare_deictic_guard(
     text: str,
 ) -> None:
-    assert not mind_main._standalone_deictic_conversation_needs_clarification(
+    assert not turn_decide._standalone_deictic_conversation_needs_clarification(
         text,
         {"mode": "conversation"},
     )
@@ -5662,7 +5687,7 @@ def test_turn_chat_receives_closed_policy_without_catalog_or_evidence() -> None:
 def test_unavailable_catalog_entity_is_closed_without_model_authority(
     text: str,
 ) -> None:
-    decision = mind_main._catalog_unavailable_turn_decision(
+    decision = turn_decisions._catalog_unavailable_turn_decision(
         text,
         None,
         (),
@@ -5690,7 +5715,7 @@ def test_unsupported_presentation_uses_one_inert_final_anchor(
     text: str,
     anchor: str,
 ) -> None:
-    assert llm_module._unsupported_request_anchor_token(text) == anchor
+    assert unsupported_answers._unsupported_request_anchor_token(text) == anchor
 
 
 def test_cpu_conversation_presentation_has_a_bounded_decode(
@@ -6318,7 +6343,7 @@ def test_missing_context_visible_answer_accepts_bounded_model_prose() -> None:
 
 def test_unsupported_habit_answer_accepts_specific_model_prose() -> None:
     assert (
-        llm_module._unsupported_answer_violates_contract(
+        unsupported_answers._unsupported_answer_violates_contract(
             "No puedo crear y marcar ese hábito como se pidió.",
             "armá el hábito de salir a correr y marcá que ya lo hice",
         )
@@ -6330,14 +6355,14 @@ def test_current_fact_limitation_accepts_updated_verification_anchor() -> None:
     request = "quien es el actual primer ministro de rusia"
 
     assert (
-        llm_module._unsupported_answer_violates_contract(
+        unsupported_answers._unsupported_answer_violates_contract(
             "No puedo verificar información actualizada.",
             request,
         )
         is False
     )
     assert (
-        llm_module._unsupported_answer_violates_contract(
+        unsupported_answers._unsupported_answer_violates_contract(
             "El primer ministro es una persona concreta.",
             request,
         )
@@ -6582,7 +6607,7 @@ def test_classifier_reuse_is_exact_bounded_and_cleared_with_model() -> None:
     runtime._effect_count_reuse_cache = OrderedDict()
     runtime._operation_compatibility_reuse_cache = OrderedDict()
 
-    for index in range(llm_module.VALIDATED_CLASSIFIER_REUSE_CAPACITY + 1):
+    for index in range(llm_settings.VALIDATED_CLASSIFIER_REUSE_CAPACITY + 1):
         runtime._validated_classifier_reuse_put(
             "_response_language_reuse_cache",
             f"mensaje-{index}",
@@ -6599,14 +6624,14 @@ def test_classifier_reuse_is_exact_bounded_and_cleared_with_model() -> None:
     assert (
         runtime._validated_classifier_reuse_get(
             "_response_language_reuse_cache",
-            f"mensaje-{llm_module.VALIDATED_CLASSIFIER_REUSE_CAPACITY}",
+            f"mensaje-{llm_settings.VALIDATED_CLASSIFIER_REUSE_CAPACITY}",
         )
         == "es"
     )
     assert (
         runtime._validated_classifier_reuse_get(
             "_response_language_reuse_cache",
-            f"mensaje-{llm_module.VALIDATED_CLASSIFIER_REUSE_CAPACITY} ",
+            f"mensaje-{llm_settings.VALIDATED_CLASSIFIER_REUSE_CAPACITY} ",
         )
         is None
     )
@@ -7473,46 +7498,46 @@ def test_native_tool_selection_accepts_no_call_as_zero_authority_conversation(fi
 
 
 def test_native_tool_selection_clarifies_only_measured_sibling_boundaries() -> None:
-    assert "never play or search media" in llm_module._native_selection_description(
+    assert "never play or search media" in native_selection._native_selection_description(
         "app.open",
         "Open an installed application.",
     )
-    assert "absolute output level" in llm_module._native_selection_description(
+    assert "absolute output level" in native_selection._native_selection_description(
         "audio.volume",
         "Set output volume.",
     )
-    assert "relative amount" in llm_module._native_selection_description(
+    assert "relative amount" in native_selection._native_selection_description(
         "audio.volume.adjust",
         "Adjust output volume.",
     )
-    assert "never append" in llm_module._native_selection_description(
+    assert "never append" in native_selection._native_selection_description(
         "filesystem.write.text",
         "Write text.",
     )
-    assert "do not describe scenes" in llm_module._native_selection_description(
+    assert "do not describe scenes" in native_selection._native_selection_description(
         "ocr.read",
         "Read text.",
     )
-    assert "never merely open Spotify" in llm_module._native_selection_description(
+    assert "never merely open Spotify" in native_selection._native_selection_description(
         "media.play.query",
         "Search and play media.",
     )
-    assert "interactive game" in llm_module._native_selection_description(
+    assert "interactive game" in native_selection._native_selection_description(
         "media.play.exact",
         "Play exact media.",
     )
-    assert "never launch" in llm_module._native_selection_description(
+    assert "never launch" in native_selection._native_selection_description(
         "media.control",
         "Control playback.",
     )
     # Uso real 2026-09-23 «qué hora es en tokio»: this PC's clock was offered
     # for another city's time; that boundary is now measured too. Tanda 4: that
     # time is this clock read with the place, never this clock as theirs.
-    described = llm_module._native_selection_description("system.time", "Read the current time.")
+    described = native_selection._native_selection_description("system.time", "Read the current time.")
     assert "only with that place in «place»" in described
     assert "never this clock as theirs" in described
     assert (
-        llm_module._native_selection_description(
+        native_selection._native_selection_description(
             "network.status",
             "Read connectivity.",
         )
@@ -7639,7 +7664,7 @@ def test_nominal_reminder_with_due_keeps_exact_effect_authority() -> None:
 
     assert _closed_unsupported_request(text) is False
     assert _explicit_stable_no_effect_turn_decision(text) is None
-    intent = mind_main.resolve_explicit_effects(text, {"reminder.create"})
+    intent = effect_intent_module.resolve_explicit_effects(text, {"reminder.create"})
 
     assert intent is not None
     assert intent.operations == ("reminder.create",)
@@ -7691,7 +7716,7 @@ def test_fresh_gate_requests_without_supported_authority_close_stably(
 def test_unavailable_app_and_game_requests_close_before_model_selection(
     text: str,
 ) -> None:
-    decision = mind_main._catalog_unavailable_turn_decision(
+    decision = turn_decisions._catalog_unavailable_turn_decision(
         text,
         None,
         effect_intent_module.build_application_catalog_index(()),
@@ -8058,7 +8083,7 @@ def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> Non
 def test_final_question_scope_does_not_swallow_prior_content(
     reply: str, question_only: bool
 ) -> None:
-    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+    assert conversation_checks.visible_reply_is_only_questions(reply) is question_only
 
 
 @pytest.mark.parametrize(
@@ -8197,12 +8222,12 @@ class _ProposedLeafLlm:
 
 
 def test_prior_request_does_not_borrow_assistant_or_skip_a_new_user_subject() -> None:
-    assert mind_main._previous_user_request([], "y la fecha?") is None
-    assert mind_main._previous_user_request(
+    assert semantic_dialogue._previous_user_request([], "y la fecha?") is None
+    assert semantic_dialogue._previous_user_request(
         [{"role": "assistant", "content": "Dime que hora es"},
          {"role": "user", "content": "y la fecha?"}], "y la fecha?",
     ) is None
-    assert mind_main._previous_user_request(
+    assert semantic_dialogue._previous_user_request(
         [{"role": "user", "content": "Dime que hora es"},
          {"role": "user", "content": "Hablemos de mi cumpleaños"},
          {"role": "assistant", "content": "Son las 18:13."},
@@ -8312,11 +8337,11 @@ def test_a_closed_refusal_asks_the_catalogue_before_it_speaks() -> None:
         {"network.status": _NETWORK_STATUS_TOOL},
     )
     assert (
-        mind_main._catalog_answers_the_request(*arguments, Identifies(), ())
+        operation_contract._catalog_answers_the_request(*arguments, Identifies(), ())
         == "network.status"
     )
-    assert mind_main._catalog_answers_the_request(*arguments, Refuses(), ()) == ""
-    assert mind_main._catalog_answers_the_request(*arguments, object(), ()) == ""
+    assert operation_contract._catalog_answers_the_request(*arguments, Refuses(), ()) == ""
+    assert operation_contract._catalog_answers_the_request(*arguments, object(), ()) == ""
 
 
 @pytest.mark.parametrize(
@@ -8344,7 +8369,7 @@ def test_catalog_recovery_uses_contextual_auto_without_weak_reclassification(
         def operation_is_the_requested_effect(self, *_args):
             pytest.fail("weak identity classifier must not override AUTO")
 
-    assert mind_main._catalog_answers_the_request(
+    assert operation_contract._catalog_answers_the_request(
         "¿y para qué sirve?", "¿y para qué sirve?",
         PlannerCatalog([_NETWORK_STATUS_TOOL]),
         {"network.status": _NETWORK_STATUS_TOOL}, Native(), (), history=history,
@@ -8450,7 +8475,7 @@ def test_missing_level_context_preserves_bound_level_and_unmute_polarity() -> No
         objective, ("audio.volume", "audio.mute"), previous_user_text="Ponle volumen al pc",
     )
     assert intent is not None
-    surfaces = mind_main._restore_evidence_surfaces(objective, intent.evidence)
+    surfaces = argument_grounding._restore_evidence_surfaces(objective, intent.evidence)
     volume = {"type": "object", "properties": {"level": {"type": "integer", "minimum": 0, "maximum": 100}},
               "required": ["level"], "additionalProperties": False}
     mute = {"type": "object", "properties": {"state": {"type": "boolean"}},
@@ -8478,7 +8503,7 @@ def test_unmute_clitic_argument_uses_the_same_polarity_as_its_effect(evidence: s
 
 def test_the_self_close_limit_may_say_how_baxy_closes() -> None:
     # Owner's test 2026-09-21 (turns 210-213) / ctx-dueno-07.
-    from baxy_mind.llm import _unsupported_answer_contract_failure
+    from baxy_mind.unsupported_answers import _unsupported_answer_contract_failure
     reply = "No puedo cerrar BAXY tal como fue pedido. BAXY se cierra con la X de su ventana o con Alt+F4."
     assert _unsupported_answer_contract_failure(reply, "cierra BAXY") == ""
     assert _unsupported_answer_contract_failure(reply, "cierra Edge") == "unsupported_shape"

@@ -11,6 +11,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind import __main__ as sidecar
+from baxy_mind import argument_grounding
+from baxy_mind import skill_registry
 
 
 # Exact wire schemas of ProductCatalog.cs audio.volume/audio.volume.adjust.
@@ -46,7 +48,7 @@ EXPLICIT = [
 
 @pytest.mark.parametrize("operation,text,expected", EXPLICIT)
 def test_explicit_audio_survives_the_public_grounding_boundary(operation, text, expected):
-    assert sidecar._ground_explicit_arguments(operation, text, SCHEMAS[operation]) == expected
+    assert argument_grounding._ground_explicit_arguments(operation, text, SCHEMAS[operation]) == expected
 
 
 @pytest.mark.parametrize("operation,text,expected", EXPLICIT)
@@ -79,8 +81,8 @@ def test_arguments_dispatch_returns_canonical_audio_without_model_extraction(
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", lambda: object())
     # This two-operation catalog has no unrelated product skills to resolve.
     monkeypatch.setattr(
-        sidecar.SkillRegistry, "load_default",
-        lambda operations, encoder=None: sidecar.SkillRegistry([], operations, encoder),
+        skill_registry.SkillRegistry, "load_default",
+        lambda operations, encoder=None: skill_registry.SkillRegistry([], operations, encoder),
     )
     def fail_dispatch_error(*_args):
         pytest.fail(traceback.format_exc())
@@ -131,7 +133,7 @@ def test_arguments_dispatch_returns_canonical_audio_without_model_extraction(
     ("audio.volume.adjust", "Lower the volume by nine points for the call at 5."),
 ])
 def test_public_explicit_grounding_keeps_denial_scope_and_quantity_guards(operation, text):
-    assert sidecar._ground_explicit_arguments(operation, text, SCHEMAS[operation]) is None
+    assert argument_grounding._ground_explicit_arguments(operation, text, SCHEMAS[operation]) is None
 
 
 @pytest.mark.parametrize("operation,text,expected", EXPLICIT[:3])
@@ -139,25 +141,25 @@ def test_canonical_audio_still_requires_the_received_catalog_schema(operation, t
     schema = deepcopy(SCHEMAS[operation])
     quantity = "level" if operation == "audio.volume" else "amount"
     schema["properties"][quantity]["maximum"] = expected[quantity] - 1
-    assert sidecar._ground_explicit_arguments(operation, text, schema) is None
+    assert argument_grounding._ground_explicit_arguments(operation, text, schema) is None
 
 
 def test_audio_direction_still_requires_the_catalog_enum():
     schema = deepcopy(SCHEMAS["audio.volume.adjust"])
     schema["properties"]["direction"]["enum"] = ["up"]
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "audio.volume.adjust", "Baja nueve puntos el volumen.", schema,
     ) is None
 
 
 def test_model_arguments_do_not_acquire_the_closed_parser_authority():
     schema = SCHEMAS["audio.volume"]
-    assert sidecar.normalize_objective_arguments({"level": 27}, schema, "Set the volume.")[0] is None
-    assert sidecar.normalize_objective_arguments({"level": 5}, schema, "Set the volume to eleven percent.")[0] is None
+    assert argument_grounding.normalize_objective_arguments({"level": 27}, schema, "Set the volume.")[0] is None
+    assert argument_grounding.normalize_objective_arguments({"level": 5}, schema, "Set the volume to eleven percent.")[0] is None
 
 
 def test_explicit_audio_cannot_ignore_a_required_catalog_field():
     schema = deepcopy(SCHEMAS["audio.volume"])
     schema["properties"]["deviceId"] = {"type": "string"}
     schema["required"].append("deviceId")
-    assert sidecar._ground_explicit_arguments("audio.volume", "Pon el volumen a la mitad.", schema) is None
+    assert argument_grounding._ground_explicit_arguments("audio.volume", "Pon el volumen a la mitad.", schema) is None

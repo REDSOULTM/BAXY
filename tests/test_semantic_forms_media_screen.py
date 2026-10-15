@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind.effect_intent import (
     EffectIntent,
     resolve_explicit_clarification_intent,
@@ -18,6 +17,8 @@ from baxy_mind.effect_intent import (
 )
 from baxy_mind.semantic.display import screen_light_as_brightness
 from baxy_mind.semantic.grammar import _fold
+from baxy_mind.semantic import reading as semantic_reading
+from baxy_mind import reply_claims
 
 
 @pytest.mark.parametrize("text", ["pausá la serie", "reanudá el episodio", "pause the movie"])
@@ -66,7 +67,7 @@ def _resolve(order: str) -> EffectIntent | None:
     [("me gustaría escuchar cumbia", "pon música de cumbia"), ("quiero escuchar algo tranqui", "pon algo tranqui")],
 )
 def test_listening_to_a_bare_name_or_genre_is_its_music(text, order):
-    found = mind._desired_media_request(text, _resolve)
+    found = semantic_reading._desired_media_request(text, _resolve)
     assert found is not None and found.evidence == (order,)
 
 
@@ -79,6 +80,4 @@ def test_listening_to_a_bare_name_or_genre_is_its_music(text, order):
     ],
 )
 def test_nouns_ending_in_a_stressed_vowel_are_not_a_first_person_claim(reply, claims):
-    from baxy_mind import llm
-
-    assert llm.visible_reply_claims_an_effect(reply) is claims
+    assert reply_claims.visible_reply_claims_an_effect(reply) is claims

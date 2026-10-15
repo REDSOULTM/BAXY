@@ -4,9 +4,9 @@ import copy
 
 import pytest
 
-from baxy_mind.__main__ import _ground_explicit_arguments
+from baxy_mind.argument_grounding import _ground_explicit_arguments
 from baxy_mind.effect_intent import operation_domain_is_grounded, resolve_explicit_effects
-from baxy_mind.llm import _compose_situation_payload
+from baxy_mind.compose_payload import _compose_situation_payload
 
 
 SCHEMA = {

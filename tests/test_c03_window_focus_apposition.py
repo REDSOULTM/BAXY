@@ -3,7 +3,8 @@ import copy
 
 import pytest
 
-from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.payload_fact_checks import _payload_fact_defect
 from test_c03_window_state_facts import Recorder, situation
 
 

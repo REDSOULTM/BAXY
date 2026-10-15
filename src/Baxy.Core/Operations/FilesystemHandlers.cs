@@ -68,12 +68,14 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                 "filesystem.create.directory" => VerifiedMutation(
                     _provider.CreateDirectory(
                         RequiredString(arguments, "relativePath"),
-                        OptionalString(arguments, "folder"))),
+                        OptionalString(arguments, "folder")),
+                    OptionalString(arguments, "folder")),
                 "filesystem.write.text" => VerifiedMutation(_provider.WriteText(
                     RequiredString(arguments, "relativePath"),
                     arguments.GetProperty("text").GetString()!,
                     OptionalString(arguments, "expectedSha256"),
-                    OptionalString(arguments, "folder"))),
+                    OptionalString(arguments, "folder")),
+                    OptionalString(arguments, "folder")),
                 "filesystem.copy" => VerifiedMutation(TransferResult(arguments, move: false)),
                 "filesystem.move" => VerifiedMutation(TransferResult(arguments, move: true)),
                 "filesystem.trash.prepare" => FilesystemResultJson.TrashPreparation(
@@ -101,7 +103,9 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             RequiredString(arguments, "expectedSha256"),
             move);
 
-    private JsonElement VerifiedMutation(FilesystemMutationResult result)
+    // Ronda 22 (r18 t4-c07, t1-c13): the receipt says which known folder it was made in, beside reachedState
+    // (true when the folder or the same content was already there), so the reply can say where without guessing.
+    private JsonElement VerifiedMutation(FilesystemMutationResult result, string? folder = null)
     {
         if (result.Sha256 is not null)
         {
@@ -112,7 +116,7 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             }
         }
 
-        return FilesystemResultJson.Mutation(result);
+        return FilesystemResultJson.Mutation(result, folder);
     }
 
     private JsonElement VerifiedBackup(BackupReceipt result)
@@ -160,7 +164,7 @@ internal static class FilesystemResultJson
         writer.WriteString("sha256", result.Sha256);
     });
 
-    public static JsonElement Mutation(FilesystemMutationResult result) => Write(writer =>
+    public static JsonElement Mutation(FilesystemMutationResult result, string? folder = null) => Write(writer =>
     {
         writer.WriteString("resourceId", result.ResourceId);
         writer.WriteString("name", result.Name);
@@ -168,6 +172,7 @@ internal static class FilesystemResultJson
         writer.WriteNumber("size", result.Size);
         if (result.Sha256 is null) writer.WriteNull("sha256"); else writer.WriteString("sha256", result.Sha256);
         writer.WriteBoolean("reachedState", result.ReachedState);
+        if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
     });
 
     public static JsonElement TrashPreparation(FilesystemTrashPreparation result) => Write(writer =>

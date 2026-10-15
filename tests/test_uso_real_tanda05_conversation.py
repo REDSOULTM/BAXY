@@ -24,20 +24,20 @@ import copy
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
-from baxy_mind.__main__ import _prepare_turn_result
-from baxy_mind.llm import (
-    LlmRuntime,
-    RandomDraw,
+from baxy_mind import literal_answers
+from baxy_mind.turn_decide import _prepare_turn_result
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.semantic.conversation import (
     _conversation_presentation_shape,
-    _literal_recall_reference,
     _recalled_speaker,
     random_draw_request,
 )
+from baxy_mind.literal_answers import _literal_recall_reference
+from baxy_mind.semantic.conversation import RandomDraw
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.patterns import echo_mode_request, known_unsupported_effect_request
 from test_c03_pointless_questions import _tool
+from baxy_mind import turn_decisions
 
 OPERATIONS = ("media.play.query", "media.play.youtube", "web.search", "audio.volume", "system.time")
 
@@ -352,7 +352,7 @@ class _FixedDraw:
 # marker check refused it. The drawn value is the mind's own, not untrusted text: the model sees it and writes it;
 # the check keeps it the only result (the value, numbers of the request and the die's faces, nothing else).
 def test_the_die_is_drawn_by_the_mind_and_the_model_words_it(monkeypatch):
-    monkeypatch.setattr(llm, "_DRAW", _FixedDraw(4))
+    monkeypatch.setattr(literal_answers, "_DRAW", _FixedDraw(4))
     seen: list[dict] = []
     runtime = _marker_runtime("You rolled a 4.", seen)
     reply, calls = runtime.chat("roll that dice, ai", history=[], temperature=0.0,
@@ -363,7 +363,7 @@ def test_the_die_is_drawn_by_the_mind_and_the_model_words_it(monkeypatch):
 
 
 def test_the_faces_of_the_die_may_be_named_with_the_value(monkeypatch):
-    monkeypatch.setattr(llm, "_DRAW", _FixedDraw(5))
+    monkeypatch.setattr(literal_answers, "_DRAW", _FixedDraw(5))
     reply, _ = _marker_runtime("Salió un 5 en el dado de 6 caras.", []).chat(
         "roll that dice, ai", history=[], temperature=0.0, conversation_kind="social", response_language="es",
     )
@@ -371,12 +371,12 @@ def test_the_faces_of_the_die_may_be_named_with_the_value(monkeypatch):
 
 
 def test_several_dice_and_a_coin_are_said_in_the_request_language(monkeypatch):
-    monkeypatch.setattr(llm, "_DRAW", _FixedDraw(3, 6))
+    monkeypatch.setattr(literal_answers, "_DRAW", _FixedDraw(3, 6))
     reply, _ = _marker_runtime("Salieron 3 y 6.", []).chat(
         "tira dos dados", history=[], temperature=0.0, conversation_kind="social", response_language="es",
     )
     assert reply == "Salieron 3 y 6."
-    monkeypatch.setattr(llm, "_DRAW", _FixedDraw())
+    monkeypatch.setattr(literal_answers, "_DRAW", _FixedDraw())
     reply, _ = _marker_runtime("Salió cruz.", []).chat(
         "lanza una moneda", history=[], temperature=0.0, conversation_kind="social", response_language="es",
     )
@@ -385,7 +385,7 @@ def test_several_dice_and_a_coin_are_said_in_the_request_language(monkeypatch):
 
 @pytest.mark.parametrize("draft", ["Salió un 3, no, un 5.", "5", "¿5?", "Salió 7.", "Salió un 5, y luego un 2."])
 def test_a_wording_that_invents_another_number_or_says_only_the_value_is_refused(monkeypatch, draft):
-    monkeypatch.setattr(llm, "_DRAW", _FixedDraw(5))
+    monkeypatch.setattr(literal_answers, "_DRAW", _FixedDraw(5))
     with pytest.raises(ValueError):
         _marker_runtime(draft, []).chat(
             "tira un dado", history=[], temperature=0.0, conversation_kind="social", response_language="es",
@@ -393,7 +393,7 @@ def test_a_wording_that_invents_another_number_or_says_only_the_value_is_refused
 
 
 def test_the_sides_the_person_named_may_be_said_again(monkeypatch):
-    monkeypatch.setattr(llm, "_DRAW", _FixedDraw(17))
+    monkeypatch.setattr(literal_answers, "_DRAW", _FixedDraw(17))
     reply, _ = _marker_runtime("En el dado de 20 caras salió 17.", []).chat(
         "tira un dado de 20 caras", history=[], temperature=0.0, conversation_kind="social",
         response_language="es",
@@ -425,7 +425,7 @@ def test_a_draw_turn_is_conversation_never_a_web_search(text):
     ],
 )
 def test_a_definition_asked_with_a_telling_verb_is_stable_knowledge(text):
-    decision = sidecar._explicit_stable_no_effect_turn_decision(text)
+    decision = turn_decisions._explicit_stable_no_effect_turn_decision(text)
     assert decision is not None and decision["conversation_kind"] == "knowledge"
 
 
@@ -434,7 +434,7 @@ def test_a_definition_asked_with_a_telling_verb_is_stable_knowledge(text):
     ["dime qué es lo que está sonando", "dime qué hora es", "indícame el volumen actual", "dime la fecha"],
 )
 def test_a_live_read_asked_with_a_telling_verb_is_not_a_definition(text):
-    decision = sidecar._explicit_stable_no_effect_turn_decision(text)
+    decision = turn_decisions._explicit_stable_no_effect_turn_decision(text)
     assert decision is None or decision["conversation_kind"] != "knowledge"
 
 
@@ -455,7 +455,7 @@ def test_a_live_read_asked_with_a_telling_verb_is_not_a_definition(text):
     ],
 )
 def test_asking_what_is_new_is_a_greeting(text, language):
-    decision = sidecar._explicit_social_turn_decision(text)
+    decision = turn_decisions._explicit_social_turn_decision(text)
     assert decision is not None
     assert decision["conversation_kind"] == "social"
     assert decision["response_language"] == language
@@ -466,7 +466,7 @@ def test_asking_what_is_new_is_a_greeting(text, language):
     ["¿qué dices?", "¿qué hay de nuevo en Chile hoy?", "what's new in the news today", "¿qué hay en mi escritorio?"],
 )
 def test_other_questions_are_not_a_greeting(text):
-    assert sidecar._explicit_social_turn_decision(text) is None
+    assert turn_decisions._explicit_social_turn_decision(text) is None
 
 
 # Tanda 5b (official window): «No puedo reproducir tus últimas palabras porque no las tengo disponibles… [[R1]]» —

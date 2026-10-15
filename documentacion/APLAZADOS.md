@@ -213,6 +213,8 @@ goal.
 - C03, 2026-10-01, M114 (salida del decisor: la app frente al decisor aislado soup V0a en DEV-D v4e y DEV-F v4d/v4e; pruebas en `tests/test_c03_m114_salida_decisor.py`). Arreglado: el decisor de la app lee el mismo prompt y el mismo esquema que el aislado y su LoRA (las once líneas `memory.*` faltaban; system y schema ahora con los mismos sha256 que `runs/exp1/V0a/meta.json`); un reloj preguntado en futuro («¿en cuántas horas será…?», «what time will it be in…») ya no se cierra como estado hipotético. Quedan: (1) ajustes del servidor distintos del aislado (`-np 3 -c 30720 -ub 256 --cont-batching` frente a `-np 1 -c 12288 -ub 512`; en el modelo híbrido el reprocesado de la cola del prefijo tras restaurar el punto de control es ~180 tokens en la app y ~430 en el aislado): medir en GPU el aislado con los ajustes de la app antes de tocar `-ub` (VRAM medida con 256); (2) D-s088 «create a new list of my pending bills»: el lector de aclaración pregunta las entradas de toda lista nueva y M91 dice que una lista nueva pedida está completa (contradicción, decisión del dueño); (3) F-w24-t4 «y eso cuánto sale por metro?» tras un presupuesto leído: `knowledge.figure_lookup` lo busca en la web aunque es una cuenta con las cifras que BAXY acaba de decir; (4) recetas y cantidades de cocina (D35/M53/M88) frente al oro «talk» de DEV-D/DEV-F: decisión del dueño.
 - C03, 2026-10-02, M122 (navegador de la persona, `documentacion/NAVEGADOR_USUARIO.md`): páginas, YouTube y streaming abren en el navegador predeterminado (Opera GX) y se verifican por UIA (campo de dirección) y SMTC. Medido con Opera GX real el 2026-10-02 (navegación y YouTube verificados, pausa por SMTC). Quedan: (1) repetir `scripts/check_user_browser.ps1` si cambia el navegador predeterminado; (2) Netflix/Disney+ por UIA en Opera con la cuenta del dueño; (3) HBO Max fuera del catálogo de streaming; (4) pestañas del navegador de la persona (atrás, recargar, cerrar) por teclado, hoy `user_browser_tabs_not_automatable`; (5) los instrumentos que dependían de Edge exportan `BAXY_BROWSER=product`.
 
+- Estabilización R, 2026-10-11 (partir `llm.py`): el censo de prosa visible (`scripts/censo_voz_visible.py`) eximía `llm.py` entero «porque es el prompt». Partido, sus módulos se miden y la mayoría no tiene prosa fija; los que heredaron texto del prompt se eximen igual (`MODULOS_DEL_PROMPT`), pero ahí también hay frases visibles fijas que el censo nunca vio: las preguntas de `clarification_style._AMBIGUOUS_ACTION_QUESTIONS` y `_ambiguous_action_question` («¿Qué quieres que abra?»), los finales de recordatorio y de pestañas de `deterministic_finals._told_result_final` («No pude crear el recordatorio.», «Cerré N pestañas; no pude cerrar las demás…») y el «No encontré …» de `consulted_answers._unframed_partial`. Qué podría pasar: el invariante 5 sin medir en esos caminos. Lo dispararía cualquier turno que caiga en ellos. Se ve con `censar()` quitando el módulo de `MODULOS_DEL_PROMPT`.
+
 ## Para la fase de computer use (dueño, 2026-10-06)
 
 «La tarea de computer use debería cubrir todos los casos que limitan a BAXY para hacerlo más universal.» Lo que hoy
@@ -225,3 +227,41 @@ que el catálogo no tenga. Estado y hallazgos: `documentacion/NAVEGADOR_USUARIO.
 - 2026-10-06 (Fase 4): «cerrá todas las pestañas de <navegador>» actúa sobre el navegador **predeterminado**
   (`browser.control` no lleva navegador). Si la persona nombra otro navegador abierto, no se distingue todavía;
   la confirmación previa nombra lo que se va a cerrar. Hacer que `browser.control` acepte un navegador nombrado.
+
+- 2026-10-08 (cu-v3-archivo-empaquetado): la devolución del frente tras abrir una app empaquetada
+  (`ForegroundHandBack.Return` → `WindowsLeaseDesktop.GiveFront`: `SetForegroundWindow` con `AttachThreadInput`)
+  funciona la primera vez en un proceso y Windows la rechaza en una apertura posterior del mismo proceso. Medido con
+  `FileOpenPackagedLiveDesktopCheck`: Bloc de notas solo, frente devuelto; Bloc de notas tras Fotos, el frente se
+  queda en Bloc de notas (el guard devuelve 1 vez sin efecto). Afecta a toda apertura con devolución, no sólo a
+  `file.open`. **Resuelto en cu-v3-foco-segunda:** el proceso no tenía el derecho de primer plano tras gastar el de su
+  arranque; la devolución lo gana con la puja de hotkey marcada (`ForegroundRight`), se relee y se reintenta acotada
+  (CONTRATO_VISTA_ACCION.md §2.2, «Devolución desde el proceso de BAXY»).
+- **cu-v3-errata-elev-vivo (2026-10-09): la oferta del límite de un programa que se eleva solo.** El Administrador de
+  tareas y el Monitor de recursos se elevan solos (medido: IL 0x3000 aun con RunAsInvoker; CONTRATO_VISTA_ACCION.md);
+  la misión para sin pasos con `computer_use_window_elevated` y sin oferta. La oferta correcta para una pregunta de
+  lectura sobre ellos (CPU en uso, memoria disponible) es la lectura propia de BAXY (`system.status`: procesador,
+  memoria), no reabrir; requiere una causa propia para «programa de monitor que se eleva solo» y su payload en el
+  compositor. Aplazado por tiempo; v3-20, v3-21, v3-22 t2, v3-69 t2, v3-70, v3-71 y v3-72 no pueden cumplir su
+  `verify` en este PC (UIPI) y su resultado correcto es el límite.
+- **Estabilización, fase 0 (2026-10-10): «un efecto incierto nunca se afirma» no entra al cierre de v3.** Rama
+  `fable/cu-v3-r31-un-efecto-incierto-nunca-se-afirma` d4aeab7e7 (código d84c0f22d). Arregla un final falso medido
+  en las tandas («Se envió el mensaje a Ron92» cuando `message.draft` falló sin verificar): el suelo ya tenía la frase
+  incierta y sólo se usaba como último recurso. Revisión adversarial: aprobada con cambios, los tres atendidos; falta
+  la re-revisión y la medida en vivo. Saldo `src` +159 −27 contra 298cb591a (creció: hay que reducirlo). Pendientes
+  que confiesa su autor: la App no conoce la respuesta anterior y puede repetir la primera frase; `reminder.create`
+  incierto y el envío confirmado incierto siguen en el redactor. Informe: `%LOCALAPPDATA%\BAXY\cu-v3\r26\r31-h1-efecto-incierto.md`.
+  Se retoma en la fase 2 («ningún final afirma algo no verificado»), no como regla nueva sino desde el suelo.
+- **Estabilización, fase 0 (2026-10-10): «mándale es enviar» no entra.** Rama `fable/cu-v3-r31-mandale-es-enviar`
+  6aa3cd3c9, BLOQUEADA por su revisión: convierte en envío borradores que el decisor leyó bien («escríbele a Ron92
+  que llego tarde pero déjalo en borrador», «write a draft to Ron92 saying…») y sólo lee el turno actual; en bypass
+  enviaría sin preguntar. Causa medida del síntoma: el decisor empata («Escríbele» 0,37 / «Manda» 0,35) y lo desempata
+  el estado de caché de `llama-server` que deja la conversación anterior (borrador en 9 de 11 estados; replay exacto
+  en `D:\BAXYWork\patches\r31m1_*` de redpc). Informes: `cu-v3\r26\r31-m1-mandale-borrador.md` y
+  `cu-v3\r26\revision-m1-mandale.md`. Se retoma en la fase 2 («la decisión de un turno no depende de la caché»).
+- **Estabilización, fase 0 (2026-10-10): «libro en blanco» no entra al cierre de v3.** Rama
+  `fable/cu-v3-r31-la-mision-ata-la-ventana-de-su-aplicacion` addde7133 (aprobada en re-revisión; +26 −5 en
+  `ComputerUseMissionWindow.cs`). Condición del prompt: entra sólo si u5 y n6 en vivo no pierden nada. Medido sobre
+  51cf45154 + la rama, con el arnés que ya cierra el Office del lote (`cu-v3\banco_libro_u5n6_c.txt`): u5 3/3, **n6
+  1/3** (n6#2 con estado base limpio: «no vi en la pantalla un control con el que seguir» tras 3 pasos; n6#3 sobre el
+  Word que dejó n6#2). Las dos corridas anteriores no valen (estado sucio: el Excel/Word del caso anterior seguía
+  abierto). Se retoma sólo si la fase 1 mide n6 estable sin la rama y el caso que arregla lo pide.

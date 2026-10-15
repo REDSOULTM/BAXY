@@ -15,14 +15,18 @@ internal sealed class PresenceStatusStore
     };
 
     private readonly string _statusPath;
-    private readonly string _samplesPath;
+    private readonly BoundedJsonlFile _samples;
 
-    internal PresenceStatusStore(string directory)
+    internal PresenceStatusStore(
+        string directory,
+        long maximumSampleBytes = BoundedJsonlFile.DefaultMaximumBytes)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(directory);
         Directory.CreateDirectory(directory);
         _statusPath = Path.Combine(directory, "status.v1.json");
-        _samplesPath = Path.Combine(directory, "idle-samples.v1.jsonl");
+        _samples = new BoundedJsonlFile(
+            Path.Combine(directory, "idle-samples.v1.jsonl"),
+            maximumSampleBytes);
     }
 
     internal static PresenceStatusStore CreateDefault() =>
@@ -30,7 +34,9 @@ internal sealed class PresenceStatusStore
 
     internal string StatusPath => _statusPath;
 
-    internal string SamplesPath => _samplesPath;
+    internal string SamplesPath => _samples.FilePath;
+
+    internal string SamplesArchivePath => _samples.ArchivePath;
 
     internal void WriteStatus(PresenceStatusDocument document)
     {
@@ -67,6 +73,6 @@ internal sealed class PresenceStatusStore
             ["processes"] = snapshot.Processes,
         };
         string line = JsonSerializer.Serialize(payload, JsonOptions);
-        File.AppendAllText(_samplesPath, line + Environment.NewLine);
+        _samples.AppendLine(line);
     }
 }

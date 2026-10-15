@@ -85,6 +85,7 @@ export type ServerEvent =
       type: 'surfaces';
       sessions: number;
       memory: number;
+      memory_revision?: number;
       triggers: number;
       tools: number;
     }

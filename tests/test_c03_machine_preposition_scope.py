@@ -2,7 +2,7 @@
 import pytest
 
 from baxy_mind import effect_intent
-from baxy_mind.__main__ import _explicit_system_status_scope
+from baxy_mind.semantic.arguments import _explicit_system_status_scope
 
 
 @pytest.mark.parametrize("target", [

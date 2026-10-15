@@ -1,0 +1,8177 @@
+{
+ "_nota": "Revisión 2 de ronda 24: vistas reales del journal de cu-universal-perfil (missions.jsonl, input.visible.controls), sin recortar. Se cambiaron por marcadores la cuenta de la persona (correo y nombre), el correo enfocado, su institución y los contadores del buzón.",
+ "obs_ventana_principal": {
+  "window": {
+   "title": "OBS 32.0.2 - Perfil: Sin Título - Escenas: Sin Título",
+   "process": "obs64",
+   "processId": 50220,
+   "hwnd": 23728086,
+   "requested": true,
+   "root": 23728086,
+   "others": [],
+   "foreground": false,
+   "rect": {
+    "x": 8,
+    "y": 0,
+    "w": 1198,
+    "h": 1012
+   },
+   "focused": {
+    "kind": "Button",
+    "name": "Alejar",
+    "nameSource": "",
+    "value": "",
+    "i": 4
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.23728086.101652883.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 9,
+     "y": 9,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "4.23728086.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1027,
+     "y": 1,
+     "w": 60,
+     "h": 37
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Maximizar",
+    "id": "4.23728086.0.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1087,
+     "y": 1,
+     "w": 59,
+     "h": 37
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.23728086.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1146,
+     "y": 1,
+     "w": 60,
+     "h": 37
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 4,
+    "kind": "Button",
+    "name": "Alejar",
+    "id": "42.16847862.4.-2147483599",
+    "state": "focused",
+    "value": "",
+    "rect": {
+     "x": 13,
+     "y": 567,
+     "w": 25,
+     "h": 20
+    },
+    "zone": "L",
+    "color": "blue"
+   },
+   {
+    "i": 5,
+    "kind": "Button",
+    "name": "Acercar",
+    "id": "42.16847862.4.-2147483597",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 93,
+     "y": 567,
+     "w": 25,
+     "h": 20
+    },
+    "zone": "L",
+    "color": "blue"
+   },
+   {
+    "i": 6,
+    "kind": "ComboBox",
+    "name": "Ninguna fuente seleccionada",
+    "nameSource": "nearText",
+    "id": "42.16847862.4.-2147483646",
+    "state": "collapsed",
+    "value": "Ajustar a la ventana",
+    "shortcut": "Down",
+    "rect": {
+     "x": 118,
+     "y": 567,
+     "w": 182,
+     "h": 20
+    },
+    "zone": "L",
+    "color": "blue"
+   },
+   {
+    "i": 7,
+    "kind": "MenuItem",
+    "name": "Archivo (F)",
+    "id": "42.1448134.4.-2147483343",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+F",
+    "rect": {
+     "x": 10,
+     "y": 37,
+     "w": 96,
+     "h": 32
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 8,
+    "kind": "MenuItem",
+    "name": "Editar",
+    "id": "42.1448134.4.-2147483341",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+E",
+    "rect": {
+     "x": 107,
+     "y": 37,
+     "w": 62,
+     "h": 32
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 9,
+    "kind": "MenuItem",
+    "name": "Vista",
+    "id": "42.1448134.4.-2147483339",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+V",
+    "rect": {
+     "x": 171,
+     "y": 37,
+     "w": 53,
+     "h": 32
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 10,
+    "kind": "MenuItem",
+    "name": "Paneles (D)",
+    "id": "42.1448134.4.-2147483337",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+D",
+    "rect": {
+     "x": 226,
+     "y": 37,
+     "w": 102,
+     "h": 32
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 11,
+    "kind": "MenuItem",
+    "name": "Perfil",
+    "id": "42.1448134.4.-2147483335",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+P",
+    "rect": {
+     "x": 330,
+     "y": 37,
+     "w": 57,
+     "h": 32
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 12,
+    "kind": "MenuItem",
+    "name": "Colección de Escenas",
+    "id": "42.1448134.4.-2147483333",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+s",
+    "rect": {
+     "x": 388,
+     "y": 37,
+     "w": 178,
+     "h": 32
+    },
+    "zone": "T",
+    "color": "blue"
+   },
+   {
+    "i": 13,
+    "kind": "MenuItem",
+    "name": "Herramientas",
+    "id": "42.1448134.4.-2147483331",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+t",
+    "rect": {
+     "x": 568,
+     "y": 37,
+     "w": 121,
+     "h": 32
+    },
+    "zone": "T",
+    "color": "blue"
+   },
+   {
+    "i": 14,
+    "kind": "MenuItem",
+    "name": "Ayuda (H)",
+    "id": "42.1448134.4.-2147483329",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt+H",
+    "rect": {
+     "x": 691,
+     "y": 37,
+     "w": 91,
+     "h": 32
+    },
+    "zone": "T",
+    "color": "blue"
+   },
+   {
+    "i": 15,
+    "kind": "ListItem",
+    "name": "Escena",
+    "id": "42.4723764.4.-2147483325",
+    "state": "selected focused",
+    "value": "",
+    "rect": {
+     "x": 12,
+     "y": 687,
+     "w": 182,
+     "h": 37
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 16,
+    "kind": "Button",
+    "name": "Agregar",
+    "id": "42.4723764.4.-2147483614",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 12,
+     "y": 930,
+     "w": 32,
+     "h": 33
+    },
+    "zone": "BL",
+    "color": "blue",
+    "repeated": 1
+   },
+   {
+    "i": 17,
+    "kind": "Button",
+    "name": "Eliminar",
+    "id": "42.4723764.4.-2147483612",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 47,
+     "y": 930,
+     "w": 32,
+     "h": 33
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 18,
+    "kind": "Button",
+    "name": "Abrir filtros de la escena",
+    "id": "42.4723764.4.-2147483603",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 90,
+     "y": 930,
+     "w": 32,
+     "h": 33
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 19,
+    "kind": "Button",
+    "name": "Mover arriba",
+    "id": "42.4723764.4.-2147483609",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 132,
+     "y": 930,
+     "w": 32,
+     "h": 33
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 20,
+    "kind": "Button",
+    "name": "Float",
+    "id": "42.4723764.4.-2147483636",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 171,
+     "y": 656,
+     "w": 26,
+     "h": 25
+    },
+    "zone": "L",
+    "color": "blue",
+    "repeated": 4
+   },
+   {
+    "i": 21,
+    "kind": "ListItem",
+    "name": "Captura de pantalla",
+    "id": "42.9638356.4.-2147483324",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 207,
+     "y": 687,
+     "w": 182,
+     "h": 37
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 22,
+    "kind": "Button",
+    "name": "Propiedades para 'Audio del escritorio'",
+    "id": "42.3020964.4.-2147483363",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 408,
+     "y": 715,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 23,
+    "kind": "CheckBox",
+    "name": "Silenciar 'Audio del escritorio'",
+    "id": "42.3020964.4.-2147483362",
+    "state": "on",
+    "value": "",
+    "rect": {
+     "x": 408,
+     "y": 747,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 24,
+    "kind": "Slider",
+    "name": "Deslizador de volumen para 'Audio del escritorio': (actualmente silenciado)",
+    "id": "42.3020964.4.-2147483360",
+    "state": "",
+    "value": "0.0 dB",
+    "rect": {
+     "x": 440,
+     "y": 755,
+     "w": 226,
+     "h": 25
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 25,
+    "kind": "Button",
+    "name": "Propiedades para 'Mic/Aux'",
+    "id": "42.3020964.4.-2147483357",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 408,
+     "y": 813,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 26,
+    "kind": "CheckBox",
+    "name": "Silenciar 'Mic/Aux'",
+    "id": "42.3020964.4.-2147483356",
+    "state": "on",
+    "value": "",
+    "rect": {
+     "x": 408,
+     "y": 846,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 27,
+    "kind": "Slider",
+    "name": "Deslizador de volumen para 'Mic/Aux': (actualmente silenciado)",
+    "id": "42.3020964.4.-2147483354",
+    "state": "",
+    "value": "0.0 dB",
+    "rect": {
+     "x": 440,
+     "y": 853,
+     "w": 226,
+     "h": 25
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 28,
+    "kind": "Button",
+    "name": "AdvAudioProps",
+    "id": "42.3020964.4.-2147483605",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 402,
+     "y": 930,
+     "w": 32,
+     "h": 33
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 29,
+    "kind": "Button",
+    "name": "Menú del mezclador de audio",
+    "id": "42.3020964.4.-2147483604",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 445,
+     "y": 930,
+     "w": 32,
+     "h": 33
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 30,
+    "kind": "ComboBox",
+    "name": "Transición",
+    "id": "42.21107644.4.-2147483588",
+    "state": "collapsed",
+    "value": "Desvanecimiento",
+    "shortcut": "Down",
+    "rect": {
+     "x": 688,
+     "y": 690,
+     "w": 238,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 31,
+    "kind": "Button",
+    "name": "Añadir transición configurable",
+    "id": "42.21107644.4.-2147483586",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 820,
+     "y": 780,
+     "w": 32,
+     "h": 35
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 32,
+    "kind": "Button",
+    "name": "Iniciar Transmisión",
+    "id": "42.2754386.4.-2147483583",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 945,
+     "y": 690,
+     "w": 252,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 33,
+    "kind": "Button",
+    "name": "Iniciar Grabación",
+    "id": "42.2754386.4.-2147483581",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 945,
+     "y": 735,
+     "w": 252,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 34,
+    "kind": "Button",
+    "name": "Iniciar Cámara Virtual",
+    "id": "42.2754386.4.-2147483577",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 945,
+     "y": 780,
+     "w": 207,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 35,
+    "kind": "Button",
+    "name": "Configurar cámara virtual",
+    "id": "42.2754386.4.-2147483576",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 1155,
+     "y": 780,
+     "w": 42,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 36,
+    "kind": "Button",
+    "name": "Modo Estudio",
+    "id": "42.2754386.4.-2147483575",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 945,
+     "y": 825,
+     "w": 252,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 37,
+    "kind": "Button",
+    "name": "Ajustes",
+    "id": "42.2754386.4.-2147483574",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 945,
+     "y": 870,
+     "w": 252,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 38,
+    "kind": "TitleBar",
+    "name": "OBS 32.0.2 - Perfil: Sin Título - Escenas: Sin Título",
+    "id": "4.23728086.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 9,
+     "y": 9,
+     "w": 1196,
+     "h": 29
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 39,
+    "kind": "MenuBar",
+    "name": "Barra de menús del sistema",
+    "id": "1.23728086.101652883",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 9,
+     "y": 9,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 40,
+    "kind": "Text",
+    "name": "44%",
+    "id": "42.16847862.4.-2147483598",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 38,
+     "y": 568,
+     "w": 55,
+     "h": 17
+    },
+    "zone": "L",
+    "color": "blue"
+   },
+   {
+    "i": 41,
+    "kind": "Text",
+    "name": "Ninguna fuente seleccionada",
+    "id": "42.9114046.4.-2147483596",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 21,
+     "y": 606,
+     "w": 200,
+     "h": 27
+    },
+    "zone": "L",
+    "color": "blue"
+   },
+   {
+    "i": 42,
+    "kind": "Text",
+    "name": "CPU: 1.4%",
+    "id": "42.8062570.4.-2147483638",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 938,
+     "y": 980,
+     "w": 77,
+     "h": 22
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 43,
+    "kind": "Text",
+    "name": "30.00 / 30.00 FPS",
+    "id": "42.8062570.4.-2147483637",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1035,
+     "y": 980,
+     "w": 128,
+     "h": 22
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 44,
+    "kind": "Window",
+    "name": "Escenas",
+    "id": "42.4723764",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 8,
+     "y": 652,
+     "w": 190,
+     "h": 315
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 45,
+    "kind": "Window",
+    "name": "Fuentes",
+    "id": "42.9638356",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 203,
+     "y": 652,
+     "w": 190,
+     "h": 315
+    },
+    "zone": "BL",
+    "color": "blue"
+   },
+   {
+    "i": 46,
+    "kind": "Window",
+    "name": "Mezclador de audio",
+    "id": "42.3020964",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 398,
+     "y": 652,
+     "w": 277,
+     "h": 315
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 47,
+    "kind": "Text",
+    "name": "Audio del escritorio",
+    "id": "42.3020964.4.-2147483352",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 408,
+     "y": 685,
+     "w": 132,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 48,
+    "kind": "Text",
+    "name": "0.0 dB",
+    "id": "42.3020964.4.-2147483359",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 617,
+     "y": 685,
+     "w": 48,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue",
+    "repeated": 1
+   },
+   {
+    "i": 49,
+    "kind": "Text",
+    "name": "Mic/Aux",
+    "id": "42.3020964.4.-2147483349",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 408,
+     "y": 783,
+     "w": 60,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 50,
+    "kind": "Window",
+    "name": "Transiciones de escena",
+    "id": "42.21107644",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 682,
+     "y": 652,
+     "w": 251,
+     "h": 315
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 51,
+    "kind": "Text",
+    "name": "Duración",
+    "id": "42.21107644.4.-2147483587",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 688,
+     "y": 735,
+     "w": 68,
+     "h": 45
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 52,
+    "kind": "Spinner",
+    "name": "Duración",
+    "id": "42.21107644.4.-2147483618",
+    "state": "",
+    "value": "300 ms",
+    "rect": {
+     "x": 762,
+     "y": 735,
+     "w": 165,
+     "h": 45
+    },
+    "zone": "BR",
+    "color": "blue"
+   },
+   {
+    "i": 53,
+    "kind": "Window",
+    "name": "Controles",
+    "id": "42.2754386",
+    "state": "",
+    "value": "",
+    "rect": {
+     "x": 937,
+     "y": 652,
+     "w": 267,
+     "h": 315
+    },
+    "zone": "BR",
+    "color": "blue"
+   }
+  ]
+ },
+ "outlook_bandeja_con_carpetas": {
+  "window": {
+   "title": "Bandeja de entrada - persona@ejemplo.edu - Outlook",
+   "process": "OUTLOOK",
+   "processId": 38732,
+   "hwnd": 12059844,
+   "requested": true,
+   "root": 12059844,
+   "born": true,
+   "foreground": false,
+   "rect": {
+    "x": 0,
+    "y": 0,
+    "w": 1920,
+    "h": 1020
+   },
+   "coveredBy": {
+    "title": "baxy-prueba-v3 - Explorador de archivos: explorer.exe - Error del sistema",
+    "process": "csrss"
+   },
+   "focused": {
+    "kind": "DataItem",
+    "name": "De remitente@ejemplo.com, Asunto (cambiado)",
+    "nameSource": "",
+    "value": "Mensaje Sin leer",
+    "i": null
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "Hyperlink",
+    "name": "Más información",
+    "id": "42.17238472.4.948674048.579",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1477,
+     "y": 246,
+     "w": 116,
+     "h": 22
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Probarla",
+    "id": "42.17238472.4.948670208.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1626,
+     "y": 288,
+     "w": 79,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Ahora no",
+    "id": "42.17238472.4.948673792.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1719,
+     "y": 288,
+     "w": 84,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Minimizar el panel de carpetas",
+    "id": "42.27003636",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 336,
+     "y": 173,
+     "w": 23,
+     "h": 23
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 4,
+    "kind": "ListItem",
+    "name": "Correo",
+    "id": "42.4392898.4.683660400.579",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 60,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 5,
+    "kind": "ListItem",
+    "name": "Calendario",
+    "id": "42.4392898.4.683659440.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 120,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 6,
+    "kind": "ListItem",
+    "name": "Copilot",
+    "id": "42.4392898.4.980851216.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 180,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 7,
+    "kind": "ListItem",
+    "name": "Personas",
+    "id": "42.4392898.4.980849536.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 240,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 8,
+    "kind": "ListItem",
+    "name": "To Do",
+    "id": "42.4392898.4.980847616.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 300,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 9,
+    "kind": "ListItem",
+    "name": "Org Explorer",
+    "id": "42.4392898.4.980850736.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 360,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 10,
+    "kind": "ListItem",
+    "name": "Más aplicaciones",
+    "id": "42.4392898.4.980852656.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 0,
+     "y": 420,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 11,
+    "kind": "Button",
+    "name": "Prioritarios",
+    "id": "42.6755650.4.859519072.579",
+    "state": "on",
+    "value": null,
+    "rect": {
+     "x": 390,
+     "y": 193,
+     "w": 107,
+     "h": 34
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 12,
+    "kind": "Button",
+    "name": "Otros",
+    "id": "42.6755650.4.859523776.579",
+    "state": "off",
+    "value": null,
+    "rect": {
+     "x": 497,
+     "y": 193,
+     "w": 68,
+     "h": 34
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 13,
+    "kind": "Button",
+    "name": "Ordenar, organizar o filtrar mensajes",
+    "id": "42.6755650.4.859521536.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 580,
+     "y": 196,
+     "w": 101,
+     "h": 25
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 14,
+    "kind": "Button",
+    "name": "Ordenar mensajes",
+    "id": "42.6755650.4.859517280.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 686,
+     "y": 196,
+     "w": 25,
+     "h": 25
+    },
+    "zone": "T",
+    "color": ""
+   },
+   {
+    "i": 15,
+    "kind": "TreeItem",
+    "name": "Favoritos",
+    "id": "42.3870048.4.859234800.579",
+    "state": "expanded",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 195,
+     "w": 283,
+     "h": 159
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 16,
+    "kind": "TreeItem",
+    "name": "Bandeja de entrada: 120 mensajes sin leer",
+    "id": "42.3870048.4.514216848.579",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 229,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "TL",
+    "color": "",
+    "repeated": 1
+   },
+   {
+    "i": 17,
+    "kind": "TreeItem",
+    "name": "Elementos enviados",
+    "id": "42.3870048.4.514219344.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 259,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "TL",
+    "color": "",
+    "repeated": 1
+   },
+   {
+    "i": 18,
+    "kind": "TreeItem",
+    "name": "Borradores: 10 elementos",
+    "id": "42.3870048.4.514218096.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 289,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "TL",
+    "color": "",
+    "repeated": 1
+   },
+   {
+    "i": 19,
+    "kind": "TreeItem",
+    "name": "Elementos eliminados: 5 mensajes sin leer",
+    "id": "42.3870048.4.466305936.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 319,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "TL",
+    "color": "",
+    "repeated": 1
+   },
+   {
+    "i": 20,
+    "kind": "TreeItem",
+    "name": "persona@ejemplo.edu",
+    "id": "42.3870048.4.514210736.579",
+    "state": "expanded",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 363,
+     "w": 283,
+     "h": 440
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 21,
+    "kind": "TreeItem",
+    "name": "Archivo: 1 mensaje sin leer",
+    "id": "42.3870048.4.864503984.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 523,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 22,
+    "kind": "TreeItem",
+    "name": "Bandeja de salida",
+    "id": "42.3870048.4.864498160.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 553,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 23,
+    "kind": "TreeItem",
+    "name": "Correo no deseado: 1000 elementos",
+    "id": "42.3870048.4.864501488.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 583,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 24,
+    "kind": "TreeItem",
+    "name": "Fuentes RSS",
+    "id": "42.3870048.4.864500656.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 613,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 25,
+    "kind": "TreeItem",
+    "name": "Historial de conversaciones",
+    "id": "42.3870048.4.864498576.579",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 643,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "L",
+    "color": ""
+   },
+   {
+    "i": 26,
+    "kind": "TreeItem",
+    "name": "Carpetas de búsqueda",
+    "id": "42.3870048.4.864501072.579",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 673,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "BL",
+    "color": ""
+   },
+   {
+    "i": 27,
+    "kind": "TreeItem",
+    "name": "Grupos",
+    "id": "42.3870048.4.864505232.579",
+    "state": "expanded",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 703,
+     "w": 283,
+     "h": 85
+    },
+    "zone": "BL",
+    "color": ""
+   },
+   {
+    "i": 28,
+    "kind": "TreeItem",
+    "name": "Aún no se ha unido a ningún grupo",
+    "id": "42.3870048.4.866509856.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 76,
+     "y": 743,
+     "w": 283,
+     "h": 30
+    },
+    "zone": "BL",
+    "color": ""
+   },
+   {
+    "i": 29,
+    "kind": "Button",
+    "name": "Haga clic aquí para mostrar siempre la vista previa del mensaje",
+    "id": "42.17434534",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1112,
+     "y": 600,
+     "w": 432,
+     "h": 30
+    },
+    "zone": "R",
+    "color": ""
+   },
+   {
+    "i": 30,
+    "kind": "Button",
+    "name": "Línea arriba",
+    "id": "42.11079582.4.870277536.579",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 720,
+     "y": 227,
+     "w": 21,
+     "h": 21
+    },
+    "zone": "T",
+    "color": ""
+   },
+   {
+    "i": 31,
+    "kind": "Button",
+    "name": "Av Pág",
+    "id": "42.11079582.4.870278256.579",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 720,
+     "y": 269,
+     "w": 21,
+     "h": 703
+    },
+    "zone": "C",
+    "color": ""
+   },
+   {
+    "i": 32,
+    "kind": "Button",
+    "name": "Línea abajo",
+    "id": "42.11079582.4.870279936.579",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 720,
+     "y": 972,
+     "w": 21,
+     "h": 21
+    },
+    "zone": "B",
+    "color": ""
+   },
+   {
+    "i": 33,
+    "kind": "Button",
+    "name": "Enviar y recibir todas las carpetas",
+    "id": "42.28903852.4.980835856.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, 1",
+    "rect": {
+     "x": 53,
+     "y": 12,
+     "w": 34,
+     "h": 35
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 34,
+    "kind": "MenuItem",
+    "name": "Personalizar barra de herramientas de acceso rápido",
+    "id": "42.28903852.4.940524448.579",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 123,
+     "y": 11,
+     "w": 34,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 35,
+    "kind": "MenuItem",
+    "name": "Escriba para buscar y use las teclas de dirección arriba y abajo para navegar.",
+    "id": "42.28903852.4.859365104.579",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 367,
+     "y": 9,
+     "w": 381,
+     "h": 42
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 36,
+    "kind": "Edit",
+    "name": "Búsqueda",
+    "id": "42.39848526",
+    "state": "",
+    "value": "Buscar",
+    "shortcut": "Alt, Y",
+    "rect": {
+     "x": 423,
+     "y": 18,
+     "w": 324,
+     "h": 27
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 37,
+    "kind": "MenuItem",
+    "name": "PERSONA EJEMPLO",
+    "id": "42.28903852.4.870607904.579",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, Z P",
+    "rect": {
+     "x": 1619,
+     "y": 0,
+     "w": 63,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 38,
+    "kind": "Button",
+    "name": "Notificaciones",
+    "id": "42.28903852.4.940334720.579",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, I",
+    "rect": {
+     "x": 1682,
+     "y": 0,
+     "w": 58,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 39,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "42.28903852.4.856325280.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1740,
+     "y": 0,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 40,
+    "kind": "Button",
+    "name": "Restaurar",
+    "id": "42.28903852.4.856322368.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1800,
+     "y": 0,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 41,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "42.28903852.4.856323488.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1860,
+     "y": 0,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 42,
+    "kind": "Button",
+    "name": "Pestaña Archivo",
+    "id": "42.28903852.4.865998848.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, A",
+    "rect": {
+     "x": 65,
+     "y": 60,
+     "w": 80,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 43,
+    "kind": "TabItem",
+    "name": "Inicio",
+    "id": "42.28903852.4.865996544.579",
+    "state": "selected",
+    "value": null,
+    "shortcut": "Alt, O",
+    "rect": {
+     "x": 145,
+     "y": 60,
+     "w": 64,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 44,
+    "kind": "TabItem",
+    "name": "Enviar y recibir",
+    "id": "42.28903852.4.866016256.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, V",
+    "rect": {
+     "x": 210,
+     "y": 60,
+     "w": 136,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 45,
+    "kind": "TabItem",
+    "name": "Vista",
+    "id": "42.28903852.4.866012672.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, W",
+    "rect": {
+     "x": 347,
+     "y": 60,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 46,
+    "kind": "TabItem",
+    "name": "Ayuda",
+    "id": "42.28903852.4.866015744.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, N",
+    "rect": {
+     "x": 408,
+     "y": 60,
+     "w": 72,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 47,
+    "kind": "Button",
+    "name": "Pruebe el nuevo Outlook",
+    "id": "42.28903852.4.940524992.579",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, P",
+    "rect": {
+     "x": 1511,
+     "y": 61,
+     "w": 268,
+     "h": 36
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 48,
+    "kind": "SplitButton",
+    "name": "Copilot",
+    "id": "42.28903852.4.940524720.579",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt, C P",
+    "rect": {
+     "x": 1785,
+     "y": 64,
+     "w": 120,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": ""
+   },
+   {
+    "i": 49,
+    "kind": "Button",
+    "name": "Copilot",
+    "id": "42.28903852.4.871032704.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, C P, C",
+    "rect": {
+     "x": 1785,
+     "y": 64,
+     "w": 89,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "",
+    "repeated": 1
+   },
+   {
+    "i": 50,
+    "kind": "SplitButton",
+    "name": "Nuevo correo electrónico",
+    "id": "42.28903852.4.940528256.579",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt, O, N 1",
+    "rect": {
+     "x": 80,
+     "y": 103,
+     "w": 269,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 51,
+    "kind": "Button",
+    "name": "Nuevo correo electrónico",
+    "id": "42.28903852.4.940336880.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 80,
+     "y": 103,
+     "w": 245,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 52,
+    "kind": "MenuItem",
+    "name": "Más opciones",
+    "id": "42.28903852.4.940329440.579",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, O, N 1",
+    "rect": {
+     "x": 325,
+     "y": 103,
+     "w": 24,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": "",
+    "repeated": 2
+   },
+   {
+    "i": 53,
+    "kind": "SplitButton",
+    "name": "Eliminar",
+    "id": "42.28903852.4.940526896.579",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt, O, D 1",
+    "rect": {
+     "x": 359,
+     "y": 103,
+     "w": 69,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 54,
+    "kind": "Button",
+    "name": "Eliminar",
+    "id": "42.28903852.4.940333520.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 359,
+     "y": 103,
+     "w": 45,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 55,
+    "kind": "Button",
+    "name": "Archivo...",
+    "id": "42.28903852.4.940335920.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, O, J",
+    "rect": {
+     "x": 428,
+     "y": 103,
+     "w": 45,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 56,
+    "kind": "MenuItem",
+    "name": "Mover",
+    "id": "42.28903852.4.940529888.579",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, O, O O",
+    "rect": {
+     "x": 473,
+     "y": 103,
+     "w": 62,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 57,
+    "kind": "SplitButton",
+    "name": "Informe",
+    "id": "42.28903852.4.940525808.579",
+    "state": "collapsed",
+    "value": "",
+    "shortcut": "Alt, O, I 1",
+    "rect": {
+     "x": 545,
+     "y": 103,
+     "w": 69,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 58,
+    "kind": "Button",
+    "name": "Informe",
+    "id": "42.28903852.4.940338560.579",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 545,
+     "y": 103,
+     "w": 45,
+     "h": 51
+    },
+    "zone": "TL",
+    "color": ""
+   },
+   {
+    "i": 59,
+    "kind": "Button",
+    "name": "Responder",
+    "id": "42.28903852.4.940338320.579",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, O, D E",
+    "rect": {
+     "x": 624,
+     "y": 103,
+     "w": 45,
+     "h": 51
+    },
+    "zone": "T",
+    "color": ""
+   }
+  ]
+ },
+ "visor_eventos_inicio": {
+  "window": {
+   "title": "Visor de eventos",
+   "process": "mmc",
+   "processId": 26560,
+   "hwnd": 21496986,
+   "requested": true,
+   "root": 21496986,
+   "others": [],
+   "foreground": true,
+   "rect": {
+    "x": 483,
+    "y": 323,
+    "w": 983,
+    "h": 689
+   },
+   "focused": {
+    "kind": "Pane",
+    "name": "Console Embedded Window",
+    "nameSource": "",
+    "value": null,
+    "i": 34
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "Button",
+    "name": "Retroceder poco",
+    "id": "42.6035654.3.-2.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1070,
+     "y": 535,
+     "w": 26,
+     "h": 17
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Retroceder mucho",
+    "id": "42.6035654.3.-2.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1070,
+     "y": 552,
+     "w": 26,
+     "h": 4
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Avanzar mucho",
+    "id": "42.6035654.3.-2.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1070,
+     "y": 566,
+     "w": 26,
+     "h": 33
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Avanzar poco",
+    "id": "42.6035654.3.-2.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1070,
+     "y": 599,
+     "w": 26,
+     "h": 17
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 4,
+    "kind": "Button",
+    "name": "Introducción",
+    "id": "42.26348470",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1066,
+     "y": 506,
+     "w": 24,
+     "h": 28
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 5,
+    "kind": "Button",
+    "name": "Resumen de eventos administrativos",
+    "id": "42.20316796",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1066,
+     "y": 630,
+     "w": 24,
+     "h": 28
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 6,
+    "kind": "Button",
+    "name": "Nodos vistos recientemente",
+    "id": "42.15208804",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1066,
+     "y": 741,
+     "w": 24,
+     "h": 28
+    },
+    "zone": "C",
+    "color": "gray"
+   },
+   {
+    "i": 7,
+    "kind": "Button",
+    "name": "Resumen de registro",
+    "id": "42.18351310",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1066,
+     "y": 853,
+     "w": 24,
+     "h": 28
+    },
+    "zone": "B",
+    "color": "gray"
+   },
+   {
+    "i": 8,
+    "kind": "Button",
+    "name": "Visor de eventos (local)",
+    "id": "26560.499996192.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 456,
+     "w": 350,
+     "h": 31
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 9,
+    "kind": "Button",
+    "name": "Abrir registro guardado...",
+    "id": "26560.500871200.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 488,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 10,
+    "kind": "Button",
+    "name": "Crear vista personalizada...",
+    "id": "26560.500871680.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 518,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 11,
+    "kind": "Button",
+    "name": "Importar vista personalizada...",
+    "id": "26560.500534800.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 548,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 12,
+    "kind": "Button",
+    "name": "Conectarse a otro equipo...",
+    "id": "26560.500535760.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 579,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 13,
+    "kind": "Button",
+    "name": "Actualizar",
+    "id": "26560.500536960.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 641,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 14,
+    "kind": "Button",
+    "name": "Ayuda",
+    "id": "26560.500533360.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 673,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 15,
+    "kind": "TreeItem",
+    "name": "Visor de eventos (local)",
+    "id": "1.5379670.0.500181520",
+    "state": "selected expanded focused",
+    "value": "Visor de eventos (local)",
+    "rect": {
+     "x": 508,
+     "y": 429,
+     "w": 123,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 16,
+    "kind": "TreeItem",
+    "name": "Vistas personalizadas",
+    "id": "1.5379670.0.500299488",
+    "state": "collapsed",
+    "value": "Vistas personalizadas",
+    "rect": {
+     "x": 527,
+     "y": 447,
+     "w": 114,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 17,
+    "kind": "TreeItem",
+    "name": "Registros de Windows",
+    "id": "1.5379670.0.500297696",
+    "state": "collapsed",
+    "value": "Registros de Windows",
+    "rect": {
+     "x": 527,
+     "y": 465,
+     "w": 119,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 18,
+    "kind": "TreeItem",
+    "name": "Registros de aplicaciones y servicios",
+    "id": "1.5379670.0.500297920",
+    "state": "collapsed",
+    "value": "Registros de aplicaciones y servicios",
+    "rect": {
+     "x": 527,
+     "y": 483,
+     "w": 190,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 19,
+    "kind": "TreeItem",
+    "name": "Suscripciones",
+    "id": "1.5379670.0.500298032",
+    "state": "",
+    "value": "Suscripciones",
+    "rect": {
+     "x": 527,
+     "y": 501,
+     "w": 74,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 20,
+    "kind": "Edit",
+    "name": "Se están leyendo datos. Espere...",
+    "nameSource": "nearText",
+    "id": "42.33623436.4.0",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 484,
+     "y": 983,
+     "w": 565,
+     "h": 21
+    },
+    "zone": "BL",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 21,
+    "kind": "Edit",
+    "name": "Introducción y resumen",
+    "nameSource": "nearText",
+    "id": "42.33623436.4.1",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1051,
+     "y": 983,
+     "w": 131,
+     "h": 21
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 22,
+    "kind": "MenuItem",
+    "name": "Archivo",
+    "id": "42.8195524.4.1",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+A",
+    "rect": {
+     "x": 486,
+     "y": 361,
+     "w": 55,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 23,
+    "kind": "MenuItem",
+    "name": "Acción",
+    "id": "42.8195524.4.2",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+c",
+    "rect": {
+     "x": 541,
+     "y": 361,
+     "w": 50,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 24,
+    "kind": "MenuItem",
+    "name": "Ver",
+    "id": "42.8195524.4.3",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+V",
+    "rect": {
+     "x": 591,
+     "y": 361,
+     "w": 32,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 25,
+    "kind": "MenuItem",
+    "name": "Ayuda",
+    "id": "42.8195524.4.6",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+u",
+    "rect": {
+     "x": 623,
+     "y": 361,
+     "w": 49,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 26,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el árbol de la consola",
+    "id": "42.25102908.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 540,
+     "y": 391,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 27,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el panel de acciones",
+    "id": "42.25102908.4.17",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 594,
+     "y": 391,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 28,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.21496986.403378611.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 484,
+     "y": 333,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 29,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "4.21496986.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1288,
+     "y": 324,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 30,
+    "kind": "Button",
+    "name": "Maximizar",
+    "id": "4.21496986.0.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1348,
+     "y": 324,
+     "w": 59,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 31,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.21496986.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1406,
+     "y": 324,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 32,
+    "kind": "Pane",
+    "name": "Área de trabajo",
+    "id": "42.24907586",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 426,
+     "w": 981,
+     "h": 584
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 33,
+    "kind": "Window",
+    "name": "Visor de eventos (local)",
+    "id": "42.14946180",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 474,
+     "y": 388,
+     "w": 1001,
+     "h": 633
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 34,
+    "kind": "Pane",
+    "name": "Console Embedded Window",
+    "id": "42.13964340",
+    "state": "focused",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 426,
+     "w": 981,
+     "h": 555
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 35,
+    "kind": "Pane",
+    "name": "Se están leyendo datos. Espere...",
+    "id": "42.30738456",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 736,
+     "y": 964,
+     "w": 368,
+     "h": 15
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 36,
+    "kind": "Text",
+    "name": "Se están leyendo datos. Espere...",
+    "id": "42.7081712",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1053,
+     "y": 474,
+     "w": 48,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 37,
+    "kind": "Text",
+    "name": "Introducción y resumen",
+    "id": "42.15208284",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 751,
+     "y": 459,
+     "w": 249,
+     "h": 31
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 38,
+    "kind": "Text",
+    "name": "Para ver los eventos que se produjeron en el equipo, selecci ... s los registros.",
+    "id": "42.2429988",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 811,
+     "y": 548,
+     "w": 241,
+     "h": 206
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 39,
+    "kind": "ScrollBar",
+    "name": "Barra de desplazamiento vertical",
+    "id": "42.6035654.3.-2",
+    "state": "",
+    "value": "0",
+    "rect": {
+     "x": 1070,
+     "y": 535,
+     "w": 26,
+     "h": 81
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 40,
+    "kind": "Thumb",
+    "name": "Miniatura",
+    "id": "42.6035654.3.-2.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1070,
+     "y": 556,
+     "w": 26,
+     "h": 10
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 41,
+    "kind": "Text",
+    "name": "Introducción",
+    "id": "42.24381302",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 750,
+     "y": 509,
+     "w": 98,
+     "h": 25
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 42,
+    "kind": "Text",
+    "name": "Resumen de eventos administrativos",
+    "id": "42.7475826",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 750,
+     "y": 633,
+     "w": 254,
+     "h": 25
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 43,
+    "kind": "Header",
+    "name": "Encabezado",
+    "id": "42.3479160",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 764,
+     "y": 785,
+     "w": 313,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 44,
+    "kind": "HeaderItem",
+    "name": "Nombre",
+    "id": "42.3479160.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 764,
+     "y": 785,
+     "w": 142,
+     "h": 24
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 45,
+    "kind": "HeaderItem",
+    "name": "Descripción",
+    "id": "42.3479160.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 922,
+     "y": 785,
+     "w": 59,
+     "h": 24
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 46,
+    "kind": "HeaderItem",
+    "name": "Modificado",
+    "id": "42.3479160.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 997,
+     "y": 785,
+     "w": 134,
+     "h": 24
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 47,
+    "kind": "ScrollBar",
+    "name": "Barra de desplazamiento horizontal",
+    "id": "42.1706016.3.-3",
+    "state": "",
+    "value": "0",
+    "rect": {
+     "x": 764,
+     "y": 803,
+     "w": 313,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 48,
+    "kind": "Text",
+    "name": "Nodos vistos recientemente",
+    "id": "42.13177664",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 750,
+     "y": 744,
+     "w": 196,
+     "h": 25
+    },
+    "zone": "C",
+    "color": "gray"
+   },
+   {
+    "i": 49,
+    "kind": "Text",
+    "name": "Resumen de registro",
+    "id": "42.15729140",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 750,
+     "y": 855,
+     "w": 148,
+     "h": 25
+    },
+    "zone": "B",
+    "color": "gray"
+   },
+   {
+    "i": 50,
+    "kind": "Pane",
+    "name": "ActionsPaneView",
+    "id": "42.19205476",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1113,
+     "y": 456,
+     "w": 350,
+     "h": 523
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 51,
+    "kind": "Menu",
+    "name": "Ver",
+    "id": "26560.500532880.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 610,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 52,
+    "kind": "Tree",
+    "name": "Console Embedded Scope",
+    "id": "42.5379670",
+    "state": "focused",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 426,
+     "w": 246,
+     "h": 555
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 53,
+    "kind": "Text",
+    "name": "Visor de eventos (local)",
+    "id": "42.5445256",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 734,
+     "y": 426,
+     "w": 373,
+     "h": 30
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 54,
+    "kind": "Header",
+    "name": "Console Embedded Results Header",
+    "id": "42.20121536",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 780,
+     "y": 429,
+     "w": 570,
+     "h": 30
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 55,
+    "kind": "TitleBar",
+    "name": "Visor de eventos (local)",
+    "id": "4.14946180.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 398,
+     "w": 981,
+     "h": 29
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 56,
+    "kind": "TitleBar",
+    "name": "Visor de eventos",
+    "id": "4.21496986.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 333,
+     "w": 981,
+     "h": 29
+    },
+    "zone": "T",
+    "color": "blue"
+   },
+   {
+    "i": 57,
+    "kind": "MenuBar",
+    "name": "Barra de menús del sistema",
+    "id": "1.21496986.403378611",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 333,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "blue"
+   }
+  ]
+ },
+ "visor_eventos_registros": {
+  "window": {
+   "title": "Visor de eventos",
+   "process": "mmc",
+   "processId": 26560,
+   "hwnd": 21496986,
+   "requested": true,
+   "root": 21496986,
+   "foreground": true,
+   "rect": {
+    "x": 483,
+    "y": 323,
+    "w": 983,
+    "h": 689
+   },
+   "focused": {
+    "kind": "Pane",
+    "name": "Console Embedded Window",
+    "nameSource": "",
+    "value": null,
+    "i": 34
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "Button",
+    "name": "Retroceder poco",
+    "id": "42.24317354.3.-3.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 955,
+     "w": 17,
+     "h": 26
+    },
+    "zone": "BL",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Retroceder mucho",
+    "id": "42.24317354.3.-3.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 756,
+     "y": 955,
+     "w": 4,
+     "h": 26
+    },
+    "zone": "BL",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Avanzar mucho",
+    "id": "42.24317354.3.-3.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 933,
+     "y": 955,
+     "w": 152,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Avanzar poco",
+    "id": "42.24317354.3.-3.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1085,
+     "y": 955,
+     "w": 17,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 4,
+    "kind": "Button",
+    "name": "Registros de Windows",
+    "id": "26560.544432416.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 456,
+     "w": 350,
+     "h": 31
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 5,
+    "kind": "Button",
+    "name": "Abrir registro guardado...",
+    "id": "26560.560324944.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 488,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 6,
+    "kind": "Button",
+    "name": "Crear vista personalizada...",
+    "id": "26560.560331904.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 518,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 7,
+    "kind": "Button",
+    "name": "Importar vista personalizada...",
+    "id": "26560.560319904.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 548,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 8,
+    "kind": "Button",
+    "name": "Actualizar",
+    "id": "26560.560320144.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 610,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 9,
+    "kind": "Button",
+    "name": "Ayuda",
+    "id": "26560.560329504.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 641,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 10,
+    "kind": "Button",
+    "name": "Aplicación",
+    "id": "26560.544422112.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 678,
+     "w": 350,
+     "h": 31
+    },
+    "zone": "R",
+    "color": "blue"
+   },
+   {
+    "i": 11,
+    "kind": "Button",
+    "name": "Abrir",
+    "id": "26560.560331424.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 709,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 12,
+    "kind": "Button",
+    "name": "Propiedades",
+    "id": "26560.560332144.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1113,
+     "y": 739,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 13,
+    "kind": "TreeItem",
+    "name": "Visor de eventos (local)",
+    "id": "1.5379670.0.500181520",
+    "state": "expanded",
+    "value": "Visor de eventos (local)",
+    "rect": {
+     "x": 508,
+     "y": 429,
+     "w": 123,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 14,
+    "kind": "TreeItem",
+    "name": "Vistas personalizadas",
+    "id": "1.5379670.0.500299488",
+    "state": "collapsed",
+    "value": "Vistas personalizadas",
+    "rect": {
+     "x": 527,
+     "y": 447,
+     "w": 114,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 15,
+    "kind": "TreeItem",
+    "name": "Registros de Windows",
+    "id": "1.5379670.0.500297696",
+    "state": "selected collapsed focused",
+    "value": "Registros de Windows",
+    "rect": {
+     "x": 527,
+     "y": 465,
+     "w": 119,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 16,
+    "kind": "TreeItem",
+    "name": "Registros de aplicaciones y servicios",
+    "id": "1.5379670.0.500297920",
+    "state": "collapsed",
+    "value": "Registros de aplicaciones y servicios",
+    "rect": {
+     "x": 527,
+     "y": 483,
+     "w": 190,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 17,
+    "kind": "TreeItem",
+    "name": "Suscripciones",
+    "id": "1.5379670.0.500298032",
+    "state": "",
+    "value": "Suscripciones",
+    "rect": {
+     "x": 527,
+     "y": 501,
+     "w": 74,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 18,
+    "kind": "Edit",
+    "name": "20,00 MB",
+    "nameSource": "nearText",
+    "id": "42.33623436.4.0",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 484,
+     "y": 983,
+     "w": 565,
+     "h": 21
+    },
+    "zone": "BL",
+    "color": "white"
+   },
+   {
+    "i": 19,
+    "kind": "Edit",
+    "name": "Aplicación",
+    "nameSource": "nearText",
+    "id": "42.33623436.4.1",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1051,
+     "y": 983,
+     "w": 131,
+     "h": 21
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 20,
+    "kind": "MenuItem",
+    "name": "Archivo",
+    "id": "42.8195524.4.1",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+A",
+    "rect": {
+     "x": 486,
+     "y": 361,
+     "w": 55,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 21,
+    "kind": "MenuItem",
+    "name": "Acción",
+    "id": "42.8195524.4.2",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+c",
+    "rect": {
+     "x": 541,
+     "y": 361,
+     "w": 50,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 22,
+    "kind": "MenuItem",
+    "name": "Ver",
+    "id": "42.8195524.4.3",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+V",
+    "rect": {
+     "x": 591,
+     "y": 361,
+     "w": 32,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 23,
+    "kind": "MenuItem",
+    "name": "Ayuda",
+    "id": "42.8195524.4.6",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+u",
+    "rect": {
+     "x": 623,
+     "y": 361,
+     "w": 49,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 24,
+    "kind": "Button",
+    "name": "Atrás",
+    "id": "42.25102908.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 486,
+     "y": 391,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 25,
+    "kind": "Button",
+    "name": "Subir un nivel",
+    "id": "42.25102908.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 540,
+     "y": 391,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 26,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el árbol de la consola",
+    "id": "42.25102908.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 563,
+     "y": 391,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 27,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el panel de acciones",
+    "id": "42.25102908.4.17",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 617,
+     "y": 391,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 28,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.21496986.403378611.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 484,
+     "y": 333,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 29,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "4.21496986.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1288,
+     "y": 324,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 30,
+    "kind": "Button",
+    "name": "Maximizar",
+    "id": "4.21496986.0.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1348,
+     "y": 324,
+     "w": 59,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 31,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.21496986.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1406,
+     "y": 324,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 32,
+    "kind": "Pane",
+    "name": "Área de trabajo",
+    "id": "42.24907586",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 426,
+     "w": 981,
+     "h": 584
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 33,
+    "kind": "Window",
+    "name": "Visor de eventos (local)\\Registros de Windows",
+    "id": "42.14946180",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 474,
+     "y": 388,
+     "w": 1001,
+     "h": 633
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 34,
+    "kind": "Pane",
+    "name": "Console Embedded Window",
+    "id": "42.13964340",
+    "state": "focused",
+    "value": null,
+    "rect": {
+     "x": 484,
+     "y": 426,
+     "w": 981,
+     "h": 555
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 35,
+    "kind": "Header",
+    "name": "Encabezado",
+    "id": "42.12388254",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 461,
+     "w": 363,
+     "h": 30
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 36,
+    "kind": "HeaderItem",
+    "name": "Nombre",
+    "id": "42.12388254.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 461,
+     "w": 137,
+     "h": 24
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 37,
+    "kind": "HeaderItem",
+    "name": "Tipo",
+    "id": "42.12388254.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 892,
+     "y": 461,
+     "w": 73,
+     "h": 24
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 38,
+    "kind": "HeaderItem",
+    "name": "Número de eventos",
+    "id": "42.12388254.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 981,
+     "y": 461,
+     "w": 103,
+     "h": 24
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 39,
+    "kind": "HeaderItem",
+    "name": "Tamaño",
+    "id": "42.12388254.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1100,
+     "y": 461,
+     "w": 46,
+     "h": 24
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 40,
+    "kind": "ScrollBar",
+    "name": "Barra de desplazamiento horizontal",
+    "id": "42.24317354.3.-3",
+    "state": "",
+    "value": "0",
+    "rect": {
+     "x": 739,
+     "y": 955,
+     "w": 363,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 41,
+    "kind": "Thumb",
+    "name": "Miniatura",
+    "id": "42.24317354.3.-3.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 760,
+     "y": 955,
+     "w": 173,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 42,
+    "kind": "DataItem",
+    "name": "Aplicación",
+    "id": "42.24317354.4.0",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 485,
+     "w": 415,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 43,
+    "kind": "Text",
+    "name": "Aplicación",
+    "id": "42.24317354.4.0.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 485,
+     "w": 145,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 44,
+    "kind": "Text",
+    "name": "Administrativo",
+    "id": "42.24317354.4.0.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 884,
+     "y": 485,
+     "w": 89,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 45,
+    "kind": "Text",
+    "name": "44.008",
+    "id": "42.24317354.4.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 973,
+     "y": 485,
+     "w": 119,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 46,
+    "kind": "Text",
+    "name": "20,00 MB",
+    "id": "42.24317354.4.0.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1092,
+     "y": 485,
+     "w": 62,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 47,
+    "kind": "DataItem",
+    "name": "Security",
+    "id": "42.24317354.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 504,
+     "w": 415,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 48,
+    "kind": "Text",
+    "name": "Security",
+    "id": "42.24317354.4.1.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 504,
+     "w": 145,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 49,
+    "kind": "Text",
+    "name": "0",
+    "id": "42.24317354.4.1.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 973,
+     "y": 504,
+     "w": 119,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 50,
+    "kind": "Text",
+    "name": "0 Bytes",
+    "id": "42.24317354.4.1.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1092,
+     "y": 504,
+     "w": 62,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 51,
+    "kind": "DataItem",
+    "name": "Instalación",
+    "id": "42.24317354.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 523,
+     "w": 415,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 52,
+    "kind": "Text",
+    "name": "Instalación",
+    "id": "42.24317354.4.2.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 523,
+     "w": 145,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 53,
+    "kind": "Text",
+    "name": "Operativo",
+    "id": "42.24317354.4.2.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 884,
+     "y": 523,
+     "w": 89,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 54,
+    "kind": "Text",
+    "name": "2.471",
+    "id": "42.24317354.4.2.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 973,
+     "y": 523,
+     "w": 119,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 55,
+    "kind": "Text",
+    "name": "1,00 MB",
+    "id": "42.24317354.4.2.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1092,
+     "y": 523,
+     "w": 62,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 56,
+    "kind": "DataItem",
+    "name": "Sistema",
+    "id": "42.24317354.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 542,
+     "w": 415,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 57,
+    "kind": "Text",
+    "name": "Sistema",
+    "id": "42.24317354.4.3.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 542,
+     "w": 145,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 58,
+    "kind": "Text",
+    "name": "38.095",
+    "id": "42.24317354.4.3.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 973,
+     "y": 542,
+     "w": 119,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 59,
+    "kind": "DataItem",
+    "name": "Eventos reenviados",
+    "id": "42.24317354.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 739,
+     "y": 561,
+     "w": 415,
+     "h": 19
+    },
+    "zone": "C",
+    "color": "white"
+   }
+  ]
+ },
+ "servicios": {
+  "window": {
+   "title": "Servicios",
+   "process": "mmc",
+   "processId": 57544,
+   "hwnd": 23858788,
+   "requested": true,
+   "root": 23858788,
+   "foreground": true,
+   "rect": {
+    "x": 109,
+    "y": 75,
+    "w": 1007,
+    "h": 741
+   },
+   "focused": {
+    "kind": "Tree",
+    "name": "Console Embedded Scope",
+    "nameSource": "",
+    "value": null,
+    "i": null
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "TreeItem",
+    "name": "Servicios (locales)",
+    "id": "1.33951120.0.11212896",
+    "state": "selected focused",
+    "value": "Servicios (locales)",
+    "rect": {
+     "x": 135,
+     "y": 181,
+     "w": 93,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Retroceder poco",
+    "id": "42.31328284.3.-3.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 739,
+     "w": 17,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Retroceder mucho",
+    "id": "42.31328284.3.-3.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 551,
+     "y": 739,
+     "w": 4,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Avanzar mucho",
+    "id": "42.31328284.3.-3.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 877,
+     "y": 739,
+     "w": 198,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 4,
+    "kind": "Button",
+    "name": "Avanzar poco",
+    "id": "42.31328284.3.-3.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1075,
+     "y": 739,
+     "w": 17,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 5,
+    "kind": "ListItem",
+    "name": "AarSvc_c552f",
+    "id": "42.31328284.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 243,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 6,
+    "kind": "Edit",
+    "name": "AarSvc_c552f",
+    "id": "42.31328284.4.0.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 243,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 7,
+    "kind": "ListItem",
+    "name": "Actualizador de zona horaria automática",
+    "id": "42.31328284.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 266,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 8,
+    "kind": "Edit",
+    "name": "Actualizador de zona horaria automática",
+    "id": "42.31328284.4.1.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 266,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 9,
+    "kind": "ListItem",
+    "name": "Adaptador de rendimiento de WMI",
+    "id": "42.31328284.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 290,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 10,
+    "kind": "Edit",
+    "name": "Adaptador de rendimiento de WMI",
+    "id": "42.31328284.4.2.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 290,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 11,
+    "kind": "ListItem",
+    "name": "Administración de capas de almacenamiento",
+    "id": "42.31328284.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 314,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 12,
+    "kind": "Edit",
+    "name": "Administración de capas de almacenamiento",
+    "id": "42.31328284.4.3.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 314,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 13,
+    "kind": "ListItem",
+    "name": "Administración remota de Windows (WS-Management)",
+    "id": "42.31328284.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 338,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 14,
+    "kind": "Edit",
+    "name": "Administración remota de Windows (WS-Management)",
+    "id": "42.31328284.4.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 338,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 15,
+    "kind": "ListItem",
+    "name": "Administrador de autenticación de Xbox Live",
+    "id": "42.31328284.4.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 361,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 16,
+    "kind": "Edit",
+    "name": "Administrador de autenticación de Xbox Live",
+    "id": "42.31328284.4.5.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 361,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 17,
+    "kind": "ListItem",
+    "name": "Administrador de conexiones automáticas de acceso remoto",
+    "id": "42.31328284.4.6",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 385,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 18,
+    "kind": "Edit",
+    "name": "Administrador de conexiones automáticas de acceso remoto",
+    "id": "42.31328284.4.6.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 385,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 19,
+    "kind": "ListItem",
+    "name": "Administrador de conexiones de acceso remoto",
+    "id": "42.31328284.4.7",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 409,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 20,
+    "kind": "Edit",
+    "name": "Administrador de conexiones de acceso remoto",
+    "id": "42.31328284.4.7.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 409,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 21,
+    "kind": "ListItem",
+    "name": "Administrador de conexiones de Windows",
+    "id": "42.31328284.4.8",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 433,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 22,
+    "kind": "Edit",
+    "name": "Administrador de conexiones de Windows",
+    "id": "42.31328284.4.8.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 433,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 23,
+    "kind": "ListItem",
+    "name": "Administrador de configuración de dispositivos",
+    "id": "42.31328284.4.9",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 456,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 24,
+    "kind": "Edit",
+    "name": "Administrador de configuración de dispositivos",
+    "id": "42.31328284.4.9.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 456,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 25,
+    "kind": "ListItem",
+    "name": "Administrador de credenciales",
+    "id": "42.31328284.4.10",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 480,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 26,
+    "kind": "Edit",
+    "name": "Administrador de credenciales",
+    "id": "42.31328284.4.10.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 480,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 27,
+    "kind": "ListItem",
+    "name": "Administrador de cuentas de seguridad",
+    "id": "42.31328284.4.11",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 504,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 28,
+    "kind": "Edit",
+    "name": "Administrador de cuentas de seguridad",
+    "id": "42.31328284.4.11.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 504,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 29,
+    "kind": "ListItem",
+    "name": "Administrador de mapas descargado",
+    "id": "42.31328284.4.12",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 528,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 30,
+    "kind": "Edit",
+    "name": "Administrador de mapas descargado",
+    "id": "42.31328284.4.12.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 528,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 31,
+    "kind": "ListItem",
+    "name": "Administrador de sesión local",
+    "id": "42.31328284.4.13",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 551,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 32,
+    "kind": "Edit",
+    "name": "Administrador de sesión local",
+    "id": "42.31328284.4.13.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 551,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 33,
+    "kind": "ListItem",
+    "name": "Administrador de usuarios",
+    "id": "42.31328284.4.14",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 575,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 34,
+    "kind": "Edit",
+    "name": "Administrador de usuarios",
+    "id": "42.31328284.4.14.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 575,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 35,
+    "kind": "ListItem",
+    "name": "Adquisición de imágenes de Windows (WIA)",
+    "id": "42.31328284.4.15",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 599,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 36,
+    "kind": "Edit",
+    "name": "Adquisición de imágenes de Windows (WIA)",
+    "id": "42.31328284.4.15.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 599,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 37,
+    "kind": "ListItem",
+    "name": "Agente de conexión de red",
+    "id": "42.31328284.4.16",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 623,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 38,
+    "kind": "Edit",
+    "name": "Agente de conexión de red",
+    "id": "42.31328284.4.16.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 623,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 39,
+    "kind": "ListItem",
+    "name": "Agente de detección en segundo plano de DevQuery",
+    "id": "42.31328284.4.17",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 646,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 40,
+    "kind": "Edit",
+    "name": "Agente de detección en segundo plano de DevQuery",
+    "id": "42.31328284.4.17.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 646,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 41,
+    "kind": "ListItem",
+    "name": "Agente de directiva IPsec",
+    "id": "42.31328284.4.18",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 670,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 42,
+    "kind": "Edit",
+    "name": "Agente de directiva IPsec",
+    "id": "42.31328284.4.18.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 670,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 43,
+    "kind": "ListItem",
+    "name": "Agente de eventos de tiempo",
+    "id": "42.31328284.4.19",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 694,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 44,
+    "kind": "Edit",
+    "name": "Agente de eventos de tiempo",
+    "id": "42.31328284.4.19.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 534,
+     "y": 694,
+     "w": 558,
+     "h": 24
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 45,
+    "kind": "Edit",
+    "name": "Manual",
+    "nameSource": "nearText",
+    "id": "42.12258398.4.0",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 110,
+     "y": 788,
+     "w": 584,
+     "h": 21
+    },
+    "zone": "BL",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 46,
+    "kind": "MenuItem",
+    "name": "Archivo",
+    "id": "42.11734562.4.1",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+A",
+    "rect": {
+     "x": 113,
+     "y": 114,
+     "w": 55,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 47,
+    "kind": "MenuItem",
+    "name": "Acción",
+    "id": "42.11734562.4.2",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+c",
+    "rect": {
+     "x": 168,
+     "y": 114,
+     "w": 50,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 48,
+    "kind": "MenuItem",
+    "name": "Ver",
+    "id": "42.11734562.4.3",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+V",
+    "rect": {
+     "x": 218,
+     "y": 114,
+     "w": 32,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 49,
+    "kind": "MenuItem",
+    "name": "Ayuda",
+    "id": "42.11734562.4.6",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+u",
+    "rect": {
+     "x": 250,
+     "y": 114,
+     "w": 49,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 50,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el árbol de la consola",
+    "id": "42.15731122.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 167,
+     "y": 144,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 51,
+    "kind": "Button",
+    "name": "Actualizar",
+    "id": "42.15731122.4.13",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 198,
+     "y": 144,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 52,
+    "kind": "Button",
+    "name": "Exportar lista",
+    "id": "42.15731122.4.14",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 221,
+     "y": 144,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 53,
+    "kind": "Button",
+    "name": "Ayuda",
+    "id": "42.15731122.4.16",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 252,
+     "y": 144,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 54,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el panel de acciones",
+    "id": "42.15731122.4.17",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 275,
+     "y": 144,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 55,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.23858788.198708709.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 110,
+     "y": 85,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 56,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "4.23858788.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 938,
+     "y": 76,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 57,
+    "kind": "Button",
+    "name": "Maximizar",
+    "id": "4.23858788.0.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 998,
+     "y": 76,
+     "w": 59,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 58,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.23858788.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1056,
+     "y": 76,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 59,
+    "kind": "Window",
+    "name": "Servicios (locales)",
+    "id": "42.16846816",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 100,
+     "y": 140,
+     "w": 1025,
+     "h": 685
+    },
+    "zone": "C",
+    "color": "white"
+   }
+  ]
+ },
+ "programador_de_tareas": {
+  "window": {
+   "title": "Programador de tareas",
+   "process": "mmc",
+   "processId": 47400,
+   "hwnd": 14685718,
+   "requested": true,
+   "root": 14685718,
+   "foreground": false,
+   "rect": {
+    "x": 439,
+    "y": 308,
+    "w": 982,
+    "h": 704
+   },
+   "focused": null
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "Button",
+    "name": "Retroceder poco",
+    "id": "42.24380570.3.-3.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 679,
+     "y": 596,
+     "w": 17,
+     "h": 26
+    },
+    "zone": "L",
+    "color": "white",
+    "repeated": 4
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Retroceder mucho",
+    "id": "42.24380570.3.-3.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 696,
+     "y": 596,
+     "w": 4,
+     "h": 26
+    },
+    "zone": "L",
+    "color": "white",
+    "repeated": 4
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Avanzar mucho",
+    "id": "42.24380570.3.-3.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 750,
+     "y": 596,
+     "w": 265,
+     "h": 26
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 4
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Avanzar poco",
+    "id": "42.24380570.3.-3.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1015,
+     "y": 596,
+     "w": 17,
+     "h": 26
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 4
+   },
+   {
+    "i": 4,
+    "kind": "Button",
+    "name": "Atrás",
+    "id": "42.30935402.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1006,
+     "y": 630,
+     "w": 24,
+     "h": 24
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 5,
+    "kind": "Button",
+    "name": "Reenviar",
+    "id": "42.30935402.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1030,
+     "y": 630,
+     "w": 24,
+     "h": 24
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 6,
+    "kind": "TabItem",
+    "name": "General",
+    "id": "42.8655394.4.0",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 680,
+     "y": 631,
+     "w": 56,
+     "h": 20
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 7,
+    "kind": "Edit",
+    "name": "Nombre:",
+    "id": "42.18353664",
+    "state": "readonly",
+    "value": "AMDRyzenMasterSDKTask",
+    "rect": {
+     "x": 788,
+     "y": 665,
+     "w": 658,
+     "h": 29
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 8,
+    "kind": "Document",
+    "name": "Descripción:",
+    "id": "42.6163406",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 788,
+     "y": 758,
+     "w": 658,
+     "h": 125
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 9,
+    "kind": "Edit",
+    "name": "Ubicación:",
+    "id": "42.26283842",
+    "state": "readonly",
+    "value": "\\",
+    "rect": {
+     "x": 788,
+     "y": 703,
+     "w": 658,
+     "h": 20
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 10,
+    "kind": "TabItem",
+    "name": "Desencadenadores",
+    "id": "42.8655394.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 736,
+     "y": 631,
+     "w": 120,
+     "h": 20
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 11,
+    "kind": "TabItem",
+    "name": "Acciones",
+    "id": "42.8655394.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 856,
+     "y": 631,
+     "w": 61,
+     "h": 20
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 12,
+    "kind": "TabItem",
+    "name": "Condiciones",
+    "id": "42.8655394.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 917,
+     "y": 631,
+     "w": 80,
+     "h": 20
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 13,
+    "kind": "TabItem",
+    "name": "Configuración",
+    "id": "42.8655394.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 997,
+     "y": 631,
+     "w": 88,
+     "h": 20
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 14,
+    "kind": "Button",
+    "name": "Biblioteca del Programador de tareas",
+    "id": "47400.492833744.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 441,
+     "w": 350,
+     "h": 31
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 15,
+    "kind": "Button",
+    "name": "Crear tarea básica...",
+    "id": "47400.535402192.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 473,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 16,
+    "kind": "Button",
+    "name": "Crear tarea...",
+    "id": "47400.535400992.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 503,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 17,
+    "kind": "Button",
+    "name": "Importar tarea...",
+    "id": "47400.535401232.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 533,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 18,
+    "kind": "Button",
+    "name": "Mostrar todas las tareas en ejecución",
+    "id": "47400.535401712.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 563,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 19,
+    "kind": "Button",
+    "name": "Habilitar el historial de todas las tareas",
+    "id": "47400.535401952.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 593,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 20,
+    "kind": "Button",
+    "name": "Nueva carpeta...",
+    "id": "47400.535402672.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 624,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 21,
+    "kind": "Button",
+    "name": "Actualizar",
+    "id": "47400.535402912.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 686,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 22,
+    "kind": "Button",
+    "name": "Ayuda",
+    "id": "47400.535400272.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 718,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "R",
+    "color": "white",
+    "repeated": 2
+   },
+   {
+    "i": 23,
+    "kind": "Button",
+    "name": "Elemento seleccionado",
+    "id": "47400.492838448.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 754,
+     "w": 350,
+     "h": 31
+    },
+    "zone": "R",
+    "color": "blue"
+   },
+   {
+    "i": 24,
+    "kind": "Button",
+    "name": "Habilitar",
+    "id": "47400.535399552.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 785,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 25,
+    "kind": "Button",
+    "name": "Exportar...",
+    "id": "47400.535399792.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 815,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 26,
+    "kind": "Button",
+    "name": "Propiedades",
+    "id": "47400.535459568.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 845,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 27,
+    "kind": "Button",
+    "name": "Eliminar",
+    "id": "47400.535458368.0",
+    "state": "readonly",
+    "value": "",
+    "shortcut": "ALT+",
+    "rect": {
+     "x": 1068,
+     "y": 876,
+     "w": 350,
+     "h": 30
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 28,
+    "kind": "TreeItem",
+    "name": "Programador de tareas (local)",
+    "id": "1.34213264.0.492506096",
+    "state": "expanded",
+    "value": "Programador de tareas (local)",
+    "rect": {
+     "x": 465,
+     "y": 414,
+     "w": 155,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 29,
+    "kind": "TreeItem",
+    "name": "Biblioteca del Programador de tareas",
+    "id": "1.34213264.0.493105872",
+    "state": "selected expanded",
+    "value": "Biblioteca del Programador de tareas",
+    "rect": {
+     "x": 484,
+     "y": 432,
+     "w": 195,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 30,
+    "kind": "TreeItem",
+    "name": "ASUS",
+    "id": "1.34213264.0.493780640",
+    "state": "",
+    "value": "ASUS",
+    "rect": {
+     "x": 503,
+     "y": 450,
+     "w": 31,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 31,
+    "kind": "TreeItem",
+    "name": "GoogleSystem",
+    "id": "1.34213264.0.493780864",
+    "state": "collapsed",
+    "value": "GoogleSystem",
+    "rect": {
+     "x": 503,
+     "y": 468,
+     "w": 79,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 32,
+    "kind": "TreeItem",
+    "name": "GoogleUserPEH",
+    "id": "1.34213264.0.493784336",
+    "state": "",
+    "value": "GoogleUserPEH",
+    "rect": {
+     "x": 503,
+     "y": 486,
+     "w": 85,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 33,
+    "kind": "TreeItem",
+    "name": "Microsoft",
+    "id": "1.34213264.0.493782768",
+    "state": "collapsed",
+    "value": "Microsoft",
+    "rect": {
+     "x": 503,
+     "y": 504,
+     "w": 54,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 34,
+    "kind": "TreeItem",
+    "name": "SoftLanding",
+    "id": "1.34213264.0.493781984",
+    "state": "collapsed",
+    "value": "SoftLanding",
+    "rect": {
+     "x": 503,
+     "y": 522,
+     "w": 67,
+     "h": 18
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 35,
+    "kind": "Edit",
+    "name": "Oculta",
+    "nameSource": "nearText",
+    "id": "42.26088380.4.0",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 440,
+     "y": 983,
+     "w": 564,
+     "h": 21
+    },
+    "zone": "BL",
+    "color": "white"
+   },
+   {
+    "i": 36,
+    "kind": "Edit",
+    "name": "AMDRyzenMasterSDKTask",
+    "nameSource": "nearText",
+    "id": "42.26088380.4.1",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1006,
+     "y": 983,
+     "w": 131,
+     "h": 21
+    },
+    "zone": "B",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 37,
+    "kind": "MenuItem",
+    "name": "Archivo",
+    "id": "42.27923290.4.1",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+A",
+    "rect": {
+     "x": 443,
+     "y": 346,
+     "w": 55,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 38,
+    "kind": "MenuItem",
+    "name": "Acción",
+    "id": "42.27923290.4.2",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+c",
+    "rect": {
+     "x": 498,
+     "y": 346,
+     "w": 50,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 39,
+    "kind": "MenuItem",
+    "name": "Ver",
+    "id": "42.27923290.4.3",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+V",
+    "rect": {
+     "x": 548,
+     "y": 346,
+     "w": 32,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 40,
+    "kind": "MenuItem",
+    "name": "Ayuda",
+    "id": "42.27923290.4.6",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+u",
+    "rect": {
+     "x": 580,
+     "y": 346,
+     "w": 49,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 41,
+    "kind": "Button",
+    "name": "Subir un nivel",
+    "id": "42.16126220.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 497,
+     "y": 376,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 42,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el árbol de la consola",
+    "id": "42.16126220.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 520,
+     "y": 376,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 43,
+    "kind": "Button",
+    "name": "Mostrar u ocultar el panel de acciones",
+    "id": "42.16126220.4.17",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 574,
+     "y": 376,
+     "w": 23,
+     "h": 22
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 44,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.14685718.726538033.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 440,
+     "y": 318,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "blue"
+   },
+   {
+    "i": 45,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "4.14685718.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1243,
+     "y": 309,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 46,
+    "kind": "Button",
+    "name": "Maximizar",
+    "id": "4.14685718.0.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1303,
+     "y": 309,
+     "w": 59,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 47,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.14685718.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1361,
+     "y": 309,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 48,
+    "kind": "Pane",
+    "name": "Área de trabajo",
+    "id": "42.10949304",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 440,
+     "y": 411,
+     "w": 980,
+     "h": 599
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 49,
+    "kind": "Window",
+    "name": "Programador de tareas (local)\\Biblioteca del Programador de tareas",
+    "id": "42.21631286",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 430,
+     "y": 373,
+     "w": 1000,
+     "h": 648
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 50,
+    "kind": "Pane",
+    "name": "Console Embedded Window",
+    "id": "42.22415714",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 440,
+     "y": 411,
+     "w": 980,
+     "h": 570
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 51,
+    "kind": "Pane",
+    "name": "panelListView",
+    "id": "42.10229182",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 675,
+     "y": 416,
+     "w": 381,
+     "h": 205
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 52,
+    "kind": "Header",
+    "name": "Encabezado",
+    "id": "42.7477432",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 679,
+     "y": 420,
+     "w": 355,
+     "h": 30
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 53,
+    "kind": "HeaderItem",
+    "name": "Nombre",
+    "id": "42.7477432.4.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 679,
+     "y": 420,
+     "w": 92,
+     "h": 24
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 54,
+    "kind": "HeaderItem",
+    "name": "Estado",
+    "id": "42.7477432.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 787,
+     "y": 420,
+     "w": 69,
+     "h": 24
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 55,
+    "kind": "HeaderItem",
+    "name": "Desencadenadores",
+    "id": "42.7477432.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 872,
+     "y": 420,
+     "w": 439,
+     "h": 24
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 56,
+    "kind": "ScrollBar",
+    "name": "Barra de desplazamiento horizontal",
+    "id": "42.24380570.3.-3",
+    "state": "",
+    "value": "0",
+    "rect": {
+     "x": 679,
+     "y": 596,
+     "w": 353,
+     "h": 26
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 57,
+    "kind": "Thumb",
+    "name": "Miniatura",
+    "id": "42.24380570.3.-3.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 700,
+     "y": 596,
+     "w": 50,
+     "h": 26
+    },
+    "zone": "L",
+    "color": "white",
+    "repeated": 4
+   },
+   {
+    "i": 58,
+    "kind": "ScrollBar",
+    "name": "Barra de desplazamiento vertical",
+    "id": "42.24380570.3.-2",
+    "state": "",
+    "value": "0",
+    "rect": {
+     "x": 1031,
+     "y": 420,
+     "w": 26,
+     "h": 176
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 59,
+    "kind": "DataItem",
+    "name": "AMDRyzenMasterSDKTask",
+    "id": "42.24380570.4.0",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 679,
+     "y": 444,
+     "w": 1364,
+     "h": 19
+    },
+    "zone": "TR",
+    "color": "white"
+   }
+  ]
+ },
+ "notepad_guardar_como_markdown": {
+  "window": {
+   "title": "*prueba de guardado v3: Bloc de notas",
+   "process": "Notepad",
+   "processId": 55280,
+   "hwnd": 2295876,
+   "requested": true,
+   "root": 2295876,
+   "personInputAgoMs": 3547,
+   "foreground": false,
+   "rect": {
+    "x": 76,
+    "y": 69,
+    "w": 1424,
+    "h": 733
+   },
+   "focused": {
+    "kind": "Button",
+    "name": "Guardar como archivo Markdown",
+    "nameSource": "",
+    "value": null,
+    "i": 0
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "Button",
+    "name": "Guardar como archivo Markdown",
+    "id": "42.2556906.4.118",
+    "state": "focused",
+    "value": null,
+    "rect": {
+     "x": 482,
+     "y": 505,
+     "w": 197,
+     "h": 40
+    },
+    "zone": "C",
+    "color": "blue"
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Guardar como archivo de texto",
+    "id": "42.2556906.4.120",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 689,
+     "y": 505,
+     "w": 196,
+     "h": 40
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 2,
+    "kind": "Button",
+    "name": "Cancelar",
+    "id": "42.2556906.4.122",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 896,
+     "y": 505,
+     "w": 197,
+     "h": 40
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 3,
+    "kind": "Document",
+    "name": "Editor de texto",
+    "id": "42.29168084",
+    "state": "",
+    "value": "prueba de guardado v3",
+    "rect": {
+     "x": 77,
+     "y": 162,
+     "w": 1422,
+     "h": 599
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 4,
+    "kind": "TabItem",
+    "name": "casahogarla casa roja, la casa azul. Modificado.",
+    "id": "42.2689078.4.3",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 137,
+     "y": 81,
+     "w": 155,
+     "h": 40
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 5,
+    "kind": "TabItem",
+    "name": "Sin título. No modificado.",
+    "id": "42.2689078.4.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 292,
+     "y": 81,
+     "w": 155,
+     "h": 40
+    },
+    "zone": "TL",
+    "color": "black",
+    "repeated": 1
+   },
+   {
+    "i": 6,
+    "kind": "TabItem",
+    "name": "lista.txt. No modificado.",
+    "id": "42.2689078.4.7",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 447,
+     "y": 81,
+     "w": 155,
+     "h": 40
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 7,
+    "kind": "TabItem",
+    "name": "lista pan. Modificado.",
+    "id": "42.2689078.4.10",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 603,
+     "y": 81,
+     "w": 155,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 8,
+    "kind": "TabItem",
+    "name": "notas.txt. No modificado.",
+    "id": "42.2689078.4.14",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 913,
+     "y": 81,
+     "w": 155,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 9,
+    "kind": "TabItem",
+    "name": "prueba de guardado v3. Modificado.",
+    "id": "42.2689078.4.18",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 1064,
+     "y": 81,
+     "w": 165,
+     "h": 40
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 10,
+    "kind": "Button",
+    "name": "Agregar nueva pestaña",
+    "id": "42.2689078.4.21",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1233,
+     "y": 88,
+     "w": 40,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 11,
+    "kind": "MenuItem",
+    "name": "Archivo",
+    "id": "42.18483088.4.25",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, A",
+    "rect": {
+     "x": 82,
+     "y": 121,
+     "w": 84,
+     "h": 40
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 12,
+    "kind": "MenuItem",
+    "name": "Editar",
+    "id": "42.18483088.4.28",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, M",
+    "rect": {
+     "x": 176,
+     "y": 121,
+     "w": 70,
+     "h": 40
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 13,
+    "kind": "MenuItem",
+    "name": "Ver",
+    "id": "42.18483088.4.31",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, V",
+    "rect": {
+     "x": 256,
+     "y": 121,
+     "w": 50,
+     "h": 40
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 14,
+    "kind": "Button",
+    "name": "Títulos",
+    "id": "42.18483088.4.34",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, H",
+    "rect": {
+     "x": 582,
+     "y": 121,
+     "w": 71,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 15,
+    "kind": "Button",
+    "name": "Listas",
+    "id": "42.18483088.4.36",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, L",
+    "rect": {
+     "x": 653,
+     "y": 121,
+     "w": 71,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 16,
+    "kind": "Button",
+    "name": "Negrita (Ctrl+N)",
+    "id": "42.18483088.4.38",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, B",
+    "rect": {
+     "x": 724,
+     "y": 121,
+     "w": 40,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 17,
+    "kind": "Button",
+    "name": "Cursiva (Ctrl+I)",
+    "id": "42.18483088.4.40",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, I",
+    "rect": {
+     "x": 764,
+     "y": 121,
+     "w": 40,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 18,
+    "kind": "Button",
+    "name": "Tachado (Ctrl+Mayús+X)",
+    "id": "42.18483088.4.42",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, G",
+    "rect": {
+     "x": 804,
+     "y": 121,
+     "w": 40,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 19,
+    "kind": "Button",
+    "name": "Vincular (Ctrl+K)",
+    "id": "42.18483088.4.44",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, K",
+    "rect": {
+     "x": 844,
+     "y": 121,
+     "w": 40,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 20,
+    "kind": "Button",
+    "name": "Tabla",
+    "id": "42.18483088.4.46",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, T",
+    "rect": {
+     "x": 884,
+     "y": 121,
+     "w": 70,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 21,
+    "kind": "Button",
+    "name": "Borrar formato (Ctrl+Espacio)",
+    "id": "42.18483088.4.48",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, C",
+    "rect": {
+     "x": 955,
+     "y": 121,
+     "w": 40,
+     "h": 40
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 22,
+    "kind": "Button",
+    "name": "Herramientas de escritura",
+    "id": "42.18483088.4.50",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, R",
+    "rect": {
+     "x": 1289,
+     "y": 121,
+     "w": 71,
+     "h": 40
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 23,
+    "kind": "Button",
+    "name": "Novedades",
+    "id": "42.18483088.4.52",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, P",
+    "rect": {
+     "x": 1365,
+     "y": 122,
+     "w": 37,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 24,
+    "kind": "Button",
+    "name": "Avatar del usuario",
+    "id": "42.18483088.4.55",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, U",
+    "rect": {
+     "x": 1407,
+     "y": 121,
+     "w": 38,
+     "h": 40
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 25,
+    "kind": "Button",
+    "name": "Configuración",
+    "id": "42.18483088.4.58",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, E",
+    "rect": {
+     "x": 1451,
+     "y": 121,
+     "w": 38,
+     "h": 40
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 26,
+    "kind": "Button",
+    "name": "Con formato",
+    "id": "42.4525920.4.66",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 461,
+     "y": 764,
+     "w": 126,
+     "h": 35
+    },
+    "zone": "BL",
+    "color": "black"
+   },
+   {
+    "i": 27,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.2295876.131909.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 78,
+     "y": 78,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "black",
+    "systemMenu": true
+   },
+   {
+    "i": 28,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "4.2295876.0.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1321,
+     "y": 70,
+     "w": 60,
+     "h": 37
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 29,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.2295876.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1440,
+     "y": 70,
+     "w": 60,
+     "h": 37
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 30,
+    "kind": "Window",
+    "name": "Ventana emergente",
+    "id": "42.2556906.4.113",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 77,
+     "y": 69,
+     "w": 1422,
+     "h": 732
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 31,
+    "kind": "Window",
+    "name": "Guardar como Markdown para conservar el formato",
+    "id": "42.2556906.4.123",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 77,
+     "y": 69,
+     "w": 1422,
+     "h": 732
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 32,
+    "kind": "Text",
+    "name": "Guardar como Markdown para conservar el formato",
+    "id": "42.2556906.4.114",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 482,
+     "y": 325,
+     "w": 590,
+     "h": 34
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 33,
+    "kind": "Text",
+    "name": "Este es un archivo de texto. Para mantener el formato actual ... todo el formato.",
+    "id": "42.2556906.4.115",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 482,
+     "y": 374,
+     "w": 611,
+     "h": 70
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 34,
+    "kind": "Text",
+    "name": "Guardar como archivo Markdown",
+    "id": "42.2556906.4.117",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 498,
+     "y": 512,
+     "w": 166,
+     "h": 23
+    },
+    "zone": "C",
+    "color": "blue"
+   },
+   {
+    "i": 35,
+    "kind": "Text",
+    "name": "Guardar como archivo de texto",
+    "id": "42.2556906.4.119",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 705,
+     "y": 512,
+     "w": 166,
+     "h": 23
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 36,
+    "kind": "Text",
+    "name": "Cancelar",
+    "id": "42.2556906.4.121",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 961,
+     "y": 512,
+     "w": 67,
+     "h": 23
+    },
+    "zone": "C",
+    "color": "black"
+   },
+   {
+    "i": 37,
+    "kind": "Text",
+    "name": "casahogarla casa roja, la casa azul",
+    "id": "42.2689078.4.1",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 148,
+     "y": 91,
+     "w": 97,
+     "h": 19
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 38,
+    "kind": "Text",
+    "name": "Sin título",
+    "id": "42.2689078.4.4",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 303,
+     "y": 91,
+     "w": 60,
+     "h": 19
+    },
+    "zone": "TL",
+    "color": "black",
+    "repeated": 1
+   },
+   {
+    "i": 39,
+    "kind": "Text",
+    "name": "lista.txt",
+    "id": "42.2689078.4.6",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 459,
+     "y": 91,
+     "w": 48,
+     "h": 19
+    },
+    "zone": "TL",
+    "color": "black"
+   },
+   {
+    "i": 40,
+    "kind": "Text",
+    "name": "lista pan",
+    "id": "42.2689078.4.8",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 614,
+     "y": 91,
+     "w": 56,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 41,
+    "kind": "Text",
+    "name": "notas.txt",
+    "id": "42.2689078.4.13",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 925,
+     "y": 91,
+     "w": 58,
+     "h": 19
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 42,
+    "kind": "Text",
+    "name": "prueba de guardado v3",
+    "id": "42.2689078.4.15",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1080,
+     "y": 91,
+     "w": 97,
+     "h": 19
+    },
+    "zone": "TR",
+    "color": "black"
+   },
+   {
+    "i": 43,
+    "kind": "Text",
+    "name": "Línea 1, Columna 1",
+    "id": "42.4525920.4.62",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 97,
+     "y": 771,
+     "w": 74,
+     "h": 20
+    },
+    "zone": "BL",
+    "color": "black"
+   },
+   {
+    "i": 44,
+    "kind": "Text",
+    "name": "21 caracteres.",
+    "id": "42.4525920.4.63",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 208,
+     "y": 771,
+     "w": 91,
+     "h": 20
+    },
+    "zone": "BL",
+    "color": "black"
+   },
+   {
+    "i": 45,
+    "kind": "Text",
+    "name": "Con formato",
+    "id": "42.4525920.4.65",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 494,
+     "y": 772,
+     "w": 86,
+     "h": 20
+    },
+    "zone": "BL",
+    "color": "black"
+   },
+   {
+    "i": 46,
+    "kind": "Text",
+    "name": "Zoom",
+    "id": "42.4525920.4.67",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1036,
+     "y": 771,
+     "w": 39,
+     "h": 20
+    },
+    "zone": "BR",
+    "color": "black"
+   },
+   {
+    "i": 47,
+    "kind": "Text",
+    "name": "Windows (CRLF)",
+    "id": "42.4525920.4.68",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1121,
+     "y": 771,
+     "w": 114,
+     "h": 20
+    },
+    "zone": "BR",
+    "color": "black"
+   },
+   {
+    "i": 48,
+    "kind": "Text",
+    "name": "UTF-8",
+    "id": "42.4525920.4.69",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1331,
+     "y": 771,
+     "w": 45,
+     "h": 20
+    },
+    "zone": "BR",
+    "color": "black"
+   },
+   {
+    "i": 49,
+    "kind": "TitleBar",
+    "name": "*prueba de guardado v3: Bloc de notas",
+    "id": "4.2295876.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 78,
+     "y": 78,
+     "w": 1420,
+     "h": 29
+    },
+    "zone": "T",
+    "color": "black"
+   },
+   {
+    "i": 50,
+    "kind": "MenuBar",
+    "name": "Barra de menús del sistema",
+    "id": "1.2295876.131909",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 78,
+     "y": 78,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "black",
+    "systemMenu": true
+   }
+  ]
+ },
+ "word_panel_navegacion": {
+  "window": {
+   "title": "Documento1  -  Autorecuperado - Word",
+   "process": "WINWORD",
+   "processId": 37080,
+   "hwnd": 22219522,
+   "requested": true,
+   "root": 22219522,
+   "born": true,
+   "foreground": false,
+   "rect": {
+    "x": 968,
+    "y": 0,
+    "w": 944,
+    "h": 1012
+   },
+   "focused": {
+    "kind": "Document",
+    "name": "Documento1 - Autorecuperado",
+    "nameSource": "",
+    "value": null,
+    "i": 41
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "MenuItem",
+    "name": "Opciones del panel de tareas",
+    "id": "42.4329132.4.1087510448.584",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 1324,
+     "y": 276,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "T",
+    "color": "white",
+    "systemMenu": true
+   },
+   {
+    "i": 1,
+    "kind": "Button",
+    "name": "Cerrar panel",
+    "id": "42.4329132.4.1087451536.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1364,
+     "y": 276,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 2,
+    "kind": "Edit",
+    "name": "Buscar en documento",
+    "id": "42.14092074",
+    "state": "",
+    "value": "Buscar en documento",
+    "rect": {
+     "x": 985,
+     "y": 325,
+     "w": 361,
+     "h": 26
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 3,
+    "kind": "SplitButton",
+    "name": "Buscar",
+    "id": "42.3804454.4.1077852480.584",
+    "state": "collapsed",
+    "value": "",
+    "rect": {
+     "x": 1346,
+     "y": 325,
+     "w": 39,
+     "h": 28
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 4,
+    "kind": "Button",
+    "name": "Buscar",
+    "id": "42.3804454.4.1088389728.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Entrar",
+    "rect": {
+     "x": 1346,
+     "y": 325,
+     "w": 29,
+     "h": 28
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 5,
+    "kind": "MenuItem",
+    "name": "Más opciones",
+    "id": "42.3804454.4.1088394528.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt+Flecha abajo",
+    "rect": {
+     "x": 1375,
+     "y": 325,
+     "w": 10,
+     "h": 28
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 6,
+    "kind": "TabItem",
+    "name": "Títulos",
+    "id": "42.3804454.4.1088403408.584",
+    "state": "selected",
+    "value": null,
+    "rect": {
+     "x": 984,
+     "y": 373,
+     "w": 63,
+     "h": 38
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 7,
+    "kind": "TabItem",
+    "name": "Páginas",
+    "id": "42.3804454.4.1088403168.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1047,
+     "y": 373,
+     "w": 85,
+     "h": 38
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 8,
+    "kind": "TabItem",
+    "name": "Resultados",
+    "id": "42.3804454.4.1088402208.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1132,
+     "y": 373,
+     "w": 96,
+     "h": 38
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 9,
+    "kind": "Hyperlink",
+    "name": "Este es un archivo recuperado que se almacena temporalmente en el equipo.",
+    "id": "42.3408834.4.1109274112.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1314,
+     "y": 222,
+     "w": 460,
+     "h": 42
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 10,
+    "kind": "Button",
+    "name": "Guardar",
+    "id": "42.3408834.4.1119150272.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1805,
+     "y": 227,
+     "w": 78,
+     "h": 32
+    },
+    "zone": "TR",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 11,
+    "kind": "Button",
+    "name": "Autoguardado",
+    "id": "42.24512672.4.1077821744.584",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, 1",
+    "rect": {
+     "x": 1022,
+     "y": 13,
+     "w": 163,
+     "h": 36
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 12,
+    "kind": "MenuItem",
+    "name": "Personalizar barra de herramientas de acceso rápido",
+    "id": "42.24512672.4.1077829904.584",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 1304,
+     "y": 12,
+     "w": 34,
+     "h": 38
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 13,
+    "kind": "Button",
+    "name": "Buscar (Alt+Q)",
+    "id": "42.24512672.4.1087507312.584",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, Q",
+    "rect": {
+     "x": 1600,
+     "y": 8,
+     "w": 58,
+     "h": 46
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 14,
+    "kind": "MenuItem",
+    "name": "PERSONA EJEMPLO",
+    "id": "42.24512672.4.1107992912.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, Z P",
+    "rect": {
+     "x": 1668,
+     "y": 1,
+     "w": 63,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 15,
+    "kind": "Button",
+    "name": "Minimizar",
+    "id": "42.24512672.4.1074746560.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1731,
+     "y": 1,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 16,
+    "kind": "Button",
+    "name": "Maximizar",
+    "id": "42.24512672.4.1074748576.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1791,
+     "y": 1,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 17,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "42.24512672.4.1074744768.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1851,
+     "y": 1,
+     "w": 60,
+     "h": 60
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 18,
+    "kind": "Button",
+    "name": "Pestaña Archivo",
+    "id": "42.24512672.4.1038891776.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, A",
+    "rect": {
+     "x": 974,
+     "y": 61,
+     "w": 80,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 19,
+    "kind": "TabItem",
+    "name": "Inicio",
+    "id": "42.24512672.4.1038892288.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, O",
+    "rect": {
+     "x": 1054,
+     "y": 61,
+     "w": 52,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 20,
+    "kind": "TabItem",
+    "name": "Insertar",
+    "id": "42.24512672.4.1038894336.584",
+    "state": "selected",
+    "value": null,
+    "shortcut": "Alt, B 2",
+    "rect": {
+     "x": 1107,
+     "y": 61,
+     "w": 69,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 21,
+    "kind": "TabItem",
+    "name": "Dibujar",
+    "id": "42.24512672.4.1038889728.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, J I",
+    "rect": {
+     "x": 1177,
+     "y": 61,
+     "w": 66,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 22,
+    "kind": "TabItem",
+    "name": "Diseño",
+    "id": "42.24512672.4.1038897664.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, S",
+    "rect": {
+     "x": 1244,
+     "y": 61,
+     "w": 63,
+     "h": 38
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 23,
+    "kind": "TabItem",
+    "name": "Disposición",
+    "id": "42.24512672.4.1038903552.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, P",
+    "rect": {
+     "x": 1308,
+     "y": 61,
+     "w": 89,
+     "h": 38
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 24,
+    "kind": "TabItem",
+    "name": "Referencias",
+    "id": "42.24512672.4.1038899456.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, K",
+    "rect": {
+     "x": 1398,
+     "y": 61,
+     "w": 90,
+     "h": 38
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 25,
+    "kind": "TabItem",
+    "name": "Correspondencia",
+    "id": "42.24512672.4.1038904320.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, D",
+    "rect": {
+     "x": 1489,
+     "y": 61,
+     "w": 90,
+     "h": 38
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 26,
+    "kind": "TabItem",
+    "name": "Revisar",
+    "id": "42.24512672.4.1038900992.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, R",
+    "rect": {
+     "x": 1580,
+     "y": 61,
+     "w": 66,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 27,
+    "kind": "TabItem",
+    "name": "Vista",
+    "id": "42.24512672.4.1038903296.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, W",
+    "rect": {
+     "x": 1647,
+     "y": 61,
+     "w": 48,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 28,
+    "kind": "TabItem",
+    "name": "Ayuda",
+    "id": "42.24512672.4.1038900736.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, N",
+    "rect": {
+     "x": 1696,
+     "y": 61,
+     "w": 60,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 29,
+    "kind": "Button",
+    "name": "Comentarios",
+    "id": "42.24512672.4.1087486256.584",
+    "state": "off",
+    "value": null,
+    "shortcut": "Alt, Z C",
+    "rect": {
+     "x": 1763,
+     "y": 65,
+     "w": 30,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 30,
+    "kind": "ComboBox",
+    "name": "Visualización",
+    "id": "42.24512672.4.1077008832.584",
+    "state": "collapsed",
+    "value": "Visualización",
+    "shortcut": "Alt, Z M",
+    "rect": {
+     "x": 1803,
+     "y": 65,
+     "w": 44,
+     "h": 30
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 31,
+    "kind": "MenuItem",
+    "name": "Compartir",
+    "id": "42.24512672.4.1077818480.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, Z S",
+    "rect": {
+     "x": 1857,
+     "y": 61,
+     "w": 39,
+     "h": 38
+    },
+    "zone": "TR",
+    "color": "blue"
+   },
+   {
+    "i": 32,
+    "kind": "MenuItem",
+    "name": "Páginas",
+    "id": "42.24512672.4.1077839424.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, B 2, Z P",
+    "rect": {
+     "x": 984,
+     "y": 101,
+     "w": 73,
+     "h": 119
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 33,
+    "kind": "MenuItem",
+    "name": "Ilustraciones",
+    "id": "42.24512672.4.1107990464.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, B 2, Z I",
+    "rect": {
+     "x": 1129,
+     "y": 101,
+     "w": 105,
+     "h": 119
+    },
+    "zone": "TL",
+    "color": "white"
+   },
+   {
+    "i": 34,
+    "kind": "MenuItem",
+    "name": "Vínculos",
+    "id": "42.24512672.4.1077834800.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, B 2, Z L",
+    "rect": {
+     "x": 1312,
+     "y": 101,
+     "w": 78,
+     "h": 119
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 35,
+    "kind": "MenuItem",
+    "name": "Encabezado y pie de página",
+    "id": "42.24512672.4.1038008128.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, B 2, Z H",
+    "rect": {
+     "x": 1494,
+     "y": 101,
+     "w": 129,
+     "h": 119
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 36,
+    "kind": "MenuItem",
+    "name": "Texto",
+    "id": "42.24512672.4.1077824736.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, B 2, Z T",
+    "rect": {
+     "x": 1623,
+     "y": 101,
+     "w": 69,
+     "h": 119
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 37,
+    "kind": "MenuItem",
+    "name": "Símbolos",
+    "id": "42.24512672.4.1077806784.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, B 2, Z S",
+    "rect": {
+     "x": 1692,
+     "y": 101,
+     "w": 85,
+     "h": 119
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 38,
+    "kind": "Button",
+    "name": "Campos de eSignature",
+    "id": "42.24512672.4.1089283520.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt, B 2, S E",
+    "rect": {
+     "x": 1787,
+     "y": 103,
+     "w": 81,
+     "h": 96
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 39,
+    "kind": "Button",
+    "name": "Columna a la derecha",
+    "id": "42.24512672.4.1089252560.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1836,
+     "y": 99,
+     "w": 30,
+     "h": 123
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 40,
+    "kind": "MenuItem",
+    "name": "Opciones de presentación de la cinta de opciones",
+    "id": "42.24512672.4.1077824464.584",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt, Z R",
+    "rect": {
+     "x": 1871,
+     "y": 192,
+     "w": 25,
+     "h": 25
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 41,
+    "kind": "Document",
+    "name": "Documento1 - Autorecuperado",
+    "id": "42.1377554",
+    "state": "focused",
+    "value": null,
+    "rect": {
+     "x": 1407,
+     "y": 264,
+     "w": 483,
+     "h": 720
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 42,
+    "kind": "Edit",
+    "name": "Contenido de la página 1",
+    "id": "42.1377554.4.2",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1432,
+     "y": 403,
+     "w": 458,
+     "h": 581
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 43,
+    "kind": "Button",
+    "name": "Línea arriba",
+    "id": "42.1705244.4.1089285920.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1890,
+     "y": 264,
+     "w": 21,
+     "h": 21
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 44,
+    "kind": "Button",
+    "name": "Av Pág",
+    "id": "42.1705244.4.1089284000.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1890,
+     "y": 643,
+     "w": 21,
+     "h": 320
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 45,
+    "kind": "Button",
+    "name": "Línea abajo",
+    "id": "42.1705244.4.1089286640.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1890,
+     "y": 963,
+     "w": 21,
+     "h": 21
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 46,
+    "kind": "Button",
+    "name": "Concentración",
+    "id": "42.25496262.4.1080229456.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1394,
+     "y": 985,
+     "w": 126,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 47,
+    "kind": "Button",
+    "name": "Modo de lectura",
+    "id": "42.25496262.4.1087498576.584",
+    "state": "off",
+    "value": null,
+    "rect": {
+     "x": 1524,
+     "y": 985,
+     "w": 50,
+     "h": 26
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 48,
+    "kind": "Button",
+    "name": "Diseño de impresión",
+    "id": "42.25496262.4.1087495216.584",
+    "state": "on",
+    "value": null,
+    "rect": {
+     "x": 1574,
+     "y": 985,
+     "w": 50,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 49,
+    "kind": "Button",
+    "name": "Diseño web",
+    "id": "42.25496262.4.1087506192.584",
+    "state": "off",
+    "value": null,
+    "rect": {
+     "x": 1624,
+     "y": 985,
+     "w": 50,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 50,
+    "kind": "Button",
+    "name": "Alejar (Ctrl -)",
+    "id": "42.25496262.4.1089298400.584",
+    "state": "readonly",
+    "value": "100",
+    "rect": {
+     "x": 1675,
+     "y": 985,
+     "w": 22,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 51,
+    "kind": "Slider",
+    "name": "Zoom",
+    "id": "42.25496262.4.1089298880.584",
+    "state": "",
+    "value": "100",
+    "rect": {
+     "x": 1697,
+     "y": 985,
+     "w": 125,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 52,
+    "kind": "Button",
+    "name": "Alejar",
+    "id": "42.25496262.4.1089293600.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1697,
+     "y": 985,
+     "w": 60,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 53,
+    "kind": "Button",
+    "name": "Acercar",
+    "id": "42.25496262.4.1089292400.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1763,
+     "y": 985,
+     "w": 59,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 54,
+    "kind": "Button",
+    "name": "Acercar (Ctrl +)",
+    "id": "42.25496262.4.1089258800.584",
+    "state": "readonly",
+    "value": "100",
+    "rect": {
+     "x": 1822,
+     "y": 985,
+     "w": 22,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 55,
+    "kind": "Button",
+    "name": "Zoom 100%",
+    "id": "42.25496262.4.1080226096.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1844,
+     "y": 985,
+     "w": 53,
+     "h": 26
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 56,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.22219522.131909.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": {
+     "x": 969,
+     "y": 9,
+     "w": 28,
+     "h": 28
+    },
+    "zone": "TL",
+    "color": "white",
+    "systemMenu": true
+   },
+   {
+    "i": 57,
+    "kind": "Pane",
+    "name": "MsoDockLeft",
+    "id": "42.9766024",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 969,
+     "y": 264,
+     "w": 438,
+     "h": 720
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 58,
+    "kind": "Pane",
+    "name": "Navegación",
+    "id": "42.3737658",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 969,
+     "y": 264,
+     "w": 438,
+     "h": 720
+    },
+    "zone": "L",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 59,
+    "kind": "Window",
+    "name": "Navegación",
+    "id": "42.1181036",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 977,
+     "y": 306,
+     "w": 422,
+     "h": 671
+    },
+    "zone": "L",
+    "color": "white"
+   },
+   {
+    "i": 60,
+    "kind": "Text",
+    "name": "Cree un esquema interactivo de su documento. Es una buena ma ... de su documento.",
+    "id": "42.3804454.4.1087507088.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 984,
+     "y": 420,
+     "w": 393,
+     "h": 190
+    },
+    "zone": "L",
+    "color": "white",
+    "reserved": true
+   },
+   {
+    "i": 61,
+    "kind": "TitleBar",
+    "name": "‪Documento1 - Autorecuperado‬",
+    "id": "42.24512672.4.1109168384.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1339,
+     "y": 1,
+     "w": 261,
+     "h": 60
+    },
+    "zone": "T",
+    "color": "white",
+    "reserved": true
+   },
+   {
+    "i": 62,
+    "kind": "Pane",
+    "name": "Documento1 - Autorecuperado",
+    "id": "42.2887088",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1407,
+     "y": 264,
+     "w": 504,
+     "h": 720
+    },
+    "zone": "R",
+    "color": "white",
+    "reserved": true
+   },
+   {
+    "i": 63,
+    "kind": "Text",
+    "name": "Mensaje de estado Documento1: 13 caracteres (valor aproximado).",
+    "id": "42.25496262.4.1080216240.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 974,
+     "y": 985,
+     "w": 299,
+     "h": 26
+    },
+    "zone": "BL",
+    "color": "white",
+    "reserved": true
+   },
+   {
+    "i": 64,
+    "kind": "TitleBar",
+    "name": "Documento1 - Autorecuperado - Word",
+    "id": "4.22219522.0",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 969,
+     "y": 9,
+     "w": 942,
+     "h": 29
+    },
+    "zone": "T",
+    "color": "white",
+    "reserved": true
+   }
+  ]
+ },
+ "word_guardar_cambios": {
+  "window": {
+   "title": "",
+   "process": "WINWORD",
+   "processId": 37080,
+   "hwnd": 28968036,
+   "requested": true,
+   "root": 22219522,
+   "others": [],
+   "foreground": false,
+   "rect": {
+    "x": 1161,
+    "y": 311,
+    "w": 559,
+    "h": 546
+   },
+   "focused": {
+    "kind": "Edit",
+    "name": "Nombre de archivo",
+    "nameSource": "",
+    "value": "Informe semanal",
+    "i": 0
+   }
+  },
+  "controls": [
+   {
+    "i": 0,
+    "kind": "Edit",
+    "name": "Nombre de archivo",
+    "id": "42.17240376",
+    "state": "focused",
+    "value": "Informe semanal",
+    "rect": {
+     "x": 1199,
+     "y": 439,
+     "w": 438,
+     "h": 26
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 1,
+    "kind": "ComboBox",
+    "name": "Guardar como tipo",
+    "id": "42.16650062.4.799215920.584",
+    "state": "collapsed",
+    "value": "Documento de Word (*.docx)",
+    "rect": {
+     "x": 1637,
+     "y": 439,
+     "w": 48,
+     "h": 26
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 2,
+    "kind": "ComboBox",
+    "name": "Elegir una ubicación",
+    "id": "42.16650062.4.1026919936.584",
+    "state": "collapsed",
+    "value": null,
+    "rect": {
+     "x": 1193,
+     "y": 530,
+     "w": 495,
+     "h": 63
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 3,
+    "kind": "Button",
+    "name": "Abrir",
+    "id": "42.16650062.4.1119136832.584",
+    "state": "",
+    "value": null,
+    "shortcut": "Alt+Flecha abajo",
+    "rect": {
+     "x": 1667,
+     "y": 531,
+     "w": 10,
+     "h": 61
+    },
+    "zone": "R",
+    "color": "white"
+   },
+   {
+    "i": 4,
+    "kind": "Hyperlink",
+    "name": "Learn more",
+    "id": "42.16650062.4.1109245184.584",
+    "state": "readonly",
+    "value": "",
+    "rect": {
+     "x": 1199,
+     "y": 720,
+     "w": 80,
+     "h": 22
+    },
+    "zone": "BL",
+    "color": "white"
+   },
+   {
+    "i": 5,
+    "kind": "Button",
+    "name": "Más opciones...",
+    "id": "42.16650062.4.1119167072.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1193,
+     "y": 803,
+     "w": 112,
+     "h": 24
+    },
+    "zone": "BL",
+    "color": "white"
+   },
+   {
+    "i": 6,
+    "kind": "Button",
+    "name": "Guardar",
+    "id": "42.16650062.4.1109184768.584",
+    "state": "",
+    "value": null,
+    "shortcut": "ALT+G",
+    "rect": {
+     "x": 1363,
+     "y": 800,
+     "w": 92,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "blue"
+   },
+   {
+    "i": 7,
+    "kind": "Button",
+    "name": "No guardar",
+    "id": "42.16650062.4.1109198592.584",
+    "state": "",
+    "value": null,
+    "shortcut": "ALT+N",
+    "rect": {
+     "x": 1466,
+     "y": 800,
+     "w": 115,
+     "h": 30
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 8,
+    "kind": "Button",
+    "name": "Cancelar",
+    "id": "42.16650062.4.1109197312.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1592,
+     "y": 800,
+     "w": 96,
+     "h": 30
+    },
+    "zone": "BR",
+    "color": "white"
+   },
+   {
+    "i": 9,
+    "kind": "MenuItem",
+    "name": "Sistema",
+    "id": "1.28968036.96734277.0",
+    "state": "collapsed",
+    "value": null,
+    "shortcut": "Alt + Espacio",
+    "rect": null,
+    "zone": "",
+    "color": "",
+    "systemMenu": true
+   },
+   {
+    "i": 10,
+    "kind": "Button",
+    "name": "Cerrar",
+    "id": "4.28968036.0.5",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1676,
+     "y": 312,
+     "w": 44,
+     "h": 37
+    },
+    "zone": "TR",
+    "color": "white"
+   },
+   {
+    "i": 11,
+    "kind": "Window",
+    "name": "¿Guardar los cambios en este archivo?",
+    "id": "42.16650062.4.1118921440.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1162,
+     "y": 349,
+     "w": 557,
+     "h": 507
+    },
+    "zone": "C",
+    "color": "white"
+   },
+   {
+    "i": 12,
+    "kind": "Text",
+    "name": "¿Guardar los cambios en este archivo?",
+    "id": "42.16650062.4.1119116000.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1193,
+     "y": 350,
+     "w": 399,
+     "h": 31
+    },
+    "zone": "T",
+    "color": "white"
+   },
+   {
+    "i": 13,
+    "kind": "Text",
+    "name": "OneDrive - INSTITUTO EJEMPLO",
+    "id": "42.16650062.4.1119132576.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1260,
+     "y": 538,
+     "w": 337,
+     "h": 26
+    },
+    "zone": "C",
+    "color": "white",
+    "repeated": 1
+   },
+   {
+    "i": 14,
+    "kind": "Text",
+    "name": "No se admiten etiquetas de confidencialidad.",
+    "id": "42.16650062.4.1119137280.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1199,
+     "y": 696,
+     "w": 304,
+     "h": 20
+    },
+    "zone": "B",
+    "color": "white"
+   },
+   {
+    "i": 15,
+    "kind": "Text",
+    "name": "Más opciones...",
+    "id": "42.16650062.4.1119166624.584",
+    "state": "",
+    "value": null,
+    "rect": {
+     "x": 1195,
+     "y": 805,
+     "w": 108,
+     "h": 20
+    },
+    "zone": "BL",
+    "color": "white"
+   }
+  ]
+ }
+}

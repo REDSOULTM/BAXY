@@ -17,8 +17,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     private readonly ConcurrentDictionary<string, ResolvedRecipient> _recipients = new();
     private readonly SemaphoreSlim _interaction = new(1, 1);
 
-    internal DesktopMessagingAdapter()
-        : this(new WindowsDesktopMessagingAutomation(), null)
+    internal DesktopMessagingAdapter(IClientInteractionProbe probe)
+        : this(new WindowsDesktopMessagingAutomation(probe), null)
     {
     }
 
@@ -213,6 +213,11 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             if (known is "whatsapp" or "discord")
             {
                 DesktopRecipientObservation knownObservation = await _automation.ResolveAsync(known, recipient, cancellationToken).ConfigureAwait(false);
+                if (PersonStop(knownObservation) is ExternalCapabilityReceipt busyOnKnown)
+                {
+                    return busyOnKnown;
+                }
+
                 if (knownObservation.Verified)
                 {
                     channel = known;
@@ -226,6 +231,11 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             foreach (string candidate in new[] { "whatsapp", "discord" })
             {
                 DesktopRecipientObservation probe = await _automation.ResolveAsync(candidate, recipient, cancellationToken).ConfigureAwait(false);
+                if (PersonStop(probe) is ExternalCapabilityReceipt busyOnProbe)
+                {
+                    return busyOnProbe;
+                }
+
                 if (probe.Verified)
                 {
                     hits.Add((candidate, probe));
@@ -246,6 +256,22 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         }
         else
         {
+            // D59 §1, ronda 19 (t1-c09, t2-c07, t3-c07 «mandale a Ron92 por discord …» with
+            // Discord closed): a named client is opened before its recipient is looked
+            // for, as the draft and the reviewed send already do; resolving against a
+            // closed client only answered «<client>_client_not_running». A client named
+            // by nobody («any») is never opened: only the open ones are probed above.
+            DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
+                channel,
+                cancellationToken).ConfigureAwait(false);
+            if (!client.Ready)
+            {
+                return Failure(
+                    "message.recipient.resolve",
+                    client.ErrorCode ?? $"{channel}_client_not_running",
+                    client.Opened);
+            }
+
             observation = await _automation.ResolveAsync(
                 channel,
                 recipient,
@@ -558,6 +584,22 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         bool effectObserved = false) =>
         new(operation, effectObserved, false, null, error);
 
+    // The codes that say the person was using the PC (no pause, or their input during the burst, and what that
+    // interruption left in a composer): with no client named, a lookup that stopped on one of them ends the search
+    // there with that cause. Probing the next client would wait, take the front and type over the person again, and
+    // the final «not found in either client» would hide why it stopped.
+    private static readonly HashSet<string> PersonStops = new(StringComparer.Ordinal)
+    {
+        "input_user_not_paused",
+        LeasedInput.Interrupted,
+        WindowsDesktopMessagingAutomation.DraftLeftAfterInterruption,
+    };
+
+    private static ExternalCapabilityReceipt? PersonStop(DesktopRecipientObservation observation) =>
+        observation.ErrorCode is string code && PersonStops.Contains(code)
+            ? Failure("message.recipient.resolve", code, observation.EffectObserved)
+            : null;
+
     private static JsonElement JsonObject(params (string Name, object Value)[] values)
     {
         var buffer = new ArrayBufferWriter<byte>();
@@ -668,27 +710,90 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const uint Unicode = 0x0004;
 
     // D59 §1: after the client's open is verified, its main window must show
-    // (Discord draws an updater splash first) within this clock, and then gets a
-    // short settle so its chat list is drawn before the chat is searched.
-    internal static readonly TimeSpan ClientReadyBudget = TimeSpan.FromSeconds(15);
+    // (Discord draws an updater splash first) within its cold-start clock
+    // (ClientColdStart, data), and then gets a short settle so its chat list is
+    // drawn before the chat is searched.
     private static readonly TimeSpan ClientSettleDelay = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan ClientReadyPoll = TimeSpan.FromMilliseconds(250);
 
-    private IApplicationOpenProvider? _clientOpener;
+    private WindowsInstalledApplicationOpenProvider? _clientOpener;
+    private readonly IForegroundLease? _lease;
 
-    internal WindowsDesktopMessagingAutomation()
+    internal WindowsDesktopMessagingAutomation(IClientInteractionProbe probe, IForegroundLease? lease = null)
     {
+        Probe = probe ?? throw new ArgumentNullException(nameof(probe));
+        _lease = lease;
     }
 
-    internal WindowsDesktopMessagingAutomation(IApplicationOpenProvider clientOpener)
+    // v3 point 0, fix 3: the client is driven with the real keyboard and mouse (its chat search, composer and quick
+    // switcher expose no pattern this flow can use), so each resolve, send and draft runs inside one burst of the
+    // foreground lease: after the person's pause, every key and click asks the burst first, and the window in front
+    // and the cursor are given back at the end.
+    private IForegroundLease Lease => _lease ?? ForegroundLease.Shared;
+
+    // Ronda 24: what says a client's window is ready to be used (content shown, a search input in focus). TZ-DC2: it
+    // reads through the Core's own UI Automation worker, never a second one started by the first search.
+    private IClientInteractionProbe Probe { get; }
+
+    // The lease's refusal in this adapter's words: a window that could not be brought up is the focus not verified.
+    internal static string LeaseStop(string code) =>
+        code == "input_window_not_in_front" ? "messaging_focus_not_verified" : code;
+
+    /// <summary>
+    /// A flow stopped after it began typing into a conversation (the person's input, or the window losing the front)
+    /// and the conversation's composer no longer looks as before: text may be left there, and the person's next Enter
+    /// in that chat would send it. Said so, never as a bare «stopped halfway».
+    /// </summary>
+    internal const string DraftLeftAfterInterruption = "message_draft_left_after_interruption";
+
+    /// <summary>
+    /// The stop of a flow that was typing near a conversation's composer: when the composer changed since
+    /// <paramref name="composerBefore"/> (compared without any input, by its picture) the stop says text was left
+    /// there; otherwise it keeps its own code.
+    /// </summary>
+    internal static LeasedInput.BurstStoppedException ComposerAfterStop(
+        LeasedInput.BurstStoppedException stop,
+        bool composerChanged) =>
+        composerChanged ? new LeasedInput.BurstStoppedException(DraftLeftAfterInterruption, stop) : stop;
+
+    private static bool ComposerChanged(nint handle, string channel, byte[]? composerBefore)
     {
-        _clientOpener = clientOpener ?? throw new ArgumentNullException(nameof(clientOpener));
+        if (composerBefore is null)
+        {
+            // No picture from before: nothing proves the composer is as it was.
+            return true;
+        }
+
+        try
+        {
+            byte[] now = CaptureRegion(handle, CaptureArea.Composer, channel);
+            return !CryptographicOperations.FixedTimeEquals(SHA256.HashData(composerBefore), SHA256.HashData(now));
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException or ExternalException)
+        {
+            // Not readable: the text may be there.
+            return true;
+        }
+    }
+
+    private static byte[]? TryCaptureComposer(nint handle, string channel)
+    {
+        try
+        {
+            return CaptureRegion(handle, CaptureArea.Composer, channel);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException or ExternalException)
+        {
+            return null;
+        }
     }
 
     public async ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
         string channel,
         CancellationToken cancellationToken)
     {
+        // The reads that prove a window ready start now, off the turn: a client already open never waits for them.
+        Probe.Prewarm();
         if (FindWindow(channel).Handle != 0)
         {
             return DesktopClientReadiness.AlreadyOpen;
@@ -706,21 +811,47 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return failure;
         }
 
+        // Encargo CS (banco fz1 s14): one clock for the whole start, as long as the client may take cold (data per
+        // application); a window still without content when it runs out says the client is still starting.
+        TimeSpan coldStart = ClientColdStart.For(ClientApplicationName(channel));
         var clock = Stopwatch.StartNew();
-        while (clock.Elapsed < ClientReadyBudget)
+        while (clock.Elapsed < coldStart)
         {
             (nint handle, _) = FindWindow(channel);
             if (handle != 0 && ClientWindowReady(WindowTitle(handle)))
             {
-                await Task.Delay(ClientSettleDelay, cancellationToken).ConfigureAwait(false);
+                // Ronda 24 (t1-c09, t2-c07, t3-c07): the loading screen already carries the client's name as its
+                // title, so a title is not readiness. Ready is a window that shows content a person interacts with
+                // (an editable field or a list). Only when nothing can be read is the old settle kept.
+                TimeSpan left = coldStart - clock.Elapsed;
+                ContentWait content = await AwaitClientContentAsync(
+                    token => Probe.ReadAsync(handle, content: true, token),
+                    left < ClientContentBudget ? left : ClientContentBudget,
+                    ClientReadyPoll,
+                    cancellationToken).ConfigureAwait(false);
+                if (content == ContentWait.NotShown)
+                {
+                    // Encargo CS: a splash titled as the client (its updater) gives way to its main window, another
+                    // window: it is looked for again while the clock lasts.
+                    continue;
+                }
+
+                if (content == ContentWait.Unanswered)
+                {
+                    await Task.Delay(ClientSettleDelay, cancellationToken).ConfigureAwait(false);
+                }
+
                 return new(true, true, null);
             }
 
             await Task.Delay(ClientReadyPoll, cancellationToken).ConfigureAwait(false);
         }
 
-        return new(false, true, $"{channel}_client_open_not_verified");
+        return new(false, true, ClientStillStarting(channel));
     }
+
+    /// <summary>Encargo CS: the client was launched and its main window did not show its content within its cold start.</summary>
+    internal static string ClientStillStarting(string channel) => $"{channel}_client_still_starting";
 
     internal static string ClientApplicationName(string channel) =>
         string.Equals(channel, "whatsapp", StringComparison.Ordinal) ? "WhatsApp" : "Discord";
@@ -751,11 +882,22 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return new(false, false, 0, 0, $"{channel}_client_not_running");
         }
 
-        if (!Focus(handle))
-        {
-            return new(false, false, handle, processId, "messaging_focus_not_verified");
-        }
+        return await LeasedInput.RunAsync(
+            Lease,
+            handle,
+            token => ResolveInBurstAsync(channel, recipient, handle, processId, Probe, token),
+            (code, sent) => new DesktopRecipientObservation(false, sent, handle, processId, LeaseStop(code)),
+            cancellationToken).ConfigureAwait(false);
+    }
 
+    private static async ValueTask<DesktopRecipientObservation> ResolveInBurstAsync(
+        string channel,
+        string recipient,
+        nint handle,
+        int processId,
+        IClientInteractionProbe probe,
+        CancellationToken cancellationToken)
+    {
         await NormalizeWindowAsync(channel, handle, cancellationToken).ConfigureAwait(false);
         // The header is read twice because the first frame after a resize or
         // focus change may still be transitional. (Escape must not be sent here:
@@ -788,22 +930,30 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             ClickAt(handle, ChatSearchLogicalX, ChatSearchLogicalY);
             await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
-            SendChord(VirtualKeyControl, VirtualKeyA);
-            await Task.Delay(100, cancellationToken).ConfigureAwait(false);
-            SendKey(VirtualKeyBack);
-            SendText(recipient);
-            await Task.Delay(350, cancellationToken).ConfigureAwait(false);
-            byte[] composerAfter = CaptureRegion(handle, CaptureArea.Composer, channel);
-            if (!CryptographicOperations.FixedTimeEquals(
-                    SHA256.HashData(composerBefore),
-                    SHA256.HashData(composerAfter)))
+            try
             {
                 SendChord(VirtualKeyControl, VirtualKeyA);
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
                 SendKey(VirtualKeyBack);
-                return new(false, true, handle, processId, "search_focus_not_verified");
-            }
+                SendText(recipient);
+                await Task.Delay(350, cancellationToken).ConfigureAwait(false);
+                byte[] composerAfter = CaptureRegion(handle, CaptureArea.Composer, channel);
+                if (!CryptographicOperations.FixedTimeEquals(
+                        SHA256.HashData(composerBefore),
+                        SHA256.HashData(composerAfter)))
+                {
+                    SendChord(VirtualKeyControl, VirtualKeyA);
+                    SendKey(VirtualKeyBack);
+                    return new(false, true, handle, processId, "search_focus_not_verified");
+                }
 
-            SendKey(VirtualKeyReturn);
+                SendKey(VirtualKeyReturn);
+            }
+            catch (LeasedInput.BurstStoppedException stop)
+            {
+                // MSGSEND1845's cleanup did not run: if the name went into the open chat's composer, it is still there.
+                throw ComposerAfterStop(stop, ComposerChanged(handle, channel, composerBefore));
+            }
         }
         else
         {
@@ -817,18 +967,51 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // keys travel through the same SendInput path that already sends
             // WhatsApp messages; a PowerShell helper stole the foreground, which
             // closes the switcher, and its Enter never reached the row.
+            // Ronda 24 (t1-c09, t2-c07, t3-c07, client opened cold): the switcher is used only once it is there. After
+            // the shortcut, a new editable field (or a result row of its list) must hold the focus (the composer keeps
+            // its own); the old fixed 1.4 s is now the most it waits. Nothing seen on a client started just now:
+            // Escape and the shortcut once more; still nothing, the name is never typed (it would go into whatever has
+            // the focus, maybe a composer) and nothing was written. Nothing seen on a client running for longer, or a
+            // window that cannot be read at all: the timed path of before is kept (revisión 2 de r24).
+            ValueTask<ClientInteraction> Read(CancellationToken token) => probe.ReadAsync(handle, content: false, token);
             SendKey(VirtualKeyEscape);
             await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+            // The focus before the shortcut is read once anything open was closed: a search left open is not taken
+            // for the conversation's field.
+            ClientInteraction before = await Read(cancellationToken).ConfigureAwait(false);
+            // The open conversation's composer, pictured before the shortcut (MSGSEND1845's check): only a composer
+            // that looks the same once the search is closed lets the turn say nothing was written (revisión 1 de r24:
+            // a cold client can focus its composer by itself while the shortcut does nothing yet).
+            byte[]? composerBefore = TryCaptureComposer(handle, channel);
+            // Revisión 2 de r24: only a client started just now may stop the name for a search not seen open.
+            bool coldClient = ClientStartedRecently(ProcessStartTime(processId), DateTime.Now);
             SendChord(VirtualKeyControl, VirtualKeyK);
-            await Task.Delay(1400, cancellationToken).ConfigureAwait(false);
+            InputWait input = await AwaitOpenedInputAsync(
+                Read, before, SearchInputBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
+            if (AfterSearchWait(input, coldClient, retried: false) == SearchStep.Retry)
+            {
+                SendKey(VirtualKeyEscape);
+                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+                SendChord(VirtualKeyControl, VirtualKeyK);
+                input = await AwaitOpenedInputAsync(
+                    Read, before, SearchInputRetryBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (AfterSearchWait(input, coldClient, retried: true) == SearchStep.Refuse)
+            {
+                SendKey(VirtualKeyEscape);
+                return UnverifiedChat(handle, processId, composerUntouched: true);
+            }
+
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after ctrl+k");
             SendChord(VirtualKeyControl, VirtualKeyA);
             await Task.Delay(120, cancellationToken).ConfigureAwait(false);
             SendKey(VirtualKeyBack);
             await Task.Delay(120, cancellationToken).ConfigureAwait(false);
             SendText(recipient);
-            await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
-            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}»");
+            bool named = await AwaitNamedResultAsync(
+                Read, name => TitleNamesMatch(name, channel, recipient), InteractionPoll, cancellationToken).ConfigureAwait(false);
+            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}», named {named}");
             // No stray modifier key-up is sent here: a lone Alt release activates
             // the window menu in Chromium and closed the switcher, so the click
             // below landed on the conversation behind it.
@@ -838,9 +1021,27 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // composer focused). The switcher is centred in the window and its
             // first row sits just below the input.
             ClickAtRelative(handle, 0.5, DiscordSwitcherFirstRowHeightFraction);
-            await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
-            await Task.Delay(1500, cancellationToken).ConfigureAwait(false);
-            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after enter, title " + WindowTitle(handle));
+            // The title is read for up to 3 s from the click (r23 c07: one read at 900 ms missed a title that came
+            // later), and the first read that names the recipient ends the wait.
+            bool opened = await PollUntilAsync(
+                ObserveRecipientAsync, ChatTitleBudget, ChatTitlePoll, cancellationToken).ConfigureAwait(false);
+            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after click, title " + WindowTitle(handle));
+            if (opened)
+            {
+                return new(true, true, handle, processId, null);
+            }
+
+            bool composerChanged = true;
+            if (input == InputWait.Opened)
+            {
+                // The name should have gone only into the switcher's own input: it is closed and the composer is
+                // pictured again; a composer that changed (or cannot be read) may hold the name.
+                SendKey(VirtualKeyEscape);
+                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+                composerChanged = ComposerChanged(handle, channel, composerBefore);
+            }
+
+            return UnverifiedChat(handle, processId, ComposerUntouched(input, composerChanged));
         }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
@@ -858,12 +1059,24 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string text,
         CancellationToken cancellationToken)
     {
-        if (!ProcessStillOwnsWindow(recipient.WindowHandle, recipient.ProcessId)
-            || !Focus(recipient.WindowHandle))
+        if (!ProcessStillOwnsWindow(recipient.WindowHandle, recipient.ProcessId))
         {
             return new(false, false, string.Empty, "messaging_focus_not_verified");
         }
 
+        return await LeasedInput.RunAsync(
+            Lease,
+            recipient.WindowHandle,
+            token => SendInBurstAsync(recipient, text, token),
+            (code, sent) => new DesktopMessageObservation(false, sent, string.Empty, LeaseStop(code)),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async ValueTask<DesktopMessageObservation> SendInBurstAsync(
+        ResolvedRecipient recipient,
+        string text,
+        CancellationToken cancellationToken)
+    {
         await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
             .ConfigureAwait(false);
 
@@ -881,7 +1094,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return new(false, false, string.Empty, "recipient_identity_changed");
         }
 
-        if (!FocusComposer(recipient.WindowHandle))
+        if (!FocusComposer(recipient.WindowHandle, recipient.Channel))
         {
             return new(false, false, string.Empty, "message_composer_not_focused");
         }
@@ -891,37 +1104,33 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendKey(VirtualKeyBack);
         await Task.Delay(150, cancellationToken).ConfigureAwait(false);
         byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
-        SendText(text);
-
-        async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
+        byte[] beforeSend;
+        try
         {
-            byte[] bitmap = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
-            bool changed = !CryptographicOperations.FixedTimeEquals(
-                SHA256.HashData(before),
-                SHA256.HashData(bitmap));
-            string observedText = changed
-                ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
-                : string.Empty;
-            return new(bitmap, changed && (ContainsPhrase(observedText, text) || DeliveryMatches(observedText, text)));
+            SendText(text);
+
+            MessageVisualObservation draftObservation = await ObserveTypedDraftAsync(
+                recipient, text, before, cancellationToken).ConfigureAwait(false);
+            if (!draftObservation.Verified)
+            {
+                SendChord(VirtualKeyControl, VirtualKeyA);
+                SendKey(VirtualKeyBack);
+                return new(false, false, string.Empty, "message_draft_not_verified");
+            }
+
+            // The delivery is read from the band of last messages just above the
+            // composer, where the new outgoing bubble appears; the whole pane never
+            // reads it (MSGSEND1845: «hola» sent and visible, pane OCR without it).
+            beforeSend = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
+            SendKey(VirtualKeyReturn);
+        }
+        catch (LeasedInput.BurstStoppedException stop)
+        {
+            // Stopped between the first character and Enter: the message, whole or in part, may sit in the composer.
+            throw ComposerAfterStop(
+                stop, ComposerChanged(recipient.WindowHandle, recipient.Channel, before));
         }
 
-        MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
-            ObserveDraftAsync,
-            static observation => observation.Verified,
-            TimeSpan.FromMilliseconds(350),
-            cancellationToken).ConfigureAwait(false);
-        if (!draftObservation.Verified)
-        {
-            SendChord(VirtualKeyControl, VirtualKeyA);
-            SendKey(VirtualKeyBack);
-            return new(false, false, string.Empty, "message_draft_not_verified");
-        }
-
-        // The delivery is read from the band of last messages just above the
-        // composer, where the new outgoing bubble appears; the whole pane never
-        // reads it (MSGSEND1845: «hola» sent and visible, pane OCR without it).
-        byte[] beforeSend = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
-        SendKey(VirtualKeyReturn);
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
         string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
@@ -975,12 +1184,24 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         CancellationToken cancellationToken)
     {
         // MSG1837: the same path as a send up to the verified draft, then stop.
-        if (!ProcessStillOwnsWindow(recipient.WindowHandle, recipient.ProcessId)
-            || !Focus(recipient.WindowHandle))
+        if (!ProcessStillOwnsWindow(recipient.WindowHandle, recipient.ProcessId))
         {
             return new(false, false, string.Empty, "messaging_focus_not_verified");
         }
 
+        return await LeasedInput.RunAsync(
+            Lease,
+            recipient.WindowHandle,
+            token => DraftInBurstAsync(recipient, text, token),
+            (code, sent) => new DesktopMessageObservation(false, sent, string.Empty, LeaseStop(code)),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async ValueTask<DesktopMessageObservation> DraftInBurstAsync(
+        ResolvedRecipient recipient,
+        string text,
+        CancellationToken cancellationToken)
+    {
         await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
             .ConfigureAwait(false);
 
@@ -998,7 +1219,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return new(false, false, string.Empty, "recipient_identity_changed");
         }
 
-        if (!FocusComposer(recipient.WindowHandle))
+        if (!FocusComposer(recipient.WindowHandle, recipient.Channel))
         {
             return new(false, false, string.Empty, "message_composer_not_focused");
         }
@@ -1008,30 +1229,25 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendKey(VirtualKeyBack);
         await Task.Delay(150, cancellationToken).ConfigureAwait(false);
         byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
-        SendText(text);
-
-        async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
+        MessageVisualObservation draftObservation;
+        try
         {
-            byte[] bitmap = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
-            bool changed = !CryptographicOperations.FixedTimeEquals(
-                SHA256.HashData(before),
-                SHA256.HashData(bitmap));
-            string observedText = changed
-                ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
-                : string.Empty;
-            return new(bitmap, changed && (ContainsPhrase(observedText, text) || DeliveryMatches(observedText, text)));
+            SendText(text);
+
+            draftObservation = await ObserveTypedDraftAsync(
+                recipient, text, before, cancellationToken).ConfigureAwait(false);
+            if (!draftObservation.Verified)
+            {
+                SendChord(VirtualKeyControl, VirtualKeyA);
+                SendKey(VirtualKeyBack);
+                return new(false, true, string.Empty, "message_draft_not_verified");
+            }
         }
-
-        MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
-            ObserveDraftAsync,
-            static observation => observation.Verified,
-            TimeSpan.FromMilliseconds(1200),
-            cancellationToken).ConfigureAwait(false);
-        if (!draftObservation.Verified)
+        catch (LeasedInput.BurstStoppedException stop)
         {
-            SendChord(VirtualKeyControl, VirtualKeyA);
-            SendKey(VirtualKeyBack);
-            return new(false, true, string.Empty, "message_draft_not_verified");
+            // A draft stopped while being typed, or while its unverified text was being cleared: part of it may remain.
+            throw ComposerAfterStop(
+                stop, ComposerChanged(recipient.WindowHandle, recipient.Channel, before));
         }
 
         return new(
@@ -1041,38 +1257,83 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             null);
     }
 
-    internal static async ValueTask<T> ObserveNowOrAtDeadlineAsync<T>(
-        Func<CancellationToken, ValueTask<T>> observe,
-        Func<T, bool> verified,
-        TimeSpan horizon,
-        CancellationToken cancellationToken,
-        Func<TimeSpan, CancellationToken, ValueTask>? delay = null)
+    // Typed text reaches a busy client's composer late: during a turn on the
+    // notebook Discord showed it 0.6 to 0.85 s after typing (G1, 2026-10-11,
+    // three sends polled without OCR) and not yet 2.6 s later while an OCR pass
+    // held the CPU, so a 350 ms horizon failed and text that landed after the
+    // clean-up went out with the next message. The band is polled without OCR
+    // until its content changes and holds still (a caret blink is not a change),
+    // and only then read, up to the horizon.
+    private static async ValueTask<MessageVisualObservation> ObserveTypedDraftAsync(
+        ResolvedRecipient recipient,
+        string text,
+        byte[] before,
+        CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(observe);
-        ArgumentNullException.ThrowIfNull(verified);
-        ArgumentOutOfRangeException.ThrowIfLessThan(horizon, TimeSpan.Zero);
-
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        T observation = await observe(cancellationToken).ConfigureAwait(false);
-        if (verified(observation))
+        Stopwatch clock = Stopwatch.StartNew();
+        byte[]? previous = null;
+        byte[]? read = null;
+        while (true)
         {
-            return observation;
+            byte[] bitmap = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
+            // Past the horizon the frame is read once more whether or not it held still: a read that outlasted the
+            // horizon must not leave the text that landed meanwhile unseen.
+            bool expired = clock.ElapsedMilliseconds >= TypedDraftHorizonMs;
+            if (previous is not null && ContentChanged(before, bitmap)
+                && (expired || !ContentChanged(previous, bitmap))
+                && (read is null || ContentChanged(read, bitmap)))
+            {
+                read = bitmap;
+                string observed = await ReadTextAsync(bitmap, cancellationToken).ConfigureAwait(false);
+                if (ContainsPhrase(observed, text) || DeliveryMatches(observed, text))
+                {
+                    return new(bitmap, true);
+                }
+            }
+
+            if (expired)
+            {
+                await AuditUnverifiedDraftAsync(before, bitmap, cancellationToken).ConfigureAwait(false);
+                return new(bitmap, false);
+            }
+
+            previous = bitmap;
+            await Task.Delay(TypedDraftPollMs, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private const int TypedDraftHorizonMs = 3000;
+    private const int TypedDraftPollMs = 50;
+    // A text caret is one or two pixels wide; a typed glyph, or the placeholder
+    // that goes away with the first one, spans more columns than this.
+    private const int CaretMaxWidthPixels = 4;
+
+    // Whether two captures of the same band differ by more than a blinking caret:
+    // the differing pixels must span more columns than a caret.
+    internal static bool ContentChanged(byte[] before, byte[] after)
+    {
+        const int header = 54;
+        if (before.Length != after.Length || before.Length < header)
+        {
+            return true;
         }
 
-        TimeSpan remaining = horizon - stopwatch.Elapsed;
-        if (remaining > TimeSpan.Zero)
+        int width = BinaryPrimitives.ReadInt32LittleEndian(before.AsSpan(18));
+        int stride = width * 4;
+        int left = int.MaxValue;
+        int right = -1;
+        for (int offset = header; offset + 3 < before.Length; offset += 4)
         {
-            if (delay is null)
+            if (before[offset] != after[offset] || before[offset + 1] != after[offset + 1]
+                || before[offset + 2] != after[offset + 2])
             {
-                await Task.Delay(remaining, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                await delay(remaining, cancellationToken).ConfigureAwait(false);
+                int column = (offset - header) % stride / 4;
+                left = Math.Min(left, column);
+                right = Math.Max(right, column);
             }
         }
 
-        return await observe(cancellationToken).ConfigureAwait(false);
+        return right >= 0 && right - left + 1 > CaretMaxWidthPixels;
     }
 
     private static async ValueTask<bool> HeaderContainsAsync(
@@ -1310,6 +1571,33 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
+    // With the audit on, an unverified draft keeps the band before typing and the
+    // last band seen (read even when unchanged, so its OCR is kept too).
+    private static async ValueTask AuditUnverifiedDraftAsync(
+        byte[] before,
+        byte[] observed,
+        CancellationToken cancellationToken)
+    {
+        string? directory = Environment.GetEnvironmentVariable("BAXY_MESSAGING_OCR_AUDIT_DIR");
+        if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+        {
+            return;
+        }
+
+        try
+        {
+            File.WriteAllBytes(
+                Path.Combine(directory, $"{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}-{Environment.ProcessId}-draft-before.bmp"),
+                before);
+        }
+        catch (IOException)
+        {
+            // The audit never changes delivery evidence.
+        }
+
+        _ = await ReadTextAsync(observed, cancellationToken).ConfigureAwait(false);
+    }
+
     private static byte[] Upscale2xNearest(byte[] bitmap)
     {
         const int header = 54;
@@ -1492,30 +1780,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return (0, 0);
     }
 
-    private static bool Focus(nint handle)
-    {
-        nint foreground = GetForegroundWindow();
-        uint foregroundThread = GetWindowThreadProcessId(foreground, out _);
-        uint currentThread = GetCurrentThreadId();
-        bool attached = foregroundThread != 0
-            && currentThread != foregroundThread
-            && AttachThreadInput(currentThread, foregroundThread, true);
-        try
-        {
-            _ = ShowWindow(handle, 9);
-            _ = BringWindowToTop(handle);
-            _ = SetForegroundWindow(handle);
-            return GetForegroundWindow() == handle;
-        }
-        finally
-        {
-            if (attached)
-            {
-                _ = AttachThreadInput(currentThread, foregroundThread, false);
-            }
-        }
-    }
-
     private static bool ProcessStillOwnsWindow(nint handle, int expectedProcessId)
     {
         _ = GetWindowThreadProcessId(handle, out uint processId);
@@ -1568,6 +1832,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     private static void SendChord(ushort modifier, ushort key)
     {
+        // Asked once before the chord: a chord is never left half pressed.
+        LeasedInput.EnsureMayAct();
         SendVirtualKey(modifier, keyUp: false);
         SendVirtualKey(key, keyUp: false);
         SendVirtualKey(key, keyUp: true);
@@ -1601,6 +1867,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     private static void SendKey(ushort key)
     {
+        LeasedInput.EnsureMayAct();
         SendVirtualKey(key, keyUp: false);
         SendVirtualKey(key, keyUp: true);
     }
@@ -1618,6 +1885,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     {
                         VirtualKey = key,
                         Flags = keyUp ? KeyUp : 0,
+                        ExtraInfo = unchecked((nint)BaxyInputMark.Value),
                     },
                 },
             },
@@ -1632,6 +1900,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     {
         foreach (char character in text)
         {
+            LeasedInput.EnsureMayAct();
             SendUnicode(character, keyUp: false);
             SendUnicode(character, keyUp: true);
         }
@@ -1650,11 +1919,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     {
                         ScanCode = character,
                         Flags = Unicode | (keyUp ? KeyUp : 0),
+                        ExtraInfo = unchecked((nint)BaxyInputMark.Value),
                     },
                 },
             },
         ];
-        if (SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<Input>()) != inputs.Length)
+        uint sent = SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<Input>());
+        // Raw Input never delivers a Unicode key: the pause detector is told it was BAXY's.
+        WindowsUserInputPause.NoteOwnUndelivered();
+        if (sent != inputs.Length)
         {
             throw new IOException("Windows rejected Unicode input.");
         }
@@ -1676,6 +1949,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // about 35 px and the title, clipped at the crop's left edge, read as noise.
     private const int WhatsAppConversationPaneOffsetAt96Dpi = 400;
     private const int DiscordConversationPaneOffsetAt96Dpi = 320;
+
+    private static int ConversationPaneOffsetAt96Dpi(string channel) =>
+        string.Equals(channel, "whatsapp", StringComparison.Ordinal)
+            ? WhatsAppConversationPaneOffsetAt96Dpi
+            : DiscordConversationPaneOffsetAt96Dpi;
+
     // Discord's own title bar (a thin band above the header row): an empty spot
     // right of the navigation arrows, left of the centered title.
     private const int DiscordTitleBarClickLogicalX = 600;
@@ -1696,6 +1975,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // (WhatsApp bar ≈ 48 px high with an 8 px margin; Discord's box sits within
     // the same band), scaled by the window's DPI like the pane offset.
     private const int ComposerBottomOffsetAt96Dpi = 56;
+    // From the conversation pane's left edge to a point inside the composer
+    // input, past the attach and emoji buttons in both apps.
+    private const int ComposerInputOffsetAt96Dpi = 200;
 
     private static async ValueTask NormalizeWindowAsync(
         string channel,
@@ -1771,11 +2053,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // Discord: the server column (72 px) and the DM list (240 px) sit left of
             // the conversation at 100 % zoom; a 42 % crop of a wide window started
             // past the composer's text and the newest message's start.
-            int sourceX = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
-                ? Math.Min(
-                    Math.Max(0, windowWidth - 1),
-                    (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
-                : Math.Min(Math.Max(0, windowWidth - 1), (int)(DiscordConversationPaneOffsetAt96Dpi * scale));
+            int sourceX = Math.Min(Math.Max(0, windowWidth - 1), (int)(ConversationPaneOffsetAt96Dpi(channel) * scale));
             // Only WhatsApp right-aligns the outgoing bubble: narrowing the band to
             // the right end is what makes it readable there. Discord's messages run
             // from the left of the conversation pane, so the band keeps its width
@@ -1905,6 +2183,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     private static void ClickAtRelative(nint handle, double widthFraction, double heightFraction)
     {
+        LeasedInput.EnsureMayMovePointer();
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
         {
@@ -1938,6 +2217,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     private static void ClickAt(nint handle, int logicalX, int logicalY)
     {
+        LeasedInput.EnsureMayMovePointer();
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
         {
@@ -1967,8 +2247,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
-    private static bool FocusComposer(nint handle)
+    private static bool FocusComposer(nint handle, string channel)
     {
+        LeasedInput.EnsureMayMovePointer();
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
         {
@@ -1977,15 +2258,18 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 return false;
             }
 
-            int width = rectangle.Right - rectangle.Left;
+            double scale = GetDpiForWindow(handle) / 96.0;
             // The composer bar has a constant height at the bottom of the window,
             // so its input is a fixed distance above the bottom edge; a fraction of
             // the window height landed on the bar's top edge once the window was
             // tall (MSGSEND1845: 944 px, 92 % = 868 px, input centred at 888 px,
             // «hola» typed into nothing, message_draft_not_verified).
+            // Across, the input starts a fixed distance into the conversation pane;
+            // 76 % of a 1296 px Discord window fell on the profile panel at the
+            // right and the typed text went nowhere (G1, notebook, 2026-10-11).
             if (!SetCursorPos(
-                    rectangle.Left + (int)(width * 0.76),
-                    rectangle.Bottom - (int)(ComposerBottomOffsetAt96Dpi * GetDpiForWindow(handle) / 96.0)))
+                    rectangle.Left + (int)((ConversationPaneOffsetAt96Dpi(channel) + ComposerInputOffsetAt96Dpi) * scale),
+                    rectangle.Bottom - (int)(ComposerBottomOffsetAt96Dpi * scale)))
             {
                 return false;
             }
@@ -2012,11 +2296,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         Type = 0,
         Union = new InputUnion
         {
-            Mouse = new NativeMouseInput { Flags = flags },
+            Mouse = new NativeMouseInput { Flags = flags, ExtraInfo = unchecked((nint)BaxyInputMark.Value) },
         },
     };
 
-    private static byte[] EncodeBmp(int width, int height, byte[] pixels)
+    internal static byte[] EncodeBmp(int width, int height, byte[] pixels)
     {
         const int header = 54;
         byte[] result = new byte[checked(header + pixels.Length)];
@@ -2104,32 +2388,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     }
 
     [LibraryImport("user32.dll")]
-    private static partial nint GetForegroundWindow();
-
-    [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint handle, out uint processId);
-
-    [LibraryImport("kernel32.dll")]
-    private static partial uint GetCurrentThreadId();
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool AttachThreadInput(
-        uint first,
-        uint second,
-        [MarshalAs(UnmanagedType.Bool)] bool attach);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool ShowWindow(nint handle, int command);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool BringWindowToTop(nint handle);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetForegroundWindow(nint handle);
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
     private static unsafe partial int GetWindowText(

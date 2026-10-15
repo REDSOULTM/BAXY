@@ -25,6 +25,23 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
+from baxy_mind import clock_checks
+from baxy_mind import agenda_facts
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import deterministic_finals
+from baxy_mind import conversation_contract
+from baxy_mind import clock_facts
+
+
+# Every mind module whose code reads this PC's clock: the clock is patched in each one.
+_CLOCK_READERS = (
+    agenda_facts, clock_checks, clock_facts, compose_situation, conversation_contract, deterministic_finals,
+    reply_claims, weather_facts,
+)
 
 TITLES = [
     "queso gaudá laminado", "marraqueta para la once", "dos paltas hass", "llamar al contador mañana",
@@ -37,7 +54,8 @@ NOW = datetime(2026, 3, 4, 15, 0).astimezone()
 
 @pytest.fixture(autouse=True)
 def fixed_clock(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_local_now", lambda: NOW)
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: NOW)
 
 
 class _Scripted(llm.LlmRuntime):
@@ -84,10 +102,10 @@ def _quoted(titles: list[str], english: bool = False) -> str:
 
 def _defect(draft: str, situation: dict, user_text: str) -> str:
     facts = {"situation": json.dumps(situation, ensure_ascii=False), "mustNotAskFollowUp": True}
-    payload = {"seen": llm._merged_observed(situation), "operation": situation["operation"]}
+    payload = {"seen": compose_situation._merged_observed(situation), "operation": situation["operation"]}
     if situation["operation"] == "notification.schedule":
-        payload["seen"] = llm._project_scheduled_notification(situation["observed"], situation, "es", user_text)
-    return llm.compose_visible_defect(draft, "status", user_text, facts) or llm._payload_fact_defect(
+        payload["seen"] = agenda_facts._project_scheduled_notification(situation["observed"], situation, "es", user_text)
+    return visible_defect.compose_visible_defect(draft, "status", user_text, facts) or payload_fact_checks._payload_fact_defect(
         draft, payload, user_text,
     )
 

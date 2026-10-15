@@ -14,10 +14,12 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
+from baxy_mind.semantic import dialogue as semantic_dialogue
+from baxy_mind import argument_grounding
+from baxy_mind import turn_decide
 
 AVAILABLE = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "audio.status", "audio.app.volume.adjust",
@@ -78,12 +80,12 @@ def _decided(*turns: str) -> tuple[tuple[str, ...] | None, dict[str, object] | N
 
     history = _history(*turns)
     text = turns[-1]
-    previous = mind._previous_user_request(history, text)
+    previous = semantic_dialogue._previous_user_request(history, text)
     intent = resolve_explicit_effects(text, AVAILABLE, previous_user_text=previous)
     if intent is None or len(intent.operations) != 1:
         return (intent.operations if intent else None), None
     operation = intent.operations[0]
-    arguments = mind._ground_explicit_arguments(operation, text, _SCHEMAS[operation], history=history)
+    arguments = argument_grounding._ground_explicit_arguments(operation, text, _SCHEMAS[operation], history=history)
     return intent.operations, arguments
 
 
@@ -229,7 +231,7 @@ def test_a_setting_pronoun_needs_a_level_request_before_it():
 )
 def test_a_number_completes_only_the_relative_request_right_before_it(turns):
     history = _history(*turns)
-    previous = mind._previous_user_request(history, turns[-1])
+    previous = semantic_dialogue._previous_user_request(history, turns[-1])
     intent = resolve_explicit_effects(turns[-1], AVAILABLE, previous_user_text=previous)
     assert intent is None or not {"system.settings.adjust", "system.settings.set", "audio.volume.adjust"} & set(
         intent.operations,
@@ -342,7 +344,7 @@ def _turn(*turns: str, pending: str | None = None) -> tuple[dict[str, object], _
     message: dict[str, object] = {"id": "levels", "text": turns[-1], "history": _history(*turns)}
     if pending is not None:
         message["pendingObjective"] = pending
-    result = mind._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         message, llm=runtime, planner_catalog=PlannerCatalog(tools),
         encoder=lambda _texts: (), tool_by_name={tool["function"]["canonical_name"]: tool for tool in tools},
     )

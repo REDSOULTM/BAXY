@@ -65,7 +65,7 @@ class _FakeProcess:
         return 0
 
 
-def process_router(*, ready=True):
+def process_router(*, ready=True, restarts=0):
     router = ProcessIntentRouter.__new__(ProcessIntentRouter)
     router._process = _FakeProcess()
     router._responses = queue.Queue()
@@ -74,8 +74,16 @@ def process_router(*, ready=True):
     router._failed = False
     router._failure = ""
     router._next_request_id = 1
+    router._late_request_id = None
+    router._late_since = 0.0
+    router._failure_times = []
+    router._restarts_left = restarts
     router._closed = threading.Event()
     return router
+
+
+def _sent_requests(process):
+    return [json.loads(line) for line in process.stdin.payload.splitlines()]
 
 
 class ProcessIntentRouterReadinessTests(unittest.TestCase):
@@ -144,22 +152,116 @@ class ProcessIntentRouterReadinessTests(unittest.TestCase):
             ["encode", "encode"],
         )
 
-    def test_timeout_retires_channel_and_late_reply_is_never_reused(self):
+    def test_timeout_keeps_channel_and_late_reply_is_discarded_by_id(self):
+        # Antes un timeout retiraba el canal para siempre, para que la
+        # respuesta tardía nunca se leyera como la de otra petición. Una sola
+        # codificación lenta (la primera tras cargar E5, o el PC cargado)
+        # dejaba así la mente entera en literal. El riesgo que cubría sigue
+        # cubierto: la respuesta tardía se descarta por su id.
         router = process_router()
 
         with self.assertRaises(TimeoutError):
             router.encode(["uno"], timeout=0.01)
 
-        self.assertTrue(router._failed)
-        self.assertEqual(router._failure, "timeout")
-        self.assertTrue(router._closed.is_set())
-        self.assertTrue(router._process.killed)
+        self.assertFalse(router._failed)
+        self.assertFalse(router._closed.is_set())
+        self.assertFalse(router._process.killed)
+        self.assertEqual(router._late_request_id, 1)
         router._responses.put(
             {"type": "encode.result", "id": 1, "rows": [[1.0, 0.0]]}
         )
+        router._responses.put(
+            {"type": "encode.result", "id": 2, "rows": [[0.0, 1.0]]}
+        )
 
-        self.assertIsNone(router.try_encode(["dos"], timeout=0.1))
-        self.assertEqual(router._responses.qsize(), 1)
+        second = router.try_encode(["dos"], timeout=1.0)
+
+        np.testing.assert_array_equal(second, [[0.0, 1.0]])
+        self.assertIsNone(router._late_request_id)
+        self.assertEqual(router._failure_times, [])
+        self.assertEqual(router._responses.qsize(), 0)
+        self.assertEqual(
+            [request["id"] for request in _sent_requests(router._process)],
+            [1, 2],
+        )
+
+    def test_late_error_reply_is_discarded_by_id_too(self):
+        router = process_router()
+        with self.assertRaises(TimeoutError):
+            router.encode(["uno"], timeout=0.01)
+        router._responses.put({"type": "error", "id": 1, "code": "request_failed"})
+        router._responses.put(
+            {"type": "encode.result", "id": 2, "rows": [[0.0, 1.0]]}
+        )
+
+        np.testing.assert_array_equal(
+            router.encode(["dos"], timeout=1.0),
+            [[0.0, 1.0]],
+        )
+
+    def test_pending_late_reply_blocks_sending_without_counting_a_failure(self):
+        router = process_router()
+        with self.assertRaises(TimeoutError):
+            router.encode(["uno"], timeout=0.01)
+
+        for _ in range(4):
+            with self.assertRaises(TimeoutError):
+                router.encode(["dos"], timeout=0.01)
+
+        # Nothing queued behind the slow worker and no new failure counted.
+        self.assertEqual(len(_sent_requests(router._process)), 1)
+        self.assertEqual(len(router._failure_times), 1)
+        self.assertFalse(router._failed)
+
+    def test_late_reply_overdue_past_grace_retires_hung_worker(self):
+        router = process_router()
+        with self.assertRaises(TimeoutError):
+            router.encode(["uno"], timeout=0.01)
+        router._late_since -= router_module.ROUTER_LATE_REPLY_GRACE_SECONDS
+
+        with self.assertRaises(TimeoutError):
+            router.encode(["dos"], timeout=0.01)
+
+        self.assertTrue(router._failed)
+        self.assertEqual(router._failure, "late_reply_overdue")
+        self.assertTrue(router._process.killed)
+
+    def test_a_short_streak_of_timeouts_retires_the_channel(self):
+        router = process_router()
+        for request_id in range(1, router_module.ROUTER_FAILURE_STREAK + 1):
+            self.assertFalse(router._failed)
+            with self.assertRaises(TimeoutError):
+                router.encode(["uno"], timeout=0.01)
+            if request_id < router_module.ROUTER_FAILURE_STREAK:
+                router._responses.put(
+                    {"type": "encode.result", "id": request_id, "rows": [[1.0]]}
+                )
+
+        self.assertTrue(router._failed)
+        self.assertEqual(router._failure, "streak:timeout")
+        self.assertTrue(router._process.killed)
+
+    def test_a_success_resets_the_streak_and_old_failures_leave_the_window(self):
+        router = process_router()
+        streak = router_module.ROUTER_FAILURE_STREAK
+        for request_id in range(1, streak):
+            with self.assertRaises(TimeoutError):
+                router.encode(["uno"], timeout=0.01)
+            router._responses.put(
+                {"type": "encode.result", "id": request_id, "rows": [[1.0]]}
+            )
+        router._responses.put(
+            {"type": "encode.result", "id": streak, "rows": [[1.0]]}
+        )
+        router.encode(["ok"], timeout=1.0)
+        self.assertEqual(router._failure_times, [])
+
+        window = router_module.ROUTER_FAILURE_WINDOW_SECONDS
+        router._failure_times = [time.monotonic() - window - 1.0] * (streak - 1)
+        with self.assertRaises(TimeoutError):
+            router.encode(["uno"], timeout=0.01)
+        self.assertFalse(router._failed)
+        self.assertEqual(len(router._failure_times), 1)
 
     def test_mismatched_reply_retires_channel_and_expected_reply_stays_stale(self):
         router = process_router()
@@ -177,18 +279,214 @@ class ProcessIntentRouterReadinessTests(unittest.TestCase):
         self.assertEqual(router._responses.qsize(), 1)
         self.assertTrue(router._process.killed)
 
-    def test_error_or_invalid_embedding_response_fails_closed(self):
+    def test_error_or_invalid_embedding_reply_is_one_failure_of_a_synced_channel(self):
         for response in (
             {"type": "error", "id": 1, "code": "request_failed"},
             {"type": "encode.result", "id": 1, "rows": [[float("nan")]]},
             {"type": "encode.result", "id": 1, "rows": []},
+            {"type": "encode.result", "id": 1, "rows": "x"},
         ):
             with self.subTest(response=response):
                 router = process_router()
                 router._responses.put(response)
                 self.assertIsNone(router.try_encode(["uno"], timeout=1.0))
-                self.assertTrue(router._failed)
-                self.assertTrue(router._closed.is_set())
+                self.assertFalse(router._failed)
+                self.assertFalse(router._closed.is_set())
+                self.assertEqual(len(router._failure_times), 1)
+                router._responses.put(
+                    {"type": "encode.result", "id": 2, "rows": [[1.0]]}
+                )
+                np.testing.assert_array_equal(
+                    router.encode(["dos"], timeout=1.0),
+                    [[1.0]],
+                )
+
+    def test_repeated_error_replies_retire_the_channel(self):
+        router = process_router()
+        for request_id in range(1, router_module.ROUTER_FAILURE_STREAK + 1):
+            router._responses.put(
+                {"type": "error", "id": request_id, "code": "request_failed"}
+            )
+            self.assertIsNone(router.try_encode(["uno"], timeout=1.0))
+
+        self.assertTrue(router._failed)
+        self.assertEqual(router._failure, "streak:error")
+        self.assertTrue(router._closed.is_set())
+
+    def test_dead_worker_is_relaunched_with_a_fresh_queue_within_budget(self):
+        router = process_router(restarts=1)
+        old_process = router._process
+        old_queue = router._responses
+        launched: list[dict] = []
+
+        def fake_launch(**kwargs):
+            launched.append(kwargs)
+
+        router._launch_and_read = fake_launch
+        router._responses.put({"type": "closed"})
+
+        with self.assertRaisesRegex(RuntimeError, "closed unexpectedly"):
+            router.encode(["uno"], timeout=1.0)
+        router._launcher.join(timeout=1.0)
+
+        self.assertFalse(router._failed)
+        self.assertFalse(router._closed.is_set())
+        self.assertTrue(old_process.killed)
+        self.assertIsNone(router._process)
+        self.assertIsNot(router._responses, old_queue)
+        self.assertFalse(router._is_ready)
+        self.assertEqual(router._restarts_left, 0)
+        self.assertEqual(len(launched), 1)
+        self.assertIs(launched[0]["previous"], old_process)
+        self.assertIs(launched[0]["responses"], router._responses)
+        self.assertEqual(launched[0]["delay"], 0.0)
+
+        # The new generation is a cold worker: waiting is not a failure, and
+        # nothing the old worker writes reaches it.
+        old_queue.put({"type": "encode.result", "id": 1, "rows": [[1.0]]})
+        new_process = _FakeProcess()
+        router._process = new_process
+        self.assertFalse(router.try_ready())
+        self.assertFalse(router._failed)
+        router._responses.put({"type": "ready"})
+        router._responses.put(
+            {"type": "encode.result", "id": 2, "rows": [[0.5]]}
+        )
+        np.testing.assert_array_equal(
+            router.encode(["dos"], timeout=1.0),
+            [[0.5]],
+        )
+
+        # Budget spent: the next death retires the channel for good.
+        router._responses.put({"type": "closed"})
+        self.assertIsNone(router.try_encode(["tres"], timeout=1.0))
+        self.assertTrue(router._failed)
+        self.assertTrue(new_process.killed)
+
+    def test_streak_relaunches_and_a_late_reply_never_crosses_generations(self):
+        router = process_router(restarts=1)
+        router._launch_and_read = lambda **_kwargs: None
+        old_queue = router._responses
+        for request_id in range(1, router_module.ROUTER_FAILURE_STREAK + 1):
+            with self.assertRaises(TimeoutError):
+                router.encode(["uno"], timeout=0.01)
+            if request_id < router_module.ROUTER_FAILURE_STREAK:
+                router._responses.put(
+                    {"type": "encode.result", "id": request_id, "rows": [[1.0]]}
+                )
+        router._launcher.join(timeout=1.0)
+
+        self.assertFalse(router._failed)
+        self.assertEqual(router._failure, "streak:timeout")
+        self.assertIsNot(router._responses, old_queue)
+        self.assertIsNone(router._late_request_id)
+        self.assertEqual(router._failure_times, [])
+
+    def test_relaunch_publishes_only_its_own_generation(self):
+        router = process_router(restarts=1)
+        superseded: queue.Queue = queue.Queue()
+        process = _FakeProcess()
+        with patch(
+            "baxy_mind.router.subprocess.Popen",
+            return_value=process,
+        ):
+            router._launch_and_read(delay=0.0, responses=superseded)
+
+        self.assertIsNot(router._process, process)
+        self.assertTrue(process.killed)
+        self.assertEqual(superseded.get_nowait(), {"type": "closed"})
+
+    def test_interactive_budget_holds_through_late_reply_and_relaunch(self):
+        # turn.decide and computer use reach the worker through the request
+        # budget: neither the wait for a pending late reply nor the relaunch
+        # of a retired worker may take longer than what is left of it.
+        router = process_router(restarts=1)
+        router._launch_and_read = lambda **_kwargs: None
+        encoder = RequestBudgetEncoder(router)
+        budget = 0.1
+        worst = 0.0
+        for request_id in range(1, router_module.ROUTER_FAILURE_STREAK + 2):
+            encoder.begin_request(budget)
+            started = time.perf_counter()
+            try:
+                with self.assertRaises(TimeoutError):
+                    # A new text each time: the late reply of an abandoned
+                    # request now serves its own texts (ronda 22), never
+                    # these.
+                    encoder([f"uno {request_id}"])
+            finally:
+                encoder.end_request()
+            worst = max(worst, time.perf_counter() - started)
+            if request_id == 1:
+                # The late reply is still pending on the next request.
+                continue
+            router._responses.put(
+                {"type": "encode.result", "id": request_id - 1, "rows": [[1.0]]}
+            )
+        router._launcher.join(timeout=1.0)
+
+        self.assertFalse(router._failed)
+        self.assertEqual(router._failure, "streak:timeout")
+        self.assertLess(worst, budget + 0.05)
+
+    def test_real_child_survives_a_slow_encoding_and_a_death(self):
+        # A real child process in place of E5: «lento» answers after the
+        # request's deadline, «muere» exits. The slow reply is discarded by id,
+        # the channel stays alive, and a dead worker is relaunched.
+        script = (
+            "import json, sys, time\n"
+            "print(json.dumps({'type': 'ready'}), flush=True)\n"
+            "for line in sys.stdin:\n"
+            "    request = json.loads(line)\n"
+            "    texts = request.get('texts') or ['']\n"
+            "    if texts[0] == 'muere':\n"
+            "        sys.exit(3)\n"
+            "    if texts[0] == 'lento':\n"
+            "        time.sleep(0.4)\n"
+            "    print(json.dumps({'type': 'encode.result', 'id': request['id'],"
+            " 'rows': [[float(len(t))] for t in texts]}), flush=True)\n"
+        )
+        real_popen = subprocess.Popen
+        spawned: list = []
+
+        def spawn(_args, **kwargs):
+            child = real_popen([sys.executable, "-c", script], **kwargs)
+            spawned.append(child)
+            return child
+
+        with patch.dict(
+            router_module.os.environ,
+            {"BAXY_MIND_ROUTER_START_DELAY": "0"},
+        ), patch(
+            "baxy_mind.router.subprocess.Popen",
+            side_effect=spawn,
+        ):
+            router = ProcessIntentRouter()
+            try:
+                self.assertTrue(router.try_ready(10.0))
+                with self.assertRaises(TimeoutError):
+                    router.encode(["lento"], timeout=0.1)
+                np.testing.assert_array_equal(
+                    router.encode(["ab"], timeout=5.0),
+                    [[2.0]],
+                )
+                self.assertFalse(router._failed)
+                self.assertEqual(len(spawned), 1)
+
+                with self.assertRaises(RuntimeError):
+                    router.encode(["muere"], timeout=5.0)
+                self.assertFalse(router._failed)
+                self.assertTrue(router.try_ready(10.0))
+                np.testing.assert_array_equal(
+                    router.encode(["abc"], timeout=5.0),
+                    [[3.0]],
+                )
+                self.assertEqual(len(spawned), 2)
+                self.assertIsNotNone(spawned[0].poll())
+            finally:
+                router.close(timeout=1.0)
+        for child in spawned:
+            self.assertIsNotNone(child.poll())
 
     def test_try_encode_never_raises_and_default_encode_timeout_is_finite(self):
         router = process_router()

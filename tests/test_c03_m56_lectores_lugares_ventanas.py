@@ -23,10 +23,16 @@ import pytest
 
 from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
-from baxy_mind.llm import _CAUSE_FACT, _cause_in_prose, _deterministic_final, _payload_fact_defect
+from baxy_mind.deterministic_finals import _deterministic_final
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.compose_situation import _CAUSE_FACT
+from baxy_mind.compose_situation import _cause_in_prose
 from baxy_mind.planner import validate_json_schema_instance
 from baxy_mind.semantic import knowledge
 from baxy_mind.semantic.web import not_a_public_lookup, place_containers
+from baxy_mind import argument_grounding
+from baxy_mind import plan_shape
+from baxy_mind.semantic import arguments as semantic_arguments
 
 # ------------------------------------------------------------------ 1. rankings and code
 
@@ -74,8 +80,8 @@ def test_a_superlative_of_an_orderable_attribute_is_a_ranking(text: str, query: 
 
 def test_the_latest_song_and_the_sql_query_keep_the_person_s_words() -> None:
     # The arguments step of the decided web.search (request 112) and the decider's talk conversion read this.
-    assert mind._reference_lookup(F_S017_RESTATED, [{"role": "user", "content": F_S017}]) is None
-    assert mind._reference_lookup(F_W14_T1, []) is None
+    assert argument_grounding._reference_lookup(F_S017_RESTATED, [{"role": "user", "content": F_S017}]) is None
+    assert argument_grounding._reference_lookup(F_W14_T1, []) is None
 
 
 def test_code_asked_for_is_never_a_public_lookup() -> None:
@@ -192,15 +198,15 @@ def test_w08_a_window_the_pc_does_not_have_keeps_its_name_in_the_plan() -> None:
     assert [(name, side) for name, side, _ in pairs] == [("Google Chrome", "left"), ("Slack", "right")]
     split = mind.window_snap_plan_split(("window.snap",), (F_W08_RESTATED,), F_W08_RESTATED, INSTALLED)
     assert split is not None and split[0] == ("window.snap", "window.snap")
-    skeleton = mind._explicit_plan_skeleton(*split)
+    skeleton = plan_shape._explicit_plan_skeleton(*split)
     grounded = []
     for step in skeleton["steps"]:
         if step["operation"] == "window.resolve":
-            arguments = mind._ground_explicit_arguments("window.resolve", step["purpose"], RESOLVE_SCHEMA, INSTALLED)
+            arguments = argument_grounding._ground_explicit_arguments("window.resolve", step["purpose"], RESOLVE_SCHEMA, INSTALLED)
             assert validate_json_schema_instance(arguments, RESOLVE_SCHEMA)
-            assert mind._normalize_grounded_operation_arguments("window.resolve", arguments, F_W08_RESTATED) == arguments
+            assert argument_grounding._normalize_grounded_operation_arguments("window.resolve", arguments, F_W08_RESTATED) == arguments
         else:
-            arguments = mind.window_snap_side_for_step(F_W08_RESTATED, step["purpose"], INSTALLED)
+            arguments = semantic_arguments.window_snap_side_for_step(F_W08_RESTATED, step["purpose"], INSTALLED)
         grounded.append((step["operation"], arguments))
     assert grounded == [
         ("window.resolve", {"applicationName": "Google Chrome"}),
@@ -242,7 +248,7 @@ def test_w06_both_windows_installed_split_as_before() -> None:
 
 @pytest.mark.parametrize(
     "code", ["plan_incomplete", "plan_unverified", "step_data_missing", "step_unlinkable", "step_unverified",
-             "continue_unsafe"],
+             "continue_unsafe", "turn_budget_exhausted"],
 )
 def test_planning_codes_reach_the_reply_as_facts_not_jargon(code: str) -> None:
     fact = _cause_in_prose(code, "en")

@@ -1,4 +1,6 @@
-# Seconds since the last keyboard/mouse input, fullscreen foreground flag, battery.
+# Seconds since the last keyboard/mouse input, fullscreen foreground flag, battery, and how many BAXY processes (Baxy,
+# baxy-core) are alive: cu_live.sh's gates in one powershell a look.
+$baxy=@(Get-Process Baxy,baxy-core -ErrorAction SilentlyContinue).Count
 Add-Type @'
 using System; using System.Runtime.InteropServices;
 public static class BaxyIdle {
@@ -12,4 +14,4 @@ public static class BaxyIdle {
 }
 '@ -ReferencedAssemblies System.Windows.Forms,System.Drawing
 $b = Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue | Select-Object -First 1
-[pscustomobject]@{ idle=[math]::Round([BaxyIdle]::Idle(),1); fullscreen=[BaxyIdle]::Fullscreen(); battery=$b.EstimatedChargeRemaining; charging=($b.BatteryStatus -eq 2) } | ConvertTo-Json -Compress
+[pscustomobject]@{ idle=[math]::Round([BaxyIdle]::Idle(),1); fullscreen=[BaxyIdle]::Fullscreen(); battery=$b.EstimatedChargeRemaining; charging=($b.BatteryStatus -eq 2); baxy=$baxy } | ConvertTo-Json -Compress

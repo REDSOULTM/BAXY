@@ -33,7 +33,12 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.notes import entries_on_a_list, list_entries, task_change
+from baxy_mind.semantic.intent import EffectIntent
 from baxy_mind.semantic.patterns import resolve_explicit_effects
+from baxy_mind import turn_decide
+from baxy_mind import plan_shape
+from baxy_mind import argument_grounding
+from baxy_mind import direct_arguments
 
 OPERATIONS = tuple(
     json.loads(
@@ -126,7 +131,7 @@ def _turn(text: str, said: list[str], decision: tuple[str, tuple[str, ...], str]
     ))
     history = [{"role": "user" if index % 2 == 0 else "assistant", "content": item} for index, item in enumerate(said)]
     tools = {name: _tool(name) for name in OPERATIONS}
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m174", "text": text, "history": [*history, {"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),
@@ -143,12 +148,12 @@ def _planned_entries(objective: str, count: int) -> list[dict | None]:
     """Each task.create step of the plan the App asks for, grounded as the plan request grounds a literal step."""
 
     expected = ("task.create",) * count
-    found = sidecar._plan_effects_read(objective, expected, OPERATIONS, [{"role": "user", "content": objective}])
+    found = plan_shape._plan_effects_read(objective, expected, OPERATIONS, [{"role": "user", "content": objective}])
     assert found is not None
-    evidence = sidecar._restore_evidence_surfaces(
-        objective, sidecar._evidence_of_expected_operations(expected, found.operations, found.evidence),
+    evidence = argument_grounding._restore_evidence_surfaces(
+        objective, plan_shape._evidence_of_expected_operations(expected, found.operations, found.evidence),
     )
-    return [sidecar._ground_explicit_arguments("task.create", clause, TASK_CREATE) for clause in evidence]
+    return [argument_grounding._ground_explicit_arguments("task.create", clause, TASK_CREATE) for clause in evidence]
 
 
 # ------------------------------------------------------------------ 1. a list written down with a colon
@@ -221,7 +226,7 @@ def test_d_w03_t2_one_more_entry_to_the_list_written_before() -> None:
     result, _ = _turn(text, D_W03, ("action", ("note.update",), "Agrega tomates a la nota «Lista del súper»."))
     assert result["kind"] == "action" and result["operation"] == "task.create"
     assert result["objective"] == "añade tomates a la lista del super"
-    assert sidecar._ground_explicit_arguments("task.create", result["objective"], TASK_CREATE) == {
+    assert argument_grounding._ground_explicit_arguments("task.create", result["objective"], TASK_CREATE) == {
         "title": "tomates", "details": "lista del super",
     }
 
@@ -276,7 +281,16 @@ def test_what_is_no_entry_of_the_list_just_made_keeps_its_decision(
 
 def test_h_s116_the_plan_reads_the_entries_inside_the_address_and_the_tag() -> None:
     text = "Ey, anótame en la lista del mercado plátano maduro, arepas de chócolo y queso costeño, ¿sí?"  # H-s116
-    assert resolve_explicit_effects(text, OPERATIONS) is None  # what the plan read before: nothing, so it asked
+    # The plan once read nothing here and asked. Since t4-r6 the explicit reader also reads the order after «Ey,»
+    # (as it read it after «oye,»): the same three entries in the same list.
+    assert resolve_explicit_effects(text, OPERATIONS) == EffectIntent(
+        ("task.create",) * 3,
+        (
+            "añade plátano maduro a la lista del mercado",
+            "añade arepas de chócolo a la lista del mercado",
+            "añade queso costeño a la lista del mercado",
+        ),
+    )
     assert _planned_entries(text, 3) == [
         {"title": "plátano maduro", "details": "lista del mercado"},
         {"title": "arepas de chócolo", "details": "lista del mercado"},
@@ -298,10 +312,10 @@ def test_variants_of_a_plan_inside_an_address(text: str, entries: list[tuple[str
 
 def test_a_plan_read_on_its_own_is_read_as_before() -> None:
     text = "añade pan y leche a la lista de la compra"
-    found = sidecar._plan_effects_read(text, ("task.create",) * 2, OPERATIONS, [])
+    found = plan_shape._plan_effects_read(text, ("task.create",) * 2, OPERATIONS, [])
     assert found == resolve_explicit_effects(text, OPERATIONS)
     # One operation keeps the whole objective as its evidence (the argument binder reads the forms itself).
-    assert sidecar._plan_effects_read("oye, qué tal", ("task.create",), OPERATIONS, []) is None
+    assert plan_shape._plan_effects_read("oye, qué tal", ("task.create",), OPERATIONS, []) is None
 
 
 # ------------------------------------------------------------------ 4. one entry changed for another
@@ -330,7 +344,7 @@ def test_h_w04_t3_the_entry_taken_back_is_the_one_changed() -> None:
     edited = state.changed_entry(person, objective)
     assert edited == {"taskId": "t2", "expectedVersion": 1, "title": "jamón", "details": "lista de la compra",
                       "due": None}
-    arguments, question = sidecar._edited_task_arguments(
+    arguments, question = direct_arguments._edited_task_arguments(
         _Decider(), objective, person, {"type": "function", "function": {"parameters": TASK_UPDATE}}, edited,
         person, "es",
     )

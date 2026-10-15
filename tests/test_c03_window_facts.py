@@ -1,7 +1,9 @@
 """Window facts reach the actual publication/retry boundary, not only shape checks."""
 import pytest
 
-from baxy_mind.llm import LlmRuntime, _compose_situation_payload, _payload_fact_defect
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.payload_fact_checks import _payload_fact_defect
 
 
 def situation(name="Orbit 23", installed=True, count=0):
@@ -132,7 +134,7 @@ def test_state_words_inside_observed_names_are_not_assertions(name):
 
 
 def test_process_uncertainty_does_not_hide_a_separate_failure_claim():
-    from baxy_mind.llm import compose_visible_defect
+    from baxy_mind.visible_defect import compose_visible_defect
 
     text = "Orbit 23 has no visible windows; I cannot tell whether it is running, but the window check failed."
     assert compose_visible_defect(text, "status", "Is Orbit 23 open?", {"situation": situation()}) == "asserted_failure"

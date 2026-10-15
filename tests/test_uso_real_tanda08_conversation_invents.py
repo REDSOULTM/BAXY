@@ -22,8 +22,11 @@ import json
 
 import pytest
 
-from baxy_mind import llm
-from baxy_mind.llm import LlmRuntime, conversation_claim_defect, conversation_world_claim
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.reply_claims import conversation_claim_defect, conversation_world_claim
 from test_c03_cpu_actor import Recorder
 
 SHOPPING = ("apúntame en la lista de la compra huevos, leche y pan de molde",)
@@ -163,8 +166,8 @@ def test_knowledge_acknowledgements_denials_and_questions_are_not_claims(reply, 
 @pytest.mark.parametrize("shape", ["free_content", "content_draft", "translation"])
 def test_content_written_for_the_person_is_not_baxys_report(shape):
     story = "Ayer compré un reloj, lo guardé en el cajón y se me olvidó dónde lo puse."
-    assert not llm._shaped_conversation_answer_violates_contract(story, "cuéntame algo", shape)
-    assert llm._shaped_conversation_answer_violates_contract(story, "cuéntame algo", None)
+    assert not conversation_contract._shaped_conversation_answer_violates_contract(story, "cuéntame algo", shape)
+    assert conversation_contract._shaped_conversation_answer_violates_contract(story, "cuéntame algo", None)
 
 
 def test_the_chat_retry_names_the_yes_or_no_it_may_not_give():
@@ -203,9 +206,9 @@ _CONVERSATION = {"situation": json.dumps({"kind": "conversation", "polarity": "s
     ],
 )
 def test_the_apps_conversation_fallback_is_held_to_the_same_contract(reply, ask, defect):
-    assert llm.compose_visible_defect(reply, "conversation", ask, _CONVERSATION) == defect
+    assert visible_defect.compose_visible_defect(reply, "conversation", ask, _CONVERSATION) == defect
     recovery = {"situation": json.dumps({"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"})}
-    assert llm.compose_visible_defect(reply, "clarification", ask, recovery) == defect
+    assert visible_defect.compose_visible_defect(reply, "clarification", ask, recovery) == defect
 
 
 @pytest.mark.parametrize(
@@ -217,12 +220,12 @@ def test_the_apps_conversation_fallback_is_held_to_the_same_contract(reply, ask,
     ],
 )
 def test_an_honest_composed_conversation_is_published(reply, ask):
-    assert llm.compose_visible_defect(reply, "conversation", ask, _CONVERSATION) == ""
+    assert visible_defect.compose_visible_defect(reply, "conversation", ask, _CONVERSATION) == ""
 
 
 def test_a_failure_where_something_ran_is_not_held_to_the_no_operation_contract():
     timeout = {"situation": json.dumps({"kind": "failure", "cause": "timeout", "polarity": "failure"})}
-    assert llm.compose_visible_defect("Listo, Chrome no respondió.", "error", "cierra Chrome", timeout) not in {
+    assert visible_defect.compose_visible_defect("Listo, Chrome no respondió.", "error", "cierra Chrome", timeout) not in {
         "effect_claim", "unread_records", "unobserved_answer",
     }
 
@@ -232,7 +235,7 @@ def test_a_verified_operation_is_not_held_to_the_no_operation_contract():
         "kind": "operation", "operation": "task.create", "polarity": "success", "verified": True,
         "succeeded": True, "observed": {"title": "tomates"},
     }
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Agregado: tomates.", "status", "ah, y tomates", {"situation": json.dumps(situation)},
     ) not in {"effect_claim", "unread_records", "unobserved_answer"}
 
@@ -258,9 +261,9 @@ _SEARCH = {
 
 @pytest.mark.parametrize("reply", ["No lo encontraste.", "Ya lo buscaste y no aparece.", "You didn't find it."])
 def test_a_search_report_does_not_make_the_person_the_one_who_searched(reply):
-    assert llm._payload_fact_defect(reply, _SEARCH, "¿a qué hora se fue el sol ayer?") == "search_report_wrong_finder"
+    assert payload_fact_checks._payload_fact_defect(reply, _SEARCH, "¿a qué hora se fue el sol ayer?") == "search_report_wrong_finder"
 
 
 @pytest.mark.parametrize("reply", ["No lo encontré.", "I couldn't find it.", "Si no lo encontraste en la tienda, prueba en línea."])
 def test_his_own_not_found_and_advice_to_the_person_stay(reply):
-    assert llm._payload_fact_defect(reply, _SEARCH, "¿a qué hora se fue el sol ayer?") != "search_report_wrong_finder"
+    assert payload_fact_checks._payload_fact_defect(reply, _SEARCH, "¿a qué hora se fue el sol ayer?") != "search_report_wrong_finder"

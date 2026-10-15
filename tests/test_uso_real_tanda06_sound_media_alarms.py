@@ -29,11 +29,12 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind.llm import compose_visible_defect
+from baxy_mind.visible_defect import compose_visible_defect
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
 from baxy_mind.semantic.reading import read
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import arguments as semantic_arguments
 
 AVAILABLE = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "audio.status", "system.settings.adjust",
@@ -72,7 +73,7 @@ def test_a_light_verb_with_a_particle_asks_only_the_amount(text: str, direction:
     assert asked.missing_fields == ("amount",)
     assert levels.direction_of(text) == direction
     # On the model path the question for the rest never asks the direction again.
-    assert mind._stated_argument_fields("audio.volume.adjust", text, _ADJUST_SCHEMA) == ("direction",)
+    assert argument_grounding._stated_argument_fields("audio.volume.adjust", text, _ADJUST_SCHEMA) == ("direction",)
 
 
 def test_a_light_verb_with_a_particle_and_an_amount_acts() -> None:
@@ -96,7 +97,7 @@ def test_a_light_verb_without_a_level_object_is_not_a_level(text: str) -> None:
 def _unmute_arguments(text: str) -> dict[str, object] | None:
     effects = resolve_explicit_effects(text, AVAILABLE)
     assert effects is not None and effects.operations == ("audio.mute",), (text, effects)
-    return mind._explicit_arguments_from_evidence("audio.mute", effects.evidence[0], (), ())
+    return semantic_arguments._explicit_arguments_from_evidence("audio.mute", effects.evidence[0], (), ())
 
 
 @pytest.mark.parametrize(
@@ -151,7 +152,7 @@ def test_observing_the_audio_is_still_a_read(text: str) -> None:
 def test_a_split_clitic_reminder_keeps_its_title_without_the_clitic(text: str, title: str) -> None:
     reading = read(text, available_operations=("reminder.create", "notification.schedule", "task.create"))
     assert reading.effects is not None and reading.effects.operations == ("reminder.create",)
-    arguments = mind._explicit_arguments_from_evidence("reminder.create", reading.effects.evidence[0], (), ())
+    arguments = semantic_arguments._explicit_arguments_from_evidence("reminder.create", reading.effects.evidence[0], (), ())
     assert arguments is not None and arguments["title"] == title
 
 
@@ -171,7 +172,7 @@ def test_a_song_by_its_performer_plays_in_the_local_player(text: str, query: str
     # MUSIC1559: music named without a provider plays from YouTube in the local player.
     effects = resolve_explicit_effects(text, AVAILABLE)
     assert effects is not None and effects.operations == ("media.play.youtube",), (text, effects)
-    assert mind._explicit_arguments_from_evidence("media.play.youtube", effects.evidence[0], (), ()) == {
+    assert semantic_arguments._explicit_arguments_from_evidence("media.play.youtube", effects.evidence[0], (), ()) == {
         "query": query
     }
 
@@ -221,7 +222,7 @@ def test_several_alarms_with_their_times_are_each_scheduled(text: str, evidence:
     assert effects.operations == ("notification.schedule",) * len(evidence)
     assert effects.evidence == evidence
     for said in effects.evidence:
-        arguments = mind._explicit_arguments_from_evidence("notification.schedule", said, (), ())
+        arguments = semantic_arguments._explicit_arguments_from_evidence("notification.schedule", said, (), ())
         assert arguments is not None and arguments["kind"] == "alarm", said
 
 

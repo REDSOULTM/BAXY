@@ -5,11 +5,10 @@ person's, D-owner 2026-09-19); a note or a reminder keeps the model's words."""
 
 from __future__ import annotations
 
-import importlib
 
 from baxy_mind.semantic.decider import as_the_person_spelled
+from baxy_mind import decided_arguments
 
-main = importlib.import_module("baxy_mind.__main__")
 
 PLAY_QUERY = {"type": "object", "properties": {"provider": {"type": "string", "enum": ["spotify"]},
                                                "query": {"type": "string"}},
@@ -33,7 +32,7 @@ def test_f_w05_t5_the_query_is_the_persons() -> None:
     # values; the App's own path, with the decider's restatement as the text, is in test_c03_m157_regresiones_v4v.
     text = "ya cambiando de tema, pone algo de javiera mena en spotify"
     history = [{"role": "user", "content": text}]
-    got = main._as_the_person_spelled(
+    got = decided_arguments._as_the_person_spelled(
         "media.play.query", {"provider": "spotify", "query": "Javier Mené"}, text, history,
     )
     assert got["query"] == "javiera mena"
@@ -41,6 +40,6 @@ def test_f_w05_t5_the_query_is_the_persons() -> None:
 
 def test_a_reminder_keeps_the_models_words() -> None:
     text = "recuérdame pagar la lus mañana"
-    main._remember_decided_arguments(text, ("reminder.create",), (("title", "pagar la luz"),))
-    got = main._with_decided_arguments("reminder.create", text, {}, REMINDER, text + "\npagar la luz")
+    decided_arguments._remember_decided_arguments(text, ("reminder.create",), (("title", "pagar la luz"),))
+    got = decided_arguments._with_decided_arguments("reminder.create", text, {}, REMINDER, text + "\npagar la luz")
     assert got == {"title": "pagar la luz"}

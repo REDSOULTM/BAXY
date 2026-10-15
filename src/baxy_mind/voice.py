@@ -94,6 +94,106 @@ _ACOUSTIC_WAKE_PRE_ROLL_S = 5.0
 _CONTEXTUAL_HOTWORD_SCORE = 5.0
 _MAX_CONTEXTUAL_HOTWORDS = 64
 _CLEANUP_JOIN_SLICE_SECONDS = 0.05
+# Reading the voice state never waits on a cold import of the voice runtime
+# (2026-10-08, v2-s02/v2-v3-04: silero_vad alone imports torch, 3.9 s idle and
+# over 10 s beside the model warmup). The import runs once on its own thread,
+# started at process start beside the model warmup or by the first read, and
+# the state reads ``pending`` until it finishes; the shell reads it again.
+# A module that failed is imported again on a later read, at most once per
+# interval and off the reader (``sounddevice`` initialises PortAudio on import
+# and fails while the audio service is still starting at logon).
+VOICE_IMPORT_RETRY_SECONDS = 10.0
+_VOICE_RUNTIME_MODULES = (
+    "sherpa_onnx",
+    "sounddevice",
+    "silero_vad",
+    "win32com.client",
+    "livekit.wakeword",
+    "onnxruntime",
+)
+
+
+class VoiceRuntimeImports:
+    """Import the voice runtime off the reader's thread and remember what loaded."""
+
+    def __init__(
+        self,
+        modules: Iterable[str] = _VOICE_RUNTIME_MODULES,
+        importer: Callable[..., Any] = __import__,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self._modules = tuple(modules)
+        self._importer = importer
+        self._clock = clock
+        self._lock = threading.Lock()
+        self._done = threading.Event()
+        self._attempted_at: float | None = None
+        self._running = False
+        self._loaded: dict[str, bool] = {}
+
+    def start(self) -> threading.Thread | None:
+        """Begin the first import: its thread, or None when it already began."""
+
+        with self._lock:
+            if self._attempted_at is not None:
+                return None
+            return self._launch_locked(self._modules)
+
+    def _launch_locked(self, modules: tuple[str, ...]) -> threading.Thread:
+        self._attempted_at = self._clock()
+        self._running = True
+        thread = threading.Thread(
+            target=self._run, args=(modules,), name="baxy-voice-imports", daemon=True
+        )
+        thread.start()
+        return thread
+
+    def _run(self, modules: tuple[str, ...]) -> None:
+        loaded: dict[str, bool] = {}
+        try:
+            for module in modules:
+                try:
+                    self._importer(module, fromlist=["*"])
+                    loaded[module] = True
+                except Exception:  # noqa: BLE001 - an absent module is a fact of the status
+                    loaded[module] = False
+        finally:
+            with self._lock:
+                self._loaded = {
+                    **self._loaded,
+                    **{module: loaded.get(module, False) for module in modules},
+                }
+                self._running = False
+            self._done.set()
+
+    def wait(self, timeout: float | None) -> dict[str, bool] | None:
+        """What loaded, or None while the first import still runs after ``timeout``."""
+
+        self.start()
+        if not self._done.wait(timeout):
+            return None
+        with self._lock:
+            loaded = dict(self._loaded)
+            failed = tuple(
+                module for module in self._modules if not loaded.get(module, False)
+            )
+            if (
+                failed
+                and not self._running
+                and self._attempted_at is not None
+                and self._clock() - self._attempted_at >= VOICE_IMPORT_RETRY_SECONDS
+            ):
+                self._launch_locked(failed)
+        return loaded
+
+
+_VOICE_RUNTIME_IMPORTS = VoiceRuntimeImports()
+
+
+def prewarm_voice_runtime() -> threading.Thread | None:
+    """Start importing the voice runtime now, beside the model warmup."""
+
+    return _VOICE_RUNTIME_IMPORTS.start()
 
 STREAMING_STT_BUNDLE = (
     "sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11"
@@ -669,20 +769,9 @@ class VoiceEngine:
             if _streaming_stt_enabled()
             else None
         )
-        dependencies: dict[str, bool] = {}
-        for module in (
-            "sherpa_onnx",
-            "sounddevice",
-            "silero_vad",
-            "win32com.client",
-            "livekit.wakeword",
-            "onnxruntime",
-        ):
-            try:
-                __import__(module, fromlist=["*"])
-                dependencies[module] = True
-            except Exception:  # noqa: BLE001
-                dependencies[module] = False
+        loaded = _VOICE_RUNTIME_IMPORTS.wait(0)
+        pending = loaded is None
+        dependencies: dict[str, bool] = loaded or {}
         cascade_config, cascade_error = inspect_wake_cascade_config()
         wake_config, wake_error = inspect_wakeword_config()
         verifier_config, verifier_error = inspect_wake_verifier_config()
@@ -700,13 +789,14 @@ class VoiceEngine:
         if wake_config is not None and not dependencies.get("livekit.wakeword", False):
             wake_error = "wake_word_runtime_missing"
         input_available = False
-        try:
-            import sounddevice as sd
+        if dependencies.get("sounddevice", False):
+            try:
+                import sounddevice as sd
 
-            default_input = sd.query_devices(kind="input")
-            input_available = int(default_input["max_input_channels"]) > 0
-        except Exception:  # noqa: BLE001
-            pass
+                default_input = sd.query_devices(kind="input")
+                input_available = int(default_input["max_input_channels"]) > 0
+            except Exception:  # noqa: BLE001
+                pass
         available = (
             not missing
             and input_available
@@ -716,6 +806,9 @@ class VoiceEngine:
         )
         return {
             "available": available,
+            # True while the voice runtime is still importing: the other
+            # fields then say only what is known now, and a later read settles.
+            "pending": pending,
             "input": input_available,
             "stt": not missing and dependencies.get("sherpa_onnx", False),
             "vad": dependencies.get("silero_vad", False),

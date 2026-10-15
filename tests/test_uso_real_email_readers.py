@@ -12,8 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind_main
-from baxy_mind.__main__ import _prepare_turn_result
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.messaging import inbox_read_request
 from baxy_mind.semantic.patterns import (
@@ -23,6 +22,7 @@ from baxy_mind.semantic.patterns import (
 )
 from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
+from baxy_mind import turn_decisions
 
 _MAIL = (
     "email.latest.read",
@@ -168,9 +168,9 @@ _PRIVATE_MAIL_QUESTIONS = [
 @pytest.mark.parametrize("text", _PRIVATE_MAIL_QUESTIONS)
 def test_received_mail_never_leaves_as_a_web_search(text: str) -> None:
     catalog = PlannerCatalog([_tool("web.search", required=("query",))])
-    assert not mind_main._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), catalog)
+    assert not turn_decisions._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), catalog)
     # The same guard reading still searches public information about mail.
-    assert mind_main._public_lookup_applies(
+    assert turn_decisions._public_lookup_applies(
         "quién inventó el correo electrónico", "quién inventó el correo electrónico",
         _GuardSaysPublic(), ("web.search",), catalog,
     )

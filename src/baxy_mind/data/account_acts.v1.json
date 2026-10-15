@@ -1,0 +1,88 @@
+{
+  "schema": "baxy.account-acts.v1",
+  "source": "Una sola fuente de los actos que un clic hace en nombre de la persona y que sólo ella pide: cambiar su cuenta (seguir, guardar, me gusta, suscribirse, instalar, la sesión) y, desde el encargo S de estabilización (banco e1/e2, u1 y y8: yendo a «Tu biblioteca» la misión pulsó «Reproducir Tu biblioteca», «Reproducir MIX CUMBIAS» y «Pausar Tu biblioteca»), reproducir o pausar. La lee la mente (semantic/account_acts.account_act y goal_asks_for): ni el modelo ni una regla pulsan uno de estos controles si el objetivo no pide ese acto. «control» son las palabras con que lo dice el nombre de un control; «asks», los verbos con que lo pide un objetivo (imperativo o infinitivo, como los deja el lector de misiones; «poner» pide reproducir salvo lo que dice «unless»; «tocar» no, porque también pulsa un control; «Siguiente/Next» no son actos: son los botones de asistentes e instaladores). Palabras plegadas: minúsculas, sin acentos. «says»: cómo se dice, al modelo que lo eligió, por qué ese clic no va. «unless»: lo que, dicho justo después del verbo, hace que no pida el acto («poné el modo oscuro» no pide reproducir). «requestCarries»: el lector de misiones reescribe el pedido («en Spotify poné Los Bunkers» llega como «activar bunkers»), así que el pedido entero cuenta para los sub-objetivos que no son ir a un lugar ni buscar (revisión S, H1). «where»: «anywhere», como palabra entera en cualquier lugar del nombre; «first», sólo como la primera palabra del nombre («Reproducir X», «Pausa (k)»; nunca «Google Play» ni «Lista de reproducción»).",
+  "says": {"playback": "reproduce o pausa algo", "delete_account": "borra o desactiva tu cuenta", "default": "cambia tu cuenta"},
+  "acts": {
+    "follow": {
+      "where": "anywhere",
+      "control": ["seguir", "siguiendo", "dejar de seguir", "follow", "following", "unfollow"],
+      "asks": ["segui", "seguir", "sigue", "follow", "unfollow", "deja de seguir", "dejar de seguir"]
+    },
+    "save": {
+      "where": "anywhere",
+      "control": ["guardar", "guardado", "guarda", "save", "saved", "anadir a", "agregar a", "add to", "quitar de", "eliminar de", "remove from"],
+      "asks": ["guarda", "guardar", "guardame", "save", "anadi", "anadir", "agrega", "agregar", "add"]
+    },
+    "like": {
+      "where": "anywhere",
+      "control": ["me gusta", "like", "liked"],
+      "asks": ["me gusta", "like", "dale like", "dale me gusta"]
+    },
+    "subscribe": {
+      "where": "anywhere",
+      "control": ["suscribir", "suscribirse", "suscribirme", "suscrito", "subscribe", "subscribed", "unirse", "unirme", "join", "joined"],
+      "asks": ["suscribi", "suscribir", "subscribe", "uni", "unirse", "join"]
+    },
+    "install": {
+      "where": "anywhere",
+      "control": ["obtener", "instalar", "install", "get", "comprar", "buy", "adquirir", "descargar", "download"],
+      "asks": ["instala", "instalar", "install", "descarga", "descargar", "get", "obtene", "obtener"]
+    },
+    "sign_in": {
+      "where": "anywhere",
+      "control": ["iniciar sesion", "inicia sesion", "inicie sesion", "iniciando sesion", "sign in", "signing in", "log in", "logging in", "login"],
+      "asks": ["inicia sesion", "iniciar sesion", "inicia la sesion", "iniciar la sesion", "inicie sesion", "sign in", "log in", "login"]
+    },
+    "sign_out": {
+      "where": "anywhere",
+      "control": ["cerrar sesion", "cierra sesion", "cerrando sesion", "sign out", "signing out", "log out", "logging out", "logout"],
+      "asks": ["cierra sesion", "cerrar sesion", "cierra la sesion", "cerrar la sesion", "sign out", "log out", "logout"]
+    },
+    "delete_account": {
+      "where": "anywhere",
+      "control": ["eliminar cuenta", "eliminar la cuenta", "eliminar mi cuenta", "borrar cuenta", "borrar la cuenta", "desactivar cuenta", "desactivar la cuenta", "deshabilitar cuenta", "deshabilitar la cuenta", "delete account", "delete my account", "delete your account", "disable account", "deactivate account"],
+      "asks": ["elimina la cuenta", "eliminar la cuenta", "elimina mi cuenta", "eliminar mi cuenta", "borra la cuenta", "borrar la cuenta", "borra mi cuenta", "desactiva la cuenta", "desactivar la cuenta", "delete the account", "delete my account", "deactivate my account"]
+    },
+    "create_account": {
+      "where": "anywhere",
+      "control": ["crear cuenta", "crear una cuenta", "crea una cuenta", "create account", "create an account", "sign up", "registrarse", "registrate", "register"],
+      "asks": ["crea una cuenta", "crear una cuenta", "crea cuenta", "crear cuenta", "create an account", "create account", "sign up", "registrate", "registrarme", "registrarse", "register"]
+    },
+    "switch_account": {
+      "where": "anywhere",
+      "control": ["cambiar de cuenta", "cambiar cuenta", "switch account", "switch accounts", "cambiar de usuario", "cambiar usuario", "switch user", "usar otra cuenta", "use another account", "use a different account", "agregar cuenta", "agregar una cuenta", "anadir cuenta", "anadir una cuenta", "add account", "add an account", "add another account"],
+      "asks": ["cambia de cuenta", "cambiar de cuenta", "cambia la cuenta", "switch account", "switch accounts", "cambia de usuario", "cambiar de usuario", "switch user", "usa otra cuenta", "usar otra cuenta", "use another account", "agrega una cuenta", "agregar una cuenta", "add an account", "add account"]
+    },
+    "playback": {
+      "where": "first",
+      "control": ["reproducir", "reproduce", "pausar", "pausa", "reanudar", "play", "pause", "resume", "shuffle", "enable shuffle", "disable shuffle", "modo aleatorio", "habilitar el modo aleatorio", "deshabilitar el modo aleatorio", "activar el modo aleatorio", "desactivar el modo aleatorio"],
+      "asks": ["reproduci", "reproducir", "reproduce", "escucha", "escuchar", "play", "listen", "pausa", "pausar", "pause", "reanuda", "reanudar", "resume", "dale play", "pone", "pon", "poner", "poneme", "ponele", "shuffle", "aleatorio", "mezcla", "mezclar"],
+      "unless": "^\\s*(?:(?:el|la|los|las|un|una|mi|tu)\\s+)?(?:modo|tema|vista|alarma|temporizador|recordatorio|aviso|fondo|brillo|volumen|idioma|nombre|titulo|color|contrasena|pantalla|zoom|tamano|fuente|letra|cursor|filtro|orden|ordenar|formato|negrita|cursiva|subrayado|mayusculas|punto|coma|texto|numero|fecha|hora)\\b",
+      "requestCarries": true
+    }
+  },
+  "abortsInProgress": {
+    "source": "Encargo CS (banco fz1 s12, «en Steam andá a la biblioteca» con Steam cerrado tras reiniciar: la primera ventana fue su actualizador, «Actualizando Steam...» y un solo botón «Cancelar»; el modelo eligió «open» sobre él y el clic canceló el arranque). Lo que está en curso en una ventana con barra de progreso (un arranque, una actualización, una descarga) no lo cancela un clic que nadie pidió: «control» son las primeras palabras del nombre de un control que lo detiene; «asks», los verbos con que un objetivo o el pedido piden cancelarlo, detenerlo, cerrarlo o salir («cancelá la descarga» sí lo pulsa). Lo lee semantic/account_acts.aborts_unasked; cu_validate sólo lo aplica a una vista con barra de progreso.",
+    "control": ["cancelar", "cancel", "abortar", "abort", "detener", "stop", "interrumpir", "salir", "exit", "quit", "cerrar", "close"],
+    "asks": ["cancela", "cancelar", "cancel", "aborta", "abortar", "abort", "deten", "detene", "detener", "frena", "frenar", "stop", "interrumpi", "interrumpir", "sali", "salir", "exit", "quit", "cerra", "cerrar", "cierra", "close"]
+  },
+  "examples": [
+    {"control": "Seguir a Tu biblioteca", "act": "follow"},
+    {"control": "Guardar La biblioteca de media noche en Tu Biblioteca", "act": "save"},
+    {"control": "Obtener", "act": "install"},
+    {"control": "Reproducir Tu biblioteca", "act": "playback"},
+    {"control": "Pausar Tu biblioteca", "act": "playback"},
+    {"control": "Pausa (k)", "act": "playback"},
+    {"control": "Play", "act": "playback"},
+    {"control": "Habilitar el Modo aleatorio para Tu biblioteca", "act": "playback"},
+    {"control": "Shuffle play", "act": "playback"},
+    {"control": "Descargar", "act": "install"},
+    {"control": "Download", "act": "install"},
+    {"control": "Descargas", "act": null},
+    {"control": "Siguiente", "act": null},
+    {"control": "Abre Tu biblioteca", "act": null},
+    {"control": "Lista de reproducción", "act": null},
+    {"control": "Google Play Juegos", "act": null},
+    {"control": "Reproductor multimedia", "act": null}
+  ]
+}

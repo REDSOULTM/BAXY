@@ -25,8 +25,10 @@ from baxy_mind import __main__ as sidecar
 from baxy_mind.llm import (
     DirectArgumentExtraction,
     LlmRuntime,
-    _build_direct_argument_payload,
 )
+from baxy_mind.argument_payload import _build_direct_argument_payload
+from baxy_mind import argument_grounding
+from baxy_mind import skill_registry
 
 
 _SCHEDULE_SCHEMA = {
@@ -86,7 +88,7 @@ def test_a_fallback_in_the_other_language_is_formulated_again_in_the_turn_langua
     objective = "Set a reminder for tomorrow at noon to pay the water bill."
 
     extraction = runtime.extract_direct_arguments(objective, _tool(), response_language="en")
-    arguments, question = sidecar.prepare_direct_argument_result(
+    arguments, question = argument_grounding.prepare_direct_argument_result(
         runtime, objective, _tool(), extraction.arguments, extraction.fallback_question,
         response_language="en",
     )
@@ -153,8 +155,8 @@ def test_the_arguments_request_carries_the_turn_language_to_the_question(monkeyp
     monkeypatch.setattr(sidecar, "LlmRuntime", RecordingLlm)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", lambda: object())
     monkeypatch.setattr(
-        sidecar.SkillRegistry, "load_default",
-        lambda operations, encoder=None: sidecar.SkillRegistry([], operations, encoder),
+        skill_registry.SkillRegistry, "load_default",
+        lambda operations, encoder=None: skill_registry.SkillRegistry([], operations, encoder),
     )
 
     def fail_dispatch_error(*_args):

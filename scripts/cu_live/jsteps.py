@@ -1,10 +1,26 @@
 import json,sys
 # Compact view of mission-journal operations in the last N records: op + observed (controls listed by name only).
+# The journal rotates (missions.<k>.jsonl are the sealed segments, missions.jsonl the live one), so the last N
+# records may start in an archived segment. Only the segments the journal's manifest (missions.jsonl.segments,
+# newest first) still links belong to this journal: segments left by an earlier reset are not read.
 import os
 p=os.path.join(os.environ['LOCALAPPDATA'],'BAXY','cu-universal-perfil','journal','missions.jsonl')
-ls=[l for l in open(p,encoding='utf-8-sig') if l.strip()]
+def linked_segments(path):
+    try: manifest=json.load(open(path+'.segments',encoding='utf-8'))['payload']
+    except (OSError,ValueError,KeyError): return []
+    stem,ext=os.path.splitext(path)
+    return ['%s.%d%s'%(stem,link['segment'],ext) for link in reversed(manifest.get('segments') or [])]
+def journal_lines(path,count):
+    files=linked_segments(path)+[path]
+    out=[]
+    for f in reversed(files):
+        if not os.path.exists(f): continue
+        out=[l for l in open(f,encoding='utf-8-sig') if l.strip()]+out
+        if len(out)>=count: break
+    return out[-count:]
 n=int(sys.argv[1]); full=len(sys.argv)>2
-for l in ls[-n:]:
+ls=journal_lines(p,n)
+for l in ls:
     d=json.loads(l)['payload']
     if d['phase']=='started': continue
     r=d.get('response') or {}

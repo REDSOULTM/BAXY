@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_situation
+from baxy_mind import payload_fact_checks
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({
     "package.install.prepare", "package.install.commit", "package.uninstall", "app.installed",
@@ -61,9 +63,9 @@ def test_negations_and_pronouns_abstain(text: str) -> None:
 def test_the_package_name_is_grounded_as_written_or_as_the_catalog_names_it() -> None:
     prepare = {"type": "object", "properties": {"packageId": {"type": "string"}, "version": {"type": ["string", "null"]}}, "required": ["packageId"], "additionalProperties": False}
     uninstall = {"type": "object", "properties": {"packageId": {"type": "string"}}, "required": ["packageId"], "additionalProperties": False}
-    assert mind._ground_explicit_arguments("package.install.prepare", "instala Photoshop", prepare, APPS) == {"packageId": "Photoshop", "version": None}
-    assert mind._ground_explicit_arguments("package.uninstall", "desinstalá Discord", uninstall, APPS) == {"packageId": "Discord"}
-    assert mind._ground_explicit_arguments("package.uninstall", "instala Photoshop", uninstall, APPS) is None
+    assert argument_grounding._ground_explicit_arguments("package.install.prepare", "instala Photoshop", prepare, APPS) == {"packageId": "Photoshop", "version": None}
+    assert argument_grounding._ground_explicit_arguments("package.uninstall", "desinstalá Discord", uninstall, APPS) == {"packageId": "Discord"}
+    assert argument_grounding._ground_explicit_arguments("package.uninstall", "instala Photoshop", uninstall, APPS) is None
 
 
 def test_domain_gates_admit_the_new_readings() -> None:
@@ -84,10 +86,10 @@ def test_domain_gates_admit_the_new_readings() -> None:
     ],
 )
 def test_the_reply_names_the_package_and_never_claims_more_than_seen(text: str, payload: dict, defect: str) -> None:
-    assert llm._package_fact_defect(text, payload) == defect
+    assert payload_fact_checks._package_fact_defect(text, payload) == defect
 
 
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("winget_package_not_resolved", "winget_package_ambiguous", "winget_package_not_installed",
                  "winget_install_not_verified", "winget_uninstall_not_verified", "winget_adapter_unavailable"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT

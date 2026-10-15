@@ -1,6 +1,6 @@
 """Voice audit 2026-10-07 (cu-r16): a third of the published computer-use finals the model wrote had a defect («Ya te
 llevé a la sección de sonido», «Abrazé a la sección de Bluetooth», «ahora selecciono Títulos», «mis playlists»). A
-mission without a question is now told from its facts first (computer_use.floor_first, data «computerUse.parts»):
+mission without a question is now told from its facts first (cu_finals.floor_first, data «computerUse.parts»):
 places, picks, typed and searched text, a calculation whose value the window shows. The model words only questions
 about the window and parts the facts cannot tell. Every situation here is our own shape of those runs; the twins of
 the App are tests/data/cu_floor_twins.json («cu-parts-*»)."""
@@ -16,14 +16,18 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from baxy_mind import computer_use, llm  # noqa: E402
+from baxy_mind import cu_vocabulary
+from baxy_mind import cu_goals
+from baxy_mind import cu_finals
+from baxy_mind import computer_use_finals
+from baxy_mind import deterministic_finals
 
 TWINS = {case["id"]: case for case in json.loads(
     (ROOT / "tests" / "data" / "cu_floor_twins.json").read_text(encoding="utf-8"))["cases"]}
 
 
 def _first(case_id: str, language: str) -> str:
-    return llm._computer_use_floor_first(TWINS[case_id]["situation"], language)
+    return computer_use_finals._computer_use_floor_first(TWINS[case_id]["situation"], language)
 
 
 @pytest.mark.parametrize("case_id", [
@@ -59,22 +63,22 @@ def test_the_facts_never_tell_a_colour_shade_the_model_would_misname() -> None:
         {"step": 2, "operation": "input.visible.click", "label": "Texto", "name": "Texto", "ok": True},
         {"step": 3, "operation": "input.visible.click", "label": "Añil", "name": "Añil", "ok": True},
     ]
-    assert llm._computer_use_floor_first(situation, "es") == "Listo, elegí «Texto» y Añil, el azul de la paleta."
-    assert llm._computer_use_floor_first(situation, "en") == "Done, I picked «Texto» and Añil, the blue of the palette."
+    assert computer_use_finals._computer_use_floor_first(situation, "es") == "Listo, elegí «Texto» y Añil, el azul de la paleta."
+    assert computer_use_finals._computer_use_floor_first(situation, "en") == "Done, I picked «Texto» and Añil, the blue of the palette."
 
 
 def test_a_question_about_the_window_is_the_model_s() -> None:
     situation = json.loads(json.dumps(TWINS["cu-reached-tab"]["situation"]))
     situation["observed"]["goal"] = "ir a la pestaña de alarma; y responder: a qué hora suena"
-    assert llm._computer_use_floor_first(situation, "es") == ""
+    assert computer_use_finals._computer_use_floor_first(situation, "es") == ""
 
 
 def test_a_place_the_window_did_not_spell_is_the_model_s() -> None:
     # «ir a world clock» on a Spanish window: the floor would say «world clock», the window says «Reloj mundial».
     situation = json.loads(json.dumps(TWINS["cu-reached-place"]["situation"]))
     situation["observed"]["goal"] = "ir a world clock"
-    assert llm._computer_use_floor_first(situation, "en") == ""
-    assert llm._deterministic_final(situation, {}, "", "en") == "Done, I'm in «world clock»."
+    assert computer_use_finals._computer_use_floor_first(situation, "en") == ""
+    assert deterministic_finals._deterministic_final(situation, {}, "", "en") == "Done, I'm in «world clock»."
 
 
 def test_keys_pressed_in_another_application_are_the_model_s() -> None:
@@ -85,8 +89,8 @@ def test_keys_pressed_in_another_application_are_the_model_s() -> None:
     observed["subgoals"] = [{"goal": "calcular 37*12", "application": "Calculadora", "reached": True},
                             {"goal": "apretar ctrl c", "application": "Calculadora", "reached": True},
                             {"goal": "apretar ctrl v", "application": "Bloc de notas", "reached": True}]
-    assert llm._computer_use_floor_first(situation, "es") == ""
-    assert llm._deterministic_final(situation, {}, "", "es") == "Listo, calculé 37 × 12 = 444."
+    assert computer_use_finals._computer_use_floor_first(situation, "es") == ""
+    assert deterministic_finals._deterministic_final(situation, {}, "", "es") == "Listo, calculé 37 × 12 = 444."
 
 
 def test_a_failure_with_its_typed_cause_is_told_from_its_facts_first() -> None:
@@ -101,16 +105,16 @@ def test_a_failure_with_its_typed_cause_is_told_from_its_facts_first() -> None:
 
 def test_a_progress_notice_is_never_a_final() -> None:
     situation = dict(TWINS["cu-reached-tab"]["situation"], kind="progress")
-    assert llm._computer_use_floor_first(situation, "es") == ""
+    assert computer_use_finals._computer_use_floor_first(situation, "es") == ""
 
 
 def test_the_value_must_be_the_window_s_and_not_an_operand() -> None:
     texts = ["La expresión es 144 ÷ 12="]
-    assert computer_use._calculation_shown("144 ÷ 12", texts) is None
-    assert computer_use._calculation_shown("144 ÷ 12", [*texts, "Se muestra 12"]) == ("144 ÷ 12", "12")
-    assert computer_use._calculation_shown("10 / 3", ["Se muestra 3,333333333333333"]) is None
-    assert computer_use._calculation_shown("2 * (3 + 4)", ["Display is 14"]) == ("2 × (3 + 4)", "14")
-    assert computer_use._calculation_shown("5 / 0", ["Se muestra 0"]) is None
+    assert cu_finals._calculation_shown("144 ÷ 12", texts) is None
+    assert cu_finals._calculation_shown("144 ÷ 12", [*texts, "Se muestra 12"]) == ("144 ÷ 12", "12")
+    assert cu_finals._calculation_shown("10 / 3", ["Se muestra 3,333333333333333"]) is None
+    assert cu_finals._calculation_shown("2 * (3 + 4)", ["Display is 14"]) == ("2 × (3 + 4)", "14")
+    assert cu_finals._calculation_shown("5 / 0", ["Se muestra 0"]) is None
 
 
 # Live 2026-10-07 (cu-r17): a chain across two applications lost its first one («Listo, estoy en «TIENDA».»), the
@@ -126,19 +130,19 @@ def test_chains_across_apps_thousands_and_capitals_are_told_from_their_facts(cas
 @pytest.mark.parametrize("language", ["es", "en"])
 def test_a_calculation_is_never_told_from_another_window_s_numbers(language: str) -> None:
     assert _first("cu-parts-calculate-other-window", language) == ""
-    told = llm._deterministic_final(TWINS["cu-parts-calculate-other-window"]["situation"], {}, "", language)
+    told = deterministic_finals._deterministic_final(TWINS["cu-parts-calculate-other-window"]["situation"], {}, "", language)
     assert "13" not in told
 
 
 @pytest.mark.parametrize(("name", "told"), [("TIENDA", "Tienda"), ("MÚSICA", "Música"), ("VPN", "VPN"),
                                             ("HDMI", "HDMI"), ("Tienda", "Tienda")])
 def test_a_name_in_capitals_is_told_with_its_first_letter_only_unless_an_acronym(name: str, told: str) -> None:
-    assert computer_use._calm_caps(name) == told
+    assert cu_goals._calm_caps(name) == told
 
 
 @pytest.mark.parametrize(("expression", "value"), [("1.500 + 500", 2000), ("2.000 × 3", 6000), ("1.500,5 + 1", "1501.5"),
                                                    ("3.5 + 1", "4.5"), ("1.250.000 ÷ 2", 625000)])
 def test_a_point_before_three_digits_groups_thousands(expression: str, value: object) -> None:
     from fractions import Fraction
-    tokens = [computer_use._PARTS["operators"].get(token, token) for token in computer_use._CALC_TOKEN.findall(expression)]
-    assert computer_use._calculated(tokens) == Fraction(str(value))
+    tokens = [cu_vocabulary._PARTS["operators"].get(token, token) for token in cu_finals._CALC_TOKEN.findall(expression)]
+    assert cu_finals._calculated(tokens) == Fraction(str(value))

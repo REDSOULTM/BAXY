@@ -24,14 +24,18 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import visible_defect
+from baxy_mind import unsupported_answers
+from baxy_mind import limit_voice
 from baxy_mind.effect_intent import resolve_explicit_effects
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue as dialogue_slot
 from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.patterns import application_shown_media_name
+from baxy_mind import plan_shape
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import context_decision
 
 APPS = ("Steam", "Spotify", "Discord", "PotPlayer 64 bit", "VLC media player", "Google Chrome", "Microsoft Edge")
 READS = frozenset({"app.open", "input.visible.controls", "input.visible.click", "web.search", "window.resolve",
@@ -54,15 +58,15 @@ def test_an_open_and_click_plan_grounds_each_step_from_its_clause(text: str, app
     read = resolve_explicit_effects(text, READS, application_names=APPS)
     assert read is not None and read.operations == ("app.open", "input.visible.controls", "input.visible.click")
 
-    evidence = sidecar._evidence_of_expected_operations(
+    evidence = plan_shape._evidence_of_expected_operations(
         ("app.open", "input.visible.click"), read.operations, read.evidence,
     )
 
     assert evidence is not None and len(evidence) == 2
-    skeleton = sidecar._explicit_plan_skeleton(("app.open", "input.visible.click"), evidence)
+    skeleton = plan_shape._explicit_plan_skeleton(("app.open", "input.visible.click"), evidence)
     assert [step["operation"] for step in skeleton["steps"]] == ["app.open", "input.visible.click"]
-    assert sidecar._explicit_arguments_from_evidence("app.open", evidence[0], APPS) == {"appId": app}
-    assert sidecar._explicit_arguments_from_evidence("input.visible.click", evidence[1], APPS) == {"label": label}
+    assert semantic_arguments._explicit_arguments_from_evidence("app.open", evidence[0], APPS) == {"appId": app}
+    assert semantic_arguments._explicit_arguments_from_evidence("input.visible.click", evidence[1], APPS) == {"label": label}
 
 
 def test_a_dropped_step_with_a_clause_of_its_own_is_another_request() -> None:
@@ -70,9 +74,9 @@ def test_a_dropped_step_with_a_clause_of_its_own_is_another_request() -> None:
     recognized = ("app.open", "web.search", "input.visible.click")
     evidence = ("steam", "busca hades", "ve a la biblioteca")
 
-    assert sidecar._evidence_of_expected_operations(("app.open", "input.visible.click"), recognized, evidence) is None
-    assert sidecar._evidence_of_expected_operations(("app.open",), ("app.close",), ("steam",)) is None
-    assert sidecar._evidence_of_expected_operations(("app.open",), ("app.open",), ("steam",)) == ("steam",)
+    assert plan_shape._evidence_of_expected_operations(("app.open", "input.visible.click"), recognized, evidence) is None
+    assert plan_shape._evidence_of_expected_operations(("app.open",), ("app.close",), ("steam",)) is None
+    assert plan_shape._evidence_of_expected_operations(("app.open",), ("app.open",), ("steam",)) == ("steam",)
 
 
 # --- t22: what a named player shows is its window's title -------------------------------------------------------
@@ -136,7 +140,7 @@ def _tool(operation: str) -> dict[str, object]:
 
 def _decided(text: str, decision: ContextDecision) -> dict[str, object]:
     tools = [_tool(name) for name in sorted(READS)]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m103", "text": text, "history": [{"role": "user", "content": text}]},
         llm=_Decider(decision),
         planner_catalog=PlannerCatalog(tools),
@@ -238,7 +242,7 @@ def _conversation(previous: str | None = None) -> dict[str, object]:
     ],
 )
 def test_the_persons_sentence_said_back_in_the_first_person_is_an_echo(reply: str, said: str) -> None:
-    assert llm.compose_visible_defect(reply, "conversation", said, _conversation(), said=said) == "echo"
+    assert visible_defect.compose_visible_defect(reply, "conversation", said, _conversation(), said=said) == "echo"
 
 
 @pytest.mark.parametrize(
@@ -253,18 +257,18 @@ def test_the_persons_sentence_said_back_in_the_first_person_is_an_echo(reply: st
     ],
 )
 def test_an_answer_with_words_of_its_own_is_no_echo(reply: str, said: str) -> None:
-    assert llm.compose_visible_defect(reply, "conversation", said, _conversation(), said=said) == ""
+    assert visible_defect.compose_visible_defect(reply, "conversation", said, _conversation(), said=said) == ""
 
 
 def test_the_composed_conversation_does_not_say_the_last_answer_again() -> None:
     previous = "No llegué a hacer clic en el juego porque no aparecía en la pantalla."
     said = "dímelo tú, te mandé la misión a ti"
 
-    assert llm.compose_visible_defect(previous, "conversation", said, _conversation(previous), said=said) == (
+    assert visible_defect.compose_visible_defect(previous, "conversation", said, _conversation(previous), said=said) == (
         "repeats_last_answer"
     )
     # Asked to say it again, it is the answer.
-    assert llm.compose_visible_defect(previous, "conversation", "¿qué dijiste?", _conversation(previous)) == ""
+    assert visible_defect.compose_visible_defect(previous, "conversation", "¿qué dijiste?", _conversation(previous)) == ""
 
 
 # --- t50/t51: the self-close limit says how BAXY is closed ----------------------------------------------------------
@@ -279,14 +283,14 @@ def test_the_composed_conversation_does_not_say_the_last_answer_again() -> None:
     ],
 )
 def test_the_self_close_limit_may_join_how_baxy_closes(request_text: str, reply: str) -> None:
-    assert llm.limit_voice_defect(reply, request_text) == ""
-    assert llm._unsupported_answer_contract_failure(reply, request_text) == ""
+    assert limit_voice.limit_voice_defect(reply, request_text) == ""
+    assert unsupported_answers._unsupported_answer_contract_failure(reply, request_text) == ""
 
 
 def test_any_other_limit_still_gives_no_reason() -> None:
     reply = "No reservo mesas porque no tengo acceso a restaurantes."
 
-    assert llm.limit_voice_defect(reply, "reserva una mesa para dos") == "limit_gives_a_reason"
+    assert limit_voice.limit_voice_defect(reply, "reserva una mesa para dos") == "limit_gives_a_reason"
 
 
 @pytest.mark.parametrize(
@@ -299,7 +303,7 @@ def test_any_other_limit_still_gives_no_reason() -> None:
     ],
 )
 def test_a_limit_said_of_the_request_names_no_act(reply: str, request_text: str, defect: str) -> None:
-    assert ("limit_names_no_act" if llm._limit_names_no_act(reply, request_text) else "") == defect
+    assert ("limit_names_no_act" if limit_voice._limit_names_no_act(reply, request_text) else "") == defect
 
 
 # --- t45: «estaba ya» is «ya estaba» ----------------------------------------------------------------------------------
@@ -318,4 +322,4 @@ def test_the_state_already_held_is_told_in_either_order(reply: str) -> None:
         "verified": False, "succeeded": False, "error": "microphone_already_muted",
     }
 
-    assert llm.compose_visible_defect(reply, "status", "silencia el micro", {"situation": situation}) == ""
+    assert visible_defect.compose_visible_defect(reply, "status", "silencia el micro", {"situation": situation}) == ""

@@ -14,6 +14,9 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import visible_defect
+from baxy_mind import payload_fact_checks
 from baxy_mind.effect_intent import resolve_explicit_effects
 from baxy_mind.semantic.missions import mission_request
 
@@ -74,14 +77,14 @@ def test_a_typed_plan_that_covers_both_clauses_keeps_its_route() -> None:
     ],
 )
 def test_baxys_verified_act_told_in_second_person_is_vetoed(draft: str) -> None:
-    assert llm._payload_fact_defect(draft, PAYLOAD, ASKED) == "action_attributed_to_user"
+    assert payload_fact_checks._payload_fact_defect(draft, PAYLOAD, ASKED) == "action_attributed_to_user"
 
 
 def test_an_app_open_told_as_the_persons_is_vetoed() -> None:
     payload = {"seen": {"ok": True, "name": "Calculadora"}, "operation": "app.open"}
     draft = "Has iniciado la aplicación de la calculadora de Windows sin que estuviera abierta previamente."
-    assert llm._payload_fact_defect(draft, payload, "abrí la calculadora") == "action_attributed_to_user"
-    assert llm._payload_fact_defect("Abrí la Calculadora.", payload, "abrí la calculadora") == ""
+    assert payload_fact_checks._payload_fact_defect(draft, payload, "abrí la calculadora") == "action_attributed_to_user"
+    assert payload_fact_checks._payload_fact_defect("Abrí la Calculadora.", payload, "abrí la calculadora") == ""
 
 
 @pytest.mark.parametrize(
@@ -96,7 +99,7 @@ def test_an_app_open_told_as_the_persons_is_vetoed() -> None:
     ],
 )
 def test_first_person_reports_and_the_persons_asking_pass(draft: str) -> None:
-    assert llm._payload_fact_defect(draft, PAYLOAD, ASKED) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, PAYLOAD, ASKED) == ""
 
 
 def test_the_verified_report_gate_judges_the_voice_too() -> None:
@@ -110,17 +113,17 @@ def test_the_verified_report_gate_judges_the_voice_too() -> None:
             "observed": SEEN,
         }
     }
-    assert llm.compose_visible_defect("Has abierto la carpeta Descargas.", "status", ASKED, facts) == (
+    assert visible_defect.compose_visible_defect("Has abierto la carpeta Descargas.", "status", ASKED, facts) == (
         "action_attributed_to_user"
     )
-    assert llm.compose_visible_defect("Ya abrí Descargas.", "status", ASKED, facts) == ""
+    assert visible_defect.compose_visible_defect("Ya abrí Descargas.", "status", ASKED, facts) == ""
 
 
 def test_a_known_folder_the_facts_do_not_hold_is_an_extra_claim_even_if_asked() -> None:
-    assert llm._payload_fact_defect("Abrí la carpeta Imágenes dentro de Descargas.", PAYLOAD, ASKED) == "extra_claim"
-    assert llm._payload_fact_defect("I opened Pictures.", PAYLOAD, ASKED) == "extra_claim"
+    assert payload_fact_checks._payload_fact_defect("Abrí la carpeta Imágenes dentro de Descargas.", PAYLOAD, ASKED) == "extra_claim"
+    assert payload_fact_checks._payload_fact_defect("I opened Pictures.", PAYLOAD, ASKED) == "extra_claim"
     # Facts with no folder are not weighed by this rule.
-    assert not llm.names_an_unseen_known_folder("Abrí Imágenes.", {"ok": True, "name": "Fotos"})
+    assert not payload_fact_checks.names_an_unseen_known_folder("Abrí Imágenes.", {"ok": True, "name": "Fotos"})
 
 
 def _sent_prompt(user_text: str, situation: dict, reply: str) -> str:
@@ -163,11 +166,11 @@ def test_a_window_handle_never_reaches_the_final() -> None:
     facts = {"situation": APP_OPEN}
     said = "abrí la calculadora"
     leaked = "Abrí la calculadora y ahora está ejecutándose en la ventana con el handle 4722336."
-    assert llm.compose_visible_defect(leaked, "status", said, facts) == "internal_code"
-    assert llm.compose_visible_defect("Listo, abrí la Calculadora.", "status", said, facts) == ""
+    assert visible_defect.compose_visible_defect(leaked, "status", said, facts) == "internal_code"
+    assert visible_defect.compose_visible_defect("Listo, abrí la Calculadora.", "status", said, facts) == ""
     # The composer is never shown the handle, unless the person asks for it.
-    seen = llm._compose_situation_payload(APP_OPEN, "es", said)["seen"]
+    seen = compose_payload._compose_situation_payload(APP_OPEN, "es", said)["seen"]
     assert "windowHandle" not in seen and seen.get("displayName") == "Calculadora"
     asked = "¿cuál es el handle de la ventana de la calculadora?"
-    assert llm._compose_situation_payload(APP_OPEN, "es", asked)["seen"].get("windowHandle") == 4722336
-    assert not llm.visible_reply_says_an_internal_identifier("La ventana tiene el handle 4722336.", asked)
+    assert compose_payload._compose_situation_payload(APP_OPEN, "es", asked)["seen"].get("windowHandle") == 4722336
+    assert not visible_defect.visible_reply_says_an_internal_identifier("La ventana tiene el handle 4722336.", asked)

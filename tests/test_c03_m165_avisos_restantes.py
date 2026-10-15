@@ -34,7 +34,6 @@ from typing import Any
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import dialogue, temporal
 from baxy_mind.semantic.arguments import _canonical_due_utc
 from baxy_mind.semantic.catalog import GameCatalogIndex
@@ -43,6 +42,10 @@ from baxy_mind.semantic.dialogue import DialogueState
 from test_c03_m148_avisos_eso_y_cuentas import (
     REMINDER, SCHEDULE, W19, W48, _arguments, _history, _local, _tool, _turn,
 )
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
 
 LOCAL = timezone(timedelta(hours=-3))
 # Sunday 4 October 2026, 20:52 in Chile: when v4y ran H-s047.
@@ -52,10 +55,10 @@ RUN = datetime(2026, 10, 4, 20, 52, tzinfo=LOCAL)
 def _normalized(text: str, due: str | None = None, *, now: datetime = RUN) -> dict | None:
     """The alarm the readers read from ``text`` (or with ``due`` as its moment), normalized at ``now``."""
 
-    raw = sidecar._explicit_arguments_from_evidence("notification.schedule", text, (), GameCatalogIndex())
+    raw = semantic_arguments._explicit_arguments_from_evidence("notification.schedule", text, (), GameCatalogIndex())
     assert raw is not None
     raw = raw if due is None else {**raw, "dueUtc": due}
-    return sidecar._normalize_grounded_operation_arguments("notification.schedule", raw, text, now_utc=now, said=text)
+    return argument_grounding._normalize_grounded_operation_arguments("notification.schedule", raw, text, now_utc=now, said=text)
 
 
 def _rings(text: str, due: str | None = None, *, now: datetime = RUN) -> datetime | None:
@@ -80,9 +83,9 @@ class _AskOnly:
 def _asked(operation: str, objective: str, said: list[str], decided: dict[str, Any] | None = None,
            schema: dict[str, Any] = SCHEDULE) -> tuple[dict | None, str, list[tuple[str, ...]]]:
     if decided is not None:
-        sidecar._remember_decided_arguments(objective, (operation,), tuple(decided.items()))
+        decided_arguments._remember_decided_arguments(objective, (operation,), tuple(decided.items()))
     model = _AskOnly()
-    arguments_, question = sidecar._direct_arguments_result(
+    arguments_, question = direct_arguments._direct_arguments_result(
         {"operation": operation, "text": objective, "history": _history(said)},
         llm=model, tool=_tool(operation, schema), dialogue_state=DialogueState(),
     )
@@ -179,8 +182,8 @@ def test_i_w20_t3_fifteen_minutes_before_the_meeting(monkeypatch: pytest.MonkeyP
     result = _turn(I20, ContextDecision(restated, "action", ("notification.schedule",), ""))
     assert result["kind"] == "action" and result["objective"] == restated
     # M170: the clock is fixed (M108); by day the next 9 was tonight's and «mañana» was lost (20:45 at 10:39).
-    normalize = sidecar._normalize_grounded_operation_arguments
-    monkeypatch.setattr(sidecar, "_normalize_grounded_operation_arguments",
+    normalize = argument_grounding._normalize_grounded_operation_arguments
+    monkeypatch.setattr(argument_grounding, "_normalize_grounded_operation_arguments",
                         lambda *args, **kwargs: normalize(*args, **{**kwargs, "now_utc": kwargs.get("now_utc") or now}))
     arguments_, question = _arguments("notification.schedule", restated, I20)
     assert question == "" and datetime.fromisoformat(arguments_["dueUtc"].replace("Z", "+00:00")) == (

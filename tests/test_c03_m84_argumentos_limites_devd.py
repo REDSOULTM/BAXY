@@ -26,8 +26,8 @@ from datetime import date
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import limit_voice
+from baxy_mind import clock_facts
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, dialogue
 from baxy_mind.semantic.conversation import asks_to_order, stable_no_effect
@@ -44,6 +44,8 @@ from baxy_mind.semantic.patterns import (
 )
 from baxy_mind.semantic.system import weather_place_known_only_through_someone
 from baxy_mind.semantic.temporal import anchored_offset_request
+from baxy_mind import turn_decide
+from baxy_mind import context_decision
 
 MUSIC = ("media.play.query", "media.play.youtube", "media.play.exact", "media.control", "app.open")
 SCHEDULE = ("notification.schedule", "reminder.create", "calendar.event.create", "system.time", "weather.current")
@@ -174,7 +176,7 @@ def test_half_an_hour_before_the_time_here() -> None:
         "place": {"name": "Madrid", "country": "España", "timeZone": "Europe/Madrid", "utcOffsetMinutes": 120,
                   "authority": "named_place_geocoded"},
     }
-    facts = llm._place_clock_facts(observed, placed, "es")
+    facts = clock_facts._place_clock_facts(observed, placed, "es")
     assert (facts["given"], facts["givenAt"], facts["clock"], facts["clockAt"]) == ("10:00", "Madrid", "05:00", "aquí")
     # The reply tells both clocks; «eso» is the one of here.
     reply = f"Si en Madrid son las {facts['given']}, {facts['clockAt']} son las {facts['clock']}."
@@ -262,7 +264,7 @@ WELCOME = [("assistant", "Hola, soy BAXY. ¿En qué puedo ayudarte hoy?")]
 
 def _first(text: str, model: _Decider) -> dict[str, object]:
     tools = {name: _tool(name) for name in TOOLS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m84", "text": text, "history": [{"role": r, "content": c} for r, c in WELCOME]
          + [{"role": "user", "content": text}]},
         llm=model,
@@ -275,7 +277,7 @@ def _first(text: str, model: _Decider) -> dict[str, object]:
 def _decided(text: str, history: list[tuple[str, str]], model: _Decider) -> dict[str, object]:
     tools = [_tool(name) for name in TOOLS]
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m84", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(tools),
@@ -363,7 +365,7 @@ def test_something_wanted_from_a_shop_is_bought() -> None:
     # pasteles de camote.»; the recovered limit is judged by limit_voice_defect only.
     request = "quiero pastel de camote de una panadería local"
     assert asks_to_order(request)
-    assert llm.limit_voice_defect("No hago pasteles de camote.", request) == "limit_changed_act"
+    assert limit_voice.limit_voice_defect("No hago pasteles de camote.", request) == "limit_changed_act"
     assert asks_to_order("I want bagels from the bakery")
     assert not asks_to_order("quiero saber el horario de la farmacia")
     assert not asks_to_order("I want to see a movie at the local cinema")

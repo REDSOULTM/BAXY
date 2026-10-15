@@ -21,9 +21,12 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import search_report
+from baxy_mind import compose_situation
+from baxy_mind import weather_facts
 from baxy_mind.semantic.web import asks_own_place, near_the_person, weather_asks_air, weather_asks_sun_time
+from baxy_mind import argument_grounding
 
 AVAILABLE = ("weather.current", "web.search", "web.news.headlines", "system.time", "app.open", "browser.navigate")
 SEARCH_SCHEMA = {
@@ -162,7 +165,7 @@ def test_the_air_as_a_topic_is_not_a_reading(text: str) -> None:
 )
 def test_near_the_person_is_searched_near_this_pcs_city(text: str, query: str) -> None:
     assert near_the_person(text)
-    assert sidecar._ground_explicit_arguments("web.search", text, SEARCH_SCHEMA) == {"query": query, "nearby": True}
+    assert argument_grounding._ground_explicit_arguments("web.search", text, SEARCH_SCHEMA) == {"query": query, "nearby": True}
 
 
 @pytest.mark.parametrize(
@@ -183,12 +186,12 @@ def test_near_the_person_is_searched_near_this_pcs_city(text: str, query: str) -
 )
 def test_a_request_about_another_place_never_carries_the_persons(text: str) -> None:
     assert not near_the_person(text)
-    grounded = sidecar._ground_explicit_arguments("web.search", text, SEARCH_SCHEMA)
+    grounded = argument_grounding._ground_explicit_arguments("web.search", text, SEARCH_SCHEMA)
     assert grounded is None or "nearby" not in grounded
 
 
 def test_the_news_of_a_named_city_keeps_the_city() -> None:
-    grounded = sidecar._ground_explicit_arguments(
+    grounded = argument_grounding._ground_explicit_arguments(
         "web.search", "qué está pasando en la ciudad de Nueva York", SEARCH_SCHEMA,
     )
     assert grounded == {"query": "noticias en la ciudad de Nueva York"}
@@ -226,7 +229,7 @@ _WEATHER = {"operation": "weather.current", "seen": _SEEN}
     ],
 )
 def test_the_place_reply_names_the_place_and_no_weather_is_required(reply: str, asked: str, defect: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEATHER, asked) == defect
+    assert weather_facts._weather_fact_defect(reply, _WEATHER, asked) == defect
 
 
 @pytest.mark.parametrize(
@@ -240,15 +243,15 @@ def test_the_place_reply_names_the_place_and_no_weather_is_required(reply: str, 
     ],
 )
 def test_the_air_reply_says_the_observed_index(reply: str, asked: str, defect: str) -> None:
-    assert llm._weather_fact_defect(reply, _WEATHER, asked) == defect
+    assert weather_facts._weather_fact_defect(reply, _WEATHER, asked) == defect
 
 
 def test_the_sun_time_of_a_named_place_is_its_observed_clock() -> None:
     payload = {"operation": "weather.current", "seen": {**_SEEN, "location": "Badalona", "region": "Cataluña",
                                                          "country": "España"}}
     asked = "dime la hora exacta de la puesta de sol en Badalona."
-    assert llm._weather_fact_defect("En Badalona el sol se pone hoy a las 19:28.", payload, asked) == ""
-    assert llm._weather_fact_defect("En Badalona el sol se pone hoy a las 20:15.", payload, asked) == "invented_number"
+    assert weather_facts._weather_fact_defect("En Badalona el sol se pone hoy a las 19:28.", payload, asked) == ""
+    assert weather_facts._weather_fact_defect("En Badalona el sol se pone hoy a las 20:15.", payload, asked) == "invented_number"
 
 
 def test_the_city_a_search_ran_near_is_observed_in_its_report() -> None:
@@ -260,10 +263,10 @@ def test_the_city_a_search_ran_near_is_observed_in_its_report() -> None:
     asked = "en qué lugares puedo pedir comida para llevar cerca"
     # Owner rule 2026-09-24: the answer says where, never that it searched or which site.
     reply = "Cerca de Curicó hay locales con despacho para pedir comida para llevar."
-    assert llm._search_report_unsourced_words(reply, payload, asked) == []
+    assert search_report._search_report_unsourced_words(reply, payload, asked) == []
     without_near = {"operation": "web.search", "seen": {k: v for k, v in payload["seen"].items() if k != "near"}}
-    assert "curico" in llm._search_report_unsourced_words(reply, without_near, asked)
+    assert "curico" in search_report._search_report_unsourced_words(reply, without_near, asked)
 
 
 def test_a_search_near_the_person_without_this_pcs_place_has_its_cause() -> None:
-    assert "web_search_place_unavailable" in llm._CAUSE_FACT
+    assert "web_search_place_unavailable" in compose_situation._CAUSE_FACT

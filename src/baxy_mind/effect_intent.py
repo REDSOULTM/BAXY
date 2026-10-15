@@ -435,7 +435,6 @@ from .semantic.messaging import (  # noqa: F401 - moved to baxy_mind.semantic.me
     email_request_without_address,
     message_draft_request,
     message_left_written_request,
-    asks_not_to_send,
     edited_draft_request,
     forwarded_draft,
     asks_to_write_a_message,

@@ -4,7 +4,8 @@ text was typed, quotes it and names the window; the bare echo «Hola mundo» is 
 from __future__ import annotations
 
 from baxy_mind import effect_intent
-from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.payload_fact_checks import _payload_fact_defect
 
 OBSERVED = {"version": 1, "ok": True, "effectObserved": True, "action": "text", "textLength": 10,
             "acceptedEvents": 20, "expectedEvents": 20, "foregroundTitleBefore": "Sin título: Bloc de notas"}

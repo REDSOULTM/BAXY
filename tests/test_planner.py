@@ -27,39 +27,40 @@ from baxy_mind.planner import (
     validate_json_schema_instance,
     validate_skeleton,
 )
-from baxy_mind.__main__ import (
-    _explicit_arguments_from_evidence,
-    _fully_enumerated_note_create_arguments,
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.__main__ import _fully_enumerated_note_create_arguments, technical_failure_message
+from baxy_mind.argument_grounding import (
     _ground_explicit_arguments,
     _normalize_grounded_operation_arguments,
     _restore_evidence_surfaces,
-    _verified_dependency_identity_arguments,
-    _verified_message_send_arguments,
-    apply_conversation_effect_presentation,
-    configure_application_catalog,
-    configure_tools,
     normalize_objective_arguments,
     prepare_direct_argument_result,
-    technical_failure_message,
     trusted_plan_grounding_source,
     unresolved_argument_fields,
 )
+from baxy_mind.plan_dependencies import _verified_dependency_identity_arguments, _verified_message_send_arguments
+from baxy_mind.turn_gates import apply_conversation_effect_presentation
+from baxy_mind.tool_catalog import configure_application_catalog, configure_tools
 from baxy_mind.llm import (
-    ArgumentGroundingAbstention,
-    CPU_USER_MESSAGE_PROMPT,
     LlmRuntime,
-    USER_MESSAGE_PROMPT,
-    _build_direct_argument_payload,
     _batch_sizes_from_env,
     _bounded_history,
-    _conversation_presentation_shape,
     _context_size_from_env,
     _kv_offload_from_env,
     _kv_cache_type_from_env,
-    _literal_recall_reference,
     _loopback_endpoint_from_env,
     _request_timeout_from_env,
+)
+from baxy_mind.argument_payload import (
+    ArgumentGroundingAbstention,
+    _build_direct_argument_payload,
     validate_missing_argument_clarification,
+)
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
+from baxy_mind.literal_answers import _literal_recall_reference
+from baxy_mind.llm_prompts import (
+    CPU_USER_MESSAGE_PROMPT,
+    USER_MESSAGE_PROMPT,
 )
 
 
@@ -792,8 +793,39 @@ class PlannerCatalogTests(unittest.TestCase):
 
     def test_runtime_planner_does_not_route_by_exact_utterance_equality(self):
         root = Path(__file__).resolve().parents[1]
-        runtime_tree = ast.parse(
-            (root / "src/baxy_mind/__main__.py").read_text(encoding="utf-8")
+        # The sidecar's entry and the modules it was split into.
+        runtime_tree = ast.Module(
+            body=[
+                node
+                for name in (
+                    "__main__",
+                    "sidecar_budgets",
+                    "turn_audit",
+                    "request_lane",
+                    "sidecar_lifecycle",
+                    "tool_catalog",
+                    "turn_history",
+                    "argument_grounding",
+                    "plan_dependencies",
+                    "decided_arguments",
+                    "plan_shape",
+                    "direct_arguments",
+                    "turn_recovery",
+                    "operation_contract",
+                    "turn_gates",
+                    "turn_decisions",
+                    "engine_handoff",
+                    "compose_facts",
+                    "send_offer",
+                    "turn_followups",
+                    "context_decision",
+                    "turn_decide",
+                )
+                for node in ast.parse(
+                    (root / f"src/baxy_mind/{name}.py").read_text(encoding="utf-8")
+                ).body
+            ],
+            type_ignores=[],
         )
         planner_tree = ast.parse(
             (root / "src/baxy_mind/planner.py").read_text(encoding="utf-8")

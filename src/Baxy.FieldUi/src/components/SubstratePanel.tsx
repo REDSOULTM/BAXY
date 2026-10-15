@@ -3,6 +3,7 @@ import type { ConvState, ModelInfo, MetricSnapshot } from '../types';
 import type { CtxBudget, SurfacesCount } from '../hooks/useEventStream';
 import { LogoMark } from './LogoMark';
 import { Icon, type IconName } from './Icon';
+import type { AccessMode, ConfirmationPolicy } from '../App';
 
 type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
 
@@ -17,8 +18,12 @@ interface Props {
   convState: ConvState;
   wsModel: ModelInfo | null;
   ctx: CtxBudget | null;
-  accessMode: string;
-  onAccessMode: (m: string) => void;
+  accessMode: AccessMode;
+  onAccessMode: (m: AccessMode) => void;
+  /** the profile's confirmation policy; bypass is switched on only after the
+   *  explicit confirmation below, and off with one press. */
+  confirmation: ConfirmationPolicy;
+  onConfirmation: (p: ConfirmationPolicy) => void;
   /** is the assistant alive (backend reachable)? Drives the online/standby dot.
    *  Independent of the mic: text mode keeps the app online with voice off. */
   online: boolean;
@@ -42,14 +47,13 @@ const INITIAL_METRICS: MetricSnapshot = {
   cpu: 0, mem: 0, gpu: 0, net: 0, dsk: 0, tmp: 0, uptime: '00:00:00',
 };
 
-// Accessibility profile (B5) — the prototype's "perfil" column is exactly this:
-// normal (person) / no vidente (eye-off) / movilidad (wheelchair). Persisted by
-// the backend (PUT /accessibility); also settable by voice. The VRAM profile
-// (vram4/standby) is no longer shown here — it lives in Settings + the power row.
-const ACCESS_MODES: { id: string; label: string; icon: IconName; locked?: boolean }[] = [
+// The interface's mode (identity: central in the engine, a mode in the
+// interface): normal or accessible, which changes only the presentation —
+// larger text, high contrast, visible focus, no motion. Persisted in the
+// profile (PUT /accessibility) and switched by chat as well.
+const ACCESS_MODES: { id: AccessMode; label: string; icon: IconName }[] = [
   { id: 'normal', label: 'normal', icon: 'person' },
-  { id: 'no_vidente', label: 'no vidente', icon: 'eye-off', locked: true },
-  { id: 'movilidad', label: 'movilidad', icon: 'wheelchair', locked: true },
+  { id: 'accessible', label: 'accesible', icon: 'eye-off' },
 ];
 
 function fmtK(n: number): string {
@@ -57,10 +61,12 @@ function fmtK(n: number): string {
 }
 
 export function SubstratePanel({
-  convState, wsModel, ctx, accessMode, onAccessMode, online, voiceOn, onToggleVoice,
-  surfaces, activeSurface, onSurface,
+  convState, wsModel, ctx, accessMode, onAccessMode, confirmation, onConfirmation,
+  online, voiceOn, onToggleVoice, surfaces, activeSurface, onSurface,
 }: Props) {
   const [model, setModel] = useState<ModelState>(INITIAL_MODEL);
+  // the conscious gesture: switching bypass on asks here first.
+  const [bypassAsked, setBypassAsked] = useState(false);
   const [metrics, setMetrics] = useState<MetricSnapshot>(INITIAL_METRICS);
 
   // poll real system metrics every 1.5s (same endpoint as before the reskin).
@@ -168,29 +174,80 @@ export function SubstratePanel({
         </div>
       </div>
 
-      {/* ---- accessibility profile (icon rows) ---- */}
+      {/* ---- interface mode (icon rows) ---- */}
       <div className="min-block">
         <div className="sec-head"><span>perfil</span></div>
-        <div className="profile-list" role="radiogroup" aria-label="accessibility mode">
+        <div className="profile-list" role="radiogroup" aria-label="modo de la interfaz">
           {ACCESS_MODES.map((m) => {
-            const selected = !m.locked && accessMode === m.id;
+            const selected = accessMode === m.id;
             return (
               <button
                 key={m.id}
                 type="button"
                 role="radio"
                 aria-checked={selected}
-                aria-disabled={m.locked ? true : undefined}
-                className={`prow${selected ? ' on' : ''}${m.locked ? ' locked' : ''}`}
-                onClick={() => { if (!m.locked) onAccessMode(m.id); }}
-                data-tip={m.locked ? 'modo bloqueado' : undefined}
+                className={`prow${selected ? ' on' : ''}`}
+                onClick={() => onAccessMode(m.id)}
               >
-                <span className="prow-ic"><Icon name={m.locked ? 'lock' : m.icon} size={14} /></span>
+                <span className="prow-ic"><Icon name={m.icon} size={14} /></span>
                 <span className="prow-lbl">{m.label}</span>
               </button>
             );
           })}
         </div>
+      </div>
+
+      {/* ---- confirmations: normal, or bypass after an explicit yes here ---- */}
+      <div className="min-block">
+        <div className="sec-head"><span>confirmaciones</span></div>
+        {confirmation === 'bypass' ? (
+          <button
+            type="button"
+            className="prow bypass on"
+            aria-pressed={true}
+            aria-label="modo bypass encendido: no pido confirmación. pulsa para apagarlo"
+            onClick={() => onConfirmation('normal')}
+          >
+            <span className="prow-ic"><Icon name="bolt" size={14} /></span>
+            <span className="prow-lbl">bypass · apagar</span>
+          </button>
+        ) : bypassAsked ? (
+          <div
+            className="bypass-ask"
+            role="alertdialog"
+            aria-labelledby="bypass-ask-q"
+            aria-describedby="bypass-ask-d"
+          >
+            <p id="bypass-ask-q" className="bypass-ask-q">¿encender bypass?</p>
+            <p id="bypass-ask-d" className="bypass-ask-d">
+              no te pediré confirmación antes de borrar, sobrescribir o cerrar sin guardar,
+              hasta que lo apagues aquí.
+            </p>
+            <div className="bypass-ask-actions">
+              <button
+                type="button"
+                className="prow bypass"
+                onClick={() => { setBypassAsked(false); onConfirmation('bypass'); }}
+              >
+                encender bypass
+              </button>
+              <button type="button" className="prow" autoFocus onClick={() => setBypassAsked(false)}>
+                cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="prow"
+            aria-pressed={false}
+            aria-label="confirmaciones normales: pregunto antes de destruir datos. pulsa para encender el modo bypass"
+            onClick={() => setBypassAsked(true)}
+          >
+            <span className="prow-ic"><Icon name="lock" size={14} /></span>
+            <span className="prow-lbl">normal · pido confirmación</span>
+          </button>
+        )}
       </div>
 
       {/* ---- ctx budget ---- */}

@@ -24,12 +24,12 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from baxy_mind import __main__ as mind_main  # noqa: E402
-from baxy_mind.__main__ import _prepare_turn_result  # noqa: E402
+from baxy_mind.turn_decide import _prepare_turn_result  # noqa: E402
 from baxy_mind.effect_intent import operation_domain_is_grounded, resolve_explicit_effects  # noqa: E402
 from baxy_mind.planner import PlannerCatalog  # noqa: E402
 from baxy_mind.semantic.system import _weather_location  # noqa: E402
 from baxy_mind.semantic.web import _entity_lookup_query, names_own_data, person_fact_subject  # noqa: E402
+from baxy_mind import turn_decisions  # noqa: E402
 
 
 def _tool(operation: str, properties: dict | None = None) -> dict:
@@ -221,13 +221,13 @@ class _GuardSaysPublic:
 @pytest.mark.parametrize("text", _OWN_DATA)
 def test_own_data_is_never_a_public_lookup_whatever_the_guard_reads(text: str) -> None:
     assert names_own_data(text)
-    assert not mind_main._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), _catalog())
+    assert not turn_decisions._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), _catalog())
 
 
 @pytest.mark.parametrize("text", _PUBLIC)
 def test_public_questions_are_still_looked_up(text: str) -> None:
     assert not names_own_data(text)
-    assert mind_main._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), _catalog())
+    assert turn_decisions._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), _catalog())
 
 
 @pytest.mark.parametrize(

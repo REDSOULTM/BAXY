@@ -239,6 +239,27 @@ internal static class MissionInputPipeline
         return new MissionInputRoute(text, input.Source, memory);
     }
 
+    /// <summary>
+    /// Ronda 29 (banco Br27: bridge.crossed→queue.wait.end 654 ms p50 and queue.wait.end→decision.start 198 ms in
+    /// the first turn, 1 ms in the next ones): the shell's own readers of a request (generated expressions and static
+    /// tables, built on first use) read one test request when the start-up begins, on the pool. Readers only:
+    /// nothing is dispatched, shown, logged, kept or sent to the mind.
+    /// </summary>
+    internal static Task WarmReadersAsync() => Task.Run(static () =>
+    {
+        MissionInputRoute route = Route(new MissionInput(UserMessagePhrases.ReadersWarmupRequest, MissionInputSource.Text));
+        _ = route.OperationContract;
+        _ = VoiceListenCommand.TryParse(route.Text, out _);
+        _ = NaturalMemoryRequestParser.ContainsSensitiveMaterial(route.Text);
+        _ = ConfirmationReplyParser.Parse(route.Text);
+        _ = NoteChoiceReplyParser.Parse(route.Text);
+        _ = NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text);
+        _ = UserMessagePolicy.IsConnectivityStatusRequest(route.Text);
+        _ = UserMessagePolicy.IsSelfDescriptionQuestion(route.Text);
+        _ = UserMessagePolicy.IsContinueConstraintRequest(route.Text);
+        _ = UserMessagePolicy.IsGreetingRequest(route.Text);
+    });
+
     internal static async Task DispatchAsync(
         MissionInput input,
         Func<MissionInputRoute, CancellationToken, Task> execute,

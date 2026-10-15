@@ -1,0 +1,7 @@
+{
+ "version": 1,
+ "source": "fable/cu-v3-worker-sin-nombres (2026-10-09). The Win32 window classes of the render surface of a Chromium host (a browser, WebView2, CEF, Electron): the child window that draws a page and takes the pointer's messages. The UIA worker (DesktopUiaWorker.ps1) tells a render surface only by these classes, never by an application's name: the press it posts in client coordinates (RenderAt) and the planner's fact «render» (HostsRender). Measured live (fable/cu-v3-clic-chromium): a press posted to this window in client coordinates focused a WebView2 client's search field with neither the front nor the cursor moved. Compared exactly (ordinal). Read by the App's providers (Baxy.Providers.Windows, embedded resource) and handed to the worker in its first «ping» (UiaWorkerHost).",
+ "classes": [
+  "Chrome_RenderWidgetHostHWND"
+ ]
+}

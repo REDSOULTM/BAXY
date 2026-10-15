@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 import functools
+import json
 import re
+from pathlib import Path
+from .lexicon import ADDRESS_VOCATIVE
 from .normalize import fold
 from .request import spoken_language
 
@@ -489,6 +492,16 @@ def _strip_request_envelope(text: str) -> str:
             if found is not None and not _head_is(_request_head(found.group("body")), _COVERAGE_ACTION_HEAD):
                 found = None
         if found is None:
+            # Tanda t4-r6 «bro abre excel y crea…»: a vocative or a marker said without a comma before an order (with
+            # or without a courtesy) is the address, not the order; only an action head may follow it.
+            found = _match(
+                current,
+                rf"^[¿?¡!\s]*(?:(?:{ADDRESS_VOCATIVE}|{_ASSISTANT_NAME}|por\s+favor|porfa|please)\s*[,;:!]?\s+)+"
+                r"(?P<body>.+)$",
+            )
+            if found is not None and not _head_is(_request_head(found.group("body")), _COVERAGE_ACTION_HEAD):
+                found = None
+        if found is None:
             found = _match(
                 current,
                 rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?P<body>.+)$",
@@ -524,7 +537,7 @@ def _request_body_surface(text: str) -> str:
 # el nombre de esta canción»: speech carries no comma after an address or a discourse marker, and the
 # request prefix (which needs that pause, so literal content stays intact) read the marker as the first word.
 _LEADING_ADDRESS = re.compile(
-    rf"^[\s¡¿]*(?:(?:oye|oiga|hey|ey|mira|escucha|che|bueno|ok|okay|vale|{_ASSISTANT_NAME})\b[\s,.:;!]*)+",
+    rf"^[\s¡¿]*(?:(?:{ADDRESS_VOCATIVE}|ok|okay|{_ASSISTANT_NAME})\b[\s,.:;!]*)+",
     re.IGNORECASE,
 )
 
@@ -760,6 +773,13 @@ def _is_negative_effect_clause(text: str) -> bool:
         count=1,
         flags=re.IGNORECASE,
     )
+    # Ronda 19 (t2-c04 «no espera se ve muy grande, regresala como estaba»): a denial that only opens a correction
+    # («no espera», «no bro», «no wait», data) prohibits nothing when what follows gives BAXY an order. Revisión
+    # adversarial 3: the default is the denial; it is dropped only for an order read by the existing request readers
+    # (``_opens_an_order``), so «no espera, basta», «no wait, later», «no espera, yo abro spotify» stay prohibitions.
+    opened = without_correction_interjection(text)
+    if opened != text and _opens_an_order(opened):
+        text = opened
     # A negated state question asks for evidence; it does not prohibit the
     # observation. Imperatives (including questions such as "no cierres?")
     # and incomplete retractions keep the prohibition boundary below.
@@ -770,6 +790,80 @@ def _is_negative_effect_clause(text: str) -> bool:
         r"^[¿?¡!\s]*(?:no|nunca|jamas|never|don'?t|do\s+not|"
         r"(?:i|we)\s+(?:don'?t|do\s+not)|(?:yo|nosotros)\s+no)\b",
     )
+
+
+@functools.lru_cache(maxsize=1)
+def correction_words() -> dict:
+    """The words a correction is said with (``data/correction_words.v1.json``), folded."""
+
+    path = Path(__file__).resolve().parent.parent / "data" / "correction_words.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def correction_phrases(key: str) -> str:
+    """An alternation of the phrases of ``key`` in the correction words, longest first, each spaced loosely."""
+
+    phrases = sorted((fold(str(item)) for item in correction_words()[key]), key=len, reverse=True)
+    return "|".join(r"[\s,]+".join(re.escape(part) for part in phrase.split()) for phrase in phrases)
+
+
+@functools.lru_cache(maxsize=1)
+def _correction_interjection() -> re.Pattern[str]:
+    return re.compile(rf"^[¿?¡!\s]*(?:{correction_phrases('interjections')})(?!\w)[\s,;:.!¡]*(?=\S)")
+
+
+# A Spanish infinitive at the head of a clause names an act («abrir spotify era broma»), it orders none.
+_HEAD_INFINITIVE = re.compile(r"[a-z]{2,}(?:ar|er|ir)(?:me|te|se|nos|lo|la|los|las|le|les)?")
+
+
+@functools.lru_cache(maxsize=1)
+def _cease_order_head() -> str:
+    return "|".join(re.escape(fold(str(head))) for head in correction_words()["cease_orders"])
+
+
+def _clause_orders(clause: str) -> bool:
+    """One clause gives BAXY an order to act now: its request head (``_request_head``) is an order head the readers
+    know, said as an imperative (not a Spanish infinitive), not one of the orders to do nothing (``cease_orders``:
+    «detente», «stop», «cancela eso», «olvídalo», «deja spotify abierto»), and not put off for later
+    (``patterns._has_unsupported_deferred_effect``: «open discord later», «mañana cierras spotify»)."""
+
+    from .patterns import _has_unsupported_deferred_effect
+
+    head = _request_head(clause)
+    if not head or not _head_is(head, _COVERAGE_ACTION_HEAD) or _head_is(head, _cease_order_head()):
+        return False
+    if _HEAD_INFINITIVE.fullmatch(head) is not None and spoken_language(clause) != "en":
+        return False
+    return not _has_unsupported_deferred_effect(clause)
+
+
+def _opens_an_order(text: str) -> bool:
+    """Revisión adversarial 3 de la ronda 19: what follows a correction interjection gives BAXY an affirmative order —
+    a clause that orders (``_clause_orders``: «make it bigger», «ponelo más fuerte», «ponlo en 50»), an undo
+    («regrésala como estaba», ``dialogue.asks_to_undo``), what was asked said back («te dije CONFIGURACIÓN», «te pedí
+    5 nomás», ``dialogue.reproaches_what_was_asked``) or the state left reproached (``dialogue.reproaches_the_state``).
+    Anything else («basta», «later», «yo abro spotify», «spotify estaba bien») leaves the denial a denial."""
+
+    from .dialogue import _REPROACH, asks_to_undo, reproaches_the_state, reproaches_what_was_asked
+
+    if "?" in text or "¿" in text:
+        return False
+    clauses = [clause.strip() for clause in re.split(r"[,;:.!¡]+|\s+(?:pero|but|y|and)\s+", text) if clause.strip()]
+    if any(_clause_orders(clause) for clause in clauses) or asks_to_undo(text):
+        return True
+    if reproaches_what_was_asked(text) or reproaches_the_state(text):
+        return True
+    # «…, te dije CONFIGURACIÓN»: what was said before, said back; «te dije que no lo abrieras» forbids.
+    said_back = _REPROACH.search(text)
+    return said_back is not None and not re.match(
+        rf"[\s,]*(?:{correction_phrases('asked_reproach_negations')})(?!\w)", text[said_back.end():]
+    )
+
+
+def without_correction_interjection(text: str) -> str:
+    """«no espera se ve muy grande» → «se ve muy grande»; folded text with no such opening is returned as is."""
+
+    return _correction_interjection().sub("", text, count=1)
 
 
 def _negative_state_question_body(text: str) -> str | None:
@@ -1466,9 +1560,13 @@ def _is_explicit_meta_or_tool_denial(text: str) -> bool:
             )
         )
     )
+    # Uso real v3 tanda 3 c06 «busca en google como hacer un pivot table en excel pls»: a how-to that is the query of a
+    # search the person sends to Google is what Google is asked, not a how-to asked of BAXY.
+    asks_google = _explicit_google_search_query(text) is not None
     return (
         (
-            _has(
+            not asks_google
+            and _has(
                 text,
                 (
                     r"\b(?:que significa|que quiere decir|what does .{0,80} mean|"
@@ -1546,7 +1644,47 @@ _CREATE = (
 
 # SEARCH2005 «dale, buscame recetas de pizza»: the clitic forms head a search too.
 # MASSIVE qa_definition (dev corpus 2026-09-24) «busque la definición de ambulancia»: the formal imperative too.
-_SEARCH = r"(?:b[uú]sc[aá](?:me|melo|mela|mel[oa]s)?|b[uú]squen?(?:me|nos)?|buscar|encuentra|search|find|look\s+up)"
+# Uso real 2026-10-07 «Podrias buscarme en google un top 3…»: the infinitive takes its clitics too (buscarme,
+# buscármelo), and «googlear» is searching.
+_SEARCH = (
+    r"(?:b[uú]sc[aá](?:me|melo|mela|mel[oa]s)?|b[uú]squen?(?:me|nos)?|"
+    r"b[uú]sc[aá]r(?:me|nos|te|lo|la|los|las|mel[oa]s?|sel[oa]s?|nosl[oa]s?)?|"
+    r"googl[eé]a(?:r(?:me|lo|la)?|me|lo|la)?|encuentra|search|find|look\s+up)"
+)
+# «busca en Google Drive mis archivos», «en Google Maps»: a Google product named is a place of its own, not the
+# search engine. A product name that is also a common noun («fotos», «noticias», «traductor») is the query when a
+# complement follows it («busca en google fotos de gatos», «noticias de hoy») or when nothing does; only before
+# other words («busca en google fotos mis vacaciones») is it the product.
+_GOOGLE_PRODUCT = (
+    r"(?:drive|docs|sheets|slides|maps|keep|meet|classroom|forms|lens|earth|scholar|play|chrome|photos|calendar|"
+    r"translate)"
+)
+_GOOGLE_PRODUCT_OR_NOUN = r"(?:fotos|noticias|traductor|calendario|acad[eé]mico|news)"
+_GOOGLE_ENGINE = (
+    rf"google(?!\s+{_GOOGLE_PRODUCT}\b)"
+    rf"(?!\s+{_GOOGLE_PRODUCT_OR_NOUN}\b(?!\s+(?:de|del|sobre|acerca|para|about|of|on|from|for)\b)(?=\s+\S))"
+)
+# A Google search whose query is only courtesy or a when («busca en google por favor», «googlea ahora») names nothing
+# to look up.
+_EMPTY_SEARCH_QUERY = re.compile(
+    r"(?:(?:por\s+favor|porfa|porfis|plis|please|pls|ahora(?:\s+mismo)?|ya|r[aá]pido|altiro|al\s+tiro|now|"
+    r"right\s+now|quickly|gracias|thanks)[\s,.!?¡¿]*)+",
+    re.IGNORECASE,
+)
+# The search verb carrying its own object («buscarlo», «búscamelo», «googlealo»): the thing to look up is an
+# antecedent, never the words after «en Google».
+_SEARCH_WITH_OBJECT_CLITIC = re.compile(
+    r"\b(?:b[uú]sc[aá]r?(?:me|se|te|nos)?|googl[eé]ar?(?:me)?)(?:lo|la|los|las)\b", re.IGNORECASE,
+)
+
+
+# Ronda 24 (r23 t2-c04#4 «te dije la escala no el brillo, regresa la escala a 100» read as feedback): putting something
+# back as it was is an order head too («regresa», «devuelve», «restablece», «revert», «put back»; «put» is below).
+# Only the imperative and the infinitive: «regresaba», «devolvió» tell what happened.
+_RESTORE_VERB = (
+    r"(?:regresa|regresar|devuelve|devolve|devolver|restablece|restablecer|reestablece|reestablecer|resetea|resetear|"
+    r"revierte|revertir|revert|reset|restore)"
+)
 
 
 # Verbs for catalog effects that this conservative recognizer does not
@@ -1563,6 +1701,7 @@ _COVERAGE_ACTION_HEAD = (
     rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
     r"quita|quitar|saca|sacar|maximiza|minimiza|"
     r"sacale|"
+    rf"{_RESTORE_VERB}|"
     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
@@ -1927,15 +2066,22 @@ def _explicit_google_search_query(text: str) -> str | None:
     prefix = rf"[¿?¡!\s]*{_REQUEST_PREFIX}"
     search = rf"(?:search(?:\s+for)?|{_SEARCH}|buscá)\s+"
     for body in (
-        search + r"(?P<query>.+?)\s+(?:en|on)\s+google[.!?]*",
-        search + r"(?:en|on)\s+google\s+(?P<query>.+)",
-        rf"(?:en|on)\s+google\s*,\s*{_REQUEST_PREFIX}"
+        search + rf"(?P<query>.+?)\s+(?:en|on)\s+{_GOOGLE_ENGINE}[.!?]*",
+        search + rf"(?:en|on)\s+{_GOOGLE_ENGINE}\s+(?P<query>.+)",
+        rf"(?:en|on)\s+{_GOOGLE_ENGINE}\s*,\s*{_REQUEST_PREFIX}"
         + search + r"(?P<query>.+)",
+        # «googlea el estreno de Dune», «googleame …»: the verb names the engine as its place.
+        r"googl[eé]a(?:r|rme|me|nos)?\s+(?!(?:lo|la|eso|esto)\b)(?P<query>.+)",
     ):
         match = re.fullmatch(prefix + body, text.strip(), re.IGNORECASE)
         if match is None:
             continue
-        query = match.group("query").strip()
+        # Semilla r8 t2: the decider's restatement «Busca en Google un top 3 … del 2026.» ended the query with the
+        # sentence's period; the end of the sentence (and the «¿»/«¡» it closes) is no part of what is looked up.
+        query = re.sub(r"[\s.!?…]+$", "", match.group("query").strip())
+        query = re.sub(r"^[¿¡]\s*", "", query)
+        if _EMPTY_SEARCH_QUERY.fullmatch(query) or _SEARCH_WITH_OBJECT_CLITIC.search(match.group(0)):
+            return None
         if (
             query
             and len(query.encode("utf-8")) <= 512

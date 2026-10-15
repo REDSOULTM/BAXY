@@ -717,9 +717,10 @@ def sidecar_environment(
     environment["BAXY_MIND_CTX"] = "4096"
     environment["BAXY_MIND_LLM_REQUEST_TIMEOUT"] = str(llm_http_timeout)
     # La certificación principal ejerce el default productivo del retraso del
-    # worker E5 (3 s desde 2026-07-30). El escenario de estrés con arranque
-    # inmediato del encoder es explícito y separado; ya no se fuerza en
-    # silencio un interleaving distinto del producto.
+    # worker E5 (router.ROUTER_START_DELAY_SECONDS: 3 s desde 2026-07-30, 0 s
+    # desde lat-e5, 2026-10-08). Con el default en 0 s el escenario de estrés
+    # de arranque inmediato es el mismo que el producto; queda explícito para
+    # que el gate nunca dependa de una variable heredada del entorno.
     if router_start_stress:
         environment["BAXY_MIND_ROUTER_START_DELAY"] = "0"
     else:

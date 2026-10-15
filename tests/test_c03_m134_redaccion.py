@@ -20,7 +20,10 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_situation
+from baxy_mind import consulted_answers
+from baxy_mind import visible_defect
+from baxy_mind import agenda_facts
 from baxy_mind.llm import LlmRuntime
 
 
@@ -69,7 +72,7 @@ MINUTES = _not_found("document.text.read", "acta_reunion.txt", "documents")
     (MINUTES, "pásalo a limpio", "No encontré acta_reunion.txt en tu carpeta Documentos."),
 ])
 def test_the_file_a_failed_read_tried_is_named_back(situation: str, said: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", said, {"situation": situation}) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", said, {"situation": situation}) == ""
     assert _Drafts([draft]).compose_user_message(said, "error", {"situation": situation}) == draft
 
 
@@ -79,14 +82,14 @@ def test_the_file_a_failed_read_tried_is_named_back(situation: str, said: str, d
     "No encontré otro-arriendo.pdf en Descargas.",
 ])
 def test_what_the_failure_did_not_try_is_still_internal_code(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", "resume el arriendo", {"situation": CONTRACT}) == "internal_code"
+    assert visible_defect.compose_visible_defect(draft, "error", "resume el arriendo", {"situation": CONTRACT}) == "internal_code"
 
 
 def test_only_what_was_tried_is_exempt() -> None:
-    tokens = llm._observed_identifier_tokens(json.loads(CONTRACT))
+    tokens = visible_defect._observed_identifier_tokens(json.loads(CONTRACT))
     assert "arriendo-depto.pdf" in tokens
     assert "document.pdf.read" not in tokens
-    assert llm._identifier_key("Cotización-Baños.PDF") == "cotizacion-banos.pdf"
+    assert visible_defect._identifier_key("Cotización-Baños.PDF") == "cotizacion-banos.pdf"
 
 
 # ------------------------------------------------------------------ 2. a failure is told in the person's language
@@ -110,10 +113,10 @@ def test_an_english_speaker_hears_the_failure_in_english() -> None:
 
 
 def test_a_translation_written_is_still_in_the_language_asked() -> None:
-    assert llm._addressed_to_the_person("status", {"kind": "operation", "polarity": "success"}) is False
-    assert llm._addressed_to_the_person("conversation", {"kind": "conversation"}) is False
-    assert llm._addressed_to_the_person("error", {}) is True
-    assert llm._addressed_to_the_person("status", {"kind": "failure"}) is True
+    assert compose_situation._addressed_to_the_person("status", {"kind": "operation", "polarity": "success"}) is False
+    assert compose_situation._addressed_to_the_person("conversation", {"kind": "conversation"}) is False
+    assert compose_situation._addressed_to_the_person("error", {}) is True
+    assert compose_situation._addressed_to_the_person("status", {"kind": "failure"}) is True
 
 
 # ------------------------------------------------------------------ 3. a clock written in an observed title
@@ -143,7 +146,7 @@ def test_a_clock_the_title_does_not_carry_is_still_invented() -> None:
     )
     assert "20:45" not in reply
     # The UTC timestamps of the record are never a local clock to say.
-    assert llm._clocks_written_in_observed_titles(json.loads(situation)["observed"]) == frozenset({"19:15"})
+    assert agenda_facts._clocks_written_in_observed_titles(json.loads(situation)["observed"]) == frozenset({"19:15"})
 
 
 # ------------------------------------------------------------------ 4. an analysis point with an unsourced figure
@@ -160,15 +163,15 @@ SWOT_SOURCED = SWOT.replace("- Una marca que suena a los 90 y a recreo.\n", "")
 
 
 def _unsourced(page: str):  # noqa: ANN202
-    return lambda part: bool(llm._reference_unsourced_figures(part, page, [], None))
+    return lambda part: bool(consulted_answers._reference_unsourced_figures(part, page, [], None))
 
 
 def test_the_point_with_an_unsourced_figure_is_left_out() -> None:
     page = "Ripley es una empresa chilena de tiendas por departamento con tiendas en muchas ciudades."
-    assert llm._analysis_without_unsourced_points(SWOT, _unsourced(page)) == SWOT_SOURCED
+    assert consulted_answers._analysis_without_unsourced_points(SWOT, _unsourced(page)) == SWOT_SOURCED
     # A sentence of the prose opening goes the same way; the rest stays.
     opening = "Mira, esta cadena tiene lo suyo. Desde 1956 que la veo crecer.\n\n"
-    assert llm._analysis_without_unsourced_points(
+    assert consulted_answers._analysis_without_unsourced_points(
         opening + SWOT_SOURCED.split("\n\n", 1)[1], _unsourced(page),
     ) == "Mira, esta cadena tiene lo suyo.\n\n" + SWOT_SOURCED.split("\n\n", 1)[1]
 
@@ -176,7 +179,7 @@ def test_the_point_with_an_unsourced_figure_is_left_out() -> None:
 def test_a_section_left_with_no_point_is_no_analysis() -> None:
     page = "Ripley es una empresa chilena."
     only_threat = SWOT_SOURCED.replace("Rivales que copian todo al tiro.", "Unos 40 rivales que copian todo.")
-    assert llm._analysis_without_unsourced_points(only_threat, _unsourced(page)) == ""
+    assert consulted_answers._analysis_without_unsourced_points(only_threat, _unsourced(page)) == ""
 
 
 RIPLEY_READ = {

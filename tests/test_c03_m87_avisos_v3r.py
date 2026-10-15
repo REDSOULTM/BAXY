@@ -26,7 +26,11 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import consulted_answers
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import clock_facts
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.semantic.knowledge import memory_answer_form
 
@@ -44,7 +48,7 @@ def _recorded(ident: str, stage: str) -> str:
 
 
 def _visible(draft: str, ident: str, user: str | None = None) -> str:
-    return llm.compose_visible_defect(draft, "status", TURNS[ident]["text"] if user is None else user, _facts(ident))
+    return visible_defect.compose_visible_defect(draft, "status", TURNS[ident]["text"] if user is None else user, _facts(ident))
 
 
 class _Writer(LlmRuntime):
@@ -91,10 +95,10 @@ def test_d_s001_the_first_recorded_draft_is_published() -> None:
 
 def test_d_s001_the_weekend_countdown_has_a_final_from_its_facts() -> None:
     situation, payload, text = TURNS["D-s001"]["situation"], TURNS["D-s001"]["payload"], TURNS["D-s001"]["text"]
-    final = llm._deterministic_final(situation, payload, text, "es")
+    final = deterministic_finals._deterministic_final(situation, payload, text, "es")
     assert final == "Hoy es miércoles; quedan 54 h 46 min para el fin de semana."
     assert _visible(final, "D-s001") == ""
-    assert llm._payload_fact_defect(final, payload, text, said=text) == ""
+    assert payload_fact_checks._payload_fact_defect(final, payload, text, said=text) == ""
     # The three drafts refused: the final from the facts is published instead of no reply.
     weekday_missing = _recorded("D-s001", "retry")
     reply = _Writer([weekday_missing]).compose_user_message(text, "status", _facts("D-s001"))
@@ -104,21 +108,21 @@ def test_d_s001_the_weekend_countdown_has_a_final_from_its_facts() -> None:
 def test_the_weekend_countdown_final_in_days_in_english_and_on_the_weekend() -> None:
     wednesday = datetime(2026, 9, 30, 17, 13, tzinfo=timezone(timedelta(hours=-3)))
     situation = TURNS["D-s001"]["situation"]
-    days = {"operation": "system.time", **llm._calendar_facts(wednesday, "¿cuánto falta para el finde?", "es")}
-    assert llm._deterministic_final(situation, days, "¿cuánto falta para el finde?", "es") == (
+    days = {"operation": "system.time", **clock_facts._calendar_facts(wednesday, "¿cuánto falta para el finde?", "es")}
+    assert deterministic_finals._deterministic_final(situation, days, "¿cuánto falta para el finde?", "es") == (
         "Hoy es miércoles; quedan 3 días para el fin de semana."
     )
-    english = {"operation": "system.time", **llm._calendar_facts(wednesday, "how many hours until the weekend", "en")}
-    assert llm._deterministic_final(situation, english, "how many hours until the weekend", "en") == (
+    english = {"operation": "system.time", **clock_facts._calendar_facts(wednesday, "how many hours until the weekend", "en")}
+    assert deterministic_finals._deterministic_final(situation, english, "how many hours until the weekend", "en") == (
         "Today is Wednesday; 54 h 47 min left until the weekend."
     )
-    saturday = {"operation": "system.time", **llm._calendar_facts(wednesday + timedelta(days=3), "¿cuánto falta para el finde?", "es")}
-    assert llm._deterministic_final(situation, saturday, "¿cuánto falta para el finde?", "es") == (
+    saturday = {"operation": "system.time", **clock_facts._calendar_facts(wednesday + timedelta(days=3), "¿cuánto falta para el finde?", "es")}
+    assert deterministic_finals._deterministic_final(situation, saturday, "¿cuánto falta para el finde?", "es") == (
         "Hoy es sábado: ya es fin de semana."
     )
     # A weekday named as the target is not this final's (it would name a second weekday).
-    friday = {"operation": "system.time", **llm._calendar_facts(wednesday, "¿cuánto falta para el viernes?", "es")}
-    assert llm._deterministic_final(situation, friday, "¿cuánto falta para el viernes?", "es") == ""
+    friday = {"operation": "system.time", **clock_facts._calendar_facts(wednesday, "¿cuánto falta para el viernes?", "es")}
+    assert deterministic_finals._deterministic_final(situation, friday, "¿cuánto falta para el viernes?", "es") == ""
 
 
 # ------------------------------------------------------------------ D-s025: the clock after a span that passes
@@ -155,18 +159,18 @@ def test_the_form_of_an_answer_from_memory_is_read_from_the_request(request_text
 
 
 def test_only_the_form_asked_is_in_the_prompt() -> None:
-    listing = llm._memory_answer_prompt("Search for scary movies.", [], True)
+    listing = consulted_answers._memory_answer_prompt("Search for scary movies.", [], True)
     assert "numbered list" in listing and "Ingredients" not in listing
-    prose = llm._memory_answer_prompt("Look for a drama film.", [], True)
+    prose = consulted_answers._memory_answer_prompt("Look for a drama film.", [], True)
     assert "two to four sentences" in prose and "Ingredients" not in prose and "list" not in prose
     # M95 (D52): no recipe is asked of memory, so there is no recipe form.
     with pytest.raises(KeyError):
-        llm._memory_answer_prompt("Dame una receta sencilla de arepas de queso.", [], False)
+        consulted_answers._memory_answer_prompt("Dame una receta sencilla de arepas de queso.", [], False)
 
 
 # The shell's jargon terms, as ModelMessageComposer sends them (UserMessagePolicy.ForbiddenResponseTerms).
 SHELL_TERMS = [
-    "planner", "router", "tool", "catálogo", "catalogo", "schema", "operación", "operacion", "capacidad interna",
+    "planner", "router", "catálogo", "catalogo", "schema", "operación", "operacion", "capacidad interna",
     "language model", "modelo de lenguaje", "qwen", "resolver el efecto", "el efecto '", "opaque identity",
     "observed profile", "grounding", "checkpoint", "reconciliación", "reconciliacion", "motor local", "core",
     "datos verificables", "pasos verificables", "identificador interno", "wmi",

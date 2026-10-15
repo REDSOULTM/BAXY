@@ -3,7 +3,11 @@
 
 from __future__ import annotations
 
+import functools
+import json
 import re
+from pathlib import Path
+from typing import Callable, Iterable
 from .grammar import _fold, _has, _strip_request_envelope, _negative_action_forms
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import _AGENDA_LISTING
@@ -373,6 +377,19 @@ _NOT_SENT = re.compile(
     r"(?:^|[\s,;.(—-]+)(?:(?:pero|y|but|and|tho)\s+)?"
     r"(?:sin\s+(?:enviar|mandar)(?:lo|la|selo|sela)?(?:\s+(?:todav[ií]a|a[uú]n))?|"
     r"no\s+(?:se\s+)?(?:lo|la)\s+(?:mandes|mand[eé]s|env[ií]es|envi[eé]s)|"
+    # Estabilización B2 (revisión B H4: the first message with a clause after a comma): leaving it written, said
+    # as the last clause of the request («…pero déjalo en borrador», «…, sólo déjalo escrito», «…, mejor sólo
+    # escríbelo», «…pero espera, no envíes», «…, yo después lo envío», «…, I'll send it later», «…but hold off on
+    # sending», «…, just leave it as a draft»). Only at the end: inside the words of a message («dile que déjalo
+    # escrito en la pizarra», «no mandes el informe todavía», «hold off on sending the files») it is what is said.
+    r"(?:(?:(?:s[oó]lo|solamente|mejor)\s+)+)?d[eé]ja(?:lo|la)\s+(?:(?:en|como)\s+(?:un\s+)?borrador|escrit[oa])(?=\s*[.!]*$)|"
+    r"(?:mejor\s+)?s[oó]lo\s+escr[ií]bel[oa](?=\s*[.!]*$)|"
+    r"no\s+(?:env[ií]es|mandes|mand[eé]s)(?:\s+(?:todav[ií]a|a[uú]n))?(?=\s*[.!]*$)|"
+    r"(?:(?<=[,;.—]\s)|(?<=[,;.—]))yo\s+(?:despu[eé]s|luego|m[aá]s\s+tarde)\s+(?:se\s+)?(?:lo|la)\s+(?:mando|env[ií]o)(?=\s*[.!]*$)|"
+    r"yo\s+lo\s+reviso\s+antes\s+de\s+(?:mandarl[oa]|enviarl[oa])(?=\s*[.!]*$)|"
+    r"i(?:'ll|\s+will)\s+send\s+(?:it|this|that)\s+later(?=\s*[.!]*$)|"
+    r"hold\s+off\s+(?:on\s+)?sending(?:\s+(?:it|this|that))?(?=\s*[.!]*$)|"
+    r"(?:just\s+)?(?:keep|leave|save)\s+(?:it|this|that)\s+as\s+a\s+draft(?=\s*[.!]*$)|"
     r"d[eé]ja(?:lo|la)\s+sin\s+(?:enviar|mandar)|"
     r"(?:do\s+not|don'?t|dont)\s+send(?:\s+(?:it|that|this))?|without\s+sending(?:\s+it)?|"
     r"(?:leave|keep)\s+(?:it|this|that)\s+(?:for|to)\s+me\s+to\s+send|"
@@ -411,10 +428,154 @@ _LEFT_WRITTEN_PATTERNS = tuple(
 )
 
 
-def asks_not_to_send(text: str) -> bool:
-    """The person says the message is not to be sent («sin enviarlo», «no se lo mandes», «don't send it yet»)."""
+# Estabilización B2 (revisión R31-M1 H1 «write a draft to Ron92 saying I'm late», «escríbele a Ron92 un borrador que
+# diga…»): a draft is what the writing verb makes, said before the words of the message. A verb of sending with the
+# draft as its object («mándale a Ron92 el borrador», «send Ron92 the draft») sends it.
+_DRAFT_OBJECT = re.compile(
+    r"^\s*(?:escr[ií]b\w*|write|redact\w*|red[aá]ct\w*)\b(?:(?!\b(?:que|that|saying|diciendo|diga|dice|says)\b)"
+    r"[^,.;:«\"“])*?\b(?:un|el|a|the)\s+(?:borrador|draft)\b",
+    re.IGNORECASE,
+)
 
-    return _without_not_sent(_strip_request_envelope(text).strip())[1]
+
+def asks_not_to_send(text: str) -> bool:
+    """The person says the message is not to be sent («sin enviarlo», «no se lo mandes», «don't send it yet», «…, sólo
+    déjalo escrito») or that what is written is a draft («write a draft to Ana saying…»)."""
+
+    raw = _strip_request_envelope(text).strip()
+    return _without_not_sent(raw)[1] or _DRAFT_OBJECT.match(raw) is not None
+
+
+@functools.lru_cache(maxsize=1)
+def _send_offer_words() -> dict:
+    """Estabilización B2: the offer's wording, its accepted request and its assents live in data."""
+
+    return json.loads((Path(__file__).resolve().parent.parent / "data" / "send_offer.v1.json").read_text(encoding="utf-8"))
+
+
+# Estabilización B2 (revisión B H1–H3): any doubt leaves the draft and offers nothing. In the words of the message, a
+# word of sending, keeping, waiting or reviewing; in an earlier message of the person, a send with a negation or a
+# delay, or a draft, a hold or a review. Broad on purpose: a doubt costs an offer, a wrong offer costs a question.
+# Revisión B2 H4: pressing enter or the button, posting, publishing or approving it, said in the words or before.
+_KEPT_SHARED = r"enter|publi|post\b|apru|approv|visto\s+bueno|boton|button|teclea|press|apriet"
+_HOLD_IN_WORDS = re.compile(
+    r"\b(?:mand|envi|send|guard|hold|borrador|draft|revis|review|muestr|show|esper|wait|todavia|aun|yet|later|despues|"
+    rf"luego|dej|keep|save|leave|escrit|antes|primero|first|cuando|when|larg|despach|veo\s+yo|{_KEPT_SHARED})"
+)
+_SEND_STEM = re.compile(r"\b(?:mand|envi|send|sende)")
+_HOLD_SAID_BEFORE = re.compile(
+    r"\b(?:no|nada|ninguno|ningun|never|don'?t|dont|not|todavia|aun|yet|despues|luego|later|hasta|until|antes|before)\b"
+)
+_KEPT_SAID_BEFORE = re.compile(rf"\b(?:borrador|draft|hold|guard|revis|review|escrit|dej|{_KEPT_SHARED})")
+# Revisión B2 H5: the words of the message hold a message for someone else.
+_ANOTHER_MESSAGE = re.compile(r"\b(?:y|e|and)\s+(?:a|al|to)\s+\S+(?:\s+\S+)?\s+(?:que|that)\b")
+
+
+def offered_send(
+    text: str, said_before: Iterable[str], proven: Callable[[str], Iterable[str]],
+) -> tuple[str, str, str | None] | None:
+    """(recipient, words, client or None) a draft the decider left in a follow-up may be offered to send, in the
+    person's own words; None at any doubt. ``proven``: what the readers without a model read in a text.
+
+    Estabilización B2 (uso real t4-c03 t2 «mandale a Ron92 que si se conecta a las 9 pa jugar» after «abre discord
+    porfa»; revisión B of the elevation to a send): the draft stays as the decider left it, and the final offers the
+    send (``DialogueState.send_offer_question``); only the person's yes sends it (``DialogueState.accepted_send``), in
+    any confirmation mode. Offered only when the readers prove a send of one recipient in the person's words, those
+    words hold nothing of keeping, waiting or sending, and no earlier message of the person holds the messages."""
+
+    said = message_request_named_client(text) or message_request_any_channel(text)
+    if said is None or asks_not_to_send(text):
+        return None
+    recipient, words, client = said
+    if (
+        _HOLD_IN_WORDS.search(_fold(words))
+        or re.search(r"[«»\"“”]", words)
+        or re.search(r",|&|\s(?:y|e|and)\s", _fold(recipient))
+        or _ANOTHER_MESSAGE.search(_fold(words))
+    ):
+        return None
+    for before in said_before:
+        folded = _fold(before)
+        if (_SEND_STEM.search(folded) and _HOLD_SAID_BEFORE.search(folded)) or _KEPT_SAID_BEFORE.search(folded):
+            return None
+    # Revisión B2 H5: the readers read that one send in the person's words, and no order in the words of the message.
+    if tuple(proven(text)) != ("message.recipient.resolve", "message.send") or tuple(proven(words)):
+        return None
+    return said
+
+
+def send_offer_question(recipient: str, words: str, english: bool) -> str:
+    """The offer said after the draft's final (``data/send_offer.v1.json``)."""
+
+    return _send_offer_words()["question"]["en" if english else "es"].format(recipient=recipient, text=words)
+
+
+def send_said(key: str, english: bool) -> str:
+    """A whole reply about a send, from data: ``not_sent`` when the yes to the offer could not send it as the readers
+    alone read it (revisión B2 H2), ``already_sent`` when the yes comes after a send already done (encargo E)."""
+
+    return _send_offer_words()[key]["en" if english else "es"]
+
+
+# Encargo E (banco i1 c6): the operations whose verified result is a message sent, and the check a mission's «enviar»
+# carries after the text its part before wrote (``semantic.missions._with_sent_checks``): the App saw that text sent.
+_SENDS = frozenset({"message.send", "message.send.test", "email.send"})
+SENT_ATOM = "sent:"
+
+
+def proven_sent(term: object) -> str:
+    """The text a check that held saw sent («stepDone:input.key.press:enter&sent:prueba baxy c6» → «prueba baxy c6»),
+    folded; "" when no atom of it says so, or the term only held by one of its alternatives («|»)."""
+
+    if not isinstance(term, str) or "|" in term:
+        return ""
+    atoms = [atom.strip() for atom in term.split("&")]
+    return next((_fold(atom[len(SENT_ATOM):]) for atom in atoms if atom.casefold().startswith(SENT_ATOM)), "")
+
+
+def verified_send(situation: object) -> bool:
+    """Encargo E: whether a result told now holds a message sent and verified: a send operation (or a step of a plan)
+    verified, or a mission whose part «enviar» held on the text seen sent (``proven_sent``)."""
+
+    if not isinstance(situation, dict):
+        return False
+    def decoded(raw: object) -> object:
+        # The App sends a plan's steps, and some observations, as their JSON text.
+        if isinstance(raw, str) and raw.lstrip().startswith("{"):
+            try:
+                return json.loads(raw)
+            except json.JSONDecodeError:
+                return None
+        return raw
+
+    raw_steps = situation.get("steps") if isinstance(situation.get("steps"), list) else []
+    steps = [situation, *(step for raw in raw_steps if isinstance(step := decoded(raw), dict))]
+    for step in steps:
+        if step.get("verified") is not True or step.get("succeeded") is not True:
+            continue
+        if step.get("operation") in _SENDS:
+            return True
+        observed = decoded(step.get("observed"))
+        observed = observed if isinstance(observed, dict) else {}
+        parts = [part for part in observed.get("subgoals") or () if isinstance(part, dict)] or [observed]
+        if step.get("operation") == "mission.computer.use" and any(
+            part.get("reached") is True and proven_sent(part.get("satisfiedBy")) for part in parts
+        ):
+            return True
+    return False
+
+
+def accepted_send_request(recipient: str, words: str, channel: str, english: bool) -> str | None:
+    """The request the readers read as that same send (recipient, words and client); None when they would read it
+    otherwise, so the offer is not made."""
+
+    request = _send_offer_words()["request"]["en" if english else "es"].format(
+        recipient=recipient, channel=channel, text=words,
+    )
+    read = message_request_named_client(request)
+    if read is None or _fold(read[0]) != _fold(recipient) or read[1] != words or read[2] != channel:
+        return None
+    return request
 
 
 def message_left_written_request(text: str) -> tuple[str, str, str] | None:
@@ -996,7 +1157,7 @@ def contact_book_request(text: str) -> bool:
 def message_body(objective: str) -> str | None:
     """The literal text the person dictated for ``message.send``: the words after the recipient, a quoted text,
     or what follows «que» / «saying» / «el mensaje»; None when the request does not say one (moved from
-    ``__main__._verified_message_send_arguments``, which joins it with the verified recipient)."""
+    ``plan_dependencies._verified_message_send_arguments``, which joins it with the verified recipient)."""
 
     any_channel = message_request_any_channel(objective)
     if any_channel is not None:
@@ -1005,7 +1166,10 @@ def message_body(objective: str) -> str | None:
     named_client = message_request_named_client(objective)
     if named_client is not None:
         return named_client[1]
-    quoted = re.search(r"[\"“](?P<text>[^\"”]{1,16384})[\"”]", objective)
+    # Encargo TZ-DC (tandas z1/z2 t4-c03 t2): a follow-up's send reaches the plan as the decider's restatement, which
+    # quotes the words in Spanish marks («Manda a Ron92 en Discord: «si se conecta a las 9 pa jugar».»). Unread here,
+    # the body went to the model, which abstained in z1 («No pude enviar el mensaje.», step_data_missing).
+    quoted = re.search(r"[\"“«](?P<text>[^\"”»]{1,16384})[\"”»]", objective)
     if quoted is not None:
         body = quoted.group("text")
     else:

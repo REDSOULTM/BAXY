@@ -36,13 +36,21 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import llm_prompts
+from baxy_mind import clock_facts
+from baxy_mind import failure_wording
+from baxy_mind import compose_situation
+from baxy_mind import search_report
 from baxy_mind.semantic import reading, web
 from baxy_mind.semantic.patterns import echo_mode_request, known_unsupported_effect_request
 from baxy_mind.semantic.grammar import _fold
 from baxy_mind.semantic.temporal import clock_elsewhere, countdown_target
 
-_violates = llm._shaped_conversation_answer_violates_contract
+_violates = conversation_contract._shaped_conversation_answer_violates_contract
 
 # ------------------------------------------------------------------ identity: one of his facts, never a bare «no info»
 
@@ -74,7 +82,7 @@ def test_an_identity_answer_with_one_of_his_facts_passes(request_text: str, repl
 
 
 def test_the_identity_instructions_ask_for_one_of_his_facts_beside_the_missing_detail() -> None:
-    prompt = llm.IDENTITY_PRESENTATION_PROMPT
+    prompt = llm_prompts.IDENTITY_PRESENTATION_PROMPT
     assert "say plainly you do not have that" in prompt
     assert "say who you are from these facts" in prompt
 
@@ -157,7 +165,7 @@ _SEARCH_FAILED = {
     ],
 )
 def test_an_absence_told_as_what_the_pages_do_not_say_shows_the_search(draft: str, payload: dict) -> None:
-    assert llm._payload_fact_defect(draft, payload, "¿qué famosos tocaron en orquestas juveniles?") == (
+    assert payload_fact_checks._payload_fact_defect(draft, payload, "¿qué famosos tocaron en orquestas juveniles?") == (
         "search_report_shows_the_search"
     )
 
@@ -173,7 +181,7 @@ def test_an_absence_told_as_what_the_pages_do_not_say_shows_the_search(draft: st
     ],
 )
 def test_not_found_said_briefly_is_the_answer(draft: str, payload: dict) -> None:
-    assert llm._payload_fact_defect(draft, payload, "¿qué famosos tocaron en orquestas juveniles?") != (
+    assert payload_fact_checks._payload_fact_defect(draft, payload, "¿qué famosos tocaron en orquestas juveniles?") != (
         "search_report_shows_the_search"
     )
 
@@ -189,7 +197,7 @@ def test_not_found_said_briefly_is_the_answer(draft: str, payload: dict) -> None
     ],
 )
 def test_a_not_found_with_a_reason_nobody_observed_invents_a_cause(draft: str) -> None:
-    assert llm._payload_fact_defect(draft, _SEARCH_FAILED, "¿la serie The Last of Us vale la pena?") == (
+    assert payload_fact_checks._payload_fact_defect(draft, _SEARCH_FAILED, "¿la serie The Last of Us vale la pena?") == (
         "search_not_found_invents_a_cause"
     )
 
@@ -203,18 +211,18 @@ def test_a_not_found_with_a_reason_nobody_observed_invents_a_cause(draft: str) -
     ],
 )
 def test_a_not_found_whose_only_reason_is_the_not_finding_invents_nothing(draft: str) -> None:
-    assert llm._payload_fact_defect(draft, _SEARCH_FAILED, "¿la nueva peli es buena?") != (
+    assert payload_fact_checks._payload_fact_defect(draft, _SEARCH_FAILED, "¿la nueva peli es buena?") != (
         "search_not_found_invents_a_cause"
     )
 
 
 def test_a_positive_statement_with_a_participle_is_not_an_absence() -> None:
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Los diez artistas que dominan hoy la escena musical fueron nombrados en una lista global.",
         _SEARCHED,
         "¿qué artistas dominan la escena musical?",
     ) != "search_report_shows_the_search"
-    assert not llm._SEARCH_NARRATED_ABSENCE.search("he was named best player and was given the award")
+    assert not search_report._SEARCH_NARRATED_ABSENCE.search("he was named best player and was given the award")
 
 
 @pytest.mark.parametrize(
@@ -229,13 +237,13 @@ def test_a_positive_statement_with_a_participle_is_not_an_absence() -> None:
 def test_the_fact_of_a_failure_says_what_the_person_hears_not_the_mechanism(
     code: str, forbidden: tuple[str, ...],
 ) -> None:
-    fact = llm._cause_in_prose(code, "es")
+    fact = compose_situation._cause_in_prose(code, "es")
     assert fact != code.replace("_", " ")
     assert not any(word in fact.casefold() for word in forbidden)
 
 
 def test_the_unavailable_search_offers_the_browser() -> None:
-    assert "browser" in llm._cause_in_prose("web_search_unavailable", "es")
+    assert "browser" in compose_situation._cause_in_prose("web_search_unavailable", "es")
 
 
 @pytest.mark.parametrize(
@@ -250,11 +258,11 @@ def test_an_unavailable_search_told_plainly_with_the_browser_offer_passes(draft:
         "outcome": "failed",
         "reason": {
             "outcome": "failed",
-            "cause": llm._cause_in_prose("web_search_unavailable", "es"),
+            "cause": compose_situation._cause_in_prose("web_search_unavailable", "es"),
             "operation": "web.search",
         },
     }
-    assert llm._payload_fact_defect(draft, payload, asked) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, payload, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -266,7 +274,7 @@ def test_an_unavailable_search_told_plainly_with_the_browser_offer_passes(draft:
     ],
 )
 def test_the_unreachable_outlook_said_plainly_is_the_failure_told(draft: str) -> None:
-    assert llm._asserts_failure(draft)
+    assert failure_wording._asserts_failure(draft)
 
 
 # ------------------------------------------------------------------ the page's voice: its offer to the reader
@@ -299,7 +307,7 @@ _PAGES = {
     ],
 )
 def test_a_page_offering_itself_to_its_reader_is_its_voice(draft: str, asked: str) -> None:
-    assert llm._search_report_speaks_as_a_page(draft, _PAGES, asked)
+    assert search_report._search_report_speaks_as_a_page(draft, _PAGES, asked)
 
 
 @pytest.mark.parametrize(
@@ -313,12 +321,12 @@ def test_a_page_offering_itself_to_its_reader_is_its_voice(draft: str, asked: st
     ],
 )
 def test_an_answer_reported_or_asked_for_themselves_is_not_the_page_speaking(draft: str, asked: str) -> None:
-    assert not llm._search_report_speaks_as_a_page(draft, _PAGES, asked)
+    assert not search_report._search_report_speaks_as_a_page(draft, _PAGES, asked)
 
 
 def test_the_page_speaking_for_itself_is_still_its_voice() -> None:
-    assert llm._search_report_speaks_as_a_page("Nuestro conversor te dice el cambio al instante.", _PAGES, "dólar hoy")
-    assert llm._search_report_speaks_as_a_page("Hemos preparado una guía de los mejores sitios.", _PAGES, "sitios")
+    assert search_report._search_report_speaks_as_a_page("Nuestro conversor te dice el cambio al instante.", _PAGES, "dólar hoy")
+    assert search_report._search_report_speaks_as_a_page("Hemos preparado una guía de los mejores sitios.", _PAGES, "sitios")
 
 
 # ------------------------------------------------------------------ what he knows about a name is who or what it is
@@ -462,9 +470,9 @@ def test_the_zone_asked_is_given_as_its_offset_and_the_time_alone_is_not() -> No
         "place": {"name": "Tokio", "country": "Japón", "timeZone": "Asia/Tokyo", "utcOffsetMinutes": 540,
                   "authority": "named_place_geocoded"},
     }
-    zone = llm._place_clock_facts(observed, "what's the time zone of tokyo", "en")
+    zone = clock_facts._place_clock_facts(observed, "what's the time zone of tokyo", "en")
     assert zone is not None and zone["zone"] == "UTC+09:00 (Asia/Tokyo)" and zone["clock"] == "12:35"
-    clock = llm._place_clock_facts(observed, "qué hora es en tokio", "es")
+    clock = clock_facts._place_clock_facts(observed, "qué hora es en tokio", "es")
     assert clock is not None and "zone" not in clock
 
 
@@ -516,9 +524,9 @@ def _sound_on_at_zero() -> dict:
 
 def _sound_defect(reply: str, asked: str) -> str:
     situation = _sound_on_at_zero()
-    payload = llm._compose_situation_payload(situation, "es", asked)
-    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
-        llm._payload_fact_defect(reply, payload, asked)
+    payload = compose_payload._compose_situation_payload(situation, "es", asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
+        payload_fact_checks._payload_fact_defect(reply, payload, asked)
     )
 
 
@@ -554,4 +562,4 @@ def test_the_sound_said_disabled_over_an_unmuted_read_is_a_reversed_mute(asked: 
     ],
 )
 def test_results_compared_aloud_show_the_search(draft: str) -> None:
-    assert llm._payload_fact_defect(draft, _SEARCHED, "¿cuál fue el primer libro de zombies?") == "search_report_shows_the_search"
+    assert payload_fact_checks._payload_fact_defect(draft, _SEARCHED, "¿cuál fue el primer libro de zombies?") == "search_report_shows_the_search"

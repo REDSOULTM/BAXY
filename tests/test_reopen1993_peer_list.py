@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import argument_grounding
 
 APPS = ("Spotify", "Discord", "Steam", "7-Zip")
 GAMES = (("steam", "3590", "Plants vs. Zombies: Game of the Year"), ("steam", "461040", "PICO PARK:Classic Edition"))
@@ -32,7 +33,7 @@ def test_an_installed_game_named_without_its_edition_is_uninstalled_from_steam(t
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
     assert intent is not None and intent.operations == ("game.uninstall.named",)
     catalog = effect_intent.build_game_catalog_index(GAMES)
-    assert mind._explicit_arguments_from_evidence("game.uninstall.named", text, APPS, catalog) == {"title": title, "store": "steam"}
+    assert semantic_arguments._explicit_arguments_from_evidence("game.uninstall.named", text, APPS, catalog) == {"title": title, "store": "steam"}
 
 
 @pytest.mark.parametrize(
@@ -42,7 +43,7 @@ def test_an_installed_game_named_without_its_edition_is_uninstalled_from_steam(t
 def test_power_orders_ground_their_action(text: str, action: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
     assert intent is not None and intent.operations == ("system.power",)
-    assert mind._ground_explicit_arguments("system.power", text, POWER_SCHEMA) == {"action": action}
+    assert argument_grounding._ground_explicit_arguments("system.power", text, POWER_SCHEMA) == {"action": action}
 
 
 @pytest.mark.parametrize("text", ["turn off the lights", "apagá", "reiniciá el router", "shut down spotify"])
@@ -61,4 +62,4 @@ def test_what_is_not_the_pc_is_not_a_power_order(text: str) -> None:
     ],
 )
 def test_a_command_names_its_known_folder_or_none(text: str, arguments: dict) -> None:
-    assert mind._ground_explicit_arguments("shell.command.run", text, SHELL_SCHEMA) == arguments
+    assert argument_grounding._ground_explicit_arguments("shell.command.run", text, SHELL_SCHEMA) == arguments

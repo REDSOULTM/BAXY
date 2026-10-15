@@ -44,9 +44,7 @@ internal sealed class ReminderHandler(
                 "reminder.list" => OperationOutcome.Success(List(arguments, dueOnly: false)),
                 "notification.list.due" => OperationOutcome.Success(List(arguments, dueOnly: true)),
                 "reminder.resolve.exact" => OperationOutcome.Success(ReminderResultJson.Selection(
-                    Verify(_store.ResolveExact(
-                        Required(arguments, "title"),
-                        OptionalBoolean(arguments, "includeDeleted") ?? false)))),
+                    Verify(Resolve(arguments)))),
                 "reminder.delete" => VerifiedRecord(_store.Delete(
                     Id(arguments),
                     arguments.GetProperty("expectedVersion").GetInt64(),
@@ -100,6 +98,23 @@ internal sealed class ReminderHandler(
             Required(arguments, "title"),
             OptionalString(arguments, "details") ?? string.Empty,
             due));
+    }
+
+    // r19b (t1-c04-2 «no, mejor a las nueve y media» → reminder_ambiguous): the reminder named by its verified id is
+    // that one, whatever other reminders share its title; the title must still be its own, or it is not found.
+    private LocalTaskRecord Resolve(JsonElement arguments)
+    {
+        string title = Required(arguments, "title");
+        bool includeDeleted = OptionalBoolean(arguments, "includeDeleted") ?? false;
+        if (OptionalString(arguments, "reminderId") is null)
+            return _store.ResolveExact(title, includeDeleted);
+        LocalTaskRecord named = _store.Read(Id(arguments), includeDeleted);
+        if (!string.Equals(
+                named.Title,
+                title.Normalize(System.Text.NormalizationForm.FormC).Trim(),
+                StringComparison.OrdinalIgnoreCase))
+            throw new LocalTaskNotFoundException("The reminder with that id has another title.");
+        return named;
     }
 
     private OperationOutcome VerifiedRecord(LocalTaskRecord changed)

@@ -34,6 +34,10 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import search_report
+from baxy_mind import visible_defect
+from baxy_mind import payload_fact_checks
 from baxy_mind.semantic import knowledge, quantities
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m92_v3u_evidence.json").read_text(encoding="utf-8"))
@@ -76,9 +80,9 @@ def _blocked(draft: str, ident: str) -> str:
     payload = _search_payload(ident)
     facts = {"situation": json.dumps(_search_situation(ident), ensure_ascii=False)}
     return (
-        llm.compose_visible_defect(draft, "status", text, facts)
-        or ("invented" if llm._truncated_fact_word(draft, payload) else "")
-        or llm._payload_fact_defect(draft, payload, text, said=text)
+        visible_defect.compose_visible_defect(draft, "status", text, facts)
+        or ("invented" if visible_defect._truncated_fact_word(draft, payload) else "")
+        or payload_fact_checks._payload_fact_defect(draft, payload, text, said=text)
     )
 
 
@@ -244,12 +248,12 @@ def test_no_recipe_is_said_from_memory(ident: str) -> None:
 
 
 def test_d_w01_t3_the_rule_read_is_applied_to_the_litres_asked() -> None:
-    evidence = llm._search_results_text(_search_payload("D-w01-t3"))
+    evidence = search_report._search_results_text(_search_payload("D-w01-t3"))
     totals = quantities.rated_totals(_case("D-w01-t3")["text"], evidence)
     assert [item.sentence for item in totals] == ["3 litros × 10 gramos por litro = 30 gramos"]
     # The read gives what a tablespoon of coarse salt weighs, not a teaspoon: no teaspoons are counted.
     assert totals[0].values == (Fraction(30),)
-    payload = llm._compose_situation_payload(_search_situation("D-w01-t3"), "es", _case("D-w01-t3")["text"])
+    payload = compose_payload._compose_situation_payload(_search_situation("D-w01-t3"), "es", _case("D-w01-t3")["text"])
     assert payload["rule_calculation"] == ["3 litros × 10 gramos por litro = 30 gramos"]
 
 
@@ -305,11 +309,11 @@ def test_d_w01_t2_an_amount_answered_to_taste_is_refused() -> None:
     assert recorded == "Se le pone a gusto."
     assert _blocked(recorded, "D-w01-t2") == "amount_without_figure"
     payload = _search_payload("D-w01-t2")
-    evidence = llm._search_results_text(payload)
+    evidence = search_report._search_results_text(payload)
     text = _case("D-w01-t2")["text"]
-    assert llm._amount_report_defect("No encontré cuánta sal le echo al agua.", payload, text, evidence) == ""
-    assert llm._amount_report_defect("Unos 10 gramos por litro.", payload, text, evidence) == ""
-    assert llm._amount_report_defect("Una cucharada por litro.", payload, text, evidence) == ""
+    assert payload_fact_checks._amount_report_defect("No encontré cuánta sal le echo al agua.", payload, text, evidence) == ""
+    assert payload_fact_checks._amount_report_defect("Unos 10 gramos por litro.", payload, text, evidence) == ""
+    assert payload_fact_checks._amount_report_defect("Una cucharada por litro.", payload, text, evidence) == ""
 
 
 def test_d_w01_t2_the_writer_is_told_an_amount_was_asked() -> None:
@@ -330,13 +334,13 @@ def test_pages_that_state_no_quantity_leave_a_plain_answer() -> None:
         {"title": "Consejos", "url": "https://salud.example.org", "snippet": "Conviene beber agua a lo largo del día."},
     ]}}
     reply = "Conviene beber agua a lo largo del día."
-    assert llm._amount_report_defect(reply, payload, "¿cuánta agua conviene beber?", reply) == ""
+    assert payload_fact_checks._amount_report_defect(reply, payload, "¿cuánta agua conviene beber?", reply) == ""
 
 
 def test_a_search_that_asks_no_amount_is_not_held_to_a_figure() -> None:
     payload = _search_payload("D-p24-t1")
-    evidence = llm._search_results_text(payload) or ""
-    assert llm._amount_report_defect(
+    evidence = search_report._search_results_text(payload) or ""
+    assert payload_fact_checks._amount_report_defect(
         "Es una película de fantasía con Elijah Wood.", payload, _case("D-p24-t1")["text"], evidence,
     ) == ""
 
@@ -349,6 +353,6 @@ def test_d_w10_t2_a_converter_that_mentions_is_the_search_shown() -> None:
     assert recorded.startswith("Un conversor de cocina menciona")
     payload = _search_payload("D-w10-t2")
     text = _case("D-w10-t2")["text"]
-    assert llm._search_report_shows_the_search(recorded, payload, text)
-    assert llm._search_report_shows_the_search("A kitchen converter mentions that flour is lighter.", payload, text)
-    assert not llm._search_report_shows_the_search("La harina es más ligera que el azúcar.", payload, text)
+    assert search_report._search_report_shows_the_search(recorded, payload, text)
+    assert search_report._search_report_shows_the_search("A kitchen converter mentions that flour is lighter.", payload, text)
+    assert not search_report._search_report_shows_the_search("La harina es más ligera que el azúcar.", payload, text)

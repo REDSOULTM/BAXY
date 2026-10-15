@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import payload_fact_checks
+from baxy_mind import compose_situation
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({
     "filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open", "desktop.wallpaper.set",
@@ -25,10 +27,10 @@ def test_the_zip_mission_is_four_typed_steps_with_windows_default_names() -> Non
     assert effect_intent.folder_txt_zip_open_mission(MISSION) == "desktop"
     directory = {"type": "object", "properties": {"folder": {"type": "string"}, "relativePath": {"type": "string"}}, "required": ["relativePath"], "additionalProperties": False}
     write = {"type": "object", "properties": {"folder": {"type": "string"}, "relativePath": {"type": "string"}, "text": {"type": "string"}, "expectedSha256": {"type": ["string", "null"]}}, "required": ["relativePath", "text"], "additionalProperties": False}
-    assert mind._ground_explicit_arguments("filesystem.create.directory", MISSION, directory) == {"folder": "desktop", "relativePath": "Nueva carpeta"}
-    assert mind._ground_explicit_arguments("filesystem.write.text", MISSION, write) == {"folder": "desktop", "relativePath": "Nueva carpeta/Nuevo documento de texto.txt", "text": "", "expectedSha256": None}
-    assert mind._ground_explicit_arguments("file.compress", MISSION, FOLDER_NAME) == {"folder": "desktop", "name": "Nueva carpeta"}
-    assert mind._ground_explicit_arguments("file.open", MISSION, FOLDER_NAME) == {"folder": "desktop", "name": "Nueva carpeta.zip"}
+    assert argument_grounding._ground_explicit_arguments("filesystem.create.directory", MISSION, directory) == {"folder": "desktop", "relativePath": "Nueva carpeta"}
+    assert argument_grounding._ground_explicit_arguments("filesystem.write.text", MISSION, write) == {"folder": "desktop", "relativePath": "Nueva carpeta/Nuevo documento de texto.txt", "text": "", "expectedSha256": None}
+    assert argument_grounding._ground_explicit_arguments("file.compress", MISSION, FOLDER_NAME) == {"folder": "desktop", "name": "Nueva carpeta"}
+    assert argument_grounding._ground_explicit_arguments("file.open", MISSION, FOLDER_NAME) == {"folder": "desktop", "name": "Nueva carpeta.zip"}
     assert effect_intent.known_unsupported_effect_request(MISSION, {"app.open"}) is True
     assert effect_intent.known_unsupported_effect_request(MISSION, AVAILABLE) is False
 
@@ -44,7 +46,7 @@ def test_the_zip_mission_is_four_typed_steps_with_windows_default_names() -> Non
 def test_named_compress_and_open(text: str, operation: str, arguments: dict) -> None:
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, ("Steam",), ())
     assert intent is not None and intent.operations == (operation,)
-    assert mind._ground_explicit_arguments(operation, text, FOLDER_NAME) == arguments
+    assert argument_grounding._ground_explicit_arguments(operation, text, FOLDER_NAME) == arguments
 
 
 def test_wallpaper_colour_and_picture() -> None:
@@ -54,8 +56,8 @@ def test_wallpaper_colour_and_picture() -> None:
     for text in (colour, picture):
         intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, ("Steam",), ())
         assert intent is not None and intent.operations == ("desktop.wallpaper.set",)
-    assert mind._ground_explicit_arguments("desktop.wallpaper.set", colour, schema) == {"color": "azul", "folder": None, "name": None}
-    assert mind._ground_explicit_arguments("desktop.wallpaper.set", picture, schema) == {"color": None, "folder": "pictures", "name": "playa.jpg"}
+    assert argument_grounding._ground_explicit_arguments("desktop.wallpaper.set", colour, schema) == {"color": "azul", "folder": None, "name": None}
+    assert argument_grounding._ground_explicit_arguments("desktop.wallpaper.set", picture, schema) == {"color": None, "folder": "pictures", "name": "playa.jpg"}
     assert effect_intent.resolve_explicit_effects("no cambies el fondo de pantalla", AVAILABLE, ("Steam",), ()) is None
     assert effect_intent.known_unsupported_effect_request(colour, {"app.open"}) is True
 
@@ -67,8 +69,8 @@ def test_web_download_of_a_page_cover_and_of_a_file() -> None:
     for text in (cover, file):
         intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, ("Steam",), ())
         assert intent is not None and intent.operations == ("web.download",)
-    assert mind._ground_explicit_arguments("web.download", cover, schema) == {"url": "wikipedia.org", "folder": "desktop", "name": None, "query": None}
-    assert mind._ground_explicit_arguments("web.download", file, schema) == {"url": "https://example.com/a.pdf", "folder": "downloads", "name": None, "query": None}
+    assert argument_grounding._ground_explicit_arguments("web.download", cover, schema) == {"url": "wikipedia.org", "folder": "desktop", "name": None, "query": None}
+    assert argument_grounding._ground_explicit_arguments("web.download", file, schema) == {"url": "https://example.com/a.pdf", "folder": "downloads", "name": None, "query": None}
     assert effect_intent.known_unsupported_effect_request(cover, {"browser.navigate"}) is True
 
 
@@ -83,12 +85,12 @@ def test_web_download_of_a_page_cover_and_of_a_file() -> None:
     ],
 )
 def test_the_reply_names_what_the_postread_saw(text: str, payload: dict, defect: str) -> None:
-    assert llm._payload_fact_defect(text, payload, "") == defect
+    assert payload_fact_checks._payload_fact_defect(text, payload, "") == defect
 
 
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("zip_already_exists", "file_not_found", "file_open_not_verified", "wallpaper_color_unknown", "download_page_without_image", "download_source_unavailable"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT
 
 
 @pytest.mark.parametrize(

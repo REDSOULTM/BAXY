@@ -11,6 +11,25 @@ public static class ProtocolLimits
     public const int MaximumOperationResponseMessageChars = 48_000;
 }
 
+/// <summary>
+/// The hello is the core's only startup message, and the App gives up on a
+/// core that does not send it within <see cref="HelloTimeout"/>. Everything the
+/// core waits for before the hello fits inside that budget: the installed
+/// application catalog is read from the core's first instant, beside the
+/// journal check, and the hello waits for it at most <see cref="HelloCatalogWait"/>
+/// from the core's start. A slower catalog leaves the hello's catalog marked
+/// unverified and incomplete instead of failing the whole start. The journal
+/// check is waited for at most <see cref="HelloJournalWait"/> from the start: a
+/// journal that fails sooner stops the core before its hello, and one still
+/// being validated then lets the hello go while every request waits for it.
+/// </summary>
+public static class CoreStartupBudget
+{
+    public static readonly TimeSpan HelloTimeout = TimeSpan.FromSeconds(10);
+    public static readonly TimeSpan HelloCatalogWait = TimeSpan.FromSeconds(6);
+    public static readonly TimeSpan HelloJournalWait = TimeSpan.FromSeconds(6);
+}
+
 public static class ProtocolTypes
 {
     public const string Hello = "hello";

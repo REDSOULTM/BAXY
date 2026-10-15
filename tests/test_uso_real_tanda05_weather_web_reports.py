@@ -8,7 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import weather_facts
 from test_c03_cpu_actor import Recorder
 
 AVAILABLE = ("weather.current", "web.search", "system.time", "note.create", "app.open")
@@ -134,10 +137,10 @@ def test_the_plan_is_answered_with_the_observed_weather_of_the_place() -> None:
     payload = {"operation": "weather.current", "seen": _SEEN}
     asked = "¿el domingo podremos comer en una terraza en Girona?"
     told = "En Girona hay 24,2 °C y está despejado ahora; el pronóstico del domingo no lo tengo."
-    assert llm._weather_fact_defect(told, payload, asked) == ""
+    assert weather_facts._weather_fact_defect(told, payload, asked) == ""
     # A figure no read carries, or a reply without the place, is not the answer.
-    assert llm._weather_fact_defect("El domingo en Girona habrá 28 °C.", payload, asked) == "invented_number"
-    assert llm._weather_fact_defect("Hay 24,2 °C y está despejado.", payload, asked) == "missing_state"
+    assert weather_facts._weather_fact_defect("El domingo en Girona habrá 28 °C.", payload, asked) == "invented_number"
+    assert weather_facts._weather_fact_defect("Hay 24,2 °C y está despejado.", payload, asked) == "missing_state"
 
 
 # --- a failed weather read that is an absence is told as that absence ----------------------
@@ -165,12 +168,12 @@ def _place_not_found() -> dict:
     ],
 )
 def test_the_unknown_place_told_is_the_failure_told(asked: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", asked, _place_not_found()) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", asked, _place_not_found()) == ""
 
 
 def test_an_unknown_place_hidden_behind_a_reading_still_misses_the_failure() -> None:
     draft = "El aire en Nowhereville está limpio hoy."
-    assert llm.compose_visible_defect(draft, "error", "cómo está el aire en Nowhereville", _place_not_found()) == (
+    assert visible_defect.compose_visible_defect(draft, "error", "cómo está el aire en Nowhereville", _place_not_found()) == (
         "missing_failure"
     )
 
@@ -215,8 +218,8 @@ def _search_payload(results: list[dict]) -> dict:
 )
 def test_the_answer_is_said_as_something_known(asked: str, answer: str) -> None:
     facts = {"situation": _search_situation(_TURTLES)}
-    assert llm.compose_visible_defect(answer, "status", asked, facts) == ""
-    assert llm._payload_fact_defect(answer, _search_payload(_TURTLES), asked) == ""
+    assert visible_defect.compose_visible_defect(answer, "status", asked, facts) == ""
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_TURTLES), asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -232,7 +235,7 @@ def test_the_answer_is_said_as_something_known(asked: str, answer: str) -> None:
     ],
 )
 def test_an_answer_that_shows_the_lookup_falls(shown: str) -> None:
-    assert llm._payload_fact_defect(shown, _search_payload(_TURTLES), "¿Qué son las Tortugas Ninja?") == (
+    assert payload_fact_checks._payload_fact_defect(shown, _search_payload(_TURTLES), "¿Qué son las Tortugas Ninja?") == (
         "search_report_shows_the_search"
     )
 
@@ -242,29 +245,30 @@ def test_the_persons_words_and_the_pages_own_words_are_not_the_lookup_showing() 
     results = [{"title": "Consejos de salud", "url": "https://salud.example.org/agua",
                 "snippet": "Según la OMS, conviene beber agua a lo largo del día."}]
     asked = "¿cuánta agua conviene beber según la OMS?"
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Según la OMS, conviene beber agua a lo largo del día.", _search_payload(results), asked
     ) == ""
     # A place that is also a site's name is the place when the pages say it.
     place = [{"title": "Turismo en Curicó", "url": "https://www.curico.cl/turismo",
               "snippet": "Curicó tiene ascensores históricos y cerros con miradores."}]
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Curicó tiene ascensores históricos y cerros con miradores.", _search_payload(place),
         "qué ver en la ciudad",
     ) == ""
 
 
-def test_a_long_walk_through_the_pages_is_too_long() -> None:
+def test_a_walk_through_the_pages_is_judged_by_its_sources_not_its_length() -> None:
+    # Estabilización R6: every sentence is a page's own, so it is published; the length is the composer's max_tokens
+    # (120, test_the_answer_publishes_on_the_first_stage_and_the_writer_is_told_to_hide_the_search), and a claim no
+    # page makes still falls (next test).
     walk = ("Las Tortugas Ninja son cuatro tortugas mutantes. Viven en las alcantarillas de Nueva York. "
             "Están entrenadas en el arte del ninjutsu. Son adolescentes.")
-    assert llm._payload_fact_defect(walk, _search_payload(_TURTLES), "¿Qué son las Tortugas Ninja?") == (
-        "search_report_runs_long"
-    )
+    assert payload_fact_checks._payload_fact_defect(walk, _search_payload(_TURTLES), "¿Qué son las Tortugas Ninja?") == ""
 
 
 def test_a_claim_no_page_makes_still_falls_without_any_source() -> None:
     invented = "Las Tortugas Ninja fueron creadas en Japón en 1950."
-    assert llm._payload_fact_defect(invented, _search_payload(_TURTLES), "¿Qué son las Tortugas Ninja?") == (
+    assert payload_fact_checks._payload_fact_defect(invented, _search_payload(_TURTLES), "¿Qué son las Tortugas Ninja?") == (
         "search_report_unsourced_claim"
     )
 
@@ -273,19 +277,19 @@ def test_not_finding_it_is_said_briefly_without_the_search() -> None:
     asked = "¿a qué hora cierra el museo de cera de Girona?"
     facts = {"situation": _search_situation(_APERITIF)}
     for answer in ("No lo encontré.", "No encontré a qué hora cierra el museo de cera de Girona."):
-        assert llm.compose_visible_defect(answer, "status", asked, facts) == ""
-        assert llm._payload_fact_defect(answer, _search_payload(_APERITIF), asked) == ""
-    assert llm.compose_visible_defect("I couldn't find it.", "status", "when does the wax museum close", facts) == ""
+        assert visible_defect.compose_visible_defect(answer, "status", asked, facts) == ""
+        assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_APERITIF), asked) == ""
+    assert visible_defect.compose_visible_defect("I couldn't find it.", "status", "when does the wax museum close", facts) == ""
 
 
 def test_the_hours_a_page_writes_are_the_pages_not_invented_clocks() -> None:
     asked = "¿a qué hora se toma el aperitivo en Girona los domingos?"
     answer = "El aperitivo se toma entre las 12:30 y las 14:00, sobre todo los domingos."
     facts = {"situation": _search_situation(_APERITIF)}
-    assert llm.compose_visible_defect(answer, "status", asked, facts) == ""
-    assert llm._payload_fact_defect(answer, _search_payload(_APERITIF), asked) == ""
+    assert visible_defect.compose_visible_defect(answer, "status", asked, facts) == ""
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(_APERITIF), asked) == ""
     # An hour no page writes is still invented.
-    assert llm.compose_visible_defect("El aperitivo se toma a las 16:45.", "status", asked, facts) == "extra_claim"
+    assert visible_defect.compose_visible_defect("El aperitivo se toma a las 16:45.", "status", asked, facts) == "extra_claim"
 
 
 def test_the_answer_publishes_on_the_first_stage_and_the_writer_is_told_to_hide_the_search() -> None:

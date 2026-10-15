@@ -27,11 +27,14 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import search_report
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue, knowledge, quantities
 from baxy_mind.semantic.decider import ContextDecision
+from baxy_mind import turn_decide
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m88_v3r_evidence.json").read_text(encoding="utf-8"))
 CONVERSATION = json.dumps({"kind": "conversation", "polarity": "success"})
@@ -108,18 +111,18 @@ def test_the_recorded_drafts_that_settle_the_go_ahead_are_refused() -> None:
     case = _case(P24_T5)
     facts = {"situation": CONVERSATION, "context": _last_reply(P24_T5), "priorRequests": _prior(P24_T5)}
     # The one the vetoes of M79 and M85 missed, and the two they caught, whatever their wording.
-    assert llm.compose_visible_defect(_stage(P24_T5, "third")["draft"], "conversation", case["text"], facts) == (
+    assert visible_defect.compose_visible_defect(_stage(P24_T5, "third")["draft"], "conversation", case["text"], facts) == (
         "go_ahead_not_done"
     )
     for stage in ("first", "retry"):
-        assert llm.compose_visible_defect(_stage(P24_T5, stage)["draft"], "conversation", case["text"], facts)
+        assert visible_defect.compose_visible_defect(_stage(P24_T5, stage)["draft"], "conversation", case["text"], facts)
     # Saying it was not done, and why, answers it (and is no denial of a write nobody asked for).
-    assert llm.compose_visible_defect(HONEST_EN, "conversation", case["text"], facts) == ""
+    assert visible_defect.compose_visible_defect(HONEST_EN, "conversation", case["text"], facts) == ""
     spanish = {"situation": CONVERSATION, "context": "No pude poner Hustlers en Netflix: pide iniciar sesión en este PC."}
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Todavía no lo he puesto: Netflix pide iniciar sesión en este PC.", "conversation", "ok, hazlo", spanish,
     ) == ""
-    assert llm.compose_visible_defect("Perfecto, sigo adelante.", "conversation", "ok, hazlo", spanish) == (
+    assert visible_defect.compose_visible_defect("Perfecto, sigo adelante.", "conversation", "ok, hazlo", spanish) == (
         "go_ahead_not_done"
     )
 
@@ -211,7 +214,7 @@ def test_the_memory_answer_gets_the_answer_a_follow_up_points_at() -> None:
 def _report_defect(ident: str) -> str:
     case = _case(ident)
     stage = _stage(ident)
-    return llm._payload_fact_defect(stage["draft"], stage["payload"], case["text"], said=case["text"])
+    return payload_fact_checks._payload_fact_defect(stage["draft"], stage["payload"], case["text"], said=case["text"])
 
 
 @pytest.mark.parametrize("ident", ["D-p12-t2", "v3e2:D-w06-t4"])
@@ -240,18 +243,18 @@ def _payload(snippets: list[str]) -> dict:
     ],
 )
 def test_a_count_the_read_gives_is_kept(draft: str, snippets: list[str]) -> None:
-    assert llm._search_report_unsourced_counts(draft, "\n".join(snippets)) == []
-    assert llm._payload_fact_defect(draft, _payload(snippets), "restaurantes abiertos") != "search_report_unsourced_claim"
+    assert search_report._search_report_unsourced_counts(draft, "\n".join(snippets)) == []
+    assert payload_fact_checks._payload_fact_defect(draft, _payload(snippets), "restaurantes abiertos") != "search_report_unsourced_claim"
 
 
 def test_a_count_the_read_does_not_give_is_refused() -> None:
     snippets = ["Don Pepe, restaurante abierto hasta las 23.", "La Estrella, restaurante abierto hasta la 1."]
-    assert llm._search_report_unsourced_counts("Hay cinco restaurantes abiertos cerca.", "\n".join(snippets)) == ["cinco"]
+    assert search_report._search_report_unsourced_counts("Hay cinco restaurantes abiertos cerca.", "\n".join(snippets)) == ["cinco"]
     # «los dos» points back at what was named; «once» is English too.
-    assert llm._search_report_unsourced_counts("Los dos restaurantes abren once a week.", "\n".join(snippets)) == []
+    assert search_report._search_report_unsourced_counts("Los dos restaurantes abren once a week.", "\n".join(snippets)) == []
     # Counting the results read is the report's voice (SEARCH2015); counting stores is a claim about the world.
-    assert llm._search_report_unsourced_counts("Se encontraron cinco resultados.", "\n".join(snippets)) == []
-    assert llm._search_report_unsourced_counts("Hay dos tiendas abiertas.", "\n".join(snippets)) == ["dos"]
+    assert search_report._search_report_unsourced_counts("Se encontraron cinco resultados.", "\n".join(snippets)) == []
+    assert search_report._search_report_unsourced_counts("Hay dos tiendas abiertas.", "\n".join(snippets)) == ["dos"]
 
 
 # ------------------------------------------------------------------ w01, w10: how much of an ingredient is looked up
@@ -374,7 +377,7 @@ def test_the_talk_about_how_much_of_an_ingredient_is_a_lookup(ident: str, restat
     tools = {name: _tool(name) for name in ("web.search", "system.time", "notification.schedule")}
     llm_fake = _Talk(restated)
 
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m88", "text": case["text"], "history": [*case["lived"], {"role": "user", "content": case["text"]}]},
         llm=llm_fake,
         planner_catalog=PlannerCatalog(list(tools.values())),

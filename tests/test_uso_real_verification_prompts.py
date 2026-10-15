@@ -22,20 +22,22 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import conversation_contract
+from baxy_mind import llm_prompts
+from baxy_mind import conversation_checks
 from baxy_mind.semantic.request import read_request
 from test_concision_2026_09_24 import ChatRecorder
+from baxy_mind import turn_decisions
 
 
 def test_the_prompt_says_small_talk_is_answered_not_questioned() -> None:
-    assert "A la charla" in llm.SYSTEM_PROMPT and "sin pedirle que aclare nada" in llm.SYSTEM_PROMPT
-    assert "To small talk" in llm.SYSTEM_PROMPT_EN and "without asking them to clarify" in llm.SYSTEM_PROMPT_EN
+    assert "A la charla" in llm_prompts.SYSTEM_PROMPT and "sin pedirle que aclare nada" in llm_prompts.SYSTEM_PROMPT
+    assert "To small talk" in llm_prompts.SYSTEM_PROMPT_EN and "without asking them to clarify" in llm_prompts.SYSTEM_PROMPT_EN
 
 
 @pytest.mark.parametrize(
     ("language", "prompt", "other"),
-    [("en", llm.SYSTEM_PROMPT_EN, llm.SYSTEM_PROMPT), ("es", llm.SYSTEM_PROMPT, llm.SYSTEM_PROMPT_EN)],
+    [("en", llm_prompts.SYSTEM_PROMPT_EN, llm_prompts.SYSTEM_PROMPT), ("es", llm_prompts.SYSTEM_PROMPT, llm_prompts.SYSTEM_PROMPT_EN)],
 )
 def test_a_reply_is_written_under_the_prompt_in_its_language(language: str, prompt: str, other: str) -> None:
     client = ChatRecorder([("Nice to meet you, Alex." if language == "en" else "Encantado, Alex.", "stop")])
@@ -48,7 +50,7 @@ def test_a_reply_is_written_under_the_prompt_in_its_language(language: str, prom
 
 @pytest.mark.parametrize(
     ("language", "prompt"),
-    [("en", llm.UNSUPPORTED_PRESENTATION_PROMPT_EN), ("es", llm.UNSUPPORTED_PRESENTATION_PROMPT)],
+    [("en", llm_prompts.UNSUPPORTED_PRESENTATION_PROMPT_EN), ("es", llm_prompts.UNSUPPORTED_PRESENTATION_PROMPT)],
 )
 def test_a_limit_is_written_under_the_prompt_in_its_language(language: str, prompt: str) -> None:
     reply = "I don't do that: soup deliveries to Vesta are out of my reach." if language == "en" else (
@@ -74,12 +76,12 @@ class _Catalog(dict):
 )
 def test_what_no_operation_reaches_is_never_looked_up(text: str) -> None:
     catalog = _Catalog({"web.search": object()})
-    assert not sidecar._public_lookup_applies(text, text, _AlwaysPublic(), ("web.search",), catalog)
+    assert not turn_decisions._public_lookup_applies(text, text, _AlwaysPublic(), ("web.search",), catalog)
 
 
 def test_a_public_question_is_still_looked_up() -> None:
     catalog = _Catalog({"web.search": object()})
-    assert sidecar._public_lookup_applies(
+    assert turn_decisions._public_lookup_applies(
         "who directed Oppenheimer", "who directed Oppenheimer", _AlwaysPublic(), ("web.search",), catalog,
     )
 
@@ -100,7 +102,7 @@ def test_spanish_stays_spanish(text: str) -> None:
      "¿Y qué te gustaría hacer hoy?", "Qué buena. ¿Cómo te fue?"],
 )
 def test_a_question_about_the_person_is_no_offer(reply: str) -> None:
-    assert not llm.visible_reply_offers_more(reply)
+    assert not conversation_checks.visible_reply_offers_more(reply)
 
 
 @pytest.mark.parametrize(
@@ -109,7 +111,7 @@ def test_a_question_about_the_person_is_no_offer(reply: str) -> None:
      "¿Te gustaría que te cuente un chiste?", "Sure. Do you want me to open it?"],
 )
 def test_an_offer_is_still_an_offer(reply: str) -> None:
-    assert llm.visible_reply_offers_more(reply)
+    assert conversation_checks.visible_reply_offers_more(reply)
 
 
 @pytest.mark.parametrize(
@@ -123,4 +125,4 @@ def test_an_offer_is_still_an_offer(reply: str) -> None:
     ],
 )
 def test_a_taste_said_as_a_manner_is_acknowledged_in_other_words(request_text: str, reply: str, violates: bool) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(reply, request_text, "preference_ack") is violates
+    assert conversation_contract._shaped_conversation_answer_violates_contract(reply, request_text, "preference_ack") is violates

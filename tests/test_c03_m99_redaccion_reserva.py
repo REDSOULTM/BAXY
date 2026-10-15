@@ -28,9 +28,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
-from baxy_mind.llm import ConversationReplyContractError
+from baxy_mind import llm_prompts
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import conversation_shape
+from baxy_mind import dialogue_history
+from baxy_mind import weather_facts
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue, reading, temporal, web
 from baxy_mind.semantic.decider import ContextDecision
@@ -38,6 +43,8 @@ from baxy_mind.semantic.grammar import _fold
 from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.patterns import _explicit_named_music_query, operation_domain_is_grounded
 from baxy_mind.semantic.request import addressed_language
+from baxy_mind import turn_recovery
+from baxy_mind import context_decision
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m99_v3x_evidence.json").read_text(encoding="utf-8"))
 TURNS = EVIDENCE["turns"]
@@ -81,7 +88,7 @@ def test_d_p27_t5_the_persons_words_written_back_by_the_repair_are_refused() -> 
                     temperature=0.0)
     assert refused.value.audit_reason == "echo"
     # A greeting or thanks is still answered in kind.
-    assert not llm._says_the_person_back("Thanks!", "thanks")
+    assert not dialogue_history._says_the_person_back("Thanks!", "thanks")
 
 
 def test_d_p31_t3_the_last_answer_again_is_refused() -> None:
@@ -104,17 +111,17 @@ def test_d_p31_t3_the_last_answer_again_is_refused() -> None:
 
 def test_the_last_answer_asked_again_is_the_answer() -> None:
     last = "La capital de Australia es Canberra."
-    assert llm._repeats_the_last_answer(last, last, "gracias")
-    assert llm._repeats_the_last_answer("La capital de Australia es Canberra", last + " Tiene unos 450 000 habitantes.",
+    assert dialogue_history._repeats_the_last_answer(last, last, "gracias")
+    assert dialogue_history._repeats_the_last_answer("La capital de Australia es Canberra", last + " Tiene unos 450 000 habitantes.",
                                         "ok")
-    assert not llm._repeats_the_last_answer(last, last, "¿qué dijiste?")
-    assert not llm._repeats_the_last_answer("Es Canberra.", last, "gracias")
+    assert not dialogue_history._repeats_the_last_answer(last, last, "¿qué dijiste?")
+    assert not dialogue_history._repeats_the_last_answer("Es Canberra.", last, "gracias")
 
 
 def test_d_p36_t3_new_lines_of_a_dialogue_are_only_the_new_ones() -> None:
     before = TURNS["D-p36-t2"]["published"]
     drafted = _raw("D-p36-t3", 1)
-    new = llm._new_dialogue_lines(drafted, before)
+    new = conversation_shape._new_dialogue_lines(drafted, before)
     assert new.count("\n") == 0 and new.startswith("Ellen Ripley:") and "piel negra" in new
     for line in before.splitlines():
         assert line not in new
@@ -123,8 +130,8 @@ def test_d_p36_t3_new_lines_of_a_dialogue_are_only_the_new_ones() -> None:
                            response_language="es", temperature=0.0)
     assert reply == new
     # Nothing old, or nothing new: left as it is.
-    assert llm._new_dialogue_lines("Ash: \"Nuevo.\"", before) == ""
-    assert llm._new_dialogue_lines(before, before) == ""
+    assert conversation_shape._new_dialogue_lines("Ash: \"Nuevo.\"", before) == ""
+    assert conversation_shape._new_dialogue_lines(before, before) == ""
 
 
 def test_d_p01_t3_calling_off_what_was_asked_is_acknowledged() -> None:
@@ -168,9 +175,9 @@ def test_d_w15_t3_the_question_back_is_in_the_persons_language() -> None:
     assert addressed_language("respóndeme en inglés", "en") == "en"
     facts = {"situation": row["situation"]}
     question = "¿Cómo se llama el informe trimestral que quieres traducir?"
-    assert llm.compose_visible_defect(question, "clarification", said, facts) == ""
+    assert visible_defect.compose_visible_defect(question, "clarification", said, facts) == ""
     # The recorded English question is now refused, and the writer is told the person's language.
-    assert llm.compose_visible_defect(row["draft"], "clarification", said, facts) == "wrong_language"
+    assert visible_defect.compose_visible_defect(row["draft"], "clarification", said, facts) == "wrong_language"
     writer = _Writer([question])
     assert writer.compose_user_message(said, "clarification", facts) == question
     assert "Idioma obligatorio: español" in _said_to_the_model(writer.sent[0])
@@ -182,11 +189,11 @@ def test_d_s053_the_recovery_question_that_offers_back_the_one_named_is_not_aske
     model = MagicMock()
     model.clarify_after_turn_failure.return_value = question
     model.compose_user_message.return_value = question
-    result = sidecar._recover_failed_turn({"id": "s053", "text": text, "history": []}, model,
+    result = turn_recovery._recover_failed_turn({"id": "s053", "text": text, "history": []}, model,
                                           failure_kinds=("contract", "contract"))
     assert question not in (result.get("question"), result.get("reply"))
     model.clarify_after_turn_failure.return_value = "¿Qué Miguel?"
-    result = sidecar._recover_failed_turn({"id": "s053", "text": text, "history": []}, model,
+    result = turn_recovery._recover_failed_turn({"id": "s053", "text": text, "history": []}, model,
                                           failure_kinds=("contract", "contract"))
     assert (result["kind"], result["question"]) == ("clarify", "¿Qué Miguel?")
 
@@ -200,28 +207,28 @@ def test_d_s054_todays_sunset_behind_the_clock_is_past() -> None:
     assert published == "Se pondrá el sol en Curicó a las 19:48 de hoy."
     read = {"location": "Curico", "country": "Chile", "observedAtLocal": "2026-09-30T22:45",
             "today": {"date": "2026-09-30", "weekday": "miércoles", "sunrise": "07:12", "sunset": "19:48"}}
-    seen = llm._project_weather_read(read, text)
+    seen = weather_facts._project_weather_read(read, text)
     assert seen["today"] == {"date": "2026-09-30", "weekday": "miércoles", "sunset": "19:48", "sunsetPassed": True}
     payload = {"operation": "weather.current", "seen": seen}
-    assert llm._weather_fact_defect(published, payload, text) == "weather_sun_time_passed"
-    assert llm._weather_fact_defect("Hoy el sol se puso en Curicó a las 19:48.", payload, text) == ""
+    assert weather_facts._weather_fact_defect(published, payload, text) == "weather_sun_time_passed"
+    assert weather_facts._weather_fact_defect("Hoy el sol se puso en Curicó a las 19:48.", payload, text) == ""
     # Read before the sunset, the time to come is said as to come.
-    earlier = llm._project_weather_read({**read, "observedAtLocal": "2026-09-30T17:05"}, text)
+    earlier = weather_facts._project_weather_read({**read, "observedAtLocal": "2026-09-30T17:05"}, text)
     # M105: still ahead is marked False (not left unmarked), so «se puso» before it is caught.
     assert earlier["today"]["sunsetPassed"] is False
-    assert llm._weather_fact_defect(published, {"operation": "weather.current", "seen": earlier}, text) == ""
-    assert "already happened today" in llm._weather_focus(text, english=True)
+    assert weather_facts._weather_fact_defect(published, {"operation": "weather.current", "seen": earlier}, text) == ""
+    assert "already happened today" in weather_facts._weather_focus(text, english=True)
 
 
 def test_d_w18_t4_a_reminder_is_never_an_order_to_the_person() -> None:
     row = TURNS["D-w18-t4"]["drafts"][-1]
     assert row["draft"] == "Recuerda en 45 minutos que te toca tomar un descanso a las 23:56."
     text = TURNS["D-w18-t4"]["text"]
-    assert llm._payload_fact_defect(row["draft"], row["payload"], text) == "schedule_told_as_order"
+    assert payload_fact_checks._payload_fact_defect(row["draft"], row["payload"], text) == "schedule_told_as_order"
     for kept in ("Te recordaré tomar un descanso a las 23:56.", "I'll remind you to take a break at 23:56.",
                  "Listo: a las 23:56 te aviso para que tomes un descanso."):
-        assert llm._payload_fact_defect(kept, row["payload"], text) == "", kept
-    assert llm._payload_fact_defect("Remember to take a break at 23:56.", row["payload"], text) == (
+        assert payload_fact_checks._payload_fact_defect(kept, row["payload"], text) == "", kept
+    assert payload_fact_checks._payload_fact_defect("Remember to take a break at 23:56.", row["payload"], text) == (
         "schedule_told_as_order"
     )
 
@@ -248,7 +255,7 @@ def _decided(text: str, decision: ContextDecision, history: list[dict] | None = 
     model.chat.return_value = ("Hola.", [])
     model.detect_response_language.return_value = "es"
     turns = [*(history or []), {"role": "user", "content": text}]
-    return sidecar._context_decided_result({"id": "m99", "text": text, "history": turns}, llm=model,
+    return context_decision._context_decided_result({"id": "m99", "text": text, "history": turns}, llm=model,
                                            planner_catalog=CATALOG)
 
 
@@ -264,9 +271,9 @@ def test_d_p28_t1_a_film_at_a_named_cinema_is_looked_up() -> None:
 
 
 def test_d_p30_code_uses_what_exists_and_does_the_join() -> None:
-    for prompt in (llm.CODE_REQUEST_PROMPT, llm.CODE_REQUEST_PROMPT_EN):
+    for prompt in (llm_prompts.CODE_REQUEST_PROMPT, llm_prompts.CODE_REQUEST_PROMPT_EN):
         assert "exact" in prompt
-    assert "el código hace esa unión" in llm.CODE_REQUEST_PROMPT
+    assert "el código hace esa unión" in llm_prompts.CODE_REQUEST_PROMPT
 
 
 # ------------------------------------------------------------------ part 2, A5: the weather asked through what it decides

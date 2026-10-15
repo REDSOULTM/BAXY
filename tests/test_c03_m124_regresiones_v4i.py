@@ -20,13 +20,14 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import consulted_answers
+from baxy_mind import visible_defect
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.conversation import stable_no_effect, stable_no_effect_preempts
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
 
 
 # ------------------------------------------------------------------ 1. an observed publisher is no internal code
@@ -45,11 +46,11 @@ def _news_search(snippet_source: str) -> dict:
 def test_a_publisher_the_search_observed_is_no_internal_code() -> None:
     situation = _news_search("cinemania.es")
     said = "Según cinemania.es, la película del faro divide a la crítica."
-    assert llm.compose_visible_defect(said, "status", "y qué dicen las reseñas", {"situation": situation}) != (
+    assert visible_defect.compose_visible_defect(said, "status", "y qué dicen las reseñas", {"situation": situation}) != (
         "internal_code"
     )
     # A dotted name nobody observed is still refused.
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Según cinemania.es y web.search, la película divide a la crítica.", "status", "y qué dicen las reseñas",
         {"situation": situation},
     ) == "internal_code"
@@ -106,7 +107,7 @@ def _tool(name: str) -> dict:
 
 def _turn(text: str, model: _Decider) -> dict:
     tools = {name: _tool(name) for name in ("client.channel.locate", "office.document.create", "web.search")}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m124", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),
@@ -162,10 +163,10 @@ SWOT_WHOLE = (
 
 
 def test_a_cut_analysis_keeps_its_whole_part() -> None:
-    assert llm._whole_part_of_cut_analysis(SWOT_WHOLE + "\n\nEn resumen, la marca") == SWOT_WHOLE
+    assert consulted_answers._whole_part_of_cut_analysis(SWOT_WHOLE + "\n\nEn resumen, la marca") == SWOT_WHOLE
     # Cut inside the sections: a SWOT without its threats is no whole part.
-    assert llm._whole_part_of_cut_analysis(SWOT_WHOLE.split("**Amenazas:**")[0] + "**Amenazas:**\n- Rivales") == ""
-    assert llm._whole_part_of_cut_analysis("Fortalezas:\n- Un nombre que") == ""
+    assert consulted_answers._whole_part_of_cut_analysis(SWOT_WHOLE.split("**Amenazas:**")[0] + "**Amenazas:**\n- Rivales") == ""
+    assert consulted_answers._whole_part_of_cut_analysis("Fortalezas:\n- Un nombre que") == ""
 
 
 class _Cut(LlmRuntime):

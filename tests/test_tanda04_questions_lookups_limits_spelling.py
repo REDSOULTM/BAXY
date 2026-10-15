@@ -21,21 +21,21 @@ from types import SimpleNamespace
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind.llm import (
-    _conversation_presentation_shape,
-    _names_the_boundary,
-    _reading_fold,
-    _shaped_conversation_answer_violates_contract,
-    _shaped_presentation_text,
-    _unsupported_answer_contract_failure,
-    spelling_word,
-)
+from baxy_mind.semantic.request import fold as _reading_fold
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
+from baxy_mind.conversation_contract import _shaped_conversation_answer_violates_contract
+from baxy_mind.conversation_shape import _shaped_presentation_text
+from baxy_mind.unsupported_answers import _unsupported_answer_contract_failure
+from baxy_mind.semantic.conversation import spelling_word
+from baxy_mind.visible_defect import _names_the_boundary
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.patterns import out_of_world_request
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.web import asks_for_information, record_fact_query
 from test_c03_pointless_questions import _tool
+from baxy_mind import turn_decide
+from baxy_mind import turn_recovery
+from baxy_mind import turn_audit
 
 # ------------------------------------------------------------------ A. a world question is never a limit
 
@@ -100,7 +100,7 @@ def _world_turn(text: str, llm: _WithdrawnSearchLlm) -> dict[str, object]:
         operation: _tool(operation, required=("query",) if operation == "web.search" else ())
         for operation in _OPERATIONS
     }
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "turn-world", "text": text, "history": [{"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -276,7 +276,7 @@ class _RecoveryLlm:
 def test_a_failed_turn_is_asked_about_its_missing_piece_not_said_again(text: str) -> None:
     llm = _RecoveryLlm()
 
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "turn-failed", "text": text, "history": []}, llm, failure_kinds=("runtime", "runtime"),
     )
 
@@ -288,10 +288,10 @@ def test_a_failed_turn_is_asked_about_its_missing_piece_not_said_again(text: str
 def test_a_failed_limit_is_recovered_as_the_limit() -> None:
     llm = _RecoveryLlm()
 
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "turn-limit", "text": "empezar a leer el libro", "history": []},
         llm,
-        failure_kinds=(sidecar.LIMIT_WORDING_FAILURE, sidecar.LIMIT_WORDING_FAILURE),
+        failure_kinds=(turn_audit.LIMIT_WORDING_FAILURE, turn_audit.LIMIT_WORDING_FAILURE),
     )
 
     assert result["kind"] == "conversation"

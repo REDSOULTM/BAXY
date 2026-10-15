@@ -20,15 +20,15 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.llm import (
-    _payload_fact_defect,
-    _search_not_found_report,
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.search_report import _search_report_unsourced_words
+from baxy_mind.visible_defect import compose_visible_defect
+from baxy_mind.search_report import _search_not_found_report
+from baxy_mind.search_report import (
     _search_report_absence_claim,
     _search_report_names_nothing,
-    _search_report_unsourced_words,
-    _shares_inflected_stem,
-    compose_visible_defect,
 )
+from baxy_mind.search_report import _shares_inflected_stem
 from baxy_mind.semantic.web import asked_dimension_words, searched_clause
 from test_c03_cpu_actor import Recorder
 

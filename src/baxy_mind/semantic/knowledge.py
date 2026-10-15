@@ -27,8 +27,11 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
 
 from __future__ import annotations
 
+import functools
+import json
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
 from .conversation import asks_for_code, translates_what_was_said
@@ -45,8 +48,9 @@ __all__ = [
 
 @dataclass(frozen=True)
 class ReferenceLookup:
-    """A named referent to look up: ``kind`` is ``recipe``, ``plot``, ``ranking``, ``quantity`` (M88) or ``figure``
-    (M104); ``query`` is what ``web.search`` is asked."""
+    """A named referent to look up: ``kind`` is ``recipe``, ``plot``, ``ranking``, ``quantity`` (M88), ``figure``
+    (M104), ``person`` (who holds a role) or ``works`` (the works or members of a named person or group); ``query`` is
+    what ``web.search`` is asked."""
 
     kind: str
     subject: str
@@ -124,17 +128,24 @@ def _recipe_named_before(folded: str) -> str | None:
             break
         dish.insert(0, word)
     return " ".join(dish) if dish and not all(word in _NOT_A_DISH for word in dish) else None
-# A category, a meal or a pronoun is no dish: «una receta vegetariana», «algo para la cena», «make it».
-_NOT_A_DISH = frozenset({
-    "algo", "eso", "esto", "esa", "ese", "esta", "este", "comida", "comidas", "cena", "almuerzo", "desayuno", "once",
-    "merienda", "receta", "recetas", "plato", "platos", "cosas", "todo", "nada", "mas", "comer", "cenar", "almorzar",
-    "vegetariana", "vegetariano", "vegana", "vegano", "facil", "rapida", "rapido", "sana", "sano", "saludable",
-    "rica", "rico", "casera", "casero", "nueva", "nuevo", "tipica", "tipico", "postre", "postres", "lista", "tarea",
-    "something", "food", "dinner", "lunch", "breakfast", "meal", "meals", "it", "that", "this", "one", "dish",
-    "dishes", "vegetarian", "vegan", "healthy", "easy", "quick", "simple", "dessert", "desserts", "list", "sure",
-    "me", "te", "le", "lo", "la", "you", "sense", "money", "time", "tiempo", "dinero", "plata", "caso", "falta",
-    "faltan", "reservation", "reserva", "please", "porfa",
-})
+# A category, a meal or a pronoun is no dish: «una receta vegetariana», «algo para la cena», «make it». Ronda 19 (uso
+# real v3 r17 t3 c14/1 «dame 3 recetas rapidas con atun y arroz» → «rapidas con atun y arroz» searched as a dish): a
+# category in the plural («rapidas», «baratas») or a joining word («con», «with») opens no dish either; the recipes
+# are ideas to talk about. The words are data (``data/loose_word_readers.v1.json``).
+_LOOSE_WORDS = json.loads(
+    (Path(__file__).resolve().parent.parent / "data" / "loose_word_readers.v1.json").read_text(encoding="utf-8")
+)
+_NOT_A_DISH = frozenset(_LOOSE_WORDS["not_a_dish"])
+# Revisión adversarial 3 («dame la receta de una buena paella», «recipe for a cheap lasagna»): a qualifier said before
+# a named dish is no part of its name and does not unname it; it is dropped and the dish is still looked up (M53/D35).
+_DISH_QUALIFIERS = frozenset(_LOOSE_WORDS["dish_qualifiers"])
+
+
+def _without_qualifiers(words: list[str]) -> list[str]:
+    index = 0
+    while index < len(words) - 1 and words[index] in _DISH_QUALIFIERS:
+        index += 1
+    return words[index:]
 
 _PLOT_CUE = re.compile(
     r"\b(?:resum\w*|sinopsis|argumento|trama|summar\w*|synopsis|plot|de\s+que\s+(?:se\s+)?trata\w*|"
@@ -183,8 +194,8 @@ def _recipe(folded: str) -> ReferenceLookup | None:
         return None
     for pattern in _RECIPE_DISH:
         for found in pattern.finditer(folded):
-            dish = found.group("dish").strip()
-            words = dish.split()
+            words = _without_qualifiers(found.group("dish").strip().split())
+            dish = " ".join(words)
             if (
                 not words
                 or words[0] in _NOT_A_DISH
@@ -379,9 +390,163 @@ def _analysis(text: str) -> ReferenceLookup | None:
     return ReferenceLookup("analysis", name, name + (" company" if language == "en" else " empresa"), language)
 
 
+# Uso real v3 tanda 3 c16 «che y cómo se llamaba el que cantaba» after Soda Stereo, restated «¿Cómo se llamaba el que
+# cantaba en el video de Soda Stereo?» → «Se llamaban los hermanos Astudillo, Gustavo y Jorge.» (it is Gustavo
+# Cerati): who holds a role in a named public work or group — the one who sang, the singer, the director, the author,
+# the founder — is a person's name, a fact the model recites wrong from memory like a plot. It is looked up as the
+# role and the name (kind ``person``). Folded; the role words are the reader's data.
+_ROLE_OF_VERB = (
+    (r"cant\w*|sang|sings?|singing", "cantante", "singer"),
+    (r"toca\w*|toco|played|plays?", "integrantes", "members"),
+    (r"dirig\w*|dirij\w*|directed|directs?", "director", "director"),
+    (r"escrib\w*|escribio|escrito|wrote|writes?|written", "autor", "author"),
+    (r"fund\w*|founded|founds?", "fundador", "founder"),
+    (r"cre[oóa]\w*|created|creates?", "creador", "creator"),
+    (r"actua\w*|protagoniz\w*|acted|starred|stars?", "protagonista", "star"),
+)
+_ROLE_NOUN = (
+    r"cantante|vocalista|baterista|guitarrista|bajista|tecladista|director|directora|autor|autora|escritor|escritora|"
+    r"fundador|fundadora|creador|creadora|protagonista|integrantes|miembros|dueno|duena|"
+    r"singer|lead\s+singer|vocalist|lead\s+vocalist|drummer|guitarist|bassist|keyboardist|director|author|writer|"
+    r"founder|creator|star|members|owner"
+)
+_WHO_ASKED = (
+    r"(?:quien(?:es)?|como\s+se\s+llama(?:ba|n|ban)?|cual\s+(?:es|era)\s+el\s+nombre\s+de|"
+    r"who|what\s+(?:is|was)\s+the\s+name\s+of|whats\s+the\s+name\s+of)"
+)
+_ROLE_HOLDER = re.compile(
+    rf"\b{_WHO_ASKED}\s+(?:(?:es|era|fue|son|eran|is|was|were|are)\s+)?(?:(?:el|la|los|las|the)\s+)?"
+    rf"(?:(?P<role>{_ROLE_NOUN})|(?:(?:que|quien|guy|man|woman|person|one|who)\s+(?:who\s+)?)?(?P<verb>[a-z]+))\b"
+    r"(?P<rest>.*)$"
+)
+_ROLE_PLACE = re.compile(
+    r"^\s*(?:(?:en|de|del|of|in|for|from|on)\s+)?(?:(?:el|la|los|las|un|una|the|a)\s+)?"
+    r"(?:(?:video|videoclip|cancion|tema|disco|album|pelicula|peli|banda|grupo|serie|libro|song|band|group|movie|film|"
+    r"show|series|book)\s+(?:de|del|of|by)\s+(?:(?:el|la|los|las|the)\s+)?)?"
+)
+_NOT_A_PUBLIC_NAME = re.compile(
+    r"^(?:mi|mis|tu|tus|su|sus|my|your|his|her|their|our|este|esta|ese|esa|eso|esto|this|that|it|aqui|ahi|here|there)\b"
+)
+
+
+def _role_holder(text: str) -> ReferenceLookup | None:
+    raw = " ".join(str(text or "").split())
+    same = fold_in_place(raw)
+    found = _ROLE_HOLDER.search(same)
+    if found is None:
+        return None
+    rest = found.group("rest")
+    place = _ROLE_PLACE.match(rest)
+    if place is None:
+        return None
+    start = found.start("rest") + place.end()
+    name = raw[start:].strip(" ¿?¡!.,;:'\"«»")
+    folded_name = fold(name)
+    if not name or len(folded_name.split()) > 6 or _NOT_A_PUBLIC_NAME.match(folded_name) is not None:
+        return None
+    if found.group("role") is None and not any(word[:1].isupper() or word[:1].isdigit() for word in name.split()):
+        # After a verb only a name written as one is the work or group («quién canta en la ducha» names none).
+        return None
+    english = re.search(r"\b(?:who|what|whats|the|of|in)\b", fold(raw)) is not None and not re.search(
+        r"\b(?:quien|como|el|la|de|del|en)\b", fold(raw)
+    )
+    role = found.group("role")
+    if role is None:
+        verb = found.group("verb")
+        mapped = next(((es, en) for pattern, es, en in _ROLE_OF_VERB if re.fullmatch(pattern, verb)), None)
+        if mapped is None:
+            return None
+        role = mapped[1] if english else mapped[0]
+    query = f"{role} of {name}" if english else f"{role} de {name}"
+    return ReferenceLookup("person", name, query, "en" if english else "es")
+
+
+# Uso real v3 tanda 4 c02-1 «dame 3 libros de cortazar para arrancar», restated «Dame 3 libros de Julio Cortázar para
+# empezar.» → «El Aleph» (Borges), «La supermanera» and «El fin de los tiempos» (none exist), and c02-2 the same three
+# again: which works a named person or group made — books, films, records, songs — or who its members are, is a list of
+# titles and names the model recites wrong from memory like a plot. It is looked up as the kind of work and the name
+# (kind ``works``). The name is one written as a name (capitalized here or in the decider's restatement, which the
+# talk gate reads too); a kind of work («libros de autoayuda», «canciones de cuna»), the person's own things («mis
+# libros de Cálculo») and a folder or file named so («la carpeta libros de Juan») name nobody. The words are data
+# (``data/works_words.v1.json``).
+@functools.lru_cache(maxsize=1)
+def _works_words() -> dict:
+    path = Path(__file__).resolve().parent.parent / "data" / "works_words.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _alternation(words: Iterable[str]) -> str:
+    return "|".join(re.escape(word).replace(r"\ ", r"\s+") for word in sorted(set(words), key=len, reverse=True))
+
+
+@functools.lru_cache(maxsize=1)
+def _works_pattern() -> re.Pattern[str]:
+    words = _works_words()
+    return re.compile(
+        rf"\b(?P<noun>{_alternation([*words['work_nouns_es'], *words['work_nouns_en']])})\s+"
+        rf"(?:{_alternation(words['of'])})\s+"
+        rf"(?P<name>(?:(?:{_alternation(words['articles'])})\s+)?\S.*)$"
+    )
+
+
+# A name: capitalized words, joined by the particles names carry («Gabriel García Márquez», «Los Prisioneros»,
+# «Simon and Garfunkel»), written in the original text.
+_NAME_RUN = re.compile(
+    r"(?:(?:el|la|los|las|the|El|La|Los|Las|The)\s+)?"
+    r"[A-ZÁÉÍÓÚÑÜ][\w'’.&-]*(?:\s+(?:[A-ZÁÉÍÓÚÑÜ][\w'’.&-]*|(?:de|del|la|las|los|y|van|von|da|di|of|and|the|&)"
+    r"(?=\s+[A-ZÁÉÍÓÚÑÜ])))*"
+)
+
+
+def _works_of(text: str) -> ReferenceLookup | None:
+    raw = " ".join(str(text or "").split())
+    same = fold_in_place(raw)
+    words = _works_words()
+    found = _works_pattern().search(same)
+    if found is None:
+        return None
+    said_before = re.findall(r"[a-z0-9]+", same[: found.start("noun")])
+    asked = said_before[:]
+    while asked and (asked[-1] in set(words["quantities"]) or asked[-1].isdigit()):
+        asked.pop()
+    if asked and not any(
+        asked[-len(head.split()):] == head.split() for head in words["asking_heads"]
+    ) and not (said_before and said_before[-1] in set(words["question_words"])):
+        # Review of t4-r6: «me encantan las canciones de Queen», «escribe un poema como los poemas de Neruda», «pon
+        # canciones de Bad Bunny» say something else of the works or ask another task with them: the decider's.
+        return None
+    before = same[: found.start("noun")].split()[-3:]
+    if any(word in set(words["own_markers"]) | set(words["containers"]) for word in before):
+        return None
+    if any(word in set(words["qualifiers"]) for word in before[-2:]):
+        # The newest, the best, the first works of someone ask for more than the works (M56): the decider's.
+        return None
+    start = found.start("name")
+    run = _NAME_RUN.match(raw, start)
+    if run is None or not any(word[:1].isupper() for word in run.group(0).split()):
+        return None
+    name = run.group(0).strip(" .,;:")
+    folded_name = fold(name).split()
+    head = [word for word in folded_name if word not in set(words["articles"])]
+    if not head or head[0] in set(words["kinds_not_names"]) or len(folded_name) > 6:
+        return None
+    tail = fold(raw[run.end():]).strip(" .,;:!?¿¡")
+    if tail and not re.match(rf"(?:{_alternation(words['tail_heads'])})\b", tail):
+        # Whatever else is said of the works (a kind, a condition) is the decider's to read.
+        return None
+    noun = fold(found.group("noun"))
+    english = noun in set(words["work_nouns_en"]) and noun not in set(words["work_nouns_es"])
+    said_noun = raw[found.start("noun"): found.end("noun")].lower()
+    query = f"{said_noun} {'by' if english else 'de'} {name}"
+    return ReferenceLookup("works", name, query, "en" if english else "es")
+
+
 def _direct(text: str) -> ReferenceLookup | None:
     folded = spelled_out(fold(text))
-    return _recipe(folded) or _plot(text, folded) or _ranking(folded) or _analysis(text)
+    return (
+        _recipe(folded) or _plot(text, folded) or _ranking(folded) or _analysis(text) or _role_holder(text)
+        or _works_of(text)
+    )
 
 
 # M88 (step 6 of goal v3: facts with figures and recipes are looked up before they are said; DEV-D v3r D-w01-t2 «oye y
@@ -497,7 +662,58 @@ def asks_one_recipe(text: str) -> bool:
     return lookup is not None and lookup.kind == "recipe" and _ONE_RECIPE.search(fold(text)) is not None
 
 
-def reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: str = "") -> ReferenceLookup | None:
+_QUOTED_SEEN = re.compile(r"[«\"“]([^«»\"“”\n]{2,160})[»\"”]")
+# «Artista - Obra», the way a played title names who performs a work; «|» or «:» part a title from its edition.
+_TITLE_PARTS = re.compile(r"\s+[-–—]\s+")
+_LEADING_ARTICLE = frozenset({"el", "la", "los", "las", "the"})
+
+
+def _title_words(text: str) -> list[str]:
+    words = re.findall(r"[a-z0-9]+", fold(text))
+    return words[1:] if len(words) > 1 and words[0] in _LEADING_ARTICLE else words
+
+
+def _with_what_was_seen(lookup: ReferenceLookup, seen: Iterable[str]) -> ReferenceLookup:
+    """Ronda 19 (uso real v3 r17 t3 c16/4 «che y cómo se llamaba el que cantaba», restated «…el que cantaba en «De
+    Música Ligera»?» after «Está sonando «Soda Stereo - De Musica Ligera (El Último Concierto)» en YouTube.» → the
+    search «cantante de De Música Ligera» found a cover, «Dua Lipa cantó De Música Ligera.»): who holds a role in a
+    work is looked up with who the conversation showed performing it. Only a quoted title of the form «who - work»
+    counts, and only when the asked name is that whole work: the part before the dash is added to the query. A title
+    in parentheses or brackets («(El Último Concierto)») is an edition, not the work.
+
+    Revisión adversarial 3: a quote that merely holds the name adds nothing — a saved note («comprar entradas para Los
+    Prisioneros…») is private and never reaches a search, «Queen of the South - …» is another work than «Queen», and
+    «Oppenheimer | Tráiler Oficial 2» names the work first, with no performer."""
+
+    if lookup.kind != "person":
+        return lookup
+    name = _title_words(lookup.subject)
+    if not name:
+        return lookup
+    for text in reversed([str(item or "") for item in seen]):
+        for quoted in reversed(_QUOTED_SEEN.findall(text)):
+            plain = re.sub(r"\([^)]*\)|\[[^\]]*\]", " ", quoted)
+            parts = [part.strip() for part in _TITLE_PARTS.split(plain.strip())]
+            if len(parts) < 2 or not any(_title_words(part) == name for part in parts[1:]):
+                continue
+            performer = " ".join(re.findall(r"[\w'’&]+", parts[0]))
+            if not performer or _title_words(performer) == name:
+                return lookup
+            return ReferenceLookup(lookup.kind, lookup.subject, f"{lookup.query} {performer}", lookup.language)
+    return lookup
+
+
+def reference_lookup(
+    text: str, prior_requests: Iterable[str] = (), last_reply: str = "", seen: Iterable[str] = (),
+) -> ReferenceLookup | None:
+    """``seen``: BAXY's earlier answers, oldest first; who holds a role in a work they quoted is looked up with that
+    work's whole title (``_with_what_was_seen``)."""
+
+    found = _reference_lookup(text, prior_requests, last_reply)
+    return _with_what_was_seen(found, seen) if found is not None else None
+
+
+def _reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: str = "") -> ReferenceLookup | None:
     """The named dish or work this request asks about, to be looked up before anything is said about it.
 
     ``prior_requests`` are the person's earlier messages, oldest first: a question about the story right after a

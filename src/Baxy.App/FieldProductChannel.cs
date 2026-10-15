@@ -121,7 +121,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly Timer _milestoneDue;
     private readonly string _sessionId = Guid.NewGuid().ToString("N")[..12];
     private string _sessionLabel = "current";
-    private string _accessibilityMode = "normal";
     private long _activitySequence;
     private long _turnSequence;
     private FieldProgressNotice? _publishedProgress;
@@ -134,8 +133,18 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     // own browser, never inside the view.
     private const int MaximumPublishedSources = 256;
     private readonly HashSet<string> _publishedSources = new(StringComparer.Ordinal);
+    // Estabilización M: the memory panel runs the chat's own catalog operations; its count is read from the store
+    // when the view asks for the surfaces and the store may have changed since (first read, a chat change).
+    private readonly MemoryPanel _memory;
+    private bool _memoryCountStale = true;
+    // Encargo I2 (identidad redpc: the open panel listed 3 while the counter said 4 after a save by chat): every chat
+    // change of the store is numbered and travels in the counter's own event, so the open list is read again with it.
+    private int _memoryRevision;
 
     internal Func<string, bool> SourceOpener { get; set; } = OpenInDefaultBrowser;
+
+    // The host's presentation of the accessible mode (FieldUiBridge: the view's zoom), applied as the view reads it.
+    internal Action<bool>? ApplyPresentation { get; set; }
 
     internal FieldProductChannel(
         MainWindowViewModel viewModel,
@@ -151,6 +160,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded += OnMessageAdded;
         _viewModel.CompositionFailed += OnCompositionFailed;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        _viewModel.MemoryChanged += OnMemoryChanged;
+        _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
         _progressPulse = new Timer(
             _ => PostToUi(OnProgressPulse),
             null,
@@ -190,7 +201,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             {
                 ["built"] = _viewModel.IsReady,
                 ["healthy"] = _viewModel.IsReady && !_viewModel.HasStartupError,
-                ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy,
+                ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
             });
         }
 
@@ -218,6 +229,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (method == "GET" && route == "/surfaces")
         {
+            if (_memoryCountStale)
+            {
+                _memoryCountStale = !await _memory.RefreshCountAsync(_lifetimeCancellation).ConfigureAwait(true);
+                Publish(SurfacesEvent());
+            }
+
             return Json(Surfaces());
         }
 
@@ -350,18 +367,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Json(new JsonObject { ["ok"] = true });
         }
 
-        if (method == "GET" && route == "/memory")
-        {
-            return Json(new JsonObject
-            {
-                ["items"] = new JsonArray(),
-                ["error"] = "La memoria privada se gestiona mediante el chat de BAXY.",
-            });
-        }
-
         if (route == "/memory" || route.StartsWith("/memory/", StringComparison.Ordinal))
         {
-            return Error("private_memory_requires_chat", 409);
+            int before = _memory.Count;
+            FieldHttpResponse memory = await _memory.HandleAsync(method, route, body, _lifetimeCancellation)
+                .ConfigureAwait(true);
+            if (_memory.Count != before)
+            {
+                Publish(SurfacesEvent());
+            }
+
+            return memory;
         }
 
         if (method == "GET" && route == "/triggers")
@@ -404,27 +420,27 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 : Error("profile_not_available", 409);
         }
 
+        // Estabilización U: the accessible mode is the profile's file (PresentationModeStore), the same one the chat's
+        // system.settings.set writes. It changes only how the view is presented: the host scales the view
+        // (ApplyPresentation) and the view switches its own styles; nothing BAXY can do changes with it.
         if (method == "GET" && route == "/accessibility")
         {
-            return Json(new JsonObject { ["active"] = _accessibilityMode });
+            return Json(PresentationMode(PresentationModeStore.ReadAccessible(MemoryOperationProtector.ResolveDataRoot())));
         }
 
         if (method == "PUT" && route == "/accessibility")
         {
             string mode = (string?)ParseBody(body)?["mode"] ?? string.Empty;
-            if (mode is not ("normal" or "no_vidente" or "movilidad"))
+            if (mode is not (PresentationModeStore.Normal or PresentationModeStore.Accessible))
             {
                 return Error("invalid_accessibility_mode", 400);
             }
 
-            _accessibilityMode = mode;
-            if (mode != "normal" && _viewModel.IsMicAvailable)
-            {
-                _ = await _viewModel.SetWakeVoiceAsync(true, _lifetimeCancellation)
-                    .ConfigureAwait(true);
-            }
-
-            return Json(new JsonObject { ["ok"] = true, ["active"] = mode });
+            string root = MemoryOperationProtector.ResolveDataRoot();
+            PresentationModeStore.WriteAccessible(root, mode == PresentationModeStore.Accessible);
+            JsonObject applied = PresentationMode(PresentationModeStore.ReadAccessible(root));
+            applied["ok"] = true;
+            return Json(applied);
         }
 
         if (method == "GET" && route == "/agent/modes")
@@ -462,7 +478,19 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Json(CurrentSettings());
         }
 
+        // The historical panel's «apply» changes nothing on the host (its diagnostics are read-only), and never the
+        // confirmation mode, which has its own route and gesture (revisión U, H1).
         if (method == "PUT" && route == "/settings")
+        {
+            return Json(new JsonObject { ["ok"] = true });
+        }
+
+        if (method == "GET" && route == "/confirmation")
+        {
+            return Json(ConfirmationPolicy(MemoryOperationProtector.ResolveDataRoot()));
+        }
+
+        if (method == "PUT" && route == "/confirmation")
         {
             return PutConfirmationMode(body);
         }
@@ -511,14 +539,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 ["used"] = 0,
                 ["budget"] = ContextSize(),
             },
-            new()
-            {
-                ["type"] = "surfaces",
-                ["sessions"] = 1,
-                ["memory"] = 0,
-                ["triggers"] = 0,
-                ["tools"] = ProductCatalog.ToolDescriptors.Count,
-            },
+            SurfacesEvent(),
             SessionEvent(),
             FieldBridgeContract.CreateProgressPayload(CurrentProgress()),
         };
@@ -532,7 +553,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     internal FieldProgressNotice? CurrentProgress() =>
         FieldBridgeContract.ResolveProgress(
-            _viewModel.IsReady,
+            _viewModel.IsReady && !_viewModel.IsMindPreparing,
             _viewModel.IsBusy,
             _viewModel.HasStartupError,
             _viewModel.StatusDescription,
@@ -543,7 +564,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["type"] = "agent",
         ["built"] = _viewModel.IsReady,
         ["healthy"] = _viewModel.IsReady && !_viewModel.HasStartupError,
-        ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy,
+        ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
     };
 
     internal JsonObject SessionEvent() => new()
@@ -799,7 +820,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     {
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
             or nameof(MainWindowViewModel.IsBusy)
-            or nameof(MainWindowViewModel.HasStartupError))
+            or nameof(MainWindowViewModel.HasStartupError)
+            or nameof(MainWindowViewModel.IsMindPreparing))
         {
             Publish(AgentEvent());
         }
@@ -826,6 +848,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
             or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.HasStartupError)
+            or nameof(MainWindowViewModel.IsMindPreparing)
             or nameof(MainWindowViewModel.StatusDescription)
             or nameof(MainWindowViewModel.ProgressLabel))
         {
@@ -977,13 +1000,27 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }),
     };
 
-    private static JsonObject Surfaces() => new()
+    private JsonObject Surfaces() => new()
     {
         ["sessions"] = 1,
-        ["memory"] = 0,
+        ["memory"] = _memory.Count,
+        ["memory_revision"] = Volatile.Read(ref _memoryRevision),
         ["triggers"] = 0,
         ["tools"] = ProductCatalog.ToolDescriptors.Count,
     };
+
+    private JsonObject SurfacesEvent()
+    {
+        JsonObject surfaces = Surfaces();
+        surfaces["type"] = "surfaces";
+        return surfaces;
+    }
+
+    private void OnMemoryChanged()
+    {
+        Interlocked.Increment(ref _memoryRevision);
+        _memoryCountStale = true;
+    }
 
     private JsonObject VoiceStatus() => new()
     {
@@ -1035,13 +1072,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["voiceEnabled"] = _viewModel.IsMicAvailable,
             ["visionAlways"] = false,
             ["telemetry"] = false,
-            ["confirmationPolicy"] = ConfirmationModeStore.Read(
-                MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
-                ? "bypass"
-                : "normal",
         };
     }
 
+    // Estabilización U: the bypass switch of BAXY's own view writes the profile's confirmation-mode through the same
+    // store the engine reads on every invocation (ConfirmationModeStore). Only the trusted document reaches this route
+    // (FieldUiBridge, HistoricalFieldOriginPolicy); the conscious gesture is the view's own confirmation. A body that
+    // names no policy changes nothing.
     private static FieldHttpResponse PutConfirmationMode(string? body)
     {
         JsonNode? node;
@@ -1054,14 +1091,35 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Error("invalid_settings", 400);
         }
 
-        string? raw = node?["confirmationPolicy"]?.GetValue<string>();
-        ConfirmationMode mode = ConfirmationModeStore.Parse(raw) ?? ConfirmationMode.Normal;
-        ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(), mode);
-        return Json(new JsonObject
+        ConfirmationMode? mode = node?["confirmationPolicy"] is JsonValue policy
+            && policy.TryGetValue(out string? raw)
+            && raw is "normal" or "bypass"
+                ? ConfirmationModeStore.Parse(raw)
+                : null;
+        if (mode is not { } chosen)
         {
-            ["ok"] = true,
-            ["confirmationPolicy"] = mode == ConfirmationMode.Bypass ? "bypass" : "normal",
-        });
+            return Error("invalid_confirmation_policy", 400);
+        }
+
+        string root = MemoryOperationProtector.ResolveDataRoot();
+        ConfirmationModeStore.Write(root, chosen);
+        JsonObject written = ConfirmationPolicy(root);
+        written["ok"] = true;
+        return Json(written);
+    }
+
+    private static JsonObject ConfirmationPolicy(string root) => new()
+    {
+        ["confirmationPolicy"] = ConfirmationModeStore.Read(root) == ConfirmationMode.Bypass ? "bypass" : "normal",
+    };
+
+    private JsonObject PresentationMode(bool accessible)
+    {
+        ApplyPresentation?.Invoke(accessible);
+        return new JsonObject
+        {
+            ["active"] = accessible ? PresentationModeStore.Accessible : PresentationModeStore.Normal,
+        };
     }
 
     private static JsonObject ModelInfo()
@@ -1192,6 +1250,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.CompositionFailed -= OnCompositionFailed;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        _viewModel.MemoryChanged -= OnMemoryChanged;
         await _channelLifetime.CancelAsync();
         _channelLifetime.Dispose();
         await _progressPulse.DisposeAsync();

@@ -16,10 +16,10 @@ from datetime import datetime as real_datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import arguments, decider
 from baxy_mind.semantic.temporal import length_borrowed_for_another, step_timer_request
+from baxy_mind import context_decision
 
 # Monday 5 October 2026, 17:58 in Chile (UTC-3).
 LOCAL = timezone(timedelta(hours=-3))
@@ -101,7 +101,7 @@ def _decided(text: str, history: list[tuple[str, str]], model: _Decider) -> dict
         for name in TOOLS
     ]
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m175", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(tools),
     )

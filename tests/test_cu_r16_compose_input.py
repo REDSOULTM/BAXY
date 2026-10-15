@@ -5,6 +5,7 @@ corta) y sin muestreo en ningún intento. Las demás operaciones no cambian."""
 import json
 
 from baxy_mind import llm
+from baxy_mind import computer_use_finals
 
 PREVIOUS_ANSWER = "MARCA-RESPUESTA-PREVIA Ya estoy en Red e Internet, donde busco la opción de Wi-Fi."
 PRIOR_REQUEST = "MARCA-PEDIDO-PREVIO abrí Configuración"
@@ -76,14 +77,14 @@ def test_a_computer_use_final_sees_no_earlier_turn_in_any_attempt() -> None:
         prompt = _text(payload)
         assert "MARCA-RESPUESTA-PREVIA" not in prompt and "MARCA-PEDIDO-PREVIO" not in prompt
         assert "previous_dialogue_for_references_only" not in prompt
-        assert llm.COMPUTER_USE_VOICE_PROMPT_ES in prompt and llm.COMPUTER_USE_VOICE_LENGTH_ES in prompt
+        assert computer_use_finals.COMPUTER_USE_VOICE_PROMPT_ES in prompt and computer_use_finals.COMPUTER_USE_VOICE_LENGTH_ES in prompt
 
 
 def test_a_computer_use_final_told_as_conversation_still_sees_no_earlier_turn() -> None:
     for payload in _sent("¿y ahora dónde estás?", ASKED_MISSION, "Llegué a Temas.", intent="conversation"):
         prompt = _text(payload)
         assert "MARCA-RESPUESTA-PREVIA" not in prompt and "MARCA-PEDIDO-PREVIO" not in prompt
-        assert llm.COMPUTER_USE_VOICE_PROMPT_ES in prompt
+        assert computer_use_finals.COMPUTER_USE_VOICE_PROMPT_ES in prompt
 
 
 def test_every_attempt_of_a_computer_use_final_is_greedy() -> None:
@@ -94,24 +95,24 @@ def test_every_attempt_of_a_computer_use_final_is_greedy() -> None:
 
 def test_an_english_request_gets_the_english_voice() -> None:
     prompt = _text(_sent("go to Themes in Settings", ASKED_MISSION, "I went to Themes in Settings.")[0])
-    assert llm.COMPUTER_USE_VOICE_PROMPT_EN in prompt and llm.COMPUTER_USE_VOICE_LENGTH_EN in prompt
-    assert llm.COMPUTER_USE_VOICE_PROMPT_ES not in prompt
+    assert computer_use_finals.COMPUTER_USE_VOICE_PROMPT_EN in prompt and computer_use_finals.COMPUTER_USE_VOICE_LENGTH_EN in prompt
+    assert computer_use_finals.COMPUTER_USE_VOICE_PROMPT_ES not in prompt
 
 
 def test_a_mission_that_did_not_reach_its_goal_keeps_its_own_length() -> None:
     failed = dict(MISSION, polarity="failure", succeeded=False)
     failed["observed"] = dict(MISSION["observed"], reached=False, satisfiedBy=None)
-    instruction = llm._computer_use_voice_instruction(failed, "es")
-    assert instruction == llm.COMPUTER_USE_VOICE_PROMPT_ES
+    instruction = computer_use_finals._computer_use_voice_instruction(failed, "es")
+    assert instruction == computer_use_finals.COMPUTER_USE_VOICE_PROMPT_ES
 
 
 def test_other_operations_keep_their_prompt_and_sampler() -> None:
     # A conversation still carries the previous answer it refers to; an operation gets no computer-use voice.
     for payload in _sent("abrí la calculadora", APP_OPEN, "Listo, abrí la Calculadora."):
-        assert llm.COMPUTER_USE_VOICE_PROMPT_ES not in _text(payload)
+        assert computer_use_finals.COMPUTER_USE_VOICE_PROMPT_ES not in _text(payload)
     retried = _sent("abrí la calculadora", APP_OPEN, "Has abierto la Calculadora, como te dije antes.")
     assert len(retried) >= 2 and retried[1].get("temperature") == 0.7 and retried[1].get("seed") == 1
-    assert all(llm.COMPUTER_USE_VOICE_PROMPT_ES not in _text(payload) for payload in retried)
+    assert all(computer_use_finals.COMPUTER_USE_VOICE_PROMPT_ES not in _text(payload) for payload in retried)
     chat = _sent("¿y eso qué significa?", {"kind": "conversation", "polarity": "success"}, "Significa eso.",
                  intent="conversation")
     assert "MARCA-RESPUESTA-PREVIA" in _text(chat[0])

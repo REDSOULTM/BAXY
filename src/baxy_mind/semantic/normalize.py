@@ -1,7 +1,7 @@
 """The one normalization every reader shares.
 
 Before Fase 3.5 the same fold lived four times (`effect_intent._fold`, `request_reading.fold`,
-`llm._fold_dialogue_text`, the dialogue slot); a reader that normalized differently from its neighbour
+`clarification_style._fold_dialogue_text`, the dialogue slot); a reader that normalized differently from its neighbour
 read the same words differently. There is one now.
 """
 

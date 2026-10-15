@@ -3,9 +3,12 @@
 
 from __future__ import annotations
 
+import json
 import re
 import unicodedata
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 from typing import Iterable, Iterator
 from .grammar import _fold, _match, _has, _strip_request_envelope, _OPEN
 from .intent import _entity_key, _is_negated_match
@@ -215,90 +218,28 @@ def build_application_catalog_index(
     )
 
 
-_CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
-    (frozenset({"calc", "calculator", "calculadora"}), ("calculadora", "calculator")),
-    (frozenset({"notepad", "bloc de notas", "app de notas", "coso de notas",
-                "editor de texto"}), ("bloc de notas", "notepad")),
-    (frozenset({"explorador", "explorador de archivos", "explorador de windows",
-                "file explorer", "files explorer", "explorer", "windows explorer"}),
-     ("explorador de archivos", "file explorer")),
-    # UI1731 «Abre Epic Games y navega hasta la biblioteca»: the Start catalog
-    # names the client «Epic Games Launcher»; people say «Epic Games» or «Epic».
-    (frozenset({"epic", "epic games", "epic launcher", "epic games launcher", "launcher de epic"}),
-     ("epic games launcher",)),
-    # UI1735 «en Opera hacé clic en …»: the Start catalog names the browser
-    # «Navegador Opera GX»; people say «Opera» or «Opera GX».
-    (frozenset({"opera", "opera gx", "navegador opera", "navegador opera gx", "opera browser"}),
-     ("navegador opera gx", "opera gx", "opera")),
-    # Tanda 5 «Abre el gallery» asked which folder: Windows names its own apps in the language it is installed
-    # in («Fotos» on this PC, «Photos» on an English one), and people name them in theirs, or by what they show
-    # (the Photos app opens on its Gallery). Each built-in app below is found by any of its Spanish or English
-    # names, whichever of them the Start catalog carries.
-    (frozenset({"fotos", "photos", "microsoft photos", "fotos de microsoft", "app de fotos", "aplicacion de fotos",
-                "photos app", "gallery", "galeria", "galeria de fotos", "photo gallery", "visor de fotos",
-                "photo viewer"}),
-     ("fotos", "photos", "microsoft photos")),
-    (frozenset({"camara", "camera", "camara de windows", "windows camera", "app de camara", "camera app"}),
-     ("camara", "camera")),
-    (frozenset({"reloj", "clock", "alarmas", "alarms", "alarmas y reloj", "alarms & clock", "alarms and clock"}),
-     ("reloj", "clock", "alarmas y reloj", "alarms & clock")),
-    (frozenset({"calendario", "calendar", "app de calendario", "calendar app"}), ("calendario", "calendar")),
-    (frozenset({"mapas", "maps", "app de mapas", "maps app"}), ("mapas", "maps")),
-    (frozenset({"herramienta recortes", "herramienta de recortes", "recortes", "snipping tool"}),
-     ("herramienta recortes", "recortes", "snipping tool")),
-    (frozenset({"grabadora", "grabadora de sonido", "grabadora de voz", "sound recorder", "voice recorder"}),
-     ("grabadora de sonido", "sound recorder", "grabadora de voz", "voice recorder")),
-    (frozenset({"reproductor multimedia", "reproductor de medios", "media player"}),
-     ("reproductor multimedia", "media player")),
-    (frozenset({"notas rapidas", "notas adhesivas", "sticky notes"}), ("notas rapidas", "sticky notes")),
-    (frozenset({"microsoft store", "tienda de microsoft", "tienda microsoft", "tienda de windows", "windows store"}),
-     ("microsoft store",)),
-    (frozenset({"administrador de tareas", "task manager"}), ("administrador de tareas", "task manager")),
-    (frozenset({"panel de control", "control panel"}), ("panel de control", "control panel")),
-    (frozenset({"simbolo del sistema", "command prompt"}), ("simbolo del sistema", "command prompt")),
-    (frozenset({"lupa", "magnifier"}), ("lupa", "magnifier")),
-    (frozenset({"narrador", "narrator"}), ("narrador", "narrator")),
-    # 2026-10-07 «in the Clock app go to Stopwatch» on a Spanish Windows: more of the apps Windows brings, by their
-    # Spanish and English names, whichever the Start catalog carries.
-    (frozenset({"paint", "microsoft paint", "ms paint", "mspaint"}), ("paint",)),
-    (frozenset({"terminal", "windows terminal", "terminal de windows"}), ("terminal", "windows terminal")),
-    (frozenset({"powershell", "windows powershell"}), ("windows powershell", "powershell")),
-    (frozenset({"cmd", "consola de comandos"}), ("simbolo del sistema", "command prompt")),
-    (frozenset({"el tiempo", "msn weather", "msn el tiempo", "app del tiempo", "app del clima", "weather app"}),
-     ("el tiempo", "msn el tiempo", "weather", "msn weather")),
-    (frozenset({"correo y calendario", "mail and calendar", "app de correo", "mail app"}), ("correo", "mail")),
-    (frozenset({"vinculo movil", "enlace movil", "phone link", "tu telefono", "your phone"}),
-     ("vinculo movil", "enlace movil", "phone link")),
-    (frozenset({"asistencia rapida", "quick assist"}), ("asistencia rapida", "quick assist")),
-    (frozenset({"editor del registro", "registry editor", "regedit"}), ("editor del registro", "registry editor")),
-    (frozenset({"administrador de dispositivos", "device manager"}),
-     ("administrador de dispositivos", "device manager")),
-    (frozenset({"mapa de caracteres", "character map"}), ("mapa de caracteres", "character map")),
-    (frozenset({"teclado en pantalla", "on-screen keyboard", "on screen keyboard"}),
-     ("teclado en pantalla", "on-screen keyboard")),
-    (frozenset({"conexion a escritorio remoto", "escritorio remoto", "remote desktop connection", "remote desktop"}),
-     ("conexion a escritorio remoto", "remote desktop connection")),
-    (frozenset({"monitor de recursos", "resource monitor"}), ("monitor de recursos", "resource monitor")),
-    (frozenset({"visor de eventos", "event viewer"}), ("visor de eventos", "event viewer")),
-    (frozenset({"informacion del sistema", "system information"}), ("informacion del sistema", "system information")),
-    (frozenset({"seguridad de windows", "windows security", "windows defender"}),
-     ("seguridad de windows", "windows security")),
-    (frozenset({"obtener ayuda", "get help"}), ("obtener ayuda", "get help")),
-    (frozenset({"centro de opiniones", "feedback hub"}), ("centro de opiniones", "feedback hub")),
-    (frozenset({"peliculas y tv", "movies & tv", "movies and tv", "peliculas y television"}),
-     ("peliculas y tv", "movies & tv")),
-    (frozenset({"microsoft news", "app de noticias", "news app"}), ("noticias", "microsoft news", "news")),
-    (frozenset({"solitario", "solitaire", "microsoft solitaire collection", "microsoft solitaire"}),
-     ("microsoft solitaire collection",)),
-    (frozenset({"to do", "microsoft to do", "lista de tareas"}), ("microsoft to do", "to do")),
-    (frozenset({"barra de juegos", "game bar", "xbox game bar"}), ("xbox game bar", "game bar")),
-    # «windows media player» is the legacy player where it is installed; the new player («Reproductor multimedia»)
-    # only where it is not (2026-10-07: with both installed it opened the new one).
-    (frozenset({"windows media player", "reproductor de windows media", "windows media player legacy",
-                "reproductor de windows media heredado"}),
-     ("windows media player legacy", "reproductor de windows media heredado", "reproductor de windows media",
-      "reproductor multimedia", "media player")),
-)
+def app_alias_rows(group: str) -> tuple[tuple[frozenset[str], tuple[str, ...]], ...]:
+    """The other names people say for installed applications (``data/app_aliases.v1.json``): (spoken words,
+    catalog names tried in order). ``group`` is «aliases» (every reader) or «mission_aliases» (computer use only)."""
+
+    data = _app_alias_data()
+    return tuple((frozenset(row["spoken"]), tuple(row["catalog"])) for row in data[group])
+
+
+def app_alias_words(group: str) -> tuple[str, ...]:
+    """A word list of ``data/app_aliases.v1.json`` («companion_words»: what makes a Start entry an application's
+    help, uninstaller or readme rather than the application)."""
+
+    return tuple(_app_alias_data()[group])
+
+
+@lru_cache(maxsize=1)
+def _app_alias_data() -> dict:
+    path = Path(__file__).resolve().parent.parent / "data" / "app_aliases.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+_CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = app_alias_rows("aliases")
 
 
 # «in the Clock app», «open the Settings app», «la aplicación Reloj», «la app de Configuración»: the word that says

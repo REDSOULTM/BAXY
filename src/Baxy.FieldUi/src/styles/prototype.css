@@ -2335,19 +2335,37 @@ html[data-maximized="true"] .window-root {
   box-shadow: inset 2px 0 0 0 var(--carmine);
 }
 .prow.on .prow-ic { color: var(--carmine); }
-.prow.locked {
-  cursor: not-allowed;
-  color: var(--t-muted);
-  opacity: 0.62;
+.prow.bypass { border-color: var(--bypass); color: var(--bypass); }
+.prow.bypass.on {
+  background: color-mix(in srgb, var(--bypass) 16%, transparent);
+  box-shadow: inset 2px 0 0 0 var(--bypass);
 }
-.prow.locked:hover {
-  color: var(--t-muted);
-  border-color: var(--hair);
-  background: transparent;
+.prow.bypass .prow-ic { color: var(--bypass); }
+
+/* the conscious gesture before bypass: an explicit question in place */
+.bypass-ask {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--bypass);
+  border-radius: 2px;
+  background: var(--bg-elev);
 }
-.prow.locked .prow-ic,
-.prow.locked:hover .prow-ic {
-  color: var(--t-muted);
+.bypass-ask-q { font-size: 12px; font-weight: 600; color: var(--bypass); }
+.bypass-ask-d { font-size: 11px; line-height: 1.45; color: var(--t-bone); }
+.bypass-ask-actions { display: flex; flex-direction: column; gap: 4px; }
+
+/* bypass is seen on at every moment it is on */
+.titlebar-bypass {
+  margin-left: 10px;
+  padding: 1px 8px;
+  border: 1px solid var(--bypass);
+  border-radius: 2px;
+  color: var(--bypass);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 /* airier activity log in minimal mode */
@@ -3034,4 +3052,36 @@ html[data-maximized="true"] .window-root {
   color: var(--t-muted);
   letter-spacing: 0.04em;
   margin-top: 4px;
+}
+
+/* bypass keeps one colour whatever the conversation state paints the chrome */
+:root { --bypass: #F2A33A; }
+
+/* ------- accessible presentation (identity: a mode in the interface) -------
+   Only how BAXY is presented changes: the host zooms the view (larger text and
+   targets), the tokens below raise the contrast, focus is always visible and
+   nothing moves (the paint loops also stand still). */
+:root[data-access="accessible"] {
+  --bg-base: #000000;
+  --bg-panel: #05070A;
+  --bg-elev: #10141A;
+  --hair: #8B95A8;
+  --edge: #8B95A8;
+  --t-bone: #FFFFFF;
+  --t-second: #E6E9EF;
+  --t-muted: #C9CED8;
+  --t-dim: #AEB6C6;
+  --bypass: #FFC266;
+}
+:root[data-access="accessible"] body { background-image: none; }
+:root[data-access="accessible"] :focus-visible {
+  outline: 3px solid #FFD54A !important;
+  outline-offset: 2px !important;
+}
+:root[data-access="accessible"] *,
+:root[data-access="accessible"] *::before,
+:root[data-access="accessible"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
 }

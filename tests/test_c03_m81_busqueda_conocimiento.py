@@ -25,8 +25,10 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import search_report
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.conversation import asks_for_code
 from baxy_mind.semantic.decider import ContextDecision
@@ -39,6 +41,8 @@ from baxy_mind.semantic.web import (
     question_names,
     searched_clause,
 )
+from baxy_mind import context_decision
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 
 TURNS = json.loads(
     (Path(__file__).parent / "data" / "c03_m81_v3m_search_turns.json").read_text(encoding="utf-8")
@@ -56,9 +60,9 @@ def _blocked(draft: str, ident: str, user: str | None = None) -> str:
         "observed": payload["seen"],
     }, ensure_ascii=False)}
     return (
-        llm.compose_visible_defect(draft, "status", user, facts)
-        or ("invented" if llm._truncated_fact_word(draft, payload) else "")
-        or llm._payload_fact_defect(draft, payload, user, said=user)
+        visible_defect.compose_visible_defect(draft, "status", user, facts)
+        or ("invented" if visible_defect._truncated_fact_word(draft, payload) else "")
+        or payload_fact_checks._payload_fact_defect(draft, payload, user, said=user)
     )
 
 
@@ -113,7 +117,7 @@ def _tool(operation: str) -> dict[str, object]:
 def test_the_decider_s_search_of_own_data_is_asked_instead(text: str) -> None:
     # v3m: the decider answered web.search with the whole sentence as the query (turn-audit, RUN.jsonl).
     decider = _Decider(ContextDecision(text, "action", ("web.search",), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m81", "text": text, "history": [{"role": "user", "content": text}]},
         llm=decider,
         planner_catalog=PlannerCatalog([_tool("web.search"), _tool("weather.current")]),
@@ -125,7 +129,7 @@ def test_the_decider_s_search_of_own_data_is_asked_instead(text: str) -> None:
 def test_a_public_search_of_the_decider_still_runs() -> None:
     text = "¿Cuál es la capital de Australia?"
     decider = _Decider(ContextDecision(text, "action", ("web.search",), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m81", "text": text, "history": [{"role": "user", "content": text}]},
         llm=decider,
         planner_catalog=PlannerCatalog([_tool("web.search")]),
@@ -154,9 +158,9 @@ def test_d_p19_t2_the_not_found_clause_keeps_the_copula_with_its_subject() -> No
 def test_d_s021_the_headlines_own_first_person_is_the_headline() -> None:
     draft = _recorded("D-s021", "first")
     assert "nuestra vida" in draft
-    assert not llm._search_report_speaks_as_a_page(draft, TURNS["D-s021"]["payload"], TURNS["D-s021"]["text"])
+    assert not search_report._search_report_speaks_as_a_page(draft, TURNS["D-s021"]["payload"], TURNS["D-s021"]["text"])
     # The page speaking to its reader is still its voice.
-    assert llm._search_report_speaks_as_a_page(
+    assert search_report._search_report_speaks_as_a_page(
         "Nuestra selección de noticias trae lo mejor del día.", TURNS["D-s021"]["payload"], TURNS["D-s021"]["text"]
     )
 
@@ -165,7 +169,7 @@ def test_d_s021_the_headlines_own_first_person_is_the_headline() -> None:
 def test_d_p31_t1_d_p34_t1_the_results_named_after_the_not_found_verb_are_clipped(ident: str, stage: str) -> None:
     draft = _recorded(ident, stage)
     assert _blocked(draft, ident) == "search_report_shows_the_search"
-    clipped = llm._SEARCH_RESULTS_TAIL.sub("", llm._SEARCH_RESULTS_AFTER_NOT_FOUND.sub(r"\1 ", draft)).rstrip(" ,;")
+    clipped = search_report._SEARCH_RESULTS_TAIL.sub("", search_report._SEARCH_RESULTS_AFTER_NOT_FOUND.sub(r"\1 ", draft)).rstrip(" ,;")
     assert clipped.startswith("No encontré ") and "resultados" not in clipped
     assert _blocked(clipped, ident) == ""
 
@@ -195,22 +199,22 @@ def test_d_p27_t3_the_same_quote_listed_three_times_lists_nothing_read() -> None
 
 def test_d_s021_the_news_read_is_said_as_its_headlines() -> None:
     payload = TURNS["D-s021"]["payload"]
-    final = llm._asked_news_headlines_final(payload, TURNS["D-s021"]["text"], "es")
+    final = deterministic_finals._asked_news_headlines_final(payload, TURNS["D-s021"]["text"], "es")
     titles = [item["title"] for item in payload["seen"]["results"][:3]]
     assert final == "Estas son las noticias: " + "; ".join(f"«{title}»" for title in titles) + "."
     assert _blocked(final, "D-s021") == ""
     # Only for what-is-happening questions: a parking search that read headlines is not the news asked.
-    assert llm._asked_news_headlines_final(payload, "Necesito aparcamiento para mañana.", "es") == ""
+    assert deterministic_finals._asked_news_headlines_final(payload, "Necesito aparcamiento para mañana.", "es") == ""
 
 
 def test_d_w08_t1_the_typo_is_not_said_back() -> None:
     payload = TURNS["D-w08-t1"]["payload"]
     clause, _ = searched_clause("cuanto qedo el america anoche", "es")
-    assert llm._spelled_as_read(clause, payload) == "cuánto quedó el america anoche"
+    assert deterministic_finals._spelled_as_read(clause, payload) == "cuánto quedó el america anoche"
     # An inflection is not a typo: a different or an added last letter stays as the person said it.
     fake = {"seen": {"query": "x", "results": [{"title": "Llueva o no, casas", "snippet": ""}]},
             "operation": "web.search"}
-    assert llm._spelled_as_read("si llueve en las casa", fake) == "si llueve en las casa"
+    assert deterministic_finals._spelled_as_read("si llueve en las casa", fake) == "si llueve en las casa"
 
 
 # ------------------------------------------------------------------ 5. content and code the model writes
@@ -225,7 +229,7 @@ def test_d_w08_t1_the_typo_is_not_said_back() -> None:
 ])
 def test_d_s030_d_p36_d_p32_content_asked_is_written(text: str) -> None:
     assert conversation_only_content_request(text)
-    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) == (
+    assert _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) == (
         "content_draft"
     )
 

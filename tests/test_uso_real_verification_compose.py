@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.llm import compose_visible_defect
+from baxy_mind.visible_defect import compose_visible_defect
 from test_c03_cpu_actor import Recorder
 from test_c03_uso_real_compose import _RATE_ASK, _RATE_RESULTS, _search_situation
 

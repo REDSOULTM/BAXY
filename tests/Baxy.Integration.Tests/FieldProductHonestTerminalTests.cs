@@ -157,6 +157,58 @@ public sealed class FieldProductHonestTerminalTests
         });
     }
 
+    // Regresiones r2 M5 (live v2-s02): the decider was unavailable and the failure could not be worded either; the
+    // person saw nothing for 171 s. A request the decider could not read is published at once with the line any failed
+    // composition leaves (review r4: no new fixed sentence, owner's M75); any other failure keeps the composition (and
+    // its queue) as before.
+    [Test]
+    public void ARequestTheDeciderCouldNotReadIsToldAtOnceWithTheFailedCompositionsLine()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationFloor.DeciderCouldNotRead(TurnVisibleFacts.Failure("mind_unavailable")), Is.True);
+            Assert.That(OperationFloor.DeciderCouldNotRead(TurnVisibleFacts.Status("mind_unavailable")), Is.True,
+                "the cause decides, whatever the event");
+            Assert.That(OperationFloor.DeciderCouldNotRead(TurnVisibleFacts.Failure("ambiguous_request")), Is.False,
+                "another failure is still worded by the mind");
+            Assert.That(OperationFloor.DeciderCouldNotRead("not json"), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task ARequestTheDeciderCouldNotReadIsNotQueuedWithNoMindReady()
+    {
+        await using MainWindowViewModel viewModel = ReadyViewModel();
+        var failures = new List<string>();
+        viewModel.CompositionFailed += (_, failure) => failures.Add(failure);
+        int before = viewModel.Messages.Count;
+        bool bypass = UserMessagePolicy.BypassLlmCompositionForTests;
+        UserMessagePolicy.BypassLlmCompositionForTests = false;
+        try
+        {
+            // No mind client: the turn's failure has no mind ready to word it (the path that queued it before).
+            typeof(MainWindowViewModel).GetMethod("AddMessage", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(
+                viewModel,
+                ["BAXY", TurnVisibleFacts.Failure("mind_unavailable"), false, false,
+                    UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService), null, null]);
+        }
+        finally
+        {
+            UserMessagePolicy.BypassLlmCompositionForTests = bypass;
+        }
+
+        var pending = new PendingModelMessage(
+            new UserMessageDraft(TurnVisibleFacts.Failure("mind_unavailable"), "error", null), string.Empty, new JsonObject(), "t0");
+        Assert.Multiple(() =>
+        {
+            Assert.That(viewModel.Messages, Has.Count.EqualTo(before + 1), "one line at once, nothing waits for the mind");
+            Assert.That(viewModel.Messages[^1].Body,
+                Is.EqualTo(MainWindowViewModel.CompositionFailureFallback(pending, "composer_unavailable")));
+            Assert.That(failures, Is.EqualTo(new[] { "composer_unavailable" }));
+            Assert.That(viewModel.HasCompositionError, Is.True);
+        });
+    }
+
     // Owner's M75 ruling: a turn that did nothing keeps its ⚠ marker; only a question still to ask and a result have
     // a floor sentence.
     [Test]

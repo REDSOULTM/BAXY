@@ -5,15 +5,15 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from datetime import date
+from datetime import date, timedelta
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
 from .grammar import _fold, _match, _has, _strip_request_envelope, _without_address, _request_head, _head_forms, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import (
-    _BOUNDED_TEMPORAL_SELECTOR, _DAY, _LAST_WEEKEND, _MONTH, _PAST_WEEKDAY, _WEEKDAYS, is_window_phrase, spoken_clocks,
-    spoken_date,
+    _BOUNDED_TEMPORAL_SELECTOR, _DAY, _LAST_WEEKEND, _MONTH, _PAST_WEEKDAY, _WEEKDAYS, WEEKEND, WEEKEND_AFTER_NEXT,
+    is_window_phrase, spoken_clocks, spoken_date, weekend_saturday,
 )
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import OWN_EVENT_NOUN, happening_in_a_span_of_hours, own_event_reference
@@ -535,6 +535,43 @@ def weather_asks_later_day(text: str) -> bool:
     return counted is not None and counted.group("count") not in {"un", "uno", "one", "a", "1"}
 
 
+# Uso real v3 tanda 1 «what's the weather gonna be like in Madrid this weekend» → «In Madrid, tomorrow: …»: a relative
+# span of days is resolved against the calendar before the read is told: the weekend as the calendar reads it
+# (``semantic.temporal.weekend_saturday``), «pasado mañana» the day after tomorrow. Folded.
+_DAY_AFTER_TOMORROW = r"\b(?:pasado\s+manana|day\s+after\s+tomorrow)\b"
+# Revisión adversarial de la tanda 1: «este weekend me voy… el weather para el sábado» asks the Saturday alone, and
+# «mañana y el finde» asks tomorrow too. A weekday, a clock or the week named beside the span is the day asked (the
+# readers of a weekday and of a clock answer it); today and tomorrow named beside it are days of the span asked.
+# «por la mañana» is a time of the day, not tomorrow.
+_SPAN_TODAY = r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde))\b"
+_SPAN_TOMORROW = r"(?<!esta )(?<!la )\b(?:manana|tomorrow)\b"
+
+
+def weather_asked_span(text: str, today: date) -> tuple[date, ...]:
+    """The calendar days a weather question names by a relative span (the weekend, the day after tomorrow), with
+    today and tomorrow when they are named beside it, read from ``today``; empty when it names none, names a day
+    already gone (``weather_asks_past``), or names a weekday, a clock or the week beside it (that is the day asked)."""
+
+    folded = _fold(text)
+    if weather_asks_past(text):
+        return ()
+    if _has(folded, _DAY_AFTER_TOMORROW):
+        span = [today + timedelta(days=2)]
+    elif (saturday := weekend_saturday(folded, today)) is not None:
+        span = [day for day in (saturday, saturday + timedelta(days=1)) if day >= today]
+    else:
+        return ()
+    rest = re.sub(_DAY_AFTER_TOMORROW, " ", folded)
+    rest = re.sub(WEEKEND_AFTER_NEXT, " ", rest)
+    rest = re.sub(WEEKEND, " ", rest)
+    if _has(rest, rf"\b{_WEEKDAY_NAME}\b") or spoken_clocks(rest) or weather_asks_week(rest):
+        return ()
+    named = [today] if _has(rest, _SPAN_TODAY) else []
+    if _has(rest, _SPAN_TOMORROW):
+        named.append(today + timedelta(days=1))
+    return tuple(sorted({*named, *span}))
+
+
 # Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and tomorrow: the week, the coming
 # days or a weekly forecast ask the days the read carries after tomorrow (``laterDays``).
 _WEATHER_WEEK = (
@@ -792,6 +829,11 @@ def _research_question_query(text: str) -> str | None:
     conversational lead-in supplies the subject when the question names none.
     None for a who/what question (its subject is looked up instead) or a local thing."""
 
+    if _explicit_google_search_query(text) is not None:
+        # Uso real v3 tanda 3 c06 «busca en google como hacer un pivot table en excel pls» → web.search, its report
+        # vetoed, answered from memory: a search whose engine is named as the place is that engine's results page in
+        # the person's browser, as «buscame en google recetas…» is, whatever its query asks (decider_catalog).
+        return None
     raw = _strip_request_envelope(text).strip()
     lead = None
     opened = _RESEARCH_LEAD_IN.match(_fold(raw))
@@ -4375,6 +4417,7 @@ _SEARCHED_NOT_BAXYS = frozenset(
      "crees", "piensas", "you", "your", "yours", "eso", "esto", "ese", "esa", "esos", "esas", "it"}
 )
 _SEARCHED_PREPOSITION = frozenset({"a", "de", "en", "por", "para", "con", "desde", "hasta"})
+_SEARCHED_ARTICLE = frozenset({"el", "la", "los", "las", "un", "una", "unos", "unas", "del", "al"})
 _SEARCHED_SECOND_PERSON = {"es": {"me": "te", "mi": "tu", "mis": "tus"}, "en": {"my": "your", "me": "you"}}
 
 
@@ -4425,7 +4468,12 @@ def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
         if keys[head] in _SEARCHED_WH_ES:
             return " ".join([*(key for key in keys[:head]), _SEARCHED_WH_ES[keys[head]], *words[head + 1:]]), True
         if question:
-            first = words[0] if words[0][1:2].isupper() or words[1][:1].isupper() else words[0][:1].lower() + words[0][1:]
+            # Ronda 22 (r18 t4-c02 «De Bestiario, Rayuela o Octaedro hay película?» → «No encontré si De Bestiario…»):
+            # a function word that opens the question is lowered whatever follows it; a name keeps its capital.
+            function = keys[0] in _SEARCHED_PREPOSITION or keys[0] in _SEARCHED_ARTICLE
+            first = words[0] if not function and (words[0][1:2].isupper() or words[1][:1].isupper()) else (
+                words[0][:1].lower() + words[0][1:]
+            )
             return " ".join(["si", first, *words[1:]]), True
     else:
         wh, _, contracted = keys[0].partition("'")
@@ -4549,22 +4597,37 @@ def _name_words(name: str) -> frozenset[str]:
     )
 
 
-def carried_subjects(understood: str, query: str, said: str) -> tuple[str, ...]:
+def _written_as_one(longer: str, shorter: str, pages: str) -> bool:
+    """The longer name holds the shorter one whole, and one result writes the longer one as a unit (its words in a row,
+    punctuation apart): «De Música Ligera - Soda Stereo» for «De Música Ligera Soda Stereo»."""
+
+    def run(text: str) -> str:
+        return " " + " ".join(re.findall(r"[a-z0-9]+", _reading_fold(text))) + " "
+
+    return run(shorter) in run(longer) and any(run(longer) in run(page) for page in str(pages or "").split("\n"))
+
+
+def carried_subjects(understood: str, query: str, said: str, pages: str = "") -> tuple[str, ...]:
     """The names of the understood request and of the query that the person's own message (``said``) does not write:
-    the subject this turn took from the conversation. Empty when the person named it, or nothing names one."""
+    the subject this turn took from the conversation. Empty when the person named it, or nothing names one.
+
+    Ronda 24 (r23 t3-c16 t4: «De Música Ligera» understood, «De Música Ligera Soda Stereo» queried): a longer writing
+    of a subject already read takes its place, so a report naming «Soda Stereo» names it. Revisión 1 de r24
+    (bloqueante 3: «Chile Copa América Chile Argentina» made «Argentina» an alternative of «Chile»): only when it holds
+    the subject whole and one result (``pages``, one per line) writes it as a unit (``_written_as_one``); any other name
+    that shares words with a subject is another entity or the same one, never an alternative."""
 
     said_words = set(re.findall(r"[a-z0-9]+", _reading_fold(said)))
     subjects: list[str] = []
     for name in [*_written_names(understood), *_written_names(query)]:
         words = _name_words(name)
-        if (
-            not words
-            or words <= _NAME_WHERE_TO_LOOK
-            or words & said_words
-            or any(words & _name_words(subject) for subject in subjects)
-        ):
+        if not words or words <= _NAME_WHERE_TO_LOOK or words & said_words:
             continue
-        subjects.append(name)
+        same = next((index for index, subject in enumerate(subjects) if words & _name_words(subject)), None)
+        if same is None:
+            subjects.append(name)
+        elif _written_as_one(name, subjects[same], pages):
+            subjects[same] = name
     return tuple(subjects)
 
 

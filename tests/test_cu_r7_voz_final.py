@@ -17,7 +17,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from baxy_mind import computer_use, llm  # noqa: E402
+from baxy_mind import cu_projection
+from baxy_mind import cu_reply_checks
+from baxy_mind import compose_instructions
+from baxy_mind import deterministic_finals
+from baxy_mind import visible_defect
 
 LRM = "‎"
 
@@ -93,15 +97,15 @@ def _failed(stopped_by: str) -> dict:
 
 
 def _defect(text: str, situation: dict, intent: str = "status", said: str = "") -> str:
-    return llm.compose_visible_defect(text, intent, said, {"situation": json.dumps(situation, ensure_ascii=False)})
+    return visible_defect.compose_visible_defect(text, intent, said, {"situation": json.dumps(situation, ensure_ascii=False)})
 
 
 def _floor(situation: dict, language: str = "es") -> str:
-    return llm._deterministic_final(situation, {}, "", language)
+    return deterministic_finals._deterministic_final(situation, {}, "", language)
 
 
 def test_a_clock_the_window_wrote_is_observed_even_with_bidi_marks() -> None:
-    assert computer_use.screen_clocks(computer_use.project_seen(WORLD_CLOCK["observed"], "es")) == {"07:58"}
+    assert cu_reply_checks.screen_clocks(cu_projection.project_seen(WORLD_CLOCK["observed"], "es")) == {"07:58"}
     said = "en el Reloj andá a Reloj mundial"
     assert _defect("Ya estoy en la pantalla del reloj mundial, que marca las 7:58.", WORLD_CLOCK, said=said) == ""
     assert _defect("Estoy en la sección de Reloj mundial y ahora se muestra la hora de 7:58.", WORLD_CLOCK) == ""
@@ -133,9 +137,9 @@ def test_the_part_of_the_day_is_said_only_when_the_window_writes_it() -> None:
 def test_going_somewhere_never_becomes_a_change_said_done() -> None:
     assert _defect("Listo, puse la alarma de las 7:00.", ALARM) == "extra_claim"
     assert _defect("Ya configuré la alarma para las 7:00.", ALARM) == "extra_claim"
-    seen = computer_use.project_seen(ALARM["observed"], "es")
-    assert computer_use.mission_defect("ya estoy en alarma y no cambie nada.", seen) is None
-    assert computer_use.mission_defect("ya estoy en alarma y no puse ninguna alarma.", seen) is None
+    seen = cu_projection.project_seen(ALARM["observed"], "es")
+    assert cu_reply_checks.mission_defect("ya estoy en alarma y no cambie nada.", seen) is None
+    assert cu_reply_checks.mission_defect("ya estoy en alarma y no puse ninguna alarma.", seen) is None
 
 
 def test_the_floor_of_a_reached_place_names_the_place_as_the_window_writes_it() -> None:
@@ -161,7 +165,7 @@ def test_the_floor_of_a_failed_mission_says_what_was_not_reached_and_why() -> No
 
 def test_a_failed_mission_gets_the_first_person_failure_voice() -> None:
     surface = _failed("computer_use_surface_unchanged")
-    shape = llm._compose_shape_instruction(surface, "es", "en configuración andá a red e internet y luego a wi-fi")
+    shape = compose_instructions._compose_shape_instruction(surface, "es", "en configuración andá a red e internet y luego a wi-fi")
     assert "first person singular" in shape and "never «pudiste»" in shape and "reason.seen" in shape
     # The veto stays: the person did not act.
     assert _defect("No pudiste llegar a Wi-Fi porque la pantalla dejó de cambiar.", surface, intent="error") == (

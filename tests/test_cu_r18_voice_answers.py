@@ -4,7 +4,8 @@ the mission's goal (v2-c6 «sí» → «Envié «prueba BAXY C6» a Ron92.» was
 
 import json
 
-from baxy_mind import computer_use, llm
+from baxy_mind import cu_reply_checks
+from baxy_mind import computer_use_finals
 from baxy_mind.semantic.normalize import fold
 
 # Copied verbatim from cu-universal-evidencia compose_audit.jsonl: v2-c5's situation, v2-c6's payload seen (its
@@ -34,23 +35,23 @@ BLUETOOTH = {
 
 
 def test_the_option_the_window_shows_answers_the_question() -> None:
-    assert llm._computer_use_final_defect("El modo es Oscuro.", C5) == ""
-    assert llm._computer_use_final_defect("El modo que aparece seleccionado es Oscuro.", C5) == ""
+    assert computer_use_finals._computer_use_final_defect("El modo es Oscuro.", C5) == ""
+    assert computer_use_finals._computer_use_final_defect("El modo que aparece seleccionado es Oscuro.", C5) == ""
 
 
 def test_a_draft_without_the_answer_is_still_refused() -> None:
-    assert llm._computer_use_final_defect("Llegué a Colores en Configuración.", C5) == "unanswered_question"
-    assert llm._computer_use_final_defect("Fui a Colores para ver si el modo es claro u oscuro.", C5) == (
+    assert computer_use_finals._computer_use_final_defect("Llegué a Colores en Configuración.", C5) == "unanswered_question"
+    assert computer_use_finals._computer_use_final_defect("Fui a Colores para ver si el modo es claro u oscuro.", C5) == (
         "unanswered_question"
     )
-    assert llm._computer_use_final_defect("El modo puede ser claro u oscuro.", C5) == "unanswered_question"
+    assert computer_use_finals._computer_use_final_defect("El modo puede ser claro u oscuro.", C5) == "unanswered_question"
 
 
 def test_a_yes_no_question_is_answered_by_its_state() -> None:
-    assert llm._computer_use_final_defect("Sí, el Bluetooth está activado.", BLUETOOTH) == ""
-    assert llm._computer_use_final_defect("Sí, está activado.", BLUETOOTH) == ""
-    assert llm._computer_use_final_defect("Llegué a Bluetooth y dispositivos.", BLUETOOTH) == "unanswered_question"
-    assert llm._computer_use_final_defect("Fui a Bluetooth para ver si está activado.", BLUETOOTH) == (
+    assert computer_use_finals._computer_use_final_defect("Sí, el Bluetooth está activado.", BLUETOOTH) == ""
+    assert computer_use_finals._computer_use_final_defect("Sí, está activado.", BLUETOOTH) == ""
+    assert computer_use_finals._computer_use_final_defect("Llegué a Bluetooth y dispositivos.", BLUETOOTH) == "unanswered_question"
+    assert computer_use_finals._computer_use_final_defect("Fui a Bluetooth para ver si está activado.", BLUETOOTH) == (
         "unanswered_question"
     )
 
@@ -58,14 +59,14 @@ def test_a_yes_no_question_is_answered_by_its_state() -> None:
 def test_a_yes_no_state_shown_only_as_the_switch_state_answers() -> None:
     switch_only = json.loads(json.dumps(BLUETOOTH))
     switch_only["observed"]["screen"]["lines"] = ["Bluetooth", "Agregar dispositivo"]
-    assert llm._computer_use_final_defect("Sí, el Bluetooth está activado.", switch_only) == ""
-    assert llm._computer_use_final_defect("Llegué a Bluetooth y dispositivos.", switch_only) == "unanswered_question"
+    assert computer_use_finals._computer_use_final_defect("Sí, el Bluetooth está activado.", switch_only) == ""
+    assert computer_use_finals._computer_use_final_defect("Llegué a Bluetooth y dispositivos.", switch_only) == "unanswered_question"
 
 
 def test_a_confirmed_send_is_told_from_the_mission_goal() -> None:
     seen = C6_SEEN
-    assert computer_use.ungrounded_word(fold("Envié «prueba BAXY C6» a Ron92."), seen, "sí") is None
-    assert computer_use.ungrounded_word(fold("Escribí «prueba BAXY C6» y lo envié a Ron92."), seen, "sí") is None
-    assert computer_use.ungrounded_word(fold("Bloqueé a Ron92."), seen, "sí") == "bloquee"
+    assert cu_reply_checks.ungrounded_word(fold("Envié «prueba BAXY C6» a Ron92."), seen, "sí") is None
+    assert cu_reply_checks.ungrounded_word(fold("Escribí «prueba BAXY C6» y lo envié a Ron92."), seen, "sí") is None
+    assert cu_reply_checks.ungrounded_word(fold("Bloqueé a Ron92."), seen, "sí") == "bloquee"
     unsent = {**seen, "goal": "ir a ron92; luego escribir prueba BAXY C6", "subgoals": seen["subgoals"][:2]}
-    assert computer_use.ungrounded_word(fold("Envié «prueba BAXY C6» a Ron92."), unsent, "sí") == "envie"
+    assert cu_reply_checks.ungrounded_word(fold("Envié «prueba BAXY C6» a Ron92."), unsent, "sí") == "envie"

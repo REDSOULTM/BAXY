@@ -49,8 +49,14 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import clock_facts
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import media_facts
+from baxy_mind import weather_facts
 from baxy_mind.semantic.network import calendar_parts_asked
+from baxy_mind.semantic.web import weather_sun_events_asked
 from test_c03_cpu_actor import Recorder
 
 # --- 1. a weekday asked alone is answered by the weekday ---------------------------------------------------------
@@ -63,9 +69,9 @@ _CLOCK = {
 
 
 def _clock_defect(reply: str, asked: str, language: str = "es") -> str:
-    payload = llm._compose_situation_payload(_CLOCK, language, asked)
-    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_CLOCK)}) or (
-        llm._payload_fact_defect(reply, payload, asked)
+    payload = compose_payload._compose_situation_payload(_CLOCK, language, asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_CLOCK)}) or (
+        payload_fact_checks._payload_fact_defect(reply, payload, asked)
     )
 
 
@@ -93,12 +99,12 @@ def test_the_weekday_asked_alone_is_the_part_asked(asked: str, part: str) -> Non
 
 
 def test_the_weekday_asked_alone_carries_only_the_weekday() -> None:
-    assert llm._compose_situation_payload(_CLOCK, "es", "¿hoy es lunes?") == {
+    assert compose_payload._compose_situation_payload(_CLOCK, "es", "¿hoy es lunes?") == {
         "weekday": "jueves", "operation": "system.time",
     }
-    assert llm._compose_situation_payload(_CLOCK, "en", "is it monday today?")["weekday"] == "Thursday"
-    assert "say yes or no first" in llm._calendar_instruction("¿hoy es lunes?")
-    assert "no date is needed" in llm._calendar_instruction("¿hoy es lunes?")
+    assert compose_payload._compose_situation_payload(_CLOCK, "en", "is it monday today?")["weekday"] == "Thursday"
+    assert "say yes or no first" in clock_facts._calendar_instruction("¿hoy es lunes?")
+    assert "no date is needed" in clock_facts._calendar_instruction("¿hoy es lunes?")
 
 
 @pytest.mark.parametrize(
@@ -175,9 +181,9 @@ _WEATHER = {
 def _weather_defect(reply: str, asked: str, language: str = "es") -> str:
     """Both composer checks of a weather final, on the payload the narrator was given."""
 
-    payload = llm._compose_situation_payload(_WEATHER, language, asked)
-    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_WEATHER)}) or (
-        llm._payload_fact_defect(reply, payload, asked)
+    payload = compose_payload._compose_situation_payload(_WEATHER, language, asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_WEATHER)}) or (
+        payload_fact_checks._payload_fact_defect(reply, payload, asked)
     )
 
 
@@ -187,17 +193,17 @@ def _weather_defect(reply: str, asked: str, language: str = "es") -> str:
      "what city am i in right now", "dime mi ubicación actual"],
 )
 def test_the_own_place_question_sends_only_the_place(asked: str) -> None:
-    payload = llm._compose_situation_payload(_WEATHER, "en", asked)
+    payload = compose_payload._compose_situation_payload(_WEATHER, "en", asked)
     assert payload["seen"] == {
         "location": "Curico", "region": "Region de Curico", "country": "Chile",
         "locatedBy": "public_ip_address",
     }
-    instruction = llm._weather_answer_instruction(asked, "en")
+    instruction = weather_facts._weather_answer_instruction(asked, "en")
     assert "temperatureC" not in instruction and "nothing about the weather" in instruction
 
 
 def test_a_weather_question_still_gets_the_whole_read() -> None:
-    assert llm._compose_situation_payload(_WEATHER, "es", "¿qué tiempo hace?")["seen"]["temperatureC"] == 14.1
+    assert compose_payload._compose_situation_payload(_WEATHER, "es", "¿qué tiempo hace?")["seen"]["temperatureC"] == 14.1
 
 
 @pytest.mark.parametrize(
@@ -266,9 +272,9 @@ _MEDIA = {
 
 
 def _media_defect(reply: str, asked: str) -> str:
-    payload = llm._compose_situation_payload(_MEDIA, "es", asked)
-    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_MEDIA)}) or (
-        llm._payload_fact_defect(reply, payload, asked)
+    payload = compose_payload._compose_situation_payload(_MEDIA, "es", asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_MEDIA)}) or (
+        payload_fact_checks._payload_fact_defect(reply, payload, asked)
     )
 
 
@@ -315,11 +321,11 @@ def test_a_wrong_name_state_or_internal_voice_is_rejected(asked: str, reply: str
 def test_the_site_suffix_is_dropped_for_every_observed_media_title() -> None:
     title = "Lofi Girl - beats to relax 😳 - YouTube"
     # The local YouTube playback still quotes the whole title, without the tab's site and blind to emoji.
-    assert llm._names_media_title("Suena «Lofi Girl - beats to relax».", title, by_parts=False)
-    assert not llm._names_media_title("Suena beats to relax, de Lofi Girl.", title, by_parts=False)
+    assert media_facts._names_media_title("Suena «Lofi Girl - beats to relax».", title, by_parts=False)
+    assert not media_facts._names_media_title("Suena beats to relax, de Lofi Girl.", title, by_parts=False)
     # The status read and the music clients name it by its names.
-    assert llm._names_media_title("Suena beats to relax, de Lofi Girl.", title, by_parts=True)
-    assert not llm._names_media_title("Suena beats to relax.", title, by_parts=True)
+    assert media_facts._names_media_title("Suena beats to relax, de Lofi Girl.", title, by_parts=True)
+    assert not media_facts._names_media_title("Suena beats to relax.", title, by_parts=True)
 
 
 def test_the_media_prompt_does_not_call_the_title_observed() -> None:
@@ -337,11 +343,11 @@ _T39 = "cuál es el pronóstico del tiempo para la semana"
 
 
 def test_the_week_is_summed_up_by_the_mind() -> None:
-    seen = llm._compose_situation_payload(_WEATHER, "es", _T39)["seen"]
+    seen = compose_payload._compose_situation_payload(_WEATHER, "es", _T39)["seen"]
     assert seen["week"] == {"minC": 12, "maxC": 21, "rainProbabilityPercentMax": 6, "rainiestWeekdays": ["viernes", "lunes"]}
     assert "laterDays" in seen
-    assert "week.minC" in llm._weather_answer_instruction(_T39, "es")
-    assert "week" not in llm._compose_situation_payload(_WEATHER, "es", "¿qué tiempo hace?")["seen"]
+    assert "week.minC" in weather_facts._weather_answer_instruction(_T39, "es")
+    assert "week" not in compose_payload._compose_situation_payload(_WEATHER, "es", "¿qué tiempo hace?")["seen"]
 
 
 @pytest.mark.parametrize(
@@ -414,19 +420,19 @@ def _alarms(days: int = 1) -> dict:
 
 
 def _alarm_defect(reply: str, situation: dict, asked: str = _T45) -> str:
-    payload = llm._compose_situation_payload(situation, "en", asked)
-    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
-        llm._payload_fact_defect(reply, payload, asked)
+    payload = compose_payload._compose_situation_payload(situation, "en", asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
+        payload_fact_checks._payload_fact_defect(reply, payload, asked)
     )
 
 
 def test_each_alarm_is_sent_with_its_local_time_and_tomorrow_as_a_word() -> None:
-    steps = llm._compose_situation_payload(_alarms(), "en", _T45)["completedStepsInOrder"]
+    steps = compose_payload._compose_situation_payload(_alarms(), "en", _T45)["completedStepsInOrder"]
     assert [step["resultAtThisStep"]["seen"] for step in steps] == [
         {"title": "alarm at 2 pm", "scheduledLocalTime": "14:00", "scheduledDay": "tomorrow"},
         {"title": "alarm at 3 pm", "scheduledLocalTime": "15:00", "scheduledDay": "tomorrow"},
     ]
-    later = llm._compose_situation_payload(_alarms(days=3), "es", _T45)["completedStepsInOrder"]
+    later = compose_payload._compose_situation_payload(_alarms(days=3), "es", _T45)["completedStepsInOrder"]
     assert later[0]["resultAtThisStep"]["seen"]["scheduledLocalDate"] == _local_at(3, 14).date().isoformat()
 
 
@@ -509,9 +515,9 @@ def _mute_read(baseline_muted: bool, final_muted: bool, level: int = 0) -> dict:
 
 
 def _mute_defect(reply: str, situation: dict, asked: str) -> str:
-    payload = llm._compose_situation_payload(situation, "es", asked)
-    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
-        llm._payload_fact_defect(reply, payload, asked)
+    payload = compose_payload._compose_situation_payload(situation, "es", asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
+        payload_fact_checks._payload_fact_defect(reply, payload, asked)
     )
 
 
@@ -519,7 +525,7 @@ _T14 = "Quiero el sound de nuevo please"
 
 
 def test_the_final_state_is_sent_even_when_nothing_changed() -> None:
-    seen = llm._compose_situation_payload(_mute_read(False, False), "es", _T14)["seen"]
+    seen = compose_payload._compose_situation_payload(_mute_read(False, False), "es", _T14)["seen"]
     assert seen["muted"] is False and seen["level"] == 0
 
 
@@ -585,20 +591,20 @@ _T1 = "he quedado con un amigo a la salida del sol mañana para correr, ¿qué h
     ],
 )
 def test_the_sun_event_asked_is_read(asked: str, events: set[str]) -> None:
-    assert llm.weather_sun_events_asked(asked) == frozenset(events)
+    assert weather_sun_events_asked(asked) == frozenset(events)
 
 
 def test_only_the_asked_event_of_the_asked_day_is_sent() -> None:
-    seen = llm._compose_situation_payload(_WEATHER, "es", _T1)["seen"]
+    seen = compose_payload._compose_situation_payload(_WEATHER, "es", _T1)["seen"]
     assert seen == {
         "location": "Curico", "region": "Region de Curico", "country": "Chile",
         "tomorrow": {"date": "2026-09-25", "weekday": "viernes", "sunrise": "07:31"},
     }
-    today = llm._compose_situation_payload(_WEATHER, "en", "what time is sunset today")["seen"]
+    today = compose_payload._compose_situation_payload(_WEATHER, "en", "what time is sunset today")["seen"]
     # M99 (DEV-D v3x D-s054): the read is of 21:45, after that sunset, so it is marked as passed.
     assert today["today"] == {"date": "2026-09-24", "weekday": "jueves", "sunset": "19:44", "sunsetPassed": True}
     assert "tomorrow" not in today
-    assert "temperatureC" not in llm._weather_answer_instruction(_T1, "es")
+    assert "temperatureC" not in weather_facts._weather_answer_instruction(_T1, "es")
 
 
 @pytest.mark.parametrize(
@@ -629,4 +635,4 @@ def test_the_other_sun_event_or_day_is_rejected(asked: str, reply: str) -> None:
     assert _weather_defect(reply, asked) != ""
     # Even given the whole read, the validator tells the other event apart.
     whole = {"operation": "weather.current", "seen": _WEATHER_SEEN}
-    assert llm._weather_fact_defect(reply, whole, asked) in {"missing_state", "extra_claim"}
+    assert weather_facts._weather_fact_defect(reply, whole, asked) in {"missing_state", "extra_claim"}

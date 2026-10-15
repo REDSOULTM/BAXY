@@ -25,8 +25,6 @@ from datetime import datetime as real_datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import arguments, decider
 from baxy_mind.semantic.patterns import _fold, resolve_explicit_effects
@@ -38,6 +36,22 @@ from baxy_mind.semantic.temporal import (
     said_durations,
     spoken_clocks,
     timed_task,
+)
+from baxy_mind import context_decision
+from baxy_mind import compose_situation
+from baxy_mind import clock_checks
+from baxy_mind import agenda_facts
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import deterministic_finals
+from baxy_mind import conversation_contract
+from baxy_mind import clock_facts
+
+
+# Every mind module whose code reads this PC's clock: the clock is patched in each one.
+_CLOCK_READERS = (
+    agenda_facts, clock_checks, clock_facts, compose_situation, conversation_contract, deterministic_finals,
+    reply_claims, weather_facts,
 )
 
 # Thursday 1 October 2026, 12:30 in Chile (UTC-3).
@@ -188,27 +202,29 @@ def test_the_lengths_the_person_wrote_are_read_as_written() -> None:
 def test_a_timer_set_by_its_length_is_told_with_it(
     monkeypatch: pytest.MonkeyPatch, user_text: str, after: timedelta, language: str, expected: str | None,
 ) -> None:
-    monkeypatch.setattr(llm, "_local_now", lambda: NOW)
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: NOW)
     due = (NOW + after).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
     observed = {"version": 1, "kind": "alarm", "title": "temporizador", "dueUtc": due, "nextRunUtc": due}
     situation = {"operation": "notification.schedule", "verified": True, "succeeded": True, "observed": observed}
-    seen = llm._project_scheduled_notification(observed, situation, language, user_text)
+    seen = agenda_facts._project_scheduled_notification(observed, situation, language, user_text)
     assert seen.get("ringsIn") == expected
 
 
 def test_a_cancelled_alarm_is_told_by_its_time(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_local_now", lambda: NOW)
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: NOW)
     tomorrow = real_datetime(2026, 10, 2, 7, 5, tzinfo=LOCAL).astimezone(timezone.utc).isoformat()
     observed = {"version": 1, "kind": "alarm", "hour": 7, "minute": 5, "expectedNextRunUtc": tomorrow,
                 "taskName": "BAXY-Alarm-x", "canceled": True}
     situation = {"operation": "notification.cancel.at", "verified": True, "succeeded": True, "observed": observed}
-    assert llm._project_cancelled_notification(observed, situation, "es") == {
+    assert agenda_facts._project_cancelled_notification(observed, situation, "es") == {
         "canceled": True, "kind": "alarma", "time": "07:05", "day": "mañana",
     }
     # The time it was told by is no invented clock in the reply.
-    assert "07:05" in llm._observed_local_clocks(situation)
+    assert "07:05" in agenda_facts._observed_local_clocks(situation)
     bare = {"kind": "reminder", "hour": 21, "minute": 0}
-    assert llm._project_cancelled_notification(bare, {}, "en") == {"kind": "reminder", "time": "21:00"}
+    assert agenda_facts._project_cancelled_notification(bare, {}, "en") == {"kind": "reminder", "time": "21:00"}
 
 
 # ------------------------------------------------------------------ 6. the follow-up
@@ -310,7 +326,7 @@ def _decided(text: str, history: list[tuple[str, str]], model: _Decider) -> dict
         for name in TOOLS
     ]
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m110", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(tools),
     )

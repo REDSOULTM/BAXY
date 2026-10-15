@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import visible_defect
 from test_c03_cpu_actor import Recorder
 
 
@@ -32,7 +32,7 @@ def facts(mission=False, present=True, percent=17):
 ])
 def test_battery_measurement_rejects_first_person_hardware(reply, mission):
     text = "How much battery is left?" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
-    assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+    assert visible_defect.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
 
 
 @pytest.mark.parametrize("mission", [False, True])
@@ -44,7 +44,7 @@ def test_battery_measurement_rejects_first_person_hardware(reply, mission):
 ])
 def test_machine_user_and_reading_subjects_are_not_assistant_hardware(reply, mission):
     text = "How much battery is left?" if reply.startswith(("The ", "Your ", "This ", "I ")) else "Estado de la batería"
-    assert llm.compose_visible_defect(reply, "status", text, facts(mission)) != "wrong_machine_actor"
+    assert visible_defect.compose_visible_defect(reply, "status", text, facts(mission)) != "wrong_machine_actor"
 
 
 @pytest.mark.parametrize("present", [False, True])
@@ -78,4 +78,4 @@ def test_persistent_wrong_battery_actor_is_not_published():
 @pytest.mark.parametrize("observed", [{}, {"battery": {}}, {"memory": {"total": 17}}])
 def test_battery_actor_requires_an_actual_battery_observation(observed):
     source = {"situation": {"kind": "operation", "operation": "system.status", "observed": observed}}
-    assert llm.compose_visible_defect("Tengo un 17% de batería.", "status", "Estado de la batería", source) != "wrong_machine_actor"
+    assert visible_defect.compose_visible_defect("Tengo un 17% de batería.", "status", "Estado de la batería", source) != "wrong_machine_actor"

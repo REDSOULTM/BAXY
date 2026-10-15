@@ -193,6 +193,8 @@ class _Lexicon:
         self._lock = threading.Lock()
         self._loaded = False
         self._dictionaries: list[Any] = []
+        # The language of each loaded dictionary, in the same order: a missing es_AR must never let en_US answer for it.
+        self._languages: list[str] = []
 
     def _load(self) -> None:
         with self._lock:
@@ -212,6 +214,7 @@ class _Lexicon:
                     continue
                 try:
                     self._dictionaries.append(Dictionary.from_files(base))
+                    self._languages.append(language)
                 except Exception:  # noqa: BLE001 - a broken file is an absent file
                     logger.warning("lexicon %s could not be read", language)
 
@@ -226,7 +229,7 @@ class _Lexicon:
         candidate = word.strip()
         if not candidate:
             return False
-        for code, dictionary in zip(_LEXICON_LANGUAGES, self._dictionaries):
+        for code, dictionary in zip(self._languages, self._dictionaries):
             if code != language:
                 continue
             for form in {candidate, candidate.casefold(), candidate.capitalize()}:
@@ -236,6 +239,36 @@ class _Lexicon:
                 except Exception:  # noqa: BLE001
                     continue
         return False
+
+    def plural_flags_in(self, language: str, word: str) -> frozenset[str]:
+        """The affix flags with which the dictionary of that language reads the word as a plural: a stem it lists plus
+        «s» or «es», nothing taken off the stem. Empty when it reads no such form or the dictionary is absent."""
+
+        self._load()
+        candidate = word.strip().casefold()
+        if not candidate:
+            return frozenset()
+        flags: set[str] = set()
+        for code, dictionary in zip(self._languages, self._dictionaries):
+            if code != language:
+                continue
+            try:
+                forms = list(dictionary.lookuper.good_forms(candidate))
+            except Exception:  # noqa: BLE001 - an engine without the analysis reads no plural
+                continue
+            for form in forms:
+                suffix = getattr(form, "suffix", None)
+                if (
+                    suffix is None
+                    or getattr(form, "prefix", None) is not None
+                    or getattr(form, "suffix2", None) is not None
+                    or getattr(suffix, "strip", None) != ""
+                    or getattr(suffix, "add", None) not in {"s", "es"}
+                    or f"{getattr(form, 'stem', '')}{suffix.add}" != candidate
+                ):
+                    continue
+                flags.add(str(getattr(suffix, "flag", "")))
+        return frozenset(flags)
 
     def known(self, word: str) -> bool:
         """True when any dictionary or the product's own list knows the word."""
@@ -275,6 +308,13 @@ def known_spanish(word: str) -> bool:
     """True when the Spanish dictionary knows the word (any casing)."""
 
     return _LEXICON.known_in("es_AR", word)
+
+
+def spanish_plural_flags(word: str) -> frozenset[str]:
+    """How the Spanish dictionary reads the word as a plural (``_Lexicon.plural_flags_in``): two words share a flag
+    when the same plural rule of the dictionary inflects both («ejercicio·s», «regular·es»). Empty without lexicon."""
+
+    return _LEXICON.plural_flags_in("es_AR", word)
 
 
 def unknown_words(text: str, known_names: Iterable[str] = ()) -> tuple[str, ...]:

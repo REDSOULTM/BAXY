@@ -39,6 +39,16 @@ public sealed class InMemoryInvocationJournal : IInvocationJournal, IDisposable
         }
     }
 
+    /// <summary>The in-memory journal forgets nothing while it lives.</summary>
+    public ValueTask<bool> IsRetiredAsync(
+        string invocationId,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(invocationId);
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(false);
+    }
+
     public async ValueTask RecordStartedAsync(
         OperationRequest request,
         string requestFingerprint,

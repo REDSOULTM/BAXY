@@ -20,6 +20,14 @@ public static class OperationVisibleFacts
     // observation is projected (ObservedProjectionSteps) and the message says so
     // in ObservedLimitKey, which the trace counts.
     private const int MaximumMessageChars = 8_192;
+
+    // Encargo WA-LEER (war1-war3, wac1-wac3 imp-wa-leer: the mind got the first 20 of a chat's lines, the top of the
+    // window, and the newest bubbles at its bottom never reached «lo último que me escribió»): the lines a chat drawn
+    // without an accessible tree is read from (observed.screen.chatLines, ComputerUseMission.NoteTheChatLinesAsync)
+    // travel whole, as many as a look keeps with their places, within the budget of the App's operation message.
+    public const int ChatLines = 200;
+    private const string ChatLinesKey = "chatLines";
+    private const int MaximumChatReadingChars = 16_384;
     public const string ObservedLimitKey = "observedLimit";
     public const string ObservedProjected = "projected";
     public const string ObservedOmitted = "omitted";
@@ -36,7 +44,7 @@ public static class OperationVisibleFacts
     private static readonly HashSet<string> ObservedIdentityKeys = new(StringComparer.Ordinal)
     {
         "title", "name", "label", "reviewLabel", "displayName", "subject", "from", "sender",
-        "query", "url", "host", "site", "folder", "relativePath", "path", "fileName",
+        "query", "url", "host", "site", "folder", "askedFolder", "relativePath", "path", "fileName",
         "dueUtc", "due", "utc", "date", "time", "localTime", "weekday", "when", "at",
         "start", "startUtc", "end", "endUtc", "receivedUtc", "createdUtc",
         "state", "status", "mode", "kind", "operation", "authority", "unit",
@@ -58,6 +66,13 @@ public static class OperationVisibleFacts
         // dropped whole and the final could say nothing of what came out.
         bool consoleOutput = operation == "shell.command.run";
         int messageLimit = processInventory || ocrObservation || consoleOutput ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
+        if (outcome.Result is { ValueKind: JsonValueKind.Object } read
+            && read.TryGetProperty("screen", out JsonElement screen) && screen.ValueKind == JsonValueKind.Object
+            && screen.TryGetProperty(ChatLinesKey, out JsonElement chatLines) && chatLines.ValueKind == JsonValueKind.Array)
+        {
+            messageLimit = MaximumChatReadingChars;
+        }
+
         var payload = new JsonObject
         {
             ["kind"] = "operation",
@@ -184,6 +199,50 @@ public static class OperationVisibleFacts
         }
     }
 
+    /// <summary>
+    /// Where a provider says its time went (<c>observed.elapsedMs</c>, whole milliseconds by part), as a trace
+    /// detail such as <c>elapsed.place.120.forecast.640</c>, or null when the observation carries none. Ronda 22:
+    /// the weather's 5.3 s were one number; geocoding and forecast are told apart in the trace.
+    /// </summary>
+    public static string? ObservedElapsed(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message) || !message.TrimStart().StartsWith('{'))
+        {
+            return null;
+        }
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(message);
+            if (document.RootElement.ValueKind != JsonValueKind.Object
+                || !document.RootElement.TryGetProperty("observed", out JsonElement observed)
+                || observed.ValueKind != JsonValueKind.Object
+                || !observed.TryGetProperty("elapsedMs", out JsonElement elapsed)
+                || elapsed.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            var parts = new List<string>();
+            foreach (JsonProperty part in elapsed.EnumerateObject())
+            {
+                if (part.Value.ValueKind == JsonValueKind.Number
+                    && part.Value.TryGetInt64(out long milliseconds)
+                    && part.Name.Length is > 0 and <= 32
+                    && part.Name.All(char.IsAsciiLetterOrDigit))
+                {
+                    parts.Add(part.Name.ToLowerInvariant() + "." + milliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+            }
+
+            return parts.Count == 0 ? null : "elapsed." + string.Join('.', parts);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
     private static JsonObject OcrSizeLimit() => new()
     {
         ["available"] = false,
@@ -297,7 +356,7 @@ public static class OperationVisibleFacts
 
     private static JsonNode? Sanitize(
         JsonElement element, int depth = 0, bool processInventory = false, bool ocrObservation = false,
-        bool captureObservation = false)
+        bool captureObservation = false, string? parentKey = null)
     {
         if (!ocrObservation && depth > 4)
         {
@@ -321,7 +380,7 @@ public static class OperationVisibleFacts
                         continue;
                     }
 
-                    JsonNode? sanitized = Sanitize(property.Value, depth + 1, processInventory, ocrObservation, captureObservation);
+                    JsonNode? sanitized = Sanitize(property.Value, depth + 1, processInventory, ocrObservation, captureObservation, key);
                     if (sanitized is not null)
                     {
                         clean[key] = sanitized;
@@ -331,7 +390,8 @@ public static class OperationVisibleFacts
                 return clean;
             case JsonValueKind.Array:
                 var cleanArray = new JsonArray();
-                foreach (JsonElement item in element.EnumerateArray().Take(ocrObservation ? int.MaxValue : processInventory ? 50 : 20))
+                foreach (JsonElement item in element.EnumerateArray().Take(
+                    ocrObservation ? int.MaxValue : processInventory ? 50 : parentKey == ChatLinesKey ? ChatLines : 20))
                 {
                     cleanArray.Add(Sanitize(item, depth + 1, processInventory, ocrObservation, captureObservation));
                 }

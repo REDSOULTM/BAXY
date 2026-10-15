@@ -137,7 +137,6 @@ internal static class UserMessagePolicy
     [
         "planner",
         "router",
-        "tool",
         "catálogo",
         "catalogo",
         "schema",
@@ -308,7 +307,10 @@ internal static class UserMessagePolicy
         // («¿Qué significa H2O?») is observed data, not the model restating the
         // definition ask; the lexical checks read the masked vocabulary.
         string judgedText = codeAsked ? vocabularyText : modelText;
-        if (LooksLikeMachineSlotAsk(FoldForPolicy(vocabularyText))
+        // Ronda 24 (pasada r23 t-drag-1): a confirmation names the place its pending act goes to («¿confirmas que
+        // arrastre lista.txt a la carpeta archivo?»); it never asks for a folder, so the folder asks are judged only in
+        // the drafts that ask for something.
+        if (LooksLikeMachineSlotAsk(FoldForPolicy(vocabularyText), confirming: draft.Intent == "confirmation")
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(vocabularyText))
             || HasRepeatedWord(judgedText, ObservedRepeatedWords(draft.Source))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
@@ -494,6 +496,13 @@ internal static class UserMessagePolicy
             {
                 return "reversed_result";
             }
+            // Estabilización M2 (live recheck 2026-10-12: «nah» to a forget's confirmation was published «He borrado
+            // de tu memoria tu bebida favorita.» with nothing erased): an act cancelled at its confirmation is never
+            // told as made; its report says it was not done or that it was cancelled.
+            if (draft.Intent == "status" && IsCancelledAct(draft.Source) && !TellsTheActUndone(modelText))
+            {
+                return "reversed_result";
+            }
             // M69 (guion v3h t47): the asked state that already held is published as a result; its final still
             // tells the unchanged state and never an effect («Listo, activé el micrófono»).
             if ((draft.Intent == "error" || IsAskedStateAlreadyHeld(draft.Source))
@@ -551,8 +560,11 @@ internal static class UserMessagePolicy
         string? priorUserText = null,
         bool clarification = false,
         bool hasRequiredInput = false,
-        IReadOnlyList<string>? missingFields = null) =>
-        ConversationReplyRejectionReason(userText, reply, mindLanguage, priorUserText, clarification, hasRequiredInput, missingFields) is null;
+        IReadOnlyList<string>? missingFields = null,
+        bool verifiedSuccess = false) =>
+        ConversationReplyRejectionReason(
+            userText, reply, mindLanguage, priorUserText, clarification, hasRequiredInput, missingFields,
+            verifiedSuccess: verifiedSuccess) is null;
 
     /// <summary>
     /// Por qué no se puede publicar una respuesta de la mente, o null si sí.
@@ -568,7 +580,8 @@ internal static class UserMessagePolicy
         bool clarification = false,
         bool hasRequiredInput = false,
         IReadOnlyList<string>? missingFields = null,
-        bool unsupportedByMind = false)
+        bool unsupportedByMind = false,
+        bool verifiedSuccess = false)
     {
         // M50 (v3a-final F-w07-t1, F-w12-t1/t2: the mind's code was refused as internal_code): when the person asked
         // for code, the code of the reply is the content asked for and only the prose around it is judged. A reply
@@ -601,7 +614,10 @@ internal static class UserMessagePolicy
                 !IsGreetingRequest(userText) && RestatesTheRequest(userText, reply) && !asksWithTheirWords),
             ("clock_pattern", ContainsClockPattern(reply)),
             ("internal_code", ContainsInternalCode(reply, string.Concat(userText, " ", priorUserText))),
-            ("unverified_success", ClaimsUnverifiedSuccess(reply)),
+            // Estabilización, encargo C (banco c2 lug-1: «abrí la página de Rocket League en Steam» reads as out of
+            // this world by «rocket», and the verified mission's «Listo, estoy en …» died here, leaving the turn
+            // without an answer): a report of a verified result claims a success that is verified.
+            ("unverified_success", !verifiedSuccess && ClaimsUnverifiedSuccess(reply)),
             ("invented_token", ContainsMeasuredInventedToken(reply)),
             ("stuttered_token", ContainsStutteredToken(reply)),
             ("unsolicited_catalog",
@@ -683,7 +699,7 @@ internal static class UserMessagePolicy
             ("restates_definition_ask", LooksLikeRestatingDefinitionAsk(said)),
             ("definition_as_action", RestatesDefinitionAsAction(userText, reply)),
             ("broken_modal_gerund", HasBrokenModalGerund(reply)),
-            ("invents_out_of_world_object", InventsOutOfWorldObject(userText, reply)),
+            ("invents_out_of_world_object", InventsOutOfWorldObject(userText, reply, verifiedSuccess)),
             ("invented_utc_offset", ContainsInventedUtcOffset(userText, reply)),
             // Si el pedido saluda («hola, ¿qué puedes hacer?»), devolver el
             // saludo delante de la respuesta no es el defecto; quedarse sólo
@@ -1252,7 +1268,14 @@ internal static class UserMessagePolicy
         && Regex.IsMatch(folded, @"\b(?:texto|text|mensaje|message|palabras|words)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
-    private static bool LooksLikeMachineSlotAsk(string folded) =>
+    private static bool AsksForAFolder(string folded) =>
+        folded.Contains("carpeta que", StringComparison.Ordinal)
+        || folded.Contains("what folder", StringComparison.Ordinal)
+        || folded.Contains("which folder", StringComparison.Ordinal)
+        || folded.Contains("folder you want", StringComparison.Ordinal)
+        || folded.Contains("la carpeta", StringComparison.Ordinal);
+
+    private static bool LooksLikeMachineSlotAsk(string folded, bool confirming = false) =>
         (folded.Contains('?', StringComparison.Ordinal)
             || folded.Contains('¿', StringComparison.Ordinal)
             || Regex.IsMatch(folded,
@@ -1268,11 +1291,7 @@ internal static class UserMessagePolicy
         || folded.Contains("established rules", StringComparison.Ordinal)
         || folded.Contains("app id", StringComparison.Ordinal)
         || folded.Contains("application id", StringComparison.Ordinal)
-        || folded.Contains("carpeta que", StringComparison.Ordinal)
-        || folded.Contains("what folder", StringComparison.Ordinal)
-        || folded.Contains("which folder", StringComparison.Ordinal)
-        || folded.Contains("folder you want", StringComparison.Ordinal)
-        || folded.Contains("la carpeta", StringComparison.Ordinal)
+        || (!confirming && AsksForAFolder(folded))
         || folded.Contains("id de confirmacion", StringComparison.Ordinal)
         || folded.Contains("confirmation id", StringComparison.Ordinal)
         || folded.Contains("precio esperado", StringComparison.Ordinal)
@@ -2201,6 +2220,10 @@ internal static class UserMessagePolicy
     }
 
     /// <summary>A result the PC verified done: one operation verified and succeeded, or a completed mission.</summary>
+    /// <summary>A status draft that reports a result the Core verified (estabilización, encargo C).</summary>
+    internal static bool ReportsVerifiedEffect(UserMessageDraft draft) =>
+        draft.Intent == "status" && IsVerifiedEffect(draft.Source);
+
     private static bool IsVerifiedEffect(string source)
     {
         if (!TryReadJson(source, out JsonElement root))
@@ -3220,7 +3243,7 @@ internal static class UserMessagePolicy
         return false;
     }
 
-    private static bool InventsOutOfWorldObject(string userText, string reply)
+    private static bool InventsOutOfWorldObject(string userText, string reply, bool verifiedSuccess = false)
     {
         if (!LooksLikeOutOfWorldRequest(FoldForPolicy(userText)))
         {
@@ -3234,7 +3257,7 @@ internal static class UserMessagePolicy
                     "esta reservado", "está reservado", "is reserved", "reservado en",
                     "cuarto de noche", "booked"])
             || reply.Contains("teá", StringComparison.Ordinal)
-            || ClaimsUnverifiedSuccess(reply)
+            || (!verifiedSuccess && ClaimsUnverifiedSuccess(reply))
             || IsGreetingOnly(reply);
     }
 
@@ -3873,6 +3896,52 @@ internal static class UserMessagePolicy
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
+    // Pasada r15b2 (v3-22 t3): a look at a window that runs as administrator read only its frame and no text; the
+    // mind tells that limit from its floor data (llm._elevated_read_floor), which is no reversal of the read.
+    private static bool ElevatedWindowUnread(string source)
+    {
+        if (!source.Contains("\"elevated\":true", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(source);
+            JsonElement root = document.RootElement;
+            if (!root.TryGetProperty("operation", out JsonElement operation)
+                || operation.GetString() != "input.visible.controls"
+                || !root.TryGetProperty("observed", out JsonElement observed)
+                || observed.ValueKind != JsonValueKind.Object
+                || !observed.TryGetProperty("window", out JsonElement window)
+                || window.ValueKind != JsonValueKind.Object
+                || !window.TryGetProperty("elevated", out JsonElement elevated)
+                || elevated.ValueKind != JsonValueKind.True)
+            {
+                return false;
+            }
+
+            if (!observed.TryGetProperty("text", out JsonElement text) || text.ValueKind != JsonValueKind.Object)
+            {
+                return true;
+            }
+
+            foreach (JsonProperty zone in text.EnumerateObject())
+            {
+                if (zone.Value.ValueKind == JsonValueKind.Array && zone.Value.GetArrayLength() > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
     private static bool StartsWithRequestImperative(string result)
     {
         string folded = FoldForPolicy(result);
@@ -3884,7 +3953,7 @@ internal static class UserMessagePolicy
 
     private static bool ReversesSuccessfulResult(string source, string result)
     {
-        if (LooksLikeFailure(source))
+        if (LooksLikeFailure(source) || ElevatedWindowUnread(source))
         {
             return false;
         }
@@ -3895,6 +3964,7 @@ internal static class UserMessagePolicy
         result = WithoutWebSearchObservedVocabulary(source, result);
         result = WithoutUnlistedNoteFinding(source, result);
         result = WithoutHeldStepUnchanged(source, result);
+        result = WithoutUnansweredQuestion(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -4235,6 +4305,14 @@ internal static class UserMessagePolicy
             return false;
         }
 
+        // Estabilización M2 (identity live check 2026-10-11 «Activa el modo bypass» → «No pude contarte cómo salió lo
+        // que pediste.»): the typed failure's own sentence (data failures, the floor both sides say) is the failure
+        // told, whatever its words; «El modo bypass no lo enciendo desde el chat…» carries no «no pude».
+        if (IsTheTypedFailureSaid(source, result))
+        {
+            return false;
+        }
+
         // out_of_catalog is a refuse, not a failed attempt. Honest "I don't
         // do that" / "eso no lo hago" must publish; only a claimed success
         // (Listo / ready / done) reverses the polarity.
@@ -4288,6 +4366,34 @@ internal static class UserMessagePolicy
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
+    // v3-43 r7: a mission that reached its place carrying a question («…; y responder: dime qué plan está activo») the
+    // window did not answer (the page still «Cargando 0»). «No pude ver qué plan de energía está activo porque la
+    // pantalla estaba cargando» tells the question unread, not the mission reversed (data computerUse.unanswered
+    // readFailure, the mind's own reading); refused as reversed_result, the turn fell to «Lo hice en la aplicación
+    // «Panel de control»», a done with no answer. A reply that denies arriving (arrivalDenied) still reverses it.
+    private static string WithoutUnansweredQuestion(string source, string result)
+    {
+        if (!TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("operation", out JsonElement operation) || operation.ValueKind != JsonValueKind.String
+            || operation.GetString() != "mission.computer.use"
+            || !root.TryGetProperty("observed", out JsonElement observed) || observed.ValueKind != JsonValueKind.Object
+            || !observed.TryGetProperty("goal", out JsonElement goal) || goal.ValueKind != JsonValueKind.String
+            || !goal.GetString()!.Contains(OperationFloor.QuestionMark, StringComparison.Ordinal))
+        {
+            return result;
+        }
+
+        System.Text.Json.Nodes.JsonObject rules = OperationFloor.UnansweredRules;
+        string folded = FoldForPolicy(result);
+        if (Regex.IsMatch(folded, (string)rules["arrivalDenied"]!, RegexOptions.CultureInvariant))
+        {
+            return result;
+        }
+
+        return Regex.Replace(
+            folded, @"[^.;\n]*(?:" + (string)rules["readFailure"]! + @")[^.;\n]*", " ", RegexOptions.CultureInvariant);
+    }
+
     private static bool MissionStepHeldTheAskedState(string source)
     {
         if (!TryReadJson(source, out JsonElement root)
@@ -4311,6 +4417,37 @@ internal static class UserMessagePolicy
     // failure told — and this twin refused it as reversed_result in every round, so the turn had no final. The markers
     // of the mind's list that LooksLikeFailure lacked; judged only against a failed result, where saying the thing was
     // not found, or that time ran out, is the failure itself.
+    private static bool IsTheTypedFailureSaid(string source, string result)
+    {
+        System.Text.Json.Nodes.JsonObject? situation;
+        try
+        {
+            situation = System.Text.Json.Nodes.JsonNode.Parse(source) as System.Text.Json.Nodes.JsonObject;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+
+        string said = result.Trim();
+        return situation is not null
+            && (said == OperationFloor.FailureSentence(situation, english: false)
+                || said == OperationFloor.FailureSentence(situation, english: true));
+    }
+
+    private static bool IsCancelledAct(string source) =>
+        TryReadJson(source, out JsonElement root)
+        && root.ValueKind == JsonValueKind.Object
+        && root.TryGetProperty("cause", out JsonElement cause)
+        && cause.ValueKind == JsonValueKind.String
+        && cause.GetString() is "memory_cancelled" or "remaining_steps_cancelled";
+
+    private static bool TellsTheActUndone(string result) =>
+        Regex.IsMatch(
+            FoldForPolicy(result),
+            @"\bcancel|\b(?:no|nada|ni|not|nothing|didn'?t|did\s+not|never|nunca)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
     private static bool TellsFailureAsTheMindReadsIt(string result) =>
         Regex.IsMatch(
             FoldForPolicy(result),

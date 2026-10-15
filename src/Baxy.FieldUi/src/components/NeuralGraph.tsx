@@ -338,13 +338,15 @@ export function NeuralGraph({ state }: Props) {
     const schedule = () => {
       const s = stateRef.current;
       const active = s === 'listening' || s === 'thinking' || s === 'speaking';
-      const interval = document.hidden ? 1000 : 1000 / (active ? 30 : 4);
+      const still = document.hidden || document.documentElement.dataset.access === 'accessible';
+      const interval = still ? 1000 : 1000 / (active ? 30 : 4);
       timer = window.setTimeout(() => tick(performance.now()), interval);
     };
     const tick = (now: number) => {
       const s = stateRef.current;
       const active = s === 'listening' || s === 'thinking' || s === 'speaking';
-      if (document.hidden) {
+      // Hidden, or the accessible presentation (no motion): the graph stays still.
+      if (document.hidden || document.documentElement.dataset.access === 'accessible') {
         prev = now;
         schedule();
         return;

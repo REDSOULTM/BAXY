@@ -36,9 +36,12 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
-from baxy_mind.__main__ import normalize_objective_arguments
+from baxy_mind import compose_payload
+from baxy_mind import visible_defect
+from baxy_mind import unsupported_answers
+from baxy_mind import reply_language_checks
+from baxy_mind import weather_facts
+from baxy_mind.argument_grounding import normalize_objective_arguments
 from baxy_mind.effect_intent import operation_domain_is_grounded
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.network import asks_calendar_part
@@ -50,6 +53,9 @@ from baxy_mind.semantic.patterns import (
 )
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.web import news_lookup_query, public_query_body
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import conversation as semantic_conversation
 
 OPERATIONS = (
     "audio.mute", "audio.volume", "audio.volume.adjust", "audio.status", "media.control", "media.play.query",
@@ -139,7 +145,7 @@ class _NoModel:
 )
 def test_the_tanda_turns_are_read_without_the_model(text, operations):
     tools = [_tool(name) for name in OPERATIONS]
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "tanda-04", "text": text, "history": []},
         llm=_NoModel(),
         planner_catalog=PlannerCatalog(tools),
@@ -173,7 +179,7 @@ def test_the_tanda_turns_are_read_without_the_model(text, operations):
 def test_the_sound_switched_is_the_mute(text, state):
     assert _effects(text) == ("audio.mute",)
     assert operation_domain_is_grounded(text, "audio.mute", ())
-    assert sidecar._ground_explicit_arguments("audio.mute", text, SCHEMAS["audio.mute"]) == {"state": state}
+    assert argument_grounding._ground_explicit_arguments("audio.mute", text, SCHEMAS["audio.mute"]) == {"state": state}
 
 
 @pytest.mark.parametrize(
@@ -219,7 +225,7 @@ def test_the_desktop_folder_opened_is_still_not_the_desktop_view():
 def test_the_start_menu_is_the_windows_key(text):
     assert _effects(text) == ("input.key.press",)
     assert operation_domain_is_grounded(text, "input.key.press", ())
-    assert sidecar._ground_explicit_arguments("input.key.press", text, SCHEMAS["input.key.press"]) == {"key": "win"}
+    assert argument_grounding._ground_explicit_arguments("input.key.press", text, SCHEMAS["input.key.press"]) == {"key": "win"}
 
 
 @pytest.mark.parametrize(
@@ -233,7 +239,7 @@ def test_the_start_menu_is_the_windows_key(text):
     ],
 )
 def test_only_a_listing_the_start_menu_cannot_show_stays_a_limit(text, closed):
-    assert sidecar._closed_unsupported_request(text) is closed
+    assert semantic_conversation._closed_unsupported_request(text) is closed
 
 
 @pytest.mark.parametrize(
@@ -243,7 +249,7 @@ def test_only_a_listing_the_start_menu_cannot_show_stays_a_limit(text, closed):
 def test_other_asks_do_not_press_the_windows_key(text):
     effects = _effects(text)
     if effects == ("input.key.press",):
-        assert sidecar._ground_explicit_arguments("input.key.press", text, SCHEMAS["input.key.press"]) != {"key": "win"}
+        assert argument_grounding._ground_explicit_arguments("input.key.press", text, SCHEMAS["input.key.press"]) != {"key": "win"}
 
 
 # ---------------------------------------------------------------- 3. the person's own music collection
@@ -303,7 +309,7 @@ def test_an_add_if_absent_reads_the_list_first(text, entry, list_name, clause):
     assert deferred_clarification_split(text, OPERATIONS) is None
     effects = resolve_explicit_effects(text, OPERATIONS)
     assert effects is not None and effects.operations == ("task.search", "task.create")
-    assert sidecar._ground_explicit_arguments("task.search", text, SCHEMAS["task.search"]) == {"query": entry}
+    assert argument_grounding._ground_explicit_arguments("task.search", text, SCHEMAS["task.search"]) == {"query": entry}
 
 
 @pytest.mark.parametrize("text", ["add flour to my shopping list", "añade harina a mi lista de la compra"])
@@ -355,11 +361,11 @@ def test_the_words_asking_to_be_told_are_not_looked_up(text, body):
 def test_what_happens_somewhere_is_its_news(text, query, nearby):
     assert news_lookup_query(text) == query
     expected = {"query": query, "nearby": True} if nearby else {"query": query}
-    assert sidecar._ground_explicit_arguments("web.search", text, SCHEMAS["web.search"]) == expected
+    assert argument_grounding._ground_explicit_arguments("web.search", text, SCHEMAS["web.search"]) == expected
 
 
 def test_a_plain_public_question_keeps_its_words_without_the_ask():
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "web.search", "dime el precio del cobre hoy", SCHEMAS["web.search"],
     ) == {"query": "el precio del cobre hoy"}
 
@@ -392,7 +398,7 @@ def _weather_payload() -> dict:
     ],
 )
 def test_the_day_asked_may_be_named_but_never_measured(ask, reply, defect):
-    assert llm._weather_fact_defect(reply, _weather_payload(), ask) == defect
+    assert weather_facts._weather_fact_defect(reply, _weather_payload(), ask) == defect
 
 
 # ---------------------------------------------------------------- 7. the date asked of the clock
@@ -455,12 +461,12 @@ _CLOCK = {
     ],
 )
 def test_the_month_asked_is_answered_with_the_date_not_the_time(text, time_only, date, carried):
-    payload = llm._compose_situation_payload(_CLOCK, "es", text)
+    payload = compose_payload._compose_situation_payload(_CLOCK, "es", text)
     assert {key: payload[key] for key in ("date", "month") if key in payload} == carried
     assert "clock" not in payload
     facts = {"situation": json.dumps(_CLOCK)}
-    assert llm.compose_visible_defect(time_only, "status", text, facts) != ""
-    assert llm.compose_visible_defect(date, "status", text, facts) == ""
+    assert visible_defect.compose_visible_defect(time_only, "status", text, facts) != ""
+    assert visible_defect.compose_visible_defect(date, "status", text, facts) == ""
 
 
 # ---------------------------------------------------------------- 8. the Gallery
@@ -488,7 +494,7 @@ def test_the_gallery_is_the_pictures_folder(text):
 def test_the_arguments_read_the_order_the_decision_read(text, operation, arguments):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == (operation,)
-    assert sidecar._ground_explicit_arguments(operation, text, SCHEMAS[operation]) == arguments
+    assert argument_grounding._ground_explicit_arguments(operation, text, SCHEMAS[operation]) == arguments
 
 
 # ---------------------------------------------------------------- 10. a word broken into capitals
@@ -505,6 +511,6 @@ def test_the_arguments_read_the_order_the_decision_read(text, operation, argumen
     ],
 )
 def test_a_word_broken_into_capitals_is_never_published(reply, ask, broken):
-    assert llm.visible_reply_breaks_word_case(reply, ask) is broken
+    assert reply_language_checks.visible_reply_breaks_word_case(reply, ask) is broken
     if broken:
-        assert llm._unsupported_answer_contract_failure(reply, ask) == "unsupported_broken_case"
+        assert unsupported_answers._unsupported_answer_contract_failure(reply, ask) == "unsupported_broken_case"

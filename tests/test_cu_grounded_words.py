@@ -9,7 +9,8 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import computer_use
-from baxy_mind.llm import compose_visible_defect
+from baxy_mind import cu_reply_checks
+from baxy_mind.visible_defect import compose_visible_defect
 from baxy_mind.semantic.normalize import _accent_folded_with_punctuation as folded
 
 BLUETOOTH = {
@@ -66,7 +67,7 @@ DOWNLOADS = {
     ],
 )
 def test_a_word_from_neither_the_facts_nor_baxys_vocabulary_is_named(seen, said, draft, word) -> None:
-    assert computer_use.ungrounded_word(folded(draft), seen, said) == word
+    assert cu_reply_checks.ungrounded_word(folded(draft), seen, said) == word
 
 
 @pytest.mark.parametrize(
@@ -85,7 +86,7 @@ def test_a_word_from_neither_the_facts_nor_baxys_vocabulary_is_named(seen, said,
     ],
 )
 def test_a_final_built_from_the_facts_and_baxys_words_is_grounded(seen, said, draft) -> None:
-    assert computer_use.ungrounded_word(folded(draft), seen, said) is None
+    assert cu_reply_checks.ungrounded_word(folded(draft), seen, said) is None
 
 
 def _situation(seen: dict) -> dict:
@@ -152,7 +153,7 @@ STEAM = {
     ],
 )
 def test_baxys_own_acts_states_and_kinds_are_grounded(seen, said, draft) -> None:
-    assert computer_use.ungrounded_word(folded(draft), seen, said) is None
+    assert cu_reply_checks.ungrounded_word(folded(draft), seen, said) is None
 
 
 @pytest.mark.parametrize(
@@ -166,4 +167,4 @@ def test_baxys_own_acts_states_and_kinds_are_grounded(seen, said, draft) -> None
     ],
 )
 def test_state_words_and_kinds_stay_in_their_lane(seen, said, draft, word) -> None:
-    assert computer_use.ungrounded_word(folded(draft), seen, said) == word
+    assert cu_reply_checks.ungrounded_word(folded(draft), seen, said) == word

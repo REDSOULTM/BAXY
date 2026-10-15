@@ -23,13 +23,14 @@ from datetime import date, datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind.llm import _search_report_shows_the_search
+from baxy_mind.search_report import _search_report_shows_the_search
 from baxy_mind.planner import validate_argument_grounding
 from baxy_mind.semantic import patterns, temporal
 from baxy_mind.semantic.arguments import partial_explicit_arguments
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.messaging import pronoun_recipient
+from baxy_mind import plan_shape
+from baxy_mind import argument_grounding
 
 
 def _schema(properties: dict, required: list[str]) -> dict:
@@ -113,8 +114,8 @@ def test_a_planned_move_takes_the_one_clock_said_and_what_was_verified(
     state = _set(kind, title, moment, "ponlo para mañana")
     moved = state.retimed_notification(said, now=NOW, zone=CHILE, moving=True)
     assert moved is not None
-    assert sidecar._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) == cancel
-    assert sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE) == {
+    assert plan_shape._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) == cancel
+    assert plan_shape._retimed_step_arguments("notification.schedule", moved, SCHEDULE) == {
         "dueUtc": due, "kind": kind, "title": title,
     }
 
@@ -169,12 +170,12 @@ def test_a_tasks_day_is_written_as_the_store_reads_it() -> None:
 
 def test_a_task_day_nobody_can_tell_is_left_out_and_one_said_is_kept() -> None:
     now = datetime(2027, 3, 3, 18, 0, tzinfo=timezone.utc)
-    kept = sidecar._normalize_grounded_operation_arguments(
+    kept = argument_grounding._normalize_grounded_operation_arguments(
         "task.create", {"title": "Hacer los ejercicios", "due": "el viernes"}, "anota hacer los ejercicios para el viernes",
         now_utc=now,
     )
     assert kept == {"title": "Hacer los ejercicios", "due": "2027-03-05"}
-    dropped = sidecar._normalize_grounded_operation_arguments(
+    dropped = argument_grounding._normalize_grounded_operation_arguments(
         "task.create", {"title": "Comprar pan", "due": "pronto"}, "anota comprar pan pronto", now_utc=now,
     )
     assert dropped == {"title": "Comprar pan"}

@@ -7,7 +7,9 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_situation
+from baxy_mind import payload_fact_checks
 
 AVAILABLE = frozenset({"web.search", "weather.current", "web.news.headlines", "system.time"})
 
@@ -71,18 +73,18 @@ def test_the_reply_quotes_the_headlines() -> None:
         "Los titulares de hoy: Bachelet se retira de la carrera por la ONU (BBC); "
         "Sube el dólar tras el anuncio (Emol); Lluvias en la zona central este lunes (La Tercera)."
     )
-    assert llm._news_fact_defect(quoted, PAYLOAD) == ""
-    assert llm._payload_fact_defect(quoted, PAYLOAD, "buscá noticias de hoy") == ""
+    assert payload_fact_checks._news_fact_defect(quoted, PAYLOAD) == ""
+    assert payload_fact_checks._payload_fact_defect(quoted, PAYLOAD, "buscá noticias de hoy") == ""
 
 
 def test_a_portal_listing_instead_of_headlines_is_missing_state() -> None:
     portals = "Aquí tienes algunas noticias de hoy: Últimas noticias de Chile y el mundo en Meganoticias; Emol."
-    assert llm._news_fact_defect(portals, PAYLOAD) == "missing_state"
+    assert payload_fact_checks._news_fact_defect(portals, PAYLOAD) == "missing_state"
 
 
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("news_feed_unavailable", "news_feed_unreadable", "news_feed_empty", "news_topic_without_headlines"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT
 
 
 def test_a_dotted_source_name_is_observed_data_not_an_internal_code() -> None:

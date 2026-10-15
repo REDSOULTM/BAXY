@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import visible_defect
 
 
 @pytest.mark.parametrize("descriptor,word", [
@@ -25,7 +25,7 @@ def test_narrator_descriptors_do_not_supply_literal_truncation_vocabulary(
         facts = {"seen": {"rows": [({"quantity": facts},)]}}
     original = copy.deepcopy(facts)
 
-    assert not llm._truncated_fact_word(word, facts)
+    assert not visible_defect._truncated_fact_word(word, facts)
     assert facts == original
 
 
@@ -42,7 +42,7 @@ def test_literal_values_still_supply_truncation_vocabulary(
     facts = {"seen": {"rows": [{field: [literal]}]}}
     original = copy.deepcopy(facts)
 
-    assert llm._truncated_fact_word(word, facts)
+    assert visible_defect._truncated_fact_word(word, facts)
     assert facts == original
 
 
@@ -54,7 +54,7 @@ def test_descriptors_cannot_mask_a_truncated_observed_name() -> None:
     }}
     original = copy.deepcopy(facts)
 
-    assert llm._truncated_fact_word("complete", facts)
+    assert visible_defect._truncated_fact_word("complete", facts)
     assert facts == original
 
 
@@ -62,5 +62,5 @@ def test_nested_keys_are_still_excluded_and_short_literal_names_still_count() ->
     facts = {"seen": {"observation": [{"name": "AtlasHelper", "title": "Atlas"}]}}
     original = copy.deepcopy(facts)
 
-    assert not llm._truncated_fact_word("observa Atlas", facts)
+    assert not visible_defect._truncated_fact_word("observa Atlas", facts)
     assert facts == original

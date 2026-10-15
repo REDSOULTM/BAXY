@@ -40,6 +40,8 @@ from baxy_mind.semantic.patterns import (
 )
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.temporal import spoken_clocks
+from baxy_mind import direct_arguments
+from baxy_mind.semantic import guards as semantic_guards
 
 OPERATIONS = tuple(
     json.loads(
@@ -77,7 +79,7 @@ class _AbstainingExtraction:
 
 def _arguments_step(operation: str, text: str, model: _AbstainingExtraction) -> tuple[object, str]:
     tool = {"function": {"canonical_name": operation, "name": operation.replace(".", "_"), "parameters": SPOTIFY}}
-    return sidecar._direct_arguments_result(
+    return direct_arguments._direct_arguments_result(
         {"operation": operation, "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, tool=tool, dialogue_state=DialogueState(),
     )
@@ -337,7 +339,7 @@ def test_a_notice_with_no_moment_still_asks_when(text: str, missing: tuple[str, 
 def test_a_show_put_on_a_service_for_someone_is_no_text_with_nowhere_to_go(
     text: str, service: str, title: str,
 ) -> None:
-    assert sidecar._unresolved_input_kind(text, ()) is None
+    assert semantic_guards._unresolved_input_kind(text, ()) is None
     assert _effects(text) == ("streaming.play.named",)
     assert arguments._explicit_arguments_from_evidence("streaming.play.named", text) == {
         "service": service, "title": title,
@@ -346,7 +348,7 @@ def test_a_show_put_on_a_service_for_someone_is_no_text_with_nowhere_to_go(
 
 @pytest.mark.parametrize("text", ["ponle hola", "ponle un saludo"])
 def test_text_to_put_with_nowhere_named_is_still_asked_where(text: str) -> None:
-    assert sidecar._unresolved_input_kind(text, ()) == "deictic_text"
+    assert semantic_guards._unresolved_input_kind(text, ()) == "deictic_text"
 
 
 @pytest.mark.parametrize(

@@ -5,7 +5,7 @@ with nothing named before is the active window, not the whole desktop."""
 from __future__ import annotations
 
 from baxy_mind import effect_intent
-from baxy_mind.__main__ import _verified_dependency_identity_arguments
+from baxy_mind.plan_dependencies import _verified_dependency_identity_arguments
 
 OPERATIONS = ("window.resolve", "window.focus", "capture.screenshot", "capture.active.window", "ocr.read")
 TOOL = {"function": {"canonical_name": "window.focus", "parameters": {

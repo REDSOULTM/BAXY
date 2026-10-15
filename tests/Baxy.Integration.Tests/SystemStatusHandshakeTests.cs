@@ -55,6 +55,8 @@ public sealed class SystemStatusHandshakeTests
             // winget, comandos, Steam desinstalar, zip, abrir archivo, fondo de escritorio, descarga web,
             // presentación, texto de carpeta conocida, conteo de la carpeta del Explorador, correo a dirección libre, volumen absoluto de una app)
             // → 207/206: input.scroll y mission.computer.use (motor de computer use).
+            // → 208/207: input.pointer.drag (computer use v3, punto 2) → 207/206: retirado en la estabilización L
+            // (arrastrar es un límite declarado).
             Assert.That(ProductCatalog.Descriptors, Has.Count.EqualTo(207));
             Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(206));
             Assert.That(complete.Capabilities, Has.Count.EqualTo(206));

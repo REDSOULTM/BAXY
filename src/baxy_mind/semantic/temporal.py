@@ -983,7 +983,7 @@ def clock_elsewhere(folded: str) -> ClockElsewhere | None:
 # M162 (DEV-H v4w H-w08-t3 «cuánta diferencia hay con aquí» after «En Lima son las 12:10.» → restated «¿Cuánta
 # diferencia horaria hay entre Buenos Aires y Lima?» and searched as a figure of the world): the hours apart from here,
 # asked with no place named right after BAXY told the clock of one place, are that place's. Said by its name, the
-# request is the clock read of M84, whose difference is computed on the reading (``llm._place_clock_facts``), never by
+# request is the clock read of M84, whose difference is computed on the reading (``clock_facts._place_clock_facts``), never by
 # the decider nor by a talk that has no clock of here.
 # The clock told of a place: «en Lima son las 12:10», «son las 01:09 en Tokio», «in Lima it's 12:10», «it's 4:15 pm in
 # London» (not «el pan está a 7.50 en Lima»).
@@ -1441,6 +1441,46 @@ _COUNTED_DAY = re.compile(
 )
 
 
+# The weekend said: the Saturday and Sunday coming (today among them when today is one, so on a Sunday it began
+# yesterday); the «next» one a week later; the one «after next» as counted below; the last one a week before. One
+# reader for every calendar window and for the weather's span (integración ronda 3: semantic.web.weather_asked_span
+# had its own copy, which took «next weekend» said midweek as the coming one against the agenda's gold, and alone
+# knew «the weekend after next»). Folded.
+WEEKEND = r"\b(?:fin\s*de\s+semana|finde|week\s*-?\s*end)\b"
+_NEXT_WEEKEND = (
+    r"\b(?:(?:proximo|siguiente)\s+(?:fin\s+de\s+semana|finde)|(?:fin\s+de\s+semana|finde)\s+(?:que\s+viene|proximo|"
+    r"siguiente)|next\s+week\s*-?\s*end)\b"
+)
+# Revisión adversarial de la tanda 1 («the weekend after next» → this weekend's Saturday and Sunday): a weekend placed
+# beyond the next one is a week later than it.
+WEEKEND_AFTER_NEXT = (
+    r"\b(?:week\s*-?\s*end\s+after\s+(?:the\s+)?next|(?:fin\s+de\s+semana|finde)\s+subsiguiente|"
+    r"(?:el\s+)?otro\s+(?:fin\s+de\s+semana|finde)|(?:en|dentro\s+de)\s+(?:dos|2)\s+(?:fines\s+de\s+semana|findes)|"
+    r"(?:in\s+)?(?:two|2)\s+weekends?\s+(?:from\s+now|away)|in\s+(?:two|2)\s+weekends)\b"
+)
+
+
+def weekend_saturday(folded: str, today: date) -> date | None:
+    """The Saturday of the weekend a folded text names, read from ``today``; None when it names none."""
+
+    after_next = re.search(WEEKEND_AFTER_NEXT, folded) is not None
+    if not after_next and re.search(WEEKEND, folded) is None:
+        return None
+    weekday = today.weekday()
+    saturday = today - timedelta(days=weekday - 5) if weekday >= 5 else today + timedelta(days=5 - weekday)
+    if re.search(_LAST_WEEKEND, folded):
+        return saturday - timedelta(days=7)
+    if after_next:
+        # Counted from the coming weekend midweek (Thursday: the 17th, «en dos fines de semana» too), from the one
+        # after today's on a weekend day (Saturday the 10th: the 24th).
+        return saturday + timedelta(days=7 if weekday < 5 else 14)
+    if re.search(_NEXT_WEEKEND, folded):
+        # «el fin de semana que viene» said on a Wednesday is the one after the coming one (uso real 2026-09-23,
+        # the agenda's gold: Wednesday the 23rd → the 3rd).
+        saturday += timedelta(days=7)
+    return saturday
+
+
 def _said_days(text: str, today: date) -> set[tuple[date, date]]:
     """Every run of whole days a folded request names (the end exclusive)."""
 
@@ -1472,14 +1512,8 @@ def _said_days(text: str, today: date) -> set[tuple[date, date]]:
         text,
     ):
         add(today)
-    saturday = (
-        today - timedelta(days=1) if today.weekday() == 6 else today + timedelta(days=(5 - today.weekday()) % 7)
-    )
-    if re.search(r"\bproximo\s+fin\s+de\s+semana\b|\bfin\s+de\s+semana\s+que\s+viene\b|\bnext\s+weekend\b", text):
-        add(saturday + timedelta(days=7), 2)
-    elif re.search(_LAST_WEEKEND, text):
-        add(saturday - timedelta(days=7), 2)
-    elif re.search(r"\bfin\s+de\s+semana\b|\bweekend\b", text):
+    saturday = weekend_saturday(text, today)
+    if saturday is not None:
         add(saturday, 2)
     monday = today - timedelta(days=today.weekday())
     if re.search(r"\bproxima\s+semana\b|(?<!\bfin\sde\s)\bsemana\s+que\s+viene\b|\bnext\s+weeks?\b", text):
@@ -2200,19 +2234,6 @@ def plural_alarm_cancellation(text: str) -> bool:
     """«Cancela las alarmas», «quita todas mis alarmas», «cancel my alarms»: every alarm, none said (D39)."""
 
     return _PLURAL_ALARM_CANCELLATION.match(_strip_request_envelope(_fold(str(text or ""))).strip()) is not None
-
-
-# D39: the yes to the offer («sí», «dale», «sí, cancélalas todas», «yes, all of them»); anything else is not it.
-_ALARM_OFFER_ASSENT = re.compile(
-    r"^[¿?¡!\s]*(?:si|dale|ok|okey|okay|bueno|claro|por\s+favor|yes|yeah|yep|sure|please|go\s+ahead|do\s+it|hazlo|"
-    r"hacelo|todas|all\s+of\s+them|cancelalas|cancela(?:las)?\s+todas|borralas|quitalas|cancel\s+(?:them|all)(?:\s+of\s+them)?)"
-    r"(?:[,\s]+(?:si|dale|por\s+favor|please|hazlo|hacelo|todas(?:\s+ellas)?|all(?:\s+of\s+them)?|cancelalas(?:\s+todas)?|"
-    r"cancela(?:las)?\s+todas|borralas|quitalas|cancel\s+(?:them|all)(?:\s+of\s+them)?|go\s+ahead))*[\s.!]*$"
-)
-
-
-def assents_to_alarm_offer(text: str) -> bool:
-    return _ALARM_OFFER_ASSENT.match(_fold(str(text or "")).strip()) is not None
 
 
 # M110 (DEV-F v4d F-w33-t4 «Yeah, go on» after «…kick-off 17:30. Shall I move the alarm to 17:00?» → «What time is the

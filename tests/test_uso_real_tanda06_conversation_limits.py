@@ -25,9 +25,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import llm
-from baxy_mind.__main__ import _retry_side_effect_free_turn
-from baxy_mind.llm import ConversationReplyContractError
+from baxy_mind import conversation_contract
+from baxy_mind import unsupported_answers
+from baxy_mind.turn_recovery import _retry_side_effect_free_turn
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.request import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
 from baxy_mind.semantic.patterns import (
@@ -35,6 +36,7 @@ from baxy_mind.semantic.patterns import (
     first_person_preference,
     resolve_application_catalog_app_id,
 )
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 from test_c03_tanda03_served_surface import _RefusingLlm, _turn
 from test_uso_real_tanda05_apps_media import ENGLISH_WINDOWS, SPANISH_WINDOWS, _opened
 
@@ -172,7 +174,7 @@ def test_what_he_does_or_who_he_is_still_asks_about_him(text: str, intent: str) 
 )
 @pytest.mark.parametrize("has_history", [False, True])
 def test_a_laugh_asked_for_is_free_content_whatever_came_before(text: str, has_history: bool) -> None:
-    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=has_history) == (
+    assert _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=has_history) == (
         "free_content"
     )
 
@@ -181,13 +183,13 @@ def test_a_laugh_asked_for_is_free_content_whatever_came_before(text: str, has_h
     "text", ["no te rías", "¿de qué te ríes?", "por qué te ríes tanto", "la risa es buena para la salud"],
 )
 def test_talk_about_laughing_is_not_a_laugh_asked_for(text: str) -> None:
-    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) != (
+    assert _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) != (
         "free_content"
     )
 
 
 def test_a_laugh_is_short_and_a_joke_is_not() -> None:
-    violates = llm._shaped_conversation_answer_violates_contract
+    violates = conversation_contract._shaped_conversation_answer_violates_contract
     assert not violates("¡Muajajaja!", "ríete como un villano", "free_content")
     assert violates("¡Ja!", "cuéntame un chiste", "free_content")
     # The laugh still ends without a question or a menu.
@@ -210,7 +212,7 @@ def test_a_laugh_is_short_and_a_joke_is_not() -> None:
 )
 def test_a_taste_told_with_a_telling_frame_is_a_preference(text: str, thing: str) -> None:
     assert first_person_preference(text) == thing
-    assert llm._conversation_presentation_shape(text, conversation_kind="social", has_history=True) == (
+    assert _conversation_presentation_shape(text, conversation_kind="social", has_history=True) == (
         "preference_ack"
     )
 
@@ -226,7 +228,7 @@ def test_asking_to_remember_a_taste_or_a_wish_is_not_a_preference_told(text: str
 
 @pytest.mark.parametrize("text", ["me gusta esa", "I like that one", "me gusta eso que dijiste"])
 def test_a_taste_pointing_back_at_earlier_turns_keeps_the_dialogue(text: str) -> None:
-    assert llm._conversation_presentation_shape(text, conversation_kind="social", has_history=True) != (
+    assert _conversation_presentation_shape(text, conversation_kind="social", has_history=True) != (
         "preference_ack"
     )
 
@@ -242,13 +244,13 @@ def test_a_taste_pointing_back_at_earlier_turns_keeps_the_dialogue(text: str) ->
     ],
 )
 def test_an_acknowledgement_never_claims_to_keep_the_taste(draft: str) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(
+    assert conversation_contract._shaped_conversation_answer_violates_contract(
         draft, "debieras saber que me gusta el jazz", "preference_ack",
     )
 
 
 def test_an_acknowledgement_naming_the_taste_passes() -> None:
-    assert not llm._shaped_conversation_answer_violates_contract(
+    assert not conversation_contract._shaped_conversation_answer_violates_contract(
         "Qué bien que te guste el jazz.", "debieras saber que me gusta el jazz", "preference_ack",
     )
 
@@ -293,7 +295,7 @@ def test_an_app_described_by_something_no_built_in_app_is_for_stays_unknown(text
     ],
 )
 def test_a_plain_limit_restated_or_a_missing_mode_is_a_limit(draft: str, asked: str) -> None:
-    assert llm._unsupported_answer_contract_failure(draft, asked) == ""
+    assert unsupported_answers._unsupported_answer_contract_failure(draft, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -306,7 +308,7 @@ def test_a_plain_limit_restated_or_a_missing_mode_is_a_limit(draft: str, asked: 
     ],
 )
 def test_what_follows_a_limit_is_still_only_the_limit(draft: str, asked: str) -> None:
-    assert llm._unsupported_answer_contract_failure(draft, asked) != ""
+    assert unsupported_answers._unsupported_answer_contract_failure(draft, asked) != ""
 
 
 def test_a_limit_whose_wording_failed_is_not_decided_twice() -> None:

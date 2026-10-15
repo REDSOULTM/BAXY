@@ -386,3 +386,282 @@ tema está activo» fue a la ruta de música («tema» = canción) en vez de al 
 estoy en «Científica».»). En Steam, cuando ya estaba en la biblioteca y la pantalla no puede probarlo, el final lo
 dice con honestidad: «Parece que ya estabas en «Biblioteca», pero no pude confirmarlo en la pantalla.» pytest
 completo 19 254 sin fallos; Integración de computer use y suelo 202.
+
+## v3 (2026-10-07/09): compañero que no molesta
+
+Goal `documentacion/GOAL_COMPUTER_USE_V3_2026-10-08.md`. Arnés: `scripts/cu_live/` con el medidor de molestia
+(`molestia/medidor.py`): un usuario simulado escribe en su propia ventana («BAXY usuario simulado», un EDIT Win32 del
+medidor) 2 s de cada 3 y mueve el ratón dentro de ella; ganchos de bajo nivel separan su input (marca `dwExtraInfo`
+propia), el de BAXY y el input real del dueño (sin `LLKHF_INJECTED`: la medición se pausa). La medición va desde la
+línea `runtime` de la App hasta el final + 2 s.
+
+### Línea base de molestia (producto sin arreglos, `fable/cu-universal-v3` @ d5b19f156, 17:50–20:20)
+
+`BANCO_72.txt` completo con el usuario simulado activo (42 casos en la primera corrida; los 30 restantes repetidos tras
+archivar el journal lleno del perfil de prueba, ver abajo). Agregado de `molestia/molestia_sum.py`:
+
+| Medida | Base |
+|---|---|
+| caracteres del usuario perdidos | **3 383** (todos los casos con un acto) |
+| caracteres insertados / teclas de BAXY en su ventana | 0 / 0 |
+| robos de foco | **70** en 72 casos (uno por misión, dura toda la misión: 630 s en total, 4,7–37 s por caso) |
+| movimientos de cursor / clics de BAXY | 26 / 25 |
+| actos fuera de una pausa del usuario | 232 |
+| ráfagas restauradas | **1 / 165 (0,6 %)** |
+| la ventana del usuario no vuelve al frente al final | 70 / 72 |
+| casos con el dueño activo (excluidos) | 0 |
+
+En la primera pasada ciega v3 (mismo producto, 95 casos medidos) aparecieron además **75 teclas de BAXY dentro de la
+ventana del usuario** (v3-06 Outlook 21, v3-25 Visor de eventos 48, v3-35 Notas rápidas 6, v3-08 1): con la ventana
+del usuario delante y la app de la misión detrás, el texto se envió al frente. Es el fallo de seguridad que corrige la
+entrega dirigida de la ronda 1.
+
+Hallazgo de entorno: a las 18:33 el journal del perfil de prueba llegó a 65 MB; con el tope de 64 MiB y 2 MiB de
+reserva por escritura el Core rechazó toda operación y 56 casos seguidos salieron `runtime_not_ready`. El journal se
+archivó entero y se encargó la rotación en el producto (rama `fable/cu-v3-journal`).
+
+### Primera pasada ciega v3 (producto sin arreglos, 20:05–22:25)
+
+72 órdenes ciegas `v3-*` en 21 apps nuevas y 24 casos de tipos de tarea `t-*`, escritos por sala limpia antes de
+cualquier arreglo (commit ef9521445), corridos una vez con el usuario simulado y sus estados base
+(`estado/casos.json`). Verificación independiente por captura + volcado UIA (`verificar.ps1`) + traza, nunca por la
+frase de BAXY (12 verificadores; veredictos en `%LOCALAPPDATA%\BAXY\cu-v3\evid_v3_primera_pasada_veredictos.json`):
+
+| Lote | Logrado | Límite honesto | Falso éxito | No logrado | No corrió |
+|---|---|---|---|---|---|
+| v3 (72) | **6** | 7 | **11** | 48 | 0 |
+| tipos (24) | **0** | 0 | 1 | 22 | 1 |
+
+Causas de los no logrados y falsos éxitos: lectura del pedido 27 (preguntar lo que el pedido ya daba, escribir la
+orden entera en un buscador, rutas de archivo sin resolver), no encontró el lugar 14, clic fallido 10, estado base 9
+(un caso deja un diálogo que rompe el siguiente; Outlook sin cuenta; OneNote sin sección), app elevada 5 (Administrador
+de tareas: límite real de Windows), texto en la ventana equivocada 3, sin cuenta 3, tiempo 1. Finales no honestos: 27.
+
+### Uso real: línea base de la tanda 1 (punto 9; producto sin arreglos + driver, 22:28–22:36)
+
+32 mensajes (20 conversaciones, 16 mensajes dentro de conversaciones dependientes) escritos por sala limpia, tecleados
+en el compositor real de la ventana oficial (`scripts/uso_real/tanda.ps1`, perfil aislado `uso-real-v3`). Juez
+independiente con las reglas del dueño (volumen/brillo relativo pregunta la cantidad; enviar se confirma):
+
+| Medida | t1 base |
+|---|---|
+| bien hechos, flexible (D71) | **23/32 (71,9 %)** |
+| bien hechos, estricto | 19/32 (59,4 %) |
+| repeticiones idénticas tras una corrección | 1 culpable (el top 5 inventado, repetido) |
+| mediana de los fáciles | 3,7 s (17 de 26 pasan de 3 s; peores 49,9 s lo-fi en Spotify, 20 s Los Prisioneros) |
+
+Causas por mecanismo: respuestas armadas con resúmenes de búsqueda que no traen el dato («Brasil» ganó el Mundial 2014,
+un top 5 de taquilleras sacado de una galería), lugares y fechas sin interpretar («valpo», «this weekend», «viernes por
+la tarde»), pedidos creativos desviados a una pregunta, confirmación de cerrar Configuración sin trabajo que perder, y
+finales que no cuadran con el acto («Abrí» por «Creé», mezcla de idiomas). El informe de la tanda inflaba la latencia
+del último turno de cada conversación (sumaba el saludo de la siguiente): corregido en el arnés.
+
+### Uso real: tandas de desarrollo (ventana oficial, juez independiente)
+
+| Tanda | Build | Flexible | Estricto | Repeticiones tras corrección | Mediana fáciles | Causas principales |
+|---|---|---|---|---|---|---|
+| t1 base | sin arreglos | 23/32 (71,9 %) | 19/32 | 1 | 3,7 s | inventos desde resúmenes de búsqueda, lugares/fechas sin interpretar, pedidos creativos desviados |
+| t2 | rondas 1–4 | 14/30 (46,7 %) | 12/30 | 2 | 3,0 s | Spotify cortado por la tecla 0xB9 de UIA (molestia2), misión en la app equivocada, «lado a lado» → YouTube, listas |
+| t3 | rondas 1–4 | — (no juzgada: regresiones aisladas por regr6) | — | — | — | Paint con un diálogo dejado por un caso, «busca en google» respondido de memoria, juegos propios vs recomendación |
+| t4 | rondas 1–6 | 14/30 (46,7 %); 14/27 sin los 3 turnos tapados | 9/30 | 1 | 3,4 s | navegación verificada por host (pestaña vieja), obras inventadas (Cortázar), corrección «X, no Y», «nuevo» reutilizó un documento abierto |
+
+Las tandas t2–t4 son más difíciles que t1 (más pasos de computer use dentro de la conversación) y corrieron con dos
+ventanas elevadas «siempre visible» (Administrador de tareas y Teclado en pantalla, abiertas por pruebas a las 02:25 y
+03:20) que el agente no puede cerrar sin elevación. Cada causa medida va a una ronda de arreglos (rondas 6 y 7).
+
+### Molestia tras las rondas 1–6 (banco de 72 con el usuario simulado, 06:30–07:46 del 2026-10-08)
+
+Mismo arnés y mismo banco que la línea base (`evid_banco_r6_molestia.txt`):
+
+| Medida | Base | Rondas 1–6 |
+|---|---|---|
+| caracteres del usuario perdidos | 3 383 | **284** |
+| caracteres insertados / teclas de BAXY en su ventana | 0 / 0 (75 en la pasada ciega) | **0 / 0** |
+| robos de foco | 70 (630 s) | 41 (60 s) |
+| movimientos de cursor | 26 | 13 |
+| actos fuera de pausa | 232 | 21 |
+| ráfagas restauradas | 1/165 (0,6 %) | 25/44 (57 %), 14 más restauradas tarde |
+| ventana del usuario sin el frente al final | 70 | 5 |
+
+Lo que más movió: el worker descarta la tecla 0xB9 que UIAutomationCore inyecta para ceder el primer plano y devuelve
+el frente con un hotkey propio marcado (uia-sin-frente); texto dirigido sin teclado; clic por patrón; apertura y vista
+sin traer la ventana; ráfagas cortas dentro de pausas con restauración exacta. Con el usuario simulado tecleando 2 s de
+cada 3, 7 misiones pararon por «empezaste a usar el PC» en vez de esperar la siguiente pausa (ronda 8: reintento tras la
+pausa). Éxito de ese banco con el usuario simulado activo: 54/72; el criterio de regresión se mide sin él.
+
+### v3 sin árbol (punto 3): cobertura antes y después
+
+Medido en dos tiempos sobre `fable/cu-universal-v3`, sin tocar `src/` ni hacer commits:
+
+- **2026-10-08, 05:26–05:55** (@ fc9d50bc4): las 16 órdenes. Quedaron 7 con la parte de tooltip sin medir, porque el
+  Administrador de tareas y el Teclado en pantalla, ambos `topmost`, tapaban.
+- **2026-10-09, 01:53–02:25** (@ bd0e7e286): esas 7, más S2 y S8 repetidas para ver si son estables. Ya no había
+  ninguna ventana `topmost` ajena: sólo la barra de tareas.
+
+En el segundo tiempo se usó siempre el turno del escritorio (`turno.sh tomar/soltar evid4a`), con seis turnos de 175,
+106, 111, 16, 7 y 14 s. El lote en vivo siguió corriendo entre turno y turno.
+
+Steam y Spotify ya estaban abiertos y no se cerraron. Paint lo abrí yo tres veces y lo cerré cada vez por su PID
+exacto (47428, 56180 y 9088).
+
+La evidencia en bruto está en `%LOCALAPPDATA%\BAXY\cu-v3\evid_p3p6\` (08-10) y `...\evid_4a\` (09-10). En `evid_4a`:
+
+- `tip_steam_{1,2,3}.txt`, `tip_otras_1.txt` y `tip_paint_2.txt`: la prueba en vivo del producto;
+- `tip_probe_*.txt`: la sonda que lee la pantalla;
+- `*-despues.png`: capturas de pantalla con el cursor encima del ícono;
+- `t*_at_point*.txt`: qué ventana hay en cada punto;
+- `cobertura_detalle.txt`;
+- los scripts `turno{1..6}.sh`.
+
+**Método** (el mismo del 08-10)
+
+- **Antes** = el `Name` de UIA más el OCR de la ventana.
+- **Después** = lo de antes, más dos fuentes:
+  1. el nombre de respaldo del worker (HelpText, LabeledBy o AutomationId), con `scripts/cu_live/cobertura_sin_arbol.ps1 -Detalle`;
+  2. la etapa de tooltips del producto (`WindowsVisibleTooltipLocator`), con su comprobación en vivo:
+
+     ```
+     BAXY_TOOLTIP_LIVE_CHECK=<proceso> BAXY_TOOLTIP_LIVE_CAP=40 \
+       dotnet test tests/Baxy.Providers.Windows.Tests -c Release --no-build \
+       --filter "FullyQualifiedName~TooltipHoverLiveCheck"
+     ```
+
+     El binario de pruebas es el Release de 2026-10-09 01:43, y su `DesktopUiaWorker.ps1` es idéntico al de `src`.
+- **Controles independientes:**
+  - `tip_probe.ps1`: deja el cursor sobre el ícono y lee por OCR la franja de pantalla;
+  - `hover_shot.ps1`: guarda una captura de pantalla antes y después del hover;
+  - `at_point.ps1`: confirma qué ventana está en el punto. Antes de cada sonda, el punto era de Steam, Spotify o
+    Paint, según el caso.
+- **«Sí» en el después** exige que el producto haya leído la etiqueta. Si el tooltip existe pero el producto no llega
+  a ese ícono, cuenta como «no», y se anota.
+
+**Las 16 órdenes**
+
+| # | Orden | App | Destino | Antes | Después (fuente y lecturas) |
+|---|---|---|---|---|---|
+| S1 | «abrí las notificaciones de Steam» | Steam (CEF, sin árbol) | campana de la barra superior | no | **sí**, por `tooltipOcr`: «Ver notificaciones». El producto la leyó en 2 de 3 pasadas (la 1.ª dio `change_is_no_tooltip`), y la sonda en 2 de 2. Es la candidata 2, así que entra en las 6 de un clic. |
+| S2 | «poné Steam en modo Big Picture» | Steam | ícono Big Picture | no | **sí**, por `tooltipOcr`: «Entrar en el modo Big Picture». El 09-10 la leyó el producto 3 de 3 veces y la sonda 2 de 2; el 08-10, 1 de 2. En total, 4 de 5 lecturas del producto. Es la candidata 3. |
+| S3 | «volvé atrás en Steam» | Steam | flecha ← | no | **no**: el ícono no tiene tooltip. El producto dio `change_is_no_tooltip` 3 de 3 veces (es la candidata 5) y la sonda no vio texto nuevo 2 de 2 veces. |
+| S4 | «abrí los filtros de la biblioteca de Steam» | Steam | ícono embudo | no | **no**. El tooltip existe: la sonda leyó 2 de 2 veces «Opciones de filtrado avanz[ado]». Pero el producto no lo pasa: no está entre las 40 primeras candidatas de las 64. |
+| S5 | «mostrá la biblioteca de Steam en cuadrícula» | Steam | ícono rejilla | no | **no**. El tooltip existe y dice «Tus colecciones» (sonda, 2 de 2), pero el producto tampoco llega a él. Aunque llegara, la etiqueta no dice «cuadrícula». |
+| S6 | «abrí la configuración de Novedades en Steam» | Steam | engranaje junto a «Novedades» | no | **no**: no tiene tooltip. El producto dio `change_is_no_tooltip` y después `tooltip_unread` (es la candidata 36 o 43), y la sonda no vio nada 2 de 2 veces. |
+| S7 | «abrí Amigos y chat en Steam» | Steam | botón inferior derecho | **sí**, por OCR («Amigos y chat») | sí, igual |
+| S8 | «subí al principio de la lista en Steam» | Steam | flecha ⌃ abajo a la derecha | no | **no**: no tiene tooltip, y es estable. El producto dio `tooltip_unread` 2 de 2 veces (la 1.ª pasada agotó el presupuesto antes de llegar) y la sonda no vio nada 2 de 2 veces el 09-10 y 1 de 1 el 08-10. |
+| D1 | «andá a la configuración de usuario de Discord» | Discord | «Ajustes de usuario» | **sí**, por `Name` (ARIA) | sí |
+| D2 | «silenciá el micrófono en Discord» | Discord | «Silenciar» | **sí**, por `Name` | sí |
+| P1 | «en Spotify abrí la cola» | Spotify | «Fila de reproducción» | **sí**, por `Name` | sí |
+| P2 | «conectá Spotify a otro dispositivo» | Spotify | «Conectar a un dispositivo» | **sí**, por `Name` | sí |
+| P3 | «abrí el menú de Spotify (los tres puntos)» | Spotify | botón «⋯» sin nombre, en (948,40) | no | **no**: no tiene nombre de respaldo (HelpText, LabeledBy ni AutomationId) ni tooltip. El producto dio `change_is_no_tooltip`, la sonda no vio texto y la captura con el cursor encima no muestra tooltip. |
+| W1 | «abrí un chat nuevo en WhatsApp» | WhatsApp | «Nuevo chat» | **sí**, por `Name` | sí |
+| W2 | «mostrame más filtros de chats en WhatsApp» | WhatsApp | pestaña ▾ sin nombre | no | **sí**, por AutomationId: `additional-filters` se lee «additional filters». Es inglés en una interfaz en español (medido el 08-10). |
+| A1 | «abrí el panel de capas en Paint» | Paint | botón «Capas» sin nombre, en (1474,136) | no por `Name`. El OCR sólo ve el rótulo «Capas» del grupo, fuera del botón: es parcial y no cuenta. | **no**: no tiene nombre de respaldo. El producto dio `nothing_changed` 2 de 2 veces, y la captura con el cursor encima no muestra tooltip ni realce. No se puede distinguir «sin tooltip» de «Paint no reacciona a un hover sintético». |
+
+**Agregados**
+
+| | 16 órdenes, 5 apps | Sólo Steam (la única ventana realmente sin árbol: 3 nodos y 0 accionables) |
+|---|---|---|
+| Antes | 6/16 (S7, D1, D2, P1, P2, W1) | 1/8 (S7) |
+| Después | **9/16** (+S1 y +S2 por tooltip OCR, +W2 por AutomationId) | **3/8** (S7, S1, S2) |
+| Sin medir | **0/16** | 0/8 |
+| Con tooltip legible a la que el producto no llega | 2 (S4, S5) | 2 |
+| Sin ninguna etiqueta (ni nombre de respaldo ni tooltip) | 5 (S3, S6, S8, P3, A1) | 3 |
+
+**Cobertura del nombre de respaldo el 09-10** (`cobertura_detalle.txt`)
+
+| App | Accionables | Sin `Name` | Recuperados | Antes → después |
+|---|---|---|---|---|
+| Steam | 0 (3 nodos) | 0 | 0 | 0 → 0 |
+| Spotify | 108 | 4 | 0 | 104 → 104 |
+| Paint | 102 | 1 | 0 | 101 → 101 |
+
+Es lo mismo que el 08-10: el respaldo sólo recupera el AutomationId de WhatsApp.
+
+**Fallos encontrados** (sólo descritos; `src` sin tocar)
+
+1. **La lectura del tooltip de Steam sigue inestable.** Ahora falló la campana: el 09-10 la 1.ª pasada dio
+   `change_is_no_tooltip` y las otras dos leyeron «Ver notificaciones». El 08-10 había fallado Big Picture.
+   - El 09-10 no había ninguna descarga en curso, así que la hipótesis de entonces (píxeles que cambian por una
+     descarga) no lo explica todo.
+2. **El OCR del cambio da etiquetas falsas.** En la pasada 3 se leyeron 15 etiquetas:
+   - 3 limpias: «Ver noticias de Steam», «Ver notificaciones» y «Entrar en el modo Big Picture».
+   - 2 reales pero con ruido: «Ordenar por actividad reciente Ordenar por actividad reciente •» y «Mostrar solo los
+     juegos listo • Instalados en este ordena'…».
+   - 10 falsas:
+     - 6 regiones de la lista de juegos con «Batmanw: Arkham Knight»: es el texto de la fila resaltada, no un tooltip;
+     - 4 tarjetas de noticias con «NOTICIAS iYa tenemos los resultados…».
+
+   Esas etiquetas van a `TooltipLabelCache` por firma de ventana. Una orden que nombre ese juego podría pulsar una
+   región equivocada. Es un riesgo, no lo probé.
+3. **Los tooltips interiores quedan fuera del alcance de un clic.**
+   - En la biblioteca maximizada, Steam da 64 candidatas.
+   - La prueba con tope 40 tarda 52–53 s, y una pasada agotó el presupuesto de 60 s en la candidata 27
+     (`tooltip_budget_spent`).
+   - El producto en un clic pasa 6 candidatas en 9 s (`MaxCandidates = 6`, `BudgetMs = 9000`), y no llega a ellos.
+   - Sin una etiqueta ya guardada, el embudo y la rejilla son inalcanzables, aunque su tooltip existe y es legible
+     (S4 y S5).
+4. **Cursor no devuelto en 1 de 3 pasadas de Steam:** fue la que agotó el presupuesto, que terminó con
+   `cursor devuelto False`.
+   - `HoverAsync` llama a `burst.Restore()` en su `finally`, así que la causa no está clara. Puede que la persona
+     moviera el mouse durante los 71 s.
+   - En las otras 5 pasadas el cursor volvió.
+5. **Sin etiqueta posible con estas fuentes:** 5 de 16 (S3, S6, S8, P3 y A1). Son íconos sin tooltip, o que no
+   reaccionan al hover. Sólo los cubriría la visión (`DECISION_VISION_V3.md`) o un procedimiento aprendido.
+6. **Para el criterio:**
+   - De las «≥ 3 apps sin árbol», sólo Steam lo es de verdad.
+   - Spotify, Paint y WhatsApp tienen árbol, pero con íconos sin nombre.
+   - Discord nombra todo lo que se le pidió.
+
+   Las 16 órdenes y las 5 apps cumplen la cantidad pedida. La parte estrictamente «sin árbol» son 8 órdenes de 1 app.
+
+**Veredicto para el criterio 4a:** medido de punta a punta, con 0 órdenes sin medir. La cobertura pasa de **6/16 a
+9/16** (en Steam, de 1/8 a 3/8), con dos límites:
+
+- 2 órdenes más (S4 y S5) tienen un tooltip legible al que el producto no llega dentro del tope de candidatas;
+- el OCR de tooltips da etiquetas falsas en Steam (10 de 15 en una pasada).
+
+### Rondas 26–29 (2026-10-10): banco B, latencia, tandas y pasada
+
+Todas las cifras de casos salen de jueces independientes (subagentes sin acceso al código, con journal, UIA antes y
+después y capturas); los casos cuya firma (alcanzado, pasos, final) no cambia respecto de la corrida juzgada anterior
+heredan su veredicto y se cuentan como «logrado por firma». Banco B = `BANCO_72` sin usuario simulado
+(`banco.sh <nombre> 0`), en el notebook. La latencia es por orden, mediana (p50), con el pedido enviado 30 ms después
+de quedar lista la mente («en frío»); «tras la bienvenida» envía el primer turno con la bienvenida ya dicha, como medía
+v2 (`CU_TRAS_BIENVENIDA=1`).
+
+| Corrida (código) | Logrados | Límite honesto | Falsos éxitos | p50 orden | p50 misión |
+|---|---|---|---|---|---|
+| bueno-1 (c24b, inicio del día) | 58/72 | — | — | 7,80 s | — |
+| candidata D (apertura con una mirada) | 65/72 | — | 0 | 7,58 s | — |
+| ronda 27 = `cu-v3-bueno-2` (4795aeef5) | 68/72 | 1 | 0 | 7,66 s | — |
+| ronda 28 = `cu-v3-bueno-3` (e219f492c), en frío | 66/72 | 1 | 0 | **6,14 s** | 5,14 s |
+| `cu-v3-bueno-3`, tras la bienvenida | (contaminada: quedó un Excel abierto) | | | **5,41 s** | 4,72 s |
+
+- Los tres casos que bueno-3 pierde frente a bueno-2 en esa corrida son c1, u1 e y8. Repetidos: u1 3/3 e y8 3/3
+  (logrados); c1 0/6 (inestable por el propio caso, no por la ronda).
+- La bajada de 7,66 s a 6,14 s viene del arranque: la bienvenida ya no ocupa el carril de la mente, la primera lectura
+  de UIA y los lectores del turno se pagan al arrancar y no en el primer pedido, y la apertura se confirma con una
+  mirada. **La meta de ≤ 5 s no se alcanza** ni en frío (6,14 s) ni tras la bienvenida (5,41 s).
+- p90 de la orden: 12,7 s en frío y 11,7 s tras la bienvenida.
+
+**Tandas de uso real** (t1–t4, 123 turnos, en redpc por tarea programada; juez independiente por tanda; «flexible»
+cuenta lo hecho bien aunque dicho distinto, regla D71):
+
+| Código | Flexible | Estricto |
+|---|---|---|
+| v3 de la mañana | 90/123 (73,2 %) | 72/123 |
+| candidata de la ronda 27 | 93/123 (75,6 %) | 76/123 |
+| bueno-2 | 100/123 (81,3 %) | 80/123 |
+| ronda 28 parcial + cierre de lo nombrado | 104/123 (84,6 %) | 84/123 |
+
+La mediana de latencia de los turnos fáciles va de 1,98 s (t1) a 3,12 s (t4). **La meta de 90 % no se alcanza**: los 19
+fallos que quedan son, por grupos, Word/Excel sin ventana atada (4), grupo de la cinta plegado en Paint (3), respuestas
+de conversación inventadas o con búsqueda corta (6) y sueltos (6).
+
+**Pasada completa sobre bueno-2** (72 órdenes ciegas v3 + 24 de tipos + 4 de WhatsApp/Epic, con usuario simulado;
+14:07–16:33): **v3 18/72 (25 %) con 4 falsos éxitos** (v3-31, v3-37, v3-59, v3-70); **tipos 4/24** (t-form-1,
+t-file-2, t-file-4, t-long-1); **WhatsApp/Epic 1/4** (wa-1). 67 de las 100 acaban en un «no pude» del propio motor.
+Por causa (`cu-v3/libro_vetos_pasada_r27.md`): el modelo elige mal con el control a la vista (12), el control no entra
+en lo que ve el modelo (7), el acto correcto se hizo y no se cierra (7), capacidad ausente como arrastre, scroll largo
+o clic derecho (6), la ventana no llega al frente con el usuario simulado delante (5), la misión no ata ventana cuando
+la orden no nombra aplicación (4), veto incorrecto (3), lectura del pedido (3). **La meta de 95 % no se alcanza**; es
+la misma cifra que la pasada r23c (18/72): las rondas de hoy mejoraron banco, latencia y tandas, no la amplitud.

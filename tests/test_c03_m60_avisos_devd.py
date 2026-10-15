@@ -21,7 +21,11 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import agenda_facts
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.semantic.web import weather_asks_rain_now
 
@@ -144,7 +148,7 @@ PATATAS_CREATED = {
      "No enciendo la luz de la cocina."),
 ])
 def test_a_limit_given_with_a_reason_is_told_without_it(user_text: str, drafts: list[str], published: str) -> None:
-    assert llm.compose_visible_defect(drafts[0], "error", user_text, {"situation": LIMIT}) == "limit_gives_a_reason"
+    assert visible_defect.compose_visible_defect(drafts[0], "error", user_text, {"situation": LIMIT}) == "limit_gives_a_reason"
     assert _compose(drafts, user_text, "error", LIMIT) == published
 
 
@@ -160,7 +164,7 @@ def test_a_limit_with_a_verb_form_that_does_not_exist_is_never_clipped_into_the_
     # M60 clipped the reason and published «No recomprobo billetes de tren.»; the independent review of DEV-D v3l
     # (M78, D-s004) marks it: «recomprobo» is no form of «recomprar». The broken first person is judged first, and the
     # clipped limit is not publishable either.
-    assert llm.compose_visible_defect(RECOMPRAR_DRAFTS[0], "error", RECOMPRAR, {"situation": LIMIT}) == (
+    assert visible_defect.compose_visible_defect(RECOMPRAR_DRAFTS[0], "error", RECOMPRAR, {"situation": LIMIT}) == (
         "limit_broken_person"
     )
     assert _compose(RECOMPRAR_DRAFTS, RECOMPRAR, "error", LIMIT) != "No recomprobo billetes de tren."
@@ -177,7 +181,7 @@ def test_the_second_limit_draft_clips_to_the_plain_limit() -> None:
 def test_a_reason_the_person_asked_for_is_not_clipped() -> None:
     # Independent review B1: «¿por qué no puedes…?» asks for the reason, so the draft is judged whole.
     draft = "No enciendo luces porque no controlo aparatos de la casa."
-    assert llm.compose_visible_defect(draft, "error", "¿por qué no puedes prender la luz?", {"situation": LIMIT}) != (
+    assert visible_defect.compose_visible_defect(draft, "error", "¿por qué no puedes prender la luz?", {"situation": LIMIT}) != (
         "limit_gives_a_reason"
     )
 
@@ -191,7 +195,7 @@ def test_a_reason_the_person_asked_for_is_not_clipped() -> None:
 ])
 def test_a_removed_task_is_named_by_its_title(draft: str) -> None:
     facts = {"situation": CHIPS_DELETED, "priorRequests": CHIPS_PRIOR}
-    assert llm.compose_visible_defect(draft, "status", CHIPS, facts) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", CHIPS, facts) == ""
 
 
 def test_a_removal_told_as_not_done_is_still_vetoed() -> None:
@@ -199,7 +203,7 @@ def test_a_removal_told_as_not_done_is_still_vetoed() -> None:
     facts = {"situation": CHIPS_DELETED, "priorRequests": CHIPS_PRIOR}
     # M107: the vetoed draft is not published; the verified removal is told from its facts instead of no final.
     assert _compose([draft], CHIPS, "status", CHIPS_DELETED, priorRequests=CHIPS_PRIOR) == "I removed the task «chips»."
-    assert llm.compose_visible_defect(draft, "status", CHIPS, facts) != ""
+    assert visible_defect.compose_visible_defect(draft, "status", CHIPS, facts) != ""
 
 
 @pytest.mark.parametrize(("draft", "user_text"), [
@@ -211,13 +215,13 @@ def test_a_removal_told_as_not_done_is_still_vetoed() -> None:
 def test_a_verified_task_write_told_as_not_done_is_reversed(draft: str, user_text: str) -> None:
     situation = CHIPS_DELETED if user_text == CHIPS else PATATAS_CREATED
     facts = {"situation": situation, "priorRequests": CHIPS_PRIOR} if user_text == CHIPS else {"situation": situation}
-    assert llm.compose_visible_defect(draft, "status", user_text, facts) == "reversed_result"
+    assert visible_defect.compose_visible_defect(draft, "status", user_text, facts) == "reversed_result"
 
 
 def test_a_task_title_alone_still_owes_its_word_outside_task_and_note_writes() -> None:
     # The exemption is for the writes of a task or a note; a titled read keeps the old rule.
-    assert llm._TITLED_ITEM_WRITES >= {"task.delete", "task.create", "note.create"}
-    assert "window.focus" not in llm._TITLED_ITEM_WRITES
+    assert agenda_facts._TITLED_ITEM_WRITES >= {"task.delete", "task.create", "note.create"}
+    assert "window.focus" not in agenda_facts._TITLED_ITEM_WRITES
 
 
 # D-p16-t1 v3c: the browser offer is not the lookup shown; the failure fact is the last resort.
@@ -228,17 +232,17 @@ def test_the_browser_offer_of_a_search_is_not_the_search_shown() -> None:
         "The valet parking information at the Kenzi Rose Garden could not be looked up right now. I can open the "
         "search page in your web browser for you.",
     ]
-    assert llm.compose_visible_defect(drafts[0], "error", KENZI, {"situation": SEARCH_UNAVAILABLE}) == ""
+    assert visible_defect.compose_visible_defect(drafts[0], "error", KENZI, {"situation": SEARCH_UNAVAILABLE}) == ""
     assert _compose(drafts, KENZI, "error", SEARCH_UNAVAILABLE) == drafts[1]
 
 
 def test_narrating_the_failed_search_is_still_the_search_shown() -> None:
-    payload = llm._compose_situation_payload(json.loads(SEARCH_UNAVAILABLE), "en", KENZI)
+    payload = compose_payload._compose_situation_payload(json.loads(SEARCH_UNAVAILABLE), "en", KENZI)
     narrated = ("The search for valet parking at the Kenzi Rose Garden failed because it could not be looked up "
                 "right now.")
-    assert llm._payload_fact_defect(narrated, payload, KENZI) == "search_report_shows_the_search"
+    assert payload_fact_checks._payload_fact_defect(narrated, payload, KENZI) == "search_report_shows_the_search"
     offer = "I could not look up valet parking right now. Would you like me to open the search in your web browser?"
-    assert llm._payload_fact_defect(offer, payload, KENZI) == ""
+    assert payload_fact_checks._payload_fact_defect(offer, payload, KENZI) == ""
 
 
 @pytest.mark.parametrize(("situation", "user_text", "english", "spanish"), [
@@ -255,7 +259,7 @@ def test_a_typed_failure_is_told_by_its_cause_after_three_vetoed_drafts(
     vetoed = ["La operación de búsqueda relativa falló porque el efecto externo es ambiguo."]
     language = "en" if user_text.isascii() else "es"
     expected = english if language == "en" else spanish
-    assert llm._deterministic_final(json.loads(situation), {}, user_text, language) == expected
+    assert deterministic_finals._deterministic_final(json.loads(situation), {}, user_text, language) == expected
     assert _compose(vetoed, user_text, "error", situation, forbiddenResponseTerms=["operación", "operacion"]) == (
         expected
     )
@@ -264,23 +268,23 @@ def test_a_typed_failure_is_told_by_its_cause_after_three_vetoed_drafts(
 def test_the_failure_template_is_publishable_in_both_languages() -> None:
     for situation, user_text in ((SEARCH_UNAVAILABLE, "Busca aparcamiento cerca del hotel."),
                                  (WEATHER_UNAVAILABLE, "¿Qué tiempo hace en Martínez?")):
-        text = llm._deterministic_final(json.loads(situation), {}, user_text, "es")
-        assert llm.compose_visible_defect(text, "error", user_text, {"situation": situation}) == ""
+        text = deterministic_finals._deterministic_final(json.loads(situation), {}, user_text, "es")
+        assert visible_defect.compose_visible_defect(text, "error", user_text, {"situation": situation}) == ""
 
 
 # D-p25-t1 v3c: the weather service that did not answer is the typed cause.
 def test_the_weather_service_that_did_not_answer_is_the_cause() -> None:
     draft = "I checked the weather service for Martinez, but it did not respond, so no forecast was available."
-    assert llm.compose_visible_defect(draft, "error", MARTINEZ, {"situation": WEATHER_UNAVAILABLE}) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", MARTINEZ, {"situation": WEATHER_UNAVAILABLE}) == ""
     # A non-answer said of a cause that is not one is still invented.
     other = SEARCH_UNAVAILABLE
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "I could not look it up because the server did not respond.", "error", KENZI, {"situation": other},
     ) == "extra_claim"
 
 
 def test_the_seek_cause_reaches_the_payload_as_its_fact() -> None:
-    payload = llm._compose_situation_payload(json.loads(SEEK_UNVERIFIED), "es", "Adelanta diez segundos la canción.")
+    payload = compose_payload._compose_situation_payload(json.loads(SEEK_UNVERIFIED), "es", "Adelanta diez segundos la canción.")
     assert "external effect ambiguous" not in json.dumps(payload)
     assert "could not be confirmed" in json.dumps(payload)
 
@@ -291,19 +295,19 @@ def test_the_seek_cause_reaches_the_payload_as_its_fact() -> None:
     "Actualmente no está lloviendo en Medellín.",
 ])
 def test_the_rain_asked_now_is_answered_by_the_rain_read_now(draft: str) -> None:
-    payload = llm._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
-    assert llm._payload_fact_defect(draft, payload, MEDELLIN) == ""
+    payload = compose_payload._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
+    assert payload_fact_checks._payload_fact_defect(draft, payload, MEDELLIN) == ""
 
 
 def test_rain_said_now_against_the_read_is_reversed() -> None:
-    payload = llm._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
-    assert llm._payload_fact_defect("Sí, está lloviendo ahora en Medellín.", payload, MEDELLIN) == "reversed_result"
+    payload = compose_payload._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
+    assert payload_fact_checks._payload_fact_defect("Sí, está lloviendo ahora en Medellín.", payload, MEDELLIN) == "reversed_result"
 
 
 def test_the_place_named_by_the_person_is_still_owed() -> None:
-    payload = llm._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
+    payload = compose_payload._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
     draft = "No está lloviendo ahora, pero la probabilidad de lluvia para hoy es del 82%."
-    assert llm._payload_fact_defect(draft, payload, MEDELLIN) == "missing_state"
+    assert payload_fact_checks._payload_fact_defect(draft, payload, MEDELLIN) == "missing_state"
 
 
 @pytest.mark.parametrize(("user_text", "now"), [
@@ -321,10 +325,10 @@ def test_rain_asked_now_is_read_in_semantic(user_text: str, now: bool) -> None:
 
 
 def test_the_weather_template_says_the_rain_now_when_it_is_asked() -> None:
-    text = llm._deterministic_final(MEDELLIN_READ, {"seen": MEDELLIN_READ["observed"]}, MEDELLIN, "es")
+    text = deterministic_finals._deterministic_final(MEDELLIN_READ, {"seen": MEDELLIN_READ["observed"]}, MEDELLIN, "es")
     assert text == "En Medellín hay 18,9 °C ahora, parcialmente nublado; no llueve ahora."
-    payload = llm._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
-    assert llm._payload_fact_defect(text, payload, MEDELLIN) == ""
+    payload = compose_payload._compose_situation_payload(MEDELLIN_READ, "es", MEDELLIN)
+    assert payload_fact_checks._payload_fact_defect(text, payload, MEDELLIN) == ""
 
 
 def test_three_vetoed_rain_drafts_end_in_the_rain_read_now() -> None:
@@ -344,19 +348,19 @@ def test_three_vetoed_rain_drafts_end_in_the_rain_read_now() -> None:
     "Swift abre su intimidad con Travis Kelce.",
 ])
 def test_headlines_quoted_without_the_feeds_stray_colon_count(draft: str) -> None:
-    payload = llm._compose_situation_payload(TAYLOR_READ, "es", TAYLOR)
-    assert llm._payload_fact_defect(draft, payload, TAYLOR) == ""
+    payload = compose_payload._compose_situation_payload(TAYLOR_READ, "es", TAYLOR)
+    assert payload_fact_checks._payload_fact_defect(draft, payload, TAYLOR) == ""
 
 
 def test_two_headlines_are_still_too_few() -> None:
-    payload = llm._compose_situation_payload(TAYLOR_READ, "es", TAYLOR)
+    payload = compose_payload._compose_situation_payload(TAYLOR_READ, "es", TAYLOR)
     draft = ("Taylor Swift supera a Beyoncé como la artista más premiada de los MTV VMA 2026; Taylor Swift abre su "
              "intimidad con Travis Kelce.")
-    assert llm._payload_fact_defect(draft, payload, TAYLOR) == "missing_state"
+    assert payload_fact_checks._payload_fact_defect(draft, payload, TAYLOR) == "missing_state"
 
 
 def test_the_headlines_read_are_the_last_resort() -> None:
-    text = llm._deterministic_final(TAYLOR_READ, {"seen": TAYLOR_READ["observed"]}, TAYLOR, "es")
+    text = deterministic_finals._deterministic_final(TAYLOR_READ, {"seen": TAYLOR_READ["observed"]}, TAYLOR, "es")
     assert text == (
         "Titulares sobre Taylor Swift: «Taylor Swift supera a Beyoncé como la artista más premiada de los MTV VMA "
         "2026»; «Taylor Swift y Lisa hacen historia y Madonna reina otra vez: los ganadores de los MTV VMA 2026»; "
@@ -378,6 +382,6 @@ def test_three_shortened_titles_end_in_the_created_item() -> None:
 def test_an_unverified_task_write_is_never_told_as_written() -> None:
     # M107: a write that failed has a final too — the failure, never «Añadí…».
     unverified = {**PATATAS_CREATED, "verified": False, "succeeded": False, "polarity": "failure"}
-    assert llm._deterministic_final(unverified, {"seen": unverified["observed"]}, PATATAS, "es") == (
+    assert deterministic_finals._deterministic_final(unverified, {"seen": unverified["observed"]}, PATATAS, "es") == (
         "No pude anotar la tarea «patatas y patatas y huevos»."
     )

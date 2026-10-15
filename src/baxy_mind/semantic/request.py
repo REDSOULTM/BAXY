@@ -1,7 +1,7 @@
 """Lectura única del pedido: idioma, saludo y petición real.
 
 Antes de esta pieza el idioma visible se decidía dos veces en Python
-(`llm._message_response_language`, `__main__._explicit_response_language`) y
+(`request_intents._message_response_language`, `turn_history._explicit_response_language`) y
 otra vez en C# (`UserMessagePolicy.IsEnglishGreetingRequest`), con tres
 lexicones distintos. «Good afternoon» salía español en Python e inglés en C#:
 el compositor recibía `greeting=hola` y su siguiente validador lo vetaba.
@@ -869,6 +869,56 @@ def spoken_language(text: str) -> str:
     """Voice of already composed text; quoted language requests are not instructions."""
     spanish, english = _language_evidence(text, fold(text))
     return "en" if english > spanish else "es"
+
+
+def evident_language(text: str) -> str | None:
+    """«es» or «en» only when the person's own words tell it (more evidence for one than the other); None when they do
+    not («ir a fonts», a bare name). Computer use names a place in the window's language with it (t-scroll-3)."""
+
+    spanish, english = _language_evidence(text or "", fold(text or ""))
+    if spanish > english:
+        return "es"
+    if english > spanish:
+        return "en"
+    return None
+
+
+# The little words a Spanish place's name carries («Red e Internet», «Barra de tareas»), never an English one's.
+_SPANISH_NAME_WORDS = frozenset({"de", "del", "la", "las", "el", "los", "y", "e", "en", "con", "para", "por", "tu", "mi"})
+# A word's ending Spanish spells with none of its own words: a final consonant other than these, a consonant before a
+# final «s» other than these («fonts», «settings», «apps»), or «y» after a consonant («library», «privacy»).
+_SPANISH_FINALS = frozenset("nsrldzjxy")
+_SPANISH_BEFORE_S = frozenset("aeiounrldz")
+_VOWELS = frozenset("aeiou")
+
+
+def name_language(name: str) -> str | None:
+    """«es» or «en» only when a place's name tells it by its own spelling: Spanish marks («ñ», an accent) or one of
+    Spanish's little words say «es»; an ending Spanish never spells («fonts», «library», «network») with none of them
+    says «en»; any other name («fuentes», «biblioteca», «red») tells nothing. Computer use keeps a name said in the
+    window's language as said (the person names a place the way the window shows it, inside a sentence in the other
+    language: «andá a fonts» on an English Settings)."""
+
+    text = str(name or "")
+    if _SPANISH_ORTHOGRAPHY.search(text):
+        return "es"
+    tokens = re.findall(r"[a-z]+", fold(text))
+    if not tokens:
+        return None
+    if any(token in _SPANISH_NAME_WORDS for token in tokens):
+        return "es"
+
+    def english_spelling(token: str) -> bool:
+        if len(token) < 3:
+            return False
+        last, before = token[-1], token[-2]
+        if last not in _VOWELS and last not in _SPANISH_FINALS:
+            return True
+        if last == "s" and before not in _SPANISH_BEFORE_S:
+            return True
+        return last == "y" and before not in _VOWELS
+
+    return "en" if any(english_spelling(token) for token in tokens) else None
 
 
 # --- Seguimiento elíptico --------------------------------------------------

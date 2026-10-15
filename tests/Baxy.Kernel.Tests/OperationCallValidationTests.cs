@@ -34,6 +34,27 @@ public sealed class OperationCallValidationTests
         });
     }
 
+    // Ronda 22 contracaso: a capture's folder outside the catalog's known folders is refused by the kernel before the
+    // handler (and so before any file is written).
+    [TestCase("capture.screenshot", "{\"folder\":\"C:\\\\Windows\"}")]
+    [TestCase("capture.screenshot", "{\"folder\":\"all_known\"}")]
+    [TestCase("capture.active.window", "{\"folder\":\"../desktop\"}")]
+    public async Task ACaptureFolderOutsideTheEnumIsRejectedBeforeHandler(string operation, string arguments)
+    {
+        var handler = new CountingProductHandler(operation);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(Request(operation, arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(response.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(handler.ExecutionCount, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task PublicValidCallReachesExactlyOneHandler()
     {

@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
 from baxy_mind.semantic import reading as semantic_reading
@@ -28,6 +27,7 @@ from baxy_mind.semantic.media import player_opened_to_play, spoken_media_order
 from baxy_mind.semantic.messaging import contact_book_request, inbox_read_request, latest_mail_reply_without_words
 from baxy_mind.semantic.notes import agenda_read_request, names_own_event, reminder_inventory_question
 from baxy_mind.semantic.patterns import known_unsupported_effect_request, resolve_explicit_clarification_intent
+from baxy_mind import context_decision
 
 OPERATIONS = (
     "app.open", "calendar.event.create", "calendar.event.list", "email.latest.read", "email.latest.reply",
@@ -71,7 +71,7 @@ def _tool(operation: str) -> dict[str, object]:
 
 
 def _decided(text: str, model: _Decider) -> dict[str, object]:
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m100", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog([_tool(name) for name in OPERATIONS]),

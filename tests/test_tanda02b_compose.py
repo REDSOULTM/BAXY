@@ -10,7 +10,10 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import previous_answer
+from baxy_mind import visible_defect
+from baxy_mind import weather_facts
 
 _SEEN = {
     "location": "Rosario",
@@ -36,7 +39,7 @@ _SUNSET = "necesito el horario de la caída del sol para mañana."
 
 def _weather_defect(text: str, asked: str) -> str:
     facts = {"situation": json.dumps(_WEATHER)}
-    return llm.compose_visible_defect(text, "status", asked, facts) or llm._payload_fact_defect(text, _PAYLOAD, asked)
+    return visible_defect.compose_visible_defect(text, "status", asked, facts) or payload_fact_checks._payload_fact_defect(text, _PAYLOAD, asked)
 
 
 @pytest.mark.parametrize("reply", [
@@ -89,8 +92,8 @@ def test_an_unread_or_wrong_day_sun_clock_still_fails(reply: str, defect: str) -
 
 
 def test_a_number_that_ends_the_sentence_is_checked_too() -> None:
-    assert llm._weather_fact_defect("En Rosario hay 17,3 °C y mañana el sol se pone a las 20:15.", _PAYLOAD, _SUNSET) == "invented_number"
-    assert llm._weather_fact_defect("En Rosario hace 25.", _PAYLOAD, "qué clima hace") == "invented_number"
+    assert weather_facts._weather_fact_defect("En Rosario hay 17,3 °C y mañana el sol se pone a las 20:15.", _PAYLOAD, _SUNSET) == "invented_number"
+    assert weather_facts._weather_fact_defect("En Rosario hace 25.", _PAYLOAD, "qué clima hace") == "invented_number"
 
 
 _CONVERSATION = {"situation": json.dumps({"kind": "conversation", "polarity": "success"})}
@@ -102,7 +105,7 @@ _HTML = "¿Cómo incluir un archivo HTML en otro  HTML?"
     "Puedes usar <iframe> o copiar el contenido dentro de <body>.",
 ])
 def test_an_html_element_in_a_technical_answer_is_not_a_template_hole(reply: str) -> None:
-    assert llm.compose_visible_defect(reply, "conversation", _HTML, _CONVERSATION) == ""
+    assert visible_defect.compose_visible_defect(reply, "conversation", _HTML, _CONVERSATION) == ""
 
 
 @pytest.mark.parametrize("reply", [
@@ -111,7 +114,7 @@ def test_an_html_element_in_a_technical_answer_is_not_a_template_hole(reply: str
     "Incluye <archivo> en la página.",
 ])
 def test_a_template_hole_in_angle_brackets_still_fails(reply: str) -> None:
-    assert llm.compose_visible_defect(reply, "conversation", _HTML, _CONVERSATION) == "copied_instruction"
+    assert visible_defect.compose_visible_defect(reply, "conversation", _HTML, _CONVERSATION) == "copied_instruction"
 
 
 _PREVIOUS = "Dentro de 64 días será el 27 de noviembre."
@@ -120,22 +123,22 @@ _WITH_CONTEXT = {**_CONVERSATION, "context": _PREVIOUS, "priorRequests": ["what 
 
 @pytest.mark.parametrize("request_text", ["¡ave, cesar!", "chistes", "¿Porque el cielo es celeste?"])
 def test_a_message_that_stands_on_its_own_does_not_inherit_the_previous_answer(request_text: str) -> None:
-    assert llm._referenced_previous_answer(request_text, _WITH_CONTEXT) == ""
+    assert previous_answer._referenced_previous_answer(request_text, _WITH_CONTEXT) == ""
 
 
 @pytest.mark.parametrize("request_text", ["¿y eso qué significa?", "¿por qué?", "explícamelo mejor"])
 def test_a_follow_up_that_points_back_keeps_the_previous_answer(request_text: str) -> None:
-    assert llm._referenced_previous_answer(request_text, _WITH_CONTEXT) == _PREVIOUS
+    assert previous_answer._referenced_previous_answer(request_text, _WITH_CONTEXT) == _PREVIOUS
 
 
 def test_a_recomposed_conversation_cannot_answer_the_previous_topic_with_an_unread_date() -> None:
     invented = "Hoy sumando 64 días sería el 10 de abril."
-    assert llm.compose_visible_defect(invented, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == "unverified_present_fact"
+    assert visible_defect.compose_visible_defect(invented, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == "unverified_present_fact"
     # Even the previous answer's own date is not this message's answer.
     restated = "Dentro de 64 días será el 27 de noviembre."
-    assert llm.compose_visible_defect(restated, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == "unverified_present_fact"
-    assert llm.compose_visible_defect("Hoy es martes.", "conversation", "¡ave, cesar!", _CONVERSATION) == "unverified_present_fact"
-    assert llm.compose_visible_defect("Today is September 3.", "conversation", "hi there", _CONVERSATION) == "unverified_present_fact"
+    assert visible_defect.compose_visible_defect(restated, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == "unverified_present_fact"
+    assert visible_defect.compose_visible_defect("Hoy es martes.", "conversation", "¡ave, cesar!", _CONVERSATION) == "unverified_present_fact"
+    assert visible_defect.compose_visible_defect("Today is September 3.", "conversation", "hi there", _CONVERSATION) == "unverified_present_fact"
 
 
 @pytest.mark.parametrize("reply", [
@@ -144,26 +147,26 @@ def test_a_recomposed_conversation_cannot_answer_the_previous_topic_with_an_unre
     "La Revolución Francesa empezó en París.",
 ])
 def test_a_social_or_knowledge_reply_without_a_present_claim_is_published(reply: str) -> None:
-    assert llm.compose_visible_defect(reply, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == ""
+    assert visible_defect.compose_visible_defect(reply, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == ""
 
 
 def test_a_year_from_memory_is_no_present_claim_but_is_memory() -> None:
     # M95 (D52): «1789» is not about today, and no message of the conversation states it: a figure from memory.
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "La Revolución Francesa empezó en 1789.", "conversation", "¡ave, cesar!", _WITH_CONTEXT,
     ) == "memory_figures"
 
 
 def test_a_follow_up_may_restate_what_the_previous_answer_said() -> None:
     reply = "Que dentro de 64 días será el 27 de noviembre."
-    assert llm.compose_visible_defect(reply, "conversation", "¿y eso qué significa?", _WITH_CONTEXT) == ""
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(reply, "conversation", "¿y eso qué significa?", _WITH_CONTEXT) == ""
+    assert visible_defect.compose_visible_defect(
         "Que dentro de 64 días será el 2 de diciembre.", "conversation", "¿y eso qué significa?", _WITH_CONTEXT,
     ) == "unverified_present_fact"
 
 
 def test_what_the_person_said_can_be_repeated() -> None:
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Dentro de 3 días, el viernes, es tu festival.", "conversation",
         "el viernes tengo un festival, dentro de 3 días", _CONVERSATION,
     ) == ""

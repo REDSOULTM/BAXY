@@ -18,6 +18,7 @@ from .dialogue import _history_has_pending_clarification, _previous_user_request
 from .grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER, past_or_hypothetical_message, spoken_number_request
 from .intent import EffectIntent
 from .patterns import chat_read_request, conversation_only_content_request, echo_mode_request
+from . import missions as _missions
 from .request import (
     INTENT_AMBIGUOUS_ACTION,
     INTENT_CAPABILITY,
@@ -794,7 +795,8 @@ def stable_no_effect_preempts(objective: str) -> bool:
         or _personal_checkin_statement(objective)
         or echo_mode_request(objective)
         or (conversation_only_content_request(objective) and asks_for_code(objective))
-        or chat_read_request(folded)
+        # Imprescindibles de mensajería: a chat read said in an application is the computer-use mission's.
+        or (chat_read_request(folded) and not _missions.last_written_in_a_place(objective))
         or (conversation_only_content_request(objective) and _WRITTEN_PIECE.search(folded) is not None)
         or read_request(objective).has(INTENT_IDENTITY)
         or _general_factoid_prompt(objective)

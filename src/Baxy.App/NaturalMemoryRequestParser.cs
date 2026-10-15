@@ -46,6 +46,14 @@ internal enum MemorySaveSubject
     Name,
 }
 
+/// <summary>Revisión M H2: what the one judge of a value to keep says of it.</summary>
+internal enum MemoryValueJudgement
+{
+    Keepable,
+    NotKeepable,
+    GrantsAuthority,
+}
+
 internal sealed class MemoryParseResult
 {
     private MemoryParseResult(
@@ -192,6 +200,14 @@ internal sealed class MemoryParseResult
     private static bool IsValidOrdinaryRoute(MemoryRoutedOperation operation)
     {
         JsonObject arguments = operation.PrivateArguments;
+        if (string.Equals(operation.Name, "memory.correct", StringComparison.Ordinal))
+        {
+            // Revisión M H2: a correction never writes a secret as an ordinary value either.
+            return arguments["value"] is not JsonValue corrected
+                || !corrected.TryGetValue(out string? correctedValue)
+                || !string.IsNullOrWhiteSpace(correctedValue)
+                && !NaturalMemoryRequestParser.ContainsSensitiveMaterial(correctedValue);
+        }
         if (string.Equals(operation.Name, "memory.save", StringComparison.Ordinal))
         {
             if (arguments["sensitivity"] is not JsonValue sensitivityValue
@@ -344,8 +360,14 @@ internal static partial class NaturalMemoryRequestParser
 
         // M111 (DEV-F v4d F-w10-t3 «save that in a note called home network» → «What content should be saved…?»):
         // «that» saved in a note, a task or a list goes to that record, never to BAXY's memory; the mind reads it.
+        // r15b t-file-3 «Save this drawing as baxy-dibujo.png in Documents\baxy-prueba-v3»: a save of «this» saved as
+        // a file name with its extension, into a path, or said as what the window holds is the window's own Save As,
+        // never BAXY's memory; the mind reads it. A name with no extension («save this as my favorite color», «guarda
+        // esto en tu memoria como importante») or a dot or slash inside the datum («ana@gmail.com», «el 3/5») still
+        // asks what to keep (revisión destino del pedido).
         if (AmbiguousSavePattern().IsMatch(foldedCommand)
-            && !RecordDestinationPattern().IsMatch(foldedCommand))
+            && !RecordDestinationPattern().IsMatch(foldedCommand)
+            && !SaveOnTheWindowPattern().IsMatch(foldedCommand))
         {
             return MemoryParseResult.ClarifySave();
         }
@@ -532,6 +554,24 @@ internal static partial class NaturalMemoryRequestParser
                 "name", name, "fact", "persistent", sensitivity: "personal")),
             publicObjective);
         return true;
+    }
+
+    /// <summary>
+    /// Revisión M H2 (one source): the filters this reader applies to every value it captures, applied to a value any
+    /// other reader (the mind's, the model) hands the private route, with the request it came in: no secret in either,
+    /// no grant of permissions for BAXY, no second order, no file path, no placeholder.
+    /// </summary>
+    internal static MemoryValueJudgement JudgeValueToKeep(string request, string value)
+    {
+        string folded = (request ?? string.Empty).ToLowerInvariant();
+        if (AuthorizationPattern().IsMatch(folded) || AuthorizationPattern().IsMatch(value.ToLowerInvariant()))
+        {
+            return MemoryValueJudgement.GrantsAuthority;
+        }
+
+        return ContainsSensitiveMaterial(request ?? string.Empty) || !TrySafeCapturedValue(value, out _)
+            ? MemoryValueJudgement.NotKeepable
+            : MemoryValueJudgement.Keepable;
     }
 
     internal static bool ContainsSensitiveMaterial(string value)
@@ -1666,7 +1706,7 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex TemporaryNoStorePattern();
 
     [GeneratedRegex(
-        "(?:\\b(?:autorizaci[oó]n|authorization|authorisation)\\b|permiso(?:s)?[ ]+(?:total(?:es)?|completo(?:s)?)|total[ ]+(?:permission|access)|(?:pc|computer)[ ]+.{0,40}(?:disposici[oó]n|permission)|(?:tienes|tiene|tengo|te[ ]+doy|te[ ]+concedo|you[ ]+have|i[ ]+give[ ]+you|i[ ]+grant[ ]+you)[ ].{0,40}(?:permiso|permission|access)|(?:eres|you[ ]+are)[ ]+(?:un[ ]+|an?[ ]+)?(?:admin(?:istrador)?|administrator|superuser|root)[ ]+(?:total|full)|(?:te[ ]+autorizo|i[ ]+authorize[ ]+you)[ ].{0,32}(?:a[ ]+)?(?:modificar|cambiar|borrar|eliminar|ejecutar|hacer|modify|change|delete|remove|run|do)|(?:puedes|pod[eé]s)[ ].{0,20}hacer[ ]+(?:lo[ ]+que[ ]+quieras|cualquier[ ]+cosa)|you[ ]+(?:may|can)[ ].{0,20}do[ ]+(?:anything|whatever[ ]+you[ ]+want))",
+        "(?:\\b(?:autorizaci[oó]n|authorization|authorisation)\\b|permiso(?:s)?[ ]+(?:total(?:es)?|completo(?:s)?)|total[ ]+(?:permission|access)|(?:pc|computer)[ ]+.{0,40}(?:disposici[oó]n|permission)|(?:tienes|ten[eé]s|tiene|tengo|te[ ]+doy|te[ ]+concedo|you[ ]+have|i[ ]+give[ ]+you|i[ ]+grant[ ]+you)[ ].{0,40}(?:permiso|permission|access)|(?:eres|you[ ]+are)[ ]+(?:un[ ]+|an?[ ]+)?(?:admin(?:istrador)?|administrator|superuser|root)[ ]+(?:total|full)|(?:te[ ]+autorizo|i[ ]+authorize[ ]+you)[ ].{0,32}(?:a[ ]+)?(?:modificar|cambiar|borrar|eliminar|ejecutar|hacer|modify|change|delete|remove|run|do)|(?:puedes|pod[eé]s)[ ].{0,20}hacer[ ]+(?:lo[ ]+que[ ]+quieras|cualquier[ ]+cosa)|you[ ]+(?:may|can)[ ].{0,20}do[ ]+(?:anything|whatever[ ]+you[ ]+want))",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex AuthorizationPattern();
 
@@ -1733,6 +1773,20 @@ internal static partial class NaturalMemoryRequestParser
         + "(?:nota|notas|note|notes|tarea|tareas|task|tasks|lista|list|pendientes|to-?do)\\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex RecordDestinationPattern();
+
+    // A save of «this» (the words ``AmbiguousSavePattern`` reads) whose rest is the window's Save As: saved as a file
+    // name with its extension («como x.txt», «as baxy-dibujo.png»; a datum's «ana@gmail.com» is none), into a path
+    // with a drive or a folder separator between letters («en Documentos\baxy-prueba-v3», «in C:\Users\Ana»; «el 3/5»
+    // is none), or said as what the window holds («this drawing»).
+    [GeneratedRegex(
+        "^(?:s[ií],[ ]+)?(?:guarda|save)[ ]+(?:esto|this|eso|that|it)[ ]+(?:"
+        + "(?:.*[ ])?(?:como|as|named|called|llamado|llamada)[ ]+[^ @]*[a-z0-9_-]\\.[a-z0-9]{2,5}(?:[ ,;:!?.].*)?"
+        + "|(?:.*[ ])?(?:en|in|to|into|a)[ ]+(?:[^ ]+[ ]+){0,2}"
+        + "(?:[a-z]:[\\\\/][^ ]*|[a-z][^ /\\\\@]*[\\\\/][^ ]*[a-z][^ ]*)(?:[ ].*)?"
+        + "|(?:drawing|document|file|image|picture|photo|page|sheet)\\b.*"
+        + ")$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex SaveOnTheWindowPattern();
 
     [GeneratedRegex(
         "^(?:esto|this|eso|that|esa[ ]+(?:preferencia|preference)|lo[ ]+del[ ]+estilo|that[ ]+setting)$",

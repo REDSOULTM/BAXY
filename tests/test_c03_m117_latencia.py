@@ -23,12 +23,13 @@ from typing import Any
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import grammar
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.normalize import _fold_text, fold
+from baxy_mind import context_decision
+from baxy_mind import turn_decide
 
 # ------------------------------------------------------------------ pure readings are kept, never changed
 
@@ -169,18 +170,31 @@ def test_a_prepared_decision_still_waits_inside_the_turn_budget() -> None:
 
 
 def test_the_catalog_prompt_is_read_once_before_the_first_turn() -> None:
-    runtime = _Runtime()
+    # Estabilización A (revisión H5): the warmup no longer sends a chat request of its own; it builds the decider's
+    # saved slot state, the catalog prefix every decision then starts from (tests/test_estab_a_decisor_determinista).
+    prepared: list[tuple[dict[str, Any], Any]] = []
+    asked: list[dict[str, Any]] = []
+
+    class _Warm(_Runtime):
+        def _decider_slot_state(self, payload: dict[str, Any]) -> Any:
+            asked.append(payload)
+            return ("estado", payload["messages"][0]["content"])
+
+        def _prepare_slot(self, state: Any, cancellation: Any) -> None:
+            prepared.append((state, cancellation))
+
+    runtime = _Warm()
     runtime.warm_decider(TOOLS, signatures=SIGNATURES)
-    _wait_posts(runtime, 1)
-    payload, kwargs = runtime.posts[0]
-    assert kwargs["reserved_slot"] is True and payload["max_tokens"] == 1
+    deadline = time.monotonic() + 5
+    while not prepared and time.monotonic() < deadline:
+        time.sleep(0.005)
     decided = runtime._decider_payload("abre spotify", [], TOOLS, SIGNATURES)[0]
-    # The same system prompt (the catalog) every decision begins with; only the message differs.
-    assert payload["messages"][0] == decided["messages"][0]
-    assert payload["response_format"] == decided["response_format"]
-    single = _Runtime(parallel=False)
+    # The state of the same system prompt (the catalog) every decision begins with; nothing is sent to decode.
+    assert prepared[0][0] == ("estado", decided["messages"][0]["content"])
+    assert asked[0]["messages"][0] == decided["messages"][0] and runtime.posts == []
+    single = _Warm(parallel=False)
     single.warm_decider(TOOLS, signatures=SIGNATURES)
-    assert single.posts == []
+    assert len(prepared) == 1
 
 
 def test_the_configured_catalog_warms_the_decider_it_will_ask() -> None:
@@ -192,9 +206,9 @@ def test_the_configured_catalog_warms_the_decider_it_will_ask() -> None:
             warmed.append((tuple(tools), signatures))
 
     catalog = PlannerCatalog([_tool(name) for name in ("web.search", "memory.save")])
-    sidecar._warm_context_decider(_Warm(), catalog)
-    assert warmed == [sidecar._decider_catalog(catalog)]
-    sidecar._warm_context_decider(object(), catalog)  # a runtime without it is left as it is
+    context_decision._warm_context_decider(_Warm(), catalog)
+    assert warmed == [context_decision._decider_catalog(catalog)]
+    context_decision._warm_context_decider(object(), catalog)  # a runtime without it is left as it is
 
 
 # ------------------------------------------------------------------ the turn prepares what it will ask
@@ -244,7 +258,7 @@ def test_the_turn_prepares_exactly_what_the_decider_is_asked(history: list[dict[
     text = "oye y quien gano el partido anoche"
     tools = {name: _tool(name) for name in ("web.search", "app.open", "memory.save")}
     llm = _Decider()
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m117", "text": text, "history": [*history, {"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),

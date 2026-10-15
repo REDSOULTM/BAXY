@@ -24,7 +24,6 @@ from typing import Any
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
 from baxy_mind.semantic.patterns import (
@@ -33,6 +32,7 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_clarification_intent,
 )
 from baxy_mind.semantic.web import names_own_data
+from baxy_mind import turn_decide
 
 OPERATIONS = (
     "audio.volume",
@@ -119,7 +119,7 @@ class _Model:
 def _turn(model: _Model, text: str, *said: str) -> dict[str, Any]:
     history = [{"role": "user" if index % 2 == 0 else "assistant", "content": content}
                for index, content in enumerate(said)]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m112", "text": text, "history": [*history, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(TOOLS.values())),

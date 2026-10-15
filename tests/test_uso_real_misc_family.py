@@ -13,7 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import _general_factoid_prompt, _prepare_turn_result
+from baxy_mind.semantic.conversation import _general_factoid_prompt
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue, reading
 from baxy_mind.semantic.decider import ContextDecision

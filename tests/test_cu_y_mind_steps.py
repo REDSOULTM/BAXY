@@ -1,6 +1,8 @@
 """Deterministic steps of computer use: retries, genders, ambiguity and content items (cu-y-mind)."""
 
-from baxy_mind import computer_use
+from baxy_mind import cu_view
+from baxy_mind import cu_rules
+from baxy_mind import cu_step_prompt
 
 
 def _ok(step: int, operation: str, **fields: object) -> dict:
@@ -24,11 +26,11 @@ def test_a_failed_click_retry_reads_what_the_verified_click_made_appear_not_the_
         _ok(1, "input.visible.click", label="BIBLIOTECA"),
         {"step": 2, "operation": "input.visible.click", "label": "Inicio", "ok": False},
     ]
-    step = computer_use.deterministic_step(goal="ir a biblioteca", view=view, history=history)
+    step = cu_rules.deterministic_step(goal="ir a biblioteca", view=view, history=history)
     assert step is None or step["arguments"].get("label") != "Página principal"
     # With the App's newTextAfterClick the menu entry is the step.
     kept = {**view, "newText": [], "newTextAfterClick": ["Página principal", "Colecciones"]}
-    step = computer_use.deterministic_step(goal="ir a biblioteca", view=kept, history=history)
+    step = cu_rules.deterministic_step(goal="ir a biblioteca", view=kept, history=history)
     assert step is not None and step["arguments"].get("label") == "Página principal"
 
 
@@ -38,7 +40,7 @@ def test_a_place_keeps_the_gender_said() -> None:
         "controls": [{"i": 0, "kind": "ListItem", "name": "Partida", "zone": "C"}],
         "text": {"C": ["Partida"]},
     }
-    step = computer_use.deterministic_step(goal="ir a partido", view=view, history=[])
+    step = cu_rules.deterministic_step(goal="ir a partido", view=view, history=[])
     assert step is None or step["arguments"].get("label") != "Partida"
     assert step is None or step["arguments"].get("index") != 0
     # A mode keeps both genders: «modo científico» finds «Científica».
@@ -47,7 +49,7 @@ def test_a_place_keeps_the_gender_said() -> None:
         "controls": [{"i": 0, "kind": "ListItem", "name": "Científica", "zone": "L"}],
         "text": {},
     }
-    step = computer_use.deterministic_step(goal="ir a científico", view=calculator, history=[])
+    step = cu_rules.deterministic_step(goal="ir a científico", view=calculator, history=[])
     assert step is not None and step["arguments"] == {"label": "Científica", "index": 0}
 
 
@@ -61,7 +63,7 @@ def test_a_name_inside_a_message_does_not_make_the_place_ambiguous() -> None:
         ],
         "text": {"C": ["general"]},
     }
-    step = computer_use.deterministic_step(goal="ir a general", view=discord, history=[])
+    step = cu_rules.deterministic_step(goal="ir a general", view=discord, history=[])
     # Not two controls named «general»: the written word is clicked, never the search opened as for a doubt.
     assert step is not None and step["arguments"] == {"label": "general"}
     # Two controls that carry the name as their own («general», «general · Mi servidor») are the doubt.
@@ -73,8 +75,8 @@ def test_a_name_inside_a_message_does_not_make_the_place_ambiguous() -> None:
             {"i": 2, "kind": "Button", "name": "general · Mi servidor"},
         ],
     }
-    assert computer_use._controls_naming(doubled, ("general",), None, True) == 2
-    assert computer_use._controls_naming(discord, ("general",), None, True) == 0
+    assert cu_rules._controls_naming(doubled, ("general",), None, True) == 2
+    assert cu_rules._controls_naming(discord, ("general",), None, True) == 0
 
 
 def _programs_view(item_name: str, *, extra: list[dict] | None = None, item_type: str = "") -> dict:
@@ -91,16 +93,16 @@ def _programs_view(item_name: str, *, extra: list[dict] | None = None, item_type
 def test_enter_is_never_the_default_on_a_file_that_runs_or_where_removal_is_offered() -> None:
     clicked = [_ok(1, "input.visible.click", label="setup.exe", index=0)]
     runs = _programs_view("setup.exe")
-    assert computer_use.deterministic_step(goal="ir a setup.exe", view=runs, history=clicked) is None
+    assert cu_rules.deterministic_step(goal="ir a setup.exe", view=runs, history=clicked) is None
     shortcut = [_ok(1, "input.visible.click", label="Juego.lnk", index=0)]
-    assert computer_use.deterministic_step(goal="ir a Juego.lnk", view=_programs_view("Juego.lnk"), history=shortcut) is None
+    assert cu_rules.deterministic_step(goal="ir a Juego.lnk", view=_programs_view("Juego.lnk"), history=shortcut) is None
     # A list of programs with «Desinstalar» on offer: the step is the model's.
     chosen = [_ok(1, "input.visible.click", label="Hades", index=0)]
     programs = _programs_view("Hades", extra=[{"i": 2, "kind": "Button", "name": "Desinstalar"}], item_type="Carpeta de archivos")
-    assert computer_use.deterministic_step(goal="ir a hades", view=programs, history=chosen) is None
+    assert cu_rules.deterministic_step(goal="ir a hades", view=programs, history=chosen) is None
     # A plain folder in a view without removal keeps its Enter; «Borradores» is no removal.
     folder = _programs_view("Hades", extra=[{"i": 2, "kind": "Button", "name": "Borradores"}], item_type="Carpeta de archivos")
-    step = computer_use.deterministic_step(goal="ir a hades", view=folder, history=chosen)
+    step = cu_rules.deterministic_step(goal="ir a hades", view=folder, history=chosen)
     assert step is not None and step["operation"] == "input.key.press" and step["arguments"] == {"key": "enter"}
 
 
@@ -110,20 +112,20 @@ def test_a_tile_in_the_left_column_is_content_when_its_row_goes_on_out_of_it() -
     neighbour = {"i": 1, "kind": "ListItem", "name": "Documentos", "zone": "C", "rect": _rect(400, 220, 120, 100)}
     lower = {"i": 1, "kind": "ListItem", "name": "Documentos", "zone": "C", "rect": _rect(400, 320, 120, 100)}
     grid = {"window": {"title": "Inicio - Explorador de archivos", "process": "explorer"}, "controls": [tile, neighbour]}
-    assert computer_use.is_content_item(tile, grid)
+    assert cu_view.is_content_item(tile, grid)
     # Another row (centres more than half the item's height apart): a side list.
     apart = {**grid, "controls": [tile, lower]}
-    assert not computer_use.is_content_item(tile, apart)
+    assert not cu_view.is_content_item(tile, apart)
     # The zone alone, without the view, still reads a left item as navigation.
-    assert not computer_use.is_content_item(tile)
+    assert not cu_view.is_content_item(tile)
     # The chosen tile in the grid is opened with Enter.
     clicked = [_ok(1, "input.visible.click", label="Descargas", index=0)]
-    step = computer_use.deterministic_step(goal="ir a descargas", view=grid, history=clicked)
+    step = cu_rules.deterministic_step(goal="ir a descargas", view=grid, history=clicked)
     assert step is not None and step["operation"] == "input.key.press" and step["arguments"] == {"key": "enter"}
-    step = computer_use.deterministic_step(goal="ir a descargas", view=apart, history=clicked)
+    step = cu_rules.deterministic_step(goal="ir a descargas", view=apart, history=clicked)
     assert step is None or step["arguments"].get("key") != "enter"
 
 
 def test_the_step_prompt_never_presses_enter_on_what_runs() -> None:
-    prompt = computer_use.STEP_PROMPT
+    prompt = cu_step_prompt.STEP_PROMPT
     assert "key enter" in prompt and "instalador" in prompt and "se ejecuta" in prompt

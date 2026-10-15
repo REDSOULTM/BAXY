@@ -549,6 +549,36 @@ public static class OperationArgumentValidator
         return schema.Required.All(seen.Contains);
     }
 
+    /// <summary>
+    /// Ronda 23 (índices de vista y esquema): the arguments that make <see cref="IsValid"/> false, by name and in
+    /// the order seen: one not declared, one whose value the schema refuses, one repeated, then each required one
+    /// missing. Empty for arguments the schema takes (and for a non-object, which names none).
+    /// </summary>
+    public static IReadOnlyList<string> InvalidArguments(JsonElement arguments, OperationArgumentsSchema schema)
+    {
+        ArgumentNullException.ThrowIfNull(schema);
+        var invalid = new List<string>();
+        if (arguments.ValueKind != JsonValueKind.Object)
+        {
+            return invalid;
+        }
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (JsonProperty supplied in arguments.EnumerateObject())
+        {
+            OperationArgumentProperty? contract = schema.Properties.FirstOrDefault(property =>
+                string.Equals(property.Name, supplied.Name, StringComparison.Ordinal));
+            if ((!seen.Add(supplied.Name) || contract is null || !IsValidValue(supplied.Value, contract))
+                && !invalid.Contains(supplied.Name, StringComparer.Ordinal))
+            {
+                invalid.Add(supplied.Name);
+            }
+        }
+
+        invalid.AddRange(schema.Required.Where(name => !seen.Contains(name)));
+        return invalid;
+    }
+
     private static bool IsValidValue(JsonElement value, OperationArgumentProperty contract)
     {
         if (!MatchesType(value, contract.Types))

@@ -39,6 +39,11 @@ public interface IScreenshotProvider
 {
     ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken);
     ValueTask<CaptureResult> CaptureActiveWindowAsync(CancellationToken cancellationToken);
+
+    /// <summary>Ronda 22: saves a verified PNG copy of the capture just taken into the known folder named
+    /// (desktop, documents, downloads, pictures), under a new dated name. A provider that cannot keep copies says so.</summary>
+    ValueTask<SavedCaptureCopy> SaveCopyAsync(string captureId, string folder, CancellationToken cancellationToken) =>
+        throw new NotSupportedException("This capture provider does not save copies.");
 }
 
 // A window image held in memory only: a 32-bit bottom-up BMP and its SHA-256.

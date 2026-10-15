@@ -19,8 +19,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from baxy_mind import __main__ as mind_main  # noqa: E402
-from baxy_mind import llm as llm_module  # noqa: E402
+from baxy_mind import conversation_contract
+from baxy_mind import llm_prompts
 from baxy_mind.planner import PlannerCatalog  # noqa: E402
 from baxy_mind.semantic.request import (  # noqa: E402
     INTENT_CAPABILITY,
@@ -35,6 +35,10 @@ from test_uso_real_facts_and_effects import (  # noqa: E402
     _IdentityTurnLlm,
     _turn,
 )
+from baxy_mind import turn_decisions
+from baxy_mind import turn_recovery
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 
 # --- 1. Every question about BAXY himself is identity ---------------------------------
 
@@ -83,7 +87,7 @@ def test_every_question_about_baxy_himself_is_an_identity_turn(text: str) -> Non
     # A trait of BAXY is not a question about what he does on the PC.
     assert not reading.has(INTENT_CAPABILITY), text
     assert (
-        llm_module._conversation_presentation_shape(
+        _conversation_presentation_shape(
             text, conversation_kind="knowledge", has_history=False,
         )
         == "identity"
@@ -106,7 +110,7 @@ def test_a_capability_named_in_so_many_words_still_reads_as_capability(text: str
 def test_a_question_about_baxy_is_never_a_public_lookup(text: str) -> None:
     guard = _GuardSaysPublic()
     catalog = PlannerCatalog([_WEB_SEARCH])
-    assert not mind_main._public_lookup_applies(text, text, guard, ("web.search",), catalog)
+    assert not turn_decisions._public_lookup_applies(text, text, guard, ("web.search",), catalog)
 
 
 class _SearchingModel(_IdentityTurnLlm):
@@ -143,7 +147,7 @@ def test_the_identity_reading_owns_the_turn_before_a_model_can_search(text: str)
 
 # --- 2. The identity answer: BAXY's facts only -------------------------------------------
 
-_violates = llm_module._shaped_conversation_answer_violates_contract
+_violates = conversation_contract._shaped_conversation_answer_violates_contract
 
 
 @pytest.mark.parametrize(
@@ -186,7 +190,7 @@ def test_an_invented_trait_or_a_missing_name_is_rejected(request_text: str, repl
 
 
 def test_the_identity_instructions_hold_baxys_facts_and_forbid_invention() -> None:
-    prompt = llm_module.IDENTITY_PRESENTATION_PROMPT
+    prompt = llm_prompts.IDENTITY_PRESENTATION_PROMPT
     assert "lives and runs on this PC" in prompt
     assert "no body, tastes, hobbies or free time" in prompt
     assert "not a person" in prompt
@@ -207,7 +211,7 @@ class _AlwaysFailingRecovery:
 
 @pytest.mark.parametrize("text", ["¿cuál es tu lugar de origen?", "¿cuándo te crearon?"])
 def test_a_failed_identity_turn_is_never_recovered_as_a_question(text: str) -> None:
-    result = mind_main._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "tanda-02", "text": text, "history": []},
         _AlwaysFailingRecovery(),
         failure_kinds=("runtime", "runtime"),
@@ -221,7 +225,7 @@ def test_a_failed_identity_turn_is_never_recovered_as_a_question(text: str) -> N
 
 
 def test_a_failed_turn_about_something_else_still_gets_its_question() -> None:
-    result = mind_main._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "tanda-02", "text": "¿cuál es el lugar de origen del tango?", "history": []},
         _AlwaysFailingRecovery(),
         failure_kinds=("runtime", "runtime"),
@@ -279,5 +283,5 @@ def test_a_datum_or_an_undated_task_is_not_read_as_a_reminder(text: str) -> None
     ],
 )
 def test_the_task_reminder_keeps_its_literal_moment_and_title(text: str, due: str, title: str) -> None:
-    arguments = mind_main._explicit_arguments_from_evidence("reminder.create", text)
+    arguments = semantic_arguments._explicit_arguments_from_evidence("reminder.create", text)
     assert arguments == {"dueUtc": due, "title": title}

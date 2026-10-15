@@ -111,21 +111,35 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         foreach($line in $text){if($line -match '^\s*(?:State|Estado)\s*:\s*(connected|conectado)\s*$'){$connected=$true};if($line -match '^\s*(?:Profile|Perfil)\s*:\s*(.+?)\s*$'){$profile=$Matches[1]}}
         [pscustomobject]@{connected=$connected;profile=$profile}|ConvertTo-Json -Compress
         """;
-    private const string BrightnessScript = """
+    // Encargo H2 (tandas redpc t2-c03, t3-c04, t4-c04: «Intenté poner el brillo…, pero no pude confirmar si se hizo» on
+    // a monitor that does not expose its brightness): WMI answers its brightness classes there with «not supported»
+    // (CimException NotSupported) or with no instance. That is the computer's limit, read before anything is changed
+    // (BrightnessNotSupported, said as the absent device of data «computerUse.limits.devices»), never a change tried.
+    internal const string BrightnessNotSupported = "brightness_not_supported";
+    private const string BrightnessInstances = """
+        function Get-BaxyBrightness([string]$class){try{@(Get-CimInstance -Namespace root/WMI -ClassName $class -ErrorAction Stop)}catch{if([string]$_.Exception.NativeErrorCode -ne 'NotSupported'){throw}}}
+        function Write-BaxyBrightnessAbsent{[pscustomobject]@{ok=$false;effectObserved=$false;error='brightness_not_supported'}|ConvertTo-Json -Compress}
+
+        """;
+    private const string BrightnessScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$value=[byte]$args[0];$effect=$false
-        try {$methods=Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods;$current=Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness
-          if($null -eq $methods -or $null -eq $current){throw 'brightness_not_supported'}
+        try {$methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods);$current=@(Get-BaxyBrightness WmiMonitorBrightness)
+          if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
+          $baseline=@($current|ForEach-Object {[int]$_.CurrentBrightness})
+          if($baseline.Count -gt 0 -and @($baseline|Where-Object {$_ -ne $value}).Count -eq 0){
+            [pscustomobject]@{ok=$true;effectObserved=$false;changed=$false;baselineValues=$baseline;values=$baseline}|ConvertTo-Json -Compress;exit 0
+          }
           foreach($method in $methods){Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=$value}|Out-Null};$effect=$true;Start-Sleep -Milliseconds 300
           $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness|ForEach-Object {[int]$_.CurrentBrightness})
-          [pscustomobject]@{ok=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0);effectObserved=$true;values=$after}|ConvertTo-Json -Compress
+          [pscustomobject]@{ok=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0);effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessAdjustScript = """
+    private const string BrightnessAdjustScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$delta=[int]$args[0];$effect=$false
         try {
-          $methods=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods)
-          $current=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness)
-          if($methods.Count -eq 0 -or $current.Count -eq 0){throw 'brightness_not_supported'}
+          $methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods)
+          $current=@(Get-BaxyBrightness WmiMonitorBrightness)
+          if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
           $expected=@{};$baseline=@()
           foreach($item in $current){
             $before=[int]$item.CurrentBrightness;$target=[Math]::Max(0,[Math]::Min(100,$before+$delta))
@@ -141,15 +155,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [pscustomobject]@{ok=$ok;effectObserved=$effect;baselineValues=$baseline;values=$values}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_adjust_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessStatusScript = """
+    private const string BrightnessStatusScript = BrightnessInstances + """
         $ErrorActionPreference='Stop'
         try {
           function Read-BaxyBrightness {
-            @(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness -ErrorAction Stop |
+            @(Get-BaxyBrightness WmiMonitorBrightness |
               ForEach-Object {[pscustomobject]@{instanceName=[string]$_.InstanceName;value=[int]$_.CurrentBrightness}} |
               Sort-Object instanceName)
           }
           $first=@(Read-BaxyBrightness)
+          if($first.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
           Start-Sleep -Milliseconds 120
           $second=@(Read-BaxyBrightness)
           $coherent=$first.Count -gt 0 -and $first.Count -eq $second.Count
@@ -211,7 +226,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     internal WindowsDeviceControlAdapter(string dataRoot, string documentsRoot)
         : this(Path.Combine(dataRoot, "scans"), documentsRoot, new ExternalProcessRunner())
     {
+        KeysLease = ForegroundLease.Shared;
     }
+
+    /// <summary>
+    /// v3 point 0, fix 3: the calculator and quick-switcher scripts bring their window up and type into it by SendInput,
+    /// so each runs in one helper burst of this lease (after the person's pause; the front and the cursor given back
+    /// after). Null runs them directly (the test seams, whose runners are fakes).
+    /// </summary>
+    internal IForegroundLease? KeysLease { get; init; }
 
     internal WindowsDeviceControlAdapter(
         string scanRoot,
@@ -472,7 +495,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteString("authority", "windows_radio_api_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved);
+        return ExternalJson.Switched(operation, result, effectObserved);
     }
 
     // REOPEN1957 H0107 «poneme el modo avión»: el modo avión de Windows es todas
@@ -678,7 +701,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteString("authority", "windows_radio_api_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved);
+        return ExternalJson.Switched(operation, result, effectObserved);
     }
 
     // NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: the radio
@@ -726,34 +749,109 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // calculator_not_foreground both times): a bare SetForegroundWindow from this helper process is refused by the
     // foreground lock whenever BAXY itself is not in front (a spoken turn, or the window run). The handoff attaches to
     // the foreground thread first, as the application open provider does (RequestForeground).
-    private const string CalculatorScript = """
+    // Review of fable/cu-v3-pausa: SendKeys.SendWait cannot carry BAXY's input mark (BaxyInputMark.cs), so the pause
+    // detector took these keys for the person's and the harness could not tell them from the person's. The scripts
+    // send them with SendInput, marked, mapped through the keyboard layout (VkKeyScan) as SendKeys did; a character
+    // the layout cannot type goes as a Unicode key. C# 5: the scripts run in Windows PowerShell 5.1.
+    private const string MarkedKeysType = """
+        $markedKeys='using System;using System.Collections.Generic;using System.Runtime.InteropServices;public static class BaxyMarkedKeys{[StructLayout(LayoutKind.Sequential)] struct KeyboardInput{public ushort Vk;public ushort Scan;public uint Flags;public uint Time;public UIntPtr Extra;}[StructLayout(LayoutKind.Sequential)] struct MouseInput{public int X;public int Y;public uint Data;public uint Flags;public uint Time;public UIntPtr Extra;}[StructLayout(LayoutKind.Explicit)] struct InputUnion{[FieldOffset(0)] public MouseInput Mouse;[FieldOffset(0)] public KeyboardInput Keyboard;}[StructLayout(LayoutKind.Sequential)] struct Input{public uint Type;public InputUnion Data;}[DllImport("user32.dll",SetLastError=true)] static extern uint SendInput(uint count,Input[] inputs,int size);[DllImport("user32.dll")] static extern short VkKeyScanW(char ch);static readonly UIntPtr Mark=new UIntPtr(0x42415859u);static Input Key(ushort vk,ushort scan,uint flags){Input input=new Input();input.Type=1;input.Data.Keyboard.Vk=vk;input.Data.Keyboard.Scan=scan;input.Data.Keyboard.Flags=flags;input.Data.Keyboard.Extra=Mark;return input;}static uint Send(List<Input> inputs){return SendInput((uint)inputs.Count,inputs.ToArray(),Marshal.SizeOf(typeof(Input)));}static uint Chord(ushort vk,int modifiers){List<Input> inputs=new List<Input>();ushort[] keys={0x10,0x11,0x12};for(int bit=0;bit<3;bit++){if((modifiers&(1<<bit))!=0)inputs.Add(Key(keys[bit],0,0));}inputs.Add(Key(vk,0,0));inputs.Add(Key(vk,0,2));for(int bit=2;bit>=0;bit--){if((modifiers&(1<<bit))!=0)inputs.Add(Key(keys[bit],0,2));}return Send(inputs);}public static uint Press(ushort vk,bool control){return Chord(vk,control?2:0);}public static uint Character(char ch,bool control){short scan=VkKeyScanW(ch);if(scan==-1){List<Input> unicode=new List<Input>();unicode.Add(Key(0,ch,4));unicode.Add(Key(0,ch,6));return Send(unicode);}return Chord((ushort)(scan&0xFF),((scan>>8)&0x7)|(control?2:0));}public static uint Text(string text){uint sent=0;foreach(char ch in text){sent+=Character(ch,false);}return sent;}}'
+        if(-not ([System.Management.Automation.PSTypeName]'BaxyMarkedKeys').Type){Add-Type -TypeDefinition $markedKeys}
+
+        """;
+
+    // Regresiones r2 M4 and molestia r2 (rama B, punto 2): the keys sent with SendInput needed the Calculator in front
+    // (a burst that took the person's front) and were counted as BAXY's keystrokes. The expression is now pressed on
+    // the keypad's own buttons by UI Automation's Invoke: each character is the button the keypad data names
+    // (src/baxy_mind/data/keypad_keys.v1.json, embedded; Spanish and English, compared folded), no window is brought up
+    // and no key is sent. The result is verified on the display: a number read there, and the expression shown ending
+    // with the last operand pressed (Standard mode folds the earlier ones into a running result). Review r4: the clear
+    // button is required and the display must read 0 after it (polled up to 300 ms), and without the expression line
+    // only a number other than 0 proves the presses: a keypad that ignored them would show the previous result.
+    internal const string KeypadFunctions = """
+        function Get-KeyFolded([string]$text){
+          if([string]::IsNullOrEmpty($text)){ return '' }
+          $decomposed=$text.Normalize([Text.NormalizationForm]::FormD);$kept=New-Object Text.StringBuilder
+          foreach($c in $decomposed.ToCharArray()){ if([Globalization.CharUnicodeInfo]::GetUnicodeCategory($c) -ne [Globalization.UnicodeCategory]::NonSpacingMark){ [void]$kept.Append($c) } }
+          return (($kept.ToString().ToLowerInvariant()) -replace '\s+',' ').Trim()
+        }
+        function Find-KeypadButton([string[]]$names,$wanted){
+          $folded=@($wanted | ForEach-Object { Get-KeyFolded ([string]$_) })
+          for($i=0;$i -lt $names.Count;$i++){ if($folded -contains (Get-KeyFolded $names[$i])){ return $i } }
+          return -1
+        }
+        function Select-KeypadPresses([string]$keys,[string[]]$names,$map){
+          $plan=New-Object System.Collections.Generic.List[int]
+          foreach($ch in $keys.ToCharArray()){
+            $at=Find-KeypadButton $names @($map.keys.([string]$ch))
+            if($at -lt 0){ return $null }
+            $plan.Add($at)
+          }
+          return ,$plan.ToArray()
+        }
+        function Test-ShowsZero([string]$value){ return ($value.Trim() -match '^-?0(?:[.,]0*)?$') }
+        function Test-ShowsLastOperand([string]$shown,[string]$value,[string]$keys){
+          if($value -notmatch '^-?\d'){ return $false }
+          if($shown.Trim().Length -eq 0){
+            # Without the expression line the display is the only proof, and it showed 0 right after the clear button: only a
+            # number other than 0 says the buttons were pressed (a result of 0 is not told from a keypad that ignored them).
+            return -not (Test-ShowsZero $value)
+          }
+          $last=([regex]::Match($keys,'(\d+(?:\.\d+)?)\)*$').Groups[1].Value -replace '[^0-9]','')
+          $digits=($shown -replace '[^0-9]','')
+          return ($last.Length -gt 0 -and $digits.EndsWith($last))
+        }
+
+        """;
+
+    internal const string CalculatorScript = """
         $ErrorActionPreference='Stop';$expr=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
-        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
-        $sig='using System;using System.Runtime.InteropServices;public static class BaxyCalcWin2{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint p);[DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();[DllImport("user32.dll")] public static extern bool AttachThreadInput(uint a, uint b, bool f);[DllImport("user32.dll")] public static extern bool BringWindowToTop(IntPtr h);[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr h, int c);}'
-        if(-not ([System.Management.Automation.PSTypeName]'BaxyCalcWin2').Type){Add-Type -TypeDefinition $sig}
+        $map=([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[1])) | ConvertFrom-Json)
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
+
+        """ + KeypadFunctions + """
         $root=[System.Windows.Automation.AutomationElement]::RootElement
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
         $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($f.Current.Name -match '^(Calculadora|Calculator)$'){$calc=$f;break}}
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $h=[IntPtr]$calc.Current.NativeWindowHandle;$fg=[BaxyCalcWin2]::GetForegroundWindow();$fp=[uint32]0;$ft=[BaxyCalcWin2]::GetWindowThreadProcessId($fg,[ref]$fp);$ct=[BaxyCalcWin2]::GetCurrentThreadId();$att=$false
-        if($ft -ne 0 -and $ft -ne $ct){$att=[BaxyCalcWin2]::AttachThreadInput($ct,$ft,$true)}
-        try{[void][BaxyCalcWin2]::ShowWindowAsync($h,9);[void][BaxyCalcWin2]::BringWindowToTop($h);[void][BaxyCalcWin2]::SetForegroundWindow($h)}finally{if($att){[void][BaxyCalcWin2]::AttachThreadInput($ct,$ft,$false)}}
-        Start-Sleep -Milliseconds 300
-        if([BaxyCalcWin2]::GetForegroundWindow() -ne $h){[pscustomobject]@{ok=$false;error='calculator_not_foreground'}|ConvertTo-Json -Compress;exit 3}
         $keys=($expr -replace '[^0-9+\-*/().]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
-        [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 150
-        foreach($ch in $keys.ToCharArray()){$k=switch($ch){'+'{'{+}'} '('{'{(}'} ')'{'{)}'} default{[string]$ch}};[System.Windows.Forms.SendKeys]::SendWait($k);Start-Sleep -Milliseconds 40}
-        [System.Windows.Forms.SendKeys]::SendWait('=');Start-Sleep -Milliseconds 400
+        $buttonCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
+        $buttons=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond))
+        $names=[string[]]@($buttons | ForEach-Object { [string]$_.Current.Name })
+        $plan=Select-KeypadPresses ($keys+'=') $names $map
+        if($null -eq $plan){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
+        function Invoke-KeypadButton($element){ $pattern=$null; if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){ ([System.Windows.Automation.InvokePattern]$pattern).Invoke(); return $true }; return $false }
+        # The clear button is required, and the display must show 0 after it: a keypad that ignored the presses (the window
+        # suspended or minimized) would otherwise leave the previous result there, read as this expression's.
+        $clear=Find-KeypadButton $names @($map.clear)
+        if($clear -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
         $idCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorResults')
         $display=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+        if($null -eq $display){[pscustomobject]@{ok=$false;error='calculator_display_not_read'}|ConvertTo-Json -Compress;exit 5}
+        function Read-DisplayValue(){ return (([string]$display.Current.Name) -replace '^[^0-9\-]*','').Trim() }
+        if(-not (Invoke-KeypadButton $buttons[$clear])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=0}|ConvertTo-Json -Compress;exit 7}
+        $cleared=Read-DisplayValue
+        for($waited=0;-not (Test-ShowsZero $cleared) -and $waited -lt 300;$waited+=40){ Start-Sleep -Milliseconds 40; $cleared=Read-DisplayValue }
+        if(-not (Test-ShowsZero $cleared)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';clearedDisplay=$cleared}|ConvertTo-Json -Compress;exit 8}
+        $pressed=0
+        foreach($at in $plan){ if(-not (Invoke-KeypadButton $buttons[$at])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=$pressed}|ConvertTo-Json -Compress;exit 7}; $pressed++; Start-Sleep -Milliseconds 30 }
+        Start-Sleep -Milliseconds 300
         $exprCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorExpression')
         $shown=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$exprCond)
-        if($null -eq $display){[pscustomobject]@{ok=$false;error='calculator_display_not_read'}|ConvertTo-Json -Compress;exit 5}
         $name=[string]$display.Current.Name;$exprName=if($shown){[string]$shown.Current.Name}else{''}
-        $value=($name -replace '^[^0-9\-]*','').Trim()
-        [pscustomobject]@{ok=$true;typed=$keys;displayName=$name;expressionName=$exprName;value=$value}|ConvertTo-Json -Compress
+        $value=Read-DisplayValue
+        if(-not (Test-ShowsLastOperand $exprName $value $keys)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
+        [pscustomobject]@{ok=$true;typed=$keys;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value}|ConvertTo-Json -Compress
         """;
+
+    // The keypad's buttons by the characters they press (src/baxy_mind/data/keypad_keys.v1.json, embedded).
+    private static readonly Lazy<string> KeypadKeys = new(() =>
+    {
+        using Stream stream = typeof(WindowsDeviceControlAdapter).Assembly.GetManifestResourceStream("Baxy.Providers.Windows.KeypadKeys.json")
+            ?? throw new InvalidOperationException("keypad_keys_missing");
+        using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
+        return reader.ReadToEnd();
+    });
 
     private static readonly Regex CalculatorExpression = new(
         @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/×÷xX]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
@@ -776,8 +874,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             .Replace("x", "*", StringComparison.OrdinalIgnoreCase)
             .Replace(",", ".", StringComparison.Ordinal)
             .Replace(" ", string.Empty, StringComparison.Ordinal);
+        // Review r4: the buttons are pressed by UI Automation's Invoke, which sends no key, moves no pointer and takes
+        // no front, so the person's keyboard and mouse are never shared: no burst is asked for, the person's pause is
+        // not waited for, and their typing in their own window does not stop the expression half pressed (v3 point 0:
+        // waiting for the pause is only for an act that has no other way than real input).
         effectBoundary.Cross(token);
-        ExternalProcessResult process = await RunPowerShellAsync(CalculatorScript, [Encode(normalized)], token);
+        ExternalProcessResult process = await RunPowerShellAsync(
+            CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], token).ConfigureAwait(false);
+
         using JsonDocument document = ParseLastJson(process.Output);
         JsonElement root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
@@ -789,7 +893,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
                 ? error.GetString() ?? "calculator_display_not_read"
                 : "calculator_display_not_read";
-            return ExternalJson.Failure(operation, code, code is "calculator_display_not_read");
+            // A button pressed before the failure (or a display that did not show the expression) may have changed the
+            // Calculator; a keypad without the buttons pressed nothing.
+            return ExternalJson.Failure(operation, code,
+                code is "calculator_display_not_read" or "calculator_display_not_verified" or "calculator_button_not_invokable");
         }
         string value = root.TryGetProperty("value", out JsonElement valueElement) && valueElement.ValueKind == JsonValueKind.String
             ? valueElement.GetString() ?? string.Empty
@@ -1042,7 +1149,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // the switcher closed with Escape; nothing is joined or opened.
     private const string ClientChannelLocateScript = """
         $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
-        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
+
+        """ + MarkedKeysType + """
         $sig='using System;using System.Runtime.InteropServices;public static class BaxyClientWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);}'
         if(-not ([System.Management.Automation.PSTypeName]'BaxyClientWin').Type){Add-Type -TypeDefinition $sig}
         $root=[System.Windows.Automation.AutomationElement]::RootElement
@@ -1050,7 +1159,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($c.Current.Name -match 'Discord'){$w=$c;break}}
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyClientWin]::ShowWindow($h,9)
-        $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}');$needle=$label.ToLowerInvariant()
+        $needle=$label.ToLowerInvariant()
         function Read-Items {param($win,$nd) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n -and $n.ToLowerInvariant().Contains($nd)){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}};,$r}
         # The product and its console compete for the foreground while this runs; a lost focus can drop the
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
@@ -1060,13 +1169,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
           $foreground=$true
-          [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 250
+          [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 250
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 150
-          [System.Windows.Forms.SendKeys]::SendWait('^k');Start-Sleep -Milliseconds 1400
-          if([BaxyClientWin]::GetForegroundWindow() -ne $h){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');continue}
-          [System.Windows.Forms.SendKeys]::SendWait($escaped);Start-Sleep -Milliseconds 900
+          [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);continue}
+          [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
           for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items $w $needle;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
-          [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300
+          [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
         }
         if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
         [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
@@ -1091,7 +1200,21 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             return ExternalJson.Failure(operation, "channel_name_invalid");
         }
-        ExternalProcessResult process = await RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], token);
+        IInputBurst? burst = await LeasedInput.HelperBurstAsync(KeysLease, token).ConfigureAwait(false);
+        using var restore = new BurstRestore(burst);
+        if (burst?.Refusal is string refused)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, refused);
+        }
+
+        (ExternalProcessResult? watched, bool interrupted) = await LeasedInput.WatchHelperAsync(
+            burst, run => RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], run), token);
+        if (interrupted || watched is not { } process)
+        {
+            // The person acted while the switcher was being typed into: the script was stopped there.
+            return ExternalJson.Failure(operation, LeasedInput.Interrupted, true);
+        }
+
         using JsonDocument document = ParseLastJson(process.Output);
         JsonElement root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
@@ -1668,7 +1791,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     private const string WifiScanScript = """
         $text=@(netsh wlan show networks mode=bssid);$joined=($text -join "`n")
         if($joined -match '(?i)apagada|powered down|is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wifi_interface_off'}|ConvertTo-Json -Compress;exit 0}
-        if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_interface_unavailable'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_radio_not_found'}|ConvertTo-Json -Compress;exit 0}
         $networks=@();$current=$null
         foreach($line in $text){
           if($line -match '^\s*SSID\s+\d+\s*:\s*(.*?)\s*$'){if($current){$networks+=$current};$current=[ordered]@{ssid=$Matches[1];authentication='';signalPercent=$null};continue}
@@ -1846,6 +1969,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             [value.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
         using JsonDocument response = ParseLastJson(process.Output);
+        if (String(response.RootElement, "error") == BrightnessNotSupported)
+            return ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported);
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
@@ -1855,16 +1980,33 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 effect);
         }
 
+        // Ronda 22 (r18 t4-c04 t2: the same level asked again took 10.2 s against 3.6 s the first time): a set whose
+        // read before already shows the asked level on every monitor changes nothing, so it does not wait for a
+        // change that will not come; it returns at once with changed:false and the level read.
+        bool changed = !response.RootElement.TryGetProperty("changed", out JsonElement changedElement)
+            || changedElement.ValueKind != JsonValueKind.False;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("setting", setting);
             writer.WriteNumber("value", value);
+            writer.WriteBoolean("changed", changed);
+            // Ronda 19b (r17 t3-c04): the level read before the set is part of the observation, so a final may say
+            // the direction it went («bajé el brillo al 30 %») only when these readings show it.
+            if (response.RootElement.TryGetProperty("baselineValues", out JsonElement baseline)
+                && baseline.ValueKind == JsonValueKind.Array)
+            {
+                writer.WritePropertyName("baselineValues");
+                baseline.WriteTo(writer);
+            }
+
             writer.WriteString("authority", "wmi_monitor_brightness_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, true);
+        return changed
+            ? ExternalJson.Success(operation, result, true)
+            : ExternalJson.Switched(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> SettingAdjustAsync(
@@ -1892,6 +2034,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             [delta.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
         using JsonDocument response = ParseLastJson(process.Output);
+        if (String(response.RootElement, "error") == BrightnessNotSupported)
+            return ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported);
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
@@ -1931,6 +2075,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalProcessResult process = await RunPowerShellAsync(
             BrightnessStatusScript, [], token);
         using JsonDocument response = ParseLastJson(process.Output);
+        if (String(response.RootElement, "error") == BrightnessNotSupported)
+            return ExternalJson.Failure(operation, BrightnessNotSupported);
         if (!Bool(response.RootElement, "ok")
             || !response.RootElement.TryGetProperty("monitors", out JsonElement monitors))
             return ExternalJson.Failure(operation, "brightness_status_verification_failed");

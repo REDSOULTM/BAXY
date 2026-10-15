@@ -7,4 +7,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Baxy.Contracts\Baxy.Contracts.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- What a click sends out to the world, one data file read by RiskPolicy and by the mind. -->
+    <EmbeddedResource Include="..\baxy_mind\data\world_acts.v1.json" LogicalName="Baxy.Kernel.WorldActs.json" />
+    <!-- The places of an application with an address of their own: one data file read by ApplicationPlaces and by the mind. -->
+    <EmbeddedResource Include="..\baxy_mind\data\app_places.v1.json" LogicalName="Baxy.Kernel.AppPlaces.json" />
+  </ItemGroup>
 </Project>

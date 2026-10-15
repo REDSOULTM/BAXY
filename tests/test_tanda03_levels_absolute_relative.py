@@ -28,7 +28,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from baxy_mind import __main__ as mind  # noqa: E402
 from baxy_mind.llm import DirectArgumentExtraction, LlmRuntime  # noqa: E402
 from baxy_mind.semantic import levels  # noqa: E402
 from baxy_mind.semantic.patterns import (  # noqa: E402
@@ -37,6 +36,8 @@ from baxy_mind.semantic.patterns import (  # noqa: E402
 )
 
 from test_semantic_levels import _SCHEMAS, AVAILABLE, _decided, _tool, _turn  # noqa: E402
+from baxy_mind import argument_grounding  # noqa: E402
+from baxy_mind import turn_gates  # noqa: E402
 
 _BRIGHTNESS = "system.settings.adjust"
 _VOLUME = "audio.volume.adjust"
@@ -232,7 +233,7 @@ def test_a_direction_without_amount_asks_only_the_amount_in_the_whole_turn(text,
     ],
 )
 def test_the_fields_a_request_already_settles_are_never_asked(operation, text, stated):
-    assert mind._stated_argument_fields(operation, text, _SCHEMAS[operation]) == stated
+    assert argument_grounding._stated_argument_fields(operation, text, _SCHEMAS[operation]) == stated
 
 
 class _AbstainingExtraction:
@@ -250,7 +251,7 @@ def test_the_grounding_gate_tells_the_extraction_what_was_already_said():
         "mode": "action", "operation": _BRIGHTNESS, "question": "", "conversation_kind": "",
         "effect_count": "one", "effect_operations": [_BRIGHTNESS], "effect_verification": "grounding_required",
     }
-    clarified = mind.apply_turn_action_grounding_gate(
+    clarified = turn_gates.apply_turn_action_grounding_gate(
         decision, "bájale al brillo lo que te parezca", {_BRIGHTNESS: _tool(_BRIGHTNESS)}, llm,
     )
     assert clarified["mode"] == "clarify"

@@ -19,7 +19,6 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.notes import agenda_event_request, agenda_read_request, stated_event_reminder
@@ -32,6 +31,10 @@ from baxy_mind.semantic.patterns import (
 from baxy_mind.semantic.temporal import UPCOMING_DAYS, agenda_window, spoken_date, spoken_window
 from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import argument_grounding
+from baxy_mind import effect_intent
+from baxy_mind import turn_decide
 
 OPERATIONS = (
     "calendar.event.list", "calendar.event.create", "reminder.create", "reminder.list", "notification.schedule",
@@ -88,7 +91,7 @@ def test_the_persons_agenda_is_read_over_the_window_said(text: str, start: str, 
     assert resolve_explicit_clarification_intent(text, OPERATIONS) is None
     assert operation_domain_is_grounded(text, "calendar.event.list") is True
     assert operation_domain_is_grounded(text, "calendar.event.create") is False
-    assert sidecar._explicit_calendar_range_arguments(effects.evidence[0], now_utc=NOW) == {
+    assert semantic_arguments._explicit_calendar_range_arguments(effects.evidence[0], now_utc=NOW) == {
         "startUtc": _utc(start), "endUtc": _utc(end),
     }
 
@@ -112,7 +115,7 @@ def test_an_agenda_read_with_no_window_reads_what_is_coming(text: str) -> None:
     # Nothing is missing: what is coming is the next thirty days (the date range was asked before).
     assert resolve_explicit_clarification_intent(text, OPERATIONS) is None
     upcoming = NOW + timedelta(days=UPCOMING_DAYS)
-    assert sidecar._explicit_calendar_range_arguments(effects.evidence[0], now_utc=NOW) == {
+    assert semantic_arguments._explicit_calendar_range_arguments(effects.evidence[0], now_utc=NOW) == {
         "startUtc": _utc("2026-09-23 22:15"), "endUtc": _utc(upcoming.strftime("%Y-%m-%d %H:%M")),
     }
 
@@ -228,7 +231,7 @@ def test_an_event_is_created_as_said_and_a_start_alone_lasts_an_hour(text, title
     assert resolve_explicit_clarification_intent(text, OPERATIONS) is None
     assert operation_domain_is_grounded(text, "calendar.event.create") is True
     assert operation_domain_is_grounded(text, "calendar.event.list") is False
-    assert sidecar._explicit_calendar_event_arguments(effects.evidence[0], now_utc=NOW) == {
+    assert semantic_arguments._explicit_calendar_event_arguments(effects.evidence[0], now_utc=NOW) == {
         "title": title, "startUtc": _utc(start), "endUtc": _utc(end),
     }
 
@@ -246,7 +249,7 @@ def test_an_event_is_created_as_said_and_a_start_alone_lasts_an_hour(text, title
 def test_a_marked_day_or_span_takes_the_whole_day(text, title, start, end) -> None:
     event = agenda_event_request(text)
     assert event is not None and event.whole_day and not event.missing
-    assert sidecar._explicit_calendar_event_arguments(text, now_utc=NOW) == {
+    assert semantic_arguments._explicit_calendar_event_arguments(text, now_utc=NOW) == {
         "title": title, "startUtc": _utc(start), "endUtc": _utc(end),
     }
 
@@ -306,7 +309,7 @@ def test_a_daily_repetition_is_a_repeating_reminder() -> None:
         },
         "required": ["dueUtc", "kind", "title"], "additionalProperties": False,
     }
-    arguments = sidecar._ground_explicit_arguments("notification.schedule", effects.evidence[0], schema)
+    arguments = argument_grounding._ground_explicit_arguments("notification.schedule", effects.evidence[0], schema)
     assert arguments is not None
     assert {key: arguments[key] for key in ("kind", "recurrence", "title")} == {
         "kind": "reminder", "recurrence": "daily", "title": "almuerzo",
@@ -333,9 +336,9 @@ def test_an_alert_an_activated_alarm_and_a_wake_up_with_its_purpose_are_schedule
     effects = resolve_explicit_effects(text, OPERATIONS)
 
     assert effects is not None and effects.operations == ("notification.schedule",)
-    arguments = sidecar._explicit_arguments_from_evidence("notification.schedule", effects.evidence[0])
+    arguments = semantic_arguments._explicit_arguments_from_evidence("notification.schedule", effects.evidence[0])
     assert arguments is not None and arguments["kind"] == "alarm"
-    due = sidecar._canonical_due_utc(arguments["dueUtc"], effects.evidence[0], now_utc=NOW.replace(hour=1))
+    due = semantic_arguments._canonical_due_utc(arguments["dueUtc"], effects.evidence[0], now_utc=NOW.replace(hour=1))
     assert due is not None
     assert datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone(LOCAL).hour == hour
 
@@ -352,7 +355,7 @@ def test_a_reminder_set_or_added_is_created_with_its_moment(text: str, title: st
     effects = resolve_explicit_effects(text, OPERATIONS)
 
     assert effects is not None and effects.operations == ("reminder.create",)
-    assert sidecar._explicit_arguments_from_evidence("reminder.create", text) == {"dueUtc": due_literal, "title": title}
+    assert semantic_arguments._explicit_arguments_from_evidence("reminder.create", text) == {"dueUtc": due_literal, "title": title}
 
 
 def test_an_event_stated_then_asked_to_be_reminded_of_is_the_reminder() -> None:
@@ -360,8 +363,8 @@ def test_an_event_stated_then_asked_to_be_reminded_of_is_the_reminder() -> None:
     assert stated_event_reminder(text) == ("una reunión el miércoles", "a las nueve de la mañana")
     effects = resolve_explicit_effects(text, OPERATIONS)
     assert effects is not None and effects.operations == ("reminder.create",)
-    arguments = sidecar._explicit_arguments_from_evidence("reminder.create", effects.evidence[0])
-    due = sidecar._canonical_due_utc(arguments["dueUtc"], text, now_utc=NOW)
+    arguments = semantic_arguments._explicit_arguments_from_evidence("reminder.create", effects.evidence[0])
+    due = semantic_arguments._canonical_due_utc(arguments["dueUtc"], text, now_utc=NOW)
     assert due == _utc("2026-09-30 09:00")
     assert stated_event_reminder("tengo una reunión el miércoles a las nueve") is None
 
@@ -388,12 +391,12 @@ def test_a_reminder_or_a_cancellation_asks_only_what_is_missing(text, operation,
 
 
 def test_a_reminder_of_a_spoken_date_falls_on_that_date() -> None:
-    due = sidecar._canonical_due_utc(
+    due = semantic_arguments._canonical_due_utc(
         "a las dos de la tarde", "recuérdame pagar el cuatro de febrero a las dos de la tarde", now_utc=NOW,
     )
     assert due == _utc("2027-02-04 14:00")
     # A date said with a day word that disagrees has no one day.
-    assert sidecar._canonical_due_utc("a las dos de la tarde", "mañana el cuatro de febrero", now_utc=NOW) is None
+    assert semantic_arguments._canonical_due_utc("a las dos de la tarde", "mañana el cuatro de febrero", now_utc=NOW) is None
 
 
 @pytest.mark.parametrize(
@@ -403,7 +406,7 @@ def test_a_reminder_of_a_spoken_date_falls_on_that_date() -> None:
 )
 def test_removing_an_event_from_the_calendar_is_a_plain_limit(text: str) -> None:
     assert known_unsupported_effect_request(text, OPERATIONS) is True
-    assert sidecar.effect_request_is_authoritative(text) is True
+    assert effect_intent.effect_request_is_authoritative(text) is True
 
 
 @pytest.mark.parametrize("text", ["cancela la alarma de las 7", "borra el recordatorio de pagar la luz"])
@@ -434,7 +437,7 @@ def _turn(text: str) -> dict[str, object]:
             ("web.search", ("query",)),
         )
     }
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "turn-agenda", "text": text},
         llm=_TalkingLlm("x"),
         planner_catalog=PlannerCatalog(list(tools.values())),

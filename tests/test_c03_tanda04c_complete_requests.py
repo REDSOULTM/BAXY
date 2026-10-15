@@ -31,17 +31,20 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
-from baxy_mind.__main__ import _prepare_turn_result
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.effect_intent import effect_request_is_authoritative, known_unsupported_effect_request
 from baxy_mind.planner import PlannerCatalog, guarding_predecessors, validate_skeleton
 from baxy_mind.semantic.reading import read
 from test_c03_pointless_questions import _tool
+from baxy_mind import argument_grounding
+from baxy_mind import plan_shape
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 
 
 def _shape(text: str, *, has_history: bool = True) -> str | None:
-    return llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=has_history)
+    return _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=has_history)
 
 
 # ---------------------------------------------------------------- t38/t41: a bit of content is given, not a menu
@@ -123,7 +126,7 @@ def test_talking_about_content_is_not_asking_for_it(text: str) -> None:
     ],
 )
 def test_a_menu_of_kinds_misses_the_free_content_contract(asked: str, reply: str) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(reply, asked, "free_content")
+    assert conversation_contract._shaped_conversation_answer_violates_contract(reply, asked, "free_content")
 
 
 @pytest.mark.parametrize(
@@ -138,7 +141,7 @@ def test_a_menu_of_kinds_misses_the_free_content_contract(asked: str, reply: str
     ],
 )
 def test_the_content_itself_meets_the_free_content_contract(asked: str, reply: str) -> None:
-    assert not llm._shaped_conversation_answer_violates_contract(reply, asked, "free_content")
+    assert not conversation_contract._shaped_conversation_answer_violates_contract(reply, asked, "free_content")
 
 
 # ---------------------------------------------------------------- t30: a conduct directive is acknowledged
@@ -179,7 +182,7 @@ def test_an_imitation_to_perform_or_another_order_is_not_a_conduct_directive(tex
     ],
 )
 def test_the_acknowledgement_ends_without_a_question(reply: str, rejected: bool) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(
+    assert conversation_contract._shaped_conversation_answer_violates_contract(
         reply, "a partir de ahora imítame", "constraint_ack",
     ) is rejected
 
@@ -214,7 +217,7 @@ def test_what_the_person_played_last_resumes_their_player(text: str) -> None:
     reading = read(text, available_operations=MEDIA_OPERATIONS)
     assert reading.clarification is None
     assert reading.effects is not None and reading.effects.operations == ("media.control",)
-    assert sidecar._ground_explicit_arguments("media.control", text, MEDIA_CONTROL_SCHEMA) == {"action": "play"}
+    assert argument_grounding._ground_explicit_arguments("media.control", text, MEDIA_CONTROL_SCHEMA) == {"action": "play"}
     assert not known_unsupported_effect_request(text, MEDIA_OPERATIONS)
 
 
@@ -297,7 +300,7 @@ TASK_SCHEMAS = {
 def test_a_conditional_add_is_a_read_then_the_add_it_guards(text: str, entry: str, list_name: str) -> None:
     effects = read(text, available_operations=LIST_OPERATIONS).effects
     assert effects is not None and effects.operations == ("task.search", "task.create")
-    skeleton = sidecar._explicit_plan_skeleton(effects.operations, effects.evidence)
+    skeleton = plan_shape._explicit_plan_skeleton(effects.operations, effects.evidence)
     steps = skeleton["steps"]
     assert [step["operation"] for step in steps] == ["task.search", "task.create"]
     # The add waits on the read and keeps the person's literal arguments.
@@ -308,10 +311,10 @@ def test_a_conditional_add_is_a_read_then_the_add_it_guards(text: str, entry: st
     assert [(step.operation, step.depends_on, step.arguments_mode) for step in proposal.steps] == [
         ("task.search", (), "literal"), ("task.create", ("step_1",), "literal"),
     ]
-    assert sidecar._ground_explicit_arguments("task.search", steps[0]["purpose"], TASK_SCHEMAS["task.search"]) == {
+    assert argument_grounding._ground_explicit_arguments("task.search", steps[0]["purpose"], TASK_SCHEMAS["task.search"]) == {
         "query": entry,
     }
-    assert sidecar._ground_explicit_arguments("task.create", steps[1]["purpose"], TASK_SCHEMAS["task.create"]) == {
+    assert argument_grounding._ground_explicit_arguments("task.create", steps[1]["purpose"], TASK_SCHEMAS["task.create"]) == {
         "title": entry, "details": list_name,
     }
 
@@ -406,7 +409,7 @@ def _added(request: str, entry: str, list_name: str) -> dict:
     ],
 )
 def test_the_final_of_the_add_tells_it_and_asks_nothing(asked, entry, list_name, reply, defect) -> None:
-    assert llm.compose_visible_defect(reply, "status", asked, _added(asked, entry, list_name)) == defect
+    assert visible_defect.compose_visible_defect(reply, "status", asked, _added(asked, entry, list_name)) == defect
 
 
 @pytest.mark.parametrize(
@@ -423,4 +426,4 @@ def test_the_read_that_found_the_entry_is_told_without_an_add(reply: str, defect
         "observed": {"tasks": [{"title": "flour", "details": "shopping list"}], "count": 1, "mode": "search",
                      "limit": 20},
     })}
-    assert llm.compose_visible_defect(reply, "status", FLOUR, found) == defect
+    assert visible_defect.compose_visible_defect(reply, "status", FLOUR, found) == defect

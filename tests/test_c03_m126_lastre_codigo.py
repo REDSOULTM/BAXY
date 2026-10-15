@@ -17,12 +17,12 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.patterns import clarification_awaits_decider, resolve_explicit_clarification_intent
 from baxy_mind.semantic.system import _weather_read_intent
+from baxy_mind import turn_decide
 
 
 class _Decider:
@@ -84,7 +84,7 @@ def _tool(name: str) -> dict:
 
 def _turn(text: str, model: _Decider) -> dict:
     tools = {name: _tool(name) for name in _OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m126", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),

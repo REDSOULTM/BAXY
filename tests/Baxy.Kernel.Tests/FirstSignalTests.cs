@@ -28,8 +28,11 @@ public sealed class FirstSignalTests
         Assert.That(FirstSignal.ShouldEmitEarly(FirstSignal.PathRecognizer, 3), Is.True);
     }
 
+    // Revisión r2, hallazgo 5: since the notice stopped repeating the request (estabilidad cu-v3 2026-10-08) it varies
+    // by the turn's language and step, not by its words; the name says what is checked. It is the progress label (a
+    // status line, as StatusText «Trabajando»), not a reply: the reply of the turn is still composed.
     [Test]
-    public void FormulatedProgressIsNotAStallAndVariesByTurn()
+    public void FormulatedProgressIsNotAStallAndSpeaksEachTurnsLanguage()
     {
         const string spanish = "Explicame en dos frases que es la fotosintesis.";
         const string english = "Tell me something odd about walnut trees.";
@@ -120,6 +123,58 @@ public sealed class FirstSignalTests
             Assert.That(visible, Is.Not.EqualTo(inProgress));
             Assert.That(visible, Does.Not.Match("(?i)^\\s*listo\\b"));
             Assert.That(response.HonestyCorrection.Claim, Does.Not.Contain("Listo"));
+        });
+    }
+
+    // Estabilidad cu-v3 2026-10-08, twins of the boot_stage labels of v2-v3-04, v3-51, v3-14 and v3-39 («Sigo con abre
+    // obs y agrega una escena nueva que se.» 16 times, «Sigo con search my onenote notebooks for receta.», «Still
+    // working on open media player, go to the video.»): the notice never repeats the request, raw or cut.
+    [TestCase("abre obs y agrega una escena nueva que se llame Pruebas", "es")]
+    [TestCase("abre powerpint, haz una presentación en blanco con el título Ventas", "es")]
+    [TestCase("search my onenote notebooks for receta de pan", "en")]
+    [TestCase("open media player, go to the video folder and play the first one", "en")]
+    [TestCase("en el explorador entrá a Documentos y creá una carpeta", null)]
+    public void ProgressNoticeNeverRepeatsTheRequest(string request, string? language)
+    {
+        foreach ((string kind, int step, int total) in new[]
+                 {
+                     (FirstSignal.KindEarly, 0, 0),
+                     (FirstSignal.KindMilestone, 0, 0),
+                     (FirstSignal.KindMilestone, 2, 3),
+                 })
+        {
+            string notice = FirstSignal.FormulateProgress(request, kind, step, total, language);
+            string[] requestWords = request.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(static word => word.Trim(',', '.').ToLowerInvariant())
+                .Where(static word => word.Length > 3)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(notice, Does.Not.Contain("Sigo con"));
+                Assert.That(requestWords.Any(word => notice.ToLowerInvariant().Contains(word, StringComparison.Ordinal)),
+                    Is.False, notice);
+                Assert.That(notice, Does.Not.Match("(?i)^\\s*(listo|done)\\b"));
+                Assert.That(notice, Does.EndWith("."));
+            });
+        }
+    }
+
+    [Test]
+    public void ProgressNoticeSpeaksTheTurnsDecidedLanguage()
+    {
+        // v3-14: an English request read as Spanish by the word list gave «Sigo con search my onenote…»; the decided
+        // language wins, and «mixed» (spanglish) falls back to the request's own reading.
+        const string request = "search my onenote notebooks for receta";
+        Assert.Multiple(() =>
+        {
+            Assert.That(FirstSignal.FormulateProgress(request, language: "en"), Is.EqualTo("Still working on it."));
+            Assert.That(FirstSignal.FormulateProgress(request, language: "es"), Is.EqualTo("Sigo trabajando en ello."));
+            Assert.That(
+                FirstSignal.FormulateProgress(request, FirstSignal.KindMilestone, 2, 3, "en"),
+                Is.EqualTo("Still working, step 2 of 3."));
+            Assert.That(
+                FirstSignal.FormulateProgress("abre Steam y ve a la biblioteca", FirstSignal.KindMilestone, 2, 3, "mixed"),
+                Is.EqualTo("Sigo en el paso 2 de 3."));
         });
     }
 

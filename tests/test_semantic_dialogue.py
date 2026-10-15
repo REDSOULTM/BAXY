@@ -11,6 +11,8 @@ import pytest
 
 from baxy_mind.semantic import dialogue as dialogue_slot
 from baxy_mind.semantic.dialogue import DialogueSlot
+from baxy_mind import turn_decisions
+from baxy_mind import turn_followups
 
 
 def _slot(pending: str | None = None, antecedents=(), reply: str | None = None) -> DialogueSlot:
@@ -137,9 +139,8 @@ def test_a_correction_with_a_destination_is_not_a_refusal():
 
 
 def _talk(text):
-    from baxy_mind import __main__ as mind
 
-    return mind._talk_act_turn_decision(text, None, None)
+    return turn_decisions._talk_act_turn_decision(text, None, None)
 
 
 @pytest.mark.parametrize(
@@ -198,7 +199,6 @@ class _NoModel:
     ],
 )
 def test_a_new_destination_rearms_the_last_request_by_pattern(previous, text, rearmed):
-    from baxy_mind import __main__ as mind
 
     message = {
         "text": text,
@@ -208,7 +208,7 @@ def test_a_new_destination_rearms_the_last_request_by_pattern(previous, text, re
             {"role": "user", "content": text},
         ],
     }
-    result = mind._rearm_in_context(
+    result = turn_followups._rearm_in_context(
         message, llm=_NoModel(), available_operations=("media.play.youtube", "media.play.query"),
     )
     assert result == (rearmed, "pattern")

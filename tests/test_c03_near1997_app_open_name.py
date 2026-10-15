@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.llm import _app_open_observed_name, compose_visible_defect
+from baxy_mind.app_open_facts import _app_open_observed_name
+from baxy_mind.visible_defect import compose_visible_defect
 
 SITUATION = {
     "kind": "operation",

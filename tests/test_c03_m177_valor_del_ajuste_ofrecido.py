@@ -35,6 +35,7 @@ from baxy_mind.semantic import levels
 from baxy_mind.semantic import temporal as semantic_temporal
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
 
 OPERATIONS = tuple(
     json.loads(
@@ -142,7 +143,7 @@ def _turn(before: list[dict[str, str]], text: str, decision: ContextDecision,
           question: str = "¿Cuánto le bajo al brillo?") -> tuple[dict, _Decider]:
     tools = {name: _tool(name) for name in OPERATIONS}
     model = _Decider(decision, question)
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m177", "text": text, "history": [*before, {"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, application_names=APPLICATIONS, dialogue_state=DialogueState(),

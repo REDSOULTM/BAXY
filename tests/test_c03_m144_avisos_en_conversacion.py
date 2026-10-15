@@ -40,6 +40,9 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import arguments, decider, notes, temporal
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
 
 LOCAL = timezone(timedelta(hours=-3))
 # Saturday 3 October 2026, 11:00 in Chile (UTC-3).
@@ -137,7 +140,7 @@ def _turn(said: list[str], decision: ContextDecision) -> tuple[dict, _Decider]:
     history = [{"role": "user" if index % 2 == 0 else "assistant", "content": line} for index, line in enumerate(said)]
     tools = {name: _tool(name) for name in OPERATIONS}
     model = _Decider(decision)
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m144", "text": said[-1], "history": history},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),
@@ -148,9 +151,9 @@ def _turn(said: list[str], decision: ContextDecision) -> tuple[dict, _Decider]:
 def _arguments(operation: str, objective: str, said: list[str], decided: dict[str, Any] | None = None,
                schema: dict[str, Any] = SCHEDULE, state: DialogueState | None = None) -> tuple[dict | None, str]:
     if decided is not None:
-        sidecar._remember_decided_arguments(objective, (operation,), tuple(decided.items()))
+        decided_arguments._remember_decided_arguments(objective, (operation,), tuple(decided.items()))
     history = [{"role": "user" if index % 2 == 0 else "assistant", "content": line} for index, line in enumerate(said)]
-    return sidecar._direct_arguments_result(
+    return direct_arguments._direct_arguments_result(
         {"operation": operation, "text": objective, "history": history},
         llm=_NoExtraction(), tool=_tool(operation, schema), dialogue_state=state or DialogueState(),
     )

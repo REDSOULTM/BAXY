@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Baxy.Providers.Windows.Applications;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.External;
@@ -59,6 +60,9 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     private readonly Func<string, string?> _knownFolder;
     private readonly HttpClient _http;
     private readonly Func<string, CancellationToken, Task<(byte[] Body, string ContentType)>>? _fetch;
+    // cu-v3-abrir-archivo: the installed application a file is opened with (file.open «application»), by the same
+    // opening app.open does: resolved in the Start catalog, opened behind the person's window, the front handed back.
+    private Func<ApplicationOpenRequest, CancellationToken, ValueTask<ApplicationOpenResult>>? _openWith;
 
     internal WindowsFileToolsAdapter()
         : this(KnownFolderPath, null)
@@ -67,10 +71,12 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
 
     internal WindowsFileToolsAdapter(
         Func<string, string?> knownFolder,
-        Func<string, CancellationToken, Task<(byte[] Body, string ContentType)>>? fetch)
+        Func<string, CancellationToken, Task<(byte[] Body, string ContentType)>>? fetch,
+        Func<ApplicationOpenRequest, CancellationToken, ValueTask<ApplicationOpenResult>>? openWith = null)
     {
         _knownFolder = knownFolder ?? throw new ArgumentNullException(nameof(knownFolder));
         _fetch = fetch;
+        _openWith = openWith;
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(40) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 BAXY/1.0 file-download");
     }
@@ -174,18 +180,22 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string folder = ExternalJson.RequiredString(arguments, "folder");
+        string asked = ExternalJson.RequiredString(arguments, "folder");
         string name = ExternalJson.RequiredString(arguments, "name").Trim();
-        string? root = ResolveKnownFolder(folder);
-        if (root is null)
-            return ExternalJson.FailureBeforeEffect(operation, "known_folder_missing");
-        string? path = SafeChild(root, name);
+        (string? path, string folder, string? error) = LocateOpenTarget(asked, name, cancellationToken: cancellationToken);
         if (path is null)
-            return ExternalJson.FailureBeforeEffect(operation, "file_name_invalid");
-        if (!File.Exists(path))
-            return ExternalJson.FailureBeforeEffect(operation, "file_not_found");
+            return ExternalJson.FailureBeforeEffect(operation, error ?? "file_not_found");
         if (!SafeOpenExtensions.Contains(Path.GetExtension(path).ToLowerInvariant()))
             return ExternalJson.FailureBeforeEffect(operation, "file_extension_not_openable");
+        if (arguments.TryGetProperty("application", out JsonElement named) && named.ValueKind == JsonValueKind.String
+            && named.GetString()?.Trim() is { Length: > 0 } application)
+        {
+            // molestia-ayudantes: «foreground» when the person asked to see it (the App's rule by who asked, as app.open's:
+            // a turn's file.open), never when a mission opens it to work in it (it stays behind the person's window).
+            bool shown = arguments.TryGetProperty("foreground", out JsonElement front) && front.ValueKind == JsonValueKind.True;
+            return await OpenWithAsync(operation, asked, folder, path, application, shown, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         HashSet<nint> windowsBefore = TopLevelWindows();
         var effectBoundary = new ExternalEffectBoundary();
@@ -218,6 +228,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                     writer.WriteNumber("version", 1);
                     writer.WriteString("folder", folder);
                     writer.WriteString("name", fileName);
+                    WriteOpenedPlace(writer, asked, folder, path);
                     writer.WriteString("windowTitle", opened.title);
                     if (processId is not null) writer.WriteNumber("processId", processId.Value);
                     writer.WriteString("authority", "shell_open_window_title_postread");
@@ -235,6 +246,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 writer.WriteNumber("version", 1);
                 writer.WriteString("folder", folder);
                 writer.WriteString("name", fileName);
+                WriteOpenedPlace(writer, asked, folder, path);
                 writer.WriteNumber("processId", processId.Value);
                 writer.WriteString("authority", "shell_open_process_postread");
                 writer.WriteEndObject();
@@ -243,6 +255,262 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
 
         return effectBoundary.Failure(operation, "file_open_not_verified", effectObserved: true);
+    }
+
+    // cu-v3-abrir-archivo (r9 v3-15, v3-17, v3-18): «abrí paisaje.jpg en Fotos» abre el archivo CON esa aplicación
+    // por el shell (su activación de paquete para archivos, o su ejecutable con la ruta), sin teclas ni diálogo: la
+    // misma apertura que app.open, delante cuando la persona pidió verlo («foreground») y detrás de su ventana cuando lo
+    // abre una misión para trabajar en él. El archivo nunca se copia ni se mueve. La prueba
+    // es la ventana de esa aplicación, o una nueva, cuyo título nombra el archivo.
+    private async ValueTask<ExternalCapabilityReceipt> OpenWithAsync(
+        string operation,
+        string asked,
+        string folder,
+        string path,
+        string application,
+        bool foreground,
+        CancellationToken cancellationToken)
+    {
+        HashSet<nint> windowsBefore = TopLevelWindows();
+        var effectBoundary = new ExternalEffectBoundary();
+        effectBoundary.Cross(cancellationToken);
+        ApplicationOpenResult opened;
+        try
+        {
+            _openWith ??= new WindowsInstalledApplicationOpenProvider().OpenAsync;
+            opened = await _openWith(
+                new ApplicationOpenRequest(
+                    application, "fileopen_" + Guid.NewGuid().ToString("N"), Foreground: foreground, ForControl: true,
+                    FilePath: path),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or IOException or InvalidOperationException)
+        {
+            return effectBoundary.Failure(operation, "file_open_dispatch_rejected");
+        }
+
+        if (!opened.Verified)
+        {
+            // Nothing was launched (the application is not installed, is two, or takes no file): nothing happened.
+            return opened.Receipt.LaunchIssued
+                ? ExternalJson.FailureAfterEffect(operation, "file_open_not_verified", effectObserved: true)
+                : ExternalJson.FailureBeforeEffect(operation, opened.ErrorCode ?? "file_open_not_verified");
+        }
+
+        string stem = Path.GetFileNameWithoutExtension(path);
+        string fileName = Path.GetFileName(path);
+        // Review of cu-v3-abrir-archivo (findings 2 and 7): a title names the file only outside the application's own
+        // name («lista.txt - Bloc de notas» does not name «notas.txt», «Fotos» does not name «foto.png»), and a new
+        // window counts only when the application's own program draws it (one the person opens meanwhile is no proof).
+        string? program = ProgramOf(opened.ProcessId ?? 0)
+            ?? (opened.WindowHandle is > 0 and long owned ? ProgramOf(ForegroundHandBack.ProcessOf(owned)) : null);
+        for (int attempt = 0; attempt < 16; attempt++)
+        {
+            (nint Handle, string Title)? shown = opened.WindowHandle is > 0 and long handle
+                && WindowTitle((nint)handle) is { Length: > 0 } title
+                && TitleNamesFile(title, stem, fileName, opened.DisplayName)
+                    ? ((nint)handle, title)
+                    : program is null
+                        ? null
+                        : NewWindowTitled(windowsBefore, stem, fileName, opened.DisplayName,
+                            window => string.Equals(
+                                ProgramOf(ForegroundHandBack.ProcessOf(window)), program, StringComparison.OrdinalIgnoreCase));
+            if (shown is { } window)
+            {
+                int processId = ForegroundHandBack.ProcessOf(window.Handle);
+                JsonElement result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteString("folder", folder);
+                    writer.WriteString("name", fileName);
+                    WriteOpenedPlace(writer, asked, folder, path);
+                    writer.WriteString("application", opened.DisplayName);
+                    writer.WriteString("windowTitle", window.Title);
+                    writer.WriteNumber("processId", processId > 0 ? processId : opened.ProcessId ?? 0);
+                    writer.WriteBoolean("alreadyRunning", opened.AlreadyRunning);
+                    // As app.open's receipt: Windows activated the application by itself, and whether the front
+                    // went back to the person's window (cu-v3-foco-segunda).
+                    if (opened.WindowsActivation)
+                    {
+                        writer.WriteBoolean("windowsActivation", true);
+                        writer.WriteBoolean("frontRestored", opened.FrontRestored);
+                    }
+
+                    writer.WriteString("authority", "application_file_open_window_title_postread");
+                    writer.WriteEndObject();
+                });
+                return ExternalJson.Success(operation, result, effectObserved: true);
+            }
+
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        }
+
+        return effectBoundary.Failure(operation, "file_open_not_verified", effectObserved: true);
+    }
+
+    private static bool TitleNamesFile(string title, string stem, string fileName) =>
+        title.Contains(stem, StringComparison.OrdinalIgnoreCase) || title.Contains(fileName, StringComparison.OrdinalIgnoreCase);
+
+    // A window of a named application names the file when, with the application's own name taken out of its title, the
+    // title still holds the file's whole name, or its name without extension as a word of its own.
+    internal static bool TitleNamesFile(string title, string stem, string fileName, string? application)
+    {
+        string rest = string.IsNullOrWhiteSpace(application)
+            ? title
+            : title.Replace(application.Trim(), " ", StringComparison.OrdinalIgnoreCase);
+        if (rest.Contains(fileName, StringComparison.OrdinalIgnoreCase))
+            return true;
+        for (int at = stem.Length == 0 ? -1 : rest.IndexOf(stem, StringComparison.OrdinalIgnoreCase); at >= 0;
+             at = rest.IndexOf(stem, at + 1, StringComparison.OrdinalIgnoreCase))
+        {
+            int end = at + stem.Length;
+            if ((at == 0 || !char.IsLetterOrDigit(rest[at - 1])) && (end == rest.Length || !char.IsLetterOrDigit(rest[end])))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static string? ProgramOf(int processId)
+    {
+        if (processId <= 0)
+            return null;
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById(processId);
+            return process.ProcessName;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    // v3 ronda 3 (lugar M6; v3-15, v3-18, t-file-4): el nombre puede traer
+    // subcarpetas relativas a la carpeta conocida («baxy-prueba-v3\paisaje.jpg»),
+    // nunca «..» ni una ruta absoluta. Si el archivo no está donde se dijo, se
+    // busca por su nombre exacto en las carpetas conocidas: uno solo se abre y
+    // el recibo dice dónde estaba; dos o más no se adivinan. Un nombre con
+    // subcarpetas dice dónde está: si no está ahí, no se busca otro. Una
+    // búsqueda cortada por tiempo o cancelación no prueba que el hallado sea el
+    // único: no se abre nada (file_search_incomplete).
+    private static readonly string[] OpenSearchFolders = ["desktop", "documents", "downloads", "pictures"];
+    private const int OpenSearchDepth = 4;
+    private static readonly TimeSpan OpenSearchBudget = TimeSpan.FromSeconds(3);
+
+    internal (string? Path, string Folder, string? Error) LocateOpenTarget(
+        string folder,
+        string name,
+        TimeSpan? budget = null,
+        CancellationToken cancellationToken = default)
+    {
+        string? root = ResolveKnownFolder(folder);
+        if (root is null)
+            return (null, folder, "known_folder_missing");
+        string? path = SafeRelative(root, name);
+        if (path is null)
+            return (null, folder, "file_name_invalid");
+        if (File.Exists(path))
+            return (path, folder, null);
+        if (name.IndexOfAny(['\\', '/']) >= 0)
+            return (null, folder, "file_not_found");
+        string leaf = System.IO.Path.GetFileName(path);
+        TimeSpan limit = budget ?? OpenSearchBudget;
+        var found = new List<(string Path, string Folder)>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var clock = Stopwatch.StartNew();
+        bool incomplete = false;
+        bool OutOfTime()
+        {
+            if (!incomplete && (cancellationToken.IsCancellationRequested || clock.Elapsed > limit))
+                incomplete = true;
+            return incomplete;
+        }
+
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            MaxRecursionDepth = OpenSearchDepth,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.ReparsePoint,
+        };
+        foreach (string known in OpenSearchFolders)
+        {
+            if (OutOfTime())
+                break;
+            string? knownRoot = ResolveKnownFolder(known);
+            if (knownRoot is null || !seen.Add(knownRoot))
+                continue;
+            try
+            {
+                // El reloj y la cancelación se miran en cada entrada, no sólo en
+                // cada coincidencia: un árbol sin el archivo también se corta.
+                var entries = new System.IO.Enumeration.FileSystemEnumerable<string>(
+                    knownRoot,
+                    (ref System.IO.Enumeration.FileSystemEntry entry) => entry.ToFullPath(),
+                    options)
+                {
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) =>
+                        !OutOfTime()
+                        && !entry.IsDirectory
+                        && entry.FileName.Equals(leaf.AsSpan(), StringComparison.OrdinalIgnoreCase),
+                    ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry _) => !OutOfTime(),
+                };
+                foreach (string candidate in entries)
+                {
+                    if (!found.Any(item => string.Equals(item.Path, candidate, StringComparison.OrdinalIgnoreCase)))
+                        found.Add((candidate, known));
+                    if (found.Count > 1 || OutOfTime())
+                        break;
+                }
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                continue;
+            }
+
+            if (found.Count > 1)
+                break;
+        }
+
+        if (found.Count > 1)
+            return (null, folder, "file_ambiguous");
+        if (incomplete)
+            return (null, folder, "file_search_incomplete");
+        return found.Count == 1 ? (found[0].Path, found[0].Folder, null) : (null, folder, "file_not_found");
+    }
+
+    private void WriteOpenedPlace(Utf8JsonWriter writer, string asked, string folder, string path)
+    {
+        string? root = ResolveKnownFolder(folder);
+        string relative = root is null ? System.IO.Path.GetFileName(path) : System.IO.Path.GetRelativePath(root, path);
+        writer.WriteString("relativePath", relative);
+        if (!string.Equals(asked, folder, StringComparison.Ordinal)
+            || !string.Equals(relative, System.IO.Path.GetFileName(path), StringComparison.Ordinal))
+        {
+            writer.WriteString("askedFolder", asked);
+        }
+    }
+
+    internal static string? SafeRelative(string root, string name)
+    {
+        string[] parts = name.Split(['\\', '/'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length == 0 || parts.Length > 8 || name.Length > 200 || name.StartsWith('\\') || name.StartsWith('/')
+            || parts.Any(part => part is "." or ".."))
+        {
+            return null;
+        }
+
+        string? path = Path.GetFullPath(root);
+        foreach (string part in parts)
+        {
+            path = SafeChild(path, part);
+            if (path is null)
+                return null;
+        }
+
+        return path;
     }
 
     // ---- desktop.wallpaper.set ----------------------------------------------
@@ -584,7 +852,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         return handles;
     }
 
-    private static (nint, string)? NewWindowTitled(HashSet<nint> before, string stem, string fileName)
+    private static (nint, string)? NewWindowTitled(HashSet<nint> before, string stem, string fileName) =>
+        NewWindowTitled(before, stem, fileName, null, null);
+
+    private static (nint, string)? NewWindowTitled(
+        HashSet<nint> before, string stem, string fileName, string? application, Func<nint, bool>? drawnBy)
     {
         (nint, string)? found = null;
         EnumWindowsProc callback = (handle, _) =>
@@ -593,7 +865,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 return true;
             string title = WindowTitle(handle);
             if (title.Length > 0
-                && (title.Contains(stem, StringComparison.OrdinalIgnoreCase) || title.Contains(fileName, StringComparison.OrdinalIgnoreCase)))
+                && (application is null ? TitleNamesFile(title, stem, fileName) : TitleNamesFile(title, stem, fileName, application))
+                && (drawnBy is null || drawnBy(handle)))
             {
                 found = (handle, title);
                 return false;

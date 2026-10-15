@@ -23,8 +23,10 @@ from typing import Any
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import dialogue as dialogue_slot
+from baxy_mind import decided_arguments
+from baxy_mind import plan_shape
+from baxy_mind import direct_arguments
 
 APP_OPEN = {"type": "object", "properties": {"appId": {"type": "string", "x-maxUtf8Bytes": 512}},
             "required": ["appId"], "additionalProperties": False}
@@ -61,15 +63,15 @@ def _plan(said: str, objective: str, effects: tuple[str, ...], decided: dict[str
     """Each literal step of the plan the App asks for, materialized as the plan request does before (or, with
     ``after``, once) the extraction ran."""
 
-    sidecar._remember_decided_arguments(objective, effects, tuple(decided.items()))
-    skeleton = sidecar._explicit_plan_skeleton(effects)
+    decided_arguments._remember_decided_arguments(objective, effects, tuple(decided.items()))
+    skeleton = plan_shape._explicit_plan_skeleton(effects)
     operations = tuple(step["operation"] for step in skeleton["steps"])
     conversation = (history or []) + [{"role": "user", "content": said}]
     got = {}
     for step in skeleton["steps"]:
         if step["argumentsMode"] != "literal":
             continue
-        got[step["operation"]] = sidecar._plan_step_decided_arguments(
+        got[step["operation"]] = decided_arguments._plan_step_decided_arguments(
             step["operation"], operations, objective, TOOLS[step["operation"]], conversation,
             extracted=extracted, after_extraction=after,
         )
@@ -123,23 +125,23 @@ def test_a_plan_never_takes_what_nobody_said_or_what_it_cannot_place() -> None:
     assert got == {"app.open": None, "window.resolve": None}
     # Two openings: the decider's values cannot say which step is whose.
     objective = "Abre Spotify y Discord."
-    sidecar._remember_decided_arguments(objective, ("app.open", "app.open"), (("app", ["Spotify", "Discord"]),))
+    decided_arguments._remember_decided_arguments(objective, ("app.open", "app.open"), (("app", ["Spotify", "Discord"]),))
     for step in ("app.open",):
-        assert sidecar._plan_step_decided_arguments(
+        assert decided_arguments._plan_step_decided_arguments(
             step, ("app.open", "app.open"), objective, TOOLS[step], [{"role": "user", "content": objective}],
         ) is None
     # A list is never one text, whatever its words.
-    assert sidecar._decided_value(["Spotify", "Discord"], {"type": "string"}) is None
+    assert decided_arguments._decided_value(["Spotify", "Discord"], {"type": "string"}) is None
 
 
 def test_the_extraction_s_values_are_kept_and_completed() -> None:
     said = "abrí spotify y ponime algo de jazz tranqui"
     objective = "Abrí Spotify y pon algo de jazz tranquilo."
-    sidecar._remember_decided_arguments(objective, ("app.open", "media.play.query"),
+    decided_arguments._remember_decided_arguments(objective, ("app.open", "media.play.query"),
                                         (("app.open", "Spotify"), ("media.play.query", "jazz tranquilo")))
 
     def completed(extracted: dict[str, Any]) -> dict[str, Any] | None:
-        return sidecar._plan_step_decided_arguments(
+        return decided_arguments._plan_step_decided_arguments(
             "media.play.query", ("app.open", "media.play.query"), objective, TOOLS["media.play.query"],
             [{"role": "user", "content": said}], extracted=extracted, after_extraction=True,
         )
@@ -163,10 +165,10 @@ class _Model:
 
 
 def _write(said: str, objective: str, reply: str, decided: dict[str, Any]) -> tuple[dict | None, str]:
-    sidecar._remember_decided_arguments(objective, ("filesystem.write.text",), tuple(decided.items()))
+    decided_arguments._remember_decided_arguments(objective, ("filesystem.write.text",), tuple(decided.items()))
     history = [{"role": "user", "content": "ahora hazlo en python"}, {"role": "assistant", "content": reply},
                {"role": "user", "content": said}]
-    return sidecar._direct_arguments_result(
+    return direct_arguments._direct_arguments_result(
         {"operation": "filesystem.write.text", "text": objective, "history": history},
         llm=_Model(), tool=TOOLS["filesystem.write.text"], dialogue_state=dialogue_slot.DialogueState(),
     )
@@ -205,8 +207,8 @@ def test_variants_of_writing_baxy_s_reply(said: str, objective: str, reply: str,
 
 def test_a_text_that_is_not_baxy_s_reply_is_not_replaced() -> None:
     reply = f"```python\n{CODE}\n```"
-    assert sidecar._reply_the_decider_wrote("def restar(a, b):\n    return a - b\n", reply) is None
-    assert sidecar._reply_the_decider_wrote(CODE + "\n", reply) == CODE
+    assert decided_arguments._reply_the_decider_wrote("def restar(a, b):\n    return a - b\n", reply) is None
+    assert decided_arguments._reply_the_decider_wrote(CODE + "\n", reply) == CODE
     # M118 (DEV-F F-w42-t3): a line left open at the end is still a cut value.
-    assert sidecar._decided_value("def f(x):\n    if \n", {"type": "string"}) is None
-    assert sidecar._decided_value(CODE + "\n", {"type": "string"}) == "def sumar(a, b): return a + b"
+    assert decided_arguments._decided_value("def f(x):\n    if \n", {"type": "string"}) is None
+    assert decided_arguments._decided_value(CODE + "\n", {"type": "string"}) == "def sumar(a, b): return a + b"

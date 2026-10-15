@@ -14,6 +14,9 @@ import copy
 import pytest
 
 from baxy_mind import computer_use
+from baxy_mind import cu_documents
+from baxy_mind import cu_rules
+from baxy_mind import cu_projection
 from baxy_mind.semantic import missions
 
 
@@ -79,7 +82,7 @@ OPENED = [{"step": 1, "operation": "app.open", "applicationName": "Excel", "ok":
 
 def _step(goal: str = "ir a la pestaña insertar", *, view: dict | None = None, history: list[dict] | None = None,
           objective: str = "en Excel andá a la pestaña Insertar", application: str = "Excel") -> dict | None:
-    return computer_use.deterministic_step(
+    return cu_rules.deterministic_step(
         goal=goal, view=view if view is not None else _start_page(), history=history if history is not None else OPENED,
         application=application, objective=objective,
     )
@@ -109,7 +112,7 @@ def test_a_tab_asked_on_a_start_page_creates_the_focused_blank_item_with_enter(a
     assert step["operation"] == "input.key.press"
     # A named list item has the keyboard: Enter sends nothing to anyone, so no target that asks.
     assert step["arguments"] == {"key": "enter"}
-    assert step["code"] == computer_use.EXPECTS_TITLE_CHANGE
+    assert step["code"] == cu_documents.EXPECTS_TITLE_CHANGE
 
 
 def test_the_live_failure_is_decided_without_the_model() -> None:
@@ -120,7 +123,7 @@ def test_the_live_failure_is_decided_without_the_model() -> None:
     )
 
     assert decision["operation"] == "input.key.press"
-    assert decision["code"] == computer_use.EXPECTS_TITLE_CHANGE
+    assert decision["code"] == cu_documents.EXPECTS_TITLE_CHANGE
 
 
 def test_a_blank_item_without_the_keyboard_is_clicked_once_and_never_acted_on_again() -> None:
@@ -128,13 +131,13 @@ def test_a_blank_item_without_the_keyboard_is_clicked_once_and_never_acted_on_ag
     first = _step(view=view)
     assert first is not None and first["operation"] == "input.visible.click"
     assert first["arguments"] == {"label": "Libro en blanco", "index": 6}
-    assert first["code"] == computer_use.EXPECTS_TITLE_CHANGE
+    assert first["code"] == cu_documents.EXPECTS_TITLE_CHANGE
 
     # Review 2026-10-07: the click may have created the document already (its window slow to come); an Enter after it
     # could create a second one. The start page still there after the wait is said, never acted on again.
     clicked = [*OPENED, {"step": 2, "operation": "input.visible.click", "label": "Libro en blanco", "index": 6, "ok": True}]
     for after in (_step(view=_start_page(), history=clicked), _step(view=view, history=clicked)):
-        assert after is not None and after["operation"] == "none" and after["code"] == computer_use.NO_DOCUMENT_OPEN
+        assert after is not None and after["operation"] == "none" and after["code"] == cu_documents.NO_DOCUMENT_OPEN
 
 
 def test_enter_only_when_the_focused_element_is_the_offer_itself() -> None:
@@ -166,7 +169,7 @@ def test_a_start_page_still_there_after_the_creation_is_said_never_entered_again
 
     assert step is not None
     assert step["operation"] == "none"
-    assert step["code"] == computer_use.NO_DOCUMENT_OPEN
+    assert step["code"] == cu_documents.NO_DOCUMENT_OPEN
 
 
 # ------------------------------------------------------------------ contracasos: nada se crea
@@ -186,7 +189,7 @@ def test_a_file_the_person_named_is_never_replaced_by_a_blank_one(objective) -> 
 
     assert step is not None
     assert step["operation"] == "none"
-    assert step["code"] == computer_use.NO_DOCUMENT_OPEN
+    assert step["code"] == cu_documents.NO_DOCUMENT_OPEN
 
 
 def test_a_start_page_without_a_blank_item_creates_nothing_and_opens_no_recent_file() -> None:
@@ -250,7 +253,7 @@ def test_a_file_named_like_a_blank_offer_in_a_folder_is_never_entered(with_list,
         application="Explorador de archivos",
     )
 
-    assert step is None or step.get("code") not in {computer_use.EXPECTS_TITLE_CHANGE, computer_use.NO_DOCUMENT_OPEN}
+    assert step is None or step.get("code") not in {cu_documents.EXPECTS_TITLE_CHANGE, cu_documents.NO_DOCUMENT_OPEN}
     assert step is None or step["operation"] != "input.key.press"
 
 
@@ -281,9 +284,9 @@ def test_a_window_whose_title_names_a_document_is_no_start_page() -> None:
 
 def test_only_a_tab_is_a_reason_to_create_never_a_plain_place_nor_the_browser() -> None:
     plain = _step("ir a insertar")
-    assert plain is None or plain.get("code") != computer_use.EXPECTS_TITLE_CHANGE
+    assert plain is None or plain.get("code") != cu_documents.EXPECTS_TITLE_CHANGE
     browser = _step(application=missions.BROWSER_CATEGORY, objective="andá a la pestaña Insertar")
-    assert browser is None or browser.get("code") != computer_use.EXPECTS_TITLE_CHANGE
+    assert browser is None or browser.get("code") != cu_documents.EXPECTS_TITLE_CHANGE
     # A tab already on screen is clicked as before, start page or not.
     view = copy.deepcopy(_start_page())
     view["controls"].append(_control(20, "TabItem", "Insertar", "", (160, 60, 70, 30)))
@@ -349,7 +352,7 @@ def test_names_own_files_list(name, expected) -> None:
 
 
 def test_the_final_says_the_start_page_as_the_cause() -> None:
-    seen = computer_use.project_seen(
+    seen = cu_projection.project_seen(
         {"goal": "ir a la pestaña diseno", "reached": False, "application": "Word",
          "stoppedBy": "computer_use_no_document_open", "steps": []},
         "es",
@@ -357,3 +360,61 @@ def test_the_final_says_the_start_page_as_the_cause() -> None:
 
     assert seen["stoppedBecause"] == "la aplicación está en su pantalla de inicio, sin ningún documento abierto"
     assert "operaci" not in seen["stoppedBecause"]
+
+
+# ------------------------------------------------------------------ Estabilización G3: el pedido presupone un documento
+# Tandas f2nb t2-c10, t3-c02, t4-c13: Word and Excel born on their start page; the model typed «1» twice into the start
+# page's name box for «seleccioná la fila 1», and «seleccionar titulo» closed by the model's own evidence after a click
+# on «Inicio». A request about a document already open is said as such on a start page with none.
+
+@pytest.mark.parametrize(("app", "blank", "objective", "goal"), [
+    ("Word", "Documento en blanco", "en word poné el titulo en negrita y centralo", "seleccionar titulo"),
+    ("Excel", "Libro en blanco", "en el excel que tengo abierto seleccioná la fila 1 y ponela en negrita",
+     "seleccionar fila 1"),
+    ("Word", "Documento en blanco", "en el word que tengo abierto ponle negrita al texto que tengo seleccionado",
+     "en el word que tengo abierto ponle negrita al texto que tengo seleccionado"),
+    ("Word", "Blank document", "in the Word doc I have open make the title bold", "select title"),
+])
+def test_g3_a_request_about_an_open_document_on_a_start_page_is_said_never_acted(app, blank, objective, goal) -> None:
+    decision = computer_use.decide_step(
+        _NoModel(), objective=objective, goal=goal, application=app, success_check=None,
+        view=_start_page(app, blank), history=[{**OPENED[0], "applicationName": app}], budget_left=10,
+        application_names=("Excel", "Word"),
+    )
+
+    assert decision["operation"] == "none"
+    assert decision["code"] == cu_documents.NO_DOCUMENT_OPEN
+
+
+def test_g3_contracaso_a_tab_on_a_start_page_still_creates_the_blank_document() -> None:
+    decision = computer_use.decide_step(
+        _NoModel(), objective="en Word andá a la pestaña Diseño", goal="ir a la pestaña diseno",
+        application="Word", success_check="control:diseno:selected", view=_start_page("Word", "Documento en blanco"),
+        history=[{**OPENED[0], "applicationName": "Word"}], budget_left=10, application_names=("Excel", "Word"),
+    )
+    assert decision["operation"] == "input.key.press" and decision["code"] == cu_documents.EXPECTS_TITLE_CHANGE
+
+
+def test_g3_contracaso_with_the_document_open_the_request_goes_on() -> None:
+    view = _document_window()
+    step = cu_rules.deterministic_step(
+        goal="seleccionar fila 1", view=view, history=OPENED, application="Excel",
+        objective="en el excel que tengo abierto seleccioná la fila 1 y ponela en negrita",
+    )
+    assert step is None or step.get("code") != cu_documents.NO_DOCUMENT_OPEN
+
+
+@pytest.mark.parametrize(("text", "expected"), [
+    ("en word poné el titulo en negrita y centralo", True),
+    ("en el excel que tengo abierto seleccioná la fila 1 y ponela en negrita", True),
+    ("en el word que tengo abierto ponle negrita al texto que tengo seleccionado", True),
+    ("in the excel that I have open select row 1", True),
+    ("en word escribí el titulo en negrita", False),
+    ("abrí excel y creá un libro en blanco", False),
+    ("abre un documento nuevo de word y poné el titulo en negrita", False),
+    ("en paint elegí el lápiz con color azul", False),
+    ("en word andá a la pestaña Diseño", False),
+    ("", False),
+])
+def test_g3_presupposes_an_open_document(text, expected) -> None:
+    assert missions.presupposes_an_open_document(text) is expected

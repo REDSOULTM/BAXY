@@ -162,6 +162,23 @@ public sealed class M120ClienteCerradoTests
         });
     }
 
+    // Encargo CS (banco fz1 s14): Discord cold after a restart goes through its updater and took more than the 15 s of
+    // D59 §1; its cold-start clock is data per application (client_cold_start.v1.json), any other keeps the default, and
+    // a client still starting when it runs out is said as such (nothing written nor sent).
+    [Test]
+    public void EachClientWaitsItsOwnColdStartAndSaysItIsStillStarting()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ClientColdStart.For(WindowsDesktopMessagingAutomation.ClientApplicationName("discord")),
+                Is.EqualTo(TimeSpan.FromSeconds(60)));
+            Assert.That(ClientColdStart.For(WindowsDesktopMessagingAutomation.ClientApplicationName("whatsapp")),
+                Is.EqualTo(TimeSpan.FromSeconds(15)), "not listed: the default of D59 §1");
+            Assert.That(ClientColdStart.For("discord"), Is.EqualTo(TimeSpan.FromSeconds(60)), "matched without case");
+            Assert.That(WindowsDesktopMessagingAutomation.ClientStillStarting("discord"), Is.EqualTo("discord_client_still_starting"));
+        });
+    }
+
     [TestCase("WhatsApp", true)]
     [TestCase("#general | Amigos - Discord", true)]
     [TestCase("Discord", true)]

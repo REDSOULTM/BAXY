@@ -6,8 +6,9 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import payload_fact_checks
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({"system.settings.set", "system.settings.status", "wifi.radio.set", "bluetooth.radio.set", "app.open"})
 SCHEMA = {"type": "object", "properties": {"setting": {"type": "string"}, "value": {"type": "integer"}}, "required": ["setting", "value"], "additionalProperties": False}
@@ -21,7 +22,7 @@ def test_airplane_mode_orders_set_every_radio(text: str, value: int) -> None:
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == ("system.settings.set",)
     assert effect_intent.airplane_mode_request(text) == value
-    assert mind._ground_explicit_arguments("system.settings.set", text, SCHEMA) == {"setting": "airplane_mode", "value": value}
+    assert argument_grounding._ground_explicit_arguments("system.settings.set", text, SCHEMA) == {"setting": "airplane_mode", "value": value}
     assert effect_intent.operation_domain_is_grounded(text, "system.settings.set") is True
 
 
@@ -48,4 +49,4 @@ def test_a_negation_and_the_old_limit() -> None:
 )
 def test_the_reply_states_the_observed_airplane_mode(text: str, on: bool, defect: str) -> None:
     payload = {"operation": "system.settings.set", "seen": {"setting": "airplane_mode", "airplaneMode": on, "changed": True, "radios": []}}
-    assert llm._payload_fact_defect(text, payload, "poneme el modo avión") == defect
+    assert payload_fact_checks._payload_fact_defect(text, payload, "poneme el modo avión") == defect

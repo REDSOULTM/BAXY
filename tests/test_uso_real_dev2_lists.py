@@ -27,12 +27,15 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.effect_intent import operation_domain_is_grounded
 from baxy_mind.planner import PlannerCatalog, validate_skeleton
 from baxy_mind.semantic.notes import list_creation_without_items, list_read_request, list_removal_request
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.patterns import known_unsupported_effect_request, resolve_explicit_effects
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
+from baxy_mind import plan_shape
+from baxy_mind import plan_dependencies
 
 SCHEMAS = {
     "task.create": {
@@ -126,7 +129,7 @@ class _NoModel:
 
 
 def _turn(text: str) -> dict:
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "dev2-lists", "text": text, "history": []},
         llm=_NoModel(),
         planner_catalog=PlannerCatalog(TOOLS),
@@ -262,7 +265,7 @@ def test_what_is_not_the_persons_list_is_not_read_as_one(text):
 def test_an_entry_put_on_a_list_is_a_task_on_it(text, title, details):
     effects = resolve_explicit_effects(text, OPERATIONS)
     assert effects is not None and effects.operations == ("task.create",)
-    arguments = sidecar._ground_explicit_arguments("task.create", effects.evidence[0], SCHEMAS["task.create"])
+    arguments = argument_grounding._ground_explicit_arguments("task.create", effects.evidence[0], SCHEMAS["task.create"])
     assert arguments == {"title": title, "details": details}
 
 
@@ -312,7 +315,7 @@ def test_an_entry_taken_off_a_list_is_resolved_then_sent_to_the_trash(text, entr
     assert removal is not None and (removal.entry, removal.list_name) == (entry, list_name)
     assert _decision(text) == ("plan", "task.delete")
     assert operation_domain_is_grounded(text, "task.delete") is True
-    skeleton = sidecar._explicit_plan_skeleton(("task.delete",), (text,))
+    skeleton = plan_shape._explicit_plan_skeleton(("task.delete",), (text,))
     assert [(step["operation"], step["dependsOn"], step["argumentsMode"]) for step in skeleton["steps"]] == [
         ("task.resolve.exact", [], "literal"),
         ("task.delete", ["step_1"], "after_dependencies"),
@@ -320,7 +323,7 @@ def test_an_entry_taken_off_a_list_is_resolved_then_sent_to_the_trash(text, entr
     catalog = PlannerCatalog(TOOLS)
     shortlist = [tool for tool in catalog.tools if tool.name in {"task.resolve.exact", "task.delete"}]
     assert validate_skeleton(skeleton, catalog, shortlist, text).kind == "plan"
-    assert sidecar._ground_explicit_arguments("task.resolve.exact", text, SCHEMAS["task.resolve.exact"]) == {
+    assert argument_grounding._ground_explicit_arguments("task.resolve.exact", text, SCHEMAS["task.resolve.exact"]) == {
         "title": entry,
     }
 
@@ -332,11 +335,11 @@ def test_the_trash_takes_the_identity_the_resolve_returned():
                    "deleted": False, "status": "open"},
     }]
     tool = {"function": {"parameters": SCHEMAS["task.delete"]}}
-    assert sidecar._verified_dependency_identity_arguments(
+    assert plan_dependencies._verified_dependency_identity_arguments(
         "task.delete", "quita la leche de mi lista de la compra", observations, tool,
     ) == {"taskId": "5f0c3a8e-1b2c-4d3e-8f40-000000000007", "expectedVersion": 3, "reviewLabel": "leche"}
     # Nothing resolved: no identity is made up.
-    assert sidecar._verified_dependency_identity_arguments(
+    assert plan_dependencies._verified_dependency_identity_arguments(
         "task.delete", "quita la leche de mi lista de la compra", [], tool,
     ) is None
 

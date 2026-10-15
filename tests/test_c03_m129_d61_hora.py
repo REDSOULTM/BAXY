@@ -12,13 +12,14 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import clock_checks
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.temporal import alarm_for_hour
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import turn_decide
 
 LOCAL = timezone(timedelta(hours=-3))
 OPERATIONS = ("notification.schedule", "reminder.create", "calendar.event.create", "notification.cancel.at",
@@ -54,7 +55,7 @@ def _local(utc: str | None) -> datetime | None:
     ],
 )
 def test_the_next_time_that_hour_comes(value: str, context: str, now: datetime, expected: datetime) -> None:
-    assert _local(sidecar._canonical_due_utc(value, context, now_utc=now)) == expected
+    assert _local(semantic_arguments._canonical_due_utc(value, context, now_utc=now)) == expected
 
 
 @pytest.mark.parametrize(
@@ -109,13 +110,13 @@ def test_the_hour_after_for_on_an_alarm(folded: str, expected: str | None) -> No
 
 
 def test_the_arguments_carry_the_next_time_that_hour_comes() -> None:
-    arguments = sidecar._explicit_arguments_from_evidence("notification.schedule", "set an alarm for 8")
+    arguments = semantic_arguments._explicit_arguments_from_evidence("notification.schedule", "set an alarm for 8")
     assert arguments is not None and arguments["dueUtc"] == "at 8"
-    assert _local(sidecar._canonical_due_utc(arguments["dueUtc"], "set an alarm for 8", now_utc=_at(2, 9))) == _at(2, 20)
+    assert _local(semantic_arguments._canonical_due_utc(arguments["dueUtc"], "set an alarm for 8", now_utc=_at(2, 9))) == _at(2, 20)
 
 
 def test_an_event_starts_the_next_time_that_hour_comes_on_its_day() -> None:
-    event = sidecar._explicit_calendar_event_arguments("agenda una reunión mañana de 3 a 4", now_utc=_at(2, 15))
+    event = semantic_arguments._explicit_calendar_event_arguments("agenda una reunión mañana de 3 a 4", now_utc=_at(2, 15))
     assert event is not None
     # D61b (owner, 2026-10-02): on a day the person names, 1 to 6 is the afternoon; the end follows the start.
     assert _local(event["startUtc"]) == _at(3, 15) and _local(event["endUtc"]) == _at(3, 16)
@@ -160,7 +161,7 @@ def _tool(name: str) -> dict:
                                                  ("set an alarm for 8", "notification.schedule")])
 def test_the_turn_schedules_without_a_question(text: str, operation: str) -> None:
     tools = {name: _tool(name) for name in OPERATIONS}
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m129", "text": text, "history": [{"role": "user", "content": text}]},
         llm=_Model(), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(),
@@ -171,5 +172,5 @@ def test_the_turn_schedules_without_a_question(text: str, operation: str) -> Non
 def test_the_reply_says_the_time_chosen() -> None:
     due = datetime(2026, 10, 2, 19, 0).astimezone()  # 19:00 on this machine's own clock face
     # «a las 7» for the 19:00 chosen would hide the choice: the composer is sent back.
-    assert llm._scheduled_notification_defect("Listo, tu alarma suena a las 7.", [due]) != ""
-    assert llm._scheduled_notification_defect("Listo, tu alarma suena a las 19:00.", [due]) == ""
+    assert clock_checks._scheduled_notification_defect("Listo, tu alarma suena a las 7.", [due]) != ""
+    assert clock_checks._scheduled_notification_defect("Listo, tu alarma suena a las 19:00.", [due]) == ""

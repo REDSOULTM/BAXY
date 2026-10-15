@@ -39,6 +39,26 @@ internal sealed class ScreenshotCaptureHandler(
                 ? "active_window_capture_failed"
                 : "screen_capture_failed");
         }
+        // Ronda 22: a capture the person asked to keep is also saved where they said (the catalog's known folder),
+        // verified on disk; without «folder» it stays private. A copy that could not be saved is the request's
+        // failure, never a capture told as kept.
+        SavedCaptureCopy? saved = null;
+        if (RequestedFolder(invocation) is { } folder)
+        {
+            try
+            {
+                saved = await provider.SaveCopyAsync(result.CaptureId, folder, cancellationToken).ConfigureAwait(false);
+            }
+            catch (ScreenshotUnavailableException exception)
+            {
+                return OperationOutcome.Failure(exception.Code);
+            }
+            catch (Exception exception) when (
+                exception is IOException or UnauthorizedAccessException or NotSupportedException)
+            {
+                return OperationOutcome.Failure("capture_save_failed");
+            }
+        }
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
@@ -47,6 +67,12 @@ internal sealed class ScreenshotCaptureHandler(
             writer.WriteNumber("height", result.Height); writer.WriteString("sha256", result.Sha256);
             writer.WriteString("scope", activeWindow ? "active_window" : "virtual_screen");
             writer.WriteString("createdAtUtc", result.CreatedAtUtc);
+            if (saved is not null)
+            {
+                writer.WriteString("savedFolder", saved.Folder);
+                writer.WriteString("fileName", saved.FileName);
+                writer.WriteString("savedSha256", saved.Sha256);
+            }
             if (result.ActiveWindow is { } window)
             {
                 writer.WriteStartObject("activeWindow");
@@ -65,6 +91,14 @@ internal sealed class ScreenshotCaptureHandler(
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return OperationOutcome.Success(document.RootElement.Clone());
     }
+
+    private static string? RequestedFolder(OperationInvocation? invocation) =>
+        invocation is { Arguments.ValueKind: JsonValueKind.Object }
+        && invocation.Arguments.TryGetProperty("folder", out JsonElement folder)
+        && folder.ValueKind == JsonValueKind.String
+        && folder.GetString() is { Length: > 0 } name
+            ? name
+            : null;
 
     private static void WriteBounds(Utf8JsonWriter writer, string name, CaptureBounds bounds)
     {

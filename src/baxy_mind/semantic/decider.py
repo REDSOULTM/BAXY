@@ -20,7 +20,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from fractions import Fraction
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable, NamedTuple
 
 from .grammar import _CARDINAL_WORDS, spoken_cardinal
 from .normalize import fold, fold_in_place, spelled_out
@@ -49,7 +49,8 @@ POLICY = (
     "precios, dólar, horarios, estrenos, datos de una persona, empresa o lugar concretos, opiniones sobre una obra) "
     "→ action con web.search (o weather.current para el clima, web.news.headlines para titulares). Lo estable "
     "(definiciones, cómo se hace algo, matemáticas, traducir, convertir unidades) → talk. Si la persona pide "
-    "buscar o investigar algo público, es action con web.search.\n"
+    "buscar o investigar algo público, es action con web.search; si nombra el buscador o el navegador como lugar "
+    "(«búscalo en Google», «en el navegador»), es action con browser.navigate a su página de resultados.\n"
     "2. Lo propio no se busca en la web: datos de la persona (sus notas, recordatorios, alarmas, tareas, agenda, "
     "archivos, lo que suena en su PC), preguntas sobre ti o sobre lo que acabas de decir → la operación que lo lee, "
     "o talk, o clarify.\n"
@@ -66,7 +67,8 @@ POLICY = (
     "8. Un mensaje que depende de lo anterior («¿y en Santiago?», «ahora en javascript», «20 minutos antes de "
     "eso», «súbele otro poco», «esa no, otra», «sí, dale», «10») se decide con la conversación: la misma operación "
     "con el valor nuevo, o talk que reusa lo que respondiste. Si acabas de preguntar algo y la persona contesta, "
-    "completa ese pedido.\n"
+    "completa ese pedido. Tras una corrección («sí, pero…», «no, …») no repitas la misma operación con los mismos "
+    "valores: aplica lo que cambia.\n"
     "9. Charla, gracias, quejas y reacciones → talk.\n\n"
     "Catálogo (operación: qué hace):\n"
 )
@@ -115,12 +117,17 @@ _COMPOSITION_FAILURE_MARKER = re.compile(r"⚠ \([^()\n]+\)")
 @functools.cache
 def _composition_failure_lines() -> frozenset[str]:
     """Live 2026-10-07: the App now leaves the operation floor's data line in the marker's place
-    (``compositionFailures``); it is the App's line, not BAXY's reply either."""
+    (``compositionFailures``); it is the App's line, not BAXY's reply either. r22: so is the line for a turn
+    sent while the mind's model was not up (``mindStartup``)."""
 
     from ..operation_floor import floor_data
 
+    data = floor_data()
     return frozenset(
-        text for line in floor_data().get("compositionFailures", {}).values() for text in line.values()
+        text
+        for key in ("compositionFailures", "mindStartup")
+        for line in data.get(key, {}).values()
+        for text in line.values()
     )
 
 
@@ -155,6 +162,398 @@ def plain_descriptions() -> dict[str, str]:
         return {}
     operations = data.get("operations") if isinstance(data, dict) else None
     return {str(k): str(v) for k, v in operations.items()} if isinstance(operations, dict) else {}
+
+
+_OPERATION_SURFACE = pathlib.Path(__file__).resolve().parents[1] / "data" / "operation_surface.v1.json"
+
+
+@functools.cache
+def _surfaces() -> tuple[dict[str, str], frozenset[str], frozenset[str]]:
+    try:
+        data = json.loads(_OPERATION_SURFACE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}, frozenset(), frozenset()
+    operations = data.get("operations") if isinstance(data, dict) else None
+    elsewhere = data.get("elsewhere") if isinstance(data, dict) else None
+    made = data.get("made_in_applications") if isinstance(data, dict) else None
+    return (
+        {str(k): str(v) for k, v in operations.items()} if isinstance(operations, dict) else {},
+        frozenset(str(item) for item in elsewhere) if isinstance(elsewhere, list) else frozenset(),
+        frozenset(str(item) for item in made) if isinstance(made, list) else frozenset(),
+    )
+
+
+@functools.cache
+def _kept_on_their_route() -> frozenset[str]:
+    try:
+        data = json.loads(_OPERATION_SURFACE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return frozenset()
+    kept = data.get("kept_on_their_route") if isinstance(data, dict) else None
+    return frozenset(str(item) for item in kept) if isinstance(kept, list) else frozenset()
+
+
+def keeps_its_route(operation: str) -> bool:
+    """Corrección ronda 5 (seguridad): an operation the coverage gate never hands to the engine, said inside an
+    application or not (``kept_on_their_route`` in ``data/operation_surface.v1.json``: system.power,
+    shell.command.run, uninstalling, emptying the trash…): its own route confirms or refuses before it acts."""
+
+    return operation in _kept_on_their_route()
+
+
+@functools.cache
+def _asked_by_name() -> dict[str, tuple[str, ...]]:
+    try:
+        data = json.loads(_OPERATION_SURFACE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    named = data.get("asked_by_name") if isinstance(data, dict) else None
+    if not isinstance(named, dict):
+        return {}
+    return {str(k): tuple(fold(str(item)) for item in v) for k, v in named.items() if isinstance(v, list)}
+
+
+def unasked_operations(operations: Iterable[str], text: str) -> tuple[str, ...]:
+    """v3-27 r9: the operations asked only by naming their object (``asked_by_name`` in the surface data) whose object
+    ``text`` never names: «abre el mapa de caracteres y copia el símbolo del euro» does not ask the on-screen keyboard."""
+
+    folded = f" {' '.join(re.findall(r'[a-z0-9]+', fold(text)))} "
+    named = _asked_by_name()
+    return tuple(
+        operation for operation in operations
+        if operation in named
+        and not any(f" {' '.join(re.findall(r'[a-z0-9]+', words))} " in folded for words in named[operation])
+    )
+
+
+@functools.cache
+def _said_by_verb() -> dict[str, tuple[tuple[str, ...], ...]]:
+    try:
+        data = json.loads(_OPERATION_SURFACE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    said = data.get("said_by_verb") if isinstance(data, dict) else None
+    if not isinstance(said, dict):
+        return {}
+    return {
+        str(operation): tuple(
+            tuple(re.findall(r"[a-z0-9*]+", fold(str(entry)))) for entry in entries if str(entry).strip()
+        )
+        for operation, entries in said.items()
+        if isinstance(entries, list)
+    }
+
+
+def _says(words: tuple[str, ...], entry: tuple[str, ...]) -> bool:
+    """Whether ``entry`` (folded words; a trailing * is a word start) is said in ``words``, its words together."""
+
+    def same(word: str, said: str) -> bool:
+        return word.startswith(said[:-1]) if said.endswith("*") else word == said
+
+    size = len(entry)
+    return size > 0 and any(
+        all(same(words[start + offset], entry[offset]) for offset in range(size))
+        for start in range(len(words) - size + 1)
+    )
+
+
+def primitives_unsaid(operations: Iterable[str], text: str) -> bool:
+    """Ronda 20 P3 (pasada r18, v3-11 t1 «en onenote crea una pagina nueva» → one input.visible.click on «Página»):
+    whether ``operations`` are only primitives of the screen whose verbs the person never said (``said_by_verb`` in
+    the surface data: «clic», «pulsá», «escribí», «tecla»…). Then the typed route is the decider's paraphrase of the
+    order, not the order. False for no operation, for one the data does not list (taken as said) and when any of
+    them is said: «en onenote haz clic en Agregar página», «escribí hola»."""
+
+    chosen = tuple(operations)
+    said_by = _said_by_verb()
+    if not chosen or any(operation not in said_by for operation in chosen):
+        return False
+    words = _words(text)
+    return not any(_says(words, entry) for operation in chosen for entry in said_by[operation])
+
+
+def primitives_said_unchosen(operations: Iterable[str], text: str) -> tuple[str, ...]:
+    """Ronda 21 (pasada r18, t-drag-1 «arrastrá lista.txt adentro de la carpeta archivo, en baxy-prueba-v3» → the
+    sandbox's filesystem.move on the decider's unfaithful restatement): the screen's own primitives whose verbs the
+    person's words say (``said_by_verb``) and that no chosen operation is. Empty when every one said was chosen."""
+
+    chosen = set(operations)
+    words = _words(text)
+    return tuple(
+        operation for operation, entries in _said_by_verb().items()
+        if operation not in chosen and any(_says(words, entry) for entry in entries)
+    )
+
+
+_RESTATED_QUOTE = re.compile(r"«([^«»]+)»|“([^“”]+)”|\"([^\"]+)\"")
+
+
+def without_unsaid_quotes(request: str, said: str) -> str:
+    """Ronda 21 (pasada r18, v3-65 «cambiala a la vista estandar» → «haz clic en «Vista estándar»», a control the
+    window does not have): a quotation in the decider's restatement whose words the person never said together is the
+    decider's own naming, never a literal label; it stays as plain words. A quotation of the person's own words
+    («hacé clic en Sistema» → «Sistema») keeps its quotes."""
+
+    said_words = _words(said)
+
+    def keep(found: re.Match[str]) -> str:
+        quoted = next(group for group in found.groups() if group is not None)
+        return found.group(0) if _says(said_words, _words(quoted)) else quoted
+
+    return _RESTATED_QUOTE.sub(keep, request)
+
+
+class _ServedWhereSaid(NamedTuple):
+    remembered: frozenset[str]
+    served: frozenset[str]
+    settings: frozenset[str]
+    whole_pc: tuple[str, ...]
+    holders: tuple[tuple[str, ...], ...]
+
+
+def _words(text: str | None) -> tuple[str, ...]:
+    return tuple(re.findall(r"[a-z0-9]+", fold(text or "")))
+
+
+@functools.cache
+def _served_where_said() -> _ServedWhereSaid:
+    try:
+        data = json.loads(_OPERATION_SURFACE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    data = data if isinstance(data, dict) else {}
+
+    def listed(key: str) -> tuple[str, ...]:
+        value = data.get(key)
+        return tuple(str(item) for item in value) if isinstance(value, list) else ()
+
+    return _ServedWhereSaid(
+        frozenset(listed("remembered_from_any_application")),
+        frozenset(listed("served_from_any_application")),
+        frozenset(fold(item) for item in listed("system_settings_applications")),
+        tuple(" ".join(_words(item)) for item in listed("whole_pc_objects") if _words(item)),
+        tuple(_words(item) for item in listed("applications_holding_their_own") if _words(item)),
+    )
+
+
+def system_settings_application(name: str | None) -> bool:
+    """Whether an installed application's catalog name is the PC's own settings window
+    (``system_settings_applications``): what is said in it about the system is the system's, not its own control."""
+
+    return name is not None and fold(name).strip() in _served_where_said().settings
+
+
+def _holds_its_own(name: str | None) -> bool:
+    """Whether an installed application keeps the person's own notes, reminders, alarms or calendar
+    (``applications_holding_their_own``: a listed name's words, in order, inside the catalog name's)."""
+
+    said = _words(name)
+    return any(
+        said[start:start + len(listed)] == listed
+        for listed in _served_where_said().holders
+        for start in range(len(said) - len(listed) + 1)
+    )
+
+
+# A clause that goes on after its place with «de/del/of …» was said in a longer place: «en configuración de Spotify …»
+# is Spotify's settings, not the PC's (revisión ruta-tipada 7); «en configuración del PC …» is still the PC's.
+_GENITIVE = frozenset({"de", "del", "of"})
+_ARTICLES = frozenset({"el", "la", "the", "mi", "my", "este", "esta", "this"})
+
+
+def _of_another_place(words: tuple[str, ...], whole_pc: tuple[str, ...]) -> bool:
+    if not words or words[0] not in _GENITIVE:
+        return False
+    rest = words[1:]
+    if rest and rest[0] in _ARTICLES:
+        rest = rest[1:]
+    return not (rest and rest[0] in {object_words.split()[-1] for object_words in whole_pc})
+
+
+def kept_where_said(
+    operations: Iterable[str],
+    place: str | None,
+    clause_read: Iterable[str] | Callable[[], Iterable[str]],
+    clause: str | None,
+) -> frozenset[str]:
+    """Ruta tipada en app (auditoría 2026-10-08): of the typed operations chosen for an order of one clause said inside
+    an application (``place``), those the application is only where the person believes it is done, so they keep their
+    route (``served_where_said_purpose`` in ``data/operation_surface.v1.json``):
+    - BAXY's own memory, and BAXY's own reminders and alarms the typed readers read in the clause without its place
+      (``clause_read``, ``clause``), said in an application that keeps none of its own («en Word ponme un recordatorio a
+      las 5»; «en Outlook creá un recordatorio» and «en Discord recordale a Juan…» stay the engine's);
+    - a system operation the typed readers read in that clause when the place is the PC's own settings window («en
+      Configuración bajá el brillo al 30», never «en configuración de Spotify…») or the clause names the whole PC as
+      its object («en Spotify silenciá el PC»; a bare «todo» is no PC: «en Teams silenciá todo»).
+    Any other is the application's own control, the engine's there («en OBS silenciá el audio del escritorio»).
+    ``clause_read`` may be a callable: the clause is then read only when an operation needs it (revisión 6)."""
+
+    served = _served_where_said()
+    surfaces = _surfaces()[0]
+    operations = tuple(operations)
+    holder = _holds_its_own(place)
+    words = _words(clause)
+    padded = f" {' '.join(words)} "
+    at_settings = system_settings_application(place) and not _of_another_place(words, served.whole_pc)
+    names_whole_pc = any(f" {object_words} " in padded for object_words in served.whole_pc)
+    needs_reading = tuple(
+        operation for operation in operations
+        if (operation in served.served and not holder)
+        or (surfaces.get(operation) == "system" and (at_settings or names_whole_pc))
+    )
+    read: frozenset[str] = frozenset()
+    if needs_reading and clause:
+        read = frozenset(clause_read() if callable(clause_read) else clause_read)
+    return frozenset(
+        operation for operation in operations
+        if (operation in served.remembered and not holder) or (operation in needs_reading and operation in read)
+    )
+
+
+def made_in_an_application(operations: Iterable[str]) -> bool:
+    """Ronda 21 (v3-35): whether a chosen operation makes in BAXY's own store what applications also make
+    (``made_in_applications``: a note, a document, a presentation, a text file)."""
+
+    return bool(set(operations) & _surfaces()[2])
+
+
+def operation_surface(operation: str) -> str | None:
+    """Where an operation acts (``data/operation_surface.v1.json``): «app», «piece», «own_store», «files», «system» or
+    «web»; None for one the data does not list."""
+
+    return _surfaces()[0].get(operation)
+
+
+@functools.cache
+def _value_pieces() -> frozenset[str]:
+    try:
+        data = json.loads(_OPERATION_SURFACE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return frozenset()
+    listed = data.get("value_pieces") if isinstance(data, dict) else None
+    return frozenset(str(item) for item in listed) if isinstance(listed, list) else frozenset()
+
+
+_SAID_NUMBER = re.compile(r"(?<![a-z0-9])\d+(?:[.,]\d+)?(?![a-z0-9])")
+# Revisión r19: a number said as the value an attribute takes — «la escala en 125», «regresala a 100», «set the scale
+# to 125» — after the attribute said with its article (or a verb's object pronoun) and a preposition of value. Never
+# the name or the count of what is touched: «apretá el 7», «tocá el botón 7», «la opción 2», «ventas 2024», «3 veces».
+_ATTRIBUTE_VALUE = re.compile(
+    r"(?<![a-z0-9])(?:(?:el|la|los|las|the|its|su|sus)\s+[a-z]+(?:\s+[a-z]+)?|[a-z]+[aeiour](?:lo|la|los|las)|it|them)"
+    r"\s+(?:en|a|al|hasta|to|at)\s+(?P<value>\d+(?:[.,]\d+)?)(?![a-z0-9])(?!\s*(?:veces|vez|times)(?![a-z]))"
+)
+
+
+def _carried_numbers(arguments: Iterable[tuple[str, Any]]) -> frozenset[str]:
+    return frozenset(
+        number for _, value in arguments for number in _SAID_NUMBER.findall(spelled_out(fold(str(value))))
+    )
+
+
+def leaves_the_said_value(
+    operations: Iterable[str], text: str, arguments: Iterable[tuple[str, Any]] = (),
+) -> bool:
+    """Uso real v3 ronda 19 (t2-c04 T2 «ahi ponle la escala en 125» → one click on «pantalla»): the request says a
+    number as the value of an attribute (``_ATTRIBUTE_VALUE``) and every operation chosen is a piece of the screen
+    (``operation_surface``) that carries no value said (``value_pieces`` in the surface data: the text typed), nor
+    holds that number among its own ``arguments`` (a click on «7», a key «5»). A typed operation of its own («subí el
+    volumen a 30» → audio.volume) is no piece and carries it; a number that names or counts what is touched («apretá
+    el 7», «bajá 3 veces», «el archivo ventas 2024») is the piece's own target."""
+
+    chosen = tuple(operations)
+    if not chosen:
+        return False
+    values = {found.group("value") for found in _ATTRIBUTE_VALUE.finditer(spelled_out(fold(text)))}
+    if not values or values <= _carried_numbers(arguments):
+        return False
+    pieces = _value_pieces()
+    return all(operation_surface(operation) == "piece" and operation not in pieces for operation in chosen)
+
+
+def order_served_elsewhere(
+    operations: Iterable[str],
+    clauses: int,
+    *,
+    doing_in_place: bool = False,
+    kept_in_place: Iterable[str] = (),
+    read_apart: Iterable[str] = (),
+    kept: Iterable[str] = (),
+    unasked: Iterable[str] = (),
+    read_in_place: Iterable[str] = (),
+) -> str | None:
+    """v3 ronda 3 (lectura L1, falsos éxitos M5, lugar M4): why the typed operations chosen for an order said inside an
+    installed application do not serve it, or None when they do.
+
+    «elsewhere»: every operation that acts somewhere that is not the application (BAXY's own notes or a presentation
+    it writes itself, the whole PC's sound, the web) serves what was said inside it: v3-01 «abre powerpoint… ponle de
+    titulo…» → document.presentation.create, v3-08 «abrí onenote, creá una página…» → note.create. Only what an
+    application itself makes (``made_in_applications``) serves a later clause of an order that opens one and goes on;
+    any other (the time, the weather, a reminder, the wifi) is a request of its own there («abrime Steam y fijate qué
+    hora es»), unless the order is one clause said inside the application (``doing_in_place``: «en OBS Studio silenciá
+    el micrófono») and that application is not only where the person believes it is done (``kept_in_place``,
+    ``kept_where_said``: «en Configuración bajá el brillo al 30», «en Word ponme un recordatorio»). One the typed readers read apart in the order (``read_apart``: «abre Discord y recordame…» →
+    app.open + reminder.create) is never taken from it unless the order is that one clause said inside the
+    application (then nothing was read apart: v3-24 «en el visor de eventos filtra…» read alone as web.search), and an
+    order that mixes one of those with the application's
+    work is left whole to the decider. One the order never asks for (``unasked``: no typed reader reads it there and
+    the order never names its object, ``unasked_operations``) is no request of its own either: v3-27 r9 «abre el mapa
+    de caracteres y copia el símbolo del euro» → input.keyboard.open opened the on-screen keyboard and nothing else.
+    «partial»: they are only pieces of what a person does on the screen (open, click, type, open a file) and fewer
+    than the clauses ordered: v3-38 «en la terminal andá a configuración y cambiá el tema…» → one click. An operation
+    the data does not list is taken as serving it.
+    Corrección ronda 5 (seguridad): an operation that keeps its own route (``keeps_its_route``, or one the caller
+    passes in ``kept``: its catalog risk is confirmed) always serves it: «en la terminal ejecutá shutdown /s /t 0» →
+    shell.command.run, «en la terminal apagá la computadora» → system.power confirm or refuse; the engine would not.
+    """
+
+    chosen = tuple(operations)
+    if not chosen:
+        return None
+    held = frozenset(kept)
+    if any(keeps_its_route(operation) or operation in held for operation in chosen):
+        return None
+    surfaces, elsewhere, made = _surfaces()
+    apart = frozenset(read_apart)
+    never_asked = frozenset(unasked) - apart
+    kinds = [surfaces.get(operation) for operation in chosen]
+    away = [operation for operation, kind in zip(chosen, kinds) if kind in elsewhere]
+    if away:
+        # v3 ronda 5 (lectura M1, v3-24 «en el visor de eventos filtra…» → web.search, v3-53 «en obs silencia el audio
+        # del escritorio» → audio.mute): an order of one clause said inside the application has no other clause to be
+        # read apart from; the typed readers reading that same clause alone is no request of its own.
+        # Erratas r9 (v3-26 «abrí el visr de eventos y en Sistema buscame un evento con ID 6005» → web.search): when
+        # the typed readers read the whole order as one mission in the application, an operation only a clause headed
+        # by a place inside it reads (``read_in_place``: semantic.missions.read_only_in_a_place) is that mission's;
+        # one a clause said apart reads («y buscame en la web …», «y apaga el wifi») or none reads («y después bajame
+        # el volumen») is still a request of its own (revisión 3).
+        in_place = frozenset(read_in_place) if apart == {"mission.computer.use"} else frozenset()
+        held_in_place = frozenset(kept_in_place) if doing_in_place else frozenset()
+        inside = all(
+            operation not in held_in_place
+            and (
+                doing_in_place or operation in in_place or operation in never_asked
+                or (operation not in apart and operation in made)
+            )
+            for operation in away
+        )
+        return "elsewhere" if inside else None
+    if all(kind == "piece" for kind in kinds) and clauses > len(chosen):
+        return "partial"
+    return None
+
+
+def asks_for_the_application_itself(operations: Iterable[str], clauses: int) -> bool:
+    """v3 ronda 5 (lectura M2): a question about a value an operation needs, asked for an order said inside an
+    application, is the application's own when every operation it is about acts on that application as a whole
+    service («app» in the surface data: «en Spotify subí el volumen» → ¿cuánto?, owner rule) and covers each clause
+    ordered. A question for an operation that acts elsewhere or is only a piece of the order is no question the
+    order needs: the engine does it in the application."""
+
+    chosen = tuple(operations)
+    if not chosen:
+        return False
+    surfaces, _, _ = _surfaces()
+    return all(surfaces.get(operation) == "app" for operation in chosen) and clauses <= len(chosen)
 
 
 def catalog_line(name: str, description: str) -> str:
@@ -331,6 +730,13 @@ _DEMONYM = re.compile(
     r"\b(?P<stem>colombian|mexican|argentin|chilen|chilean|uruguay|peruan|peruvian|venezolan|ecuatorian|ecuadorian|"
     r"bolivian|paraguay|cuban|dominican|filipin|philippin|brasilen|brazilian|canadiense|canadian|australian|"
     r"estadounidense|japones|japanese)(?:o|a|os|as|es|s|e)?\b"
+)
+# A file named with its extension («lista.txt», «informe final.docx» is «final.docx»), folded; web addresses
+# («youtube.com») are no files.
+_FILE_NAME = re.compile(
+    r"(?<![\w.-])[\w-]+(?:\.[\w-]+)*\.(?:txt|md|csv|json|xml|log|ini|pdf|docx?|xlsx?|pptx?|odt|ods|odp|rtf|png|jpe?g|"
+    r"gif|bmp|webp|svg|tiff?|ico|mp3|wav|flac|ogg|m4a|mp4|mkv|avi|mov|webm|zip|rar|7z|exe|msi|bat|ps1|py|js|html?|css)"
+    r"(?!\w)(?!\.\w)"
 )
 # What a removed complement leaves hanging in front of it: its preposition and its article.
 _LEAD_IN = re.compile(
@@ -600,6 +1006,13 @@ def _introduced_spans(
         if not (_values(match.group("number")) & numbers) or not unit_said:
             spans.append((match.start(), end, request[match.start():end]))
 
+    said_files = {found.group(0) for found in _FILE_NAME.finditer(fold("\n".join(said)))}
+    for match in _FILE_NAME.finditer(folded_request):
+        # Lectura-ruta (r9 t-drag-1 «arrastrá lista.txt adentro de la carpeta archivo» restated «Mueve archivo.txt…»):
+        # a file named by its extension is said only as a whole; its words said apart («archivo», «.txt») are not it.
+        if not inside(match.start()) and match.group(0) not in said_files:
+            covered.append((match.start(), match.end()))
+            spans.append((match.start(), match.end(), request[match.start():match.end()]))
     for match in _DEMONYM.finditer(folded_request):
         # M105 (DEV-D v4a D-w03-t4 «ya. dolar hoy?» in a Chilean conversation → «¿Cuánto vale hoy el dólar en pesos
         # colombianos?»): a nationality is a name written in lower case; the country it belongs to nobody said.

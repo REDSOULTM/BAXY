@@ -3,7 +3,9 @@ import copy
 
 import pytest
 
-from baxy_mind.llm import LlmRuntime, _compose_situation_payload, _payload_fact_defect
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.payload_fact_checks import _payload_fact_defect
 
 
 def situation(focus, state="normal", name="Atlas"):

@@ -19,7 +19,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.semantic.conversation import asks_whether_able, translation_without_its_text
 
@@ -76,7 +77,7 @@ TAYLOR_THIRD = (
 
 
 def _visible(text: str, intent: str, user_text: str, situation: str) -> str:
-    return llm.compose_visible_defect(text, intent, user_text, {"situation": situation})
+    return visible_defect.compose_visible_defect(text, intent, user_text, {"situation": situation})
 
 
 def test_d_s032_the_headlines_quoted_as_written_are_published_first() -> None:
@@ -89,7 +90,7 @@ def test_d_s032_the_paraphrases_still_die_and_the_deterministic_final_is_publish
 
     payload = {"operation": "web.news.headlines", "seen": json.loads(TAYLOR_READ)["observed"]}
     for draft in (TAYLOR_RETRY, TAYLOR_THIRD):
-        assert llm._payload_fact_defect(draft, payload, TAYLOR) == "missing_state"
+        assert payload_fact_checks._payload_fact_defect(draft, payload, TAYLOR) == "missing_state"
     published, calls = _compose([TAYLOR_RETRY, TAYLOR_RETRY, TAYLOR_THIRD], TAYLOR, "status", TAYLOR_READ)
     assert calls == 3
     assert published.startswith("Titulares sobre Taylor Swift: «Taylor Swift supera a Beyoncé")

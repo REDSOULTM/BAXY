@@ -32,14 +32,14 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.notes import list_entries, list_entry_request
 from baxy_mind.semantic.reading import read
-from baxy_mind import llm
+from baxy_mind import visible_defect
 from baxy_mind.semantic.reading import plain_talk
 from baxy_mind.semantic.request import INTENT_IDENTITY, read_request
 from baxy_mind.semantic.system import _weather_location
+from baxy_mind.semantic import arguments as semantic_arguments
 
 OPERATIONS = (
     "audio.mute", "audio.volume", "audio.volume.adjust", "audio.status", "media.control", "media.play.query",
@@ -78,7 +78,7 @@ def _effects(text: str) -> tuple[str, ...]:
 )
 def test_the_song_that_plays_skipped_is_the_next_track(text: str) -> None:
     assert _effects(text) == ("media.control",)
-    assert sidecar._explicit_media_control_arguments(text) == {"action": "next"}
+    assert semantic_arguments._explicit_media_control_arguments(text) == {"action": "next"}
 
 
 @pytest.mark.parametrize(
@@ -335,12 +335,12 @@ def _news_facts(*titles: str) -> dict[str, str]:
 )
 def test_a_headline_that_says_a_failure_is_read_as_the_news(titles: tuple[str, ...]) -> None:
     draft = " ".join(f"{title}." for title in titles)
-    assert llm.compose_visible_defect(draft, "result", "¿qué están diciendo en las noticias?", _news_facts(*titles)) \
+    assert visible_defect.compose_visible_defect(draft, "result", "¿qué están diciendo en las noticias?", _news_facts(*titles)) \
         != "asserted_failure"
 
 
 def test_a_failure_of_the_news_read_itself_is_still_a_failure() -> None:
     facts = _news_facts("Rechazada la ley de pesca en el Senado")
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "No pude leer las noticias.", "result", "¿qué están diciendo en las noticias?", facts,
     ) == "asserted_failure"

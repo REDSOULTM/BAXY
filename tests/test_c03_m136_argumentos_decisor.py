@@ -12,9 +12,8 @@ DEV-G (iterable, sealed 2026-10-03) first turns where the decider of the App wro
 
 from __future__ import annotations
 
-import importlib
+from baxy_mind import decided_arguments
 
-main = importlib.import_module("baxy_mind.__main__")
 
 APP_OPEN = {"type": "object", "properties": {"appId": {"type": "string"}}, "required": ["appId"],
             "additionalProperties": False}
@@ -33,9 +32,9 @@ TRASH = {"type": "object", "properties": {"fileName": {"type": "string"}, "folde
 
 
 def _decided(text, operations, arguments, operation, schema, said=None):
-    main._remember_decided_arguments(text, tuple(operations), tuple(arguments.items()))
-    source = main._with_every_known_folder_unsaid(operation, schema, said or text)
-    return main._with_decided_arguments(operation, text, {}, schema, source)
+    decided_arguments._remember_decided_arguments(text, tuple(operations), tuple(arguments.items()))
+    source = decided_arguments._with_every_known_folder_unsaid(operation, schema, said or text)
+    return decided_arguments._with_decided_arguments(operation, text, {}, schema, source)
 
 
 def test_g_s040_the_decider_s_app_is_app_open_s_app_id() -> None:

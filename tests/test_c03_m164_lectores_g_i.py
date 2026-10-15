@@ -27,13 +27,15 @@ import pytest
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind import effect_intent
-from baxy_mind import llm
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.files import only_file_named
 from baxy_mind.semantic.grammar import _request_clauses
 from baxy_mind.semantic.media import asks_what_sounds
+from baxy_mind import turn_decide
+from baxy_mind import direct_arguments
+from baxy_mind import argument_payload
 
 OPEN_SCHEMA = {
     "type": "object",
@@ -129,8 +131,8 @@ class _Decider:
 class _Abstaining:
     """The model's own extraction abstains: only BAXY's steps ground the arguments."""
 
-    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> llm.DirectArgumentExtraction:
-        return llm.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué archivo?")
+    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> argument_payload.DirectArgumentExtraction:
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué archivo?")
 
     def formulate_missing_argument_question(self, *_args: object, **_kwargs: object) -> str:
         return "¿Qué archivo?"
@@ -148,7 +150,7 @@ def _turn(
 
     tools = {name: _tool(name) for name in OPERATIONS}
     model = _Decider(decision, serves)
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m164", "text": text, "history": _history(before, text)},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, application_names=APPLICATIONS, game_catalog=GAMES, dialogue_state=DialogueState(),
@@ -157,7 +159,7 @@ def _turn(
 
 
 def _open_arguments(before: list[dict[str, str]], text: str, objective: str) -> tuple[dict | None, str]:
-    return sidecar._direct_arguments_result(
+    return direct_arguments._direct_arguments_result(
         {"operation": "file.open", "text": objective, "history": _history(before, text)},
         llm=_Abstaining(), tool=_tool("file.open"), dialogue_state=DialogueState(),
     )

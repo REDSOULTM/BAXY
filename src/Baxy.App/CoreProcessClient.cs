@@ -198,10 +198,19 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 ShellTraceScopes.Turn,
                 ShellTraceSink.TurnId,
                 ShellTraceStages.CoreCallEnd,
-                OperationVisibleFacts.ObservedLimit(response?.Message) is { } limit
-                    ? "observed." + limit
-                    : null);
+                CoreCallEndDetail(response?.Message));
         }
+    }
+
+    // M106: an observation cut to fit the message («observed.projected», «observed.omitted»); ronda 22: where a
+    // provider says its time went («elapsed.place.120.forecast.640»).
+    internal static string? CoreCallEndDetail(string? message)
+    {
+        string? limit = OperationVisibleFacts.ObservedLimit(message) is { } cut ? "observed." + cut : null;
+        string? elapsed = OperationVisibleFacts.ObservedElapsed(message);
+        string? detail = limit is null ? elapsed : elapsed is null ? limit : limit + "." + elapsed;
+        // A trace label is at most 64 characters; the cut of the observation is the one M106 counts.
+        return detail is { Length: > 64 } ? limit : detail;
     }
 
     private async Task<OperationResponse> SendOperationCoreAsync(
@@ -240,11 +249,16 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                     throw new IOException("The local engine exited before receiving the request.");
                 }
 
-                if (string.Equals(operation.OperationName, "app.open", StringComparison.Ordinal))
+                if (operation.OperationName is "app.open" or "file.open"
+                    && operation.Arguments.ValueKind == JsonValueKind.Object
+                    && operation.Arguments.TryGetProperty("foreground", out JsonElement foreground)
+                    && foreground.ValueKind == JsonValueKind.True)
                 {
                     // Grant only the trusted core immediately before its serialized
-                    // request can be observed. Final foreground identity is still
-                    // independently verified by the provider.
+                    // request can be observed, and only for an opening the person
+                    // asked to see in front (v3 point 0, arreglo 4: otherwise the
+                    // application opens behind the person's window). Final foreground
+                    // identity is still independently verified by the provider.
                     _ = ForegroundPermission.AllowSetForegroundWindow(
                         unchecked((uint)process.Id));
                 }

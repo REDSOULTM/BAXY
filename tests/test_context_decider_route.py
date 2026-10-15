@@ -10,9 +10,15 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
+from baxy_mind import turn_decide
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import search_report
+from baxy_mind import compose_situation
+from baxy_mind import failure_wording
+from baxy_mind import limit_voice
+from baxy_mind.semantic.normalize import _accent_folded_with_punctuation
 
 OPERATIONS = ("media.control", "media.play.query", "audio.mute", "web.search", "app.open", "system.time")
 
@@ -77,7 +83,7 @@ class _Decider:
 
 def _turn(text: str, llm: _Decider, history: list[dict[str, str]] | None = None) -> dict[str, object]:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "turn-context-decider", "text": text, "history": [*(history or []), {"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -214,7 +220,7 @@ def test_a_question_about_an_unreachable_place_is_its_limit() -> None:
 def test_the_app_to_open_is_read_from_its_own_clause(objective: str) -> None:
     # Owner script t36: full3 opened Steam for «abre steam y ve a la biblioteca» and the arguments step, reading the
     # whole compound as the application's name, asked «¿Cuál es el nombre exacto de la aplicación…?».
-    assert sidecar._explicit_arguments_from_evidence("app.open", objective, ("Steam", "Spotify")) == {"appId": "Steam"}
+    assert semantic_arguments._explicit_arguments_from_evidence("app.open", objective, ("Steam", "Spotify")) == {"appId": "Steam"}
 
 
 @pytest.mark.parametrize(
@@ -245,7 +251,7 @@ def test_music_is_asked_only_when_nothing_to_play_was_said(text: str, asks: bool
 # Independent review 2026-09-27 (REVISION_INDEPENDIENTE_2026-09-27.md).
 def test_a_condition_never_opens_its_app_now() -> None:
     # M1: the clause fallback of M23 read «abre discord» out of a condition.
-    assert sidecar._explicit_arguments_from_evidence("app.open", "si se cierra steam, abre discord", ("Steam", "Discord")) is None
+    assert semantic_arguments._explicit_arguments_from_evidence("app.open", "si se cierra steam, abre discord", ("Steam", "Discord")) is None
 
 
 @pytest.mark.parametrize("text", ["pon musica porfa", "pon música, gracias", "pon música en el living"])
@@ -261,18 +267,14 @@ def test_courtesy_and_the_room_are_no_music(text: str) -> None:
      ("El micrófono ya está activo.", True), ("It was already on.", True)],
 )
 def test_done_is_not_already(draft: str, already: bool) -> None:
-    from baxy_mind import llm
-
-    assert (llm._ALREADY_STATEMENT.search(llm._accent_folded_with_punctuation(draft)) is not None) is already
+    assert (compose_situation._ALREADY_STATEMENT.search(_accent_folded_with_punctuation(draft)) is not None) is already
 
 
 def test_the_true_not_found_and_the_asked_reason_are_no_invention() -> None:
-    from baxy_mind import llm
-
     failed = {"outcome": "failed", "reason": {"operation": "web.search"}}
-    assert not llm._not_found_invents_a_cause("No lo encontré porque la búsqueda no devolvió resultados.", failed)
-    assert llm.limit_voice_defect("No mando cartas a Eris porque no hay correo allá.", "¿por qué no puedes mandar una carta a Eris?") == ""
-    assert not llm._failure_word_is_the_persons("Estos fallos se deben a que Spotify no respondió.", "odio estos fallos")
+    assert not search_report._not_found_invents_a_cause("No lo encontré porque la búsqueda no devolvió resultados.", failed)
+    assert limit_voice.limit_voice_defect("No mando cartas a Eris porque no hay correo allá.", "¿por qué no puedes mandar una carta a Eris?") == ""
+    assert not failure_wording._failure_word_is_the_persons("Estos fallos se deben a que Spotify no respondió.", "odio estos fallos")
 
 
 def test_talk_about_an_unreachable_place_is_its_limit_too() -> None:

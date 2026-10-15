@@ -15,6 +15,10 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import computer_use
+from baxy_mind import cu_view
+from baxy_mind import cu_rules
+from baxy_mind import cu_step_prompt
+from baxy_mind import cu_projection
 from baxy_mind.effect_intent import resolve_explicit_effects
 from baxy_mind.semantic import missions
 
@@ -311,9 +315,42 @@ def test_what_the_engine_never_tries_is_not_a_mission() -> None:
     for text in NEVER:
         assert _route(text) != ("mission.computer.use",), text
         assert not missions.engine_can_try(text, APPS), text
-    # An order no reader knows is no part of the place before it: the chain is left to the decider.
-    assert _route("abre Steam, ve a la biblioteca y dibujá a Batman") != ("mission.computer.use",)
-    assert _route("en Discord buscá a Cotele y llamalo") != ("mission.computer.use",)
+    # An order no reader knows is no part of the place before it (v3 punto 2, A7: it is a free sub-goal of the chain,
+    # tests/test_cu_v3_tipos_lectura.py). v3 ronda 5 (lectura M6, diseño 5) changes what this line pinned: two of them
+    # beside one checked sub-goal used to leave the chain to the decider, which sent v3-49 «en 7-zip cambia la vista a
+    # detalles y ordena por tamaño» to the engine as one sentence with one goal's budget. With the application
+    # resolved every clause is a sub-goal, the free ones judged by the done judge; a prohibition beside them, or no
+    # application at all, still leaves the chain out.
+    steps = _steps("abre Steam, ve a la biblioteca, dibujá a Batman y pintalo de rojo")
+    assert [(application, check is None) for application, _, check in steps] == [
+        ("Steam", False), ("Steam", True), ("Steam", True),
+    ]
+    assert missions.mission_request("abre Steam, ve a la biblioteca, dibujá a Batman y pintalo de rojo, pero no cierres nada", APPS) is None
+    assert missions.mission_request("ve a la biblioteca, dibujá a Batman y pintalo de rojo", APPS) is None
+    # v3 r3a lectura L3: one free sub-goal beside one checked one is a mission (the router no longer drops a chain the
+    # mission reader admits); «llamalo» is its own sub-goal, never glued to the name searched, and the call's click is
+    # still confirmed by RiskPolicy on its label.
+    steps = _steps("en Discord buscá a Cotele y llamalo")
+    assert [goal for _, goal, _ in steps] == ["buscar Cotele", "llamalo"]
+    assert steps[1][2] is None
+    # Review of L3: with free sub-goals reaching the engine, money or a gift sent and a cart taken to its end are
+    # paying acts (no mission, no engine), and a message sent to someone as a free sub-goal stays the decider's.
+    for paying in (
+        "en Discord buscá a Cotele y mandale 20 dólares",
+        "en Discord buscá a Cotele y transferile plata",
+        "abrí Steam, andá a la tienda y regalale Hades a Juan",
+        "open Steam, go to the store and gift Hades to John",
+        "en Steam andá a la tienda y agregá Hades al carrito y finalizá",
+    ):
+        assert missions.mission_request(paying, APPS) is None, paying
+        assert _route(paying) != ("mission.computer.use",), paying
+        assert not missions.engine_can_try(paying, APPS), paying
+        assert missions.free_form_arguments(paying, APPS) is None, paying
+    assert _route("abrí WhatsApp, buscá a Juan y mandale hola") != ("mission.computer.use",)
+    assert missions.sends_to_someone("mandale hola") and missions.sends_to_someone("reply to her")
+    # Counter-cases: sending nothing to anyone is no message («llamalo», «ordená por fecha»), and money only when said.
+    assert not missions.sends_to_someone("llamalo") and not missions.sends_to_someone("sort by date added")
+    assert missions.mission_request("en Discord buscá a Cotele y mandale hola", APPS) is not None
 
 
 def _steps(text: str) -> list[tuple[str | None, str, str | None]]:
@@ -340,18 +377,18 @@ def test_a_new_tab_an_address_a_search_and_a_section_of_the_page() -> None:
     ]
     assert steps[0][2] == "stepDone:input.key.press:ctrl_t"
     assert steps[1][2] == "title:wikipedia"
-    # The page titled with the name counts once this sub-goal submitted the search (a title that said it already does
-    # not).
-    assert steps[2][2].split("|")[:2] == [
-        "title:nunoa&stepDone:input.key.press:enter", "title:nunoa&stepDone:input.visible.click:nunoa",
-    ]
+    # The name typed and submitted in this sub-goal, on screen (estabilización R17: a page titled with it is no proof
+    # of its own).
+    assert steps[2][2] == "stepDone:input.text.type&stepDone:input.key.press:enter&text:nunoa"
     assert "stepDone:input.visible.click:historia" in steps[3][2].split("|")
 
 
 def test_a_closing_question_is_split_off_and_answered_by_the_final() -> None:
     said = "abrí Configuración, andá a Personalización, entrá a Colores y decime si el modo es claro u oscuro"
     mission = missions.mission_request(said, APPS)
-    assert [step.goal for step in mission.steps] == ["ir a personalizacion", "ir a colores"]
+    # Ronda 23 (live r21 v3-46): the last sub-goal carries the question too, so receipts alone never close it.
+    assert [step.goal for step in mission.steps] == [
+        "ir a personalizacion", "ir a colores" + missions.QUESTION_MARK + "decime si el modo es claro u oscuro"]
     assert mission.goal.endswith(missions.QUESTION_MARK + "decime si el modo es claro u oscuro")
     # A single clause with a question stays a single mission (its own budget, not a chain link's thirty seconds):
     # the question rides on the goal, and the loop's steps read the goal without it.
@@ -359,10 +396,10 @@ def test_a_closing_question_is_split_off_and_answered_by_the_final() -> None:
     assert single.steps == () and "steps" not in single.arguments()
     assert single.goal == "ir a colores" + missions.QUESTION_MARK + "decime si el modo es claro u oscuro"
     assert single.success_check.startswith("control:colores:current|")
-    seen = computer_use.project_seen({"goal": mission.goal, "reached": True, "steps": []}, "es")
+    seen = cu_projection.project_seen({"goal": mission.goal, "reached": True, "steps": []}, "es")
     assert seen["goal"] == "ir a personalizacion; luego ir a colores"
     assert seen["question"] == "decime si el modo es claro u oscuro"
-    assert computer_use.compose_instruction(seen, "es").startswith("seen.question")
+    assert cu_projection.compose_instruction(seen, "es").startswith("seen.question")
     # «escribí decime si venís» types the words: no joiner, no question.
     assert missions.mission_request("en el bloc de notas escribí decime si venís", APPS).goal == "escribir decime si venís"
 
@@ -373,7 +410,7 @@ def test_a_closing_question_may_name_the_thing_alone() -> None:
     said = "en Configuración andá a Sistema, después a Sonido y decime el volumen"
     mission = missions.mission_request(said, APPS)
     assert mission is not None and mission.application == "Configuración"
-    assert [step.goal for step in mission.steps] == ["ir a sistema", "ir a sonido"]
+    assert [step.goal for step in mission.steps] == ["ir a sistema", "ir a sonido" + missions.QUESTION_MARK + "decime el volumen"]
     assert all(step.success_check.startswith(f"control:{name}:current|") for step, name in zip(mission.steps, ("sistema", "sonido")))
     assert mission.goal.endswith(missions.QUESTION_MARK + "decime el volumen")
     english = missions.mission_request("in Settings go to System, then Sound and tell me the volume", APPS)
@@ -399,7 +436,7 @@ def test_a_question_inside_the_text_to_type_is_typed_never_split_off(said) -> No
 
     assert mission is not None and missions.QUESTION_MARK not in mission.goal
     assert mission.goal.endswith(("y decime el horario", "and tell me the time"))
-    assert mission.success_check == "stepDone:input.text.type"
+    assert mission.success_check == missions.WRITTEN_CHECK
 
 
 def test_a_question_after_the_closed_quote_is_still_a_question() -> None:
@@ -451,10 +488,10 @@ _SETTINGS_VIEW = {
 
 def test_a_follow_up_click_on_a_navigation_place_clicks_the_navigation_item() -> None:
     goal = missions.mission_request("En Configuración, haz clic en «Sistema».", APPS).goal
-    step = computer_use.deterministic_step(goal=goal, view=_SETTINGS_VIEW, history=[], application="Configuración")
+    step = cu_rules.deterministic_step(goal=goal, view=_SETTINGS_VIEW, history=[], application="Configuración")
     assert step == {"operation": "input.visible.click", "arguments": {"label": "Sistema", "index": 4}, "reason": "el objetivo lo dice"}
     # The same for going there, the v3 chain's first sub-goal.
-    step = computer_use.deterministic_step(goal="ir a sistema", view=_SETTINGS_VIEW, history=[], application="Configuración")
+    step = cu_rules.deterministic_step(goal="ir a sistema", view=_SETTINGS_VIEW, history=[], application="Configuración")
     assert step is not None and step["arguments"].get("index") == 4
 
 
@@ -475,13 +512,13 @@ _VIEW_SEARCH = {
 
 
 def test_searching_types_in_the_windows_search_then_submits() -> None:
-    first = computer_use.deterministic_step(goal="buscar Hades", view=_VIEW_SEARCH, history=[])
+    first = cu_rules.deterministic_step(goal="buscar Hades", view=_VIEW_SEARCH, history=[])
     assert first["operation"] == "input.visible.click" and first["arguments"]["label"] == "Buscar en la tienda"
     focused = {**_VIEW_SEARCH, "window": {"title": "Steam", "focused": {"kind": "Edit", "name": "Buscar en la tienda"}}}
     clicked = [{"step": 1, "operation": "input.visible.click", "label": "Buscar en la tienda", "ok": True}]
-    assert computer_use.deterministic_step(goal="buscar Hades", view=focused, history=clicked)["arguments"] == {"text": "Hades"}
+    assert cu_rules.deterministic_step(goal="buscar Hades", view=focused, history=clicked)["arguments"] == {"text": "Hades"}
     typed = [*clicked, {"step": 2, "operation": "input.text.type", "text": "Hades", "ok": True}]
-    assert computer_use.deterministic_step(goal="buscar Hades", view=focused, history=typed)["arguments"] == {"key": "enter"}
+    assert cu_rules.deterministic_step(goal="buscar Hades", view=focused, history=typed)["arguments"] == {"key": "enter"}
 
 
 def test_an_address_is_the_bar_the_address_delete_and_enter() -> None:
@@ -492,25 +529,25 @@ def test_an_address_is_the_bar_the_address_delete_and_enter() -> None:
     for wanted in (
         {"key": "ctrl_l"}, {"text": "es.wikipedia.org"}, {"key": "delete", "target": "text_field"}, {"key": "enter"},
     ):
-        step = computer_use.deterministic_step(goal="ir a la direccion es.wikipedia.org", view=view, history=history)
+        step = cu_rules.deterministic_step(goal="ir a la direccion es.wikipedia.org", view=view, history=history)
         assert step["arguments"] == wanted
         history.append({"step": len(history) + 1, "operation": step["operation"], "ok": True, **wanted})
-    assert computer_use.deterministic_step(goal="ir a la direccion es.wikipedia.org", view=view, history=history) is None
+    assert cu_rules.deterministic_step(goal="ir a la direccion es.wikipedia.org", view=view, history=history) is None
 
 
 def test_choosing_clicks_the_tool_until_it_shows_selected() -> None:
     view = {"window": {"title": "Paint"}, "controls": [
         {"i": 0, "kind": "RadioButton", "name": "Lápiz", "state": ""}, {"i": 1, "kind": "ListItem", "name": "Rojo", "state": ""},
     ], "text": {}}
-    assert computer_use.deterministic_step(goal="seleccionar lapiz", view=view, history=[])["arguments"] == {"label": "Lápiz", "index": 0}
+    assert cu_rules.deterministic_step(goal="seleccionar lapiz", view=view, history=[])["arguments"] == {"label": "Lápiz", "index": 0}
     # The English name of the colour finds the Spanish control.
-    assert computer_use.deterministic_step(goal="seleccionar red", view=view, history=[])["arguments"]["label"] == "Rojo"
+    assert cu_rules.deterministic_step(goal="seleccionar red", view=view, history=[])["arguments"]["label"] == "Rojo"
     chosen = {**view, "controls": [{"i": 0, "kind": "RadioButton", "name": "Lápiz", "state": "on"}]}
-    assert computer_use.deterministic_step(goal="seleccionar lapiz", view=chosen, history=[]) is None
+    assert cu_rules.deterministic_step(goal="seleccionar lapiz", view=chosen, history=[]) is None
 
 
 def test_every_mission_of_the_corpus_grounds_against_the_catalog_schema() -> None:
-    from baxy_mind.__main__ import _ground_explicit_arguments
+    from baxy_mind.argument_grounding import _ground_explicit_arguments
     from test_computer_use import CHAIN_SCHEMA
 
     ungrounded = [
@@ -635,14 +672,14 @@ _CLICKED = [{"step": 1, "operation": "input.visible.click", "ok": True, "label":
 
 def test_a_content_item_chosen_by_one_click_is_opened_with_enter() -> None:
     view = _explorer_view(title="Inicio - Explorador de archivos", item_zone="T", selected=True)
-    step = computer_use.deterministic_step(
+    step = cu_rules.deterministic_step(
         goal="ir a downloads", view=view, history=_CLICKED, application="Explorador de archivos"
     )
     # Enter on a list item sends nothing: no message_composer target for RiskPolicy.
     assert step["operation"] == "input.key.press" and step["arguments"] == {"key": "enter"}
     # Once pressed, Enter is not pressed again.
     pressed = [*_CLICKED, {"step": 2, "operation": "input.key.press", "ok": True, "key": "enter"}]
-    again = computer_use.deterministic_step(
+    again = cu_rules.deterministic_step(
         goal="ir a downloads", view=view, history=pressed, application="Explorador de archivos"
     )
     assert again is None or again.get("arguments", {}).get("key") != "enter"
@@ -651,37 +688,37 @@ def test_a_content_item_chosen_by_one_click_is_opened_with_enter() -> None:
 def test_enter_is_not_pressed_where_the_click_already_arrived() -> None:
     # The window is titled with the place: the click opened it.
     arrived = _explorer_view(title="Descargas - Explorador de archivos", item_zone="T", selected=True)
-    step = computer_use.deterministic_step(
+    step = cu_rules.deterministic_step(
         goal="ir a descargas", view=arrived, history=_CLICKED, application="Explorador de archivos"
     )
     assert step is None or step["operation"] != "input.key.press"
     # A navigation list in the side column: its selected item is the page shown.
     side = _explorer_view(title="Inicio - Explorador de archivos", item_zone="L", selected=True)
-    step = computer_use.deterministic_step(
+    step = cu_rules.deterministic_step(
         goal="ir a descargas", view=side, history=_CLICKED, application="Explorador de archivos"
     )
     assert step is None or step["operation"] != "input.key.press"
     # Nothing was clicked yet: the item is clicked first.
     fresh = _explorer_view(title="Inicio - Explorador de archivos", item_zone="T", selected=False)
-    step = computer_use.deterministic_step(
+    step = cu_rules.deterministic_step(
         goal="ir a descargas", view=fresh, history=[], application="Explorador de archivos"
     )
     assert step is not None and step["operation"] == "input.visible.click"
     # Choosing an item is the goal itself: no Enter after selecting it.
-    chosen = computer_use.deterministic_step(
+    chosen = cu_rules.deterministic_step(
         goal="seleccionar descargas", view=arrived, history=_CLICKED, application="Explorador de archivos"
     )
     assert chosen is None or chosen["operation"] != "input.key.press"
 
 
 def test_content_items_are_list_items_out_of_the_side_column() -> None:
-    assert computer_use.is_content_item({"kind": "ListItem", "zone": "C"})
-    assert computer_use.is_content_item({"kind": "DataItem", "zone": "TR"})
-    assert not computer_use.is_content_item({"kind": "ListItem", "zone": "L"})
-    assert not computer_use.is_content_item({"kind": "ListItem", "zone": "TL"})
-    assert not computer_use.is_content_item({"kind": "TreeItem", "zone": "C"})
-    assert not computer_use.is_content_item({"kind": "ListItem"})
+    assert cu_view.is_content_item({"kind": "ListItem", "zone": "C"})
+    assert cu_view.is_content_item({"kind": "DataItem", "zone": "TR"})
+    assert not cu_view.is_content_item({"kind": "ListItem", "zone": "L"})
+    assert not cu_view.is_content_item({"kind": "ListItem", "zone": "TL"})
+    assert not cu_view.is_content_item({"kind": "TreeItem", "zone": "C"})
+    assert not cu_view.is_content_item({"kind": "ListItem"})
 
 
 def test_the_step_prompt_matches_controls_by_meaning_across_languages() -> None:
-    assert "otro idioma" in computer_use.STEP_PROMPT and "significado" in computer_use.STEP_PROMPT
+    assert "otro idioma" in cu_step_prompt.STEP_PROMPT and "significado" in cu_step_prompt.STEP_PROMPT

@@ -276,6 +276,19 @@ productivo es encoder-only y `ProcessIntentRouter.route()` falla
 deliberadamente: regenerar el banco no entrena ni concede autoridad al routing
 vivo, que pertenece a `turn.decide`.
 
+Una codificación que pasa de su plazo (0,75 s interactivo) no retira el canal
+del encoder (2026-10-08). La petición vencida queda abandonada por su id y la
+siguiente descarta esa respuesta por id antes de enviar nada, así que una
+respuesta tardía nunca se entrega a otra petición. El canal sólo se retira si el
+worker muere o rompe el protocolo, si encadena `ROUTER_FAILURE_STREAK` fallos
+seguidos en `ROUTER_FAILURE_WINDOW_SECONDS` o si la respuesta abandonada no
+llega en `ROUTER_LATE_REPLY_GRACE_SECONDS`; entonces se relanza un worker nuevo
+(cola e ids propios) hasta `ROUTER_MAX_RESTARTS` veces y sólo después queda
+retirado para siempre. No vuelvas a retirar el canal por un timeout suelto: una
+sola codificación lenta (la primera tras cargar E5, o el PC cargado) dejaba toda
+la vida de la mente en literal, sin emparejamiento semántico en computer use ni
+router en `turn.decide`. Los tests están en `tests/test_router.py`.
+
 ### Evidencia de turnos
 
 Solo puede reforzar conversación o abstenerse. Cambiar su corpus, cache,
@@ -387,9 +400,10 @@ Checklist:
   fault/timeout de protocolo;
 - ningún prompt contiene secretos o corpus histórico literal.
 
-`llm.py` es un hotspot; extrae módulos solo por ownership coherente y con
-pruebas que congelen la frontera. Dividir por longitud sin eliminar
-acoplamiento no mejora mantenibilidad.
+`llm.py` se partió por responsabilidad (2026-10-11): queda el runtime (proceso,
+presupuesto, transporte) y sus tareas viven en mixins (`llm_chat`, `llm_compose`,
+…) y en módulos hermanos por familia de hecho. Lo nuevo va al módulo dueño;
+un test que parchea un nombre lo parchea donde se lee.
 
 ## Cambiar voz
 

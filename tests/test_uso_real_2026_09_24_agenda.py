@@ -19,7 +19,6 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.grammar import imperative_rewrites
 from baxy_mind.semantic.guards import _overheard_speech
@@ -36,6 +35,9 @@ from baxy_mind.semantic.temporal import agenda_window, spoken_clock
 from baxy_mind.semantic.web import names_own_data
 from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import argument_grounding
+from baxy_mind import turn_decide
 
 OPERATIONS = (
     "calendar.event.list", "calendar.event.create", "reminder.create", "reminder.list", "notification.schedule",
@@ -140,17 +142,17 @@ def test_a_reminder_sent_or_set_keeps_its_subject_and_moment(text: str, title: s
     effects = read(text, available_operations=OPERATIONS).effects
     assert effects is not None and effects.operations == ("reminder.create",)
 
-    arguments = sidecar._explicit_arguments_from_evidence("reminder.create", effects.evidence[0])
+    arguments = semantic_arguments._explicit_arguments_from_evidence("reminder.create", effects.evidence[0])
     assert arguments is not None and fold(arguments["title"]) == fold(title)
-    due = sidecar._canonical_due_utc(arguments["dueUtc"], text, now_utc=NOW)
+    due = semantic_arguments._canonical_due_utc(arguments["dueUtc"], text, now_utc=NOW)
     assert due is not None
     assert datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone(LOCAL).hour == hour
 
 
 def test_set_a_reminder_to_and_send_a_reminder_to_read_the_same_arguments() -> None:
     expected = {"dueUtc": "at 7 pm", "title": "call the vet"}
-    assert sidecar._explicit_arguments_from_evidence("reminder.create", "set a reminder to call the vet at 7 pm") == expected
-    assert sidecar._explicit_arguments_from_evidence("reminder.create", "send me a reminder to call the vet at 7 pm") == expected
+    assert semantic_arguments._explicit_arguments_from_evidence("reminder.create", "set a reminder to call the vet at 7 pm") == expected
+    assert semantic_arguments._explicit_arguments_from_evidence("reminder.create", "send me a reminder to call the vet at 7 pm") == expected
 
 
 # ------------------------------------------------------------------ the person's own agenda, read
@@ -284,7 +286,7 @@ def test_a_daily_alarm_or_reminder_repeats_daily(text: str, kind: str, title: st
     effects = read(text, available_operations=OPERATIONS).effects
     assert effects is not None and effects.operations == ("notification.schedule",)
 
-    arguments = sidecar._ground_explicit_arguments("notification.schedule", effects.evidence[0], NOTIFICATION_SCHEMA)
+    arguments = argument_grounding._ground_explicit_arguments("notification.schedule", effects.evidence[0], NOTIFICATION_SCHEMA)
     assert arguments is not None
     assert arguments["kind"] == kind and arguments["recurrence"] == "daily"
     if title is not None:
@@ -311,7 +313,7 @@ def test_a_repetition_no_alarm_or_reminder_holds_is_asked(text: str, operation: 
     assert clarification.operations == (operation,)
     assert clarification.missing_fields == ("repetition_the_calendar_cannot_hold",)
     # Nothing is scheduled once in its place.
-    assert sidecar._explicit_arguments_from_evidence("notification.schedule", text) is None
+    assert semantic_arguments._explicit_arguments_from_evidence("notification.schedule", text) is None
 
 
 # ------------------------------------------------------------------ what is asked, what is a limit
@@ -414,7 +416,7 @@ def _turn(text: str) -> dict[str, object]:
             ("web.search", ("query",)),
         )
     }
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "turn-agenda-2", "text": text},
         llm=_PublicLookupLlm("No lo sé."),
         planner_catalog=PlannerCatalog(list(tools.values())),

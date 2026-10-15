@@ -12,14 +12,16 @@ from .catalog import ApplicationCatalogIndex, GameCatalogIndex
 from .grammar import (
     _ASSISTANT_NAME,
     _CLAUSE_EDGE_PUNCTUATION,
+    _RESTORE_VERB,
     _head_forms,
+    _head_is,
     _original_clause,
     _without_address,
     imperative_rewrites,
 )
 from .intent import EffectIntent
 from .media import player_opened_to_play, spoken_media_order
-from .messaging import after_opening_the_mailbox
+from .messaging import after_opening_the_mailbox, asks_not_to_send
 from .normalize import fold as _fold
 from .patterns import (
     ClarificationIntent,
@@ -411,6 +413,36 @@ _OVERHEARD_ACTION_WORDS = re.compile(
 )
 
 
+# A clause opens where the message starts, after a punctuation mark or after a connective (as for the list above).
+_CLAUSE_HEAD = re.compile(
+    r"(?:^|[,.;:!¡¿]\s*|\b(?:y|o|e|u|entonces|luego|despues|ahora|primero|tambien|and|then|now)\s+)"
+    r"(?P<head>[a-z]+)\b(?!\s*[,.;])"
+)
+
+
+def _clause_opens_with_restore(folded: str) -> bool:
+    """Ronda 24 (r23 t2-c04#4 «te dije la escala no el brillo, regresa la escala a 100»): a clause that opens with a
+    verb of putting something back (``grammar._RESTORE_VERB``) is an order; «te dije que regresaba mañana» is not (the
+    verb follows «que» and is no imperative).
+
+    Revisión 4: «regresa», «devuelve», «restablece» are also the third person of the present («estoy feliz, regresa mi
+    hermano mañana», «qué bueno, regresa el sol»), and «reset» a noun («reset total de mi vida»). The clause is an
+    order only when what it puts back is something of the PC (``_TALK_PC_DOMAIN``) or it says a level («a 100»,
+    «al 50 %», «to 80»)."""
+
+    for found in _CLAUSE_HEAD.finditer(folded):
+        if not _head_is(found.group("head"), _RESTORE_VERB):
+            continue
+        clause = re.split(r"[,.;:!?¡¿]", folded[found.end("head") :], maxsplit=1)[0]
+        if _TALK_PC_DOMAIN.search(clause) or _RESTORE_LEVEL.search(clause):
+            return True
+    return False
+
+
+# A level said with a number: «a 100», «al 50 %», «to 80», «70%».
+_RESTORE_LEVEL = re.compile(r"\b(?:a|al|to)\s+(?:un\s+|el\s+)?\d+\b(?!\s*[a-z])|\b\d+\s*(?:%|por\s*ciento|percent)")
+
+
 def plain_talk(text: str, *, effects: EffectIntent | None, clarification: object | None) -> str | None:
     """The talk act of a message that asks nothing («statement», «feedback», «reaction»), or None.
 
@@ -430,6 +462,7 @@ def plain_talk(text: str, *, effects: EffectIntent | None, clarification: object
     if (
         _OVERHEARD_ACTION_WORDS.search(orders)
         or _TALK_EXTRA_ORDER.search(orders)
+        or _clause_opens_with_restore(orders)
         or _TALK_DESIRED_REQUEST.search(folded)
         or _TALK_LOOKUP.search(folded)
         # MASSIVE «i had a problem with my burger can you tweet bk»: a request after the story is a request.
@@ -482,6 +515,10 @@ def utterance_form(
         ("imperative_rewrite", _imperative_rewrite_request),
     ):
         effects = form(text, resolve)
+        if effects is not None and "message.send" in effects.operations and asks_not_to_send(text):
+            # Estabilización B2 (revisión B H4 «escríbele a Ron92 que llego tarde, sólo déjalo escrito»): M155 reads
+            # the whole message; a send read in one clause of it is never a send the rest keeps written.
+            return None
         if effects is not None:
             return name, effects
     return None

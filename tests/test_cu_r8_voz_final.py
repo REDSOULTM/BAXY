@@ -18,8 +18,13 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from baxy_mind import computer_use, llm, operation_floor  # noqa: E402
+from baxy_mind import operation_floor
+from baxy_mind import cu_projection
+from baxy_mind import cu_reply_checks
+from baxy_mind import deterministic_finals
+from baxy_mind import visible_defect
 from baxy_mind.semantic import missions  # noqa: E402
+from baxy_mind.semantic.normalize import _accent_folded_with_punctuation
 
 TWINS = json.loads((ROOT / "tests" / "data" / "cu_floor_twins.json").read_text(encoding="utf-8"))
 
@@ -62,12 +67,12 @@ PENCIL = _mission("seleccionar el lápiz", [("Lápiz", "Button")], {"title": "Si
 
 
 def _mission_defect(text: str, situation: dict) -> str | None:
-    folded = llm._accent_folded_with_punctuation(text)
-    return computer_use.mission_defect(folded, computer_use.project_seen(situation["observed"], "es"))
+    folded = _accent_folded_with_punctuation(text)
+    return cu_reply_checks.mission_defect(folded, cu_projection.project_seen(situation["observed"], "es"))
 
 
 def _defect(text: str, situation: dict, said: str = "") -> str:
-    return llm.compose_visible_defect(text, "status", said, {"situation": json.dumps(situation, ensure_ascii=False)})
+    return visible_defect.compose_visible_defect(text, "status", said, {"situation": json.dumps(situation, ensure_ascii=False)})
 
 
 @pytest.mark.parametrize("draft", [
@@ -118,15 +123,15 @@ def test_the_change_claims_of_r7_stay_vetoed() -> None:
 @pytest.mark.parametrize("case", TWINS["cases"], ids=lambda case: case["id"])
 def test_the_twin_fixture_is_what_the_mind_says(case: dict) -> None:
     # The C# OperationFloor reads the same fixture (ComputerUseFloorTests.TheAppSaysWhatTheMindSays).
-    assert llm._deterministic_final(case["situation"], {}, "", "es") == case["es"]
-    assert llm._deterministic_final(case["situation"], {}, "", "en") == case["en"]
+    assert deterministic_finals._deterministic_final(case["situation"], {}, "", "es") == case["es"]
+    assert deterministic_finals._deterministic_final(case["situation"], {}, "", "en") == case["en"]
 
 
 def test_the_floor_data_is_the_mind_s_own() -> None:
     data = operation_floor.floor_data()["computerUse"]
     # The App splits the question off the goal with the marker the mission reader writes.
     assert data["questionMark"] == missions.QUESTION_MARK
-    assert computer_use._STOP_CAUSES is data["causes"]
+    assert cu_projection._STOP_CAUSES is data["causes"]
     for said in data["causes"].values():
         assert set(said) == {"es", "en"} and "operaci" not in said["es"] and "operation" not in said["en"]
 

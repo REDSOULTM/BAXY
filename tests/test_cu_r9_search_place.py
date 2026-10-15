@@ -4,7 +4,7 @@ word is never the place, and a click that failed is not tried again in the same 
 
 from __future__ import annotations
 
-from baxy_mind import computer_use
+from baxy_mind import cu_rules
 from baxy_mind.semantic import missions
 
 
@@ -47,7 +47,7 @@ VIEW = {
 
 
 def test_going_to_search_never_clicks_a_read_only_address_field() -> None:
-    step = computer_use.deterministic_step(goal="ir a search", view=VIEW, history=[], application="Spotify")
+    step = cu_rules.deterministic_step(goal="ir a search", view=VIEW, history=[], application="Spotify")
     assert step is not None and step["operation"] == "input.visible.click"
     assert step["arguments"]["label"] == "Buscar"
 
@@ -57,5 +57,5 @@ def test_a_label_whose_click_failed_is_not_clicked_again_after_other_steps() -> 
         {"step": 1, "operation": "input.visible.click", "ok": False, "label": "Buscar", "index": 3},
         {"step": 2, "operation": "input.key.press", "ok": True, "key": "ctrl_f"},
     ]
-    step = computer_use.deterministic_step(goal="ir a search", view=VIEW, history=history, application="Spotify")
+    step = cu_rules.deterministic_step(goal="ir a search", view=VIEW, history=history, application="Spotify")
     assert step is None or step.get("arguments", {}).get("label") != "Buscar"

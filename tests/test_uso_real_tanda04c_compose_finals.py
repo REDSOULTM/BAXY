@@ -27,8 +27,11 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import reply_language_checks
+from baxy_mind import visible_defect
+from baxy_mind import clock_facts
 from baxy_mind.effect_intent import operation_domain_is_grounded
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.planner import PlannerCatalog
@@ -36,6 +39,10 @@ from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.network import calendar_parts_asked
 from baxy_mind.semantic.patterns import conversation_only_content_request, resolve_explicit_clarification_intent
 from baxy_mind.semantic.reading import read
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import conversation as semantic_conversation
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 
 OPERATIONS = (
     "audio.volume", "audio.volume.adjust", "input.key.press", "app.installed", "app.open", "window.resolve",
@@ -107,7 +114,7 @@ class _Writer:
 
 def _turn(text: str, model: _Writer | None = None) -> dict:
     tools = [_tool(name) for name in OPERATIONS]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "tanda-04c", "text": text, "history": []},
         llm=model or _Writer(),
         planner_catalog=PlannerCatalog(tools),
@@ -162,7 +169,7 @@ def test_the_calendar_part_asked_is_read(text, parts):
     ],
 )
 def test_the_payload_carries_only_the_part_asked(text, language, facts):
-    payload = llm._compose_situation_payload(_CLOCK, language, text)
+    payload = compose_payload._compose_situation_payload(_CLOCK, language, text)
     assert {key: payload[key] for key in ("date", "weekday", "month", "year") if key in payload} == facts
     assert "clock" not in payload
 
@@ -195,15 +202,15 @@ def test_the_payload_carries_only_the_part_asked(text, language, facts):
 )
 def test_the_part_asked_is_the_part_checked(text, reply, published):
     facts = {"situation": json.dumps(_CLOCK)}
-    payload = llm._compose_situation_payload(_CLOCK, "es", text)
-    assert (llm.compose_visible_defect(reply, "status", text, facts) == "") is published
-    assert (llm._payload_fact_defect(reply, payload, text) == "") is published
+    payload = compose_payload._compose_situation_payload(_CLOCK, "es", text)
+    assert (visible_defect.compose_visible_defect(reply, "status", text, facts) == "") is published
+    assert (payload_fact_checks._payload_fact_defect(reply, payload, text) == "") is published
 
 
 def test_a_named_month_outside_the_carried_one_is_another_month():
     # «enero o febrero» named back is two other months; the answer says the carried one only.
-    assert llm._misses_calendar_facts("No es enero ni febrero, es septiembre.", {"month": "septiembre"})
-    assert not llm._misses_calendar_facts("It may still feel like summer, but it's September.", {"month": "September"})
+    assert clock_facts._misses_calendar_facts("No es enero ni febrero, es septiembre.", {"month": "septiembre"})
+    assert not clock_facts._misses_calendar_facts("It may still feel like summer, but it's September.", {"month": "September"})
 
 
 # ---------------------------------------------------------------- 2. the direction observed
@@ -245,11 +252,11 @@ _VOLUME_UP_AT_TOP = {
     ],
 )
 def test_a_direction_is_said_only_as_observed(payload, reply, defect):
-    assert llm._payload_fact_defect(reply, payload, "") == defect
+    assert payload_fact_checks._payload_fact_defect(reply, payload, "") == defect
 
 
 def test_an_offer_to_lower_more_is_not_a_claimed_direction():
-    assert llm._payload_fact_defect("El brillo quedó en 8. ¿Quieres que lo baje más?", _SET_TO_8, "") == ""
+    assert payload_fact_checks._payload_fact_defect("El brillo quedó en 8. ¿Quieres que lo baje más?", _SET_TO_8, "") == ""
 
 
 # ---------------------------------------------------------------- 3. the PC's nouns in Spanish
@@ -275,7 +282,7 @@ _BRIGHTNESS_SET = {
 )
 def test_a_spanish_reply_names_the_pc_in_spanish(request_text, reply, defect):
     facts = {"situation": json.dumps(_BRIGHTNESS_SET)}
-    assert llm.compose_visible_defect(reply, "status", request_text, facts) == defect
+    assert visible_defect.compose_visible_defect(reply, "status", request_text, facts) == defect
 
 
 @pytest.mark.parametrize(
@@ -288,7 +295,7 @@ def test_a_spanish_reply_names_the_pc_in_spanish(request_text, reply, defect):
     ],
 )
 def test_only_the_lowercase_prose_nouns_count_as_english(reply, words):
-    assert llm._english_pc_nouns(reply) == words
+    assert visible_defect._english_pc_nouns(reply) == words
 
 
 # ---------------------------------------------------------------- 4. the article agrees
@@ -313,7 +320,7 @@ def test_only_the_lowercase_prose_nouns_count_as_english(reply, words):
     ],
 )
 def test_the_article_agrees_with_the_pc_noun(text, agreeing):
-    assert llm.visible_reply_breaks_article_agreement(text) == agreeing
+    assert reply_language_checks.visible_reply_breaks_article_agreement(text) == agreeing
 
 
 def test_a_composed_reply_with_a_disagreeing_article_is_retried():
@@ -325,7 +332,7 @@ def test_a_composed_reply_with_a_disagreeing_article_is_retried():
     }
     facts = {"situation": json.dumps(adjusted)}
     request_text = "baja el brillo de la pantalla un 20"
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Reducí el brillo del pantalla un 20 por ciento.", "status", request_text, facts
     ) == "wrong_gender"
 
@@ -383,10 +390,10 @@ def test_a_clarification_that_never_agrees_is_not_published():
 def test_the_applications_shown_are_the_open_windows_read_aloud(text):
     assert _effects(text) == ("window.resolve",)
     assert operation_domain_is_grounded(text, "window.resolve", ())
-    assert sidecar._ground_explicit_arguments("window.resolve", text, WINDOW_RESOLVE_SCHEMA) == {
+    assert argument_grounding._ground_explicit_arguments("window.resolve", text, WINDOW_RESOLVE_SCHEMA) == {
         "process": "*", "byTitle": False,
     }
-    assert not sidecar._closed_unsupported_request(text)
+    assert not semantic_conversation._closed_unsupported_request(text)
 
 
 @pytest.mark.parametrize(
@@ -409,7 +416,7 @@ def test_a_category_of_applications_is_still_asked_which(text):
 @pytest.mark.parametrize("text", ["abre el menú inicio", "open the start menu", "pull up the start menu please"])
 def test_the_start_menu_named_is_still_the_windows_key(text):
     assert _effects(text) == ("input.key.press",)
-    assert sidecar._ground_explicit_arguments("input.key.press", text, KEY_SCHEMA) == {"key": "win"}
+    assert argument_grounding._ground_explicit_arguments("input.key.press", text, KEY_SCHEMA) == {"key": "win"}
 
 
 @pytest.mark.parametrize(
@@ -418,7 +425,7 @@ def test_the_start_menu_named_is_still_the_windows_key(text):
 )
 def test_the_installed_applications_listed_stay_a_limit(text):
     assert _effects(text) != ("input.key.press",)
-    assert sidecar._closed_unsupported_request(text)
+    assert semantic_conversation._closed_unsupported_request(text)
 
 
 def test_a_key_press_narrates_only_the_key():
@@ -432,7 +439,7 @@ def test_a_key_press_narrates_only_the_key():
             "authority": "win32_sendinput_return_count",
         },
     }
-    payload = llm._compose_situation_payload(pressed, "es", "abre el menú inicio")
+    payload = compose_payload._compose_situation_payload(pressed, "es", "abre el menú inicio")
     assert payload["seen"] == {"keyPressed": "win"}
     assert "Informe" not in json.dumps(payload, ensure_ascii=False)
 
@@ -458,7 +465,7 @@ def test_a_key_press_narrates_only_the_key():
 )
 def test_fiction_asked_for_is_a_draft_written_in_the_conversation(text):
     assert conversation_only_content_request(text)
-    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) == (
+    assert _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) == (
         "content_draft"
     )
 

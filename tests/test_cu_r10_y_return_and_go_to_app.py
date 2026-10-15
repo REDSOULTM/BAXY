@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-from baxy_mind import computer_use
+from baxy_mind import cu_rules
 from baxy_mind.semantic import missions
 
 APPS = ("Steam", "Discord", "Calculadora", "Configuración", "Explorador de archivos", "Paint")
@@ -82,5 +82,5 @@ def test_a_name_with_ampersand_is_clicked_by_its_localized_navigation_item_never
         ],
         "text": {"C": ["Bluetooth y dispositivos", "Bluetooth"]},
     }
-    step = computer_use.deterministic_step(goal="ir a Bluetooth & devices", view=view, history=[])
+    step = cu_rules.deterministic_step(goal="ir a Bluetooth & devices", view=view, history=[])
     assert step is not None and step["arguments"] == {"label": "Bluetooth y dispositivos", "index": 3}

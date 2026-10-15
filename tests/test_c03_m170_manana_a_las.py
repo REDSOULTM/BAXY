@@ -22,10 +22,10 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import temporal
 from test_c03_m148_avisos_eso_y_cuentas import _arguments
 from test_c03_m165_avisos_restantes import I20
+from baxy_mind import argument_grounding
 
 LOCAL = timezone(timedelta(hours=-3))
 # Sunday 4 October 2026 in Chile (UTC-3); the hours each case is asked at.
@@ -41,11 +41,11 @@ def _at(hour: int, minute: int, days: int = 0) -> datetime:
 def clock(monkeypatch: pytest.MonkeyPatch):
     """Fix the clock the reminder's moment is read against (M108): ``clock(now)``."""
 
-    normalize = sidecar._normalize_grounded_operation_arguments
+    normalize = argument_grounding._normalize_grounded_operation_arguments
 
     def fix(now: datetime) -> None:
         monkeypatch.setattr(
-            sidecar, "_normalize_grounded_operation_arguments",
+            argument_grounding, "_normalize_grounded_operation_arguments",
             lambda *args, **kwargs: normalize(*args, **{**kwargs, "now_utc": kwargs.get("now_utc") or now}),
         )
 

@@ -18,8 +18,20 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import failure_wording
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
 from baxy_mind.llm import LlmRuntime
+from baxy_mind import computer_use_finals
+from baxy_mind import llm_audit
+from baxy_mind import llm_compose
+
+
+# Every mind module whose code writes a composition stage: the audit is patched in each one.
+_COMPOSE_STAGE_WRITERS = (computer_use_finals, llm_audit, llm_compose)
 
 AMBIGUOUS = {"situation": {"kind": "failure", "polarity": "failure", "cause": "ambiguous_request"}}
 
@@ -127,11 +139,11 @@ class _Drafts(LlmRuntime):
 
 
 def _visible(text: str, intent: str, user_text: str, situation: dict) -> str:
-    return llm.compose_visible_defect(text, intent, user_text, {"situation": situation})
+    return visible_defect.compose_visible_defect(text, intent, user_text, {"situation": situation})
 
 
 def _payload(text: str, user_text: str, situation: dict, language: str) -> str:
-    return llm._payload_fact_defect(text, llm._compose_situation_payload(situation, language, user_text), user_text)
+    return payload_fact_checks._payload_fact_defect(text, compose_payload._compose_situation_payload(situation, language, user_text), user_text)
 
 
 # A — the question is the reply to ambiguous_request.
@@ -157,7 +169,7 @@ def test_ambiguous_request_still_vetoes_what_is_not_a_question(user_text: str, d
 def test_the_clarification_names_the_field_the_app_declares_missing() -> None:
     # The App now reports empty arguments of a decided action as a clarification with missingValue (FINAL t320).
     situation = {"kind": "clarification", "polarity": "pending", "cause": "ambiguous_request", "missingValue": "text"}
-    payload = llm._compose_situation_payload(situation, "es", "perfect, copialo al clipboard")
+    payload = compose_payload._compose_situation_payload(situation, "es", "perfect, copialo al clipboard")
     assert payload["missingValue"] == "text"
     assert _visible("¿Qué texto quieres que copie al portapapeles?", "clarification",
                     "perfect, copialo al clipboard", situation) == ""
@@ -206,8 +218,8 @@ def test_the_current_clock_question_still_owes_the_current_clock() -> None:
 
 # E1 — «spotfy» is Spotify misspelled, not a name nobody said.
 def test_a_misspelled_service_name_is_the_one_the_person_said() -> None:
-    assert llm._said_misspelled(LUIS_MIGUEL, "spotify")
-    assert not llm._said_misspelled("ponme algo de luis miguel", "spotify")
+    assert visible_defect._said_misspelled(LUIS_MIGUEL, "spotify")
+    assert not visible_defect._said_misspelled("ponme algo de luis miguel", "spotify")
     draft = "Está sonando «Luis Miguel - Hasta Que Me Olvides (En Vivo) - YouTube» en YouTube, no en Spotify."
     assert _visible(draft, "status", LUIS_MIGUEL, YOUTUBE) != "unmentioned_name"
     assert _visible(draft, "status", "ponme algo de luis miguel", YOUTUBE) == "unmentioned_name"
@@ -215,11 +227,11 @@ def test_a_misspelled_service_name_is_the_one_the_person_said() -> None:
 
 # E2 — a jargon term is a whole word.
 def test_forbidden_terms_are_whole_words() -> None:
-    assert not llm._names_forbidden_term("botones para operaciones básicas", "operacion")
-    assert llm._names_forbidden_term("la operacion fallo", "operacion")
-    assert not llm._names_forbidden_term("a Python toolkit", "tool")
-    assert llm._names_forbidden_term("XRouter notes", "router")
-    assert llm._names_forbidden_term("resolver el efecto 'abrir'", "el efecto '")
+    assert not visible_defect._names_forbidden_term("botones para operaciones básicas", "operacion")
+    assert visible_defect._names_forbidden_term("la operacion fallo", "operacion")
+    assert not visible_defect._names_forbidden_term("a Python toolkit", "tool")
+    assert visible_defect._names_forbidden_term("XRouter notes", "router")
+    assert visible_defect._names_forbidden_term("resolver el efecto 'abrir'", "el efecto '")
 
 
 def test_the_gui_answer_with_arithmetic_operations_publishes() -> None:
@@ -261,18 +273,18 @@ def test_an_observed_file_name_is_not_an_internal_code() -> None:
 
 # E5 — Netflix asks to sign in: that is the cause told, and «ambiguo» is no cut of the English cause.
 def test_netflix_sign_in_reaches_the_payload_as_its_cause() -> None:
-    payload = llm._compose_situation_payload(NETFLIX, "es", "baxy poné la casa de papel en netflix")
-    assert payload["reason"]["cause"] == llm._CAUSE_FACT["netflix_authentication_required"]
+    payload = compose_payload._compose_situation_payload(NETFLIX, "es", "baxy poné la casa de papel en netflix")
+    assert payload["reason"]["cause"] == compose_situation._CAUSE_FACT["netflix_authentication_required"]
     draft = "No pude poner La casa de papel en Netflix porque el efecto externo es ambiguo."
-    assert not llm._truncated_fact_word(draft, {"reason": {"cause": "external effect ambiguous"}})
+    assert not visible_defect._truncated_fact_word(draft, {"reason": {"cause": "external effect ambiguous"}})
 
 
 # E6 — «No he podido» is the failure said.
 def test_the_perfect_tense_failure_is_a_failure_asserted() -> None:
-    assert llm._asserts_failure(
+    assert failure_wording._asserts_failure(
         "No he podido subir el volumen ni oír nada, ya que el cambio no se confirmó después de la acción."
     )
-    assert llm._asserts_failure("I haven't been able to raise the volume.")
+    assert failure_wording._asserts_failure("I haven't been able to raise the volume.")
 
 
 # Last resort — the verified result is told when every draft is vetoed.
@@ -283,8 +295,8 @@ def test_three_vetoed_volume_drafts_end_in_the_observed_level() -> None:
 
 
 def test_the_spanish_volume_template_says_the_observed_level() -> None:
-    payload = llm._compose_situation_payload(VOLUME, "es", "bajale 10")
-    assert llm._deterministic_final(VOLUME, payload, "bajale 10", "es") == "Bajé el volumen a 40 %; está silenciado."
+    payload = compose_payload._compose_situation_payload(VOLUME, "es", "bajale 10")
+    assert deterministic_finals._deterministic_final(VOLUME, payload, "bajale 10", "es") == "Bajé el volumen a 40 %; está silenciado."
 
 
 def test_vetoed_youtube_drafts_end_in_the_observed_title() -> None:
@@ -315,20 +327,23 @@ def test_the_netflix_sign_in_is_told_as_the_failure_it_was() -> None:
 def test_an_unverified_result_is_never_told_as_done() -> None:
     # M107: the failed change has its floor (the plain clause, failed), never the observed level as if it held.
     unverified = {**VOLUME, "verified": False, "succeeded": False, "polarity": "failure"}
-    payload = llm._compose_situation_payload(unverified, "es", "bajale 10")
-    assert llm._deterministic_final(unverified, payload, "bajale 10", "es") == "No pude cambiar el volumen."
+    payload = compose_payload._compose_situation_payload(unverified, "es", "bajale 10")
+    assert deterministic_finals._deterministic_final(unverified, payload, "bajale 10", "es") == "No pude cambiar el volumen."
 
 
 def test_the_weather_template_names_the_day_asked_from_the_read() -> None:
-    payload = llm._compose_situation_payload(WEATHER, "es", SAN_ANTONIO)
-    text = llm._deterministic_final(WEATHER, payload, SAN_ANTONIO, "es")
+    payload = compose_payload._compose_situation_payload(WEATHER, "es", SAN_ANTONIO)
+    text = deterministic_finals._deterministic_final(WEATHER, payload, SAN_ANTONIO, "es")
     assert text == "En Curico, el sábado: nublado, de 10,7 a 18,3 °C, 14 % de lluvia."
-    assert llm._payload_fact_defect(text, payload, SAN_ANTONIO) == ""
+    assert payload_fact_checks._payload_fact_defect(text, payload, SAN_ANTONIO) == ""
 
 
 def test_the_last_resort_is_recorded_as_its_own_stage(monkeypatch: pytest.MonkeyPatch) -> None:
     stages: list[tuple[str, bool]] = []
-    monkeypatch.setattr(llm, "_capture_compose_stage", lambda **row: stages.append((row["stage"], row["published"])))
+    for module in _COMPOSE_STAGE_WRITERS:
+        monkeypatch.setattr(
+            module, "_capture_compose_stage", lambda **row: stages.append((row["stage"], row["published"])),
+        )
     _Drafts(["The volume is muted."]).compose_user_message("turn it down 10", "status", {"situation": VOLUME})
     assert stages[-1] == ("deterministic_fallback", True)
     assert json.dumps(stages)
@@ -345,12 +360,12 @@ MEDIA = {
 
 
 def test_a_verified_media_control_is_told_as_the_observed_session() -> None:
-    payload = llm._compose_situation_payload(MEDIA, "en", "i don't like that song turn it off")
-    assert llm._deterministic_final(MEDIA, payload, "i don't like that song turn it off", "en") == (
+    payload = compose_payload._compose_situation_payload(MEDIA, "en", "i don't like that song turn it off")
+    assert deterministic_finals._deterministic_final(MEDIA, payload, "i don't like that song turn it off", "en") == (
         "«Baila Baila Baila - Remix» by Ozuna is paused."
     )
     playing = {**MEDIA, "observed": {**MEDIA["observed"], "playbackStatus": "playing"}}
-    payload = llm._compose_situation_payload(playing, "es", "pasa a la siguiente")
-    assert llm._deterministic_final(playing, payload, "pasa a la siguiente", "es") == (
+    payload = compose_payload._compose_situation_payload(playing, "es", "pasa a la siguiente")
+    assert deterministic_finals._deterministic_final(playing, payload, "pasa a la siguiente", "es") == (
         "Está sonando «Baila Baila Baila - Remix» de Ozuna."
     )

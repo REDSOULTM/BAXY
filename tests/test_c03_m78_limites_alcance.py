@@ -32,13 +32,20 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import weather_facts
+from baxy_mind import limit_voice
+from baxy_mind import reply_claims
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
 from baxy_mind.semantic.conversation import asks_to_order
 from baxy_mind.semantic.patterns import conversation_only_content_request
 from baxy_mind.semantic.web import weather_asked_date, weather_asks_later_time, weather_names_date
+from baxy_mind import turn_decide
 
 WEATHER = json.loads(
     (Path(__file__).parent / "data" / "c03_m78_v3l_weather_situations.json").read_text(encoding="utf-8")
@@ -51,7 +58,7 @@ def _situation(case: str) -> dict:
 
 
 def _payload(case: str, user_text: str, language: str = "en") -> dict:
-    return llm._compose_situation_payload(_situation(case), language, user_text)
+    return compose_payload._compose_situation_payload(_situation(case), language, user_text)
 
 
 # ------------------------------------------------------------------ the date a weather question names
@@ -143,7 +150,7 @@ def test_today_named_by_its_date_is_the_read_now() -> None:
     ],
 )
 def test_the_published_reply_for_a_time_beyond_the_read_is_vetoed(case: str, user_text: str, reply: str) -> None:
-    assert llm._payload_fact_defect(reply, _payload(case, user_text), user_text) == "invented_number"
+    assert payload_fact_checks._payload_fact_defect(reply, _payload(case, user_text), user_text) == "invented_number"
 
 
 @pytest.mark.parametrize(
@@ -161,16 +168,16 @@ def test_the_published_reply_for_a_time_beyond_the_read_is_vetoed(case: str, use
     ],
 )
 def test_the_limit_of_the_read_is_said(case: str, user_text: str, reply: str, defect: str) -> None:
-    assert llm._payload_fact_defect(reply, _payload(case, user_text), user_text) == defect
+    assert payload_fact_checks._payload_fact_defect(reply, _payload(case, user_text), user_text) == defect
 
 
 def test_the_day_asked_is_answered_with_its_figures() -> None:
     user_text = "I want to check the weather for Marshall on the 5th."
     payload = _payload("D-p21-t1", user_text)
     day = payload["seen"]["askedDay"]
-    assert llm._payload_fact_defect(WEATHER["D-p21-t1"]["published"], payload, user_text) == "invented_number"
+    assert payload_fact_checks._payload_fact_defect(WEATHER["D-p21-t1"]["published"], payload, user_text) == "invented_number"
     good = f"In Marshall on October 5: {day['condition']}, {day['minC']} to {day['maxC']} °C."
-    assert llm._payload_fact_defect(good, payload, user_text) == ""
+    assert payload_fact_checks._payload_fact_defect(good, payload, user_text) == ""
 
 
 @pytest.mark.parametrize(
@@ -186,34 +193,34 @@ def test_the_day_asked_is_answered_with_its_figures() -> None:
 )
 def test_the_last_resort_says_the_limit(case: str, user_text: str, language: str, expected: str) -> None:
     payload = _payload(case, user_text, language)
-    text = llm._deterministic_final(_situation(case), payload, user_text, language)
+    text = deterministic_finals._deterministic_final(_situation(case), payload, user_text, language)
     assert text == expected
-    assert llm._payload_fact_defect(text, payload, user_text) == ""
+    assert payload_fact_checks._payload_fact_defect(text, payload, user_text) == ""
     # Said as the reach of a verified read, not as a failure: neither the composer nor the App reverses it.
     facts = {"situation": json.dumps(_situation(case), ensure_ascii=False)}
-    assert llm.compose_visible_defect(text, "status", user_text, facts) == ""
+    assert visible_defect.compose_visible_defect(text, "status", user_text, facts) == ""
 
 
 def test_a_limit_said_as_a_failure_over_the_read_is_vetoed() -> None:
     # «No puedo ver…» over a verified read is a failure the read did not have (and the App reverses it).
     facts = {"situation": json.dumps(_situation("D-p20-t2"), ensure_ascii=False)}
     said = "I can't see the weather in Palo Alto for March 2; the forecast only reaches October 5."
-    assert llm.compose_visible_defect(said, "status", "What's the weather in Palo Alto on March 2?", facts) != ""
+    assert visible_defect.compose_visible_defect(said, "status", "What's the weather in Palo Alto on March 2?", facts) != ""
 
 
 def test_the_last_resort_gives_the_day_asked() -> None:
     user_text = "I want to check the weather for Marshall on the 5th."
     payload = _payload("D-p21-t1", user_text)
-    text = llm._deterministic_final(_situation("D-p21-t1"), payload, user_text, "en")
+    text = deterministic_finals._deterministic_final(_situation("D-p21-t1"), payload, user_text, "en")
     assert text.startswith("In Marshall, October 5: ")
-    assert llm._payload_fact_defect(text, payload, user_text) == ""
+    assert payload_fact_checks._payload_fact_defect(text, payload, user_text) == ""
 
 
 def test_the_instruction_asks_for_the_day_or_the_limit() -> None:
-    focus = llm._weather_answer_instruction("What's the weather in Palo Alto on March 2?", "en")
+    focus = weather_facts._weather_answer_instruction("What's the weather in Palo Alto on March 2?", "en")
     assert "seen.outOfReach" in focus and "seen.askedDay" in focus
     assert "covers today and tomorrow only" not in focus
-    air = llm._weather_answer_instruction("Estara alto the air quality the next week?", "en")
+    air = weather_facts._weather_answer_instruction("Estara alto the air quality the next week?", "en")
     assert "only as it is now" in air
 
 
@@ -311,7 +318,7 @@ def _turn(text: str, restated: str, history: list[tuple[str, str]] = ()) -> tupl
     tools = {name: _tool(name) for name in OPERATIONS}
     model = _LimitingDecider(restated)
     turns = [{"role": role, "content": content} for role, content in history]
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m78", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -412,10 +419,10 @@ def test_the_foda_request_is_answered_not_refused_nor_asked(text: str) -> None:
 def test_a_recovered_limit_with_a_verb_form_that_does_not_exist_is_vetoed() -> None:
     # M78 (DEV-D v3l s004): the limit contract refused it; the recovered limit is judged by limit_voice_defect.
     request = "recomprar el último billete de tren a huesca"
-    assert llm.limit_voice_defect("No recomprobo billetes de tren.", request) == "limit_broken_person"
-    assert llm.limit_voice_defect("No recompro billetes de tren.", request) == ""
+    assert limit_voice.limit_voice_defect("No recomprobo billetes de tren.", request) == "limit_broken_person"
+    assert limit_voice.limit_voice_defect("No recompro billetes de tren.", request) == ""
     facts = {"situation": json.dumps({"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"})}
-    assert llm.compose_visible_defect("No recomprobo billetes de tren.", "error", request, facts) == (
+    assert visible_defect.compose_visible_defect("No recomprobo billetes de tren.", "error", request, facts) == (
         "limit_broken_person"
     )
 
@@ -432,7 +439,7 @@ def test_a_recovered_limit_with_a_verb_form_that_does_not_exist_is_vetoed() -> N
 )
 def test_ordering_in_any_person_is_ordering(request_text: str) -> None:
     assert asks_to_order(request_text)
-    assert llm.limit_voice_defect("No hago pizzas.", request_text) == "limit_changed_act"
+    assert limit_voice.limit_voice_defect("No hago pizzas.", request_text) == "limit_changed_act"
 
 
 def test_asking_for_the_order_state_is_not_ordering() -> None:
@@ -454,7 +461,7 @@ def test_asking_for_the_order_state_is_not_ordering() -> None:
     ],
 )
 def test_a_voice_change_nothing_made_is_a_claimed_effect(reply: str) -> None:
-    assert llm.visible_reply_claims_an_effect(reply, "your speech slower it")
+    assert reply_claims.visible_reply_claims_an_effect(reply, "your speech slower it")
 
 
 @pytest.mark.parametrize(
@@ -468,7 +475,7 @@ def test_a_voice_change_nothing_made_is_a_claimed_effect(reply: str) -> None:
     ],
 )
 def test_saying_the_voice_limit_or_a_manner_of_words_is_not(reply: str) -> None:
-    assert not llm.visible_reply_claims_an_effect(reply, "your speech slower it")
+    assert not reply_claims.visible_reply_claims_an_effect(reply, "your speech slower it")
 
 
 # ------------------------------------------------------------------ the facts' field names
@@ -483,6 +490,6 @@ def test_the_facts_field_names_are_not_told() -> None:
     facts = {"situation": json.dumps({"kind": "operation", "operation": "system.identity", "polarity": "success",
                                       "verified": True, "succeeded": True,
                                       "observed": {"userName": "usuario", "machineName": "REDNOTE"}})}
-    assert llm.compose_visible_defect(reply, "status", "and which one tengo instalada yo?", facts) == (
+    assert visible_defect.compose_visible_defect(reply, "status", "and which one tengo instalada yo?", facts) == (
         "copied_instruction"
     )

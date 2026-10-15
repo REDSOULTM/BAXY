@@ -10,16 +10,19 @@ namespace Baxy.Kernel.Policy;
 /// pedir permisos sólo deben ser cosas destructivas o irreparables». Reproducir,
 /// navegar, copiar, capturar, pulsar, escribir, radios y ajustes van directos en
 /// modo normal; lo que llega a otra persona (mensajes y correo) y lo que destruye
-/// o interrumpe (work_loss, session_disruption, monetary) sigue preguntando. Las
-/// etiquetas de riesgo del catálogo no cambian: los sellos históricos las citan.
+/// o interrumpe (work_loss, session_disruption, monetary) sigue preguntando, e
+/// instalar también (decisión 8 del dueño, 2026-10-10). Las etiquetas de riesgo
+/// del catálogo no cambian: los sellos históricos las citan.
 ///
 /// Motor de computer use (CONTRATO_VISTA_ACCION.md §2.1, D15): un paso del bucle
 /// lleva el riesgo de su primitiva evaluado con los argumentos exactos delante.
 /// Un clic cuya etiqueta nombra un canal de voz o una llamada (alguien te oye),
-/// o un botón de enviar, publicar, responder, comentar, compartir o unirse, y un
-/// Enter declarado sobre un compositor de mensajes, llegan a una persona; un clic
-/// que compra, paga, elimina o desinstala no se deshace. Ambos piden confirmación
-/// en modo normal, ligada a esa misma invocación. Igual una invocación cuyo argumento cierra de una vez todo lo
+/// o un botón de enviar, publicar, responder, comentar, compartir, unirse o emitir
+/// en directo (ronda 29, v3-53: «Iniciar Transmisión»), y un Enter declarado sobre
+/// un compositor de mensajes, salen al mundo o llegan a una persona; un clic que
+/// compra, paga, elimina o desinstala no se deshace. Ambos piden confirmación en
+/// modo normal, ligada a esa misma invocación. Las palabras de lo que sale al mundo
+/// son dato (<see cref="WorldActs"/>), el mismo que lee la mente. Igual una invocación cuyo argumento cierra de una vez todo lo
 /// que la persona tiene abierto en una superficie (todas las pestañas de su
 /// navegador): pierde su sesión, aunque la operación con otro argumento no.
 /// Revisión de seguridad 2026-10-07: el verbo de enviar, reenviar, invitar o
@@ -81,8 +84,8 @@ public static partial class RiskPolicy
         {
             OperationRisk.ReadOnly => PolicyDecision.Allow,
             OperationRisk.Reversible => PolicyDecision.Allow,
-            // privacy_sensitive e installation: leer, copiar, capturar, escribir,
-            // radios, ajustes e instalar no destruyen nada (D3).
+            // privacy_sensitive: leer, copiar, capturar, escribir, radios y ajustes no
+            // destruyen nada (D3); instalar pregunta desde la decisión 8 del dueño.
             OperationRisk.Sensitive => PolicyDecision.Allow,
             OperationRisk.External => operation is not null && ExternalRequiringConfirmation.Contains(operation)
                 ? PolicyDecision.RequireConfirmation
@@ -93,10 +96,11 @@ public static partial class RiskPolicy
     }
 
     /// <summary>
-    /// Whether this exact invocation of a computer-use primitive reaches another
-    /// person: joining a voice channel or a call, pressing «enviar/send»,
-    /// «publicar/post», «responder/reply», «comentar/comment»,
-    /// «compartir/share» or «unirse/join», or Enter over a message composer
+    /// Whether this exact invocation of a computer-use primitive leaves the
+    /// computer or reaches another person: joining a voice channel or a call,
+    /// pressing «enviar/send», «publicar/post», «responder/reply»,
+    /// «comentar/comment», «compartir/share», «unirse/join» or going live
+    /// («iniciar transmisión», «go live»), or Enter over a message composer
     /// that holds text. Bilingual, general, and never naming an application.
     /// </summary>
     public static bool ReachesAPerson(string? operation, JsonElement arguments)
@@ -109,14 +113,14 @@ public static partial class RiskPolicy
         switch (operation)
         {
             case "input.visible.click":
-                return arguments.TryGetProperty("label", out JsonElement label)
-                    && label.ValueKind == JsonValueKind.String
-                    && LabelReachesAPerson(label.GetString());
+                // The result a search burst chooses (choose) is pressed too: read as its label is.
+                return ClickLabels(arguments).Any(LabelReachesAPerson);
             case "input.key.press":
                 // Enter, and space on a focused send or reply control, hand what was written to someone when the
                 // step declares it lands on a message composer (the mind labels it from the focused control).
+                // Revisión de V (H1): or presses a control that reaches someone (a voice channel highlighted in a search).
                 return KeyOf(arguments) is "enter" or "space"
-                    && TargetOf(arguments) is "message_composer";
+                    && (TargetOf(arguments) is "message_composer" || LabelReachesAPerson(OntoOf(arguments)));
             default:
                 return false;
         }
@@ -137,15 +141,41 @@ public static partial class RiskPolicy
         // The Delete key outside a text field deletes what is selected (a file to the bin, a message, an item of a
         // list). Fail-closed: it asks unless the step declares the keyboard is on a text field, where it only
         // erases characters.
+        // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
+        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The mission marks it from the view it
+        // was decided on.
+        bool overwrites = arguments.TryGetProperty("consequence", out JsonElement consequence)
+            && consequence.ValueKind == JsonValueKind.String
+            && string.Equals(consequence.GetString(), "overwrite", StringComparison.Ordinal);
         if (string.Equals(operation, "input.key.press", StringComparison.Ordinal))
         {
-            return KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field";
+            return overwrites || (KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field")
+                || (KeyOf(arguments) is "enter" or "space" && LabelCannotBeUndone(OntoOf(arguments)));
         }
 
-        return string.Equals(operation, "input.visible.click", StringComparison.Ordinal)
-            && arguments.TryGetProperty("label", out JsonElement label)
-            && label.ValueKind == JsonValueKind.String
-            && LabelCannotBeUndone(label.GetString());
+        if (!string.Equals(operation, "input.visible.click", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (overwrites)
+        {
+            return true;
+        }
+
+        return ClickLabels(arguments).Any(LabelCannotBeUndone);
+    }
+
+    // What a click presses, by name: its label and, in a search burst (goal v3 point 0, fix 3), the result it chooses.
+    private static IEnumerable<string?> ClickLabels(JsonElement arguments)
+    {
+        foreach (string name in new[] { "label", "choose" })
+        {
+            if (arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String)
+            {
+                yield return value.GetString();
+            }
+        }
     }
 
     /// <summary>
@@ -161,12 +191,20 @@ public static partial class RiskPolicy
 
         string folded = Fold(label);
         return IrreversibleAct().IsMatch(folded)
-            || (folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length <= 6 && DestructiveVerb().IsMatch(folded));
+            || (folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length <= ShortLabelWords && DestructiveVerb().IsMatch(folded));
     }
+
+    // A button or a menu entry, not a sentence that mentions deleting.
+    private const int ShortLabelWords = 6;
 
     private static string? KeyOf(JsonElement arguments) =>
         arguments.TryGetProperty("key", out JsonElement key) && key.ValueKind == JsonValueKind.String
             ? key.GetString()
+            : null;
+
+    private static string? OntoOf(JsonElement arguments) =>
+        arguments.TryGetProperty("onto", out JsonElement onto) && onto.ValueKind == JsonValueKind.String
+            ? onto.GetString()
             : null;
 
     private static string? TargetOf(JsonElement arguments) =>
@@ -194,28 +232,76 @@ public static partial class RiskPolicy
             ["browser.control"] = ("action", "close_all"),
         };
 
-    internal static bool LabelReachesAPerson(string? label)
+    // The words are data (WorldActs): a voice channel or a call, a control that sends, publishes, shares or joins, and
+    // one that goes live. A noun that only shares the stem («Enviados», «Comentarios (12)», «Shared with me») does not.
+    internal static bool LabelReachesAPerson(string? label) =>
+        !string.IsNullOrWhiteSpace(label) && WorldActs.Reaches(Fold(label));
+
+    /// <summary>
+    /// Encargo VZ (imp3d imp-dc-voz: the person confirmed «Cotele!!!😎, Canal de voz, Choche» and the same mission asked
+    /// again for «Cotele!!!😎 (canal de voz), RED, …»): the act this exact invocation takes out to the world, as its
+    /// family in the data and the name it acts on (the label's own name, before its first comma or parenthesis), or
+    /// null when it reaches no one. Enter over a message composer sends what it holds: family «send», no name.
+    /// </summary>
+    public static WorldAct? WorldActOf(string? operation, JsonElement arguments)
     {
-        if (string.IsNullOrWhiteSpace(label))
+        if (!ReachesAPerson(operation, arguments))
         {
-            return false;
+            return null;
+        }
+
+        string? label = operation == "input.key.press" ? OntoOf(arguments) : ClickLabels(arguments).FirstOrDefault(LabelReachesAPerson);
+        if (string.IsNullOrWhiteSpace(label) || !LabelReachesAPerson(label))
+        {
+            return new WorldAct("send", string.Empty, Joins: false, Key: "send:");
         }
 
         string folded = Fold(label);
-        return VoiceOrCall().IsMatch(folded) || SendAct().IsMatch(folded) || PublicAct().IsMatch(folded);
+        string name = label.Split([',', '('], 2)[0].Trim();
+        name = name.Length > 0 ? name : label.Trim();
+        string family = WorldActs.FamilyOf(folded)!;
+        return new WorldAct(family, name, WorldActs.Joins(folded), family + ":" + Fold(name));
     }
 
     /// <summary>A click whose label joins a voice channel, a call or a meeting: others hear or see the person from then on.</summary>
-    public static bool LabelJoins(string? label)
-    {
-        if (string.IsNullOrWhiteSpace(label))
-        {
-            return false;
-        }
+    public static bool LabelJoins(string? label) =>
+        !string.IsNullOrWhiteSpace(label) && WorldActs.Joins(Fold(label));
 
-        string folded = Fold(label);
-        return VoiceOrCall().IsMatch(folded) || JoinVerb().IsMatch(folded);
-    }
+    /// <summary>
+    /// Whether pressing a control of this name would need the person's word (it leaves the computer, reaches a person
+    /// or cannot be undone) when the label a click was judged by does not: the policy read another name than the one
+    /// about to be pressed, so nothing is pressed (ronda 29: a label that names its control by a part of its name).
+    /// </summary>
+    public static bool PressedNameAsksMoreThanItsLabel(string? label, string? pressedName) =>
+        LabelAsks(pressedName) && !LabelAsks(label);
+
+    /// <summary>
+    /// Encargo V (banco e2, c7): the policy judges a click's label and the UIA worker resolves the control it presses,
+    /// at times one the view never listed, by its name holding the label («cotele» pressed «Cotele!!!😎, Canal de voz,
+    /// Choche» and joined the channel unasked). The worker refuses, before any press, a control whose name asks more
+    /// than its label (<see cref="PressedNameAsksMoreThanItsLabel"/>), so the step names it and this policy asks. It is
+    /// handed this one pattern over a folded name (<see cref="FoldHint"/> dropped): this policy's own words and verbs.
+    /// </summary>
+    public static string AsksPattern => Asks.Value.ToString();
+
+    /// <summary>The trailing shortcut hint a fold drops («Enviar (Ctrl+Enter)»), for the worker's fold.</summary>
+    public static string FoldHint => WorldActs.ShortcutHint.ToString();
+
+    // Leaves the computer, reaches a person or cannot be undone: LabelReachesAPerson or LabelCannotBeUndone, as one.
+    internal static bool LabelAsks(string? label) => !string.IsNullOrWhiteSpace(label) && Asks.Value.IsMatch(Fold(label));
+
+    private static readonly Lazy<Regex> Asks = new(() => new Regex(
+        "^(?:" + string.Join('|', WorldActs.Rules.Select(rule => Rule(rule.Pattern, rule.Unless, 0))
+            .Append(Rule(IrreversibleAct().ToString(), null, 0))
+            .Append(Rule(DestructiveVerb().ToString(), null, ShortLabelWords))) + ")",
+        RegexOptions.CultureInvariant));
+
+    // A rule as lookaheads from the start of a folded name: its pattern somewhere, its exception nowhere, and at most so
+    // many words when it counts only in a short label.
+    private static string Rule(string pattern, string? unless, int words) =>
+        (unless is null ? string.Empty : $"(?!.*?(?:{unless}))")
+        + (words > 0 ? $"(?=\\S+(?: \\S+){{0,{words - 1}}}$)" : string.Empty)
+        + $"(?=.*?(?:{pattern}))";
 
     // Lower case, without accents, without format characters (a zero-width space or a direction mark inside a label
     // must not hide its verb) and without a trailing shortcut hint («Enviar (Ctrl+Enter)», «Delete (Supr)»).
@@ -234,41 +320,8 @@ public static partial class RiskPolicy
         }
 
         string folded = string.Join(' ', builder.ToString().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
-        return ShortcutHint().Replace(folded, string.Empty).Trim();
+        return WorldActs.ShortcutHint.Replace(folded, string.Empty).Trim();
     }
-
-    [GeneratedRegex(
-        @"\s*[(\[](?:ctrl|control|ctl|alt|shift|mayus|mayusculas|supr|del|enter|intro|cmd|win)\b[^)\]]*[)\]]$",
-        RegexOptions.CultureInvariant)]
-    private static partial Regex ShortcutHint();
-
-    // «canal de voz», «voice channel», «llamar», «llamada», «call», «unirse a la
-    // llamada», «join call», «join voice», «videollamada», «video call».
-    [GeneratedRegex(
-        @"\b(?:canal\s+de\s+voz|voice\s+channel|voice\s+call|video\s*llamada|video\s+call|llamar|llamada|join\s+(?:the\s+)?(?:call|voice)|unirse\s+a\s+(?:la\s+)?(?:llamada|voz)|start\s+(?:a\s+)?call|iniciar\s+(?:una\s+)?llamada)\b|\bcall\b",
-        RegexOptions.CultureInvariant)]
-    private static partial Regex VoiceOrCall();
-
-    // The control that hands something to someone, named by its verb as the first word whatever follows: «Enviar»,
-    // «Send», «Enviar a Ron92», «Send Friend Request», «Reenviar», «Forward», «Invitar», «Invite», «Responder»,
-    // «Reply all». A noun that only shares the stem («Enviados», «Invitaciones», «Forwarding») does not.
-    [GeneratedRegex(
-        @"^(?:enviar|envia|enviale|mandar|manda|send|reenviar|reenvia|forward|invitar|invita|invite|responder|responde|reply)\b",
-        RegexOptions.CultureInvariant)]
-    private static partial Regex SendAct();
-
-    // The control that puts the person's words or presence in front of others,
-    // named by its verb as the first word of the label and at most three more
-    // («Publicar», «Post», «Responder a todos», «Reply», «Comentar», «Comment»,
-    // «Compartir», «Share», «Unirse», «Join», «Join meeting»). A label that only
-    // mentions the noun («Comentarios (12)», «Shared with me») does not.
-    [GeneratedRegex(
-        @"^(?:publicar|publica|post|tweet|twittear|responder|responde|reply|comentar|comenta|comment|compartir|comparte|share|unirse|unirme|unete|join)(?:\s+\S+){0,3}$",
-        RegexOptions.CultureInvariant)]
-    private static partial Regex PublicAct();
-
-    [GeneratedRegex(@"^(?:unirse|unirme|unete|join)\b", RegexOptions.CultureInvariant)]
-    private static partial Regex JoinVerb();
 
     // What cannot be taken back once clicked: buying and paying («Comprar ahora»,
     // «Buy now», «Pagar», «Pay», «Checkout», «Proceed to checkout», «Realizar
@@ -290,3 +343,10 @@ public static partial class RiskPolicy
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }
+
+/// <summary>
+/// An act that goes out to the world (<see cref="RiskPolicy.WorldActOf"/>): its family in the data, the name it acts on,
+/// whether it joins a call, a voice channel or a meeting, and its key (the family and the folded name): two invocations
+/// with one key take one act, whatever control of the screen takes it.
+/// </summary>
+public sealed record WorldAct(string Family, string Name, bool Joins, string Key);

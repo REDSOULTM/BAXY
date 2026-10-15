@@ -16,12 +16,13 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import operation_floor
 from baxy_mind.effect_intent import resolve_explicit_effects
 from baxy_mind.semantic import decider
 from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
 from baxy_mind.semantic.patterns import folder_then_directory_request
+from baxy_mind import plan_shape
+from baxy_mind import argument_grounding
 
 ROOT = Path(__file__).resolve().parents[1]
 OPERATIONS = tuple(
@@ -53,11 +54,11 @@ def test_going_to_a_known_folder_and_creating_one_plans_both_steps_without_askin
     assert read is not None and read.operations == PLAN
 
     # The plan request of the turn the decider decided: each step grounds from its clause, on the person's surface.
-    found = sidecar._plan_effects_read(text, PLAN, OPERATIONS, [])
-    evidence = sidecar._evidence_of_expected_operations(PLAN, found.operations, found.evidence)
+    found = plan_shape._plan_effects_read(text, PLAN, OPERATIONS, [])
+    evidence = plan_shape._evidence_of_expected_operations(PLAN, found.operations, found.evidence)
     assert evidence is not None
-    surfaces = sidecar._restore_evidence_surfaces(text, evidence)
-    steps = sidecar._expand_effect_plan(PLAN, surfaces)
+    surfaces = argument_grounding._restore_evidence_surfaces(text, evidence)
+    steps = plan_shape._expand_effect_plan(PLAN, surfaces)
     assert [operation for operation, _ in steps] == list(PLAN)
     assert _explicit_arguments_from_evidence(steps[0][0], steps[0][1]) == {"folder": opened}
     assert _explicit_arguments_from_evidence(steps[1][0], steps[1][1]) == {"relativePath": name, "folder": created}

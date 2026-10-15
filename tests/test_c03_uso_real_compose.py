@@ -9,7 +9,12 @@ from datetime import datetime
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
+from baxy_mind import search_report
+from baxy_mind import weather_facts
+from baxy_mind.semantic.normalize import _accent_folded_with_punctuation
 from test_c03_cpu_actor import Recorder
 
 # --- web.search reports --------------------------------------------------------
@@ -57,24 +62,24 @@ def test_a_pasted_snippet_speaking_as_the_page_is_not_baxys_voice() -> None:
         "Nuestro conversor de moneda le permite conocer el cambio del peso chileno en relación "
         "con el yen en tiempo real. Utiliza el conversor de JPY a CLP en tasas-hoy.org."
     )
-    assert llm._payload_fact_defect(pasted, _search_payload(_RATE_RESULTS), _RATE_ASK) == "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(pasted, _search_payload(_RATE_RESULTS), _RATE_ASK) == "search_report_page_voice"
     told = "Según su página, en diariodivisas.com le decimos cuánto vale el yen hoy."
-    assert llm._payload_fact_defect(told, _search_payload(_RATE_RESULTS), _RATE_ASK) == "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(told, _search_payload(_RATE_RESULTS), _RATE_ASK) == "search_report_page_voice"
     english = "Our converter on diariodivisas.com gives the rate in real time."
-    assert llm._payload_fact_defect(english, _search_payload(_RATE_RESULTS), "yen to chilean peso") == "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(english, _search_payload(_RATE_RESULTS), "yen to chilean peso") == "search_report_page_voice"
 
 
 def test_the_page_voice_inside_a_quotation_or_the_persons_own_words_is_not_baxys() -> None:
     quoted = "La página de diariodivisas.com dice «Nuestro conversor de moneda le permite conocer el cambio»."
-    assert llm._search_report_speaks_as_a_page(quoted, _search_payload(_RATE_RESULTS), _RATE_ASK) is False
-    assert llm._search_report_speaks_as_a_page(
+    assert search_report._search_report_speaks_as_a_page(quoted, _search_payload(_RATE_RESULTS), _RATE_ASK) is False
+    assert search_report._search_report_speaks_as_a_page(
         "diariodivisas.com tiene un conversor para nuestra moneda.",
         _search_payload(_RATE_RESULTS),
         "a cuánto está nuestra moneda frente al yen",
     ) is False
     # The generic «we» of an idiom is not a page talking.
     generic = "History of AI on example.org states that AI as we know it is a collective effort."
-    assert llm._search_report_speaks_as_a_page(generic, _search_payload(_RATE_RESULTS), "who created ai") is False
+    assert search_report._search_report_speaks_as_a_page(generic, _search_payload(_RATE_RESULTS), "who created ai") is False
 
 
 def test_an_honest_report_with_grammar_words_and_plurals_is_grounded() -> None:
@@ -83,8 +88,8 @@ def test_an_honest_report_with_grammar_words_and_plurals_is_grounded() -> None:
         "Hay conversores que tienen el cambio del peso chileno en relación con el yen, en tiempo real, "
         "y permiten convertir yenes a pesos chilenos y a diversas divisas con tasas actualizadas diariamente."
     )
-    assert llm._search_report_unsourced_words(honest, _search_payload(_RATE_RESULTS), _RATE_ASK) == []
-    assert llm._payload_fact_defect(honest, _search_payload(_RATE_RESULTS), _RATE_ASK) == ""
+    assert search_report._search_report_unsourced_words(honest, _search_payload(_RATE_RESULTS), _RATE_ASK) == []
+    assert payload_fact_checks._payload_fact_defect(honest, _search_payload(_RATE_RESULTS), _RATE_ASK) == ""
 
 
 def test_a_claim_no_result_carries_still_falls_even_named_after_a_page() -> None:
@@ -96,12 +101,12 @@ def test_a_claim_no_result_carries_still_falls_even_named_after_a_page() -> None
          "snippet": "Problemas en tiempo real con WhatsApp."},
     ]
     invented = "Encontré fallas.mx y downdetector.mx, que mencionan problemas de conexión y servidores caídos."
-    assert llm._search_report_unsourced_claim(invented, _search_payload(results), "por qué falla whatsapp") is True
-    words = llm._search_report_unsourced_words(invented, _search_payload(results), "por qué falla whatsapp")
+    assert search_report._search_report_unsourced_claim(invented, _search_payload(results), "por qué falla whatsapp") is True
+    words = search_report._search_report_unsourced_words(invented, _search_payload(results), "por qué falla whatsapp")
     assert "conexion" in words and "servidores" in words
     # A paraphrase of the page with the model's own content words still falls.
     reworded = "calculadora.cl requiere registrarse para servir cotizaciones históricas."
-    assert llm._search_report_unsourced_claim(reworded, _search_payload(_RATE_RESULTS), _RATE_ASK) is True
+    assert search_report._search_report_unsourced_claim(reworded, _search_payload(_RATE_RESULTS), _RATE_ASK) is True
 
 
 def test_a_site_named_by_its_own_words_shows_the_search() -> None:
@@ -112,10 +117,10 @@ def test_a_site_named_by_its_own_words_shows_the_search() -> None:
          "snippet": "La canción final del disco."},
     ]
     asked = "busca la canción última"
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Según El Tiempo, es la canción final del disco.", _search_payload(results), asked
     ) == "search_report_shows_the_search"
-    assert llm._payload_fact_defect("Es la canción final del disco.", _search_payload(results), asked) == ""
+    assert payload_fact_checks._payload_fact_defect("Es la canción final del disco.", _search_payload(results), asked) == ""
 
 
 def test_a_search_title_is_page_prose_not_a_name_to_cut() -> None:
@@ -124,10 +129,10 @@ def test_a_search_title_is_page_prose_not_a_name_to_cut() -> None:
          "url": "https://www.casadecambio.cl/dolar-hoy", "snippet": "Precio publicado diariamente."},
     ]
     draft = "Según casadecambio.cl, el precio del dólar se actualiza durante el día."
-    assert llm._truncated_fact_word(draft, _search_payload(results)) is False
+    assert visible_defect._truncated_fact_word(draft, _search_payload(results)) is False
     # A window title is still a name: «Configur» is a cut of it.
     window = {"operation": "window.resolve", "seen": {"windows": [{"title": "Configuración", "processName": "SystemSettings"}]}}
-    assert llm._truncated_fact_word("Abrí la ventana Configur del sistema.", window) is True
+    assert visible_defect._truncated_fact_word("Abrí la ventana Configur del sistema.", window) is True
 
 
 def test_the_registrable_site_of_a_result_host_is_observed_not_code() -> None:
@@ -138,8 +143,8 @@ def test_the_registrable_site_of_a_result_host_is_observed_not_code() -> None:
     ]
     report = "«Lentejas estofadas. La receta de las abuelas», de elmundo.es, menciona una receta súper tradicional."
     facts = {"situation": _search_situation(results)}
-    assert llm.compose_visible_defect(report, "status", "cómo se hacen las lentejas", facts) == ""
-    assert llm.compose_visible_defect(report + " Usé media.status.", "status", "cómo se hacen las lentejas", facts) == "internal_code"
+    assert visible_defect.compose_visible_defect(report, "status", "cómo se hacen las lentejas", facts) == ""
+    assert visible_defect.compose_visible_defect(report + " Usé media.status.", "status", "cómo se hacen las lentejas", facts) == "internal_code"
 
 
 def test_a_generic_search_answer_publishes_on_the_first_stage_without_its_sites() -> None:
@@ -192,9 +197,9 @@ def _absence_facts(error: str = "youtube_tab_not_found") -> dict:
 def test_the_absence_told_is_the_failure_told(asked: str, draft: str) -> None:
     # M105 (DEV-D v4a D-s047): the general «nothing is playing» is told by the system media session's read; the
     # assistant's own YouTube tab missing tells only of that tab.
-    assert llm.compose_visible_defect(draft, "error", asked, _absence_facts("media_session_not_found")) == ""
-    general = llm._GENERAL_PLAYBACK_ABSENCE.search(llm._accent_folded_with_punctuation(draft)) is not None
-    assert llm.compose_visible_defect(draft, "error", asked, _absence_facts()) == (
+    assert visible_defect.compose_visible_defect(draft, "error", asked, _absence_facts("media_session_not_found")) == ""
+    general = compose_situation._GENERAL_PLAYBACK_ABSENCE.search(_accent_folded_with_punctuation(draft)) is not None
+    assert visible_defect.compose_visible_defect(draft, "error", asked, _absence_facts()) == (
         "absence_beyond_check" if general else ""
     )
 
@@ -207,12 +212,12 @@ def test_the_absence_told_is_the_failure_told(asked: str, draft: str) -> None:
     ],
 )
 def test_a_draft_that_hides_the_absence_still_misses_the_failure(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", "qué música se está reproduciendo", _absence_facts()) == "missing_failure"
+    assert visible_defect.compose_visible_defect(draft, "error", "qué música se está reproduciendo", _absence_facts()) == "missing_failure"
 
 
 def test_an_absence_does_not_tell_a_failure_that_is_not_one() -> None:
     # A timeout is not an absence: «no hay música» would hide it.
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "No hay música sonando.", "error", "qué música se está reproduciendo", _absence_facts("timeout")
     ) == "missing_failure"
 
@@ -238,14 +243,14 @@ def _local(stamp: str) -> str:
 def test_the_listed_alarms_are_named_with_their_local_times() -> None:
     first, second = "2026-09-24T08:00:00.0000000+00:00", "2026-09-24T10:30:00+00:00"
     draft = f"Hay 2 alarmas programadas: una a las {_local(first)} y otra a las {_local(second)}."
-    assert llm.compose_visible_defect(draft, "status", "qué alarmas hay puestas", _alarm_facts(first, second)) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", "qué alarmas hay puestas", _alarm_facts(first, second)) == ""
 
 
 def test_a_time_no_listed_alarm_has_is_invented() -> None:
     first = "2026-09-24T08:00:00+00:00"
     other = "23:59" if _local(first) != "23:59" else "23:58"
     draft = f"Hay 1 alarma programada, a las {other}."
-    assert llm.compose_visible_defect(draft, "status", "qué alarmas hay puestas", _alarm_facts(first)) == "extra_claim"
+    assert visible_defect.compose_visible_defect(draft, "status", "qué alarmas hay puestas", _alarm_facts(first)) == "extra_claim"
 
 
 # --- capture.screenshot ---------------------------------------------------------
@@ -291,9 +296,9 @@ def _weather_payload(location: str = "Londres") -> dict:
 
 def test_the_place_named_as_the_person_named_it_is_the_place() -> None:
     reply = "In London, the temperature is 15.7°C with clear skies."
-    assert llm._weather_fact_defect(reply, _weather_payload(), "what's the weather like in london") == ""
-    assert llm._weather_fact_defect(reply, _weather_payload(), "what's the weather like in paris") == "missing_state"
-    assert llm._weather_fact_defect("It is 15.7°C with clear skies.", _weather_payload(), "what's the weather like in london") == "missing_state"
+    assert weather_facts._weather_fact_defect(reply, _weather_payload(), "what's the weather like in london") == ""
+    assert weather_facts._weather_fact_defect(reply, _weather_payload(), "what's the weather like in paris") == "missing_state"
+    assert weather_facts._weather_fact_defect("It is 15.7°C with clear skies.", _weather_payload(), "what's the weather like in london") == "missing_state"
 
 
 # --- media.control said with a verb --------------------------------------------
@@ -308,11 +313,11 @@ def _stopped_facts() -> dict:
 
 @pytest.mark.parametrize("draft", ["La reproducción se detuvo.", "Dejé de reproducir.", "Paré la reproducción."])
 def test_a_verified_stop_said_with_a_verb_names_the_state(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", "para de reproducir", _stopped_facts()) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", "para de reproducir", _stopped_facts()) == ""
 
 
 def test_a_stop_denied_is_still_reversed() -> None:
-    assert llm.compose_visible_defect("La reproducción no se detuvo.", "status", "para de reproducir", _stopped_facts()) == "reversed_result"
+    assert visible_defect.compose_visible_defect("La reproducción no se detuvo.", "status", "para de reproducir", _stopped_facts()) == "reversed_result"
 
 
 # --- conversation retry hint -----------------------------------------------------

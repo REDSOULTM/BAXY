@@ -21,7 +21,10 @@ from datetime import date
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import clock_facts
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 from baxy_mind.semantic.network import calendar_parts_asked, relative_calendar_days
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.temporal import relative_days
@@ -47,8 +50,8 @@ def _effects(text: str) -> tuple[str, ...] | None:
 def _clock_defect(reply: str, asked: str) -> str:
     """Both composer checks of a system.time final: the visible defects and the carried calendar facts."""
 
-    payload = llm._compose_situation_payload(_CLOCK, "es", asked)
-    return llm.compose_visible_defect(reply, "status", asked, _CLOCK_FACTS) or llm._payload_fact_defect(
+    payload = compose_payload._compose_situation_payload(_CLOCK, "es", asked)
+    return visible_defect.compose_visible_defect(reply, "status", asked, _CLOCK_FACTS) or payload_fact_checks._payload_fact_defect(
         reply, payload, asked
     )
 
@@ -67,14 +70,14 @@ def test_a_yes_no_day_question_reads_the_clock_and_carries_the_part_asked(text: 
     # Tanda 6b (owner): a weekday asked yes or no is answered by the weekday; only a day of the month asks the date.
     assert _effects(text) == ("system.time",)
     assert calendar_parts_asked(text) == (part,)
-    payload = llm._compose_situation_payload(_CLOCK, "es", text)
+    payload = compose_payload._compose_situation_payload(_CLOCK, "es", text)
     assert payload.get("date") == ("2026-09-24" if part == "date" else None)
 
 
 @pytest.mark.parametrize("text", ["¿hoy es lunes?", "is today friday", "¿es martes hoy?", "hoy es jueves, ¿verdad?"])
 def test_a_weekday_named_in_the_question_carries_the_observed_weekday(text: str) -> None:
-    assert llm._compose_situation_payload(_CLOCK, "es", text)["weekday"] == "jueves"
-    assert "say yes or no first" in llm._calendar_instruction(text)
+    assert compose_payload._compose_situation_payload(_CLOCK, "es", text)["weekday"] == "jueves"
+    assert "say yes or no first" in clock_facts._calendar_instruction(text)
 
 
 @pytest.mark.parametrize(
@@ -208,12 +211,12 @@ def test_the_last_weekend_on_a_weekend_is_the_one_before() -> None:
 
 
 def test_the_asked_days_are_carried_with_their_weekdays_instead_of_today() -> None:
-    payload = llm._compose_situation_payload(_CLOCK, "es", "¿sabes qué días fueron el último fin de semana?")
+    payload = compose_payload._compose_situation_payload(_CLOCK, "es", "¿sabes qué días fueron el último fin de semana?")
     assert payload == {
         "asked_days": [{"date": "2026-09-19", "weekday": "sábado"}, {"date": "2026-09-20", "weekday": "domingo"}],
         "operation": "system.time",
     }
-    assert "clock" not in llm._compose_situation_payload(_CLOCK, "en", "¿cuándo es pasado mañana?")
+    assert "clock" not in compose_payload._compose_situation_payload(_CLOCK, "en", "¿cuándo es pasado mañana?")
 
 
 @pytest.mark.parametrize(

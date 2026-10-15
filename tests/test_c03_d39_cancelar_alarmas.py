@@ -16,11 +16,15 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind.llm import LlmRuntime, _compose_situation_payload, _deterministic_final, _payload_fact_defect
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.deterministic_finals import _deterministic_final
+from baxy_mind.payload_fact_checks import _payload_fact_defect
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
-from baxy_mind.semantic.temporal import assents_to_alarm_offer, plural_alarm_cancellation
+from baxy_mind.semantic.dialogue import accepts_offer
+from baxy_mind.semantic.temporal import plural_alarm_cancellation
+from baxy_mind import argument_grounding
 
 F_S040 = "Cancela las alarmas, por favor."
 OPERATIONS = (
@@ -94,7 +98,7 @@ def test_alarms_in_the_plural_without_which_are_read(text: str) -> None:
     assert effects is not None and effects.operations == ("notification.list",)
     # M62 (v3e2-final F-s040: the read held 20 of 38 notifications, «resultsMayBeTruncated»): the offer of every alarm
     # reads as many as the catalog lets it.
-    assert mind._ground_explicit_arguments("notification.list", text, LIST_SCHEMA) == {"limit": 50}
+    assert argument_grounding._ground_explicit_arguments("notification.list", text, LIST_SCHEMA) == {"limit": 50}
 
 
 @pytest.mark.parametrize(
@@ -163,7 +167,7 @@ def test_the_yes_cancels_each_alarm_read(answer: str) -> None:
     )
     effects = resolve_explicit_effects(request, OPERATIONS)
     assert effects is not None and effects.operations == ("notification.cancel.at",) * 4
-    assert [mind._ground_explicit_arguments("notification.cancel.at", clause, CANCEL_AT) for clause in effects.evidence] == [
+    assert [argument_grounding._ground_explicit_arguments("notification.cancel.at", clause, CANCEL_AT) for clause in effects.evidence] == [
         {"hour": 7, "kind": "alarm", "period": "am"},
         {"hour": 8, "kind": "alarm", "minute": 30, "period": "am"},
         {"hour": 12, "kind": "alarm", "period": "pm"},
@@ -177,7 +181,7 @@ def test_the_yes_in_english_and_a_minute_with_its_zero() -> None:
     assert request == "cancel the alarm at 12:05 am and cancel the alarm at 6:45 am"
     effects = resolve_explicit_effects(request, OPERATIONS)
     assert effects is not None
-    assert [mind._ground_explicit_arguments("notification.cancel.at", clause, CANCEL_AT) for clause in effects.evidence] == [
+    assert [argument_grounding._ground_explicit_arguments("notification.cancel.at", clause, CANCEL_AT) for clause in effects.evidence] == [
         {"hour": 12, "kind": "alarm", "minute": 5, "period": "am"},
         {"hour": 6, "kind": "alarm", "minute": 45, "period": "am"},
     ]
@@ -185,7 +189,7 @@ def test_the_yes_in_english_and_a_minute_with_its_zero() -> None:
 
 @pytest.mark.parametrize("answer", ["no", "solo la de las 7", "¿cuáles son?", "mejor no"])
 def test_anything_but_the_yes_cancels_nothing(answer: str) -> None:
-    assert not assents_to_alarm_offer(answer)
+    assert not accepts_offer(answer, "alarms")
     assert _offered(_alarms_read((7, 0), (8, 30))).accepted_alarm_cancellation(answer) is None
 
 

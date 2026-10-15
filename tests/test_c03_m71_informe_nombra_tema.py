@@ -11,7 +11,8 @@ makes the outlet the one who speaks (owner rule 2026-09-24: BAXY says what was s
 
 from __future__ import annotations
 
-from baxy_mind.llm import _payload_fact_defect, _search_report_leaves_out_subject
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.search_report import _search_report_leaves_out_subject
 from baxy_mind.semantic.web import carried_subjects, names_subject
 from test_c03_cpu_actor import Recorder
 

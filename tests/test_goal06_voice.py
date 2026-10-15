@@ -5,44 +5,80 @@ import inspect
 import json
 
 from baxy_mind import llm as llm_mod
-from baxy_mind.llm import (
-    CPU_USER_MESSAGE_PROMPT,
+from baxy_mind.llm_prompts import (
     GRANITE_CLOCK_EN_USER_MESSAGE_PROMPT,
     GRANITE_CLOCK_USER_MESSAGE_PROMPT,
     GRANITE_CONTINUE_EN_CPU_USER_MESSAGE_PROMPT,
     GRANITE_CONTINUE_EN_USER_MESSAGE_PROMPT,
-    GRANITE_CPU_USER_MESSAGE_PROMPT,
-    GRANITE_USER_MESSAGE_PROMPT,
     GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT,
     GRANITE_WELCOME_USER_MESSAGE_PROMPT,
-    NARRATOR_PROMPT,
-    SYSTEM_PROMPT,
-    USER_MESSAGE_PROMPT,
-    _compose_shape_instruction,
-    _compose_situation_payload,
-    _local_clock_from_observed,
-    _message_response_language,
+    _public_compose_sampling,
+)
+from baxy_mind.compose_instructions import _compose_shape_instruction
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.request_intents import (
     _looks_like_capability_question,
     _looks_like_refuse_question,
-    _public_compose_sampling,
-    _strip_prompt_labels,
-    compose_visible_defect,
+)
+from baxy_mind.draft_cleanup import _strip_prompt_labels
+from baxy_mind.visible_defect import compose_visible_defect
+from baxy_mind.request_intents import _message_response_language
+from baxy_mind.llm_prompts import SYSTEM_PROMPT
+from baxy_mind.reply_language_checks import (
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
+)
+from baxy_mind.clock_facts import _local_clock_from_observed
+from baxy_mind.llm_prompts import (
+    CPU_USER_MESSAGE_PROMPT,
+    GRANITE_CPU_USER_MESSAGE_PROMPT,
+    GRANITE_USER_MESSAGE_PROMPT,
+    NARRATOR_PROMPT,
+    USER_MESSAGE_PROMPT,
 )
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MAIN = (ROOT / "src/baxy_mind/__main__.py").read_text(encoding="utf-8")
+MIND = ROOT / "src/baxy_mind"
+# The sidecar's entry and the modules it was split into; each cause is worded in one of them.
+SIDECAR = "".join(
+    (MIND / f"{name}.py").read_text(encoding="utf-8")
+    for name in (
+        "__main__",
+        "sidecar_budgets",
+        "turn_audit",
+        "request_lane",
+        "sidecar_lifecycle",
+        "tool_catalog",
+        "turn_history",
+        "argument_grounding",
+        "plan_dependencies",
+        "decided_arguments",
+        "plan_shape",
+        "direct_arguments",
+        "turn_recovery",
+        "operation_contract",
+        "turn_gates",
+        "turn_decisions",
+        "engine_handoff",
+        "compose_facts",
+        "send_offer",
+        "turn_followups",
+        "context_decision",
+        "turn_decide",
+    )
+)
+EARLY_NOTICE = (MIND / "turn_decide.py").read_text(encoding="utf-8")
+RECOVERY = (MIND / "turn_recovery.py").read_text(encoding="utf-8")
 
 
 def test_early_signal_production_path_uses_compose_not_snippet_template() -> None:
-    assert "formulate_progress" not in MAIN
-    assert '"cause": "acting"' in MAIN
+    assert "formulate_progress" not in SIDECAR
+    assert '"cause": "acting"' in EARLY_NOTICE
 
 
 def test_early_signal_preserves_phase_and_is_optional_when_composition_fails() -> None:
-    from baxy_mind.__main__ import _emit_early_turn_signal
+    from baxy_mind.turn_decide import _emit_early_turn_signal
     from baxy_mind.first_signal import PATH_MODEL, PendingTurnSignal
 
     captured = []
@@ -710,10 +746,10 @@ def test_narrate_is_compose_not_a_parallel_prompt() -> None:
 
 
 def test_recovery_compose_does_not_pass_a_spanish_constant() -> None:
-    assert "No pude completar el análisis de tu petición." not in MAIN
+    assert "No pude completar el análisis de tu petición." not in SIDECAR
     # Tanda 4 2026-09-24: the recovery asks the missing piece through the
     # clarification cause; it still passes a cause code, never visible text.
-    assert '"cause": "ambiguous_request"' in MAIN
+    assert '"cause": "ambiguous_request"' in RECOVERY
 
 
 def test_invented_infinitives_and_stalls_are_still_rejected() -> None:
@@ -839,7 +875,8 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         {"situation": click_failed},
     ) == ""
     # ctx-dueno-07: the family code carries its fact into the failure payload.
-    from baxy_mind.llm import _cause_in_prose, _has_cause_fact
+    from baxy_mind.compose_situation import _has_cause_fact
+    from baxy_mind.compose_situation import _cause_in_prose
     assert _has_cause_fact("youtube_playback_not_verified_watch_ready0_playing_network2_source_none")
     assert "did not start playing" in _cause_in_prose(
         "youtube_playback_not_verified_watch_ready0_playing_network2_source_none", "es"
@@ -850,7 +887,7 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
     assert "already on" in _cause_in_prose("airplane_mode_already_on", "es")
     # WALLPAPER2037 (notebook): the narrator's copy of the wallpaper receipt has no
     # RGB code and no previous-wallpaper path; the checks still see the colour.
-    from baxy_mind.llm import _compose_situation_payload
+    from baxy_mind.compose_payload import _compose_situation_payload
     wallpaper = {
         "kind": "operation", "operation": "desktop.wallpaper.set", "polarity": "success",
         "verified": True, "succeeded": True,
@@ -862,7 +899,7 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
     assert "rgb" not in projected["seen"] and "previousWallpaper" not in projected["seen"]
     # WALLPAPER2039: the verified change is an effect, not a read («I set …» stays).
     assert projected.get("effect") == "applied"
-    from baxy_mind.llm import _payload_fact_defect
+    from baxy_mind.payload_fact_checks import _payload_fact_defect
     assert _payload_fact_defect("I set the wallpaper to solid red.", projected, "set the wallpaper to red") == ""
     assert compose_visible_defect(
         "I set the wallpaper to solid red.",

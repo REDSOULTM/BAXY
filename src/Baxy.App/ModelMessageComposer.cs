@@ -238,7 +238,8 @@ internal static class ModelMessageComposer
                 modelText,
                 priorUserText: priorUserText,
                 hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
-                missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
+                missingFields: UserMessagePolicy.DeclaredMissingFields(draft),
+                verifiedSuccess: UserMessagePolicy.ReportsVerifiedEffect(draft)))
         ?? "model_response_rejected";
 
     private static string? AcceptPublishedConversation(
@@ -279,7 +280,8 @@ internal static class ModelMessageComposer
                 priorUserText: priorUserText,
                 clarification: draft.Intent == "clarification",
                 hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
-                missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
+                missingFields: UserMessagePolicy.DeclaredMissingFields(draft),
+                verifiedSuccess: UserMessagePolicy.ReportsVerifiedEffect(draft)))
         {
             return null;
         }

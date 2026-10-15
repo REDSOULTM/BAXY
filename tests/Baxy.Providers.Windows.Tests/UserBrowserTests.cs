@@ -17,6 +17,9 @@ public sealed class UserBrowserTests
     private const string OperaCommand =
         "\"C:\\Users\\owner\\AppData\\Local\\Programs\\Opera GX\\opera.exe\" -noautoupdate -- \"%1\"";
 
+    // A new tab or the browser's start page leaves the address field empty: the read finds no address there.
+    private static string? EmptyAddressField(nint window) => null;
+
     private static readonly UserBrowserIdentity OperaGx = new(
         "Opera GXStable", "opera_gx", "Opera GX",
         @"C:\Users\owner\AppData\Local\Programs\Opera GX\opera.exe");
@@ -113,6 +116,348 @@ public sealed class UserBrowserTests
         });
     }
 
+    private const string OldSearch = "www.google.com/search?q=si+hay+pel%C3%ADcula+de+El+Aleph";
+    private const string AskedSearch = "https://www.google.com/search?q=los+horarios+del+cercanias+de+madrid";
+
+    [Test]
+    public async Task AnotherSearchThePersonHadOpenIsNeverTakenForTheOneAskedFor()
+    {
+        // Uso real v3 t4 (c10): the Google tab of the previous conversation was still on show in the window whose
+        // title moved; the host matched and BAXY announced that old search as the one it had opened.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "si hay película de El Aleph - Buscar con Google - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowsAfterOpen = [new(11, "Buscar con Google - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+            Assert.That(receipt.Result, Is.Null, "the old search is never reported as the arrival");
+            Assert.That(platform.BaselineReads, Is.EqualTo(1), "only the front window is read before the link opens");
+            Assert.That(harness.Edge.NavigateCalls, Is.Zero);
+        });
+    }
+
+    private const string ShownSearch = "www.google.com/search?q=los+horarios+del+cercanias+de+madrid";
+
+    [Test]
+    public async Task TheDestinationAlreadyOnShowInTheFrontWindowIsAnArrival()
+    {
+        // Semilla r8 t3: the same search opened again in a new tab leaves the window's title as it was; the front
+        // window still showing the destination after the link is opened is what the person sees.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "los horarios del cercanias de madrid - Buscar con Google - Opera")],
+            AddressOf = _ => ShownSearch,
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://" + ShownSearch));
+            Assert.That(platform.AddressReads, Is.EqualTo(1), "one read of the front window after the link opened");
+            Assert.That(harness.Edge.NavigateCalls, Is.Zero);
+            // Review r10a finding 6: nothing was seen to open; the receipt says the page was already on show.
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo(UserBrowserSurface.AlreadyShownAuthority));
+        });
+    }
+
+    [Test]
+    public async Task ALoadingTabTitledWithTheDestinationIsTheArrivalWhenTheAddressFieldIsStale()
+    {
+        // Semilla r8 t2 (probe 2026-10-08): Opera GX's address field kept the previous search for minutes while the
+        // new tab, still loading, titled the window with its own address.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "si hay película de El Aleph - Buscar con Google - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowSteps.Add([new(11, "Cargando… - Opera")]);
+        platform.WindowSteps.Add([new(11, "google.com/search?q=los+horarios+del+cercanías+de+madrid - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate",
+            Json("""{"url":"https://www.google.com/search?q=los+horarios+del+cercan%C3%ADas+de+madrid"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.TitleAuthority));
+            Assert.That(platform.AddressReads, Is.EqualTo(1), "only the loading title was read through UIA");
+        });
+    }
+
+    [Test]
+    public async Task AWindowTitledWithAnotherAddressIsNeverTheArrival()
+    {
+        // Contracaso: another search's address in the title, or a page title that is no address, proves nothing.
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowSteps.Add([new(11, "google.com/search?q=si+hay+película+de+El+Aleph - Opera")]);
+        platform.WindowSteps.Add([new(11, "Buscar con Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+            Assert.That(UserBrowserSurface.TitleAddress("Buscar con Google - Opera"), Is.Null);
+            Assert.That(UserBrowserSurface.TitleAddress("Inicio - Opera"), Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task TheDestinationOnShowBeforeButGoneAfterTheLinkStaysUnconfirmed()
+    {
+        // Contracaso: what the front window showed before the link is opened is never the arrival by itself.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "los horarios del cercanias de madrid - Buscar con Google - Opera")],
+            AddressBeforeOpen = _ => ShownSearch,
+            AddressOf = _ => OldSearch,
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+            Assert.That(receipt.Result, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task AnotherQueryOnTheSamePageIsNoRedirectEvenInANewWindow()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressBeforeOpen = EmptyAddressField,
+            AddressOf = window => window == 12 ? OldSearch : null,
+        };
+        platform.WindowsAfterOpen = [new(11, "Inicio - Opera"), new(12, "Buscar con Google - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+        });
+    }
+
+    [Test]
+    public async Task TheSearchAskedForIsWaitedForPastTheTabOfAnotherOne()
+    {
+        int reads = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "si hay película de El Aleph - Buscar con Google - Opera")],
+            AddressBeforeOpen = _ => OldSearch,
+            AddressOf = _ => ++reads == 1 ? OldSearch : AskedSearch.Replace("https://", string.Empty),
+        };
+        platform.WindowSteps.Add([new(11, "Buscar con Google - Opera")]);
+        platform.WindowSteps.Add([new(11, "los horarios del cercanias de madrid - Buscar con Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo(AskedSearch));
+            // Ronda 23: the changed title that names every word searched is the arrival, with no second address read.
+            Assert.That(platform.AddressReads, Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.SearchTitleAuthority));
+        });
+    }
+
+    [Test]
+    public async Task TheSearchAskedForIsWaitedForPastTheTabOfAnotherOneByItsAddress()
+    {
+        // The same wait when the new title does not name the words searched: the address read decides, as before.
+        int reads = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "si hay película de El Aleph - Buscar con Google - Opera")],
+            AddressBeforeOpen = _ => OldSearch,
+            AddressOf = _ => ++reads == 1 ? OldSearch : AskedSearch.Replace("https://", string.Empty),
+        };
+        platform.WindowSteps.Add([new(11, "Buscar con Google - Opera")]);
+        platform.WindowSteps.Add([new(11, "Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo(AskedSearch));
+            Assert.That(platform.AddressReads, Is.EqualTo(2));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.AddressAuthority));
+        });
+    }
+
+    [Test]
+    public async Task TheSameSearchTwiceInARowArrives()
+    {
+        // Contracase: the destination itself is the arrival even when the front tab already showed it.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "los horarios del cercanias de madrid - Buscar con Google - Opera")],
+            AddressOf = _ => AskedSearch.Replace("https://", string.Empty) + "&sca_esv=1f2e&ei=abc",
+        };
+        platform.WindowsAfterOpen = [new(11, "Buscar con Google - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(),
+                Is.EqualTo(AskedSearch + "&sca_esv=1f2e&ei=abc"), "parameters the page adds are not compared");
+            // Review r10a finding 6, contracase: the window changed (a new tab was seen opening), so it is no page
+            // that was merely already on show.
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.Not.EqualTo(UserBrowserSurface.AlreadyShownAuthority));
+        });
+    }
+
+    [Test]
+    public async Task AConsentPageThatGivesWayToTheResultsArrivesAtTheResults()
+    {
+        int reads = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressBeforeOpen = EmptyAddressField,
+            AddressOf = _ => ++reads == 1
+                ? "consent.google.com/ml?continue=https://www.google.com/search&hl=es"
+                : AskedSearch.Replace("https://", string.Empty),
+        };
+        platform.WindowSteps.Add([new(11, "Antes de ir a Google - Opera")]);
+        platform.WindowSteps.Add([new(11, "los horarios del cercanias de madrid - Buscar con Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo(AskedSearch));
+        });
+    }
+
+    [Test]
+    public async Task ARedirectOfTheSiteInTheTabJustOpenedIsWhereTheLinkLanded()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressBeforeOpen = EmptyAddressField,
+            AddressOf = _ => "www.youtube.com/feed/you",
+        };
+        platform.WindowsAfterOpen = [new(11, "YouTube - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://youtube.com/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://www.youtube.com/feed/you"));
+        });
+    }
+
+    [Test]
+    public async Task APageOfTheSiteThePersonAlreadyHadIsNoRedirect()
+    {
+        // Contracase: the same site, but the very address the front tab showed before the link was opened, or a
+        // page in a window whose earlier address is unknown, is not what the link opened.
+        var shown = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "Video - YouTube - Opera")],
+            AddressOf = _ => "www.youtube.com/watch?v=abc",
+        };
+        shown.WindowsAfterOpen = [new(11, "(1) Video - YouTube - Opera")];
+        var elsewhere = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "Inicio - Opera"), new(12, "Video - YouTube - Opera")],
+            AddressBeforeOpen = EmptyAddressField,
+            AddressOf = window => window == 12 ? "www.youtube.com/watch?v=abc" : null,
+        };
+        elsewhere.WindowsAfterOpen = [new(11, "Inicio - Opera"), new(12, "(1) Video - YouTube - Opera")];
+        using Harness first = new(shown);
+        using Harness second = new(elsewhere);
+
+        ExternalCapabilityReceipt same = await first.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://youtube.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt other = await second.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://youtube.com/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(same.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+            Assert.That(other.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+        });
+    }
+
+    [TestCase("https://www.google.com/search?q=los+horarios", "google.com/search?q=los%20horarios", true)]
+    [TestCase("http://example.org/page", "https://example.org/page/", true)]
+    [TestCase("https://example.org/page#top", "https://www.example.org/page", true)]
+    [TestCase("https://www.google.com/search?q=El+fin+de+los+tiempos.", "www.google.com/search?q=El+fin+de+los+tiempos.", true)]
+    [TestCase("https://www.google.com/search?q=El+fin+de+los+tiempos.", "www.google.com/search?q=El+fin+de+los+tiempos", false)]
+    [TestCase("https://www.google.com/search?q=cercanias", "www.google.com/search?q=El+Aleph", false)]
+    [TestCase("https://www.google.com/search?q=cercanias", "www.google.com/webhp?q=cercanias", false)]
+    [TestCase("https://www.google.com/search?q=pel%C3%ADcula", "www.google.com/search?q=película", true)]
+    [TestCase("https://es.wikipedia.org/wiki/Aleph", "es.wikipedia.org/wiki/aleph", false)]
+    public void TheDestinationIsTheAddressAskedForWithTheSpellingsABrowserShows(
+        string requested, string observed, bool reached)
+    {
+        Assert.That(UserBrowserSurface.TryAddress(observed, out Uri? seen), Is.True);
+        Assert.That(UserBrowserSurface.ReachedTarget(new Uri(requested), seen!), Is.EqualTo(reached));
+    }
+
+    [TestCase("https://www.google.com/search?q=cercanias", "www.google.com/search?q=El+Aleph", true)]
+    [TestCase("https://www.google.com/search?q=cercanias", "www.google.com/search?q=cercanias&hl=es", false)]
+    [TestCase("https://www.google.com/search?q=cercanias", "consent.google.com/ml?q=otra", false)]
+    [TestCase("https://youtube.com/", "www.youtube.com/feed/you", false)]
+    public void AnotherQueryOnThePathAskedForContradictsTheDestination(string requested, string observed, bool contradicts)
+    {
+        Assert.That(UserBrowserSurface.TryAddress(observed, out Uri? seen), Is.True);
+        Assert.That(UserBrowserSurface.ContradictsTarget(new Uri(requested), seen!), Is.EqualTo(contradicts));
+    }
+
     [Test]
     public async Task AnUnreadableAddressFieldIsReadOncePerTitleAndLeavesTheNavigationUncertain()
     {
@@ -162,7 +507,13 @@ public sealed class UserBrowserTests
     [Test]
     public async Task NoWindowChangeLeavesTheNavigationUncertain()
     {
-        var platform = new FakePlatform(OperaGx) { AddressOf = _ => "wikipedia.org" };
+        // The front window showed another page before the link opened (semilla r8: the destination already on show
+        // there is read again, TheDestinationAlreadyOnShowInTheFrontWindowIsAnArrival).
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressBeforeOpen = _ => "www.example.org/",
+            AddressOf = _ => "wikipedia.org",
+        };
         using Harness harness = new(platform);
 
         ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
@@ -293,6 +644,221 @@ public sealed class UserBrowserTests
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.PlaybackUnconfirmed));
             Assert.That(platform.Played, Is.Empty);
             Assert.That(harness.Edge.YouTubeCalls, Is.Zero, "the video is not started a second time elsewhere");
+        });
+    }
+
+    // Tanda t4-r6: a YouTube page that never played held the turn for the whole 15 s.
+    [Test]
+    public async Task ARunningBrowserWithoutAnyMediaTraceEndsTheWaitAfterEightSeconds()
+    {
+        var platform = new FakePlatform(OperaGx);
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.PlaybackUnconfirmed));
+            Assert.That(platform.SessionReads, Is.EqualTo(1 + UserBrowserSurface.SilentPlaybackPolls));
+        });
+    }
+
+    [Test]
+    public async Task ABrowserThatWasNotRunningKeepsTheWholePlaybackHorizon()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            WindowsAfterOpen = [new(11, "YouTube - Opera")],
+        };
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(platform.SessionReads, Is.EqualTo(1 + UserBrowserSurface.SlowStartPlaybackPolls),
+                "a cold launch is not a negative signal");
+        });
+    }
+
+    // Tandas on redpc 2026-10-12, Opera GX closed before the first YouTube play of the tanda. fin3 t1 «ponme algo de
+    // los prisioneros» was verified at the edge of the 60-poll horizon (core call 17,6 s); fin4 t1 (same request,
+    // 16,9 s) and fin1 t2 «no mejor en youtube, algun video largo…» (Spotify playing before, 15,8 s) ran it out and
+    // said «no pude confirmar que esté sonando»; fin4's next turn, browser up, played in 4,1 s. The session the page
+    // starts after the launch is waited for past the running browser's horizon.
+    [TestCase("fin3 t1", 58, "", "los prisioneros", "Los Prisioneros - Estrechez De Corazón (Audio)")]
+    [TestCase("fin4 t1", 61, "", "los prisioneros", "Los Prisioneros - Estrechez De Corazón (Audio)")]
+    [TestCase("fin1 t2", 61, "Los Bunkers - Llueve Sobre La Ciudad", "video largo de Los Bunkers",
+        "Los Bunkers - video largo")]
+    [TestCase("slow launch", 110, "", "los prisioneros", "Los Prisioneros - Estrechez De Corazón (Audio)")]
+    public async Task ABrowserThisRequestLaunchedIsWaitedForPastTheRunningBrowsersHorizon(
+        string run, int pollsBeforePlaying, string spotifyBefore, string query, string sessionTitle)
+    {
+        const string Opera = "OperaSoftware.OperaGXWebBrowser.1735227809";
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            WindowsAfterOpen = [new(11, "YouTube - Opera")],
+        };
+        IReadOnlyList<UserMediaSession> others = spotifyBefore.Length == 0
+            ? []
+            : [new UserMediaSession("Spotify.exe", spotifyBefore, "Los Bunkers", "playing")];
+        platform.SessionsBeforeOpen = others;
+        platform.SessionsAfterOpen =
+        [
+            .. Enumerable.Repeat(others, pollsBeforePlaying - 1),
+            [.. others, new UserMediaSession(Opera, sessionTitle, string.Empty, "playing")],
+        ];
+        using Harness harness = new(platform, http: YouTubePage("nNbowGjKQHc", sessionTitle));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json($$"""{"query":"{{query}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, run);
+            Assert.That(platform.SessionReads, Is.EqualTo(1 + pollsBeforePlaying), run);
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo(sessionTitle), run);
+            Assert.That(receipt.Result?.GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo(Opera), run);
+        });
+    }
+
+    [Test]
+    public async Task ARunningBrowserKeepsItsOwnHorizonWhenThePageNeverPlays()
+    {
+        var platform = new FakePlatform(OperaGx);
+        var loading = new UserMediaSession("Opera GXStable", "YouTube", "", "opened");
+        platform.SessionsAfterOpen = [[loading]];
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.PlaybackUnconfirmed));
+            Assert.That(platform.SessionReads, Is.EqualTo(1 + 60), "only a launch pays the longer wait");
+        });
+    }
+
+    [Test]
+    public async Task AnyMediaTraceOfTheBrowserKeepsWaitingUntilThePagePlays()
+    {
+        var platform = new FakePlatform(OperaGx);
+        var loading = new UserMediaSession("Opera GXStable", "YouTube", "", "paused");
+        var playing = new UserMediaSession("Opera GXStable", "Never Gonna Give You Up", "Rick Astley", "playing");
+        platform.SessionsAfterOpen = [.. Enumerable.Repeat<IReadOnlyList<UserMediaSession>>([loading], 40), [playing]];
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(platform.SessionReads, Is.EqualTo(1 + 41));
+        });
+    }
+
+    // Ronda 19, t1-c01 #1 «ponme algo de los prisioneros» with Opera closed: the page started a session whose title
+    // was not the video's, the title-only check never took it and the whole 60-poll horizon ran out (27,6 s).
+    [Test]
+    public async Task ABrowserThisRequestLaunchedIsVerifiedByItsNewSessionWhateverItsTitle()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            WindowsAfterOpen = [new(11, "YouTube - Opera")],
+        };
+        var spotify = new UserMediaSession("Spotify.exe", "Some song", "Someone", "playing");
+        platform.SessionsBeforeOpen = [spotify];
+        platform.SessionsAfterOpen =
+        [
+            [spotify],
+            [spotify, new("Opera GXStable", "Los Prisioneros - Tren al sur (video oficial)", "", "playing")],
+        ];
+        using Harness harness = new(platform, http: YouTubePage("aB3dEf9hIjk", "Algo de Los Prisioneros en vivo 1986"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"algo de los prisioneros"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(platform.SessionReads, Is.EqualTo(1 + 2), "the wait ends on the first playing session");
+            Assert.That(receipt.Result?.GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("Opera GXStable"));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(),
+                Is.EqualTo("Los Prisioneros - Tren al sur (video oficial)"));
+        });
+    }
+
+    [Test]
+    public async Task ABrowserThisRequestLaunchedGetsItsNewHeldBackSessionPressedOnce()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            WindowsAfterOpen = [new(11, "YouTube - Opera")],
+        };
+        var held = new UserMediaSession("Opera GXStable", "YouTube", "", "paused");
+        platform.SessionsAfterOpen = [[held]];
+        platform.OnPlay = session => platform.SessionsAfterOpen = [[session with { PlaybackStatus = "playing" }]];
+        using Harness harness = new(platform, http: YouTubePage("aB3dEf9hIjk", "Algo de Los Prisioneros en vivo 1986"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"algo de los prisioneros"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(platform.Played, Has.Count.EqualTo(1));
+            Assert.That(platform.Played[0].Title, Is.EqualTo("YouTube"));
+        });
+    }
+
+    [Test]
+    public void ARunningBrowsersNewSessionWithAnotherTitleIsStillNotTheVideo()
+    {
+        var other = new UserMediaSession("Opera GXStable", "Another video", "", "playing");
+        var theirs = new UserMediaSession("Opera GXStable", "Their podcast", "Someone", "paused");
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserBrowserSurface.PlaybackCandidate(
+                OperaGx, "Never Gonna Give You Up", [], [other], anyNewBrowserSession: false), Is.Null);
+            Assert.That(UserBrowserSurface.PlaybackCandidate(
+                OperaGx, "Never Gonna Give You Up", [], [other], anyNewBrowserSession: false, coldLaunch: true),
+                Is.EqualTo(other));
+            // Cold or not, a session that was already there, title and state alike, is never the page's.
+            Assert.That(UserBrowserSurface.PlaybackCandidate(
+                OperaGx, "Never Gonna Give You Up", [theirs], [theirs], anyNewBrowserSession: false, coldLaunch: true),
+                Is.Null);
+            Assert.That(UserBrowserSurface.MayPressPlay(OperaGx, "Never Gonna Give You Up", [theirs], theirs, true),
+                Is.False);
+            Assert.That(UserBrowserSurface.MayPressPlay(OperaGx, "Never Gonna Give You Up", [], theirs, false),
+                Is.False);
+            Assert.That(UserBrowserSurface.MayPressPlay(OperaGx, "Never Gonna Give You Up", [], theirs, true),
+                Is.True);
+        });
+    }
+
+    [Test]
+    public void OnlyTheBrowsersOwnSessionsDecideWhetherAnythingChanged()
+    {
+        var theirs = new UserMediaSession("Opera GXStable", "Their podcast", "Someone", "paused");
+        var spotify = new UserMediaSession("Spotify.exe", "Some song", "Someone", "playing");
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserBrowserSurface.BrowserSessionsUnchanged(OperaGx, [theirs], [spotify, theirs]), Is.True);
+            Assert.That(UserBrowserSurface.BrowserSessionsUnchanged(OperaGx, [theirs], [theirs with { PlaybackStatus = "playing" }]), Is.False);
+            Assert.That(UserBrowserSurface.BrowserSessionsUnchanged(OperaGx, [theirs], []), Is.False);
+            Assert.That(UserBrowserSurface.BrowserSessionsUnchanged(OperaGx, [], [theirs]), Is.False);
         });
     }
 
@@ -720,6 +1286,7 @@ public sealed class UserBrowserTests
     {
         var platform = new FakePlatform(OperaGx)
         {
+            AddressBeforeOpen = EmptyAddressField,
             AddressOf = _ => "www.disneyplus.com/es-419/browse/search",
             PageStep = new UserBrowserPageStep(false, "play", "Daredevil"),
         };
@@ -829,6 +1396,7 @@ public sealed class UserBrowserTests
         int reads = 0;
         var platform = new FakePlatform(OperaGx)
         {
+            AddressBeforeOpen = EmptyAddressField,
             AddressOf = _ => ++reads == 1 ? "play.hbomax.com/search/result?q=Dune" : "auth.hbomax.com/login",
         };
         platform.WindowsAfterOpen = [new(11, "HBO Max - Opera")];
@@ -873,7 +1441,11 @@ public sealed class UserBrowserTests
     [Test]
     public async Task AStreamingServiceAskingToSignInIsSaidAsSuch()
     {
-        var platform = new FakePlatform(OperaGx) { AddressOf = _ => "www.netflix.com/login" };
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressBeforeOpen = EmptyAddressField,
+            AddressOf = _ => "www.netflix.com/login",
+        };
         platform.WindowsAfterOpen = [new(11, "Netflix - Opera")];
         using Harness harness = new(platform);
 
@@ -922,6 +1494,122 @@ public sealed class UserBrowserTests
     private static string YouTubePage(string id, string escapedTitle) =>
         "var ytInitialData = {\"contents\":{\"videoRenderer\":{\"videoId\":\"" + id
         + "\",\"thumbnail\":{\"thumbnails\":[]},\"title\":{\"runs\":[{\"text\":\"" + escapedTitle + "\"}]}}}};";
+
+    [Test]
+    public async Task AChangedSearchTitleNamingEveryWordIsTheArrivalWhenTheAddressFieldIsStale()
+    {
+        // Ronda 23 t4-c10 «busca en google los horarios del cercanias de madrid»: Opera GX titled the window
+        // «… - Buscar con Google» and its address field kept the previous search; the turn waited 12 s unconfirmed.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "si hay película de El Aleph - Buscar con Google - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowSteps.Add([new(11, "los horarios del cercanías de madrid - Buscar con Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.SearchTitleAuthority));
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo(AskedSearch));
+            Assert.That(platform.AddressReads, Is.Zero, "the title alone, read at once");
+            Assert.That(platform.Delays, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task ASearchTitleTheWindowAlreadyHadBeforeTheLinkIsNeverTheArrival()
+    {
+        // Contracaso: the tab already had that title before navigating; nothing changed, so it proves nothing, and with
+        // no window changing at all the wait ends early instead of running out the whole horizon.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "los horarios del cercanías de madrid - Buscar con Google - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+            Assert.That(platform.Delays, Is.EqualTo(UserBrowserSurface.QuietNavigationPolls));
+        });
+    }
+
+    [Test]
+    public async Task AHostTitleNamingTheWordSearchedInTheBrowsersSegmentIsNeverTheArrival()
+    {
+        // Revisión 1 r24u contracaso: Opera GX with no network, «busca opera en google». The tab is titled by the host
+        // and the browser («www.google.com - Opera»); «opera» is the browser's segment, not a results page.
+        const string asked = "https://www.google.com/search?q=opera";
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "Inicio - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowSteps.Add([new(11, "www.google.com - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{asked}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+        });
+    }
+
+    [Test]
+    public async Task AnotherWindowWhoseVideoNamesTheWordsIsNeverTheArrival()
+    {
+        // Revisión 1 r24u contracaso: another window of the same browser moves to the next video of its list while the
+        // link opens, and that video names the words searched; it is no results page.
+        const string asked = "https://www.google.com/search?q=opera";
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "Inicio - Opera"), new(12, "Lista de música - YouTube - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowSteps.Add([new(11, "Inicio - Opera"), new(12, "Opera de París en vivo - YouTube - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{asked}}"}"""), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.False);
+    }
+
+    [Test]
+    public async Task AChangedSearchTitleMissingAWordAskedIsNeverTheArrival()
+    {
+        // Contracaso: a search title that does not name every word asked is another search.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "Inicio - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        platform.WindowSteps.Add([new(11, "los horarios del metro de madrid - Buscar con Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+        });
+    }
 
     private sealed class Harness : IDisposable
     {
@@ -998,6 +1686,10 @@ public sealed class UserBrowserTests
         internal UserBrowserPageStep PageStep { get; init; } = new(false, "title", string.Empty);
         internal IReadOnlyList<UserBrowserWindow> WindowsBeforeOpen { get; set; } = [new(11, "Inicio - Opera")];
         internal IReadOnlyList<UserBrowserWindow>? WindowsAfterOpen { get; set; }
+        /// <summary>Windows listed in turn after the link is opened (the last one stays); empty uses <see cref="WindowsAfterOpen"/>.</summary>
+        internal List<IReadOnlyList<UserBrowserWindow>> WindowSteps { get; } = [];
+        internal Func<nint, string?>? AddressBeforeOpen { get; init; }
+        internal int BaselineReads { get; private set; }
         internal IReadOnlyList<UserMediaSession> SessionsBeforeOpen { get; set; } = [];
         internal List<IReadOnlyList<UserMediaSession>> SessionsAfterOpen { get; set; } = [];
         internal Action<UserMediaSession>? OnPlay { get; set; }
@@ -1019,13 +1711,25 @@ public sealed class UserBrowserTests
             _opened = true;
         }
 
-        public IReadOnlyList<UserBrowserWindow> ListWindows(string processName) =>
-            processName == identity?.ProcessName
-                ? (_opened ? WindowsAfterOpen ?? WindowsBeforeOpen : WindowsBeforeOpen)
-                : [];
+        public IReadOnlyList<UserBrowserWindow> ListWindows(string processName)
+        {
+            if (processName != identity?.ProcessName)
+                return [];
+            if (!_opened)
+                return WindowsBeforeOpen;
+            if (WindowSteps.Count == 0)
+                return WindowsAfterOpen ?? WindowsBeforeOpen;
+            IReadOnlyList<UserBrowserWindow> current = WindowSteps[0];
+            if (WindowSteps.Count > 1)
+                WindowSteps.RemoveAt(0);
+            return current;
+        }
+
+        internal int SessionReads { get; private set; }
 
         public ValueTask<IReadOnlyList<UserMediaSession>> ReadMediaSessionsAsync(CancellationToken cancellationToken)
         {
+            SessionReads++;
             if (!_opened)
                 return ValueTask.FromResult(SessionsBeforeOpen);
             if (SessionsAfterOpen.Count == 0)
@@ -1043,8 +1747,18 @@ public sealed class UserBrowserTests
             return ValueTask.FromResult(true);
         }
 
+        /// <summary>
+        /// Reads before the link is opened (the front window's address kept as the baseline of a navigation, or a page
+        /// read) are counted apart in <see cref="BaselineReads"/>; <see cref="AddressBeforeOpen"/>, when set, answers
+        /// them, otherwise <see cref="AddressOf"/> does.
+        /// </summary>
         public ValueTask<string?> ReadAddressAsync(nint window, CancellationToken cancellationToken)
         {
+            if (!_opened)
+            {
+                BaselineReads++;
+                return ValueTask.FromResult((AddressBeforeOpen ?? AddressOf)(window));
+            }
             AddressReads++;
             return ValueTask.FromResult(AddressOf(window));
         }
@@ -1121,7 +1835,13 @@ public sealed class UserBrowserTests
             return ValueTask.FromResult(PageText);
         }
 
-        public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        internal int Delays { get; private set; }
+
+        public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
+        {
+            Delays++;
+            return ValueTask.CompletedTask;
+        }
     }
 
     private sealed class FixedHttpHandler(string body) : HttpMessageHandler

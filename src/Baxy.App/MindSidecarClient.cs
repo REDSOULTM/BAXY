@@ -10,6 +10,45 @@ using Baxy.Kernel.Planning;
 namespace Baxy.App;
 
 /// <summary>
+/// r22 (2026-10-09): why the mind's model did not start, from the catalog
+/// reply's <c>startup</c> object. Only stable causes cross; the server's own
+/// startup lines stay in the mind's report (paths scrubbed there).
+/// </summary>
+internal sealed record MindStartupFailure(string Cause, long? ExitCode)
+{
+    internal static readonly IReadOnlySet<string> Causes = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "vram_insuficiente",
+        "ram_insuficiente",
+        "proceso_salio",
+        "tiempo",
+    };
+
+    /// <summary>The stable trace label: the cause, with the exit code when the server exited.</summary>
+    internal string TraceLabel => ExitCode is { } code && Cause == "proceso_salio"
+        ? Cause + "." + code.ToString(CultureInfo.InvariantCulture)
+        : Cause;
+
+    internal static MindStartupFailure? FromReply(JsonObject? reply)
+    {
+        if (reply is null
+            || (string?)reply["type"] != "error"
+            || reply["startup"] is not JsonObject startup
+            || startup["cause"] is not JsonValue causeValue
+            || !causeValue.TryGetValue(out string? cause)
+            || !Causes.Contains(cause))
+        {
+            return null;
+        }
+
+        long? exitCode = startup["exitCode"] is JsonValue exitValue && exitValue.TryGetValue(out long code)
+            ? code
+            : null;
+        return new MindStartupFailure(cause, exitCode);
+    }
+}
+
+/// <summary>
 /// Decisión de turno emitida por la política contextual de la mente. Es una
 /// clasificación abstinente: el shell sigue siendo la única autoridad para
 /// ejecutar, confirmar y validar operaciones.
@@ -54,6 +93,13 @@ internal sealed record MindTurnDecision(
     // Presentation disposition only; this never grants an executable effect.
     public string? ConversationKind { get; init; }
 
+    /// <summary>
+    /// Estabilidad cu-v3 2026-10-08 (v2-v3-61; review r2 finding 3): a recovered turn the mind understood as talk
+    /// («social», «knowledge», «followup», or «conversation» when its attempts agreed on no kind) whose wording failed.
+    /// Presentation only: its failure is not asked back with the person's words. Grants no effect.
+    /// </summary>
+    public string? UnderstoodAs { get; init; }
+
     public string? RecoveryFailureCode { get; init; }
 
     /// <summary>
@@ -79,7 +125,17 @@ internal sealed record MindPlanStep(
 internal sealed record MindPlanResult(
     string Kind,
     string Question,
-    IReadOnlyList<MindPlanStep> Steps);
+    IReadOnlyList<MindPlanStep> Steps)
+{
+    /// <summary>
+    /// Ronda 19 (revisión, MUSIC1675, CLOSE1371): the mind read the request as conditioned on an application being
+    /// open now («si tengo word abierto, ponelo a la izquierda», «if Chrome is open, snap it to the right»; read in
+    /// semantic/apps.py <c>present_state_condition</c>). The plan's window read is that check, so no window means the
+    /// condition is false: the shell never opens the absent application to satisfy it
+    /// (<see cref="MindPlanBoundary.OpenBeforeResolvingAgain"/>). Grants no effect.
+    /// </summary>
+    public bool PresentStateCondition { get; init; }
+}
 
 /// <summary>
 /// The mind's answer to one composition. <see cref="Text"/> is null when the
@@ -100,18 +156,37 @@ internal sealed record MindComposedMessage(string? Text, bool Reproducible = fal
 /// there is no step (<c>no_document_open</c>: the application is on its start
 /// page), or what the next look waits for (<c>expects_title_change</c>: the act
 /// creates a document whose window replaces the start page).
+/// <see cref="Alias"/> ({from, to}) says the click is on the other language's
+/// name of the place the goal said; <see cref="Translation"/> ({label, names,
+/// source}) is the translation the mind looked up for the label cache (§4.4.1).
+/// <see cref="Source"/> says where the mind's step came from (<c>model</c>,
+/// <c>rule</c>, <c>semantic</c>: a name matched by meaning) and
+/// <see cref="Encoder"/> what its E5 encoder was when the step asked it
+/// (<c>ready</c>, <c>cold</c>: still loading, <c>failed</c>), for the trace.
+/// <see cref="EncoderMs"/> is the time the step spent in the encoder (waiting
+/// for it and encoding), so the trace's model time is the model's (lat-e5).
+/// <see cref="Wanted"/> (ronda 21) are the goal's words the mind ranked the view by; the next look of the same
+/// sub-goal carries them so the view's cut keeps a bounded room for the controls they name.
 /// </summary>
 internal sealed record MindComputerUseStep(
     string Operation,
     JsonObject Arguments,
     string Reason,
-    string Code = "");
+    string Code = "",
+    JsonObject? Alias = null,
+    JsonObject? Translation = null,
+    string Source = "",
+    string Encoder = "",
+    long EncoderMs = 0,
+    JsonArray? Wanted = null);
 
 /// <summary>
 /// What the mind is asked for one computer-use step: the person's whole
 /// request (<see cref="Objective"/>), the CURRENT sub-goal's goal, application
 /// and success check, the compact view, that sub-goal's history, the steps
 /// left, and where the sub-goal sits in a chained mission (0-based).
+/// <see cref="LabelTranslations"/> is the label cache's entry for the goal's
+/// label only ({label: {names: […]}}), or null (§4.4.1).
 /// </summary>
 internal sealed record ComputerUseStepRequest(
     string Objective,
@@ -122,7 +197,9 @@ internal sealed record ComputerUseStepRequest(
     JsonArray History,
     int BudgetLeft,
     int Subgoal,
-    int SubgoalCount);
+    int SubgoalCount,
+    JsonObject? LabelTranslations = null,
+    string? FormCheck = null);
 
 internal sealed record MindVoiceStatus(
     bool Available,
@@ -134,7 +211,46 @@ internal sealed record MindVoiceStatus(
     bool DuckingAvailable,
     string Mode,
     bool Listening,
-    bool Speaking);
+    bool Speaking,
+    bool Pending = false);
+
+/// <summary>
+/// Reads the voice state again while the sidecar still reports it as
+/// <c>pending</c> (its voice runtime is importing), a bounded number of times.
+/// The delay is injected so the schedule is testable without a real clock.
+/// </summary>
+internal static class VoiceStatusSettling
+{
+    internal static readonly TimeSpan Interval = TimeSpan.FromSeconds(1);
+    internal const int MaximumReads = 60;
+
+    internal static async Task<MindVoiceStatus?> UntilSettledAsync(
+        Func<CancellationToken, Task<MindVoiceStatus?>> read,
+        Func<TimeSpan, CancellationToken, Task> delay,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(read);
+        ArgumentNullException.ThrowIfNull(delay);
+        MindVoiceStatus? status = null;
+        for (int attempt = 0; attempt < MaximumReads; attempt++)
+        {
+            await delay(Interval, cancellationToken).ConfigureAwait(false);
+            status = await read(cancellationToken).ConfigureAwait(false);
+            if (status is { Pending: false })
+            {
+                return status;
+            }
+        }
+
+        return status;
+    }
+}
+
+/// <summary>The core's authenticated catalog the mind is configured with once the core said hello.</summary>
+internal sealed record MindStartupCatalog(
+    IReadOnlyList<OperationDescriptor> Capabilities,
+    ApplicationCatalogSnapshot? ApplicationCatalog,
+    GameCatalogSnapshot? GameCatalog);
 
 /// <summary>
 /// Cliente del sidecar de inteligencia (baxy.mind.v1, ADR-0005). Es un
@@ -194,6 +310,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private bool _disposed;
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
+
+    /// <summary>Why the last catalog handshake found the model down, or null.</summary>
+    internal MindStartupFailure? LastStartupFailure { get; private set; }
 
     internal bool HasActiveRequest => _requestLock.CurrentCount == 0;
 
@@ -389,8 +508,25 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         TimeSpan handshakeTimeout,
         CancellationToken cancellationToken)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(capabilities);
+        return await TryStartAsync(
+            Task.FromResult(new MindStartupCatalog(capabilities, applicationCatalog, gameCatalog)),
+            handshakeTimeout,
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Ronda 22 (r18: «listo» 9-15 s before <c>startup.mind.ready</c>): the process and its model start while the
+    /// core still says hello; <c>catalog.configure</c> goes once <paramref name="catalog"/> carries the core's
+    /// authenticated catalog. A catalog that never comes (the core failed, cancelled) ends the start without a mind.
+    /// </summary>
+    internal async Task<bool> TryStartAsync(
+        Task<MindStartupCatalog> catalog,
+        TimeSpan handshakeTimeout,
+        CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        ArgumentNullException.ThrowIfNull(catalog);
         if (_ready)
         {
             return true;
@@ -444,10 +580,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 && requests?.Any(static request => (string?)request == "plan") == true;
             _turnDecisionAvailable = hasLlm
                 && requests?.Any(static request => (string?)request == "turn.decide") == true;
+            MindStartupCatalog inputs = await catalog
+                .WaitAsync(startupCancellation.Token)
+                .ConfigureAwait(false);
             if (!await ConfigureCatalogAsync(
-                    capabilities,
-                    applicationCatalog,
-                    gameCatalog,
+                    inputs.Capabilities,
+                    inputs.ApplicationCatalog,
+                    inputs.GameCatalog,
                     handshakeTimeout,
                     startupCancellation.Token).ConfigureAwait(false))
             {
@@ -479,7 +618,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         JsonObject? reply = await RequestAsync(
             request,
             timeout,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken,
+            returnProtocolError: true).ConfigureAwait(false);
+        LastStartupFailure = MindStartupFailure.FromReply(reply);
         return reply is not null
             && (string?)reply["type"] == "catalog.ready"
             && (int?)reply["count"] == capabilities.Count;
@@ -653,6 +794,15 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         {
             return null;
         }
+        string? understoodAs = null;
+        if (reply["understoodAs"] is JsonNode understood
+            && (kind != "conversation"
+                || understood is not JsonValue understoodValue
+                || !understoodValue.TryGetValue(out understoodAs)
+                || understoodAs is not ("social" or "knowledge" or "followup" or "conversation")))
+        {
+            return null;
+        }
         string? responseLanguage = (string?)reply["responseLanguage"] is { } language
             && language is "es" or "en" or "mixed"
                 ? language
@@ -722,6 +872,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 StartsNewObjective = startsNewObjective,
                 ResponseLanguage = responseLanguage,
                 ConversationKind = conversationKind,
+                UnderstoodAs = understoodAs,
                 RecoveryFailureCode = recoveryFailureCode,
                 Objective = objective,
             }
@@ -914,7 +1065,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         {
             return new MindPlanResult(
                 "failed",
-                TurnVisibleFacts.Failure("plan_incomplete"),
+                TurnVisibleFacts.Failure(PlanFailureCause(reply)),
                 Array.Empty<MindPlanStep>());
         }
 
@@ -924,6 +1075,20 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             expectedOperations,
             expectedSuffix);
     }
+
+    /// <summary>
+    /// Ronda 20 P5 (pasada r18 v3-27: a 4xx of the local model server's grammar told as «No pude abrir … en este
+    /// equipo»): the cause of a plan request that failed. No reply (the transport failed, the
+    /// mind closed or its deadline expired) or the mind's runtime fault («plan_runtime_failure», an exception under
+    /// the plan such as an HTTP error of the model server) is <c>internal_fault</c>, BAXY's own; a reply the
+    /// contract refused stays <c>plan_incomplete</c>.
+    /// </summary>
+    internal static string PlanFailureCause(JsonObject? reply) =>
+        reply is null
+            || ((string?)reply["type"] == "error"
+                && ((string?)reply["message"])?.EndsWith("_runtime_failure", StringComparison.Ordinal) == true)
+            ? "internal_fault"
+            : "plan_incomplete";
 
     internal static JsonObject CreatePlanRequest(
         string text,
@@ -1186,20 +1351,32 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(step);
+        var request = new JsonObject
+        {
+            ["type"] = "computer.use.step",
+            ["objective"] = step.Objective,
+            ["goal"] = step.Goal,
+            ["application"] = step.Application,
+            ["successCheck"] = step.SuccessCheck,
+            ["view"] = step.View.DeepClone(),
+            ["history"] = step.History.DeepClone(),
+            ["budgetLeft"] = step.BudgetLeft,
+            ["subgoal"] = step.Subgoal,
+            ["subgoalCount"] = step.SubgoalCount,
+        };
+        if (step.LabelTranslations is { Count: > 0 } translations)
+        {
+            request["labelTranslations"] = translations.DeepClone();
+        }
+
+        if (step.FormCheck is { Length: > 0 } formCheck)
+        {
+            // Ronda 20b, revisión 2: the check of the whole form the sub-goal belongs to.
+            request["formCheck"] = formCheck;
+        }
+
         JsonObject? reply = await RequestAsync(
-            new JsonObject
-            {
-                ["type"] = "computer.use.step",
-                ["objective"] = step.Objective,
-                ["goal"] = step.Goal,
-                ["application"] = step.Application,
-                ["successCheck"] = step.SuccessCheck,
-                ["view"] = step.View.DeepClone(),
-                ["history"] = step.History.DeepClone(),
-                ["budgetLeft"] = step.BudgetLeft,
-                ["subgoal"] = step.Subgoal,
-                ["subgoalCount"] = step.SubgoalCount,
-            },
+            request,
             ComputerUseStepRequestTimeout,
             cancellationToken).ConfigureAwait(false);
         if (reply is null
@@ -1211,8 +1388,49 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
         JsonObject arguments = reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject();
         return new MindComputerUseStep(
-            operation, arguments, (string?)reply["reason"] ?? string.Empty, (string?)reply["code"] ?? string.Empty);
+            operation, arguments, (string?)reply["reason"] ?? string.Empty, (string?)reply["code"] ?? string.Empty,
+            reply["alias"]?.DeepClone() as JsonObject, reply["translation"]?.DeepClone() as JsonObject,
+            TraceWord(reply["source"]), TraceWord(reply["encoder"]), EncoderMilliseconds(reply["encoderMs"]),
+            WantedWords(reply["wanted"]));
     }
+
+    // Ronda 21: the goal's words the mind ranked the view by, as the catalog's «wanted» takes them (at most 24 non-empty
+    // texts of at most 64 characters); anything else is no word.
+    internal static JsonArray? WantedWords(JsonNode? node)
+    {
+        if (node is not JsonArray given)
+        {
+            return null;
+        }
+
+        var words = new JsonArray();
+        foreach (JsonNode? item in given)
+        {
+            if (item is JsonValue value && value.TryGetValue(out string? word) && !string.IsNullOrWhiteSpace(word)
+                && System.Text.Encoding.UTF8.GetByteCount(word.Trim()) <= 64 && words.Count < 24)
+            {
+                words.Add(word.Trim());
+            }
+        }
+
+        return words.Count > 0 ? words : null;
+    }
+
+    // The step's time in the encoder (lat-e5): whole milliseconds within the step's own timeout, else 0.
+    internal static long EncoderMilliseconds(JsonNode? node) =>
+        node is JsonValue value && value.GetValueKind() == System.Text.Json.JsonValueKind.Number
+            && long.TryParse(value.ToJsonString(), System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture, out long milliseconds)
+            && milliseconds > 0 && milliseconds <= (long)ComputerUseStepRequestTimeout.TotalMilliseconds
+            ? milliseconds
+            : 0;
+
+    // A short lowercase word of the mind's step for the trace (source, encoder); anything else is dropped.
+    internal static string TraceWord(JsonNode? node) =>
+        node is JsonValue value && value.TryGetValue(out string? word)
+            && word is { Length: > 0 and <= 16 } && word.All(character => character is >= 'a' and <= 'z')
+            ? word
+            : string.Empty;
 
     public async Task<MindComposedMessage?> ComposeUserMessageAsync(
         string userText,
@@ -1280,6 +1498,19 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return null;
         }
 
+        // Ronda 19 (revisión): optional and only ever true when present on a plan. Outside a plan it conditions nothing
+        // and is ignored (revisión 2): a clarify or conversation answer keeps its question instead of failing the turn
+        // («si tengo el chrome abierto, movelo» asking where).
+        bool presentStateCondition = false;
+        if (kind == "plan"
+            && reply.TryGetPropertyValue("presentStateCondition", out JsonNode? condition)
+            && (condition is not JsonValue conditionValue
+                || !conditionValue.TryGetValue(out presentStateCondition)
+                || !presentStateCondition))
+        {
+            return null;
+        }
+
         var steps = new List<MindPlanStep>(rawSteps.Count);
         foreach (JsonNode? node in rawSteps)
         {
@@ -1329,7 +1560,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return null;
         }
 
-        return new MindPlanResult(kind, question, steps);
+        return new MindPlanResult(kind, question, steps)
+        {
+            PresentStateCondition = presentStateCondition,
+        };
     }
 
     public Task<bool> VoiceStartAsync(
@@ -1390,7 +1624,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             (bool?)status["ducking"] ?? false,
             (string?)status["mode"] ?? "off",
             (bool?)status["listening"] ?? false,
-            (bool?)status["speaking"] ?? false);
+            (bool?)status["speaking"] ?? false,
+            (bool?)status["pending"] ?? false);
     }
 
     public async Task<bool> VoiceSpeakAsync(
@@ -1431,6 +1666,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     {
         // Cancellation is handled by the sidecar control plane independently
         // of model work and must never wait for an inference to finish.
+        // voice.status stays on the serial lane, like the sidecar keeps it: it
+        // is short because the sidecar never waits on the voice import for it
+        // (2026-10-08, v2-v3-04: turn.decide waited 10 s behind voice.status).
         if ((string?)request["type"] is "voice.cancel" or "shutdown")
         {
             return await SendRequestAsync(request, timeout, returnProtocolError,
@@ -1474,6 +1712,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return null;
         }
 
+        CancellationTokenSource? timeoutSource = null;
+        bool timeoutExpired() => timeoutSource?.IsCancellationRequested == true;
         try
         {
             byte[] utf8Line = SerializeRequestToUtf8(request);
@@ -1501,7 +1741,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 _writeLock.Release();
             }
 
-            using var timeoutSource = new CancellationTokenSource(timeout);
+            timeoutSource = new CancellationTokenSource(timeout);
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken, timeoutSource.Token);
             JsonObject reply = await completion.Task.WaitAsync(linked.Token).ConfigureAwait(false);
@@ -1512,18 +1752,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         catch (Exception exception) when (exception is not OperationCanceledException
             || !cancellationToken.IsCancellationRequested)
         {
-            // A late voice-cancel acknowledgement does not invalidate concurrent
-            // model work. The caller receives false and the late reply is discarded.
-            // Model deadlines and transport failures still trigger owner recovery.
-            bool voiceCancelTimeout = exception is OperationCanceledException
-                && requestType == "voice.cancel";
-            if (!voiceCancelTimeout)
+            string failure = ClassifyRequestFailure(exception, timeoutExpired);
+            if (InvalidatesMind(failure, requestType))
             {
                 _ready = false;
             }
 
-            string failure = exception is OperationCanceledException
-                ? "request_timeout" : "request_io";
             ShellTraceSink.Record(ShellTraceScopes.Turn, traceId,
                 "mind.request.failed", $"{failure}.{requestType}.id.{requestId}");
             return null;
@@ -1531,8 +1765,35 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         finally
         {
             _pending.TryRemove(requestId, out _);
+            timeoutSource?.Dispose();
         }
     }
+
+    /// <summary>
+    /// The honest name of a failed request: its own deadline expired
+    /// (<c>request_timeout</c>), the mind closed under it (<c>mind_closed</c>,
+    /// the reader cancels every pending reply when the sidecar ends, as at app
+    /// close), or the transport failed (<c>request_io</c>).
+    /// </summary>
+    internal static string ClassifyRequestFailure(Exception exception, Func<bool> timeoutExpired) =>
+        exception is not OperationCanceledException ? "request_io"
+            : timeoutExpired() ? "request_timeout"
+            : "mind_closed";
+
+    /// <summary>
+    /// Whether a failed request means the model transport can no longer be
+    /// trusted. A late voice reply (status, speech, start, stop, cancel) is
+    /// not a dead mind: the late reply is discarded and the next turn goes
+    /// through (2026-10-08, v2-s02: a slow voice.status relaunched the mind
+    /// three times). A closed mind was already marked by its reader.
+    /// </summary>
+    internal static bool InvalidatesMind(string failure, string requestType) =>
+        failure switch
+        {
+            "request_io" => true,
+            "request_timeout" => !requestType.StartsWith("voice.", StringComparison.Ordinal),
+            _ => false,
+        };
 
     internal static byte[] SerializeRequestToUtf8(JsonObject request)
     {

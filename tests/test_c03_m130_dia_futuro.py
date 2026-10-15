@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
+from baxy_mind.semantic import arguments as semantic_arguments
 
 LOCAL = timezone(timedelta(hours=-3))
 
@@ -46,4 +46,4 @@ def _local(utc: str | None) -> datetime | None:
     ],
 )
 def test_a_named_day_takes_the_daytime_hour(value: str, context: str, now: datetime, expected: datetime) -> None:
-    assert _local(sidecar._canonical_due_utc(value, context, now_utc=now)) == expected
+    assert _local(semantic_arguments._canonical_due_utc(value, context, now_utc=now)) == expected

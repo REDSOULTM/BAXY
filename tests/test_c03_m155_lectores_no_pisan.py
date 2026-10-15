@@ -39,6 +39,7 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_effects,
 )
 from baxy_mind.semantic.temporal import alarm_for_hour
+from baxy_mind import turn_decide
 
 OPERATIONS = tuple(
     json.loads(
@@ -109,7 +110,7 @@ def _tool(name: str) -> dict:
 
 def _turn(text: str, model: _Decider, history: list[dict] | None = None) -> dict:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m155", "text": text, "history": [*(history or []), {"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),

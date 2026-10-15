@@ -19,7 +19,8 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import visible_defect
+from baxy_mind import media_facts
 
 
 def _situation(operation: str, observed: dict) -> dict:
@@ -73,17 +74,19 @@ def _status(title: str, artist: str) -> dict:
     (_played("Queen - Bohemian Rhapsody - Live At Wembley Stadium"), "pon algo de queen",
      "Está sonando «Bohemian Rhapsody» de Queen en Spotify."),
     (_played("Soda Stereo - Persiana Americana - En Vivo"), "ponme soda stereo",
-     "Ya suena «Persiana Americana» de Soda Stereo, la versión en vivo."),
+     "Ya suena «Persiana Americana» de Soda Stereo en Spotify, la versión en vivo."),
     (_played("The Killers - Mr. Brightside - Radio Edit"), "play the killers on spotify",
      'Now playing "Mr. Brightside" by The Killers on Spotify.'),
     (_status("Hotel California - 2013 Remaster", "Eagles"), "qué canción es esta",
      "Es «Hotel California» de Eagles y está sonando."),
     (_status("Bora Bora - Versión Acústica", "Los Twist"), "cómo se llama esta",
      "Está sonando «Bora Bora - Versión Acústica» de Los Twist."),
-    (_played("Mon Laferte - Mi Buen Amor"), I_S047, "Inicié la reproducción de «Mi Buen Amor» de Mon Laferte."),
+    # Uso real v3 tanda 1 (t1-c07): what was put on in a service names the service (without it: missing_place).
+    (_played("Mon Laferte - Mi Buen Amor"), I_S047,
+     "Inicié la reproducción de «Mi Buen Amor» de Mon Laferte en Spotify."),
 ])
 def test_the_song_named_without_its_recording_suffix_is_named(facts: dict, request_text: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", request_text, facts, said=request_text) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", request_text, facts, said=request_text) == ""
 
 
 @pytest.mark.parametrize(("facts", "request_text", "draft", "reason"), [
@@ -103,13 +106,13 @@ def test_the_song_named_without_its_recording_suffix_is_named(facts: dict, reque
     (FRU_FRU_PLAYED, I_S047, 'No he iniciado la reproducción de "Mi Buen Amor" de Mon Laferte.', "reversed_result"),
 ])
 def test_another_song_or_a_stutter_is_still_refused(facts: dict, request_text: str, draft: str, reason: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", request_text, facts, said=request_text) == reason
+    assert visible_defect.compose_visible_defect(draft, "status", request_text, facts, said=request_text) == reason
 
 
 def test_a_suffix_is_never_owed_from_the_first_part_and_parts_stay_owed() -> None:
-    assert llm._media_title_names("Mon Laferte - Mi Buen Amor - Desde El Teatro Fru Fru", owed_only=True) == [
+    assert media_facts._media_title_names("Mon Laferte - Mi Buen Amor - Desde El Teatro Fru Fru", owed_only=True) == [
         "Mon Laferte", "Mi Buen Amor",
     ]
     # Without ``owed_only`` (the masks) every part is still a name.
-    assert "Desde El Teatro Fru Fru" in llm._media_title_names("Mon Laferte - Mi Buen Amor - Desde El Teatro Fru Fru")
-    assert llm._media_title_names("En Vivo - Soda Stereo", owed_only=True) == ["En Vivo", "Soda Stereo"]
+    assert "Desde El Teatro Fru Fru" in media_facts._media_title_names("Mon Laferte - Mi Buen Amor - Desde El Teatro Fru Fru")
+    assert media_facts._media_title_names("En Vivo - Soda Stereo", owed_only=True) == ["En Vivo", "Soda Stereo"]

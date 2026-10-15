@@ -86,6 +86,18 @@ internal static class ProductConductorHost
                     .ConfigureAwait(true);
             }
 
+            // Measurement only (--after-welcome): the first turn is sent once the start-up's own messages (the
+            // welcome) are composed and published, the way a person who reads the greeting would send it. Off, the
+            // turn goes as soon as the mind is ready, with the welcome possibly still on the mind's lane (cold figure).
+            bool? welcomeSettled = parsed.AfterWelcome && viewModel.IsReady
+                ? await WelcomeSettledAsync(
+                        () => viewModel.PendingModelMessageCount == 0 && viewModel.Messages.Count > 0,
+                        WelcomeWait,
+                        Task.Delay,
+                        lifetime.Token)
+                    .ConfigureAwait(true)
+                : null;
+
             await EmitAsync(
                     new JsonObject
                     {
@@ -93,6 +105,8 @@ internal static class ProductConductorHost
                         ["ready"] = viewModel.IsReady,
                         ["startupError"] = viewModel.HasStartupError,
                         ["status"] = viewModel.StatusDescription,
+                        ["afterWelcome"] = parsed.AfterWelcome,
+                        ["welcomeSettled"] = welcomeSettled,
                     },
                     capture,
                     lifetime.Token)
@@ -157,6 +171,38 @@ internal static class ProductConductorHost
                 await capture.DisposeAsync();
             }
         }
+    }
+
+    internal const string AfterWelcomeArgument = "--after-welcome";
+
+    // How long --after-welcome waits for the start-up's messages before sending the first turn anyway (said in the
+    // «runtime» line as welcomeSettled=false).
+    private static readonly TimeSpan WelcomeWait = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// Waits until <paramref name="settled"/> says the start-up's messages are composed and published, looking every
+    /// 50 ms, for at most <paramref name="limit"/>. True when they settled; false when the limit passed first.
+    /// </summary>
+    internal static async Task<bool> WelcomeSettledAsync(
+        Func<bool> settled,
+        TimeSpan limit,
+        Func<TimeSpan, CancellationToken, Task> delay,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(settled);
+        ArgumentNullException.ThrowIfNull(delay);
+        TimeSpan step = TimeSpan.FromMilliseconds(50);
+        for (TimeSpan waited = TimeSpan.Zero; !settled(); waited += step)
+        {
+            if (waited >= limit)
+            {
+                return false;
+            }
+
+            await delay(step, cancellationToken).ConfigureAwait(true);
+        }
+
+        return true;
     }
 
     private static async Task<bool> ExecuteCommandAsync(
@@ -1090,7 +1136,8 @@ internal static class ProductConductorHost
         string? TurnsFile,
         string? Text,
         string? Commit,
-        TimeSpan Timeout)
+        TimeSpan Timeout,
+        bool AfterWelcome = false)
     {
         internal static ConductorArguments Parse(IReadOnlyList<string> arguments)
         {
@@ -1103,10 +1150,15 @@ internal static class ProductConductorHost
             string? text = null;
             string? commit = Environment.GetEnvironmentVariable("BAXY_CONDUCTOR_COMMIT");
             int timeoutMs = 120_000;
+            bool afterWelcome = false;
             for (int index = 0; index < arguments.Count; index++)
             {
                 string argument = arguments[index];
-                if (TryTake(arguments, ref index, "--profile", out string? profileValue))
+                if (string.Equals(argument, AfterWelcomeArgument, StringComparison.OrdinalIgnoreCase))
+                {
+                    afterWelcome = true;
+                }
+                else if (TryTake(arguments, ref index, "--profile", out string? profileValue))
                 {
                     profile = profileValue!;
                 }
@@ -1139,7 +1191,8 @@ internal static class ProductConductorHost
                 string.IsNullOrWhiteSpace(turns) ? null : Path.GetFullPath(turns),
                 text,
                 commit,
-                TimeSpan.FromMilliseconds(timeoutMs));
+                TimeSpan.FromMilliseconds(timeoutMs),
+                afterWelcome);
         }
 
         private static bool TryTake(

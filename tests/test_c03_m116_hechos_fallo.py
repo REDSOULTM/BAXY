@@ -22,6 +22,8 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm, operation_floor
+from baxy_mind import compose_payload
+from baxy_mind import clock_checks
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -76,6 +78,16 @@ WINDOW_ABSENT = _mission(_failed(
 VOLUME_AT_MAXIMUM = _mission(_failed(
     "audio.volume.adjust", "volume_already_at_maximum", attempted={"direction": "up", "amount": 15},
 ))
+# Estabilización F: the three above are said from the floor (a family cause, a typed sentence) before any draft. The
+# writer keeps a failure whose code is a cause the floor cannot say: the same facts with such a code.
+WHATSAPP_UNREAD = _mission(_failed(
+    "message.draft", "whatsapp_chat_not_readable", target="Ana",
+    attempted={"channel": "whatsapp", "recipient": "Ana", "text": "llego tarde al ensayo"},
+))
+WINDOW_UNSEEN = _mission(_failed(
+    "window.resolve", "window_not_found", target="Nébula", attempted={"applicationName": "Nébula"},
+    notDone=[{"operation": "window.snap", "target": "Nébula", "attempted": {"side": "left"}}],
+))
 
 
 def _writer_facts(writer: _Scripted) -> str:
@@ -88,10 +100,10 @@ def _writer_facts(writer: _Scripted) -> str:
 def test_the_writer_is_given_what_was_attempted_and_told_to_name_it() -> None:
     final, writer = _compose(
         "déjale escrito a Ana en WhatsApp que llego tarde al ensayo, no lo mandes",
-        WHATSAPP_CLOSED,
-        ["No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo» porque WhatsApp no está abierto."],
+        WHATSAPP_UNREAD,
+        ["No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo»: no pude leer ese chat."],
     )
-    assert final == "No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo» porque WhatsApp no está abierto."
+    assert final == "No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo»: no pude leer ese chat."
     sent = _writer_facts(writer)
     assert '"attempted": {"channel": "whatsapp", "recipient": "Ana", "text": "llego tarde al ensayo"}' in sent
     assert "Los hechos traen lo que se intentó (attempted)" in sent
@@ -99,12 +111,12 @@ def test_the_writer_is_given_what_was_attempted_and_told_to_name_it() -> None:
 
 def test_the_effect_left_undone_reaches_the_writer_as_its_plain_act() -> None:
     _final, writer = _compose(
-        "mejor ponlo a la izquierda", WINDOW_ABSENT,
-        ["No pude poner Nébula a la izquierda: no está instalada en este equipo."],
+        "mejor ponlo a la izquierda", WINDOW_UNSEEN,
+        ["No pude poner Nébula a la izquierda: no tiene ninguna ventana abierta."],
     )
     sent = _writer_facts(writer)
     assert '"notDone": [{"action": "colocar la ventana", "target": "Nébula", "attempted": {"side": "left"}}]' in sent
-    payload = llm._compose_situation_payload(WINDOW_ABSENT, "en", "put it on the left")
+    payload = compose_payload._compose_situation_payload(WINDOW_ABSENT, "en", "put it on the left")
     assert payload["reason"]["notDone"] == [
         {"action": "snap the window", "target": "Nébula", "attempted": {"side": "left"}}
     ]
@@ -112,8 +124,8 @@ def test_the_effect_left_undone_reaches_the_writer_as_its_plain_act() -> None:
 
 def test_a_failure_with_nothing_attempted_gets_no_such_instruction() -> None:
     _final, writer = _compose(
-        "abre la app de notas", _mission(_failed("app.open", "app_not_found")),
-        ["No pude abrir la app de notas porque no está instalada."],
+        "abre la app de notas", _mission(_failed("app.open", "app_launch_rejected")),
+        ["No pude abrir la app de notas porque Windows no la dejó arrancar."],
     )
     assert "attempted" not in _writer_facts(writer)
 
@@ -122,10 +134,9 @@ def test_a_failure_with_nothing_attempted_gets_no_such_instruction() -> None:
     ("text", "situation", "draft"),
     [
         # A follow-up whose words are not the message's: the draft quotes what the facts attempted.
-        ("igual mándaselo", WHATSAPP_CLOSED,
-         "No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo» porque WhatsApp no está abierto."),
-        ("ok put it on the left", WINDOW_ABSENT, "I couldn't put Nébula on the left: it isn't installed on this PC."),
-        ("pues unos 15 y ahí la dejamos", VOLUME_AT_MAXIMUM, "No subí el volumen 15 puntos: ya estaba al máximo."),
+        ("igual mándaselo", WHATSAPP_UNREAD,
+         "No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo»: no pude leer ese chat."),
+        ("ok put it on the left", WINDOW_UNSEEN, "I couldn't put Nébula on the left: it has no open window."),
     ],
 )
 def test_a_draft_that_names_what_was_attempted_is_published(text: str, situation: dict, draft: str) -> None:
@@ -133,14 +144,33 @@ def test_a_draft_that_names_what_was_attempted_is_published(text: str, situation
     assert final == draft
 
 
+@pytest.mark.parametrize(
+    ("text", "situation", "draft", "final"),
+    [
+        # Estabilización F: what these drafts said the floor says itself, before any draft (they are never asked).
+        ("igual mándaselo", WHATSAPP_CLOSED,
+         "No pude dejarle escrito a Ana en WhatsApp «llego tarde al ensayo» porque WhatsApp no está abierto.",
+         "No pude dejar escrito el mensaje para «Ana» en WhatsApp: «llego tarde al ensayo», porque la aplicación no "
+         "estaba abierta."),
+        ("ok put it on the left", WINDOW_ABSENT, "I couldn't put Nébula on the left: it isn't installed on this PC.",
+         "I couldn't snap the window «Nébula» on the left, because the app wasn't found."),
+        ("pues unos 15 y ahí la dejamos", VOLUME_AT_MAXIMUM, "No subí el volumen 15 puntos: ya estaba al máximo.",
+         "El volumen ya está al máximo."),
+    ],
+)
+def test_what_the_floor_can_say_is_never_drafted(text: str, situation: dict, draft: str, final: str) -> None:
+    said, writer = _compose(text, situation, [draft, "", ""])
+    assert (said, writer.sent) == (final, [])
+
+
 def test_a_clock_the_step_attempted_is_no_invented_clock() -> None:
     # Twin of the App's UserMessagePolicy.InventedClock (M116HechosFalloTests.AClockTheFailedStepAttemptedIsNoInventedClock).
     attempted = _mission(_failed("message.draft", "whatsapp_client_not_running", target="Ana",
                                  attempted={"channel": "whatsapp", "recipient": "Ana", "text": "paso por ti a las 8"}))
     reply = "No pude dejarle escrito a Ana en WhatsApp «paso por ti a las 8:00» porque WhatsApp no está abierto."
-    assert not llm._failure_invents_a_clock(reply, "igual déjaselo escrito", attempted)
+    assert not clock_checks._failure_invents_a_clock(reply, "igual déjaselo escrito", attempted)
     bare = _mission(_failed("message.draft", "whatsapp_client_not_running", target="Ana"))
-    assert llm._failure_invents_a_clock(reply, "igual déjaselo escrito", bare)
+    assert clock_checks._failure_invents_a_clock(reply, "igual déjaselo escrito", bare)
 
 
 # ------------------------------------------------------------------ 2. the floor says it when every draft dies
@@ -162,7 +192,9 @@ def test_the_floor_names_what_was_attempted(situation: dict, spanish: str, engli
     assert operation_floor.floor_final(situation, True) == english
     # Every draft dies (a time the facts do not hold, then nothing): the floor is the final.
     final, _writer = _compose("dale", situation, ["Listo, quedó hecho a las 07:45.", "", ""])
-    assert final == spanish
+    # Ronda 19 (r17 t3-c07): the mind's last sentence also says the cause of the failure's family.
+    assert final == operation_floor.with_family_cause(spanish, situation, False)
+    assert final != spanish
 
 
 def test_the_floor_never_says_the_message_was_the_target() -> None:

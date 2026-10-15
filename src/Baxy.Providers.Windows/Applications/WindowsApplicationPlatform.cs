@@ -20,6 +20,15 @@ internal interface IWindowsApplicationPlatform
         bool inheritHandles,
         string? commandLine);
 
+    // activate false: the new window is shown without taking the front (STARTF_USESHOWWINDOW, SW_SHOWNOACTIVATE).
+    IWindowsApplicationProcess CreateProcess(
+        string executablePath,
+        uint creationFlags,
+        bool inheritHandles,
+        string? commandLine,
+        bool activate) =>
+        CreateProcess(executablePath, creationFlags, inheritHandles, commandLine);
+
     IWindowsApplicationProcess? OpenProcess(int processId);
 
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
@@ -116,7 +125,15 @@ internal sealed class WindowsApplicationPlatform : IWindowsApplicationPlatform
         string executablePath,
         uint creationFlags,
         bool inheritHandles,
-        string? commandLine)
+        string? commandLine) =>
+        CreateProcess(executablePath, creationFlags, inheritHandles, commandLine, activate: true);
+
+    public IWindowsApplicationProcess CreateProcess(
+        string executablePath,
+        uint creationFlags,
+        bool inheritHandles,
+        string? commandLine,
+        bool activate)
     {
         if (commandLine is not null)
         {
@@ -126,6 +143,10 @@ internal sealed class WindowsApplicationPlatform : IWindowsApplicationPlatform
         NativeMethods.StartupInfo startupInfo = new()
         {
             Size = checked((uint)Marshal.SizeOf<NativeMethods.StartupInfo>()),
+            // STARTF_USESHOWWINDOW with SW_SHOWNOACTIVATE: the application's first window shows without the front
+            // (v3 point 0, arreglo 4); an application that ignores it is handed back by the opener.
+            Flags = activate ? 0u : 0x00000001u,
+            ShowWindow = activate ? (ushort)0 : (ushort)4,
         };
 
         bool created = NativeMethods.CreateProcess(

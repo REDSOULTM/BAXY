@@ -15,12 +15,16 @@ the App sent; the decider is scripted so the deterministic steps after it are wh
 
 from __future__ import annotations
 
-from baxy_mind import __main__ as sidecar
+import json
+
 from baxy_mind import llm
+from baxy_mind import deterministic_finals
+from baxy_mind import visible_defect
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue as dialogue_slot
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.ui import asks_to_type
+from baxy_mind import context_decision
 
 OPERATIONS = ("app.open", "app.close", "input.text.type", "input.visible.click", "web.search", "window.resolve")
 
@@ -81,7 +85,7 @@ class _Decider:
 def _turn(text: str, llm_: _Decider, history: list[tuple[str, str]]) -> dict[str, object]:
     tools = {name: _tool(name) for name in OPERATIONS}
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m65", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=llm_,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -187,8 +191,33 @@ STEAM_OPENED = {
 def test_an_open_that_reused_steam_is_not_told_as_opened_and_entered() -> None:
     user = "Perfecto muy bien"
     final = "He abierto Steam y he entrado en la biblioteca."
-    assert llm.compose_visible_defect(final, "status", user, {"situation": STEAM_OPENED}) == "unstated_already_running"
+    # Estabilización F: an open that reused the running app is never drafted; the floor says it was already open
+    # (data «unchanged» of app.open), so the draft above is never asked for (the veto that caught it was retired).
+    assert deterministic_finals._floor_first_final(STEAM_OPENED, {}, user, "es") == "La aplicación «Steam» ya estaba abierta."
     launched = {**STEAM_OPENED, "observed": {**STEAM_OPENED["observed"], "alreadyRunning": False}}
-    assert llm.compose_visible_defect(final, "status", user, {"situation": launched}) == "extra_claim"
-    assert llm.compose_visible_defect("Abrí Steam.", "status", user, {"situation": launched}) == ""
-    assert llm.compose_visible_defect("Steam ya estaba abierto.", "status", user, {"situation": STEAM_OPENED}) == ""
+    assert visible_defect.compose_visible_defect(final, "status", user, {"situation": launched}) == "extra_claim"
+    assert visible_defect.compose_visible_defect("Abrí Steam.", "status", user, {"situation": launched}) == ""
+    assert visible_defect.compose_visible_defect("Steam ya estaba abierto.", "status", user, {"situation": STEAM_OPENED}) == ""
+
+
+class _AlwaysOpened(llm.LlmRuntime):
+    """Revisión F (H2): a writer that would say the opening nobody made; it counts how often it is asked."""
+
+    def __init__(self) -> None:  # noqa: D107
+        self._gguf = None
+        self.asked = 0
+
+    def _post(self, payload, **_):  # noqa: ANN001, ANN201
+        self.asked += 1
+        return {"choices": [{"message": {"content": "He abierto Steam y he entrado en la biblioteca."},
+                             "finish_reason": "stop"}]}
+
+
+def test_a_correction_over_the_reused_steam_is_never_told_as_opened() -> None:
+    # The path R11 covered: the floor's sentence would repeat the last answer. It is said again as the same result.
+    first = "La aplicación «Steam» ya estaba abierta."
+    corrected = {**STEAM_OPENED, "correctedFinal": {"previousReply": first}}
+    writer = _AlwaysOpened()
+    final = writer.compose_user_message("que lo abras te dije", "status", {"situation": json.dumps(corrected)})
+    assert final == "El resultado es el mismo. " + first
+    assert writer.asked == 0

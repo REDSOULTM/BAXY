@@ -23,13 +23,13 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from baxy_mind import __main__ as mind_main  # noqa: E402
-from baxy_mind import llm as llm_module  # noqa: E402
 from baxy_mind.planner import PlannerCatalog  # noqa: E402
 from baxy_mind.semantic.request import INTENT_CAPABILITY, INTENT_IDENTITY, read_request  # noqa: E402
 
 from test_tanda02_identity_and_task_reminders import _SearchingModel  # noqa: E402
 from test_uso_real_facts_and_effects import _WEB_SEARCH, _GuardSaysPublic, _turn  # noqa: E402
+from baxy_mind import turn_decisions  # noqa: E402
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
 
 # --- about his maker and his making ------------------------------------------------------------------
 _MAKER = [
@@ -294,7 +294,7 @@ def test_a_question_about_baxy_is_read_by_its_form(text: str) -> None:
     assert reading.has(INTENT_IDENTITY), text
     assert not reading.has(INTENT_CAPABILITY), text
     assert (
-        llm_module._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=False)
+        _conversation_presentation_shape(text, conversation_kind="knowledge", has_history=False)
         == "identity"
     )
 
@@ -322,7 +322,7 @@ def test_the_phrase_list_is_gone() -> None:
 @pytest.mark.parametrize("text", _MAKER[:6] + _PLACE_AND_AGE[:3] + _LIKES_NAME_PURPOSE[:3])
 def test_a_question_about_baxy_is_never_a_public_lookup(text: str) -> None:
     catalog = PlannerCatalog([_WEB_SEARCH])
-    assert not mind_main._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), catalog)
+    assert not turn_decisions._public_lookup_applies(text, text, _GuardSaysPublic(), ("web.search",), catalog)
 
 
 @pytest.mark.parametrize("text", ["¿Quién te ha programado?", "¿quiénes te han creado?", "who came up with you?"])

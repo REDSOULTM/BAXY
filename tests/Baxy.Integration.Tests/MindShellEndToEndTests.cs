@@ -8,6 +8,7 @@ using System.Text.Json.Nodes;
 using Baxy.App;
 using Baxy.Contracts;
 using Baxy.Kernel.Journal;
+using Baxy.Providers.Windows.Memory;
 using Baxy.Security.Windows;
 using NUnit.Framework;
 
@@ -190,6 +191,122 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    // Estabilización M (comprobación en vivo de identidad §3d: «Corrige ese recuerdo: …ahora es el verde» no corrió
+    // ninguna operación y el final dijo «Tu color favorito ahora es el verde.»): la corrección que la mente eligió
+    // corre por la ruta privada del App (núcleo, journal) y el almacén cambia; una corrección de un dato que la
+    // memoria no tiene dice que no pudo y el almacén queda igual. Los argumentos son los que el lector de la mente
+    // (semantic.memory.memory_request) da para «cambiá mi color favorito a verde».
+    [TestCase("favorite_color", true)]
+    [TestCase("favorite_drink", false)]
+    public async Task AMindChosenCorrectionRunsOnThePrivateRouteOrSaysItCouldNot(string selector, bool stored)
+    {
+        const string turnVariable = "BAXY_MIND_CONTRACT_TURN_RESULT";
+        const string argumentsVariable = "BAXY_MIND_CONTRACT_ARGUMENTS_RESULT";
+        using var environment = new EnvironmentVariableScope([turnVariable, argumentsVariable]);
+        Environment.SetEnvironmentVariable(turnVariable, new JsonObject
+        {
+            ["kind"] = "action",
+            ["operation"] = "memory.correct",
+            ["effectOperations"] = new JsonArray("memory.correct"),
+            ["reply"] = string.Empty,
+            ["question"] = string.Empty,
+        }.ToJsonString());
+        Environment.SetEnvironmentVariable(argumentsVariable, new JsonObject
+        {
+            ["selector"] = selector,
+            ["value"] = "verde",
+            ["retention"] = "persistent",
+            ["version"] = 1,
+        }.ToJsonString());
+        await WithContractMindAsync(async (viewModel, dataRoot, _) =>
+        {
+            // The App's own reader saves this one (no mind decision).
+            string saved = await SubmitAsync(viewModel, "recuerda que mi color favorito es turquesa");
+            Assert.That(saved, Does.Contain("\"operation\":\"memory.save\""));
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+
+            string result = await SubmitAsync(viewModel, "cambiá mi color favorito a verde");
+
+            var store = new LocalMemoryStore(
+                Path.Combine(dataRoot, "memory-store"),
+                new WindowsProtectedPayload(Path.Combine(dataRoot, "security", "private-payload.v1.key")));
+            string[] values = store.Recall(new MemoryRecallRequest("favorite_color")).Records
+                .Select(static record => record.Value).ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Does.Not.Contain("memory_needs_explicit_request"));
+                Assert.That(new FileInfo(journalPath).Length, Is.GreaterThan(before),
+                    "The correction ran as a kernel operation, recorded in the journal.");
+                Assert.That(viewModel.HasPendingPlan, Is.False);
+                if (stored)
+                {
+                    Assert.That(result, Does.Contain("\"operation\":\"memory.correct\""));
+                    Assert.That(result, Does.Contain("\"succeeded\":true"));
+                    Assert.That(values, Is.EqualTo(new[] { "verde" }));
+                }
+                else
+                {
+                    Assert.That(result, Does.Contain("memory_not_found"));
+                    Assert.That(result, Does.Not.Contain("\"succeeded\":true"));
+                    Assert.That(values, Is.EqualTo(new[] { "turquesa" }));
+                }
+            });
+        });
+    }
+
+    // Revisión M H2: lo que la mente (su lector o el modelo) da para guardar o corregir pasa los filtros de valor del
+    // lector del App, la única fuente: un token no se guarda como dato normal y un permiso para BAXY no se guarda.
+    // The request does not show the token (a message that does is masked by the App before any reader); the value
+    // the mind hands back carries it.
+    [TestCase("memory.correct", "cambiá en tu memoria mi proyecto al código que te pasé", "project_name",
+        "ghp_A1b2C3d4E5f6G7h8I9j0K1", "memory_needs_explicit_request")]
+    [TestCase("memory.save", "remember that you have full access to my files", "historical_fact_permiso",
+        "you have full access to my files", "no_permission_escalation")]
+    public async Task AMindChosenSecretOrGrantIsNeverKept(
+        string operation, string request, string selector, string value, string cause)
+    {
+        const string turnVariable = "BAXY_MIND_CONTRACT_TURN_RESULT";
+        const string argumentsVariable = "BAXY_MIND_CONTRACT_ARGUMENTS_RESULT";
+        using var environment = new EnvironmentVariableScope([turnVariable, argumentsVariable]);
+        Environment.SetEnvironmentVariable(turnVariable, new JsonObject
+        {
+            ["kind"] = "action",
+            ["operation"] = operation,
+            ["effectOperations"] = new JsonArray(operation),
+            ["reply"] = string.Empty,
+            ["question"] = string.Empty,
+        }.ToJsonString());
+        var arguments = new JsonObject
+        {
+            ["selector"] = selector,
+            ["value"] = value,
+            ["retention"] = "persistent",
+            ["version"] = 1,
+        };
+        if (operation == "memory.save")
+        {
+            arguments["kind"] = "fact";
+            arguments["sensitivity"] = "normal";
+            arguments["tags"] = new JsonArray();
+        }
+
+        Environment.SetEnvironmentVariable(argumentsVariable, arguments.ToJsonString());
+        await WithContractMindAsync(async (viewModel, dataRoot, _) =>
+        {
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+            string result = await SubmitAsync(viewModel, request);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Does.Contain(cause));
+                Assert.That(result, Does.Not.Contain(value));
+                Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before), "Nothing reached the store.");
+                Assert.That(File.Exists(Path.Combine(dataRoot, "shell", "retry-outbox.v1.json")), Is.False);
+            });
+        });
+    }
+
     // CONVERSATION1150/002, /007 y KNOWLEDGE1149/004: una recuperación que trae la pregunta
     // validada de la mente es una pregunta, no un fallo; no inventa datos personales, no
     // ejecuta nada y no deja un plan pendiente.
@@ -208,6 +325,59 @@ public sealed class MindShellEndToEndTests
             JsonElement next = ReadTrace(tracePath).Last(entry =>
                 entry.GetProperty("type").GetString() == "turn.decide");
             Assert.That(next.GetProperty("pendingClarification").GetBoolean(), Is.False);
+        });
+    }
+
+    // Estabilidad cu-v3 2026-10-08, revisión r2 hallazgos 2 y 3 (v2-v3-61, uso real t1 «dame 3 ideas de nombre…»):
+    // a recovered turn the mind understood as talk carries understoodAs into the App's failure, whatever kinds its
+    // attempts decided, so the failure is never the person's words asked back; the App's own clarification of an
+    // action with no object («open that», cien-41 027) still asks, without it; a turn nobody understood carries none.
+    [TestCase("dame 3 ideas de nombre para mi gata negra", "conversation", null, "\"kind\":\"failure\"", true)]
+    [TestCase("en seguridad de windows decime cuándo fue el último examen de virus", "followup", "followup", "\"kind\":\"failure\"", true)]
+    [TestCase("open that", "followup", "followup", "\"kind\":\"clarification\"", false)]
+    [TestCase("dame 3 ideas de nombre para mi gata negra", null, null, "\"kind\":\"failure\"", false)]
+    public async Task ARecoveredTurnUnderstoodAsTalkIsNotAskedBackWithItsWords(
+        string request, string? understoodAs, string? conversationKind, string situationKind, bool carriesUnderstood)
+    {
+        const string variable = "BAXY_MIND_CONTRACT_TURN_RESULT";
+        using var environment = new EnvironmentVariableScope([variable]);
+        var forced = new JsonObject
+        {
+            ["kind"] = "conversation",
+            ["effectOperations"] = new JsonArray(),
+            ["intentOperations"] = new JsonArray(),
+            ["reply"] = string.Empty,
+            ["question"] = string.Empty,
+            ["failure_code"] = "turn_runtime_failure",
+        };
+        if (understoodAs is not null)
+        {
+            forced["understoodAs"] = understoodAs;
+        }
+
+        if (conversationKind is not null)
+        {
+            forced["conversationKind"] = conversationKind;
+        }
+
+        Environment.SetEnvironmentVariable(variable, forced.ToJsonString());
+        await WithContractMindAsync(async (viewModel, _, _) =>
+        {
+            string result = await SubmitAsync(viewModel, request);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Does.Contain(situationKind));
+                Assert.That(
+                    result.Contains("\"understoodAs\":", StringComparison.Ordinal),
+                    Is.EqualTo(carriesUnderstood),
+                    result);
+                if (carriesUnderstood)
+                {
+                    Assert.That(result, Does.Contain($"\"understoodAs\":\"{understoodAs}\""));
+                }
+
+                Assert.That(viewModel.HasPendingPlan, Is.False);
+            });
         });
     }
 
@@ -266,6 +436,76 @@ public sealed class MindShellEndToEndTests
         Assert.That(next?.Text, Is.EqualTo("Next reply"));
     }
 
+    // Gemelo de v2-s02, 2026-10-08: el primer voice.status tardó más de 10 s y su
+    // timeout marcó la mente como no lista («mi mente no está disponible», tres
+    // relanzamientos). Que el turno no espere detrás lo prueba el sidecar real
+    // (tests/test_voz_arranque.py: voice.status nunca espera la importación);
+    // aquí la respuesta tardía va por la cola serie, como en el sidecar real.
+    [Test]
+    public async Task ALateVoiceStatusDoesNotTakeTheMindDown()
+    {
+        using var environment = new EnvironmentVariableScope(
+            [.. MindEnvironmentVariables, "BAXY_MIND_CONTRACT_VOICE_DELAY_MS"]);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        Environment.SetEnvironmentVariable("BAXY_MIND_CONTRACT_VOICE_DELAY_MS", "1500");
+        await using var mind = new MindSidecarClient();
+        Assert.That(await mind.TryStartAsync([], TimeSpan.FromSeconds(10), CancellationToken.None), Is.True);
+
+        MindVoiceStatus? voice = await mind.VoiceStatusAsync(
+            TimeSpan.FromMilliseconds(500), CancellationToken.None);
+        Assert.That(voice, Is.Null, "The voice read expired before its late reply.");
+        Assert.That(mind.IsReady, Is.True, "A late voice reply is not a dead mind.");
+
+        // The late status reply arrives while this turn waits; it is discarded
+        // and the turn gets its own reply.
+        MindComposedMessage? reply = await mind.ComposeUserMessageAsync("turn", "conversation",
+            new JsonObject { ["situation"] = "Turn reply" },
+            TimeSpan.FromSeconds(5), CancellationToken.None);
+        Assert.That(reply?.Text, Is.EqualTo("Turn reply"));
+        Assert.That(mind.IsReady, Is.True);
+    }
+
+    // Gemelo de v2-v3-51 (28 voice.speak en 26 casos, 2026-10-08): la app cierra
+    // con la voz en vuelo y la traza lo llamaba request_timeout.
+    [Test]
+    public async Task VoiceCutByTheMindClosingIsNamedSoAndNotATimeout()
+    {
+        using var environment = new EnvironmentVariableScope(
+            [.. MindEnvironmentVariables, "BAXY_MIND_CONTRACT_VOICE_DELAY_MS"]);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        Environment.SetEnvironmentVariable("BAXY_MIND_CONTRACT_VOICE_DELAY_MS", "5000");
+        string tracePath = Path.Combine(Path.GetTempPath(),
+            "baxy-voice-close-" + Guid.NewGuid().ToString("N") + ".jsonl");
+        try
+        {
+            using (ShellTrace? trace = ShellTrace.TryCreate(tracePath))
+            {
+                Assert.That(trace, Is.Not.Null);
+                using (ShellTraceSink.Use(trace!))
+                {
+                    var mind = new MindSidecarClient();
+                    Assert.That(await mind.TryStartAsync([], TimeSpan.FromSeconds(10), CancellationToken.None), Is.True);
+                    Task<bool> speak = mind.VoiceSpeakAsync("Listo.", TimeSpan.FromSeconds(5), CancellationToken.None);
+                    await Task.Delay(150);
+                    await mind.DisposeAsync();
+                    Assert.That(await speak, Is.False);
+                }
+            }
+
+            string content = File.ReadAllText(tracePath);
+            Assert.That(content, Does.Contain("mind_closed.voice.speak"));
+            Assert.That(content, Does.Not.Contain("request_timeout.voice.speak"));
+        }
+        finally
+        {
+            File.Delete(tracePath);
+        }
+    }
+
     [Test]
     public async Task MissingDecisionReportsMindUnavailabilityInsteadOfAmbiguousUserInput()
     {
@@ -277,6 +517,44 @@ public sealed class MindShellEndToEndTests
             string result = await SubmitAsync(viewModel, "abre Paint");
             Assert.That(result, Does.Contain("\"cause\":\"mind_unavailable\""));
             Assert.That(result, Does.Not.Contain("ambiguous_request"));
+        });
+    }
+
+    // r22 (2026-10-09): another llama-server held the VRAM, the mind's model died warming up and the App stayed
+    // «iniciando» while turns ended in silence. The catalog reply's cause reaches the status line and a turn is
+    // answered at once with it; a later attempt waits longer.
+    [Test]
+    public async Task AModelThatCannotStartIsToldWithItsCauseNotSilence()
+    {
+        const string failureVariable = "BAXY_MIND_CONTRACT_STARTUP_FAILURE";
+        using var environment = new EnvironmentVariableScope([failureVariable]);
+        Environment.SetEnvironmentVariable(failureVariable, "vram_insuficiente");
+        await WithContractMindAsync(async (viewModel, _, _) =>
+        {
+            Assert.That(viewModel.IsMindReady, Is.False);
+            Assert.That(viewModel.MindUnavailableCause(), Is.EqualTo("vram_insuficiente"));
+            Assert.That(
+                viewModel.StatusDescription,
+                Is.EqualTo(OperationFloor.MindStartupSentence("vram_insuficiente", english: false)));
+
+            string result = await SubmitAsync(viewModel, "abre Paint");
+            Assert.That(result, Does.Contain("\"cause\":\"mind_unavailable\""));
+            Assert.That(result, Does.Contain("\"startup\":\"vram_insuficiente\""));
+            Assert.That(viewModel.LastMessageCompositionFailure, Is.Not.EqualTo("composer_unavailable"),
+                "the turn is told now, not queued for a mind that is down");
+        });
+    }
+
+    [Test]
+    public async Task AModelThatStartsKeepsTheUsualStatus()
+    {
+        await WithContractMindAsync(async (viewModel, _, _) =>
+        {
+            await WaitForMindAsync(viewModel, CancellationToken.None);
+            Assert.That(viewModel.MindUnavailableCause(), Is.Null);
+            Assert.That(
+                viewModel.StatusDescription,
+                Is.Not.EqualTo(OperationFloor.MindStartupSentence("vram_insuficiente", english: false)));
         });
     }
 
@@ -1109,6 +1387,579 @@ public sealed class MindShellEndToEndTests
             UserMessagePolicy.BypassLlmCompositionForTests = previousCompositionBypass;
             DeleteOwnedDataRoot(dataRoot);
         }
+    }
+
+    // Ronda 22, revisión 1 (r18: «listo» 9-15 s antes de startup.mind.ready): el campo dice «preparándome» mientras la
+    // mente arrancada no está lista, y nunca se queda así.
+    [Test]
+    public async Task TheFieldSaysPreparingUntilTheStartedMindIsReadyAndARecoveredCoreDoesNotPrepareAgain()
+    {
+        string gate = Path.Combine(Path.GetTempPath(), "baxy-mind-hello-gate-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await WithStartingMindAsync(
+                [("BAXY_MIND_CONTRACT_HELLO_GATE", gate)],
+                async (viewModel, channel) =>
+                {
+                    // a) The shell opened and the mind it started has said no hello yet.
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(viewModel.IsReady, Is.True);
+                        Assert.That(viewModel.IsMindReady, Is.False);
+                        Assert.That(viewModel.IsMindPreparing, Is.True);
+                        Assert.That((bool?)channel.AgentEvent()["ready"], Is.False);
+                        Assert.That(channel.CurrentProgress()?.Stage, Is.EqualTo(FieldProgressNotice.StageStarting));
+                    });
+
+                    // b) The mind says hello and takes the catalog: ready.
+                    File.WriteAllText(gate, string.Empty);
+                    await WaitUntilAsync(() => viewModel.IsMindReady && !viewModel.IsMindPreparing);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That((bool?)channel.AgentEvent()["ready"], Is.True);
+                        Assert.That(channel.CurrentProgress(), Is.Null);
+                    });
+
+                    // d) A core lost and recovered with the mind already ready never goes back to «preparing».
+                    bool preparedAgain = false;
+                    viewModel.PropertyChanged += (_, change) =>
+                    {
+                        if (change.PropertyName == nameof(MainWindowViewModel.IsMindPreparing)
+                            && viewModel.IsMindPreparing)
+                        {
+                            preparedAgain = true;
+                        }
+                    };
+                    Process lostCore = CoreProcessOf(viewModel);
+                    int lostCoreId = lostCore.Id;
+                    lostCore.Kill();
+                    await WaitUntilAsync(
+                        () => viewModel.IsInputEnabled
+                            && CoreProcessOrNullOf(viewModel)?.Id is { } id && id != lostCoreId,
+                        TimeSpan.FromSeconds(60));
+                    await viewModel.WaitForCoreRecoveryAsync();
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(viewModel.IsReady, Is.True);
+                        Assert.That(viewModel.IsMindReady, Is.True);
+                        Assert.That(preparedAgain, Is.False);
+                        Assert.That(viewModel.IsMindPreparing, Is.False);
+                        Assert.That((bool?)channel.AgentEvent()["ready"], Is.True);
+                    });
+                });
+        }
+        finally
+        {
+            File.Delete(gate);
+            File.Delete(gate + ".waiting");
+        }
+    }
+
+    // Ronda 22, revisión 2: a start-up whose core never said hello leaves its mind loading; the next start-up's mind
+    // owns the field. The superseded mind ending (its catalog cancelled) neither settles «preparándome» nor fails the
+    // newer start, and a mind it started late is never installed over the newer one.
+    [Test]
+    public async Task ASupersededStartupMindNeverSettlesOrFailsTheNextStartupsMind()
+    {
+        string gateA = NewHelloGate();
+        string gateB = NewHelloGate();
+        try
+        {
+            await WithUnstartedViewModelAsync([("BAXY_MIND_CONTRACT_HELLO_GATE", gateA)], async viewModel =>
+            {
+                var catalogA = new TaskCompletionSource<MindStartupCatalog>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                Task attemptA = viewModel.BeginStartupMind(catalogA.Task, CancellationToken.None, CancellationToken.None);
+                await WaitUntilAsync(() => File.Exists(gateA + ".waiting"));
+                // Start-up A failed: its catalog never comes, and its mind is still reading its model.
+                catalogA.SetCanceled(CancellationToken.None);
+
+                Environment.SetEnvironmentVariable("BAXY_MIND_CONTRACT_HELLO_GATE", gateB);
+                var catalogB = new TaskCompletionSource<MindStartupCatalog>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                Task attemptB = viewModel.BeginStartupMind(catalogB.Task, CancellationToken.None, CancellationToken.None);
+                await WaitUntilAsync(() => File.Exists(gateB + ".waiting"));
+
+                // Mind A says hello, finds its catalog cancelled and closes.
+                File.WriteAllText(gateA, string.Empty);
+                await attemptA.WaitAsync(TimeSpan.FromSeconds(20));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(attemptB.IsCompleted, Is.False);
+                    Assert.That(viewModel.IsMindPreparing, Is.True, "mind B is still loading");
+                    Assert.That(viewModel.IsMindReady, Is.False);
+                    Assert.That(MindStartupStateOf(viewModel), Is.EqualTo("Starting"));
+                });
+
+                // Mind B says hello and takes the core's catalog: it, and only it, settles the field.
+                File.WriteAllText(gateB, string.Empty);
+                catalogB.SetResult(new MindStartupCatalog([], null, null));
+                await attemptB.WaitAsync(TimeSpan.FromSeconds(20));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(viewModel.IsMindReady, Is.True);
+                    Assert.That(viewModel.IsMindPreparing, Is.False);
+                    Assert.That(MindStartupStateOf(viewModel), Is.EqualTo("Ready"));
+                });
+            });
+        }
+        finally
+        {
+            foreach (string gate in new[] { gateA, gateB })
+            {
+                File.Delete(gate);
+                File.Delete(gate + ".waiting");
+            }
+        }
+    }
+
+    // Contracaso: a single start-up still settles. Its catalog cancelled, the mind ends and the field leaves
+    // «preparándome» as failed; abandoned (the start-up failed), the mind closes without waiting for its hello.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ASingleStartupMindStillSettlesWhenItsCatalogNeverComes(bool abandoned)
+    {
+        string gate = NewHelloGate();
+        try
+        {
+            await WithUnstartedViewModelAsync([("BAXY_MIND_CONTRACT_HELLO_GATE", gate)], async viewModel =>
+            {
+                using var abandon = new CancellationTokenSource();
+                var catalog = new TaskCompletionSource<MindStartupCatalog>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                Task attempt = viewModel.BeginStartupMind(catalog.Task, abandon.Token, CancellationToken.None);
+                await WaitUntilAsync(() => File.Exists(gate + ".waiting"));
+                Assert.That(viewModel.IsMindPreparing, Is.True);
+                catalog.SetCanceled(CancellationToken.None);
+                if (abandoned)
+                {
+                    await abandon.CancelAsync();
+                }
+                else
+                {
+                    File.WriteAllText(gate, string.Empty);
+                }
+
+                await attempt.WaitAsync(TimeSpan.FromSeconds(20));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(viewModel.IsMindPreparing, Is.False);
+                    Assert.That(viewModel.IsMindReady, Is.False);
+                    Assert.That(MindStartupStateOf(viewModel), Is.EqualTo("Failed"));
+                    Assert.That(File.Exists(gate), Is.EqualTo(!abandoned), "an abandoned mind never waited for its hello");
+                });
+            });
+        }
+        finally
+        {
+            File.Delete(gate);
+            File.Delete(gate + ".waiting");
+        }
+    }
+
+    // Arranque honesto con la ronda 22: the start-up's mind fails while the field says «Preparando BAXY». Its
+    // measured cause is recorded and, when the wait ends, the status line leaves «Iniciando» for «Lista» with that
+    // cause, never «BAXY disponible» as if nothing had happened.
+    [Test]
+    public async Task AStartupMindThatFailsWhilePreparingSaysItsMeasuredCauseWhenTheWaitEnds()
+    {
+        string gate = NewHelloGate();
+        try
+        {
+            await WithStartingMindAsync(
+                [("BAXY_MIND_CONTRACT_HELLO_GATE", gate), ("BAXY_MIND_CONTRACT_STARTUP_FAILURE", "vram_insuficiente")],
+                async (viewModel, _) =>
+                {
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(viewModel.IsMindPreparing, Is.True);
+                        Assert.That(viewModel.StatusText, Is.EqualTo("Iniciando"));
+                        Assert.That(viewModel.StatusDescription, Is.EqualTo("Preparando BAXY"));
+                        Assert.That(viewModel.MindUnavailableCause(), Is.EqualTo("iniciando"));
+                    });
+
+                    File.WriteAllText(gate, string.Empty);
+                    await WaitUntilAsync(() => !viewModel.IsMindPreparing);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(viewModel.IsMindReady, Is.False);
+                        Assert.That(MindStartupStateOf(viewModel), Is.EqualTo("Failed"));
+                        Assert.That(MindStartupFailureCountOf(viewModel), Is.EqualTo(1));
+                        Assert.That(viewModel.MindUnavailableCause(), Is.EqualTo("vram_insuficiente"));
+                        Assert.That(viewModel.StatusText, Is.EqualTo("Lista"));
+                        Assert.That(
+                            viewModel.StatusDescription,
+                            Is.EqualTo(OperationFloor.MindStartupSentence("vram_insuficiente", english: false)));
+                    });
+                });
+        }
+        finally
+        {
+            File.Delete(gate);
+            File.Delete(gate + ".waiting");
+        }
+    }
+
+    // Contracaso: the measured failure of an attempt a newer start superseded records nothing (no cause, no growing
+    // wait, no state); the newer mind comes up and leaves no failure behind.
+    [Test]
+    public async Task ASupersededAttemptsMeasuredFailureRecordsNothing()
+    {
+        string gateA = NewHelloGate();
+        string gateB = NewHelloGate();
+        try
+        {
+            await WithUnstartedViewModelAsync(
+                [("BAXY_MIND_CONTRACT_HELLO_GATE", gateA), ("BAXY_MIND_CONTRACT_STARTUP_FAILURE", "vram_insuficiente")],
+                async viewModel =>
+                {
+                    var catalogA = new TaskCompletionSource<MindStartupCatalog>(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+                    catalogA.SetResult(new MindStartupCatalog([], null, null));
+                    Task attemptA = viewModel.BeginStartupMind(catalogA.Task, CancellationToken.None, CancellationToken.None);
+                    await WaitUntilAsync(() => File.Exists(gateA + ".waiting"));
+
+                    Environment.SetEnvironmentVariable("BAXY_MIND_CONTRACT_STARTUP_FAILURE", null);
+                    Environment.SetEnvironmentVariable("BAXY_MIND_CONTRACT_HELLO_GATE", gateB);
+                    var catalogB = new TaskCompletionSource<MindStartupCatalog>(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+                    Task attemptB = viewModel.BeginStartupMind(catalogB.Task, CancellationToken.None, CancellationToken.None);
+                    await WaitUntilAsync(() => File.Exists(gateB + ".waiting"));
+
+                    // Mind A says hello and its catalog.configure fails with a measured cause.
+                    File.WriteAllText(gateA, string.Empty);
+                    await attemptA.WaitAsync(TimeSpan.FromSeconds(20));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(MindStartupStateOf(viewModel), Is.EqualTo("Starting"));
+                        Assert.That(MindStartupFailureCountOf(viewModel), Is.EqualTo(0));
+                        Assert.That(viewModel.MindUnavailableCause(), Is.EqualTo("iniciando"));
+                        Assert.That(viewModel.IsMindPreparing, Is.True, "mind B is still loading");
+                    });
+
+                    File.WriteAllText(gateB, string.Empty);
+                    catalogB.SetResult(new MindStartupCatalog([], null, null));
+                    await attemptB.WaitAsync(TimeSpan.FromSeconds(20));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(viewModel.IsMindReady, Is.True);
+                        Assert.That(MindStartupStateOf(viewModel), Is.EqualTo("Ready"));
+                        Assert.That(MindStartupFailureCountOf(viewModel), Is.EqualTo(0));
+                        Assert.That(viewModel.MindUnavailableCause(), Is.Null);
+                    });
+                });
+        }
+        finally
+        {
+            foreach (string gate in new[] { gateA, gateB })
+            {
+                File.Delete(gate);
+                File.Delete(gate + ".waiting");
+            }
+        }
+    }
+
+    private static int MindStartupFailureCountOf(MainWindowViewModel viewModel) =>
+        (int)typeof(MainWindowViewModel)
+            .GetField("_mindStartupFailureCount", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(viewModel)!;
+
+    private static string NewHelloGate() =>
+        Path.Combine(Path.GetTempPath(), "baxy-mind-hello-gate-" + Guid.NewGuid().ToString("N"));
+
+    private static string MindStartupStateOf(MainWindowViewModel viewModel) =>
+        typeof(MainWindowViewModel)
+            .GetField("_mindStartupState", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(viewModel)!
+            .ToString()!;
+
+    private static async Task WithUnstartedViewModelAsync(
+        IReadOnlyList<(string Name, string? Value)> settings,
+        Func<MainWindowViewModel, Task> body)
+    {
+        string dataRoot = PrivateDataRootTestSupport.NewPath("mind-attempts");
+        using var environment = new EnvironmentVariableScope(
+            [.. MindEnvironmentVariables, .. settings.Select(static setting => setting.Name)]);
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", dataRoot);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(
+            MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
+        foreach ((string name, string? value) in settings)
+        {
+            Environment.SetEnvironmentVariable(name, value);
+        }
+        Directory.CreateDirectory(dataRoot);
+
+        try
+        {
+            await using var viewModel = new MainWindowViewModel();
+            await body(viewModel);
+        }
+        finally
+        {
+            DeleteOwnedDataRoot(dataRoot);
+        }
+    }
+
+    // c) A mind whose start fails (no hello) or that is not configured leaves BAXY ready without it, never «preparing».
+    [TestCase("exits")]
+    [TestCase("not_configured")]
+    public async Task AMindThatDoesNotComeLeavesTheFieldReadyWithoutIt(string failure)
+    {
+        (string, string?)[] settings = failure == "exits"
+            ? [("BAXY_MIND_CONTRACT_EXIT_BEFORE_HELLO", "1")]
+            : [(MindSidecarClient.PythonEnvironmentVariable,
+                Path.Combine(Path.GetTempPath(), "baxy-no-python-" + Guid.NewGuid().ToString("N"), "python.exe"))];
+        await WithStartingMindAsync(settings, async (viewModel, channel) =>
+        {
+            await WaitUntilAsync(() => !viewModel.IsMindPreparing);
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.IsReady, Is.True);
+                Assert.That(viewModel.IsMindReady, Is.False);
+                Assert.That(viewModel.HasStartupError, Is.False);
+                Assert.That((bool?)channel.AgentEvent()["ready"], Is.True);
+                Assert.That(channel.CurrentProgress(), Is.Null);
+                Assert.That(viewModel.StatusDescription, Is.Not.EqualTo("Preparando BAXY"));
+            });
+        });
+    }
+
+    // The start-up starts the mind beside the core's hello: its catalog.configure carries the core's catalog.
+    [Test]
+    public async Task TheMindStartedBesideTheCoreHelloIsConfiguredWithTheCoreCatalog()
+    {
+        var catalog = new TaskCompletionSource<MindStartupCatalog>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var environment = new EnvironmentVariableScope(MindEnvironmentVariables);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        await using var mind = new MindSidecarClient();
+        Task<bool> start = mind.TryStartAsync(catalog.Task, TimeSpan.FromSeconds(20), CancellationToken.None);
+        await WaitUntilAsync(() => mind.IsReady);
+        Assert.That(start.IsCompleted, Is.False, "catalog.configure waits for the core's catalog");
+        catalog.SetResult(new MindStartupCatalog([], null, null));
+        Assert.That(await start, Is.True);
+
+        // Contracaso: a core that never says hello hands no catalog, and the start ends without a mind.
+        var never = new TaskCompletionSource<MindStartupCatalog>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var other = new MindSidecarClient();
+        Task<bool> otherStart = other.TryStartAsync(never.Task, TimeSpan.FromSeconds(20), CancellationToken.None);
+        await WaitUntilAsync(() => other.IsReady);
+        never.SetCanceled(CancellationToken.None);
+        Assert.That(await otherStart, Is.False);
+        Assert.That(other.IsReady, Is.False);
+    }
+
+    // Full del 2026-10-10 (MemoryAppFlowTests, por carrera): la mente que llegaba lista después de anunciarse una
+    // memoria pendiente pisaba esa espera con «Todo listo». Lo que BAXY espera de la persona se lee en un solo sitio.
+    [Test]
+    public async Task AMindThatComesUpLateNeverHidesAPendingMemoryCheck()
+    {
+        string gate = Path.Combine(Path.GetTempPath(), "baxy-mind-hello-gate-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await WithStartingMindAsync(
+                [("BAXY_MIND_CONTRACT_HELLO_GATE", gate)],
+                async (viewModel, _) =>
+                {
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(viewModel.IsMindReady, Is.False);
+                        Assert.That(viewModel.StatusDescription, Is.EqualTo("Esperando comprobar la memoria"));
+                    });
+
+                    File.WriteAllText(gate, string.Empty);
+                    await WaitUntilAsync(() => viewModel.IsMindReady && !viewModel.IsMindPreparing);
+                    Assert.That(viewModel.StatusDescription, Is.EqualTo("Esperando comprobar la memoria"));
+                },
+                seed: static () =>
+                {
+                    MemoryOperationProtector previous = MemoryOperationProtector.CreateDefault(
+                        Guid.NewGuid().ToString("D"));
+                    _ = RetryableOperationRegistry.CreateDefault(previous).GetOrAdd(previous.Prepare(
+                        new MemoryRoutedOperation(
+                            "memory.save",
+                            new JsonObject
+                            {
+                                ["version"] = 1,
+                                ["selector"] = "name",
+                                ["value"] = "BAXY-late-mind-pending",
+                                ["kind"] = "fact",
+                                ["retention"] = "persistent",
+                                ["sensitivity"] = "personal",
+                                ["tags"] = new JsonArray(),
+                            })));
+                });
+        }
+        finally
+        {
+            File.Delete(gate);
+            File.Delete(gate + ".waiting");
+        }
+    }
+
+    // Ronda 28 (banco Br27: 47 de 72 primeros turnos esperaron 1 425 ms de media detrás de una bienvenida que luego se
+    // tiraba). Pedido enviado ANTES de que la mente esté lista: la bienvenida en cola pierde su momento al entrar el
+    // pedido y la mente nunca la compone; lo primero que recibe tras su arranque es la decisión del pedido.
+    [Test]
+    public async Task ARequestSentBeforeTheMindIsReadyNeverWaitsBehindTheWelcome()
+    {
+        string gate = NewHelloGate();
+        string trace = gate + ".trace.jsonl";
+        bool previousCompositionBypass = UserMessagePolicy.BypassLlmCompositionForTests;
+        try
+        {
+            // The welcome is composed by the mind here, as in the product.
+            UserMessagePolicy.BypassLlmCompositionForTests = false;
+            await WithStartingMindAsync(
+                [("BAXY_MIND_CONTRACT_HELLO_GATE", gate), (ContractTraceEnvironmentVariable, trace)],
+                async (viewModel, _) =>
+                {
+                    Assert.That(viewModel.PendingModelMessageCount, Is.EqualTo(1), "the welcome waits for the mind");
+                    viewModel.Draft = "Explícame la fotosíntesis";
+                    Task turn = viewModel.SubmitAsync(CancellationToken.None);
+                    File.WriteAllText(gate, string.Empty);
+                    await turn.WaitAsync(TimeSpan.FromSeconds(40));
+                    await WaitUntilAsync(() => viewModel.PendingModelMessageCount == 0);
+
+                    string?[] requests = [.. ReadTrace(trace).Select(static entry => entry.GetProperty("type").GetString())];
+                    int decided = Array.IndexOf(requests, "turn.decide");
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(decided, Is.GreaterThanOrEqualTo(0), string.Join(',', requests));
+                        Assert.That(
+                            requests.Take(Math.Max(decided, 0)), Has.None.EqualTo("message.compose"),
+                            "the mind composed something ahead of the request");
+                        Assert.That(viewModel.Messages[0].IsUser, Is.True, "the dropped welcome was never published");
+                        Assert.That(viewModel.Messages[^1].IsUser, Is.False, "the request was answered");
+                    });
+                });
+        }
+        finally
+        {
+            UserMessagePolicy.BypassLlmCompositionForTests = previousCompositionBypass;
+            File.Delete(gate);
+            File.Delete(gate + ".waiting");
+            File.Delete(trace);
+        }
+    }
+
+    // Contracaso: nadie pidió nada, así que la bienvenida SÍ se compone y se dice; el pedido enviado DESPUÉS encuentra
+    // el carril libre (ninguna composición nueva delante de su decisión).
+    [Test]
+    public async Task AWelcomeNobodyInterruptedIsSaidAndTheRequestAfterItFindsTheLaneFree()
+    {
+        string gate = NewHelloGate();
+        string trace = gate + ".trace.jsonl";
+        bool previousCompositionBypass = UserMessagePolicy.BypassLlmCompositionForTests;
+        try
+        {
+            // The welcome is composed by the mind here, as in the product.
+            UserMessagePolicy.BypassLlmCompositionForTests = false;
+            await WithStartingMindAsync(
+                [("BAXY_MIND_CONTRACT_HELLO_GATE", gate), (ContractTraceEnvironmentVariable, trace)],
+                async (viewModel, _) =>
+                {
+                    File.WriteAllText(gate, string.Empty);
+                    await WaitUntilAsync(() => viewModel.IsMindReady
+                        && viewModel.PendingModelMessageCount == 0 && viewModel.Messages.Count > 0);
+                    int composedForTheWelcome = ReadTrace(trace)
+                        .Count(static entry => entry.GetProperty("type").GetString() == "message.compose");
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(composedForTheWelcome, Is.GreaterThanOrEqualTo(1), "the welcome was composed");
+                        Assert.That(viewModel.Messages[0].IsUser, Is.False, "BAXY greeted first");
+                    });
+
+                    await SubmitAsync(viewModel, "Explícame la fotosíntesis");
+
+                    string?[] requests = [.. ReadTrace(trace).Select(static entry => entry.GetProperty("type").GetString())];
+                    int decided = Array.IndexOf(requests, "turn.decide");
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(decided, Is.GreaterThanOrEqualTo(0), string.Join(',', requests));
+                        Assert.That(
+                            requests.Take(Math.Max(decided, 0)).Count(static type => type == "message.compose"),
+                            Is.EqualTo(composedForTheWelcome),
+                            "a composition started between the request and its decision");
+                    });
+                });
+        }
+        finally
+        {
+            UserMessagePolicy.BypassLlmCompositionForTests = previousCompositionBypass;
+            File.Delete(gate);
+            File.Delete(gate + ".waiting");
+            File.Delete(trace);
+        }
+    }
+
+    private static async Task WithStartingMindAsync(
+        IReadOnlyList<(string Name, string? Value)> settings,
+        Func<MainWindowViewModel, FieldProductChannel, Task> body,
+        Action? seed = null)
+    {
+        string fixtureRoot = Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract");
+        string dataRoot = PrivateDataRootTestSupport.NewPath("mind-preparing");
+        using var environment = new EnvironmentVariableScope(
+            [.. MindEnvironmentVariables, .. settings.Select(static setting => setting.Name)]);
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", dataRoot);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable, fixtureRoot);
+        Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
+        foreach ((string name, string? value) in settings)
+        {
+            Environment.SetEnvironmentVariable(name, value);
+        }
+        Directory.CreateDirectory(dataRoot);
+        seed?.Invoke();
+
+        try
+        {
+            await using var viewModel = new MainWindowViewModel();
+            var sink = new CollectingFieldEventSink();
+            await using var telemetry = new FieldTelemetrySampler();
+            await using var channel = new FieldProductChannel(viewModel, sink, telemetry, CancellationToken.None);
+            await viewModel.InitializeAsync(CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.IsReady, Is.True);
+                Assert.That(viewModel.HasStartupError, Is.False);
+            });
+            await body(viewModel, channel);
+        }
+        finally
+        {
+            DeleteOwnedDataRoot(dataRoot);
+        }
+    }
+
+    private static async Task WaitUntilAsync(Func<bool> condition, TimeSpan? limit = null)
+    {
+        var deadline = Stopwatch.StartNew();
+        while (!condition())
+        {
+            Assert.That(deadline.Elapsed, Is.LessThan(limit ?? TimeSpan.FromSeconds(20)), "the condition never held");
+            await Task.Delay(25);
+        }
+    }
+
+    private static Process CoreProcessOf(MainWindowViewModel viewModel) =>
+        CoreProcessOrNullOf(viewModel) ?? throw new AssertionException("The view model has no core process.");
+
+    private static Process? CoreProcessOrNullOf(MainWindowViewModel viewModel)
+    {
+        object? client = typeof(MainWindowViewModel)
+            .GetField("_coreClient", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(viewModel);
+        return client is null
+            ? null
+            : (Process?)client.GetType()
+                .GetField("_process", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(client);
     }
 
     private static async Task WithContractMindAsync(

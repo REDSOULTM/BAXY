@@ -28,14 +28,29 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import reply_claims
+from baxy_mind import unsupported_answers
+from baxy_mind import limit_voice
+from baxy_mind import failure_wording
+from baxy_mind import payload_fact_checks
+from baxy_mind import weather_facts
+from baxy_mind import reply_language_checks
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.semantic.arguments import _canonical_due_utc, _explicit_arguments_from_evidence
 from baxy_mind.semantic.decider import faithful_request
 from baxy_mind.semantic.dialogue import offers_back_the_named_one
 from baxy_mind.semantic.temporal import anchored_offset_request, moment_then_title_reminder
 from baxy_mind.semantic.web import weather_asked_clock
+from baxy_mind import turn_recovery
+from baxy_mind import direct_arguments
+from baxy_mind import search_report
+from baxy_mind import llm_compose
+
+
+# Every mind module whose code reads the day a search report is judged on: it is patched in each one.
+_REPORT_DAY_READERS = (llm_compose, search_report)
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m93_v3u_evidence.json").read_text(encoding="utf-8"))
 TURNS = EVIDENCE["turns"]
@@ -63,8 +78,8 @@ def test_d_s021_a_headline_keeps_who_does_what() -> None:
     row = _draft("D-s021", "first")
     payload = row["payload"]
     assert "Alemania, campeona del mundo, criticó a Jürgen Klopp" in row["draft"]
-    assert llm._search_report_moves_the_subject(row["draft"], payload) == "Alemania"
-    assert llm._payload_fact_defect(row["draft"], payload, TURNS["D-s021"]["text"]) == (
+    assert search_report._search_report_moves_the_subject(row["draft"], payload) == "Alemania"
+    assert payload_fact_checks._payload_fact_defect(row["draft"], payload, TURNS["D-s021"]["text"]) == (
         "search_report_moves_the_subject"
     )
     # Quoted whole, or retold with the one who acts, it is the headline.
@@ -73,23 +88,24 @@ def test_d_s021_a_headline_keeps_who_does_what() -> None:
         "Un campeón del mundo con Alemania critica a Jürgen Klopp.",
         "Dos chilenas fueron elegidas entre las 100 figuras emergentes más influyentes del mundo según revista Time.",
     ):
-        assert llm._search_report_moves_the_subject(kept, payload) == "", kept
+        assert search_report._search_report_moves_the_subject(kept, payload) == "", kept
 
 
 def test_d_s027_an_undated_pages_tomorrow_is_no_known_day(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_report_today", lambda: RUN_DAY)
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: RUN_DAY)
     row = _draft("D-s027", "first")
     payload = row["payload"]
     snippet = payload["seen"]["results"][0]["snippet"]
     assert "mañana" in snippet and "Pittsburg" in snippet
-    assert llm._search_report_undated_relative_day(row["draft"], payload) == "manana"
-    assert llm._payload_fact_defect(row["draft"], payload, TURNS["D-s027"]["text"]) == "search_report_undated_day"
+    assert search_report._search_report_undated_relative_day(row["draft"], payload) == "manana"
+    assert payload_fact_checks._payload_fact_defect(row["draft"], payload, TURNS["D-s027"]["text"]) == "search_report_undated_day"
     # The same page with the date of tomorrow written in it gives the day.
     dated = json.loads(json.dumps(payload))
     dated["seen"]["results"][0]["snippet"] = snippet.replace("mañana", "mañana 1 de octubre", 1)
-    assert llm._search_report_undated_relative_day(row["draft"], dated) == ""
+    assert search_report._search_report_undated_relative_day(row["draft"], dated) == ""
     # «de la mañana» is a part of the day, and a sentence with no relative day claims none.
-    assert llm._search_report_undated_relative_day(
+    assert search_report._search_report_undated_relative_day(
         "Hay un evento gratuito en 6th Street & Broadway a las 10 de la mañana.", payload,
     ) == ""
 
@@ -98,14 +114,14 @@ def test_d_s061_the_article_named_in_the_passive_is_the_search_shown() -> None:
     row = _draft("D-s061", "partial_after_not_found")
     assert "como se menciona en el artículo revisado por Nicholas Ferraro" in row["draft"]
     payload = _search_payload(row)
-    assert llm._search_report_shows_the_search(row["draft"], payload, TURNS["D-s061"]["text"])
+    assert search_report._search_report_shows_the_search(row["draft"], payload, TURNS["D-s061"]["text"])
     # What the page states, said directly, stays: «cientos de miles de empleados» is in its text.
-    assert not llm._search_report_shows_the_search(
+    assert not search_report._search_report_shows_the_search(
         "Sí, McDonald's tiene cientos de miles de empleados en Estados Unidos.", payload, TURNS["D-s061"]["text"],
     )
     for shown in ("As stated in the article, McDonald's has hundreds of thousands of employees.",
                   "Según se indica en la página, hay cientos de miles de empleados."):
-        assert llm._search_report_shows_the_search(shown, payload, TURNS["D-s061"]["text"]), shown
+        assert search_report._search_report_shows_the_search(shown, payload, TURNS["D-s061"]["text"]), shown
 
 
 def test_d_w06_t4_a_report_that_only_says_back_the_request() -> None:
@@ -114,13 +130,13 @@ def test_d_w06_t4_a_report_that_only_says_back_the_request() -> None:
     text = TURNS["D-w06-t4"]["text"]
     assert row["draft"] == "Las pizzerías abiertas están cerca de Curico."
     assert "ERRAZURIZ 2970" in json.dumps(payload, ensure_ascii=False)
-    assert llm._search_report_echoes_the_ask(row["draft"], payload, text)
-    assert llm._payload_fact_defect(row["draft"], payload, text) == "search_report_echoes_the_ask"
-    assert not llm._search_report_echoes_the_ask(
+    assert search_report._search_report_echoes_the_ask(row["draft"], payload, text)
+    assert payload_fact_checks._payload_fact_defect(row["draft"], payload, text) == "search_report_echoes_the_ask"
+    assert not search_report._search_report_echoes_the_ask(
         "Giuseppe es una pizzería de Curicó, en Errázuriz 2970.", payload, text,
     )
     # A yes-or-no question answered with its own words is an answer.
-    assert not llm._search_report_echoes_the_ask(
+    assert not search_report._search_report_echoes_the_ask(
         "Las pizzerías abiertas están cerca de Curico.", payload, "¿hay pizzerías abiertas cerca?",
     )
 
@@ -132,24 +148,24 @@ def test_d_s062_a_failed_minimize_is_not_told_as_a_close() -> None:
     row = _draft("D-s062", "retry")
     payload = row["payload"]
     assert payload["reason"]["operation"] == "window.minimize.all"
-    assert llm._report_changes_the_act(row["draft"], payload) == "close"
-    assert llm._payload_fact_defect(row["draft"], payload, TURNS["D-s062"]["text"]) == "report_changes_the_act"
-    assert llm._report_changes_the_act("No pude minimizar las ventanas porque la verificación falló.", payload) == ""
+    assert payload_fact_checks._report_changes_the_act(row["draft"], payload) == "close"
+    assert payload_fact_checks._payload_fact_defect(row["draft"], payload, TURNS["D-s062"]["text"]) == "report_changes_the_act"
+    assert payload_fact_checks._report_changes_the_act("No pude minimizar las ventanas porque la verificación falló.", payload) == ""
     # A close that says it closed, or an open that says it opened, is its own act.
     closed = {"outcome": "failed", "reason": {"operation": "app.close", "cause": "x"}}
-    assert llm._report_changes_the_act("No pude cerrar Spotify.", closed) == ""
-    assert llm._report_changes_the_act("Ya estaba abierta la app de Fotos.", {"operation": "app.open", "seen": {}}) == ""
+    assert payload_fact_checks._report_changes_the_act("No pude cerrar Spotify.", closed) == ""
+    assert payload_fact_checks._report_changes_the_act("Ya estaba abierta la app de Fotos.", {"operation": "app.open", "seen": {}}) == ""
 
 
 def test_d_w18_t4_a_reminder_still_to_ring_is_not_told_as_rung() -> None:
     row = _draft("D-w18-t4", "first")
     payload = row["payload"]
     assert row["draft"] == "Te he recordado para que tomes un descanso a las 20:23."
-    assert llm._payload_fact_defect(row["draft"], payload, TURNS["D-w18-t4"]["text"]) == "schedule_told_as_rung"
+    assert payload_fact_checks._payload_fact_defect(row["draft"], payload, TURNS["D-w18-t4"]["text"]) == "schedule_told_as_rung"
     for future in ("Te recordaré que tomes un descanso a las 20:23.", "I'll remind you to take a break at 20:23.",
                    "Listo, a las 20:23 te aviso para que tomes un descanso."):
-        assert not llm._schedule_told_as_rung(future, payload), future
-    assert llm._schedule_told_as_rung("I reminded you to take a break at 20:23.", payload)
+        assert not payload_fact_checks._schedule_told_as_rung(future, payload), future
+    assert payload_fact_checks._schedule_told_as_rung("I reminded you to take a break at 20:23.", payload)
 
 
 # ------------------------------------------------------------------ 3. weather
@@ -160,10 +176,10 @@ def test_d_s014_the_hour_asked_is_said_not_read() -> None:
     row = _draft("D-s014", "retry")
     payload = row["payload"]
     assert weather_asked_clock(text) == "las cuatro"
-    assert llm._weather_fact_defect(row["draft"], payload, text) == "missing_state"
-    assert "las cuatro" in llm._weather_focus(text, english=False)
+    assert weather_facts._weather_fact_defect(row["draft"], payload, text) == "missing_state"
+    assert "las cuatro" in weather_facts._weather_focus(text, english=False)
     said = "No tengo el pronóstico por hora; en Curicó ahora hace 16.8 °C y está nublado."
-    assert llm._weather_fact_defect(said, payload, text) == ""
+    assert weather_facts._weather_fact_defect(said, payload, text) == ""
     # No clock, or the sun's own time asked: nothing new is required.
     for other in ("¿qué tiempo hace?", "¿a qué hora se pone el sol?", "clima de mañana en Lima"):
         assert weather_asked_clock(other) is None, other
@@ -174,9 +190,9 @@ def test_d_s054_todays_sunset_is_not_tomorrows() -> None:
     row = _draft("D-s054", "first")
     payload = row["payload"]
     assert set(payload["seen"]) >= {"today"} and "tomorrow" not in payload["seen"]
-    assert llm._weather_fact_defect(row["draft"], payload, text) == "weather_wrong_day"
-    assert llm._weather_fact_defect("Hoy en Curicó el sol se pondrá a las 19:48.", payload, text) == ""
-    assert llm._weather_fact_defect("En Curicó el sol se pone a las 19:48 de la tarde.", payload, text) == ""
+    assert weather_facts._weather_fact_defect(row["draft"], payload, text) == "weather_wrong_day"
+    assert weather_facts._weather_fact_defect("Hoy en Curicó el sol se pondrá a las 19:48.", payload, text) == ""
+    assert weather_facts._weather_fact_defect("En Curicó el sol se pone a las 19:48 de la tarde.", payload, text) == ""
 
 
 # ------------------------------------------------------------------ 4. wording
@@ -186,37 +202,37 @@ def test_d_p02_t1_one_act_said_not_to_be_another_explains_nothing() -> None:
     text = TURNS["D-p02-t1"]["text"]
     published = TURNS["D-p02-t1"]["published"]
     assert published == "No saco fotos: sacar una foto no es tomarla yo."
-    assert llm.limit_voice_defect(published, text) == "limit_act_is_not_act"
-    assert llm._unsupported_answer_contract_failure(published, text) == "unsupported_limit_act_is_not_act"
+    assert limit_voice.limit_voice_defect(published, text) == "limit_act_is_not_act"
+    assert unsupported_answers._unsupported_answer_contract_failure(published, text) == "unsupported_limit_act_is_not_act"
     # The limits the reviewer accepted in v3r stay.
     for kept, request in (
         ("No saco fotos: sacar fotos no es lo que hago ahora.", text),
         ("I do not take videos: recording a video in two minutes is not something I do.", "record a video in 2 min"),
         ("Eso no lo hago: los hábitos no los llevo yo.", "márcame el hábito de hoy"),
     ):
-        assert llm.limit_voice_defect(kept, request) != "limit_act_is_not_act", kept
+        assert limit_voice.limit_voice_defect(kept, request) != "limit_act_is_not_act", kept
 
 
 def test_d_s042_a_spanish_noun_keeps_its_spanish_plural() -> None:
     text = TURNS["D-s042"]["text"]
     published = TURNS["D-s042"]["published"]
     assert published == "No encargo pastels ni panaderías."
-    assert llm.visible_reply_breaks_spanish_plural(published, text)
-    assert llm._unsupported_answer_contract_failure(published, text) == "unsupported_broken_plural"
+    assert reply_language_checks.visible_reply_breaks_spanish_plural(published, text)
+    assert unsupported_answers._unsupported_answer_contract_failure(published, text) == "unsupported_broken_plural"
     for kept in ("No encargo pasteles de camote a panaderías.", "No encargo el pastel de camote."):
-        assert not llm.visible_reply_breaks_spanish_plural(kept, text), kept
-    assert not llm.visible_reply_breaks_spanish_plural("I don't order pastels.", "order a pastel")
-    assert not llm.visible_reply_breaks_spanish_plural("Tienes 3 emails nuevos.", "lee mi email")
+        assert not reply_language_checks.visible_reply_breaks_spanish_plural(kept, text), kept
+    assert not reply_language_checks.visible_reply_breaks_spanish_plural("I don't order pastels.", "order a pastel")
+    assert not reply_language_checks.visible_reply_breaks_spanish_plural("Tienes 3 emails nuevos.", "lee mi email")
 
 
 def test_d_w11_t1_an_invented_subjunctive_is_invented() -> None:
     row = _draft("D-w11-t1", "retry")
     assert row["draft"].endswith("probabilidad de que llovenga.")
-    assert llm.visible_reply_invents_a_spanish_infinitive(row["draft"])
-    assert llm.compose_visible_defect(row["draft"], "status", TURNS["D-w11-t1"]["text"], {}) == "invented"
+    assert reply_language_checks.visible_reply_invents_a_spanish_infinitive(row["draft"])
+    assert visible_defect.compose_visible_defect(row["draft"], "status", TURNS["D-w11-t1"]["text"], {}) == "invented"
     for real in ("tenga", "venga", "mantenga", "convengan", "obtengas", "provenga", "intervengamos", "detenga"):
-        assert not llm._invented_tener_venir_subjunctive(real), real
-    assert not llm.visible_reply_invents_a_spanish_infinitive("Mañana hay un 100% de probabilidad de que llueva.")
+        assert not reply_language_checks._invented_tener_venir_subjunctive(real), real
+    assert not reply_language_checks.visible_reply_invents_a_spanish_infinitive("Mañana hay un 100% de probabilidad de que llueva.")
 
 
 def test_d_s053_a_question_that_offers_back_the_one_named_asks_nothing() -> None:
@@ -224,8 +240,8 @@ def test_d_s053_a_question_that_offers_back_the_one_named_asks_nothing() -> None
     question = TURNS["D-s053"]["reply"]
     assert question == "¿Te refieres a Miguel o a alguien más?"
     assert offers_back_the_named_one(question, text)
-    assert not sidecar._recovery_question_is_valid(question, text)
-    assert sidecar._recovery_question_is_valid("¿Qué Miguel?", text)
+    assert not turn_recovery._recovery_question_is_valid(question, text)
+    assert turn_recovery._recovery_question_is_valid("¿Qué Miguel?", text)
     assert not offers_back_the_named_one("¿Te refieres a Miguel Pérez o a otro?", text)
     assert offers_back_the_named_one("Do you mean Miguel or someone else?", text)
 
@@ -237,11 +253,11 @@ def test_d_s053_a_question_that_offers_back_the_one_named_asks_nothing() -> None
 def test_the_reply_the_app_refused_is_refused_by_the_mind(ident: str) -> None:
     refused = TURNS[ident]["app_rejected"]
     assert refused["rejection"] == "internal_code"
-    assert llm.conversation_reply_speaks_of_the_system(refused["reply"], TURNS[ident]["text"])
-    assert llm._shaped_conversation_answer_violates_contract(refused["reply"], TURNS[ident]["text"], None)
+    assert conversation_contract.conversation_reply_speaks_of_the_system(refused["reply"], TURNS[ident]["text"])
+    assert conversation_contract._shaped_conversation_answer_violates_contract(refused["reply"], TURNS[ident]["text"], None)
     # What the App published instead came from a bare conversation payload.
     assert TURNS["D-p35-t3"]["terminal"] == "composition_failed"
-    assert not llm.conversation_reply_speaks_of_the_system(
+    assert not conversation_contract.conversation_reply_speaks_of_the_system(
         "No puedo asegurarlo al cien por cien: lo que te dije sale de lo que sé, así que conviene contrastarlo.",
         TURNS[ident]["text"],
     )
@@ -252,10 +268,10 @@ def test_d_p35_t2_how_baxy_did_what_it_wrote_is_no_effect_claim() -> None:
     assert TURNS["D-p35-t2"]["reply"].startswith("No entendí bien tu pregunta")
     prior = (TURNS["D-p35-t2"]["history"][0]["content"],)
     told = "Lo hice repasando las fortalezas, debilidades, oportunidades y amenazas de Adidas con un tono casual."
-    assert llm.conversation_world_claim(told, text, prior) == ""
-    assert not llm._shaped_conversation_answer_violates_contract(told, text, None, prior_requests=prior)
+    assert reply_claims.conversation_world_claim(told, text, prior) == ""
+    assert not conversation_contract._shaped_conversation_answer_violates_contract(told, text, None, prior_requests=prior)
     # After a request on the PC, «lo hice» is still an effect nothing ran.
-    assert llm.conversation_world_claim("Lo hice abriendo Spotify.", text, ("abre spotify",)) == "effect_claim"
+    assert reply_claims.conversation_world_claim("Lo hice abriendo Spotify.", text, ("abre spotify",)) == "effect_claim"
 
 
 # ------------------------------------------------------------------ 6. moments
@@ -281,7 +297,7 @@ def test_d_s104_the_passed_clock_is_asked_again_saying_why() -> None:
     runtime.formulate_missing_argument_question = MagicMock(side_effect=[
         TURNS["D-s104"]["reply"], "Las 18:00 de hoy ya pasaron: ¿a qué otra hora o qué día suena la alarma?",
     ])
-    question = sidecar._unschedulable_time_question(
+    question = direct_arguments._unschedulable_time_question(
         runtime, "notification.schedule", text, text, _tool("notification.schedule"), "es", now=RUN_NOW,
     )
     assert question == "Las 18:00 de hoy ya pasaron: ¿a qué otra hora o qué día suena la alarma?"
@@ -289,7 +305,7 @@ def test_d_s104_the_passed_clock_is_asked_again_saying_why() -> None:
     assert TURNS["D-s104"]["reply"] in retry and "already passed" in retry
     # A question that says why is asked once.
     runtime.formulate_missing_argument_question = MagicMock(return_value="Las 18:00 ya pasaron, ¿a qué hora la pongo?")
-    sidecar._unschedulable_time_question(
+    direct_arguments._unschedulable_time_question(
         runtime, "notification.schedule", text, text, _tool("notification.schedule"), "es", now=RUN_NOW,
     )
     assert runtime.formulate_missing_argument_question.call_count == 1
@@ -333,13 +349,13 @@ def test_heldout_v3v_t10_the_unconfirmed_open_told_honestly_is_published() -> No
     assert [row["reason"] for row in turn["drafts"]] == ["reversed_polarity", "missing_failure", "reversed_polarity"]
     for row in turn["drafts"]:
         facts = {"situation": row["situation"]}
-        assert llm.compose_visible_defect(row["draft"], "error", turn["text"], facts) == "", row["draft"]
-        assert llm._payload_fact_defect(row["draft"], row["payload"], turn["text"]) == "", row["draft"]
+        assert visible_defect.compose_visible_defect(row["draft"], "error", turn["text"], facts) == "", row["draft"]
+        assert payload_fact_checks._payload_fact_defect(row["draft"], row["payload"], turn["text"]) == "", row["draft"]
     facts = {"situation": turn["drafts"][0]["situation"]}
     # An open claimed, or the app said to be open, still reverses the failure.
     for claimed in ("Ya abrí el Bloc de notas.", "El Bloc de notas está abierto, pero no pude confirmarlo.",
                     "El Bloc de notas se abrió."):
-        assert llm.compose_visible_defect(claimed, "error", turn["text"], facts) != "", claimed
+        assert visible_defect.compose_visible_defect(claimed, "error", turn["text"], facts) != "", claimed
     # «no pudo abrirse» is a failure told; a sentence without the pronoun after the verb is not read so.
-    assert llm._asserts_failure("El Bloc de notas no pudo abrirse.")
-    assert not llm._asserts_failure("Napoleón no pudo conquistar Rusia.")
+    assert failure_wording._asserts_failure("El Bloc de notas no pudo abrirse.")
+    assert not failure_wording._asserts_failure("Napoleón no pudo conquistar Rusia.")

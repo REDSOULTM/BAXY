@@ -92,92 +92,107 @@ _GROUNDING = "a value the model proposed is accepted only when the person's word
 # (file, function) -> (class, reason). Only functions that apply a pattern to the person's words are listed.
 REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     # ------------------------------------------------ llm: the composer's checks and the prompt's material
-    ("llm.py", "_literal_reply_defect"): (
+    ("literal_answers.py", "_literal_reply_defect"): (
         "GROUNDING", "a number in the reply of a said-back literal or a draw must be one the person said"),
-    ("llm.py", "_shaped_presentation_text"): (
+    ("conversation_shape.py", "_shaped_presentation_text"): (
         "WORDING", "the person's message is the material of the prompt (a numbered list kept, anchor words); "
         "the shape was read by semantic.conversation"),
-    ("llm.py", "_shaped_conversation_answer_violates_contract"): (
+    ("conversation_contract.py", "_shaped_conversation_answer_violates_contract"): (
         "GROUNDING", "a maker or origin the person named is theirs to repeat (_INVENTED_ORIGIN on both texts); "
         "what was asked comes from semantic.conversation readers"),
-    ("llm.py", "visible_reply_claims_an_effect"): (
+    ("reply_claims.py", "visible_reply_claims_an_effect"): (
         "GROUNDING", "a claimed act that repeats the person's own words is not invented (asked_words)"),
-    ("llm.py", "_screen_count_defect"): ("GROUNDING", "a number the person said may be repeated"),
-    ("llm.py", "_clocks_written_in_observed_titles.walk"): (
+    ("device_facts.py", "_screen_count_defect"): ("GROUNDING", "a number the person said may be repeated"),
+    ("deterministic_finals.py", "_plain_words"): (
+        "GROUNDING", "Estabilización F (_quotes_what_it_was_not_given): a quote over a result is checked literally "
+        "against the payload and the person's own words, which may be quoted back"),
+    ("agenda_facts.py", "_clocks_written_in_observed_titles.walk"): (
         "GROUNDING", "M134: clocks inside observed titles/names a verified operation returned, never the person's words",
     ),
-    ("llm.py", "talk_memory_figures"): (
+    ("talk_memory_figures.py", "talk_memory_figures"): (
         "GROUNDING", "M95: a figure of a talk answer is the conversation's only when its words (the person's or BAXY's "
         "earlier answers) contain it, or the name it follows"),
+    ("talk_memory_figures.py", "_without_memory_figures.carries"): (
+        "GROUNDING", "ronda 22: the figures talk_memory_figures already found are looked for in the reply's own "
+        "sentences and list items to drop them; the person's words are not read"),
+    # Arranque honesto (r22): the model server's own output, kept for the startup failure's tail.
+    ("llm_startup.py", "scrub_line"): (
+        "OTHER", "a line the llama-server wrote, with its file paths masked (they carry the account name) and cut to "
+        "its length; the person's words are not read here"),
+    ("payload_fact_checks.py", "names_an_unseen_known_folder.named"): (
+        "GROUNDING",
+        "the reply's known-folder names (data _KNOWN_FOLDER_FORMS) compared with the observed facts of a known-folder "
+        "operation: the place reported must be the one observed; the person's words are not read here",
+    ),
     # M97 (reserve es315 «no cago…»).
-    ("llm.py", "visible_reply_says_a_vulgarity"): (
+    ("reply_language_checks.py", "visible_reply_says_a_vulgarity"): (
         "GROUNDING", "a vulgar word of the reply is allowed only when the person wrote it first"),
-    ("llm.py", "_failure_word_is_the_persons"): (
+    ("failure_wording.py", "_failure_word_is_the_persons"): (
         "GROUNDING", "the «fallos» of the reply may be the person's own word said back, never BAXY's failure"),
-    ("llm.py", "_ocr_unsupported_terms.stems"): (
+    ("device_facts.py", "_ocr_unsupported_terms.stems"): (
         "GROUNDING", "a word of the screen report must be read on screen or said by the person"),
-    ("llm.py", "_search_report_unsourced_numbers"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_unsourced_numbers"): ("GROUNDING", _GROUNDING_SEARCH),
     # M88 (DEV-D v3r D-p12-t2): a count said in words, grounded like one in digits.
-    ("llm.py", "_search_report_unsourced_counts"): ("GROUNDING", _GROUNDING_SEARCH),
-    ("llm.py", "_search_report_sentences"): ("GROUNDING", _GROUNDING_SEARCH),
-    ("llm.py", "_search_report_speaks_as_a_page"): ("GROUNDING", _GROUNDING_SEARCH),
-    ("llm.py", "_search_report_shows_the_search"): ("GROUNDING", _GROUNDING_SEARCH),
-    ("llm.py", "_search_report_offers_a_finder"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_unsourced_counts"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_sentences"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_speaks_as_a_page"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_shows_the_search"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_offers_a_finder"): ("GROUNDING", _GROUNDING_SEARCH),
     # M168 (D77): a weekday or clock of a report of ESPN's calendar the person said themselves is theirs to repeat.
-    ("llm.py", "_match_report_unread"): ("GROUNDING", _GROUNDING_SEARCH),
-    ("llm.py", "_search_report_off_subject"): (
+    ("search_report.py", "_match_report_unread"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("search_report.py", "_search_report_off_subject"): (
         "GROUNDING", "the proper names the person wrote are the subject the report must be about"),
-    ("llm.py", "_headline_words"): (
+    ("payload_fact_checks.py", "_headline_words"): (
         "GROUNDING", "M77: a question of the reply is folded to its words to tell whether it quotes an observed "
         "headline; nothing decides what was asked"),
-    ("llm.py", "_places_whole_address"): (
+    ("search_report.py", "_places_whole_address"): (
         "GROUNDING", "the tail of an address the person wrote themselves may be said back (M62)"),
-    ("llm.py", "_weather_fact_defect"): (
+    ("weather_facts.py", "_weather_fact_defect"): (
         "GROUNDING", "a number the person said is theirs to repeat, never a measurement; what the weather "
         "question asks is read by semantic.web"),
-    ("llm.py", "_unverified_present_fact"): (
+    ("visible_defect.py", "_unverified_present_fact"): (
         "GROUNDING", "a date or figure about now may only restate what the person said or what was read"),
-    ("llm.py", "compose_visible_defect"): (
+    ("visible_defect.py", "compose_visible_defect"): (
         "GROUNDING", "identifiers and literals the person typed are allowed in the reply, and an echo of the "
         "request is rejected; every reading of what was asked is a semantic reader it calls"),
-    ("llm.py", "_unsupported_request_anchor_token"): (
+    ("unsupported_answers.py", "_unsupported_request_anchor_token"): (
         "WORDING", "picks which of the person's words a limit must quote (an anchor), not what they asked"),
-    ("llm.py", "_cut_request_tail"): ("WORDING", "the last words of a cut message, quoted back in the question"),
-    ("llm.py", "_bare_path_name"): ("WORDING", "the file name of a pasted path, quoted back in the question"),
-    ("llm.py", "_told_result_final"): (
+    ("clarification_style.py", "_cut_request_tail"): ("WORDING", "the last words of a cut message, quoted back in the question"),
+    ("clarification_style.py", "_bare_path_name"): ("WORDING", "the file name of a pasted path, quoted back in the question"),
+    ("deterministic_finals.py", "_told_result_final"): (
         "WORDING",
         "A7 last resort: the day or later hour the person named picks which verified value the sentence tells",
     ),
-    ("llm.py", "_observed_identifier_tokens.walk"): (
+    ("visible_defect.py", "_observed_identifier_tokens.walk"): (
         "GROUNDING",
         "A7 E4: identifiers inside observed values, so a fragment of an observed title is not internal code",
     ),
-    ("llm.py", "_observed_repeated_words.walk"): (
+    ("visible_defect.py", "_observed_repeated_words.walk"): (
         "GROUNDING",
         "M172: words an observed value already repeats («Fru Fru»), so saying them is not a stutter",
     ),
-    ("computer_use.py", "_folded_words"): (
+    ("cu_reply_checks.py", "_folded_words"): (
         "GROUNDING",
         "cu-r16: a word of a mission final must be one of the facts, the person's own words or BAXY's vocabulary",
     ),
-    ("computer_use.py", "_preterites"): (
+    ("cu_reply_checks.py", "_preterites"): (
         "GROUNDING",
         "cu-r17/r18: the first-person past forms of the verbs the person and the goal said, so a final telling that "
         "act («pegué», «envié») is grounded; decides no intention",
     ),
-    ("llm.py", "_said_misspelled"): (
+    ("visible_defect.py", "_said_misspelled"): (
         "GROUNDING",
         "A7 E1: a name in the reply checked against a word the person wrote with a typo",
     ),
-    ("llm.py", "_search_query_terms"): (
+    ("search_report.py", "_search_query_terms"): (
         "GROUNDING",
         "M51: the query's content words, the evidence a search result is about what was asked",
     ),
-    ("llm.py", "LlmRuntime._compose_partial_report"): (
+    ("llm_compose.py", "ComposeMixin._compose_partial_report"): (
         "GROUNDING",
         "M83: a name or figure a page carries is found data only when the person's request did not already say it",
     ),
-    ("llm.py", "LlmRuntime.clarify_unresolved_input"): (
+    ("llm_clarify.py", "ClarifyMixin.clarify_unresolved_input"): (
         "WORDING", "the question BAXY writes must not echo the person's words (echo check); the kind of input "
         "was read by semantic.guards"),
     # ------------------------------------------------ other mind modules
@@ -196,22 +211,108 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("wake_cascade.py", "normalize_lexical_transcript"): ("INPUT", _WAKE),
     ("wake_verifier.py", "lexical_words"): ("INPUT", _WAKE),
     # ------------------------------------------------ computer use: the engine's step, after semantic.missions read
-    ("computer_use.py", "deterministic_step"): (
+    ("cu_rules.py", "deterministic_step"): (
         "GROUNDING", "the goal is the sub-goal semantic.missions wrote; the article and the control kind said before "
         "a name only narrow which control of the view it names"),
-    ("computer_use.py", "_goal_target"): (
+    ("cu_goals.py", "_goal_target"): (
         "GROUNDING", "the goal is the sub-goal semantic.missions wrote; the article and the control kind said before "
         "a name only narrow which control of the view it names"),
-    ("computer_use.py", "_destination"): (
+    ("cu_goals.py", "_destination"): (
         "GROUNDING", "the place of a sub-goal semantic.missions wrote («ir a X»), its article dropped"),
-    ("computer_use.py", "_unlisted_name_click"): (
+    ("cu_goals.py", "reading_goal"): (
+        "GROUNDING", "the head verb of the sub-goal semantic.missions wrote (or the question's look), matched against "
+        "the floor data readGoal, so a reading never presses a switch on the way"),
+    ("cu_by_name.py", "_unlisted_name_click"): (
         "GROUNDING", "the names of a sub-goal semantic.missions wrote, tried by label on the window; a name that "
         "removes or opens elsewhere is never clicked unseen"),
-    ("computer_use.py", "_echoes_typing"): (
+    ("cu_languages.py", "_translation_clickable"): (
+        "GROUNDING", "the goal semantic.missions wrote, checked for asking an account act or another tab or window "
+        "before a control found by the model's translation is clicked; the same guards the model's clicks pass"),
+    ("cu_view.py", "_shown_as_words"): (
+        "GROUNDING", "a name of the sub-goal's place (as said, from the table or translated) looked up as whole words "
+        "in a control's name or the view's lines: a literal check against the screen, never a reading"),
+    ("cu_lookup.py", "_view_resembles"): (
+        "GROUNDING", "the names of the sub-goal's place (as said, from the table or translated) split into content "
+        "words and looked up, literally, among the words of the view's controls' names (ronda 20 P1, v3-03): a check "
+        "against the screen of whether a blind lookup may miss what the window shows, never a reading"),
+    # Encargo S de estabilización: the place's own button and the acts in the person's name, against the view.
+    ("cu_lookup.py", "_is_the_place"): (
+        "GROUNDING", "the place of a sub-goal semantic.missions wrote, its article dropped, compared literally (or by the "
+        "place table's other names) with a control's name: which control of the view is the place's own"),
+    # Estabilización G2: a control or a written line that holds the place's name and adds words of its own.
+    ("cu_view.py", "names_another_place"): (
+        "GROUNDING", "the place of a sub-goal semantic.missions wrote looked up, literally and as whole words, in a "
+        "control's name or a line of the window, whose other words (the window's, never the person's) tell whether it "
+        "names another place («Pantalla de bloqueo»); decides no intention"),
+    ("cu_unasked.py", "unasked_act"): (
+        "GROUNDING", "the place of a sub-goal semantic.missions wrote compared literally with the name of the control "
+        "to press (the control that IS the place only goes there); the act asked is read by semantic.account_acts"),
+    ("cu_evidence.py", "_echoes_typing"): (
         "GROUNDING", "a cited evidence that repeats what BAXY typed in the sub-goal is its own echo, never arrival"),
-    ("computer_use.py", "typed_text"): (
+    ("cu_acts.py", "typed_text"): (
         "INPUT", "the text to type keeps the person's words on one line (breaks and tabs become spaces): it is "
         "never read for an intention"),
+    ("cu_unasked.py", "unasked_text"): (
+        "GROUNDING", "a lone letter the model would type is accepted only when the request or the sub-goal says it as "
+        "a word, literally (live v3-11); going to a place, a text only when one of its words is a word of the request, "
+        "the sub-goal or its place's other names, literally (estabilización G2); decides no intention"),
+    ("cu_evidence.py", "_cited_control_name"): (
+        "OTHER", "the evidence is the model's citation of a control line as the step's prompt lists it («Kind «name» · "
+        "states»), resolved against the view's controls; the person's words are not read here"),
+    # Ronda 20 P4 (v3-08): a part new by identity after the command that creates what the goal names.
+    ("cu_vocabulary.py", "_created_words"): (
+        "GROUNDING", "the words of a written goal and of a command's name, cut and grouped by data "
+        "«computerUse.evidence.creatingKin», compared with each other; the person's words are not read here"),
+    ("cu_first_look.py", "_new_part_by_identity"): (
+        "GROUNDING", "whether a goal semantic.missions wrote creates one thing (data «creatingGoal», "
+        "«creatingQuantity») and the last click's command creates it («creatingCommand»), with the UIA ids of the "
+        "view; the person's words are not read here"),
+    # Revisión 2 de P4: a form's own button cited as the proof of a creation.
+    ("cu_creation.py", "_form_button_cited"): (
+        "GROUNDING", "whether a goal semantic.missions wrote creates something (data «creatingGoal») and the citation is "
+        "a button the sub-goal brought (new on its first look or after its click) beside one that saves or confirms "
+        "(data «commitControl»), naming none of the goal's words (data «creatingKin»); the person's words "
+        "are not read here"),
+    # Ronda 22 (pasada r18, t4-c06, t4-c13): mirror of EvidenceRefusal's «unrelated».
+    ("cu_evidence.py", "_unrelated_evidence"): (
+        "GROUNDING", "the stems of the sub-goal semantic.missions wrote (semantic.cu_buscar.proof_stems) compared with "
+        "the pieces of the model's citation new on screen and the names of the controls a click chose, by data "
+        "«computerUse.evidence.relevanceFillers», «computerUse.evidenceAliases», «creatingKin» and «noticeText» (only a "
+        "notice that shares no stem is unrelated); the person's words are not read here"),
+    ("cu_goals.py", "_goal_names_control"): (
+        "GROUNDING", "the words of a control's name looked up, literally, among the words of the sub-goal "
+        "semantic.missions wrote; decides no intention"),
+    # Recibo del clic por estado (r15b v3-44): the rule's own presses (a written line, a name clicked by label alone)
+    # pass the same help guard as the model's act.
+    ("cu_unasked.py", "opens_help"): (
+        "GROUNDING", "the words of a control's name or a line of the view matched, literally, against the offer to look "
+        "something up in the help or on the web, and the sub-goal or the request only checked for help or web words "
+        "the person said (_ASKS_HELP), never to decide an intention; the same guard the model's click passes"),
+    # Ronda 17 menus-actos: the open/menu/double acts go through the guards of a click.
+    ("cu_validate.py", "_checked_manner"): (
+        "GROUNDING", "the model's open/menu/double act checked against the view's control (its kind, states and name) "
+        "and against the sub-goal semantic.missions wrote, with the same guards as _checked_act (account, removal, "
+        "scroll part); the person's words are not read here"),
+    ("cu_validate.py", "_checked_act"): (
+        "GROUNDING", "the model's act checked against the sub-goal semantic.missions wrote: its «ir a X» place, its "
+        "«activar/seleccionar X» thing and whether it names a tab or window bound which control a click may press "
+        "(the same guards as _translation_clickable); the request's new tab is semantic.cu_buscar.asks_a_new_tab"),
+    ("cu_goals.py", "done_needs_an_act"): (
+        "GROUNDING", "twin of ComputerUseSuccessCheck.Evidence.cs::DoneNeedsAnAct: whether a goal semantic.missions (or the decider) "
+        "wrote is a place («ir a X», data «placeGoal»), a reading (data «computerUse.evidence.readGoal», or a goal "
+        "with a question) or a goal of doing; the person's words are not read here"),
+    ("cu_goals.py", "_search_goal"): (
+        "GROUNDING", "twin of ComputerUseSuccessCheck.Evidence.cs::SearchGoal: whether a goal semantic.missions (or the decider) "
+        "wrote is a search (data «computerUse.evidence.searchGoal»); the person's words are not read here"),
+    ("cu_evidence.py", "acted_with_effect"): (
+        "GROUNDING", "twin of ComputerUseSuccessCheck.Evidence.cs::ActedWithEffect: the verified steps of a sub-goal and their "
+        "receipts; only whether the goal written is one of opening (data «computerUse.evidence.openGoal»); the "
+        "person's words are not read here"),
+    # Ronda 24 (pasada r23 v3-33): an option chosen is no product made.
+    ("cu_evidence.py", "product_noun"): (
+        "GROUNDING", "twin of ComputerUseSuccessCheck.Evidence.cs::ProductNoun: the noun of the product a goal semantic.missions (or "
+        "the decider) wrote makes (data «computerUse.evidence.productGoal»), so a chosen option is not taken for it; "
+        "the person's words are not read here"),
 }
 
 # The App (C#): one class per file, with the methods that differ.
@@ -249,10 +350,94 @@ APP_FILES: dict[str, tuple[str, str]] = {
 }
 APP_METHODS: dict[tuple[str, str], tuple[str, str]] = {
     # Computer use: the success check is a grammar the mind's reader (semantic/missions) writes; the App parses it.
-    ("ComputerUseMission.cs", "CountAtom"): (
+    # Ronda 23 (pregunta-lee-lo-pertinente): the excerpt of the view puts first what shares a root with the question.
+    ("ComputerUseSuccessCheck.Place.cs", "PlaceToggle"): (
+        "GROUNDING", "the place of an atom of the success check semantic.missions wrote, its article dropped, compared "
+        "literally with a button's name after a verb of the data computerUse.placeToggle; twin of the mind's "
+        "cu_lookup.own_place_button"),
+    ("ComputerUseMission.Final.cs", "BearsQuestionRoot"): (
+        "GROUNDING", "orders the view's lines and controls for the model by a root they share with the question of the "
+        "goal semantic.missions wrote («; y responder: …»); it decides no meaning, only which of the window's texts "
+        "are shown first"),
+    ("ComputerUseSuccessCheck.cs", "CountAtom"): (
         "GROUNDING", "parses the «count:<kind> <op> N» atom of the success check that semantic.missions wrote and "
         "counts the view's controls; the person's words are not read here"),
+    # Revisión 1 de la ronda 24b (B4): the witness of a «count:» atom that closed a sub-goal is the count measured.
+    ("ComputerUseSuccessCheck.cs", "CountSource"): (
+        "GROUNDING", "parses the same «count:<kind> <op> N» atom (CountAtom's pattern) to quote, as the witness of the "
+        "term that closed a sub-goal, how many controls of that kind the view counted; the person's words are not read "
+        "here"),
+    # Live y7: the «result:<expression>» atom semantic.missions writes for a calculation; the App reads the numbers
+    # the screen shows (a display, a value) to compare them with the expression's value, never the person's words.
+    ("ComputerUseSuccessCheck.Calculation.cs", "ShownNumbers"): (
+        "GROUNDING", "reads the numbers on the view (display text, control values) for the «result:» atom of the "
+        "success check that semantic.missions wrote; the person's words are not read here"),
+    # Ronda 23, revisión 3: «10.000-1» of the «result:» atom read both with its mark decimal and as thousands grouped.
+    ("ComputerUseSuccessCheck.Calculation.cs", "CalculationValues"): (
+        "GROUNDING", "evaluates the expression of the «result:» atom of the success check that semantic.missions wrote, "
+        "a number whose marks each group three digits read both as decimal and as thousands; it decides no meaning and "
+        "the person's words are not read here"),
+    # Ronda 20b, revisión 1 (bloqueante 4): «1500» held «value:horizontal=500» by containment.
+    ("ComputerUseSuccessCheck.cs", "ValueHolds"): (
+        "GROUNDING", "whether a field's value on the view holds the value of the «value:» atom semantic.missions "
+        "wrote: a number within digit bounds, a text contained; the person's words are not read here"),
+    # Revisión 2 de la ronda 22: which lines of the screen excerpt are a control's label.
+    ("ComputerUseMission.Final.cs", "LabelWords"): (
+        "GROUNDING", "the words of an OCR line and of a control's UIA name, compared to mark the excerpt's lines that "
+        "are a control's label (ControlLines); the person's words are not read here"),
+    # Ronda 21 (pasada r18 v3-26), review 2: the opening the engine put first restarts its sub-goal's clock.
+    ("ComputerUseMission.cs", "RestartsSubgoalClock"): (
+        "GROUNDING", "whether the goal semantic.missions (or the decider) wrote for a sub-goal is one of opening (data "
+        "«computerUse.evidence.openGoal»), so the engine's opening put first in it is not its work and its clock "
+        "starts after it; the person's words are not read here"),
+    ("ComputerUseSuccessCheck.Evidence.cs", "SearchGoal"): (
+        "GROUNDING", "whether a goal semantic.missions (or the decider) wrote is a search (data "
+        "«computerUse.evidence.searchGoal»), so typing its query is its act; the person's words are not read here"),
+    ("ComputerUseSuccessCheck.Evidence.cs", "ProofStems"): (
+        "MIRROR", "twin of semantic.cu_buscar.proof_stems: the words of a written goal or of a window's text, cut and "
+        "grouped by data; decides no intention"),
+    # The mission's window by its title (ronda 12): the title is the window's, never the person's words.
+    # Ronda 24 (pasada r23 t-form-2): a command that may erase or replace is let on the tied document only when the
+    # request carries the verb of that very command's class (data «computerUse.contentErasing.requested»); revisión 3
+    # de r24 (B2): only where an order stands (data «commandPosition», «commandPlace»: InCommandPosition).
+    ("ComputerUseMissionWindow.cs", "RequestedOnTiedDocument"): (
+        "GROUNDING", "the request's own words are the literal evidence that a pressed command of an erasing class was "
+        "asked for (the class's verb in them); what the mission does is semantic.missions'; this only lets the guard "
+        "pass an act already chosen"),
+    ("ComputerUseMissionWindow.cs", "InCommandPosition"): (
+        "GROUNDING", "the same literal evidence narrowed: the class's word counts only where an order stands (the "
+        "request's start, a link, a courtesy or a modal, or the place named by the tied window's own application or "
+        "title), never an adjective or noun of the same spelling; it only lets the guard pass an act already chosen"),
+    ("ComputerUseMissionWindow.cs", "DocumentPart"): (
+        "OTHER", "a window title's first segment (the document or the dialog, before « - » and the application's "
+        "name); the person's words are not read here"),
     # cu-r16: the floor of a mission tells its parts from the goals semantic.missions wrote (data «computerUse.parts»).
+    # cu-v3-elevacion (review, finding 2): the rights an app.open runs with are the App's to decide, never the model's.
+    ("OperationFloor.cs", "AdministratorAsked"): (
+        "MIRROR", "whether the person's request asks for administrator rights (data «administratorAsked.cues», whole "
+        "words): the App decides the rights of an app.open itself and never takes an extracted forControl, so a raised "
+        "window opens only when the person's own words ask for it (invariant 1: the kernel authorizes)"),
+    # Ronda 24 (v3-59): a place's done whose citation shares no word with the place nor with the window's title.
+    ("ComputerUseSuccessCheck.Evidence.cs", "CitationOffThePlace"): (
+        "GROUNDING", "the place of the goal semantic.missions (or the decider) wrote («ir a X», OperationFloor.PlaceAsked) "
+        "and the names its check and translation give it, compared word by word with the model's citation and the "
+        "window's own process and title; it decides no meaning and the person's words are not read here"),
+    # Revisión 1 de r24 (B2, v3-08): the citation is the whole text a verified typing put into a field the goal names.
+    ("ComputerUseSuccessCheck.Form.cs", "SlotWritten"): (
+        "GROUNDING", "the words of the goal written for the sub-goal, matched against the names of the view's fields "
+        "and the text a verified typing step put there (twin of cu_evidence._slot_written); an observation of the "
+        "screen and the receipts, the person's words are not read here"),
+    # Review of cierre-de-subobjetivos (finding 3): only a goal of bringing something up is closed by what appeared.
+    ("ComputerUseSuccessCheck.Evidence.cs", "BringsUpGoal"): (
+        "GROUNDING", "whether a free goal semantic.missions (or the decider) wrote is one of opening or of going to a "
+        "place (data «computerUse.evidence.openGoal», «placeGoal»), so the control its act brought up may close "
+        "it; the person's words are not read here"),
+    ("OperationFloor.cs", "Unanswered"): (
+        "GROUNDING", "the question part of a goal semantic.missions wrote, said back in the honest limit of a mission "
+        "that reached its place without reading the answer; the person's words are not read here"),
+    ("OperationFloor.cs", "Filled"): (
+        "WORDING", "revisión F: the placeholders of the floor's own data wording ({value}) filled from the observation; "
+        "the person's words are not read here"),
     ("OperationFloor.cs", "PartMatch"): (
         "GROUNDING", "splits a goal that semantic.missions wrote («ir a X», «escribir X») into its object, to say it "
         "back from the facts; the person's words are not read here"),
@@ -595,10 +780,15 @@ def _cs_parameters(raw: str) -> list[str]:
 
 def cs_sites() -> list[Site]:
     sites: list[Site] = []
-    for path in sorted(APP.glob("*.cs")):
+    paths = sorted(APP.glob("*.cs"))
+    # A Regex field is called from every file of its partial class, and from another class by its qualified name.
+    fields: set[str] = set()
+    for path in paths:
         text = path.read_text(encoding="utf-8")
-        fields = set(re.findall(r"\bRegex[ \t]+(\w+)[ \t]*=", text))
+        fields |= set(re.findall(r"\bRegex[ \t]+(\w+)[ \t]*=", text))
         fields |= set(re.findall(r"partial[ \t]+Regex[ \t]+(\w+)\(\)", text))
+    for path in paths:
+        text = path.read_text(encoding="utf-8")
         methods = [(match.start(), match["name"], _cs_parameters(match["params"]))
                    for pattern in (_CS_METHOD, _CS_LOCAL) for match in pattern.finditer(text)
                    if match["name"] not in _CS_KEYWORDS]

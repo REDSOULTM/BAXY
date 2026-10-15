@@ -64,9 +64,42 @@ def load_conversation(profile: pathlib.Path) -> list[tuple[dict, dict | None]]:
     return pairs
 
 
+def linked_segments(journal: pathlib.Path) -> list[pathlib.Path]:
+    """The sealed segments the journal's manifest (``missions.jsonl.segments``) still links, oldest first.
+
+    Segments a reset of the journal left beside it are not in the manifest and are not part of this journal.
+    """
+    try:
+        manifest = json.loads((journal.parent / (journal.name + ".segments")).read_text(encoding="utf-8"))["payload"]
+    except (OSError, ValueError, KeyError):
+        return []
+    links = manifest.get("segments") or []
+    return [journal.with_name(f"{journal.stem}.{link['segment']}{journal.suffix}") for link in reversed(links)]
+
+
+def journal_rows(journal: pathlib.Path) -> list[dict]:
+    """Rows of the rotated journal in order: its linked sealed ``missions.<k>.jsonl`` segments, then the live one.
+
+    A rotation carries each incomplete invocation's start into the next segment, so a repeated start is skipped.
+    """
+    rows, seen_starts = [], set()
+    for path in linked_segments(journal) + [journal]:
+        if not path.exists():
+            continue
+        for row in read_jsonl(path):
+            payload = row.get("payload") if isinstance(row.get("payload"), dict) else row
+            if payload.get("phase") == "started":
+                key = payload.get("invocationId")
+                if key in seen_starts:
+                    continue
+                seen_starts.add(key)
+            rows.append(row)
+    return rows
+
+
 def load_operations(profile: pathlib.Path) -> list[dict]:
     ops = []
-    for row in read_jsonl(profile / "journal" / "missions.jsonl"):
+    for row in journal_rows(profile / "journal" / "missions.jsonl"):
         payload = row.get("payload") if isinstance(row.get("payload"), dict) else row
         operation = payload.get("operation")
         if not operation or str(operation).startswith("memory."):

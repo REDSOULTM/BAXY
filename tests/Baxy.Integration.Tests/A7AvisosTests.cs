@@ -79,6 +79,10 @@ public sealed class A7AvisosTests
         Assert.That(UserMessagePolicy.LeakedInternalTerm("a Python toolkit", null), Is.Null);
         Assert.That(UserMessagePolicy.LeakedInternalTerm("Hice la operacion.", null), Is.EqualTo("operacion"));
         Assert.That(UserMessagePolicy.LeakedInternalTerm("Uso el core local.", null), Is.EqualTo("core"));
+        // Estabilización R10 (bancos r27–r30 v7/d2, 8 of 15 forbidden_term vetoes slower): «tool» is the word for what Paint
+        // calls a tool, never a jargon of BAXY; the other terms still are.
+        Assert.That(UserMessagePolicy.LeakedInternalTerm("I chose the eraser tool in Paint.", null), Is.Null);
+        Assert.That(UserMessagePolicy.LeakedInternalTerm("El planner selecciona una tool.", null), Is.EqualTo("planner"));
         Assert.That(
             UserMessagePolicy.ConversationReplyRejectionReason(
                 "Podrías decirme como crear una interfaz sencilla (también conocida como gui) de una calculadora "

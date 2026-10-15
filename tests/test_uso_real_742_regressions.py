@@ -19,9 +19,9 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import web
 from baxy_mind.semantic.notes import agenda_event_request
+from baxy_mind import turn_followups
 
 
 @pytest.mark.parametrize(
@@ -94,7 +94,7 @@ def test_a_follow_up_that_reads_a_request_by_itself_is_that_request(text: str) -
     history = [{"role": "user" if i % 2 == 0 else "assistant", "content": turn} for i, turn in enumerate(turns)]
     message = {"id": "742-regression", "text": text, "history": history}
     model = _NoModel()
-    assert sidecar._rearm_in_context(message, llm=model, available_operations=_OPERATIONS) is None
+    assert turn_followups._rearm_in_context(message, llm=model, available_operations=_OPERATIONS) is None
     assert model.asked == []
 
 

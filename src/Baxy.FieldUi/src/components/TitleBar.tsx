@@ -28,7 +28,7 @@ function api(): PyWebviewApi | null {
  *  the native drag handle; the buttons live OUTSIDE it so a click on a control
  *  isn't swallowed by the drag (pywebview starts a drag when the mousedown
  *  target — or any ancestor — is the drag region). */
-export function TitleBar() {
+export function TitleBar({ bypass }: { bypass: boolean }) {
   const [maximized, setMaximized] = useState(false);
 
   // Reflect the maximized state on <html> so the CSS can release the compact
@@ -92,6 +92,13 @@ export function TitleBar() {
         <span className="titlebar-title">
           gemma <span className="accent">4</span> <span className="dim">· field</span>
         </span>
+        {/* Bypass is seen on at every moment while it is on (identity: a conscious
+            setting that stays on until it is switched off). */}
+        {bypass && (
+          <span className="titlebar-bypass" role="status">
+            bypass · sin confirmaciones
+          </span>
+        )}
       </div>
       <div className="titlebar-controls">
         <button

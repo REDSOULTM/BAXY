@@ -371,7 +371,7 @@ reparse points.
 
 | Datos | Owner/ruta relativa | Protección | Recovery y límites relevantes |
 |---|---|---|---|
-| Journal de invocaciones | Core/Kernel: `journal/missions.jsonl` + `.anchor` | HMAC-SHA256 encadenado; clave protegida DPAPI | fsync, compactación, 64 MiB, reserva terminal de 2 MiB |
+| Journal de invocaciones | Core/Kernel: `journal/missions.jsonl` + `.anchor`; segmentos sellados `missions.<n>.jsonl` + `.anchor` + `.index` (memo autenticado de su validación); manifiesto `missions.jsonl.segments`; ids retirados `missions.jsonl.retired` | HMAC-SHA256 encadenado; clave protegida DPAPI; archivados autenticados y enlazados desde el manifiesto; el ancla viva conserva el formato anterior a la rotación | fsync, compactación, 64 MiB, reserva terminal de 2 MiB; rotación al 75 %, retiene 2 archivados y retira (rechaza con `idempotency_conflict`) los ids de los podados (`documentacion/computer-use/JOURNAL_ROTACION.md`) |
 | Clave journal | Security: `security/journal-hmac.v2.key` | DPAPI CurrentUser | ausencia incompatible falla cerrado |
 | Estado de plan | App: `shell/planner-state.v1.bin` + key | AES-GCM, purpose binding, clave DPAPI | 1 MiB; checkpoint/recovery |
 | Retry outbox | App: `shell/retry-outbox.v1.json` | texto plano + checksum SHA-256 | 128 entradas, 1 MiB; detecta corrupción accidental, no MAC |

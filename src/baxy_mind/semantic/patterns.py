@@ -12,16 +12,18 @@ from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import levels, lexicon
 from .grammar import TASK_REMINDER_HEAD, _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _is_definition_question, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface, _without_address, imperative_rewrites
-from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
-from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE, start_menu_request
+from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, app_volume_named_in_place, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
+from .windows import deictic_window_mutation, _PLACING_REASON_TAIL, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, _SIDE_BY_SIDE, _SPLIT_SCREEN_HEAD, _ENGLISH_SNAP_HEAD, side_by_side_placement, two_things_side_by_side, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE, start_menu_request
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
+from .decider import system_settings_application
+from .drag import asks_to_drag
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import said_advance, _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, alarm_for_hour, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request, purpose_music_query
 from .web import asks_for_information, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, browser_close_tab_arguments, browser_page_step_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing, asks_to_watch_the_news
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
-from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
+from .games import _corrected_game_launch_title, games_of_this_pc as _games_of_this_pc, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
 from .notes import _STATE_OF_THE_PERSON, asked_to_be_told_now, puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, list_creation_said, new_list_title, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
@@ -366,6 +368,24 @@ MISSION_SUBSUMES = frozenset({
     "app.open", "client.channel.locate", "input.key.press", "input.text.type", "input.visible.click",
     "input.visible.controls", "window.focus",
 })
+# Reads of what the screen shows that a mission's own post-read answers (the window's UIA first, its OCR after): chosen
+# beside a step of the mission they read the place it reaches (v3-43 r11: «luego a opciones de energía y dime qué plan
+# está activo» → a click plus vision.describe, which alleged «la visión no está configurada» while the window's
+# controls held the plan). Alone they keep their own route, and a capture the person's words ask for is the person's
+# (``mission_reads``: the mission keeps no capture to give).
+MISSION_READS = frozenset({"capture.active.window", "capture.screenshot", "ocr.read", "vision.describe"})
+_CAPTURES = frozenset({"capture.active.window", "capture.screenshot"})
+_ASKS_A_CAPTURE = re.compile(
+    r"\b(?:captur\w*|pantallazos?|screenshots?|screen\s*(?:shots?|captures?)|snapshots?|"
+    r"fotos?\s+(?:de\s+(?:la\s+)?|a\s+la\s+)?(?:pantalla|ventana)|pictures?\s+of\s+the\s+(?:screen|window))\b"
+)
+
+
+def mission_reads(text: str) -> frozenset[str]:
+    """``MISSION_READS`` for the person's ``text``: without the captures when the words ask for one (review of
+    finales-buscador, finding 2: «escribe hola y sácame una captura de pantalla» lost its capture to the mission)."""
+
+    return MISSION_READS - _CAPTURES if _ASKS_A_CAPTURE.search(_fold(text or "")) else MISSION_READS
 
 
 def _mission_takes_over(
@@ -374,15 +394,45 @@ def _mission_takes_over(
     available: tuple[str, ...],
     application_names: Iterable[str] | ApplicationCatalogIndex,
     game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex,
+    text: str = "",
 ) -> bool:
     """A mission wins over a typed reading made only of its own primitives. With no typed reading it wins only when
     the clause is an act the reader knows how to check (go to, press, calculate, switch, type, click) and is not
     itself a catalog request («en Discord activá el micrófono»: the microphone); a loose verb («en Spotify baja el
     volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission. A chained
-    mission wins when the reader checks every sub-goal and no typed reading covers them all."""
+    mission wins when the reader checks every sub-goal or admits it as a free one (v3 r3a lectura L3) and no typed
+    reading covers them all; a free sub-goal that sends something to someone («… y mandale hola») still leaves the
+    chain to the decider, and a paying one is no mission at all (missions._UNDOING_OR_PAYING_ACT)."""
 
     if intent is not None and set(intent.operations) <= MISSION_SUBSUMES:
         return True
+    from . import app_places as _app_places
+
+    if not getattr(mission, "steps", ()) and _app_places.declares(
+        getattr(mission, "application", None), getattr(mission, "goal", None)
+    ):
+        # Estabilización, encargo C («abrí la página de Cuphead en Steam» launched the game and searched the web): a
+        # place the application's data declare (data app_places.v1.json) is gone to in the application, before any
+        # typed reading of the words that name it.
+        return True
+    if (
+        intent is not None and len(intent.operations) == 2 and intent.operations[0] == "app.open"
+        and len(intent.evidence) == 2
+    ):
+        # v3-34 r7 «abre notas rápidas y crea una nota que diga …» (app.open + note.create): the note was saved in
+        # BAXY's own store and told as created in the notes app. An act whose object is what the opened application is
+        # named for is done inside it (missions.act_object_names_application).
+        from . import missions as _missions
+
+        # The application as the person said it too («open sticky notes and create a note …»).
+        folded, clause = _missions.fold(text), _missions.fold(intent.evidence[1])
+        said = folded[: folded.find(clause)] if clause and clause in folded else ""
+        if any(
+            _missions.act_object_names_application(intent.evidence[1], name)
+            for name in (getattr(mission, "application", ""), said)
+            if name
+        ):
+            return True
     # Live 2026-10-07 (r21): «en Configuración andá a Personalización y decime qué tema está activo» read the closing
     # question alone as a status of the PC («tema» → media.status: «no hay nada reproduciéndose»). A status the
     # question alone reads is the question the mission's final answers from the window it reached.
@@ -396,8 +446,17 @@ def _mission_takes_over(
     if steps:
         # A chain of steps inside applications («andá a la biblioteca en Steam y después a general en Discord») is
         # one mission even when a clause alone is a typed request; a typed reading that covers every clause keeps
-        # its route (D21), and a clause the reader cannot check leaves the turn to the decider.
-        if any(step.success_check is None for step in steps):
+        # its route (D21), and a clause the reader cannot check leaves the turn to the decider. A free sub-goal is no
+        # such clause: the mission reader admits it only beside as many checked ones and never beside a prohibition
+        # (missions.mission_request), and the model does it inside the application named (v3 r3a lectura L3:
+        # «… go to the video library and sort by date added» went to the decider, which opened the app alone).
+        if any(step.success_check is None and not getattr(step, "free", False) for step in steps):
+            return False
+        # Review of L3: a free sub-goal that sends something to someone («… buscá a Juan y mandale hola») is a message
+        # no reader checked; the decider reads it as one (message.send and its confirmation).
+        from . import missions as _missions
+
+        if any(getattr(step, "free", False) and _missions.sends_to_someone(step.goal) for step in steps):
             return False
         # The mission's own primitives in the typed reading are its steps said one by one; only the other typed
         # operations can cover a sub-goal (measured: «… go to Desktop and create a new folder called tasks» read as
@@ -2176,7 +2235,61 @@ def conversation_only_content_request(text: str) -> bool:
         r"(?:ejemplos?|examples?)\s+(?:de|of)\b|"
         rf"(?:{_CODE_PIECE})\b.{{0,32}}\b(?:(?:en|in)\s+)?{_CODE_LANGUAGE}|"
         rf"{_CODE_LANGUAGE}\s+(?:[a-z-]+\s+)?(?:{_CODE_PIECE})\b)",
-    )
+    ) or _ideas_asked_here(folded)
+
+
+# Uso real v3 tanda 1 «dame 3 ideas de nombre para mi gata negra» → «¿Qué quieres que haga con…?»: ideas,
+# suggestions or names for something are written here, as many as asked. Folded.
+_IDEAS_ASKED = (
+    r"^(?:dame|danos|tirame|sugiereme|sugerime|proponme|proponeme|give\s+(?:me|us)|suggest|"
+    r"(?:can|could)\s+you\s+(?:give\s+me|suggest)|(?:me\s+)?podrias\s+dar(?:me)?|se\s+te\s+ocurren?)\b"
+    r".{0,48}\b(?:ideas?|sugerencias?|suggestions?|nombres?\s+para|names?\s+for)\b"
+)
+# Revisión adversarial de la tanda 1 («dame ideas de nombres y anótalas en el bloc de notas», «suggest names for my
+# files in downloads and rename them»): a clause joined after the ideas that starts with a verb asks an act besides
+# the writing. The verb is told by its form, not by a list: a verb with its object pronoun fused («anótalas»,
+# «cópialas», «renómbrala»), an English verb followed by «it/them», or an order the readers know.
+_JOINED_CLAUSE = re.compile(
+    r"(?:,|\b(?:y|e|and|luego|then|despues|tambien|also))\s+(?:(?:luego|then|despues|tambien|also)\s+)?"
+    r"(?P<head>[a-z\u00f1']+)(?P<rest>(?:\s+\S+){0,2})"
+)
+_FUSED_OBJECT_VERB = re.compile(r"[a-z\u00f1]{2,}(?:a|e|i|ar|er|ir)(?:me|te|se|nos)?(?:lo|la|los|las)$")
+_ENGLISH_OBJECT_AFTER_VERB = re.compile(r"^\s+(?:it|them|those|these|that)\b")
+# What only this PC or a live read knows («mi biblioteca de Steam», «mi disco», «mis archivos», the weather of a day,
+# what is playing, what is open now, the screen, what is near the person): ideas about it need that read first.
+_PC_OR_LIVE_SUBJECT = (
+    r"\b(?:mi|mis|my|nuestr[oa]s?|our)\s+(?:\w+\s+){0,2}?(?:biblioteca|library|disco|discos|disk|drive|"
+    r"almacenamiento|storage|pc|computador|computadora|computer|laptop)\b|"
+    r"\b(?:liberar|libera|free\s+up)\s+(?:\w+\s+){0,2}?(?:espacio|space)\b|"
+    r"\b(?:pantalla|screen)\b|"
+    r"\b(?:(?:esta|estoy|que|lo\s+que)\s+(?:sonando|suena|escuchando)|(?:now|currently)\s+playing|is\s+playing|"
+    r"(?:i'?m|i\s+am)\s+(?:listening|playing))\b|"
+    r"\b(?:abiert[oa]s?|open)\s+(?:ahora|now|hoy|today|right\s+now|en\s+este\s+momento)\b|"
+    r"\b(?:cerca|nearby|near\s+me)\b"
+)
+_WEATHER_DAY = (
+    r"\b(?:hoy|today|ahora|now|manana|tomorrow|tonight|esta\s+(?:noche|tarde|semana)|this\s+(?:week|weekend)|"
+    r"este\s+(?:finde|fin\s+de\s+semana)|afuera|outside)\b"
+)
+
+
+def _ideas_asked_here(folded: str) -> bool:
+    """Ideas, suggestions or names asked for something, with no act on the PC joined to them and about nothing only
+    this PC or a live read knows (folded)."""
+
+    if not _has(folded, _IDEAS_ASKED):
+        return False
+    for clause in _JOINED_CLAUSE.finditer(folded):
+        head = clause.group("head")
+        if (
+            _FUSED_OBJECT_VERB.search(head)
+            or _ENGLISH_OBJECT_AFTER_VERB.match(clause.group("rest"))
+            or _head_is(head, _COVERAGE_ACTION_HEAD)
+        ):
+            return False
+    if _has(folded, _PC_OR_LIVE_SUBJECT) or _has(folded, _FILESYSTEM_OBJECT_NOUN):
+        return False
+    return not (_has(folded, _WEATHER_WORDS) and _has(folded, _WEATHER_DAY))
 
 
 # «actúa como Julio Verne y …», «pretend you're a pirate and …», «como si fueras Borges, …»: the voice a
@@ -2432,9 +2545,9 @@ def known_unsupported_effect_request(
             {"media.library.play"},
         ),
         (
-            _has(folded, r"\b(?:arrastra|drag)\b")
-            and _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")
-            and _has(folded, r"\b(?:ventana|window)\b"),
+            # Estabilización L (límite de partida): dragging or drawing with the mouse is a declared limit; no operation
+            # does it (semantic.drag.asks_to_drag reads the act, never a window moved nor a dictated or searched text).
+            asks_to_drag(text),
             {"input.drag.drop", "filesystem.drag.drop"},
         ),
         (
@@ -2672,11 +2785,23 @@ def known_unsupported_effect_request(
         ),
         (
             # Owner 2026-09-21 «qué fue lo último que me dijo vicho en wsp», «leé lo
-            # último que me dijo X», «qué me escribió mamá» (H0510/H0720): reading a
-            # chat needs the computer-use engine (deferred); a plain limit, not
-            # «no pude entender».
-            chat_read_request(folded),
-            {"message.latest.read"},
+            # último que me dijo X», H0510 «qué me escribió mamá», H0720 «leéme el
+            # último mensaje de Pedro»: a plain limit, not «no pude entender», when
+            # no place is said; a request that names mail keeps the mail reader.
+            # Imprescindibles de mensajería (dueño 2026-10-10, decisión 4, over the
+            # 2026-09-17 §5 «reading private chats stays out»): said in an
+            # application, the computer-use mission reads it. One contract for the
+            # two readings of a chat read (message.read.named was its twin).
+            (
+                chat_read_request(folded)
+                or (
+                    _has(folded, r"\bwhat\s+did\s+\w+(?:\s+\w+)?\s+(?:write|send|say|text)\s+(?:to\s+)?me\b"
+                                 r"|\b(?:lee|leeme|leer|leelo|leela|leelos|leelas|mostra|mostrame|muestra|muestrame|dime|decime|read|show)\b.{0,40}\b(?:mensajes?|messages?|chats?|dms?|texts?)\b.{0,30}\b(?:de|from|of)\s+\w+")
+                    and not _has(folded, r"\b(?:correos?|mails?|e-?mails?|emails?|inbox|bandeja|gmail|outlook)\b")
+                )
+            )
+            and not _chat_read_by_a_mission(text, available),
+            {"message.latest.read", "message.read.named"},
         ),
         (
             # MASSIVE social_post/social_query (dev corpus 2026-09-23) «tuitea a
@@ -2750,21 +2875,6 @@ def known_unsupported_effect_request(
             # interface (input.visible.click), so this contract is inert.
             client_navigation_target(folded) is not None,
             {"input.visible.click"},
-        ),
-        (
-            # H0510 «qué me escribió mamá», H0720 «leéme el último mensaje de
-            # Pedro» (owner, 2026-09-17 §5: reading private chats stays out;
-            # defer or honest limit): no operation reads what a named person
-            # wrote in a chat. The mail reader reads the latest mail of the
-            # test mailbox regardless of sender, so a request that names mail
-            # keeps that path; a chat client or no channel at all is this limit.
-            (
-                _asks_what_was_said_to_me(folded)
-                or _has(folded, r"\bwhat\s+did\s+\w+(?:\s+\w+)?\s+(?:write|send|say|text)\s+(?:to\s+)?me\b"
-                             r"|\b(?:lee|leeme|leer|leelo|leela|leelos|leelas|mostra|mostrame|muestra|muestrame|dime|decime|read|show)\b.{0,40}\b(?:mensajes?|messages?|chats?|dms?|texts?)\b.{0,30}\b(?:de|from|of)\s+\w+")
-                and not _has(folded, r"\b(?:correos?|mails?|e-?mails?|emails?|inbox|bandeja|gmail|outlook)\b")
-            ),
-            {"message.read.named"},
         ),
         (
             # H0646 «pone The Office en Prime Video» (owner, 2026-09-20: no
@@ -4505,6 +4615,11 @@ def near_catalog_application_candidates(
         # M123 (D58, reserva es10302 «inicia el juego» → «Que hay de nuevo en la última versión» opened, «juego» two
         # edits from «nuevo»): a kind of thing names no application; what to open is the contextual decider's.
         return ()
+    if key in _ordinary_words() and any(key in entry_key.split() for entry_key in catalog.keys):
+        # Erratas r9 (revisión 6): nor an ordinary word alone that is one word of a name («abre el editor» → Editor
+        # del Registro, which asks for elevation): only the whole name said names that application (data/
+        # app_aliases.v1.json «common_words»). A slip of a name that is no word of one («abre stream») stays near.
+        return ()
     scored: list[tuple[int, int, str]] = []
     for name, entry_key in catalog.entries:
         tokens = [entry_key] + entry_key.split()
@@ -4711,6 +4826,13 @@ def _names_an_uninstaller(name: str) -> bool:
     return bool(tokens) and tokens[0] in _UNINSTALLER_WORDS
 
 
+def _ordinary_words() -> frozenset[str]:
+    from .catalog import app_alias_words
+
+    words = app_alias_words("common_words")
+    return frozenset((*words, *(word[:-1] for word in words if word.endswith("s")), *(f"{word}s" for word in words)))
+
+
 def resolve_application_catalog_app_id(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -4795,6 +4917,11 @@ def resolve_application_catalog_app_id(
         query_tokens = set(_entity_key(key).split())
         if not query_tokens:
             continue
+        if len(query_tokens) == 1 and next(iter(query_tokens)) in _ordinary_words():
+            # Erratas r9 (revisión 6): «abre el editor» is no «Editor del Registro» because one name holds the word;
+            # an ordinary word alone (data/app_aliases.v1.json «common_words») names an application only whole, the
+            # same rule as the one resolver (semantic.missions._catalog_key).
+            continue
         ranked: list[tuple[int, str]] = []
         for name, _ in catalog.entries:
             candidate_tokens = set(_entity_key(name).split())
@@ -4825,37 +4952,57 @@ def _authenticated_application_close_target(
     This supplies intent/domain evidence only: process/window identity still
     comes from window.resolve and the existing exact confirmation contract.
     """
-    if (
-        not effect_request_is_authoritative(text)
-        or _has_unsupported_deferred_effect(_fold(text))
-        or _other_device_effect_scope(_fold(text))
-    ):
-        return None
     # «necesito que cierres whatsapp», «podés cerrar la calculadora?»,
     # «cerrame el paint»: the desire/ability preface and the clitic still
     # ask for one close. The envelope already removes «puedes/could you».
-    request = _match(
-        _strip_request_envelope(_fold(text)),
-        r"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
-        r"(?:cierra|cierres|cerra|cerrar|cerrame|close)\s+(?P<target>.+)$",
-    )
+    request = _window_order(text, r"(?:cierra|cierres|cerra|cerrar|cerrame|close)\s+(?P<target>.+)$")
     if request is None:
         return None
+    return _one_named_target(request, "target", application_names)
+
+
+def _window_order(text: str, order: str) -> re.Match[str] | None:
+    """r31: the one guard of the four readers of a window order (close, focus, minimize, snap): the text can authorize
+    an effect now and on this PC, and its body, without the request envelope and after a desire or ability preface, is
+    ``order``. None otherwise."""
+
+    folded = _fold(text)
+    if (
+        not effect_request_is_authoritative(text)
+        or _has_unsupported_deferred_effect(folded)
+        or _other_device_effect_scope(folded)
+    ):
+        return None
+    return _match(
+        _strip_request_envelope(folded),
+        r"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+        + order,
+    )
+
+
+def _one_named_target(
+    request: re.Match[str],
+    group: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+    bare_tail: bool = True,
+) -> tuple[int, str] | None:
+    """The one catalog identity the target of a window order names, with where it starts; None when none or several.
+
+    Do not inherit open's execution-count hints for a work-loss effect: with ``bare_tail`` only punctuation, the
+    window wrapper's own tail («… window», «… app») and the existing bounded courtesy may follow the name."""
+
     catalog = build_application_catalog_index(application_names)
-    raw_target = request.group("target")
+    raw_target = request.group(group)
     matches: list[tuple[int, str]] = []
     for target, offset in _close_target_forms(raw_target):
-        # Do not inherit open's execution-count hints for a work-loss effect.
-        # Only punctuation, the window wrapper's own tail («… window», «… app»)
-        # and the existing bounded courtesy are removable.
         suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
         suffix = re.sub(r"^(?:window|app|application)\b", "", suffix).strip(" ,;:.!?")
-        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None \
+        if bare_tail and suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None \
                 and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
             continue
         key = _authenticated_close_key(target, catalog)
         if key is not None:
-            matches.append((request.start("target") + offset, key))
+            matches.append((request.start(group) + offset, key))
     identities = {key for _, key in matches}
     if len(identities) != 1:
         return None
@@ -4894,38 +5041,23 @@ def _authenticated_application_focus_target(
     over one exact catalog identity. Window identity still comes from
     window.resolve; an absent window ends there truthfully.
     """
-    if (
-        not effect_request_is_authoritative(text)
-        or _has_unsupported_deferred_effect(_fold(text))
-        or _other_device_effect_scope(_fold(text))
-    ):
-        return None
-    folded = _strip_request_envelope(_fold(text))
-    request = _match(
-        folded,
-        rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+    request = _window_order(
+        text,
         rf"(?:{_FOCUS_HEAD_ONLY}\s+(?:(?:me|a)\s+)?(?P<target_a>.+?)(?:\s+{_FOCUS_TAIL})?"
         rf"|{_FOCUS_HEAD_WITH_TAIL}\s+(?:(?:me|a)\s+)?(?P<target_b>.+?)\s+{_FOCUS_TAIL})[\s.!?]*$",
     )
     if request is None:
         return None
     group = "target_a" if request.group("target_a") is not None else "target_b"
-    raw_target = request.group(group)
-    catalog = build_application_catalog_index(application_names)
-    matches: list[tuple[int, str]] = []
-    for target, offset in _close_target_forms(raw_target):
-        suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
-        suffix = re.sub(r"^(?:window|app|application)\b", "", suffix).strip(" ,;:.!?")
-        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None \
-                and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
-            continue
-        key = _authenticated_close_key(target, catalog)
-        if key is not None:
-            matches.append((request.start(group) + offset, key))
-    identities = {key for _, key in matches}
-    if len(identities) != 1:
+    return _one_named_target(request, group, application_names)
+
+
+def _display_name(target: tuple | None, catalog: ApplicationCatalogIndex) -> str | None:
+    """The one catalog display name of an authenticated target's key (r31: said once for the four window orders)."""
+    if target is None:
         return None
-    return min(matches, key=lambda item: item[0])
+    names = {name for name, key in catalog.entries if key == target[1]}
+    return next(iter(names)) if len(names) == 1 else None
 
 
 def resolve_application_focus_name(
@@ -4934,11 +5066,7 @@ def resolve_application_focus_name(
 ) -> str | None:
     """Preserve an authenticated focus target as a catalog display name."""
     catalog = build_application_catalog_index(application_names)
-    target = _authenticated_application_focus_target(text, catalog)
-    if target is None:
-        return None
-    names = {name for name, key in catalog.entries if key == target[1]}
-    return next(iter(names)) if len(names) == 1 else None
+    return _display_name(_authenticated_application_focus_target(text, catalog), catalog)
 
 
 def _authenticated_application_minimize_target(
@@ -4953,37 +5081,12 @@ def _authenticated_application_minimize_target(
     absent one ends there truthfully. «minimizá todo» stays with the desktop
     reader; a deictic «esta ventana» stays with window.active.
     """
-    if (
-        not effect_request_is_authoritative(text)
-        or _has_unsupported_deferred_effect(_fold(text))
-        or _other_device_effect_scope(_fold(text))
+    request = _window_order(text, rf"{_MINIMIZE_HEAD}\s+(?:(?:me|a)\s+)?(?P<target>.+?)[\s.!?]*$")
+    if request is None or _has(
+        request.group("target"), r"\b(?:ventana|ventanas|window|windows|todo|todas|everything|all)\b",
     ):
         return None
-    folded = _strip_request_envelope(_fold(text))
-    request = _match(
-        folded,
-        rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
-        rf"{_MINIMIZE_HEAD}\s+(?:(?:me|a)\s+)?(?P<target>.+?)[\s.!?]*$",
-    )
-    if request is None:
-        return None
-    raw_target = request.group("target")
-    if _has(raw_target, r"\b(?:ventana|ventanas|window|windows|todo|todas|everything|all)\b"):
-        return None
-    catalog = build_application_catalog_index(application_names)
-    matches: list[tuple[int, str]] = []
-    for target, offset in _close_target_forms(raw_target):
-        suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
-        suffix = re.sub(r"^(?:window|app|application)\b", "", suffix).strip(" ,;:.!?")
-        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None                 and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
-            continue
-        key = _authenticated_close_key(target, catalog)
-        if key is not None:
-            matches.append((request.start("target") + offset, key))
-    identities = {key for _, key in matches}
-    if len(identities) != 1:
-        return None
-    return min(matches, key=lambda item: item[0])
+    return _one_named_target(request, "target", application_names)
 
 
 def resolve_application_minimize_name(
@@ -4992,11 +5095,7 @@ def resolve_application_minimize_name(
 ) -> str | None:
     """Preserve an authenticated minimize target as a catalog display name."""
     catalog = build_application_catalog_index(application_names)
-    target = _authenticated_application_minimize_target(text, catalog)
-    if target is None:
-        return None
-    names = {name for name, key in catalog.entries if key == target[1]}
-    return next(iter(names)) if len(names) == 1 else None
+    return _display_name(_authenticated_application_minimize_target(text, catalog), catalog)
 
 
 def _authenticated_application_snap_target(
@@ -5011,35 +5110,15 @@ def _authenticated_application_snap_target(
     docks it on that half of its monitor. «la ventana de chrome» names the
     same window; «esta ventana» stays with window.active.
     """
-    if (
-        not effect_request_is_authoritative(text)
-        or _has_unsupported_deferred_effect(_fold(text))
-        or _other_device_effect_scope(_fold(text))
+    request = _window_order(text, rf"{_SNAP_HEAD}\s+(?:(?:me|a)\s+)?(?P<target>.+?)\s+{_SNAP_SIDE}[\s.!?]*$")
+    if request is None or _has(
+        request.group("target"),
+        r"\b(?:esta|this|esa|that|todo|todas|everything|all|activa|active|actual|current)\b",
     ):
         return None
-    folded = _strip_request_envelope(_fold(text))
-    request = _match(
-        folded,
-        rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
-        rf"{_SNAP_HEAD}\s+(?:(?:me|a)\s+)?(?P<target>.+?)\s+{_SNAP_SIDE}[\s.!?]*$",
-    )
-    if request is None:
-        return None
-    raw_target = request.group("target")
-    if _has(raw_target, r"\b(?:esta|this|esa|that|todo|todas|everything|all|activa|active|actual|current)\b"):
-        return None
+    named = _one_named_target(request, "target", application_names, bare_tail=False)
     side = "left" if _has(request.group("side"), r"\b(?:izquierda|left)\b") else "right"
-    catalog = build_application_catalog_index(application_names)
-    matches: list[tuple[int, str]] = []
-    for target, offset in _close_target_forms(raw_target):
-        key = _authenticated_close_key(target, catalog)
-        if key is not None:
-            matches.append((request.start("target") + offset, key))
-    identities = {key for _, key in matches}
-    if len(identities) != 1:
-        return None
-    offset, key = min(matches, key=lambda item: item[0])
-    return (offset, key, side)
+    return (*named, side) if named is not None else None
 
 
 def resolve_application_snap(
@@ -5049,10 +5128,8 @@ def resolve_application_snap(
     """The authenticated snap target as (catalog display name, side)."""
     catalog = build_application_catalog_index(application_names)
     target = _authenticated_application_snap_target(text, catalog)
-    if target is None:
-        return None
-    names = {name for name, key in catalog.entries if key == target[1]}
-    return (next(iter(names)), target[2]) if len(names) == 1 else None
+    name = _display_name(target, catalog)
+    return (name, target[2]) if name is not None else None
 
 
 def resolve_application_snap_name(
@@ -5075,10 +5152,20 @@ _SNAP_PAIR_OPENING = (
 _SNAP_PAIR = re.compile(
     rf"(?P<target>.+?)\s+{_SNAP_SIDE}"
     rf"(?:(?P<more>\s*,?\s+(?:y|e|and)\s+(?:{_SNAP_HEAD}\s+(?:(?:me|a)\s+)?)?|\s*,\s*)"
-    r"|(?P<end>(?:\s*,?\s+(?:so|so\s+that|para|para\s+que|porque|because)\b.*)?[\s.!?]*$))",
+    rf"|(?P<end>{_PLACING_REASON_TAIL}))",
     re.IGNORECASE,
 )
 _SNAP_PAIR_ELLIPSIS = re.compile(r"^(?:la|el|the)\s+(?:de|del|of)\s+", re.IGNORECASE)
+# v3 r6 lectores (t2-r4 c18): «pon el Word y el Edge uno al lado del otro», «pon lado a lado Word y Edge», «put Word and
+# Edge side by side», «divide la pantalla entre Word y Edge». The phrase that places them beside each other is
+# required (before the names, after them, or the split head itself): «pon Word y Edge» alone places nothing.
+_SIDE_BY_SIDE_PAIR = re.compile(
+    rf"{_SNAP_PAIR_OPENING}(?:(?P<head>{_SNAP_HEAD})\s+(?:(?:me|a)\s+)?(?P<before>{_SIDE_BY_SIDE}\s+)?|"
+    rf"(?P<split>{_SPLIT_SCREEN_HEAD})\s+)"
+    r"(?P<first>.+?)\s*,?\s+(?:y|e|and)\s+(?P<second>.+?)"
+    rf"(?P<said>\s+{_SIDE_BY_SIDE})?{_PLACING_REASON_TAIL}",
+    re.IGNORECASE,
+)
 # M56 (v3c-final F-w08-t1, Slack not installed on the test PC): a name the catalog does not hold is still a name when
 # it is one to three plain words and none of them is a word for a window, a program, a side or an article.
 _ABSENT_NAME = re.compile(r"[a-z0-9][a-z0-9.+&'-]*(?:\s+[a-z0-9.+&'-]+){0,2}")
@@ -5130,18 +5217,12 @@ def application_snap_pairs(
         or _other_device_effect_scope(folded)
     ):
         return None
-    opening = _match(folded, rf"{_SNAP_PAIR_OPENING}(?P<head>{_SNAP_HEAD})\s+(?:(?:me|a)\s+)?")
-    if opening is None:
-        return None
     catalog = build_application_catalog_index(application_names)
-    head = opening.group("head")
-    pairs: list[tuple[str, str, str]] = []
-    position = opening.end()
-    while True:
-        found = _SNAP_PAIR.match(folded, position)
-        if found is None:
-            return None
-        raw_target = _SNAP_PAIR_ELLIPSIS.sub("", found.group("target").strip())
+
+    def named_window(raw: str) -> tuple[str, str] | None:
+        """The one window a target names, as (name, clause target), or None."""
+
+        raw_target = _SNAP_PAIR_ELLIPSIS.sub("", raw.strip())
         if not raw_target or _has(
             raw_target,
             r"\b(?:esta|this|esa|that|todo|todas|everything|all|activa|active|actual|current)\b",
@@ -5158,16 +5239,46 @@ def application_snap_pairs(
             keys = {"absent:" + absent_name.casefold()} if absent_name is not None else set()
         if len(keys) != 1 or len(names) != 1:
             return None
-        side = "left" if _has(found.group("side"), r"\b(?:izquierda|left)\b") else "right"
-        target = found.group("target").strip()
+        name = next(iter(names))
+        target = raw.strip()
         if next(iter(keys)).startswith("absent:"):
             # The step reads its clause alone: it keeps the name as the person wrote it («Slack»).
-            name = next(iter(names))
             target = re.sub(r"(?<!\w)" + re.escape(name.casefold()) + r"(?!\w)", lambda _: name, target, count=1)
-        pairs.append((next(iter(names)), side, f"{head} {target} {found.group('side')}"))
-        if found.group("end") is not None:
-            break
-        position = found.end()
+        return name, target
+
+    pairs: list[tuple[str, str, str]] = []
+    beside = _SIDE_BY_SIDE_PAIR.match(folded)
+    if beside is not None and (beside.group("split") or beside.group("before") or beside.group("said")):
+        # Two windows beside each other, no side said: the first named on the left half, the second on the right.
+        # Each clause says its side the way the single-window reader reads it.
+        english = _ENGLISH_SNAP_HEAD.match(beside.group("head") or beside.group("split")) is not None
+        head = "put" if english else (beside.group("head") or "pon")
+        for raw, side, said in (
+            (beside.group("first"), "left", "on the left" if english else "a la izquierda"),
+            (beside.group("second"), "right", "on the right" if english else "a la derecha"),
+        ):
+            window = named_window(raw)
+            if window is None:
+                return None
+            pairs.append((window[0], side, f"{head} {window[1]} {said}"))
+    else:
+        opening = _match(folded, rf"{_SNAP_PAIR_OPENING}(?P<head>{_SNAP_HEAD})\s+(?:(?:me|a)\s+)?")
+        if opening is None:
+            return None
+        head = opening.group("head")
+        position = opening.end()
+        while True:
+            found = _SNAP_PAIR.match(folded, position)
+            if found is None:
+                return None
+            window = named_window(found.group("target"))
+            if window is None:
+                return None
+            side = "left" if _has(found.group("side"), r"\b(?:izquierda|left)\b") else "right"
+            pairs.append((window[0], side, f"{head} {window[1]} {found.group('side')}"))
+            if found.group("end") is not None:
+                break
+            position = found.end()
     if len({name for name, _, _ in pairs}) != len(pairs):
         return None
     return tuple(pairs)
@@ -5179,11 +5290,35 @@ def resolve_application_close_name(
 ) -> str | None:
     """Preserve an authenticated close target as a catalog display name."""
     catalog = build_application_catalog_index(application_names)
-    target = _authenticated_application_close_target(text, catalog)
-    if target is None:
-        return None
-    names = {name for name, key in catalog.entries if key == target[1]}
-    return next(iter(names)) if len(names) == 1 else None
+    return _display_name(_authenticated_application_close_target(text, catalog), catalog)
+
+
+_SPOKEN_LINKS = re.compile(rf"^[¿¡\s]*(?:{lexicon.SPOKEN_LINK}\b[\s,.;:!]*)+")
+
+
+def window_order_application(text: str, application_names: Iterable[str] | ApplicationCatalogIndex) -> str | None:
+    """r31 (tandas b2/c28u t2-c03 t2 «ya cierra configuracion que me esta laggeando el valorant» → window.resolve of
+    «ya cierra configuracion», app_not_found): the application the window order of an already decided operation names
+    (placing, close, focus, minimize), as its catalog display name. The whole order is read first, so a name the
+    readers read keeps its reading («cierra Just Cause 3»); only then without the words that link it to the talk
+    before («ya», «okey», «bro»: ``lexicon.SPOKEN_LINK``) and, last, without its last clause that only tells why
+    (``dialogue.order_before_its_reason``: one cut, never a shorter one). Each reading passes the readers' own guard
+    (``_window_order``); an order said for later or for another device is never cut. It decides nothing."""
+
+    from .dialogue import order_before_its_reason
+
+    catalog = build_application_catalog_index(application_names)
+    folded = _fold(text)
+    alone = _SPOKEN_LINKS.sub("", folded)
+    elsewhere = _has_unsupported_deferred_effect(folded) or _other_device_effect_scope(folded)
+    for order in dict.fromkeys(filter(None, (text, alone, None if elsewhere else order_before_its_reason(alone)))):
+        name = (
+            resolve_application_snap_name(order, catalog) or resolve_application_close_name(order, catalog)
+            or resolve_application_focus_name(order, catalog) or resolve_application_minimize_name(order, catalog)
+        )
+        if name is not None:
+            return name
+    return None
 
 
 def _repeated_application_target(
@@ -5934,6 +6069,14 @@ def _asks_what_was_said_to_me(folded: str) -> bool:
     )
 
 
+def _chat_read_by_a_mission(text: str, available: Iterable[str]) -> bool:
+    """A chat read said in an application, with the computer-use mission available to read it."""
+
+    from . import missions as _missions
+
+    return "mission.computer.use" in available and _missions.last_written_in_a_place(text)
+
+
 def chat_read_request(folded: str) -> bool:
     """A request to read what someone wrote in a chat client or to read a chat:
     «qué (fue lo último que) me dijo/escribió X (en wsp)», «leé/leeme lo último
@@ -6004,9 +6147,33 @@ def _other_device_effect_scope(text: str) -> bool:
     )
 
 
+# The words that give a volume its level rather than an amount to move it by («al 80», «a 20», «to 40»); «a 20 puntos»
+# still counts points to move it by (revisión ruta-tipada 5).
+_TO_A_LEVEL = frozenset({"a", "al", "to"})
+
+
+def _to_a_level(found: re.Match[str]) -> bool:
+    groups = found.groupdict()
+    return groups.get("prep") in _TO_A_LEVEL and groups.get("points") is None
+
+
+def _app_volume_match(folded: str, readers: tuple[re.Pattern[str], ...]) -> tuple[re.Match[str], bool] | None:
+    """The first app-volume reading of the order as said, else as said inside one application (``placed``: «en Spotify
+    subí el volumen al 80», ``app_volume_named_in_place``)."""
+
+    for said in (folded, *app_volume_named_in_place(folded)):
+        for reader in readers:
+            found = reader.match(said)
+            if found is not None:
+                return found, said is not folded
+    return None
+
+
 def app_volume_request(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
+    *,
+    as_decided: bool = False,
 ) -> tuple[str, str, int | None] | None:
     """AUDIO1787 «subí el volumen de spotify»: (catalog display name, direction, amount or None).
 
@@ -6025,9 +6192,10 @@ def app_volume_request(
     folded = _strip_request_envelope(_fold(text))
     if _has(folded, r"\b(?:o|or)\b") or len(_request_clauses(folded)) != 1:
         return None
-    match = _APP_VOLUME_SPANISH.match(folded) or _APP_VOLUME_ENGLISH.match(folded) or _APP_VOLUME_ENGLISH_SPLIT.match(folded)
-    if match is None:
+    matched = _app_volume_match(folded, (_APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT))
+    if matched is None:
         return None
+    match, placed = matched
     verb = match.group("verb")
     if re.fullmatch(rf"{_VOLUME_UP_VERB}|turn\s+up|raise|increase|bump\s+up|crank\s+up|up", verb):
         direction = "up"
@@ -6045,7 +6213,12 @@ def app_volume_request(
         return None
     key = next(iter(keys))
     names = {name for name, entry_key in catalog.entries if entry_key == key}
-    if len(names) != 1:
+    if len(names) != 1 or (placed and system_settings_application(next(iter(names)))):
+        return None
+    if _to_a_level(match) and not as_decided:
+        # «subí el volumen de Spotify al 80» raises it to a level, not by 80: app_volume_set_request reads it. When the
+        # decider itself chose the adjustment (M177 «dale, a 20» → «Baja el volumen de Spotify a 20.»), its number is
+        # the amount it read, the person's literal, not one more call to the model (revisión ruta-tipada 3).
         return None
     raw_amount = match.group("amount") or match.group("amount2")
     amount = int(raw_amount) if raw_amount is not None else None
@@ -6065,7 +6238,7 @@ def _completed_missing_app_volume_request(
         return None
     answer = _strip_request_envelope(_fold(text)).strip()
     found = re.fullmatch(
-        r"(?:(?:en|by|a|al|to|unos|unas|about)\s+)?(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?)?[\s.!?]*",
+        r"(?:(?P<prep>en|by|a|al|to|unos|unas|about)\s+)?(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|(?P<points>puntos?|points?))?[\s.!?]*",
         answer,
     )
     if found is None:
@@ -6074,7 +6247,11 @@ def _completed_missing_app_volume_request(
     if prior is None or prior.operations != ("audio.app.volume.adjust",) or prior.missing_fields != ("amount",):
         return None
     previous_folded = _strip_request_envelope(_fold(previous_user_text))
-    joiner = " by " if (_APP_VOLUME_ENGLISH.match(previous_folded) or _APP_VOLUME_ENGLISH_SPLIT.match(previous_folded)) else " en "
+    english = _app_volume_match(previous_folded, (_APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT)) is not None
+    # Revisión ruta-tipada 4: «al 20» answers the level, the same as said in the request (``_to_a_level``); a bare «20»
+    # or «en 20» the amount BAXY asked.
+    to_a_level = _to_a_level(found)
+    joiner = (" to " if to_a_level else " by ") if english else (" al " if to_a_level else " en ")
     return previous_user_text.strip().rstrip(" .!?") + joiner + found.group("amount")
 
 
@@ -6097,9 +6274,14 @@ def app_volume_set_request(
     folded = _strip_request_envelope(_fold(text))
     if _has(folded, r"\b(?:o|or)\b") or len(_request_clauses(folded)) != 1:
         return None
-    match = _APP_VOLUME_SET_SPANISH.match(folded) or _APP_VOLUME_SET_ENGLISH.match(folded)
-    if match is None:
-        return None
+    matched = _app_volume_match(folded, (_APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH))
+    if matched is None:
+        # Ruta tipada en app: a raise or a drop to a level is that level («subí el volumen de Spotify al 80», «turn
+        # Spotify volume down to 20»), the grammar of the system volume (semantic.levels: «a 40» is no «40 less»).
+        matched = _app_volume_match(folded, (_APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT))
+        if matched is None or not _to_a_level(matched[0]):
+            return None
+    match, placed = matched
     raw_app = match.group("app").strip(" ,;:")
     if _has(raw_app, r"\b(?:sistema|equipo|pc|computador(?:a)?|ordenador|system|computer|windows|todo|everything|musica|music|volumen|volume|sonido|sound|audio|brillo|brightness|pantalla|screen)\b"):
         return None
@@ -6110,12 +6292,15 @@ def app_volume_set_request(
         return None
     key = next(iter(keys))
     names = {name for name, entry_key in catalog.entries if entry_key == key}
-    if len(names) != 1:
+    if len(names) != 1 or (placed and system_settings_application(next(iter(names)))):
         return None
-    if match.group("level") is not None:
-        level = int(match.group("level"))
+    found = match.groupdict()
+    if found.get("amount") is not None:
+        level = int(found["amount"])
+    elif found.get("level") is not None:
+        level = int(found["level"])
     else:
-        level = _APP_VOLUME_LEVEL_WORDS[match.group("word")]
+        level = _APP_VOLUME_LEVEL_WORDS[found["word"]]
     if not 0 <= level <= 100:
         return None
     return (next(iter(names)), level)
@@ -6673,6 +6858,11 @@ def _explicit_named_music_query(text: str) -> str | None:
         # en lugar de claros en la casa»: starting a thing or setting the house
         # is the physical world, never a title to play.
         or _has(_fold(query), r"^en\s+marcha\b")
+        # v3 r6 lectores (t2-r4 c18 «pon el Word y el Edge uno al lado del otro» → a YouTube video): two things put
+        # beside each other on the screen are windows to arrange, never a title; a title alone that says it («pon
+        # Side by Side») has no second thing and is still played, and neither does a title credited to two artists
+        # («pon Side by Side de Ariana Grande y Nicki Minaj»).
+        or two_things_side_by_side(query)
         or physical_world_request(folded)
         # Dev corpus 2026-09-23 «pon un tuit a la compañía vodafone…»: a tweet is posted, never played.
         or social_network_request(text)
@@ -7409,7 +7599,9 @@ def _has_contradictory_correction(
     text = re.sub(
         r"\bno\s+(?:lo\s+)?se\s+(?=(?:que|qu[eé]|como|cual|cuando|donde|si|bien|nada)\b|[,.;!?]|$)|"
         r"\bno\s+tengo\s+(?:ni\s+)?(?:idea|claro)\b|\bno\s+estoy\s+segur[oa]\b|"
-        r"\bi\s+(?:don'?t|do\s+not)\s+know\b|\b(?:i'?m\s+)?not\s+sure\b",
+        r"\bi\s+(?:don'?t|do\s+not)\s+know\b|\b(?:i'?m\s+)?not\s+sure\b|"
+        # Estabilización L4 (en vivo t-drag-4 «…, más o menos por la mitad»): an approximation offers no alternative.
+        r"\bm[aá]s\s+o\s+menos\b|\bmore\s+or\s+less\b",
         "",
         text,
         flags=re.IGNORECASE,
@@ -7798,6 +7990,10 @@ def _is_direct_request(text: str) -> bool:
         # «en <app> apretá enter», «abre Steam y ve a la biblioteca», «cerrá todas las pestañas de chrome»: an app
         # frame with a doing clause is a request (computer use, CONTRATO_VISTA_ACCION.md §6).
         or _computer_use_mission_is_direct(text)
+        # Estabilización L4 (en vivo t-drag-4 «en Paint draw una línea … arrastrando el mouse …» → «no encuentro un
+        # pedido para mí», t-drag-3 «agarrá la nota … y llevala arrastrando …» → the engine): the drag the act reader
+        # reads (semantic.drag, never a dictated or searched text) is a request, whatever verb heads it.
+        or asks_to_drag(text)
         # Uso real 2026-09-23 «vuelve el sonido», «Turn off silenciar», «¡detén este horrible ruido!», «silencio»:
         # the message opens with the mute switched or the sound asked back; that is the request.
         or _has(text, lexicon.MUTE_REQUEST)
@@ -8657,7 +8853,8 @@ def _strict_catalog_request(
         found_domains = [
             item
             for item in found_domains
-            if item[1] != "note.list" or _note_inventory_object(text)
+            if (item[1] != "note.list" or _note_inventory_object(text))
+            and (item[1] != "game.catalog.list" or _games_of_this_pc(text))
         ]
         if any(
             operation == "filesystem.known.duplicates" for _, operation in found_domains
@@ -11026,6 +11223,15 @@ def _named_browser_site_request(
     return browser, site
 
 
+# «… en una pestaña nueva», «in a new tab», «en otra pestaña»: where a named browser opens the search, said after its
+# name (the search opens in a new tab). Never a window («en otra ventana», «in a new window»): a search said that way
+# is not one a named navigation honours (review of r9, finding 8), nor «la pestaña» / «the tab», which is one open.
+_NEW_TAB_OPENING = re.compile(
+    r"\s+(?:en|in)\s+(?:una|un|a|otra|another)\s+(?:(?:nueva|new)\s+)?(?:pestana|tab)"
+    r"(?:\s+(?:nueva|new))?\s*$"
+)
+
+
 def _named_browser_search(text: str) -> tuple[str, str] | None:
     """Bind a public query and browser within one complete current request."""
 
@@ -11061,7 +11267,9 @@ def _named_browser_search(text: str) -> tuple[str, str] | None:
     if len(clauses) == 2:
         opening = _application_open_request(_fold(clauses[0]))
         if opening is not None and effect_request_is_authoritative(clauses[0]):
-            opening_target = "in " + opening.group("target").rstrip(".!?")
+            # Pasada v3 r9 (v3-57 «abre edge en una pestaña nueva y busca clima en guadalajara» → «¿Cuál es la URL
+            # final…?»): the new tab where the browser opens the search is no other browser.
+            opening_target = "in " + _NEW_TAB_OPENING.sub("", opening.group("target").rstrip(".!?"))
             opened_scope = _named_browser_match(opening_target)
             opened = _named_browser(opening_target)
             if (
@@ -11792,6 +12000,23 @@ _SWITCHED_SETTINGS = (
     ("airplane_mode", r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b"),
     ("night_light", r"\b(?:luz\s+nocturna|night\s*light|filtro\s+de\s+luz\s+azul|blue\s+light\s+filter)\b"),
     ("do_not_disturb", r"\b(?:(?:modo\s+)?no\s+molestar|do\s+not\s+disturb|dnd)\b"),
+    # Estabilización U (identity live check, «Activa el modo accesible para personas no videntes» → computer use on
+    # BAXY's own window, stopped with a made-up cause): BAXY's own two settings are switched the same way. The
+    # accessible mode is BAXY's interface, never Windows' accessibility settings; bypass from the chat is only switched
+    # off (the handler refuses switching it on: that is a conscious gesture in BAXY's own window).
+    ("accessible_mode", r"\b(?:modo\s+(?:de\s+)?(?:accesible|accesibilidad|no\s+vidente)|accessible\s+mode|"
+                        r"accessibility\s+mode)\b"),
+    ("confirmation_bypass", r"\b(?:modo\s+bypass|bypass\s+mode|(?:el|the|tu|your|mi|my)\s+bypass)\b"),
+)
+# Revisión U, H4 («apagá el bypass del router», «turn on accessible mode in Word», «activa el modo de accesibilidad de
+# Windows»): BAXY's own settings are read only when nothing after them names another owner or place. What may follow:
+# the end, BAXY himself, who the mode is for, a courtesy or «on/off».
+_OWN_SETTINGS = frozenset({"accessible_mode", "confirmation_bypass"})
+_OWN_SETTING_TAIL = re.compile(
+    r"\s*(?:$|[,.;:!?¡¿]|(?:de|del|en|of|in|on|for|from)\s+(?:baxy|ti|vos|you|yourself)\b|"
+    r"(?:para|for)\s+(?:personas|gente|people|ciegos|blind|no\s+videntes|mi|me)\b|"
+    r"(?:por\s+favor|porfa|please|pls|ya|ahora|now|otra\s+vez|again|de\s+nuevo|tuyo|tuya)\b|"
+    r"(?:on|off|encendido|apagado|activado|desactivado)\s*(?:$|[,.;:!?]|(?:por\s+favor|porfa|please)\b))"
 )
 
 
@@ -11804,6 +12029,10 @@ def setting_switch_request(text: str) -> tuple[str, int] | None:
     if len(named) != 1:
         return None
     setting, words = named[0]
+    if setting in _OWN_SETTINGS and not all(
+        _OWN_SETTING_TAIL.match(folded, said.end()) for said in re.finditer(words, folded)
+    ):
+        return None
     value = airplane_mode_request(text, words)
     return (setting, value) if value is not None else None
 
@@ -12125,7 +12354,9 @@ def _new_notepad_paste_intent(
     available: frozenset[str],
     application_names: ApplicationCatalogIndex,
 ) -> EffectIntent | None:
-    """Open a verified blank Notepad target before pasting the clipboard."""
+    """Open Notepad and paste the clipboard. The document is a new one because the plan's opening carries
+    ``newDocument`` (``arguments.with_new_document`` reads «nuevo» in the person's words): the provider makes it and
+    sees it made, or the plan stops before anything is pasted."""
 
     if not {"app.open", "clipboard.paste"} <= available:
         return None
@@ -12790,6 +13021,35 @@ def resolve_explicit_effects(
     *,
     previous_user_text: str | None = None,
 ) -> EffectIntent | None:
+    """Resolve a bounded sequence of clause-local, closed-catalog effects (``_resolve_explicit_effects_said``).
+
+    Tanda t4-r6 «oye pon rosalía»: the envelope reads the order after a leading address on the folded text, so the
+    evidence lost the person's accents and capitals («rosalia») that the same order said alone keeps. When the order
+    after the address reads the same operations alone, its evidence (the person's own writing) is the evidence.
+    """
+
+    available = tuple(available_operations)
+    intent = _resolve_explicit_effects_said(
+        text, available, application_names, game_catalog, previous_user_text=previous_user_text,
+    )
+    addressed = _without_address(text) if intent is not None else None
+    if intent is not None and addressed is not None:
+        alone = _resolve_explicit_effects_said(
+            addressed, available, application_names, game_catalog, previous_user_text=previous_user_text,
+        )
+        if alone is not None and alone.operations == intent.operations:
+            return alone
+    return intent
+
+
+def _resolve_explicit_effects_said(
+    text: str,
+    available_operations: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+    game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
+    *,
+    previous_user_text: str | None = None,
+) -> EffectIntent | None:
     """Resolve a bounded sequence of clause-local, closed-catalog effects.
 
     A message the clause readers do not resolve may still be an output level said without its object, in
@@ -12803,22 +13063,39 @@ def resolve_explicit_effects(
         # «programe» its folded form reads as; telling it asks for nothing.
         return None
     mission = None
-    if "mission.computer.use" in available:
+    computer_use = "mission.computer.use" in available
+    if computer_use:
         from . import missions as _missions
 
         mission = _missions.mission_request(text, application_names)
-        if mission is not None and mission.names_a_tab:
+        if mission is not None and mission.looks_only:
+            # Corrección ronda 5: a question said inside an application («en Chrome decime el clima de mañana», «en
+            # Steam decime si tengo instalado Portal 2») is read by the typed readers and the decider first, which
+            # serve it verified; only a turn they could ask about or close as a limit is a look at the application
+            # (``engine_handoff._engine_for_an_unserved_order``).
+            mission = None
+        if mission is not None and (mission.names_a_tab or _missions.send_in_place(text, application_names) is not None):
             # «ve a la pestaña de YouTube»: going to a tab is a step inside the browser no typed operation takes.
+            # Encargo IMP2: nor does a message to someone in a client whose sends are a mission (data «sendInPlace»).
             return EffectIntent(("mission.computer.use",), (text,))
         available = tuple(operation for operation in available if operation != "mission.computer.use")
     intent = _resolve_clause_effects(
         text, available, application_names, game_catalog, previous_user_text=previous_user_text,
     )
-    if mission is not None and _mission_takes_over(mission, intent, available, application_names, game_catalog):
+    if mission is not None and _mission_takes_over(mission, intent, available, application_names, game_catalog, text):
         # Computer use (CONTRATO_VISTA_ACCION.md §6): what the catalog already does goes straight to its typed
         # operation (it is verified better than the screen, D21); a step inside an application that only the
         # loose primitives reach —open, look, click, type, press— is one mission of the general engine.
         return EffectIntent(("mission.computer.use",), (text,))
+    if intent is not None and computer_use and mission is None:
+        from . import missions as _missions
+
+        clause = _missions.framed_clause(text, application_names)
+        if clause is not None and _resolve_clause_effects(clause, available, application_names, game_catalog) is None:
+            # v3 r3a lectura L3 (v3-24 «en el visor de eventos filtra el registro de aplicación …» → web.search): the
+            # installed application's own name is no evidence. When the order said inside it reads nothing alone,
+            # the typed reading came from the name's words («eventos»), and the turn is the decider's.
+            return None
     if intent is not None and "message.send" in intent.operations and asks_not_to_send(text):
         # M155 (safety; DEV-I v4u I-s061 «write a WhatsApp to Callum saying … but leave it for me to send» → sent): a
         # message the person orders not to send is never read as sent. Left written in its client when the readers
@@ -13278,6 +13555,18 @@ def _resolve_clause_effects(
         # ARRANGE1781 «poné chrome a la izquierda»: docking an authenticated
         # application on one half of the screen is window.snap; window.resolve
         # (its prerequisite) binds the window.
+        return EffectIntent(("window.snap",), (folded,))
+    if (
+        "window.snap" in available
+        and side_by_side_placement(folded)
+        and (beside := application_snap_pairs(text, authenticated_applications)) is not None
+        and len(beside) == 2
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # v3 r6 lectores (t2-r4 c18 «pon el Word y el Edge uno al lado del otro» → a YouTube video): two installed
+        # applications beside each other are two docked windows; the plan splits it into one resolve and one snap per
+        # window (``window_snap_plan_split``), the first named on the left.
         return EffectIntent(("window.snap",), (folded,))
     if (
         "window.minimize" in available

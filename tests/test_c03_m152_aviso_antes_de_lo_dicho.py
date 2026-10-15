@@ -30,7 +30,6 @@ from datetime import timedelta
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import temporal
 from baxy_mind.semantic.arguments import _canonical_due_utc, _explicit_relative_reminder_arguments
 from baxy_mind.semantic.decider import ContextDecision
@@ -39,6 +38,7 @@ from baxy_mind.semantic.dialogue import DialogueState
 from test_c03_m148_avisos_eso_y_cuentas import (
     NOW, OPERATIONS, REMINDER, SCHEDULE, W19, _arguments, _Decider, _history, _local, _tool,
 )
+from baxy_mind import turn_decide
 
 
 class _Asking(_Decider):
@@ -50,7 +50,7 @@ class _Asking(_Decider):
 
 def _turn(said: list[str], decision: ContextDecision) -> dict:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m152", "text": said[-1], "history": _history(said)},
         llm=_Asking(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(),

@@ -22,12 +22,15 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind import __main__ as sidecar  # noqa: E402
-from baxy_mind.llm import (  # noqa: E402
-    LlmRuntime,
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.argument_payload import (
     _build_direct_argument_payload,
     _single_fenced_code,
 )
 from baxy_mind.semantic import decider  # noqa: E402
+from baxy_mind import decided_arguments  # noqa: E402
+from baxy_mind import turn_history  # noqa: E402
+from baxy_mind import skill_registry  # noqa: E402
 
 _CLIPBOARD_SCHEMA = {
     "type": "object",
@@ -146,12 +149,12 @@ def test_the_code_of_the_one_block_is_what_a_code_copy_takes() -> None:
 
 
 def test_the_previous_reply_is_the_last_assistant_turn_before_the_current_message() -> None:
-    assert sidecar._previous_reply(_SQL_HISTORY) == _SQL_REPLY
-    assert sidecar._previous_reply(_SQL_HISTORY[:-1]) == _SQL_REPLY
+    assert turn_history._previous_reply(_SQL_HISTORY) == _SQL_REPLY
+    assert turn_history._previous_reply(_SQL_HISTORY[:-1]) == _SQL_REPLY
     # The person spoke again after it: that reply is no longer the one right before.
-    assert sidecar._previous_reply(_SQL_HISTORY[:3] + [_SQL_HISTORY[4]]) is None
-    assert sidecar._previous_reply([{"role": "user", "content": "copia hola"}]) is None
-    assert sidecar._previous_reply(None) is None
+    assert turn_history._previous_reply(_SQL_HISTORY[:3] + [_SQL_HISTORY[4]]) is None
+    assert turn_history._previous_reply([{"role": "user", "content": "copia hola"}]) is None
+    assert turn_history._previous_reply(None) is None
 
 
 # ------------------------------------------------------------------ the extraction
@@ -222,8 +225,8 @@ def test_a_note_takes_the_list_and_a_title_said_in_it() -> None:
 
 def test_a_decided_text_at_the_decider_bound_was_cut() -> None:
     cut = _SQL_REPLY[: decider.ARGUMENT_VALUE_CHARACTERS]
-    assert sidecar._decided_value(cut, {"type": "string"}) is None
-    assert sidecar._decided_value("SELECT 1", {"type": "string"}) == "SELECT 1"
+    assert decided_arguments._decided_value(cut, {"type": "string"}) is None
+    assert decided_arguments._decided_value("SELECT 1", {"type": "string"}) == "SELECT 1"
     assert decider.response_schema(["clipboard.write.text"], with_arguments=True)["anyOf"][0]["properties"][
         "arguments"
     ]["additionalProperties"]["maxLength"] == decider.ARGUMENT_VALUE_CHARACTERS
@@ -240,8 +243,8 @@ def _run_arguments(monkeypatch, runtime, operation: str, schema: dict, text: str
     monkeypatch.setattr(sidecar, "LlmRuntime", lambda *_args, **_kwargs: runtime)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", lambda: object())
     monkeypatch.setattr(
-        sidecar.SkillRegistry, "load_default",
-        lambda operations, encoder=None: sidecar.SkillRegistry([], operations, encoder),
+        skill_registry.SkillRegistry, "load_default",
+        lambda operations, encoder=None: skill_registry.SkillRegistry([], operations, encoder),
     )
 
     def fail_dispatch_error(*_args):
@@ -332,8 +335,8 @@ def test_m67b_a_short_restatement_from_the_decider_never_replaces_the_previous_r
     # M67b: the decider may restate the content («el query de SQL de usuarios activos») within its bound; that text
     # grounds in its own request, so alone it would be copied instead of the query. With a reply that can be the
     # content, the extraction, which reads the reply, decides.
-    monkeypatch.setattr(sidecar, "_DECIDED_ARGUMENTS", {})
-    sidecar._remember_decided_arguments(
+    monkeypatch.setattr(decided_arguments, "_DECIDED_ARGUMENTS", {})
+    decided_arguments._remember_decided_arguments(
         _SQL_OBJECTIVE, ("clipboard.write.text",), (("text", "el query de SQL de usuarios activos del último mes"),),
     )
     runtime = _runtime({
@@ -349,6 +352,6 @@ def test_m67b_a_short_restatement_from_the_decider_never_replaces_the_previous_r
 
 def test_m67b_without_a_previous_reply_the_decider_values_still_settle_the_arguments() -> None:
     tool = _tool("clipboard.write.text", _CLIPBOARD_SCHEMA)
-    assert sidecar._previous_reply_may_be_content(tool, _SQL_HISTORY) is True
-    assert sidecar._previous_reply_may_be_content(tool, [{"role": "user", "content": "copia hola"}]) is False
-    assert sidecar._previous_reply_may_be_content(_tool("web.search", _SEARCH_SCHEMA), _SQL_HISTORY) is False
+    assert turn_history._previous_reply_may_be_content(tool, _SQL_HISTORY) is True
+    assert turn_history._previous_reply_may_be_content(tool, [{"role": "user", "content": "copia hola"}]) is False
+    assert turn_history._previous_reply_may_be_content(_tool("web.search", _SEARCH_SCHEMA), _SQL_HISTORY) is False

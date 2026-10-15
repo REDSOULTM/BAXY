@@ -2,7 +2,8 @@
 
 Este repositorio es **BAXY Definitivo**. Confirma que estás en él:
 `git rev-parse --show-toplevel` termina en `BAXY Definitivo`, y la raíz contiene
-`Baxy.slnx`, `main.py` y este fichero. Rama de trabajo: **`main`**.
+`Baxy.slnx`, `main.py` y este fichero. Rama de trabajo: la de tu goal; `codex/kiro-goal-c03`
+integra los goals y `main` recibe lo cerrado.
 
 **Cuidado con el nombre.** En la misma carpeta `Programacion` hay otro repositorio
 llamado `BAXY` a secas: es el intento anterior, **fuente de herencia, no sitio de
@@ -12,9 +13,9 @@ trabajo**. Nada de lo que escribas va allí.
 
 Los once goals de producto y la Fase 3.5 (comprensión) están cerrados; su evidencia
 salió del repositorio el 2026-10-06 (ver «Buscar antes de leer»). El último estado
-medido está en `documentacion/SEMANTICA.md` («Segunda vuelta»). El paso siguiente, el
-motor de *computer use* (Fase 4), está en la rama `fable/computer-use-engine` (base
-2026-09-20, sin integrar: choca en ~13 ficheros con el trabajo de comprensión posterior).
+medido está en `documentacion/SEMANTICA.md` («Segunda vuelta»). El motor de *computer
+use* (Fase 4 y sus goals v2 y v3) está integrado; su contrato, mediciones y progreso
+viven en `documentacion/computer-use/`.
 
 **Si te han dado un goal, ésa es tu única instrucción.** Este fichero no te dice qué
 hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, pregunta al dueño.
@@ -105,13 +106,14 @@ después de cada línea.
 | 1 | Tras editar | El test dueño: `py -m pytest tests/test_X.py -q` o `dotnet test tests/Baxy.Kernel.Tests -c Release` |
 | 2 | Cambio integrado que toca fuente | `.\scripts\test_source_quality.ps1` (estática multilenguaje + build Release) |
 | 3 | Cierre de tanda, contrato compartido, ejecución, persistencia | `.\scripts\test_source_quality.ps1 -Mode Full` (+ suites .NET y pytest) |
-| 4 | Publish, hardware, voz, ciclo instalado | No es implícito en Full. Ver `05_VALIDACION_SEGURIDAD_Y_HANDOFF.md` |
+| 4 | Publish, hardware, voz, ciclo instalado | No es implícito en Full. Ver la guía 05 de abajo |
 
 **La entrega se cierra en nivel 3, verde entero.** Un rojo bloquea, sin excepción y
 sin nota al pie. No se cierra con `skip`, `xfail`, umbral relajado ni fallback. Un
 skip no cuenta como pass: dilo como «suite X: N pass, M skips ambientales».
 
-Detalle por ownership y matriz de pruebas: `GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md`.
+Detalle por ownership y matriz de pruebas:
+`documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md`.
 
 ## Buscar antes de leer
 

@@ -28,16 +28,20 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
-from typing import Iterable
+from typing import Callable, Iterable
 
-from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
+from . import lexicon
+from . import messaging
+from .claims import service_name
+from .grammar import _COVERAGE_ACTION_HEAD, _GOOGLE_ENGINE, _RELATIVE_DURATION_PATTERN, _head_is, correction_phrases
+from .grammar import _SEARCH, _compiled, _head_forms, _imperatives_of, _request_head
+from .grammar import _cease_order_head, _clause_orders, correction_words, without_correction_interjection
 from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
 from .notes import changed_entry_names, entry_name
 from .patterns import datetime_followup_antecedent
 from .temporal import (
     alarm_cancellation_request,
-    assents_to_alarm_offer,
     moved_to_clock,
     moved_to_length,
     notification_retiming,
@@ -55,6 +59,9 @@ _WORD = re.compile(r"[a-z0-9ñ]+")
 _ENCLITIC = re.compile(
     r"\b[a-zñ]{3,}(?:a|e|i|ar|er|ir|ando|iendo)(?:me|te|se|nos)?(?:lo|la|los|las|le|les)\b"
 )
+# The short imperatives with their clitic, for an object to be said in place of it: «ponlo al 50», «hazlo», «tenla»
+# (review 2026-10-08 r2: «no, el brillo te dije, no el volumen. ponlo al 50» lost its 50).
+_SHORT_IMPERATIVE_CLITIC = re.compile(r"(?:pon|haz|ten|di)(?:me|te|se|nos)?(?:lo|la|los|las|le|les)")
 # A clitic before a finite verb at the start: «lo subís a 100», «la cerrás».
 _PROCLITIC_START = re.compile(
     r"^(?:y\s+|ahora\s+|pues\s+)?(?:me\s+|te\s+)?(?:lo|la|los|las|le|les)\s+"
@@ -77,18 +84,37 @@ _RESEARCH_VERB = re.compile(
     r"\b(?:investig|averigu|busc|googl|fijate|fijese|chequea|chequear|revisa\s+(?:que|si|cuando|como)|"
     r"look\s+(?:it\s+)?up|search|find\s+out|check\s+(?:if|when|what|how))\w*"
 )
-# Bare assent: the whole message only says yes.
-_ASSENT = re.compile(
-    r"^(?:(?:si|sip|sep|dale|ok|okay|okey|claro|confirmo|de\s+una|obvio|por\s+favor|porfa|bueno|va|vale|"
-    r"hacelo|hazlo|adelante|yes|yeah|yep|sure|do\s+it|go\s+ahead|please)[\s,.!]*){1,4}$"
+# Bare assent: the whole message only says yes. Estabilización M (live identity check §3d: «Sí, estoy seguro» after
+# «¿Estás seguro de que quieres actualizar ese recuerdo?» was read as the person talking about themselves, and the
+# writer answered «Tu color favorito ahora es el verde.» with nothing done): being sure, said to a question, is a yes.
+# Revisión M H5: the words are one list with the App's confirmation (data/assent_words.v1.json).
+_ANSWER_WORDS = json.loads(
+    (Path(__file__).resolve().parent.parent / "data" / "assent_words.v1.json").read_text(encoding="utf-8")
 )
+_ASSENT_WORDS = _ANSWER_WORDS["words"]
+
+
+def _whole_answer(words: list[str]) -> re.Pattern[str]:
+    """A message that only says these words (up to four, with commas or stops between them)."""
+
+    alternatives = "|".join(re.escape(word).replace(r"\ ", r"\s+") for word in sorted(words, key=len, reverse=True))
+    return re.compile(r"^(?:(?:" + alternatives + r")[\s,.!]*){1,4}$")
+
+
+_ASSENT = _whole_answer(_ASSENT_WORDS)
+
+
+def _says_yes(text: str) -> bool:
+    """The whole message only says yes; a question mark makes it a doubt («¿seguro?», «¿sí?»: revisión M H6)."""
+
+    raw = str(text or "")
+    return "?" not in raw and "¿" not in raw and _ASSENT.fullmatch(_fold(raw).strip(" ¡!.,")) is not None
+
+
 # A refusal: the whole message only declines («no, dejalo», «mejor no», «olvidalo», «no thanks»).
-# It never completes the pending request; «no, en YouTube» carries a destination and is not one.
-_REFUSAL = re.compile(
-    r"^(?:(?:no|nop|nope|nah|nel|nada|mejor\s+no|no\s+gracias|no\s+hace\s+falta|ya\s+no|dejalo|deja|dejala|"
-    r"dejemoslo|olvidalo|olvidate|olvida|cancela|cancelalo|cancelar|para|basta|ninguno|ninguna|tranqui|"
-    r"no\s+thanks|never\s+mind|forget\s+it|cancel|stop|leave\s+it|no\s+need)[\s,.!]*){1,4}$"
-)
+# It never completes the pending request; «no, en YouTube» carries a destination and is not one. Estabilización M2: the
+# words are one list with the App's cancellation of a confirmation (data/assent_words.v1.json, declineWords).
+_REFUSAL = _whole_answer(_ANSWER_WORDS["declineWords"])
 # A prohibition is an instruction of its own, never the answer to a pending question (cien-99 097: «don't
 # open the calculator» after «¿Qué quieres que abra?» was rearmed onto «ábreme eso» and answered in Spanish).
 _PROHIBITION = re.compile(r"^(?:no|nunca|jamas|tampoco|don'?t|do\s+not|never)\s+(?:(?:me|te|lo|la|los|las|le|les|it)\s+)?[a-z]{3,}")
@@ -234,6 +260,69 @@ _FAILED_REPORT = re.compile(
 )
 
 
+# Uso real v3 t2 (c04-3 «no espera se ve muy grande, regresala como estaba» → «No hago ajustes de tamaño de ventana»):
+# putting back what the last change changed, said with its verb and «como estaba / como antes / the way it was», or
+# undoing it whole («deshazlo», «undo that»). Folded.
+_UNDO_LAST = re.compile(
+    # «vuelve a abrirlo como antes» does it again (volver a + infinitive), never undoes it.
+    r"\b(?:regresa|devuelve|(?:vuelve|volve)(?!\s+a\s+[a-z]+(?:ar|er|ir)(?:l[oa]s?|me|te|se|le)?\b)|deja|pon|pone|"
+    r"restaura|revierte|poner|dejar|regresar|devolver|restaurar|return|put|set|turn|change)"
+    r"(?:la|lo|las|los|le|me|mela|melo|sela|selo)?\s+(?:[a-z]+\s+){0,3}?"
+    r"(?:a\s+)?(?:como\s+(?:estaba|era|antes|lo\s+tenia|la\s+tenia)|a\s+lo\s+de\s+antes|al?\s+valor\s+(?:de\s+antes|anterior)|"
+    r"(?:back\s+)?(?:the\s+way|how)\s+it\s+was|back\s+to\s+(?:how|what)\s+it\s+was|back\s+to\s+before)\b"
+    r"|\b(?:deshaz|deshace|deshacelo|deshazlo|desace)(?:\s+(?:eso|el\s+cambio|lo\s+ultimo|lo\s+que\s+hiciste))?\b"
+    r"|\b(?:undo|revert)\s+(?:that|it|this|the\s+(?:last\s+)?change|what\s+you\s+did)\b"
+)
+# What BAXY's last reply says when the act it was asked did not happen: a failure told, or a «no se/no hice».
+_NOTHING_CHANGED_REPORT = re.compile(
+    r"\b(?:no\s+(?:pude|se\s+pudo|logre|llegue\s+a|hice|cambie|se\s+cambio|se\s+(?:cerro|abrio|puso|aplico))|"
+    r"could\s*n[o']t|was\s*n[o']t\s+able|not\s+able|failed|did\s*n[o']t\s+(?:change|do|apply))\b"
+)
+
+
+def asks_to_undo(text: str) -> bool:
+    """«regrésala como estaba», «déjalo como antes», «deshazlo», «put it back the way it was», «undo that»: the person
+    asks to put back what the conversation's last change changed. A question is not one («¿cómo estaba?»)."""
+
+    folded = _fold(str(text or ""))
+    return "?" not in folded and _UNDO_LAST.search(folded) is not None
+
+
+# Revisión 4 de la ronda 24: what may close an undo without being another order («regrésala como estaba antes, porfa»,
+# «undo that bro»), and what joins a second order to it («… y abre spotify», «…, then close chrome»).
+_UNDO_TAIL = frozenset("antes before bro wey man mejor plis pls plz please".split())
+_UNDO_JOIN = re.compile(r"^(?:[\s,.;:!]|\b(?:y|e|and|then|despues|luego|tambien|also|plus)\b)+")
+
+
+def only_undoes(text: str) -> bool:
+    """Revisión 4 de la ronda 24: an undo (``asks_to_undo``) is all the message says — nothing after it but what closes
+    it (``_order_after``) and no clause before it that orders (``grammar._clause_orders``): «nah, déjalo como estaba y
+    abre spotify», «undo that and open spotify», «deshazlo y borra el archivo notas.txt», «cierra chrome y después
+    deshazlo» carry another order, which is never answered as an undo."""
+
+    folded = _fold(str(text or ""))
+    if "?" in folded:
+        return False
+    found = list(_UNDO_LAST.finditer(folded))
+    if not found:
+        return False
+    # An order said before the undo («cierra chrome y después deshazlo») is another order too.
+    before = re.split(r"[,;:.!¡]+|\s+(?:pero|but|y|and|then|luego|despues)\s+", folded[: found[0].start()])
+    if any(_clause_orders(clause.strip()) for clause in before if clause.strip()):
+        return False
+    rest = _UNDO_JOIN.sub("", folded[found[-1].end():]).strip(" ¡!.,;:")
+    words = [word for word in rest.replace(",", " ").split() if word not in _UNDO_TAIL]
+    return not words or not _order_after(" ".join(words))
+
+
+def undo_with_nothing_changed(text: str, last_reply: str | None) -> bool:
+    """An undo (``asks_to_undo``) right after BAXY's reply told the act it was asked did not happen: there is nothing
+    to put back, and saying so is the answer (uso real v3 t2, c04-3 after «No pude hacerlo en…»)."""
+
+    reply = _fold(str(last_reply or ""))
+    return bool(reply) and asks_to_undo(text) and _NOTHING_CHANGED_REPORT.search(reply) is not None
+
+
 def retracts_the_last_effect(text: str, last_reply: str | None) -> bool:
     """«never mind, don't add barbells to my list» after «I've added barbells to your fitness list.»: the person takes
     back the effect BAXY's last reply reports as done (the same act, on the same thing). A question, a failure told
@@ -311,6 +400,13 @@ def words_floor_question(said: str, language: str) -> str:
     quoted = " ".join(words) + ("…" if cut else "")
     templates = _words_floor_templates()
     return templates["en" if language == "en" else "es"].replace("{quoted}", quoted)
+
+
+def understood_failure_line(language: str) -> str:
+    """Estabilidad cu-v3 2026-10-08 (v2-v3-61): the short cause of a turn understood whose wording failed — never the
+    person's words asked back (data: words_floor_question.v1.json «understood»)."""
+
+    return _words_floor_templates()["understood"]["en" if language == "en" else "es"]
 
 
 def says_the_message_back(question: str, said: str) -> bool:
@@ -422,11 +518,11 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
         return None
     words = folded.split()
     if slot.pending_request:
-        if _ASSENT.fullmatch(folded) and _BARE_DEICTIC_REQUEST.fullmatch(_fold(slot.pending_request).strip(" ¿?¡!.,")):
+        if _says_yes(text) and _BARE_DEICTIC_REQUEST.fullmatch(_fold(slot.pending_request).strip(" ¿?¡!.,")):
             # cien-99 049: «hazlo» after «haz eso» → «¿Qué es eso?». Agreeing to a request
             # with no object completes nothing; the message is read on its own.
             return None
-        if _ASSENT.fullmatch(folded) or _NUMBER_ANSWER.fullmatch(folded) or followup(text).value:
+        if _says_yes(text) or _NUMBER_ANSWER.fullmatch(folded) or followup(text).value:
             # Tanda 9 «It will be for 3:30 pm.» after BAXY asked what to do: a value answers the question.
             return "answer"
         # A question read only from BAXY's reply is answered by a yes or a value; any other message is read as usual.
@@ -559,7 +655,7 @@ def joined_answer(pending_request: str, answer: str, *, percentage: bool = False
     folded = _fold(answer).strip(" ¿?¡!.,")
     if not request or not folded:
         return None
-    if _ASSENT.fullmatch(folded):
+    if _says_yes(answer):
         return request
     original = " ".join(str(answer).split()).strip(" ¿?¡!.,")
     value = _TRAILING_TURN.sub("", _LEADING_TURN.sub("", original)).strip(" ,.")
@@ -582,12 +678,63 @@ def joined_answer(pending_request: str, answer: str, *, percentage: bool = False
 
 def is_assent(text: str) -> bool:
     """The whole message only says yes («sí», «dale», «ok, sí»)."""
-    return _ASSENT.fullmatch(_fold(text).strip(" ¿?¡!.,")) is not None
+    return _says_yes(text)
+
+
+@functools.lru_cache(maxsize=1)
+def _offer_assent_words() -> dict:
+    return json.loads((Path(__file__).resolve().parent.parent / "data" / "offer_assent.v1.json").read_text(encoding="utf-8"))
+
+
+def accepts_offer(text: str, act: str) -> bool:
+    """D39 and estabilización B2: the whole message is an unequivocal yes to an offer that acts once accepted («sí»,
+    «sí, cancélalas todas», «dale, mándalo», «yes, send it»; ``data/offer_assent.v1.json``, ``act`` its acts). A
+    question («¿sí?», «yes?»), a doubt («bueno...») or a bare «ya», «bueno», «please» is not (revisión B2 H1)."""
+
+    raw = str(text or "").strip()
+    if not raw or re.search(r"[¿?…]|\.\.", raw):
+        return False
+    words = _offer_assent_words()
+    accepting = set(words["yes"]) | set(words["acts"][act])
+    tokens = re.sub(r"[,;.!¡]", " ", _fold(raw)).split()
+    said, index = False, 0
+    while index < len(tokens):
+        size = next(
+            (size for size in (4, 3, 2, 1) if " ".join(tokens[index:index + size]) in accepting | set(words["with"])),
+            0,
+        )
+        if not size:
+            return False
+        said = said or " ".join(tokens[index:index + size]) in accepting
+        index += size
+    return said
 
 
 def is_refusal(text: str) -> bool:
     """The whole message only says no («no», «mejor no», «no thanks»)."""
     return _REFUSAL.fullmatch(_fold(text).strip(" ¿?¡!.,")) is not None
+
+
+def calls_off(text: str) -> bool:
+    """Revisión adversarial 2 r19: the whole message only calls off what was asked or leaves things as they are — a
+    verb of leaving, cancelling or forgetting (``lexicon.CALL_OFF_VERBS``), with nothing before it but a lead
+    («no», «mejor», «espera»: ``lexicon.CALL_OFF_LEADS``) and nothing after it but a pronoun, a demonstrative or how
+    things stay (``lexicon.CALL_OFF_MODIFIERS``): «no, déjalo así», «no, cancela eso», «dejalo como está nomás»,
+    «no, leave it as it is», «forget about it». «deja la escala en 100» or «cancela la suscripción» say what to do."""
+
+    folded = re.sub(r"\bnever\s+mind\b", "nevermind", _fold(text))
+    words = re.findall(r"[a-z0-9]+", folded.replace("'", "").replace("’", ""))
+    if len(words) == 1 and words[0] in lexicon.CALL_OFF_BARE_ORDERS:
+        # Revisión adversarial 3: «cancelá», «leave» said alone may press a dialog's Cancel or leave a call.
+        return False
+    for index, word in enumerate(words):
+        if word in lexicon.CALL_OFF_VERBS:
+            return all(lead in lexicon.CALL_OFF_LEADS for lead in words[:index]) and all(
+                after in lexicon.CALL_OFF_MODIFIERS or after in lexicon.CALL_OFF_VERBS for after in words[index + 1:]
+            )
+        if word not in lexicon.CALL_OFF_LEADS:
+            return False
+    return False
 
 
 def is_social(text: str) -> bool:
@@ -687,17 +834,32 @@ def remate_of_what_was_done(text: str, last_reply: str | None) -> bool:
     )
 
 
+# Estabilización F3 (banco h1 c6: «sí» after «No pude escribir ni enviar el mensaje en Discord…» was answered «Sí, el
+# mensaje "prueba BAXY C6" ya fue enviado…» with nothing run): BAXY's last reply told an act it did not get done.
+_TOLD_NOT_DONE = re.compile(
+    r"\b(?:no\s+(?:pude|logre|llegue|consegui|alcance)|intente|couldn'?t|could\s+not|i\s+tried|didn'?t\s+manage)\b"
+)
+
+
 def go_ahead_with_nothing_pending(text: str, last_reply: str | None) -> bool:
     """M88: a go-ahead (``gives_go_ahead``) after a reply of BAXY's that asked nothing: nothing is waiting for that yes.
-    After a question, the go-ahead answers it and is read as usual."""
+    After a question, the go-ahead answers it and is read as usual. Estabilización F3: a bare yes («sí», «dale», «ok»)
+    after a reply that told an act not done is one too; after any other reply it is talk (agreeing with what was
+    said)."""
 
-    return gives_go_ahead(text) and not str(last_reply or "").rstrip().endswith("?")
+    last = str(last_reply or "").rstrip()
+    if last.endswith("?"):
+        return False
+    return gives_go_ahead(text) or (_says_yes(text) and _TOLD_NOT_DONE.search(_fold(last)) is not None)
 
 
 # What a reply says to tell that nothing was done (folded): a negation of doing or having done. «No problem» and
 # «sin problema» agree to something and are not one.
 _NOT_DONE = re.compile(r"\b(?:no|not|nothing|nada|nunca|never|todavia|aun|yet)\b|n'?t\b")
-_AGREEING_NO = re.compile(r"\b(?:no\s+(?:problem|worries|hay\s+problema)|sin\s+problemas?|why\s+not|por\s+que\s+no)\b")
+_AGREEING_NO = re.compile(
+    r"\b(?:no\s+(?:problem|worries|hay\s+problema|importa|pasa\s+nada|te\s+preocupes)|not\s+a\s+problem|sin\s+problemas?|"
+    r"why\s+not|por\s+que\s+no)\b"
+)
 
 
 def says_nothing_was_done(reply: str) -> bool:
@@ -786,7 +948,7 @@ def talk_act(text: str) -> str | None:
 
     raw = str(text or "")
     folded = _fold(raw).strip(" .!")
-    if not folded or "?" in raw or "¿" in raw or len(folded.split()) > 80:
+    if not folded or "?" in raw or "¿" in raw or len(folded.split()) > 80 or _ASSENT.fullmatch(folded):
         return None
     if _REACTION_TALK.match(folded):
         return "reaction"
@@ -958,7 +1120,7 @@ def with_object(text: str, obj: str | None) -> str | None:
     words = str(text).split()
     for index, word in enumerate(words):
         bare = word.strip(" ¿?¡!.,")
-        if not _ENCLITIC.fullmatch(_fold(bare)):
+        if not (_ENCLITIC.fullmatch(_fold(bare)) or _SHORT_IMPERATIVE_CLITIC.fullmatch(_fold(bare))):
             continue
         tail = _CLITIC_TAIL.search(_fold(bare))
         if tail is None or tail.group("clitic") in {"le", "les"}:
@@ -1013,8 +1175,17 @@ _FILLER = re.compile(
 )
 _CORRECTION = re.compile(
     r"^(?:(?:no|nop|nope|nah|mejor|actually|en\s+realidad|perdon|digo|o\s+sea|wait|espera|sorry|rather|instead|"
-    r"mas\s+bien)\b[\s,.:]*)+"
+    # «que no, el lápiz»: a denial insisted on before a pause («que no se te olvide» asks something else).
+    r"mas\s+bien|que\s+no(?=\s*[,.!;:]))\b[\s,.:]*)+"
 )
+# Uso real 2026-10-07 «si pero quiero buscar un top 3», «ok pero lo puedes buscar en google…» after the search: an
+# agreement with «pero/but» right after it takes back part of what was just given; it corrects the last result, it
+# does not add to it.
+_ADVERSATIVE_CORRECTION = re.compile(
+    r"^(?:si+|sip|ok|okay|okey|ya|vale|dale|bueno|claro|yes|yeah|yep|sure|right)\b[\s,.:]*(?:pero|but)\b[\s,.:]*"
+)
+# «y otro de 20», «and at 8 too», «ok pero además una a las 9»: adding to what was done, not instead of it.
+_ADDITIVE = re.compile(r"\b(?:otro|otra|another|also|too|tambien|ademas|second|segundo|segunda)\b")
 _COURTESY_TAIL = re.compile(r"(?:[\s,]+(?:mejor|entonces|then|instead|porfa|por\s+favor|please|pls))+$")
 _EDGE = " ¿?¡!.,;:"
 _UNIT = (
@@ -1064,6 +1235,38 @@ _PLACE_ANAPHOR = re.compile(
     r"\b(?:alla|alli|aya|ahi)\b|(?<!is )(?<!are )(?<!was )(?<!were )(?<!be )\b(?:over\s+)?there\b"
     r"(?!\s+(?:is|are|was|were|will|be|'s)\b)"
 )
+# Ronda 20 P3 (pasada r18, v3-11 t2 «escribe ahí: comprar pan, leche y huevos» after «en onenote crea una pagina
+# nueva» failed): a place said back to what the turn before was to leave — «ahí», «allá», «there», «en ella», «in it».
+_PLACE_SAID_BACK = re.compile(
+    r"\b(?:en|dentro\s+de|in|into|inside)\s+(?:ella|ellas|esa|esas|aquella|it)\b"
+)
+
+
+def points_back_to_a_place(text: str) -> bool:
+    """Whether the message puts what it asks in a place it only points back to («escribe ahí: X», «ponelo en ella»,
+    «type it in there»), never one it names («escribí hola en el Bloc de notas»)."""
+
+    folded = _PLACE_FILLER.sub(" ", _fold(str(text or "")))
+    return bool(_PLACE_ANAPHOR.search(folded) or _PLACE_SAID_BACK.search(folded))
+
+
+def only_place_filler(text: str) -> bool:
+    """Revisión 2 (hallazgo 2): whether a clause says nothing once its spoken «ahí» fillers are off («déjalo ahí»,
+    «por ahí»): such a clause names no place a later «ahí» could point to."""
+
+    return not re.search(r"\w", _PLACE_FILLER.sub(" ", _fold(str(text or ""))))
+
+
+# Ronda 20 P3, revisión 1 (hallazgo 3): «ahí va», «ahí vamos», «ahí nomás» are a spoken filler, no place pointed to
+# («ahí va, ahora cerrá spotify»). Revisión 2 (hallazgo 2a): so are the idioms a person says right after a failure —
+# «déjalo ahí» (drop it), «por ahí» (somewhere, maybe), «hasta ahí» (that far) — and «ahí mismo» heading the message
+# («ahí mismo escribí hola»: right away); after its verb («escribilo ahí mismo») it is a place («right there»). Folded.
+_PLACE_FILLER = re.compile(
+    r"\b(?:ahi|alli)\s+(?:va|vamos|nomas|noma)\b|\bdej\w*\s+(?:ahi|alli)\b|\b(?:por|hasta)\s+(?:ahi|alli)\b|"
+    r"^[\s\W]*(?:(?:y|bueno|ok|entonces)\b[\s\W]*)?(?:ahi|alli)\s+mismo\b"
+)
+
+
 # «esa no, otra más movida», «another one», «not that one».
 _ANOTHER_FRAGMENT = re.compile(
     r"^(?:(?:esa|esta|ese|este|eso|that|this)(?:\s+(?:one|cancion|song|tema|track))?\s+no\b|not\s+(?:that|this)\b|"
@@ -1141,8 +1344,7 @@ class Followup:
         if _AGAIN_FRAGMENT.fullmatch(self.folded):
             return False  # «otra vez», «más»: once more, not instead
         corrects = self.corrected or re.match(_CHANGE, self.folded) is not None or not self.continued
-        adds = re.search(r"\b(?:otro|otra|another|also|too|tambien|ademas|second|segundo|segunda)\b", self.folded)
-        return corrects and adds is None
+        return corrects and _ADDITIVE.search(self.folded) is None
 
 
 def _trimmed(said: str, folded: str) -> tuple[str, str]:
@@ -1161,6 +1363,16 @@ def followup(text: str) -> Followup:
     said, folded = _trimmed(said, folded)
     continued = corrected = False
     while folded:
+        found = _ADVERSATIVE_CORRECTION.match(folded)
+        if found is not None and found.end():
+            # Revisión 2026-10-07 «ok pero además una a las 9»: «pero» before an addition adds, it does not correct
+            # (the connector «además» is trimmed next, so it is looked for here).
+            if _ADDITIVE.search(folded[found.end():]) is not None:
+                continued = True
+            else:
+                corrected = True
+            said, folded = _trimmed(said[found.end():], folded[found.end():])
+            continue
         found = _FILLER.match(folded)
         if found is None or not found.end():
             found = _CONTINUATION.match(folded)
@@ -1419,6 +1631,23 @@ def asks_attribute_of_the_last(text: str) -> bool:
     return _ATTRIBUTE_OF_THE_LAST.fullmatch(followup(text).folded) is not None
 
 
+# Ronda 23 (r21 v3-50 t2 «decime cuántos archivos tiene adentro» after «en 7zip abrí el prueba.zip que está en
+# baxy-prueba-v3»: read alone, «hay 7 archivos en la carpeta»): a holding verb asked with nothing after it («¿qué
+# tiene?»). Its words are the lexicon's (``lexicon.BARE_HOLDING_VERBS``).
+_BARE_HOLDING_QUESTION = re.compile(rf"que\s+{alternation(lexicon.BARE_HOLDING_VERBS)}")
+
+
+def asks_the_inside_of_the_last(text: str) -> bool:
+    """Ronda 23: the message asks the inside of what the turn before named, or what it holds, with no subject or place
+    of its own («¿cuántos hay adentro?», «what is inside», «¿qué tiene?»; ``missions.anaphoric_question`` reads the
+    inside and the holding with ``lexicon.ANAPHORIC_QUESTION``). «¿qué tiene adentro un huevo?», «cuántos archivos
+    tiene la carpeta Descargas» and «¿qué hora es?» name their own or ask nothing of it."""
+
+    from .missions import anaphoric_question
+
+    return anaphoric_question(text) or _BARE_HOLDING_QUESTION.fullmatch(followup(text).folded) is not None
+
+
 def leans_on_context(text: str) -> bool:
     """The trigger: the message's form leans on the turn before (see the section comment). Talk never does."""
 
@@ -1427,6 +1656,8 @@ def leans_on_context(text: str) -> bool:
     if not folded or _SOCIAL.fullmatch(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
         return False
     if said.fragment or refers_back(text) or _OWN_LISTING.fullmatch(folded) or asks_attribute_of_the_last(text):
+        return True
+    if asks_the_inside_of_the_last(text):
         return True
     # A name of its own in a question («y quién ganó el Mundial?») is a new subject: that question is complete.
     names_something = re.search(r"\s(?!I\b)[A-ZÁÉÍÓÚÑ]", said.said) is not None or re.search(r"[\"«“]", said.said)
@@ -1462,15 +1693,183 @@ def _period_after(first: str, old_period: str | None, request: str) -> str:
     return " de la mañana" if morning else " de la noche" if re.search(r"(?:night|noche)$", first) else " de la tarde"
 
 
+# Uso real v3 tanda 4 c01-4 «no po, en spotify te dije, no en youtube» → restated «Pon una cumbia en YouTube.» (the
+# service refused), c04-2 «joder que te he dicho brillo no volumen» after the brightness was set → an answer about the
+# sound output: a contrastive correction says what the last request was about (X) and what it was not (Y) — «(en) X
+# (te dije), no (en) Y», «X no Y», «no (en) Y, (sino) (en) X», «not Y, X». Only what it says to change is read: a
+# prohibition without a replacement («no quiero spotify») and a bare destination («no, en YouTube») are not
+# contrasts. Folded words; the cue words are the reader's data.
+# Audit 2026-10-08 (t1-c02-2 «no, el brillo te dije, no el volumen. bajalo mas», t2-c04-4 «te dije la escala no el
+# brillo, regresa la escala a 100», t3-c19-2 «que no, el lápiz, no el pincel»): the contrast is a run of the message's
+# clauses, not its end; what follows it is the order about X.
+@dataclass(frozen=True)
+class Contrast:
+    """``wanted`` (X) and ``refused`` (Y), folded single words, the preposition X was said with (or ""), the article X
+    was said with (or "") and the order said after the contrast (folded, or "")."""
+
+    wanted: str
+    refused: str
+    preposition: str
+    article: str = ""
+    rest: str = ""
+
+
+_CONTRAST_PREPOSITION = r"(?:en|on|in|por|con|with|via|desde|from)"
+_CONTRAST_ARTICLE = r"(?:(?:el|la|los|las|un|una|the|a|al)\s+)*"
+_CONTRAST_TOLD = (
+    r"(?:te\s+(?:dije|pedi|he\s+dicho|habia\s+dicho)|dije|pedi|i\s+(?:said|told\s+you|asked(?:\s+for)?)|told\s+you)"
+)
+_CONTRAST_TAG = r"(?:po|pues|pue|weon|wey|we|bro|man|dude|eh|oye|ok)"
+_CONTRAST_WORD = r"[a-z0-9n][a-z0-9n'&+-]*"
+_CONTRAST_X_THEN_Y = re.compile(
+    rf"(?:^|\s)(?:(?P<px>{_CONTRAST_PREPOSITION})\s+)?(?P<ax>{_CONTRAST_ARTICLE})(?P<x>{_CONTRAST_WORD})"
+    rf"(?:\s+{_CONTRAST_TOLD})?(?:\s+{_CONTRAST_TAG})?\s*[,;]?\s+(?:no|not|y\s+no|and\s+not|instead\s+of|en\s+vez\s+de|"
+    rf"en\s+lugar\s+de)\s+(?:{_CONTRAST_PREPOSITION}\s+)?{_CONTRAST_ARTICLE}(?P<y>{_CONTRAST_WORD})\s*[.!?]*$"
+)
+_CONTRAST_Y_THEN_X = re.compile(
+    rf"^(?:(?:{_CONTRAST_TAG}|no|nah|nope)\s*[,.]?\s+)*(?:no|not)\s+(?:{_CONTRAST_PREPOSITION}\s+)?{_CONTRAST_ARTICLE}"
+    # Y and X are set apart by a pause or «sino»: «no cierres chrome», «no pongas reggaeton» are a prohibition of the
+    # last request, never «chrome instead of cierres» (that repeated the request the person forbade).
+    rf"(?P<y>{_CONTRAST_WORD})(?:\s*[,;]\s*(?:sino\s+(?:que\s+)?|but\s+|si\s+no\s+)?|\s+(?:sino\s+(?:que\s+)?|but\s+|si\s+no\s+))"
+    rf"(?:(?P<px>{_CONTRAST_PREPOSITION})\s+)?(?P<ax>{_CONTRAST_ARTICLE})(?P<x>{_CONTRAST_WORD})"
+    rf"(?:\s+{_CONTRAST_TOLD})?(?:\s+{_CONTRAST_TAG})?\s*[.!?]*$"
+)
+# A message that opens by denying («no, …», «que no, …», «nah …») says that what follows corrects the last result.
+_CONTRAST_DENIAL = re.compile(r"(?:no|nah|nope|not|que\s+no)\b")
+# The pauses that set a message's clauses apart. A point or a colon pauses only before a space or the end: inside an
+# hour («10:30»), an amount («37.5») or an address («netflix.com») it is no pause (review 2026-10-08 r2).
+_CONTRAST_PAUSE = re.compile(r"\s*(?:[,;!?]+|[.:]+(?=\s|$))[\s,;:.!?]*")
+# A contrast is said in a few clauses (a denial, X, Y and a tag): longer runs are never tried, so a long message is
+# read in linear time (review 2026-10-08 r2: all the runs of 120 clauses took 3 s).
+_CONTRAST_SPAN = 4
+# Words that are no thing to put in place of another: pointers, verbs of wanting or working, the cue words.
+_NOT_CONTRASTED = frozenset(
+    "no|not|si|yes|ya|que|eso|esto|esa|ese|lo|la|le|me|te|se|y|o|pero|mas|asi|tan|muy|nada|todo|eso|it|this|that|"
+    "funciona|funcionaba|anda|sirve|suena|sono|quiero|queria|gusta|puedo|puedes|se|works|worked|plays|want|wanted|"
+    "like|can|could|dije|dicho|pedi|said|told|asked|po|pues|weon|wey|bro|man|dude|ok|vale|joder|mierda|ahora|now|"
+    "mejor|better|ahi|aqui|there|here|tampoco|either|nunca|never|otra|otro|other|vez|time|el|los|las|un|una|the|a|an|"
+    "en|on|in|de|del|of|to|para|for".split("|")
+)
+
+
+def contrastive_correction(text: str) -> Contrast | None:
+    """«no po, en spotify te dije, no en youtube» → Contrast(spotify, youtube, en); «te he dicho brillo no volumen» →
+    Contrast(brillo, volumen, ""); «no en spotify, en youtube» → Contrast(youtube, spotify, en); «te dije la escala no
+    el brillo, regresa la escala a 100» → Contrast(escala, brillo, rest «regresa la escala a 100»). None otherwise."""
+
+    folded = spelled_out(_fold(text)).strip()
+    if not folded:
+        return None
+    # The contrast is a run of the message's clauses: the interjections and reproaches before it («no po,», «joder
+    # que te he dicho») are no part of it, and what follows it is the order said about X.
+    clauses = [clause for clause in _CONTRAST_PAUSE.split(folded) if clause.strip()]
+    told = re.search(rf"\b{_CONTRAST_TOLD}\b", folded) is not None
+    denies = _CONTRAST_DENIAL.match(folded) is not None
+    for first in range(len(clauses)):
+        for last in range(min(len(clauses), first + _CONTRAST_SPAN), first, -1):
+            candidate = ", ".join(clauses[first:last])
+            for pattern, needs_cue in ((_CONTRAST_Y_THEN_X, False), (_CONTRAST_X_THEN_Y, True)):
+                found = pattern.search(candidate)
+                if found is None:
+                    continue
+                wanted, refused = found.group("x"), found.group("y")
+                if (
+                    wanted == refused
+                    or wanted in _NOT_CONTRASTED
+                    or refused in _NOT_CONTRASTED
+                    # An hour, an amount or a day replaced is the readers' below; a bare number is no thing named.
+                    or any(re.fullmatch(r"[\d:.,]+", word) for word in (wanted, refused))
+                    # Review 2026-10-08 r2: «abre chrome, no firefox» after «cierra firefox» became «cierra chrome»;
+                    # «el martes, no el lunes, recuerdamelo» took the order for X. X said with an order of its own (a
+                    # verb in its clause) is a whole new request, never a correction of the last one; an order is no X.
+                    or _head_is(wanted, _COVERAGE_ACTION_HEAD)
+                    or any(
+                        _head_is(word, _COVERAGE_ACTION_HEAD)
+                        for word in candidate[: found.start("x")].rsplit(",", 1)[-1].split()
+                    )
+                    # «te había dicho que hoy no trabajo»: a bare word right after «que» opens a clause of its own,
+                    # whose «no» denies its verb.
+                    or (
+                        not found.group("ax").strip()
+                        and not found.group("px")
+                        and re.search(r"\bque\s*$", candidate[: found.start("x")]) is not None
+                    )
+                ):
+                    continue
+                # «X no Y» alone is also how a sentence is said («spotify no anda»): it is a correction when the
+                # person says they said it, when the message opens by denying («no, …», «que no, …»), or when the
+                # whole message is «X, no Y» set apart by a pause and «no Y» is no courtesy («perfecto, no gracias»,
+                # «bueno, no importa», «sure, not a problem»).
+                paused = (
+                    first == 0
+                    and last == len(clauses)
+                    and re.search(r",\s*(?:no|not)\s", candidate) is not None
+                    and not is_social(clauses[-1])
+                    and _AGREEING_NO.search(clauses[-1]) is None
+                )
+                if needs_cue and not (told or denies or paused):
+                    continue
+                return Contrast(
+                    wanted, refused, found.group("px") or "", found.group("ax").strip(), ", ".join(clauses[last:]),
+                )
+    return None
+
+
+def _order_after(rest: str) -> str:
+    """What follows a contrast without what only closes it («gracias», «porfa», «dale», «ya»): "" when nothing else."""
+
+    words = rest.replace(",", " ").split()
+    if not words or is_social(rest) or gives_go_ahead(rest) or all(word in _ORDER_TAIL for word in words):
+        return ""
+    return rest
+
+
+def _contrasted_request(base: str, contrast: Contrast) -> str | None:
+    """The last request with the contrast applied: Y in it becomes X; a request that already names X (and not Y) is
+    itself; one that names neither takes X with the preposition it was said with («… en spotify»)."""
+
+    rest = _order_after(contrast.rest)
+    if rest:
+        # The order after the contrast is about X: said with X it is itself («regresa la escala a 100»), said with a
+        # pronoun it takes X («bajalo mas» → «baja el brillo mas»); a second order joined by «y» follows the corrected
+        # last request («… en spotify y sube el volumen»). Review 2026-10-08 r2: an order that cannot be told so is
+        # never dropped for the last request (its value or its second order was lost): there is no corrected request.
+        if re.search(rf"\b{re.escape(contrast.wanted)}\b", rest) is not None:
+            return rest
+        if followup(rest).continued:
+            corrected = _contrasted_request(base, Contrast(contrast.wanted, contrast.refused, contrast.preposition))
+            return f"{corrected.rstrip(' .!?')} {rest}" if corrected is not None else None
+        # X said with a preposition is a place («en spotify»): «subelo» after it is about what plays there.
+        if contrast.preposition:
+            return None
+        return with_object(rest, f"{contrast.article} {contrast.wanted}".strip())
+    said = followup(base).said or base
+    folded = _fold(said)
+    if len(folded) != len(said):
+        said = folded
+    refused = re.search(rf"\b{re.escape(contrast.refused)}\b", folded)
+    if refused is not None:
+        return said[: refused.start()] + contrast.wanted + said[refused.end():]
+    if re.search(rf"\b{re.escape(contrast.wanted)}\b", folded) is not None:
+        return said
+    if contrast.preposition:
+        return f"{said.rstrip(' .!?')} {contrast.preposition} {contrast.wanted}"
+    return None
+
+
 def corrected_request(request: str | None, text: str) -> str | None:
     """«no, mejor a las 6:15» after «ponme una alarma a las 6 y media pa mañana» → «ponme una alarma a las 6:15 pa
-    mañana»; «mejor que sean 6» after «un temporizador de 8 minutos» → «… de 6 minutos». None when the message is not
-    such a correction or the request has no value of that kind."""
+    mañana»; «mejor que sean 6» after «un temporizador de 8 minutos» → «… de 6 minutos»; «en spotify te dije, no en
+    youtube» after «ponme cumbia en youtube» → «ponme cumbia en spotify» (``contrastive_correction``). None when the
+    message is not such a correction or the request has no value of that kind."""
 
     said = followup(text)
     base = " ".join(str(request or "").split())
     if not base or "\n" in str(request) or not said.replaces_last:
         return None
+    contrast = contrastive_correction(text)
+    if contrast is not None:
+        return _contrasted_request(base, contrast)
     folded = _fold(base)
     if len(folded) != len(base):
         base = folded
@@ -1593,10 +1992,953 @@ def _family(operation: str) -> str:
     return operation.split(".", 1)[0]
 
 
-def same_family(operations: tuple[str, ...], frame: tuple[str, ...]) -> bool:
-    """A rewrite reads no effect, or only effects of the family of the request it continues."""
+# Uso real 2026-10-07 «ok pero lo puedes buscar en google» after a web search: the same search, shown in the browser.
+_SEARCH_SHOWN_IN_THE_BROWSER = frozenset({"browser.navigate", "browser.navigate.named"})
 
-    return not operations or (bool(frame) and {_family(op) for op in operations} <= {_family(op) for op in frame})
+
+def same_family(operations: tuple[str, ...], frame: tuple[str, ...]) -> bool:
+    """A rewrite reads no effect, or only effects of the family of the request it continues (a web search continues
+    as its results page opened in the browser)."""
+
+    if not operations:
+        return True
+    if not frame:
+        return False
+    families = {_family(op) for op in frame}
+    return all(
+        _family(op) in families or (op in _SEARCH_SHOWN_IN_THE_BROWSER and "web.search" in frame)
+        for op in operations
+    )
+
+
+# Uso real 2026-10-07 «ok pero lo puedes buscar en google no me importa the ice»: the thing to look up said as a
+# pronoun («lo», «eso», «it») and the search engine or the browser named as the place. What follows the place may be
+# a comment on what was found («no me importa…»), never another thing to look up. A «no» before the verb forbids it
+# («no me lo busques en Google»); a Google product is a place of its own («Google Drive»).
+_PRONOUN_SEARCH_LEAD = (
+    r"^(?:(?:y|e|entonces|mejor|ahora|pues|bueno|porfa|por\s+favor)\b[\s,]*)*"
+    r"(?:(?:me\s+)?(?:puedes|podes|podrias|puede|podria|podrian|pueden|quiero\s+que|necesito\s+que)\s+)?"
+)
+_PRONOUN_SEARCH_FORBIDDEN = re.compile(
+    r"^[\s¿?¡!]*(?:(?:ok|okay|bueno|pero|y|entonces|baxy)\b[\s,]*)*(?:no|nunca|jamas|don'?t|do\s+not|never)\s+(?![,.])"
+)
+_PRONOUN_SEARCH_VERB = (
+    r"(?:(?:me\s+|te\s+)?(?:lo|la|los|las)\s+(?:(?:puedes|podes|podrias|puede|podria|podrian|pueden|quiero\s+que\s+|"
+    r"me\s+)\s*)?(?:busca|buscas|buscar|busques|buscaras|buscarias|googleas|googlear|googlees)|"
+    r"b[uú]sc[aá](?:me)?(?:lo|la|los|las)|b[uú]sc[aá]r(?:me|se|te)?(?:lo|la|los|las)|googlea(?:r)?(?:me)?(?:lo|la)|"
+    r"(?:busca|buscar|buscame|googlea|googlear)\s+(?:eso|esto|aquello)|"
+    r"(?:(?:can|could|would)\s+you\s+)?(?:search(?:\s+for)?|look\s+up|google)\s+(?:it|that|this)(?:\s+up)?)"
+)
+_PRONOUN_SEARCH_PLACE = re.compile(
+    _PRONOUN_SEARCH_LEAD
+    + _PRONOUN_SEARCH_VERB
+    + rf"\s+(?:en|on|in)\s+(?:el\s+|the\s+|mi\s+|my\s+)?(?P<place>{_GOOGLE_ENGINE}|navegador|browser)"
+    # Ronda 19 (r17 t3 c17/4 «buscalo en google pa poder citarlo»): what the search is for («pa…», «para…», «so I
+    # can…») follows the place and names nothing to look up. Revisión adversarial 3 («búscalo en google para windows
+    # 11», «para android»): only a purpose is no part of the search — «para» with an infinitive that goes on (a clitic
+    # or more words) or with «que», «so» with who will do it, «to» with a verb; «para» with a name qualifies what is
+    # searched and the turn stays with the decider.
+    r"(?P<tail>(?:\s*[,.;!?]+\s*|\s+)(?:no|not|porque|because|que|ya|ahora|now|please|por\s+favor|porfa|gracias|thanks|"
+    r"(?:pa|para)\s+(?:que|[a-z]*(?:ar|er|ir)(?:(?:me|te|se|lo|la|los|las|le|les|nos)+\b|(?=\s+\w)))|"
+    r"so\s+(?:that|i|we|you|he|she|they|it|i'?ll|i'?d)|in\s+order\s+to|to\s+(?!the\b|a\b|an\b|my\b|your\b|this\b)[a-z]{2,})\b.*|"
+    r"\s*(?:,?\s*(?:porfa|por\s+favor|please|pls|plis))?[\s.!?]*)$"
+)
+# Revisión 2026-10-07 «busca en google eso», «search on google for it»: the pronoun after the place.
+_PRONOUN_AFTER_SEARCH_PLACE = re.compile(
+    _PRONOUN_SEARCH_LEAD
+    + r"(?:busca|buscar|buscame|buscanos|googlea|googlear|googleame|search(?:\s+for)?|look\s+up)"
+    + rf"\s+(?:en|on|in)\s+(?:el\s+|the\s+|mi\s+|my\s+)?(?P<place>{_GOOGLE_ENGINE}|navegador|browser)"
+    r"\s+(?:for\s+)?(?:eso|esto|lo\s+mismo|it|that|the\s+same(?:\s+thing)?)"
+    r"\s*(?:,?\s*(?:porfa|por\s+favor|please|pls|plis))?[\s.!?]*$"
+)
+
+
+def pronoun_search_place(text: str) -> str | None:
+    """«búscalo en Google», «ok pero lo puedes buscar en google no me importa X», «search it on Google» → «google»;
+    «búscalo en el navegador» → «browser». None when the message names what to look up or forbids it."""
+
+    if _PRONOUN_SEARCH_FORBIDDEN.match(_fold(str(text or ""))):
+        return None
+    folded = followup(text).folded
+    found = _PRONOUN_SEARCH_PLACE.match(folded) or _PRONOUN_AFTER_SEARCH_PLACE.match(folded)
+    if found is None:
+        return None
+    return "google" if found.group("place") == "google" else "browser"
+
+
+def asks_to_search(text: str) -> bool:
+    """Ronda 24, revisión 2 (r23 t3-c17 t4 «buscalo en google pa poder citarlo» → «¿Cuál es la URL exacta…?»): the
+    message is an order to look something up — its head is a search verb (``grammar._SEARCH``: «busca», «búscalo»,
+    «googlea», «search», «look up») or it searches a pronoun in a named place. A search verb never asks for an
+    address; «abre la página del banco» or «ve a la web de la U» are no search."""
+
+    return pronoun_search_place(text) is not None or _head_is(_request_head(str(text or "")), _SEARCH)
+
+
+# Revisión 2026-10-07 «busca en google eso», «búscame en google lo que te dije», «googlea esa canción»: the words
+# after the engine point back at something said before; they are no query of their own.
+_QUERY_POINTS_BACK = re.compile(
+    r"^(?:for\s+|sobre\s+|de\s+)?(?:"
+    r"(?:ese|esa|esos|esas|aquel|aquella|aquellos|aquellas|that|those)\b.*|"
+    r"(?:eso|esto|aquello|ello|it|that|this|them|lo\s+mismo|la\s+misma|lo\s+de\s+antes|the\s+same(?:\s+thing)?|"
+    r"what\s+i\s+(?:said|told\s+you|asked)|lo\s+que\s+(?:te\s+|le\s+)?(?:dije|pedi|dijiste|encontraste|buscaste)\b.*|"
+    r"(?:este|esta|estos|estas|this|these)\s+\S+)"
+    r")$"
+)
+
+
+def query_points_back(query: str) -> bool:
+    """The thing to look up is said as a pointer to something said before («eso», «lo mismo», «lo que te dije»,
+    «esa canción», «it»); «el estreno de Dune» or «noticias de hoy» name their own."""
+
+    folded = followup(query).folded
+    return bool(folded) and _QUERY_POINTS_BACK.fullmatch(folded) is not None
+
+
+@functools.lru_cache(maxsize=1)
+def _order_said_back_words() -> dict[str, tuple[str, ...]]:
+    path = Path(__file__).resolve().parent.parent / "data" / "order_said_back.v1.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        key: tuple(fold(str(word)) for word in data.get(key, ()))
+        for key in ("yes_no_openers", "filler", "alternatives", "pointers", "takes_back")
+    }
+
+
+@functools.lru_cache(maxsize=4096)
+def _order_heads(word: str) -> frozenset[str]:
+    """The order heads a word is said as: itself, without its fused clitics, or the tú/voseo imperative of the
+    «usted»/subjunctive form or infinitive it is (``grammar._head_forms``, ``grammar._imperatives_of``), kept only when
+    the readers know it as an order head («abra» → «abre», «suba» → «sube», «ponga» → «pon», «súbele» → «sube»)."""
+
+    heads = _compiled(_COVERAGE_ACTION_HEAD)
+    candidates = (word, *_imperatives_of(word, _COVERAGE_ACTION_HEAD))
+    return frozenset(form for candidate in candidates for form in _head_forms(candidate) if heads.fullmatch(form))
+
+
+def _same_word(said_back: str, said: str) -> bool:
+    # Revisión 2: a verb said back in another mood is the same order head («cierra» → «cierre», «abre» → «abra»,
+    # «pon» → «ponga»); «descarga» → «descarte» or «cierra» → «cierro» are other words. Any other word is said as is.
+    return said_back == said or bool(_order_heads(said_back) & _order_heads(said))
+
+
+@dataclass(frozen=True)
+class OrderSaidBack:
+    """The request split where the question's saying back ends: ``said`` up to the last word the question repeats,
+    ``rest`` what follows, both as the person wrote them."""
+
+    said: str
+    rest: str
+
+
+def order_said_back(question: str, request: str) -> OrderSaidBack | None:
+    """Ronda 24 (r23 t2-c03#2 «ya cierra configuracion…» → «¿Te gustaría que cierre la configuración ahora mismo?»,
+    t4-c03 «ya cierra discord» → «¿Quieres que cierre Discord ahora mismo?»): a yes/no question (``yes_no_openers`` in
+    ``data/order_said_back.v1.json``) whose every other word is the request's own or filler asks for no missing value:
+    the order is said back. A question that names something the request did not («¿cierro Chrome o Word?»), offers a
+    choice, points at a referent («¿Quieres que lo cierre?») or asks how much («¿cuánto lo subo?») is a real question
+    (None). Where the request goes on after the words said back, ``rest`` keeps it for the caller to judge."""
+
+    words = _order_said_back_words()
+    folded = " ".join(re.findall(r"[a-z0-9]+", fold(str(question or ""))))
+    opener = next(
+        (opener for opener in sorted(words["yes_no_openers"], key=len, reverse=True)
+         if folded == opener or folded.startswith(opener + " ")),
+        None,
+    )
+    if opener is None:
+        return None
+    rest = [word for word in folded[len(opener):].split() if word not in words["filler"]]
+    # Revisión 1: a word that points («lo», «eso», «it») asks about a referent not yet resolved («ciérralo» →
+    # «¿Quieres que lo cierre?»): the question is real, whatever the request said.
+    if not rest or any(word in words["alternatives"] or word in words["pointers"] for word in rest):
+        return None
+    request = str(request or "")
+    tokens = [
+        (found.end(), piece)
+        for found in re.finditer(r"[^\W_]+", request)
+        for piece in re.findall(r"[a-z0-9]+", fold(found.group()))
+    ]
+    end = 0
+    for word in rest:
+        ends = [token_end for token_end, said in tokens if _same_word(word, said)]
+        if not ends:
+            return None
+        end = max(end, min(ends))
+    return OrderSaidBack(request[:end], request[end:])
+
+
+def question_only_says_the_order_back(question: str, request: str) -> bool:
+    """The question says the request back (``order_said_back``), the whole of it or its start."""
+
+    return order_said_back(question, request) is not None
+
+
+def _rest_words(rest: str) -> str:
+    # English negative contractions are one word without the apostrophe («don't» → «dont»).
+    return " ".join(re.findall(r"[a-z0-9]+", re.sub(r"['’]", "", fold(str(rest or "")))))
+
+
+# r31: each reader's view of the one list (``lexicon.REASON_OPENERS``).
+_SAID_BACK_REASON = lexicon.reason_opening(lexicon.REASONS_SAID_BACK)
+_WINDOW_ORDER_REASON = lexicon.reason_opening(lexicon.REASONS_OF_A_WINDOW_ORDER)
+
+
+def _reason_opener(folded: str, opening: str = _SAID_BACK_REASON) -> str | None:
+    found = _compiled(opening).match(folded)
+    return found.group(0) if found is not None else None
+
+
+def takes_the_order_back(rest: str, opening: str = _SAID_BACK_REASON) -> bool:
+    """Revisión 3 de la ronda 24 («cierra discord que me esta laggeando o mejor no», «ya cierra discord que me esta
+    laggeando el valorant bueno no mejor no», «cierra discord que me lo pidio mi mama pero no lo cierres todavia»,
+    «close discord because it lags but not yet»): what follows the order said back takes it back or leaves it open — a
+    refusal or a correction interjection (``refusals``, ``interjections`` of ``data/correction_words.v1.json``), an
+    order to do nothing (``cease_orders``: «déjalo», «olvídalo») or a connective that opposes or offers another choice
+    (``takes_back`` of ``data/order_said_back.v1.json``: «pero», «o», «but», «or»). Said by voice it comes without
+    commas. The «no» of a reason opener is the reason's own («que ya no lo uso»)."""
+
+    folded = _rest_words(rest)
+    opener = _reason_opener(folded, opening)
+    if opener is not None:
+        folded = folded[len(opener):].strip()
+    if not folded:
+        return False
+    words = correction_words()
+    padded = f" {folded} "
+    phrases = (
+        *_order_said_back_words()["takes_back"],
+        *(fold(str(word)) for word in words["refusals"]),
+        *(fold(str(phrase)) for phrase in words["interjections"]),
+    )
+    if any(f" {phrase} " in padded for phrase in phrases):
+        return True
+    return any(_head_is(word, _cease_order_head()) for word in folded.split())
+
+
+def only_gives_a_reason(rest: str, opening: str = _SAID_BACK_REASON) -> bool:
+    """Revisión 2 de la ronda 24 (r23 t2-c03#2 «ya cierra configuracion que me esta laggeando el valorant»): what follows
+    the order said back only tells why («que me está…», «porque…», «because…»; ``lexicon.REASONS_SAID_BACK``), or
+    nothing follows. «…, bueno no, mejor no», «… y spotify» or «… que dice error»
+    (which window) are more than a reason, and so is a reason that goes on to take the order back without a pause
+    (revisión 3, ``takes_the_order_back``: «… que me laggea o mejor no», «… because it lags but not yet»)."""
+
+    clauses = [" ".join(re.findall(r"[a-z0-9]+", part)) for part in re.split(r"[,;.:!?]+", fold(str(rest or "")))]
+    said = [clause for clause in clauses if clause]
+    if len(said) > 1:
+        # «… que me laggea, bueno no, mejor no»: a clause after the reason may take the order back.
+        return False
+    folded = said[0] if said else ""
+    if not folded:
+        return True
+    return _reason_opener(folded, opening) is not None and not takes_the_order_back(rest, opening)
+
+
+def order_before_its_reason(request: str) -> str | None:
+    """Tandas b2/c28u t2-c03 t2 «ya cierra configuracion que me esta laggeando el valorant»: the request up to its last
+    clause that only tells why (``only_gives_a_reason`` over ``lexicon.REASONS_OF_A_WINDOW_ORDER``: «… que me está…»,
+    «… porque…», «… cuz…»); None when it ends in none. One cut, the longest order: what it leaves is read as it is, never
+    shortened again («cierra just cause 3 porque se pegó» is never «cierra just»). A clause is its conjunction and at
+    least two words more, the first no number: «cause 3», «since dawn» are the rest of a name. A reason that goes on to
+    take the order back is none, and what BAXY did for the person («que me abriste recién») says which one, not why."""
+
+    request = str(request or "")
+    for found in reversed(tuple(re.finditer(r"[^\W_]+", request))):
+        rest = request[found.start():]
+        words = _rest_words(rest).split()
+        if (
+            found.start() and len(words) >= 3 and not words[1].isdigit()
+            and not (words[0] in {"que", "q", "k"} and words[1] in {"me", "nos"} and words[2].endswith(("aste", "iste")))
+            and only_gives_a_reason(rest, _WINDOW_ORDER_REASON)
+        ):
+            return request[:found.start()].rstrip(" ,;:")
+    return None
+
+
+@functools.lru_cache(maxsize=1)
+def _answer_subject_words() -> dict[str, tuple[str, ...]]:
+    path = Path(__file__).resolve().parent.parent / "data" / "answer_subject.v1.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    words = {
+        key: tuple(fold(str(word)) for word in data.get(key, ()))
+        for key in (
+            "copulas", "function_words", "first_person", "openers", "subordinators", "finite_verbs", "evaluative",
+            "sentence_adverbs", "quantifiers", "generic_heads",
+        )
+    }
+    words["refusals"] = tuple(fold(str(word)) for word in correction_words()["refusals"])
+    return words
+
+
+def _without_answer_opener(sentence: str) -> str:
+    """Revisión 3: «Claro, la Primera Guerra Mundial fue…» → «la Primera Guerra Mundial fue…». An opener (``openers``)
+    is dropped only when a comma or a mark follows it; «Claro de Luna de Debussy es…» keeps it."""
+
+    openers = sorted(_answer_subject_words()["openers"], key=len, reverse=True)
+    while True:
+        tokens = list(re.finditer(r"[^\W_]+", sentence))
+        folded = [fold(token.group()) for token in tokens]
+        size = next(
+            (len(opener.split()) for opener in openers
+             if " ".join(folded[: len(opener.split())]) == opener and len(tokens) > len(opener.split())),
+            0,
+        )
+        if not size:
+            return sentence
+        between = sentence[tokens[size - 1].end() : tokens[size].start()]
+        if not re.fullmatch(r"\s*[,!¡:;—–-]+\s*", between):
+            return sentence
+        sentence = sentence[tokens[size].start() :]
+
+
+def answer_subject(reply: str) -> str | None:
+    """Ronda 24, revisión 2 (r23 t3-c17 t4): the thing BAXY's answer is about, as it wrote it — the words before the
+    verb that says what it is or was in its first sentence («La invasión de Bélgica por Alemania fue la violación…» →
+    «La invasión de Bélgica por Alemania»). None for a list, a short or empty subject, or one that speaks of BAXY or the
+    person («Son las 17:26.», «Te di 3 elementos…», «La respuesta es 42», «Tu alarma es a las 7»).
+
+    Revisión 3: an opening interjection is no part of it («Claro, la Primera Guerra Mundial fue…»), and words that say
+    something instead of naming it leave no subject: a refusal («No estoy seguro de quién fue…», «No lo sé con
+    certeza, pero creo que fue…»), a subordinate clause («Eso que preguntas es…») or a finite verb of the first or
+    second person («Creo…», «tienes»).
+
+    Revisión 4 («La causa más común es la falta de RAM…», «Una buena opción es…», «Lamentablemente esa información
+    es…», «Ninguna aplicación es perfecta»): a subject that values, ranks or comments instead of naming leaves none —
+    a word of degree or value, a sentence adverb, or an opening quantifier; a generic head («causa», «opción») is
+    named only with what follows it («La causa de la Primera Guerra Mundial»). A word of a proper name is none of
+    these («Buenos Aires es…»)."""
+
+    words = _answer_subject_words()
+    opened = _without_answer_opener(str(reply or "").strip())
+    first = re.split(r"(?<=[^\d\s])[.!?;:](?:\s|$)|\n", opened, maxsplit=1)[0].strip()
+    tokens = list(re.finditer(r"[^\W_]+", first))
+    folded = [fold(token.group()) for token in tokens]
+    if not tokens or folded[0].isdigit():
+        return None
+    says = {*words["first_person"], *words["refusals"], *words["subordinators"], *words["finite_verbs"]}
+    for index in range(1, min(len(tokens), 12)):
+        if any(" ".join(folded[index : index + len(copula.split())]) == copula for copula in words["copulas"]):
+            subject = folded[:index]
+            unnamed = {*words["function_words"], *words["generic_heads"]}
+            named = [word for word in subject if word not in unnamed and not word.isdigit()]
+            if len(named) < 2 or any(word in says for word in subject):
+                return None
+            # A word of a proper name is no value or quantifier («Buenos Aires», «Todos los Santos», «Best Buy»): a
+            # capitalized word that is not the first, or the first when the second is capitalized too.
+            def _named_part(position: int) -> bool:
+                if not tokens[position].group()[:1].isupper():
+                    return False
+                return position > 0 or (index > 1 and tokens[1].group()[:1].isupper())
+
+            plain = [word for position, word in enumerate(subject) if not _named_part(position)]
+            joined = f" {' '.join(plain)} "
+            if (
+                (not _named_part(0) and subject[0] in words["quantifiers"])
+                or any(word in words["evaluative"] for word in plain)
+                or any(word.endswith("mente") and len(word) > 6 for word in plain)
+                or any(f" {adverb} " in joined for adverb in words["sentence_adverbs"])
+            ):
+                return None
+            return first[tokens[0].start() : tokens[index - 1].end()]
+    return None
+
+
+# «otra vez», «de nuevo», «inténtalo», «again», «try again»: doing it once more is asked, whatever leads it.
+_ASKED_AGAIN = re.compile(
+    r"\b(?:otra\s+vez|de\s+nuevo|nuevamente|intentalo|reintenta(?:lo|r)?|"
+    r"again|once\s+more|one\s+more\s+time|retry)\b"
+)
+# Reads with no effect on the machine whose same result may come back again: only these are held to «not the same
+# again». An effect (an app opened, a note created, the volume) is never swapped for a remark about the last one.
+_PUBLIC_READS = frozenset({"web.search", "web.news.headlines"})
+
+
+def corrects_or_insists(text: str) -> bool:
+    """The message corrects the last result («no, …», «sí, pero…», «ok pero…») or insists on what was asked («te dije
+    que lo buscaras», «búscalo en Google»). «otra vez» and «repítelo» ask for it again; «¿y ahora…?» goes on."""
+
+    said = followup(text)
+    if _AGAIN_FRAGMENT.fullmatch(said.folded) or _ASKED_AGAIN.search(_fold(str(text or ""))):
+        # Revisión 2026-10-07 «no, búscalo de nuevo», «ok pero intenta otra vez»: a retry asked, anywhere in it.
+        return False
+    return (
+        said.corrected
+        or insists_on_searching(text)
+        or pronoun_search_place(text) is not None
+        or _REPROACH.search(said.folded) is not None
+        or _REPROACH.search(_fold(str(text or ""))) is not None  # «pero te he dicho …»: the lead is part of it
+        # «joder que te he dicho brillo no volumen» (t4-c04-2): a contrast with the last request reproaches it.
+        or contrastive_correction(text) is not None
+        # Ronda 19 (t3-c18 «esa no es la de programador wey, sigue en la estandar, cambiala»): the state left reproached.
+        or reproaches_the_state(text)
+    )
+
+
+# Uso real v3 t2 («te dije la escala no el brillo, regresa la escala a 100», «…, te dije CHROME»): what the person
+# said before, said back to BAXY at the head of a clause, reproaches the last result. «¿qué te dije ayer?» asks.
+_REPROACH = re.compile(
+    r"(?:^|[,;.]\s*)(?:(?:(?:pero|but|bro|che|wey|guey|loco)\s+)?"
+    r"(?:te\s+(?:dije|pedi|estoy\s+diciendo)|ya\s+te\s+dije|i\s+(?:said|told\s+you|asked\s+(?:you\s+)?(?:for|to)))|"
+    # «pero te he dicho que en spotify»: the perfect reproaches after a lead; alone it also tells a fact («te he dicho
+    # que me gusta el rock», review 2026-10-08 r2). «joder que te he dicho brillo no volumen» (t4-c04-2) is a contrast.
+    r"(?:pero|but|bro|che|wey|guey|loco|ya)\s+te\s+(?:he|habia)\s+dicho)\b"
+)
+
+
+# Revisión de la ronda 19: a reproach of the state is said in clauses of its own — a denial of the state left («esa no
+# es la de programador»), a claim of the state still on («sigue en la estándar»), each naming one thing — and the
+# other clauses only lead («no», «wey») or ask it changed («cambiala»). «eso no es urgente, pero abre chrome», «it's
+# still early, play some music», «sigue en la página 3», «el que sigue en la lista, ábrelo» and «sigue siendo de noche,
+# baja el brillo» are new requests (data: correction_words.v1.json).
+@functools.lru_cache(maxsize=1)
+def _state_clause() -> re.Pattern[str]:
+    return re.compile(
+        rf"(?:(?:{correction_phrases('state_leads')})\s+)*(?:(?P<denial>{correction_phrases('state_denials')})|"
+        rf"(?P<claim>{correction_phrases('state_claims')}))\s+(?:(?:{correction_phrases('state_skips')})\s+)*"
+        rf"(?P<word>[a-z0-9ñ][a-z0-9ñ'+-]*)(?:\s+(?:{correction_phrases('state_tags')}))*"
+    )
+
+
+@functools.lru_cache(maxsize=1)
+def _state_aside() -> re.Pattern[str]:
+    return re.compile(
+        rf"(?:(?:{correction_phrases('state_leads')}|{correction_phrases('state_tags')})(?:\s+|$))+|"
+        rf"(?:(?:{correction_phrases('state_leads')})\s+)*(?:{correction_phrases('state_change_orders')})(?:\s+(?:{correction_phrases('state_tags')}))*"
+    )
+
+
+@functools.lru_cache(maxsize=1)
+def _asked_reproach() -> re.Pattern[str]:
+    # At the head of a clause: «lo que te pedí ayer» names something asked, it says nothing back.
+    return re.compile(
+        rf"(?:(?:{correction_phrases('state_leads')})\s+)*(?:{correction_phrases('asked_reproaches')})(?!\w)"
+        rf"(?![\s,]+(?:{correction_phrases('asked_reproach_negations')})(?!\w))"
+    )
+
+
+@dataclass(frozen=True)
+class StateReproach:
+    """The things a state reproach denies are on («esa no es la de programador») and claims are still on («sigue en
+    la estándar»), folded single words."""
+
+    denied: tuple[str, ...]
+    claimed: tuple[str, ...]
+
+
+def _clauses(folded: str) -> list[str]:
+    return [clause.strip() for clause in _CONTRAST_PAUSE.split(folded) if clause.strip()]
+
+
+def state_reproach(text: str) -> StateReproach | None:
+    """Ronda 19 (t3-c18 «esa no es la de programador wey, sigue en la estandar, cambiala»): the person says the state
+    the last turn left is not the one asked. Every clause is a denial or a claim naming one thing, a lead or an order
+    to change it (``_state_clause``, ``_state_aside``). A question asks («¿sigue en pie la reunión?»); a clause of
+    anything else is another request («eso no es urgente, pero abre chrome»). None otherwise."""
+
+    raw = str(text or "")
+    if "?" in raw or "¿" in raw:
+        return None
+    denied: list[str] = []
+    claimed: list[str] = []
+    for clause in _clauses(without_correction_interjection(_fold(" ".join(raw.split())))):
+        found = _state_clause().fullmatch(clause)
+        if found is not None:
+            (denied if found.group("denial") else claimed).append(found.group("word"))
+        elif _state_aside().fullmatch(clause) is None:
+            return None
+    return StateReproach(tuple(denied), tuple(claimed)) if denied or claimed else None
+
+
+def reproaches_the_state(text: str) -> bool:
+    """Ronda 19: ``state_reproach`` reads one («sigue en estándar», «that's not the programmer one»)."""
+
+    return state_reproach(text) is not None
+
+
+def reproaches_what_was_asked(text: str) -> bool:
+    """Ronda 19 (t1-c03 «no wey te pedi 5 nomas, no me sueltes la lista entera»): the person says back what they asked
+    («te pedí», «I asked for», data) at the head of a clause. «te pedí que no lo abrieras» forbids; «lo que te pedí
+    ayer, ¿lo recuerdas?» asks. Whether it adds anything to what was asked is ``says_only_what_was_asked``."""
+
+    raw = str(text or "")
+    if "?" in raw or "¿" in raw:
+        return False
+    folded = without_correction_interjection(_fold(" ".join(raw.split())))
+    return any(_asked_reproach().match(clause) is not None for clause in _clauses(folded))
+
+
+def _counts_of(text: str) -> set[int]:
+    from .listing import counts_said
+
+    return set(counts_said(spelled_out(_fold(str(text or "")))))
+
+
+def _only_complains(words: list[str], extent: set[str], given: set[str]) -> bool:
+    """Ronda 22: a clause that only complains of how much was told («me tiraste una lista enorme», «me tiraste como
+    7»): every word is of the complaint (data: count_extent) or a number said after what BAXY handed over (count_given:
+    the person's claim of how many, never a count asked). «dame 7», «de terror», «son 6» say something else."""
+
+    handed = False
+    for word in words:
+        if _counts_of(word) or word.isdigit():
+            if not handed:
+                return False
+        elif word in given:
+            handed = True
+        elif word not in extent:
+            return False
+    return True
+
+
+def says_only_what_was_asked(text: str, request: object, *, counts: Iterable[int] = ()) -> bool:
+    """Revisión de la ronda 19: a reproach of what was asked («no wey te pedi 5 nomas, no me sueltes la lista entera»)
+    that says nothing the last request did not say — its clause names only the request's words, a count it said (or
+    ``counts``) and a limiter («nomás», «only»); the other clauses only complain of how much was told. «te pedí 5 de
+    terror, no de acción», «te pedí 5 pero en orden de recaudación», «I asked for 5 comedies not these», «te pedí un
+    uber ayer y no llegó», «I asked my boss, now open teams» and «te pedí el bloc de notas» after «abre la
+    calculadora» add a restriction or ask something else: never done or answered as the last request."""
+
+    if not reproaches_what_was_asked(text):
+        return False
+    data = correction_words()
+    asked = spelled_out(_fold(str(request or "")))
+    allowed_counts = set(counts) | _counts_of(asked)
+    known = set(_WORD.findall(asked)) | _NOT_NAMED | set(data["count_limiters"])
+    extent = known | set(data["count_extent"])
+    links = set(data["asked_reproach_links"])
+    given = set(data["count_given"])
+    joins = set(data["count_joins"])
+    said = False
+    for clause in _clauses(spelled_out(without_correction_interjection(_fold(" ".join(str(text or "").split()))))):
+        found = None if said else _asked_reproach().match(clause)
+        words = _WORD.findall(clause[found.end():] if found is not None else clause)
+        # Ronda 22 (t4-c02 «no, te pedi 3 nomas y me tiraste una lista enorme»): a complaint joined to the reproach
+        # without a pause is a clause of its own, read as one said apart.
+        join = next((index for index, word in enumerate(words) if found is not None and word in joins), None)
+        if join is not None:
+            words, complaint = words[:join], words[join + 1:]
+        else:
+            complaint = []
+        if complaint and not _only_complains(complaint, extent, given):
+            return False
+        for index, word in enumerate(words):
+            number = _counts_of(word)
+            if number or word.isdigit():
+                if not number or not number <= allowed_counts:
+                    # Ronda 22 (t3-c17 «…, me tiraste como 7, solo 4»): a number said apart is the count asked again,
+                    # or what the person says BAXY handed over (``_only_complains``), never a new count asked.
+                    if found is not None or not _only_complains(words, extent, given):
+                        return False
+            elif word in (known | links if found is not None else extent):
+                continue
+            # «te pedí que abrieras la calculadora» after «abre la calculadora»: the request's own verb, reported.
+            elif not (
+                found is not None
+                and index > 0
+                and words[index - 1] in links
+                and any(len(other) >= 3 and word[:3] == other[:3] for other in _WORD.findall(asked))
+            ):
+                return False
+        said = said or found is not None
+    return said
+
+
+def _asks_another(folded: str) -> bool:
+    return bool(set(_WORD.findall(folded)) & set(correction_words()["another"]))
+
+
+@dataclass(frozen=True)
+class AlreadyHolds:
+    """What the correction asks that the last turn already verified: ``kind`` (playing, provider, state, target,
+    count) and the verified thing as the result wrote it (``named``: the service the operation reported, as it is
+    written, the screen value read) or the number of items told (``count``). A held effect (every kind but count) is
+    said with its sentence (data: operation_floor «heldFact»); only a held count is worded by the writer
+    (``turn_followups._correction_already_held``)."""
+
+    kind: str
+    named: str = ""
+    count: int = 0
+    # Ronda 22 (kind target): the thing the person refused, which the last turn never touched, as they said it.
+    untouched: str = ""
+    # Encargo TZ-HOLD (tanda z6 t4-c01 t4): what the verified play reported playing (``observed.title``).
+    title: str = ""
+
+    @property
+    def effect(self) -> bool:
+        """Whether this is a fact the last turn's verified result read (every kind but a count of items told)."""
+
+        return self.kind != "count"
+
+    def facts(self) -> dict[str, str]:
+        """The fact for the situation (``alreadyHolds``), strings only."""
+
+        return {
+            "kind": self.kind,
+            **({"named": self.named} if self.named else {}),
+            **({"count": str(self.count)} if self.count else {}),
+            **({"untouched": self.untouched} if self.untouched else {}),
+            **({"title": self.title} if self.title else {}),
+        }
+
+
+def opens_with_a_denial(reply: object) -> bool:
+    """Ronda 24 (r23 t2-c03 #3 «No, cerré la ventana de Configuración que pediste.»): a reply whose first clause is a
+    bare denial («No,», «Nope.»; data: correction_words.v1.json, refusals). «No había ventanas abiertas» opens with a
+    sentence, never a bare denial."""
+
+    clauses = _clauses(_fold(" ".join(str(reply or "").split())))
+    return bool(clauses) and clauses[0] in set(correction_words()["refusals"])
+
+
+def _refuses_where_named(folded: str, word: str) -> bool:
+    """Revisión adversarial 2 de la ronda 19: a clause naming ``word`` that also refuses («no en YouTube», «YouTube
+    no», «nunca en YouTube», «not on YouTube») refuses it; only a denial said apart («no, en YouTube») opens a
+    correction that names it. Data: correction_words.v1.json, refusals."""
+
+    refusals = set(correction_words()["refusals"])
+    return any(
+        word in words and bool(set(words) & refusals)
+        for words in (_WORD.findall(clause) for clause in _clauses(folded))
+    )
+
+
+# Words of a correction that name no thing: the cue words of a contrast and the heads of a state reproach.
+_NOT_NAMED = frozenset(_NOT_CONTRASTED | {"modo", "mode", "es", "sigue", "still", "nomas", "solo", "only", "just"})
+
+
+def _content_words(folded: str) -> list[str]:
+    return [word for word in _WORD.findall(folded) if word not in _NOT_NAMED and not word.isdigit()]
+
+
+def _screen_parts(observed: dict) -> list[str]:
+    """Every text the screen read after a mission showed: its title, its values, its numbers and its lines (ronda 22,
+    t3-c18: the mode a window is in is often written as a line, «Calculadora | Programador», no value), as read.
+
+    Revisión 2 de la ronda 22 (bloqueante 1): a line is read only when the excerpt says it is no control's label
+    (``controlLines``, ComputerUseMission.ControlLines): «Modo de lectura» under the ribbon's button of that name stays
+    written whether or not the mode changed, and the label clicked proves nothing. An excerpt that does not tell its
+    labels apart gives no line."""
+
+    screen = observed.get("screen") if isinstance(observed.get("screen"), dict) else {}
+    parts: list[str] = [str(screen.get("title") or "")]
+    for item in screen.get("values") or []:
+        if isinstance(item, dict):
+            parts += [str(item.get("name") or ""), str(item.get("value") or "")]
+    parts += [str(item) for item in screen.get("numbers") or [] if isinstance(item, str)]
+    labels = screen.get("controlLines")
+    if isinstance(labels, list):
+        marked = {index for index in labels if type(index) is int}
+        lines = screen.get("lines") if isinstance(screen.get("lines"), list) else []
+        parts += [line for index, line in enumerate(lines) if isinstance(line, str) and index not in marked]
+    return [part for part in parts if part.strip()]
+
+
+def _screen_words(observed: dict) -> set[str]:
+    """Every word the screen read after a mission showed."""
+
+    return set(_WORD.findall(_fold(" ".join(_screen_parts(observed)))))
+
+
+def _shown_as(observed: dict, word: str) -> str:
+    """The screen text that shows ``word`` (a folded word), as it was read; empty when none shows it."""
+
+    for part in _screen_parts(observed):
+        if word in _WORD.findall(_fold(part)):
+            return " ".join(part.split())
+    return ""
+
+
+def correction_already_holds(
+    previous: object,
+    text: str,
+    last_reply: object = None,
+    request: object = None,
+    *,
+    delivered: bool = True,
+    touched: Iterable[str] = (),
+    acted: bool = False,
+) -> AlreadyHolds | None:
+    """Ronda 19 (t3-c16 «no, en YouTube» with YouTube already playing → played again; t3-c18 «esa no es la de
+    programador wey, sigue en la estandar, cambiala» after the mission reached Programador → four random clicks; a
+    «te pedí 5» after five items told): a correction whose thing the last turn's verified result already holds is
+    answered with that fact, never done again. ``previous`` is that result (operation, verified, succeeded, observed);
+    ``last_reply`` the words BAXY told of it, ``request`` what it was asked. Three facts are compared, each only as
+    verified:
+
+    - the provider it ran on (``observed.provider``) named as all the correction says («no, en YouTube»), unless the
+      correction refuses it («no en YouTube, en Spotify», «no, en YouTube no», «no, not on YouTube»: a refusal in the
+      clause that names it, ``_refuses_where_named``) or asks for another thing («no, otra en YouTube»); it is
+      said playing only when ``observed.playbackStatus`` says so;
+    - the state a reached mission verified (``observed.satisfiedBy``) denied by a state reproach («esa no es la de
+      programador, sigue en la estándar», ``_verified_state_denied``), only when the screen read after it shows the
+      denied state (a word of it read there or by the check) and not the claimed one. Revisión adversarial 2: a click
+      receipt and the claimed word missing from the screen prove nothing; with no positive read the mission is done
+      again (``DialogueState.denied_state_again``). A correction that asks for another state («…, ponla en
+      científica») is no state reproach;
+    - the number of items told (``listing.items_listed``) equal to the number the reproach says, when the reproach
+      says nothing more than that number (``says_only_what_was_asked``).
+
+    None otherwise: «no, en Spotify» after YouTube changes the service, «esa no es la de programador, sigue en la
+    estándar» with Estándar on screen is done again, «te pedí 5 de terror» asks for others, «y ahora baja el brillo»
+    goes on."""
+
+    from .listing import counts_said, empty_items, given_counts, items_listed, opening_series
+
+    if not corrects_or_insists(text):
+        return None
+    folded = without_correction_interjection(_fold(" ".join(str(text or "").split())))
+    if _asks_another(folded):
+        return None
+    # Ronda 22 (t3-c17 «no te pedi 4 po, me tiraste como 7, solo 4» after four causes told in conversation, t4-c02 «no,
+    # te pedi 3 nomas y me tiraste una lista enorme» after three titles in one sentence): the count told is read in
+    # the last answer, whatever turn told it, an operation's or a conversation's. The count asked is the first number
+    # that is not what the person says BAXY handed over («me tiraste como 7»).
+    # Revisión 1 de la ronda 22: only a last answer that delivered — never a final that told a failure, nor a turn
+    # whose operations verified none («Lo siento, no encontré libros y no puedo seguir.» is no three items told).
+    claimed = set(given_counts(folded))
+    count = next((said for said in counts_said(spelled_out(folded)) if said not in claimed), None)
+    # Revisión 2 de la ronda 22: a list with an item that says nothing («1. 2. El bloqueo…») did not tell its count;
+    # only items with content are told, so such a list holds no count.
+    if count is not None and last_reply and delivered and not empty_items(str(last_reply)):
+        told = items_listed(str(last_reply), counted=True) or opening_series(str(last_reply))
+        if told == count and says_only_what_was_asked(text, request, counts=(count,)):
+            return AlreadyHolds("count", count=count)
+    if not isinstance(previous, dict) or previous.get("verified") is not True or previous.get("succeeded") is not True:
+        return None
+    observed = previous.get("observed") if isinstance(previous.get("observed"), dict) else {}
+    words = _content_words(folded)
+    contrast = contrastive_correction(text)
+    provider = _fold(str(observed.get("provider") or "")).strip()
+    if (
+        provider
+        and not _refuses_where_named(folded, provider)
+        and (contrast is None or (contrast.refused != provider and not _order_after(contrast.rest)))
+    ):
+        if set(words) == {provider} or (contrast is not None and contrast.wanted == provider):
+            playing = str(observed.get("playbackStatus") or "").lower() == "playing"
+            # Encargo TZ-HOLD (tanda z6 t4-c01 t4): the service as it is written («Spotify») and what plays there.
+            return AlreadyHolds(
+                "playing" if playing else "provider",
+                named=service_name(observed.get("provider")) or str(observed.get("provider")).strip(),
+                title=" ".join(str(observed.get("title") or "").split()),
+            )
+    if acted and contrast is not None and not _order_after(contrast.rest):
+        # Ronda 22 (t4-c04 «joder que te he dicho brillo no volumen» right after the brightness was set → set again,
+        # and its final vetoed): the wanted thing is what the last turn acted on, and it never touched the refused one.
+        # Revisión 1 de la ronda 22 («pon el brillo y el volumen al 40»): the refused thing must be in no step the turn
+        # did or tried (``touched``), not only in its last verified result. Revisión 2: the wanted thing is held only by
+        # an operation with an effect (``acted``: the catalog's risk of the last verified operation is no read) — a
+        # status read of the brightness changed nothing, and the writer is told the turn changed it.
+        done = _identity_of(previous) | {_fold(str(item)).strip() for item in touched if str(item).strip()}
+        wanted, refused = _target_of(contrast.wanted), _target_of(contrast.refused)
+        if wanted and refused and wanted in done and refused not in done:
+            return AlreadyHolds("target", named=contrast.wanted, untouched=contrast.refused)
+    denied = _verified_state_denied(observed, text)
+    if denied is not None:
+        claimed, word = denied
+        screen = _screen_words(observed)
+        read = _read_by_the_check(str(observed.get("satisfiedBy")))
+        if not set(claimed) & screen and (word in screen or word in read):
+            # Encargo TZ-CAL (tanda z2 t3-c18 t3): the state is named as the check read it on arrival (``arrivedAs``,
+            # «Programador»), never the navigation entry that also shows it («Programador Calculadora»).
+            arrived = str(observed.get("arrivedAs") or "").strip()
+            named = arrived if word in _WORD.findall(_fold(arrived)) else _shown_as(observed, word) or read[word]
+            return AlreadyHolds("state", named=named)
+    return None
+
+
+def _verified_state_denied(observed: dict, text: str) -> tuple[tuple[str, ...], str] | None:
+    """Encargo TZ-CAL (tandas z1/z2 t3-c18 «esa no es la de programador wey, sigue en la estandar, cambiala» after a
+    mission that reached Programador): a state reproach (``state_reproach``) that denies a word, of four letters or
+    more, of what a reached mission's check verified (``satisfiedBy``) — as (the states it claims still on, that word).
+    Whether the screen read after the mission holds it is ``correction_already_holds``'s; when it does not, the
+    mission is done again (``DialogueState.denied_state_again``). None otherwise («ponla en científica» asks another
+    state, «sigue en estándar» alone denies nothing verified)."""
+
+    satisfied = observed.get("satisfiedBy")
+    reproach = state_reproach(text)
+    if observed.get("reached") is not True or not isinstance(satisfied, str) or reproach is None:
+        return None
+    verified = set(_WORD.findall(_fold(satisfied)))
+    word = next((word for word in reproach.denied if len(word) >= 4 and word in verified), None)
+    return (reproach.claimed, word) if word is not None else None
+
+
+# The states of a ``control:`` atom that say the control is on (ComputerUseMission's control states).
+_HELD_STATES = frozenset({"selected", "on"})
+# The atoms that name a place read on the screen (ComputerUseSuccessCheck.ArrivedAs, less a click's receipt).
+_READ_ATOMS = frozenset({"header", "page", "title", "mark"})
+
+
+def _read_by_the_check(satisfied: str) -> dict[str, str]:
+    """Estabilización G3 (tanda f2nb t3-c18 «esa no es la de programador wey, sigue en la estandar, cambiala» after
+    «Listo, estoy en «Programador»», satisfied by ``header:programador``): the words the shell's check read on the
+    screen itself — a place it read (``header:``, ``page:``, ``title:``, ``mark:``; encargo TZ-CAL, tanda z1:
+    ``page:programador``) or a control on or selected (``control:X:selected|on``) — each with the name the atom read.
+    The excerpt of the screen (``_screen_parts``) may not carry them (the Calculator's mode is a header no value
+    repeats). A click's receipt (``stepDone:``) reads nothing on the screen and gives none."""
+
+    read: dict[str, str] = {}
+    for atom in re.split(r"[|&]", satisfied):
+        kind, _, rest = atom.strip().partition(":")
+        kind = kind.strip().lower()
+        if kind == "control":
+            name, _, state = rest.rpartition(":")
+            if state.strip().lower() not in _HELD_STATES:
+                continue
+            rest = name
+        elif kind not in _READ_ATOMS:
+            continue
+        name = rest.strip().lstrip("=").strip()
+        for word in _WORD.findall(_fold(name)):
+            read.setdefault(word, name)
+    return read
+
+
+def _same_answer(shown: str, told: str) -> bool:
+    """Revisión 3 de la ronda 22: whether the answer the history shows is the final told, spacing aside (a history
+    that keeps only the opening of a long answer still shows it)."""
+
+    seen, said = " ".join(shown.split()), " ".join(told.split())
+    return seen == said or (len(seen) >= 200 and said.startswith(seen))
+
+
+def _attempt_of(situation: dict) -> tuple[str, dict[str, str]] | None:
+    """The operation a failed result tried and the arguments it tried (``attempted``: provider, query…), read from
+    the result or from the reason of a failed turn; None when it verified, or tried nothing it says."""
+
+    for item in (situation, situation.get("reason")):
+        if not isinstance(item, dict) or item.get("verified") is True:
+            continue
+        operation = str(item.get("operation") or "")
+        tried = item.get("attempted")
+        if operation and isinstance(tried, dict):
+            arguments = {str(key): str(value) for key, value in tried.items() if isinstance(value, str) and value.strip()}
+            if arguments:
+                return operation, arguments
+    return None
+
+
+def _target_of(word: str) -> str:
+    """The identity a person's word names a setting or a device part by (data: correction_words.v1.json,
+    target_names): «brillo» → brightness, «volumen» → volume; "" when the word names none of them."""
+
+    folded = _fold(str(word or "")).strip()
+    for identity, names in correction_words()["target_names"].items():
+        if folded in {_fold(str(name)).strip() for name in names}:
+            return identity
+    return ""
+
+
+def _identity_of(previous: dict) -> set[str]:
+    """What a verified result says it acted on: the setting, the provider and the application it observed, and the
+    parts of its operation's name («audio.volume.set» → audio, volume, set), folded."""
+
+    observed = previous.get("observed") if isinstance(previous.get("observed"), dict) else {}
+    found = {_fold(str(observed.get(key) or "")).strip() for key in ("setting", "provider", "appId")}
+    found |= {_fold(part).strip() for part in str(previous.get("operation") or "").split(".")}
+    return {item for item in found if item}
+
+
+# Revisión 2 de la ronda 24: the situations a final only asks or talks with (the shell's message.compose kinds).
+_ASKING_OR_TALKING_KINDS = frozenset({"clarification", "confirmation", "conversation", "welcome"})
+
+
+def only_asked_or_talked(situation: object) -> bool:
+    """Revisión 2 de la ronda 24 (r23 t2-c04 #2: the shell composed «¿Qué escala específica necesitas en 125?» as
+    ``{kind: clarification, polarity: pending}``): whether a final told of this situation ran nothing — a question, a
+    confirmation asked, a talk, or anything still pending. Contracaso: an operation's result, done or failed, and a
+    mission's, are acts."""
+
+    if not isinstance(situation, dict):
+        return False
+    kind = str(situation.get("kind") or "").strip().lower()
+    polarity = str(situation.get("polarity") or "").strip().lower()
+    return kind in _ASKING_OR_TALKING_KINDS or polarity == "pending"
+
+
+def _may_have_changed(item: dict) -> bool:
+    """Revisión 1 de la ronda 24: whether a result, verified or not, may have changed something. Only a result that
+    tells it took no step at all (``observed.stepCount`` 0) did not; one that does not tell counts as an act."""
+
+    observed = item.get("observed") if isinstance(item.get("observed"), dict) else {}
+    count = observed.get("stepCount")
+    return not (isinstance(count, int) and not isinstance(count, bool) and count == 0)
+
+
+def _normalized_request(request: str) -> str:
+    return " ".join(_WORD.findall(_fold(request)))
+
+
+# What changes between two reads of the same thing without it being another result (when, which receipt), by its
+# whole name: «items», «lat», «noteId» or «queryTerms» are results (revisión 2026-10-07).
+_VOLATILE_KEYS = frozenset(
+    key.lower()
+    for key in (
+        "at", "utc", "timestamp", "observedAt", "observedAtUtc", "checkedAt", "checkedAtUtc", "retrievedAt",
+        "retrievedAtUtc", "elapsedMs", "durationMs", "receiptId", "requestId", "traceId",
+    )
+)
+
+
+def _stable(value: object) -> object:
+    if isinstance(value, dict):
+        return {key: _stable(item) for key, item in value.items() if str(key).lower() not in _VOLATILE_KEYS}
+    if isinstance(value, list):
+        return [_stable(item) for item in value]
+    return value
+
+
+_NAVIGATIONS = frozenset({"browser.navigate", "browser.navigate.named"})
+_READS_OF_THE_PAGE_ON_SHOW = frozenset({"browser.page.read", "browser.tabs.list"})
+
+
+def _search_words(value: str) -> frozenset[str]:
+    """The words of a search, function words (one or two letters), accents and punctuation aside; numbers kept."""
+
+    return frozenset(
+        word for word in re.findall(r"[a-z0-9]+", fold(value)) if len(word) > 2 or word.isdigit()
+    )
+
+
+def same_page(left: str, right: str) -> bool:
+    """Two addresses name the same page: the same site (``www.`` aside) and path, and every query parameter with the
+    same words (``_search_words``)."""
+
+    from urllib.parse import parse_qs, urlparse
+
+    def parts(value: str) -> tuple[str, str, dict[str, frozenset[str]]] | None:
+        try:
+            parsed = urlparse(value if "://" in value else "https://" + value)
+        except ValueError:
+            return None
+        host = (parsed.hostname or "").casefold()
+        host = host[4:] if host.startswith("www.") else host
+        query = {key: _search_words(" ".join(values)) for key, values in parse_qs(parsed.query).items()}
+        return host, parsed.path.rstrip("/"), query
+
+    one, other = parts(left), parts(right)
+    return one is not None and other is not None and bool(one[0]) and one == other
+
+
+def in_progress(situation: object) -> bool:
+    """A progress notice of a turn still running (``cause: acting``), not a result nor a final of the turn."""
+
+    return isinstance(situation, dict) and str(situation.get("cause") or "").strip().lower() == "acting"
+
+
+def _result_signature(situation: object) -> tuple[str, str] | None:
+    """(operation, what it observed) of a verified, succeeded operation result; None for anything else."""
+
+    if not isinstance(situation, dict) or situation.get("verified") is not True or situation.get("succeeded") is not True:
+        return None
+    operation = str(situation.get("operation") or "")
+    if operation not in _PUBLIC_READS:
+        return None
+    observed = situation.get("observed")
+    if not operation or not isinstance(observed, dict) or not observed:
+        return None
+    return operation, json.dumps(_stable(observed), ensure_ascii=False, sort_keys=True)
 
 
 def continues(operations: tuple[str, ...], frame: tuple[str, ...], state: DialogueState | None) -> bool:
@@ -1673,6 +3015,9 @@ class RetimedNotification:
     set_title: str = ""
     # M173: when it was to ring, local: a move that names another notice by its clock is not of this one.
     set_at: datetime | None = None
+    # r19b (t1-c04-2 «no, mejor a las nueve y media» → reminder_ambiguous): the id ``reminder.create`` verified, so
+    # the move resolves that reminder and never another of the same title made elsewhere; "" when none was verified.
+    set_id: str = ""
 
     @property
     def moving_operations(self) -> tuple[str, str]:
@@ -1733,6 +3078,52 @@ class DialogueState:
         self._headlines: tuple[str, ...] = ()  # M83: the headlines read, in the order they were told
         # M145: every alarm, timer or reminder this conversation set and has not cancelled, as verified, in order.
         self._own_notifications: list[dict[str, str]] = []
+        # Uso real 2026-10-07: the last operation result told (operation, what it observed) and the words told of it.
+        self._told: tuple[str, str, str] | None = None
+        # Uso real v3 t2 (c03-2, c04-4): the words of the last final told, whatever its result.
+        self._last_final: str | None = None
+        # Ronda 20 P3 (v3-11 t2): whether the last final told was a failure (or a mission that did not reach its place),
+        # and the window that same final observed. A new request clears both: its final is not told yet (revisión 1,
+        # hallazgo 4: a window of a turn before is never named as the one the failed request left).
+        self._last_final_failed = False
+        self._last_window: str | None = None
+        # Semilla fix2: the address the last verified navigation showed in the person's browser, until another act.
+        self._on_show: str | None = None
+        # The search on show this turn reads instead of opening it again (``reads_on_show``).
+        self.reading_on_show: str | None = None
+        # Ronda 19: the last turn's verified result, for a correction it already holds (``already_holds``).
+        self._last_verified: dict | None = None
+        # Ronda 22: the operation the last turn tried and could not verify, and the arguments it tried
+        # (``attempted_again``).
+        self._last_attempt: tuple[str, dict[str, str]] | None = None
+        # Revisión 1 de la ronda 22: the identity of every step the last request did or tried (``_identity_of``), for a
+        # correction that says what it did not touch (``already_holds``, kind target).
+        self._touched: set[str] = set()
+        # Revisión 1 de la ronda 24: every operation this conversation verified or tried that may have changed
+        # something (``_may_have_changed``), whatever turn it was; ``undo_of_nothing`` never says nothing changed past
+        # one of them. And the last request that was about an operation, the one an undo of nothing names.
+        self._conversation_acts: set[str] = set()
+        self._acting_request: str | None = None
+        # Estabilización G3 (tanda f2nb t2-c04 #3): what the last request about an operation did or tried that may have
+        # changed something, and what any turn verified that did; an undo of a request that did nothing is told so
+        # past a request before it that only tried (``undo_of_nothing``).
+        self._acting_did: set[str] = set()
+        self._verified_changes: set[str] = set()
+        # Revisión 3 de la ronda 22: whether ``_last_final`` is the final of the last request (``expect``), told of it
+        # (``told``) or said by it in conversation (``said``); a final of a request before counts nothing told now.
+        self._final_of_request = False
+        # Ronda 24 (r23 t2-c03 #3 «no bro cerraste el que no era…» after a turn that only asked → «No, cerré…»):
+        # whether ``_last_final`` told an operation's result (``told``), not a question or a talk (``said``).
+        self._last_final_acted = False
+        # Estabilización B2: the send a follow-up's draft may offer (recipient, words, client or None), the same once its
+        # draft is verified (client, recipient, words), and once the final told it (the request a yes is, the question),
+        # which only the next turn reads (``begin_turn``; revisión B2 H3).
+        self._send_offer: tuple[str, str, str | None] | None = None
+        self._send_ready: tuple[str, str, str] | None = None
+        self._send_offered: tuple[str, str] | None = None
+        self._send_now: tuple[str, str] | None = None
+        # Encargo E (banco i1 c6): whether the last final told a send verified (``yes_after_a_send``).
+        self._told_send = False
 
     def expect(self, request: str, operations: object) -> None:
         if self.operations and not set(self.operations) & set(_TASK_WRITES):
@@ -1744,10 +3135,22 @@ class DialogueState:
         self.previous_operations = self.operations
         self.request = str(request or "").strip() or None
         self.intended = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
+        if self.intended and self.request is not None:
+            self._acting_request = self.request
+            self._acting_did = set()
         self.operations = ()
         self._facts.pop("request", None)
         # D39: the offer to cancel the alarms read stands only for the turn right after it.
         self._alarm_offer = ()
+        # Estabilización B2: as D39, the offer to send stands only for the turn right after the final that told it.
+        self._send_offer = self._send_ready = self._send_offered = self._send_now = None
+        self._told_send = False
+        self._last_verified = None
+        self._last_attempt = None
+        self._touched = set()
+        self._final_of_request = False
+        self._last_final_failed = False
+        self._last_window = None
 
     def record(self, situation: object) -> None:
         if not isinstance(situation, dict) or self.request is None:
@@ -1756,6 +3159,26 @@ class DialogueState:
             self._keep_own_notification(step)
             self._keep_entry(step)
         operation = str(situation.get("operation") or "")
+        for item in (situation, situation.get("reason"), *(situation.get("steps") or () if isinstance(
+            situation.get("steps"), list
+        ) else ())):
+            # Revisión 1 de la ronda 22: what the turn did or tried, verified or not, each step of a chain included.
+            if isinstance(item, str):
+                try:
+                    item = json.loads(item)
+                except json.JSONDecodeError:
+                    continue
+            if isinstance(item, dict) and item.get("operation"):
+                self._touched |= _identity_of(item)
+                if _may_have_changed(item):
+                    self._conversation_acts.add(str(item.get("operation")))
+                    self._acting_did.add(str(item.get("operation")))
+                    if item.get("verified") is True and item.get("succeeded") is True:
+                        self._verified_changes.add(str(item.get("operation")))
+        attempt = _attempt_of(situation)
+        if attempt is not None and attempt[0] in self.intended:
+            # Ronda 22 (t4-c01): what the last request tried and could not verify, by its own arguments.
+            self._last_attempt = attempt
         if (
             operation not in self.intended
             or situation.get("verified") is not True
@@ -1765,6 +3188,7 @@ class DialogueState:
         request = self.request
         observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
         self.operations = tuple(dict.fromkeys((*self.operations, operation)))
+        self._last_verified = situation
         self._facts["request"] = request
         family = _family(operation)
         self.families.add(family)
@@ -1812,8 +3236,22 @@ class DialogueState:
                     "kind": "reminder", "title": observed["title"], "dueUtc": observed["dueUtc"], "request": request,
                     "set_by": operation,
                 }
+                if isinstance(observed.get("reminderId"), str) and observed["reminderId"].strip():
+                    # r19b: the reminder made is that id, whatever other reminders share its title.
+                    self._notification["id"] = observed["reminderId"]
         elif operation == "notification.list" and plural_alarm_cancellation(request):
             self._alarm_offer = _alarm_clocks(observed)
+        elif operation == "message.draft" and self._send_offer is not None:
+            # Estabilización B2: the draft left for the recipient the offer names, in its client, and in a client the
+            # readers can send through again.
+            recipient, words, client = self._send_offer
+            channel = str(observed.get("channel") or "")
+            if (
+                fold(str(observed.get("displayName") or "")) == fold(recipient)
+                and channel in {"discord", "whatsapp"}
+                and client in {None, channel}
+            ):
+                self._send_ready = (channel, recipient, words)
         elif operation in _TASK_WRITES:
             # M80 (DEV-D v3m D-p06-t2, D-p08-t3): the task as the store verified it after the write, for a change of
             # it in the next turns that says only what changes.
@@ -1957,14 +3395,376 @@ class DialogueState:
 
         return self._facts.get("topic")
 
+    def searched_in_place(self, text: str) -> str | None:
+        """Uso real 2026-10-07 («ok pero lo puedes buscar en google…» after a web search): the thing looked up said as
+        a pronoun, with the engine or the browser named as the place, is what this conversation last searched, opened
+        there, as one request every reader reads. None with nothing searched («búscalo en Google» alone asks what), or
+        when the message names its own thing to look up or forbids the search."""
+
+        place = pronoun_search_place(text)
+        if place is None:
+            return None
+        # Ronda 24, revisión 2 (r23 t3-c17 t4 «buscalo en google pa poder citarlo» after an answer about «La invasión
+        # de Bélgica por Alemania»): when the last request was answered in conversation (no operation), the pronoun
+        # points at what that answer was about (``answer_subject``); otherwise at what this conversation last searched.
+        answered = answer_subject(self._last_final or "") if self._final_of_request and not self.intended else None
+        topic = answered or self._facts.get("topic")
+        if not topic:
+            return None
+        # Spanglish («…no me importa the ice») and an English pronoun over a Spanish topic read in Spanish.
+        in_spanish = spanish(text) or spanish(topic)
+        if place == "google":
+            return f"busca en google {topic}" if in_spanish else f"search on google for {topic}"
+        return f"busca {topic} en mi navegador" if in_spanish else f"search for {topic} in my browser"
+
+    def already_holds(
+        self, text: str, *, risk_of: Callable[[str], str | None] | None = None, shown: object = None
+    ) -> AlreadyHolds | None:
+        """Ronda 19 (t3-c16 «no, en YouTube» with YouTube playing, t3-c18 «…sigue en la estandar, cambiala» with
+        Programador read on screen): the fact that the correction already holds in what the last turn verified
+        (``correction_already_holds``), never doing it again; a held effect is said with its sentence, a held count
+        is worded by the writer. None when it does not hold or nothing was verified."""
+
+        # Revisión 1 de la ronda 22: a count is held only by a last turn that delivered — its final told no failure and,
+        # when it was about operations, one of them verified.
+        delivered = not self._last_final_failed and (not self.intended or bool(self.operations))
+        touched = self._touched | {
+            part for operation in (*self.intended, *self.operations) for part in str(operation).split(".") if part
+        }
+        # Revisión 2 de la ronda 22: the last verified operation acted only when the catalog says its risk, and it is
+        # no read (``risk_of``, the tools' risk); unknown, nothing is held as done.
+        last = str((self._last_verified or {}).get("operation") or "")
+        risk = risk_of(last) if risk_of is not None and last else None
+        acted = isinstance(risk, str) and bool(risk) and risk != "read_only"
+        # Revisión 3 de la ronda 22: the count is read only in the final of the last request, and only when it is what
+        # the person last saw (``shown``: the last answer of the history, when the turn carries one) — a final of a
+        # request before, or one the shell did not publish, counts nothing.
+        reply = self._last_final if self._final_of_request else None
+        if reply and isinstance(shown, str) and shown.strip() and not _same_answer(shown, reply):
+            reply = None
+        return correction_already_holds(
+            self._last_verified, text, reply, self.request, delivered=delivered, touched=touched,
+            acted=acted,
+        )
+
+    def denied_state_again(self, text: str) -> str | None:
+        """Encargo TZ-CAL (tanda z1 t3-c18 «esa no es la de programador wey, sigue en la estandar, cambiala»: the engine
+        got the reproach's own words as its goal and pressed «Operadores estándar»): a state reproach that denies what
+        the last turn's reached mission verified (``_verified_state_denied``), when the screen read after it does not
+        hold it (``already_holds`` is asked first), is that mission's request done again — the engine reads the window
+        and tells whether the state is on. None otherwise."""
+
+        previous = self._last_verified
+        if not self.request or not isinstance(previous, dict) or previous.get("succeeded") is not True:
+            return None
+        observed = previous.get("observed") if isinstance(previous.get("observed"), dict) else {}
+        return self.request if previous.get("verified") is True and _verified_state_denied(observed, text) else None
+
+    def attempted_again(self, text: str) -> tuple[str, str, tuple[tuple[str, str], ...]] | None:
+        """Ronda 22 (t4-c01 «no po, en spotify te dije, no en youtube» after «ponme cumbia» was tried in Spotify and
+        could not be verified → tried again with «cumbia mientras»): a correction that names, as all it asks, the
+        provider the last request already tried is that same try again — the request as this conversation understood
+        it, its operation and the arguments it tried — never the person's raw words rebuilt. None when nothing was
+        tried, when the correction refuses that provider («no en Spotify, en YouTube»), names another one («no, en
+        YouTube» after Spotify) or asks for something else («otra en Spotify»)."""
+
+        if self._last_attempt is None or not self.request or not corrects_or_insists(text):
+            return None
+        operation, tried = self._last_attempt
+        provider = _fold(tried.get("provider", "")).strip()
+        folded = without_correction_interjection(_fold(" ".join(str(text or "").split())))
+        if not provider or _asks_another(folded) or _refuses_where_named(folded, provider):
+            return None
+        contrast = contrastive_correction(text)
+        if contrast is not None:
+            if contrast.wanted != provider or contrast.refused == provider or _order_after(contrast.rest):
+                return None
+        elif set(_content_words(folded)) != {provider}:
+            return None
+        return self.request, operation, tuple(sorted(tried.items()))
+
+    def undelivered_reproach(self, text: str) -> tuple[str, str] | None:
+        """Ronda 19 (t1-c03 «no wey te pedi 5 nomas…» after «No lo encontré.» → «¿Podrías decirme solo los 5
+        títulos…?»): the person says back what they asked of a last turn that failed or did not deliver it; that turn
+        is done again, as (its one operation, its request), instead of asking them for it. Not delivered: none of
+        its operations verified, or a count asked that the last final did not list. None otherwise («te pedí que no
+        lo abrieras» forbids; after five items told, «te pedí 5» already holds). Revisión de la ronda 19: only a
+        reproach that says nothing the request did not («te pedí el bloc de notas, no la calculadora» after «abre la
+        calculadora», «te pedí un uber ayer y no llegó»): the request done again would lose what it adds
+        (``says_only_what_was_asked``)."""
+
+        from .listing import count_said, items_listed, listing_asked
+
+        if not self.request or len(self.intended) != 1 or not says_only_what_was_asked(text, self.request):
+            return None
+        if self.operations:
+            asked = listing_asked(self.request)
+            count = asked.count if asked is not None and asked.count is not None else count_said(_fold(text))
+            if count is None or (items_listed(self._last_final or "") or 0) >= count:
+                return None
+        return self.intended[0], self.request
+
+    def repeats_the_last_plan(self, operations: object, request: object, text: str) -> bool:
+        """Uso real 2026-10-07 («si pero quiero buscar un top 3» → the same search, the same result, the same words): a
+        correction or an insistence decided as exactly what the last turn did — the same operations on the same request
+        — is not done again. «otra vez» asks for it again and is not a correction; «sí, dale» to an offer is not either."""
+
+        decided = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
+        if not decided or not set(decided) <= _PUBLIC_READS:
+            # Revisión 2026-10-07: «no, te dije que abras el bloc de notas» after it opened is done, not remarked on.
+            return False
+        if not self.operations or set(decided) != set(self.operations) or not self.request:
+            return False
+        if not corrects_or_insists(text):
+            return False
+        return _normalized_request(str(request or "")) == _normalized_request(self.request)
+
+    def same_result_again(self, situation: object, text: str) -> str | None:
+        """Uso real 2026-10-07: the words BAXY told of the last result, when this result is the same operation with the
+        same observation and the person was correcting or insisting; the writer must not tell it again in those words
+        (``sameResultAgain``). None otherwise: «¿y ahora cuánto está el dólar?» may get the same figure again."""
+
+        told = self._told
+        signature = _result_signature(situation)
+        if told is None or signature is None or signature != told[:2] or not corrects_or_insists(text):
+            return None
+        return told[2]
+
+    def told(self, situation: object, reply: str) -> None:
+        """The words told of an operation result, kept beside what it observed for ``same_result_again``. A progress
+        notice worded while the operation still runs («Estoy trabajando en la solicitud.») is no final: semilla r8 t3
+        repeated t2's final word for word because t3's own notice had taken its place as the last final."""
+
+        if in_progress(situation):
+            return
+        self._keep_on_show(situation)
+        self._keep_final_outcome(situation)
+        signature = _result_signature(situation)
+        if signature is not None and str(reply or "").strip():
+            self._told = (*signature, str(reply).strip())
+        if str(reply or "").strip():
+            self._last_final = str(reply).strip()
+            self._final_of_request = True
+            # Revisión 2 de la ronda 24 (r23 t2-c04 #2 «¿Qué escala específica necesitas en 125?» composed by the
+            # shell as {kind: clarification, polarity: pending}): a question or a talk told is no act.
+            self._last_final_acted = not only_asked_or_talked(situation)
+            self._told_send = messaging.verified_send(situation)
+
+    def said(self, reply: object) -> None:
+        """Revisión 3 de la ronda 22: the reply a conversation turn carries is published by the shell as it is, never
+        through message.compose (``told``); it is the last final of its request all the same («dame 3 chistes» after a
+        list of games: a later «te pedí 3 nomás» is about the jokes, never the games). Ronda 24: a question the turn
+        asked instead of acting is its final too (r23 t2-c03 #2 «¿Te gustaría que cierre la configuración…?»)."""
+
+        if str(reply or "").strip():
+            self._last_final = str(reply).strip()
+            self._final_of_request = True
+            self._last_final_acted = False
+            self._told_send = False
+
+    def last_final_acted(self) -> bool:
+        """Ronda 24: whether the last final told an operation's result (done or failed); False after a question or a
+        talk, which ran nothing."""
+
+        return self._last_final_acted
+
+    def undo_of_nothing(self, text: str, *, risk_of: Callable[[str], str | None] | None = None) -> str | None:
+        """Ronda 24 (r23 t2-c04 #3 «no espera se ve muy grande, regresala como estaba» after a turn that only asked
+        «¿Qué escala…?» → eleven blind clicks in 29,5 s): an undo (``asks_to_undo``) whose antecedent changed nothing —
+        the last request verified no operation with an effect and tried none, and the request before it verified none
+        either — is answered with that fact; nothing is put back. Returns the last request (what changed nothing), or
+        None. Contracaso: after a verified brightness change («sube el brillo» → «regrésalo como estaba»), or a change
+        two turns back with a read between, the undo is decided as before. An operation whose risk the catalog does
+        not tell (``risk_of``) counts as an effect. Revisión 1 de la ronda 24: any turn of the conversation counts, not
+        only the last two (a change three turns back, a mission that clicked without verifying before a talk), and
+        what changed nothing is the last request about an operation, never a «gracias» said after it. Revisión 4 de la
+        ronda 24: only an undo that is all the message says (``only_undoes``; «deshazlo y abre spotify» is decided as
+        before, its order never lost), and only after a request about an operation (``_acting_request``): after a
+        «hola» alone there is nothing of BAXY's to put back, and nothing is said unverified."""
+
+        if self._acting_request is None or not only_undoes(text) or self._touched:
+            return None
+
+        def effect(operation: str) -> bool:
+            risk = risk_of(operation) if risk_of is not None else None
+            return not (isinstance(risk, str) and risk == "read_only")
+
+        if not any(
+            effect(str(operation))
+            for operation in (*self.operations, *self.previous_operations, *sorted(self._conversation_acts))
+        ):
+            return self._acting_request
+        # Estabilización G3 (tanda f2nb t2-c04 #3: «abre configuracion y ve a pantalla» failed after unverified clicks,
+        # «ahi ponle la escala en 125» was only asked about, and the undo went to the engine, which pressed the theme
+        # «Windows (oscuro)» twice): the undo is of the last request about an operation; when that one did and tried
+        # nothing (a question, a failure without a step) and no turn verified a change, there is nothing of it to put
+        # back. A request before it that only tried is no change this undo names.
+        if self._acting_did or any(
+            effect(str(operation))
+            for operation in (*self.operations, *self.previous_operations, *sorted(self._verified_changes))
+        ):
+            return None
+        return self._acting_request
+
+    def _keep_final_outcome(self, situation: object) -> None:
+        """Ronda 20 P3: whether this final told a failure (``polarity: failure``, or a mission whose ``reached`` is
+        false) and the window its own observation named (none when it observed none), kept for ``antecedent_failed``."""
+
+        if not isinstance(situation, dict):
+            return
+        observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+        reason = situation.get("reason") if isinstance(situation.get("reason"), dict) else {}
+        self._last_final_failed = (
+            str(situation.get("polarity") or "").strip().lower() == "failure"
+            or situation.get("succeeded") is False
+            or observed.get("reached") is False
+        )
+        self._last_window = None
+        for seen in (observed, reason.get("observed") if isinstance(reason.get("observed"), dict) else {}):
+            window = next(
+                (str(seen[key]).strip() for key in ("windowTitle", "application") if str(seen.get(key) or "").strip()),
+                None,
+            )
+            if window is not None:
+                self._last_window = window[:120]
+                break
+
+    def antecedent_failed(self, text: str, slot: DialogueSlot) -> str | None:
+        """Ronda 20 P3 (pasada r18, v3-11 t2: «escribe ahí: comprar pan, leche y huevos» after «en onenote crea una
+        pagina nueva» was told as failed, and the text went into the title of a page that already existed): the
+        person's request before, when this message puts what it asks in a place it only points back to
+        (``points_back_to_a_place``) and the last final told of that request was a failure. That place is the
+        product of a request that never made it; whatever window is open is no answer to «ahí». None otherwise: after
+        «Listo, creé la página» the same words act, and a first message has no request before."""
+
+        if not self._last_final_failed or not slot.antecedents or not points_back_to_a_place(text):
+            return None
+        return slot.antecedents[0]
+
+    def last_window(self) -> str | None:
+        """The window the last final observed (its title, else its application), or None: never one of a turn before."""
+
+        return self._last_window
+
+    def _keep_on_show(self, situation: object) -> None:
+        """A verified navigation leaves its address on show; any other act (a read of it aside) may have changed what
+        the browser shows, so nothing is held on show after it."""
+
+        if not isinstance(situation, dict):
+            return
+        operation = str(situation.get("operation") or "")
+        observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+        if (
+            operation in _NAVIGATIONS
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(address := observed.get("requestedUrl") or observed.get("finalUrl"), str)
+        ):
+            self._on_show = address
+        elif operation and operation not in _READS_OF_THE_PAGE_ON_SHOW:
+            self._on_show = None
+        elif not operation:
+            reason = situation.get("reason") if isinstance(situation.get("reason"), dict) else {}
+            steps = situation.get("steps") if isinstance(situation.get("steps"), list) else []
+            acted = {str(item.get("operation") or "") for item in (reason, *steps) if isinstance(item, dict)} - {""}
+            if acted - _READS_OF_THE_PAGE_ON_SHOW:
+                self._on_show = None
+
+    def on_show(self, address: object) -> str | None:
+        """Semilla fix2 («si pero quiero buscar un top 3», «ok pero lo puedes buscar en google…» after that search was
+        opened and verified): the address on show, when ``address`` is the same page — the same site and path, and a
+        search with the same words (function words, accents and punctuation aside). None otherwise."""
+
+        if self._on_show is None or not isinstance(address, str):
+            return None
+        return self._on_show if same_page(address, self._on_show) else None
+
+    def final_before_correction(self, situation: object, text: str) -> str | None:
+        """Uso real v3 t2 (c03-2 «no bro cerraste el que no era, te dije CHROME» → «No se cerró Chrome porque no tenía
+        ninguna ventana abierta.» again; c04-4 the same mission failure again): the words of the last final told, when
+        the person corrects or reproaches it and this result is not the same read found again (``same_result_again``
+        tells that one). The writer must answer the correction, never tell those words again. None otherwise: a
+        follow-up that goes on («y ahora baja el brillo») may get any words."""
+
+        if self._last_final is None or not corrects_or_insists(text) or self.same_result_again(situation, text):
+            return None
+        return self._last_final
+
+    def last_final(self) -> str | None:
+        """The last final BAXY told, whatever it was of (``already_holds`` gives it to the writer not to repeat)."""
+
+        return self._last_final
+
+    def last_told(self) -> str | None:
+        """The words BAXY told of the last operation result; None before any."""
+
+        return self._told[2] if self._told is not None else None
+
     def accepted_alarm_cancellation(self, text: str) -> str | None:
         """D39 (owner, 2026-09-29): after «cancela las alarmas» BAXY read the alarms and asked whether to cancel them
         all; a yes is the cancellation of each alarm read (its verified local clock), as one request the readers read.
         None for anything else, with no alarm read, or with more than a plan holds."""
 
-        if not self._alarm_offer or self.request is None or not assents_to_alarm_offer(text):
+        if not self._alarm_offer or self.request is None or not accepts_offer(text, "alarms"):
             return None
         return alarm_cancellation_request(self._alarm_offer, english=not spanish(self.request))
+
+    def offer_send(self, offer: tuple[str, str, str | None] | None) -> None:
+        """Estabilización B2: the send this turn's draft may offer (``semantic.messaging.offered_send``)."""
+
+        self._send_offer = offer
+
+    def send_offer_question(self, english: bool, readers_send: Callable[[str], bool]) -> str | None:
+        """The offer to send the verified draft's message in the person's words, told now at the end of its final;
+        None when there is nothing to offer, or when ``readers_send`` says the readers alone would not send it on the
+        yes. Only an offer told is accepted (``accepted_send``)."""
+
+        if self._send_ready is None:
+            return None
+        channel, recipient, words = self._send_ready
+        self._send_ready = None
+        request = messaging.accepted_send_request(recipient, words, channel, english)
+        if request is None or not readers_send(request):
+            return None
+        question = messaging.send_offer_question(recipient, words, english)
+        self._send_offered = (request, question)
+        return question
+
+    def begin_turn(self) -> None:
+        """Revisión B2 H3: each turn.decide starts here, whatever comes of it; an offer told in the last final is read
+        only by this turn, never by a later one (a failed turn in between, a final the shell replaced)."""
+
+        self._send_now, self._send_offered = self._send_offered, None
+
+    def accepted_send(self, text: str, history: object) -> str | None:
+        """Estabilización B2: a yes right after the offer is the send it named, as one request the readers read (the
+        recipient in its client, the person's words); None for anything else, which leaves the draft as it is.
+        Revisión B2 H3: only when BAXY's message right before the yes, as the shell sent it, ends with that offer."""
+
+        if self._send_now is None or not accepts_offer(text, "send") or not isinstance(history, list):
+            return None
+        said = [item for item in history if isinstance(item, dict)]
+        if said and said[-1].get("role") == "user" and said[-1].get("content") == text:
+            said = said[:-1]
+        request, question = self._send_now
+        last = said[-1] if said else {}
+        if last.get("role") != "assistant" or not str(last.get("content") or "").rstrip().endswith(question):
+            return None
+        return request
+
+    def yes_after_a_send(self, text: str, history: object) -> bool:
+        """Encargo E (banco i1 c6, bypass: «sí» after «Escribí "prueba BAXY C6" en el chat con Ron92…», a send BAXY had
+        made and verified, was answered «Sí, lo enviaste.»): a whole yes right after a final that told a verified send,
+        with nothing asked in BAXY's message before it as the shell sent it. Nothing waits for that yes; the send is
+        BAXY's, already done, and is said so from data (``already_sent``), never drafted with another actor."""
+
+        if not self._told_send or not accepts_offer(text, "send") or not isinstance(history, list):
+            return False
+        said = [item for item in history if isinstance(item, dict)]
+        if said and said[-1].get("role") == "user" and said[-1].get("content") == text:
+            said = said[:-1]
+        last = said[-1] if said else {}
+        return last.get("role") == "assistant" and not re.search(r"[¿?]", str(last.get("content") or ""))
 
     def lines(self) -> list[tuple[str, str]]:
         """What was verified, one line per kind, for the rewrite prompt and its word check."""
@@ -2032,7 +3832,7 @@ class DialogueState:
         return RetimedNotification(
             kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now,
             set_by=self._notification.get("set_by", "notification.schedule"), set_title=self._notification["title"],
-            set_at=old,
+            set_at=old, set_id=self._notification.get("id", ""),
         )
 
     def moved_notification_request(
@@ -2296,3 +4096,100 @@ def offered_alarm_clocks(observed: dict) -> tuple[tuple[int, int], ...] | None:
             return None
         clocks.append((local.hour, local.minute))
     return tuple(clocks) if len(clocks) <= 8 else None
+
+
+# Ronda 23 (r21 v3-50 t2): what a request names as its object — a file with its extension («prueba.zip») or a name
+# said in quotes («Informe final»). Original case. A capitalised word is no such object: «para el paseo a Santa Marta»,
+# «450 dólares a Euros» say a place or a complement the restatement may leave to the readers (m174, m154 contracasos).
+_NAMED_FILE = re.compile(
+    rf"(?<![\w.-])[\w-]+(?:\.[\w-]+)*\.{alternation(lexicon.FILE_EXTENSIONS)}(?![\w])(?!\.\w)", re.IGNORECASE
+)
+_QUOTED_NAME = re.compile(r"[«“\"]([^«»“”\"\n]{1,80})[»”\"]")
+
+
+# The application a restatement is framed in, before the request itself («en 7-Zip File Manager, decime …»).
+_APPLICATION_FRAME = re.compile(r"(?:en|in)\s+([^,]{1,80}),\s*", re.IGNORECASE)
+
+# A place said by its kind («la carpeta Descargas») or by a path («C:\fotos», «docs/2024»).
+_NAMED_PLACE = re.compile(rf"\b{alternation(lexicon.PLACE_NOUNS)}\b|\\|\b[a-z]{{2,}}/[a-z]")
+# Revisión 2 de r23: a question for what the thing says or shows («¿qué dice?», «what does it show»); every other
+# question ``asks_the_inside_of_the_last`` reads asks what it holds.
+_ASKS_WHAT_IT_SAYS = re.compile(
+    rf"\b(?:que|what)\s+(?:(?:does|do)\s+(?:it|that|this)\s+)?{alternation(lexicon.SAYS_WORDS)}[\s¿?¡!.,;:]*$"
+)
+
+
+def _is_container(name: str) -> bool:
+    """Revisión 2 de r23: a file that holds others (``lexicon.CONTAINER_EXTENSIONS``)."""
+
+    return "." in name and fold(name).rsplit(".", 1)[-1] in lexicon.CONTAINER_EXTENSIONS
+
+
+def named_objects(text: str) -> tuple[str, ...]:
+    """The objects a request names (see above), in the order said; none for one that only points («¿qué tiene?»)."""
+
+    said = " ".join(str(text or "").split())
+    found = [*_NAMED_FILE.finditer(said), *_QUOTED_NAME.finditer(said)]
+    names: dict[str, str] = {}
+    for match in sorted(found, key=lambda m: m.start()):
+        name = (match.group(1) if match.re is _QUOTED_NAME else match.group(0)).strip(" .,;:")
+        if name and not any(fold(name) in fold(kept) for kept in names.values()):
+            names[fold(name)] = name
+    return tuple(names.values())
+
+
+def files_acted_on(text: str) -> tuple[str, ...]:
+    """Revisión 3 de r23 (revisión 2 left out only the quote of a verb of writing, so «en el bloc de notas poné «hola
+    mundo»» → «¿qué dice?» still sent «… (hola mundo)», and so did «pegá», «mandale «hola» a Ana» and «buscá «Hollow
+    Knight»»): the objects a later question can ask of are the files a request names by their extension, said outside
+    any quote. A quote says text — what the turn wrote, pasted, sent, searched or played, whatever its verb — and that
+    text is what the screen will then show: carried into the objective it is the expected answer, unverified, never an
+    object."""
+
+    said = _QUOTED_NAME.sub(" ", " ".join(str(text or "").split()))
+    names: dict[str, str] = {}
+    for match in _NAMED_FILE.finditer(said):
+        name = match.group(0).strip(" .,;:")
+        if name and fold(name) not in names:
+            names[fold(name)] = name
+    return tuple(names.values())
+
+
+def objective_with_the_antecedent_object(
+    objective: str, said: str, antecedent: str | None, *, is_application: Callable[[str], bool] = lambda _name: False,
+) -> str | None:
+    """Ronda 23 (r21 v3-50 t2 «decime cuántos archivos tiene adentro» after «en 7zip abrí el prueba.zip que está en
+    baxy-prueba-v3» was restated «en 7-Zip File Manager, decime cuántos archivos tiene adentro»: the engine counted the
+    folder and BAXY said «hay 7 archivos en la carpeta»). The restatement of a message that leans on the turn before
+    (the caller checks ``dependency``) and names nothing itself must keep what that turn named: a file it acted on
+    (``files_acted_on``; never a quote) that is not an application (the restatement frames those itself). When it kept none of them, the
+    objective is repaired with them, as said; None when there is nothing to repair («¿qué tiene?» after «abrí
+    Spotify», a restatement that kept «prueba.zip», a message that names its own object). Revisión 1: only a message
+    that asks the inside of what came before (``asks_the_inside_of_the_last``) is repaired, never a new order or a
+    question that depends some other way («buscá el clima de mañana», «dale, seguí», «en la calculadora calculá
+    37*12»), and never a restatement that gave it an object or a place of its own."""
+
+    if not antecedent or named_objects(said) or not asks_the_inside_of_the_last(said):
+        return None
+    # Revisión 2 (r23): a turn before that named a place of its own («abrí la carpeta Descargas y seleccioná foto.jpg»)
+    # leaves the inside asked between that place and a file in it; the restatement is not repaired. A question for what
+    # something holds («¿cuántos hay adentro?», «¿qué tiene?») asks it only of a file that holds others (an archive, a
+    # disk image), never of a picture, a document or a quoted name; one for what it says («¿qué dice?») of any of them.
+    if _NAMED_PLACE.search(fold(antecedent)):
+        return None
+    holds = _ASKS_WHAT_IT_SAYS.search(followup(said).folded) is None
+    objects = [
+        name for name in files_acted_on(antecedent)
+        if not is_application(name) and (not holds or _is_container(name))
+    ]
+    restated = " ".join(str(objective or "").split())
+    if not objects or not restated or any(fold(name) in fold(restated) for name in objects):
+        return None
+    # Revisión 1 (r23): a restatement that gave the question an object or a place of its own («qué tiene la carpeta
+    # Descargas» for «¿qué tiene?») is the decider's reading and stays; only one that still asks the bare inside, past
+    # the application it is framed in («en 7-Zip File Manager, …»), lost the object.
+    frame = _APPLICATION_FRAME.match(restated)
+    asked = restated[frame.end():] if frame is not None and is_application(frame.group(1)) else restated
+    if not asks_the_inside_of_the_last(asked):
+        return None
+    return f"{restated.rstrip(' .')} ({', '.join(objects)})"

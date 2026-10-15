@@ -22,13 +22,17 @@ from datetime import date
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm as llm_module
 from baxy_mind.effect_intent import resolve_explicit_clarification_intent
 from baxy_mind.planner import PlannerCatalog, enum_member_named, validate_argument_grounding
 from baxy_mind.semantic import knowledge, notes, temporal
 from baxy_mind.semantic.decider import ContextDecision, said_in_other_words
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
+from baxy_mind import turn_decide
+from baxy_mind import context_decision
+from baxy_mind.semantic import guards as semantic_guards
+from baxy_mind import argument_payload
 
 
 def _schema(properties: dict, required: list[str]) -> dict:
@@ -63,7 +67,7 @@ class _Abstains:
     """The model stand-in of the arguments step: the extraction abstains, a question is a fixed marker."""
 
     def extract_direct_arguments(self, *_a, **_k):
-        return llm_module.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿qué?")
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿qué?")
 
     def formulate_missing_argument_question(self, *_a, **_k):
         return "¿qué falta?"
@@ -75,8 +79,8 @@ class _Abstains:
 
 
 def _arguments(operation: str, schema: dict, request: str, decided: dict, history: list[dict]) -> dict | None:
-    sidecar._remember_decided_arguments(request, (operation,), tuple(sorted(decided.items())))
-    arguments, _question = sidecar._direct_arguments_result(
+    decided_arguments._remember_decided_arguments(request, (operation,), tuple(sorted(decided.items())))
+    arguments, _question = direct_arguments._direct_arguments_result(
         {"type": "arguments", "operation": operation, "text": request, "history": history},
         llm=_Abstains(), tool=_tool(operation, schema), dialogue_state=DialogueState(),
     )
@@ -130,7 +134,7 @@ def test_a_member_named_in_the_persons_language_is_that_member() -> None:
     assert enum_member_named("Escritorio", enum) == "desktop"
     assert enum_member_named("Documents", enum) == "documents"
     assert enum_member_named("Imágenes", enum) is None
-    assert sidecar._decided_value("Descargas", FOLDER_OPEN["properties"]["folder"]) == "downloads"
+    assert decided_arguments._decided_value("Descargas", FOLDER_OPEN["properties"]["folder"]) == "downloads"
     # A file «bajado» was downloaded: the folder the decider named is said.
     assert validate_argument_grounding({"folder": "downloads"}, FOLDER_OPEN, "¿dónde quedó el informe.pdf? lo bajé ayer")
     assert not validate_argument_grounding({"folder": "downloads"}, FOLDER_OPEN, "¿dónde quedó el informe.pdf?")
@@ -145,8 +149,8 @@ def test_the_day_said_takes_the_year_the_person_means() -> None:
 
 def test_a_value_left_open_at_the_end_is_cut() -> None:
     contract = {"type": "string", "x-maxUtf8Bytes": 65536}
-    assert sidecar._decided_value("for x in lista:\n    if \n", contract) is None
-    assert sidecar._decided_value("Comprar pan y leche", contract) == "Comprar pan y leche"
+    assert decided_arguments._decided_value("for x in lista:\n    if \n", contract) is None
+    assert decided_arguments._decided_value("Comprar pan y leche", contract) == "Comprar pan y leche"
 
 
 # ------------------------------------------------------------------ 5. a new list named by what it is for
@@ -250,7 +254,7 @@ class _Decider:
 
 def _turn(text: str, model: _Decider) -> dict:
     tools = {name: _tool(name, _schema({}, [])) for name in ("web.search", "network.ping", "task.create")}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m118", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),
@@ -286,7 +290,7 @@ def test_overheard_talk_is_asked_about_before_the_decider_and_never_acted_on() -
 
 def test_after_earlier_turns_overheard_talk_is_still_never_acted_on() -> None:
     model = _Decider(ContextDecision(OVERHEARD, "action", ("task.create",), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m123", "text": OVERHEARD, "history": [{"role": "user", "content": OVERHEARD}]},
         llm=model, planner_catalog=PlannerCatalog([_tool("task.create", _schema({}, []))]), overheard=True,
     )
@@ -303,7 +307,7 @@ def test_after_earlier_turns_overheard_talk_is_still_never_acted_on() -> None:
     "Elabora una lista con los inventos más famosos del siglo veinte indicando quién los creó y en qué año aparecieron",
 ])
 def test_a_long_request_said_to_baxy_is_not_overheard(text: str) -> None:
-    assert sidecar._unresolved_input_kind(text, ()) != "overheard_speech"
+    assert semantic_guards._unresolved_input_kind(text, ()) != "overheard_speech"
 
 
 # ------------------------------------------------------------------ 7–10. after the decider (later tandas of M118)
@@ -314,7 +318,7 @@ def _follow(text: str, history: list[tuple[str, str]], model: _Decider) -> dict:
              "calendar.event.list", "web.search")
     tools = [_tool(name, _schema({}, [])) for name in names]
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m118", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(tools),
     )
@@ -381,7 +385,7 @@ def test_memory_is_only_what_the_person_asks_of_it() -> None:
 
 
 def test_the_writer_never_denies_talking_to_a_go_ahead() -> None:
-    from baxy_mind.llm import _go_ahead_reply_unmet
+    from baxy_mind.reply_claims import _go_ahead_reply_unmet
 
     assert _go_ahead_reply_unmet("No lo he hecho: no tengo la capacidad de mantener conversaciones sin abrir programas.", "dale")
     assert _go_ahead_reply_unmet("I have not done it: I can't have conversations without opening apps.", "go ahead")

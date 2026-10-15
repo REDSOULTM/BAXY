@@ -4,7 +4,10 @@ import json
 
 import pytest
 
-from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect, compose_visible_defect, LlmRuntime
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.visible_defect import compose_visible_defect
 from baxy_mind.window_prose_facts import window_fact_feedback
 
 

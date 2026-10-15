@@ -67,7 +67,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                     privatePayload,
                     operationName,
                     out string forget,
-                    responseReplayed)
+                    responseReplayed,
+                    privateArguments)
                         ? forget
                         : null;
                 break;
@@ -145,7 +146,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 "selector",
                 MaximumSelectorUtf8Bytes,
                 allowEmpty: false,
-                out _)
+                out string selector)
             || !TryGetBoolean(payload, "replayed", out bool replayed))
         {
             return false;
@@ -174,6 +175,9 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             && !HasControlCharacter(value))
         {
             observed["remembered"] = value.Trim();
+            // Estabilización M2: the datum's name as the store keeps it, so the floor says which one
+            // («Listo, me acuerdo: tu color favorito es el verde.»).
+            observed["selector"] = selector.ToLowerInvariant();
         }
         message = CompletedFacts(operationName, "memory_updated", observed, responseReplayed || replayed);
         return true;
@@ -196,7 +200,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         JsonElement payload,
         string operationName,
         out string message,
-        bool responseReplayed)
+        bool responseReplayed,
+        JsonElement? privateArguments = null)
     {
         message = string.Empty;
         if (!HasExactProperties(payload, ["version", "deletedCount", "replayed"])
@@ -212,10 +217,19 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
+        var observed = new JsonObject { ["deletedCount"] = deleted };
+        if (privateArguments is { ValueKind: JsonValueKind.Object } arguments
+            && arguments.TryGetProperty("scope", out JsonElement scope)
+            && scope.ValueKind == JsonValueKind.String
+            && scope.GetString() == "all")
+        {
+            // Estabilización M: «olvida todo lo que sabes de mí» is told as everything forgotten, not one datum.
+            observed["scope"] = "all";
+        }
+
         message = deleted == 0 && operationName != "memory.session.clear"
             ? TurnVisibleFacts.Failure("memory_forget_empty")
-            : CompletedFacts(operationName, "memory_deleted",
-                new JsonObject { ["deletedCount"] = deleted }, responseReplayed || replayed);
+            : CompletedFacts(operationName, "memory_deleted", observed, responseReplayed || replayed);
         return true;
     }
 

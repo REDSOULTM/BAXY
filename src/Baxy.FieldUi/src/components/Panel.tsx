@@ -24,7 +24,7 @@ export function Panel({ title, onClose, width, className, children }: PropsWithC
       >
         <div className="panel-head">
           <span className="panel-title">{title}</span>
-          <button className="ibtn" onClick={onClose} data-tip="close" aria-label="close">
+          <button className="ibtn" onClick={onClose} data-tip="cerrar" aria-label="cerrar">
             <Icon name="x" />
           </button>
         </div>

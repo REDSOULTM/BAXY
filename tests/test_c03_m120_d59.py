@@ -21,8 +21,13 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import compose_instructions
+from baxy_mind import compose_payload
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import conversation_shape
+from baxy_mind import llm_prompts
+from baxy_mind import compose_situation
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, web
 from baxy_mind.semantic.conversation import _conversation_presentation_shape
@@ -32,6 +37,8 @@ from baxy_mind.semantic.patterns import known_unsupported_effect_request
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from test_concision_2026_09_24 import ChatRecorder  # noqa: E402
+from baxy_mind import turn_decide  # noqa: E402
+from baxy_mind import turn_recovery as turn_recovery_module  # noqa: E402
 
 OPERATIONS = (
     "system.settings.adjust", "system.settings.set", "system.settings.status", "web.search", "web.news.headlines",
@@ -94,7 +101,7 @@ def _tool(operation: str) -> dict[str, object]:
 
 def _turn(text: str, model: _Decider) -> dict[str, object]:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m120", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -117,22 +124,22 @@ def _draft(opened: bool) -> dict:
 
 
 def test_a_client_opened_for_the_draft_is_told() -> None:
-    payload = llm._compose_situation_payload(_draft(True), "es", "déjale escrito a Tere en whatsapp que llego en diez")
+    payload = compose_payload._compose_situation_payload(_draft(True), "es", "déjale escrito a Tere en whatsapp que llego en diez")
     assert payload["seen"]["clientOpened"] is True
-    shape = llm._compose_shape_instruction(_draft(True), "es", "déjale escrito a Tere en whatsapp que llego en diez")
+    shape = compose_instructions._compose_shape_instruction(_draft(True), "es", "déjale escrito a Tere en whatsapp que llego en diez")
     assert "clientOpened is true" in shape
 
 
 def test_the_final_that_says_the_client_was_opened_is_published() -> None:
     final = "Abrí WhatsApp y dejé escrito «llego en diez» en el chat con Tere, sin enviarlo."
     asked = "déjale escrito a Tere en whatsapp que llego en diez"
-    assert llm.compose_visible_defect(final, "status", asked, {"situation": json.dumps(_draft(True))}) == ""
+    assert visible_defect.compose_visible_defect(final, "status", asked, {"situation": json.dumps(_draft(True))}) == ""
 
 
 def test_a_client_already_open_is_no_news() -> None:
-    payload = llm._compose_situation_payload(_draft(False), "en", "leave Tere a whatsapp saying I'm ten minutes out")
+    payload = compose_payload._compose_situation_payload(_draft(False), "en", "leave Tere a whatsapp saying I'm ten minutes out")
     assert "clientOpened" not in payload["seen"]
-    shape = llm._compose_shape_instruction(_draft(False), "en", "leave Tere a whatsapp saying I'm ten minutes out")
+    shape = compose_instructions._compose_shape_instruction(_draft(False), "en", "leave Tere a whatsapp saying I'm ten minutes out")
     assert "clientOpened" not in shape
 
 
@@ -143,10 +150,12 @@ def test_a_client_already_open_is_no_news() -> None:
         ("discord_client_not_installed", "Discord"),
         ("whatsapp_client_open_not_verified", "WhatsApp"),
         ("discord_client_open_not_verified", "Discord"),
+        ("whatsapp_client_still_starting", "WhatsApp"),
+        ("discord_client_still_starting", "Discord"),
     ],
 )
 def test_the_ways_the_open_can_end_have_their_fact(code: str, client: str) -> None:
-    fact = llm._cause_in_prose(code, "es")
+    fact = compose_situation._cause_in_prose(code, "es")
     assert client in fact and "_" not in fact
 
 
@@ -242,7 +251,7 @@ def test_a_watch_is_the_limit_whatever_was_decided(text: str, decision: str, ope
 def test_the_watch_limit_has_its_shape(kind: str | None) -> None:
     text = "avísame cuando haya noticias de bitcoin"
     assert _conversation_presentation_shape(text, conversation_kind=kind, has_history=False) == "news_watch_limit"
-    assert json.loads(llm._shaped_presentation_text(text, "news_watch_limit", response_language="es")) == {
+    assert json.loads(conversation_shape._shaped_presentation_text(text, "news_watch_limit", response_language="es")) == {
         "response_language": "es", "subject": "bitcoin",
     }
 
@@ -261,7 +270,7 @@ def test_the_limit_with_its_offer_is_published(text: str, language: str, reply: 
     client = ChatRecorder([(reply, "stop")])
     answer, _ = client.chat(text, history=[], conversation_kind="unsupported", response_language=language)
     assert answer == reply
-    assert client.payloads[0]["messages"][0]["content"] == llm.NEWS_WATCH_LIMIT_PRESENTATION_PROMPT
+    assert client.payloads[0]["messages"][0]["content"] == llm_prompts.NEWS_WATCH_LIMIT_PRESENTATION_PROMPT
 
 
 @pytest.mark.parametrize(
@@ -274,7 +283,7 @@ def test_the_limit_with_its_offer_is_published(text: str, language: str, reply: 
     ],
 )
 def test_a_promise_to_watch_or_a_missing_part_is_refused(reply: str) -> None:
-    assert llm._shaped_conversation_answer_violates_contract(
+    assert conversation_contract._shaped_conversation_answer_violates_contract(
         reply, "avísame cuando haya noticias de bitcoin", "news_watch_limit",
     )
 
@@ -320,7 +329,7 @@ class _Silent:
 )
 def test_the_recovery_asks_with_the_persons_words(said: str, question: str) -> None:
     composer = _Silent()
-    result = sidecar._recover_failed_turn({"id": "m120", "text": said, "history": []}, composer,
+    result = turn_recovery_module._recover_failed_turn({"id": "m120", "text": said, "history": []}, composer,
                                           failure_kinds=("runtime", "runtime"))
     assert result["kind"] == "clarify" and result["question"] == question
     assert result["turn_recovery"] == "words_floor_question"
@@ -329,7 +338,7 @@ def test_the_recovery_asks_with_the_persons_words(said: str, question: str) -> N
 
 def test_a_recovered_limit_is_not_asked_about() -> None:
     composer = _Silent()
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery_module._recover_failed_turn(
         {"id": "m120", "text": "send flowers to Deimos", "history": []}, composer,
         failure_kinds=("runtime", "runtime"),
     )

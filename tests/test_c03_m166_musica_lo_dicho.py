@@ -17,10 +17,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
 from baxy_mind.semantic.arguments import music_named_in_message
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
+from baxy_mind import argument_payload
 
 PLAY_QUERY = {"type": "object", "properties": {
     "provider": {"type": "string", "enum": ["spotify"], "x-maxUtf8Bytes": 1024},
@@ -42,8 +43,8 @@ def _history(said: list[str]) -> list[dict[str, str]]:
 
 
 class _Abstaining:
-    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> llm.DirectArgumentExtraction:
-        return llm.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué canción?")
+    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> argument_payload.DirectArgumentExtraction:
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué canción?")
 
     def formulate_missing_argument_question(self, *_args: object, **_kwargs: object) -> str:
         return "¿Qué canción?"
@@ -53,15 +54,15 @@ def _arguments(operation: str, schema: dict[str, Any], said: list[str], request:
                decided: tuple[tuple[str, Any], ...]) -> tuple[Any, str]:
     """The App's arguments request: the decider's restatement as text, the lived conversation as history."""
 
-    sidecar._remember_decided_arguments(request, (operation,), decided)
-    return sidecar._direct_arguments_result(
+    decided_arguments._remember_decided_arguments(request, (operation,), decided)
+    return direct_arguments._direct_arguments_result(
         {"operation": operation, "text": request, "history": _history(said), "responseLanguage": "es"},
         llm=_Abstaining(), tool=_tool(operation, schema), dialogue_state=DialogueState(),
     )
 
 
 def _named(operation: str, arguments: dict[str, Any], said: list[str]) -> dict[str, Any]:
-    return sidecar._as_the_person_spelled(operation, arguments, said[-1], _history(said))
+    return decided_arguments._as_the_person_spelled(operation, arguments, said[-1], _history(said))
 
 
 # ------------------------------------------------------------------ H-w22-t2, the title the person said

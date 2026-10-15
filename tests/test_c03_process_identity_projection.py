@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from baxy_mind.llm import _compose_situation_payload
+from baxy_mind.compose_payload import _compose_situation_payload
 from baxy_mind.measurement_prose_projection import project_process_measurements
 
 

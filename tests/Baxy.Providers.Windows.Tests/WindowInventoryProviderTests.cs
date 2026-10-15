@@ -159,8 +159,52 @@ public sealed class WindowInventoryProviderTests
         Assert.That(platform.ReadCalls, Is.EqualTo(during ? 1 : 0));
     }
 
+    // Ronda 22 (revisión 1): a resolve publishes where each window stands on the desktop (z rank, topmost, work area),
+    // never the order of its read.
+    [Test]
+    public async Task EachCandidateCarriesWhereItStandsOnTheDesktop()
+    {
+        var platform = new InventoryPlatform(2)
+        {
+            StandingOf = identity => new WindowStanding(
+                (int)identity.Handle == 1 ? 7 : 2, (int)identity.Handle == 2, new WindowBounds(0, 0, 1934, 1046)),
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowResolveResult result = await provider.ResolveAsync("*", 5, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Windows.Select(window => window.ZOrder), Is.EqualTo(new int?[] { 7, 2 }));
+            Assert.That(result.Windows.Select(window => window.Topmost), Is.EqualTo(new[] { false, true }));
+            Assert.That(result.Windows.All(window => window.WorkAreaWidth == 1934 && window.WorkAreaHeight == 1046),
+                Is.True);
+            Assert.That(platform.EffectCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task ContracaseAPlatformThatCannotTellPublishesNoStanding()
+    {
+        var provider = new WindowsWindowControlProvider(new InventoryPlatform(2));
+
+        WindowResolveResult result = await provider.ResolveAsync("*", 5, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Windows.All(window => window.ZOrder is null && !window.Topmost
+                && window.WorkAreaWidth is null), Is.True);
+        });
+    }
+
     private sealed class InventoryPlatform(int count) : IWindowControlPlatform
     {
+        public Func<WindowIdentity, WindowStanding?>? StandingOf { get; init; }
+
+        public WindowStanding? Standing(WindowIdentity identity) => StandingOf?.Invoke(identity);
+
         private readonly WindowSnapshot[] _windows = Enumerable.Range(1, count)
             .Select(index => new WindowSnapshot(
                 new WindowIdentity((nint)index, index + 10, index, $"editor{index}", DateTimeOffset.UnixEpoch),

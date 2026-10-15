@@ -20,7 +20,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import _explicit_arguments_from_evidence, _prepare_turn_result
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.games import steam_library_title
 from baxy_mind.semantic.media import radio_station_query

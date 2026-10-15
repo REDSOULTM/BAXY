@@ -31,17 +31,20 @@ import pytest
 
 from baxy_mind import __main__ as mind_main
 from baxy_mind import llm as llm_module
-from baxy_mind.__main__ import _catalog_answers_the_request, _emit_early_turn_signal, _prepare_turn_result
+from baxy_mind.operation_contract import _catalog_answers_the_request
+from baxy_mind.turn_decide import _emit_early_turn_signal, _prepare_turn_result
 from baxy_mind.first_signal import NOTICE_AFTER_SECONDS, PATH_MODEL, SILENCE_BUDGET_SECONDS, PendingTurnSignal
 from baxy_mind.llm_transport import ChatCompletionCancelled
 from baxy_mind.llm import (
     NATIVE_SELECTION_CALL_TOKENS,
     NATIVE_SELECTION_PROSE_TOKENS,
-    RESPONSE_LANGUAGE_PROMPT,
-    SEMANTIC_EFFECT_GUARD_PROMPT,
-    ConversationReplyContractError,
     LlmRuntime,
 )
+from baxy_mind.llm_prompts import (
+    RESPONSE_LANGUAGE_PROMPT,
+    SEMANTIC_EFFECT_GUARD_PROMPT,
+)
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.planner import PlannerCatalog
 
 _WAIT = 5.0

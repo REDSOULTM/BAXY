@@ -1,5 +1,9 @@
 {
- "_doc": "D59.7 (dueño 2026-10-02): la pregunta de un turno no entendido se arma con las palabras de la persona; plantilla por idioma, {quoted} = sus palabras.",
+ "_doc": "D59.7 (dueño 2026-10-02): la pregunta de un turno no entendido se arma con las palabras de la persona; plantilla por idioma, {quoted} = sus palabras. understood (estabilidad cu-v3 2026-10-08, v2-v3-61): un turno entendido cuya redacción falló no se pregunta con sus palabras; su fallo dice la causa, corta.",
  "es": "¿Qué quieres que haga con \"{quoted}\"?",
- "en": "What should I do with \"{quoted}\"?"
+ "en": "What should I do with \"{quoted}\"?",
+ "understood": {
+  "es": "No logré armar una respuesta fiable a eso.",
+  "en": "I couldn't put together a reliable answer to that."
+ }
 }

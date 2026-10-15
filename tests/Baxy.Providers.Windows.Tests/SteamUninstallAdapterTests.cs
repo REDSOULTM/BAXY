@@ -6,8 +6,10 @@ namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
 /// Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): la desinstalación de
-/// un juego instalado pasa por la consola de Steam y se verifica en el
-/// manifiesto; lo que no está instalado se dice antes de tocar nada.
+/// un juego instalado se verifica en el manifiesto; lo que no está instalado se
+/// dice antes de tocar nada. Encargo imp-steam: pasa por la dirección del dato
+/// (steam://uninstall/&lt;id&gt;) y el diálogo propio de Steam confirmado por sus
+/// nombres, ya no por la consola.
 /// </summary>
 [TestFixture]
 public sealed class SteamUninstallAdapterTests
@@ -31,6 +33,8 @@ public sealed class SteamUninstallAdapterTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(cancelled, Is.EqualTo("620"));
+            Assert.That(automation.Dispatched, Is.EqualTo("steam://uninstall/620"));
+            Assert.That(automation.Confirmed, Is.EqualTo(new[] { "Desinstalar", "Uninstall" }));
             Assert.That(receipt.Result!.Value.GetProperty("removed").GetBoolean(), Is.True);
             Assert.That(receipt.Result!.Value.GetProperty("name").GetString(), Is.EqualTo("Portal 2"));
             Assert.That(receipt.Result!.Value.GetProperty("state").GetString(), Is.EqualTo("manifest_removed"));
@@ -57,7 +61,7 @@ public sealed class SteamUninstallAdapterTests
     }
 
     [Test]
-    public async Task AGameStillInstalledAfterTheConsoleOrderIsNotClaimedRemoved()
+    public async Task AGameStillInstalledAfterItsDialogIsNotClaimedRemoved()
     {
         var automation = new StubAutomation(_ => { });
         var adapter = new SteamLocalAdapter(
@@ -73,6 +77,27 @@ public sealed class SteamUninstallAdapterTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("steam_uninstall_not_verified"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // Steam's dialog left unconfirmed (its button not found, nothing pressed): said, the game not claimed removed and
+    // its manifest not waited on.
+    [Test]
+    public async Task AnUnconfirmedUninstallDialogRemovesNothing()
+    {
+        var automation = new StubAutomation(_ => Assert.Fail("nothing was pressed"), confirmed: false);
+        var adapter = new SteamLocalAdapter(
+            () => [new("620", "Portal 2", new string('a', 64))], () => new HashSet<string> { "620" }, automation, (_, _) => ValueTask.CompletedTask);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.uninstall.named",
+            JsonSerializer.SerializeToElement(new { title = "Portal 2" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_uninstall_dialog_not_confirmed"));
         });
     }
 
@@ -93,17 +118,25 @@ public sealed class SteamUninstallAdapterTests
         Assert.That(receipt.ErrorCode, Is.AnyOf("epic_launcher_data_not_found", "epic_entitlement_not_verified", "epic_install_link_not_resolved", "epic_install_not_verified", "epic_install_dispatch_rejected").Or.Null);
     }
 
-    private sealed class StubAutomation(Action<string> onCancel) : ISteamClientAutomation
+    // Steam's own uninstall dialog for the last address, confirmed by its labels (or left unconfirmed).
+    private sealed class StubAutomation(Action<string> onCancel, bool confirmed = true) : ISteamClientAutomation
     {
-        public ValueTask<SteamDispatchResult> DispatchAsync(string uri, CancellationToken cancellationToken) =>
-            ValueTask.FromResult(new SteamDispatchResult(true, true));
+        internal string? Dispatched { get; private set; }
+        internal IReadOnlyList<string> Confirmed { get; private set; } = [];
 
-        public ValueTask<SteamDispatchResult> ContinueLaunchDialogAsync(SteamDispatchResult dispatch, CancellationToken cancellationToken) =>
-            ValueTask.FromResult(new SteamDispatchResult(false, dispatch.EffectObserved));
-
-        public ValueTask<SteamDispatchResult> CancelPartialAsync(string appId, CancellationToken cancellationToken)
+        public ValueTask<SteamDispatchResult> DispatchAsync(string uri, CancellationToken cancellationToken)
         {
-            onCancel(appId);
+            Dispatched = uri;
+            return ValueTask.FromResult(new SteamDispatchResult(true, true));
+        }
+
+        public ValueTask<SteamDispatchResult> ConfirmAsync(
+            SteamDispatchResult dispatch, IReadOnlyList<string> labels, CancellationToken cancellationToken)
+        {
+            Confirmed = labels;
+            if (!confirmed)
+                return ValueTask.FromResult(new SteamDispatchResult(false, false));
+            onCancel(Dispatched!["steam://uninstall/".Length..]);
             return ValueTask.FromResult(new SteamDispatchResult(true, true));
         }
     }

@@ -3,7 +3,9 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 
 
 def _situation(clock):
@@ -33,11 +35,11 @@ def _situation(clock):
 def test_named_clock_preserves_the_observation(gate, clock, reply):
     situation = _situation(clock)
     if gate == "payload":
-        defect = llm._payload_fact_defect(reply, llm._compose_situation_payload(situation, "es"))
+        defect = payload_fact_checks._payload_fact_defect(reply, compose_payload._compose_situation_payload(situation, "es"))
     else:
         english = any(word in reply for word in ("noon", "midnight", "The time"))
         question = "What time is it?" if english else "¿Qué hora es?"
-        defect = llm.compose_visible_defect(reply, "status", question, {"situation": json.dumps(situation)})
+        defect = visible_defect.compose_visible_defect(reply, "status", question, {"situation": json.dumps(situation)})
     assert defect == ""
 
 
@@ -51,7 +53,7 @@ def test_named_clock_preserves_the_observation(gate, clock, reply):
 ])
 @pytest.mark.parametrize("clock", ["12:00", "00:00"])
 def test_non_exact_or_non_asserted_named_time_does_not_supply_a_clock(reply, clock):
-    assert llm._payload_fact_defect(reply, {"clock": clock})
+    assert payload_fact_checks._payload_fact_defect(reply, {"clock": clock})
 
 
 @pytest.mark.parametrize("reply", [
@@ -60,7 +62,7 @@ def test_non_exact_or_non_asserted_named_time_does_not_supply_a_clock(reply, clo
 ])
 @pytest.mark.parametrize("clock", ["12:00", "00:00"])
 def test_every_asserted_clock_value_must_agree(reply, clock):
-    assert llm._payload_fact_defect(reply, {"clock": clock}) == "reversed_result"
+    assert payload_fact_checks._payload_fact_defect(reply, {"clock": clock}) == "reversed_result"
 
 
 @pytest.mark.parametrize("clock, reply", [
@@ -68,12 +70,12 @@ def test_every_asserted_clock_value_must_agree(reply, clock):
     ("00:00", "The time is 12:00 PM."), ("12:00", "The time is 12:00 AM."),
 ])
 def test_named_times_do_not_erase_minutes_or_half_of_day(clock, reply):
-    assert llm._payload_fact_defect(reply, {"clock": clock})
+    assert payload_fact_checks._payload_fact_defect(reply, {"clock": clock})
 
 
 def test_date_only_response_still_rejects_an_added_wrong_named_time():
     situation = _situation("12:00")
     facts = {"situation": json.dumps(situation)}
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Hoy es 10 de septiembre de 2026; es medianoche.", "status", "¿Qué fecha es?", facts,
     ) == "reversed_result"

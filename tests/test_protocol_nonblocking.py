@@ -6,6 +6,7 @@ import os
 import pytest
 
 from baxy_mind import protocol
+from baxy_mind import request_lane
 
 
 @pytest.mark.parametrize("empty_reads", [1, 3])
@@ -86,7 +87,7 @@ def test_open_protocol_reader_preserves_regular_file_input(
     path.write_bytes(b'{"type":"ping"}\n')
     with path.open("rb") as source:
         monkeypatch.setattr(sidecar.sys, "stdin", source)
-        reader = sidecar._open_protocol_reader()
+        reader = request_lane._open_protocol_reader()
         assert reader() == {"type": "ping"}
         assert reader() is None
 
@@ -100,7 +101,7 @@ def test_open_protocol_reader_uses_a_real_nonblocking_pipe(
     try:
         with os.fdopen(read_fd, "rb", closefd=False) as source:
             monkeypatch.setattr(sidecar.sys, "stdin", source)
-            reader = sidecar._open_protocol_reader()
+            reader = request_lane._open_protocol_reader()
             if os.name == "nt":
                 assert not os.get_blocking(read_fd)
             os.write(write_fd, b'{"type":"ping"}\n')

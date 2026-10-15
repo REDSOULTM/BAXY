@@ -475,3 +475,5 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/PROCESS_DEADLINE804/FAST_EXIT.json -text
 /artifacts/comprobaciones/C03/PROCESS_DEADLINE804/NEXT_CONFIRMATION.json -text
 /artifacts/comprobaciones/C03/PROCESS_DEADLINE804/VALIDATION_EXIT.json -text
+# Filas E5 congeladas de las vistas de la pasada r3 (tests/test_cu_v3_semejanza.py).
+/tests/data/cu_semejanza_e5.npy -text

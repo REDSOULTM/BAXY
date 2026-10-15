@@ -35,6 +35,7 @@ from baxy_mind.semantic.grammar import past_or_hypothetical_message
 from baxy_mind.semantic.catalog import build_game_catalog_index
 from baxy_mind.semantic.patterns import resolve_explicit_effects
 from baxy_mind.semantic.web import bare_domain_names_an_application
+from baxy_mind import argument_grounding
 
 OPERATIONS = (
     "app.open", "app.installed", "browser.navigate", "filesystem.folder.open", "notification.cancel.latest",
@@ -120,7 +121,7 @@ def test_each_entry_enumerated_for_a_list_is_a_task_of_its_own() -> None:
     assert read.operations == ("task.create",) * 3
     schema = {"type": "object", "properties": {"title": {"type": "string"}, "details": {"type": "string"}},
               "required": ["title"], "additionalProperties": False}
-    titles = [sidecar._ground_explicit_arguments("task.create", clause, schema, (), build_game_catalog_index(()))
+    titles = [argument_grounding._ground_explicit_arguments("task.create", clause, schema, (), build_game_catalog_index(()))
               for clause in read.evidence]
     assert [arguments["title"] for arguments in titles] == ["tomates", "cebolla morada", "arroz"]
     assert {arguments["details"] for arguments in titles} == {"lista del súper"}
@@ -147,11 +148,11 @@ def test_the_studio_or_album_version_is_the_song_as_recorded() -> None:
     for restated in ("Pon la versión de estudio de «Gracias a la vida».",
                      "Play the album version of «Fake Plastic Trees».",
                      "Pon la versión del disco de «Lamento boliviano»."):
-        grounded = sidecar._ground_explicit_arguments("media.play.exact", restated, EXACT, (), games)
+        grounded = argument_grounding._ground_explicit_arguments("media.play.exact", restated, EXACT, (), games)
         assert grounded is not None and grounded["title"] in restated
         assert grounded["title"] not in {"Estudio", "estudio"}
     # A live or acoustic version is no title; it stays with the extraction.
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "media.play.exact", "Pon la versión en vivo de «Gracias a la vida».", EXACT, (), games) is None
 
 

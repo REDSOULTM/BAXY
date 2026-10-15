@@ -93,6 +93,92 @@ internal static class SearchPertinence
     // in the result as a name is: a headline of last year's race is not about this year's.
     internal static Pertinence Judge(string query, string title, string snippet)
     {
+        Pertinence judged = JudgeWords(query, title, snippet);
+        return judged == Pertinence.About && OneWorkOfTheCounted(query, title) ? Pertinence.NamesOnly : judged;
+    }
+
+    // Ronda 19 (r17 t2-c01 T4 «cuantos discos de estudio tienen los bunkers?» → the article «Los Bunkers (álbum)»,
+    // judged About, answered with one record's page): a title «Entity (kind of work …)» is the page of ONE work. A
+    // question that counts works of that kind («cuántos discos») is about the entity, not about one of them: such a
+    // page only names what is asked about, unless the question names that kind of work for itself («cuántas canciones
+    // tiene el álbum …»). A question that is not a count («¿de qué álbum es Ven aquí?» → «Ven aquí (canción de Los
+    // Bunkers)») keeps the work's own page, and so does a count of anything but works of that kind, which asks what
+    // the work itself has («cuántos premios ganó Titanic» → «Titanic (película de 1997)», «cuántas temporadas tiene
+    // Dark» → «Dark (serie de televisión)», «cuántas canciones tiene Thriller» → «Thriller (álbum)»).
+    private static readonly string[][] WorkKinds =
+    [
+        ["album", "disco", "lp", "ep"],
+        ["cancion", "tema", "sencillo", "single", "song"],
+        ["pelicula", "filme", "film", "movie"],
+        ["serie", "series", "show"],
+        ["novela", "libro", "novel", "book"],
+        ["videojuego", "juego", "game"],
+        ["gira", "tour"],
+    ];
+
+    private static readonly string[] CountHeads = ["cuantos", "cuantas", "how many", "number of", "numero de", "cantidad de"];
+
+    // The entity a work-qualified title is the work of («Los Bunkers (álbum)» → «Los Bunkers»), or null.
+    internal static string? WorkQualifiedEntity(string title)
+    {
+        int open = title.LastIndexOf('(');
+        if (open <= 0 || !title.TrimEnd().EndsWith(')')) return null;
+        string[] qualifier = WikipediaSearchSource.FoldedWords(title[(open + 1)..]);
+        return qualifier.Length > 0 && KindOf(qualifier[0]) is not null ? title[..open].Trim() : null;
+    }
+
+    // Revisión r19: the entity's own page is the one whose title is the entity's name AND that describes what the
+    // work's page says its maker is («Los Bunkers (álbum)»: «… de la banda de rock chilena …» → «Los Bunkers»: «…
+    // banda de rock chilena …»): two content words besides the name are shared. A namesake that is something else (a
+    // town, a ship, another work of the name) shares the name only and is judged as any other result; a
+    // disambiguation page never reaches here (WikipediaSearchSource.ParseSearchResponse drops it).
+    private const int SharedDescriptionWords = 2;
+
+    internal static bool OwnPageOfTheWork(string workTitle, string workSnippet, string title, string snippet)
+    {
+        if (WorkQualifiedEntity(workTitle) is not { } entity
+            || string.Join(' ', WikipediaSearchSource.FoldedWords(title)) != string.Join(' ', WikipediaSearchSource.FoldedWords(entity)))
+        {
+            return false;
+        }
+        var named = new HashSet<string>(WikipediaSearchSource.FoldedWords(entity), StringComparer.Ordinal);
+        var described = new HashSet<string>(WikipediaSearchSource.FoldedWords(snippet), StringComparer.Ordinal);
+        return ContentTerms(workSnippet)
+            .Where(word => !named.Contains(word) && !word.All(char.IsAsciiDigit))
+            .Count(word => WebBrowserAdapter.MatchesSearchTerm(word, described)) >= SharedDescriptionWords;
+    }
+
+    private static string[]? KindOf(string word) =>
+        WorkKinds.FirstOrDefault(kind => kind.Any(name => word == name || word == name + "s" || word == name + "es"));
+
+    internal static bool AsksACount(string query)
+    {
+        string folded = " " + string.Join(' ', WikipediaSearchSource.FoldedWords(query)) + " ";
+        return CountHeads.Any(head => folded.Contains(" " + head + " ", StringComparison.Ordinal));
+    }
+
+    private static bool OneWorkOfTheCounted(string query, string title)
+    {
+        if (WorkQualifiedEntity(title) is null || !AsksACount(query)) return false;
+        string[] qualifier = WikipediaSearchSource.FoldedWords(title[(title.LastIndexOf('(') + 1)..]);
+        string[] kind = KindOf(qualifier[0])!;
+        string[] words = WikipediaSearchSource.FoldedWords(query);
+        // The word counted is the one right after the count head; naming the kind there is counting the works.
+        var counted = new HashSet<int>();
+        for (int index = 0; index < words.Length; index++)
+        {
+            bool head = words[index] is "cuantos" or "cuantas"
+                || (index > 0 && (words[index - 1], words[index]) is ("how", "many") or ("number", "of") or ("numero", "de")
+                    or ("cantidad", "de"));
+            if (head && index + 1 < words.Length) counted.Add(index + 1);
+        }
+        // What is counted must be works of the title's kind; a count of anything else is asked of the work itself.
+        if (!counted.Any(index => KindOf(words[index]) == kind)) return false;
+        return !words.Where((word, index) => !counted.Contains(index)).Any(word => KindOf(word) == kind);
+    }
+
+    private static Pertinence JudgeWords(string query, string title, string snippet)
+    {
         string[] terms = ContentTerms(query);
         if (terms.Length == 0) return Pertinence.None;
         var titled = new HashSet<string>(WikipediaSearchSource.FoldedWords(title), StringComparer.Ordinal);

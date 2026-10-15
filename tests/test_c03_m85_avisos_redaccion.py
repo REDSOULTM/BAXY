@@ -26,8 +26,15 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import dialogue_history
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import conversation_shape
+from baxy_mind import clock_facts
+from baxy_mind import reply_claims
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue, temporal
 from baxy_mind.semantic.conversation import (
@@ -42,6 +49,8 @@ from baxy_mind.semantic.conversation import (
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.network import hours_until_asked
 from baxy_mind.semantic.request import INTENT_CAPABILITY, asks_about_reliability, read_request
+from baxy_mind import context_decision
+from baxy_mind import turn_recovery
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m85_v3o_evidence.json").read_text(encoding="utf-8"))
 CONVERSATION = json.dumps({"kind": "conversation", "polarity": "success"})
@@ -56,7 +65,7 @@ def _stage(ident: str, stage: str = "first") -> dict:
 
 
 def _visible(draft: str, user_text: str, situation: str = CONVERSATION, **facts: object) -> str:
-    return llm.compose_visible_defect(draft, "conversation", user_text, {"situation": situation, **facts})
+    return visible_defect.compose_visible_defect(draft, "conversation", user_text, {"situation": situation, **facts})
 
 
 class _Writer(llm.LlmRuntime):
@@ -149,7 +158,7 @@ def test_there_without_an_earlier_clock_place_stays_as_said(text: str, prior: li
 def test_w02_t2_the_decider_s_talk_is_this_pc_s_clock_read_with_the_place() -> None:
     # v3o turn-audit request 1334: mode talk, «¿Qué hora es en Madrid si allá son las 10 de la mañana?».
     decider = _Decider(ContextDecision("¿Qué hora es en Madrid si allá son las 10 de la mañana?", "talk", (), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m85", "text": W02_T2, "history": _history("D-w02-t2")},
         llm=decider,
         planner_catalog=PlannerCatalog([_tool("system.time"), _tool("web.search")]),
@@ -165,7 +174,7 @@ def test_s025_a_clock_later_on_talked_is_this_pc_s_clock_read() -> None:
     assert temporal.clock_later_asked(text) == ("si pasan cuarenta minutos", 40)
     assert temporal.clock_later_asked("what time will it be if 40 minutes pass") == ("if 40 minutes pass", 40)
     decider = _Decider(ContextDecision(text, "talk", (), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m85", "text": text, "history": [{"role": "user", "content": text}]},
         llm=decider,
         planner_catalog=PlannerCatalog([_tool("system.time")]),
@@ -176,7 +185,7 @@ def test_s025_a_clock_later_on_talked_is_this_pc_s_clock_read() -> None:
 def test_talk_that_is_no_clock_stays_talk() -> None:
     text = "¿por qué España tiene el horario de Europa central?"
     decider = _Decider(ContextDecision(text, "talk", (), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m85", "text": text, "history": [{"role": "user", "content": text}]},
         llm=decider,
         planner_catalog=PlannerCatalog([_tool("system.time")]),
@@ -191,24 +200,24 @@ def _madrid_clock_situation() -> dict:
 def test_w02_t2_the_conversion_is_computed_and_its_last_resort_is_said_from_the_figures() -> None:
     situation = _madrid_clock_situation()
     user_text = "y si en madrid son las 10 de la mañana acá qué hora es"
-    payload = llm._compose_situation_payload(situation, "es", user_text)
+    payload = compose_payload._compose_situation_payload(situation, "es", user_text)
     assert {key: payload[key] for key in ("given", "givenAt", "clock", "clockAt")} == {
         "given": "10:00", "givenAt": "Madrid", "clock": "05:00", "clockAt": "aquí",
     }
-    final = llm._deterministic_final(situation, payload, user_text, "es")
+    final = deterministic_finals._deterministic_final(situation, payload, user_text, "es")
     assert final == "Si en Madrid son las 10:00, aquí son las 05:00."
-    assert llm.compose_visible_defect(final, "status", user_text, {"situation": json.dumps(situation)}) == ""
-    assert llm._payload_fact_defect(final, payload, user_text) == ""
+    assert visible_defect.compose_visible_defect(final, "status", user_text, {"situation": json.dumps(situation)}) == ""
+    assert payload_fact_checks._payload_fact_defect(final, payload, user_text) == ""
     # The recorded draft said this PC's clock read of the turn before as the answer.
-    assert llm._payload_fact_defect(_stage("D-w02-t2")["draft"].replace("allá", "en Madrid"), payload, user_text) != ""
+    assert payload_fact_checks._payload_fact_defect(_stage("D-w02-t2")["draft"].replace("allá", "en Madrid"), payload, user_text) != ""
 
 
 def test_another_place_s_clock_last_resort() -> None:
     situation = _madrid_clock_situation()
     payload = json.loads(json.dumps(_stage("D-w02-t1")["payload"]))
-    assert llm._deterministic_final(situation, payload, "baxy qué hora es en madrid", "es") == "En Madrid son las 19:49."
-    english = llm._compose_situation_payload(situation, "en", "and if it's 10 am in Madrid, what time is it here?")
-    assert llm._deterministic_final(situation, english, "and if it's 10 am in Madrid, what time is it here?", "en") == (
+    assert deterministic_finals._deterministic_final(situation, payload, "baxy qué hora es en madrid", "es") == "En Madrid son las 19:49."
+    english = compose_payload._compose_situation_payload(situation, "en", "and if it's 10 am in Madrid, what time is it here?")
+    assert deterministic_finals._deterministic_final(situation, english, "and if it's 10 am in Madrid, what time is it here?", "en") == (
         "If it's 10:00 in Madrid, it's 05:00 here."
     )
 
@@ -338,7 +347,7 @@ def test_what_takes_the_last_effect_back(text: str, last_reply: str, retracts: b
     ],
 )
 def test_a_write_denied_in_a_turn_that_ran_nothing(reply: str, user_text: str) -> None:
-    assert llm.conversation_world_claim(reply, user_text) == "own_write_denied"
+    assert reply_claims.conversation_world_claim(reply, user_text) == "own_write_denied"
     assert _visible(reply, user_text) == "own_write_denied"
 
 
@@ -355,7 +364,7 @@ def test_w01_t2_the_recorded_draft_dies() -> None:
     ],
 )
 def test_a_denial_asked_for_is_no_invented_write(reply: str, user_text: str) -> None:
-    assert llm.conversation_world_claim(reply, user_text) != "own_write_denied"
+    assert reply_claims.conversation_world_claim(reply, user_text) != "own_write_denied"
 
 
 def test_p09_t3_the_retry_says_not_to_deny() -> None:
@@ -379,10 +388,10 @@ def test_p09_t3_the_retry_says_not_to_deny() -> None:
     ],
 )
 def test_p24_t5_a_plan_settled_in_a_turn_that_ran_nothing(draft: str) -> None:
-    assert llm.visible_reply_settles_a_plan(draft)
+    assert reply_claims.visible_reply_settles_a_plan(draft)
     # M105: after a reply that asked nothing, the go-ahead's own veto (M88) is judged first, with its own hint.
     assert _visible(draft, _case("D-p24-t5")["text"]) in {"effect_claim", "go_ahead_not_done"}
-    assert llm.conversation_world_claim(draft, _case("D-p24-t5")["text"]) == "effect_claim"
+    assert reply_claims.conversation_world_claim(draft, _case("D-p24-t5")["text"]) == "effect_claim"
 
 
 @pytest.mark.parametrize(
@@ -391,7 +400,7 @@ def test_p24_t5_a_plan_settled_in_a_turn_that_ran_nothing(draft: str) -> None:
      "¿Quieres que lo confirme?", "If you sign in to Netflix, the movie will play."],
 )
 def test_other_sentences_settle_nothing(draft: str) -> None:
-    assert not llm.visible_reply_settles_a_plan(draft)
+    assert not reply_claims.visible_reply_settles_a_plan(draft)
 
 
 def test_p24_t5_the_recorded_drafts_die() -> None:
@@ -405,7 +414,7 @@ def test_p27_t1_a_work_recommended_with_no_title_is_invented() -> None:
     third = _stage("D-p27-t1", "third")["draft"]
     assert third == _case("D-p27-t1")["published"]
     assert _visible(third, _case("D-p27-t1")["text"]) == "unnamed_work"
-    assert llm.visible_reply_recommends_an_unnamed_work("Te recomiendo la última película de ciencia ficción.")
+    assert reply_claims.visible_reply_recommends_an_unnamed_work("Te recomiendo la última película de ciencia ficción.")
 
 
 @pytest.mark.parametrize(
@@ -419,7 +428,7 @@ def test_p27_t1_a_work_recommended_with_no_title_is_invented() -> None:
     ],
 )
 def test_a_named_work_or_no_recommendation_passes(reply: str) -> None:
-    assert not llm.visible_reply_recommends_an_unnamed_work(reply)
+    assert not reply_claims.visible_reply_recommends_an_unnamed_work(reply)
 
 
 def test_p27_t1_the_mind_s_honest_question_back_is_no_failure() -> None:
@@ -470,9 +479,9 @@ def test_p32_t2_the_list_asked_is_written_as_a_list() -> None:
     text = "Dame las claves que mencionas en esa respuesta en forma de lista o tabla."
     published = _case("D-p32-t2")["published"]
     assert asks_a_list_or_table(text)
-    assert llm._misses_content_shape(published, text)
+    assert conversation_shape._misses_content_shape(published, text)
     listed = "- Conectar con lo que realmente importa\n- Mantener relaciones saludables\n- Encontrar propósito"
-    assert not llm._misses_content_shape(listed, text)
+    assert not conversation_shape._misses_content_shape(listed, text)
     writer = _Writer([published, listed])
     answer, _ = writer.chat(text, history=_case("D-p32-t2")["lived"], conversation_kind="knowledge",
                             response_language="es")
@@ -491,18 +500,18 @@ def test_p36_t2_more_lines_of_the_dialogue_are_written_as_dialogue() -> None:
     rejected = _case("D-p36-t2")["app_rejection"]
     assert rejected["reason"] == "looks_like_failure"
     assert "no puedo" not in without_quoted_speech(rejected["reply"]).casefold()
-    assert not llm._misses_content_shape(rejected["reply"], text)
+    assert not conversation_shape._misses_content_shape(rejected["reply"], text)
     assert _visible(rejected["reply"], text) == ""
 
 
 def test_p27_t5_the_person_s_words_said_back_are_an_echo() -> None:
-    assert llm._says_the_person_back("That is a lot.", "Nope, that's a lot.")
+    assert dialogue_history._says_the_person_back("That is a lot.", "Nope, that's a lot.")
     assert _visible(_stage("D-p27-t5")["draft"], _case("D-p27-t5")["text"]) == "echo"
-    assert not llm._says_the_person_back("That sounds good.", "That one sounds good.")  # p27-t4, reviewed ok
-    assert not llm._says_the_person_back("Of course, that is a lot to take in.", "Nope, that's a lot.")
+    assert not dialogue_history._says_the_person_back("That sounds good.", "That one sounds good.")  # p27-t4, reviewed ok
+    assert not dialogue_history._says_the_person_back("Of course, that is a lot to take in.", "Nope, that's a lot.")
     # A greeting or thanks is answered in kind.
-    assert not llm._says_the_person_back("¡Hola!", "hola")
-    assert not llm._says_the_person_back("Gracias a ti.", "gracias")
+    assert not dialogue_history._says_the_person_back("¡Hola!", "hola")
+    assert not dialogue_history._says_the_person_back("Gracias a ti.", "gracias")
     assert _visible("Buenas noches.", "buenas noches") == ""
 
 
@@ -511,15 +520,15 @@ def test_s001_the_hours_left_until_the_weekend_are_counted() -> None:
     situation = json.loads(stage["situation"])
     text = _case("D-s001")["text"]
     assert hours_until_asked(text) and not hours_until_asked("¿cuánto falta para el finde?")
-    payload = llm._compose_situation_payload(situation, "es", text)
+    payload = compose_payload._compose_situation_payload(situation, "es", text)
     # Observed Wednesday 2026-09-30 14:37 (UTC−3); the weekend begins on Saturday at 00:00.
     assert payload["days_until"] == 3 and payload["hours_until"] == "57 h 22 min"
-    assert llm._misses_calendar_facts(stage["draft"], payload)  # «Quedan dos días para el fin de semana…»
-    assert not llm._misses_calendar_facts("Quedan 57 h 22 min para el fin de semana; hoy es miércoles.", payload)
-    assert "hours_until" in llm._calendar_instruction(text)
+    assert clock_facts._misses_calendar_facts(stage["draft"], payload)  # «Quedan dos días para el fin de semana…»
+    assert not clock_facts._misses_calendar_facts("Quedan 57 h 22 min para el fin de semana; hoy es miércoles.", payload)
+    assert "hours_until" in clock_facts._calendar_instruction(text)
 
 
 def test_p04_t1_the_person_s_question_said_back_asks_nothing() -> None:
     assert _case("D-p04-t1")["text"] == "Dónde?"
-    assert not sidecar._recovery_question_is_valid("¿Dónde?", "Dónde?")
-    assert sidecar._recovery_question_is_valid("¿Qué lugar buscas?", "Dónde?")
+    assert not turn_recovery._recovery_question_is_valid("¿Dónde?", "Dónde?")
+    assert turn_recovery._recovery_question_is_valid("¿Qué lugar buscas?", "Dónde?")

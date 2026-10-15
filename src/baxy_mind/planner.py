@@ -910,6 +910,27 @@ def enum_member_named(value: object, enum: list[Any]) -> Any | None:
     return None
 
 
+def fixed_arguments(schema: object) -> dict[str, Any]:
+    """Estabilización M2 (identity live check 2026-10-11: «Olvidá mi color favorito» was asked «¿Qué confirmación,
+    alcance y versión necesitas…?»): the fields whose contract admits one value only (a ``const``, an integer whose
+    minimum is its maximum, such as a payload ``version``). They are the contract's, never the person's: they are never
+    asked, and they are filled when missing."""
+
+    properties = schema.get("properties") if isinstance(schema, dict) else None
+    fixed: dict[str, Any] = {}
+    for name, contract in (properties.items() if isinstance(properties, dict) else ()):
+        if not isinstance(contract, dict):
+            continue
+        if "const" in contract:
+            fixed[name] = contract["const"]
+        elif (
+            contract.get("type") == "integer" and isinstance(contract.get("minimum"), int)
+            and contract.get("minimum") == contract.get("maximum")
+        ):
+            fixed[name] = contract["minimum"]
+    return fixed
+
+
 def validate_argument_grounding(
     arguments: dict[str, Any],
     schema: dict[str, Any],
@@ -1150,6 +1171,12 @@ def _value_is_grounded(
         false_signal = bool(tokens & _FALSE_CUES)
         return true_signal != false_signal and value is true_signal
     if isinstance(value, (int, float)):
+        if (
+            isinstance(value, int) and "minimum" in schema and schema.get("minimum") == schema.get("maximum")
+            and value == schema["minimum"]
+        ):
+            # The only value the contract admits (``fixed_arguments``) is never the person's to say.
+            return True
         if property_name == "seconds" and isinstance(value, int) and value:
             # M115 (DEV-F v4e2 F-w43-t3 «adelantala un minuto…» → «¿Cuántos segundos…?»): seconds said as the
             # minutes or hours they make are said.
@@ -1177,6 +1204,14 @@ def _value_is_grounded(
         from .semantic.temporal import iso_day_said
 
         if iso_day_said(value, source):
+            return True
+    if property_name == "side" and value in {"left", "right"}:
+        # v3 r6 lectores (t2-r4 c18 «pon el Word y el Edge uno al lado del otro»): two windows put beside each other
+        # take both halves of the screen; which window takes which is the request's order (window_snap_side_for_step).
+        # One window alone «en pantalla dividida» says no half: its side stays unsaid.
+        from .semantic.windows import two_things_side_by_side
+
+        if two_things_side_by_side(source):
             return True
     enum = schema.get("enum")
     if isinstance(enum, list):

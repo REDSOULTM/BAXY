@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
 using System.Text;
@@ -23,6 +25,11 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
     private readonly HttpClient _http;
     private readonly Func<string, CancellationToken, Task<string>>? _fetch;
     private readonly PublicPlaceLocator _locator;
+
+    // Ronda 22 (r18 t4-c05: the weather took 5.3 s): a named place this session already resolved is not geocoded
+    // again; the forecast is always read anew. Only a place found is kept, with whether it has namesakes elsewhere.
+    private readonly ConcurrentDictionary<(string Location, string? DialectCountry), (PublicPlace Place, bool Elsewhere)>
+        _resolvedPlaces = new();
 
     internal OpenMeteoWeatherAdapter()
     {
@@ -54,12 +61,21 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
         {
             location = named.GetString()!.Trim();
         }
+        string? dialectCountry = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("dialectCountry", out JsonElement marked)
+            && marked.ValueKind == JsonValueKind.String
+            ? marked.GetString()
+            : null;
 
         try
         {
+            var namesakes = new Namesakes(dialectCountry);
+            // Ronda 22: where the time of a weather read goes (the place, the forecast) travels in elapsedMs.
+            var clock = Stopwatch.StartNew();
             PublicPlace? place = location is null
                 ? await _locator.LocateAsync(cancellationToken).ConfigureAwait(false)
-                : await GeocodeAsync(location, cancellationToken).ConfigureAwait(false);
+                : await ResolvePlaceAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
+            long placeMs = clock.ElapsedMilliseconds;
             if (place is null)
             {
                 return ExternalJson.FailureBeforeEffect(
@@ -87,7 +103,9 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             Task<AirQuality?> airRead = ReadAirQualityAsync(AirQualityAuthority + coordinates
                 + "&current=us_aqi,pm2_5,pm10&timezone=auto", cancellationToken);
             string forecastJson = await forecastRead.ConfigureAwait(false);
+            long forecastMs = clock.ElapsedMilliseconds - placeMs;
             AirQuality? air = await airRead.ConfigureAwait(false);
+            long totalMs = clock.ElapsedMilliseconds;
             using JsonDocument forecast = JsonDocument.Parse(forecastJson);
             JsonElement root = forecast.RootElement;
             if (!root.TryGetProperty("current", out JsonElement current)
@@ -109,6 +127,10 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 if (located.Region is { Length: > 0 } region)
                     writer.WriteString("region", region);
                 writer.WriteString("country", located.Country);
+                // Ronda 19: other towns of this name and comparable size exist in other countries; the reply names
+                // the country read, so the person can tell it was not the one meant.
+                if (namesakes.Elsewhere)
+                    writer.WriteBoolean("namesakesElsewhere", true);
                 writer.WriteString("locatedBy", located.Source);
                 writer.WriteString("observedAtLocal", ReadString(current, "time") ?? string.Empty);
                 writer.WriteString("timezone", ReadString(root, "timezone") ?? string.Empty);
@@ -165,6 +187,11 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 {
                     writer.WriteNull("airQuality");
                 }
+                writer.WriteStartObject("elapsedMs");
+                writer.WriteNumber("place", placeMs);
+                writer.WriteNumber("forecast", forecastMs);
+                writer.WriteNumber("total", totalMs);
+                writer.WriteEndObject();
                 writer.WriteString("authority", "open_meteo_forecast_v1");
                 writer.WriteEndObject();
             });
@@ -190,7 +217,58 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
     // ajeno o un parque que lleva el nombre no bastan.
     private static readonly string[] RegionFields = ["admin1", "admin2", "country"];
 
-    private async Task<PublicPlace?> GeocodeAsync(string location, CancellationToken cancellationToken)
+    // Ronda 19 (r17 t2-c13 «¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?» → Valencia, Venezuela, the
+    // most populous, with no country said): towns of the asked name whose size is comparable (a quarter of the
+    // largest or more) in other countries are namesakes. The country the person's speech marks (dialectCountry)
+    // chooses among them; it never picks a much smaller namesake nor passes over a region said. The receipt says
+    // when namesakes exist, so the reply names the country read.
+    private sealed class Namesakes(string? dialectCountry)
+    {
+        internal string? DialectCountry { get; } = dialectCountry;
+
+        internal bool Elsewhere { get; set; }
+    }
+
+    private const double ComparableNamesake = 0.25;
+
+    private static JsonElement? ChooseAmongNamesakes(List<JsonElement> sameName, JsonElement? largest, Namesakes namesakes)
+    {
+        if (largest is not { } top || ReadDouble(top, "population") is not double topPopulation || topPopulation <= 0)
+            return largest;
+        List<JsonElement> comparable = sameName
+            .Where(item => ReadString(item, "feature_code") is { } code && code.StartsWith("PPL", StringComparison.Ordinal)
+                && (ReadDouble(item, "population") ?? 0) >= ComparableNamesake * topPopulation)
+            .ToList();
+        string? topCountry = ReadString(top, "country_code");
+        namesakes.Elsewhere = comparable.Any(item => ReadString(item, "country_code") is { } code
+            && !string.Equals(code, topCountry, StringComparison.OrdinalIgnoreCase));
+        if (namesakes.DialectCountry is not { Length: > 0 } marked)
+            return largest;
+        JsonElement? spoken = comparable
+            .Where(item => string.Equals(ReadString(item, "country_code"), marked, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(item => ReadDouble(item, "population") ?? 0)
+            .Select(item => (JsonElement?)item)
+            .FirstOrDefault();
+        return spoken ?? largest;
+    }
+
+    private async Task<PublicPlace?> ResolvePlaceAsync(
+        string location, Namesakes namesakes, CancellationToken cancellationToken)
+    {
+        var key = (location.ToUpperInvariant(), namesakes.DialectCountry?.ToUpperInvariant());
+        if (_resolvedPlaces.TryGetValue(key, out var known))
+        {
+            namesakes.Elsewhere = known.Elsewhere;
+            return known.Place;
+        }
+
+        PublicPlace? place = await GeocodeAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
+        if (place is { } found)
+            _resolvedPlaces[key] = (found, namesakes.Elsewhere);
+        return place;
+    }
+
+    private async Task<PublicPlace?> GeocodeAsync(string location, Namesakes namesakes, CancellationToken cancellationToken)
     {
         // M58 (v3d-final F-p07-t1/t2 «the weather in Foster City» → Foster City, Michigan, the
         // first of the list and with no population, instead of Foster City, California): «Lugar,
@@ -248,6 +326,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             .ThenBy(entry => entry.order)
             .Select(entry => (JsonElement?)entry.item)
             .FirstOrDefault();
+        namedPlace = ChooseAmongNamesakes(sameName, namedPlace, namesakes);
         long? regionId = candidates
             .Where(item => Spellings(item, "admin1").Any(region => region is not null && RegionKey(region) == asked))
             .Select(item => ReadLong(item, "admin1_id"))
@@ -392,9 +471,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
     };
 
     private Task<string> FetchAsync(string url, CancellationToken cancellationToken) =>
-        _fetch is not null
-            ? _fetch(url, cancellationToken)
-            : _http.GetStringAsync(url, cancellationToken);
+        TransientHttp.GetStringAsync(_fetch ?? _http.GetStringAsync, url, cancellationToken);
 
     // Códigos WMO del servicio, en las palabras que una persona usa para el cielo.
     internal static string Condition(int code) => code switch

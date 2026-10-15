@@ -25,10 +25,13 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
-from baxy_mind.llm import ConversationReplyContractError
+from baxy_mind import visible_defect
+from baxy_mind import reply_claims
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.semantic import dialogue
+from baxy_mind import turn_recovery
+from baxy_mind import turn_audit
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m109_evidence.json").read_text(encoding="utf-8"))
 TALK = json.dumps({"kind": "conversation", "polarity": "success"})
@@ -120,9 +123,9 @@ def test_a_question_keeps_its_answer_however_it_is_told(reply: str, asked: str) 
 
 def test_the_claimed_ability_hint_carries_the_last_message_and_a_reasoned_denial() -> None:
     last = "I don't change the captions of films."
-    english = llm._claimed_ability_instruction(last, "en")
+    english = reply_claims._claimed_ability_instruction(last, "en")
     assert f"«{last}»" in english and "after a colon («I have not done that: …»)" in english
-    spanish = llm._claimed_ability_instruction("No cambio los subtítulos de las películas.", "es")
+    spanish = reply_claims._claimed_ability_instruction("No cambio los subtítulos de las películas.", "es")
     assert "«No cambio los subtítulos de las películas.»" in spanish and "tras dos puntos («No lo he hecho: …»)" in spanish
 
 
@@ -135,7 +138,7 @@ def test_the_claimed_ability_hint_carries_the_last_message_and_a_reasoned_denial
     ],
 )
 def test_a_denial_that_says_why_is_the_answer_the_hint_asks_for(reply: str, asked: str, denied: bool) -> None:
-    assert llm.visible_reply_denies_an_own_write(reply, asked) is denied
+    assert reply_claims.visible_reply_denies_an_own_write(reply, asked) is denied
 
 
 def test_the_fallback_composer_follows_the_hint_to_an_answer() -> None:
@@ -154,14 +157,14 @@ def test_the_fallback_composer_follows_the_hint_to_an_answer() -> None:
 
 def test_the_own_write_hint_says_what_to_write_when_the_act_was_asked() -> None:
     for language, words in (("en", "say that you do not do it"), ("es", "di que eso no lo haces")):
-        assert words in llm._own_write_denied_instruction(language)
+        assert words in reply_claims._own_write_denied_instruction(language)
 
 
 def test_a_go_ahead_after_a_question_is_told_its_yes_answers_nothing_asked() -> None:
     asked = "Which playlist should I start?"
-    assert "their yes does not answer what you asked" in llm._go_ahead_instruction(asked, "en")
-    assert "su sí no contesta lo que preguntaste" in llm._go_ahead_instruction("¿Qué lista pongo?", "es")
-    assert "nothing of yours was waiting for a yes" in llm._go_ahead_instruction("I paused the music.", "en")
+    assert "their yes does not answer what you asked" in reply_claims._go_ahead_instruction(asked, "en")
+    assert "su sí no contesta lo que preguntaste" in reply_claims._go_ahead_instruction("¿Qué lista pongo?", "es")
+    assert "nothing of yours was waiting for a yes" in reply_claims._go_ahead_instruction("I paused the music.", "en")
     writer = _Writer(["The request is confirmed and under way.", "I have not started anything yet: which playlist?"])
     final = writer.compose_user_message(
         "Yes, that is confirmed, please go ahead.", "conversation", {"situation": TALK, "context": asked},
@@ -220,10 +223,10 @@ class _Composer:
 def test_the_recovery_composes_with_the_conversation() -> None:
     composer = _Composer({"conversation": "I don't change the captions of films, French ones included."})
     history = [*_SUBTITLES_HISTORY, {"role": "user", "content": "Then switch them to French."}]
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m109", "text": "Then switch them to French.", "history": history},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
         conversation_kinds=("knowledge", "knowledge"),
     )
     assert result["reply"] == "I don't change the captions of films, French ones included."
@@ -235,10 +238,10 @@ def test_the_recovery_composes_with_the_conversation() -> None:
 def test_the_recovery_question_is_asked_with_the_conversation_too() -> None:
     composer = _Composer({"clarification": "Which documentary do you mean?"})
     history = [*_SUBTITLES_HISTORY]
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m109", "text": "Then switch them to French.", "history": history},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
         conversation_kinds=("knowledge", "knowledge"),
     )
     assert result["kind"] == "clarify" and result["question"] == "Which documentary do you mean?"
@@ -275,17 +278,17 @@ def test_a_headlines_report_is_no_failure_told_while_an_own_failure_still_is() -
     report = ("Titulares: «El ministro responde a la oposición: “No acepto esas críticas”»; «Rechazado en el Senado "
               "el plan de transporte nocturno».")
     facts = {"situation": _HEADLINES}
-    assert llm.compose_visible_defect(report, "status", "qué hay de nuevo en las noticias", facts) != "asserted_failure"
+    assert visible_defect.compose_visible_defect(report, "status", "qué hay de nuevo en las noticias", facts) != "asserted_failure"
     own = report + " No pude leer el resto."
-    assert llm.compose_visible_defect(own, "status", "qué hay de nuevo en las noticias", facts) == "asserted_failure"
+    assert visible_defect.compose_visible_defect(own, "status", "qué hay de nuevo en las noticias", facts) == "asserted_failure"
 
 
 def test_do_it_answered_with_the_act_not_done_and_why_is_no_unasked_question() -> None:
     facts = {"situation": TALK, "context": "The download of the album failed because the store asks for a sign-in."}
     reasoned = "I have not done it yet because the store asks me to sign in on this PC first."
-    assert llm.compose_visible_defect(reasoned, "conversation", "Yes, do it for me.", facts) != (
+    assert visible_defect.compose_visible_defect(reasoned, "conversation", "Yes, do it for me.", facts) != (
         "clarification_not_a_question"
     )
-    assert llm.compose_visible_defect("Sure.", "conversation", "do it", {"situation": TALK}) == (
+    assert visible_defect.compose_visible_defect("Sure.", "conversation", "do it", {"situation": TALK}) == (
         "clarification_not_a_question"
     )

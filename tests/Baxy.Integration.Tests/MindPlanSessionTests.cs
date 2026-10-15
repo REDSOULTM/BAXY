@@ -395,4 +395,102 @@ public sealed class MindPlanSessionTests
             Directory.Delete(root, recursive: true);
         }
     }
+
+    // Tanda t4-r6 (2026-10-08): a spent turn budget starts no further step. The end says
+    // what was done and what was left, and nothing stays pending. Contracases: inside the
+    // budget, or with nothing done yet, the step is attempted (here against a core that is
+    // gone, so the attempt is the thrown send).
+    [TestCase(60, 1, true)]
+    [TestCase(10, 1, false)]
+    [TestCase(60, 0, false)]
+    public async Task ASpentTurnBudgetStartsNoFurtherStepAndSaysWhatWasDone(
+        int elapsedSeconds, int doneSteps, bool stopsBeforeTheStep)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-plan-turn-budget-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        var core = new CoreProcessClient();
+        var mind = new MindSidecarClient();
+        try
+        {
+            var published = new List<(string Body, UserMessageEvent? Event)>();
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = () => core,
+                Mind = () => mind,
+                Publish = (body, messageEvent) => published.Add((body, messageEvent)),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (registry, prepared) =>
+                {
+                    registry.MarkResolved(prepared);
+                    return true;
+                },
+                TurnElapsed = () => TimeSpan.FromSeconds(elapsedSeconds),
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            var registry = new RetryableOperationRegistry(Path.Combine(root, "outbox.bin"));
+            var execution = new PendingMindPlanExecution(
+                "abre el bloc de notas y la calculadora",
+                [
+                    new MindPlanStep("open", "app.open", "Abre el Bloc de notas.", [], "literal",
+                        new JsonObject { ["appId"] = "windows.notepad" }),
+                    new MindPlanStep("calculator", "app.open", "Abre la calculadora.", [], "literal",
+                        new JsonObject { ["appId"] = "windows.calculator" }),
+                ])
+            {
+                NextIndex = doneSteps,
+            };
+            if (doneSteps > 0)
+            {
+                execution.CompletedMessages.Add("Abrí Bloc de notas.");
+                execution.Observations.Add(new JsonObject { ["stepId"] = "open", ["operation"] = "app.open" });
+            }
+
+            session.Begin(execution);
+            if (!stopsBeforeTheStep)
+            {
+                Assert.ThrowsAsync<InvalidOperationException>(
+                    async () => await session.ExecuteAsync(execution, registry, CancellationToken.None));
+                return;
+            }
+
+            await session.ExecuteAsync(execution, registry, CancellationToken.None);
+            Assert.That(published, Has.Count.EqualTo(1));
+            JsonNode facts = JsonNode.Parse(published[0].Body)!;
+            Assert.Multiple(() =>
+            {
+                Assert.That(session.HasPending, Is.False);
+                Assert.That(store.Load(registry), Is.Null);
+                Assert.That(published[0].Body, Does.Contain("Bloc de notas"));
+                Assert.That(facts["reason"]!["cause"]!.GetValue<string>(), Is.EqualTo("turn_budget_exhausted"));
+                Assert.That(facts["reason"]!["operation"]!.GetValue<string>(), Is.EqualTo("app.open"));
+            });
+        }
+        finally
+        {
+            await mind.DisposeAsync();
+            await core.DisposeAsync();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [TestCase(44, false)]
+    [TestCase(45, true)]
+    [TestCase(90, true)]
+    public void TheTurnBudgetIsSpentAtItsTotal(int elapsedSeconds, bool spent) =>
+        Assert.That(TurnBudget.IsSpent(TimeSpan.FromSeconds(elapsedSeconds)), Is.EqualTo(spent));
+
+    // Review 2026-10-08: the clock only resets when a turn starts, so between turns it kept growing. A message
+    // published outside a turn is not a spent turn.
+    [Test]
+    public void OutsideATurnNoBudgetIsSpent()
+    {
+        long longAgo = System.Diagnostics.Stopwatch.GetTimestamp()
+            - (long)(System.Diagnostics.Stopwatch.Frequency * 120.0);
+        Assert.Multiple(() =>
+        {
+            Assert.That(TurnBudget.Elapsed(turnActive: false, longAgo), Is.EqualTo(TimeSpan.Zero));
+            Assert.That(TurnBudget.IsSpent(TurnBudget.Elapsed(turnActive: true, longAgo)), Is.True);
+        });
+    }
 }

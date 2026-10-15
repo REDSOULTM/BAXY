@@ -41,6 +41,7 @@ from typing import Iterable
 
 from .grammar import _CARDINAL_WORDS, SPOKEN_NUMBER, spoken_cardinal
 from .normalize import fold
+from .temporal import MONTH_NUMBERS
 
 __all__ = [
     "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "spoken_numbers_in",
@@ -48,6 +49,7 @@ __all__ = [
     "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked",
     "UnitFigure", "unit_figures", "unit_asked", "converts_by_itself", "equivalence_said",
     "unsaid_figures", "spelled_figure", "without_listed_years", "RatedTotal", "rated_totals", "gives_a_total",
+    "APPROXIMATION_MARKERS", "without_digit_groups", "marked_roundings", "unit_of_a_figure",
 ]
 
 # dimension: (length, time, mass, volume) exponents
@@ -959,3 +961,122 @@ def gives_a_total(reply: str, totals: Iterable[RatedTotal]) -> bool:
         value is not None and abs(value - expected) <= max(abs(expected) / 10, Fraction(1, 10))
         for item in totals for expected in item.values for value in written
     )
+
+
+# Ronda 22 «vetos que reparan sin rehacer» (pasada r18 t1-c03 «las 5 películas más taquilleras»): a page's
+# «2 925 466 085 USD» was said «2.925.466.085 USD» (another separator of thousands) and «casi 3 mil millones de
+# dólares» (a rounding the report marks as one), and both drafts died as unsourced figures. The separators of thousands
+# are dropped before figures are compared, and a figure the report marks as rounded («casi», «cerca de», «unos»,
+# «about») is the page's when it is within a tenth of one the page writes. An unmarked figure is still compared as
+# written. Folded words.
+APPROXIMATION_MARKERS = (
+    "casi", "cerca de", "unos", "unas", "alrededor de", "aproximadamente", "aprox", "mas o menos", "poco menos de",
+    "poco mas de", "about", "around", "almost", "nearly", "roughly", "approximately", "close to", "some",
+)
+_SCALE_WORDS = {
+    "mil millones": 10 ** 9, "millones": 10 ** 6, "millon": 10 ** 6, "mil": 10 ** 3,
+    "billion": 10 ** 9, "billions": 10 ** 9, "million": 10 ** 6, "millions": 10 ** 6, "thousand": 10 ** 3,
+    "thousands": 10 ** 3,
+}
+_SCALE = "|".join(sorted((re.escape(word) for word in _SCALE_WORDS), key=len, reverse=True))
+_MONTH_WORDS = "|".join(sorted(MONTH_NUMBERS, key=len, reverse=True))
+_DIGIT_GROUP = re.compile(r"(?<=\d)[ .,   ](?=\d{3}(?!\d))")
+_SCALED_FIGURE = re.compile(rf"(?<![\w.,])(?P<number>\d+(?:[.,]\d+)?)(?:\s+(?P<scale>{_SCALE})\b)?")
+_MARKED_FIGURE = re.compile(
+    r"\b(?:" + "|".join(sorted((re.escape(word).replace(r"\ ", r"\s+") for word in APPROXIMATION_MARKERS),
+                               key=len, reverse=True))
+    + rf")\s+(?P<number>\d+(?:[.,]\d+)?)(?:\s+(?P<scale>{_SCALE})\b)?"
+)
+
+
+def without_digit_groups(text: str) -> str:
+    """The text with the separators of thousands dropped from its figures: «2 925 466 085», «2.925.466.085»,
+    «2,925,466,085» and «2 925 466 085» (thin spaces) are all «2925466085». «3,5» and «1.5» are left as written."""
+
+    return _DIGIT_GROUP.sub("", str(text or ""))
+
+
+def _scaled(number: str, scale: str | None) -> Fraction | None:
+    try:
+        value = Fraction(number.replace(",", "."))
+    except (ValueError, ZeroDivisionError):
+        return None
+    return value * _SCALE_WORDS[scale] if scale else value
+
+
+_DAY_MONTH = re.compile(
+    rf"\b\d{{1,2}}(?:st|nd|rd|th)?\s+(?:de\s+|of\s+)?(?:{_MONTH_WORDS})\b(?:,?\s+(?:de\s+|of\s+)?\d{{4}}\b)?"
+    rf"|\b(?:{_MONTH_WORDS})\s+(?:\d{{1,2}}(?:st|nd|rd|th)?\b,?\s*)?(?:(?:de\s+|of\s+)?\d{{4}}\b)?"
+    r"|\b\d{1,4}[/-]\d{1,2}[/-]\d{1,4}\b"
+)
+# A figure that reads as a year: four digits from 1000 to 2199 with no scale word after them.
+_YEAR_LIKE = re.compile(r"(?:1\d{3}|2[01]\d{2})")
+# The word a figure counts («525 muertos», «3 mil millones de dolares»): the first word after it and its scale word.
+_COUNTED_WORD = re.compile(r"\s*(?:(?:de|of)\s+)?(?P<word>[^\W\d_]{2,})")
+
+
+def _without_dates(text: str) -> str:
+    """The folded text with its dates written over («27 de febrero de 2010», «march 3, 2019», «27/02/2010»): a date is
+    no amount, and an amount rounded near one of its numbers is not the page's (revisión 1 de la ronda 22)."""
+
+    return _DAY_MONTH.sub("§", text)
+
+
+def _counted_word(text: str, end: int) -> str:
+    found = _COUNTED_WORD.match(text, end)
+    return found.group("word") if found is not None else ""
+
+
+def _same_counted_word(one: str, other: str) -> bool:
+    """Two words a figure counts are one when they are the same word or share its stem («muerto», «muertos»)."""
+
+    return bool(one) and bool(other) and (one == other or (min(len(one), len(other)) >= 4 and one[:5] == other[:5]))
+
+
+def marked_roundings(sentence: str, grounds: str) -> list[str]:
+    """The figures of a sentence it marks as rounded («casi 3 mil millones», «about 40») that are within a tenth of a
+    figure the grounds write (their separators of thousands dropped, a scale word read: «2 925 466 085» or «2,9 mil
+    millones»), as the sentence writes them; a figure without a marker is never one, a date of the grounds («27 de febrero
+    de 2010») is no figure a rounding is near, and a figure that reads as a year («2010», «(2019)») is near one only
+    when it counts the same thing («hubo 2010 muertos» for «unos 2000 muertos»)."""
+
+    page = without_digit_groups(_without_dates(fold(grounds)))
+    # (value, the word it counts, whether it reads as a year)
+    written = [
+        (value, _counted_word(page, found.end()),
+         found.group("scale") is None and _YEAR_LIKE.fullmatch(found.group("number")) is not None)
+        for found in _SCALED_FIGURE.finditer(page)
+        if (value := _scaled(found.group("number"), found.group("scale"))) is not None and value > 0
+    ]
+    folded_sentence = fold(sentence)
+    rounded: list[str] = []
+    for found in _MARKED_FIGURE.finditer(folded_sentence):
+        value = _scaled(found.group("number"), found.group("scale"))
+        if value is None:
+            continue
+        counted = _counted_word(folded_sentence, found.end())
+        # Revisión 1 de la ronda 22 («unos 2000 muertos» against a page that writes «Chile de 2010» and «525
+        # muertos»): a figure of the page that reads as a year is near a rounding only when both count one thing.
+        if any(
+            abs(value - seen) <= seen / 10 and (not year_like or _same_counted_word(counted, word))
+            for seen, word, year_like in written
+        ):
+            rounded.append(found.group("number"))
+    return rounded
+
+
+_CURRENCY_CODE = re.compile(r"[A-Z]{3}")
+
+
+def unit_of_a_figure(text: str, name: str) -> bool:
+    """A capitalised run a text writes as the unit or the currency of a figure («2 925 466 085 USD», «USD 3,5», «12
+    Km»): every word of it a unit, a currency word or a three-letter code, and a figure right before or after it."""
+
+    words = str(name or "").split()
+    if not words or not all(
+        _CURRENCY_CODE.fullmatch(word) or fold(word) in _UNITS or re.fullmatch(_CURRENCY_WORD, fold(word))
+        for word in words
+    ):
+        return False
+    escaped = re.escape(str(name))
+    return re.search(rf"\d\s*{escaped}(?!\w)|(?<!\w){escaped}\s*\d", str(text or "")) is not None

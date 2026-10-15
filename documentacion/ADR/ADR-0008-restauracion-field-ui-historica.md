@@ -36,6 +36,17 @@ reintroducido autoridades, tools y contratos ya sustituidos.
    de tools quedan bloqueados. Memoria privada y rutinas arbitrarias continúan
    exigiendo el chat/planner actual; la GUI no recupera las autoridades directas
    del backend antiguo.
+   *Estabilización M, 2026-10-11:* el panel de memoria lista, edita y borra
+   (identidad: «se puede ver, editar y borrar entero») sin autoridad propia: corre
+   las mismas operaciones del catálogo que el chat (`memory.list`, `memory.recall`,
+   `memory.correct`, `memory.forget`), selladas por el mismo protector y enviadas al
+   mismo Core, que las autoriza y las registra en el journal (`Baxy.App/MemoryPanel.cs`).
+   Sólo llega a ellas el documento propio de la App (origen `https://baxy.local/index.html`)
+   o el conductor sin ventana; el contenido web no. El host no puede comprobar que una
+   persona confirmó un olvido: lo confirma la propia interfaz con un segundo toque (no un
+   diálogo del navegador) y el panel responde al reto del núcleo con el token de esa
+   invocación; olvidar todo es su propio pedido (`DELETE /memory` con `scope: all`), nunca
+   una clave vacía o `*` (revisión M, H7).
 6. CPU, RAM, disco y GPU visibles se leen de los providers Windows actuales.
    Red y temperatura aparecen como no disponibles, no como mediciones inventadas.
 
@@ -118,3 +129,15 @@ causa/ruta en su evento tipado y deja de duplicarse como texto de conversación.
 Una región alert persistente identifica el error sin mover foco; se conserva
 la posibilidad de una nueva petición. No se reejecutan efectos automáticamente.
 Source/dist y sello se regeneran deliberadamente; ORIGIN registra las huellas.
+
+## Reapertura de identidad: bypass y modo accesible — 2026-10-11
+
+La identidad pide bypass como «un ajuste consciente que queda encendido hasta que se apague» y la accesibilidad
+como «modo en la interfaz». La reapertura de 2026-08-11 había ocultado las pestañas sin PUT nativo; el PUT de
+`confirmationPolicy` llegó después (goal04) pero su campo siguió en la pestaña oculta, y los modos de
+accesibilidad quedaron bloqueados. No había razón de seguridad: el canal ya sólo acepta el documento propio
+(`HistoricalFieldOriginPolicy`). Ahora el ajuste `confirmaciones` está en el panel izquierdo (pregunta explícita
+antes de encender bypass, apagado con un toque, indicador permanente en la barra de título) y el campo oculto se
+retira. El modo accesible es un fichero del perfil (`PresentationModeStore`) que la vista y el chat
+(`system.settings.set`) escriben; el host aplica el zoom y la vista el contraste, el foco y la quietud. Las demás
+pestañas sin respaldo nativo siguen ocultas por la razón original.

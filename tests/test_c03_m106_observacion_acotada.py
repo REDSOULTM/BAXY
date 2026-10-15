@@ -16,8 +16,24 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import listing_facts
+from baxy_mind import compose_situation
+from baxy_mind import clock_checks
+from baxy_mind import agenda_facts
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import deterministic_finals
+from baxy_mind import conversation_contract
+from baxy_mind import clock_facts
 from test_c03_m101b_sin_vacios import _Scripted
+
+
+# Every mind module whose code reads this PC's clock: the clock is patched in each one.
+_CLOCK_READERS = (
+    agenda_facts, clock_checks, clock_facts, compose_situation, conversation_contract, deterministic_finals,
+    reply_claims, weather_facts,
+)
 
 _ASKED = "ponme recordatorio una hora antes de ese partido"
 # M108: the PC's clock the replies are told against is fixed (no test reads the machine's date or hour).
@@ -26,7 +42,8 @@ _NOW = datetime(2026, 3, 4, 13, 0, tzinfo=timezone.utc)
 
 @pytest.fixture(autouse=True)
 def _fixed_clock(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_local_now", lambda: _NOW.astimezone())
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: _NOW.astimezone())
 
 
 def _due(days: int = 3) -> datetime:
@@ -46,7 +63,7 @@ def _final(situation: dict, drafts: list[str]) -> str:
 
 
 def _spanish_date(local: datetime) -> str:
-    return f"{local.day} de {llm._WEATHER_MONTHS[local.month - 1][0]}"
+    return f"{local.day} de {weather_facts._WEATHER_MONTHS[local.month - 1][0]}"
 
 
 def test_a_draft_that_says_the_verified_time_is_published() -> None:
@@ -59,7 +76,7 @@ def test_a_draft_with_another_time_gives_way_to_the_verified_one() -> None:
     local = _due().astimezone()
     other = (local + timedelta(hours=3)).strftime("%H:%M")
     floor = f"Creé el recordatorio «Partido de la Selección» para el {_spanish_date(local)} a las {local:%H:%M}."
-    assert llm._deterministic_final(_reminder(_due()), {}, _ASKED, "es") == floor
+    assert deterministic_finals._deterministic_final(_reminder(_due()), {}, _ASKED, "es") == floor
     assert _final(_reminder(_due()), [f"Te avisaré a las {other}."] * 3) == floor
 
 
@@ -67,14 +84,14 @@ def test_tomorrow_is_said_as_the_word_the_person_hears() -> None:
     due = _due(days=1)
     local = due.astimezone()
     expected = "mañana" if local.date() == _NOW.astimezone().date() + timedelta(days=1) else _spanish_date(local)
-    final = llm._deterministic_final(_reminder(due), {}, _ASKED, "es")
+    final = deterministic_finals._deterministic_final(_reminder(due), {}, _ASKED, "es")
     assert expected in final and f"{local:%H:%M}" in final
 
 
 def test_a_projected_record_keeps_the_title_and_time_and_the_bound_stays_out_of_the_payload() -> None:
     situation = _reminder(_due(), details="detalle " * 250 + "…", truncated=True)
     situation["observedLimit"] = "projected"
-    payload = llm._compose_situation_payload(situation, "es", _ASKED)
+    payload = compose_payload._compose_situation_payload(situation, "es", _ASKED)
     local = _due().astimezone()
     assert payload["seen"]["title"] == "Partido de la Selección"
     assert payload["seen"]["scheduledLocalTime"] == f"{local:%H:%M}"
@@ -85,4 +102,4 @@ def test_a_projected_record_keeps_the_title_and_time_and_the_bound_stays_out_of_
 def test_a_projected_page_read_is_more_not_shown() -> None:
     observed = {"title": "Informe anual", "url": "https://example.org/informe", "text": "Una frase leída. " * 100,
                 "truncated": True}
-    assert llm._project_page_read(observed, "es")["moreNotShown"] is True
+    assert listing_facts._project_page_read(observed, "es")["moreNotShown"] is True

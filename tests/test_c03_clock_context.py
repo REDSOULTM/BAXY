@@ -1,7 +1,7 @@
 """Clock continuations retain human antecedents without borrowing assistant prose."""
 import pytest
 
-from baxy_mind.__main__ import _previous_user_request
+from baxy_mind.semantic.dialogue import _previous_user_request
 from baxy_mind.effect_intent import resolve_explicit_effects
 
 

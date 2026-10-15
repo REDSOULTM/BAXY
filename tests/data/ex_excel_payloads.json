@@ -1,0 +1,206 @@
+{
+ "source": "Encargo EX: tandas n5 y n6 (notebook, fable/estab-fase3 5862303c4), t4-c06 t1 «bro abre excel y crea un blank workbook»: el observed real de la misión (compose_audit, situation.reason.observed / situation.observed, traza t17) tal como lo recibió el redactor.",
+ "n6": {
+  "draft": "No pude hacerlo en «Excel»: no vi en la pantalla un control con el que seguir.",
+  "observed": {
+   "goal": "crea un blank workbook",
+   "application": "Excel",
+   "reached": false,
+   "stepCount": 1,
+   "steps": [
+    {
+     "step": 1,
+     "operation": "app.open",
+     "source": "model",
+     "appId": "Excel",
+     "ok": true,
+     "alreadyRunning": true,
+     "changed": true,
+     "sameView": true,
+     "sameText": true
+    }
+   ],
+   "window": {
+    "title": "",
+    "process": "EXCEL",
+    "requested": true,
+    "root": 330818,
+    "foreground": false,
+    "rect": {
+     "x": 201,
+     "y": 311,
+     "w": 559,
+     "h": 546
+    },
+    "coveredBy": {
+     "title": "@Ron92 - Discord",
+     "process": "Discord"
+    }
+   },
+   "joined": false,
+   "elapsedMs": 2694,
+   "modelMs": 1772,
+   "authority": "shell_loop_over_uia_ocr_postread",
+   "screen": {
+    "title": "",
+    "values": [
+     {
+      "name": "Nombre de archivo",
+      "value": "Libro1"
+     },
+     {
+      "name": "Guardar como tipo",
+      "value": "Libro de Excel (*.xlsx)"
+     }
+    ],
+    "lines": [
+     "OneDrive - INSTITUTO EJEMPLO",
+     "Guardar este archivo",
+     "Nombre de archivo",
+     "Librol",
+     "x",
+     ".xlsx"
+    ],
+    "controlLines": [
+     1,
+     2
+    ]
+   },
+   "stoppedBy": "computer_use_no_step_visible"
+  }
+ },
+ "n5": {
+  "draft": "Abrí Excel y guardé el libro como Libro1.",
+  "template": "Llevo dos pasos en «Excel», pero la pantalla todavía no muestra que haya quedado hecho.",
+  "observed": {
+   "goal": "crea un blank workbook",
+   "application": "Excel",
+   "reached": true,
+   "stepCount": 2,
+   "steps": [
+    {
+     "step": 1,
+     "operation": "input.visible.click",
+     "source": "model",
+     "label": "Libro en blanco",
+     "index": 11,
+     "ok": true,
+     "cascadeStage": "uia",
+     "method": "invoke",
+     "surfaceChanged": false,
+     "absentOrDisabled": true,
+     "selected": false,
+     "toggled": false,
+     "name": "Libro en blanco",
+     "kind": "ListItem",
+     "changed": true,
+     "broughtNew": true,
+     "appeared": [
+      "comprobador de accesibilidad accesibilidad: todo correcto",
+      "normal",
+      "diseno de pagina",
+      "vista previa de salto de pagina",
+      "alejar",
+      "zoom",
+      "acercar",
+      "autoguardado",
+      "guardar",
+      "personalizar barra de herramientas de acceso rapido",
+      "‪libro1‬ - excel",
+      "buscar",
+      "pestana archivo",
+      "insertar",
+      "dibujar",
+      "disposicion de pagina",
+      "formulas",
+      "datos",
+      "revisar",
+      "vista"
+     ]
+    },
+    {
+     "step": 2,
+     "operation": "input.visible.click",
+     "source": "model",
+     "label": "‪Libro1‬ - Excel",
+     "index": 10,
+     "ok": true,
+     "cascadeStage": "uia",
+     "method": "invoke",
+     "surfaceChanged": false,
+     "absentOrDisabled": false,
+     "selected": false,
+     "toggled": false,
+     "name": "‪Libro1‬ - Excel",
+     "kind": "Button",
+     "changed": false,
+     "broughtNew": true,
+     "appeared": [
+      "nombre de archivo",
+      "guardar como tipo",
+      "elegir una ubicacion",
+      "abrir",
+      "learn more",
+      "mas opciones...",
+      "cancelar",
+      "guardar este archivo",
+      "onedrive - instituto ejemplo",
+      "no se admiten etiquetas de confidencialidad."
+     ]
+    }
+   ],
+   "window": {
+    "title": "",
+    "process": "EXCEL",
+    "requested": true,
+    "root": 330818,
+    "foreground": true,
+    "rect": {
+     "x": 201,
+     "y": 311,
+     "w": 559,
+     "h": 546
+    },
+    "focused": {
+     "kind": "Edit",
+     "name": "Nombre de archivo",
+     "nameSource": "",
+     "value": "Libro1",
+     "i": 0
+    }
+   },
+   "joined": false,
+   "elapsedMs": 7534,
+   "modelMs": 3109,
+   "authority": "shell_loop_over_uia_ocr_postread",
+   "satisfiedBy": "model_evidence",
+   "screen": {
+    "title": "",
+    "values": [
+     {
+      "name": "Nombre de archivo",
+      "value": "Libro1"
+     },
+     {
+      "name": "Guardar como tipo",
+      "value": "Libro de Excel (*.xlsx)"
+     }
+    ],
+    "lines": [
+     "OneDrive - INSTITUTO EJEMPLO",
+     "Guardar este archivo",
+     "Nombre de archivo",
+     "Libro",
+     "x",
+     ".xlsx"
+    ],
+    "controlLines": [
+     1,
+     2
+    ]
+   },
+   "evidence": "Guardar este archivo | Nombre de archivo | Libro"
+  },
+  "note": "situation recortada por el registro tras «controlLines»: se cierra ahí; satisfiedBy y evidence vienen del seen del mismo registro."
+ }
+}

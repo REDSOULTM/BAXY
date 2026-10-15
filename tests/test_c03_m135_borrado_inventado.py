@@ -7,7 +7,7 @@ unverified was told «Se borró el borrador…», the same in three rounds.
 
 from __future__ import annotations
 
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
 
 DRAFT = (
     "Se borró el borrador para mi contacto en WhatsApp con el mensaje de que me viene genial, pero no se confirmó si "
@@ -27,8 +27,8 @@ PAYLOAD = {
 
 
 def test_f_w47_t2_an_unverified_draft_is_not_told_as_deleted() -> None:
-    assert llm._report_claims_a_deletion(DRAFT, PAYLOAD)
-    assert llm._payload_fact_defect(DRAFT, PAYLOAD, "Contéstale por WhatsApp que sí, déjalo sin enviar") == (
+    assert payload_fact_checks._report_claims_a_deletion(DRAFT, PAYLOAD)
+    assert payload_fact_checks._payload_fact_defect(DRAFT, PAYLOAD, "Contéstale por WhatsApp que sí, déjalo sin enviar") == (
         "report_claims_a_deletion"
     )
     for honest in (
@@ -36,19 +36,19 @@ def test_f_w47_t2_an_unverified_draft_is_not_told_as_deleted() -> None:
         "No se borró nada: el borrador quizá quedó escrito en WhatsApp; revísalo.",
         "I tried to leave the draft in WhatsApp but couldn't confirm it was written.",
     ):
-        assert not llm._report_claims_a_deletion(honest, PAYLOAD), honest
+        assert not payload_fact_checks._report_claims_a_deletion(honest, PAYLOAD), honest
 
 
 def test_a_deleting_operation_or_a_plan_may_say_it_deleted() -> None:
     trashed = {"operation": "filesystem.trash.commit", "seen": {"name": "notas.txt"}}
-    assert not llm._report_claims_a_deletion("Se eliminó notas.txt a la papelera.", trashed)
+    assert not payload_fact_checks._report_claims_a_deletion("Se eliminó notas.txt a la papelera.", trashed)
     cancelled = {"operation": "notification.cancel.at", "seen": {"title": "gym"}}
-    assert not llm._report_claims_a_deletion("I deleted the gym alarm.", cancelled)
+    assert not payload_fact_checks._report_claims_a_deletion("I deleted the gym alarm.", cancelled)
     plan = {"completedStepsInOrder": [{"operation": "task.delete"}], "operation": "task.list"}
-    assert not llm._report_claims_a_deletion("He borrado «chips» de tu lista.", plan)
+    assert not payload_fact_checks._report_claims_a_deletion("He borrado «chips» de tu lista.", plan)
 
 
 def test_other_reports_claiming_a_deletion() -> None:
     note = {"operation": "note.create", "seen": {"title": "viaje"}}
-    assert llm._report_claims_a_deletion("He borrado la nota anterior y guardé «viaje».", note)
-    assert llm._report_claims_a_deletion("The old draft was deleted.", {"operation": "message.draft", "seen": {}})
+    assert payload_fact_checks._report_claims_a_deletion("He borrado la nota anterior y guardé «viaje».", note)
+    assert payload_fact_checks._report_claims_a_deletion("The old draft was deleted.", {"operation": "message.draft", "seen": {}})

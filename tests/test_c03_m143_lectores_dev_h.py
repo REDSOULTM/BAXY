@@ -35,6 +35,9 @@ from baxy_mind.semantic.media import _youtube_search_query
 from baxy_mind.semantic.messaging import message_draft_request, message_request_any_channel
 from baxy_mind.semantic.notes import agenda_read_request, list_entries
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
+from baxy_mind import decided_arguments
 
 OPERATIONS = tuple(
     json.loads(
@@ -105,7 +108,7 @@ def _tool(name: str) -> dict:
 
 def _turn(text: str, model: _Decider) -> dict:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m143", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model, planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (), tool_by_name=tools,
         dialogue_state=DialogueState(),
@@ -224,7 +227,7 @@ def test_music_with_no_provider_named_is_still_youtube() -> None:
 
 
 def test_h_s037_the_query_is_the_artist() -> None:
-    found = sidecar._ground_explicit_arguments(
+    found = argument_grounding._ground_explicit_arguments(
         "media.play.query", "a ver, ponme algo de Rosalía en el Spotify, lo que sea, da igual", PLAY_QUERY,
     )
     assert found == {"provider": "spotify", "query": "Rosalía"}
@@ -384,7 +387,7 @@ def test_h_s047_an_alarm_before_a_clock_rings_that_long_before_it(text: str, hou
     assert _read(text) in {("notification.schedule",), None}
     raw = arguments._explicit_arguments_from_evidence("notification.schedule", text)
     assert raw is not None
-    read = sidecar._normalize_grounded_operation_arguments("notification.schedule", dict(raw), text, now_utc=NOW)
+    read = argument_grounding._normalize_grounded_operation_arguments("notification.schedule", dict(raw), text, now_utc=NOW)
     assert read is not None and read["kind"] == "alarm"
     due = _local(read["dueUtc"])
     assert (due.hour, due.minute) == (hour, minute)
@@ -417,11 +420,11 @@ SNAP = {"type": "object", "properties": {"side": {"type": "string", "enum": ["le
 
 
 def _alone(text: str, operations: tuple[str, ...], decided: dict, operation: str, schema: dict) -> dict | None:
-    sidecar._remember_decided_arguments(text, operations, tuple(decided.items()))
+    decided_arguments._remember_decided_arguments(text, operations, tuple(decided.items()))
     tool = {"type": "function", "function": {"name": operation.replace(".", "_"), "canonical_name": operation,
                                              "description": operation, "parameters": schema}}
-    said = sidecar._with_decided_restatements(operation, text, schema, text)
-    return sidecar._decided_arguments_alone(operation, text, tool, said)
+    said = decided_arguments._with_decided_restatements(operation, text, schema, text)
+    return decided_arguments._decided_arguments_alone(operation, text, tool, said)
 
 
 @pytest.mark.parametrize(
@@ -454,8 +457,8 @@ def test_h_w21_t1_the_only_provider_the_decider_gave_is_not_asked(text: str, dec
 
 def test_a_member_of_several_is_still_said_or_asked() -> None:
     # «left» was never said: a field with two members is the person's choice.
-    sidecar._remember_decided_arguments("pon chrome a un lado", ("window.snap",), (("side", "left"),))
-    assert sidecar._with_decided_restatements("window.snap", "pon chrome a un lado", SNAP, "pon chrome a un lado") == (
+    decided_arguments._remember_decided_arguments("pon chrome a un lado", ("window.snap",), (("side", "left"),))
+    assert decided_arguments._with_decided_restatements("window.snap", "pon chrome a un lado", SNAP, "pon chrome a un lado") == (
         "pon chrome a un lado"
     )
     # The decider gave no provider: none is invented.
@@ -488,11 +491,11 @@ def test_h_s116_one_task_per_entry() -> None:
 def test_h_s009_the_plan_takes_the_decider_s_application() -> None:
     # M141 already: «minimiza todo y abreme la calculadora» → app.open {"appId": "Calculadora"}.
     objective = "Minimiza todas las ventanas y abre la Calculadora."
-    sidecar._remember_decided_arguments(objective, ("window.minimize.all", "app.open"), (("app", "Calculadora"),))
+    decided_arguments._remember_decided_arguments(objective, ("window.minimize.all", "app.open"), (("app", "Calculadora"),))
     tool = {"type": "function", "function": {"name": "app_open", "canonical_name": "app.open", "description": "app.open",
                                              "parameters": {"type": "object", "properties": {"appId": {"type": "string"}},
                                                             "required": ["appId"], "additionalProperties": False}}}
-    got = sidecar._plan_step_decided_arguments(
+    got = decided_arguments._plan_step_decided_arguments(
         "app.open", ("window.minimize.all", "app.open"), objective, tool,
         [{"role": "user", "content": "minimiza todo y abreme la calculadora"}],
     )

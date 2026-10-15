@@ -26,14 +26,25 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import search_report
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import reply_language_checks
+from baxy_mind import unsupported_answers
+from baxy_mind import limit_voice
+from baxy_mind import weather_facts
+from baxy_mind import compose_situation
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.semantic import quantities
 from baxy_mind.semantic import temporal
 from baxy_mind.semantic.dialogue import DialogueState, offered_alarm_clocks
 from baxy_mind.semantic.patterns import echo_mode_request
 from baxy_mind.semantic.web import weather_asks_later_in_the_day
+from baxy_mind import argument_grounding
+from baxy_mind import agenda_facts
 
 RECORDED = json.loads((Path(__file__).parent / "data" / "c03_m62_v3e2_situations.json").read_text(encoding="utf-8"))
 
@@ -68,7 +79,7 @@ F_S040 = "Cancela las alarmas, por favor."
 
 
 def test_f_s040_the_offer_is_said_from_the_alarms_alone() -> None:
-    payload = llm._compose_situation_payload(_situation("F-s040"), "es", F_S040)
+    payload = compose_payload._compose_situation_payload(_situation("F-s040"), "es", F_S040)
     seen = payload["seen"]
     assert seen["alarmCount"] == 16, "the sixteen alarms read, not the 38 notifications nor the reminders"
     assert [entry["time"] for entry in seen["alarms"]] == ["05:20", "06:00", "06:45", "08:30", "08:40", "09:00"]
@@ -81,10 +92,10 @@ def test_f_s040_the_offer_is_said_from_the_alarms_alone() -> None:
 def test_f_s040_the_recorded_offer_is_refused_and_the_final_asks_which(monkeypatch) -> None:
     # The alarms were read on 2026-09-29; judged on another day they would carry their date (M82: the recorded read is
     # judged on its own day, not on the machine's).
-    monkeypatch.setattr(llm, "_local_today", lambda: date(2026, 9, 29))
-    payload = llm._compose_situation_payload(_situation("F-s040"), "es", F_S040)
+    monkeypatch.setattr(agenda_facts, "_local_today", lambda: date(2026, 9, 29))
+    payload = compose_payload._compose_situation_payload(_situation("F-s040"), "es", F_S040)
     published = "Hay ocho alarmas a las 05:20, 06:00, 06:45, 08:30, 08:40 y 09:00; ¿las cancelo todas?"
-    assert llm._payload_fact_defect(published, payload, F_S040) == "alarm_offer_not_whole"
+    assert payload_fact_checks._payload_fact_defect(published, payload, F_S040) == "alarm_offer_not_whole"
     final, writer = _compose(RECORDED["F-s040"]["drafts"], F_S040, "status", _situation("F-s040"))
     assert final == "Tienes 16 alarmas (05:20, 06:00, 06:45 (×3), 08:30 (×4), 08:40 (×3) y 09:00 (×4)). ¿Cuál cancelo?"
     assert "seen.alarmCount" in json.dumps(writer.requests[0]["messages"], ensure_ascii=False)
@@ -112,12 +123,12 @@ def _alarms_read(*clocks: tuple[int, int], truncated: bool = False) -> dict:
 
 def test_f_s040_the_number_said_is_the_alarms_named() -> None:
     situation = _alarms_read((7, 0), (8, 30), (12, 0))
-    payload = llm._compose_situation_payload(situation, "es", F_S040)
+    payload = compose_payload._compose_situation_payload(situation, "es", F_S040)
     assert payload["seen"]["offer"] == "all" and payload["seen"]["alarmCount"] == 3
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Tienes 3 alarmas para mañana (07:00, 08:30 y 12:00). ¿Las cancelo todas?", payload, F_S040,
     ) == ""
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Hay ocho alarmas a las 07:00, 08:30 y 12:00; ¿las cancelo todas?", payload, F_S040,
     ) == "alarm_count_wrong"
 
@@ -139,7 +150,7 @@ def test_f_s040_the_yes_is_offered_only_when_it_cancels_exactly_those(clocks, tr
     state.record(situation)
     accepted = state.accepted_alarm_cancellation("sí")
     assert (accepted is not None) == (offered is not None)
-    payload = llm._compose_situation_payload(situation, "es", F_S040)
+    payload = compose_payload._compose_situation_payload(situation, "es", F_S040)
     assert payload["seen"]["offer"] == ("all" if offered is not None else "which")
 
 
@@ -154,8 +165,8 @@ def test_f_s040_the_recorded_read_offers_no_yes() -> None:
 def test_f_s040_the_alarms_are_read_up_to_the_catalog_limit() -> None:
     schema = {"type": "object", "properties": {"limit": {"type": "integer", "minimum": 1, "maximum": 50}},
               "required": [], "additionalProperties": False}
-    assert mind._ground_explicit_arguments("notification.list", F_S040, schema) == {"limit": 50}
-    assert mind._ground_explicit_arguments("notification.list", "¿qué alarmas tengo?", schema) == {}
+    assert argument_grounding._ground_explicit_arguments("notification.list", F_S040, schema) == {"limit": 50}
+    assert argument_grounding._ground_explicit_arguments("notification.list", "¿qué alarmas tengo?", schema) == {}
 
 
 # ------------------------------------------------------------------ F-s019: no alarm at that time, said plainly
@@ -164,13 +175,13 @@ F_S019 = "Cambia la alarma despertador de las 8:00 a las 9:00."
 
 
 def test_f_s019_no_alarm_at_that_time_is_a_fact_not_a_code() -> None:
-    payload = llm._compose_situation_payload(_situation("F-s019"), "es", F_S019)
+    payload = compose_payload._compose_situation_payload(_situation("F-s019"), "es", F_S019)
     cause = payload["reason"]["cause"]
-    assert cause == llm._CAUSE_FACT["notification_clock_not_found"]
+    assert cause == compose_situation._CAUSE_FACT["notification_clock_not_found"]
     assert "clock" not in cause.split(",")[0] or "no alarm or reminder" in cause
     assert "notification clock" not in json.dumps(payload)
-    assert llm._failure_is_an_absence(_situation("F-s019"))
-    assert llm._cause_in_prose("notification_clock_ambiguous", "es") == llm._CAUSE_FACT["notification_clock_ambiguous"]
+    assert compose_situation._failure_is_an_absence(_situation("F-s019"))
+    assert compose_situation._cause_in_prose("notification_clock_ambiguous", "es") == compose_situation._CAUSE_FACT["notification_clock_ambiguous"]
 
 
 def test_f_s019_the_plain_answer_is_published() -> None:
@@ -208,14 +219,14 @@ def test_f_s044_the_new_clock_takes_the_part_of_day_said_before() -> None:
     said = [item["content"] for item in reversed(history) if item["content"] != F_S044]
     assert temporal.change_part_of_day(change, said) == "pm"
     assert change.schedule_arguments("pm")["dueUtc"] == "at 4 pm"
-    grounded = mind._ground_explicit_arguments("notification.schedule", F_S044, SCHEDULE_SCHEMA, history=history)
+    grounded = argument_grounding._ground_explicit_arguments("notification.schedule", F_S044, SCHEDULE_SCHEMA, history=history)
     assert grounded is not None and grounded["kind"] == "reminder"
     due = datetime.fromisoformat(grounded["dueUtc"].replace("Z", "+00:00")).astimezone()
     assert (due.hour, due.minute) == (16, 0)
 
 
 def test_f_s044_with_nothing_said_before_it_is_asked() -> None:
-    assert mind._ground_explicit_arguments("notification.schedule", F_S044, SCHEDULE_SCHEMA, history=[]) is None
+    assert argument_grounding._ground_explicit_arguments("notification.schedule", F_S044, SCHEDULE_SCHEMA, history=[]) is None
 
 
 @pytest.mark.parametrize(
@@ -264,9 +275,9 @@ F_W13_T2_DECIDED = "¿Cuánto me sale cargar 40 litros de nafta Super en Córdob
 
 
 def test_f_w13_t2_the_total_is_computed_from_the_unit_price_read() -> None:
-    payload = llm._compose_situation_payload(_situation("F-w13-t2"), "es", F_W13_T2_DECIDED)
+    payload = compose_payload._compose_situation_payload(_situation("F-w13-t2"), "es", F_W13_T2_DECIDED)
     assert payload["calculation"] == ["40 litros × $1.460 por litro = $58.400"]
-    evidence = llm._search_results_text(payload)
+    evidence = search_report._search_results_text(payload)
     # «El litro de Diésel … trepa ahora a $755» is another fuel: the request that names «nafta Super» prices only it;
     # the bare follow-up names none, so both litre prices are its.
     assert [item.total for item in quantities.priced_totals(F_W13_T2_DECIDED, evidence)] == [58400]
@@ -275,12 +286,12 @@ def test_f_w13_t2_the_total_is_computed_from_the_unit_price_read() -> None:
 
 @pytest.mark.parametrize("request_text", [F_W13_T2, F_W13_T2_DECIDED])
 def test_f_w13_t2_a_tanks_price_for_forty_litres_is_vetoed(request_text: str) -> None:
-    payload = llm._compose_situation_payload(_situation("F-w13-t2"), "es", request_text)
+    payload = compose_payload._compose_situation_payload(_situation("F-w13-t2"), "es", request_text)
     published = RECORDED["F-w13-t2"]["drafts"][0]
     assert published == "En Córdoba el litro de nafta súper cuesta $1.460, lo que suma $73.000 por 40 litros."
-    assert llm._payload_fact_defect(published, payload, request_text) == "underived_price"
+    assert payload_fact_checks._payload_fact_defect(published, payload, request_text) == "underived_price"
     good = "En Córdoba, 40 litros de nafta súper te salen $58.400 ($1.460 el litro)."
-    assert llm._payload_fact_defect(good, payload, request_text) == ""
+    assert payload_fact_checks._payload_fact_defect(good, payload, request_text) == ""
 
 
 def test_f_w13_t2_the_retry_is_told_the_calculation() -> None:
@@ -321,21 +332,23 @@ def test_f_p07_t1_later_today_is_answered_with_todays_read() -> None:
     assert weather_asks_later_in_the_day("¿qué tiempo hará esta tarde en Lima?")
     assert not weather_asks_later_in_the_day("¿qué tiempo hará mañana por la tarde?")
     assert not weather_asks_later_in_the_day("what's the weather in Foster City?")
-    payload = llm._compose_situation_payload(_situation("F-p07-t1"), "en", F_P07_T1)
+    payload = compose_payload._compose_situation_payload(_situation("F-p07-t1"), "en", F_P07_T1)
     published = RECORDED["F-p07-t1"]["drafts"][0]
     assert published == "It is 11.7°C and clear in Foster City, so you should wear a light jacket."
-    assert llm._weather_fact_defect(published, payload, F_P07_T1) == "missing_state"
+    assert weather_facts._weather_fact_defect(published, payload, F_P07_T1) == "missing_state"
     good = "Later today in Foster City it will reach 30 °C, with a low of 9.3 °C and a 0% chance of rain."
-    assert llm._weather_fact_defect(good, payload, F_P07_T1) == ""
-    assert "today.maxC" in llm._weather_answer_instruction(F_P07_T1, "en")
+    assert weather_facts._weather_fact_defect(good, payload, F_P07_T1) == ""
+    assert "today.maxC" in weather_facts._weather_answer_instruction(F_P07_T1, "en")
 
 
 def test_f_p07_t1_the_deterministic_final_carries_today() -> None:
     situation = _situation("F-p07-t1")
-    payload = llm._compose_situation_payload(situation, "en", F_P07_T1)
-    assert llm._deterministic_final(situation, payload, F_P07_T1, "en") == (
-        "In Foster City it is 11.7 °C now, despejado; today: 9.3 to 30 °C, 0% chance of rain."
-    )
+    payload = compose_payload._compose_situation_payload(situation, "en", F_P07_T1)
+    # Uso real v3 tanda 1 (t1-c06): an English final says the sky in English (data/weather_words.v1.json); it said
+    # the read's Spanish «despejado» before.
+    text = deterministic_finals._deterministic_final(situation, payload, F_P07_T1, "en")
+    assert text == "In Foster City it is 11.7 °C now, clear; today: 9.3 to 30 °C, 0% chance of rain."
+    assert payload_fact_checks._payload_fact_defect(text, payload, F_P07_T1) == ""
 
 
 # ------------------------------------------------------------------ F-p07-t4: BAXY does not call the person BAXY
@@ -354,15 +367,15 @@ def test_f_p07_t1_the_deterministic_final_carries_today() -> None:
     ],
 )
 def test_f_p07_t4_the_person_is_not_called_baxy(reply: str, vocative: bool) -> None:
-    assert llm.visible_reply_calls_the_person_baxy(reply) is vocative
+    assert reply_language_checks.visible_reply_calls_the_person_baxy(reply) is vocative
     english = reply.startswith(("Have", "Bye", "I'm"))
     request = "Okay, that's all; see ya!" if english else "Vale, eso es todo, ¡nos vemos!"
-    assert (llm.compose_visible_defect(reply, "conversation", request, {}) == "person_called_baxy") is vocative
+    assert (visible_defect.compose_visible_defect(reply, "conversation", request, {}) == "person_called_baxy") is vocative
 
 
 def test_f_p07_t4_the_talk_reply_is_refused() -> None:
-    assert llm._shaped_conversation_answer_violates_contract("Have a great day, BAXY!", "Okay, that's all; see ya!", None)
-    assert not llm._shaped_conversation_answer_violates_contract("Have a great day!", "Okay, that's all; see ya!", None)
+    assert conversation_contract._shaped_conversation_answer_violates_contract("Have a great day, BAXY!", "Okay, that's all; see ya!", None)
+    assert not conversation_contract._shaped_conversation_answer_violates_contract("Have a great day!", "Okay, that's all; see ya!", None)
 
 
 # ------------------------------------------------------------------ F-w11-t1 and F-s064: the limit names the act
@@ -384,9 +397,9 @@ LIMIT = {"kind": "failure", "polarity": "failure", "cause": "out_of_catalog"}
     ],
 )
 def test_f_w11_t1_ordering_is_not_making(reply: str, defect: str) -> None:
-    assert llm.limit_voice_defect(reply, F_W11_T1) == defect
+    assert limit_voice.limit_voice_defect(reply, F_W11_T1) == defect
     if defect:
-        assert llm._unsupported_answer_contract_failure(reply, F_W11_T1) == "unsupported_changed_act"
+        assert unsupported_answers._unsupported_answer_contract_failure(reply, F_W11_T1) == "unsupported_changed_act"
 
 
 def test_f_w11_t1_the_recovered_limit_is_the_model_s_and_names_ordering() -> None:
@@ -411,8 +424,8 @@ def test_f_s064_the_limit_names_repeating(reply: str, defect: str) -> None:
     # Owner rule (uso real tanda 5, 2026-09-24): repeating everything from now on is a mode BAXY does not keep, so the
     # decision is the limit; what was wrong is its wording.
     assert echo_mode_request(F_S064)
-    assert llm.limit_voice_defect(reply, F_S064) == defect
-    assert llm.limit_voice_defect("No hago el pedido de agregar el número de móvil de Pedro.", "agrega el número de "
+    assert limit_voice.limit_voice_defect(reply, F_S064) == defect
+    assert limit_voice.limit_voice_defect("No hago el pedido de agregar el número de móvil de Pedro.", "agrega el número de "
                                   "móvil de Pedro a mis contactos") == "limit_names_no_act"
 
 
@@ -439,21 +452,21 @@ def _places_with_distances() -> dict:
 
 def test_f_p05_t1_the_whole_address_is_refused() -> None:
     situation = _places_with_distances()
-    payload = llm._compose_situation_payload(situation, "es", F_P05_T1)
+    payload = compose_payload._compose_situation_payload(situation, "es", F_P05_T1)
     published = RECORDED["F-p05-t1"]["drafts"][-1]
     assert published.startswith("Encontré aparcamiento en Calle Aurora, Valdelagrana, El Puerto de Santa María")
-    assert llm._payload_fact_defect(published, payload, F_P05_T1) == "places_whole_address"
+    assert payload_fact_checks._payload_fact_defect(published, payload, F_P05_T1) == "places_whole_address"
     good = "Hay aparcamiento a 150 m, en la Calle Aurora, y a 430 m, en la Avenida de Valdelagrana."
-    assert llm._payload_fact_defect(good, payload, F_P05_T1) == ""
+    assert payload_fact_checks._payload_fact_defect(good, payload, F_P05_T1) == ""
 
 
 def test_f_p05_t1_the_deterministic_final_says_how_far() -> None:
     situation = _places_with_distances()
-    payload = llm._compose_situation_payload(situation, "es", F_P05_T1)
-    assert llm._deterministic_final(situation, payload, F_P05_T1, "es") == (
+    payload = compose_payload._compose_situation_payload(situation, "es", F_P05_T1)
+    assert deterministic_finals._deterministic_final(situation, payload, F_P05_T1, "es") == (
         "Encontré: Calle Aurora (a 150 m), Avenida de Valdelagrana (a 430 m) y Avenida de Europa (a 450 m)."
     )
 
 
 def test_f_p05_t1_none_near_is_said_plainly() -> None:
-    assert "nothing of that kind was found near" in llm._cause_in_prose("web_search_places_not_found_near", "es")
+    assert "nothing of that kind was found near" in compose_situation._cause_in_prose("web_search_places_not_found_near", "es")

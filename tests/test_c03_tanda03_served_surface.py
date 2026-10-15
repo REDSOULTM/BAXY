@@ -21,11 +21,11 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, surface
 from baxy_mind.semantic.patterns import conversation_only_content_request, operation_domain_is_grounded
 from baxy_mind.semantic.reading import read
+from baxy_mind import turn_decide
 
 OPERATIONS = (
     "media.control", "media.play.query", "media.play.youtube", "media.play.exact", "audio.microphone.mute",
@@ -209,7 +209,7 @@ def _tool(operation: str) -> dict[str, object]:
 
 def _turn(text: str, llm: _RefusingLlm) -> dict[str, object]:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "turn-served-surface", "text": text, "history": [{"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -302,7 +302,7 @@ def test_a_served_operation_the_rewrite_names_never_acts_unasked_when_it_destroy
     tools = {name: _tool(name) for name in OPERATIONS}
     tools["filesystem.folder.open"]["function"]["risk"] = risk
 
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "turn-served-risk", "text": "open my gallery", "history": [{"role": "user", "content": "open my gallery"}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),

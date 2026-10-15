@@ -24,14 +24,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
 from baxy_mind.semantic.conversation import translates_what_was_said
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.knowledge import reference_lookup
 from baxy_mind.semantic.notes import note_content_unsaid
 from test_c03_m154_cifra_se_consulta import _turn
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
+from baxy_mind import argument_payload
 
 PLAY_QUERY = {"type": "object", "properties": {
     "provider": {"type": "string", "enum": ["spotify"], "x-maxUtf8Bytes": 1024},
@@ -59,8 +60,8 @@ class _Extraction:
         self.arguments = arguments
         self.asked: list[tuple[str, ...]] = []
 
-    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> llm.DirectArgumentExtraction:
-        return llm.DirectArgumentExtraction(arguments=self.arguments, evidence=(), fallback_question="¿Qué?")
+    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> argument_payload.DirectArgumentExtraction:
+        return argument_payload.DirectArgumentExtraction(arguments=self.arguments, evidence=(), fallback_question="¿Qué?")
 
     def formulate_missing_argument_question(self, _objective, _purpose, _tool, fields, **_kwargs) -> str:
         self.asked.append(tuple(fields))
@@ -71,8 +72,8 @@ def _arguments(operation: str, schema: dict[str, Any], said: list[str], request:
                decided: tuple[tuple[str, Any], ...], model: _Extraction | None = None) -> tuple[Any, str]:
     """The App's arguments request: the decider's restatement as text, the lived conversation as history."""
 
-    sidecar._remember_decided_arguments(request, (operation,), decided)
-    return sidecar._direct_arguments_result(
+    decided_arguments._remember_decided_arguments(request, (operation,), decided)
+    return direct_arguments._direct_arguments_result(
         {"operation": operation, "text": request, "history": _history(said), "responseLanguage": "es"},
         llm=model or _Extraction(), tool=_tool(operation, schema), dialogue_state=DialogueState(),
     )
@@ -134,13 +135,13 @@ def test_what_must_not_change() -> None:
     # An application keeps the catalog's name the readers chose for the person's spelling (M127); a web search, a
     # note and a reminder keep the model's words.
     said = _history(["abreme el exel"])
-    assert sidecar._as_the_person_spelled("app.open", {"appId": "Excel"}, "abreme el exel", said) == {"appId": "Excel"}
+    assert decided_arguments._as_the_person_spelled("app.open", {"appId": "Excel"}, "abreme el exel", said) == {"appId": "Excel"}
     said = _history(["busca quien es javiera mena"])
-    assert sidecar._as_the_person_spelled(
+    assert decided_arguments._as_the_person_spelled(
         "web.search", {"query": "Javier Mené"}, "busca quien es javiera mena", said,
     ) == {"query": "Javier Mené"}
     said = _history(["recuérdame pagar la lus mañana"])
-    assert sidecar._as_the_person_spelled(
+    assert decided_arguments._as_the_person_spelled(
         "reminder.create", {"title": "pagar la luz"}, "recuérdame pagar la lus mañana", said,
     ) == {"title": "pagar la luz"}
 

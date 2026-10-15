@@ -1,0 +1,57 @@
+{
+  "_doc": "Ronda 19 de uso real v3 (lectores-palabra-suelta): palabras que deciden si un lector se dispara por lo que la persona pidió y no por una palabra suelta. machine_status: el objeto directo de una cabeza de observación («dame», «mostrame») tiene que ser la máquina o un sustantivo de estado; «dame 5 juegos … en la pc» pide juegos, la pc sólo es un complemento. Cada sustantivo vale en singular y en plural («discos», «temps»); «de la pc» y «of my pc» son de la máquina (owner_prepositions), «juegos de pc» la nombra como clase; «del» lleva su artículo (owner_prepositions_with_article), así que «la bios del equipo» también es de la máquina. not_a_dish: una categoría, un plural de categoría o una conjunción no nombran un plato («3 recetas rapidas con atun y arroz»). dish_qualifiers: un calificativo dicho antes de un plato con nombre («una buena paella», «a cheap lasagna») se quita del plato y el plato se sigue buscando; tras quitarlo, lo que queda tiene que nombrar un plato («rapidas con atun y arroz» → «con …» no lo nombra).",
+  "machine_status": {
+    "machine_nouns": [
+      "pc", "computador", "computadora", "compu", "computer", "equipo", "sistema", "system", "notebook", "laptop",
+      "maquina", "machine", "windows"
+    ],
+    "status_nouns": [
+      "estado", "status", "salud", "health", "uso", "usage", "use", "consumo", "rendimiento", "performance",
+      "ram", "memoria", "memory", "cpu", "procesador", "processor", "gpu", "vram", "grafica", "bateria", "battery",
+      "carga", "charge", "disco", "disk", "almacenamiento", "storage", "espacio", "space", "temperatura",
+      "temperature", "temperaturas", "nivel", "level", "porcentaje", "percentage", "version", "build", "modelo",
+      "model", "info", "informacion", "information", "datos", "specs", "especificaciones", "detalles", "details",
+      "caracteristicas", "componentes", "hardware", "recursos", "resources", "resumen", "summary", "drive", "unidad",
+      "temp", "stat", "ventilador", "fan", "velocidad", "speed", "sensor", "ssd", "hdd", "frecuencia", "frequency",
+      "voltaje", "voltage", "uptime"
+    ],
+    "clause_openers": [
+      "como", "cuanto", "cuanta", "cuantos", "cuantas", "que", "cual", "cuales", "si", "donde", "how", "what",
+      "which", "if", "whether", "where"
+    ],
+    "skipped_before_object": [
+      "el", "la", "los", "las", "lo", "un", "una", "unos", "unas", "mi", "mis", "tu", "tus", "su", "sus", "este",
+      "esta", "the", "a", "an", "my", "your", "this", "some", "me", "nos", "le", "les", "us", "rapido", "rapidito",
+      "porfa", "por", "favor", "please", "ya", "ahora", "now", "bien", "todo", "toda", "all", "full", "completo",
+      "completa", "solo", "just", "nomas", "un", "poco"
+    ],
+    "complement_prepositions": ["en", "para", "pa", "con", "sin", "for", "on", "in", "with"],
+    "owner_prepositions": ["de", "del", "of"],
+    "owner_prepositions_with_article": ["del"]
+  },
+  "dish_qualifiers": [
+    "buena", "buenas", "bueno", "buenos", "rica", "ricas", "rico", "ricos", "sencilla", "sencillas", "sencillo",
+    "sencillos", "simple", "simples", "ligera", "ligeras", "ligero", "ligeros", "liviana", "livianas", "liviano",
+    "livianos", "facil", "faciles", "rapida", "rapidas", "rapido", "rapidos", "sana", "sanas", "sano", "sanos",
+    "saludable", "saludables", "casera", "caseras", "casero", "caseros", "tipica", "tipicas", "tipico", "tipicos",
+    "barata", "baratas", "barato", "baratos", "economica", "economicas", "economico", "economicos", "deliciosa",
+    "deliciosas", "delicioso", "deliciosos", "autentica", "autentico", "tradicional", "tradicionales", "clasica",
+    "clasico", "good", "great", "nice", "easy", "quick", "cheap", "budget", "healthy", "tasty", "delicious",
+    "classic", "authentic", "homemade", "traditional", "light"
+  ],
+  "not_a_dish": [
+    "algo", "eso", "esto", "esa", "ese", "esta", "este", "comida", "comidas", "cena", "cenas", "almuerzo",
+    "almuerzos", "desayuno", "desayunos", "once", "merienda", "receta", "recetas", "plato", "platos", "cosas", "todo",
+    "nada", "mas", "comer", "cenar", "almorzar", "vegetariana", "vegetarianas", "vegetariano", "vegetarianos",
+    "vegana", "veganas", "vegano", "veganos", "facil", "faciles", "rapida", "rapidas", "rapido", "rapidos", "sana",
+    "sanas", "sano", "sanos", "saludable", "saludables", "rica", "ricas", "rico", "ricos", "casera", "caseras",
+    "casero", "caseros", "nueva", "nuevas", "nuevo", "nuevos", "tipica", "tipicas", "tipico", "tipicos", "barata",
+    "baratas", "barato", "baratos", "economica", "economicas", "economico", "economicos", "sencilla", "sencillas",
+    "sencillo", "sencillos", "simples", "ligera", "ligeras", "liviana", "livianas", "distintas", "diferentes",
+    "buenas", "buena", "postre", "postres", "lista", "tarea", "ideas", "idea", "opciones", "con", "sin", "y",
+    "something", "food", "dinner", "lunch", "breakfast", "meal", "meals", "it", "that", "this", "one", "dish",
+    "dishes", "vegetarian", "vegan", "healthy", "easy", "quick", "simple", "cheap", "budget", "dessert", "desserts",
+    "list", "sure", "ideas", "with", "without", "and", "me", "te", "le", "lo", "la", "you", "sense", "money", "time",
+    "tiempo", "dinero", "plata", "caso", "falta", "faltan", "reservation", "reserva", "please", "porfa"
+  ]
+}

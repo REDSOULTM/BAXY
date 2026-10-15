@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
+from baxy_mind.semantic import arguments as semantic_arguments
 
 STREAM_AVAILABLE = frozenset(
     {"streaming.play.named", "streaming.navigate", "app.open", "web.search", "memory.status", "browser.navigate"}
@@ -27,7 +27,7 @@ STREAM_AVAILABLE = frozenset(
 def test_a_title_on_hbo_max_plays_it_there(text: str, title: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, STREAM_AVAILABLE, ("Spotify",), ())
     assert intent is not None and intent.operations == ("streaming.play.named",)
-    arguments = mind._explicit_arguments_from_evidence(
+    arguments = semantic_arguments._explicit_arguments_from_evidence(
         "streaming.play.named", text, ("Spotify",), effect_intent.build_game_catalog_index(())
     )
     assert arguments == {"service": "hbo_max", "title": title}
@@ -38,7 +38,7 @@ def test_a_title_on_hbo_max_plays_it_there(text: str, title: str) -> None:
     [("pon bluey en disney plus", "disney_plus"), ("ponme stranger things en netflix", "netflix")],
 )
 def test_the_other_services_keep_their_value(text: str, service: str) -> None:
-    arguments = mind._explicit_arguments_from_evidence(
+    arguments = semantic_arguments._explicit_arguments_from_evidence(
         "streaming.play.named", text, ("Spotify",), effect_intent.build_game_catalog_index(())
     )
     assert arguments is not None and arguments["service"] == service
@@ -52,7 +52,7 @@ def test_a_bare_max_is_a_level_not_the_service(text: str) -> None:
 
 def test_an_hbo_max_address_is_its_resource() -> None:
     url = "https://play.hbomax.com/show/93ba22b1-833e-47ba-ae94-8ee7b9eefa9a"
-    arguments = mind._explicit_arguments_from_evidence(
+    arguments = semantic_arguments._explicit_arguments_from_evidence(
         "streaming.navigate", f"abre {url}", ("Spotify",), effect_intent.build_game_catalog_index(())
     )
     assert arguments == {"resourceUri": url, "service": "hbo_max"}

@@ -35,6 +35,12 @@ internal sealed class MemoryTurnSession
         internal required Func<MissionInputRoute, RetryableOperationRegistry, CancellationToken, Task<bool>>
             ContinuePublic
         { get; init; }
+
+        /// <summary>
+        /// Estabilización M: a verified change of what the memory holds (saved, corrected, forgotten, switched on or
+        /// off). The interface's memory count is read again from the store, never kept by the App.
+        /// </summary>
+        internal Action? MemoryChanged { get; init; }
     }
 
     private sealed record MemoryContinuation(
@@ -146,7 +152,8 @@ internal sealed class MemoryTurnSession
                 _host.Publish(
                     PrivateOperationNarration.CreateMemoryConfirmationPrompt(
                         pending.Prepared,
-                        _confirmationRequiresReconciliation),
+                        _confirmationRequiresReconciliation,
+                        Forgotten(pending.Prepared)),
                     UserMessageEvent.Confirmation);
                 return;
             case ConfirmationReplyKind.Cancel:
@@ -171,7 +178,10 @@ internal sealed class MemoryTurnSession
 
                 ClearContinuation(pending.Prepared);
                 ClearConfirmation();
-                _host.Publish(PrivateOperationNarration.CreateMemoryCancellationMessage(pending.Prepared), null);
+                _host.Publish(
+                    PrivateOperationNarration.CreateMemoryCancellationMessage(
+                        pending.Prepared, Forgotten(pending.Prepared)),
+                    null);
                 ContinueRecovery(registry);
                 return;
             case ConfirmationReplyKind.Confirm:
@@ -219,7 +229,7 @@ internal sealed class MemoryTurnSession
 
             ClearContinuation(pending);
             ResetOperation();
-            _host.Publish(PrivateOperationNarration.CreateMemoryCancellationMessage(pending), null);
+            _host.Publish(PrivateOperationNarration.CreateMemoryCancellationMessage(pending, Forgotten(pending)), null);
             ContinueRecovery(registry);
             return;
         }
@@ -238,6 +248,26 @@ internal sealed class MemoryTurnSession
             isDurable: true,
             confirmationToken: null,
             cancellationToken);
+    }
+
+    // The scope and datum a forget acts on (PrivateOperationNarration.MemoryAction); null for any other operation.
+    private JsonObject? Forgotten(PreparedOperation prepared)
+    {
+        if (prepared.OperationName != "memory.forget" || _host.Protector() is not { } protector)
+        {
+            return null;
+        }
+
+        try
+        {
+            using OpenedBoundProtectedJson opened = protector.OpenPrivateArguments(prepared);
+            return JsonNode.Parse(opened.Payload.GetRawText()) as JsonObject;
+        }
+        catch (StaleMemorySessionException)
+        {
+            // An attempt recovered from an earlier session is named without its datum («ese dato»).
+            return null;
+        }
     }
 
     internal async Task ExecuteRouteAsync(
@@ -388,7 +418,8 @@ internal sealed class MemoryTurnSession
             _host.Publish(
                 PrivateOperationNarration.CreateMemoryConfirmationPrompt(
                     prepared,
-                    challenge.ReconciliationRequired),
+                    challenge.ReconciliationRequired,
+                    Forgotten(prepared)),
                 UserMessageEvent.Confirmation);
             return;
         }
@@ -424,12 +455,17 @@ internal sealed class MemoryTurnSession
                 }
 
                 string? objective = _continuation?.RequestText ?? _continuation?.Objective;
-                if (_host.PublishForObjective is { } publishForObjective
+                // Estabilización M2 (live recheck 2026-10-12: the first save of a session said «Activé la memoria.»
+                // and then «Listo, me acuerdo: …»): the memory switched on for a save is told by that save's own
+                // final, once.
+                bool toldBySave = _continuation is { SaveAfterEnable: not null } enabling
+                    && IsSame(enabling.Predecessor, prepared);
+                if (!toldBySave && _host.PublishForObjective is { } publishForObjective
                     && !string.IsNullOrWhiteSpace(objective))
                 {
                     publishForObjective(projection.Message, null, objective);
                 }
-                else
+                else if (!toldBySave)
                 {
                     _host.Publish(projection.Message, null);
                 }
@@ -442,6 +478,11 @@ internal sealed class MemoryTurnSession
             }
 
             ClearConfirmationFor(prepared);
+            if (prepared.OperationName is not ("memory.recall" or "memory.list" or "memory.status" or "memory.export"))
+            {
+                _host.MemoryChanged?.Invoke();
+            }
+
             if (Resolve(registry, prepared))
             {
                 await ContinueAfterAsync(prepared, registry, cancellationToken);

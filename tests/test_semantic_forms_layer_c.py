@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind.effect_intent import EffectIntent
 from baxy_mind.semantic.audio import _audio_mute_domain
 from baxy_mind.semantic.grammar import _fold, _strip_request_envelope
+from baxy_mind.semantic import reading as semantic_reading
+from baxy_mind.semantic import arguments as semantic_arguments
 
 
 @pytest.mark.parametrize(
@@ -55,13 +56,13 @@ def _resolve_place(text: str) -> EffectIntent | None:
     ],
 )
 def test_a_place_said_before_the_order_is_read_after_it(text, reordered):
-    found = mind._fronted_place_request(text, _resolve_place)
+    found = semantic_reading._fronted_place_request(text, _resolve_place)
     assert found is not None and found.evidence == (reordered,)
 
 
 @pytest.mark.parametrize("text", ["en Spotify hay mucha música", "en mi casa pon la mesa"])
 def test_a_place_before_talk_or_before_an_unreadable_order_stays_as_it_was(text):
-    assert mind._fronted_place_request(text, _resolve_place) is None
+    assert semantic_reading._fronted_place_request(text, _resolve_place) is None
 
 
 @pytest.mark.parametrize("text", ["presioná enter en Slack", "pulsá la tecla intro en Word", "oprimí enter"])
@@ -117,13 +118,13 @@ def _resolve_play(order: str) -> EffectIntent | None:
     ],
 )
 def test_a_desire_to_listen_is_the_order_to_play(text, order):
-    found = mind._desired_media_request(text, _resolve_play)
+    found = semantic_reading._desired_media_request(text, _resolve_play)
     assert found is not None and found.evidence == (order,)
 
 
 @pytest.mark.parametrize("text", ["quiero que me escuches", "quiero escuchar tu opinión sobre esto"])
 def test_a_desire_that_is_not_media_stays_as_it_was(text):
-    found = mind._desired_media_request(text, lambda order: None)
+    found = semantic_reading._desired_media_request(text, lambda order: None)
     assert found is None
 
 
@@ -144,4 +145,4 @@ def test_volume_levels_and_voseo_amounts(text, operation):
 
 @pytest.mark.parametrize(("text", "state"), [("devolveme el audio", False), ("recuperá el sonido", False), ("silenciá todo", True)])
 def test_restoring_the_sound_is_unmute_in_the_arguments_too(text, state):
-    assert mind._explicit_arguments_from_evidence("audio.mute", text) == {"state": state}
+    assert semantic_arguments._explicit_arguments_from_evidence("audio.mute", text) == {"state": state}

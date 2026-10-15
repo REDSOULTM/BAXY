@@ -1,0 +1,103 @@
+{
+ "schema": "baxy.app-places.v1",
+ "source": "Estabilización, encargo C (2026-10-11; banco r30 x10: el clic por OCR en «TIENDA» no cambió la página de Steam; g1 0/3: Steam no deja escribir en su buscador; u1 y y8 inestables en Spotify). Los lugares de una aplicación que tienen dirección propia (un protocolo que la aplicación registró en Windows): una misión que va a uno de ellos abre su dirección con la apertura de la aplicación (app.open con «place») y la vista de la ventana comprueba que llegó; un lugar que no está aquí sigue con computer use. Cada aplicación: su nombre del catálogo Inicio, los esquemas que puede abrir (el kernel no abre ninguno que no esté aquí), el catálogo de juegos cuyos identificadores llenan {game}, y sus lugares: la dirección con a lo sumo un hueco ({query}: lo buscado, escapado; {game}: el identificador numérico del juego) y los nombres con que se dice el lugar (plegados: minúsculas, sin acentos; «{game}» marca dónde va el título). El lugar que lleva {query} es donde se buscan cosas en la aplicación. Lo leen Baxy.Kernel (ApplicationPlaces: los lugares permitidos y la dirección) y la mente (semantic/app_places: el lugar de un sub-objetivo); los ejemplos atan a los dos lectores en sus tests. Direcciones comprobadas a mano en vivo el 2026-10-11 con el lanzamiento del shell, como lo hace el producto (detalle en el informe del encargo). Un lugar sin «address» se nombra pero no tiene dirección (medido: spotify:collection y spotify:library abren «Tus Me Gusta», no «Tu biblioteca»): sigue con computer use. «within» ata el lugar que lleva {query} al lugar donde se busca (la tienda de Steam busca en la tienda): un pedido que nombra otro lugar de la aplicación («andá a la biblioteca y buscá X», «en mi biblioteca») no usa esa dirección. «shows» (encargo S2, banco f3 v8: el botón «Inicio» no tiene estado y la página principal se titula con la canción que suena): el nombre entero de un control que sólo muestra la página de ese lugar, medido en vivo el 2026-10-11 en redpc (Spotify en español: la lista «Filtros de Inicio» sólo en Inicio; ni en Buscar ni en Tus Me Gusta); la llegada se prueba con él, se haya llegado como se haya llegado. La llegada a un lugar abierto con un valor se prueba con el valor nacido en la ventana después de abrirlo (átomo opened:), nunca con el valor en cualquier parte. «search»: false (estabilización L3, g1 0/3, 3/3 y 0/1: Steam, dibujado con CEF, no deja escribir de forma fiable en el buscador de su biblioteca) declara un límite: buscar dentro de ese lugar no se intenta; la misión va al lugar, que es lo seguro, y dice corto que no puede buscar ahí y ofrece buscarlo en el lugar donde busca la dirección con {query} (su «within»). «said» es cómo dice el final cada lugar en cada idioma.",
+ "applications": {
+  "Configuración": {
+   "_about": "Estabilización G2 (tandas f2 del notebook, t2-c03 «abre configuracion que quiero ver lo de la pantalla»: la Configuración del notebook abre en «Inicio», que recomienda «Pantalla de bloqueo»; la misión vagó por Personalización y escribió en el buscador una fecha leída por OCR). Las secciones de Configuración tienen dirección propia (ms-settings:), así que se va a ellas sin clics. Cada dirección se comprobó en vivo en redpc el 2026-10-11 con el lanzamiento del shell (sonda estab/G2_sonda: título, elemento seleccionado de la navegación y miga de pan). No tienen dirección, y siguen con computer use: «Aplicaciones» (ms-settings:apps abre «Aplicaciones instaladas»), «Hora e idioma» (ms-settings:time-language abre «Sistema») y «Juegos» (ms-settings:gaming abre «Game Bar»). Estabilización L4 (en vivo t-scroll-3: el clic por nombre en «Fonts», fuera de la vista de Personalización, tardó 33 s y agotó el plazo del sub-objetivo): «fonts» se comprobó igual en redpc el 2026-10-11 (sonda estab/L4_sonda: abre Personalización › Fuentes, «Fuentes disponibles»).",
+   "schemes": ["ms-settings"],
+   "places": {
+    "about": {"address": "ms-settings:about", "names": ["informacion", "acerca de", "about"]},
+    "accessibility": {"address": "ms-settings:easeofaccess", "names": ["accesibilidad", "accessibility"]},
+    "accounts": {"address": "ms-settings:accounts", "names": ["cuentas", "accounts"]},
+    "background": {"address": "ms-settings:personalization-background", "names": ["fondo", "fondo de pantalla", "fondo de escritorio", "background", "wallpaper"]},
+    "bluetooth": {"address": "ms-settings:bluetooth", "names": ["bluetooth y dispositivos", "bluetooth & dispositivos", "bluetooth & devices", "bluetooth and devices", "bluetooth"]},
+    "colors": {"address": "ms-settings:colors", "names": ["colores", "colors", "colours"]},
+    "datetime": {"address": "ms-settings:dateandtime", "names": ["fecha y hora", "date & time", "date and time"]},
+    "fonts": {"address": "ms-settings:fonts", "names": ["fuentes", "fonts"]},
+    "defaultapps": {"address": "ms-settings:defaultapps", "names": ["aplicaciones predeterminadas", "default apps"]},
+    "display": {"address": "ms-settings:display", "names": ["pantalla", "display", "configuracion de pantalla", "display settings"]},
+    "home": {"address": "ms-settings:home", "names": ["inicio", "home"]},
+    "installedapps": {"address": "ms-settings:appsfeatures", "names": ["aplicaciones instaladas", "installed apps"]},
+    "language": {"address": "ms-settings:regionlanguage", "names": ["idioma y region", "idioma", "language & region", "language and region", "language"]},
+    "lockscreen": {"address": "ms-settings:lockscreen", "names": ["pantalla de bloqueo", "lock screen"]},
+    "mouse": {"address": "ms-settings:mousetouchpad", "names": ["mouse", "raton"]},
+    "network": {"address": "ms-settings:network", "names": ["red e internet", "red", "redes", "network & internet", "network and internet", "network"]},
+    "notifications": {"address": "ms-settings:notifications", "names": ["notificaciones", "notifications"]},
+    "personalization": {"address": "ms-settings:personalization", "names": ["personalizacion", "personalization"]},
+    "power": {"address": "ms-settings:powersleep", "names": ["inicio/apagado", "energia", "energia y bateria", "power", "power & battery", "power and battery"]},
+    "printers": {"address": "ms-settings:printers", "names": ["impresoras y escaneres", "impresoras", "printers & scanners", "printers and scanners", "printers"]},
+    "privacy": {"address": "ms-settings:privacy", "names": ["privacidad y seguridad", "privacidad", "privacy & security", "privacy and security", "privacy"]},
+    "sound": {"address": "ms-settings:sound", "names": ["sonido", "sound"]},
+    "storage": {"address": "ms-settings:storagesense", "names": ["almacenamiento", "storage"]},
+    "system": {"address": "ms-settings:system", "names": ["sistema", "system"]},
+    "taskbar": {"address": "ms-settings:taskbar", "names": ["barra de tareas", "taskbar"]},
+    "themes": {"address": "ms-settings:themes", "names": ["temas", "themes"]},
+    "update": {"address": "ms-settings:windowsupdate", "names": ["windows update"]},
+    "wifi": {"address": "ms-settings:network-wifi", "names": ["wi-fi", "wifi", "wi fi"]}
+   }
+  },
+  "Discord": {
+   "_about": "Encargo IMP2 (banco fix1 c6: «en Discord abrí el chat con Ron92…» empezó en la página de un canal de voz de un servidor, donde ni el chat ni el buscador de conversaciones están; el clic no encontró nada y Ctrl+F buscó en el canal). Los mensajes directos tienen dirección propia (medido en redpc el 2026-10-12 con el lanzamiento del shell: discord://-/channels/@me lleva a «Amigos - Discord» en 0,9 s, 2 de 2, desde un MD). «chats»: el lugar donde la aplicación lista sus chats; un sub-objetivo que va a un lugar que estos datos no declaran («ir a ron92») y que la vista no nombra empieza allí (cu_address), y desde allí sigue con computer use (el enlace del chat o el buscador de conversaciones).",
+   "schemes": ["discord"],
+   "chats": "directs",
+   "places": {
+    "directs": {"address": "discord://-/channels/@me", "names": ["mensajes directos", "direct messages"]}
+   }
+  },
+  "WhatsApp": {
+   "_about": "Encargo IMP4 (imp3 imp-wa-leer: el árbol UIA de un chat abierto de WhatsApp no trae el texto de los mensajes —61 controles: «Enviado», «Tú:», fechas— y la copia de pantalla de la ventana tapada leyó la de encima). «conversation»: dónde dibuja la conversación, en fracciones de su ventana (dibujada por sí misma), y cómo se ve lo propio. Medido en redpc el 2026-10-12 con el grupo Música abierto (1920×1044, 3 lecturas iguales): la lista de chats acaba en x≈0,23; la cabecera hasta y≈0,09 y el cuadro de mensaje desde y≈0,93; las burbujas propias empiezan a la derecha del centro (x≥0,79) y acaban en x≈0,93-0,96 con la hora y la marca de leído; las fechas («20/9/2026», «Hoy») van centradas (centro ≈0,61). Las ajenas empiezan junto al borde izquierdo de la conversación. Sin lugares con dirección.",
+   "schemes": ["whatsapp"],
+   "places": {},
+   "conversation": {"left": 0.235, "top": 0.09, "right": 1.0, "bottom": 0.93, "centerBand": 0.06, "ownEdge": 0.88},
+   "chatSearch": {
+    "_about": "Encargo TZ-WA2 (banco zu1–zu3 del notebook, 7 de 9 casos imp-wa-* fallidos): ir a un chat (un lugar que estos datos no declaran) lo decide cu_chats.chat_search_step sin el modelo. Medido: el chat sin ver en la lista (zu1 leer, WhatsApp tapado por otra ventana: el OCR leyó la otra); la búsqueda que conservaba «abuela» de un caso anterior, cuyo eco se pulsó por OCR (zu2 y zu3); el modelo pulsó «Nuevo chat» (zu2, zu3) y la regla de pestañas eligió el filtro «No leídos», que quedó puesto y ocultó el chat a la búsqueda en los casos siguientes (zu2 enviar → zu3); la fila con la vista previa «Abuela 19:25 prueba BAXY imp» pulsada por su acción por defecto no abrió el chat (zu1 leer, zu2 abrir) y su celda de título «Abuela 19:25» pulsada en la superficie sí (zu2 abrir). «fields»: los nombres del cuadro de búsqueda de chats, plegados (vacío dice su invitación; con texto se llama como la aplicación, medido en zu1 leer y en redpc el 2026-10-14). «all»: la pestaña de filtro que muestra todos los chats, la única que se elige (y sólo si el chat no está a la vista). «entry»: la entrada propia de un chat en la lista o en los resultados, plegada, con {name} el chat: su nombre (con los emojis que lo siguen), con o sin la marca de no leídos o de estado delante y la hora o la fecha detrás (medido en zu1–zu3 y en redpc: la celda de título «Abuela 19:25», «1 mensaje no leído Enmanuel … 19:25»; el botón «Abuela» de las búsquedas recientes, zt1); nunca la fila con la vista previa del último mensaje ni un mensaje que nombra al chat.",
+    "fields": ["buscar un chat o iniciar uno nuevo", "search or start a new chat", "whatsapp"],
+    "all": ["todos", "all"],
+    "entry": "^(?:(?:ver estado|view status|\\d+ mensajes? no leidos?|\\d+ unread messages?) )?{name}(?: [^\\w\\s]+)*(?: (?:\\d{1,2}:\\d{2}(?: ?[ap]\\.? ?m\\.?)?|\\d{1,2}/\\d{1,2}/\\d{2,4}|ayer|hoy|yesterday|today|lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday))?$"
+   }
+  },
+  "Spotify": {
+   "schemes": ["spotify"],
+   "places": {
+    "home": {"address": "spotify:home", "names": ["inicio", "home", "pagina principal"], "shows": ["filtros de inicio"]},
+    "library": {"names": ["tu biblioteca", "biblioteca", "your library", "library"]},
+    "search": {"address": "spotify:search", "names": ["buscar", "search", "busqueda"]},
+    "results": {"address": "spotify:search:{query}", "within": "search"}
+   }
+  },
+  "Steam": {
+   "_about": "Encargo imp-steam (imprescindibles del dueño: lanzar un juego instalado, instalarlo y desinstalarlo con confirmación; antes el título se traducía con 13 títulos fijos en el código la desinstalación tecleaba app_uninstall en la consola y el lanzamiento pulsaba Enter sobre Steam). «acts»: lo que la aplicación hace con un juego de su catálogo por una dirección propia; no son lugares (app.open no los abre): los empiezan game.install.named, game.uninstall.named, game.install.cancel y game.launch, que el núcleo autoriza (instalar y desinstalar preguntan en Normal). «confirm»: los nombres del control del diálogo propio de Steam que confirma el acto, pulsado como lo pulsa un paso de la misión (input.visible.click sobre esa ventana), y después la verificación por el manifiesto del juego (aparece, o deja de estar). Medido a mano en redpc el 2026-10-11 sin confirmar nada (estab/IMP_steam.md): steam://install/40800 abre «Instalar» (título, «INSTALAR EN:», botones «Instalar» y «Cancelar»; ventana propia si Steam está minimizado, dibujado sobre la ventana principal si está a la vista) y steam://uninstall/<id> abre «Desinstalar» (pregunta, botones «Desinstalar» y «Cancelar»). El diálogo que Steam pueda mostrar antes de un juego (sus opciones de inicio) se confirma igual, por «Jugar» (sin medir: Cuphead lanza sin diálogo). «titles»: la búsqueda pública de la tienda que da el número de un título que no está instalado; sólo sale el título.",
+   "schemes": ["steam"],
+   "gameCatalog": "steam",
+   "titles": {"address": "https://store.steampowered.com/api/storesearch/?term={title}&l=english&cc=US", "list": "items", "id": "id", "name": "name"},
+   "acts": {
+    "install": {"address": "steam://install/{game}", "confirm": ["Instalar", "Install"]},
+    "launch": {"address": "steam://rungameid/{game}", "confirm": ["Jugar", "Play"]},
+    "uninstall": {"address": "steam://uninstall/{game}", "confirm": ["Desinstalar", "Uninstall"]}
+   },
+   "places": {
+    "community": {"address": "steam://url/CommunityHome", "names": ["comunidad", "community"]},
+    "game": {"address": "steam://store/{game}", "names": ["pagina de {game}", "pagina del juego {game}", "page of {game}", "page for {game}", "{game} page"]},
+    "library": {"address": "steam://open/games", "names": ["biblioteca", "library"], "search": false, "said": {"es": "la biblioteca", "en": "the library"}},
+    "results": {"address": "steam://openurl/https://store.steampowered.com/search/?term={query}", "within": "store"},
+    "store": {"address": "steam://store", "names": ["tienda", "store", "shop"], "said": {"es": "la tienda", "en": "the store"}}
+   }
+  }
+ },
+ "examples": [
+  {"application": "Discord", "goal": "ir a mensajes directos", "place": "directs", "address": "discord://-/channels/@me"},
+  {"application": "Configuración", "goal": "ir a pantalla", "place": "display", "address": "ms-settings:display"},
+  {"application": "Configuración", "goal": "ir a bluetooth & devices", "place": "bluetooth", "address": "ms-settings:bluetooth"},
+  {"application": "Configuración", "goal": "ir a sistema", "place": "system", "address": "ms-settings:system"},
+  {"application": "Configuración", "goal": "ir a wi-fi", "place": "wifi", "address": "ms-settings:network-wifi"},
+  {"application": "Configuración", "goal": "ir a idioma y region", "place": "language", "address": "ms-settings:regionlanguage"},
+  {"application": "Steam", "goal": "ir a biblioteca", "place": "library", "address": "steam://open/games"},
+  {"application": "Steam", "goal": "ir a store", "place": "store", "address": "steam://store"},
+  {"application": "Steam", "goal": "ir a comunidad", "place": "community", "address": "steam://url/CommunityHome"},
+  {"application": "Steam", "goal": "buscar Cuphead", "place": "results", "value": "Cuphead", "address": "steam://openurl/https://store.steampowered.com/search/?term=Cuphead"},
+  {"application": "Steam", "goal": "ir a pagina de rocket league", "place": "game", "value": "252950", "address": "steam://store/252950"},
+  {"application": "Spotify", "goal": "ir a inicio", "place": "home", "address": "spotify:home"},
+  {"application": "Spotify", "goal": "ir a search", "place": "search", "address": "spotify:search"},
+  {"application": "Spotify", "goal": "buscar Los Bunkers", "place": "results", "value": "Los Bunkers", "address": "spotify:search:Los%20Bunkers"}
+ ]
+}

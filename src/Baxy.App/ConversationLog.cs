@@ -11,7 +11,9 @@ namespace Baxy.App;
 /// produjo y la latencia desde el último mensaje de la persona. Vive sólo en el
 /// perfil local (<c>&lt;datos&gt;/conversation/conversation.v1.jsonl</c>) y nunca
 /// sale del PC; sirve para reportar fallos y latencias del uso diario sin tener
-/// que reescribir lo dicho. <c>BAXY_CONVERSATION_LOG=0</c> lo desactiva.
+/// que reescribir lo dicho. <c>BAXY_CONVERSATION_LOG=0</c> lo desactiva. Tiene
+/// tope (<see cref="BoundedJsonlFile"/>): al pasarlo, lo anterior queda en
+/// <c>conversation.v1.jsonl.1</c> y el registro vivo empieza de nuevo.
 /// </summary>
 internal sealed class ConversationLog
 {
@@ -24,18 +26,22 @@ internal sealed class ConversationLog
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    private readonly string _path;
+    private readonly BoundedJsonlFile _file;
     private readonly object _gate = new();
     private DateTimeOffset? _lastUserMessageAt;
     private int _turn;
 
-    internal ConversationLog(string directory)
+    internal ConversationLog(
+        string directory,
+        long maximumBytes = BoundedJsonlFile.DefaultMaximumBytes)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(directory);
-        _path = Path.Combine(directory, "conversation.v1.jsonl");
+        _file = new BoundedJsonlFile(Path.Combine(directory, "conversation.v1.jsonl"), maximumBytes);
     }
 
-    internal string FilePath => _path;
+    internal string FilePath => _file.FilePath;
+
+    internal string ArchivePath => _file.ArchivePath;
 
     internal static ConversationLog? CreateDefault()
     {
@@ -93,8 +99,8 @@ internal sealed class ConversationLog
 
             try
             {
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(_path)!);
-                File.AppendAllText(_path, JsonSerializer.Serialize(payload, JsonOptions) + Environment.NewLine);
+                Directory.CreateDirectory(Path.GetDirectoryName(_file.FilePath)!);
+                _file.AppendLine(JsonSerializer.Serialize(payload, JsonOptions));
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {

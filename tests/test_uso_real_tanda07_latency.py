@@ -20,7 +20,8 @@ import re
 
 import pytest
 
-from baxy_mind.llm import ConversationReplyContractError, LlmRuntime
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.semantic import grammar
 from baxy_mind.semantic.reading import read
 

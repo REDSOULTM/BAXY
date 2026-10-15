@@ -8,7 +8,8 @@ de lo que la verificación observó.
 
 Qué NO cuenta, y por qué:
 
-- `llm.py` — es el prompt. La personalidad vive ahí por decisión del goal 06:
+- `llm.py` y los módulos que salieron de él con texto del prompt o instrucciones al redactor
+  (`MODULOS_DEL_PROMPT`) — es el prompt. La personalidad vive ahí por decisión del goal 06:
   «cambiar el carácter tiene que ser editar un texto». Un literal en el prompt
   es la solución, no el defecto. `semantic/decider.py`, por lo mismo: es el prompt
   del decisor en contexto (Fase 3.5b); lo que dice la persona lo redacta el modelo.
@@ -36,8 +37,15 @@ PALABRAS_ES = re.compile(
     u'encontré)\\b')
 REGEXISH = re.compile(r'[\^\$\|\[\]]')
 
-FICHEROS_DE_ENTRADA = ('/llm.py', '/semantic/decider.py', '/semantic/request.py',
-                       '/UserMessagePhrases.cs')
+# llm.py se partió por responsabilidad; estos módulos heredaron su texto de prompt (y las frases fijas que el censo no
+# veía dentro de llm.py, anotadas en documentacion/APLAZADOS.md).
+MODULOS_DEL_PROMPT = ('/llm_prompts.py', '/weather_facts.py', '/context_rewrite.py', '/reply_claims.py',
+                      '/conversation_shape.py', '/clarification_style.py', '/computer_use_finals.py',
+                      '/deterministic_finals.py', '/consulted_answers.py', '/payload_fact_checks.py',
+                      '/visible_defect.py', '/llm_chat.py', '/llm_clarify.py', '/llm_plans.py',
+                      '/llm_compose.py')
+FICHEROS_DE_ENTRADA = ('/llm.py',) + MODULOS_DEL_PROMPT + ('/semantic/decider.py', '/semantic/request.py',
+                                                          '/UserMessagePhrases.cs')
 
 
 def lineas_de_docstring(txt):

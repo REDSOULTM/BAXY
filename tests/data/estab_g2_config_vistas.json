@@ -1,0 +1,4218 @@
+{
+ "source": "Estabilización G2: vistas reales congeladas de la Configuración del notebook (lo que el Core devolvió a input.visible.controls: el «result» completo de la respuesta, no los 20 controles del resumen). nb_inicio_1343 y nb_pantalla_de_bloqueo_1344: diario %LOCALAPPDATA%/BAXY/uso-real-v3/journal/missions.jsonl, 2026-10-11 13:43:49.319 y 13:44:03.301 UTC (tanda f2nb t2-c03 «abre configuracion que quiero ver lo de la pantalla»: la primera vista, que abre en Inicio y recomienda «Pantalla de bloqueo», y la vista sobre la que el modelo tecleó «d ingo, ii de octubre» en el buscador). nb_sistema_u8 y nb_pantalla_u8: diario del perfil cu-universal-perfil, banco e3 caso u8, 2026-10-11 05:45:57.644 y 05:45:58.673 UTC (la página Sistema con su elemento «Pantalla» y la página Pantalla con su cabecera «Sistema > Pantalla»). El nombre y el correo de la cuenta se cambiaron; nada más.",
+ "views": {
+  "nb_inicio_1343": {
+   "version": 2,
+   "ok": true,
+   "error": "",
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "processId": 35540,
+    "hwnd": 36176582,
+    "requested": true,
+    "root": 36176582,
+    "foreground": false,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "focused": {
+     "kind": "Edit",
+     "name": "Cuadro de búsqueda, Buscar una opción",
+     "nameSource": "",
+     "value": "",
+     "i": 4
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "MenuItem",
+     "name": "Sistema",
+     "id": "42.23728280.4.65535",
+     "state": "collapsed",
+     "value": null,
+     "rect": null,
+     "zone": "",
+     "color": "",
+     "repeated": 1
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Minimizar Configuración",
+     "id": "42.23728280.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1168,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Maximizar Configuración",
+     "id": "42.23728280.4.2",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1225,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Cerrar Configuración",
+     "id": "42.23728280.4.3",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1282,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Edit",
+     "name": "Cuadro de búsqueda, Buscar una opción",
+     "id": "42.30804878.4.7",
+     "state": "focused",
+     "value": "",
+     "rect": {
+      "x": 377,
+      "y": 11,
+      "w": 645,
+      "h": 41
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Persona Prueba persona@example.com",
+     "id": "42.30804878.4.13",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 65,
+      "y": 62,
+      "w": 360,
+      "h": 94
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "ListItem",
+     "name": "Inicio",
+     "id": "42.30804878.4.16",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 181,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "ListItem",
+     "name": "Sistema",
+     "id": "42.30804878.4.19",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 231,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "ListItem",
+     "name": "Bluetooth y dispositivos",
+     "id": "42.30804878.4.22",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 281,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "ListItem",
+     "name": "Red e Internet",
+     "id": "42.30804878.4.25",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 331,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "ListItem",
+     "name": "Personalización",
+     "id": "42.30804878.4.28",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 381,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "ListItem",
+     "name": "Aplicaciones",
+     "id": "42.30804878.4.31",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 431,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "ListItem",
+     "name": "Cuentas",
+     "id": "42.30804878.4.34",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 481,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "ListItem",
+     "name": "Hora e idioma",
+     "id": "42.30804878.4.37",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 531,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "ListItem",
+     "name": "Juegos",
+     "id": "42.30804878.4.40",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 581,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "ListItem",
+     "name": "Accesibilidad",
+     "id": "42.30804878.4.43",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 631,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "ListItem",
+     "name": "Privacidad y seguridad",
+     "id": "42.30804878.4.46",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 681,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "ListItem",
+     "name": "Windows Update",
+     "id": "42.30804878.4.49",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 731,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Inicio",
+     "id": "42.30804878.4.61",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 465,
+      "y": 69,
+      "w": 86,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Hyperlink",
+     "name": "Cambiar nombre",
+     "id": "42.30804878.4.68",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 637,
+      "y": 247,
+      "w": 130,
+      "h": 26
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 20,
+     "kind": "Button",
+     "name": "Ethernet Conectado",
+     "id": "42.30804878.4.73",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1042,
+      "y": 139,
+      "w": 175,
+      "h": 66
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 21,
+     "kind": "Button",
+     "name": "Windows Update Última comprobación: hace 4 horas",
+     "id": "42.30804878.4.77",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1042,
+      "y": 235,
+      "w": 264,
+      "h": 85
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 22,
+     "kind": "ListItem",
+     "name": "Pantalla de bloqueo",
+     "id": "42.30804878.4.86",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 478,
+      "w": 844,
+      "h": 90
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 23,
+     "kind": "ListItem",
+     "name": "Aplicaciones instaladas",
+     "id": "42.30804878.4.91",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 564,
+      "w": 844,
+      "h": 89
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 24,
+     "kind": "ListItem",
+     "name": "Sonido",
+     "id": "42.30804878.4.96",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 649,
+      "w": 844,
+      "h": 90
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 25,
+     "kind": "Button",
+     "name": "Bluetooth",
+     "id": "42.30804878.4.107",
+     "state": "on",
+     "value": null,
+     "rect": {
+      "x": 1118,
+      "y": 900,
+      "w": 159,
+      "h": 50
+     },
+     "zone": "BR",
+     "color": "black"
+    },
+    {
+     "i": 26,
+     "kind": "ListItem",
+     "name": "Xbox Wireless Controller, categoría Entrada de juegos, 100% ... tado Emparejado,",
+     "id": "42.30804878.4.115",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 969,
+      "w": 838,
+      "h": 31
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 27,
+     "kind": "Button",
+     "name": "Más opciones",
+     "id": "42.30804878.4.113",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1225,
+      "y": 988,
+      "w": 51,
+      "h": 13
+     },
+     "zone": "BR",
+     "color": "black"
+    },
+    {
+     "i": 28,
+     "kind": "Window",
+     "name": "Configuración",
+     "id": "42.23728280",
+     "state": "readonly",
+     "value": "Configuración",
+     "rect": {
+      "x": 1106,
+      "y": 1,
+      "w": 233,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 29,
+     "kind": "MenuBar",
+     "name": "Sistema",
+     "id": "42.23728280.4.0",
+     "state": "",
+     "value": null,
+     "shortcut": "Alt+Space",
+     "rect": null,
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 30,
+     "kind": "Text",
+     "name": "Configuración",
+     "id": "42.30804878.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 122,
+      "y": 21,
+      "w": 984,
+      "h": 20
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 31,
+     "kind": "Image",
+     "name": "Imagen de perfil del usuario",
+     "id": "42.30804878.4.10",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 71,
+      "w": 75,
+      "h": 75
+     },
+     "zone": "TL",
+     "color": "green"
+    },
+    {
+     "i": 32,
+     "kind": "Text",
+     "name": "Persona Prueba",
+     "id": "42.30804878.4.11",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 86,
+      "w": 163,
+      "h": 24
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 33,
+     "kind": "Text",
+     "name": "persona@example.com",
+     "id": "42.30804878.4.12",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 110,
+      "w": 163,
+      "h": 20
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 34,
+     "kind": "Text",
+     "name": "Inicio",
+     "id": "42.30804878.4.60",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 465,
+      "y": 69,
+      "w": 86,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 35,
+     "kind": "Image",
+     "name": "Vista previa de escritorio",
+     "id": "42.30804878.4.64",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 472,
+      "y": 193,
+      "w": 140,
+      "h": 74
+     },
+     "zone": "T",
+     "color": "blue"
+    },
+    {
+     "i": 36,
+     "kind": "Group",
+     "name": "REDNOTE",
+     "id": "42.30804878.4.69",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 637,
+      "y": 193,
+      "w": 332,
+      "h": 80
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 37,
+     "kind": "Text",
+     "name": "REDNOTE",
+     "id": "42.30804878.4.65",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 637,
+      "y": 193,
+      "w": 332,
+      "h": 30
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 38,
+     "kind": "Text",
+     "name": "ASUS TUF Gaming A15 FA506QM_FA506QM",
+     "id": "42.30804878.4.66",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 637,
+      "y": 223,
+      "w": 332,
+      "h": 24
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 39,
+     "kind": "Text",
+     "name": "Ethernet",
+     "id": "42.30804878.4.71",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1098,
+      "y": 147,
+      "w": 110,
+      "h": 25
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 40,
+     "kind": "Text",
+     "name": "Conectado",
+     "id": "42.30804878.4.72",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1098,
+      "y": 175,
+      "w": 110,
+      "h": 20
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 41,
+     "kind": "Text",
+     "name": "Windows Update",
+     "id": "42.30804878.4.75",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1098,
+      "y": 243,
+      "w": 199,
+      "h": 25
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 42,
+     "kind": "Text",
+     "name": "Última comprobación: hace 4 horas",
+     "id": "42.30804878.4.76",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1098,
+      "y": 271,
+      "w": 199,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 43,
+     "kind": "Group",
+     "name": "Configuración recomendada",
+     "id": "42.30804878.4.98",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 345,
+      "w": 844,
+      "h": 394
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 44,
+     "kind": "Text",
+     "name": "Configuración recomendada",
+     "id": "42.30804878.4.80",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 498,
+      "y": 376,
+      "w": 779,
+      "h": 34
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 45,
+     "kind": "Text",
+     "name": "Configuración reciente y usada habitualmente",
+     "id": "42.30804878.4.81",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 498,
+      "y": 425,
+      "w": 354,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 46,
+     "kind": "Group",
+     "name": "Pantalla de bloqueo",
+     "id": "42.30804878.4.85",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 479,
+      "w": 838,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 47,
+     "kind": "Text",
+     "name": "Pantalla de bloqueo",
+     "id": "42.30804878.4.83",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 551,
+      "y": 510,
+      "w": 154,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 48,
+     "kind": "Group",
+     "name": "Aplicaciones instaladas",
+     "id": "42.30804878.4.90",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 565,
+      "w": 838,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 49,
+     "kind": "Text",
+     "name": "Aplicaciones instaladas",
+     "id": "42.30804878.4.88",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 551,
+      "y": 597,
+      "w": 178,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 50,
+     "kind": "Group",
+     "name": "Sonido",
+     "id": "42.30804878.4.95",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 651,
+      "w": 838,
+      "h": 86
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 51,
+     "kind": "Text",
+     "name": "Sonido",
+     "id": "42.30804878.4.93",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 551,
+      "y": 683,
+      "w": 55,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 52,
+     "kind": "Group",
+     "name": "Dispositivos Bluetooth",
+     "id": "42.30804878.4.142",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 748,
+      "w": 841,
+      "h": 253
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 53,
+     "kind": "Text",
+     "name": "Dispositivos Bluetooth",
+     "id": "42.30804878.4.99",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 498,
+      "y": 778,
+      "w": 779,
+      "h": 33
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 54,
+     "kind": "Text",
+     "name": "Administrar, agregar y quitar dispositivos",
+     "id": "42.30804878.4.100",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 498,
+      "y": 827,
+      "w": 317,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 55,
+     "kind": "Text",
+     "name": "Bluetooth",
+     "id": "42.30804878.4.102",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 551,
+      "y": 903,
+      "w": 76,
+      "h": 23
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 56,
+     "kind": "Text",
+     "name": "Detectable al “REDNOTE”",
+     "id": "42.30804878.4.103",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 551,
+      "y": 927,
+      "w": 542,
+      "h": 20
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 57,
+     "kind": "Group",
+     "name": "Xbox Wireless Controller, categoría Entrada de juegos, 100% ... tado Emparejado,",
+     "id": "42.30804878.4.114",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 969,
+      "w": 838,
+      "h": 31
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 58,
+     "kind": "Text",
+     "name": "Xbox Wireless Controller",
+     "id": "42.30804878.4.109",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 551,
+      "y": 990,
+      "w": 190,
+      "h": 10
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 59,
+     "kind": "List",
+     "name": "Seleccionar un tema para aplicarlo",
+     "id": "42.30804878.4.163",
+     "state": "",
+     "value": null,
+     "rect": null,
+     "zone": "",
+     "color": ""
+    }
+   ],
+   "disabled": [
+    {
+     "kind": "Button",
+     "name": "Atrás",
+     "state": "disabled",
+     "zone": "TL"
+    }
+   ],
+   "controlCount": 62,
+   "clientProviders": true,
+   "text": {
+    "TL": [
+     "Configuración",
+     "Q",
+     "b",
+     "Persona Prueba",
+     "persona@example.com",
+     "Inicio",
+     "Sistema",
+     "Bluetooth y dispositivos"
+    ],
+    "T": [
+     "uscar una opción de configuración",
+     "REDNOTE",
+     "ASUS TU Gaming A15 FA506QM FA506QM",
+     "ASUS TUF Gaming A15 FA506QVl FA506QM",
+     "Cambiar nombre"
+    ],
+    "TR": [
+     "x",
+     "Ethernet",
+     "Conectado",
+     "Última comprobación: hace 4",
+     "Ultima comprobación: hace 4",
+     "horas"
+    ],
+    "L": [
+     "Red e Internet",
+     "Personalización",
+     "Aplicaciones",
+     "Cuentas",
+     "Hora e idioma",
+     "Juegos",
+     "Accesibilidad"
+    ],
+    "C": [
+     "Configuración recomendada",
+     "Configuración reciente y usada habitualmente",
+     "Pantalla de bloqueo",
+     "Aplicaciones instaladas"
+    ],
+    "BL": [
+     "Privacidad y seguridad",
+     "Windows Update"
+    ],
+    "B": [
+     "4))",
+     "Sonido",
+     "Dispositivos Bluetooth",
+     "Administrar, agregar y quitar dispositivos",
+     "Bluetooth",
+     "Detectable al",
+     "Detectable al \"",
+     "\"REDNOTE\"",
+     "REDNOTE\""
+    ],
+    "BR": [
+     "Activado"
+    ]
+   },
+   "textAuthority": "windows_media_ocr_lines",
+   "authority": "windows_uia_snapshot_ocr_zones"
+  },
+  "nb_pantalla_de_bloqueo_1344": {
+   "version": 2,
+   "ok": true,
+   "error": "",
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "processId": 35540,
+    "hwnd": 36176582,
+    "requested": true,
+    "root": 36176582,
+    "foreground": true,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "focused": {
+     "kind": "ComboBox",
+     "name": "Personalizar la pantalla de bloqueo",
+     "nameSource": "",
+     "value": "Presentación",
+     "i": 21
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "MenuItem",
+     "name": "Sistema",
+     "id": "42.23728280.4.65535",
+     "state": "collapsed",
+     "value": null,
+     "rect": null,
+     "zone": "",
+     "color": "",
+     "repeated": 1
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Minimizar Configuración",
+     "id": "42.23728280.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1168,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Maximizar Configuración",
+     "id": "42.23728280.4.2",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1225,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Cerrar Configuración",
+     "id": "42.23728280.4.3",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1282,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Edit",
+     "name": "Cuadro de búsqueda, Buscar una opción",
+     "id": "42.30804878.4.7",
+     "state": "",
+     "value": "",
+     "rect": {
+      "x": 377,
+      "y": 11,
+      "w": 645,
+      "h": 41
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Atrás",
+     "id": "42.30804878.4.9",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 64,
+      "y": 9,
+      "w": 50,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Persona Prueba persona@example.com",
+     "id": "42.30804878.4.13",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 65,
+      "y": 62,
+      "w": 360,
+      "h": 94
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "ListItem",
+     "name": "Inicio",
+     "id": "42.30804878.4.16",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 181,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "ListItem",
+     "name": "Sistema",
+     "id": "42.30804878.4.19",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 231,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "ListItem",
+     "name": "Bluetooth y dispositivos",
+     "id": "42.30804878.4.22",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 281,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "ListItem",
+     "name": "Red e Internet",
+     "id": "42.30804878.4.25",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 331,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "ListItem",
+     "name": "Personalización",
+     "id": "42.30804878.4.28",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 381,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "ListItem",
+     "name": "Aplicaciones",
+     "id": "42.30804878.4.31",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 431,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "ListItem",
+     "name": "Cuentas",
+     "id": "42.30804878.4.34",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 481,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "ListItem",
+     "name": "Hora e idioma",
+     "id": "42.30804878.4.37",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 531,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "ListItem",
+     "name": "Juegos",
+     "id": "42.30804878.4.40",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 581,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "ListItem",
+     "name": "Accesibilidad",
+     "id": "42.30804878.4.43",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 631,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "ListItem",
+     "name": "Privacidad y seguridad",
+     "id": "42.30804878.4.46",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 681,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "ListItem",
+     "name": "Windows Update",
+     "id": "42.30804878.4.49",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 731,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Personalización",
+     "id": "42.30804878.4.190",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 65,
+      "w": 298,
+      "h": 54
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 20,
+     "kind": "Button",
+     "name": "Pantalla de bloqueo",
+     "id": "42.30804878.4.192",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 763,
+      "y": 69,
+      "w": 315,
+      "h": 47
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 21,
+     "kind": "ComboBox",
+     "name": "Personalizar la pantalla de bloqueo",
+     "id": "42.30804878.4.201",
+     "state": "collapsed focused",
+     "value": "Presentación",
+     "rect": {
+      "x": 1083,
+      "y": 352,
+      "w": 173,
+      "h": 50
+     },
+     "zone": "R",
+     "color": "gray"
+    },
+    {
+     "i": 22,
+     "kind": "ListItem",
+     "name": "Presentación",
+     "id": "42.30804878.4.200",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 1103,
+      "y": 364,
+      "w": 100,
+      "h": 24
+     },
+     "zone": "R",
+     "color": "gray"
+    },
+    {
+     "i": 23,
+     "kind": "Button",
+     "name": "Mostrar más valores de configuración",
+     "id": "42.30804878.4.203",
+     "state": "expanded",
+     "value": null,
+     "rect": {
+      "x": 1256,
+      "y": 356,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 24,
+     "kind": "Button",
+     "name": "Examinar",
+     "id": "42.30804878.4.207",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1088,
+      "y": 430,
+      "w": 163,
+      "h": 39
+     },
+     "zone": "R",
+     "color": "gray"
+    },
+    {
+     "i": 25,
+     "kind": "ListItem",
+     "name": "Imágenes",
+     "id": "42.30804878.4.214",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 483,
+      "w": 838,
+      "h": 63
+     },
+     "zone": "C",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 26,
+     "kind": "Button",
+     "name": "Quitar carpeta",
+     "id": "42.30804878.4.212",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1088,
+      "y": 494,
+      "w": 163,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "gray",
+     "repeated": 1
+    },
+    {
+     "i": 27,
+     "kind": "CheckBox",
+     "name": "Obtén datos divertidos, consejos, sugerencias y más en tu pantalla de bloqueo",
+     "id": "42.30804878.4.223",
+     "state": "on",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 622,
+      "w": 641,
+      "h": 40
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 28,
+     "kind": "CheckBox",
+     "name": "Incluir las carpetas del álbum de cámara de este equipo y OneDrive",
+     "id": "42.30804878.4.230",
+     "state": "off",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 775,
+      "w": 554,
+      "h": 40
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 29,
+     "kind": "CheckBox",
+     "name": "Usar solo imágenes que quepan en la pantalla",
+     "id": "42.30804878.4.232",
+     "state": "off",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 839,
+      "w": 390,
+      "h": 40
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 30,
+     "kind": "CheckBox",
+     "name": "Mostrar una presentación al usar batería",
+     "id": "42.30804878.4.234",
+     "state": "off",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 903,
+      "w": 346,
+      "h": 40
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 31,
+     "kind": "CheckBox",
+     "name": "Cuando mi equipo esté inactivo, mostrar la pantalla de bloqu ... ivar la pantalla",
+     "id": "42.30804878.4.236",
+     "state": "on",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 968,
+      "w": 700,
+      "h": 33
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 32,
+     "kind": "Button",
+     "name": "Disminución pequeña vertical",
+     "id": "42.30804878.4.293",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1323,
+      "y": 133,
+      "w": 15,
+      "h": 15
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 33,
+     "kind": "Button",
+     "name": "Aumento grande vertical",
+     "id": "42.30804878.4.296",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1323,
+      "y": 552,
+      "w": 15,
+      "h": 434
+     },
+     "zone": "BR",
+     "color": "black"
+    },
+    {
+     "i": 34,
+     "kind": "Button",
+     "name": "Aumento pequeño vertical",
+     "id": "42.30804878.4.298",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1323,
+      "y": 986,
+      "w": 15,
+      "h": 15
+     },
+     "zone": "BR",
+     "color": "black"
+    },
+    {
+     "i": 35,
+     "kind": "Window",
+     "name": "Configuración",
+     "id": "42.23728280",
+     "state": "readonly",
+     "value": "Configuración",
+     "rect": {
+      "x": 1106,
+      "y": 1,
+      "w": 233,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 36,
+     "kind": "MenuBar",
+     "name": "Sistema",
+     "id": "42.23728280.4.0",
+     "state": "",
+     "value": null,
+     "shortcut": "Alt+Space",
+     "rect": null,
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 37,
+     "kind": "Text",
+     "name": "Configuración",
+     "id": "42.30804878.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 122,
+      "y": 21,
+      "w": 984,
+      "h": 20
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 38,
+     "kind": "Image",
+     "name": "Imagen de perfil del usuario",
+     "id": "42.30804878.4.10",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 71,
+      "w": 75,
+      "h": 75
+     },
+     "zone": "TL",
+     "color": "green"
+    },
+    {
+     "i": 39,
+     "kind": "Text",
+     "name": "Persona Prueba",
+     "id": "42.30804878.4.11",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 86,
+      "w": 163,
+      "h": 24
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 40,
+     "kind": "Text",
+     "name": "persona@example.com",
+     "id": "42.30804878.4.12",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 110,
+      "w": 163,
+      "h": 20
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 41,
+     "kind": "Text",
+     "name": "Personalización",
+     "id": "42.30804878.4.186",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 465,
+      "y": 69,
+      "w": 245,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 42,
+     "kind": "Text",
+     "name": "Pantalla de bloqueo",
+     "id": "42.30804878.4.191",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 763,
+      "y": 69,
+      "w": 315,
+      "h": 47
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 43,
+     "kind": "Text",
+     "name": "Vista previa de la pantalla de bloqueo",
+     "id": "42.30804878.4.194",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 580,
+      "y": 169,
+      "w": 87,
+      "h": 50
+     },
+     "zone": "T",
+     "color": "blue"
+    },
+    {
+     "i": 44,
+     "kind": "Group",
+     "name": "Personalizar la pantalla de bloqueo",
+     "id": "42.30804878.4.224",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 333,
+      "w": 840,
+      "h": 341
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 45,
+     "kind": "Text",
+     "name": "Personalizar la pantalla de bloqueo",
+     "id": "42.30804878.4.198",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 364,
+      "w": 270,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 46,
+     "kind": "Group",
+     "name": "Agregar un álbum para la presentación",
+     "id": "42.30804878.4.208",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 419,
+      "w": 838,
+      "h": 63
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 47,
+     "kind": "Text",
+     "name": "Agregar un álbum para la presentación",
+     "id": "42.30804878.4.205",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 438,
+      "w": 301,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 48,
+     "kind": "Group",
+     "name": "Imágenes",
+     "id": "42.30804878.4.213",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 483,
+      "w": 838,
+      "h": 63
+     },
+     "zone": "C",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 49,
+     "kind": "Text",
+     "name": "Imágenes",
+     "id": "42.30804878.4.210",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 594,
+      "y": 502,
+      "w": 75,
+      "h": 23
+     },
+     "zone": "C",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 50,
+     "kind": "Group",
+     "name": "Configuración de presentación avanzada",
+     "id": "42.30804878.4.241",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 678,
+      "w": 840,
+      "h": 322
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 51,
+     "kind": "Text",
+     "name": "Configuración de presentación avanzada",
+     "id": "42.30804878.4.225",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 488,
+      "y": 710,
+      "w": 314,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 52,
+     "kind": "ScrollBar",
+     "name": "Vertical",
+     "id": "42.30804878.4.289",
+     "state": "",
+     "value": "0",
+     "rect": {
+      "x": 1323,
+      "y": 133,
+      "w": 15,
+      "h": 868
+     },
+     "zone": "R",
+     "color": "black"
+    },
+    {
+     "i": 53,
+     "kind": "TitleBar",
+     "name": "Configuración",
+     "id": "4.36176582.0",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 59,
+      "y": 9,
+      "w": 1280,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 54,
+     "kind": "MenuBar",
+     "name": "Barra de menús del sistema",
+     "id": "1.36176582.65985",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 59,
+      "y": 9,
+      "w": 28,
+      "h": 28
+     },
+     "zone": "TL",
+     "color": "black",
+     "systemMenu": true
+    }
+   ],
+   "controlCount": 55,
+   "clientProviders": true,
+   "text": {
+    "TL": [
+     "Configuración",
+     "Q",
+     "Persona Prueba",
+     "persona@example.com",
+     "Inicio",
+     "Sistema",
+     "Bluetooth y dispositivos"
+    ],
+    "T": [
+     "Buscar una opción de configuración",
+     "Personalización",
+     "Personalización >",
+     "10:43",
+     "d ingo, II de octubre",
+     "d ingo, II de octub"
+    ],
+    "TR": [
+     "x",
+     "Pantalla de bloqueo"
+    ],
+    "L": [
+     "Red e Internet",
+     "I Personalización",
+     "Aplicaciones",
+     "Cuentas",
+     "Hora e idioma",
+     "Juegos",
+     "Accesibilidad"
+    ],
+    "C": [
+     "Personalizar la pantalla de bloqueo",
+     "Agregar un álbum para la presentación",
+     "Imágenes",
+     "Obtén datos divertidos, consejos, sugerencias y más en tu pantalla de bloqueo"
+    ],
+    "R": [
+     "Presentación",
+     "Examinar",
+     "Quitar"
+    ],
+    "BL": [
+     "Privacidad y seguridad",
+     "Windows Update"
+    ],
+    "B": [
+     "Configuración de presentación avanzada",
+     "o",
+     "Incluir las carpetas del álbum de cámara de este equipo y OneDrive",
+     "Usar solo imágenes que quepan en la pantalla",
+     "Mostrar una presentación al usar batería"
+    ]
+   },
+   "textAuthority": "windows_media_ocr_lines",
+   "authority": "windows_uia_snapshot_ocr_zones"
+  },
+  "nb_sistema_u8": {
+   "version": 2,
+   "ok": true,
+   "error": "",
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "processId": 46348,
+    "hwnd": 22611686,
+    "requested": true,
+    "root": 22611686,
+    "foreground": false,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": null
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "MenuItem",
+     "name": "Sistema",
+     "id": "42.44435548.4.65535",
+     "state": "collapsed",
+     "value": null,
+     "rect": null,
+     "zone": "",
+     "color": "",
+     "repeated": 1
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Minimizar Configuración",
+     "id": "42.44435548.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1168,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Maximizar Configuración",
+     "id": "42.44435548.4.2",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1225,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Cerrar Configuración",
+     "id": "42.44435548.4.3",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1282,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Edit",
+     "name": "Cuadro de búsqueda, Buscar una opción",
+     "id": "42.23726548.4.7",
+     "state": "",
+     "value": "",
+     "rect": {
+      "x": 377,
+      "y": 11,
+      "w": 645,
+      "h": 41
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Atrás",
+     "id": "42.23726548.4.9",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 64,
+      "y": 9,
+      "w": 50,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Persona Prueba persona@example.com",
+     "id": "42.23726548.4.13",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 65,
+      "y": 62,
+      "w": 360,
+      "h": 94
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "ListItem",
+     "name": "Inicio",
+     "id": "42.23726548.4.16",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 181,
+      "w": 349,
+      "h": 83
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "ListItem",
+     "name": "Sistema",
+     "id": "42.23726548.4.19",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 231,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "ListItem",
+     "name": "Bluetooth y dispositivos",
+     "id": "42.23726548.4.22",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 281,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "ListItem",
+     "name": "Red e Internet",
+     "id": "42.23726548.4.25",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 331,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "ListItem",
+     "name": "Personalización",
+     "id": "42.23726548.4.28",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 381,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "ListItem",
+     "name": "Aplicaciones",
+     "id": "42.23726548.4.31",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 431,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "ListItem",
+     "name": "Cuentas",
+     "id": "42.23726548.4.34",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 481,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "ListItem",
+     "name": "Hora e idioma",
+     "id": "42.23726548.4.37",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 531,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "ListItem",
+     "name": "Juegos",
+     "id": "42.23726548.4.40",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 581,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "ListItem",
+     "name": "Accesibilidad",
+     "id": "42.23726548.4.43",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 631,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "ListItem",
+     "name": "Privacidad y seguridad",
+     "id": "42.23726548.4.46",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 681,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "ListItem",
+     "name": "Windows Update",
+     "id": "42.23726548.4.49",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 731,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Sistema",
+     "id": "42.23726548.4.185",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 465,
+      "y": 69,
+      "w": 126,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 20,
+     "kind": "Hyperlink",
+     "name": "Cambiar nombre",
+     "id": "42.23726548.4.190",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 634,
+      "y": 247,
+      "w": 130,
+      "h": 26
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 21,
+     "kind": "Button",
+     "name": "Microsoft 365 Ver beneficios",
+     "id": "42.23726548.4.192",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1045,
+      "y": 139,
+      "w": 176,
+      "h": 66
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 22,
+     "kind": "Button",
+     "name": "Windows Update Última comprobación: hace 8 horas",
+     "id": "42.23726548.4.196",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1045,
+      "y": 235,
+      "w": 264,
+      "h": 85
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 23,
+     "kind": "ListItem",
+     "name": "Pantalla",
+     "id": "42.23726548.4.203",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 344,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 24,
+     "kind": "ListItem",
+     "name": "Sonido",
+     "id": "42.23726548.4.209",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 434,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 25,
+     "kind": "ListItem",
+     "name": "Notificaciones",
+     "id": "42.23726548.4.215",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 524,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 26,
+     "kind": "ListItem",
+     "name": "Concentración",
+     "id": "42.23726548.4.221",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 614,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 27,
+     "kind": "ListItem",
+     "name": "Energía y batería",
+     "id": "42.23726548.4.227",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 704,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 28,
+     "kind": "ListItem",
+     "name": "Almacenamiento",
+     "id": "42.23726548.4.233",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 794,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 29,
+     "kind": "ListItem",
+     "name": "Compartir",
+     "id": "42.23726548.4.239",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 884,
+      "w": 852,
+      "h": 88
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 30,
+     "kind": "ListItem",
+     "name": "Multitareas",
+     "id": "42.23726548.4.245",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 460,
+      "y": 974,
+      "w": 852,
+      "h": 27
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 31,
+     "kind": "Window",
+     "name": "Configuración",
+     "id": "42.44435548",
+     "state": "readonly",
+     "value": "Configuración",
+     "rect": {
+      "x": 1106,
+      "y": 1,
+      "w": 233,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 32,
+     "kind": "MenuBar",
+     "name": "Sistema",
+     "id": "42.44435548.4.0",
+     "state": "",
+     "value": null,
+     "shortcut": "Alt+Space",
+     "rect": null,
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 33,
+     "kind": "Text",
+     "name": "Configuración",
+     "id": "42.23726548.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 122,
+      "y": 21,
+      "w": 984,
+      "h": 20
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 34,
+     "kind": "Image",
+     "name": "Imagen de perfil del usuario",
+     "id": "42.23726548.4.10",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 71,
+      "w": 75,
+      "h": 75
+     },
+     "zone": "TL",
+     "color": "green"
+    },
+    {
+     "i": 35,
+     "kind": "Text",
+     "name": "Persona Prueba",
+     "id": "42.23726548.4.11",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 86,
+      "w": 163,
+      "h": 24
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 36,
+     "kind": "Text",
+     "name": "persona@example.com",
+     "id": "42.23726548.4.12",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 110,
+      "w": 163,
+      "h": 20
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 37,
+     "kind": "Text",
+     "name": "Sistema",
+     "id": "42.23726548.4.184",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 465,
+      "y": 69,
+      "w": 126,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 38,
+     "kind": "Image",
+     "name": "Vista previa de escritorio",
+     "id": "42.23726548.4.186",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 469,
+      "y": 193,
+      "w": 140,
+      "h": 74
+     },
+     "zone": "T",
+     "color": "blue"
+    },
+    {
+     "i": 39,
+     "kind": "Group",
+     "name": "REDNOTE",
+     "id": "42.23726548.4.191",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 634,
+      "y": 193,
+      "w": 332,
+      "h": 80
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 40,
+     "kind": "Text",
+     "name": "REDNOTE",
+     "id": "42.23726548.4.187",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 634,
+      "y": 193,
+      "w": 332,
+      "h": 30
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 41,
+     "kind": "Text",
+     "name": "ASUS TUF Gaming A15 FA506QM_FA506QM",
+     "id": "42.23726548.4.188",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 634,
+      "y": 223,
+      "w": 332,
+      "h": 24
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 42,
+     "kind": "Text",
+     "name": "Microsoft 365",
+     "id": "42.23726548.4.268",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1100,
+      "y": 147,
+      "w": 111,
+      "h": 25
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 43,
+     "kind": "Text",
+     "name": "Ver beneficios",
+     "id": "42.23726548.4.269",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1100,
+      "y": 175,
+      "w": 111,
+      "h": 20
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 44,
+     "kind": "Text",
+     "name": "Windows Update",
+     "id": "42.23726548.4.194",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1100,
+      "y": 243,
+      "w": 199,
+      "h": 25
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 45,
+     "kind": "Text",
+     "name": "Última comprobación: hace 8 horas",
+     "id": "42.23726548.4.195",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1100,
+      "y": 271,
+      "w": 199,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 46,
+     "kind": "Group",
+     "name": "Pantalla",
+     "id": "42.23726548.4.202",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 345,
+      "w": 844,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 47,
+     "kind": "Text",
+     "name": "Pantalla",
+     "id": "42.23726548.4.199",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 367,
+      "w": 61,
+      "h": 23
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 48,
+     "kind": "Text",
+     "name": "Monitores, brillo, luz nocturna, perfil de pantalla",
+     "id": "42.23726548.4.200",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 391,
+      "w": 325,
+      "h": 20
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 49,
+     "kind": "Group",
+     "name": "Sonido",
+     "id": "42.23726548.4.208",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 435,
+      "w": 844,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 50,
+     "kind": "Text",
+     "name": "Sonido",
+     "id": "42.23726548.4.205",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 457,
+      "w": 55,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 51,
+     "kind": "Text",
+     "name": "Niveles de volumen, salida, entrada, dispositivos de sonido",
+     "id": "42.23726548.4.206",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 481,
+      "w": 398,
+      "h": 20
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 52,
+     "kind": "Group",
+     "name": "Notificaciones",
+     "id": "42.23726548.4.214",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 525,
+      "w": 844,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 53,
+     "kind": "Text",
+     "name": "Notificaciones",
+     "id": "42.23726548.4.211",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 547,
+      "w": 110,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 54,
+     "kind": "Text",
+     "name": "Alertas de aplicaciones y sistema, no molestar",
+     "id": "42.23726548.4.212",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 571,
+      "w": 310,
+      "h": 20
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 55,
+     "kind": "Group",
+     "name": "Concentración",
+     "id": "42.23726548.4.220",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 615,
+      "w": 844,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 56,
+     "kind": "Text",
+     "name": "Concentración",
+     "id": "42.23726548.4.217",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 637,
+      "w": 112,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 57,
+     "kind": "Text",
+     "name": "Reducir las distracciones",
+     "id": "42.23726548.4.218",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 661,
+      "w": 166,
+      "h": 20
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 58,
+     "kind": "Group",
+     "name": "Energía y batería",
+     "id": "42.23726548.4.226",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 705,
+      "w": 844,
+      "h": 86
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 59,
+     "kind": "Text",
+     "name": "Energía y batería",
+     "id": "42.23726548.4.223",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 538,
+      "y": 727,
+      "w": 129,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black"
+    }
+   ],
+   "controlCount": 71,
+   "clientProviders": true,
+   "text": {
+    "TL": [
+     "Configuración",
+     "Q",
+     "Persona Prueba",
+     "persona@example.com",
+     "Inicio",
+     "Sistema",
+     "Bluetooth y dispositivos",
+     "I etooth y dispositivos"
+    ],
+    "T": [
+     "Buscar una opción de configuración",
+     "REDNOTE",
+     "ASUS TUF Gaming A15 FA506QVl FA506QM",
+     "ASUS TU Gaming A15 FA506QM FA506QM",
+     "Cambiar nombre"
+    ],
+    "TR": [
+     "x",
+     "Microsoft 365",
+     "Ver beneficios",
+     "Ultima comprobación: hace 8",
+     "Última comprobación: hace 8",
+     "horas"
+    ],
+    "L": [
+     "Red e Internet",
+     "Personalización",
+     "Aplicaciones",
+     "Cuentas",
+     "Hora e idioma",
+     "Juegos",
+     "Accesibilidad"
+    ],
+    "C": [
+     "Pantalla",
+     "Monitores, brillo, luz nocturna, perfil de pantalla",
+     "4))",
+     "Sonido",
+     "Niveles de volumen, salida, entrada, dispositivos de sonido",
+     "Notificaciones",
+     "Alertas de aplicaciones y sistema, no molestar",
+     "6)",
+     "Concentracion",
+     "Concentración"
+    ],
+    "BL": [
+     "Privacidad y seguridad",
+     "Windows Update"
+    ],
+    "B": [
+     "Reducir las distracciones",
+     "Energía y batería",
+     "Pantalla y suspensión, uso de la batería, modo de energía, ahorro de energía",
+     "Almacenamiento",
+     "Espacio de almacenamiento, unidades, reglas de configuración",
+     "Compartir",
+     "Compartir archivos, fotos, vínculos y más"
+    ]
+   },
+   "textAuthority": "windows_media_ocr_lines",
+   "authority": "windows_uia_snapshot_ocr_zones"
+  },
+  "nb_pantalla_u8": {
+   "version": 2,
+   "ok": true,
+   "error": "",
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "processId": 46348,
+    "hwnd": 22611686,
+    "requested": true,
+    "root": 22611686,
+    "foreground": false,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": null
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "MenuItem",
+     "name": "Sistema",
+     "id": "42.44435548.4.65535",
+     "state": "collapsed",
+     "value": null,
+     "rect": null,
+     "zone": "",
+     "color": "",
+     "repeated": 1
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Minimizar Configuración",
+     "id": "42.44435548.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1168,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Maximizar Configuración",
+     "id": "42.44435548.4.2",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1225,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Cerrar Configuración",
+     "id": "42.44435548.4.3",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1282,
+      "y": 1,
+      "w": 57,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Edit",
+     "name": "Cuadro de búsqueda, Buscar una opción",
+     "id": "42.23726548.4.7",
+     "state": "",
+     "value": "",
+     "rect": {
+      "x": 377,
+      "y": 11,
+      "w": 645,
+      "h": 41
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Atrás",
+     "id": "42.23726548.4.9",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 64,
+      "y": 9,
+      "w": 50,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Persona Prueba persona@example.com",
+     "id": "42.23726548.4.13",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 65,
+      "y": 62,
+      "w": 360,
+      "h": 94
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "ListItem",
+     "name": "Inicio",
+     "id": "42.23726548.4.16",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 181,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "ListItem",
+     "name": "Sistema",
+     "id": "42.23726548.4.19",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 231,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "ListItem",
+     "name": "Bluetooth y dispositivos",
+     "id": "42.23726548.4.22",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 281,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "ListItem",
+     "name": "Red e Internet",
+     "id": "42.23726548.4.25",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 331,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "ListItem",
+     "name": "Personalización",
+     "id": "42.23726548.4.28",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 381,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "ListItem",
+     "name": "Aplicaciones",
+     "id": "42.23726548.4.31",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 431,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "ListItem",
+     "name": "Cuentas",
+     "id": "42.23726548.4.34",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 481,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "ListItem",
+     "name": "Hora e idioma",
+     "id": "42.23726548.4.37",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 531,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "ListItem",
+     "name": "Juegos",
+     "id": "42.23726548.4.40",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 581,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "ListItem",
+     "name": "Accesibilidad",
+     "id": "42.23726548.4.43",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 631,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "ListItem",
+     "name": "Privacidad y seguridad",
+     "id": "42.23726548.4.46",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 681,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "ListItem",
+     "name": "Windows Update",
+     "id": "42.23726548.4.49",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 731,
+      "w": 349,
+      "h": 45
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Sistema",
+     "id": "42.23726548.4.327",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 464,
+      "y": 65,
+      "w": 178,
+      "h": 54
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 20,
+     "kind": "Button",
+     "name": "Pantalla",
+     "id": "42.23726548.4.329",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 643,
+      "y": 69,
+      "w": 126,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 21,
+     "kind": "Button",
+     "name": "Mostrar más valores de configuración",
+     "id": "42.23726548.4.340",
+     "state": "collapsed",
+     "value": null,
+     "rect": {
+      "x": 1256,
+      "y": 196,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 22,
+     "kind": "Slider",
+     "name": "Brillo",
+     "id": "42.23726548.4.335",
+     "state": "",
+     "value": "40",
+     "rect": {
+      "x": 1026,
+      "y": 196,
+      "w": 225,
+      "h": 41
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 23,
+     "kind": "Button",
+     "name": "Luz nocturna",
+     "id": "42.23726548.4.350",
+     "state": "off",
+     "value": null,
+     "rect": {
+      "x": 1092,
+      "y": 282,
+      "w": 159,
+      "h": 51
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 24,
+     "kind": "Button",
+     "name": "Perfil de color",
+     "id": "42.23726548.4.359",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1256,
+      "y": 379,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black"
+    },
+    {
+     "i": 25,
+     "kind": "Hyperlink",
+     "name": "Más información sobre HDR",
+     "id": "42.23726548.4.364",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 490,
+      "w": 195,
+      "h": 19
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 26,
+     "kind": "Button",
+     "name": "HDR",
+     "id": "42.23726548.4.367",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1256,
+      "y": 468,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black"
+    },
+    {
+     "i": 27,
+     "kind": "ComboBox",
+     "name": "Escala",
+     "id": "42.23726548.4.383",
+     "state": "collapsed",
+     "value": "125% (recomendado)",
+     "rect": {
+      "x": 1020,
+      "y": 623,
+      "w": 236,
+      "h": 50
+     },
+     "zone": "R",
+     "color": "gray"
+    },
+    {
+     "i": 28,
+     "kind": "ListItem",
+     "name": "125% (recomendado)",
+     "id": "42.23726548.4.382",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 1040,
+      "y": 635,
+      "w": 163,
+      "h": 23
+     },
+     "zone": "R",
+     "color": "gray"
+    },
+    {
+     "i": 29,
+     "kind": "Button",
+     "name": "Escala",
+     "id": "42.23726548.4.385",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 1256,
+      "y": 628,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black"
+    },
+    {
+     "i": 30,
+     "kind": "ComboBox",
+     "name": "Resolución de pantalla",
+     "id": "42.23726548.4.393",
+     "state": "collapsed",
+     "value": "1920 × 1080 (recomendada)",
+     "rect": {
+      "x": 1005,
+      "y": 713,
+      "w": 285,
+      "h": 50
+     },
+     "zone": "BR",
+     "color": "gray"
+    },
+    {
+     "i": 31,
+     "kind": "ListItem",
+     "name": "1920 × 1080 (recomendada)",
+     "id": "42.23726548.4.392",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 1025,
+      "y": 724,
+      "w": 212,
+      "h": 24
+     },
+     "zone": "BR",
+     "color": "gray"
+    },
+    {
+     "i": 32,
+     "kind": "ComboBox",
+     "name": "Orientación de la pantalla",
+     "id": "42.23726548.4.398",
+     "state": "collapsed",
+     "value": "Horizontal",
+     "rect": {
+      "x": 1118,
+      "y": 802,
+      "w": 173,
+      "h": 50
+     },
+     "zone": "BR",
+     "color": "gray"
+    },
+    {
+     "i": 33,
+     "kind": "ListItem",
+     "name": "Horizontal",
+     "id": "42.23726548.4.397",
+     "state": "selected",
+     "value": null,
+     "rect": {
+      "x": 1138,
+      "y": 814,
+      "w": 100,
+      "h": 24
+     },
+     "zone": "BR",
+     "color": "gray"
+    },
+    {
+     "i": 34,
+     "kind": "Window",
+     "name": "Configuración",
+     "id": "42.44435548",
+     "state": "readonly",
+     "value": "Configuración",
+     "rect": {
+      "x": 1106,
+      "y": 1,
+      "w": 233,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 35,
+     "kind": "MenuBar",
+     "name": "Sistema",
+     "id": "42.44435548.4.0",
+     "state": "",
+     "value": null,
+     "shortcut": "Alt+Space",
+     "rect": null,
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 36,
+     "kind": "Text",
+     "name": "Configuración",
+     "id": "42.23726548.4.1",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 122,
+      "y": 21,
+      "w": 984,
+      "h": 20
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 37,
+     "kind": "Image",
+     "name": "Imagen de perfil del usuario",
+     "id": "42.23726548.4.10",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 79,
+      "y": 71,
+      "w": 75,
+      "h": 75
+     },
+     "zone": "TL",
+     "color": "green"
+    },
+    {
+     "i": 38,
+     "kind": "Text",
+     "name": "Persona Prueba",
+     "id": "42.23726548.4.11",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 86,
+      "w": 163,
+      "h": 24
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 39,
+     "kind": "Text",
+     "name": "persona@example.com",
+     "id": "42.23726548.4.12",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 169,
+      "y": 110,
+      "w": 163,
+      "h": 20
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 40,
+     "kind": "Text",
+     "name": "Sistema",
+     "id": "42.23726548.4.323",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 466,
+      "y": 69,
+      "w": 125,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 41,
+     "kind": "Text",
+     "name": "Pantalla",
+     "id": "42.23726548.4.328",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 643,
+      "y": 69,
+      "w": 126,
+      "h": 47
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 42,
+     "kind": "Group",
+     "name": "Brillantez y color",
+     "id": "42.23726548.4.370",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 139,
+      "w": 840,
+      "h": 391
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 43,
+     "kind": "Text",
+     "name": "Brillantez y color",
+     "id": "42.23726548.4.330",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 139,
+      "w": 840,
+      "h": 24
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 44,
+     "kind": "Group",
+     "name": "Brillo, Brillo",
+     "id": "42.23726548.4.341",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 173,
+      "w": 840,
+      "h": 86
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 45,
+     "kind": "Group",
+     "name": "Brillo",
+     "id": "42.23726548.4.337",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 468,
+      "y": 174,
+      "w": 783,
+      "h": 84
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 46,
+     "kind": "Text",
+     "name": "Brillo",
+     "id": "42.23726548.4.332",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 195,
+      "w": 40,
+      "h": 24
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 47,
+     "kind": "Text",
+     "name": "Cambiar el brillo de la pantalla integrada",
+     "id": "42.23726548.4.333",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 219,
+      "w": 276,
+      "h": 20
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 48,
+     "kind": "Group",
+     "name": "Luz nocturna",
+     "id": "42.23726548.4.354",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 263,
+      "w": 840,
+      "h": 88
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 49,
+     "kind": "Text",
+     "name": "Luz nocturna",
+     "id": "42.23726548.4.345",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 285,
+      "w": 100,
+      "h": 24
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 50,
+     "kind": "Text",
+     "name": "Usar colores más cálidos para ayudar a bloquear la luz azul",
+     "id": "42.23726548.4.346",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 309,
+      "w": 398,
+      "h": 20
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 51,
+     "kind": "Group",
+     "name": "Perfil de color",
+     "id": "42.23726548.4.361",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 355,
+      "w": 840,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 52,
+     "kind": "Text",
+     "name": "Perfil de color",
+     "id": "42.23726548.4.356",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 377,
+      "w": 107,
+      "h": 23
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 53,
+     "kind": "Text",
+     "name": "Determinar cómo aparecen los colores en la pantalla",
+     "id": "42.23726548.4.357",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 401,
+      "w": 355,
+      "h": 20
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 54,
+     "kind": "Group",
+     "name": "HDR",
+     "id": "42.23726548.4.369",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 444,
+      "w": 840,
+      "h": 86
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 55,
+     "kind": "Text",
+     "name": "HDR",
+     "id": "42.23726548.4.363",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 466,
+      "w": 685,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 56,
+     "kind": "Text",
+     "name": "Más información sobre HDR",
+     "id": "42.23726548.4.365",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 490,
+      "w": 685,
+      "h": 20
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 57,
+     "kind": "Group",
+     "name": "Escala y diseño",
+     "id": "42.23726548.4.407",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 570,
+      "w": 840,
+      "h": 388
+     },
+     "zone": "B",
+     "color": "black"
+    },
+    {
+     "i": 58,
+     "kind": "Text",
+     "name": "Escala y diseño",
+     "id": "42.23726548.4.371",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 570,
+      "w": 840,
+      "h": 24
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 59,
+     "kind": "Group",
+     "name": "Escala",
+     "id": "42.23726548.4.387",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 604,
+      "w": 840,
+      "h": 85
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 60,
+     "kind": "Text",
+     "name": "Resolución de pantalla",
+     "id": "42.23726548.4.389",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 715,
+      "w": 174,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black",
+     "reserved": true
+    },
+    {
+     "i": 61,
+     "kind": "Text",
+     "name": "Ajustar la resolución para que se adapte a la pantalla conectada",
+     "id": "42.23726548.4.390",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 739,
+      "w": 431,
+      "h": 20
+     },
+     "zone": "B",
+     "color": "black",
+     "reserved": true
+    },
+    {
+     "i": 62,
+     "kind": "Text",
+     "name": "Orientación de la pantalla",
+     "id": "42.23726548.4.395",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 815,
+      "w": 199,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black",
+     "reserved": true
+    },
+    {
+     "i": 63,
+     "kind": "Group",
+     "name": "Varias pantallas",
+     "id": "42.23726548.4.405",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 467,
+      "y": 872,
+      "w": 840,
+      "h": 86
+     },
+     "zone": "B",
+     "color": "black",
+     "reserved": true
+    },
+    {
+     "i": 64,
+     "kind": "Text",
+     "name": "Varias pantallas",
+     "id": "42.23726548.4.400",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 894,
+      "w": 119,
+      "h": 24
+     },
+     "zone": "B",
+     "color": "black",
+     "reserved": true
+    },
+    {
+     "i": 65,
+     "kind": "Text",
+     "name": "Elige el modo de presentación para tus pantallas",
+     "id": "42.23726548.4.401",
+     "state": "",
+     "value": null,
+     "rect": {
+      "x": 541,
+      "y": 918,
+      "w": 329,
+      "h": 20
+     },
+     "zone": "B",
+     "color": "black",
+     "reserved": true
+    }
+   ],
+   "controlCount": 72,
+   "clientProviders": true,
+   "text": {
+    "TL": [
+     "Configuración",
+     "Q",
+     "Persona Prueba",
+     "persona@example.com",
+     "Inicio",
+     "Sistema",
+     "Bluetooth y dispositivos"
+    ],
+    "T": [
+     "Buscar una opción de configuración",
+     "Sistema >",
+     "Sistema > Pantalla",
+     "Pantalla",
+     "Brillantez y color",
+     "Brillo",
+     "Cambiar el brillo de la pantalla integrada",
+     "Cambiar eI brillo de la pantalla integrada",
+     "Luz nocturna",
+     "Usar colores más cálidos para ayudar a bloquear la luz azul"
+    ],
+    "TR": [
+     "x",
+     "Desactivado"
+    ],
+    "L": [
+     "Red e Internet",
+     "Personalización",
+     "Aplicaciones",
+     "Cuentas",
+     "Hora e idioma",
+     "Juegos",
+     "Accesibilidad"
+    ],
+    "C": [
+     "Perfil de color",
+     "Determinar cómo aparecen los colores en la pantalla",
+     "HDR",
+     "Más información sobre HDR",
+     "Escala y diseño",
+     "Escala",
+     "Cambiar el tamaño del texto, las aplicaciones y otros elementos",
+     "Cambiar eI tamaño del texto, las aplicaciones y otros elementos"
+    ],
+    "R": [
+     "125% (recomendado)"
+    ],
+    "BL": [
+     "Privacidad y seguridad",
+     "Windows Update"
+    ],
+    "B": [
+     "Resolución de pantalla",
+     "Ajustar la resolución para que se adapte a la pantalla conectada",
+     "Orientación de la pantalla",
+     "Varias pantallas",
+     "Elige el modo de presentación para tus pantallas",
+     "Elige eI modo de presentación para tus pantallas"
+    ],
+    "BR": [
+     "1920 x 1080 (recomendada)",
+     "Horizontal"
+    ]
+   },
+   "textAuthority": "windows_media_ocr_lines",
+   "authority": "windows_uia_snapshot_ocr_zones"
+  }
+ }
+}

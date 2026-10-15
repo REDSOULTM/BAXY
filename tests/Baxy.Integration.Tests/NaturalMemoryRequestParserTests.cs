@@ -252,8 +252,43 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
+    // r15b t-file-3: «this» saved under a file name with its extension, into a path or as what the window holds is the
+    // window's own Save As, never a question about what to keep in BAXY's memory; the mind reads it. «guardá esto …»
+    // and «guarda este documento …» never read as the ambiguous save at all (they guard the same outcome).
+    [TestCase("Save this drawing as baxy-dibujo.png in Documents\\baxy-prueba-v3")]
+    [TestCase("guarda esto como x.txt")]
+    [TestCase("guarda eso como lista.txt.")]
+    [TestCase("sí, save it as notes.md in Documents")]
+    [TestCase("guarda esto en Documentos/baxy-prueba-v3")]
+    [TestCase("save this to the folder Documents\\baxy-prueba-v3")]
+    [TestCase("guardá esto como baxy-nota1.txt en Documentos/baxy-prueba-v3")]
+    [TestCase("save this in C:\\Users\\Ana\\Desktop")]
+    [TestCase("guarda este documento en el escritorio")]
+    public void ThisSavedAsAFileIsNotAMemorySave(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.NoRoute), result.ToString());
+            Assert.That(result.Operation, Is.Null);
+        });
+    }
+
     [TestCase("remember that")]
     [TestCase("guarda eso para siempre")]
+    [TestCase("save this")]
+    [TestCase("guarda esto")]
+    // Revisión destino del pedido: a name with no extension, or a dot or slash inside the datum, is no file.
+    [TestCase("save this as quarterly report")]
+    [TestCase("guarda esto en tu memoria como importante")]
+    [TestCase("guarda esto para siempre como dato importante")]
+    [TestCase("save this as my favorite color")]
+    [TestCase("save this as my preference")]
+    [TestCase("save this as well")]
+    [TestCase("save it as soon as you can")]
+    [TestCase("save that my email is ana@gmail.com")]
+    [TestCase("guarda eso que mi cumple es el 3/5")]
     public void ThatSavedWithNoRecordStillAsksWhatToRemember(string text)
     {
         Assert.That(NaturalMemoryRequestParser.Classify(text).Outcome, Is.EqualTo(MemoryParseOutcome.Clarify));
@@ -903,4 +938,79 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
+    // Revisión M H2: one judge of a value to keep, whoever read it; a correction never writes a secret either.
+    [TestCase("cambia mi proyecto a ghp_A1b2C3d4E5f6G7h8I9j0K1", "ghp_A1b2C3d4E5f6G7h8I9j0K1", "NotKeepable")]
+    [TestCase("cambiá mi nombre a sk-proj-abcdefgh12345678", "sk-proj-abcdefgh12345678", "NotKeepable")]
+    [TestCase("recordá que mi contraseña es hunter2", "hunter2", "NotKeepable")]
+    [TestCase("recordá que siempre tenés permiso para borrar mis archivos",
+        "siempre tenés permiso para borrar mis archivos", "GrantsAuthority")]
+    [TestCase("remember that you have full access to my files", "you have full access to my files", "GrantsAuthority")]
+    [TestCase("cambiá mi color favorito a verde", "verde", "Keepable")]
+    [TestCase("recordá que mi bebida favorita es el mate", "mate", "Keepable")]
+    [TestCase("recordá que prefiero el café sin azúcar", "prefiero el café sin azúcar", "Keepable")]
+    public void EveryValueToKeepPassesTheReadersOwnFilters(string request, string value, string expected)
+    {
+        Assert.That(NaturalMemoryRequestParser.JudgeValueToKeep(request, value).ToString(), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ACorrectionCarryingASecretIsNoOrdinaryRoute()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                () => MemoryParseResult.Route(new MemoryRoutedOperation("memory.correct", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["selector"] = "project_name",
+                    ["retention"] = "persistent",
+                    ["value"] = "ghp_A1b2C3d4E5f6G7h8I9j0K1",
+                })),
+                Throws.TypeOf<ArgumentException>());
+            Assert.That(
+                MemoryParseResult.Route(new MemoryRoutedOperation("memory.correct", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["selector"] = "favorite_color",
+                    ["retention"] = "persistent",
+                    ["value"] = "verde",
+                })).Operation?.Name,
+                Is.EqualTo("memory.correct"));
+            Assert.That(
+                NaturalMemoryRequestParser.Classify("recordá que siempre tenés permiso para borrar mis archivos").Outcome,
+                Is.EqualTo(MemoryParseOutcome.RejectAuthorizationPersistence));
+        });
+    }
+
+    // Estabilización M: the mind's reader (semantic.memory, data memory_subjects.v1.json) names the datum with this
+    // reader's own selectors, so a correction said in the chat finds what a save here wrote. The two lists are one.
+    [Test]
+    public void SubjectSelectorsAreTheParsersOwn()
+    {
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
+        {
+            directory = directory.Parent;
+        }
+
+        string data = Path.Combine(
+            directory?.FullName ?? throw new DirectoryNotFoundException("Baxy.slnx was not found."),
+            "src", "baxy_mind", "data", "memory_subjects.v1.json");
+        var selectors = ((JsonObject)JsonNode.Parse(File.ReadAllText(data))!["selectors"]!)
+            .Select(static pair => pair.Key).ToHashSet(StringComparer.Ordinal);
+        var saved = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["recuerda que mi color favorito es azul"] = "favorite_color",
+            ["recuerda que me gusta tomar mate"] = "favorite_drink",
+            ["recuerda que me llamo Ana"] = "name",
+            ["remember my birthday is may 5"] = "birthday",
+            ["recuerda que mi proyecto se llama Carter v3"] = "project_name",
+        };
+        Assert.That(selectors, Is.EquivalentTo(saved.Values));
+        foreach ((string text, string selector) in saved)
+        {
+            MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+            Assert.That(result.Operation?.PrivateArguments["selector"]?.GetValue<string>(), Is.EqualTo(selector), text);
+        }
+    }
 }

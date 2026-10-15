@@ -1,7 +1,9 @@
 """Derive narrator quantities from typed system.status measurements.
 
-The canonical byte observations stay unchanged. Decimal GB prevents a binary
-quantity from being narrated as gigabytes; engine load and VRAM occupancy have
+The canonical byte observations stay unchanged. RAM, disk and GPU memory sizes are
+told the way Windows shows them: bytes over 2**30 under the label «GB» (v3 r5a M4, v3-45:
+17179869184 bytes were told «17,18 GB» while the window the person had open said
+«16,0 GB»). Engine load and VRAM occupancy have
 different names because they measure different things. The size keys are
 `total`, `free` and `used`: «total_usable» was narrated as «disponible en total»
 and the whole disk or RAM was published under the free label (SYSTEM1173,
@@ -20,8 +22,18 @@ def _byte_count(value: object) -> bool:
     return type(value) is int and 0 <= value <= 2**64 - 1
 
 
-def _quantity(value: int | float, unit: str = "GB") -> dict[str, Any]:
-    return {"value": round(value / 10**9 if unit == "GB" else value, 4), "unit": unit}
+def _quantity(value: int | float, unit: str) -> dict[str, Any]:
+    return {"value": round(value, 4), "unit": unit}
+
+
+# Windows' own unit for every size it labels «GB» (RAM, disk, and the GPU's dedicated and shared memory in the Task
+# Manager): 2**30 bytes (v3 r5a M4). One unit for everything labelled «GB»: the shared GPU memory, half the RAM, was told
+# in 10**9 beside a RAM in 2**30, two figures the model could compare that Windows never shows side by side.
+WINDOWS_GB = 2**30
+
+
+def _windows_size(value: int) -> dict[str, Any]:
+    return {"value": round(value / WINDOWS_GB, 4), "unit": "GB"}
 
 
 def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
@@ -36,12 +48,12 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
             projected = {k: v for k, v in values.items() if k not in {
                 "totalBytes", "availableBytes", "installedBytes",
             }}
-            projected.update(total=_quantity(total), free=_quantity(available),
-                             used=_quantity(total - available))
+            projected.update(total=_windows_size(total), free=_windows_size(available),
+                             used=_windows_size(total - available))
             if name == "memory":
                 installed = values.get("installedBytes")
                 projected["installed_capacity"] = (
-                    _quantity(installed) if _byte_count(installed) and installed >= total else None
+                    _windows_size(installed) if _byte_count(installed) and installed >= total else None
                 )
             result[name] = projected
     adapters = seen.get("adapters")
@@ -63,7 +75,7 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
         for old, new in names.items():
             value = adapter.get(old)
             if _byte_count(value):
-                projected[new] = _quantity(value)
+                projected[new] = _windows_size(value)
                 projected.pop(old)
         engine = adapter.get("usagePercent")
         if type(engine) in (int, float) and math.isfinite(engine) and 0 <= engine <= 100:

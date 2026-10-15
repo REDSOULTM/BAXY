@@ -8,7 +8,7 @@ The readers know «pausa el audio», «desactivar el micrófono», «pon algo al
 
 ``canonical`` rewrites only those words (their table is in ``lexicon``) and keeps every other word as it was said.
 Like ``levels``, it decides no effect: the turn re-reads the rewrite with the ordinary readers and gates before it
-publishes a limit (``__main__._served_surface_reread``). A rewrite nothing reads is nothing done.
+publishes a limit (``turn_decide._served_surface_reread``). A rewrite nothing reads is nothing done.
 """
 
 from __future__ import annotations

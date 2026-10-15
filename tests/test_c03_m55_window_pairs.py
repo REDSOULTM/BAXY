@@ -11,6 +11,10 @@ import pytest
 from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
 from baxy_mind.planner import normalize_grounded_arguments, validate_json_schema_instance
+from baxy_mind import plan_shape
+from baxy_mind import argument_grounding
+from baxy_mind import plan_dependencies
+from baxy_mind.semantic import arguments as semantic_arguments
 
 APPLICATIONS = ("Word", "Google Chrome", "Slack", "Excel", "Spotify")
 RESOLVE_SCHEMA = {
@@ -89,13 +93,13 @@ def _run_plan(objective: str) -> list[tuple[str, dict]]:
 
     split = mind.window_snap_plan_split(("window.snap",), (objective,), objective, APPLICATIONS)
     assert split is not None
-    skeleton = mind._explicit_plan_skeleton(*split)
+    skeleton = plan_shape._explicit_plan_skeleton(*split)
     grounded: list[tuple[str, dict]] = []
     for index, step in enumerate(skeleton["steps"]):
         if step["operation"] == "window.resolve":
             assert step["argumentsMode"] == "literal" and step["dependsOn"] == []
-            arguments = mind._ground_explicit_arguments("window.resolve", step["purpose"], RESOLVE_SCHEMA, APPLICATIONS)
-            assert mind._normalize_grounded_operation_arguments("window.resolve", arguments, objective) == arguments
+            arguments = argument_grounding._ground_explicit_arguments("window.resolve", step["purpose"], RESOLVE_SCHEMA, APPLICATIONS)
+            assert argument_grounding._normalize_grounded_operation_arguments("window.resolve", arguments, objective) == arguments
         else:
             assert step["operation"] == "window.snap" and step["argumentsMode"] == "after_dependencies"
             assert step["dependsOn"] == [f"step_{index}"]
@@ -104,11 +108,11 @@ def _run_plan(objective: str) -> list[tuple[str, dict]]:
                 "stepId": step["dependsOn"][0], "operation": "window.resolve", "verified": True,
                 "status": "completed", "result": {"windows": [{"windowId": window_id, "processName": "app"}]},
             }]
-            arguments = mind._verified_dependency_identity_arguments(
+            arguments = plan_dependencies._verified_dependency_identity_arguments(
                 "window.snap", objective, observations, SNAP_TOOL, APPLICATIONS, purpose=step["purpose"],
             )
             assert arguments is not None and arguments["windowId"] == window_id
-            source = mind.trusted_plan_grounding_source(objective, observations)
+            source = argument_grounding.trusted_plan_grounding_source(objective, observations)
             assert normalize_grounded_arguments(arguments, SNAP_SCHEMA, source) == arguments
         assert validate_json_schema_instance(arguments, RESOLVE_SCHEMA if step["operation"] == "window.resolve" else SNAP_SCHEMA)
         grounded.append((step["operation"], {key: value for key, value in arguments.items() if key != "windowId"}))
@@ -146,24 +150,24 @@ def test_the_standup_layout_in_english() -> None:
 def test_one_window_keeps_the_one_step_plan_and_reads_the_restated_head() -> None:
     objective = "Coloca la ventana de Chrome en la mitad izquierda."
     assert mind.window_snap_plan_split(("window.snap",), (objective,), objective, APPLICATIONS) is None
-    assert mind._ground_explicit_arguments("window.resolve", objective, RESOLVE_SCHEMA, APPLICATIONS) == {
+    assert argument_grounding._ground_explicit_arguments("window.resolve", objective, RESOLVE_SCHEMA, APPLICATIONS) == {
         "applicationName": "Google Chrome"
     }
     observations = [{"stepId": "step_1", "operation": "window.resolve", "verified": True, "status": "completed",
                      "result": {"windows": [{"windowId": "window_00000001"}]}}]
-    assert mind._verified_dependency_identity_arguments(
+    assert plan_dependencies._verified_dependency_identity_arguments(
         "window.snap", objective, observations, SNAP_TOOL, APPLICATIONS,
     ) == {"side": "left", "windowId": "window_00000001"}
 
 
 def test_a_step_purpose_only_picks_one_of_the_request_s_own_pairs() -> None:
-    assert mind.window_snap_side_for_step(RESTATED_T1, "coloca la de chrome en la mitad derecha", APPLICATIONS) == {
+    assert semantic_arguments.window_snap_side_for_step(RESTATED_T1, "coloca la de chrome en la mitad derecha", APPLICATIONS) == {
         "side": "right"
     }
     # A purpose that swaps the side, names a window the request did not, or names both, picks nothing.
-    assert mind.window_snap_side_for_step(RESTATED_T1, "coloca la de chrome en la mitad izquierda", APPLICATIONS) is None
-    assert mind.window_snap_side_for_step(RESTATED_T1, "pon slack a la derecha", APPLICATIONS) is None
-    assert mind.window_snap_side_for_step(RESTATED_T1, RESTATED_T1, APPLICATIONS) is None
+    assert semantic_arguments.window_snap_side_for_step(RESTATED_T1, "coloca la de chrome en la mitad izquierda", APPLICATIONS) is None
+    assert semantic_arguments.window_snap_side_for_step(RESTATED_T1, "pon slack a la derecha", APPLICATIONS) is None
+    assert semantic_arguments.window_snap_side_for_step(RESTATED_T1, RESTATED_T1, APPLICATIONS) is None
 
 
 def test_the_split_keeps_the_other_effects_of_the_turn_in_place() -> None:
@@ -195,4 +199,4 @@ def test_the_split_keeps_the_other_effects_of_the_turn_in_place() -> None:
     ],
 )
 def test_window_resolve_carries_exactly_one_selector(arguments: dict, expected: dict | None) -> None:
-    assert mind._normalize_grounded_operation_arguments("window.resolve", arguments, RESTATED_T1) == expected
+    assert argument_grounding._normalize_grounded_operation_arguments("window.resolve", arguments, RESTATED_T1) == expected

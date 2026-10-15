@@ -90,7 +90,8 @@ public sealed class WindowsApplicationOpenVerifier : IApplicationOpenVerifier
                 if (observation.WindowHandle != 0
                     && observation.WindowVisible)
                 {
-                    if (!observation.Foreground)
+                    // Only an opening the person asked to see in front asks for it (v3 point 0, arreglo 4).
+                    if (request.Foreground && !observation.Foreground)
                     {
                         reopened.RequestForeground(observation.WindowHandle);
                     }

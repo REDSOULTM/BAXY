@@ -1,0 +1,42 @@
+{
+ "about": "Goal v3, criterio 7: etiquetas fuera de _LABEL_ALIASES que E5 real lleva al control correcto en las vistas reales de cu_semejanza_vistas.json (medidas en cu-v3/evid_punto3_punto6.md, punto 6), y los contracasos de interruptores y de quitar que E5 pone primero en la vista.",
+ "pairs": [
+  {"case": "v3-14", "label": "music library", "target": "Biblioteca de música"},
+  {"case": "v3-62", "label": "virus & threat protection", "target": "Protección contra virus y amenazas"},
+  {"case": "v3-62", "label": "account protection", "target": "Protección de cuentas"},
+  {"case": "v3-62", "label": "app & browser control", "target": "Control de aplicaciones y navegador"},
+  {"case": "v3-62", "label": "family options", "target": "Opciones de familia"},
+  {"case": "v3-62", "label": "protection history", "target": "Historial de protección"},
+  {"case": "v3-03a", "label": "new slide", "target": "Nueva diapositiva"},
+  {"case": "v3-03a", "label": "3d models", "target": "Modelos 3D"},
+  {"case": "v3-03a", "label": "symbol", "target": "Símbolo"},
+  {"case": "v3-03b", "label": "reading view", "target": "Vista de lectura"},
+  {"case": "v3-03b", "label": "comments", "target": "Comentarios"},
+  {"case": "t-form-3", "label": "comment", "target": "Comentario"},
+  {"case": "t-form-3", "label": "equation", "target": "Ecuación"},
+  {"case": "t-form-2", "label": "select all", "target": "Seleccionar todo"},
+  {"case": "t-form-2", "label": "time/date", "target": "Fecha y hora"},
+  {"case": "t-form-2", "label": "find next", "target": "Buscar siguiente"},
+  {"case": "v3-41", "label": "system and security", "target": "Sistema y seguridad"},
+  {"case": "v3-41", "label": "hardware and sound", "target": "Hardware y sonido"},
+  {"case": "v3-41", "label": "add a device", "target": "Agregar un dispositivo"},
+  {"case": "v3-52", "label": "appearance", "target": "Apariencia"},
+  {"case": "v3-52", "label": "advanced", "target": "Avanzado"}
+ ],
+ "never": [
+  {"case": "v3-30", "label": "advanced view", "control": "Vista avanzada", "why": "switch"},
+  {"case": "t-form-1", "label": "pixels", "control": "Píxeles", "why": "switch"},
+  {"case": "t-form-1", "label": "percentage", "control": "Porcentaje", "why": "switch"},
+  {"case": "v3-52", "label": "hide obs windows from screen capture", "control": "Ocultar las ventanas de OBS de la captura de pantalla", "why": "switch"},
+  {"case": "v3-52", "label": "check for updates automatically at startup", "control": "Comprobar actualizaciones automáticamente al inicio", "why": "switch"},
+  {"case": "v3-52", "label": "open stats dialog on startup", "control": "Abrir diálogo de estadísticas al inicio", "why": "switch"},
+  {"case": "t-form-3", "label": "autosave", "control": "Autoguardado", "why": "switch"},
+  {"case": "t-form-1", "label": "maintain aspect ratio", "control": "Mantener la relación de aspecto", "why": "switch"},
+  {"case": "v3-01", "label": "show or hide region", "control": "Ocultar o mostrar región", "why": "switch"},
+  {"case": "t-form-2", "label": "remove", "control": "Eliminar", "why": "removal"},
+  {"case": "t-form-2", "label": "erase", "control": "Eliminar", "why": "removal"},
+  {"case": "t-form-2", "label": "clear formatting", "control": "Borrar formato", "why": "removal"},
+  {"case": "t-form-1", "label": "remove background", "control": "Quitar fondo", "why": "removal"},
+  {"case": "t-menu-3", "label": "clear formatting", "control": "Borrar formato (Ctrl+Espacio)", "why": "removal"}
+ ]
+}

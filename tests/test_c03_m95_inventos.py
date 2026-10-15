@@ -53,6 +53,12 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import consulted_answers
+from baxy_mind import search_report
+from baxy_mind import visible_defect
+from baxy_mind import llm_chat
+from baxy_mind import talk_memory_figures
+from baxy_mind import payload_fact_checks
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m95_evidence.json").read_text(encoding="utf-8"))["turns"]
 P28 = EVIDENCE["v3u:D-p28-t3"]
@@ -99,7 +105,7 @@ def test_the_recorded_talk_answer_gives_a_year_from_memory() -> None:
     # The same draft in v3x (HEAD 817dde50) before any veto.
     assert EVIDENCE["v3x:D-p28-t3"]["raw_replies"][0]["raw_reply"] == RECORDED
     # «1980» is BAXY's earlier answer; «2019» nothing in the conversation states.
-    assert llm.talk_memory_figures(RECORDED, P28["text"], _dialogue(P28), _person(P28)) == ["2019"]
+    assert talk_memory_figures.talk_memory_figures(RECORDED, P28["text"], _dialogue(P28), _person(P28)) == ["2019"]
 
 
 def test_the_talk_answer_is_written_again_without_the_figure() -> None:
@@ -120,7 +126,7 @@ def test_a_retry_that_keeps_the_figure_loses_that_sentence() -> None:
 def test_a_retry_that_is_only_the_figure_is_no_answer() -> None:
     writer = _Writer([RECORDED, json.dumps({"answer": "Hustlers came out in 2019."})])
 
-    with pytest.raises(llm.ConversationReplyContractError) as refused:
+    with pytest.raises(llm_chat.ConversationReplyContractError) as refused:
         _chat(writer, P28)
     assert refused.value.audit_reason == "memory_figures"
 
@@ -132,8 +138,8 @@ def test_the_composed_conversation_message_is_held_to_the_same_rule() -> None:
         "priorRequests": _person(P28),
     }
 
-    assert llm.compose_visible_defect(RECORDED, "conversation", P28["text"], facts) == "memory_figures"
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(RECORDED, "conversation", P28["text"], facts) == "memory_figures"
+    assert visible_defect.compose_visible_defect(
         "Hustlers sounds like a great pick for a dramatic story.", "conversation", P28["text"], facts,
     ) == ""
 
@@ -157,7 +163,7 @@ def test_the_recorded_talk_answers_with_grounded_figures_pass(ident: str) -> Non
     case = EVIDENCE[ident]
     assert case["decision"].startswith("conversation:") and case["ok"]
 
-    assert llm.talk_memory_figures(case["published"], case["text"], _dialogue(case), _person(case)) == []
+    assert talk_memory_figures.talk_memory_figures(case["published"], case["text"], _dialogue(case), _person(case)) == []
 
 
 @pytest.mark.parametrize(
@@ -173,7 +179,7 @@ def test_the_recorded_talk_answers_with_grounded_figures_pass(ident: str) -> Non
     ],
 )
 def test_figures_no_one_said_are_memory(reply: str, asked: str, dialogue: list[str], expected: list[str]) -> None:
-    assert llm.talk_memory_figures(reply, asked, dialogue, dialogue[::2]) == expected
+    assert talk_memory_figures.talk_memory_figures(reply, asked, dialogue, dialogue[::2]) == expected
 
 
 @pytest.mark.parametrize(
@@ -191,22 +197,22 @@ def test_figures_no_one_said_are_memory(reply: str, asked: str, dialogue: list[s
     ],
 )
 def test_figures_the_conversation_grounds_pass(reply: str, asked: str, dialogue: list[str]) -> None:
-    assert llm.talk_memory_figures(reply, asked, dialogue, dialogue[::2]) == []
+    assert talk_memory_figures.talk_memory_figures(reply, asked, dialogue, dialogue[::2]) == []
 
 
 def test_only_the_sentences_with_a_figure_from_memory_are_dropped() -> None:
     reply = "Es una película dramática. Se estrenó en 2019. Te va a gustar."
 
-    assert llm._without_memory_figures(reply, ["2019"]) == "Es una película dramática. Te va a gustar."
-    assert llm._without_memory_figures("Se estrenó en 2019.", ["2019"]) == ""
+    assert talk_memory_figures._without_memory_figures(reply, ["2019"]) == "Es una película dramática. Te va a gustar."
+    assert talk_memory_figures._without_memory_figures("Se estrenó en 2019.", ["2019"]) == ""
     # «2019» inside another number is not that figure.
-    assert llm._without_memory_figures("Cuesta 20190 pesos.", ["2019"]) == "Cuesta 20190 pesos."
+    assert talk_memory_figures._without_memory_figures("Cuesta 20190 pesos.", ["2019"]) == "Cuesta 20190 pesos."
 
 
 def test_code_and_written_content_are_not_judged() -> None:
     facts = {"situation": json.dumps({"kind": "conversation"}), "priorRequests": []}
 
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "```python\nprint(2019)\n```", "conversation", "escribe un programa en python que imprima un año", facts,
     ) != "memory_figures"
     writer = _Writer(["Había una vez 3 hermanos que vivían en 1890 en un pueblo pequeño."])
@@ -226,7 +232,7 @@ def test_an_hour_the_read_does_not_cover_is_answered_with_the_days_figures() -> 
     # giving the temperature now, and the turn ended with no answer.
     assert len(S014["drafts"]) == 2
     for draft in S014["drafts"]:
-        assert llm._payload_fact_defect(draft, S014["payload"], S014["text"]) == ""
+        assert payload_fact_checks._payload_fact_defect(draft, S014["payload"], S014["text"]) == ""
 
 
 @pytest.mark.parametrize(
@@ -241,7 +247,7 @@ def test_an_hour_the_read_does_not_cover_is_answered_with_the_days_figures() -> 
     ],
 )
 def test_the_weather_report_still_carries_what_was_read(draft: str, asked: str) -> None:
-    assert llm._payload_fact_defect(draft, S014["payload"], asked) != ""
+    assert payload_fact_checks._payload_fact_defect(draft, S014["payload"], asked) != ""
 
 
 def test_no_recipe_is_asked_of_memory() -> None:
@@ -280,7 +286,7 @@ def test_d_p31_t1_a_memory_list_written_twice_is_refused() -> None:
     case = EVIDENCE["v3x:D-p31-t1"]
     recorded = next(stage["draft"] for stage in case["stages"] if stage["stage"] == "from_memory")
     assert recorded == case["published"]
-    assert llm._memory_list_repeats(recorded)
+    assert consulted_answers._memory_list_repeats(recorded)
     writer = _Writer([recorded])
 
     assert writer._compose_consulted_answer(
@@ -298,7 +304,7 @@ def test_d_p31_t1_a_memory_list_written_twice_is_refused() -> None:
     ],
 )
 def test_a_memory_answer_that_says_each_thing_once_passes(draft: str) -> None:
-    assert not llm._memory_list_repeats(draft)
+    assert not consulted_answers._memory_list_repeats(draft)
 
 
 def test_d_p34_t2_the_answer_puts_in_the_first_answer_what_it_never_said() -> None:
@@ -306,12 +312,12 @@ def test_d_p34_t2_the_answer_puts_in_the_first_answer_what_it_never_said() -> No
     dialogue = _dialogue(case)
     assert "NASA" not in " ".join(dialogue)
 
-    assert llm.talk_misquotes_itself(case["published"], dialogue) == ["NASA", "Back to the Future"]
+    assert talk_memory_figures.talk_misquotes_itself(case["published"], dialogue) == ["NASA", "Back to the Future"]
     honest = (
         "En mi primera respuesta busqué las fechas y el contenido de cápsulas del tiempo famosas y no encontré ninguna "
         "página que los diera. Otro significado es el de las cápsulas de medicamentos que liberan el fármaco poco a poco."
     )
-    assert llm.talk_misquotes_itself(honest, dialogue) == []
+    assert talk_memory_figures.talk_misquotes_itself(honest, dialogue) == []
 
 
 def test_d_p34_t2_the_retry_gets_the_earlier_answers_word_for_word() -> None:
@@ -355,7 +361,7 @@ def test_d_p34_t2_a_retry_that_still_misquotes_loses_that_sentence() -> None:
 )
 def test_what_the_conversation_carries_is_not_a_misquote(reply: str) -> None:
     dialogue = ["Tell me about Dune", "Dune came out in 2021.", "¿con quién es la reunión?", "Es con Marta."]
-    assert llm.talk_misquotes_itself(reply, dialogue) == []
+    assert talk_memory_figures.talk_misquotes_itself(reply, dialogue) == []
 
 
 def test_d_w15_t4_a_note_written_with_a_description_is_not_told_as_holding_it() -> None:
@@ -363,19 +369,19 @@ def test_d_w15_t4_a_note_written_with_a_description_is_not_told_as_holding_it() 
     payload = case["payload"]
     assert payload["seen"]["content"] == "resumen del informe trimestral de Documentos"
 
-    assert llm._payload_fact_defect(case["published"], payload, case["text"]) == "note_content_described"
+    assert payload_fact_checks._payload_fact_defect(case["published"], payload, case["text"]) == "note_content_described"
     for honest in (
         "He guardado la nota «reunion jueves».",
         "He guardado la nota «reunion jueves» con el texto «resumen del informe trimestral de Documentos».",
     ):
-        assert llm._payload_fact_defect(honest, payload, case["text"]) != "note_content_described"
+        assert payload_fact_checks._payload_fact_defect(honest, payload, case["text"]) != "note_content_described"
 
 
 def test_an_ordinary_note_is_told_with_its_text() -> None:
     payload = {"operation": "note.create", "seen": {"title": "compras", "content": "leche, pan y huevos"}}
-    assert not llm._note_content_described("He guardado la nota «compras» con leche, pan y huevos.", payload)
+    assert not payload_fact_checks._note_content_described("He guardado la nota «compras» con leche, pan y huevos.", payload)
     listed = {"operation": "note.create", "seen": {"title": "viaje", "content": "lista de cosas para la playa: toalla"}}
-    assert llm._note_content_described("Guardé la nota «viaje» con la lista de cosas para la playa.", listed)
+    assert payload_fact_checks._note_content_described("Guardé la nota «viaje» con la lista de cosas para la playa.", listed)
 
 
 # ------------------------------------------------------------------ a not-found over a read that answers
@@ -408,7 +414,7 @@ def test_d_w01_t2_tallarines_are_pasta_to_the_page_filter() -> None:
     case = EVIDENCE["v3x:D-w01-t2"]
     seen = case["payload"]["seen"]
     rule = next(item for item in seen["results"] if "regla del 1, 100 y 10" in item["title"])
-    assert llm._search_result_is_about(seen["query"], rule, False)
+    assert search_report._search_result_is_about(seen["query"], rule, False)
     writer = _Writer(["Se suele usar la regla del 1, 100 y 10."])
 
     assert _after_not_found(writer, case, "No encontré una cifra exacta.") == "Se suele usar la regla del 1, 100 y 10."

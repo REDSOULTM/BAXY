@@ -59,7 +59,8 @@ public sealed class ProductCatalogTests
 
 
     // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md):
-    // el desplazamiento verificado por superficie y la misión general del shell.
+    // el desplazamiento verificado por superficie y la misión general del shell (el arrastre de v3 se retiró en la
+    // estabilización L: arrastrar es un límite declarado).
     internal static readonly string[] ComputerUseAdditions =
     [
         "input.scroll",
@@ -98,12 +99,86 @@ public sealed class ProductCatalogTests
         });
     }
 
-    // Computer use, chained missions (shared contract «steps»): up to eight ordered sub-goals, each a closed object with
-    // its goal, application and success check; the whole mission up to thirty steps.
+    // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture takes the known folder
+    // it is also saved to, optional (without it the capture stays private), and nothing outside the enum.
+    [TestCase("capture.screenshot", "{}", true)]
+    [TestCase("capture.screenshot", """{"folder":"desktop"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"pictures"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"documents"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"downloads"}""", true)]
+    [TestCase("capture.active.window", "{}", true)]
+    [TestCase("capture.active.window", """{"folder":"desktop"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"all_known"}""", false)]
+    [TestCase("capture.screenshot", """{"folder":"C:\\Users"}""", false)]
+    [TestCase("capture.screenshot", """{"folder":null}""", false)]
+    [TestCase("capture.screenshot", """{"path":"C:\\Users"}""", false)]
+    [TestCase("capture.active.window", """{"folder":"projects"}""", false)]
+    public void ACaptureTakesAnOptionalKnownFolderToBeSavedTo(string operation, string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
+            Assert.That(descriptor.ArgumentsSchema.Required, Is.Empty);
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+        });
+    }
+
+    // Ronda 23 (índices de vista y esquema, t-menu-2 r21): a look numbers up to its cap, the goal's reserved room and
+    // the body; the acts on a control of the look take all of it and nothing past it, and the look's own limit is the cap.
+    [TestCase("input.visible.click", "index", "\"label\":\"Tamaño\"")]
+    [TestCase("input.scroll", "index", "\"amount\":1,\"direction\":\"down\"")]
+    [TestCase("input.text.type", "index", "\"text\":\"hola\"")]
+    public void ActsOnAControlOfTheLookTakeEveryIndexTheLookNumbers(string operation, string argument, string rest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired(operation).ArgumentsSchema;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleViewNumbering.HighestIndex, Is.EqualTo(70));
+            foreach ((int index, bool expected) in new[] { (0, true), (59, true), (60, true), (VisibleViewNumbering.HighestIndex, true), (VisibleViewNumbering.HighestIndex + 1, false), (-1, false) })
+            {
+                using JsonDocument arguments = JsonDocument.Parse($"{{\"{argument}\":{index},{rest}}}");
+                Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, schema), Is.EqualTo(expected), $"{argument}={index}");
+            }
+
+            OperationArgumentsSchema look = ProductCatalog.GetRequired("input.visible.controls").ArgumentsSchema;
+            using JsonDocument atCap = JsonDocument.Parse($"{{\"limit\":{VisibleViewNumbering.Cap}}}");
+            using JsonDocument pastCap = JsonDocument.Parse($"{{\"limit\":{VisibleViewNumbering.Cap + 1}}}");
+            Assert.That(OperationArgumentValidator.IsValid(atCap.RootElement, look), Is.True);
+            Assert.That(OperationArgumentValidator.IsValid(pastCap.RootElement, look), Is.False);
+        });
+    }
+
+    // Ronda 23: the cause a refused act is handed back with names the arguments the schema refuses, and none for
+    // arguments it takes (counter-case).
+    [Test]
+    public void TheInvalidArgumentsAreNamedAndNoneForValidOnes()
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.visible.click").ArgumentsSchema;
+        using JsonDocument wrong = JsonDocument.Parse("{\"index\":71,\"manner\":\"triple\",\"labelz\":\"x\"}");
+        using JsonDocument right = JsonDocument.Parse("{\"index\":70,\"label\":\"Tamaño\",\"manner\":\"menu\"}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.InvalidArguments(wrong.RootElement, schema),
+                Is.EqualTo(new[] { "index", "manner", "labelz", "label" }));
+            Assert.That(OperationArgumentValidator.InvalidArguments(right.RootElement, schema), Is.Empty);
+            Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
+        });
+    }
+
+    // Computer use, chained missions (shared contract «steps»): up to ten ordered sub-goals (goal v3 point 2: long tasks;
+    // the mind's MAX_STEPS was 8 only because this limit was), each a closed object with its goal, application and
+    // success check; the whole mission up to thirty steps.
     [TestCase("""{"goal":"abre Steam"}""", true)]
     [TestCase("""{"goal":"abre Steam","budgetSteps":30}""", true)]
     [TestCase("""{"goal":"abre Steam","budgetSteps":31}""", false)]
     [TestCase("""{"goal":"abre Steam","steps":null}""", true)]
+    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":true}""", true)]
+    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":"si"}""", false)]
     [TestCase("""{"goal":"a y b","application":null,"successCheck":null,"steps":[{"goal":"a","application":"Steam","successCheck":"text:a"},{"goal":"b","application":null,"successCheck":null}]}""", true)]
     [TestCase("""{"goal":"a","steps":[{"goal":"a"}]}""", true)]
     [TestCase("""{"goal":"a","steps":[]}""", false)]
@@ -112,8 +187,12 @@ public sealed class ProductCatalogTests
     [TestCase("""{"goal":"a","steps":[{"goal":"a","budgetSteps":3}]}""", false)]
     [TestCase("""{"goal":"a","steps":[{"goal":"a","application":7}]}""", false)]
     [TestCase("""{"goal":"a","steps":["a"]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"},{"goal":"11"}]}""", false)]
+    // Ronda 20b, revisión 2: a sub-goal of a form carries the check of the whole form (formCheck), a string or null.
+    [TestCase("""{"goal":"a","steps":[{"goal":"poner alto en 500","formCheck":"value:ancho=500&value:alto=500"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"hacer clic en aceptar","formCheck":null}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a","formCheck":7}]}""", false)]
     public void AComputerUseMissionMayChainOrderedSubgoals(string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
@@ -147,14 +226,15 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(steps.GetProperty("maxItems").GetInt32(), Is.EqualTo(8));
+            Assert.That(steps.GetProperty("maxItems").GetInt32(), Is.EqualTo(10));
             Assert.That(steps.GetProperty("minItems").GetInt32(), Is.EqualTo(1));
             Assert.That(items.GetProperty("type").GetString(), Is.EqualTo("object"));
             Assert.That(items.GetProperty("additionalProperties").GetBoolean(), Is.False);
             Assert.That(items.GetProperty("required").EnumerateArray().Select(name => name.GetString()), Is.EqualTo(new[] { "goal" }));
+            // Estabilización L: «limit» (the declared limit the sub-goal is) and «requires» (the device its place needs).
             Assert.That(
                 items.GetProperty("properties").EnumerateObject().Select(property => property.Name),
-                Is.EqualTo(new[] { "application", "goal", "successCheck" }));
+                Is.EqualTo(new[] { "application", "formCheck", "goal", "limit", "requires", "successCheck" }));
         });
     }
 
@@ -173,12 +253,61 @@ public sealed class ProductCatalogTests
     [TestCase("""{"amount":3,"direction":"down","index":0}""", true)]
     [TestCase("""{"amount":3,"direction":"up","index":59}""", true)]
     [TestCase("""{"amount":3,"direction":"up","index":null}""", true)]
-    [TestCase("""{"amount":3,"direction":"up","index":60}""", false)]
+    // Ronda 23 (t-menu-2): the look numbers past its cap (the goal's reserved room, the body); 60 is one of its
+    // controls now and the first index past the look is VisibleViewNumbering.HighestIndex + 1 (71).
+    [TestCase("""{"amount":3,"direction":"up","index":60}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":70}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":71}""", false)]
     [TestCase("""{"amount":3,"direction":"up","index":-1}""", false)]
     [TestCase("""{"amount":3,"direction":"up","index":"2"}""", false)]
     public void ScrollMayTargetOneControlOfTheView(string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.scroll");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
+    // Goal v3 point 2: a scroll may name the element to bring into view (label), a text the field it sets (field) and
+    // whether it replaces its value (replace), a click what it writes over (consequence, only «overwrite»).
+    [TestCase("input.scroll", """{"amount":3,"direction":"down","label":"Omega","window":4660}""", true)]
+    [TestCase("input.scroll", """{"amount":3,"direction":"down","label":null}""", true)]
+    [TestCase("input.scroll", """{"amount":3,"direction":"down","label":5}""", false)]
+    [TestCase("input.text.type", """{"text":"800","field":"Ancho","replace":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"800","replace":"yes"}""", false)]
+    // Ronda 19 (r17 t2-c13): the country the person's speech marks goes with the place as a declared hint.
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"ES"}""", true)]
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":null}""", true)]
+    [TestCase("weather.current", """{"location":"Curicó"}""", true)]
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"España"}""", false)]
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"FR"}""", false)]
+    // Review of combos-galerias (finding 1): the entry of a list chosen by pattern, as the mind sends it.
+    [TestCase("input.text.type", """{"text":"Wingdings","field":"Fuente","replace":true,"entry":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"Wingdings","entry":null}""", true)]
+    [TestCase("input.text.type", """{"text":"Wingdings","entry":"yes"}""", false)]
+    [TestCase("input.visible.click", """{"label":"Sí","consequence":"overwrite"}""", true)]
+    [TestCase("input.visible.click", """{"label":"Sí","consequence":"delete"}""", false)]
+    [TestCase("input.key.press", """{"key":"shift_f10"}""", true)]
+    [TestCase("input.key.press", """{"key":"ctrl_shift_s"}""", true)]
+    [TestCase("input.key.press", """{"key":"alt_f4"}""", false)]
+    [TestCase("input.key.press", """{"key":"enter","consequence":"overwrite"}""", true)]
+    [TestCase("input.key.press", """{"key":"enter","consequence":"delete"}""", false)]
+    // Ronda 21 (vista ordenada por objetivo): the goal's words go with the mission's look, bounded; a word that is not
+    // text, an empty word or more than the bound is refused.
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":["aplicacion","application"]}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":null}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":[" "]}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":[3]}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":"aplicacion"}""", false)]
+    [TestCase("input.visible.controls", """{"wanted":["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y"]}""", false)]
+    // Ronda 26: the mission's first look asks only who is in front when the application named has no window.
+    [TestCase("input.visible.controls", """{"limit":60,"application":"Calculadora","identityIfAbsent":true}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":null}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":"si"}""", false)]
+    public void TheTypesOfTaskOfV3AreArgumentsOfThePrimitives(string operation, string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
         using JsonDocument arguments = JsonDocument.Parse(json);
 
         Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));

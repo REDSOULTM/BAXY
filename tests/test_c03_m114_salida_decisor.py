@@ -14,11 +14,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import effect_intent
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
 from baxy_mind.semantic.temporal import clock_elsewhere
+from baxy_mind import context_decision
+from baxy_mind import turn_decide
 
 OPERATIONS = ("media.status", "memory.recall", "memory.save", "note.create", "web.search")
 
@@ -61,7 +62,7 @@ class _Model:
 
 
 def _decided(model: _Model, text: str) -> dict[str, Any]:
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m114", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(TOOLS.values())),
@@ -152,7 +153,7 @@ class _Turn:
 
 
 def _clock_turn(text: str) -> dict[str, Any]:
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m114", "text": text, "history": [{"role": "user", "content": text}]},
         llm=_Turn(),
         planner_catalog=PlannerCatalog(list(CLOCK_TOOLS.values())),

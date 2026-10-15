@@ -96,9 +96,7 @@ public sealed class OpenMeteoPlaceTimeZoneResolver : IPlaceTimeZoneResolver, IDi
     }
 
     private Task<string> FetchAsync(string url, CancellationToken cancellationToken) =>
-        _fetch is not null
-            ? _fetch(url, cancellationToken)
-            : _http.GetStringAsync(url, cancellationToken);
+        TransientHttp.GetStringAsync(_fetch ?? _http.GetStringAsync, url, cancellationToken);
 
     public void Dispose() => _http.Dispose();
 }

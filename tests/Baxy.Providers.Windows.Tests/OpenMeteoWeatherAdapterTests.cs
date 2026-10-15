@@ -36,6 +36,63 @@ public sealed class OpenMeteoWeatherAdapterTests
         """;
 
     [Test]
+    public async Task APlaceResolvedThisSessionIsNotGeocodedAgainButItsForecastIsReadAnew()
+    {
+        // Ronda 22 (r18 t4-c05: the weather took 5.3 s): the second read of the same place skips the geocoding.
+        var asked = new List<string>();
+        var adapter = new OpenMeteoWeatherAdapter((url, _) =>
+        {
+            asked.Add(url);
+            return Task.FromResult(url.Contains("geocoding", StringComparison.Ordinal) ? Geocoded : Forecast);
+        });
+        JsonElement arguments = JsonSerializer.SerializeToElement(new { location = "buenos aires" });
+
+        ExternalCapabilityReceipt first = await adapter.InvokeAsync("weather.current", arguments, CancellationToken.None);
+        int geocodedFirst = asked.Count(url => url.Contains("geocoding", StringComparison.Ordinal));
+        ExternalCapabilityReceipt second = await adapter.InvokeAsync("weather.current", arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Verified, Is.True);
+            Assert.That(second.Verified, Is.True);
+            Assert.That(geocodedFirst, Is.GreaterThan(0));
+            Assert.That(asked.Count(url => url.Contains("geocoding", StringComparison.Ordinal)), Is.EqualTo(geocodedFirst));
+            Assert.That(asked.Count(url => url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal)), Is.EqualTo(2));
+            Assert.That(second.Result?.GetProperty("location").GetString(), Is.EqualTo("Buenos Aires"));
+            JsonElement elapsed = second.Result!.Value.GetProperty("elapsedMs");
+            Assert.That(elapsed.GetProperty("place").GetInt64(), Is.GreaterThanOrEqualTo(0));
+            Assert.That(elapsed.GetProperty("forecast").GetInt64(), Is.GreaterThanOrEqualTo(0));
+        });
+    }
+
+    [Test]
+    public async Task AnotherPlaceOrAPlaceNotFoundIsGeocodedEachTime()
+    {
+        // Contracaso: only a place found is kept, and only for the same words.
+        var asked = new List<string>();
+        var adapter = new OpenMeteoWeatherAdapter((url, _) =>
+        {
+            asked.Add(url);
+            if (url.Contains("geocoding", StringComparison.Ordinal))
+                return Task.FromResult(url.Contains("nowhere", StringComparison.Ordinal) ? "{}" : Geocoded);
+            return Task.FromResult(Forecast);
+        });
+
+        await adapter.InvokeAsync("weather.current",
+            JsonSerializer.SerializeToElement(new { location = "nowhereville" }), CancellationToken.None);
+        int afterMissing = asked.Count;
+        ExternalCapabilityReceipt again = await adapter.InvokeAsync("weather.current",
+            JsonSerializer.SerializeToElement(new { location = "nowhereville" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(again.Verified, Is.False);
+            Assert.That(again.ErrorCode, Is.EqualTo("weather_place_not_found"));
+            Assert.That(asked.Count, Is.GreaterThan(afterMissing));
+        });
+    }
+
+    [Test]
     public async Task ANamedPlaceIsGeocodedAndItsForecastIsReadVerbatim()
     {
         var asked = new List<string>();
@@ -135,6 +192,68 @@ public sealed class OpenMeteoWeatherAdapterTests
             CancellationToken.None);
 
         Assert.That(receipt.ErrorCode, Is.EqualTo("weather_service_unavailable"));
+    }
+
+    // fable/estab-wx-clima (tanda n6 t1-c05 «va a llover mañana en valpo?» → «el servicio meteorológico no respondió» at
+    // 2.1 s; n5 read it): a service that fails once and answers next is read after one pause.
+    [Test]
+    public async Task AServiceThatFailsOnceIsAskedAgainOnceAfterAPause()
+    {
+        int forecastCalls = 0;
+        var adapter = new OpenMeteoWeatherAdapter((url, _) =>
+        {
+            if (url.Contains("geocoding", StringComparison.Ordinal))
+                return Task.FromResult(Geocoded);
+            if (url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal) && ++forecastCalls == 1)
+                throw new System.Net.Http.HttpRequestException("bad gateway", null, System.Net.HttpStatusCode.BadGateway);
+            return Task.FromResult(Forecast);
+        });
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current",
+            JsonSerializer.SerializeToElement(new { location = "Buenos Aires" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("location").GetString(), Is.EqualTo("Buenos Aires"));
+            Assert.That(forecastCalls, Is.EqualTo(2));
+            Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(TransientHttp.Pause - TimeSpan.FromMilliseconds(50)));
+        });
+    }
+
+    // Contracase: failing twice keeps the same honest final, with no third ask; a refusal that is not transient (404)
+    // is not asked again.
+    [TestCase(System.Net.HttpStatusCode.ServiceUnavailable, 2)]
+    [TestCase(System.Net.HttpStatusCode.NotFound, 1)]
+    public async Task AServiceThatFailsAgainOrRefusesKeepsTheHonestFinal(System.Net.HttpStatusCode status, int expectedCalls)
+    {
+        int forecastCalls = 0;
+        var adapter = new OpenMeteoWeatherAdapter((url, _) =>
+        {
+            if (url.Contains("geocoding", StringComparison.Ordinal))
+                return Task.FromResult(Geocoded);
+            if (url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal))
+            {
+                forecastCalls++;
+                throw new System.Net.Http.HttpRequestException("down", null, status);
+            }
+            return Task.FromResult(Forecast);
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current",
+            JsonSerializer.SerializeToElement(new { location = "Buenos Aires" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("weather_service_unavailable"));
+            Assert.That(forecastCalls, Is.EqualTo(expectedCalls));
+        });
     }
 
     // Uso real tanda 4c «Digame el weather lunes 13 en North Carolina» read «Calvary,
@@ -259,6 +378,75 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(urls.First(url => url.Contains("geocoding", StringComparison.Ordinal)),
                 Does.EndWith("name=Foster%20City"), "the region said is not sent as part of the name");
         });
+    }
+
+    // Ronda 19 (r17 t2-c13 «¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): two
+    // towns of comparable size share the name; the country the person's speech marks chooses, the receipt says
+    // namesakes exist (the reply names the country), a region said still wins, and a much smaller namesake in the
+    // marked country is never chosen over the large town.
+    private const string ValenciaEs =
+        """{"results":[{"id":3625549,"name":"Valencia","latitude":10.16202,"longitude":-68.00765,"feature_code":"PPLA","admin1_id":3647073,"population":1385083,"country_code":"VE","country":"Venezuela","admin1":"Carabobo"},{"id":2509954,"name":"Valencia","latitude":39.46975,"longitude":-0.37739,"feature_code":"PPLA2","admin1_id":2593113,"population":814208,"country_code":"ES","country":"España","admin1":"Comunidad Valenciana"},{"id":1698120,"name":"Valencia","latitude":9.28,"longitude":123.24,"feature_code":"PPL","admin1_id":7521309,"population":31477,"country_code":"PH","country":"Filipinas","admin1":"Negros Oriental"}]}""";
+
+    private const string LimaEs =
+        """{"results":[{"id":3936456,"name":"Lima","latitude":-12.04318,"longitude":-77.02824,"feature_code":"PPLC","admin1_id":3936452,"population":7737002,"country_code":"PE","country":"Perú","admin1":"Lima"},{"id":3118999,"name":"Lima","latitude":42.6,"longitude":-8.1,"feature_code":"PPL","admin1_id":3336902,"population":120,"country_code":"ES","country":"España","admin1":"Galicia"}]}""";
+
+    [TestCase("Valencia", null, "Venezuela", true)]
+    [TestCase("Valencia", "ES", "España", true)]
+    [TestCase("Valencia", "MX", "Venezuela", true)]
+    [TestCase("Valencia, Carabobo", "ES", "Venezuela", false)]
+    // Revisión r19: a comma part that places nothing (a vocative the mind could not tell from a region) leaves the
+    // name, and the speech still chooses.
+    [TestCase("Valencia, Juan", "ES", "España", true)]
+    public async Task NamesakesOfComparableSizeAreToldAndTheSpeechOfThePersonChooses(
+        string asked, string? dialect, string country, bool namesakesTold)
+    {
+        var adapter = new OpenMeteoWeatherAdapter(Service(ValenciaEs, ValenciaEs));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current",
+            JsonSerializer.SerializeToElement(new { location = asked, dialectCountry = dialect }),
+            CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("location").GetString(), Is.EqualTo("Valencia"));
+            Assert.That(result.GetProperty("country").GetString(), Is.EqualTo(country));
+            Assert.That(result.TryGetProperty("namesakesElsewhere", out JsonElement told) && told.GetBoolean(),
+                Is.EqualTo(namesakesTold));
+        });
+    }
+
+    [Test]
+    public async Task AMuchSmallerNamesakeInTheMarkedCountryIsNotChosen()
+    {
+        var adapter = new OpenMeteoWeatherAdapter(Service(LimaEs, LimaEs));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current",
+            JsonSerializer.SerializeToElement(new { location = "Lima", dialectCountry = "ES" }),
+            CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result!.Value.GetProperty("country").GetString(), Is.EqualTo("Perú"));
+            Assert.That(receipt.Result!.Value.TryGetProperty("namesakesElsewhere", out _), Is.False);
+        });
+    }
+
+    // Ronda 19 contracase: with the colloquial form resolved by the mind, a name the service does not know is still
+    // not found; nothing is invented.
+    [Test]
+    public async Task ANameNothingGeocodesStaysNotFound()
+    {
+        var adapter = new OpenMeteoWeatherAdapter(Service("""{"generationtime_ms":0.3}""", """{"generationtime_ms":0.3}"""));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Xqzvlop" }), CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.EqualTo("weather_place_not_found"));
     }
 
     [Test]

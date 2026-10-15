@@ -87,6 +87,23 @@ internal sealed class PendingModelMessageQueue
         }
     }
 
+    /// <summary>
+    /// Estabilización F2 (banco lug-1: a greeting still queued from the startup held the turn's floor back, the turn
+    /// closed with no answer and the floor came after it): whether an answer is queued ahead, the order of which a
+    /// final must keep. A greeting or a progress line answers nothing a final must wait for.
+    /// </summary>
+    internal bool HoldsAnAnswer
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _pending.Any(static item => PublicResponseRoute.FromDraft(item.Draft)
+                    is not (PublicResponseRoute.Welcome or PublicResponseRoute.Progress));
+            }
+        }
+    }
+
     internal void Enqueue(PendingModelMessage pending, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(pending);
@@ -171,10 +188,8 @@ internal sealed class PendingModelMessageQueue
             // nada: se publicaba detrás de la respuesta del primer turno y se
             // quedaba como su final. No se descarta ninguna respuesta, sólo
             // una bienvenida que perdió su momento.
-            if (_isStale(pending))
+            if (await DroppedStaleAsync(pending).ConfigureAwait(false))
             {
-                RemoveHead(pending);
-                await _onSettledAsync().ConfigureAwait(false);
                 continue;
             }
 
@@ -199,14 +214,18 @@ internal sealed class PendingModelMessageQueue
                     .ConfigureAwait(false);
             }
 
+            // Ronda 25 (latency): a greeting stale by now never takes the mind's serial lane ahead of the request.
+            if (await DroppedStaleAsync(pending).ConfigureAwait(false))
+            {
+                continue;
+            }
+
             ModelMessageCompositionOutcome outcome =
                 await _composeAsync(pending, mind, cancellationToken).ConfigureAwait(false);
             // The greeting may have lost its turn while waiting for the model.
             // Neither its prose nor its failure belongs to the new request.
-            if (_isStale(pending))
+            if (await DroppedStaleAsync(pending).ConfigureAwait(false))
             {
-                RemoveHead(pending);
-                await _onSettledAsync().ConfigureAwait(false);
                 continue;
             }
             if (outcome.Text is null)
@@ -232,6 +251,18 @@ internal sealed class PendingModelMessageQueue
                     pending)
                 .ConfigureAwait(false);
         }
+    }
+
+    private async Task<bool> DroppedStaleAsync(PendingModelMessage pending)
+    {
+        if (!_isStale(pending))
+        {
+            return false;
+        }
+
+        RemoveHead(pending);
+        await _onSettledAsync().ConfigureAwait(false);
+        return true;
     }
 
     private async Task ExhaustAsync(PendingModelMessage pending, string failure)

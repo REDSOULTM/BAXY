@@ -31,10 +31,16 @@ from __future__ import annotations
 from typing import Any
 
 from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
 from baxy_mind.planner import required_predecessors
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.notes import names_a_note, note_addition, pointed_note_content
+from baxy_mind import turn_history
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
+from baxy_mind import plan_dependencies
+from baxy_mind import argument_grounding
+from baxy_mind import plan_shape
+from baxy_mind import argument_payload
 
 NOTE = {"type": "object", "properties": {
     "content": {"type": "string", "x-maxUtf8Bytes": 65536},
@@ -66,7 +72,7 @@ def _history(said: list[str]) -> list[dict[str, str]]:
 
 
 def _exchanges(said: list[str]) -> list[tuple[str, str]]:
-    return sidecar._conversation_exchanges(_history(said))
+    return turn_history._conversation_exchanges(_history(said))
 
 
 class _Extraction:
@@ -76,9 +82,9 @@ class _Extraction:
         self.offered: str | None = None
         self.asked: list[tuple[str, ...]] = []
 
-    def extract_direct_arguments(self, *_args: object, **kwargs: object) -> llm.DirectArgumentExtraction:
+    def extract_direct_arguments(self, *_args: object, **kwargs: object) -> argument_payload.DirectArgumentExtraction:
         self.offered = kwargs.get("previous_reply")  # type: ignore[assignment]
-        return llm.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué guardo en la nota?")
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué guardo en la nota?")
 
     def formulate_missing_argument_question(self, _objective, _purpose, _tool, fields, **_kwargs) -> str:
         self.asked.append(tuple(fields))
@@ -89,9 +95,9 @@ def _arguments(said: list[str], request: str, decided: tuple[tuple[str, Any], ..
                model: _Extraction | None = None) -> tuple[Any, str]:
     """The App's arguments request for note.create: the decider's restatement as text, the lived conversation."""
 
-    sidecar._DECIDED_ARGUMENTS.clear()
-    sidecar._remember_decided_arguments(request, ("note.create",), decided)
-    return sidecar._direct_arguments_result(
+    decided_arguments._DECIDED_ARGUMENTS.clear()
+    decided_arguments._remember_decided_arguments(request, ("note.create",), decided)
+    return direct_arguments._direct_arguments_result(
         {"operation": "note.create", "text": request, "history": _history(said), "responseLanguage": "es"},
         llm=model or _Extraction(), tool=_tool("note.create", NOTE), dialogue_state=DialogueState(),
     )
@@ -328,7 +334,7 @@ def test_a_dictated_or_unsaid_note_does_not_change() -> None:
                                      (("content", "Junta de hoy."), ("title", "Junta de hoy")), model)
     assert arguments is None and question == "¿Qué quieres que diga la nota?" and model.asked == [("content",)]
     # Another operation never takes it (DEV-F F-w03-t6 «la nota del snippet, léemela» is a read).
-    assert sidecar._pointed_note_content("note.read", "Lee la nota.", "léemela", _history(H_W11), NOTE, "", None) is None
+    assert decided_arguments._pointed_note_content("note.read", "Lee la nota.", "léemela", _history(H_W11), NOTE, "", None) is None
 
 
 # ------------------------------------------------------------------ 4. G-w12-t2, an addition to the note just made
@@ -363,20 +369,20 @@ def _grounded_update(objective: str, observations: list[dict[str, Any]]) -> dict
     """The plan.ground request for the note.update step, as the sidecar answers it."""
 
     tool = _tool("note.update", NOTE_UPDATE)
-    arguments = sidecar._verified_dependency_identity_arguments(
+    arguments = plan_dependencies._verified_dependency_identity_arguments(
         "note.update", objective, observations, tool, purpose=objective,
     )
     if arguments is None:
         return None
     grounded = sidecar.normalize_grounded_arguments(
-        arguments, NOTE_UPDATE, sidecar.trusted_plan_grounding_source(objective, observations),
+        arguments, NOTE_UPDATE, argument_grounding.trusted_plan_grounding_source(objective, observations),
     )
-    return sidecar._normalize_grounded_operation_arguments("note.update", grounded, objective) if grounded else None
+    return argument_grounding._normalize_grounded_operation_arguments("note.update", grounded, objective) if grounded else None
 
 
 def test_g_w12_t2_the_note_just_made_takes_the_addition() -> None:
     assert required_predecessors("note.update") == ("note.read",)
-    skeleton = sidecar._explicit_plan_skeleton(("note.update",), (G_W12_REQUEST,))
+    skeleton = plan_shape._explicit_plan_skeleton(("note.update",), (G_W12_REQUEST,))
     assert [(step["operation"], step["dependsOn"], step["argumentsMode"]) for step in skeleton["steps"]] == [
         ("note.read", [], "literal"),
         ("note.update", ["step_1"], "after_dependencies"),
@@ -385,7 +391,7 @@ def test_g_w12_t2_the_note_just_made_takes_the_addition() -> None:
                      "ideas para el cumpleaños de juliana", "ideas para el cumpleaños de juliana")
     state.expect(G_W12_REQUEST, ["note.update"])
     operations = ("note.read", "note.update")
-    assert sidecar._conversation_note_selector("note.read", operations, G_W12[-1], state, NOTE_SELECTOR) == {
+    assert plan_dependencies._conversation_note_selector("note.read", operations, G_W12[-1], state, NOTE_SELECTOR) == {
         "title": "ideas para el cumpleaños de juliana",
     }
     note_id = "3f2b8c1e-6a0d-4e57-9b1a-2c4d5e6f7a80"
@@ -423,22 +429,22 @@ def test_what_an_addition_must_not_take() -> None:
     # «agrégale X» with no note in the conversation: no selector; the read is extracted and asked as before.
     fresh = DialogueState()
     fresh.expect("Agrega que quiero comprarle un ramo de flores a la nota.", ["note.update"])
-    assert sidecar._conversation_note_selector("note.read", operations, G_W12[-1], fresh, NOTE_SELECTOR) is None
-    assert sidecar._ground_explicit_arguments("note.read", G_W12[-1], NOTE_SELECTOR) is None
+    assert plan_dependencies._conversation_note_selector("note.read", operations, G_W12[-1], fresh, NOTE_SELECTOR) is None
+    assert argument_grounding._ground_explicit_arguments("note.read", G_W12[-1], NOTE_SELECTOR) is None
     # Another effect after the note: the conversation is no longer on it (as M80's task).
     moved_on = _created(DialogueState(), "crea una nota que diga ideas", "ideas", "ideas")
     moved_on.expect("Abre Spotify.", ["app.open"])
     moved_on.record({"operation": "app.open", "verified": True, "succeeded": True, "observed": {}})
     moved_on.expect(G_W12_REQUEST, ["note.update"])
-    assert sidecar._conversation_note_selector("note.read", operations, G_W12[-1], moved_on, NOTE_SELECTOR) is None
+    assert plan_dependencies._conversation_note_selector("note.read", operations, G_W12[-1], moved_on, NOTE_SELECTOR) is None
     # The person names another note: that one, read as before.
     state = _created(DialogueState(), "crea una nota que diga ideas", "ideas", "ideas")
     assert names_a_note("agrégale huevos a la nota de compras")
-    assert sidecar._conversation_note_selector(
+    assert plan_dependencies._conversation_note_selector(
         "note.read", operations, "agrégale huevos a la nota de compras", state, NOTE_SELECTOR,
     ) is None
     # A read that is not before an update, and a request that adds nothing (a new title), keep their own paths.
-    assert sidecar._conversation_note_selector("note.read", ("note.read",), "léemela", state, NOTE_SELECTOR) is None
+    assert plan_dependencies._conversation_note_selector("note.read", ("note.read",), "léemela", state, NOTE_SELECTOR) is None
     assert note_addition("ponle de título viaje a Lisboa") is None
     assert note_addition("Agrega a la nota «compras».") is None
     observations = _read("3f2b8c1e-6a0d-4e57-9b1a-2c4d5e6f7a80", "ideas", "ideas", 1)

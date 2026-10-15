@@ -13,22 +13,20 @@ import copy
 import json
 from types import SimpleNamespace
 
-from baxy_mind import __main__ as mind_main
-from baxy_mind.__main__ import _recover_failed_turn, _recovery_question_is_valid
-from baxy_mind.llm import (
-    _cause_in_prose,
-    _deterministic_final,
-    _payload_fact_defect,
-    _question_without_time_format,
-    _search_report_absence_claim,
-    _search_report_says_unseen_name,
-    _situation_from_facts,
-    _unsupported_answer_contract_failure,
-    _weather_unsupported_comparison,
-    compose_visible_defect,
-    limit_breaks_the_asked_verb,
-    validate_missing_argument_clarification,
-)
+from baxy_mind.turn_recovery import _recover_failed_turn, _recovery_question_is_valid
+from baxy_mind.deterministic_finals import _deterministic_final
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.search_report import _search_report_says_unseen_name
+from baxy_mind.compose_situation import _situation_from_facts
+from baxy_mind.visible_defect import compose_visible_defect
+from baxy_mind.argument_payload import validate_missing_argument_clarification
+from baxy_mind.unsupported_answers import _unsupported_answer_contract_failure
+from baxy_mind.reply_language_checks import limit_breaks_the_asked_verb
+from baxy_mind.search_report import _search_report_absence_claim
+from baxy_mind.compose_situation import _cause_in_prose
+from baxy_mind.argument_payload import _question_without_time_format
+from baxy_mind.weather_facts import _weather_unsupported_comparison
+from baxy_mind import turn_audit
 
 
 # v3b-final t66
@@ -389,14 +387,14 @@ def test_d_s042_wanting_a_cake_from_a_bakery_is_not_asking_to_make_it():
 
 def test_d_s005_a_recovered_limit_is_audited_as_unsupported(monkeypatch, tmp_path):
     audit_path = tmp_path / "turn-audit.jsonl"
-    monkeypatch.setenv(mind_main.TURN_AUDIT_ENV, str(audit_path))
+    monkeypatch.setenv(turn_audit.TURN_AUDIT_ENV, str(audit_path))
     llm = SimpleNamespace(compose_user_message=lambda *args, **kwargs: "No enciendo la pantalla.")
 
     result = _recover_failed_turn(
         {"id": "d-s005", "text": "Turn on la pantalla", "history": [], "uiLanguage": "es"},
         llm,
         attempts=1,
-        failure_kinds=(mind_main.LIMIT_WORDING_FAILURE,),
+        failure_kinds=(turn_audit.LIMIT_WORDING_FAILURE,),
     )
 
     record = json.loads(audit_path.read_text(encoding="utf-8"))

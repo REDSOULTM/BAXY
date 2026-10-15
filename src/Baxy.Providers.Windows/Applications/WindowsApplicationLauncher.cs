@@ -42,6 +42,7 @@ public sealed class WindowsApplicationLauncher : IApplicationLauncher
     {
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
+        ForegroundAsked.Value = request.Foreground;
 
         if (!string.Equals(
                 request.ApplicationId,
@@ -244,7 +245,8 @@ public sealed class WindowsApplicationLauncher : IApplicationLauncher
                 target.BootstrapExecutablePath,
                 CreateBreakawayFromJob,
                 inheritHandles: false,
-                commandLine: null);
+                commandLine: null,
+                activate: ForegroundAsked.Value);
         }
         catch (ApplicationInventoryException)
         {
@@ -534,11 +536,16 @@ public sealed class WindowsApplicationLauncher : IApplicationLauncher
         return inventory;
     }
 
+    // Whether this opening was asked to come to the front (app.open «foreground»): set once per LaunchAsync, it flows
+    // to the observation steps it awaits and never back to the caller.
+    private static readonly AsyncLocal<bool> ForegroundAsked = new();
+
     private void RequestFocusIfPossible(
         ApplicationProcessObservation observation,
         NotepadLaunchTarget target)
     {
-        if (observation.WindowHandle == 0 || !observation.WindowVisible)
+        // v3 point 0 (arreglo 4): the front is asked for only when the person asked to see the application.
+        if (!ForegroundAsked.Value || observation.WindowHandle == 0 || !observation.WindowVisible)
         {
             return;
         }

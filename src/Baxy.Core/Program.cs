@@ -28,9 +28,11 @@ namespace Baxy.Core;
 internal static class Program
 {
     private const int MaximumLineBytes = 1024 * 1024;
+    private static readonly long StartedAt = System.Diagnostics.Stopwatch.GetTimestamp();
 
     public static async Task<int> Main()
     {
+        _ = StartedAt;
         Console.InputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
         Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
@@ -97,9 +99,15 @@ internal static class Program
         var filesystemProvider = new LocalFilesystemProvider(
             Path.Combine(dataRoot, "filesystem-sandbox"));
         using var externalCapabilityProvider = new WindowsExternalCapabilityProvider(dataRoot);
-        // Computer use: the first view of a mission does not pay the UI Automation worker's start (about 1 s).
+        // Computer use: the first view of a mission pays neither the UI Automation worker's start nor its first look.
         externalCapabilityProvider.Prewarm();
         var installedApplicationProvider = new WindowsInstalledApplicationOpenProvider();
+        // The catalog read (a cold PowerShell at sign-in) starts now, beside the
+        // journal check, instead of after it; the hello waits for it only
+        // within its own budget (CoreStartupBudget).
+        Task<InstalledApplicationCatalogSnapshot> catalogRead = installedApplicationProvider
+            .GetCatalogSnapshotAsync(cancellationToken)
+            .AsTask();
         var routedApplicationOpenProvider = new ApplicationOpenProviderRouter(
             new WindowsCalculatorOpenProvider(),
             installedApplicationProvider);
@@ -141,7 +149,7 @@ internal static class Program
                 screenshotProvider, "capture.active.window", activeWindow: true),
             new ScreenshotCaptureHandler(screenshotProvider),
             .. FilesystemHandlers.Create(filesystemProvider),
-            .. ExternalCapabilityHandlers.Create(externalCapabilityProvider),
+            .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot),
             new ComputerUseMissionHandler(),
             .. MemoryHandlers.Create(
                 memoryStore,
@@ -170,10 +178,44 @@ internal static class Program
         ];
         var registry = new OperationRegistry(handlers);
         ProductCatalog.ValidateAgainst(registry);
-        await using FileInvocationJournal journal = await OpenJournalAsync(
-            dataRoot,
-            privatePayload,
-            cancellationToken).ConfigureAwait(false);
+        // The journal check re-authenticates the live segment record by record
+        // (seconds on a grown journal under load). It runs beside the catalog read
+        // and the hello waits for it only within its budget (HelloJournalWait); no
+        // request is read, let alone executed, until the journal is open and valid,
+        // and a journal that fails validation still stops the core (exit 74).
+        Task<FileInvocationJournal> journalOpen = Task.Run(
+            async () => await OpenJournalAsync(
+                    dataRoot,
+                    privatePayload,
+                    cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken);
+        await using Stream input = Console.OpenStandardInput();
+        await using Stream output = Console.OpenStandardOutput();
+        var lineReader = new BoundedLineReader(input, MaximumLineBytes);
+
+        try
+        {
+            await HelloJournalWait.WithinAsync(
+                    journalOpen,
+                    System.Diagnostics.Stopwatch.GetElapsedTime(StartedAt),
+                    cancellationToken)
+                .ConfigureAwait(false);
+            await WriteHelloAsync(
+                    output,
+                    registry,
+                    catalogRead,
+                    externalCapabilityProvider,
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch
+        {
+            await DiscardJournalAsync(journalOpen).ConfigureAwait(false);
+            throw;
+        }
+
+        await using FileInvocationJournal journal = await journalOpen.ConfigureAwait(false);
         using var engine = new MissionEngine(
             registry,
             journal,
@@ -185,43 +227,6 @@ internal static class Program
                 Narrator = ProductOperationNarrator.Instance,
                 ConfirmationMode = () => ConfirmationModeStore.Read(dataRoot),
             });
-        await using Stream input = Console.OpenStandardInput();
-        await using Stream output = Console.OpenStandardOutput();
-        var lineReader = new BoundedLineReader(input, MaximumLineBytes);
-
-        ProtocolHello hello = await CreateHelloAsync(
-            registry,
-            installedApplicationProvider,
-            externalCapabilityProvider,
-            cancellationToken).ConfigureAwait(false);
-        byte[] helloMessage = ProtocolJson.SerializeToUtf8Bytes(hello);
-        if (helloMessage.Length > MaximumLineBytes)
-        {
-            hello = hello with
-            {
-                ApplicationCatalog = new ApplicationCatalogSnapshot(
-                    ApplicationCatalogContract.CurrentVersion,
-                    Verified: false,
-                    Complete: false,
-                    Array.Empty<string>()),
-                GameCatalog = new GameCatalogSnapshot(
-                    GameCatalogContract.CurrentVersion,
-                    Verified: false,
-                    Complete: false,
-                    Array.Empty<GameCatalogEntry>()),
-            };
-            helloMessage = ProtocolJson.SerializeToUtf8Bytes(hello);
-        }
-
-        if (helloMessage.Length > MaximumLineBytes)
-        {
-            throw new InvalidDataException("The core hello exceeds the protocol line limit.");
-        }
-
-        await WriteMessageAsync(
-            output,
-            helloMessage,
-            cancellationToken).ConfigureAwait(false);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -267,6 +272,64 @@ internal static class Program
         return 0;
     }
 
+    private static async ValueTask WriteHelloAsync(
+        Stream output,
+        OperationRegistry registry,
+        Task<InstalledApplicationCatalogSnapshot> catalogRead,
+        WindowsExternalCapabilityProvider externalCapabilityProvider,
+        CancellationToken cancellationToken)
+    {
+        ProtocolHello hello = await CreateHelloAsync(
+            registry,
+            catalogRead,
+            externalCapabilityProvider,
+            cancellationToken).ConfigureAwait(false);
+        byte[] helloMessage = ProtocolJson.SerializeToUtf8Bytes(hello);
+        if (helloMessage.Length > MaximumLineBytes)
+        {
+            hello = hello with
+            {
+                ApplicationCatalog = new ApplicationCatalogSnapshot(
+                    ApplicationCatalogContract.CurrentVersion,
+                    Verified: false,
+                    Complete: false,
+                    Array.Empty<string>()),
+                GameCatalog = new GameCatalogSnapshot(
+                    GameCatalogContract.CurrentVersion,
+                    Verified: false,
+                    Complete: false,
+                    Array.Empty<GameCatalogEntry>()),
+            };
+            helloMessage = ProtocolJson.SerializeToUtf8Bytes(hello);
+        }
+
+        if (helloMessage.Length > MaximumLineBytes)
+        {
+            throw new InvalidDataException("The core hello exceeds the protocol line limit.");
+        }
+
+        await WriteMessageAsync(
+            output,
+            helloMessage,
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Closes a journal whose open was still running when the start failed, so its
+    /// file handle and key never outlive the core's own failure.
+    /// </summary>
+    private static async ValueTask DiscardJournalAsync(Task<FileInvocationJournal> journalOpen)
+    {
+        try
+        {
+            await (await journalOpen.ConfigureAwait(false)).DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // The start already failed; that failure is the one reported.
+        }
+    }
+
     private static async ValueTask<FileInvocationJournal> OpenJournalAsync(
         string dataRoot,
         IProtectedPayload privatePayload,
@@ -297,6 +360,7 @@ internal static class Program
             FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
                     journalPath,
                     authenticator,
+                    static diagnostic => Console.Error.WriteLine($"BAXY core: {diagnostic}"),
                     cancellationToken)
                 .ConfigureAwait(false);
             authenticator = null;
@@ -311,11 +375,11 @@ internal static class Program
 
     private static async ValueTask<ProtocolHello> CreateHelloAsync(
         OperationRegistry registry,
-        WindowsInstalledApplicationOpenProvider applicationCatalogProvider,
+        Task<InstalledApplicationCatalogSnapshot> applicationCatalogRead,
         WindowsExternalCapabilityProvider externalCapabilityProvider,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(applicationCatalogProvider);
+        ArgumentNullException.ThrowIfNull(applicationCatalogRead);
         ArgumentNullException.ThrowIfNull(externalCapabilityProvider);
         ProductCatalog.ValidateAgainst(registry);
         OperationDescriptor[] capabilities = registry.ToolDescriptors.ToArray();
@@ -327,9 +391,10 @@ internal static class Program
         try
         {
             InstalledApplicationCatalogSnapshot providerSnapshot =
-                await applicationCatalogProvider
-                    .GetCatalogSnapshotAsync(cancellationToken)
-                    .ConfigureAwait(false);
+                await HelloCatalogWait.WithinAsync(
+                    applicationCatalogRead,
+                    System.Diagnostics.Stopwatch.GetElapsedTime(StartedAt),
+                    cancellationToken).ConfigureAwait(false);
             applicationCatalog = new ApplicationCatalogSnapshot(
                 ApplicationCatalogContract.CurrentVersion,
                 providerSnapshot.Verified,

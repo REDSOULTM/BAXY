@@ -29,27 +29,34 @@ from datetime import date
 
 import pytest
 
-from baxy_mind import llm
-from baxy_mind.llm import (
+from baxy_mind import llm_compose
+from baxy_mind import search_report
+from baxy_mind.search_report import (
     _SEARCH_RESULTS_TAIL,
-    _birth_ages,
-    _payload_fact_defect,
     _places_unread_qualifiers,
     _search_report_defines_the_ask,
     _search_report_other_year,
     _search_report_stale_day,
     _search_report_unsourced_words,
-    _search_report_why_title_as_fact,
-    compose_visible_defect,
 )
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.visible_defect import compose_visible_defect
+from baxy_mind.search_report import _search_report_why_title_as_fact
+from baxy_mind.search_report import _birth_ages
 from baxy_mind.semantic.web import asks_this_year, request_common_words, undefined_asked_phrases
+from baxy_mind.semantic.request import fold
+
+
+# Every mind module whose code reads the day a search report is judged on: it is patched in each one.
+_REPORT_DAY_READERS = (llm_compose, search_report)
 
 
 @pytest.fixture
 def run_day(monkeypatch: pytest.MonkeyPatch) -> None:
     """The run was on 2026-09-29."""
 
-    monkeypatch.setattr(llm, "_report_today", lambda: date(2026, 9, 29))
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: date(2026, 9, 29))
 
 
 def _search(query: str, results: list[dict], authority: str) -> dict:
@@ -300,7 +307,7 @@ def test_d_p27_t2_none_of_the_results_is_the_search_shown() -> None:
     ],
 )
 def test_d_p34_t1_and_d_p31_t1_fragments_and_visible_information_are_the_search_shown(draft: str) -> None:
-    assert llm._SEARCH_MECHANICS.search(llm._reading_fold(draft)) is not None
+    assert search_report._SEARCH_MECHANICS.search(fold(draft)) is not None
 
 
 def test_d_s063_the_provided_results_tail_is_clipped() -> None:
@@ -316,7 +323,7 @@ def test_d_s063_the_provided_results_tail_is_clipped() -> None:
 
 def test_results_of_a_match_are_not_the_search() -> None:
     # «Los resultados del partido» are the match's, not the search's.
-    assert llm._SEARCH_MECHANICS.search(llm._reading_fold("Los resultados del partido fueron dos a uno.")) is None
+    assert search_report._SEARCH_MECHANICS.search(fold("Los resultados del partido fueron dos a uno.")) is None
 
 
 # ------------------------------------------------------------------ 2. a verdict the read does not hold
@@ -426,10 +433,12 @@ def test_d_p05_t2_a_headline_tomorrow_is_the_day_after_it_was_published(
     assert _payload_fact_defect(draft, P05_T2, user, said=user) == "search_report_stale_day"
     assert _search_report_stale_day(draft, P05_T2) == ("manana", date(2026, 9, 24))
     # On the day it was published, its «mañana» is the person's.
-    monkeypatch.setattr(llm, "_report_today", lambda: date(2026, 9, 24))
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: date(2026, 9, 24))
     assert _search_report_stale_day(draft, P05_T2) is None
     # Saying it was not found carries no day of a headline.
-    monkeypatch.setattr(llm, "_report_today", lambda: date(2026, 9, 29))
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: date(2026, 9, 29))
     assert _search_report_stale_day("No encontré aparcamiento para mañana.", P05_T2) is None
 
 

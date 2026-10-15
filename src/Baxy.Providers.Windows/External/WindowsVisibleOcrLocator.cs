@@ -15,9 +15,15 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
 
     public string Stage => "ocr";
 
+    public ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
+        string operation,
+        string label,
+        CancellationToken cancellationToken) => TryClickAsync(operation, label, null, cancellationToken);
+
     public async ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
         string operation,
         string label,
+        IPointPress? press,
         CancellationToken cancellationToken)
     {
         VisibleControlSurface.CapturedWindow? captured =
@@ -31,33 +37,71 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
             if (engine is null)
                 return null;
-            using SoftwareBitmap bitmap = await DecodeAsync(before.Bmp);
-            OcrResult recognized = await engine.RecognizeAsync(bitmap);
-            cancellationToken.ThrowIfCancellationRequested();
-            OcrResult? enhanced = null;
-            using (SoftwareBitmap? darker = Darkened(bitmap))
-            {
-                if (darker is not null)
-                    enhanced = await engine.RecognizeAsync(darker);
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-            WordHit? located = UniqueHit(recognized, enhanced, label);
+            WordHit? located = await LocateAsync(engine, before.Bmp, label, cancellationToken).ConfigureAwait(false);
             if (located is null)
                 return null;
             WordHit hit = located.Value;
-            if (!VisibleControlSurface.MayPress())
-                return null;
-            VisibleControlSurface.Click(before.Left + hit.CenterX, before.Top + hit.CenterY);
-            // Looked at until it changes, up to 1.5 s: a web view redraws later than 400 ms (measured on the Epic Games
-            // launcher, whose «Biblioteca» click was judged unchanged at 400 ms).
+            int screenX = before.Left + hit.CenterX;
+            int screenY = before.Top + hit.CenterY;
+            // The control under the word, pressed through the accessible tree when it has a way (no cursor); the
+            // pointer only when the worker says nothing there has one, behind the pointer's guard and inside a burst
+            // of the foreground lease (GOAL_COMPUTER_USE_V3 point 0, fix 3): after a pause of the person, with the
+            // window read again inside the burst. Moved or resized, nothing is clicked; redrawn, the word is located
+            // again on the new capture (a blinking caret redraws too), which is the baseline of the post-read, so a
+            // change the person made while waited for is never the click's.
+            async ValueTask<(int X, int Y)?> Relocate(VisibleControlSurface.CapturedWindow again, CancellationToken token)
+            {
+                WordHit? relocated = await LocateAsync(engine, again.Bmp, label, token).ConfigureAwait(false);
+                if (relocated is not { } word)
+                    return null;
+                hit = word;
+                return (again.Left + word.CenterX, again.Top + word.CenterY);
+            }
+
+            // Review of fable/cu-v3-clic-chromium (finding 3): a press without the mouse (a pattern, or a press posted to
+            // a render surface) is proved by the window changing, so its baseline is the window right before the press,
+            // not the one the OCR read seconds earlier: whatever the window drew by itself meanwhile (a message coming
+            // in, a spinner) is not the press's. What is at the point when it is pressed is the worker's check.
+            VisibleControlSurface.CapturedWindow? baseline =
+                await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
+                press, operation, before.Hwnd, screenX, screenY, label, before, Relocate, cancellationToken)
+                .ConfigureAwait(false);
+            if (pressed.Failure is { } refused)
+                return refused;
+            if (pressed.Before is { } fresh)
+                before = fresh;
+            else if (pressed.Burst is null && baseline is { } now && now.Hwnd == before.Hwnd)
+                before = now;
+            string method = pressed.Method;
+            IInputBurst? burst = pressed.Burst;
             VisibleControlSurface.CapturedWindow? after = null;
             bool changed = false;
-            for (int look = 0; look < PostReadLooks && !changed; look++)
+            bool userActed = false;
+            bool restored = true;
+            try
             {
-                await Task.Delay(look == 0 ? 400 : 220, cancellationToken).ConfigureAwait(false);
-                after = await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
-                changed = after is not null && after.Value.Sha256 != before.Sha256;
+                // Looked at until it changes, up to 1.5 s: a web view redraws later than 400 ms (measured on the Epic
+                // Games launcher, whose «Biblioteca» click was judged unchanged at 400 ms). r4a M3: a pointer's burst
+                // was given back right after the press, so its looks read the window's own drawing behind the person's,
+                // the way its baseline was taken; the person's first input ends them.
+                for (int look = 0; look < PostReadLooks && !changed && burst is not { UserActed: true }; look++)
+                {
+                    await Task.Delay(look == 0 ? 400 : 220, cancellationToken).ConfigureAwait(false);
+                    after = burst is null
+                        ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
+                        : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
+                            .ConfigureAwait(false);
+                    changed = after is not null && after.Value.Sha256 != before.Sha256;
+                }
+            }
+            finally
+            {
+                if (burst is not null)
+                {
+                    userActed = burst.UserActed;
+                    restored = burst.Restore();
+                }
             }
 
             bool surfaceObserved = false;
@@ -77,14 +121,19 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // completado cuando seguía abierto y sin descargar nada. Que la
             // etiqueta siga ahí no prueba nada; lo único que prueba un efecto
             // es que la superficie cambie. Se sigue anotando lo observado.
-            bool ok = changed;
+            // A field made the text's destination is proved by the designation itself, not by a redraw; a surface
+            // that changed after the person acted proves nothing of the click.
+            bool targeted = method == "target" && pressed.Focused;
+            bool ok = (changed && !userActed) || targeted;
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
                 writer.WriteBoolean("ok", ok);
                 writer.WriteBoolean("effectObserved", true);
-                writer.WriteString("error", ok ? "" : "visible_button_postread_unchanged");
+                writer.WriteString(
+                    "error",
+                    ok ? "" : userActed ? "input_user_interrupted" : "visible_button_postread_unchanged");
                 writer.WriteBoolean("labelStillOnScreen", surfaceObserved);
                 writer.WriteString("name", hit.Text);
                 writer.WriteString("controlIdentity", "ocr." + hit.CenterX + "." + hit.CenterY);
@@ -92,13 +141,23 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 writer.WriteBoolean("selected", surfaceObserved);
                 writer.WriteBoolean("surfaceChanged", changed);
                 writer.WriteString("observedText", observedText.Length > 240 ? observedText[..240] : observedText);
+                writer.WriteString("method", method);
+                if (targeted)
+                {
+                    writer.WriteBoolean("targeted", true);
+                    writer.WriteBoolean("focused", true);
+                    writer.WriteString("kind", pressed.Kind);
+                }
                 writer.WriteString("cascadeStage", Stage);
+                writer.WriteNumber("waitedMs", burst is null ? 0 : pressed.WaitedMs);
+                writer.WriteBoolean("restored", restored);
                 writer.WriteString("authority", "windows_media_ocr_locate_click_postread");
                 writer.WriteEndObject();
             });
             return ok
                 ? ExternalJson.Success(operation, result, true)
-                : ExternalJson.Failure(operation, "visible_click_postread_invalid", true);
+                : ExternalJson.Failure(
+                    operation, userActed ? "input_user_interrupted" : "visible_click_postread_invalid", true);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -107,6 +166,27 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         {
             return null;
         }
+    }
+
+    // The one word or run of words that reads the label on a capture, through both OCR passes.
+    private static async ValueTask<WordHit?> LocateAsync(
+        OcrEngine engine,
+        byte[] bmp,
+        string label,
+        CancellationToken cancellationToken)
+    {
+        using SoftwareBitmap bitmap = await DecodeAsync(bmp);
+        OcrResult recognized = await engine.RecognizeAsync(bitmap);
+        cancellationToken.ThrowIfCancellationRequested();
+        OcrResult? enhanced = null;
+        using (SoftwareBitmap? darker = Darkened(bitmap))
+        {
+            if (darker is not null)
+                enhanced = await engine.RecognizeAsync(darker);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return UniqueHit(recognized, enhanced, label);
     }
 
     // A capture held in memory, decoded for the OCR engine (the bitmap a file read used to hand it).
@@ -176,18 +256,29 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return needles;
     }
 
-    /// <summary>One OCR line with its box in capture pixels (contract §1.2, text by zone).</summary>
-    internal sealed record LayoutLine(string Text, double X, double Y, double Width, double Height);
+    /// <summary>One OCR line with its box in capture pixels (contract §1.2, text by zone) and its words' boxes, which
+    /// tell apart the labels of a row read as one line («BIBLIOTECA COMUNIDAD», contract §1.7).</summary>
+    internal sealed record LayoutLine(
+        string Text, double X, double Y, double Width, double Height, IReadOnlyList<LayoutWord>? Words = null);
+
+    /// <summary>One OCR word with its box in capture pixels.</summary>
+    internal sealed record LayoutWord(string Text, double X, double Y, double Width, double Height);
 
     // Lo que está escrito en la ventana capturada, línea a línea y con su
     // posición. Hace falta porque hay superficies que no exponen árbol de
     // accesibilidad: la interfaz del lanzador de juegos devuelve un solo nodo
     // (la ventana heredada de CEF), sin un hijo. Ahí lo único que se puede
     // leer es lo que se ve.
+    // Encargo WA-LEER: con «placed» cada línea vale por su sitio (las de un chat, semantic.chat_lines): un texto que se
+    // repite en otro sitio es otra línea —trece burbujas «prueba BAXY imp», la hora y la fecha de la última burbuja que
+    // la lista de chats repite— y sólo se descarta la segunda lectura del mismo texto en el mismo sitio; una línea larga
+    // de un mensaje se guarda entera. Medido en redpc (chat «Abuela» abierto, 1938×1098): por texto quedaban 45 de 66
+    // líneas, 12 de las 13 burbujas fuera.
     internal static async ValueTask<IReadOnlyList<LayoutLine>?> ReadLayoutAsync(
         byte[] capture,
         int limit,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool placed = false)
     {
         try
         {
@@ -215,24 +306,30 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 foreach (OcrLine line in pass.Lines)
                 {
                     string text = line.Text.Trim();
-                    if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
+                    if (text.Length == 0 || !placed && (text.Length > 80 || !seen.Add(text)))
                         continue;
                     global::Windows.Foundation.Rect box = default;
                     bool started = false;
+                    var words = new List<LayoutWord>();
                     foreach (OcrWord word in line.Words)
                     {
+                        global::Windows.Foundation.Rect wordBox = word.BoundingRect;
+                        words.Add(new LayoutWord(word.Text, wordBox.X, wordBox.Y, wordBox.Width, wordBox.Height));
                         if (!started)
                         {
-                            box = word.BoundingRect;
+                            box = wordBox;
                             started = true;
                         }
                         else
                         {
-                            box.Union(word.BoundingRect);
+                            box.Union(wordBox);
                         }
                     }
 
-                    lines.Add(new LayoutLine(text, box.X, box.Y, box.Width, box.Height));
+                    var read = new LayoutLine(text, box.X, box.Y, box.Width, box.Height, words);
+                    if (placed && lines.Any(kept => ReadAgain(kept, read)))
+                        continue;
+                    lines.Add(read);
                     if (lines.Count >= limit)
                         break;
                 }
@@ -258,6 +355,12 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return null;
         }
     }
+
+    /// <summary>Encargo WA-LEER: the same text read again where it was read (the darkened pass over the first).</summary>
+    internal static bool ReadAgain(LayoutLine kept, LayoutLine line) =>
+        string.Equals(kept.Text, line.Text, StringComparison.OrdinalIgnoreCase)
+        && kept.X < line.X + line.Width && line.X < kept.X + kept.Width
+        && kept.Y < line.Y + line.Height && line.Y < kept.Y + kept.Height;
 
     private static WordHit? UniqueHit(
         OcrResult recognized,

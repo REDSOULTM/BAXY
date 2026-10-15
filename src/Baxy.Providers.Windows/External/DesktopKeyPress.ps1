@@ -118,6 +118,15 @@ public static class BaxyKeyInput {
     [DllImport("user32.dll")]
     public static extern bool SetForegroundWindow(IntPtr window);
 
+    // BAXY's input mark (BaxyInputMark.cs): the pause detector and the live harness tell BAXY's input by it.
+    private static INPUT[] Marked(INPUT[] inputs) {
+        for (int index = 0; index < inputs.Length; index++) {
+            if (inputs[index].type == 1) inputs[index].data.keyboard.extraInfo = new UIntPtr(0x42415859u);
+            else inputs[index].data.mouse.extraInfo = new UIntPtr(0x42415859u);
+        }
+        return inputs;
+    }
+
     public static uint PressChord(ushort[] keys) {
         INPUT[] inputs = new INPUT[keys.Length * 2];
         for (int index = 0; index < keys.Length; index++) {
@@ -129,7 +138,7 @@ public static class BaxyKeyInput {
             inputs[keys.Length + index].data.keyboard.virtualKey = keys[keys.Length - index - 1];
             inputs[keys.Length + index].data.keyboard.flags = 2;
         }
-        return SendInput((uint)inputs.Length, inputs, InputSize);
+        return SendInput((uint)inputs.Length, Marked(inputs), InputSize);
     }
 
     public static bool SetSpanishLayout(IntPtr window, out ushort observedLanguageId) {
@@ -175,7 +184,7 @@ public static class BaxyKeyInput {
             inputs[1].type = 0;
             inputs[1].data.mouse.flags = 0x0004u;
         }
-        return SendInput((uint)inputs.Length, inputs, InputSize);
+        return SendInput((uint)inputs.Length, Marked(inputs), InputSize);
     }
 
     public static string WindowTitle(IntPtr window) {

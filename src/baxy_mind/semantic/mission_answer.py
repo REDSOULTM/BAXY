@@ -8,7 +8,10 @@ reply's wording only; the facts they compare it with come from the mission.
 
 from __future__ import annotations
 
+import functools
+import json
 import re
+from pathlib import Path
 
 from .normalize import fold
 
@@ -118,3 +121,47 @@ def gives_an_answer(
         return True
     said_numbers = {number.replace(",", ".") for number in _NUMBER.findall(folded)}
     return bool(said_numbers & numbers) or bool(said & answers)
+
+
+_DATA = Path(__file__).resolve().parent.parent / "data"
+
+
+@functools.lru_cache(maxsize=1)
+def devices() -> dict:
+    """The device kinds a question may ask the state of (data operation_floor.v1.json «computerUse.answer.devices»)."""
+
+    floor = json.loads((_DATA / "operation_floor.v1.json").read_text(encoding="utf-8"))
+    return floor["computerUse"]["answer"]["devices"]
+
+
+@functools.lru_cache(maxsize=1)
+def screen_states() -> tuple[str, ...]:
+    """The connection states a window writes, folded, longest first (data screen_state_lines.v1.json, the same the
+    view's ScreenStateLines groups with their device)."""
+
+    states = json.loads((_DATA / "screen_state_lines.v1.json").read_text(encoding="utf-8"))["states"]
+    return tuple(sorted({fold(state) for state in states if state}, key=len, reverse=True))
+
+
+def has_phrase(folded: str, phrase: str) -> bool:
+    return re.search(rf"(?<![a-z0-9]){re.escape(phrase)}(?![a-z0-9])", folded) is not None
+
+
+def device_asked(question: str) -> tuple[str, str] | None:
+    """Encargo H3 (tanda n5 t3-c09: «fijate si los auriculares están conectados»): the device kind a question asks the
+    state of and the person's own words for it, with their article («headphones», «los auriculares»); None when it
+    names no kind of the data or asks no state."""
+
+    folded = fold(question)
+    if _STATE.search(folded) is None and not any(has_phrase(folded, state) for state in screen_states()):
+        return None
+    data = devices()
+    tokens = list(re.finditer(r"[^\W_]+", question))
+    for index, token in enumerate(tokens):
+        kind = next((name for name, terms in data["kinds"].items() if fold(token.group(0)) in terms["words"]), None)
+        if kind is None:
+            continue
+        article = index > 0 and fold(tokens[index - 1].group(0)) in data["articles"]
+        start = tokens[index - 1].start() if article else token.start()
+        return kind, question[start:token.end()]
+    return None

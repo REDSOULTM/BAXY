@@ -23,9 +23,15 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import deterministic_finals
+from baxy_mind import visible_defect
+from baxy_mind import failure_wording
+from baxy_mind import unsupported_answers
+from baxy_mind import limit_voice
 from baxy_mind.semantic.conversation import asked_act_clause, wants_to_consume
+from baxy_mind import turn_recovery
+from baxy_mind import turn_audit
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m101_evidence.json").read_text(encoding="utf-8"))
 
@@ -83,10 +89,10 @@ def test_drinking_or_watching_still_is(text: str) -> None:
 def test_a_limit_on_taking_a_photo_is_not_the_persons_act() -> None:
     # D-s037: «No tomo fotos de playas.» died three times as limit_persons_act.
     asked = "quiero tomar una foto del volcán, mejor que salga el lago"
-    assert llm.limit_voice_defect("No saco fotos de volcanes.", asked) == ""
-    assert llm.limit_voice_defect("No tomo fotos de volcanes.", asked) == ""
+    assert limit_voice.limit_voice_defect("No saco fotos de volcanes.", asked) == ""
+    assert limit_voice.limit_voice_defect("No tomo fotos de volcanes.", asked) == ""
     # Drinking asked is still the person's own act.
-    assert llm.limit_voice_defect("No tomo café.", "quiero tomar un café") == "limit_persons_act"
+    assert limit_voice.limit_voice_defect("No tomo café.", "quiero tomar un café") == "limit_persons_act"
 
 
 @pytest.mark.parametrize(
@@ -104,9 +110,9 @@ def test_a_limit_on_taking_a_photo_is_not_the_persons_act() -> None:
     ],
 )
 def test_a_limit_that_named_the_thing_keeps_it_without_the_second_denial(draft: str, asked: str, kept: str) -> None:
-    assert llm._unsupported_answer_contract_failure(draft, asked) != ""
-    assert llm.limit_without_its_echo(draft) == kept
-    assert llm._unsupported_answer_contract_failure(kept, asked) == ""
+    assert unsupported_answers._unsupported_answer_contract_failure(draft, asked) != ""
+    assert limit_voice.limit_without_its_echo(draft) == kept
+    assert unsupported_answers._unsupported_answer_contract_failure(kept, asked) == ""
 
 
 @pytest.mark.parametrize(
@@ -118,7 +124,7 @@ def test_a_limit_that_named_the_thing_keeps_it_without_the_second_denial(draft: 
     ],
 )
 def test_a_limit_of_another_shape_is_not_clipped(draft: str) -> None:
-    assert llm.limit_without_its_echo(draft) == ""
+    assert limit_voice.limit_without_its_echo(draft) == ""
 
 
 def test_the_composed_limit_keeps_what_it_named() -> None:
@@ -133,7 +139,7 @@ def test_not_managing_to_understand_is_the_failure_told() -> None:
     asked = "¿y estás completamente seguro de eso?"
     facts = {"situation": TURN_FAILURE, "mustNotAskFollowUp": True}
     draft = "No logré interpretar bien lo que me dijiste."
-    assert llm.compose_visible_defect(draft, "error", asked, facts) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", asked, facts) == ""
     assert _final(asked, TURN_FAILURE, [draft]) == draft
 
 
@@ -142,14 +148,14 @@ def test_an_opened_youtube_page_is_the_cause_fact_not_a_reversed_result() -> Non
     asked = "ponme cumbia villera en YouTube mientras cocino"
     draft = "He abierto YouTube, pero no he podido confirmar si la cumbia villera está sonando."
     situation = _youtube_unverified("cumbia villera")
-    assert llm.compose_visible_defect(draft, "error", asked, {"situation": situation}) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", asked, {"situation": situation}) == ""
     # A claimed success is still reversed, and another failure keeps the open veto.
-    assert llm.compose_visible_defect("Listo, ya suena la cumbia villera.", "error", asked,
+    assert visible_defect.compose_visible_defect("Listo, ya suena la cumbia villera.", "error", asked,
                                       {"situation": situation}) == "reversed_polarity"
     other = json.dumps({"kind": "failure", "polarity": "failure", "cause": "mission_failed", "stepCount": 0,
                         "steps": [], "reason": {"kind": "operation", "operation": "app.open", "polarity": "failure",
                                                 "verified": False, "succeeded": False, "error": "app_not_found"}})
-    assert llm.compose_visible_defect("He abierto Spotify, pero no pude confirmar nada.", "error", "abre spotify",
+    assert visible_defect.compose_visible_defect("He abierto Spotify, pero no pude confirmar nada.", "error", "abre spotify",
                                       {"situation": other}) == "reversed_polarity"
 
 
@@ -199,8 +205,8 @@ def test_what_cannot_be_said_as_the_person_said_it_is_left_out(asked: str, langu
 )
 def test_a_limit_every_draft_of_which_died_is_said_from_the_decision(asked: str, language: str, final: str) -> None:
     situation = json.loads(LIMIT)
-    assert llm._deterministic_final(situation, {}, asked, language) == final
-    assert llm.compose_visible_defect(final, "error", asked, {"situation": LIMIT}) == ""
+    assert deterministic_finals._deterministic_final(situation, {}, asked, language) == final
+    assert visible_defect.compose_visible_defect(final, "error", asked, {"situation": LIMIT}) == ""
 
 
 def test_the_composed_limit_never_ends_empty() -> None:
@@ -227,7 +233,7 @@ def test_the_composed_limit_never_ends_empty() -> None:
 )
 def test_an_unconfirmed_youtube_playback_is_reported_naming_its_target(asked: str, language: str, final: str) -> None:
     situation = _youtube_unverified("cumbia villera")
-    assert llm._deterministic_final(json.loads(situation), {}, asked, language) == final
+    assert deterministic_finals._deterministic_final(json.loads(situation), {}, asked, language) == final
     assert _final(asked, situation, ["Listo, ya suena."] * 3) == final
 
 
@@ -236,9 +242,10 @@ def test_an_effect_left_uncertain_names_its_target() -> None:
               "succeeded": False, "error": "spotify_playback_unconfirmed", "effectUncertain": True,
               "target": "Los Prisioneros"}
     situation = {"kind": "failure", "polarity": "failure", "cause": "mission_failed", "reason": reason}
-    final = llm._deterministic_final(situation, {}, "pon a Los Prisioneros en Spotify", "es")
-    assert final == "No pude confirmar el resultado con «Los Prisioneros»."
-    assert "No pude" in final and "Los Prisioneros" in final
+    final = deterministic_finals._deterministic_final(situation, {}, "pon a Los Prisioneros en Spotify", "es")
+    # Estabilización F: the floor's own clause names the act tried, not a fixed sentence in code that named none.
+    assert final == "Intenté poner la música «Los Prisioneros», pero no pude confirmar si se hizo."
+    assert "no pude confirmar" in final and "Los Prisioneros" in final
 
 
 def test_a_turn_failure_keeps_no_fixed_final() -> None:
@@ -271,10 +278,10 @@ def test_talk_whose_recovered_reply_tells_a_failure_asks_back() -> None:
         "conversation": "No puedo garantizar que todo sea exacto ni saber cómo reaccionará cada cual.",
         "clarification": "¿Qué dato quieres que revise?",
     })
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m101", "text": "¿y estás completamente seguro de eso?", "history": []},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
     )
     assert composer.asked == ["conversation", "clarification"]
     assert result["kind"] == "clarify" and result["question"] == "¿Qué dato quieres que revise?"
@@ -292,7 +299,7 @@ def test_talk_whose_recovered_reply_tells_a_failure_asks_back() -> None:
     ],
 )
 def test_a_talk_reply_that_tells_a_failure(reply: str, asked: str, told: bool) -> None:
-    assert llm.talk_reply_tells_a_failure(reply, asked) is told
+    assert failure_wording.talk_reply_tells_a_failure(reply, asked) is told
 
 
 # ------------------------------------------------------------------ 3. an asked state that already held
@@ -316,7 +323,7 @@ def _microphone(error: str | None, muted: bool | None = None) -> str:
 )
 def test_the_state_that_already_held_is_told(draft: str) -> None:
     facts = {"situation": _microphone("microphone_already_muted")}
-    assert llm.compose_visible_defect(draft, "status", "mutea el micro porfa", facts) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", "mutea el micro porfa", facts) == ""
 
 
 @pytest.mark.parametrize(
@@ -330,7 +337,7 @@ def test_the_state_that_already_held_is_told(draft: str) -> None:
 def test_an_asked_state_that_held_has_a_final_from_its_facts(error: str, language: str, final: str) -> None:
     situation = _microphone(error)
     asked = "mute my mic please" if language == "en" else "mutea el micro porfa"
-    assert llm._deterministic_final(json.loads(situation), {}, asked, language) == final
+    assert deterministic_finals._deterministic_final(json.loads(situation), {}, asked, language) == final
     assert _final(asked, situation, ["Silencié el micrófono."] * 3, intent="status") == final
 
 
@@ -338,5 +345,5 @@ def test_an_asked_state_that_held_has_a_final_from_its_facts(error: str, languag
 def test_a_verified_microphone_change_has_a_final_from_its_facts(muted: bool, final: str) -> None:
     situation = _microphone(None, muted)
     asked = "mutea el micro porfa" if muted else "prende el micro porfa"
-    assert llm._deterministic_final(json.loads(situation), {}, asked, "es") == final
+    assert deterministic_finals._deterministic_final(json.loads(situation), {}, asked, "es") == final
     assert _final(asked, situation, ["Listo."] * 3, intent="status") == final

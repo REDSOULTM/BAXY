@@ -8,8 +8,11 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import plan_dependencies
+from baxy_mind import turn_decisions
 
 APPS = ("Spotify", "Discord", "Steam", "Google Chrome")
 AVAILABLE = frozenset({"web.search", "browser.navigate", "browser.navigate.named", "app.open", "browser.control", "web.page.read", "memory.status"})
@@ -43,7 +46,7 @@ def test_a_search_in_the_persons_browser_is_the_reviewed_navigation_to_the_searc
     assert effect_intent._browser_search_query(text) == "power automate"
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, ())
     assert intent is not None and intent.operations == ("browser.navigate",)
-    assert mind._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS) == {"url": "https://www.bing.com/search?q=power+automate"}
+    assert argument_grounding._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS) == {"url": "https://www.bing.com/search?q=power+automate"}
 
 
 @pytest.mark.parametrize("text", ["abre el navegador", "abre una pestaña en mi navegador", "abrí un link en mi navegador", "abre google.com en el navegador", "abre youtube en mi navegador"])
@@ -62,7 +65,7 @@ def test_open_it_in_my_browser_takes_the_thing_asked_about_two_turns_back() -> N
     text = history[-1]["content"]
     intent = effect_intent.browser_search_pronoun_intent(text, history, AVAILABLE)
     assert intent is not None and intent.operations == ("browser.navigate",)
-    assert mind._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS, history=history) == {"url": "https://www.bing.com/search?q=power+automate"}
+    assert argument_grounding._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS, history=history) == {"url": "https://www.bing.com/search?q=power+automate"}
     assert effect_intent.browser_search_pronoun_intent(text, [{"role": "user", "content": "hola"}], AVAILABLE) is None
 
 
@@ -84,9 +87,9 @@ def test_a_message_for_a_person_in_a_named_client_is_looked_up_there_and_sent(te
     intent = effect_intent.resolve_explicit_effects(text, MSG_AVAILABLE, APPS, ())
     assert intent is not None and intent.operations == ("message.recipient.resolve", "message.send")
     catalog = effect_intent.build_game_catalog_index(())
-    assert mind._explicit_arguments_from_evidence("message.recipient.resolve", text, APPS, catalog) == {"channel": channel, "recipient": recipient}
+    assert semantic_arguments._explicit_arguments_from_evidence("message.recipient.resolve", text, APPS, catalog) == {"channel": channel, "recipient": recipient}
     observations = [{"operation": "message.recipient.resolve", "verified": True, "status": "completed", "result": {"recipientId": "id-1"}}]
-    assert mind._verified_message_send_arguments(text, observations) == {"recipientId": "id-1", "text": body}
+    assert plan_dependencies._verified_message_send_arguments(text, observations) == {"recipientId": "id-1", "text": body}
 
 
 def test_mail_keeps_its_own_reader() -> None:
@@ -120,7 +123,7 @@ def test_ponme_a_title_on_a_streaming_service_plays_it(text: str, service: str, 
     # 16:09 «ponme daredevil en disney» → «No puedo poner Daredevil en Disney»; «Quiero ver daredevil en disney» played.
     intent = effect_intent.resolve_explicit_effects(text, STREAM_AVAILABLE, ("Spotify",), ())
     assert intent is not None and intent.operations == ("streaming.play.named",)
-    assert mind._explicit_arguments_from_evidence("streaming.play.named", text, ("Spotify",), effect_intent.build_game_catalog_index(())) == {"service": service, "title": title}
+    assert semantic_arguments._explicit_arguments_from_evidence("streaming.play.named", text, ("Spotify",), effect_intent.build_game_catalog_index(())) == {"service": service, "title": title}
 
 
 def test_do_it_after_a_cancelled_request_redoes_that_request() -> None:
@@ -135,7 +138,7 @@ def test_do_it_after_a_cancelled_request_redoes_that_request() -> None:
     text = history[-1]["content"]
     intent = effect_intent.redo_previous_request_intent(text, history, AVAILABLE, APPS, ())
     assert intent is not None and intent.operations == ("browser.navigate",)
-    assert mind._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS, history=history) == {"url": "https://www.bing.com/search?q=power+automate"}
+    assert argument_grounding._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS, history=history) == {"url": "https://www.bing.com/search?q=power+automate"}
     assert effect_intent.redo_previous_request_intent("dale", [{"role": "user", "content": "hola"}], AVAILABLE, APPS, ()) is None
 
 
@@ -143,7 +146,7 @@ def test_do_it_after_a_cancelled_request_redoes_that_request() -> None:
 
 @pytest.mark.parametrize("text", ["Si tuvieras un sueno, cual te gustaria que fuera", "Pero imagina que tuvieras uno, como seria?"])
 def test_a_counterfactual_question_to_the_assistant_is_answered_not_refused(text: str) -> None:
-    decision = mind._explicit_stable_no_effect_turn_decision(text, None)
+    decision = turn_decisions._explicit_stable_no_effect_turn_decision(text, None)
     assert decision is not None and decision["conversation_kind"] == "knowledge"
 
 
@@ -162,7 +165,7 @@ def test_the_clock_and_this_pc_are_not_topics() -> None:
 @pytest.mark.parametrize("text", ["hazme un curriculum", "formato de curriculum en word", "buscame un formato de oficiio en word", "hazme un triangulo con las estaciones del ano", "buscame palabras con a"])
 def test_drafted_text_and_word_games_are_written_in_the_conversation(text: str) -> None:
     assert effect_intent.conversation_only_content_request(text)
-    decision = mind._explicit_stable_no_effect_turn_decision(text, None)
+    decision = turn_decisions._explicit_stable_no_effect_turn_decision(text, None)
     assert decision is not None and decision["conversation_kind"] == "knowledge"
 
 
@@ -177,7 +180,7 @@ def test_ponme_an_installed_app_opens_it(text: str, app: str) -> None:
     available = frozenset({"app.open", "media.play.query", "memory.status", "web.search", "audio.volume"})
     intent = effect_intent.resolve_explicit_effects(text, available, apps, ())
     assert intent is not None and intent.operations == ("app.open",)
-    assert mind._explicit_arguments_from_evidence("app.open", text, apps, effect_intent.build_game_catalog_index(())) == {"appId": app}
+    assert semantic_arguments._explicit_arguments_from_evidence("app.open", text, apps, effect_intent.build_game_catalog_index(())) == {"appId": app}
 
 
 def test_ponme_music_and_the_volume_keep_their_readers() -> None:
@@ -189,6 +192,6 @@ def test_ponme_music_and_the_volume_keep_their_readers() -> None:
 
 def test_a_plain_yes_to_a_yes_no_clarification_closes_the_base_request() -> None:
     objective = "buscame un formato de oficiio en word aclaracion confiable del usuario: si"
-    decision = mind._explicit_stable_no_effect_turn_decision(objective, [{"role": "user", "content": "x"}], pending_clarification=True)
+    decision = turn_decisions._explicit_stable_no_effect_turn_decision(objective, [{"role": "user", "content": "x"}], pending_clarification=True)
     assert decision is not None and decision["conversation_kind"] == "knowledge"
-    assert mind._explicit_stable_no_effect_turn_decision("subí el volumen de spotify aclaracion confiable del usuario: 20", [{"role": "user", "content": "x"}], pending_clarification=True) is None
+    assert turn_decisions._explicit_stable_no_effect_turn_decision("subí el volumen de spotify aclaracion confiable del usuario: 20", [{"role": "user", "content": "x"}], pending_clarification=True) is None

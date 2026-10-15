@@ -1,0 +1,1023 @@
+{
+ "v3-01": {
+  "app": "PowerPoint",
+  "lang": "es-cl",
+  "turns": [
+   "abre powerpoint con una presentacion en blanco y en la primera diapo ponle de titulo Informe de ventas"
+  ],
+  "verify": "Ventana de PowerPoint con título que empieza por «Presentación» (nueva, sin guardar); el marcador de título de la diapositiva 1 contiene exactamente «Informe de ventas».",
+  "setup": "",
+  "safety": "No abrir ni modificar presentaciones existentes; no guardar."
+ },
+ "v3-02": {
+  "app": "PowerPoint",
+  "lang": "es-ar",
+  "turns": [
+   "en el powerpoint que tengo abierto andá a la pestaña Transiciones",
+   "ahora ponele la transición Desvanecer a esta diapo"
+  ],
+  "verify": "Tras el turno 1 la pestaña de cinta «Transiciones» está seleccionada; tras el turno 2 la galería de transiciones muestra «Desvanecer» marcada para la diapositiva 1 (icono de transición junto a la miniatura).",
+  "setup": "PowerPoint abierto con una presentación en blanco nueva (Presentación1).",
+  "safety": "Sólo la presentación nueva; no guardar ni tocar archivos existentes."
+ },
+ "v3-03": {
+  "app": "PowerPoint",
+  "lang": "en",
+  "turns": [
+   "in powerpoint add a new slide and switch to slide sorter view"
+  ],
+  "verify": "La presentación tiene 2 diapositivas y la vista activa es «Clasificador de diapositivas» (botón de la barra de estado/pestaña Vista marcado, miniaturas en cuadrícula).",
+  "setup": "PowerPoint abierto con una presentación en blanco nueva.",
+  "safety": "No guardar; no tocar presentaciones existentes."
+ },
+ "v3-04": {
+  "app": "PowerPoint",
+  "lang": "es-mx",
+  "turns": [
+   "abre powerpint, haz una presentación en blanco, ponle 'Proyecto final' de título y guárdala como proyecto-final en Documentos\\baxy-prueba-v3"
+  ],
+  "verify": "Título de la ventana «proyecto-final - PowerPoint»; existe el archivo Documentos\\baxy-prueba-v3\\proyecto-final.pptx; el título de la diapositiva 1 es «Proyecto final».",
+  "setup": "Carpeta Documentos\\baxy-prueba-v3 creada y sin proyecto-final.pptx.",
+  "safety": "Guardar sólo en Documentos\\baxy-prueba-v3; no sobrescribir otro archivo."
+ },
+ "v3-05": {
+  "app": "Outlook (classic)",
+  "lang": "es-cl",
+  "turns": [
+   "en outlook cambiate al calendaio y ponlo en vista semana laboral"
+  ],
+  "verify": "El módulo Calendario está activo en la barra de navegación y el botón «Semana laboral» de la pestaña Inicio está seleccionado (la cuadrícula muestra lunes a viernes).",
+  "setup": "Outlook (classic) abierto en Correo.",
+  "safety": "No crear, aceptar, rechazar ni mover citas o reuniones."
+ },
+ "v3-06": {
+  "app": "Outlook (classic)",
+  "lang": "es-es",
+  "turns": [
+   "búscame en el correo de outlook los mensajes que pongan factura"
+  ],
+  "verify": "El cuadro de búsqueda de Outlook contiene «factura» y la lista de mensajes muestra resultados de búsqueda (aparece la pestaña contextual Buscar).",
+  "setup": "Outlook (classic) abierto en Correo.",
+  "safety": "No abrir adjuntos, no responder, no reenviar, no borrar ni mover correos."
+ },
+ "v3-07": {
+  "app": "Outlook (classic)",
+  "lang": "spanglish",
+  "turns": [
+   "abre outlook y apaga el reading pane porfa",
+   "ok now vuelve a ponerlo a la derecha"
+  ],
+  "verify": "Tras el turno 1, Vista > Panel de lectura = Desactivado (no hay panel de vista previa); tras el turno 2, Panel de lectura = Derecha (panel visible a la derecha de la lista).",
+  "setup": "Outlook (classic) cerrado o abierto en Correo con panel de lectura a la derecha.",
+  "safety": "Sólo cambia la vista; no abrir, enviar ni borrar correos."
+ },
+ "v3-08": {
+  "app": "OneNote",
+  "lang": "es-ar",
+  "turns": [
+   "abrí onenote, creá una página nueva y ponele de título Lista del super"
+  ],
+  "verify": "En la lista de páginas de la sección actual aparece una página nueva titulada «Lista del super» y es la página seleccionada; su campo de título contiene ese texto.",
+  "setup": "",
+  "safety": "No borrar ni editar páginas existentes."
+ },
+ "v3-09": {
+  "app": "OneNote",
+  "lang": "es-mx",
+  "turns": [
+   "en onenote ve a la pestaña Dibujar y escoge el marcador amarillo"
+  ],
+  "verify": "La pestaña de cinta «Dibujar» está seleccionada y la herramienta activa es un resaltador de color amarillo (botón de la galería de lápices marcado).",
+  "setup": "OneNote abierto en una página nueva vacía.",
+  "safety": "No dibujar sobre páginas con contenido."
+ },
+ "v3-10": {
+  "app": "OneNote",
+  "lang": "en",
+  "turns": [
+   "search my onenote notebooks for receta"
+  ],
+  "verify": "El cuadro de búsqueda de OneNote contiene «receta» y se muestra el panel/lista de resultados de búsqueda.",
+  "setup": "OneNote abierto.",
+  "safety": "Sólo búsqueda; no editar ni borrar páginas."
+ },
+ "v3-11": {
+  "app": "OneNote",
+  "lang": "es-cl",
+  "turns": [
+   "en onenote crea una pagina nueva",
+   "escribe ahi: comprar pan, leche y huevos",
+   "ahora subele el zoom a 150"
+  ],
+  "verify": "Existe una página nueva seleccionada cuyo cuerpo contiene «comprar pan, leche y huevos» y el zoom de la página está en 150 % (pestaña Vista / control de zoom).",
+  "setup": "OneNote abierto.",
+  "safety": "Escribir sólo en la página nueva; no tocar otras páginas."
+ },
+ "v3-12": {
+  "app": "Reproductor multimedia (Windows 11)",
+  "lang": "es-cl",
+  "turns": [
+   "abre el reproductor multimedia y anda a la biblioteca de musica"
+  ],
+  "verify": "Ventana «Reproductor multimedia» con el elemento «Biblioteca de música» seleccionado en el panel de navegación izquierdo.",
+  "setup": "",
+  "safety": "No borrar ni quitar carpetas de la biblioteca."
+ },
+ "v3-13": {
+  "app": "Reproductor multimedia (Windows 11)",
+  "lang": "es-es",
+  "turns": [
+   "en el reproductor multimedia de windows pon el tema oscuro desde configuración"
+  ],
+  "verify": "Página Configuración del Reproductor multimedia abierta con «Tema de la aplicación» = Oscuro y la interfaz en colores oscuros.",
+  "setup": "Reproductor multimedia abierto con tema distinto de Oscuro.",
+  "safety": "Ajuste reversible de la app; no quitar carpetas de biblioteca. Revertir tras la prueba."
+ },
+ "v3-14": {
+  "app": "Reproductor multimedia (Windows 11)",
+  "lang": "en",
+  "turns": [
+   "open media player, go to the video library and sort by date added"
+  ],
+  "verify": "Sección «Biblioteca de vídeos» seleccionada y el desplegable de orden muestra «Fecha de adición» (o equivalente).",
+  "setup": "",
+  "safety": "Sólo navegación y orden; no borrar archivos."
+ },
+ "v3-15": {
+  "app": "Fotos",
+  "lang": "es-cl",
+  "turns": [
+   "abre la foto paisaje.jpg que esta en Documentos\\baxy-prueba-v3 en fotos, editala y girala a la derecha pero no la guardes"
+  ],
+  "verify": "Fotos en modo edición con paisaje.jpg, la imagen girada 90° a la derecha en el lienzo; no se pulsó Guardar: el archivo original conserva fecha de modificación y dimensiones.",
+  "setup": "Documentos\\baxy-prueba-v3\\paisaje.jpg existe (horizontal).",
+  "safety": "Nunca guardar encima del original."
+ },
+ "v3-16": {
+  "app": "Fotos",
+  "lang": "es-ar",
+  "turns": [
+   "en fotos abrí el editor de la imagen que tengo abierta y ponele un filtro blanco y negro, sin guardar"
+  ],
+  "verify": "Editor de Fotos abierto en la sección Filtros con un filtro monocromo seleccionado y la vista previa en blanco y negro; el archivo original sin cambios (misma fecha de modificación).",
+  "setup": "Fotos abierto mostrando Documentos\\baxy-prueba-v3\\paisaje.jpg.",
+  "safety": "No guardar encima del original."
+ },
+ "v3-17": {
+  "app": "Fotos",
+  "lang": "es-mx",
+  "turns": [
+   "abre la imagen prueba.png de la carpeta baxy-prueba-v3 en fotos",
+   "recórtala en proporción cuadrada",
+   "guárdala como copia en esa misma carpeta"
+  ],
+  "verify": "En Documentos\\baxy-prueba-v3 aparece un archivo nuevo (copia de prueba.png) con ancho = alto; prueba.png original conserva sus dimensiones y fecha de modificación.",
+  "setup": "Documentos\\baxy-prueba-v3\\prueba.png existe y no es cuadrada.",
+  "safety": "Guardar sólo como copia dentro de baxy-prueba-v3; no sobrescribir el original."
+ },
+ "v3-18": {
+  "app": "Fotos",
+  "lang": "en",
+  "turns": [
+   "open paisaje.jpg in photos and tell me the image dimensions"
+  ],
+  "verify": "Fotos muestra paisaje.jpg con el panel de información de archivo abierto y visibles las dimensiones (p. ej. «1920 x 1080»), que coinciden con las reales del archivo.",
+  "setup": "Documentos\\baxy-prueba-v3\\paisaje.jpg existe.",
+  "safety": "Sólo lectura."
+ },
+ "v3-19": {
+  "app": "Administrador de tareas",
+  "lang": "es-cl",
+  "turns": [
+   "abre el adminsitrador de tareas y ordena los procesos por memoria"
+  ],
+  "verify": "Administrador de tareas en la página Procesos con la columna «Memoria» como columna de orden (flecha de orden en su encabezado, mayor arriba).",
+  "setup": "",
+  "safety": "Sin elevar; nunca finalizar tareas."
+ },
+ "v3-20": {
+  "app": "Administrador de tareas",
+  "lang": "es-ar",
+  "turns": [
+   "en el administrador de tareas andá a Rendimiento y decime cuánto de CPU se está usando"
+  ],
+  "verify": "Página Rendimiento seleccionada con el panel CPU visible (gráfico y «Uso» en %).",
+  "setup": "Administrador de tareas abierto en Procesos.",
+  "safety": "Sólo lectura; nunca finalizar tareas."
+ },
+ "v3-21": {
+  "app": "Administrador de tareas",
+  "lang": "en",
+  "turns": [
+   "task manager: add the command line column in the details tab"
+  ],
+  "verify": "Página Detalles seleccionada y la tabla muestra la columna «Línea de comandos».",
+  "setup": "Administrador de tareas abierto.",
+  "safety": "Sólo columnas; nunca finalizar procesos ni cambiar prioridad/afinidad."
+ },
+ "v3-22": {
+  "app": "Administrador de tareas",
+  "lang": "es-mx",
+  "turns": [
+   "abre el administrador de tareas",
+   "ve a aplicaciones de arranque",
+   "¿cuáles tienen impacto alto?"
+  ],
+  "verify": "Página «Aplicaciones de arranque» seleccionada; el estado (Habilitado/Deshabilitado) de todas las entradas igual que antes.",
+  "setup": "",
+  "safety": "No habilitar ni deshabilitar aplicaciones de arranque."
+ },
+ "v3-23": {
+  "app": "Visor de eventos",
+  "lang": "es-cl",
+  "turns": [
+   "abre el visor de eventos",
+   "ahora anda a registros de windows, sistema"
+  ],
+  "verify": "Ventana Visor de eventos con el nodo «Registros de Windows > Sistema» seleccionado en el árbol y la lista central mostrando eventos de Sistema.",
+  "setup": "",
+  "safety": "No borrar ni guardar registros."
+ },
+ "v3-24": {
+  "app": "Visor de eventos",
+  "lang": "es-es",
+  "turns": [
+   "en el visor de eventos filtra el registro de aplicación para que solo salgan los errores"
+  ],
+  "verify": "Nodo «Aplicación» seleccionado y la cabecera de la lista indica filtro activo con Nivel = Error; todos los eventos visibles son de nivel Error.",
+  "setup": "Visor de eventos abierto.",
+  "safety": "No borrar el registro ni cambiar sus propiedades."
+ },
+ "v3-25": {
+  "app": "Visor de eventos",
+  "lang": "en",
+  "turns": [
+   "event viewer, go to windows logs > system and tell me the event ID of the most recent one"
+  ],
+  "verify": "Nodo «Sistema» seleccionado, lista ordenada por fecha descendente con la primera fila visible/seleccionada; el ID dicho coincide con esa fila.",
+  "setup": "Visor de eventos abierto.",
+  "safety": "Sólo lectura."
+ },
+ "v3-26": {
+  "app": "Visor de eventos",
+  "lang": "es-ar",
+  "turns": [
+   "abrí el visr de eventos y en Sistema buscame un evento con ID 6005"
+  ],
+  "verify": "Nodo «Sistema» seleccionado y el evento seleccionado (o filtro actual) tiene Id. del evento = 6005.",
+  "setup": "",
+  "safety": "Sólo lectura; no borrar registros."
+ },
+ "v3-27": {
+  "app": "Mapa de caracteres",
+  "lang": "es-cl",
+  "turns": [
+   "abre el mapa de caracteres y copia el simbolo del euro"
+  ],
+  "verify": "El campo «Caracteres para copiar» contiene «€» y el portapapeles contiene «€».",
+  "setup": "",
+  "safety": "Sólo portapapeles."
+ },
+ "v3-28": {
+  "app": "Mapa de caracteres",
+  "lang": "es-mx",
+  "turns": [
+   "en el mapa de caracteres cambia la fuente a Wingdings"
+  ],
+  "verify": "El desplegable «Fuente» muestra «Wingdings» y la cuadrícula muestra sus símbolos.",
+  "setup": "Mapa de caracteres abierto.",
+  "safety": "Ninguno especial."
+ },
+ "v3-29": {
+  "app": "Mapa de caracteres",
+  "lang": "spanglish",
+  "turns": [
+   "abre character map, busca el copyright symbol y pégalo en una sticky note nueva"
+  ],
+  "verify": "Existe una nota nueva de Notas rápidas cuyo texto contiene «©»; en Mapa de caracteres el campo de copia contiene «©».",
+  "setup": "",
+  "safety": "Pegar sólo en una nota nueva; no editar notas existentes."
+ },
+ "v3-30": {
+  "app": "Mapa de caracteres",
+  "lang": "es-es",
+  "turns": [
+   "en el mapa de caracteres activa la vista avanzada y busca flecha"
+  ],
+  "verify": "Casilla «Vista avanzada» marcada, campo «Buscar» con «flecha» y la cuadrícula filtrada a caracteres de flecha.",
+  "setup": "Mapa de caracteres abierto.",
+  "safety": "Ninguno especial."
+ },
+ "v3-31": {
+  "app": "Herramienta Recortes",
+  "lang": "es-cl",
+  "turns": [
+   "abre recortes y cambia el modo a ventana"
+  ],
+  "verify": "Herramienta Recortes abierta con el modo de recorte «Ventana» seleccionado en el desplegable de modo.",
+  "setup": "",
+  "safety": "No iniciar grabación de vídeo."
+ },
+ "v3-32": {
+  "app": "Herramienta Recortes",
+  "lang": "en",
+  "turns": [
+   "open snipping tool and set the delay to 5 seconds"
+  ],
+  "verify": "El desplegable de retraso de la Herramienta Recortes muestra «5 segundos».",
+  "setup": "",
+  "safety": "No grabar vídeo."
+ },
+ "v3-33": {
+  "app": "Herramienta Recortes",
+  "lang": "es-ar",
+  "turns": [
+   "abrí recortes, sacá una captura de pantalla completa y guardala como captura-v3 en Documentos\\baxy-prueba-v3"
+  ],
+  "verify": "Existe Documentos\\baxy-prueba-v3\\captura-v3.png con dimensiones iguales a la resolución de la pantalla.",
+  "setup": "Carpeta Documentos\\baxy-prueba-v3 existe sin captura-v3.png.",
+  "safety": "Guardar sólo en baxy-prueba-v3; no grabar vídeo; no compartir la captura."
+ },
+ "v3-34": {
+  "app": "Notas rápidas",
+  "lang": "es-mx",
+  "turns": [
+   "abre notas rápidas y crea una nota que diga llamar al dentista el martes"
+  ],
+  "verify": "Hay una nota nueva abierta cuyo texto es «llamar al dentista el martes» y aparece en la lista de notas.",
+  "setup": "",
+  "safety": "No borrar ni editar notas existentes."
+ },
+ "v3-35": {
+  "app": "Notas rápidas",
+  "lang": "es-cl",
+  "turns": [
+   "crea una nota rapida nueva",
+   "ponle: pagar la luz",
+   "ahora ponla de color morado"
+  ],
+  "verify": "Existe una nota con texto «pagar la luz» y color Morado (fondo de la ventana de la nota morado).",
+  "setup": "",
+  "safety": "Sólo la nota nueva; no borrar notas."
+ },
+ "v3-36": {
+  "app": "Notas rápidas",
+  "lang": "en",
+  "turns": [
+   "in sticky notes search for dentista"
+  ],
+  "verify": "La lista de Notas rápidas tiene el cuadro de búsqueda con «dentista» y sólo muestra notas que lo contienen.",
+  "setup": "Notas rápidas abierta con al menos una nota que contiene «dentista».",
+  "safety": "Sólo búsqueda; no borrar notas."
+ },
+ "v3-37": {
+  "app": "Terminal",
+  "lang": "es-ar",
+  "turns": [
+   "abrí la terminal y abrí una pestaña nueva de símbolo del sistema"
+  ],
+  "verify": "Windows Terminal con una pestaña nueva seleccionada titulada «Símbolo del sistema» (perfil cmd).",
+  "setup": "",
+  "safety": "No ejecutar comandos."
+ },
+ "v3-38": {
+  "app": "Terminal",
+  "lang": "es-cl",
+  "turns": [
+   "en la terminal anda a configuracion y cambia el tema de la app a oscuro"
+  ],
+  "verify": "Pestaña Configuración de Terminal en la página Aspecto con «Tema de la aplicación» = Oscuro.",
+  "setup": "Windows Terminal abierto con tema distinto de Oscuro.",
+  "safety": "Ajuste reversible de la app; no tocar perfiles ni ejecutar comandos. Revertir tras la prueba."
+ },
+ "v3-39": {
+  "app": "Terminal",
+  "lang": "en",
+  "turns": [
+   "windows terminal: open settings and tell me which profile is the default"
+  ],
+  "verify": "Pestaña Configuración abierta en la página Inicio con el campo «Perfil predeterminado» visible; el perfil dicho coincide con ese valor.",
+  "setup": "",
+  "safety": "Sólo lectura; no guardar cambios."
+ },
+ "v3-40": {
+  "app": "Terminal",
+  "lang": "spanglish",
+  "turns": [
+   "abre terminal",
+   "split the pane vertical",
+   "y renombra la tab a pruebas"
+  ],
+  "verify": "La pestaña activa tiene dos paneles lado a lado y su título es «pruebas».",
+  "setup": "",
+  "safety": "No escribir ni ejecutar comandos en los paneles."
+ },
+ "v3-41": {
+  "app": "Panel de control",
+  "lang": "es-es",
+  "turns": [
+   "abre el panel de control y ponlo en vista de iconos grandes"
+  ],
+  "verify": "Ventana Panel de control con «Ver por: Iconos grandes» y la lista de elementos en iconos grandes.",
+  "setup": "",
+  "safety": "Sólo cambia la vista."
+ },
+ "v3-42": {
+  "app": "Panel de control",
+  "lang": "es-cl",
+  "turns": [
+   "en el panel de control anda a programas y caracteristicas y busca chrome"
+  ],
+  "verify": "Ventana «Programas y características» con el cuadro de búsqueda conteniendo «chrome» y la lista filtrada.",
+  "setup": "Panel de control abierto.",
+  "safety": "Nunca desinstalar, cambiar ni reparar programas."
+ },
+ "v3-43": {
+  "app": "Panel de control",
+  "lang": "es-mx",
+  "turns": [
+   "abre el panel de control",
+   "entra a Sistema y seguridad",
+   "luego a opciones de energía y dime qué plan está activo"
+  ],
+  "verify": "Página «Opciones de energía» visible; el plan seleccionado no cambió y coincide con el plan dicho.",
+  "setup": "",
+  "safety": "No cambiar el plan de energía ni su configuración."
+ },
+ "v3-44": {
+  "app": "Panel de control",
+  "lang": "en",
+  "turns": [
+   "control panel, go to devices and printers and tell me which printer is the default"
+  ],
+  "verify": "Ventana «Dispositivos e impresoras» abierta; la impresora dicha es la que tiene la marca verde de predeterminada.",
+  "setup": "",
+  "safety": "No imprimir, quitar dispositivos ni cambiar la predeterminada."
+ },
+ "v3-45": {
+  "app": "Información del sistema",
+  "lang": "es-cl",
+  "turns": [
+   "abre informacion del sistema",
+   "cuanta ram fisica instalada tengo?"
+  ],
+  "verify": "Ventana Información del sistema con «Resumen del sistema» seleccionado y la fila «Memoria física instalada (RAM)» visible; el valor dicho coincide.",
+  "setup": "",
+  "safety": "Sólo lectura; no exportar."
+ },
+ "v3-46": {
+  "app": "Información del sistema",
+  "lang": "es-ar",
+  "turns": [
+   "en información del sistema andá a Componentes > Pantalla y decime qué tarjeta de video tengo"
+  ],
+  "verify": "Nodo «Componentes > Pantalla» seleccionado en el árbol; la fila «Nombre» de la tabla coincide con la tarjeta dicha.",
+  "setup": "Información del sistema abierta.",
+  "safety": "Sólo lectura."
+ },
+ "v3-47": {
+  "app": "Información del sistema",
+  "lang": "spanglish",
+  "turns": [
+   "abre system information, copia el nombre del procesador y pégalo en una página nueva de onenote"
+  ],
+  "verify": "OneNote tiene una página nueva seleccionada cuyo contenido contiene el texto del campo «Procesador» de Información del sistema.",
+  "setup": "",
+  "safety": "Pegar sólo en una página nueva; no editar páginas existentes."
+ },
+ "v3-48": {
+  "app": "7-Zip File Manager",
+  "lang": "es-cl",
+  "turns": [
+   "abre 7zip y anda a la carpeta Documentos\\baxy-prueba-v3"
+  ],
+  "verify": "Ventana de 7-Zip File Manager cuya barra de ruta termina en «Documentos\\baxy-prueba-v3\\» y lista los archivos de esa carpeta.",
+  "setup": "Carpeta Documentos\\baxy-prueba-v3 existe.",
+  "safety": "No borrar, mover ni renombrar."
+ },
+ "v3-49": {
+  "app": "7-Zip File Manager",
+  "lang": "es-mx",
+  "turns": [
+   "en 7-zip cambia la vista a detalles y ordena por tamaño"
+  ],
+  "verify": "Vista «Detalles» activa (menú Ver marcado) y la columna «Tamaño» con indicador de orden.",
+  "setup": "7-Zip File Manager abierto en Documentos\\baxy-prueba-v3.",
+  "safety": "Sólo vista; no borrar archivos."
+ },
+ "v3-50": {
+  "app": "7-Zip File Manager",
+  "lang": "es-ar",
+  "turns": [
+   "en 7zip abrí el prueba.zip que está en baxy-prueba-v3",
+   "decime cuántos archivos tiene adentro"
+  ],
+  "verify": "La barra de ruta de 7-Zip termina en «prueba.zip\\» y lista el contenido del archivo; la cantidad dicha coincide con los elementos listados.",
+  "setup": "Documentos\\baxy-prueba-v3\\prueba.zip existe con varios archivos.",
+  "safety": "No extraer, borrar ni añadir archivos al zip."
+ },
+ "v3-51": {
+  "app": "OBS Studio",
+  "lang": "es-cl",
+  "turns": [
+   "abre obs y agrega una escena nueva que se llame Pruebas"
+  ],
+  "verify": "La lista «Escenas» de OBS contiene una escena llamada «Pruebas».",
+  "setup": "",
+  "safety": "Nunca iniciar grabación, transmisión ni cámara virtual; no borrar escenas."
+ },
+ "v3-52": {
+  "app": "OBS Studio",
+  "lang": "en",
+  "turns": [
+   "in obs open settings, go to the video section and tell me the base resolution"
+  ],
+  "verify": "Diálogo Configuración de OBS abierto con la sección «Vídeo» seleccionada; el valor dicho coincide con «Resolución base (lienzo)».",
+  "setup": "OBS Studio abierto.",
+  "safety": "No aplicar cambios; nunca grabar ni transmitir."
+ },
+ "v3-53": {
+  "app": "OBS Studio",
+  "lang": "es-es",
+  "turns": [
+   "en obs silencia el audio del escritorio",
+   "vale, vuelve a activarlo"
+  ],
+  "verify": "Tras el turno 1 el botón de silencio de «Audio del escritorio» en el mezclador está activado (icono tachado); tras el turno 2 está desactivado.",
+  "setup": "OBS Studio abierto con fuente Audio del escritorio sin silenciar.",
+  "safety": "Nunca grabar ni transmitir."
+ },
+ "v3-54": {
+  "app": "GitHub Desktop",
+  "lang": "es-ar",
+  "turns": [
+   "abrí github desktop y andá a la pestaña History"
+  ],
+  "verify": "GitHub Desktop con la pestaña «History» seleccionada en el panel izquierdo y la lista de commits visible.",
+  "setup": "GitHub Desktop con un repositorio local agregado.",
+  "safety": "Nunca commit, push, revert ni descartar cambios."
+ },
+ "v3-55": {
+  "app": "GitHub Desktop",
+  "lang": "es-cl",
+  "turns": [
+   "en github desktop dime en que rama esta el repo que tengo abierto"
+  ],
+  "verify": "GitHub Desktop visible con el botón «Current branch» mostrando un nombre de rama que coincide con el dicho.",
+  "setup": "GitHub Desktop abierto con un repositorio.",
+  "safety": "No cambiar de rama, commit, push ni fetch."
+ },
+ "v3-56": {
+  "app": "GitHub Desktop",
+  "lang": "en",
+  "turns": [
+   "github desktop: open options and switch the appearance to dark"
+  ],
+  "verify": "Diálogo Options en la sección Appearance con «Dark» seleccionado y la interfaz en tema oscuro.",
+  "setup": "GitHub Desktop abierto en tema claro.",
+  "safety": "Ajuste reversible; nunca commit ni push. Revertir tras la prueba."
+ },
+ "v3-57": {
+  "app": "Microsoft Edge",
+  "lang": "es-mx",
+  "turns": [
+   "abre edge en una pestaña nueva y busca clima en guadalajara"
+  ],
+  "verify": "Edge con una pestaña nueva activa cuya barra de direcciones/búsqueda contiene la consulta «clima en guadalajara» en un buscador.",
+  "setup": "",
+  "safety": "Sólo pestaña nueva; no cerrar ni tocar pestañas existentes."
+ },
+ "v3-58": {
+  "app": "Microsoft Edge",
+  "lang": "es-cl",
+  "turns": [
+   "abre edge y anda a la configuracion",
+   "busca cookies ahi en la configuracion"
+  ],
+  "verify": "Pestaña nueva en edge://settings con el cuadro de búsqueda de configuración conteniendo «cookies» y resultados resaltados.",
+  "setup": "",
+  "safety": "No borrar datos de navegación ni cambiar ajustes de privacidad."
+ },
+ "v3-59": {
+  "app": "Microsoft Edge",
+  "lang": "spanglish",
+  "turns": [
+   "en edge abre una new tab, entra a wikipedia y busca Curicó"
+  ],
+  "verify": "Pestaña nueva de Edge cuya URL es la página de Wikipedia de «Curicó» (es.wikipedia.org/wiki/Curicó) y su título lo contiene.",
+  "setup": "",
+  "safety": "Sólo pestaña nueva; no iniciar sesión ni editar."
+ },
+ "v3-60": {
+  "app": "Seguridad de Windows",
+  "lang": "es-cl",
+  "turns": [
+   "abre seguridad de windows y anda a proteccion contra virus y amenazas"
+  ],
+  "verify": "Ventana Seguridad de Windows con la página «Protección contra virus y amenazas» seleccionada.",
+  "setup": "",
+  "safety": "Sólo navegar; nunca apagar protecciones ni ejecutar exámenes."
+ },
+ "v3-61": {
+  "app": "Seguridad de Windows",
+  "lang": "es-ar",
+  "turns": [
+   "en seguridad de windows decime cuándo fue el último examen de virus"
+  ],
+  "verify": "Página «Protección contra virus y amenazas» visible con el texto de amenazas actuales / último examen; el dato dicho coincide.",
+  "setup": "Seguridad de Windows abierta.",
+  "safety": "Sólo lectura; no ejecutar exámenes ni cambiar ajustes."
+ },
+ "v3-62": {
+  "app": "Seguridad de Windows",
+  "lang": "en",
+  "turns": [
+   "windows security, go to firewall & network protection and tell me which network is active"
+  ],
+  "verify": "Página «Firewall y protección de red» visible; la red marcada como «(activo)» coincide con la dicha; ningún interruptor cambió.",
+  "setup": "",
+  "safety": "Nunca desactivar el firewall ni cambiar perfiles."
+ },
+ "v3-63": {
+  "app": "Servicios",
+  "lang": "es-es",
+  "turns": [
+   "abre servicios, busca el de cola de impresión y dime si está en ejecución"
+  ],
+  "verify": "Consola Servicios con la fila «Cola de impresión» seleccionada; el valor dicho coincide con su columna Estado.",
+  "setup": "",
+  "safety": "Sólo lectura; nunca iniciar, detener ni cambiar el tipo de inicio."
+ },
+ "v3-64": {
+  "app": "Servicios",
+  "lang": "es-mx",
+  "turns": [
+   "en servicios ordena la lista por tipo de inicio"
+  ],
+  "verify": "La columna «Tipo de inicio» de la consola Servicios es la columna de orden (indicador de orden en su encabezado, filas agrupadas por tipo).",
+  "setup": "Consola Servicios abierta.",
+  "safety": "Sólo orden; nunca cambiar servicios."
+ },
+ "v3-65": {
+  "app": "Servicios",
+  "lang": "es-cl",
+  "turns": [
+   "abre servicios",
+   "cambiala a la vista estandar"
+  ],
+  "verify": "Consola Servicios con la pestaña inferior «Estándar» seleccionada (sin panel de descripción extendida).",
+  "setup": "",
+  "safety": "Sólo vista; nunca cambiar servicios."
+ },
+ "v3-66": {
+  "app": "Programador de tareas",
+  "lang": "es-ar",
+  "turns": [
+   "abrí el programador de tareas y andá a la biblioteca"
+  ],
+  "verify": "Ventana Programador de tareas con el nodo «Biblioteca del Programador de tareas» seleccionado y la lista de tareas visible.",
+  "setup": "",
+  "safety": "Sólo navegar; no ejecutar, deshabilitar, crear ni borrar tareas."
+ },
+ "v3-67": {
+  "app": "Programador de tareas",
+  "lang": "en",
+  "turns": [
+   "task scheduler: open library > microsoft > windows > defrag and tell me the next run time"
+  ],
+  "verify": "Carpeta «Microsoft\\Windows\\Defrag» seleccionada en el árbol con la tarea ScheduledDefrag listada; el valor dicho coincide con su columna «Próxima ejecución».",
+  "setup": "",
+  "safety": "Nunca ejecutar, deshabilitar ni modificar la tarea."
+ },
+ "v3-68": {
+  "app": "Programador de tareas",
+  "lang": "es-cl",
+  "turns": [
+   "en el programador de tareas esconde el panel de acciones de la derecha"
+  ],
+  "verify": "El panel «Acciones» ya no se muestra (Ver > Panel de acciones desmarcado).",
+  "setup": "Programador de tareas abierto con el panel de acciones visible.",
+  "safety": "Sólo vista."
+ },
+ "v3-69": {
+  "app": "Monitor de recursos",
+  "lang": "es-cl",
+  "turns": [
+   "abre el monitor de recursos",
+   "ahora anda a la pestaña red"
+  ],
+  "verify": "Ventana Monitor de recursos con la pestaña «Red» seleccionada.",
+  "setup": "",
+  "safety": "Nunca finalizar ni suspender procesos."
+ },
+ "v3-70": {
+  "app": "Monitor de recursos",
+  "lang": "spanglish",
+  "turns": [
+   "en resource monitor, en la tab de memoria dime cuánto está disponible"
+  ],
+  "verify": "Pestaña «Memoria» seleccionada con la barra de memoria física visible; el valor dicho coincide con «Disponible».",
+  "setup": "Monitor de recursos abierto.",
+  "safety": "Sólo lectura."
+ },
+ "v3-71": {
+  "app": "Monitor de recursos",
+  "lang": "es-mx",
+  "turns": [
+   "en el monitor de recursos, pestaña CPU, busca explorer en identificadores asociados"
+  ],
+  "verify": "Pestaña «CPU» seleccionada y el cuadro de búsqueda de «Identificadores asociados» contiene «explorer» con resultados listados.",
+  "setup": "Monitor de recursos abierto.",
+  "safety": "Nunca cerrar identificadores ni finalizar procesos."
+ },
+ "v3-72": {
+  "app": "Administrador de tareas",
+  "lang": "es-es",
+  "turns": [
+   "abre el administrador de tareas, ve a Rendimiento, luego a Memoria y dime la velocidad de la RAM"
+  ],
+  "verify": "Página Rendimiento con el panel «Memoria» seleccionado; el valor dicho coincide con «Velocidad».",
+  "setup": "",
+  "safety": "Sólo lectura; nunca finalizar tareas."
+ },
+ "t-form-1": {
+  "app": "Paint",
+  "lang": "es-CL",
+  "turns": [
+   "oye, en el Paint cambiale el tamaño a la imagen a 800 de ancho por 600 de alto, en píxeles, y sácale lo de mantener la relación de aspecto"
+  ],
+  "verify": "La barra de estado de Paint muestra el tamaño del lienzo «800 × 600px» (UIA o captura). El diálogo «Cambiar tamaño y sesgar» ya no está abierto.",
+  "setup": "Paint abierto con un lienzo nuevo en blanco con su tamaño por defecto (distinto de 800×600), sin guardar.",
+  "safety": "No guardar ni sobrescribir ningún archivo. No cerrar Paint ni descartar otro trabajo. No tocar el porcentaje de sesgo."
+ },
+ "t-form-2": {
+  "app": "Bloc de notas",
+  "lang": "es-AR",
+  "turns": [
+   "en el bloc de notas reemplazá todas las «casa» por «hogar», todas de una"
+  ],
+  "verify": "El texto del documento en el Bloc de notas (UIA Document/Edit Value) es «la hogar roja, la hogar azul, mi hogar es tu hogar»: «hogar» aparece 4 veces y «casa» 0 veces. El diálogo Buscar/Reemplazar puede quedar abierto o cerrado.",
+  "setup": "Bloc de notas abierto en una pestaña nueva con el texto «la casa roja, la casa azul, mi casa es tu casa», sin guardar.",
+  "safety": "No guardar el documento. No cerrar otras pestañas del Bloc de notas. No reemplazar en otras pestañas."
+ },
+ "t-form-3": {
+  "app": "Word",
+  "lang": "en",
+  "turns": [
+   "Insert a table with 4 columns and 3 rows in this Word document"
+  ],
+  "verify": "El documento de Word contiene exactamente una tabla de 3 filas y 4 columnas (UIA: elemento Table con RowCount=3 y ColumnCount=4, o captura del documento). El diálogo «Insertar tabla» está cerrado.",
+  "setup": "Word abierto con un documento en blanco nuevo, sin guardar, cursor al inicio.",
+  "safety": "No guardar el documento ni abrir otro. No cambiar plantillas ni opciones de Word."
+ },
+ "t-form-4": {
+  "app": "Word",
+  "lang": "es-ES",
+  "turns": [
+   "Ponme el texto seleccionado en Arial, tamaño 20 y en cursiva, desde el cuadro de diálogo de Fuente"
+  ],
+  "verify": "Con el texto «Hola mundo» seleccionado, la cinta de Word muestra fuente «Arial», tamaño «20» y el botón Cursiva activado (UIA Toggle State=On); visualmente el texto está en cursiva. El diálogo «Fuente» está cerrado (Aceptar, no Cancelar).",
+  "setup": "Word abierto con un documento nuevo que contiene sólo el párrafo «Hola mundo» en Calibri 11, todo seleccionado, sin guardar.",
+  "safety": "No pulsar «Establecer como predeterminado» (cambiaría la plantilla Normal). No guardar el documento."
+ },
+ "t-file-1": {
+  "app": "Bloc de notas",
+  "lang": "es-CL",
+  "turns": [
+   "guardá esto como baxy-nota1.txt en Documentos, en la carpeta baxy-prueba-v3"
+  ],
+  "verify": "Existe D:\\Perfil\\Documentos\\baxy-prueba-v3\\baxy-nota1.txt y su contenido es «prueba de guardado v3». La pestaña del Bloc de notas se titula «baxy-nota1.txt». notas.txt y lista.txt siguen intactos (mismo hash).",
+  "setup": "Carpeta baxy-prueba-v3 con notas.txt, lista.txt, foto.png y subcarpeta vacía «archivo». Bloc de notas abierto con una pestaña nueva sin título con el texto «prueba de guardado v3».",
+  "safety": "No sobrescribir ningún archivo existente; si aparece «¿Desea reemplazarlo?» responder No. Guardar sólo dentro de baxy-prueba-v3 y con el nombre pedido."
+ },
+ "t-file-2": {
+  "app": "Bloc de notas",
+  "lang": "es-MX",
+  "turns": [
+   "ábreme el archivo lista.txt que está en Documentos\\baxy-prueba-v3, desde Archivo > Abrir del Bloc de notas porfa"
+  ],
+  "verify": "El Bloc de notas tiene una pestaña activa titulada «lista.txt» cuyo texto coincide byte a byte con D:\\Perfil\\Documentos\\baxy-prueba-v3\\lista.txt. El diálogo Abrir está cerrado.",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base. Bloc de notas abierto con una pestaña vacía.",
+  "safety": "No modificar ni guardar lista.txt (mismo hash y fecha de modificación tras el caso). No abrir otros archivos."
+ },
+ "t-file-3": {
+  "app": "Paint",
+  "lang": "en",
+  "turns": [
+   "Save this drawing as baxy-dibujo.png in Documents\\baxy-prueba-v3"
+  ],
+  "verify": "Existe D:\\Perfil\\Documentos\\baxy-prueba-v3\\baxy-dibujo.png, es un PNG válido con las dimensiones del lienzo y contiene el trazo (píxeles no blancos). La ventana de Paint se titula «baxy-dibujo.png - Paint». foto.png sin cambios (mismo hash).",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base. Paint abierto con un lienzo nuevo sin título con un trazo negro dibujado, sin guardar.",
+  "safety": "No sobrescribir foto.png ni ningún otro archivo; guardar sólo con el nombre nuevo baxy-dibujo.png dentro de baxy-prueba-v3."
+ },
+ "t-file-4": {
+  "app": "Paint",
+  "lang": "spanglish",
+  "turns": [
+   "oye, open la foto.png en Paint, está en Documentos/baxy-prueba-v3, usa el Abrir de Paint"
+  ],
+  "verify": "La ventana de Paint se titula «foto.png - Paint» y la barra de estado muestra las dimensiones reales de foto.png. El diálogo Abrir está cerrado.",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base. Paint abierto con un lienzo nuevo sin cambios (para que no salga el aviso de guardar).",
+  "safety": "No guardar ni modificar foto.png (hash y fecha iguales tras el caso). Si Paint pregunta si guardar un lienzo previo, responder No guardar sólo si ese lienzo es el del setup sin cambios."
+ },
+ "t-menu-1": {
+  "app": "Explorador de archivos",
+  "lang": "es-CL",
+  "turns": [
+   "en la carpeta baxy-prueba-v3 de Documentos haceme clic derecho en notas.txt y abrime las propiedades, quiero ver cuánto pesa"
+  ],
+  "verify": "Hay una ventana abierta titulada «Propiedades: notas.txt» (UIA) en la pestaña General, que muestra el tamaño del archivo.",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base. Explorador cerrado o en otra carpeta.",
+  "safety": "No cambiar atributos (Solo lectura, Oculto), ni el programa con que se abre, ni permisos; no pulsar Aplicar. No renombrar ni borrar notas.txt."
+ },
+ "t-menu-2": {
+  "app": "Explorador de archivos",
+  "lang": "es-AR",
+  "turns": [
+   "en baxy-prueba-v3 ordená los archivos por tamaño, con el clic derecho en un espacio vacío, Ordenar por"
+  ],
+  "verify": "En la ventana del Explorador abierta en D:\\Perfil\\Documentos\\baxy-prueba-v3, la vista está ordenada por Tamaño (encabezado de columna «Tamaño» con indicador de orden en vista Detalles, o el orden de los elementos en la lista UIA coincide con el orden por tamaño real de notas.txt, lista.txt y foto.png).",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base; vista ordenada por Nombre. Explorador abierto en esa carpeta.",
+  "safety": "No mover, renombrar ni borrar archivos al hacer clic. No cambiar opciones de carpeta globales ni «Aplicar a todas las carpetas»."
+ },
+ "t-menu-3": {
+  "app": "Bloc de notas",
+  "lang": "en",
+  "turns": [
+   "Zoom in twice in Notepad using the View menu, View > Zoom > Zoom in"
+  ],
+  "verify": "La barra de estado del Bloc de notas muestra el zoom en «120%» (dos pasos de 10% desde 100%).",
+  "setup": "Bloc de notas abierto con una pestaña con algo de texto y zoom al 100%.",
+  "safety": "No cambiar la configuración del Bloc de notas (fuente, tema, ajuste de línea). No guardar ni cerrar pestañas."
+ },
+ "t-menu-4": {
+  "app": "Paint",
+  "lang": "es-ES",
+  "turns": [
+   "Gira la imagen 90 grados a la derecha desde el menú Imagen > Girar"
+  ],
+  "verify": "La barra de estado de Paint muestra el lienzo con ancho y alto intercambiados: «400 × 800px» (antes 800 × 400). En la captura, la marca roja que estaba en la esquina superior izquierda queda en la superior derecha.",
+  "setup": "Paint abierto con un lienzo nuevo de 800 × 400 px con una marca roja en la esquina superior izquierda, sin guardar.",
+  "safety": "No guardar. No voltear (reflejar) en vez de girar; no girar 180°."
+ },
+ "t-scroll-1": {
+  "app": "Configuración",
+  "lang": "es-CL",
+  "turns": [
+   "abrí Configuración, Aplicaciones instaladas, y bajá en la lista hasta el Bloc de notas, nada más, no desinstales nada"
+  ],
+  "verify": "La ventana Configuración está en la página «Aplicaciones instaladas» y el elemento de lista «Bloc de notas» está visible en pantalla (UIA IsOffscreen=False dentro del área de la lista, o visible en la captura).",
+  "setup": "Configuración cerrada. Bloc de notas instalado.",
+  "safety": "No pulsar Desinstalar, Modificar, Opciones avanzadas ni Restablecer. No usar el menú de tres puntos de ninguna app. No cambiar ningún ajuste."
+ },
+ "t-scroll-2": {
+  "app": "Mapa de caracteres",
+  "lang": "es-MX",
+  "turns": [
+   "abre el mapa de caracteres y búscame la omega mayúscula, la Ω, bajando en la lista, y selecciónala"
+  ],
+  "verify": "En el Mapa de caracteres con la fuente Arial, el carácter seleccionado es Ω: la barra de estado muestra «U+03A9» (Letra griega mayúscula omega) o el cuadro «Caracteres para copiar» contiene «Ω».",
+  "setup": "Mapa de caracteres cerrado; al abrirse, fuente por defecto Arial.",
+  "safety": "No usar Configuración avanzada para cambiar el juego de caracteres del sistema. No pegar el carácter en ninguna otra ventana."
+ },
+ "t-scroll-3": {
+  "app": "Configuración",
+  "lang": "en",
+  "turns": [
+   "Go to Settings, Personalization, Fonts, scroll down to Times New Roman and open its page"
+  ],
+  "verify": "La ventana Configuración muestra la página de detalle de la fuente con el título «Times New Roman» (UIA o captura).",
+  "setup": "Configuración cerrada. Times New Roman instalada (fuente del sistema).",
+  "safety": "No pulsar Desinstalar en la fuente. No arrastrar ni instalar fuentes. No cambiar la fuente de visualización."
+ },
+ "t-scroll-4": {
+  "app": "Explorador de archivos",
+  "lang": "spanglish",
+  "turns": [
+   "abrí C:\\Windows\\System32 en el explorer y select el archivo calc.exe, pero no lo abras eh, solo seleccionado"
+  ],
+  "verify": "Una ventana del Explorador está en C:\\Windows\\System32 y el único elemento seleccionado es calc.exe (UIA SelectionItem IsSelected=True), visible en pantalla. No se abrió ningún proceso de Calculadora nuevo durante el caso.",
+  "setup": "Explorador cerrado o en otra carpeta. Calculadora cerrada.",
+  "safety": "No ejecutar, renombrar, mover, copiar ni borrar nada en System32. No aceptar avisos de UAC. Si aparece el aviso de permisos de carpeta, no pulsar Continuar para cambiar permisos."
+ },
+ "t-drag-1": {
+  "app": "Explorador de archivos",
+  "lang": "es-CL",
+  "turns": [
+   "arrastrá lista.txt adentro de la carpeta archivo, en baxy-prueba-v3"
+  ],
+  "verify": "En disco existe D:\\Perfil\\Documentos\\baxy-prueba-v3\\archivo\\lista.txt con el mismo hash que el lista.txt original, y ya no existe D:\\Perfil\\Documentos\\baxy-prueba-v3\\lista.txt. notas.txt y foto.png siguen en la raíz.",
+  "setup": "Carpeta baxy-prueba-v3 con notas.txt, lista.txt, foto.png y subcarpeta vacía «archivo». Explorador abierto en esa carpeta.",
+  "safety": "Mover, no copiar ni crear accesos directos. No soltar en otra carpeta ni en otra ventana. No arrastrar otros archivos. No borrar nada."
+ },
+ "t-drag-2": {
+  "app": "PowerPoint",
+  "lang": "es-ES",
+  "turns": [
+   "En el panel de miniaturas arrastra la diapositiva «Tres» para que quede la primera"
+  ],
+  "verify": "El orden de las diapositivas en el panel de miniaturas (UIA) es: 1 «Tres», 2 «Uno», 3 «Dos». Siguen siendo 3 diapositivas.",
+  "setup": "PowerPoint abierto con una presentación nueva sin guardar de 3 diapositivas con títulos «Uno», «Dos» y «Tres» en ese orden.",
+  "safety": "No borrar ni duplicar diapositivas. No guardar la presentación. No cambiar diseños ni temas."
+ },
+ "t-drag-3": {
+  "app": "Notas rápidas",
+  "lang": "es-AR",
+  "turns": [
+   "agarrá la nota adhesiva que dice «baxy prueba» y llevala arrastrando a la esquina de arriba a la derecha de la pantalla"
+  ],
+  "verify": "La ventana de la nota «baxy prueba» tiene su rectángulo (UIA BoundingRectangle) en el cuadrante superior derecho de la pantalla principal: borde derecho a menos de 100 px del borde derecho y borde superior a menos de 100 px del superior.",
+  "setup": "Notas rápidas abierto con una nota cuyo texto es «baxy prueba», situada en el centro de la pantalla.",
+  "safety": "No borrar ni editar el texto de ninguna nota. No crear notas nuevas. No cambiar el color ni la cuenta. Al terminar el dueño borra la nota de prueba, no BAXY."
+ },
+ "t-drag-4": {
+  "app": "Paint",
+  "lang": "spanglish",
+  "turns": [
+   "en Paint draw una línea recta arrastrando el mouse de la izquierda a la derecha del lienzo, más o menos por la mitad"
+  ],
+  "verify": "En una captura del lienzo hay píxeles no blancos que forman un trazo horizontal que cruza al menos el 50% del ancho del lienzo cerca de su altura media; antes del caso el lienzo era todo blanco.",
+  "setup": "Paint abierto con un lienzo nuevo en blanco, herramienta Lápiz o Pincel seleccionada, sin guardar.",
+  "safety": "No guardar. No borrar el lienzo de otra imagen abierta. Mover el ratón sólo dentro del lienzo de Paint."
+ },
+ "t-long-1": {
+  "app": "Calculadora + Bloc de notas",
+  "lang": "es-CL",
+  "turns": [
+   "abrí la calcu, pasala a científica, calculá 2 elevado a 10, copiá el resultado, abrí el bloc de notas y pegalo"
+  ],
+  "verify": "La Calculadora está en modo «Científica» (UIA Header) y muestra 1024. Hay una pestaña del Bloc de notas cuyo texto contiene «1024».",
+  "setup": "Calculadora cerrada y en modo Estándar la última vez. Bloc de notas cerrado o con una pestaña vacía.",
+  "safety": "No guardar el Bloc de notas. No pegar en otras ventanas. No modificar el historial ni la memoria de otras pestañas del Bloc de notas."
+ },
+ "t-long-2": {
+  "app": "Word",
+  "lang": "es-AR",
+  "turns": [
+   "en Word creá un documento en blanco, escribí «Informe semanal» como título, ponelo en negrita, centralo y guardalo como baxy-informe en Documentos\\baxy-prueba-v3"
+  ],
+  "verify": "Existe D:\\Perfil\\Documentos\\baxy-prueba-v3\\baxy-informe.docx; su word/document.xml contiene un párrafo con el texto «Informe semanal», con <w:b/> en la ejecución y <w:jc w:val=\"center\"/> en el párrafo. La ventana de Word se titula «baxy-informe».",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base. Word cerrado.",
+  "safety": "Guardar sólo como baxy-informe.docx dentro de baxy-prueba-v3; no sobrescribir nada. No guardar en OneDrive. No cambiar la plantilla Normal."
+ },
+ "t-long-3": {
+  "app": "Paint",
+  "lang": "en",
+  "turns": [
+   "Open Paint, resize the canvas to 500 by 500 pixels, draw a red filled rectangle in the middle, save it as baxy-cuadro.png in Documents\\baxy-prueba-v3 and then close Paint"
+  ],
+  "verify": "Existe D:\\Perfil\\Documentos\\baxy-prueba-v3\\baxy-cuadro.png, PNG de 500×500 px con una región de píxeles rojos (R alto, G y B bajos) en el centro. No queda ninguna ventana de Paint abierta.",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base. Paint cerrado.",
+  "safety": "Guardar sólo con el nombre nuevo baxy-cuadro.png; no sobrescribir foto.png. Al cerrar Paint no descartar otro trabajo (no debe haber otro)."
+ },
+ "t-long-4": {
+  "app": "Explorador de archivos + Bloc de notas",
+  "lang": "es-MX",
+  "turns": [
+   "abre el explorador en Documentos\\baxy-prueba-v3, crea una carpeta nueva que se llame baxy-respaldo, mueve notas.txt adentro, luego ábrelo desde ahí con el Bloc de notas y súbele el zoom"
+  ],
+  "verify": "Existe la carpeta D:\\Perfil\\Documentos\\baxy-prueba-v3\\baxy-respaldo con notas.txt dentro (mismo hash que el original) y ya no hay notas.txt en la raíz. El Bloc de notas tiene una pestaña «notas.txt» abierta desde baxy-respaldo y su barra de estado muestra zoom mayor que 100%.",
+  "setup": "Carpeta baxy-prueba-v3 con su contenido base y sin carpeta baxy-respaldo. Explorador y Bloc de notas cerrados.",
+  "safety": "No mover, renombrar ni borrar otros archivos. Mover notas.txt, no copiarlo. No guardar notas.txt ni editar su contenido. Crear sólo la carpeta baxy-respaldo."
+ },
+ "wa-1": {
+  "app": "WhatsApp",
+  "lang": "es-ar",
+  "turns": [
+   "en WhatsApp escribí baxyprueba en el buscador de chats"
+  ],
+  "verify": "El campo de búsqueda de chats de WhatsApp contiene «baxyprueba» (UIA del WebView2).",
+  "setup": "WhatsApp abierto.",
+  "safety": "No abrir ningún chat ni enviar nada."
+ },
+ "wa-2": {
+  "app": "WhatsApp",
+  "lang": "es-ar",
+  "turns": [
+   "abrí WhatsApp y buscá el chat de Ron92"
+  ],
+  "verify": "El buscador de WhatsApp contiene «Ron92» y la lista muestra resultados (o el chat de Ron92 queda abierto sin enviar nada).",
+  "setup": "WhatsApp cerrado.",
+  "safety": "No enviar nada."
+ },
+ "epic-1": {
+  "app": "Epic Games Launcher",
+  "lang": "es-ar",
+  "turns": [
+   "abrí Epic Games y llevame a la biblioteca"
+  ],
+  "verify": "Epic Games Launcher abierto mostrando la Biblioteca (carga larga).",
+  "setup": "Epic Games Launcher cerrado.",
+  "safety": "No instalar, comprar ni cambiar nada."
+ },
+ "epic-2": {
+  "app": "Epic Games Launcher",
+  "lang": "es-ar",
+  "turns": [
+   "en el Epic Games Launcher andá a la Tienda"
+  ],
+  "verify": "Epic Games Launcher muestra la Tienda.",
+  "setup": "Epic Games Launcher abierto en la Biblioteca.",
+  "safety": "No comprar ni instalar nada."
+ }
+}

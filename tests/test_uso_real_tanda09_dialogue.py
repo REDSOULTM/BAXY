@@ -50,9 +50,11 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import context_rewrite
 from baxy_mind.semantic import dialogue, levels
+from baxy_mind import turn_followups
+from baxy_mind import effect_intent
 
 OPERATIONS = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "system.settings.set", "system.settings.adjust",
@@ -85,7 +87,7 @@ def _message(*turns: str) -> dict:
 
 
 def _rearm(message: dict, model: _Scripted, state: dialogue.DialogueState | None = None):
-    return sidecar._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
+    return turn_followups._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
 
 
 def _verified(operation: str, observed: dict | None = None) -> dict:
@@ -204,7 +206,7 @@ def test_pausing_what_just_played_needs_no_model(text):
     state = _state(_PLAYED[0], "media.play.youtube")
     result = _rearm(_message(*_PLAYED, text), _Scripted(), state)
     assert result is not None and result[1] == "pattern"
-    assert set(sidecar.resolve_explicit_effects(result[0], OPERATIONS).operations) == {"media.control"}
+    assert set(effect_intent.resolve_explicit_effects(result[0], OPERATIONS).operations) == {"media.control"}
 
 
 @pytest.mark.parametrize("text", ["ok, seguí", "dale, seguilo", "resume it", "sigue", "continuá porfa"])
@@ -212,7 +214,7 @@ def test_resuming_what_was_paused_needs_no_model(text):
     state = _state("pausa la canción", "media.control")
     result = _rearm(_message("pausa la canción", "Listo, la pausé.", text), _Scripted(), state)
     assert result is not None and result[1] == "pattern"
-    assert set(sidecar.resolve_explicit_effects(result[0], OPERATIONS).operations) == {"media.control"}
+    assert set(effect_intent.resolve_explicit_effects(result[0], OPERATIONS).operations) == {"media.control"}
 
 
 def test_an_order_left_without_object_after_something_else_is_not_about_music():
@@ -244,7 +246,7 @@ def test_an_order_that_says_its_object_is_not_a_bare_order(text):
 def test_an_order_said_with_why_is_the_order(text, direction, target):
     level = levels.read(text)
     assert level is not None and level.direction == direction and level.target == target
-    asked = sidecar.resolve_explicit_clarification_intent(text, OPERATIONS)
+    asked = effect_intent.resolve_explicit_clarification_intent(text, OPERATIONS)
     if target is None:
         # A relative change without an amount asks how much; it never takes a default step.
         assert asked is not None and asked.operations == ("audio.volume.adjust",) and asked.missing_fields == ("amount",)
@@ -370,14 +372,14 @@ def test_a_day_said_in_the_other_language_is_the_same_word(turns, rewrite, stays
     ],
 )
 def test_the_weather_with_the_day_first_or_how_it_feels_is_the_weather_read(text):
-    assert sidecar.resolve_explicit_effects(text, OPERATIONS).operations == ("weather.current",)
+    assert effect_intent.resolve_explicit_effects(text, OPERATIONS).operations == ("weather.current",)
 
 
 @pytest.mark.parametrize(
     "text", ["y mañana qué hago", "mañana abre el museo?", "and tomorrow what time is the game"],
 )
 def test_a_day_first_does_not_make_the_weather_of_what_is_not(text):
-    found = sidecar.resolve_explicit_effects(text, OPERATIONS)
+    found = effect_intent.resolve_explicit_effects(text, OPERATIONS)
     assert found is None or "weather.current" not in found.operations
 
 
@@ -430,4 +432,4 @@ def test_an_answer_is_shown_a_time_given_to_an_open_question_about_alarms():
     runtime.rewrite_in_context("it will be 9:10 pm", context, dependency="answer", shape="answer")
     shown = [message["content"] for message in seen[0]["messages"] if message["role"] == "user"][:-1]
     assert any("alarm" in example and example.rstrip().endswith("am") for example in shown)
-    assert len(shown) <= llm._REWRITE_EXAMPLES_SHOWN
+    assert len(shown) <= context_rewrite._REWRITE_EXAMPLES_SHOWN

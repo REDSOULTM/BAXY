@@ -26,8 +26,16 @@ from datetime import datetime
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import corrector
+from baxy_mind import conversation_contract
+from baxy_mind import reply_language_checks
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import search_report
 from baxy_mind.semantic import decider
+from baxy_mind.semantic.request import fold
 
 # ------------------------------------------------------------------ 1. sun times against the read's own clock
 
@@ -49,48 +57,48 @@ _SUNRISE_ES = "¿A qué hora sale el sol hoy?"
 @pytest.mark.parametrize("read", [_SOUTH, _NORTH], ids=["south", "north"])
 @pytest.mark.parametrize(("clock", "passed"), [("04:45", False), ("12:00", False), ("21:30", True)])
 def test_todays_sunset_is_marked_against_the_reads_own_clock(read: dict, clock: str, passed: bool) -> None:
-    seen = llm._project_weather_read({**read, "observedAtLocal": f"2026-10-01T{clock}"}, _SUNSET_ES)
+    seen = weather_facts._project_weather_read({**read, "observedAtLocal": f"2026-10-01T{clock}"}, _SUNSET_ES)
     assert seen["today"]["sunsetPassed"] is passed
 
 
 @pytest.mark.parametrize("read", [_SOUTH, _NORTH], ids=["south", "north"])
 @pytest.mark.parametrize(("clock", "passed"), [("04:45", False), ("12:00", True), ("21:30", True)])
 def test_todays_sunrise_is_marked_against_the_reads_own_clock(read: dict, clock: str, passed: bool) -> None:
-    seen = llm._project_weather_read({**read, "observedAtLocal": f"2026-10-01T{clock}"}, _SUNRISE_ES)
+    seen = weather_facts._project_weather_read({**read, "observedAtLocal": f"2026-10-01T{clock}"}, _SUNRISE_ES)
     assert seen["today"]["sunrisePassed"] is passed
 
 
 def test_a_read_of_another_day_or_with_no_clock_marks_nothing() -> None:
     for observed in ("2026-09-30T23:10", "", None):
-        seen = llm._project_weather_read({**_SOUTH, "observedAtLocal": observed}, _SUNSET_ES)
+        seen = weather_facts._project_weather_read({**_SOUTH, "observedAtLocal": observed}, _SUNSET_ES)
         assert "sunsetPassed" not in seen["today"]
 
 
 @pytest.mark.parametrize("read", [_SOUTH, _NORTH], ids=["south", "north"])
 def test_before_sunset_the_sunset_is_never_told_in_the_past(read: dict) -> None:
     sunset = read["today"]["sunset"]
-    early = llm._project_weather_read({**read, "observedAtLocal": "2026-10-01T04:45"}, _SUNSET_ES)
+    early = weather_facts._project_weather_read({**read, "observedAtLocal": "2026-10-01T04:45"}, _SUNSET_ES)
     payload = {"operation": "weather.current", "seen": early}
-    assert llm._weather_fact_defect(f"El sol se puso a las {sunset} hoy.", payload, _SUNSET_ES) == "weather_sun_time_ahead"
-    assert llm._weather_fact_defect(f"Hoy el sol se pondrá a las {sunset}.", payload, _SUNSET_ES) == ""
-    english = llm._project_weather_read({**read, "observedAtLocal": "2026-10-01T04:45"}, _SUNSET_EN)
+    assert weather_facts._weather_fact_defect(f"El sol se puso a las {sunset} hoy.", payload, _SUNSET_ES) == "weather_sun_time_ahead"
+    assert weather_facts._weather_fact_defect(f"Hoy el sol se pondrá a las {sunset}.", payload, _SUNSET_ES) == ""
+    english = weather_facts._project_weather_read({**read, "observedAtLocal": "2026-10-01T04:45"}, _SUNSET_EN)
     payload_en = {"operation": "weather.current", "seen": english}
-    assert llm._weather_fact_defect(f"The sun set at {sunset} today.", payload_en, _SUNSET_EN) == "weather_sun_time_ahead"
-    assert llm._weather_fact_defect(f"The sun will set at {sunset} today.", payload_en, _SUNSET_EN) == ""
+    assert weather_facts._weather_fact_defect(f"The sun set at {sunset} today.", payload_en, _SUNSET_EN) == "weather_sun_time_ahead"
+    assert weather_facts._weather_fact_defect(f"The sun will set at {sunset} today.", payload_en, _SUNSET_EN) == ""
 
 
 @pytest.mark.parametrize("read", [_SOUTH, _NORTH], ids=["south", "north"])
 def test_after_sunset_the_sunset_is_still_told_in_the_past(read: dict) -> None:
     sunset = read["today"]["sunset"]
-    late = llm._project_weather_read({**read, "observedAtLocal": "2026-10-01T21:30"}, _SUNSET_ES)
+    late = weather_facts._project_weather_read({**read, "observedAtLocal": "2026-10-01T21:30"}, _SUNSET_ES)
     payload = {"operation": "weather.current", "seen": late}
-    assert llm._weather_fact_defect(f"Hoy el sol se puso a las {sunset}.", payload, _SUNSET_ES) == ""
-    assert llm._weather_fact_defect(f"Hoy el sol se pondrá a las {sunset}.", payload, _SUNSET_ES) == "weather_sun_time_passed"
+    assert weather_facts._weather_fact_defect(f"Hoy el sol se puso a las {sunset}.", payload, _SUNSET_ES) == ""
+    assert weather_facts._weather_fact_defect(f"Hoy el sol se pondrá a las {sunset}.", payload, _SUNSET_ES) == "weather_sun_time_passed"
 
 
 def test_the_writer_is_told_both_marks() -> None:
-    assert "With it false, it has not happened yet today" in llm._weather_focus(_SUNSET_EN, english=True)
-    assert "Con false aún no llega hoy" in llm._weather_focus(_SUNSET_ES, english=False)
+    assert "With it false, it has not happened yet today" in weather_facts._weather_focus(_SUNSET_EN, english=True)
+    assert "Con false aún no llega hoy" in weather_facts._weather_focus(_SUNSET_ES, english=False)
 
 
 # ------------------------------------------------------------------ 2. only the assistant's tab checked
@@ -115,21 +123,21 @@ def _media_failure(error: str) -> dict:
     ],
 )
 def test_the_assistants_tab_missing_never_tells_that_nothing_plays(draft: str, asked: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", asked, _media_failure("youtube_tab_not_found")) == (
+    assert visible_defect.compose_visible_defect(draft, "error", asked, _media_failure("youtube_tab_not_found")) == (
         "absence_beyond_check"
     )
     # The PC's media session read nothing playing: then it is the truth.
-    assert llm.compose_visible_defect(draft, "error", asked, _media_failure("media_session_not_found")) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", asked, _media_failure("media_session_not_found")) == ""
 
 
 def test_what_was_checked_is_told_as_checked() -> None:
     draft = "No encontré abierta la pestaña de YouTube que uso, así que no pude leer qué suena ahí."
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         draft, "error", "qué canción está sonando ahora", _media_failure("youtube_tab_not_found"),
     ) == ""
     # The fact the narrator gets says what was checked, not that nothing plays.
-    assert "is playing" not in llm._CAUSE_FACT["youtube_tab_not_found"]
-    assert "only that tab was checked" in llm._CAUSE_FACT["youtube_tab_not_found"]
+    assert "is playing" not in compose_situation._CAUSE_FACT["youtube_tab_not_found"]
+    assert "only that tab was checked" in compose_situation._CAUSE_FACT["youtube_tab_not_found"]
 
 
 # ------------------------------------------------------------------ 3. what a cinema shows, unread
@@ -145,7 +153,7 @@ def test_what_was_checked_is_told_as_checked() -> None:
     ],
 )
 def test_a_listing_nobody_read_is_not_stated(reply: str, asked: str, prior: tuple[str, ...]) -> None:
-    assert llm.conversation_world_claim(reply, asked, prior) == "unread_showtimes"
+    assert reply_claims.conversation_world_claim(reply, asked, prior) == "unread_showtimes"
 
 
 @pytest.mark.parametrize(
@@ -160,7 +168,7 @@ def test_a_listing_nobody_read_is_not_stated(reply: str, asked: str, prior: tupl
 def test_not_knowing_the_listing_or_another_topic_is_no_listing_claim(
     reply: str, asked: str, prior: tuple[str, ...],
 ) -> None:
-    assert llm.conversation_world_claim(reply, asked, prior) != "unread_showtimes"
+    assert reply_claims.conversation_world_claim(reply, asked, prior) != "unread_showtimes"
 
 
 # ------------------------------------------------------------------ 4. an act confirmed that nobody ran
@@ -178,8 +186,8 @@ def test_not_knowing_the_listing_or_another_topic_is_no_listing_claim(
     ],
 )
 def test_an_act_confirmed_in_a_turn_that_ran_nothing_is_a_settled_plan(reply: str) -> None:
-    assert llm.visible_reply_settles_a_plan(reply)
-    assert llm.conversation_world_claim(reply, "That is confirmed to proceed.") == "effect_claim"
+    assert reply_claims.visible_reply_settles_a_plan(reply)
+    assert reply_claims.conversation_world_claim(reply, "That is confirmed to proceed.") == "effect_claim"
 
 
 @pytest.mark.parametrize(
@@ -192,7 +200,7 @@ def test_an_act_confirmed_in_a_turn_that_ran_nothing_is_a_settled_plan(reply: st
     ],
 )
 def test_an_offer_a_question_or_a_confirmation_of_words_settles_nothing(reply: str) -> None:
-    assert not llm.visible_reply_settles_a_plan(reply)
+    assert not reply_claims.visible_reply_settles_a_plan(reply)
 
 
 def test_the_go_ahead_after_a_failed_act_is_answered_without_a_failure_told() -> None:
@@ -200,14 +208,14 @@ def test_the_go_ahead_after_a_failed_act_is_answered_without_a_failure_told() ->
         "I have not done it yet because the streaming of Hustlers failed because Netflix requires a sign-in on this "
         "PC before playback can begin."
     )
-    assert llm._go_ahead_reply_unmet(told_failed, "Yes, do it for me.")
-    assert not llm._go_ahead_reply_unmet(
+    assert reply_claims._go_ahead_reply_unmet(told_failed, "Yes, do it for me.")
+    assert not reply_claims._go_ahead_reply_unmet(
         "I haven't played Hustlers yet: Netflix asks to sign in on this PC first.", "Yes, do it for me.",
     )
-    assert llm._go_ahead_reply_unmet("Sure, it is on its way.", "Yes, do it for me.")
-    instruction = llm._go_ahead_instruction(told_failed, "en")
+    assert reply_claims._go_ahead_reply_unmet("Sure, it is on its way.", "Yes, do it for me.")
+    instruction = reply_claims._go_ahead_instruction(told_failed, "en")
     assert "without the words failed, could not or cannot" in instruction
-    assert "sin las palabras falló, no pude ni no puedo" in llm._go_ahead_instruction(told_failed, "es")
+    assert "sin las palabras falló, no pude ni no puedo" in reply_claims._go_ahead_instruction(told_failed, "es")
 
 
 # ------------------------------------------------------------------ 5. «I can …» in a turn that ran nothing
@@ -222,7 +230,7 @@ def test_the_go_ahead_after_a_failed_act_is_answered_without_a_failure_told() ->
     ],
 )
 def test_an_ability_claimed_in_a_turn_that_ran_nothing_is_vetoed(reply: str, asked: str) -> None:
-    assert llm.conversation_world_claim(reply, asked) == "claimed_ability"
+    assert reply_claims.conversation_world_claim(reply, asked) == "claimed_ability"
 
 
 @pytest.mark.parametrize(
@@ -237,7 +245,7 @@ def test_an_ability_claimed_in_a_turn_that_ran_nothing_is_vetoed(reply: str, ask
     ],
 )
 def test_a_denial_an_offer_or_an_asked_capability_is_no_claimed_ability(reply: str, asked: str) -> None:
-    assert llm.conversation_world_claim(reply, asked) != "claimed_ability"
+    assert reply_claims.conversation_world_claim(reply, asked) != "claimed_ability"
 
 
 # ------------------------------------------------------------------ 6. «the provided text»
@@ -245,10 +253,10 @@ def test_a_denial_an_offer_or_an_asked_capability_is_no_claimed_ability(reply: s
 
 def test_the_provided_text_is_metadiscourse_and_clipped_off_a_not_found() -> None:
     draft = "I could not find specific drama films mentioned in the provided text."
-    assert llm._SEARCH_RESULTS_TAIL.sub("", draft).rstrip(" ,;") == "I could not find specific drama films."
-    assert llm._SEARCH_MECHANICS.search(llm._reading_fold("Drama films are listed in the provided text.")) is not None
-    assert llm._SEARCH_MECHANICS.search(llm._reading_fold("Según el texto proporcionado, es un drama.")) is not None
-    assert llm._TASK_METADISCOURSE.search("The venue is not specified in the provided text.") is not None
+    assert search_report._SEARCH_RESULTS_TAIL.sub("", draft).rstrip(" ,;") == "I could not find specific drama films."
+    assert search_report._SEARCH_MECHANICS.search(fold("Drama films are listed in the provided text.")) is not None
+    assert search_report._SEARCH_MECHANICS.search(fold("Según el texto proporcionado, es un drama.")) is not None
+    assert visible_defect._TASK_METADISCOURSE.search("The venue is not specified in the provided text.") is not None
 
 
 # ------------------------------------------------------------------ 7. a word cut short
@@ -262,8 +270,8 @@ def test_the_provided_text_is_metadiscourse_and_clipped_off_a_not_found() -> Non
     ],
 )
 def test_a_word_cut_after_a_plural_noun_is_broken(reply: str) -> None:
-    assert llm.visible_reply_cuts_a_word(reply)
-    assert llm._shaped_conversation_answer_violates_contract(reply, "rutina semanal para ganar músculo", "content_draft")
+    assert reply_language_checks.visible_reply_cuts_a_word(reply)
+    assert conversation_contract._shaped_conversation_answer_violates_contract(reply, "rutina semanal para ganar músculo", "content_draft")
 
 
 @pytest.mark.parametrize(
@@ -277,7 +285,18 @@ def test_a_word_cut_after_a_plural_noun_is_broken(reply: str) -> None:
     ],
 )
 def test_whole_words_are_not_cut(reply: str) -> None:
-    assert not llm.visible_reply_cuts_a_word(reply)
+    assert not reply_language_checks.visible_reply_cuts_a_word(reply)
+
+
+@pytest.mark.skipif(not corrector.lexicon_available(), reason="only the lexicon tells a verb from a plural noun")
+@pytest.mark.parametrize(
+    "reply",
+    ["Necesitas descansar.", "Necesitamos descansar.", "Cuando quieras empezar.", "Intentas mejorar."],
+)
+def test_an_infinitive_after_a_conjugated_verb_is_whole_with_the_lexicon(reply: str) -> None:
+    # «regular» is cut after «ejercicios» because the same plural rule inflects both; an infinitive after a verb that
+    # merely ends in «-as»/«-os» shares none with it.
+    assert not reply_language_checks.visible_reply_cuts_a_word(reply)
 
 
 # ------------------------------------------------------------------ 8. a list read is reported, one word paraphrased
@@ -301,9 +320,9 @@ def test_titles_the_pages_list_are_reported_with_the_reports_own_noun() -> None:
     }
     asked = "Any good movies for me to watch?"
     draft = "You can watch popular films like Paper Lanterns, The Glass Orchard and Northbound Tide."
-    assert llm._search_report_unsourced_words(draft, payload, asked) == []
+    assert search_report._search_report_unsourced_words(draft, payload, asked) == []
     # Two words of its own are still a claim of its own.
-    assert llm._search_report_unsourced_words(
+    assert search_report._search_report_unsourced_words(
         "Critics adore the hilarious films Paper Lanterns and Northbound Tide.", payload, asked,
     )
 

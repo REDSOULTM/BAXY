@@ -370,6 +370,50 @@ def _current_directory_file_count(folded: str) -> bool:
     )
 
 
+# Ronda 20b-3 (revisión 1 de v3-50: «¿cuántos zip hay en baxy-prueba-v3?» → the Desktop counted and published as
+# «cero archivos zip en la carpeta Escritorio»): the place a count names after «en / in / dentro de», unless it is the
+# Desktop, the current directory or no place at all («en total», «en esta carpeta», «en el directorio actual»).
+_COUNT_PLACE = re.compile(
+    r"\b(?:en|in|inside(?:\s+of)?|within|dentro\s+de|adentro\s+de)\s+"
+    r"(?:(?:el|la|los|las|mi|mis|tu|the|my|your|this|that|este|esta|ese|esa)\s+)?"
+    r"(?:(?P<kind>carpeta|directorio|folder|directory|archivo|file)\s+(?:(?:de|del|of)\s+)?)?(?P<place>\w[\w.\-]*)"
+)
+_NOT_A_COUNTED_PLACE = frozenset(
+    {
+        "escritorio", "desktop", "actual", "current", "working", "total", "general", "todo", "todos", "all",
+        "carpeta", "directorio", "folder", "directory", "explorador", "explorer", "it", "there", "here", "ahi", "aca",
+        "aqui", "alli", "esto", "eso", "este", "esta", "this", "that", "pantalla", "screen",
+    }
+)
+_COUNT_DESKTOP = re.compile(r"\b(?:escritorio|desktop)\b")
+
+
+def count_names_a_place_beyond_the_desktop(text: str) -> bool:
+    """Ronda 20b-3 (v3-50): a count request that names where to count — a folder, a file, an application — other than
+    the Desktop or the current directory. A count read from the Desktop is not the answer to it.
+
+    Revisión 2 («¿cuántos archivos hay en el escritorio en este momento?», «¿cuántos archivos en PDF tengo en el
+    escritorio?», «… en formato pdf», «… en este pc»): «en X» names a place only when X is said as one («la carpeta X»,
+    «el archivo X») or is a folder of the person (a known folder, or a folder of that name under them); a time, a format
+    or the machine is no place, and the Desktop count answers those requests. When the request names the Desktop, a
+    bare word is a place only as a folder on the Desktop («en baxy-prueba-v3 del escritorio»)."""
+
+    folded = _strip_request_envelope(_fold(str(text or ""))).strip(" ¿?¡!.")
+    if not folded or _current_directory_file_count(folded):
+        return False
+    from .. import known_folders
+    from . import cu_tipos
+
+    within = "desktop" if _COUNT_DESKTOP.search(folded) else None
+    for found in _COUNT_PLACE.finditer(folded):
+        place = found.group("place")
+        if place in _NOT_A_COUNTED_PLACE or place.isdigit():
+            continue
+        if found.group("kind") or place in cu_tipos.KNOWN_FOLDERS or known_folders.located_folders(place, within)[0]:
+            return True
+    return False
+
+
 _DUPLICATE_FILES = r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b"
 
 
@@ -572,7 +616,10 @@ def open_named_file_request(text: str) -> tuple[str, str] | None:
         rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?\.[a-z0-9]{{1,5}})\s+"
         # M111 (DEV-F v4d F-s025 «… presupuesto_finca.xlsx q esta en documentos»): where the file is, said as a clause.
         rf"(?:(?:q|que)\s+(?:est[aá]|tengo|guard[eé])\s+en|that'?s\s+in|which\s+is\s+in|"
-        rf"del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mis|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        rf"del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mis|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b"
+        # v3 r3a lectura L3: «… paisaje.jpg que está en Documentos\baxy-prueba-v3» names a folder inside the known one;
+        # read as the known folder alone it opened another file or none. A path is the file dialog's (missions).
+        r"(?![\\/])",
         raw,
         re.IGNORECASE,
     )

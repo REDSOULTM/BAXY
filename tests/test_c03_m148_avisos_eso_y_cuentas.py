@@ -34,6 +34,11 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue, temporal
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
+from baxy_mind import decided_arguments
+from baxy_mind import direct_arguments
+from baxy_mind import plan_shape
+from baxy_mind import argument_grounding
 
 LOCAL = timezone(timedelta(hours=-3))
 # Saturday 3 October 2026, 15:00 in Chile (UTC-3).
@@ -130,7 +135,7 @@ def _turn(said: list[str], decision: ContextDecision) -> dict:
     """``said``: the conversation, user first and alternating, ending in the person's message."""
 
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m148", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(),
@@ -140,8 +145,8 @@ def _turn(said: list[str], decision: ContextDecision) -> dict:
 def _arguments(operation: str, objective: str, said: list[str], decided: dict[str, Any] | None = None,
                schema: dict[str, Any] = SCHEDULE) -> tuple[dict | None, str]:
     if decided is not None:
-        sidecar._remember_decided_arguments(objective, (operation,), tuple(decided.items()))
-    return sidecar._direct_arguments_result(
+        decided_arguments._remember_decided_arguments(objective, (operation,), tuple(decided.items()))
+    return direct_arguments._direct_arguments_result(
         {"operation": operation, "text": objective, "history": _history(said)},
         llm=_NoExtraction(), tool=_tool(operation, schema), dialogue_state=DialogueState(),
     )
@@ -379,7 +384,7 @@ def test_a_timer_moved_to_a_new_length_rings_that_long_from_now(title: str, sett
     state = _timer_state(title, NOW + timedelta(minutes=25), setting)
     moved = state.retimed_notification(said, now=NOW, zone=LOCAL, moving=True)
     assert moved is not None and moved.schedule_arguments == {"dueUtc": due, "kind": "alarm", "title": title}
-    assert sidecar._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "alarm"}
+    assert plan_shape._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "alarm"}
 
 
 @pytest.mark.parametrize(
@@ -409,4 +414,4 @@ def test_no_new_length(title: str, setting: str, said: str, kind: str) -> None:
     ],
 )
 def test_a_countdown_is_a_timer_to_cancel(said: str, kind: dict) -> None:
-    assert sidecar._ground_explicit_arguments("notification.cancel.latest", said, CANCEL_LATEST) == kind
+    assert argument_grounding._ground_explicit_arguments("notification.cancel.latest", said, CANCEL_LATEST) == kind

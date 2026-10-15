@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using Windows.Media.Control;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -173,70 +172,21 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
     }
 
     public async ValueTask<IReadOnlyList<UserMediaSession>> ReadMediaSessionsAsync(
-        CancellationToken cancellationToken)
-    {
-        var sessions = new List<UserMediaSession>();
-        try
-        {
-            GlobalSystemMediaTransportControlsSessionManager manager =
-                await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
-            foreach (GlobalSystemMediaTransportControlsSession session in manager.GetSessions())
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                string title = string.Empty;
-                string artist = string.Empty;
-                try
-                {
-                    GlobalSystemMediaTransportControlsSessionMediaProperties properties =
-                        await session.TryGetMediaPropertiesAsync();
-                    title = properties?.Title ?? string.Empty;
-                    artist = properties?.Artist ?? string.Empty;
-                }
-                catch (Exception exception) when (exception is COMException
-                    or InvalidOperationException)
-                {
-                    // A session without readable metadata still has a state.
-                }
-                sessions.Add(new UserMediaSession(
-                    session.SourceAppUserModelId ?? string.Empty,
-                    title,
-                    artist,
-                    StatusName(session.GetPlaybackInfo()?.PlaybackStatus)));
-            }
-        }
-        catch (Exception exception) when (exception is COMException
-            or InvalidOperationException or UnauthorizedAccessException)
-        {
-            // No media session service: nothing can be observed through it.
-        }
-        return sessions;
-    }
+        CancellationToken cancellationToken) =>
+        await MediaSessionCalls.ReadAsync(cancellationToken).ConfigureAwait(false);
 
     public async ValueTask<bool> PlayMediaSessionAsync(
         UserMediaSession target, CancellationToken cancellationToken)
     {
         try
         {
-            GlobalSystemMediaTransportControlsSessionManager manager =
-                await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
-            foreach (GlobalSystemMediaTransportControlsSession session in manager.GetSessions())
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!string.Equals(session.SourceAppUserModelId, target.SourceAppUserModelId,
-                        StringComparison.Ordinal))
-                    continue;
-                GlobalSystemMediaTransportControlsSessionMediaProperties properties =
-                    await session.TryGetMediaPropertiesAsync();
-                if (!string.Equals(properties?.Title ?? string.Empty, target.Title, StringComparison.Ordinal))
-                    continue;
-                return await session.TryPlayAsync();
-            }
+            return await MediaSessionCalls.ControlAsync(
+                target.SourceAppUserModelId, target.Title, pause: false, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is COMException
-            or InvalidOperationException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
+            return false;
         }
-        return false;
     }
 
     public async ValueTask<string?> ReadAddressAsync(nint window, CancellationToken cancellationToken)
@@ -444,18 +394,6 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             return null;
         }
     }
-
-    private static string StatusName(GlobalSystemMediaTransportControlsSessionPlaybackStatus? status) =>
-        status switch
-        {
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing => "playing",
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused => "paused",
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped => "stopped",
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed => "closed",
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus.Opened => "opened",
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus.Changing => "changing",
-            _ => string.Empty,
-        };
 
     private static unsafe string ReadWindowTitle(nint handle)
     {

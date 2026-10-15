@@ -22,11 +22,16 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as mind_main
 from baxy_mind import effect_intent
 from baxy_mind import llm
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import search_report
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.temporal import clock_elsewhere
+from baxy_mind.semantic import arguments as semantic_arguments
 
 
 def _search_payload(results: list[dict]) -> dict:
@@ -57,15 +62,15 @@ _AIR_ASK = "cómo está el air quality hoy?"
 )
 def test_a_report_in_the_other_language_of_its_pages_is_not_unsourced(report: str) -> None:
     payload = _search_payload(_AIR_RESULTS)
-    assert llm._search_report_unsourced_words(report, payload, _AIR_ASK) == []
-    assert llm._payload_fact_defect(report, payload, _AIR_ASK) == ""
+    assert search_report._search_report_unsourced_words(report, payload, _AIR_ASK) == []
+    assert payload_fact_checks._payload_fact_defect(report, payload, _AIR_ASK) == ""
 
 
 def test_a_translated_report_still_owes_the_pages_numbers() -> None:
     invented = "El índice de calidad del aire indica que el PM2.5 marcó 35 en la última lectura."
     payload = _search_payload(_AIR_RESULTS)
-    assert llm._search_report_unsourced_words(invented, payload, _AIR_ASK) == ["35"]
-    assert llm._payload_fact_defect(invented, payload, _AIR_ASK) == "search_report_unsourced_claim"
+    assert search_report._search_report_unsourced_words(invented, payload, _AIR_ASK) == ["35"]
+    assert payload_fact_checks._payload_fact_defect(invented, payload, _AIR_ASK) == "search_report_unsourced_claim"
 
 
 _GAME_RESULTS = [
@@ -88,7 +93,7 @@ _GAME_RESULTS = [
 )
 def test_one_paraphrased_word_among_many_sourced_ones_is_the_reports_wording(report: str) -> None:
     payload = _search_payload(_GAME_RESULTS)
-    assert llm._payload_fact_defect(report, payload, "how do you play charades") == ""
+    assert payload_fact_checks._payload_fact_defect(report, payload, "how do you play charades") == ""
 
 
 @pytest.mark.parametrize(
@@ -102,7 +107,7 @@ def test_one_paraphrased_word_among_many_sourced_ones_is_the_reports_wording(rep
 )
 def test_a_claim_of_the_models_own_still_falls(claim: str) -> None:
     payload = _search_payload(_GAME_RESULTS)
-    assert llm._payload_fact_defect(claim, payload, "how do you play charades") == "search_report_unsourced_claim"
+    assert payload_fact_checks._payload_fact_defect(claim, payload, "how do you play charades") == "search_report_unsourced_claim"
 
 
 _NUTRITION_RESULTS = [
@@ -120,12 +125,12 @@ def test_a_number_must_be_one_a_page_writes() -> None:
     asked = "nutrition facts for lasagna please"
     honest = "One serving of lasagna contains 480 Calories with 40% carbs."
     invented = "One serving of lasagna contains 620 Calories with 40% carbs."
-    assert llm._payload_fact_defect(honest, payload, asked) == ""
-    assert llm._payload_fact_defect(invented, payload, asked) == "search_report_unsourced_claim"
+    assert payload_fact_checks._payload_fact_defect(honest, payload, asked) == ""
+    assert payload_fact_checks._payload_fact_defect(invented, payload, asked) == "search_report_unsourced_claim"
     # A number the page writes in words is the page's («three countries»).
     worded = [{"title": "Three flags that are not rectangles", "url": "https://24flags.example.com/",
                "snippet": "Only three countries have a flag that is not a rectangle."}]
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Only 3 countries have a flag that is not a rectangle.",
         _search_payload(worded), "is there a flag that is not a rectangle",
     ) == ""
@@ -169,7 +174,7 @@ def test_the_place_of_a_clock_elsewhere_is_read(text: str, place: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, ("system.time", "web.search"), (), ())
     assert intent is not None and intent.operations == ("system.time",)
     assert effect_intent.operation_domain_is_grounded(text, "system.time") is True
-    assert mind_main._explicit_arguments_from_evidence("system.time", fold(text)) == {"place": place}
+    assert semantic_arguments._explicit_arguments_from_evidence("system.time", fold(text)) == {"place": place}
 
 
 @pytest.mark.parametrize(
@@ -219,7 +224,7 @@ def test_a_zone_named_by_its_name_is_read_as_that_zone(text: str, zone: str) -> 
 )
 def test_this_clock_an_event_or_two_zones_are_not_a_clock_elsewhere(text: str) -> None:
     assert clock_elsewhere(fold(text)) is None
-    assert mind_main._explicit_arguments_from_evidence("system.time", fold(text)) == {}
+    assert semantic_arguments._explicit_arguments_from_evidence("system.time", fold(text)) == {}
 
 
 _NOW = "2026-09-24T11:18:52.1234567Z"
@@ -254,7 +259,7 @@ _TOKYO = {"name": "Tokio", "country": "Japón", "timeZone": "Asia/Tokyo",
     ],
 )
 def test_the_mind_computes_the_time_there_and_the_conversion(asked, place, language, facts) -> None:
-    payload = llm._compose_situation_payload(_time_situation(place), language, user_text=asked)
+    payload = compose_payload._compose_situation_payload(_time_situation(place), language, user_text=asked)
     for key, value in facts.items():
         assert payload[key] == value, key
     # The zone identifier and this PC's instant are not words for the narrator.
@@ -276,12 +281,12 @@ def test_the_mind_computes_the_time_there_and_the_conversion(asked, place, langu
 def test_the_reply_owes_the_computed_time_and_the_place(asked: str, reply: str, defect: str) -> None:
     situation = _time_situation(_MADRID)
     language = "en" if asked.startswith("what") else "es"
-    payload = llm._compose_situation_payload(situation, language, user_text=asked)
-    visible = llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)})
-    assert llm._payload_fact_defect(reply, payload, asked) == defect
+    payload = compose_payload._compose_situation_payload(situation, language, user_text=asked)
+    visible = visible_defect.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)})
+    assert payload_fact_checks._payload_fact_defect(reply, payload, asked) == defect
     assert visible == defect or (defect and visible)
 
 
 @pytest.mark.parametrize("code", ["time_place_not_found", "time_place_service_unavailable", "time_place_zone_ambiguous"])
 def test_the_absences_of_a_place_time_have_their_cause_facts(code: str) -> None:
-    assert code in llm._CAUSE_FACT
+    assert code in compose_situation._CAUSE_FACT

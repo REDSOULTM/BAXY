@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import visible_defect
 from baxy_mind.semantic import voice_register
 
 MISSION = {
@@ -29,7 +29,7 @@ NOTE_SAVED = {
 
 
 def _defect(text: str, situation: dict, intent: str = "status", said: str = "") -> str:
-    return llm.compose_visible_defect(text, intent, said, {"situation": json.dumps(situation, ensure_ascii=False)})
+    return visible_defect.compose_visible_defect(text, intent, said, {"situation": json.dumps(situation, ensure_ascii=False)})
 
 
 @pytest.mark.parametrize(

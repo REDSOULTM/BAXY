@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import clock_facts
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.knowledge import reference_lookup, worked_out_from_what_was_said
 from baxy_mind.semantic.temporal import hours_apart_from_the_clock_told
@@ -120,7 +120,7 @@ def test_h_w08_t3_the_hours_apart_from_here_are_the_clock_read_of_the_place_just
         "place": {"name": "Lima", "country": "Perú", "timeZone": "America/Lima", "utcOffsetMinutes": -300,
                   "authority": "named_place_geocoded"},
     }
-    facts = llm._place_clock_facts(observed, result["objective"], "es")
+    facts = clock_facts._place_clock_facts(observed, result["objective"], "es")
     assert (facts["clock"], facts["clockAt"], facts["difference"]) == ("10:10", "Lima", "2 h menos que aquí")
 
 

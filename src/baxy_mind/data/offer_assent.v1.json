@@ -1,0 +1,16 @@
+{
+ "version": 1,
+ "_doc": "Un sí a una oferta de BAXY que, aceptada, actúa (D39: cancelar las alarmas leídas; estabilización B2: enviar el mensaje que dejó escrito). Una sola fuente para las dos (semantic.dialogue.accepts_offer). La respuesta entera, plegada y sin acentos, son sólo estas frases: al menos una de yes o de las del acto ofrecido (acts), y las de with sólo acompañándolas. Revisión B2 H1: sin ¿ ? ni puntos suspensivos (una repregunta o una duda no es un sí) y sin «ya», «bueno», «vale» ni «please»/«por favor» a secas (ambiguos).",
+ "yes": [
+  "si", "sip", "dale", "ok", "okay", "okey", "claro", "hazlo", "hacelo", "adelante", "de una",
+  "yes", "yeah", "yep", "sure", "go ahead", "do it"
+ ],
+ "with": ["por favor", "porfa", "please"],
+ "acts": {
+  "alarms": [
+   "todas", "todas ellas", "all", "all of them", "cancelalas", "cancelalas todas", "cancela todas",
+   "borralas", "quitalas", "cancel them", "cancel all", "cancel them all", "cancel all of them"
+  ],
+  "send": ["envialo", "mandalo", "enviala", "mandala", "send it"]
+ }
+}

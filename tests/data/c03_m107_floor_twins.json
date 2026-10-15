@@ -77,8 +77,8 @@
      "side": "right"
     }
    },
-   "es": "Coloqué la ventana: a la derecha.",
-   "en": "I snapped the window: on the right."
+   "es": "Coloqué la ventana a la derecha.",
+   "en": "I snapped the window on the right."
   },
   {
    "id": "audio-mute-done",
@@ -526,6 +526,63 @@
    "en": "There was no pending reminder to cancel."
   },
   {
+   "id": "bluetooth-already-on",
+   "situation": {
+    "kind": "operation",
+    "operation": "bluetooth.radio.set",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "state": true,
+     "changed": false,
+     "radioCount": 1,
+     "authority": "windows_radio_api_postread"
+    }
+   },
+   "es": "El Bluetooth ya estaba encendido.",
+   "en": "The Bluetooth was already on."
+  },
+  {
+   "id": "wifi-already-off",
+   "situation": {
+    "kind": "operation",
+    "operation": "wifi.radio.set",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "state": false,
+     "changed": false,
+     "radioCount": 1,
+     "authority": "windows_radio_api_postread"
+    }
+   },
+   "es": "El Wi-Fi ya estaba apagado.",
+   "en": "The Wi-Fi was already off."
+  },
+  {
+   "id": "bluetooth-switched-on",
+   "situation": {
+    "kind": "operation",
+    "operation": "bluetooth.radio.set",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "state": true,
+     "changed": true,
+     "radioCount": 1,
+     "authority": "windows_radio_api_postread"
+    }
+   },
+   "es": "Encendí el Bluetooth.",
+   "en": "I turned the Bluetooth on."
+  },
+  {
    "id": "search-found-untold",
    "situation": {
     "kind": "operation",
@@ -811,8 +868,235 @@
      "displayName": "Tomás"
     }
    },
-   "es": "Dejé escrito el mensaje para «Tomás».",
-   "en": "I left the message written for «Tomás»."
+   "es": "Dejé escrito el mensaje para «Tomás» en Discord.",
+   "en": "I left the message written for «Tomás» on Discord."
+  },
+  {
+   "id": "capture-saved-desktop",
+   "situation": {
+    "kind": "operation",
+    "operation": "capture.screenshot",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "captureId": "capture_00000000000000000000000000000000",
+     "width": 1920,
+     "height": 1080,
+     "sha256": "abababababababababababababababababababababababababababababababab",
+     "scope": "virtual_screen",
+     "savedFolder": "desktop",
+     "fileName": "Screenshot 2026-10-09 075027.png"
+    }
+   },
+   "es": "Hice la captura de pantalla «Screenshot 2026-10-09 075027.png»: la guardé en el Escritorio.",
+   "en": "I captured the screen «Screenshot 2026-10-09 075027.png»: I saved it on the Desktop."
+  },
+ {
+   "id": "brightness-already-at-level",
+   "situation": {
+    "kind": "operation",
+    "operation": "system.settings.set",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "setting": "brightness",
+     "value": 40,
+     "changed": false,
+     "baselineValues": [40],
+     "values": [40],
+     "authority": "wmi_monitor_brightness_postread"
+    }
+   },
+   "es": "El brillo ya estaba al 40 %.",
+   "en": "The brightness was already at 40%."
+  },
+  {
+   "id": "brightness-set-from-30",
+   "situation": {
+    "kind": "operation",
+    "operation": "system.settings.set",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "setting": "brightness",
+     "value": 40,
+     "changed": true,
+     "baselineValues": [30],
+     "values": [40],
+     "authority": "wmi_monitor_brightness_postread"
+    }
+   },
+   "es": "Puse el brillo: 40 %.",
+   "en": "I adjusted the brightness: 40%."
+  },
+  {
+   "id": "estabf-send-unconfirmed",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "result_unverified",
+    "step": 2,
+    "pendingRequest": "Manda a Ron92 en Discord: «si se conecta a las 9 para jugar».",
+    "effectUncertain": true,
+    "verified": false,
+    "pending": true,
+    "canRepeat": false,
+    "evidenceRetained": true,
+    "steps": [
+     "{\"kind\": \"operation\", \"operation\": \"message.recipient.resolve\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"recipientId\": \"recipient_0645b6087d344fab8f92972740aae988\", \"channel\": \"discord\", \"displayName\": \"Ron92\", \"verified\": true}, \"readOnly\": true}"
+    ],
+    "reason": {
+     "kind": "operation",
+     "operation": "message.send",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "effectUncertain": true,
+     "target": "Ron92",
+     "attempted": {
+      "text": "si se conecta a las 9 para jugar"
+     }
+    }
+   },
+   "es": "Intenté enviar el mensaje a «Ron92»: «si se conecta a las 9 para jugar», pero no pude confirmar si se hizo.",
+   "en": "I tried to send the message to «Ron92»: «si se conecta a las 9 para jugar», but I couldn't confirm whether it was done."
+  },
+  {
+   "id": "estabf-send-verified-with-its-text",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "mission_completed",
+    "stepCount": 2,
+    "steps": [
+     "{\"kind\": \"operation\", \"operation\": \"message.recipient.resolve\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"recipientId\": \"recipient_0645b6087d344fab8f92972740aae988\", \"channel\": \"discord\", \"displayName\": \"Ron92\", \"verified\": true}, \"readOnly\": true}",
+     "{\"kind\": \"operation\", \"operation\": \"message.send\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"messageId\": \"message_242d96c386a4988c176a8747\", \"recipientId\": \"recipient_0645b6087d344fab8f92972740aae988\", \"channel\": \"discord\", \"displayName\": \"Ron92\", \"contentSha256\": \"d2feab60cbfabf2d27df2319d96861b67d421fd7e063b801fdd433f25297a249\", \"delivery\": \"visible_postcondition\", \"text\": \"llego en 10 min y que lleve el cargador\"}, \"readOnly\": false}"
+    ],
+    "completedRequest": "mandale a Ron92 por discord que llego en 10 min y que lleve el cargador"
+   },
+   "es": "Envié el mensaje a «Ron92» en Discord: dice «llego en 10 min y que lleve el cargador».",
+   "en": "I sent the message to «Ron92» on Discord: it says «llego en 10 min y que lleve el cargador»."
+  },
+  {
+   "id": "estabf-open-already-running",
+   "situation": {
+    "kind": "operation",
+    "operation": "app.open",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "appId": "Microsoft Edge",
+     "displayName": "Microsoft Edge",
+     "alreadyRunning": true,
+     "windowHandle": 68050
+    },
+    "readOnly": false
+   },
+   "es": "La aplicación «Microsoft Edge» ya estaba abierta.",
+   "en": "The app «Microsoft Edge» was already open."
+  },
+  {
+   "id": "estabf-open-running-new-document",
+   "situation": {
+    "kind": "operation",
+    "operation": "app.open",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "appId": "Word",
+     "displayName": "Word",
+     "alreadyRunning": true,
+     "newDocument": true
+    }
+   },
+   "es": "Creé un documento nuevo en la aplicación «Word».",
+   "en": "I created a new document in the app «Word»."
+  },
+  {
+   "id": "estabf-place-edge-running-without-window",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 3,
+    "steps": [
+     "{\"kind\": \"operation\", \"operation\": \"window.snap\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"side\": \"left\", \"window\": {\"windowId\": \"win_d4afdf65f63ccf663d32ccd24a3981ba\", \"processName\": \"WINWORD\", \"title\": \"Documento1 - Word\", \"state\": \"normal\", \"foreground\": true, \"x\": 0, \"y\": 0, \"width\": 960, \"height\": 1044}}, \"readOnly\": false}",
+     "{\"kind\": \"operation\", \"operation\": \"app.open\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"appId\": \"Microsoft Edge\", \"displayName\": \"Microsoft Edge\", \"alreadyRunning\": true, \"windowHandle\": 68050}, \"readOnly\": false}"
+    ],
+    "reason": {
+     "kind": "operation",
+     "operation": "window.resolve",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "window_not_found",
+     "target": "Microsoft Edge",
+     "attempted": {
+      "applicationName": "Microsoft Edge"
+     },
+     "notDone": [
+      {
+       "operation": "window.snap",
+       "target": "Microsoft Edge"
+      }
+     ]
+    }
+   },
+   "es": "Coloqué la ventana «Documento1 - Word» a la izquierda y la aplicación «Microsoft Edge» ya estaba abierta, pero no pude colocar la ventana «Microsoft Edge».",
+   "en": "I snapped the window «Documento1 - Word» on the left and the app «Microsoft Edge» was already open, but I couldn't snap the window «Microsoft Edge»."
+  },
+  {
+   "id": "estabf-brightness-uncertain",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "system.settings.set",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "verification_failed",
+     "effectUncertain": true,
+     "attempted": {
+      "setting": "brightness",
+      "value": 30
+     }
+    }
+   },
+   "es": "Intenté poner el brillo: 30 %, pero no pude confirmar si se hizo.",
+   "en": "I tried to set the brightness: 30%, but I couldn't confirm whether it was done."
+  },
+  {
+   "id": "estabf-send-verified-text-unquotable",
+   "situation": {
+    "kind": "operation",
+    "operation": "message.send",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "recipientId": "recipient_0645b6087d344fab8f92972740aae988",
+     "channel": "discord",
+     "displayName": "Ron92",
+     "contentSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "delivery": "visible_postcondition"
+    }
+   },
+   "es": "Envié el mensaje a «Ron92» en Discord.",
+   "en": "I sent the message to «Ron92» on Discord."
   }
  ]
 }

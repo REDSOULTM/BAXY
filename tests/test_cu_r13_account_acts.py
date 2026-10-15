@@ -1,6 +1,6 @@
 """Live z7 (2026-10-07): going to «Tu biblioteca» the model followed a profile and saved a playlist in the account."""
 
-from baxy_mind import computer_use
+from baxy_mind import cu_validate
 from baxy_mind.semantic.account_acts import account_act, goal_asks_for
 
 
@@ -13,7 +13,7 @@ def _click(goal: str, label: str, *names: str) -> dict:
     view = _view(*names)
     index = next(i for i, name in enumerate(names) if name == label)
     raw = {"act": "click", "label": label, "i": index, "why": "probar"}
-    return computer_use.validate_decision(raw, view=view, last_failed=None, application_names=[], goal=goal, history=[])
+    return cu_validate.validate_decision(raw, view=view, last_failed=None, application_names=[], goal=goal, history=[])
 
 
 def test_account_acts_are_read_from_the_control_name() -> None:
@@ -45,3 +45,17 @@ def test_a_place_named_like_an_act_is_still_the_place() -> None:
     assert _click("ir a tus me gusta", "Tus me gusta", *names)["operation"] == "input.visible.click"
     assert _click("ir a liked songs", "Liked Songs", *names)["operation"] == "input.visible.click"
     assert _click("ir a tus me gusta", "Seguir a Ron92", *names)["operation"] == "none"
+
+
+def test_deleting_the_account_is_an_act_never_pressed_unasked() -> None:
+    # Live s13 (banco fp, 2026-10-14): going to Discord's settings, the mission wandered and left the focus on «Eliminar
+    # cuenta». In bypass the Kernel asks nothing, so the mind's own guard must refuse it unless the goal asks for it.
+    assert account_act("Eliminar cuenta") == "delete_account"
+    assert account_act("Delete Account") == "delete_account"
+    assert account_act("Desactivar cuenta") == "delete_account"
+    assert account_act("Eliminar de la lista") != "delete_account"
+    names = ("Mi cuenta", "Eliminar cuenta", "Desactivar cuenta")
+    for label in names[1:]:
+        step = _click("ir a configuracion", label, *names)
+        assert step["operation"] == "none" and step.get("code") == "changes_the_account", label
+    assert goal_asks_for("eliminar mi cuenta", "delete_account")

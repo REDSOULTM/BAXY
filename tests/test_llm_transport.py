@@ -20,6 +20,7 @@ from baxy_mind.llm_transport import (
     ChatCompletionConnectionPool,
     post_chat_completion,
 )
+from baxy_mind import llm_settings
 
 
 @pytest.mark.parametrize("instruction_count", [1, 2, 3])
@@ -1383,13 +1384,13 @@ def test_runtime_pool_owns_slots_only_on_the_owned_multi_slot_server(
     assert runtime._http_connection_pool._server_slots is owns_slots
     if endpoint is None:
         # The pool leases exactly the slots the owned server runs.
-        assert command[command.index("-np") + 1] == str(llm.GPU_SERVER_SLOTS if owns_slots else 1)
+        assert command[command.index("-np") + 1] == str(llm_settings.GPU_SERVER_SLOTS if owns_slots else 1)
     runtime.close()
 
 
 def test_gpu_slot_count_can_be_lowered_for_a_measured_run() -> None:
     """M57 (goal v3 step 7): BAXY_MIND_GPU_SLOTS=2 lowers the server's slots; anything else keeps three."""
-    from baxy_mind.llm import _gpu_slots_from_env
+    from baxy_mind.llm_settings import _gpu_slots_from_env
 
     assert _gpu_slots_from_env("2") == 2
     assert _gpu_slots_from_env(" 3 ") == 3

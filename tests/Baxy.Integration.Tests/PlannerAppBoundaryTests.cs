@@ -108,6 +108,296 @@ public sealed class PlannerAppBoundaryTests
         }
     }
 
+    // Tanda t4-r6 «ponme el navegador y el word uno al lado del otro»: Word's resolve also listed an untitled or owned
+    // dialog; placing acts on the application's one titled frame no window owns. Closing, or two real frames, stays
+    // ambiguous.
+    [TestCase("window.snap", "", false, true)]
+    [TestCase("window.move", "Guardar como", true, true)]
+    [TestCase("window.maximize", null, false, true)]
+    [TestCase("window.snap", "Documento2 - Word", false, false)]
+    [TestCase("app.close", "", false, false)]
+    public void ArrangingGroundsTheApplicationsMainFrame(string operation, string? otherTitle, bool otherOwned, bool grounded)
+    {
+        var step = new MindPlanStep("place", operation, "Acomoda Word.", ["find"], "after_dependencies", null);
+        var dialog = new JsonObject
+        {
+            ["windowId"] = "win_" + new string('2', 32),
+            ["processName"] = "WINWORD",
+            ["state"] = "normal",
+        };
+        if (otherTitle is not null)
+            dialog["title"] = otherTitle;
+        if (otherOwned)
+            dialog["owned"] = true;
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = "find",
+            ["operation"] = "window.resolve",
+            ["verified"] = true,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = new JsonObject
+            {
+                ["windows"] = new JsonArray(
+                    new JsonObject
+                    {
+                        ["windowId"] = "win_" + new string('1', 32),
+                        ["processName"] = "WINWORD",
+                        ["title"] = "Documento1 - Word",
+                        ["state"] = "normal",
+                    },
+                    dialog),
+            },
+        });
+        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments),
+            Is.EqualTo(grounded));
+        if (grounded)
+            Assert.That((string?)arguments!["windowId"], Is.EqualTo("win_" + new string('1', 32)));
+    }
+
+    // Ronda 22 (r18 t4-c19 «ponme el navegador y el word uno al lado del otro»): the browser's resolve listed three
+    // titled frames — the real view of the evidence, a picture-in-picture of 365×206 among them — and the snap ended in
+    // step_data_missing. The frame the act is for is grounded: not already in the act's end state, then foreground,
+    // then topmost tool-sized frames out (against the work area), then the provider's z rank, then the clearly larger
+    // one. Two comparable frames with no recency stay ambiguous. Revisión 1: the order of the read proves nothing.
+    private static JsonObject Frame(char id, string title, string state, int width, int height, bool foreground = false,
+        int? zOrder = null, bool topmost = false)
+    {
+        var frame = new JsonObject
+        {
+            ["windowId"] = Id(id),
+            ["processId"] = 4100,
+            ["processName"] = "opera",
+            ["title"] = title,
+            ["state"] = state,
+            ["foreground"] = foreground,
+            ["x"] = 0,
+            ["y"] = 0,
+            ["width"] = width,
+            ["height"] = height,
+            ["workAreaWidth"] = 1934,
+            ["workAreaHeight"] = 1046,
+        };
+        if (zOrder is int rank)
+            frame["zOrder"] = rank;
+        if (topmost)
+            frame["topmost"] = true;
+        return frame;
+    }
+
+    private static string Id(char id) => "win_" + new string(id, 32);
+
+    private static bool GroundSnap(JsonArray windows, out string? windowId, string operation = "window.snap")
+    {
+        var step = new MindPlanStep("place", operation, "Pon el navegador a la izquierda.", ["find"],
+            "after_dependencies", null);
+        // The application read always carries this scope and lists its frames by area: neither is a z-order.
+        var result = new JsonObject
+        {
+            ["windows"] = windows,
+            ["count"] = windows.Count,
+            ["observationScope"] = "visible_top_level_windows",
+        };
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = "find",
+            ["operation"] = "window.resolve",
+            ["verified"] = true,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = result,
+        });
+        bool grounded = PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments);
+        windowId = grounded ? (string?)arguments!["windowId"] : null;
+        return grounded;
+    }
+
+    [Test]
+    public void T4C19ThePersonsBrowserFrameIsGroundedOutOfThreeFrames()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Verification page | Example Platform - Opera", "maximized", 1550, 830, zOrder: 4),
+            Frame('0', "(14) Un día cualquiera en la ciudad | VLOG - YouTube - Opera", "normal", 768, 816, zOrder: 9),
+            Frame('e', "Imagen sobre imagen", "normal", 365, 206, zOrder: 0, topmost: true));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('5')));
+    }
+
+    [Test]
+    public void TheFrameFirstInZOrderWinsNotTheFirstListed()
+    {
+        // Revisión 1: BAXY in front; «Descargas» was used a moment ago and stands above «Documentos», which is larger
+        // and comes first in a read ordered by area.
+        var windows = new JsonArray(
+            Frame('d', "Documentos", "normal", 1100, 750, zOrder: 6),
+            Frame('a', "Descargas", "normal", 1000, 700, zOrder: 2));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseWithNoZRankTheFirstListedIsNotTheOneUsed()
+    {
+        var windows = new JsonArray(
+            Frame('d', "Documentos", "normal", 1100, 750),
+            Frame('a', "Descargas", "normal", 1000, 700));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void TheForegroundFrameWinsOverZOrder()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Página A - Navegador", "normal", 900, 800, zOrder: 1),
+            Frame('0', "Página B - Navegador", "normal", 900, 800, foreground: true, zOrder: 3));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('0')));
+    }
+
+    [Test]
+    public void ASmallForegroundFrameWinsOverAMaximizedOne()
+    {
+        // Revisión 1: the size rule never overrides the window the person acts in.
+        var windows = new JsonArray(
+            Frame('m', "Documentos", "maximized", 1934, 1046, zOrder: 1),
+            Frame('s', "Descargas", "normal", 640, 360, foreground: true, zOrder: 0));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('s')));
+    }
+
+    [Test]
+    public void ContracaseASmallFrameThatIsNotTopmostIsNotATool()
+    {
+        // A small ordinary window above a maximized one is the one used last, not a tool.
+        var windows = new JsonArray(
+            Frame('m', "Documentos", "maximized", 1934, 1046, zOrder: 3),
+            Frame('s', "Descargas", "normal", 640, 360, zOrder: 1));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('s')));
+    }
+
+    [Test]
+    public void ATopmostToolSizedFrameIsATool()
+    {
+        var windows = new JsonArray(
+            Frame('e', "Imagen sobre imagen", "normal", 365, 206, topmost: true),
+            Frame('0', "Página B - Navegador", "normal", 900, 800));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('0')));
+    }
+
+    [Test]
+    public void ContracaseALargeTopmostFrameIsNotATool()
+    {
+        var windows = new JsonArray(
+            Frame('t', "Página A - Navegador", "normal", 900, 800, topmost: true),
+            Frame('0', "Página B - Navegador", "normal", 880, 790));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void RestoreIsForTheMinimizedFrameNotTheNormalOne()
+    {
+        // Revisión 1: a minimized frame measures 160×28; it is the one to restore, never a tool.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, zOrder: 2),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.restore"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('m')));
+    }
+
+    [Test]
+    public void RestoreIsForTheMinimizedFrameEvenWithTheNormalOneInFront()
+    {
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, foreground: true, zOrder: 0),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.restore"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('m')));
+    }
+
+    [Test]
+    public void MaximizeIsForTheForegroundFrameEvenWhenItIsAlreadyMaximized()
+    {
+        // Revisión 2 (D71): «maximiza el explorador» with «Documentos» maximized in front and «Descargas» behind. The
+        // end state never outranks the person's frame: maximizing the one behind would cover the window in use.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "maximized", 1934, 1046, foreground: true, zOrder: 0),
+            Frame('b', "Descargas", "normal", 1000, 700, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.maximize"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void MaximizeIsForTheFrameFirstInZOrderEvenWhenItIsAlreadyMaximized()
+    {
+        // BAXY in front: the explorer frame first in z-order is the person's, maximized or not.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "maximized", 1934, 1046, zOrder: 1),
+            Frame('b', "Descargas", "normal", 1000, 700, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.maximize"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseMaximizeDoesNotBringBackAMinimizedFrameOverTheForegroundOne()
+    {
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "maximized", 1934, 1046, foreground: true, zOrder: 0),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.maximize"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseRestoreOfAMaximizedFrameBehindStaysWithTheForegroundOne()
+    {
+        // Only a minimized frame has no place in front for the foreground to speak of.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, foreground: true, zOrder: 0),
+            Frame('b', "Descargas", "maximized", 1934, 1046, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.restore"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseASnapWithAMinimizedAndANormalFrameStaysAmbiguous()
+    {
+        // Where a minimized window stands says nothing of use, and it has no size to compare.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, zOrder: 2),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void ContracaseTwoComparableFramesWithNoRecencyStayAmbiguous()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Página A - Navegador", "normal", 900, 800),
+            Frame('0', "Página B - Navegador", "normal", 860, 790));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void AClearlyLargerFrameWinsWithNoRecency()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Página A - Navegador", "maximized", 1550, 830),
+            Frame('0', "Página B - Navegador", "normal", 768, 816));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('5')));
+    }
+
+    [Test]
+    public void ContracaseTwoApplicationsKeepTwoIds()
+    {
+        // One frame for each application: the snap of one window is not grounded from two applications' frames.
+        JsonObject word = Frame('1', "Documento1 - Word", "normal", 900, 800, zOrder: 1);
+        word["processId"] = 5200;
+        word["processName"] = "WINWORD";
+        var windows = new JsonArray(Frame('5', "Página A - Navegador", "maximized", 1550, 830, zOrder: 2), word);
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
     // MEME2053 «Tienes algun meme?»: the open is grounded from the verified download's folder and name.
     [Test]
     public void FileOpenIsGroundedFromTheVerifiedDownload()
@@ -1299,6 +1589,49 @@ public sealed class PlannerAppBoundaryTests
         {
             Assert.That(published, Is.Empty);
             Assert.That(failures, Is.Empty);
+            Assert.That(queue.Count, Is.Zero);
+        });
+    }
+
+    // Ronda 25 (latency): the person speaks while the boot greeting waits for the mind. The greeting is never composed:
+    // its composition would hold the mind's serial lane ahead of the request.
+    [Test]
+    public async Task WelcomeThatBecomesStaleWhileWaitingForTheMindIsNeverComposed()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        var pending = new PendingModelMessage(
+            draft, string.Empty, ModelMessageComposer.CreateFacts(draft), "t0");
+        bool stale = false;
+        int compositions = 0;
+        var published = new List<string>();
+        var settled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ =>
+            {
+                // The person submits t1 while the greeting waits for the mind to be ready.
+                stale = true;
+                return Task.FromResult<MindSidecarClient?>(mind);
+            },
+            (text, _, _) => { published.Add(text); settled.TrySetResult(true); return Task.CompletedTask; },
+            _ => Task.CompletedTask,
+            () => { },
+            () => { settled.TrySetResult(true); return Task.CompletedTask; },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(new ModelMessageCompositionOutcome("Hello, welcome!", null, UsedRecovery: false));
+            },
+            (_, _) => Task.CompletedTask,
+            isStale: _ => stale);
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await queue.CloseAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(compositions, Is.Zero);
+            Assert.That(published, Is.Empty);
             Assert.That(queue.Count, Is.Zero);
         });
     }
@@ -2748,6 +3081,60 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(MindPlanBoundary.MayReplan(mission, failed), Is.True);
             Assert.That(MindPlanBoundary.MayReplan(mission, ambiguous), Is.False);
             Assert.That(MindPlanBoundary.MayReplan(replannedTwice, failed), Is.False);
+        });
+    }
+
+    [Test]
+    public void AnAbsentTargetBeforeOnlyClosingStepsIsNotReplanned()
+    {
+        // Uso real t2-r4 c03-1 «cierra chrome» with Chrome not open: window.resolve answered window_not_found, the
+        // rest only closed it, and the planner ran twice more (10.5 s) to end in the same failure.
+        MindPlanStep resolve = new(
+            "resolve", "window.resolve", "Encuentra la ventana.", [], "literal",
+            new JsonObject { ["applicationName"] = "Google Chrome" });
+        MindPlanStep close = new(
+            "close", "app.close", "Cierra la aplicación.", ["resolve"], "literal",
+            new JsonObject { ["applicationName"] = "Google Chrome" });
+        MindPlanStep focus = new(
+            "focus", "window.focus", "Trae la ventana.", ["resolve"], "literal",
+            new JsonObject { ["applicationName"] = "Google Chrome" });
+        OperationResponse absent = new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Failed,
+            "No hay ninguna ventana de esa aplicación.",
+            false,
+            false,
+            null,
+            "window_not_found");
+        OperationResponse clientAbsent = absent with { ErrorCode = "spotify_client_not_running" };
+        OperationResponse otherFailure = absent with { ErrorCode = "inventory_failed" };
+        var closing = new PendingMindPlanExecution("cierra chrome", [resolve, close]);
+        var focusing = new PendingMindPlanExecution("trae chrome", [resolve, focus]);
+        // Review: a close of another target that does not hang on the absent one («cierra chrome y spotify», Chrome's
+        // window gone at its own close) is not ended by that absence.
+        MindPlanStep resolveSpotify = new(
+            "resolveSpotify", "window.resolve", "Encuentra Spotify.", [], "literal",
+            new JsonObject { ["applicationName"] = "Spotify" });
+        MindPlanStep closeSpotify = new(
+            "closeSpotify", "app.close", "Cierra Spotify.", ["resolveSpotify"], "literal",
+            new JsonObject { ["applicationName"] = "Spotify" });
+        var closingTwo = new PendingMindPlanExecution(
+            "cierra chrome y spotify", [resolve, resolveSpotify, close, closeSpotify])
+        {
+            NextIndex = 2,
+        };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindPlanBoundary.MayReplan(closingTwo, absent), Is.True);
+            Assert.That(MindPlanBoundary.MayReplan(closing, absent), Is.False);
+            Assert.That(MindPlanBoundary.MayReplan(closing, clientAbsent), Is.False);
+            // Contracases: another failure before the close, and an absence before a step that is no close, replan.
+            Assert.That(MindPlanBoundary.MayReplan(closing, otherFailure), Is.True);
+            Assert.That(MindPlanBoundary.MayReplan(focusing, absent), Is.True);
         });
     }
 

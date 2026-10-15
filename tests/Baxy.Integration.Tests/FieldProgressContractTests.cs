@@ -191,6 +191,7 @@ public sealed class FieldProgressContractTests
             DateTimeStyles.AssumeUniversal);
         string root = Path.Combine(Path.GetTempPath(), "baxy-cu-milestone-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
+        bool bypass = UserMessagePolicy.BypassLlmCompositionForTests;
         try
         {
             await using var viewModel = new MainWindowViewModel();
@@ -208,15 +209,32 @@ public sealed class FieldProgressContractTests
             plans.Begin(execution);
             viewModel.BeginTurnPresentation("Abre Steam y ve a la biblioteca", start);
 
-            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(start)), Is.False);
-            Assert.That(viewModel.ProgressLabel, Is.Null);
+            // lat-apertura-clic (owner's rule: more than 3 s without a signal is not acceptable): a wait of the mission
+            // gets the formulated label, which claims no result; the model is never asked to compose one. Review of
+            // the branch (finding 5): the assembly bypasses the model's composition for every test, which took the
+            // formulated path whatever the mission; here the bypass is off, so only the running mission can take it
+            // (with no model ready, the ordinary milestone would emit nothing).
+            UserMessagePolicy.BypassLlmCompositionForTests = false;
+            DateTimeOffset due = FieldBridgeContract.FirstHitoDueAt(start);
+            Assert.That(viewModel.TryEmitDueMilestone(due), Is.True);
+            Assert.That(viewModel.ProgressLabel, Is.EqualTo(FirstSignal.FormulateProgress(
+                "Abre Steam y ve a la biblioteca", FirstSignal.KindMilestone)));
+            Assert.That(viewModel.ProgressLabel, Does.Not.Match("(?i)^\\s*listo\\b"));
+            Assert.That(typeof(MainWindowViewModel)
+                .GetField("_milestoneCompositionTask", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(viewModel), Is.Null, "no label composed by the model while the mission runs");
+            Assert.That(viewModel.TryEmitDueMilestone(due.AddSeconds(1)), Is.False, "not again before 3 s more");
 
             execution.ComputerUse = null;
-            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(start)), Is.True,
+            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(due)), Is.False,
+                "once the mission ends, no formulated label: the model's milestone (none ready here)");
+            UserMessagePolicy.BypassLlmCompositionForTests = true;
+            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(due).AddSeconds(3)), Is.True,
                 "once the mission ends the ordinary milestone comes back");
         }
         finally
         {
+            UserMessagePolicy.BypassLlmCompositionForTests = bypass;
             Directory.Delete(root, recursive: true);
         }
     }

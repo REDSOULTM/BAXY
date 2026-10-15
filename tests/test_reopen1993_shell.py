@@ -6,8 +6,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_situation
+from baxy_mind import payload_fact_checks
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({"shell.command.run", "app.open", "web.search", "package.install.prepare", "package.install.commit", "app.installed"})
 APPS = ("Spotify", "Steam")
@@ -30,7 +32,7 @@ def test_console_commands_are_run_for_real(text: str, command: str, cwd: str | N
     assert intent is not None and intent.operations == ("shell.command.run",)
     assert effect_intent.shell_command_request(text) == (command, cwd)
     schema = {"type": "object", "properties": {"command": {"type": "string"}, "cwd": {"type": ["string", "null"]}}, "required": ["command"], "additionalProperties": False}
-    assert mind._ground_explicit_arguments("shell.command.run", text, schema, APPS) == {"command": command, "cwd": cwd}
+    assert argument_grounding._ground_explicit_arguments("shell.command.run", text, schema, APPS) == {"command": command, "cwd": cwd}
     assert effect_intent.operation_domain_is_grounded(text, "shell.command.run") is True
 
 
@@ -62,9 +64,9 @@ SILENT = {"operation": "shell.command.run", "seen": {"command": "cd .", "cwd": "
     ],
 )
 def test_the_reply_quotes_only_what_the_command_printed(text: str, payload: dict, defect: str) -> None:
-    assert llm._shell_fact_defect(text, payload) == defect
+    assert payload_fact_checks._shell_fact_defect(text, payload) == defect
 
 
 def test_the_refusals_have_their_own_cause_facts() -> None:
     for code in ("shell_command_destructive", "shell_command_directory_not_found", "shell_command_timeout", "shell_command_not_started"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT

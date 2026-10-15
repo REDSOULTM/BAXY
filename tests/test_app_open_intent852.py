@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import apply_explicit_effect_contract
+from baxy_mind.turn_gates import apply_explicit_effect_contract
 from baxy_mind.effect_intent import (
     operation_domain_is_grounded,
     resolve_application_catalog_app_id,

@@ -28,13 +28,13 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.arguments import partial_explicit_arguments, watch_named_title
 from baxy_mind.semantic.decider import ContextDecision, followup_thing_kept, with_the_searched_name
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.web import searches_places_somewhere
 from test_c03_m148_avisos_eso_y_cuentas import OPERATIONS, _Decider, _history, _tool
+from baxy_mind import turn_decide
 
 STREAMING = {"type": "object", "properties": {
     "service": {"type": "string", "enum": ["disney_plus", "netflix"]},
@@ -86,7 +86,7 @@ def _turn(said: list[str], decision: ContextDecision, state: DialogueState | Non
     """``said``: the conversation, user first and alternating, ending in the person's message."""
 
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m179", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=state or DialogueState(),

@@ -24,7 +24,7 @@ del motor (Fase 4/5).
 
 ## Los tres caminos, en orden (hoy)
 
-Todo pasa por `turn.decide` → `src/baxy_mind/__main__.py::_prepare_turn_result`.
+Todo pasa por `turn.decide` → `src/baxy_mind/turn_decide.py::_prepare_turn_result`.
 
 0. **Atajos del shell** (`MainWindowViewModel.TryExecuteWithMindAsync`): hora → `system.time`, conexión →
    `network.status`, saludo / «quién eres» / «sigue así» → conversación. Una confirmación pendiente la decide el
@@ -36,7 +36,7 @@ Todo pasa por `turn.decide` → `src/baxy_mind/__main__.py::_prepare_turn_result
    charla, destino delante, deseo de escuchar) devuelven `effects` y de qué forma salieron (`source`); un efecto
    reconocido sin su valor es `clarification`; la charla que no pide nada es `talk`. Un efecto → action, varios →
    plan, falta un dato → clarify, límite conocido / fuera del mundo / charla → conversation. Antes de la lectura
-   quedan en `__main__` los lectores que necesitan el historial (una oferta pendiente, «repetilo», el pronombre de
+   quedan en el sidecar (`turn_followups`, `turn_decide`) los lectores que necesitan el historial (una oferta pendiente, «repetilo», el pronombre de
    una búsqueda del navegador).
 3. **Decisor en contexto** (Fase 3.5b, `semantic/decider.py` + `llm.decide_in_context`): todo lo que ningún lector
    prueba —y, si el mensaje sigue a turnos anteriores, todo lo que los lectores de conversación (charla, quejas,
@@ -135,20 +135,21 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 |---|---|---|
 | `normalize.py` | el único fold (minúsculas, sin tildes, espacios), el de palabras (`_policy_guard_text`: la puntuación es espacio) y el que conserva la puntuación (`_accent_folded_with_punctuation`) | antes había cuatro copias idénticas en effect_intent, request_reading, llm y el hueco; los dos últimos salieron de `llm` con sus lectores (2026-09-25) |
 | `request.py` | la lectura única del pedido: idioma (también el de un turno de conversación y la respuesta neutra «sí/confirmar»), saludo, intenciones (identidad, capacidad, restricciones) | era `baxy_mind/request_reading.py`; pasó entera (2026-09-25). `first_signal` ya no tiene su propio lector de idioma |
-| `conversation.py` | lo que se contesta hablando: acto social, «no entendí», conocimiento y factoides, aritmética, descripción, charla personal, límites cerrados, conversación estable sin efecto, app o juego no instalado; la forma de respuesta pedida (`_conversation_presentation_shape`: contenido libre, risa, directiva de conducta, deletreo, versus, sarcasmo…), el sorteo, lo que se pide repetir, y las lecturas del pedido que usan los vetos del compositor (pregunta sí/no sobre lo propio, «¿qué es esto?», cargo público actual, código pedido `asks_for_code` y encargar algo `asks_to_order`, M50; pedir que se haga algo `asks_to_make` y las raíces de los infinitivos pedidos `requested_infinitive_stems`, M54) | salió de `__main__` y `llm` (2026-09-25). Devuelve lecturas (tipo de conversación e idioma, o si la forma está); `__main__._conversation_turn_decision` arma la decisión |
-| `arguments.py` | el ligador de argumentos: los valores literales de cada operación leídos de las palabras de la persona (`_explicit_arguments_from_evidence` y sus lectores por familia, hora canónica, correferencia ordinal de un paso del plan) | salió de `__main__` (2026-09-25); `__main__._ground_explicit_arguments` lo contrasta con el esquema del catálogo |
+| `conversation.py` | lo que se contesta hablando: acto social, «no entendí», conocimiento y factoides, aritmética, descripción, charla personal, límites cerrados, conversación estable sin efecto, app o juego no instalado; la forma de respuesta pedida (`_conversation_presentation_shape`: contenido libre, risa, directiva de conducta, deletreo, versus, sarcasmo…), el sorteo, lo que se pide repetir, y las lecturas del pedido que usan los vetos del compositor (pregunta sí/no sobre lo propio, «¿qué es esto?», cargo público actual, código pedido `asks_for_code` y encargar algo `asks_to_order`, M50; pedir que se haga algo `asks_to_make` y las raíces de los infinitivos pedidos `requested_infinitive_stems`, M54) | salió de `__main__` y `llm` (2026-09-25). Devuelve lecturas (tipo de conversación e idioma, o si la forma está); `turn_decisions._conversation_turn_decision` arma la decisión |
+| `arguments.py` | el ligador de argumentos: los valores literales de cada operación leídos de las palabras de la persona (`_explicit_arguments_from_evidence` y sus lectores por familia, hora canónica, correferencia ordinal de un paso del plan) | salió de `__main__` (2026-09-25); `argument_grounding._ground_explicit_arguments` lo contrasta con el esquema del catálogo |
 | `lexicon.py` | las palabras de cada familia, dichas una vez: micrófono (sustantivos, verbos de silenciar / activar), volumen, brillo, ajustes del PC, restaurar el sonido | el lector del patrón, la guarda de dominio, las pistas de estado del planner y el veto importan lo mismo; un sinónimo se añade una vez («micro», «prender», «devolver el sonido») |
 | `grammar.py` | la gramática compartida del pedido: sobre (saludos, cortesía, «¿podés…?», «volvé a…», «ahora/luego…» + verbo), cabeza, cláusulas, negación | `_head_is` reconoce **formas**, no entradas: la cabeza tal cual, sin clíticos («cerralo» → «cerra»), y el voseo como infinitivo («cerra» → «cerrar»). Una lista de verbos ya no necesita «cerralo», «abrilo», «devolvele» |
 | `dialogue.py` | el hueco de diálogo (arriba), el antecedente del pedido, la aclaración pendiente del historial, si la reescritura del decisor trae palabras que nadie dijo (`restatement_was_said`, M19) y si la persona pregunta el porqué (`asks_for_the_reason`) | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí; «¿por qué no puedes…?» deja que un límite diga su razón |
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
 | `levels.py` | los niveles de salida (volumen del sistema, brillo) dichos sin objeto, mezclando idiomas, secos («Brillo 20%») o como respuesta a «¿cuánto?» | no decide efectos: reescribe el pedido en la frase canónica que ya leen los lectores de volumen y brillo (`patterns.output_level_request`); una cantidad suelta sólo completa el pedido relativo inmediatamente anterior, «a 40» es el nivel final y «20» lo que se mueve; sin cantidad pregunta cuánto (H0027) |
-| `surface.py` | la superficie canónica: las palabras con que la persona nombra algo servido y que ningún lector conoce («speaker/bocina/parlante» → «el audio», «hacer sonar» → «poner», «quiero/me apetece que + subjuntivo» → imperativo, «inactivar» → «desactivar», «gallery/galería» → «carpeta de imágenes», «añadir una lista» → «crea una lista», «pon en pausa» → «pausa»), con su tabla en `lexicon` | como `levels`, no decide efectos: antes de publicar un límite —de un lector o del decisor en contexto (M13)— `__main__._served_surface_reread` relee la reescritura y sólo lo que los lectores prueban ahí la reemplaza (tanda 3, 2026-09-24) |
+| `surface.py` | la superficie canónica: las palabras con que la persona nombra algo servido y que ningún lector conoce («speaker/bocina/parlante» → «el audio», «hacer sonar» → «poner», «quiero/me apetece que + subjuntivo» → imperativo, «inactivar» → «desactivar», «gallery/galería» → «carpeta de imágenes», «añadir una lista» → «crea una lista», «pon en pausa» → «pausa»), con su tabla en `lexicon` | como `levels`, no decide efectos: antes de publicar un límite —de un lector o del decisor en contexto (M13)— `turn_decide._served_surface_reread` relee la reescritura y sólo lo que los lectores prueban ahí la reemplaza (tanda 3, 2026-09-24) |
 | `decider.py` | el decisor en contexto de la Fase 3.5b: su política (9 reglas del dueño en prosa), el formato, los títulos de familia, el catálogo llano (`data/decider_catalog.es.v1.json`, escrito en sala limpia), la ventana de 4 mensajes, el esquema y el parser | es el prompt: lo que dice la persona lo redacta el modelo, así que el censo de prosa visible no lo cuenta; los datos del LoRA se construyen con este mismo prompt (`comprension-f1/lora/build_train.py`) |
-| `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden con charla alrededor, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
+| `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden con charla alrededor, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `turn_decide._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
 | `patterns.py` | el orquestador del patrón: `resolve_explicit_effects`, `resolve_explicit_clarification_intent`, las revisiones por dominio que se llaman entre sí, los contratos compuestos | salió entero de `effect_intent` (traslado puro, 0 diferencias en 4 946 lecturas); `effect_intent` queda como capa de re-exportación de 687 líneas mientras los llamadores migran |
 
-**Unificación (dueño, 2026-09-24): toda lectura del pedido va a `semantic/`.** `__main__`, `llm` y los módulos de
+**Unificación (dueño, 2026-09-24): toda lectura del pedido va a `semantic/`.** El sidecar (`__main__` y los módulos
+en que se partió), `llm` y los módulos de
 prosa consumen lecturas; no aplican patrones propios al texto de la persona salvo para redactar (eco, cita), para
 contrastar un valor con sus palabras literales o sobre el habla antes de ser pedido. Lo cuenta
 `scripts/inventory_reading_outside_semantic.py` y lo exige `tests/test_reading_lives_in_semantic.py`: una lectura
@@ -169,7 +170,7 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
   la orden dicha antes de la charla («para la música, me va a explotar la cabeza», tanda 3) → la orden; no si lo que
   sigue es otra orden, una condición, una corrección («digo…», «no, mejor no») o más de la misma orden («algo
   tranquilo», «al 50»).
-- **Límite sólo de lo que no se sabe hacer** (`__main__._served_surface_reread`, tanda 3): antes de publicar
+- **Límite sólo de lo que no se sabe hacer** (`turn_decide._served_surface_reread`, tanda 3): antes de publicar
   «no hago eso» el turno relee la superficie canónica (`surface.py`). Lo que los lectores prueban se hace, lo que
   falta se pregunta, y una operación servida que sólo la reescritura fundamenta (la guarda de dominio curada, y
   para apps y juegos su identidad instalada) se vuelve a decidir sobre la reescritura; si el modelo vuelve a
@@ -189,14 +190,14 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
   siendo apagar. **«Sacá una captura»** a secas es una captura de pantalla. **Comilla sin cerrar** al dictar un texto
   para el portapapeles abre el literal.
 - **Código interno**: la causa `request_analysis_failed` llegaba al redactor como «request analysis failed» y se leía
-  en voz alta («el análisis de la solicitud falló»). Ahora tiene su hecho en `llm._CAUSE_FACT` (BAXY no entendió, no
+  en voz alta («el análisis de la solicitud falló»). Ahora tiene su hecho en `compose_situation._CAUSE_FACT` (BAXY no entendió, no
   hizo nada, pide decirlo de otra forma) y el veto la rechaza también en castellano.
 - **El pronombre tras una pregunta pública** (`dialogue.asked_about`): «¿la nueva peli de X es buena?» → «investigala»
   busca X. Sólo palabras que dijo la persona; el pedido re-armado se clasifica como siempre.
 - **Lecturas que no se confirman**: la hora con calificativo o cortesía («la hora exacta, porfa»), «quiero saber /
   ¿sabés quién es X?», «qué app / proceso está activo o en primer plano». Antes llegaban al modelo, la guarda de
   dominio retiraba la operación y BAXY preguntaba «¿Quieres que te diga la hora?»; leer no cambia nada del PC (D24).
-- **Charla que no pide nada** (`dialogue.talk_act`, `__main__._talk_act_turn_decision`): una afirmación en primera
+- **Charla que no pide nada** (`dialogue.talk_act`, `turn_decisions._talk_act_turn_decision`): una afirmación en primera
   persona («me gusta crear cosas como tú», «anoche vi Oppenheimer»), una queja o comentario sobre BAXY («odio estos
   fallos», «no lo hiciste», «tus detectores no funcionan») o una reacción («jajaja qué respuesta más rara») se
   contesta como charla y conserva el historial. Nunca si hay una orden, un pedido que el patrón lee, un deseo o

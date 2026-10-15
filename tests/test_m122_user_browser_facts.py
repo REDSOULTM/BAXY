@@ -5,6 +5,13 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import compose_instructions
+from baxy_mind import compose_payload
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
+from baxy_mind import listing_facts
 
 
 @pytest.mark.parametrize(
@@ -35,7 +42,7 @@ from baxy_mind import llm
     ],
 )
 def test_user_browser_codes_have_their_fact(code: str, words: str) -> None:
-    prose = llm._cause_in_prose(code, "es")
+    prose = compose_situation._cause_in_prose(code, "es")
 
     assert words in prose
     assert "_" not in prose
@@ -70,10 +77,10 @@ def test_a_page_summary_names_the_page_without_saying_title() -> None:
         "ampliar la serie Bayonetta y expandir su mundo."
     )
 
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         draft, "status", "léeme lo que dice la página que tengo abierta", {"situation": json.dumps(situation)}
     ) == ""
-    assert llm.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "La página dice que Bayonetta tendrá una película.",
         "status",
         "léeme lo que dice la página que tengo abierta",
@@ -96,8 +103,8 @@ def test_a_quoted_passage_may_join_two_lines_of_the_page() -> None:
     )
     invented = 'La página dice: "El jefe de PlatinumGames anunció una película de Bayonetta."'
 
-    assert llm._payload_fact_defect(joined, payload, "léeme la página") == ""
-    assert llm._payload_fact_defect(invented, payload, "léeme la página") == "page_unquoted_passage"
+    assert payload_fact_checks._payload_fact_defect(joined, payload, "léeme la página") == ""
+    assert payload_fact_checks._payload_fact_defect(invented, payload, "léeme la página") == "page_unquoted_passage"
 
 
 def test_when_every_draft_fails_the_page_is_told_by_its_first_sentence() -> None:
@@ -107,13 +114,13 @@ def test_when_every_draft_fails_the_page_is_told_by_its_first_sentence() -> None
         "El presidente de PlatinumGames ha expresado muchas ganas de ampliar la serie Bayonetta.",
     }
 
-    final = llm._page_read_final(seen, english=False)
+    final = listing_facts._page_read_final(seen, english=False)
 
     assert final == (
         "Leí la página «GX Corner». Dice: «El presidente de PlatinumGames ha expresado muchas ganas de ampliar "
         "la serie Bayonetta»."
     )
-    assert llm._payload_fact_defect(final, {"operation": "browser.page.read", "seen": seen}, "léeme la página") == ""
+    assert payload_fact_checks._payload_fact_defect(final, {"operation": "browser.page.read", "seen": seen}, "léeme la página") == ""
 
 
 _FIVE_TABS = {
@@ -141,7 +148,7 @@ def _tabs_payload() -> dict:
         "succeeded": True,
         "observed": _FIVE_TABS,
     }
-    return llm._compose_situation_payload(situation, "es", "cuántas pestañas tengo abiertas")
+    return compose_payload._compose_situation_payload(situation, "es", "cuántas pestañas tengo abiertas")
 
 
 def test_the_tab_listing_gives_the_model_the_figures_counted_by_the_code() -> None:
@@ -172,18 +179,18 @@ def test_the_tab_listing_gives_the_model_the_figures_counted_by_the_code() -> No
     ],
 )
 def test_a_count_the_tab_strip_did_not_give_is_rejected(reply: str, defect: str) -> None:
-    assert llm._payload_fact_defect(reply, _tabs_payload(), "cuántas pestañas tengo abiertas") == defect
+    assert payload_fact_checks._payload_fact_defect(reply, _tabs_payload(), "cuántas pestañas tengo abiertas") == defect
 
 
 def test_when_every_draft_fails_the_tabs_are_told_as_read() -> None:
     payload = _tabs_payload()
     situation = {"operation": "browser.tabs.list", "verified": True, "succeeded": True}
 
-    final = llm._told_result_final(situation, payload, "cuántas pestañas tengo abiertas", "es")
+    final = deterministic_finals._told_result_final(situation, payload, "cuántas pestañas tengo abiertas", "es")
 
     assert final.startswith("Tienes 5 pestañas abiertas en Opera GX: «Recibidos (9)")
     assert final.endswith("y «GX Corner».")
-    assert llm._payload_fact_defect(final, payload, "cuántas pestañas tengo abiertas") == ""
+    assert payload_fact_checks._payload_fact_defect(final, payload, "cuántas pestañas tengo abiertas") == ""
 
 
 def test_a_tab_step_tells_the_tab_that_closed_and_the_one_now_in_front() -> None:
@@ -205,7 +212,7 @@ def test_a_tab_step_tells_the_tab_that_closed_and_the_one_now_in_front() -> None
         },
     }
 
-    seen = llm._compose_situation_payload(situation, "es", "cierra esta pestaña")["seen"]
+    seen = compose_payload._compose_situation_payload(situation, "es", "cierra esta pestaña")["seen"]
 
     assert seen == {
         "action": "close",
@@ -286,7 +293,7 @@ def test_closing_every_tab_that_stopped_part_way_is_said_as_not_done() -> None:
         "error": "user_browser_close_all_incomplete",
     }
 
-    final = llm._told_result_final(situation, {}, "cierra todas las pestañas", "es")
+    final = deterministic_finals._told_result_final(situation, {}, "cierra todas las pestañas", "es")
 
     assert final.startswith("No pude cerrarlas todas")
     assert "quedan varias" in final
@@ -318,17 +325,17 @@ def test_each_tab_failure_floor_passes_the_reply_judge(code: str, said: str) -> 
         "error": code,
         "operationAttempted": True,
     }
-    final = llm._told_result_final(situation, {}, said, "es")
+    final = deterministic_finals._told_result_final(situation, {}, said, "es")
 
     assert final
-    assert llm.compose_visible_defect(final, "error", said, {"situation": json.dumps(situation)}) == ""
+    assert visible_defect.compose_visible_defect(final, "error", said, {"situation": json.dumps(situation)}) == ""
 
 
 def test_streaming_tabs_are_grouped_as_a_person_reads_their_titles() -> None:
     """Live read 2026-10-06 in Opera GX: Disney+ titles end in « | Disney+», HBO Max ones in « • HBO Max» wrapped in
     bidi isolates, and HBO Max's home is «HBO\xa0Max»."""
 
-    seen = llm._project_tab_listing(
+    seen = listing_facts._project_tab_listing(
         {
             "count": 5,
             "tabs": [
@@ -344,8 +351,8 @@ def test_streaming_tabs_are_grouped_as_a_person_reads_their_titles() -> None:
     assert seen["tabsPerSite"] == {"Disney+": 2, "HBO Max": 3}
     assert seen["activeTab"] == "When You're Lost in the Darkness • HBO Max"
     payload = {"operation": "browser.tabs.list", "seen": seen}
-    assert llm._payload_fact_defect("Tienes 5 pestañas: dos de Disney+ y tres de HBO Max.", payload) == ""
-    assert llm._payload_fact_defect("Tienes 5 pestañas, cuatro de HBO Max.", payload) == "invented_number"
+    assert payload_fact_checks._payload_fact_defect("Tienes 5 pestañas: dos de Disney+ y tres de HBO Max.", payload) == ""
+    assert payload_fact_checks._payload_fact_defect("Tienes 5 pestañas, cuatro de HBO Max.", payload) == "invented_number"
 
 
 def test_a_tab_step_is_told_as_done_by_the_assistant_just_now() -> None:
@@ -360,7 +367,7 @@ def test_a_tab_step_is_told_as_done_by_the_assistant_just_now() -> None:
         "observed": {"version": 1, "action": "fullscreen_video", "observedState": "fullscreen", "browser": "Opera GX"},
     }
 
-    instruction = llm._compose_shape_instruction(situation, "es", "pon el video en pantalla completa")
+    instruction = compose_instructions._compose_shape_instruction(situation, "es", "pon el video en pantalla completa")
 
     assert "«Puse el video en pantalla completa»" in instruction
     assert "Never say it already was so" in instruction
@@ -393,15 +400,15 @@ def test_closing_every_tab_tells_how_many_closed_and_the_one_left() -> None:
 
     said = "cierra todas las pestañas del navegador"
     facts = {"situation": json.dumps(_CLOSED_ALL)}
-    seen = llm._compose_situation_payload(_CLOSED_ALL, "es", said)["seen"]
+    seen = compose_payload._compose_situation_payload(_CLOSED_ALL, "es", said)["seen"]
 
     assert seen["closedTabs"] == 3 and seen["tabCount"] == 1
-    assert llm.compose_visible_defect("Cerré 3 pestañas; queda una abierta.", "status", said, facts) == ""
-    assert llm.compose_visible_defect("Cerré 5 pestañas; queda una abierta.", "status", said, facts) == "invented_number"
-    assert llm.compose_visible_defect("Cerré todas las pestañas del navegador.", "status", said, facts) == "extra_claim"
-    final = llm._told_result_final(_CLOSED_ALL, {"seen": seen}, said, "es")
+    assert visible_defect.compose_visible_defect("Cerré 3 pestañas; queda una abierta.", "status", said, facts) == ""
+    assert visible_defect.compose_visible_defect("Cerré 5 pestañas; queda una abierta.", "status", said, facts) == "invented_number"
+    assert visible_defect.compose_visible_defect("Cerré todas las pestañas del navegador.", "status", said, facts) == "extra_claim"
+    final = deterministic_finals._told_result_final(_CLOSED_ALL, {"seen": seen}, said, "es")
     assert final == "Cerré 3 pestañas; queda 1 abierta."
-    assert llm.compose_visible_defect(final, "status", said, facts) == ""
+    assert visible_defect.compose_visible_defect(final, "status", said, facts) == ""
 
 
 def test_the_question_before_closing_every_tab_says_one_stays() -> None:

@@ -15,7 +15,22 @@ from datetime import datetime
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import visible_defect
+from baxy_mind import clock_facts
+from baxy_mind import compose_situation
+from baxy_mind import clock_checks
+from baxy_mind import agenda_facts
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import deterministic_finals
+from baxy_mind import conversation_contract
+
+
+# Every mind module whose code reads this PC's clock: the clock is patched in each one.
+_CLOCK_READERS = (
+    agenda_facts, clock_checks, clock_facts, compose_situation, conversation_contract, deterministic_finals,
+    reply_claims, weather_facts,
+)
 
 # Thursday 2026-09-24 18:55 at UTC-3, as system.time observed it in tanda-06.
 _CLOCK = {
@@ -29,7 +44,8 @@ _CLOCK_FACTS = {"situation": json.dumps(_CLOCK)}
 def thursday(monkeypatch: pytest.MonkeyPatch) -> None:
     """A turn that read no clock is checked against this PC's own: pinned to the Thursday of the run."""
 
-    monkeypatch.setattr(llm, "_local_now", lambda: datetime(2026, 9, 24, 18, 55))
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: datetime(2026, 9, 24, 18, 55))
 
 
 _SNIPPET_SEARCH = {
@@ -55,7 +71,7 @@ _SNIPPET_SEARCH = {
 )
 def test_a_search_report_never_states_another_day_as_today(asked: str, reply: str) -> None:
     facts = {"situation": json.dumps(_SNIPPET_SEARCH)}
-    assert llm.compose_visible_defect(reply, "status", asked, facts) == "false_date"
+    assert visible_defect.compose_visible_defect(reply, "status", asked, facts) == "false_date"
 
 
 @pytest.mark.usefixtures("thursday")
@@ -71,8 +87,8 @@ def test_a_search_report_never_states_another_day_as_today(asked: str, reply: st
     ],
 )
 def test_a_conversation_never_states_another_day_as_today(asked: str, reply: str) -> None:
-    assert llm.conversation_claim_defect(reply, asked) in {"false_date", "hedged_date"}
-    assert llm._shaped_conversation_answer_violates_contract(reply, asked, None)
+    assert reply_claims.conversation_claim_defect(reply, asked) in {"false_date", "hedged_date"}
+    assert conversation_contract._shaped_conversation_answer_violates_contract(reply, asked, None)
 
 
 @pytest.mark.usefixtures("thursday")
@@ -98,13 +114,14 @@ def test_a_conversation_never_states_another_day_as_today(asked: str, reply: str
     ],
 )
 def test_true_dates_and_other_days_are_not_false_dates(asked: str, reply: str) -> None:
-    assert llm._calendar_contradiction(reply, asked, llm._local_now()) == ""
+    assert clock_facts._calendar_contradiction(reply, asked, clock_facts._local_now()) == ""
 
 
 def test_the_observed_clock_wins_over_this_pcs_own(monkeypatch: pytest.MonkeyPatch) -> None:
     # A turn that read the clock is checked against that reading, not against the moment it is checked.
-    monkeypatch.setattr(llm, "_local_now", lambda: datetime(2026, 12, 31, 23, 59))
-    assert llm.compose_visible_defect("Hoy es jueves 24 de septiembre.", "status", "¿qué día es hoy?", _CLOCK_FACTS) == ""
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: datetime(2026, 12, 31, 23, 59))
+    assert visible_defect.compose_visible_defect("Hoy es jueves 24 de septiembre.", "status", "¿qué día es hoy?", _CLOCK_FACTS) == ""
 
 
 @pytest.mark.usefixtures("thursday")
@@ -113,7 +130,7 @@ def test_the_observed_clock_wins_over_this_pcs_own(monkeypatch: pytest.MonkeyPat
 )
 def test_the_calendar_is_never_guessed(reply: str) -> None:
     # t47 «…, creo.»: a date is read from the clock, never hedged, even when it happens to be true.
-    assert llm.conversation_claim_defect(reply, "¿qué día es hoy?") == "hedged_date"
+    assert reply_claims.conversation_claim_defect(reply, "¿qué día es hoy?") == "hedged_date"
 
 
 @pytest.mark.parametrize(
@@ -124,4 +141,4 @@ def test_the_calendar_is_never_guessed(reply: str) -> None:
      ("necesito que me digas el mes en el que estamos ya, ¡rápido!", "Creo que estamos en septiembre.")],
 )
 def test_the_clock_read_is_never_hedged(asked: str, reply: str) -> None:
-    assert llm.compose_visible_defect(reply, "status", asked, _CLOCK_FACTS) == "hedged_date"
+    assert visible_defect.compose_visible_defect(reply, "status", asked, _CLOCK_FACTS) == "hedged_date"

@@ -12,6 +12,8 @@ import re
 import unicodedata
 from typing import Iterable
 
+from .lexicon import COLOUR_NOUNS
+
 
 def _fold(value: object) -> str:
     text = unicodedata.normalize("NFKD", str(value or "").casefold())
@@ -146,6 +148,21 @@ def shade_of(name: object, control_name: object) -> bool:
     if family is None or not folded or folded in family[0]:
         return False
     return any(_fold(shade) == folded for shade in colour_shades(name))
+
+
+def names_the_colour_kind(name: object) -> bool:
+    """«color», «colores», «colour»: the kind of the choice alone (``lexicon.COLOUR_NOUNS``, singular or plural), no
+    colour of it. Estabilización G3 (tanda f2nb t3-c19 «y ponle color rojo», planned «hacer clic en color; luego
+    seleccionar rojo»): containment took «Editar colores» for it, a button whose modal dialog hung the read 20 s."""
+
+    folded = _fold(name)
+    return any(folded == noun or folded in (f"{noun}s", f"{noun}es") for noun in COLOUR_NOUNS)
+
+
+def names_a_colour(text: object) -> bool:
+    """The text says a basic colour (``is_basic_colour``) among its words: «y ponle color rojo», «pick the blue one»."""
+
+    return any(is_basic_colour(word) for word in re.findall(r"[^\W\d_]+", _fold(text)))
 
 
 def changes_the_tool(control_name: object) -> bool:

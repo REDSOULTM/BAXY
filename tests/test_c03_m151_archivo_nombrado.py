@@ -28,12 +28,14 @@ from typing import Any
 import pytest
 
 from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.arguments import conversation_file_folder, conversation_pdf, conversation_text_file
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.files import NamedFileMeant, files_named_in_reply, named_file_meant, named_file_operation
+from baxy_mind import turn_decide
+from baxy_mind import direct_arguments
+from baxy_mind import argument_payload
 
 PDF_SCHEMA = {
     "type": "object",
@@ -135,8 +137,8 @@ class _Decider:
 class _Abstaining:
     """The model's own extraction abstains: only BAXY's steps ground the arguments."""
 
-    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> llm.DirectArgumentExtraction:
-        return llm.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué archivo?")
+    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> argument_payload.DirectArgumentExtraction:
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué archivo?")
 
     def formulate_missing_argument_question(self, *_args: object, **_kwargs: object) -> str:
         return "¿Qué archivo?"
@@ -150,7 +152,7 @@ def _history(said: list[str]) -> list[dict[str, str]]:
 
 def _turn(said: list[str], decision: ContextDecision) -> dict:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m151", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(),
@@ -158,7 +160,7 @@ def _turn(said: list[str], decision: ContextDecision) -> dict:
 
 
 def _arguments(said: list[str], operation: str, objective: str) -> tuple[dict | None, str]:
-    return sidecar._direct_arguments_result(
+    return direct_arguments._direct_arguments_result(
         {"operation": operation, "text": objective, "history": _history(said)},
         llm=_Abstaining(), tool=_tool(operation), dialogue_state=DialogueState(),
     )

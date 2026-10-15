@@ -11,29 +11,23 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as mind_main
-from baxy_mind.__main__ import (
-    CONVERSATION_WORDING_FAILURE,
-    LIMIT_WORDING_FAILURE,
-    _explicit_arguments_from_evidence,
-    _prepare_turn_result,
-    _recover_failed_turn,
-    _turn_failure_kind,
-)
-from baxy_mind.llm import (
-    ConversationReplyContractError,
-    LlmRuntime,
-    _compose_situation_payload,
-    _conversation_presentation_shape,
-    _payload_fact_defect,
-    _shaped_conversation_answer_violates_contract,
-    compose_visible_defect,
-    validate_missing_argument_clarification,
-)
+from baxy_mind.turn_audit import CONVERSATION_WORDING_FAILURE, LIMIT_WORDING_FAILURE, _turn_failure_kind
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.turn_decide import _prepare_turn_result
+from baxy_mind.turn_recovery import _recover_failed_turn
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.visible_defect import compose_visible_defect
+from baxy_mind.argument_payload import validate_missing_argument_clarification
+from baxy_mind.llm_chat import ConversationReplyContractError
+from baxy_mind.semantic.conversation import _conversation_presentation_shape
+from baxy_mind.conversation_contract import _shaped_conversation_answer_violates_contract
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.request import read_request, speaking_directive
 from baxy_mind.semantic import patterns
 from baxy_mind.semantic.reading import read
+from baxy_mind import native_selection
 
 
 def _tool(operation: str, *, required: tuple[str, ...] = ()) -> dict[str, object]:
@@ -288,7 +282,7 @@ def test_public_information_is_looked_up_before_the_catalogue_is_offered(text: s
 def test_this_pc_clock_is_described_as_never_another_place() -> None:
     # Tanda 4: another place's time is this clock read with that place, never
     # this clock recited as theirs.
-    described = mind_main._native_selection_description("system.time", "Lee la fecha y hora actuales.")
+    described = native_selection._native_selection_description("system.time", "Lee la fecha y hora actuales.")
     assert "only with that place in «place»" in described
     assert "never this clock as theirs" in described
 

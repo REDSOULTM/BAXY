@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "purpose": "Encargo H2 (tandas redpc t3-c09: «Conectado», read alone under «Ethernet» in Configuración, was told as «los auriculares están conectados»): a line read on the screen that only says a connection state belongs to the line it sits under, the device it is the state of. The view reads them as one line («Ethernet: Conectado», Baxy.Providers.Windows ScreenStateLines). Folded, whole line. Encargo H3: the mind reads the same states as the state a device row writes and a question asks (semantic.mission_answer.screen_states).",
+  "states": [
+    "conectado", "conectada", "conectados", "conectadas", "desconectado", "desconectada", "no conectado", "no conectada",
+    "sin conexion", "emparejado", "emparejada", "emparejados", "emparejadas", "vinculado", "vinculada", "sin internet", "sin acceso a internet",
+    "connected", "disconnected", "not connected", "paired", "no internet", "no internet access"
+  ]
+}

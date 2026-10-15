@@ -9,7 +9,11 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_payload
+from baxy_mind import payload_fact_checks
+from baxy_mind import compose_situation
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({"wifi.profile.list", "wifi.connect.named", "wifi.ensure.connected", "wifi.status", "app.open"})
 SCHEMA = {
@@ -41,7 +45,7 @@ def test_a_place_lists_the_saved_networks_and_connects_by_association(text: str,
     assert effect_intent.wifi_place_request(text) == place
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == ("wifi.profile.list", "wifi.connect.named")
-    assert mind._ground_explicit_arguments("wifi.connect.named", text, SCHEMA) == {"profileName": place, "place": place}
+    assert argument_grounding._ground_explicit_arguments("wifi.connect.named", text, SCHEMA) == {"profileName": place, "place": place}
     assert effect_intent.operation_domain_is_grounded(text, "wifi.profile.list") is True
     assert effect_intent.operation_domain_is_grounded(text, "wifi.connect.named") is True
 
@@ -51,7 +55,7 @@ def test_a_name_that_is_not_a_place_stays_a_profile_name(text: str) -> None:
     assert effect_intent.wifi_place_request(text) is None
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == ("wifi.connect.named",)
-    grounded = mind._ground_explicit_arguments("wifi.connect.named", text, SCHEMA)
+    grounded = argument_grounding._ground_explicit_arguments("wifi.connect.named", text, SCHEMA)
     assert grounded is not None and "place" not in grounded
 
 
@@ -69,7 +73,7 @@ def test_the_answer_names_the_network_and_keeps_the_place(answer: str, name: str
     assert effect_intent.wifi_place_answer(answer, history) == (name, "casa")
     intent = effect_intent.wifi_place_answer_intent(answer, history, AVAILABLE)
     assert intent is not None and intent.operations == ("wifi.connect.named",)
-    assert mind._ground_explicit_arguments("wifi.connect.named", answer, SCHEMA, history=history) == {"profileName": name, "place": "casa"}
+    assert argument_grounding._ground_explicit_arguments("wifi.connect.named", answer, SCHEMA, history=history) == {"profileName": name, "place": "casa"}
 
 
 @pytest.mark.parametrize("answer", ["hola", "no", "abrí spotify", "Fibertel-2G y Vecino", "¿cuál tenés?", "gracias"])
@@ -88,7 +92,7 @@ def test_a_bare_name_needs_the_question_but_an_explicit_form_does_not() -> None:
 
 def test_the_unknown_place_failure_is_not_replanned() -> None:
     assert "wifi_place_unknown" in mind._NO_REPLAN_ERROR_CODES
-    assert "wifi_place_unknown" in llm._CAUSE_FACT
+    assert "wifi_place_unknown" in compose_situation._CAUSE_FACT
 
 
 def _failed_mission_payload() -> dict:
@@ -102,14 +106,14 @@ def _failed_mission_payload() -> dict:
         ],
         "reason": {"kind": "operation", "operation": "wifi.connect.named", "polarity": "failure", "verified": False, "succeeded": False, "cause": "wifi_place_unknown"},
     }
-    return llm._compose_situation_payload(situation, "es", "conectate al wifi de casa")
+    return compose_payload._compose_situation_payload(situation, "es", "conectate al wifi de casa")
 
 
 def test_the_failed_mission_carries_the_saved_networks_and_the_place() -> None:
     payload = _failed_mission_payload()
     assert payload["seen"] == {"savedNetworks": ["Fibertel-2G", "Vecino"], "place": "casa"}
     assert "completedStepsInOrder" not in payload
-    assert payload["reason"]["cause"] == llm._CAUSE_FACT["wifi_place_unknown"]
+    assert payload["reason"]["cause"] == compose_situation._CAUSE_FACT["wifi_place_unknown"]
 
 
 @pytest.mark.parametrize(
@@ -122,10 +126,10 @@ def test_the_failed_mission_carries_the_saved_networks_and_the_place() -> None:
     ],
 )
 def test_the_reply_lists_the_saved_networks_and_asks(text: str, defect: str) -> None:
-    assert llm._payload_fact_defect(text, _failed_mission_payload(), "conectate al wifi de casa") == defect
+    assert payload_fact_checks._payload_fact_defect(text, _failed_mission_payload(), "conectate al wifi de casa") == defect
 
 
 def test_a_verified_connect_by_place_says_it_connected() -> None:
     payload = {"operation": "wifi.connect.named", "seen": {"connected": True, "place": "casa"}}
-    assert llm._payload_fact_defect("Listo, te conecté a la red de casa.", payload, "conectate al wifi de casa") == ""
-    assert llm._payload_fact_defect("La red de casa es Fibertel.", payload, "conectate al wifi de casa") == "missing_state"
+    assert payload_fact_checks._payload_fact_defect("Listo, te conecté a la red de casa.", payload, "conectate al wifi de casa") == ""
+    assert payload_fact_checks._payload_fact_defect("La red de casa es Fibertel.", payload, "conectate al wifi de casa") == "missing_state"

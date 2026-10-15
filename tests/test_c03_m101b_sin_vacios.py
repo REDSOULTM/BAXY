@@ -17,6 +17,7 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import deterministic_finals
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m101b_evidence.json").read_text(encoding="utf-8"))
 
@@ -71,7 +72,7 @@ def test_the_evidence_is_the_two_empty_turns() -> None:
 def test_a_verified_reminder_has_a_final_from_its_facts(observed: dict | None, language: str, final: str) -> None:
     asked = "remind me an hour before the game" if language == "en" else "avísame una hora antes del partido"
     situation = _reminder(observed)
-    assert llm._deterministic_final(situation, {}, asked, language) == final
+    assert deterministic_finals._deterministic_final(situation, {}, asked, language) == final
     # The drafts stated a day and an hour the facts do not hold; the floor states none.
     drafts = ["Te puse el recordatorio para el domingo 4 de octubre a las 18:00."] * 3
     assert _final(asked, situation, drafts) == final
@@ -88,7 +89,7 @@ def test_a_verified_reminder_has_a_final_from_its_facts(observed: dict | None, l
 def test_a_reminder_not_created_says_its_cause(error: str, uncertain: bool, final: str) -> None:
     situation = _reminder(error=error, uncertain=uncertain)
     asked = "recuérdame lo del dentista ayer a las tres"
-    assert llm._deterministic_final(situation, {}, asked, "es") == final
+    assert deterministic_finals._deterministic_final(situation, {}, asked, "es") == final
     assert _final(asked, situation, ["Listo, quedó agendado."] * 3, intent="error") == final
 
 

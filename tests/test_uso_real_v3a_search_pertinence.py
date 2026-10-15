@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import copy
 
-from baxy_mind.llm import (
-    _payload_fact_defect,
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.search_report import (
     _search_report_from_no_pertinent_result,
     _search_report_proposal_as_fact,
 )

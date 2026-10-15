@@ -28,17 +28,17 @@ from datetime import datetime, timezone
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind.llm import (
-    LlmRuntime,
-    _deterministic_final,
-    _payload_fact_defect,
-    _places_inside_named_place,
-)
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.deterministic_finals import _deterministic_final
+from baxy_mind.payload_fact_checks import _payload_fact_defect
+from baxy_mind.search_report import _places_inside_named_place
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
 from baxy_mind.semantic.system import _weather_location
 from baxy_mind.semantic.temporal import notification_change, timed_task
+from baxy_mind import argument_grounding
+from baxy_mind import plan_shape
+from baxy_mind import direct_arguments
 
 # ------------------------------------------------------------------ the catalog's schemas (ProductCatalog.cs)
 
@@ -107,10 +107,10 @@ def _plan_arguments(text: str) -> list[tuple[str, dict | None]]:
 
     effects = resolve_explicit_effects(text, OPERATIONS)
     assert effects is not None
-    evidence = mind._restore_evidence_surfaces(text, effects.evidence)
-    skeleton = mind._explicit_plan_skeleton(effects.operations, evidence)
+    evidence = argument_grounding._restore_evidence_surfaces(text, effects.evidence)
+    skeleton = plan_shape._explicit_plan_skeleton(effects.operations, evidence)
     return [
-        (step["operation"], mind._ground_explicit_arguments(step["operation"], step["purpose"], SCHEMAS[step["operation"]]))
+        (step["operation"], argument_grounding._ground_explicit_arguments(step["operation"], step["purpose"], SCHEMAS[step["operation"]]))
         for step in skeleton["steps"]
     ]
 
@@ -125,7 +125,7 @@ F_S011_RESTATED = "Reanuda el ejercicio en 10 minutos."  # turn-audit request 71
 def test_s011_a_task_at_a_corrected_time_is_a_reminder_at_the_last_time(objective: str) -> None:
     task = timed_task(F_S011)
     assert task is not None and (task.title, task.due) == ("Reanudar el ejercicio", "en 10 minutos")
-    arguments = mind._ground_explicit_arguments(
+    arguments = argument_grounding._ground_explicit_arguments(
         "notification.schedule", objective, SCHEDULE, history=[{"role": "user", "content": F_S011}],
     )
     assert arguments is not None
@@ -244,7 +244,7 @@ F_P06 = [
 
 def test_p05_t3_the_same_place_keeps_the_town_said_with_it() -> None:
     # Request 682 restated «Encuentrame aparcamiento cerca de La Puntilla.» and the search reached San Juan.
-    placed = mind._with_conversation_place(
+    placed = direct_arguments._with_conversation_place(
         "web.search", {"query": "Encuentrame aparcamiento cerca de La Puntilla."}, F_P05, WEB_SEARCH,
     )
     assert placed == {"query": "Encuentrame aparcamiento cerca de La Puntilla, El Puerto."}
@@ -262,12 +262,12 @@ def test_p05_t3_the_same_place_keeps_the_town_said_with_it() -> None:
     ],
 )
 def test_p06_a_street_named_alone_is_in_the_town_of_the_conversation(query: str, expected: str) -> None:
-    assert mind._with_conversation_place("web.search", {"query": query}, F_P06, WEB_SEARCH) == {"query": expected}
+    assert direct_arguments._with_conversation_place("web.search", {"query": query}, F_P06, WEB_SEARCH) == {"query": expected}
 
 
 def test_a_place_near_this_pc_is_not_placed_by_the_conversation() -> None:
     near = {"query": "aparcamiento cerca de La Puntilla", "nearby": True}
-    assert mind._with_conversation_place("web.search", near, F_P05, WEB_SEARCH) == near
+    assert direct_arguments._with_conversation_place("web.search", near, F_P05, WEB_SEARCH) == near
 
 
 def test_the_weather_of_a_town_said_before_with_its_region_keeps_the_region() -> None:
@@ -276,10 +276,10 @@ def test_the_weather_of_a_town_said_before_with_its_region_keeps_the_region() ->
         {"role": "assistant", "content": "En San Juan hay 28,5 °C."},
         {"role": "user", "content": "¿y mañana en San Juan?"},
     ]
-    assert mind._with_conversation_place("weather.current", {"location": "San Juan"}, history, WEATHER) == {
+    assert direct_arguments._with_conversation_place("weather.current", {"location": "San Juan"}, history, WEATHER) == {
         "location": "San Juan, Puerto Rico",
     }
-    assert mind._with_conversation_place("weather.current", {"location": "Lima"}, history, WEATHER) == {
+    assert direct_arguments._with_conversation_place("weather.current", {"location": "Lima"}, history, WEATHER) == {
         "location": "Lima",
     }
 
@@ -289,7 +289,7 @@ F_W15_T1 = "ok so este weekend me voy a San Antonio con unos friends, like, can 
 
 def test_w15_t1_there_is_the_town_the_person_is_going_to() -> None:
     # The arguments step read {"location": None} from the weather clause and the provider located this PC.
-    assert mind._ground_explicit_arguments("weather.current", F_W15_T1, WEATHER) == {"location": "San Antonio"}
+    assert argument_grounding._ground_explicit_arguments("weather.current", F_W15_T1, WEATHER) == {"location": "San Antonio"}
     assert _weather_location("¿qué tiempo hace allá?") is None
     assert _weather_location("I must verify the weather in Foster City later today.") == "Foster City"
 

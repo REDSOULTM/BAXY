@@ -52,6 +52,20 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             entry, process, title, observedId), Is.EqualTo(expected));
     }
 
+    [TestCase(@"C:\Users\p\AppData\Local\Chat\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", true)]
+    [TestCase(@"C:\Users\p\AppData\Local\Chat\app-1.0.9260\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", true)]
+    [TestCase(@"C:\Users\p\AppData\Local\Chat\4.41.105\chat.EXE", @"C:\Users\p\AppData\Local\Chat\Chat.exe", true)]
+    [TestCase(@"C:\Users\p\AppData\Local\Other\app-1.0.9260\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
+    [TestCase(@"C:\Users\p\AppData\Local\Chat\plugins\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
+    [TestCase(@"C:\Users\p\AppData\Local\Chat\app-1.0.9260\bin\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
+    [TestCase(@"C:\Users\p\AppData\Local\Chat\app-1.0.9260\Update.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
+    [TestCase(@"D:\Tools\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
+    public void LauncherShortcutAcceptsOnlyItsDirectVersionedImage(string actual, string expected, bool accepted)
+    {
+        Assert.That(WindowsInstalledApplicationPlatform.ExecutableIsLaunchedImage(actual, expected),
+            Is.EqualTo(accepted));
+    }
+
     [TestCase("Steam", "steamwebhelper", "Community", true)]
     [TestCase("Google Chrome", "chrome", "Document", true)]
     [TestCase("Steam", "notepad", "my steam notes", false)]
@@ -294,7 +308,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         ApplicationOpenResult result = await provider.OpenAsync(
-            Request("Steam"),
+            Request("Steam", foreground: true),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -311,6 +325,480 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // r20b palanca 4 (v3-43 journal 555: the control panel opened in front, no frontRestored, and the person's keyboard
+    // went to it for 51 s; v3-40 the same with a terminal): asked in front while the person types in their own window,
+    // the application shows above it without the activation; the front Windows gave it goes back at once, and the
+    // receipt says shownWithoutFocus. Counter-case: the request written in BAXY's chat (nobody working elsewhere) opens
+    // in front and active, as before.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AnOpeningAskedInFrontWhileThePersonWorksElsewhereShowsWithoutTakingTheirKeyboard(bool working)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: true),
+            PersonFront = 0x500,
+            WorkingFront = working ? 0x500 : 0,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(working));
+            Assert.That(platform.FocusCalls, Is.EqualTo(working ? 0 : 1), "the front is asked for only from BAXY's chat");
+            Assert.That(platform.HandedBack, Is.EqualTo(working ? [0x500L] : Array.Empty<long>()));
+            Assert.That(platform.RaisedWithoutActivation, Is.EqualTo(working ? [73L] : Array.Empty<long>()));
+            Assert.That(result.WindowsActivation, Is.EqualTo(working));
+            Assert.That(result.FrontRestored, Is.EqualTo(working));
+        });
+    }
+
+    // The same with a window of the application already open: shown above without the activation, never focused.
+    [Test]
+    public async Task AnOpenWindowAskedInFrontWhileThePersonWorksElsewhereIsRaisedWithoutFocus()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            PersonFront = 0x500,
+            WorkingFront = 0x500,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(result.ShownWithoutFocus, Is.True);
+            Assert.That(platform.FocusCalls, Is.Zero);
+            Assert.That(platform.RaisedWithoutActivation, Is.EqualTo(new[] { 73L }));
+        });
+    }
+
+    // Review of r20b palanca 4, finding 2: who works where is read when the opening ends, never before the launch. The
+    // request written in BAXY's chat (BAXY in front, 0x600) and the person back in their document (0x500) while the
+    // application starts: it is shown above their document without the front. Counter-case: still in BAXY's chat at
+    // the end, the front is taken as asked.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task WhoWorksWhereIsReadWhenTheOpeningEndsNotBeforeTheLaunch(bool personWentBack)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x600,
+            FrontAfterOpening = personWentBack ? 0x500 : 0,
+            WorkingFront = 0x500,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(platform.FocusCalls, Is.EqualTo(personWentBack ? 0 : 1));
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(personWentBack));
+            Assert.That(platform.RaisedAbove, Is.EqualTo(personWentBack ? [0x500L] : Array.Empty<long>()));
+        });
+    }
+
+    // Finding 2, the front Windows gave the application at its start: the person's window before the opening, where
+    // they still work, gets the front back and the application is shown above it. Counter-case: nobody working there,
+    // the front asked for is kept.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AFrontWindowsGaveTheOpenedApplicationGoesBackToThePersonWorking(bool working)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: true),
+            PersonFront = 0x500,
+            FrontAfterOpening = 73,
+            WorkingFront = working ? 0x500 : 0,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(platform.FocusCalls, Is.EqualTo(working ? 0 : 1));
+            Assert.That(platform.HandedBack, Is.EqualTo(working ? [0x500L] : Array.Empty<long>()));
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(working));
+        });
+    }
+
+    // Finding 3: «shownWithoutFocus» is said only when the showing is read back (visible, not minimized, above the
+    // person's window). A window Windows left minimized or refused to move is opened and verified, never said shown,
+    // and the person's keyboard is still never taken for it.
+    [TestCase(true, true)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(false, false)]
+    public async Task ShownWithoutFocusIsSaidOnlyWhenReadBack(bool reused, bool readBack)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = reused ? [Observation(foreground: false)] : [],
+            ObservationAfterActivation = reused ? null : Observation(foreground: false),
+            PersonFront = 0x500,
+            WorkingFront = 0x500,
+            ShowReadBack = readBack,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.EqualTo(reused));
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(readBack));
+            Assert.That(platform.FocusCalls, Is.Zero);
+            Assert.That(platform.RaisedAbove, Is.EqualTo(new[] { 0x500L }));
+        });
+    }
+
+    // The read-back of the real showing: visible, not minimized, and above the person's window; anything else is not
+    // shown.
+    [TestCase(true, false, true, true)]
+    [TestCase(true, true, true, false)]
+    [TestCase(false, false, true, false)]
+    [TestCase(true, false, false, false)]
+    public void TheShowingIsReadBackVisibleNotMinimizedAndAbove(bool visible, bool minimized, bool above, bool shown) =>
+        Assert.That(ForegroundHandBack.ShownAbove(visible, minimized, above), Is.EqualTo(shown));
+
+    // Finding 1: a new document asked in front while the person types in their own window follows the same rule (the
+    // reviewer's case: FocusCalls was 1 and shownWithoutFocus false). Counter-case: from BAXY's chat it is left in
+    // front.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ANewDocumentAskedInFrontWhileThePersonWorksElsewhereDoesNotTakeTheirKeyboard(bool working)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            PersonFront = 0x500,
+            WorkingFront = working ? 0x500 : 0,
+            WindowAfterNewDocument = Observation(foreground: false) with { WindowHandle = 75 },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            NewDocument("Bloc de notas") with { Foreground = true }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(75));
+            Assert.That(platform.FocusCalls, Is.EqualTo(working ? 0 : 2), "the reused window, then the new document");
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(working));
+            Assert.That(platform.RaisedWithoutActivation, Is.EqualTo(working ? [73L, 75L] : Array.Empty<long>()));
+        });
+    }
+
+    // Review 2 of r20b palanca 4: the application Windows activated at its start (a launch), or the new document that
+    // took the front, asked in front while the person works in their window, and a hand-back Windows refused: the opened
+    // window is above theirs and holds their keyboard, so it is never said shown without the focus. Counter-case: the
+    // hand-back holds, and it is.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ALaunchWhoseHandBackWindowsRefusedIsNeverSaidShownWithoutTheFocus(bool holds)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: true),
+            PersonFront = 0x500,
+            FrontAfterOpening = 73,
+            WorkingFront = 0x500,
+            HandBackHolds = holds,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(platform.FocusCalls, Is.Zero);
+            Assert.That(result.WindowsActivation, Is.True);
+            Assert.That(result.FrontRestored, Is.EqualTo(holds));
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(holds));
+        });
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ANewDocumentWhoseHandBackWindowsRefusedIsNeverSaidShownWithoutTheFocus(bool holds)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            PersonFront = 0x500,
+            WorkingFront = 0x500,
+            WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 75 },
+            FrontAfterNewDocument = 75,
+            HandBackHolds = holds,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            NewDocument("Bloc de notas") with { Foreground = true }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(75));
+            Assert.That(platform.FocusCalls, Is.Zero);
+            Assert.That(result.WindowsActivation, Is.True);
+            Assert.That(result.FrontRestored, Is.EqualTo(holds));
+            Assert.That(result.ShownWithoutFocus, Is.EqualTo(holds));
+        });
+    }
+
+    // Counter-case: an opening not asked in front never asks whether the person works elsewhere, nor raises anything.
+    [Test]
+    public async Task AnOpeningNotAskedInFrontIsNeverRaised()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x500,
+            WorkingFront = 0x500,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ShownWithoutFocus, Is.False);
+            Assert.That(platform.WorkingAsked, Is.Zero);
+            Assert.That(platform.RaisedWithoutActivation, Is.Empty);
+        });
+    }
+
+    // The rule of who works where: BAXY's own window in front is the request's own (the front is taken as before); the
+    // person's input that reaches less than their pause ago makes the front theirs; an older one, or none, does not.
+    [TestCase(false, 100, true)]
+    [TestCase(true, 100, false)]
+    [TestCase(false, 499, true)]
+    [TestCase(false, 500, false)]
+    [TestCase(false, 5_000, false)]
+    public void ThePersonWorksInTheFrontOnlyWhenTheyReachedItWithinTheirPause(bool product, long agoMs, bool works)
+    {
+        const long now = 100_000;
+        Assert.Multiple(() =>
+        {
+            Assert.That(ForegroundHandBack.PersonWorksIn(product, now - agoMs, now), Is.EqualTo(works));
+            Assert.That(ForegroundHandBack.PersonWorksIn(product, 0, now), Is.False, "no input known");
+        });
+    }
+
+    // v3 point 0 (arreglo 4): an opening nobody asked to see in front never asks for it; when Windows activates the
+    // application by itself (a packaged app), the front goes back at once to the person's window and is counted.
+    [TestCase(false, false)]
+    [TestCase(true, true)]
+    public async Task AnOpeningNotAskedInFrontNeverAsksForItAndHandsBackWhatWindowsActivated(
+        bool windowsActivates,
+        bool handedBack)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: windowsActivates),
+            PersonFront = 0x500,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Receipt.LaunchIssued, Is.True);
+            Assert.That(platform.FocusCalls, Is.Zero);
+            Assert.That(result.WindowsActivation, Is.EqualTo(handedBack));
+            Assert.That(result.FrontRestored, Is.EqualTo(handedBack));
+            Assert.That(platform.HandedBack, Is.EqualTo(handedBack ? [0x500L] : Array.Empty<long>()));
+        });
+    }
+
+    // cu-v3-foco-segunda: Windows may refuse the hand-back (measured on the second opening of one process); the receipt
+    // says the activation and that the front did not go back, never a restored front it did not read.
+    [Test]
+    public async Task AHandBackWindowsRefusedIsNotCountedAsRestored()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: true),
+            PersonFront = 0x500,
+            HandBackHolds = false,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.WindowsActivation, Is.True);
+            Assert.That(result.FrontRestored, Is.False);
+        });
+    }
+
+    // cu-v3-foco-segunda: an application that takes the front again after a hand-back that held gets it handed back
+    // again inside the guard (measured: a packaged editor took it 30 ms after its hand-back); a refused hand-back is
+    // counted apart and ends the guard (never fought).
+    [TestCase(true, 2, 2, 0)]
+    [TestCase(false, 1, 0, 1)]
+    public async Task TheGuardHandsBackEachFrontTheApplicationTakesAndCountsWhatHeld(
+        bool holds,
+        int expectedHandBacks,
+        int expectedReturns,
+        int expectedRefusals)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x500,
+            FrontAfterOpening = 73,
+            RetakesAfterHandBack = 1,
+            HandBackHolds = holds,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+        _ = ForegroundHandBack.TakeGuardReturns();
+        _ = ForegroundHandBack.TakeGuardRefusals();
+
+        _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.HandedBack, Has.Count.EqualTo(expectedHandBacks));
+            Assert.That(ForegroundHandBack.TakeGuardReturns(), Is.EqualTo(expectedReturns));
+            Assert.That(ForegroundHandBack.TakeGuardRefusals(), Is.EqualTo(expectedRefusals));
+        });
+    }
+
+    // cu-v3-foco-segunda: the window that takes the front may be the opened application's from another of its
+    // processes (a packaged editor: the opening's process 8808, the window's 33672); it is the application's when the
+    // platform says so, and a window of another application never is.
+    [TestCase(true, 1)]
+    [TestCase(false, 0)]
+    public async Task TheGuardHandsBackAFrontTakenByAnotherProcessOfTheApplication(bool sameApplication, int handedBack)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x500,
+            FrontAfterOpening = 74,
+            SiblingIsSameApplication = sameApplication,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.That(platform.HandedBack, Has.Count.EqualTo(handedBack));
+    }
+
+    // v3 point 0 review: the guard hands back only a front the application took by itself. When BAXY's next act took
+    // it on purpose (a mission's first click or key, inside the guard's 3 s) or the person clicked the new window,
+    // the front stays where it went; otherwise it goes back to the person's window.
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public async Task TheGuardNeverUndoesAFrontTakenOnPurpose(bool interrupted, bool handedBack)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x500,
+            FrontAfterOpening = 73,
+            GuardInterrupted = interrupted,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+        _ = ForegroundHandBack.TakeGuardReturns();
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.WindowsActivation, Is.False);
+            Assert.That(platform.HandedBack, Is.EqualTo(handedBack ? [0x500L] : Array.Empty<long>()));
+            // A front handed back after the receipt is counted for the next look (v3 point 0, fix 4); none otherwise.
+            Assert.That(ForegroundHandBack.TakeGuardReturns(), Is.EqualTo(handedBack ? 1 : 0));
+        });
+    }
+
+    // v3 point 1 review: the looks while an application starts hand back a front only for the last opening that left
+    // the person's window in front; an opening asked in front (or any later opening) replaces it.
+    [Test]
+    public async Task OnlyAnOpeningBehindThePersonsWindowIsNotedForTheLooksWhileItStarts()
+    {
+        var behind = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x500,
+        };
+        var inFront = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            PersonFront = 0x500,
+        };
+
+        _ = await new WindowsInstalledApplicationOpenProvider(behind).OpenAsync(Request("Steam"), CancellationToken.None);
+        _ = await new WindowsInstalledApplicationOpenProvider(inFront)
+            .OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(behind.Openings, Is.EqualTo(new[] { "forget", "note 1280 4242" }));
+            Assert.That(inFront.Openings, Is.EqualTo(new[] { "forget" }), "an opening in front forgets the earlier one");
+        });
+    }
+
+    [Test]
+    public void TakingTheFrontOnPurposeInterruptsAGuardStartedBefore()
+    {
+        ForegroundHandBack.GuardStamp stamp = ForegroundHandBack.Stamp();
+
+        ForegroundHandBack.NoteFrontTaken();
+
+        Assert.That(ForegroundHandBack.Interrupted(stamp), Is.True);
+    }
+
+    [Test]
+    public async Task AReuseNotAskedInFrontLeavesTheWindowWhereItIs()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(platform.FocusCalls, Is.Zero);
+            Assert.That(result.WindowsActivation, Is.False);
+        });
+    }
+
     [Test]
     public async Task AbsentApplicationIsActivatedAndIndependentlyFocused()
     {
@@ -321,7 +809,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         ApplicationOpenResult result = await provider.OpenAsync(
-            Request("Steam"),
+            Request("Steam", foreground: true),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -348,7 +836,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         ApplicationOpenResult result = await provider.OpenAsync(
-            Request("Steam"),
+            Request("Steam", foreground: true),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -358,6 +846,91 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(platform.ActivateCalls, Is.Zero);
             Assert.That(platform.FocusCalls, Is.EqualTo(1));
             Assert.That(platform.DelayCalls, Is.EqualTo(1));
+        });
+    }
+
+    // v3 r5a M5 review: the provider hands the platform whether the opening is for a computer-use mission; only then
+    // does the platform start a program Windows would raise unasked with the person's rights.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task TheActivationSaysWhetherTheOpeningIsForControl(bool forControl)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(
+            new ApplicationOpenRequest("Steam", Guid.NewGuid().ToString("D"), Foreground: true, ForControl: forControl),
+            CancellationToken.None);
+
+        Assert.That(platform.ActivatedForControl, Is.EqualTo(new[] { forControl }));
+    }
+
+    // cu-v3-elevacion, twin of r9 v3-65/v3-23: a console left raised (its window cannot be read nor pressed) is opened
+    // again with the person's rights instead of being reused, when its program opens that way; counter-cases: asked as
+    // administrator (no forControl), or a program that raises itself again (the Task Manager), the window is reused.
+    [TestCase(true, true, false)]
+    [TestCase(false, true, true)]
+    [TestCase(true, false, true)]
+    public async Task ARaisedWindowIsOpenedAgainWithThePersonsRightsInsteadOfReused(
+        bool forControl, bool reopensUnraised, bool reused)
+    {
+        InstalledApplicationObservation raised = Observation(foreground: false);
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [raised],
+            RaisedReopenable = reopensUnraised ? [raised.ProcessId] : [],
+            ObservationAfterActivation = raised with { ProcessId = 5151, WindowHandle = 91, ProcessCreationTimeUtcTicks = raised.ProcessCreationTimeUtcTicks + 1 },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            new ApplicationOpenRequest("Steam", Guid.NewGuid().ToString("D"), ForControl: forControl),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Receipt.ReusedExisting, Is.EqualTo(reused));
+            Assert.That(platform.ActivateCalls, Is.EqualTo(reused ? 0 : 1));
+            Assert.That(result.Receipt.ProcessId, Is.EqualTo(reused ? raised.ProcessId : 5151));
+        });
+    }
+
+    // Review of cu-v3-elevacion (finding 4): the raised console in front and the copy BAXY opened with the person's
+    // rights behind it. Each «abre servicios» reuses that copy instead of starting one more; asked as administrator
+    // (no forControl), the raised one in front is the one reused, as before.
+    [TestCase(true, 5151)]
+    [TestCase(false, 4242)]
+    public async Task TheUnraisedCopyIsReusedWhileTheRaisedOneHoldsTheFront(bool forControl, int reusedProcess)
+    {
+        InstalledApplicationObservation raised = Observation(foreground: true);
+        InstalledApplicationObservation copy = raised with
+        {
+            ProcessId = 5151,
+            WindowHandle = 91,
+            Foreground = false,
+            ProcessCreationTimeUtcTicks = raised.ProcessCreationTimeUtcTicks + 1,
+        };
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [raised, copy],
+            RaisedReopenable = [raised.ProcessId],
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            new ApplicationOpenRequest("Steam", Guid.NewGuid().ToString("D"), ForControl: forControl),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Receipt.ReusedExisting, Is.True);
+            Assert.That(platform.ActivateCalls, Is.Zero, "no new copy is started");
+            Assert.That(result.Receipt.ProcessId, Is.EqualTo(reusedProcess));
         });
     }
 
@@ -506,8 +1079,291 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
-    private static ApplicationOpenRequest Request(string name) =>
-        new(name, Guid.NewGuid().ToString("D"));
+    // cu-v3-documento-nuevo, twin of uso real t4-c14 «pegame lo que copie en un bloc de notas nuevo» with the person's
+    // «*lista pan» open: the opening makes a new document (a new tab of the same window) and never hands back theirs.
+    [Test]
+    public async Task NewDocumentInAnOpenApplicationIsMadeInItsWindowNotReusedAsItWas()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FrontFollowsRequest = true,
+            TitleAfterNewDocument = "Sin título - Bloc de notas",
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(73));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
+            // Review of cu-v3-documento-nuevo (finding 4): the opening leaves the front where it is (v3 point 0); only
+            // the command's own burst of the lease takes it, and gives it back.
+            Assert.That(platform.FocusCalls, Is.Zero, "the opening takes no front of its own");
+        });
+    }
+
+    // Finding 4, the front asked for: the new document is the window left in front.
+    [Test]
+    public async Task NewDocumentAskedInFrontIsLeftInFront()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FrontFollowsRequest = true,
+            WindowAfterNewDocument = Observation(foreground: false) with { WindowHandle = 75 },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            NewDocument("Bloc de notas") with { Foreground = true }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(75));
+            Assert.That(platform.ForegroundWindow(), Is.EqualTo(75));
+        });
+    }
+
+    // Finding 5: a title that changes by itself (a page that ends loading, a player's song) is no new tab, and a «*»
+    // that goes is the same document saved: nothing new is told, so nothing is pasted into the person's document.
+    [TestCase(true, null)]
+    [TestCase(false, "lista pan - Bloc de notas")]
+    public async Task TitleThatChangesWithoutANewDocumentTellsNone(bool drifts, string? titleAfter)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            TitleDrifts = drifts,
+            TitleAfterNewDocument = titleAfter,
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+        });
+    }
+
+    // A multi-window application (the fake catalog's entry stands for one such as Excel in t4-c06 «bro abre excel y
+    // crea un blank workbook»): the New command shows a new window, which is the result.
+    [Test]
+    public async Task NewDocumentShownAsANewWindowIsTheOpenedWindow()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FrontFollowsRequest = true,
+            WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 75 },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(75));
+            Assert.That(result.AlreadyRunning, Is.True);
+        });
+    }
+
+    // Nothing new seen (no window, the title as it was), or only a dialog of the application («¿Guardar cambios?»):
+    // an honest limit, so the plan stops before a paste reaches the person's document.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task NewDocumentNotSeenIsAnHonestLimit(bool onlyADialog)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FrontFollowsRequest = true,
+            WindowAfterNewDocument = onlyADialog ? Observation(foreground: true) with { WindowHandle = 76 } : null,
+            Owned = [76],
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.False);
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(result.Succeeded, Is.True, "the application was opened: an effect may have occurred");
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
+            // Finding 6: the dialog the command raised is closed as cancelled, never left over the person's work.
+            Assert.That(platform.Dismissed, Is.EqualTo(onlyADialog ? new[] { 76L } : Array.Empty<long>()));
+        });
+    }
+
+    // The command goes only to the application's window in front, in a burst of the lease: when the burst is refused
+    // (the person did not pause, a modifier held, the window lost the front), nothing is sent.
+    [Test]
+    public async Task NewDocumentCommandIsNeverSentToAnotherWindow()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            PersonFront = 99,
+            LeaseGrants = false,
+            TitleAfterNewDocument = "Sin título - Bloc de notas",
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.NewDocumentIssued, Is.Empty);
+        });
+    }
+
+    // Counter-case «abrí el bloc de notas»: without a new document asked for, the open window is reused and no
+    // command is given.
+    [Test]
+    public async Task OpeningWithoutNewDocumentReusesTheWindowAndGivesNoCommand()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FrontFollowsRequest = true,
+            TitleAfterNewDocument = "Sin título - Bloc de notas",
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Bloc de notas", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(platform.NewDocumentIssued, Is.Empty);
+        });
+    }
+
+    // Ronda 20 P4, twin of v3-01 («abrí PowerPoint y creá una presentación»): cold start verified on the start window
+    // («Abriendo - PowerPoint»); the main window, still on its start screen («PowerPoint»), is born right after. It is
+    // where the command goes, and it is never taken for the new document: with nothing made after the command the
+    // opening is an honest limit.
+    [Test]
+    public async Task ColdStartWhoseMainWindowIsBornLateIsNoNewDocument()
+    {
+        var platform = ColdStart(madeTitle: null);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 75L }), "the command goes to the settled main window");
+        });
+    }
+
+    // Counter-case: the command on the settled main window makes a real document, born after it.
+    [Test]
+    public async Task ColdStartNewDocumentIsTheWindowBornAfterTheCommand()
+    {
+        var platform = ColdStart(madeTitle: "Presentación1 - PowerPoint");
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(77));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 75L }));
+        });
+    }
+
+    // Counter-case: a window born after the command but titled as the bare application (another start screen) or as
+    // the start window was is no document.
+    [TestCase("PowerPoint")]
+    [TestCase("Steam")]
+    [TestCase("Abriendo - PowerPoint")]
+    public async Task ColdStartWindowWithTheBareNameIsNoDocument(string madeTitle)
+    {
+        var platform = ColdStart(madeTitle);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+        });
+    }
+
+    // Revisión 2 de P4: «abrí un chrome nuevo» with the browser closed. The start leaves its main window on
+    // «Nueva pestaña - …» and the New command opens a second window with that same title: it is the new document,
+    // since only the start's other windows and the bare name are never one.
+    [Test]
+    public async Task ColdStartNewWindowRepeatingTheMainWindowTitleIsTheNewDocument()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
+            FrontFollowsRequest = true,
+            WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 77 },
+        };
+        platform.Titles[73] = "Nueva pestaña - Steam";
+        platform.Titles[77] = "Nueva pestaña - Steam";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.ErrorCode, Is.Null.Or.Empty);
+            Assert.That(result.WindowHandle, Is.EqualTo(77));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
+        });
+    }
+
+    private static FakePlatform ColdStart(string? madeTitle)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
+            BornAfterStart = Observation(foreground: false) with { WindowHandle = 75 },
+            FrontFollowsRequest = true,
+            WindowAfterNewDocument = madeTitle is null ? null : Observation(foreground: true) with { WindowHandle = 77 },
+        };
+        platform.Titles[73] = "Abriendo - PowerPoint";
+        platform.Titles[75] = "PowerPoint";
+        if (madeTitle is not null)
+        {
+            platform.Titles[77] = madeTitle;
+        }
+
+        return platform;
+    }
+
+    private static ApplicationOpenRequest NewDocument(string name) =>
+        new(name, Guid.NewGuid().ToString("D"), NewDocument: true);
+
+    private static ApplicationOpenRequest Request(string name, bool foreground = false) =>
+        new(name, Guid.NewGuid().ToString("D"), foreground);
 
     private static InstalledApplicationObservation Observation(bool foreground) =>
         new(
@@ -528,6 +1384,155 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public InstalledApplicationObservation? ObservationAfterActivation { get; init; }
 
         public bool FocusRequiresDelay { get; init; }
+
+        public long PersonFront { get; init; }
+
+        // r20b palanca 4: the window the person works in (0: none, or BAXY's own), how many times it was asked, the
+        // windows shown above theirs without the activation, and whether that showing is read back (a minimized window
+        // Windows did not show, a raised one it refused to move: false).
+        public long WorkingFront { get; init; }
+
+        public int WorkingAsked { get; private set; }
+
+        public List<long> RaisedWithoutActivation { get; } = [];
+
+        public List<long> RaisedAbove { get; } = [];
+
+        public bool ShowReadBack { get; init; } = true;
+
+        public long PersonWorkingIn(long window)
+        {
+            WorkingAsked++;
+            return window != 0 && window == WorkingFront ? window : 0;
+        }
+
+        public bool ShowAboveWithoutActivation(long window, long personWindow)
+        {
+            RaisedWithoutActivation.Add(window);
+            RaisedAbove.Add(personWindow);
+            return ShowReadBack;
+        }
+
+        public List<long> HandedBack { get; } = [];
+
+        // The window in front once the opening has read the person's (what the hand-back guard sees; 0: theirs).
+        public long FrontAfterOpening { get; init; }
+
+        // BAXY took the front on purpose, or the person used the keyboard or the mouse, since the guard started.
+        public bool GuardInterrupted { get; init; }
+
+        // Whether a hand-back holds (Windows may refuse it), and how many times the application takes the front
+        // again after one that held.
+        public bool HandBackHolds { get; init; } = true;
+
+        public int RetakesAfterHandBack { get; init; }
+
+        // Window 74 belongs to process 5151, another process of the opened application when this says so.
+        public bool SiblingIsSameApplication { get; init; }
+
+        private int _frontReads;
+
+        private bool _frontBack;
+
+        public long ForegroundWindow() =>
+            FrontFollowsRequest && _requestedForegroundHandle is long requested ? requested
+            : _newDocumentIssued && FrontAfterNewDocument != 0 && !_frontBack ? FrontAfterNewDocument
+            : _frontReads++ > 0 && FrontAfterOpening != 0 && !_frontBack ? FrontAfterOpening : PersonFront;
+
+        // cu-v3-documento-nuevo: the window asked to the front holds it.
+        public bool FrontFollowsRequest { get; init; }
+
+        public Dictionary<long, string> Titles { get; } = [];
+
+        // What the New command shows: the window's new title (a new tab), a new window, or nothing.
+        public string? TitleAfterNewDocument { get; init; }
+
+        public InstalledApplicationObservation? WindowAfterNewDocument { get; init; }
+
+        // The window in front once the New command ran, until a hand-back that holds (0: as before the command).
+        public long FrontAfterNewDocument { get; init; }
+
+        private bool _newDocumentIssued;
+
+        public HashSet<long> Owned { get; init; } = [];
+
+        public List<long> NewDocumentIssued { get; } = [];
+
+        // Whether the lease's burst may send (the person paused, no modifier held, the window holds the front).
+        public bool LeaseGrants { get; init; } = true;
+
+        // The window's title changes by itself at each read (a page loading, a player's song).
+        public bool TitleDrifts { get; init; }
+
+        private int _titleReads;
+
+        public List<long> Dismissed { get; } = [];
+
+        public void DismissDialog(long windowHandle) => Dismissed.Add(windowHandle);
+
+        public ValueTask<bool> IssueNewDocumentAsync(long windowHandle, CancellationToken cancellationToken)
+        {
+            if (!LeaseGrants)
+            {
+                return ValueTask.FromResult(false);
+            }
+
+            NewDocumentIssued.Add(windowHandle);
+            _newDocumentIssued = true;
+            if (TitleAfterNewDocument is { } title)
+            {
+                Titles[windowHandle] = title;
+            }
+
+            if (WindowAfterNewDocument is { } window)
+            {
+                Observations = [.. Observations, window];
+            }
+
+            return ValueTask.FromResult(true);
+        }
+
+        // Ronda 20 P4 (v3-01): a window the start shows after the one the opening verified (the main window after a
+        // splash), born when the start window's title is first read once the application was launched.
+        public InstalledApplicationObservation? BornAfterStart { get; init; }
+
+        private bool _bornAfterStart;
+
+        public string WindowTitle(long windowHandle)
+        {
+            if (!_bornAfterStart && BornAfterStart is { } born && ActivateCalls > 0)
+            {
+                _bornAfterStart = true;
+                Observations = [.. Observations, born];
+            }
+
+            return !Titles.TryGetValue(windowHandle, out string? title) ? string.Empty
+                : TitleDrifts ? $"{title} {++_titleReads}"
+                : title;
+        }
+
+        public bool IsOwnedWindow(long windowHandle) => Owned.Contains(windowHandle);
+
+        public int WindowProcessId(long windowHandle) => windowHandle switch { 73 => 4242, 74 => 5151, _ => 0 };
+
+        public bool SameApplication(int opened, int process) =>
+            opened > 0 && (opened == process || SiblingIsSameApplication && process == 5151);
+
+        public bool FrontGuardInterrupted(ForegroundHandBack.GuardStamp stamp) => GuardInterrupted;
+
+        public bool ReturnForeground(long previous, long opened)
+        {
+            HandedBack.Add(previous);
+            _frontBack = HandBackHolds && HandedBack.Count > RetakesAfterHandBack;
+            return HandBackHolds;
+        }
+
+        // The openings noted for the looks while the application starts, and the forgotten ones, in order.
+        public List<string> Openings { get; } = [];
+
+        public void NoteOpening(long previousFront, int processId) => Openings.Add($"note {previousFront} {processId}");
+
+        public void ForgetOpening() => Openings.Add("forget");
 
         public int ActivateCalls { get; private set; }
 
@@ -555,6 +1560,19 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public IReadOnlyList<InstalledApplicationObservation> Inventory(
             InstalledApplicationEntry entry) => InventoryFailure is null
                 ? Observations : throw InventoryFailure;
+
+        public List<bool> ActivatedForControl { get; } = [];
+
+        // The processes that run as administrator and whose program would open again with the person's rights.
+        public HashSet<int> RaisedReopenable { get; init; } = [];
+
+        public bool RaisedButReopensUnraised(int processId) => RaisedReopenable.Contains(processId);
+
+        public bool Activate(InstalledApplicationEntry entry, bool forControl)
+        {
+            ActivatedForControl.Add(forControl);
+            return Activate(entry);
+        }
 
         public bool Activate(InstalledApplicationEntry entry)
         {

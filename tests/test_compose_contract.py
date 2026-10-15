@@ -18,12 +18,20 @@ import json
 import pytest
 
 from baxy_mind import llm as llm_mod
-from baxy_mind.llm import (
-    CAPABILITY_SAMPLE,
-    _compose_situation_payload,
-    compose_visible_defect,
-    served_capability_families,
-)
+from baxy_mind import llm_compose
+from baxy_mind import payload_fact_checks
+from baxy_mind import search_report
+from baxy_mind import visible_defect
+from baxy_mind import conversation_contract
+from baxy_mind import compose_situation
+from baxy_mind import compose_payload
+from baxy_mind import reply_claims
+from baxy_mind.compose_payload import _compose_situation_payload
+from baxy_mind.visible_defect import compose_visible_defect
+from baxy_mind.capability_families import CAPABILITY_SAMPLE
+from baxy_mind.capability_families import served_capability_families
+from baxy_mind import turn_history
+from baxy_mind import llm_audit
 
 GRANITE = r"D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf"
 CONVERSATION = {"situation": '{"kind":"conversation","polarity":"success"}'}
@@ -269,15 +277,15 @@ def test_composed_identity_preserves_the_observed_account(account, answer, user_
         "verified": True, "succeeded": True,
         "observed": {"version": 1, "domain": "REDNOTE", "userName": account},
     }}
-    payload = llm_mod._compose_situation_payload(
+    payload = compose_payload._compose_situation_payload(
         facts["situation"], "en" if user_text == "Who am I?" else "es", user_text
     )
-    assert llm_mod._payload_fact_defect(answer, payload) == expected
+    assert payload_fact_checks._payload_fact_defect(answer, payload) == expected
 
 
 @pytest.mark.parametrize("seen", [{}, {"userName": None}, {"userName": ""}, {"userName": " "}])
 def test_missing_observed_account_does_not_create_a_name_obligation(seen):
-    assert llm_mod._payload_fact_defect("No account name was returned.", {"seen": seen}) == ""
+    assert payload_fact_checks._payload_fact_defect("No account name was returned.", {"seen": seen}) == ""
 
 
 def test_composed_identity_retries_an_answer_about_the_assistant():
@@ -393,7 +401,7 @@ def test_english_name_clarification_payload_does_not_require_catalog_vocabulary(
         {"kind": "clarification", "polarity": "pending", "cause": "memory_save_needs_content"},
         "en", "What can you do? Remember my name.", capabilities=["app", "audio", "system"],
     )
-    assert llm_mod._payload_fact_defect("What is your name?", payload) == ""
+    assert payload_fact_checks._payload_fact_defect("What is your name?", payload) == ""
 
 
 @pytest.mark.parametrize("reply", ["What is your name?", "Which name would you like me to remember?"])
@@ -665,9 +673,9 @@ def test_previous_state_is_not_verified_evidence_in_any_compose_attempt(
 def test_dialogue_context_cannot_be_flattened_into_observations() -> None:
     context = [{"role": "assistant", "content": "Steam ya está abierto."}]
     facts = {"previous_dialogue_for_references_only": context}
-    assert llm_mod._visible_compose_facts(facts) is None
+    assert compose_payload._visible_compose_facts(facts) is None
     facts["verified"] = False
-    assert llm_mod._visible_compose_facts(facts) == {"verified": False}
+    assert compose_payload._visible_compose_facts(facts) == {"verified": False}
 
 
 def test_prior_filename_is_human_vocabulary_only_when_user_supplied() -> None:
@@ -682,12 +690,12 @@ def test_prior_filename_is_human_vocabulary_only_when_user_supplied() -> None:
 
 def test_the_trace_identifies_the_turn_and_the_draft() -> None:
     records: list[dict] = []
-    original = llm_mod._capture_compose_stage
+    original = llm_audit._capture_compose_stage
 
     def capture(**kwargs: object) -> None:
         records.append(dict(kwargs))
 
-    llm_mod._capture_compose_stage = capture  # type: ignore[assignment]
+    llm_compose._capture_compose_stage = capture  # type: ignore[assignment]
     try:
         client = _Recorder(["Hola."])
         client.compose_user_message(
@@ -696,7 +704,7 @@ def test_the_trace_identifies_the_turn_and_the_draft() -> None:
             {"situation": '{"kind":"welcome","polarity":"success"}', "traceId": "t7"},
         )
     finally:
-        llm_mod._capture_compose_stage = original  # type: ignore[assignment]
+        llm_compose._capture_compose_stage = original  # type: ignore[assignment]
 
     assert len(records) == 1
     stage = records[0]
@@ -769,7 +777,7 @@ def test_greeting_back_a_greeted_question_is_not_a_defect() -> None:
 
 
 def test_a_payload_key_is_not_a_truncated_word() -> None:
-    from baxy_mind.llm import _truncated_fact_word
+    from baxy_mind.visible_defect import _truncated_fact_word
 
     # «open» era prefijo de la clave «opening» y vetaba una respuesta correcta.
     assert not _truncated_fact_word("I won't open Paint.", {"opening": "none"})
@@ -791,7 +799,7 @@ def test_complete_short_fact_words_are_not_truncated_longer_values(name: str, lo
         window["title"] = name
     elif location == "key_only":
         window[name] = "unrelated"
-    assert llm_mod._truncated_fact_word(name, facts) is (location != "nested_value")
+    assert visible_defect._truncated_fact_word(name, facts) is (location != "nested_value")
 
 
 @pytest.mark.parametrize("name", ["Atlas", "Opera", "Ágora", "Steam", "Panel", "Notas"])
@@ -846,7 +854,7 @@ def test_the_visible_text_keeps_the_facts_the_payload_gave_it() -> None:
     con `can` delante.
     """
 
-    from baxy_mind.llm import _payload_fact_defect
+    from baxy_mind.payload_fact_checks import _payload_fact_defect
 
     audio = {"clock": "13:03", "seen": {"level": 100, "muted": False}}
     assert (
@@ -881,13 +889,13 @@ def test_clock_with_named_units_preserves_the_observed_time() -> None:
         "Son las 07 horas y 13 minutos.",
         "It is 07 hours and 13 minutes.",
     ):
-        assert llm_mod._payload_fact_defect(answer, {"clock": "07:13"}) == ""
+        assert payload_fact_checks._payload_fact_defect(answer, {"clock": "07:13"}) == ""
     for answer in (
         "Son las 07 horas y 14 minutos.",
         "It is 07 hours and 13 minutes PM.",
         "Son las 07:13, o las 08 horas y 13 minutos.",
     ):
-        assert llm_mod._payload_fact_defect(answer, {"clock": "07:13"})
+        assert payload_fact_checks._payload_fact_defect(answer, {"clock": "07:13"})
 
 
 def test_out_of_catalog_states_a_boundary_and_never_a_failed_attempt() -> None:
@@ -967,7 +975,7 @@ def test_a_read_never_claims_it_changed_the_state() -> None:
     la hora es las 18:11.» ante un turno que sólo leyó reloj y audio.
     """
 
-    from baxy_mind.llm import _payload_fact_defect
+    from baxy_mind.payload_fact_checks import _payload_fact_defect
 
     payload = {"clock": "18:11", "seen": {"level": 20, "muted": False}}
 
@@ -1022,9 +1030,8 @@ def test_the_persons_fallos_answered_back_claim_no_failure(reply: str, defect: s
 )
 def test_content_asked_in_a_named_language_is_answered_in_it(request_text: str, language: str) -> None:
     # M33 (DEV-B 2026-09-28): the draft in the language the person named was vetoed as the wrong reply language.
-    from baxy_mind import __main__ as sidecar
 
-    assert sidecar._read_reply_language(request_text, []) == language
+    assert turn_history._read_reply_language(request_text, []) == language
 
 
 @pytest.mark.parametrize(
@@ -1042,9 +1049,7 @@ def test_content_asked_in_a_named_language_is_answered_in_it(request_text: str, 
 )
 def test_what_baxy_said_is_the_conversation_not_an_effect(draft: str, claims: bool) -> None:
     # M35 (real log 121 «¿de qué hablas?»): the reply was vetoed twice and the turn asked instead.
-    from baxy_mind import llm
-
-    assert llm.visible_reply_claims_an_effect(draft, "de qué hablas") is claims
+    assert reply_claims.visible_reply_claims_an_effect(draft, "de qué hablas") is claims
 
 
 @pytest.mark.parametrize(
@@ -1060,9 +1065,7 @@ def test_what_baxy_said_is_the_conversation_not_an_effect(draft: str, claims: bo
 )
 def test_an_identity_answer_keeps_the_numbers_the_request_brought(request_text: str, draft: str, violates: bool) -> None:
     # M35 (real log 66): a digit was always read as an invented maker date.
-    from baxy_mind import llm
-
-    assert llm._shaped_conversation_answer_violates_contract(draft, request_text, "identity") is violates
+    assert conversation_contract._shaped_conversation_answer_violates_contract(draft, request_text, "identity") is violates
 
 
 @pytest.mark.parametrize(
@@ -1086,9 +1089,7 @@ def test_the_days_left_are_counted_from_the_observed_date(text: str, until: tupl
 
 def test_a_pending_detail_is_asked_without_naming_an_internal_cause() -> None:
     # M38: «unclear request» was copied into the drafts («…because the request was unclear»), no question at all.
-    from baxy_mind import llm
-
-    fact = llm._CAUSE_FACT["ambiguous_request"]
+    fact = compose_situation._CAUSE_FACT["ambiguous_request"]
     assert "question" in fact and "unclear request" not in fact
 
 
@@ -1139,6 +1140,4 @@ def test_the_clock_later_on_is_computed_not_narrated(text: str, later: int | Non
 )
 def test_a_closing_mention_of_the_search_is_clipped(draft: str, clipped: str) -> None:
     # M41 (official-window DEV-A 2026-09-28): the not-found report was vetoed three times for that closing phrase.
-    from baxy_mind import llm
-
-    assert llm._SEARCH_RESULTS_TAIL.sub("", draft) == clipped
+    assert search_report._SEARCH_RESULTS_TAIL.sub("", draft) == clipped

@@ -26,11 +26,28 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm, operation_floor
+from baxy_mind import operation_floor
+from baxy_mind import visible_defect
+from baxy_mind import reply_language_checks
+from baxy_mind import reply_claims
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.web import not_a_public_lookup
 from test_c03_m101b_sin_vacios import _Scripted
+from baxy_mind import turn_decisions
+from baxy_mind import compose_situation
+from baxy_mind import clock_checks
+from baxy_mind import agenda_facts
+from baxy_mind import weather_facts
+from baxy_mind import deterministic_finals
+from baxy_mind import conversation_contract
+from baxy_mind import clock_facts
+
+
+# Every mind module whose code reads this PC's clock: the clock is patched in each one.
+_CLOCK_READERS = (
+    agenda_facts, clock_checks, clock_facts, compose_situation, conversation_contract, deterministic_finals,
+    reply_claims, weather_facts,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 TWINS = json.loads((ROOT / "tests" / "data" / "c03_m108_gate_twins.json").read_text(encoding="utf-8"))
@@ -41,12 +58,12 @@ TWINS = json.loads((ROOT / "tests" / "data" / "c03_m108_gate_twins.json").read_t
 
 @pytest.mark.parametrize("case", TWINS["promises"], ids=lambda case: case["reply"][:40])
 def test_a_promised_act_is_told_apart_from_a_told_one(case: dict) -> None:
-    assert llm.visible_reply_promises_the_act(case["reply"]) is case["promise"]
+    assert reply_claims.visible_reply_promises_the_act(case["reply"]) is case["promise"]
 
 
 @pytest.mark.parametrize("case", TWINS["tokens"], ids=lambda case: case["reply"][:40])
 def test_a_contract_token_is_told_apart_from_the_persons_and_the_observed_words(case: dict) -> None:
-    assert llm.visible_reply_leaks_a_contract_token(case["reply"], case["situation"], [case["said"]]) is case["leaks"]
+    assert reply_language_checks.visible_reply_leaks_a_contract_token(case["reply"], case["situation"], [case["said"]]) is case["leaks"]
 
 
 def _bluetooth_off(ok: bool = True) -> dict:
@@ -76,9 +93,9 @@ def _final(text: str, situation: dict, drafts: list[str], intent: str = "status"
     ],
 )
 def test_a_verified_effect_is_never_promised(said: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", said, _facts(_bluetooth_off())) == "promised_effect"
+    assert visible_defect.compose_visible_defect(draft, "status", said, _facts(_bluetooth_off())) == "promised_effect"
     # A failure promised nothing that happened: its own checks judge it, not this one.
-    assert llm.compose_visible_defect(draft, "error", said, _facts(_bluetooth_off(ok=False))) != "promised_effect"
+    assert visible_defect.compose_visible_defect(draft, "error", said, _facts(_bluetooth_off(ok=False))) != "promised_effect"
 
 
 @pytest.mark.parametrize(
@@ -92,13 +109,13 @@ def test_a_verified_effect_is_never_promised(said: str, draft: str) -> None:
     ],
 )
 def test_a_contract_token_in_a_report_is_internal_code(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", "apagá el bluetooth", _facts(_bluetooth_off())) == "internal_code"
+    assert visible_defect.compose_visible_defect(draft, "status", "apagá el bluetooth", _facts(_bluetooth_off())) == "internal_code"
 
 
 def test_a_conversation_is_not_judged_as_the_report_of_a_result() -> None:
     # «debug=true» explained in talk is content, not a leak; the report checks are for a result's report only.
     facts = _facts({"kind": "conversation"})
-    assert llm.compose_visible_defect("Pon debug=true en el archivo de configuración.", "status", "cómo activo el debug",
+    assert visible_defect.compose_visible_defect("Pon debug=true en el archivo de configuración.", "status", "cómo activo el debug",
                                       facts) != "internal_code"
 
 
@@ -120,7 +137,7 @@ def test_a_refused_promise_or_token_costs_a_retry_then_the_floor(said: str, draf
 def test_a_completed_mission_is_not_promised_either() -> None:
     step = json.dumps({**_bluetooth_off(), "readOnly": False}, ensure_ascii=False)
     mission = {"kind": "status", "polarity": "success", "cause": "mission_completed", "stepCount": 1, "steps": [step]}
-    assert llm.compose_visible_defect("Ahora mismo lo apago.", "status", "apagá el bluetooth", _facts(mission)) == (
+    assert visible_defect.compose_visible_defect("Ahora mismo lo apago.", "status", "apagá el bluetooth", _facts(mission)) == (
         "promised_effect"
     )
 
@@ -131,13 +148,13 @@ def test_what_a_verified_notice_will_do_is_its_own_fact() -> None:
                  "succeeded": True, "observed": {"kind": "reminder", "title": "tomar un descanso",
                                                  "dueUtc": due.isoformat(), "nextRunUtc": due.isoformat()}}
     for draft in ("Te recordaré tomar un descanso.", "I'll remind you to take a break.", "Te voy a avisar a esa hora."):
-        assert llm.compose_visible_defect(draft, "status", "recuérdame tomar un descanso", _facts(situation)) != (
+        assert visible_defect.compose_visible_defect(draft, "status", "recuérdame tomar un descanso", _facts(situation)) != (
             "promised_effect"
         )
 
 
 def test_the_promised_futures_are_the_catalog_acts_and_doing() -> None:
-    futures = llm._spanish_promised_futures()
+    futures = reply_claims._spanish_promised_futures()
     assert {"apagare", "abrire", "hare", "procedere", "pondre", "buscaremos"} <= futures
     # A preterite of a verb in «-rar» is no future: «recuperé», «preparé».
     assert not {"recupere", "prepare", "dejare"} & futures
@@ -156,12 +173,14 @@ def test_the_floor_tells_the_day_against_the_injected_clock(monkeypatch: pytest.
     due = datetime(2026, 3, 5, 13, 0, tzinfo=timezone.utc)
     local = due.astimezone()
     clock = f"{'la' if local.hour == 1 else 'las'} {local:%H:%M}"
-    monkeypatch.setattr(llm, "_local_now", lambda: (due - timedelta(days=1)).astimezone())
-    assert llm._deterministic_final(_reminder_due(due), {}, "recuérdame regar el jardín", "es") == (
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: (due - timedelta(days=1)).astimezone())
+    assert deterministic_finals._deterministic_final(_reminder_due(due), {}, "recuérdame regar el jardín", "es") == (
         f"Creé el recordatorio «Regar el jardín» para mañana a {clock}."
     )
-    monkeypatch.setattr(llm, "_local_now", lambda: (due - timedelta(hours=1)).astimezone())
-    assert llm._deterministic_final(_reminder_due(due), {}, "recuérdame regar el jardín", "es") == (
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: (due - timedelta(hours=1)).astimezone())
+    assert deterministic_finals._deterministic_final(_reminder_due(due), {}, "recuérdame regar el jardín", "es") == (
         f"Creé el recordatorio «Regar el jardín» para {clock}."
     )
 
@@ -221,9 +240,9 @@ def _catalog() -> PlannerCatalog:
 
 @pytest.mark.parametrize("text", [LOG_86, "?"])
 def test_the_guard_cannot_send_a_piece_to_make_or_a_bare_mark_to_the_web(text: str) -> None:
-    assert not sidecar._public_lookup_applies(text, text, _GuardSaysLookUp(), ("web.search",), _catalog())
+    assert not turn_decisions._public_lookup_applies(text, text, _GuardSaysLookUp(), ("web.search",), _catalog())
 
 
 def test_the_guard_still_sends_a_figure_of_the_world() -> None:
     text = "cuánto mide el everest"
-    assert sidecar._public_lookup_applies(text, text, _GuardSaysLookUp(), ("web.search",), _catalog())
+    assert turn_decisions._public_lookup_applies(text, text, _GuardSaysLookUp(), ("web.search",), _catalog())

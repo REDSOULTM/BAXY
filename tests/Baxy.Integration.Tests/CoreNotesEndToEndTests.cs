@@ -804,7 +804,8 @@ public sealed class CoreNotesEndToEndTests
                 Is.EqualTo(ProductCatalog.OperationNames));
             // 190 herramientas públicas tras las 21 operaciones de C03 (plan post-goal 2026-09-20, grupo B);
             // 204 con las catorce herramientas tipadas de la auditoría semántica REOPEN1957/1993 y la Fase 8;
-            // 206 con input.scroll y mission.computer.use (motor de computer use).
+            // 206 con input.scroll y mission.computer.use (motor de computer use); 207 con input.pointer.drag (v3), que la
+            // estabilización L retiró (arrastrar es un límite declarado): 206.
             Assert.That(session.Hello.Capabilities, Has.Count.EqualTo(206));
             Assert.That(
                 session.Hello.Capabilities.Select(static capability => capability.Name),

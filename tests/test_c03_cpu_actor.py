@@ -4,6 +4,7 @@ import json
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import visible_defect
 
 
 def facts(mission=False):
@@ -35,7 +36,7 @@ def facts(mission=False):
 ])
 def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
     user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
-    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+    assert visible_defect.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
 
 
 class Recorder(llm.LlmRuntime):
@@ -119,7 +120,7 @@ def test_other_model_does_not_inherit_qwen_sampling():
     {"kind": "operation", "operation": "system.status", "observed": {"cpu": {}}},
 ])
 def test_missing_whole_cpu_observation_does_not_activate_machine_actor_repair(situation):
-    result = llm.compose_visible_defect("Estoy usando un 23,75% de la CPU.", "status", "Describe el uso", {"situation": situation})
+    result = visible_defect.compose_visible_defect("Estoy usando un 23,75% de la CPU.", "status", "Describe el uso", {"situation": situation})
     assert result != "wrong_machine_actor"
 
 
@@ -130,7 +131,7 @@ def test_missing_whole_cpu_observation_does_not_activate_machine_actor_repair(si
     "El uso de CPU es del 23,75%. Tengo el resultado de la lectura.",
 ])
 def test_reading_activity_is_not_cpu_ownership_or_process_usage(reply):
-    assert llm.compose_visible_defect(reply, "status", "Read the CPU usage", facts()) != "wrong_machine_actor"
+    assert visible_defect.compose_visible_defect(reply, "status", "Read the CPU usage", facts()) != "wrong_machine_actor"
 
 
 @pytest.mark.parametrize("reply", [
@@ -146,7 +147,7 @@ def test_reading_activity_is_not_cpu_ownership_or_process_usage(reply):
 ])
 def test_repair_cannot_change_observed_cpu_quantities(reply):
     user_text = "Show CPU usage and core counts" if reply.startswith(("The ", "This ", "Physical ")) else "Describe el uso de CPU"
-    assert llm.compose_visible_defect(reply, "status", user_text, facts()) == "wrong_machine_value"
+    assert visible_defect.compose_visible_defect(reply, "status", user_text, facts()) == "wrong_machine_value"
 
 
 @pytest.mark.parametrize("reply", [
@@ -158,7 +159,7 @@ def test_repair_cannot_change_observed_cpu_quantities(reply):
 ])
 def test_cpu_quantities_allow_decimal_locale_display_rounding_and_labels(reply):
     user_text = "Show CPU usage and core counts" if reply.startswith(("CPU ", "Physical ")) else "Describe el uso de CPU"
-    assert llm.compose_visible_defect(reply, "status", user_text, facts()) == ""
+    assert visible_defect.compose_visible_defect(reply, "status", user_text, facts()) == ""
 
 
 def test_wrong_quantity_in_actor_repair_is_rejected_before_existing_last_attempt():

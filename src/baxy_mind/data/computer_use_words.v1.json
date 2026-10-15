@@ -1,6 +1,6 @@
 {
  "schema": "baxy.computer-use-words.v1",
- "source": "cu-r16 (voice audit 2026-10-07): every content word of a computer-use final comes from the turn's facts (goal, steps, window, screen, application, the person's request) or from this vocabulary: the words BAXY uses to say its own arrival or act in first person singular, function words, numbers and units. A word outside both is vetoed as ungrounded_word («Abrazé», a leaked «Wi-Fi», «busco»). Words are folded (lower case, no accents). Peninsular perfects («he», «ha»), the plural «estamos», «mis» and «already» are left out on purpose: they are not BAXY's voice. cu-r17: short first-person preterites of common UI acts («pegué», «cerré») are listed whole, since the stem match cannot reach them from the request («pegalo»); screenStates maps a Spanish screen state or UI word to the English word an English reply says for it («Emparejado» → «paired»), used only when the reply is English. applicationKinds names what the pages of an application hold, in both languages, keyed by the folded application name the facts carry: a final may call the listed things by their kind («los juegos» in Steam, «el disco» in the File Explorer, «la resolución» in Settings) though no line on the screen spells it.",
+ "source": "cu-r16 (voice audit 2026-10-07): every content word of a computer-use final comes from the turn's facts (goal, steps, window, screen, application, the person's request) or from this vocabulary: the words BAXY uses to say its own arrival or act in first person singular, function words, numbers and units. A word outside both is vetoed as ungrounded_word («Abrazé», a leaked «Wi-Fi», «busco»). Words are folded (lower case, no accents). Peninsular perfects («he», «ha»), the plural «estamos», «mis» and «already» are left out on purpose: they are not BAXY's voice. cu-r17: short first-person preterites of common UI acts («pegué», «cerré») are listed whole, since the stem match cannot reach them from the request («pegalo»); screenStates maps a Spanish screen state or UI word to the English word an English reply says for it («Emparejado» → «paired»), used only when the reply is English. applicationKinds names what the pages of an application hold, in both languages, keyed by the folded application name the facts carry: a final may call the listed things by their kind («los juegos» in Steam, «el disco» in the File Explorer, «la resolución» in Settings) though no line on the screen spells it. Revisión 1 de r22 (hallazgo d): «llevo», «paso(s)», «haya», «quedado», «step(s)», «doesn», «show», «more», «than» are the words of the floor's weakDone sentence (operation_floor.v1.json computerUse.weakDone), the template the composer publishes after a draft dies on unbacked_act.",
  "stemLength": 5,
  "function": {
   "es": [
@@ -191,8 +191,16 @@
    "remains"
   ]
  },
+ "ownSearchOpenedSource": "Revisión 1 de r24b (B3): «abrio», «busqueda» y «cursor» (own.es) y «cursor» (own.en) son las palabras de la plantilla computerUse.searchOpened («Listo, se abrió la búsqueda y el cursor está en …»), que caía como ungrounded_word cuando la ventana no decía «buscar» y por eso nunca se publicaba como plantilla.",
  "own": {
   "es": [
+   "antes",
+   "llevo",
+   "paso",
+   "pasos",
+   "haya",
+   "quedado",
+   "parar",
    "listo",
    "lista",
    "listos",
@@ -380,9 +388,25 @@
    "restaure",
    "subi",
    "baje",
-   "desplace"
+   "desplace",
+   "leer",
+   "lei",
+   "mostraba",
+   "mostrar",
+   "dato",
+   "abrio",
+   "busqueda",
+   "cursor"
   ],
   "en": [
+   "before",
+   "stopping",
+   "step",
+   "steps",
+   "doesn",
+   "show",
+   "more",
+   "than",
    "done",
    "ready",
    "opened",
@@ -521,7 +545,10 @@
    "restored",
    "raised",
    "lowered",
-   "scrolled"
+   "scrolled",
+   "read",
+   "showed",
+   "cursor"
   ]
  },
  "screenStates": {
@@ -953,6 +980,85 @@
    "artist",
    "artists",
    "albums"
+  ]
+ },
+ "screenLists": {
+  "_about": "Ronda 20b, palanca 6. commandSearch: the names a window's search of its own orders is drawn with (a command palette, a «tell me» box); only an order is looked up there. lookingGoals: the first words of a goal that only checks what is on screen (never an order for that search). viewOptionLabels: the label a window writes beside the control that shows the current option of its view or its order; viewOptionLabels.view/.sort/.group split it by the family of the option the goal names (review 3, finding 2). frameNavigation: the window's frame and its navigation buttons, never a search's result (back, up, refresh, the address band). assistantCommand (ronda 24, v3-07): the first words of a command that calls an assistant; the blind unfolding before a «none» never opens one.",
+  "commandSearch": [
+   "paleta de comandos",
+   "command palette",
+   "que desea hacer",
+   "que quieres hacer",
+   "tell me what you want to do",
+   "search for commands",
+   "buscar comandos"
+  ],
+  "lookingGoals": [
+   "verificar",
+   "confirmar",
+   "asegurarse",
+   "asegurar",
+   "chequear",
+   "verify",
+   "confirm",
+   "make sure",
+   "ensure"
+  ],
+  "viewOptionLabels": [
+   "ver por",
+   "view by",
+   "ordenar por",
+   "sort by",
+   "agrupar por",
+   "group by"
+  ],
+  "viewOptionLabels.view": [
+   "ver por",
+   "view by"
+  ],
+  "viewOptionLabels.sort": [
+   "ordenar por",
+   "sort by"
+  ],
+  "viewOptionLabels.group": [
+   "agrupar por",
+   "group by"
+  ],
+  "assistantCommand": [
+   "copilot",
+   "asistente",
+   "assistant",
+   "cortana",
+   "gemini"
+  ],
+  "frameNavigation": [
+   "atras",
+   "back",
+   "adelante",
+   "forward",
+   "subir",
+   "up to",
+   "actualizar",
+   "refresh",
+   "direccion",
+   "address",
+   "banda de direcciones",
+   "address band",
+   "ubicaciones anteriores",
+   "ubicaciones recientes",
+   "previous locations",
+   "recent locations",
+   "botones de navegacion",
+   "navigation buttons"
+  ]
+ },
+ "searchPlace": {
+  "_about": "Ronda 24b (banco r23 x7, u9): the search as a place, by its folded names in either language («andá a search», «ve a la búsqueda»), read by semantic/missions.py (is_search_place). Once its own control was pressed nothing looks it up blind (no find key, no Escape on the field that key focused, no scroll): when the shell does not give the arrival, the model decides.",
+  "names": [
+   "buscar",
+   "busqueda",
+   "search",
+   "buscador"
   ]
  }
 }

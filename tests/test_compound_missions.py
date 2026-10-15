@@ -8,11 +8,9 @@ import pytest
 
 from baxy_mind.planner import PlannerContractError
 
-from baxy_mind.__main__ import (
-    _explicit_arguments_from_evidence,
-    _explicit_plan_skeleton,
-    apply_compound_effect_conservation_veto,
-)
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.plan_shape import _explicit_plan_skeleton
+from baxy_mind.turn_gates import apply_compound_effect_conservation_veto
 from baxy_mind.effect_intent import (
     operation_domain_is_grounded,
     resolve_explicit_effects,
@@ -140,6 +138,7 @@ def test_visible_click_cascade_source_has_no_app_names() -> None:
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleVisionLocator.cs",
+        REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleTooltipLocator.cs",
         REPO / "src/Baxy.Providers.Windows/External/VisibleControlSurface.cs",
         REPO / "src/Baxy.Providers.Windows/External/UiaWorkerHost.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsScrollAdapter.cs",

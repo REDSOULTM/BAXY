@@ -17,12 +17,14 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm as llm_mod
-from baxy_mind.llm import (
+from baxy_mind import llm_prompts
+from baxy_mind import visible_defect
+from baxy_mind.compose_payload import (
     _compose_situation_payload,
     _compose_user_content,
-    _message_response_language,
-    served_capability_families,
 )
+from baxy_mind.request_intents import _message_response_language
+from baxy_mind.capability_families import served_capability_families
 from baxy_mind.semantic import request as reading_mod
 from baxy_mind.semantic.request import read_request
 
@@ -104,7 +106,7 @@ def test_naming_does_not_override_english_or_an_explicit_language(text: str, exp
 def test_reply_language_uses_the_sentence_instead_of_an_accented_name(
     text: str, language: str, rejected: bool,
 ) -> None:
-    assert llm_mod._reply_uses_opposite_language(text, language) is rejected
+    assert visible_defect._reply_uses_opposite_language(text, language) is rejected
 
 
 def test_translation_and_explicit_language_win_over_the_text() -> None:
@@ -274,8 +276,8 @@ def test_capabilities_come_from_the_served_catalog() -> None:
 
 
 def test_the_compose_prompt_no_longer_dictates_the_refusal_sentence() -> None:
-    assert "I don't do that" not in llm_mod.GRANITE_OOC_EN_USER_MESSAGE_PROMPT
-    assert "eso no lo hago" not in llm_mod.GRANITE_OOC_USER_MESSAGE_PROMPT
+    assert "I don't do that" not in llm_prompts.GRANITE_OOC_EN_USER_MESSAGE_PROMPT
+    assert "eso no lo hago" not in llm_prompts.GRANITE_OOC_USER_MESSAGE_PROMPT
     assert "close_clip" not in Path(llm_mod.__file__).read_text(encoding="utf-8")
 
 
@@ -298,7 +300,7 @@ def test_an_english_greeting_reaches_granite_in_english() -> None:
 
     assert text == "Hi, good to see you."
     assert captured[0]["messages"][0]["content"] == (
-        llm_mod.GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT
+        llm_prompts.GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT
     )
     assert "Good afternoon" in captured[0]["messages"][1]["content"]
     assert '"greeting":' not in captured[0]["messages"][1]["content"]
@@ -306,7 +308,7 @@ def test_an_english_greeting_reaches_granite_in_english() -> None:
 
 
 def test_a_spanish_greeting_for_an_english_request_is_still_rejected() -> None:
-    assert llm_mod.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Buenos días, compa.",
         "welcome",
         "Good afternoon",
@@ -515,13 +517,13 @@ def test_a_followup_answered_with_another_question_is_rejected() -> None:
         "situation": '{"kind":"conversation","polarity":"success"}',
         "priorRequests": ["qué es el kernel, una frase"],
     }
-    assert llm_mod.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "¿Para qué necesita el PC ejecutar tareas específicas?",
         "conversation",
         "para qué lo necesita el PC",
         facts,
     ) == "answered_with_a_question"
-    assert llm_mod.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "El PC necesita el kernel para gestionar sus recursos.",
         "conversation",
         "para qué lo necesita el PC",
@@ -530,7 +532,7 @@ def test_a_followup_answered_with_another_question_is_rejected() -> None:
 
 
 def test_a_social_reply_may_still_end_in_a_question() -> None:
-    assert llm_mod.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         "Hola, ¿en qué te ayudo?",
         "conversation",
         "hola",
@@ -589,12 +591,12 @@ def test_the_visible_text_never_names_the_instruction_it_was_given() -> None:
         "Internal language policy: answer exclusively in English.",
         "Política interna de idioma: responde exclusivamente en español.",
     ]
-    assert llm_mod.repeats_a_sent_instruction(
+    assert visible_defect.repeats_a_sent_instruction(
         "The capital of Peru is Lima.\n\n(Note: I'm responding in English as "
         "per the internal language policy.)",
         instructions,
     )
-    assert llm_mod.repeats_a_sent_instruction(
+    assert visible_defect.repeats_a_sent_instruction(
         "Según la política interna de idioma, contesto en español.",
         instructions,
     )
@@ -611,7 +613,7 @@ def test_the_visible_text_never_names_the_instruction_it_was_given() -> None:
     ],
 )
 def test_an_answer_that_only_answers_is_not_taken_for_a_leak(reply: str) -> None:
-    assert not llm_mod.repeats_a_sent_instruction(
+    assert not visible_defect.repeats_a_sent_instruction(
         reply,
         [
             "Internal language policy: answer exclusively in English.",
@@ -624,11 +626,11 @@ def test_an_answer_that_only_answers_is_not_taken_for_a_leak(reply: str) -> None
 def test_the_rule_needs_no_list_of_forbidden_phrases() -> None:
     # La garantía se deriva de lo enviado: cambiar la instrucción cambia lo
     # que se veta, sin tocar ninguna lista.
-    assert llm_mod.repeats_a_sent_instruction(
+    assert visible_defect.repeats_a_sent_instruction(
         "Contesto según la regla inventada de hoy.",
         ["Regla inventada de hoy: contesta en una frase."],
     )
-    assert not llm_mod.repeats_a_sent_instruction(
+    assert not visible_defect.repeats_a_sent_instruction(
         "Contesto según la regla inventada de hoy.",
         ["Otra regla distinta: contesta en una frase."],
     )
@@ -737,7 +739,7 @@ def test_a_catalog_answerable_ask_is_never_answered_with_a_question(
     reply: str,
     asked: str,
 ) -> None:
-    assert llm_mod.compose_visible_defect(
+    assert visible_defect.compose_visible_defect(
         reply,
         "conversation",
         asked,
@@ -747,7 +749,7 @@ def test_a_catalog_answerable_ask_is_never_answered_with_a_question(
 
 def test_the_catalog_answer_itself_passes() -> None:
     assert (
-        llm_mod.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             "Solo hago el trabajo de este PC y nada más.",
             "conversation",
             "cuáles son tus límites aquí",
@@ -762,12 +764,12 @@ def test_the_persons_own_words_are_not_a_copied_instruction() -> None:
     # decir «I will keep talking without launching anything», y vetarlo agotó
     # el turno seis veces. Misma exención que los términos prohibidos.
     instructions = ["keep talking without launching anything. Una frase."]
-    assert not llm_mod.repeats_a_sent_instruction(
+    assert not visible_defect.repeats_a_sent_instruction(
         "I will keep talking without launching anything.",
         instructions,
         "keep talking without launching anything",
     )
-    assert llm_mod.repeats_a_sent_instruction(
+    assert visible_defect.repeats_a_sent_instruction(
         "I will keep talking without launching anything.",
         instructions,
         "hola",
@@ -794,7 +796,7 @@ def test_answering_with_the_words_of_the_request_is_not_prompt_vocabulary(
     # «keep talking» está en la lista de vocabulario del encargo, así que la
     # respuesta correcta se vetaba y el turno se agotaba (limites-21/009).
     assert (
-        llm_mod.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             reply,
             "conversation",
             asked,
@@ -810,7 +812,7 @@ def test_answering_with_the_words_of_the_request_is_not_prompt_vocabulary(
 )
 def test_prompt_vocabulary_the_person_never_used_is_still_vetoed(reply: str) -> None:
     assert (
-        llm_mod.compose_visible_defect(
+        visible_defect.compose_visible_defect(
             reply,
             "conversation",
             "hola",

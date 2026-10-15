@@ -67,7 +67,6 @@ export interface SettingsConfig {
   specDraftModel: string;      // GEMMA4_SPEC_DRAFT_MODEL (path)
   llamaApiKey: string;         // GEMMA4_LLAMA_API_KEY
   voiceLang: string;           // GEMMA4_VOICE_LANG ("" = auto | es/en/pt/fr/de/it)
-  confirmationPolicy: string;  // normal | bypass
   // paths
   memoryJson: string; stateJson: string; traceJsonl: string;
   sessionsDir: string; timelineDir: string;
@@ -97,7 +96,7 @@ const DEFAULTS: SettingsConfig = {
   summarization: true, tracing: true,
   visionAlways: true,
   disablePrewarm: false, telemetry: false, kvType: '',
-  specDraftModel: '', llamaApiKey: '', voiceLang: '', confirmationPolicy: '',
+  specDraftModel: '', llamaApiKey: '', voiceLang: '',
   memoryJson: '~/gemma4/data/memory.json', stateJson: '~/gemma4/data/state.json',
   traceJsonl: '~/gemma4/data/traces.jsonl', sessionsDir: '~/.gemma4/sessions',
   timelineDir: '~/.gemma4/timeline',
@@ -379,24 +378,6 @@ function AgentTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <Field label=" ">
         <STCheck value={c.safetyFilter} onChange={set('safetyFilter')} label="safety filter on" />
       </Field>
-      <Field label="confirmaciones" hint="un ajuste, dos valores, el mismo camino">
-        <Select
-          value={c.confirmationPolicy === 'bypass' ? 'bypass' : 'normal'}
-          onChange={(v) => set('confirmationPolicy')(v)}
-          options={[
-            { value: 'normal', label: 'normal', hint: 'confirma borrar, sobrescribir y cerrar sin guardar; apagar y cerrar sesión van directos' },
-            { value: 'bypass', label: 'bypass', hint: 'no confirma nada; se queda encendido hasta que lo apagues. no miente ni ejecuta lo que no pediste' },
-          ]}
-          ariaLabel="confirmation policy"
-        />
-      </Field>
-      <STTip warn>
-        {c.confirmationPolicy === 'bypass' ? (
-          <>modo <b className="carmine">bypass</b> activo: no pregunta, pero sigue sin ejecutar lo no pedido y sin afirmar un éxito no verificado.</>
-        ) : (
-          <>modo normal: confirma sólo si se destruyen datos. apagar y cerrar sesión van directos.</>
-        )}
-      </STTip>
     </STSection>
   );
 }

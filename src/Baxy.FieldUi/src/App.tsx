@@ -30,7 +30,10 @@ export type MicMode = 'listening' | 'ptt' | 'off';
 const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
 // 2026-05-26: un solo perfil operante (vram4) + standby; el hotkey alterna entre esos dos.
 const PROFILE_CYCLE = ['vram4', 'standby'];
-const ONLY_ACCESS_MODE = 'normal';
+// The interface's two presentations. The profile's file on the host is the only
+// source (GET/PUT /accessibility); the chat switches the same file.
+export type AccessMode = 'normal' | 'accessible';
+export type ConfirmationPolicy = 'normal' | 'bypass';
 
 export default function App() {
   const { clock } = useClock();
@@ -90,19 +93,12 @@ export default function App() {
   // push-effect below from PUTting (and restarting llama-server) on first
   // mount before we even know the real active profile.
   const profileSynced = useRef(false);
-  // Modo de accesibilidad (normal | no_vidente | movilidad). Mismo ciclo que
-  // profile: arranca del último, se reconcilia con GET /accessibility en mount,
-  // y se PUT-ea al cambiar. NO reinicia el server (es capa de comportamiento).
-  const [accessMode, setAccessMode] = useState<string>(() => {
-    const stored = localStorage.getItem('field.accessMode');
-    return stored === ONLY_ACCESS_MODE ? stored : ONLY_ACCESS_MODE;
-  });
-  const accessSynced = useRef(false);
-  // value last adopted FROM the backend (the persisted "last config"). The
-  // push-effect skips PUTting when accessMode equals this, so reconciling the
-  // backend value never fires a redundant PUT (which emitted a spurious
-  // "accessibility · X" activity entry on every boot).
-  const accessReconciled = useRef<string | null>(null);
+  // Modo de la interfaz (normal | accessible) and the confirmation policy
+  // (normal | bypass): both live in the profile on the host and are read from
+  // it on mount and every few seconds, so a change made by chat shows here too.
+  // The view only PUTs what the person chose in it.
+  const [accessMode, setAccessModeState] = useState<AccessMode>('normal');
+  const [confirmation, setConfirmationState] = useState<ConfirmationPolicy>('normal');
   const [activeSurface, setActiveSurface] = useState<SurfaceId>(() => {
     const stored = localStorage.getItem('field.surface');
     if (stored === 'sessions' || stored === 'memory' || stored === 'triggers' || stored === 'tools') {
@@ -200,53 +196,65 @@ export default function App() {
       .catch(() => toastError('profile change failed · backend unreachable'));
   }, [profile]);
 
-  // Accessibility mode: the backend's persisted active_accessibility_mode.txt is
-  // the source of truth for "what the user left last time". Reconcile from it on
-  // mount and remember that value so the push-effect below does NOT PUT it back
-  // (which would emit a spurious activity entry and could clobber it on boot).
+  // Read both settings from the profile now and every 4s (the chat may change
+  // the accessible mode, and bypass stays on until it is switched off).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const sync = async () => {
       try {
-        const r = await fetch('/accessibility');
-        if (!cancelled && r.ok) {
-          const data = await r.json();
-          if (data?.active) {
-            const rawActive = String(data.active);
-            const active = ONLY_ACCESS_MODE;
-            accessReconciled.current = active;
-            localStorage.setItem('field.accessMode', active);
-            setAccessMode(active);
-            if (rawActive !== active) {
-              fetch('/accessibility', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode: active }),
-              }).catch(() => { /* backend may be offline during static previews */ });
-            }
-          }
+        const [a, s] = await Promise.all([fetch('/accessibility'), fetch('/confirmation')]);
+        if (cancelled) return;
+        if (a.ok) {
+          const data = (await a.json()) as { active?: string };
+          setAccessModeState(data.active === 'accessible' ? 'accessible' : 'normal');
         }
-      } catch { /* keep localStorage default */ }
-      finally { accessSynced.current = true; }
-    })();
-    return () => { cancelled = true; };
+        if (s.ok) {
+          const data = (await s.json()) as { confirmationPolicy?: string };
+          setConfirmationState(data.confirmationPolicy === 'bypass' ? 'bypass' : 'normal');
+        }
+      } catch { /* backend offline: keep what is shown */ }
+    };
+    sync();
+    const id = window.setInterval(sync, 4000);
+    return () => { cancelled = true; window.clearInterval(id); };
   }, []);
 
+  // The presentation hangs from the document root: the stylesheet's accessible
+  // rules (contrast, focus, no motion) and the paint loops read it.
   useEffect(() => {
-    if (!accessSynced.current) return;  // don't PUT until reconciled
-    // Skip the PUT when this value is exactly what we just read from the backend
-    // — it's already persisted there; re-PUTting it only spams the activity log.
-    if (accessMode === accessReconciled.current) return;
-    accessReconciled.current = null;  // subsequent equal values are user-driven
-    localStorage.setItem('field.accessMode', accessMode);
-    fetch('/accessibility', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mode: accessMode }),
-    })
-      .then((r) => { if (!r.ok) toastError(`accessibility change rejected · ${r.status}`); })
-      .catch(() => toastError('accessibility change failed · backend unreachable'));
+    document.documentElement.dataset.access = accessMode;
   }, [accessMode]);
+
+  const setAccessMode = useCallback(async (mode: AccessMode) => {
+    try {
+      const r = await fetch('/accessibility', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      if (!r.ok) throw new Error(`status ${r.status}`);
+      const data = (await r.json()) as { active?: string };
+      setAccessModeState(data.active === 'accessible' ? 'accessible' : 'normal');
+    } catch (e) {
+      toastError(`modo accesible sin cambiar · ${String(e).replace(/^Error: /, '')}`);
+    }
+  }, []);
+
+  const setConfirmation = useCallback(async (policy: ConfirmationPolicy) => {
+    try {
+      // Its own route: the settings panel's «apply» never carries the confirmation mode.
+      const r = await fetch('/confirmation', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmationPolicy: policy }),
+      });
+      if (!r.ok) throw new Error(`status ${r.status}`);
+      const data = (await r.json()) as { confirmationPolicy?: string };
+      setConfirmationState(data.confirmationPolicy === 'bypass' ? 'bypass' : 'normal');
+    } catch (e) {
+      toastError(`confirmaciones sin cambiar · ${String(e).replace(/^Error: /, '')}`);
+    }
+  }, []);
 
   // debug override + auto-cycler when WS is down
   const [debugState, setDebugState] = useState<ConvState | null>(null);
@@ -510,11 +518,13 @@ export default function App() {
     const schedule = () => {
       const state = visualStateRef.current;
       const active = state === 'listening' || state === 'thinking' || state === 'speaking';
-      const interval = document.hidden ? 1000 : 1000 / (active ? 30 : 4);
+      const still = document.hidden || document.documentElement.dataset.access === 'accessible';
+      const interval = still ? 1000 : 1000 / (active ? 30 : 4);
       timer = window.setTimeout(() => loop(performance.now()), interval);
     };
     const loop = (now: number) => {
-      if (document.hidden) {
+      // Hidden, or the accessible presentation (no motion): the border stays still.
+      if (document.hidden || document.documentElement.dataset.access === 'accessible') {
         last = now;
         schedule();
         return;
@@ -573,7 +583,7 @@ export default function App() {
 
   return (
     <div className="window-root">
-      <TitleBar />
+      <TitleBar bypass={confirmation === 'bypass'} />
       <div className="app-frame">
       <div className="shell">
         {effectiveVisionThreshold && (
@@ -605,6 +615,8 @@ export default function App() {
               ctx={stream.ctx}
               accessMode={accessMode}
               onAccessMode={setAccessMode}
+              confirmation={confirmation}
+              onConfirmation={setConfirmation}
               online={online}
               voiceOn={voiceOn}
               onToggleVoice={onMicLeftClick}
@@ -650,7 +662,7 @@ export default function App() {
           />
         )}
         {openPanel === 'sessions' && <SessionsPanel onClose={closePanel} />}
-        {openPanel === 'memory' && <MemoryPanel onClose={closePanel} />}
+        {openPanel === 'memory' && <MemoryPanel onClose={closePanel} revision={liveSurfaces?.memory_revision ?? 0} />}
         {openPanel === 'triggers' && <TriggersPanel onClose={closePanel} />}
         {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}
 

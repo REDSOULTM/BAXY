@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind.effect_intent import CompoundEffectContract
+from baxy_mind.semantic import reading as semantic_reading
 
 
 def _resolve_opens(clause: str):
@@ -29,7 +29,7 @@ def _resolve_opens(clause: str):
     ],
 )
 def test_the_leading_clauses_the_pattern_proves_are_the_offered_part(text, proved, pending):
-    assert mind._leading_proved_clauses(text, None, _resolve_opens) == (proved, pending)
+    assert semantic_reading._leading_proved_clauses(text, None, _resolve_opens) == (proved, pending)
 
 
 @pytest.mark.parametrize(
@@ -37,12 +37,12 @@ def test_the_leading_clauses_the_pattern_proves_are_the_offered_part(text, prove
     ["abre Ratchet y Clank", "abre Dungeons and Dragons", "abre Hollow y Knight", "abre la app de Pérez y Asociados"],
 )
 def test_a_title_with_a_conjunction_is_one_name(text):
-    assert mind._leading_proved_clauses(text, None, _resolve_opens) is None
+    assert semantic_reading._leading_proved_clauses(text, None, _resolve_opens) is None
 
 
 def test_nothing_to_offer_when_no_clause_is_proved_or_all_are():
-    assert mind._leading_proved_clauses("dibujá un perro y pintalo de azul", None, _resolve_opens) is None
-    assert mind._leading_proved_clauses("abre Paint y abre Word", None, _resolve_opens) is None
+    assert semantic_reading._leading_proved_clauses("dibujá un perro y pintalo de azul", None, _resolve_opens) is None
+    assert semantic_reading._leading_proved_clauses("abre Paint y abre Word", None, _resolve_opens) is None
 
 
 def test_the_compound_contract_reading_wins_and_keeps_the_original_words():
@@ -52,14 +52,14 @@ def test_the_compound_contract_reading_wins_and_keeps_the_original_words():
         clause_requirements=(("abri la calculadora", ("app.open",)), ("sacame la raiz de 81", ())),
     )
     text = "Abrí la Calculadora y sacame la raíz de 81."
-    assert mind._leading_proved_clauses(text, contract, lambda clause: None) == (
+    assert semantic_reading._leading_proved_clauses(text, contract, lambda clause: None) == (
         ["Abrí la Calculadora"],
         ["sacame la raíz de 81"],
     )
 
 
 def test_the_offer_quotes_both_parts_asks_and_resumes_only_the_proved_part():
-    question, objective = mind._compound_partial_offer(
+    question, objective = semantic_reading._compound_partial_offer(
         "abrí Excel y armame una planilla", (["abrí Excel"], ["armame una planilla"]), "es"
     )
     assert "«abrí Excel»" in question and "«armame una planilla»" in question
@@ -70,7 +70,7 @@ def test_the_offer_quotes_both_parts_asks_and_resumes_only_the_proved_part():
 
 
 def test_the_offer_speaks_the_request_language():
-    question, objective = mind._compound_partial_offer(
+    question, objective = semantic_reading._compound_partial_offer(
         "open Photoshop and remove the background",
         (["open Photoshop"], ["remove the background"]),
         "en",

@@ -25,9 +25,14 @@ import pytest
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
-from baxy_mind.llm import ConversationReplyContractError
+from baxy_mind import talk_memory_figures
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, knowledge, quantities, reading, system, web
+from baxy_mind import turn_recovery
+from baxy_mind import turn_audit
+from baxy_mind import context_decision
+from baxy_mind import turn_decisions
 
 # ------------------------------------------------------------------ 2. numbers said in words
 
@@ -60,7 +65,7 @@ def test_numbers_said_in_words_are_said(text: str, numbers: list[int]) -> None:
     ],
 )
 def test_a_figure_computed_from_the_persons_words_is_not_memory(reply: str, asked: str) -> None:
-    assert llm.talk_memory_figures(reply, asked) == []
+    assert talk_memory_figures.talk_memory_figures(reply, asked) == []
 
 
 @pytest.mark.parametrize(
@@ -72,12 +77,12 @@ def test_a_figure_computed_from_the_persons_words_is_not_memory(reply: str, aske
     ],
 )
 def test_a_figure_spelled_out_from_memory_is_still_a_figure(reply: str, asked: str, figures: list[str]) -> None:
-    assert llm.talk_memory_figures(reply, asked) == figures
+    assert talk_memory_figures.talk_memory_figures(reply, asked) == figures
 
 
 def test_the_sentence_with_a_spelled_figure_is_dropped() -> None:
     reply = "Green tea is delicate. Two to Three Minutes is enough."
-    assert llm._without_memory_figures(reply, ["three minutes"]) == "Green tea is delicate."
+    assert talk_memory_figures._without_memory_figures(reply, ["three minutes"]) == "Green tea is delicate."
 
 
 # ------------------------------------------------------------------ 1. the kind travels; no empty answer
@@ -136,10 +141,10 @@ class _Composer:
 
 def test_talk_recovered_after_its_wording_failed_keeps_its_kind() -> None:
     composer = _Composer({"conversation": "The Gregorian calendar corrected the drift of the Julian one."})
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m104", "text": "what changed between the julian and the gregorian calendars", "history": []},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
         conversation_kinds=("knowledge", "knowledge"),
     )
     assert result["kind"] == "conversation" and result["conversationKind"] == "knowledge"
@@ -148,10 +153,10 @@ def test_talk_recovered_after_its_wording_failed_keeps_its_kind() -> None:
 
 def test_a_recovery_with_no_decided_talk_kind_publishes_none() -> None:
     composer = _Composer({"conversation": "Claro."})
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m104", "text": "hola", "history": []},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
         conversation_kinds=("knowledge", "social"),
     )
     assert result["conversationKind"] is None
@@ -232,7 +237,7 @@ CATALOG = PlannerCatalog([_tool(op) for op in ("web.search", "notification.sched
 def test_a_figure_the_decider_would_talk_is_searched() -> None:
     text = "cuántos kilómetros mide el río amazonas"
     model = _Decider("talk")
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m104", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model,
         planner_catalog=CATALOG,
@@ -246,7 +251,7 @@ def test_a_figure_the_decider_would_talk_is_searched() -> None:
     ["I haven't checked how deep the trench is.", "No la tengo comprobada.", "No lo he verificado todavía."],
 )
 def test_a_figure_the_talk_has_not_checked_is_what_it_does_not_know(reply: str) -> None:
-    assert sidecar._ADMITS_NOT_KNOWING.search(sidecar.effect_intent._fold(reply)) is not None
+    assert turn_decisions._ADMITS_NOT_KNOWING.search(sidecar.effect_intent._fold(reply)) is not None
 
 
 # ------------------------------------------------------------------ 4. the rest
@@ -291,7 +296,7 @@ def test_the_climate_of_the_world_is_no_weather_read() -> None:
 )
 def test_notifications_of_the_news_are_a_limit(text: str) -> None:
     assert web.asks_to_watch_the_news(text)
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m104", "text": text, "history": [{"role": "user", "content": text}]},
         llm=_Decider("action", ("notification.schedule",)),
         planner_catalog=CATALOG,

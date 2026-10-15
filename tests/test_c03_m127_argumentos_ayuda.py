@@ -25,10 +25,10 @@ from datetime import datetime
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
 from baxy_mind.semantic import decider, dialogue
 from baxy_mind.semantic.arguments import conversation_pdf, corrected_song_title
+from baxy_mind import direct_arguments
+from baxy_mind import argument_payload
 
 NOW = datetime(2026, 10, 1, 12, 30)
 
@@ -163,15 +163,15 @@ def _tool(operation: str, schema: dict) -> dict:
 class _Abstaining:
     """The model's own extraction abstains: only BAXY's steps ground the arguments."""
 
-    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> llm.DirectArgumentExtraction:
-        return llm.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué canción?")
+    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> argument_payload.DirectArgumentExtraction:
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué canción?")
 
     def formulate_missing_argument_question(self, *_args: object, **_kwargs: object) -> str:
         return "¿Qué canción?"
 
 
 def _exact(request: str, history: list[dict[str, str]]) -> tuple[dict | None, str]:
-    return sidecar._direct_arguments_result(
+    return direct_arguments._direct_arguments_result(
         {"operation": "media.play.exact", "text": request, "history": history},
         llm=_Abstaining(),
         tool=_tool("media.play.exact", EXACT_SCHEMA),
@@ -238,7 +238,7 @@ def test_no_pdf_is_taken_when_the_conversation_did_not_write_its_one_name(reques
 def test_the_arguments_step_reads_the_pdf_where_the_conversation_found_it() -> None:
     history = [{"role": role, "content": content} for role, content in zip(("user", "assistant") * 2, FOUND_TWO)]
     history.append({"role": "user", "content": "ya, y qué dice de la fecha en ese papel"})
-    arguments, question = sidecar._direct_arguments_result(
+    arguments, question = direct_arguments._direct_arguments_result(
         {"operation": "document.pdf.read", "text": "Lee el PDF «contrato_arriendo_2026.pdf» y dime la fecha.",
          "history": history},
         llm=_Abstaining(),

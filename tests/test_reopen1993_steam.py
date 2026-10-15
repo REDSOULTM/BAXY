@@ -10,8 +10,11 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import compose_situation
+from baxy_mind import deterministic_finals
+from baxy_mind import operation_floor
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({
     "game.entitlement.named", "game.install.named", "game.uninstall.named", "game.launch",
@@ -39,7 +42,7 @@ def test_downloads_and_installs_are_the_real_install(text: str, title: str, stor
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
     assert intent is not None and intent.operations == ("game.install.named",)
     assert effect_intent.steam_library_verb(text) == "install"
-    grounded = mind._ground_explicit_arguments("game.install.named", text, SCHEMA, APPS, effect_intent.build_game_catalog_index(GAMES))
+    grounded = argument_grounding._ground_explicit_arguments("game.install.named", text, SCHEMA, APPS, effect_intent.build_game_catalog_index(GAMES))
     assert grounded is not None and grounded["store"] == store
     assert effect_intent._fold(grounded["title"]).split() == effect_intent._fold(title).split()
     assert effect_intent.operation_domain_is_grounded(text, "game.install.named", APPS) is True
@@ -56,7 +59,7 @@ def test_downloads_and_installs_are_the_real_install(text: str, title: str, stor
 def test_uninstalls_are_the_real_uninstall(text: str, title: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
     assert intent is not None and intent.operations == ("game.uninstall.named",)
-    grounded = mind._ground_explicit_arguments("game.uninstall.named", text, SCHEMA, APPS, effect_intent.build_game_catalog_index(GAMES))
+    grounded = argument_grounding._ground_explicit_arguments("game.uninstall.named", text, SCHEMA, APPS, effect_intent.build_game_catalog_index(GAMES))
     assert grounded == {"title": title, "store": "steam"}
 
 
@@ -77,21 +80,47 @@ def test_without_the_effects_the_library_read_remains() -> None:
     assert intent is not None and intent.operations == ("game.entitlement.named",)
 
 
+def _installed(operation: str, observed: dict) -> dict:
+    return {"kind": "operation", "operation": operation, "polarity": "success", "verified": True, "succeeded": True,
+            "observed": {"version": 1, **observed}}
+
+
+# Encargo IMP2 (imp1 imp-steam-instalar, 2026-10-12): over a verified install whose manifest said «queued» the writer
+# drafted «Super Meat Boy ya está instalado en Steam, pero no se ha descargado…» — the receipt's «state» never reached
+# its payload, so the instruction and the veto that read it (llm_compose, payload_fact_checks._game_library_fact_defect)
+# never ran. The launcher's manifest state is said by the floor before any draft (operation_floor.v1.json «told» by
+# «state»): a download started is never «ya estaba instalado», and only a state already there says so.
 @pytest.mark.parametrize(
-    ("text", "payload", "defect"),
+    ("operation", "observed", "said"),
     [
-        ("Empezó la descarga de Fall Guys en Steam.", {"operation": "game.install.named", "seen": {"name": "Fall Guys", "state": "downloading"}}, ""),
-        ("Fall Guys ya está instalado.", {"operation": "game.install.named", "seen": {"name": "Fall Guys", "state": "downloading"}}, "extra_claim"),
-        ("Listo.", {"operation": "game.install.named", "seen": {"name": "Fall Guys", "state": "downloading"}}, "missing_state"),
-        ("Fall Guys ya estaba instalado; no descargué nada.", {"operation": "game.install.named", "seen": {"name": "Fall Guys", "state": "already_installed"}}, ""),
-        ("Desinstalé Portal 2; ya no figura como instalado.", {"operation": "game.uninstall.named", "seen": {"name": "Portal 2", "state": "manifest_removed"}}, ""),
-        ("Portal 2 sigue ahí.", {"operation": "game.uninstall.named", "seen": {"name": "Portal 2", "state": "manifest_removed"}}, "missing_state"),
+        ("game.install.named", {"jobId": "steam_job_d0f718abb62c271e6665a051", "appId": "40800", "name": "Super Meat Boy",
+                                "state": "queued", "bytesDownloaded": 0, "bytesTotal": 0,
+                                "authority": "steam_manifest_transition"},
+         "Listo, empecé a instalar el juego «Super Meat Boy»."),
+        ("game.install.named", {"appId": "1", "name": "Fall Guys", "state": "downloading", "bytesDownloaded": 10},
+         "Listo, empecé a instalar el juego «Fall Guys»."),
+        ("game.install.named", {"appId": "1", "name": "Fall Guys", "state": "installed"}, "Listo, instalé el juego «Fall Guys»."),
+        ("game.install.named", {"appId": "1", "name": "Fall Guys", "state": "already_installed",
+                                "authority": "steam_local_appmanifest"},
+         "El juego «Fall Guys» ya estaba instalado; no descargué nada."),
+        ("game.uninstall.named", {"appId": "620", "name": "Portal 2", "state": "manifest_removed"},
+         "Listo, desinstalé el juego «Portal 2»."),
     ],
 )
-def test_the_reply_matches_the_manifest_state(text: str, payload: dict, defect: str) -> None:
-    assert llm._game_library_fact_defect(text, payload) == defect
+def test_the_manifest_state_is_said_by_the_floor_first(operation: str, observed: dict, said: str) -> None:
+    situation = _installed(operation, observed)
+    assert operation_floor.tells_first(situation) is True
+    assert deterministic_finals._floor_first_final(situation, {}, "instalá el juego en Steam", "es") == said
+
+
+def test_contracase_an_install_not_verified_keeps_its_own_floor() -> None:
+    situation = {"kind": "operation", "operation": "game.install.named", "polarity": "failure", "verified": False,
+                 "succeeded": False, "error": "steam_install_transition_not_verified", "effectUncertain": True,
+                 "observed": {"appId": "40800", "name": "Super Meat Boy"}}
+    final = operation_floor.floor_final(situation, False)
+    assert "ya estaba" not in final and "empecé a instalar" not in final
 
 
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("steam_entitlement_not_verified", "steam_game_not_installed", "steam_uninstall_not_verified", "epic_entitlement_not_verified", "epic_install_not_verified"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT

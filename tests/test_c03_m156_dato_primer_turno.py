@@ -22,7 +22,6 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import temporal
 from baxy_mind.semantic.arguments import _canonical_due_utc
 from baxy_mind.semantic.decider import ContextDecision, as_the_person_spelled, faithful_request
@@ -30,6 +29,8 @@ from baxy_mind.semantic.grammar import _fold
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.planner import PlannerCatalog
 from test_c03_m148_avisos_eso_y_cuentas import OPERATIONS, _Decider, _history, _tool
+from baxy_mind import turn_decide
+from baxy_mind.semantic import arguments as semantic_arguments
 
 LOCAL = timezone(timedelta(hours=-3))
 # The run of I-s050: Sunday 4 October 2026, 06:25 in Chile.
@@ -50,7 +51,7 @@ def _local(utc: str | None) -> datetime | None:
 
 def _turn(text: str, decision: ContextDecision, application_names: tuple[str, ...] = ()) -> dict:
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m156", "text": text, "history": _history([text])},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(), application_names=application_names,
@@ -152,7 +153,7 @@ def test_the_hour_after_for_keeps_its_minutes(folded: str, expected: str | None)
     ],
 )
 def test_the_title_after_the_service(text: str, service: str, title: str) -> None:
-    assert sidecar._explicit_arguments_from_evidence("streaming.play.named", text) == {"service": service,
+    assert semantic_arguments._explicit_arguments_from_evidence("streaming.play.named", text) == {"service": service,
                                                                                          "title": title}
 
 
@@ -167,7 +168,7 @@ def test_the_title_after_the_service(text: str, service: str, title: str) -> Non
     ],
 )
 def test_no_title_said_is_still_asked(text: str) -> None:
-    assert sidecar._explicit_arguments_from_evidence("streaming.play.named", text) is None
+    assert semantic_arguments._explicit_arguments_from_evidence("streaming.play.named", text) is None
 
 
 # ------------------------------------------------------------------ I-s038: a name written as it sounds

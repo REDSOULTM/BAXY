@@ -2,7 +2,7 @@
 import pytest
 
 from baxy_mind.effect_intent import resolve_explicit_effects
-from baxy_mind.__main__ import _prepare_turn_result
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 
 

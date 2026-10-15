@@ -32,6 +32,61 @@ public sealed class WindowsScreenshotProviderTests
         });
     }
 
+    // Auditoría de estabilidad r19, hallazgo 4: the private capture folder kept every bitmap. A new capture removes
+    // the oldest beyond the cap and nothing else in the folder.
+    [Test]
+    public async Task StoringACaptureRemovesTheOldestBeyondTheCapOnly()
+    {
+        using TemporaryDirectory temporary = new();
+        DateTime now = DateTime.UtcNow;
+        string[] seeded = Enumerable.Range(0, 20)
+            .Select(index => Seed(temporary.Path, index, now.AddHours(index - 20)))
+            .ToArray();
+        string diagnostic = Path.Combine(temporary.Path, "web-search-rejections.jsonl");
+        File.WriteAllText(diagnostic, "{}\n");
+        File.SetLastWriteTimeUtc(diagnostic, now.AddDays(-30));
+        var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
+
+        CaptureResult result = await provider.CaptureAsync(CancellationToken.None);
+
+        string[] left = Directory.GetFiles(temporary.Path, "capture_*.bmp");
+        Assert.Multiple(() =>
+        {
+            Assert.That(left, Has.Length.EqualTo(WindowsScreenshotProvider.RetainedCaptures));
+            Assert.That(File.Exists(Path.Combine(temporary.Path, result.CaptureId + ".bmp")), Is.True);
+            Assert.That(seeded.Take(5).Any(File.Exists), Is.False);
+            Assert.That(seeded.Skip(5).All(File.Exists), Is.True);
+            Assert.That(File.Exists(diagnostic), Is.True);
+        });
+    }
+
+    [Test]
+    public async Task StoringACaptureBelowTheCapKeepsEveryEarlierCapture()
+    {
+        using TemporaryDirectory temporary = new();
+        DateTime now = DateTime.UtcNow;
+        string[] seeded = Enumerable.Range(0, 3)
+            .Select(index => Seed(temporary.Path, index, now.AddDays(index - 40)))
+            .ToArray();
+        var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
+
+        await provider.CaptureAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(seeded.All(File.Exists), Is.True);
+            Assert.That(Directory.GetFiles(temporary.Path, "capture_*.bmp"), Has.Length.EqualTo(4));
+        });
+    }
+
+    private static string Seed(string directory, int index, DateTime writtenUtc)
+    {
+        string path = Path.Combine(directory, "capture_" + index.ToString("x32", CultureInfo.InvariantCulture) + ".bmp");
+        File.WriteAllBytes(path, [(byte)'B', (byte)'M']);
+        File.SetLastWriteTimeUtc(path, writtenUtc);
+        return path;
+    }
+
     // Computer use looks at windows it never keeps: the image held in memory is the stored capture, byte for byte and
     // hash for hash, so a click compares surfaces as before without writing, flushing and re-reading each one.
     [Test]

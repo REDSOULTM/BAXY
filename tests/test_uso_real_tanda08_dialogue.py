@@ -30,9 +30,15 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import request_intents
+from baxy_mind import context_rewrite
+from baxy_mind import literal_answers
+from baxy_mind import weather_facts
 from baxy_mind.semantic import dialogue
+from baxy_mind import turn_followups
+from baxy_mind import argument_grounding
+from baxy_mind.semantic.conversation import _recalled_speaker
 
 OPERATIONS = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "system.settings.set", "system.settings.adjust",
@@ -64,7 +70,7 @@ def _message(*turns: str) -> dict:
 
 
 def _rearm(message: dict, model: _Scripted, state: dialogue.DialogueState | None):
-    return sidecar._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
+    return turn_followups._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
 
 
 def _verified(operation: str, observed: dict | None = None) -> dict:
@@ -272,14 +278,14 @@ def test_the_rewrite_is_shown_worked_conversations_before_the_real_one():
     messages = _rewrite_payload("¿y eso por 3?", context, [("verificado", "lugar (place): Quito")])["messages"]
     examples = [message for message in messages[1:-1] if message["role"] in {"user", "assistant"}]
     # Tanda 8 replay (rewrite p50 ~850 ms with all twelve): only the conversations of the message's shape.
-    of_shape = [example for example in llm._REWRITE_EXAMPLES if "question" in example[0]]
+    of_shape = [example for example in context_rewrite._REWRITE_EXAMPLES if "question" in example[0]]
     # Tanda 8 GPU replay: an English example turned a Spanish correction English; the shape's examples in the
     # message's language are the ones shown when there are any.
-    same_language = [example for example in of_shape if llm._message_response_language(example[3]) == "es"]
+    same_language = [example for example in of_shape if request_intents._message_response_language(example[3]) == "es"]
     of_shape = same_language or of_shape
-    assert 2 <= len(examples) == 2 * min(len(of_shape), llm._REWRITE_EXAMPLES_SHOWN)
+    assert 2 <= len(examples) == 2 * min(len(of_shape), context_rewrite._REWRITE_EXAMPLES_SHOWN)
     assert [json.loads(answer["content"])["request"] for answer in examples[1::2]] == [
-        example[4] for example in of_shape[: llm._REWRITE_EXAMPLES_SHOWN]
+        example[4] for example in of_shape[: context_rewrite._REWRITE_EXAMPLES_SHOWN]
     ]
     real = messages[-1]
     assert real["role"] == "user"
@@ -294,7 +300,7 @@ def test_the_rewrite_is_shown_worked_conversations_before_the_real_one():
     )
 
 
-@pytest.mark.parametrize("example", llm._REWRITE_EXAMPLES, ids=lambda example: example[3])
+@pytest.mark.parametrize("example", context_rewrite._REWRITE_EXAMPLES, ids=lambda example: example[3])
 def test_every_worked_example_keeps_the_rule_it_teaches(example):
     shapes, verified, context, text, rewrite = example
     slot = dialogue.DialogueSlot(None, None, tuple(line for speaker, line in reversed(context) if speaker == "persona"),
@@ -308,7 +314,7 @@ def test_every_worked_example_keeps_the_rule_it_teaches(example):
 
 
 def test_every_shape_has_a_worked_example():
-    shown = {shape for example in llm._REWRITE_EXAMPLES for shape in example[0]}
+    shown = {shape for example in context_rewrite._REWRITE_EXAMPLES for shape in example[0]}
     assert {"amount", "time", "another", "listing", "place", "pointer", "question", "item", "answer",
             "reference", "topic", "destination"} <= shown
 
@@ -333,13 +339,13 @@ _CANCEL_LATEST_SCHEMA = {
 )
 def test_the_kind_of_the_last_one_cancelled_is_read_from_its_name(clause, kind):
     # A timer is a scheduled alarm; the plan's cancel step no longer asks which kind it is.
-    assert sidecar._ground_explicit_arguments("notification.cancel.latest", clause, _CANCEL_LATEST_SCHEMA) == {
+    assert argument_grounding._ground_explicit_arguments("notification.cancel.latest", clause, _CANCEL_LATEST_SCHEMA) == {
         "kind": kind,
     }
 
 
 def test_the_last_of_two_kinds_named_is_still_asked():
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "notification.cancel.latest", "cancela el último temporizador o recordatorio", _CANCEL_LATEST_SCHEMA,
     ) is None
 
@@ -369,8 +375,8 @@ def test_a_result_of_the_turn_answers_the_request_as_the_turn_understood_it():
 def test_the_weekend_answer_passes_against_the_understood_request_and_not_the_fragment():
     payload = {"operation": "weather.current", "seen": _SEEN}
     draft = "El fin de semana llueve: 70 % el sábado y 85 % el domingo."
-    assert llm._weather_fact_defect(draft, payload, "oye, ¿va a llover el fin de semana?") == ""
-    assert llm._weather_fact_defect(draft, payload, "¿y el fin de semana?") == "missing_state"
+    assert weather_facts._weather_fact_defect(draft, payload, "oye, ¿va a llover el fin de semana?") == ""
+    assert weather_facts._weather_fact_defect(draft, payload, "¿y el fin de semana?") == "missing_state"
 
 
 @pytest.mark.parametrize(
@@ -473,26 +479,26 @@ _RECALL_HISTORY = [
 )
 def test_what_the_person_already_said_is_said_back_in_any_tense(text):
     history = [*_RECALL_HISTORY, {"role": "user", "content": text}]
-    assert llm._recalled_speaker(text) == "user"
-    assert llm._literal_recall_reference(history, text) == "baja el brillo a 30"
+    assert _recalled_speaker(text) == "user"
+    assert literal_answers._literal_recall_reference(history, text) == "baja el brillo a 30"
 
 
 @pytest.mark.parametrize("text", ["¿me repites lo que me has dicho?", "repíteme lo mismo que me dijiste"])
 def test_what_baxy_already_said_is_said_back_in_any_tense(text):
     history = [*_RECALL_HISTORY, {"role": "user", "content": text}]
-    assert llm._recalled_speaker(text) == "assistant"
-    assert llm._literal_recall_reference(history, text) == "El brillo está en 30."
+    assert _recalled_speaker(text) == "assistant"
+    assert literal_answers._literal_recall_reference(history, text) == "El brillo está en 30."
 
 
 @pytest.mark.parametrize("text", ["repite lo mismo que te diga", "repite lo que digo", "¿me repites la canción?"])
 def test_what_is_still_to_be_said_is_not_a_recall(text):
-    assert llm._recalled_speaker(text) is None
+    assert _recalled_speaker(text) is None
 
 
 def test_no_worked_example_or_hint_is_a_phrase_of_a_measured_tanda():
     shown = " ".join(
-        [str(part) for example in llm._REWRITE_EXAMPLES for part in example]
-        + list(llm._REWRITE_DEPENDENCY_HINTS.values())
+        [str(part) for example in context_rewrite._REWRITE_EXAMPLES for part in example]
+        + list(context_rewrite._REWRITE_DEPENDENCY_HINTS.values())
     ).casefold()
     for literal in ("2350", "335", "tomates", "top scorer", "lakers", "mar del plata", "finde", "madrid", "6:15",
                     "40 percent", "entrance", "goleador", "boca"):

@@ -27,11 +27,13 @@ from pathlib import Path
 import pytest
 
 from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 from baxy_mind.llm import LlmRuntime
 
 EVIDENCE = json.loads((Path(__file__).parent / "data" / "c03_m146_evidence.json").read_text(encoding="utf-8"))
 FORBIDDEN_TERMS = [
-    "planner", "router", "tool", "catálogo", "catalogo", "schema", "operación", "operacion", "capacidad interna",
+    "planner", "router", "catálogo", "catalogo", "schema", "operación", "operacion", "capacidad interna",
     "language model", "modelo de lenguaje", "qwen", "resolver el efecto", "el efecto '", "opaque identity",
     "observed profile", "grounding", "checkpoint", "reconciliación", "reconciliacion", "motor local", "core",
     "datos verificables", "pasos verificables", "identificador interno", "wmi",
@@ -82,7 +84,7 @@ G_S087 = "resúmeme el pdf del contrato de alquiler que tengo en documentos, por
     ],
 )
 def test_the_word_the_person_said_is_not_the_prompt_leaking(said: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", said, {"situation": PDF_ABSENT}, said=said) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", said, {"situation": PDF_ABSENT}, said=said) == ""
 
 
 @pytest.mark.parametrize(
@@ -95,7 +97,7 @@ def test_the_word_the_person_said_is_not_the_prompt_leaking(said: str, draft: st
     ],
 )
 def test_the_prompts_own_words_are_still_internal_code(said: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", said, {"situation": PDF_ABSENT}, said=said) == "internal_code"
+    assert visible_defect.compose_visible_defect(draft, "error", said, {"situation": PDF_ABSENT}, said=said) == "internal_code"
 
 
 # ------------------------------------------------------------------ 2. G-s116: a mission's playback names its title
@@ -132,14 +134,19 @@ G_S116 = "abrí spotify y ponime algo de jazz tranqui, que estoy laburando y nec
     ],
 )
 def test_a_mission_playback_is_named_by_its_title(said: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", said, {"situation": VENDLA}, said=said) == ""
+    assert visible_defect.compose_visible_defect(draft, "status", said, {"situation": VENDLA}, said=said) == ""
 
 
-def test_the_mission_publishes_its_first_draft() -> None:
+def test_the_mission_is_said_from_the_floor_when_its_app_was_already_open() -> None:
+    # Estabilización F: Spotify was already running (alreadyRunning), so «Abrí Spotify…» was never true; a plan with a
+    # state that already held is said from the floor before any draft, with the title verified playing.
     first = ('Abrí Spotify y ya está reproduciendo "Vendla - After Winter Comes Spring" en modo jazz tranquilo.')
     writer = _Drafts([first])
-    assert writer.compose_user_message(G_S116, "status", {"situation": VENDLA}, said=G_S116) == first
-    assert len(writer.requests) == 1
+    assert writer.compose_user_message(G_S116, "status", {"situation": VENDLA}, said=G_S116) == (
+        "La aplicación «Spotify» ya estaba abierta y puse la música «Vendla - After Winter Comes Spring»: se está "
+        "reproduciendo."
+    )
+    assert len(writer.requests) == 0
 
 
 @pytest.mark.parametrize(
@@ -154,7 +161,7 @@ def test_the_mission_publishes_its_first_draft() -> None:
     ],
 )
 def test_a_mission_without_the_observed_playing_title_is_still_missing_its_name(situation: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", G_S116, {"situation": situation}, said=G_S116) == (
+    assert visible_defect.compose_visible_defect(draft, "status", G_S116, {"situation": situation}, said=G_S116) == (
         "missing_name"
     )
 
@@ -230,7 +237,7 @@ H_S001 = "oye, ¿me podrias decir a como anda el dolar hoy?"
     ],
 )
 def test_the_currency_a_code_names_is_sourced(payload: dict, said: str, draft: str) -> None:
-    assert llm._payload_fact_defect(draft, payload, said, said=said) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said, said=said) == ""
 
 
 @pytest.mark.parametrize(
@@ -245,7 +252,7 @@ def test_the_currency_a_code_names_is_sourced(payload: dict, said: str, draft: s
     ],
 )
 def test_a_figure_or_currency_no_page_gives_is_still_unsourced(payload: dict, draft: str) -> None:
-    assert llm._payload_fact_defect(draft, payload, H_S001, said=H_S001) == "search_report_unsourced_claim"
+    assert payload_fact_checks._payload_fact_defect(draft, payload, H_S001, said=H_S001) == "search_report_unsourced_claim"
 
 
 # ------------------------------------------------------------------ 5. F-w47-t4: the veto stands, the hint names the title
@@ -270,7 +277,7 @@ F_W47_T4 = "Apúntamelo en una nota, que luego se me olvida"
     ],
 )
 def test_a_note_report_that_answers_the_note_is_still_refused(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", F_W47_T4, {"situation": BOSTON_NOTE}, said=F_W47_T4) == (
+    assert visible_defect.compose_visible_defect(draft, "status", F_W47_T4, {"situation": BOSTON_NOTE}, said=F_W47_T4) == (
         "missing_name"
     )
 
@@ -314,7 +321,7 @@ def test_other_reports_keep_their_own_hint() -> None:
     ],
 )
 def test_a_question_of_baxys_own_after_the_note_is_still_an_extra_claim(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "status", F_W47_T4, {"situation": BOSTON_NOTE}, said=F_W47_T4) in {
+    assert visible_defect.compose_visible_defect(draft, "status", F_W47_T4, {"situation": BOSTON_NOTE}, said=F_W47_T4) in {
         "extra_claim", "missing_name",
     }
 
@@ -333,15 +340,104 @@ def test_the_sourced_part_is_published_when_the_retry_fails() -> None:
     assert len(writer.requests) == 2
 
 
-def test_the_retry_is_not_asked_without_the_request_budget_for_it() -> None:
-    import time
+class _ClockedDrafts(_Drafts):
+    """Each draft spends ``seconds`` of a fake clock, as the model's did in the row (~7 s per composition)."""
 
-    writer = _Drafts([ADIDAS["draft"], AssertionError("no retry was to be asked")])
-    writer._request_deadline = time.monotonic() + 1.5
-    writer._request_maximum_timeout = 9.0
+    def __init__(self, drafts: list[object], clock: list[float], seconds: float) -> None:  # noqa: D107
+        super().__init__(drafts)
+        self.clock = clock
+        self.seconds = seconds
+
+    def _post(self, payload, **kwargs):  # noqa: ANN001, ANN201
+        try:
+            return super()._post(payload, **kwargs)
+        finally:
+            self.clock[0] += self.seconds
+
+
+def _clocked_writer(
+    monkeypatch: pytest.MonkeyPatch, drafts: list[object], budget: float, seconds: float, rate: float | None,
+) -> _ClockedDrafts:
+    # The machine's real clock is not read: a loaded CPU (a live batch beside the suite) cannot move the verdict.
+    clock = [1000.0]
+    monkeypatch.setattr(llm.time, "monotonic", lambda: clock[0])
+    writer = _ClockedDrafts(drafts, clock, seconds)
+    writer._measured_decode_rate = rate
+    writer._request_deadline = clock[0] + budget
+    writer._request_maximum_timeout = budget
+    return writer
+
+
+@pytest.mark.parametrize(
+    ("seconds", "rate"),
+    [
+        # v4m–v4p: the App's 9 s budget, the first draft spent ~7 s of it and the retry was asked with 2 s left.
+        (7.0, None),
+        # A model measured fast enough to write the retry in the 2.8 s left: the request's own floor still stops it.
+        (6.2, 100.0),
+    ],
+)
+def test_the_retry_is_not_asked_without_the_request_budget_for_it(
+    monkeypatch: pytest.MonkeyPatch, seconds: float, rate: float | None,
+) -> None:
+    # Uso real v3 tanda 2 (603623d2b) no longer starts a draft that cannot be written in the time left (1.5 s left
+    # starts none and hands the turn to the ordinary composition), so the budget is the row's and its draft spends it.
+    writer = _clocked_writer(
+        monkeypatch, [ADIDAS["draft"], AssertionError("no retry was to be asked")], 9.0, seconds, rate,
+    )
     reply = writer.compose_user_message(ADIDAS["user"], "status", {"situation": ADIDAS["situation"]})
     assert "en los 80" not in reply and reply.startswith("Oye, mira, Adidas")
     assert len(writer.requests) == 1
+    # What decides it is the request's budget: with room for it after the first draft, the retry is asked.
+    roomy = _clocked_writer(
+        monkeypatch, [ADIDAS["draft"], ConnectionError("el servidor cerró la conexión")], 16.0, seconds, rate,
+    )
+    reply = roomy.compose_user_message(ADIDAS["user"], "status", {"situation": ADIDAS["situation"]})
+    assert "en los 80" not in reply and reply.startswith("Oye, mira, Adidas")
+    assert len(roomy.requests) == 2
+
+
+def test_with_1_5_s_of_request_budget_no_retry_is_asked(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The original case: 1.5 s left of the request, on a frozen clock. Since 603623d2b the consulted writer does not
+    # start (nothing it could write fits) and the ordinary writer drafts; its draft is refused
+    # (search_report_unsourced_claim) and its retry is not asked either: the turn ends as a model out of time (no
+    # consulted draft, no sourced part to publish). Ronda 19b (r17 t3-c14): over a verified search that time is said
+    # (data: operation_floor «searchUntold»), never the App's composition-failure line. Ronda 22 (r18 t2-c01 t4): the
+    # draft was refused before the time ran out, so the turn ends in the not-found (what no draft could say from the
+    # pages), never in «se me acabó el tiempo».
+    from baxy_mind import operation_floor
+
+    writer = _clocked_writer(monkeypatch, [ADIDAS["draft"], AssertionError("no retry was to be asked")], 1.5, 0.0, None)
+    reply = writer.compose_user_message(ADIDAS["user"], "status", {"situation": ADIDAS["situation"]})
+    untold = operation_floor.floor_data()["searchUntold"]
+    assert reply.startswith("No encontré ") or reply == "No lo encontré.", reply
+    assert reply not in {words["bare"] for words in untold.values() if isinstance(words, dict)}
+    assert len(writer.requests) == 1
+    # Its counter-case: with 16 s the analysis is drafted, refused for its unsourced point, and the retry is asked.
+    roomy = _clocked_writer(
+        monkeypatch, [ADIDAS["draft"], ConnectionError("el servidor cerró la conexión")], 16.0, 0.0, None,
+    )
+    reply = roomy.compose_user_message(ADIDAS["user"], "status", {"situation": ADIDAS["situation"]})
+    assert "en los 80" not in reply and reply.startswith("Oye, mira, Adidas")
+    assert len(roomy.requests) == 2
+
+
+@pytest.mark.parametrize(("budget", "asked"), [(1.5, 1), (2.9, 1), (3.0, 2), (16.0, 2)])
+def test_the_ordinary_writer_asks_its_retry_only_inside_the_request_budget(
+    monkeypatch: pytest.MonkeyPatch, budget: float, asked: int,
+) -> None:
+    # The ordinary composition's retry under the same floor as the consulted writer's (_RETRY_MIN_REQUEST_SECONDS).
+    task = json.dumps({"kind": "operation", "operation": "task.create", "polarity": "success", "verified": True,
+                       "succeeded": True, "observed": {"title": "what time does the pharmacy close"}})
+    writer = _clocked_writer(
+        monkeypatch, ["The pharmacy closes at 9 pm.", 'I added the task "what time does the pharmacy close".'],
+        budget, 0.0, None,
+    )
+    try:
+        writer.compose_user_message("add that to my tasks", "status", {"situation": task}, said="add that to my tasks")
+    except TimeoutError:
+        assert asked == 1
+    assert len(writer.requests) == asked
 
 
 def test_with_nothing_kept_a_failed_retry_still_raises() -> None:

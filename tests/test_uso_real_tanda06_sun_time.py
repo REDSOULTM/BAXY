@@ -9,7 +9,8 @@ import json
 
 import pytest
 
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 from baxy_mind.semantic.reading import read
 
 _OPERATIONS = ("system.time", "web.search", "weather.current", "media.play.query", "audio.volume")
@@ -73,5 +74,5 @@ def test_no_sun_time_or_a_second_request_is_not_that_read(text: str) -> None:
 def test_tomorrows_sunrise_is_the_answer(reply: str, published: bool) -> None:
     facts = {"situation": json.dumps(_WEATHER)}
     payload = {"operation": "weather.current", "seen": _SEEN}
-    defect = llm.compose_visible_defect(reply, "status", _T1, facts) or llm._payload_fact_defect(reply, payload, _T1)
+    defect = visible_defect.compose_visible_defect(reply, "status", _T1, facts) or payload_fact_checks._payload_fact_defect(reply, payload, _T1)
     assert (defect == "") is published

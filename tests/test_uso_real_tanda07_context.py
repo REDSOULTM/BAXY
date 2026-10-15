@@ -31,11 +31,13 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import search_report
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue
 from baxy_mind.semantic.reading import read
+from baxy_mind import turn_followups
+from baxy_mind import turn_decide
 
 OPERATIONS = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "system.settings.set", "system.settings.adjust",
@@ -262,7 +264,7 @@ def _message(*turns: str) -> dict:
 
 
 def _rearm(message: dict, model: _Scripted, state: dialogue.DialogueState | None):
-    return sidecar._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
+    return turn_followups._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
 
 
 _WEATHER = ("che, ¿llueve mañana?", "weather.current", {"location": "Córdoba", "region": "Córdoba", "country": "Argentina"})
@@ -414,7 +416,7 @@ def _tool(operation: str) -> dict:
 
 def _turn(message: dict, model: _Scripted, state: dialogue.DialogueState) -> dict:
     tools = [_tool(name) for name in OPERATIONS]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         message,
         llm=model,
         planner_catalog=PlannerCatalog(tools),
@@ -477,17 +479,17 @@ def _search_payload(*snippets: str) -> dict:
 def test_a_search_about_something_else_is_reported_as_not_found():
     user = "quién fue el top scorer del game de los Lakers anoche"
     payload = _search_payload("Raphinha es el máximo goleador de LaLiga con 12 goles.", "Tabla de goleadores 2026/27.")
-    assert llm._payload_fact_defect("Raphinha fue el top scorer con 12 goles.", payload, user) == "search_report_off_subject"
-    assert llm._payload_fact_defect("No encontré quién fue el goleador de ese partido.", payload, user) == ""
+    assert payload_fact_checks._payload_fact_defect("Raphinha fue el top scorer con 12 goles.", payload, user) == "search_report_off_subject"
+    assert payload_fact_checks._payload_fact_defect("No encontré quién fue el goleador de ese partido.", payload, user) == ""
     answered = _search_payload("Luka Doncic fue el top scorer de los Lakers anoche con 34 puntos.")
-    assert llm._payload_fact_defect("Luka Doncic fue el top scorer con 34 puntos.", answered, user) != (
+    assert payload_fact_checks._payload_fact_defect("Luka Doncic fue el top scorer con 34 puntos.", answered, user) != (
         "search_report_off_subject"
     )
 
 
 def test_a_question_without_a_name_is_not_judged_by_its_subject():
     payload = _search_payload("El arcoíris tiene siete colores: rojo, naranja, amarillo, verde, azul, añil y violeta.")
-    assert llm._search_report_off_subject("Tiene siete colores.", payload, "cuáles son los colores del arcoíris") is False
+    assert search_report._search_report_off_subject("Tiene siete colores.", payload, "cuáles son los colores del arcoíris") is False
 
 
 # ---------------------------------------------------------------- 6. the last timer cancelled

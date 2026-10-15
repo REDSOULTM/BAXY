@@ -485,6 +485,70 @@ public sealed class MemoryOperationProtectionTests
         Assert.That(ConfirmationReplyParser.Parse(text).ToString(), Is.EqualTo(expected));
     }
 
+    // Revisión M H5/H6: the bare yes is one list with the mind (src/baxy_mind/data/assent_words.v1.json; the mind's
+    // side is tests/test_estab_m_memoria.py::test_every_word_of_the_one_yes_list_is_a_yes). A doubt is no yes.
+    [Test]
+    public void EveryAssentWordConfirmsAndAQuestionDoesNot()
+    {
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
+        {
+            directory = directory.Parent;
+        }
+
+        string data = Path.Combine(
+            directory?.FullName ?? throw new DirectoryNotFoundException("Baxy.slnx was not found."),
+            "src", "baxy_mind", "data", "assent_words.v1.json");
+        string[] words = ((JsonArray)JsonNode.Parse(File.ReadAllText(data))!["words"]!)
+            .Select(static word => (string)word!).ToArray();
+        Assert.Multiple(() =>
+        {
+            foreach (string word in words)
+            {
+                Assert.That(ConfirmationReplyParser.Parse(word), Is.EqualTo(ConfirmationReplyKind.Confirm), word);
+                Assert.That(ConfirmationReplyParser.Parse($"Sí, {word}."), Is.EqualTo(ConfirmationReplyKind.Confirm), word);
+            }
+
+            Assert.That(ConfirmationReplyParser.Parse("Sí, estoy seguro"), Is.EqualTo(ConfirmationReplyKind.Confirm));
+            Assert.That(ConfirmationReplyParser.Parse("I’m sure"), Is.EqualTo(ConfirmationReplyKind.Confirm));
+            foreach (string doubt in new[] { "¿Seguro?", "¿Estoy seguro?", "seguro?", "¿sí?", "no estoy seguro" })
+            {
+                Assert.That(ConfirmationReplyParser.Parse(doubt), Is.Not.EqualTo(ConfirmationReplyKind.Confirm), doubt);
+            }
+        });
+    }
+
+    // Estabilización M2: the bare no is one list with the mind's refusal (declineWords; the mind's side is
+    // tests/test_estab_m2_identidad.py::test_every_word_of_the_one_no_list_is_a_refusal_and_never_a_yes).
+    [Test]
+    public void EveryDeclineWordCancelsAndAnOrderDoesNot()
+    {
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
+        {
+            directory = directory.Parent;
+        }
+
+        string data = Path.Combine(
+            directory?.FullName ?? throw new DirectoryNotFoundException("Baxy.slnx was not found."),
+            "src", "baxy_mind", "data", "assent_words.v1.json");
+        string[] words = ((JsonArray)JsonNode.Parse(File.ReadAllText(data))!["declineWords"]!)
+            .Select(static word => (string)word!).ToArray();
+        Assert.Multiple(() =>
+        {
+            foreach (string word in words)
+            {
+                Assert.That(ConfirmationReplyParser.Parse(word), Is.EqualTo(ConfirmationReplyKind.Cancel), word);
+                Assert.That(ConfirmationReplyParser.Parse($"No, {word}."), Is.EqualTo(ConfirmationReplyKind.Cancel), word);
+            }
+
+            foreach (string order in new[] { "no, mandalo igual", "cancela la suscripción", "no, en YouTube" })
+            {
+                Assert.That(ConfirmationReplyParser.Parse(order), Is.EqualTo(ConfirmationReplyKind.Invalid), order);
+            }
+        });
+    }
+
     private static BoundProtectedJsonCodec CreateCodec(TemporaryDirectory temporary) =>
         new(
             new WindowsProtectedPayload(

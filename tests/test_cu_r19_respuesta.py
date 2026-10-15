@@ -9,8 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import computer_use as cu
-from baxy_mind.computer_use import fold
+from baxy_mind import cu_reply_checks
+from baxy_mind import cu_finals
+from baxy_mind.semantic.missions import fold
 
 _PAYLOADS = json.loads(
     (Path(__file__).resolve().parent / "data" / "cu_r19_question_payloads.json").read_text(encoding="utf-8")
@@ -31,8 +32,8 @@ def _observed(case: str) -> dict:
 )
 def test_real_payloads_are_answered_from_the_one_fact(case: str, final: str) -> None:
     observed = _observed(case)
-    assert cu.floor_first(observed, False, True) == final
-    assert cu.floor_sentence(observed, False, True) == final
+    assert cu_finals.floor_first(observed, False, True) == final
+    assert cu_finals.floor_sentence(observed, False, True) == final
 
 
 def test_english_question() -> None:
@@ -41,60 +42,60 @@ def test_english_question() -> None:
     for item in observed["screen"]["values"]:
         if item["name"] == "Oscuro":
             item["name"] = "Dark"
-    assert cu.floor_first(observed, True, True) == "Done: the mode is set to «Dark»."
+    assert cu_finals.floor_first(observed, True, True) == "Done: the mode is set to «Dark»."
     volume = _observed("v2-v3")
     volume["goal"] = volume["goal"].replace("decime el volumen", "tell me the volume")
     volume["screen"]["values"][0]["name"] = "Adjust the output volume"
-    assert cu.floor_first(volume, True, True) == "Done: the volume is at 60."
+    assert cu_finals.floor_first(volume, True, True) == "Done: the volume is at 60."
 
 
 def test_both_options_selected_is_the_model_s() -> None:
     observed = _observed("v2-c5")
     observed["screen"]["values"].append({"name": "Claro", "state": "selected"})
-    assert cu.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
 
 
 def test_no_option_selected_is_the_model_s() -> None:
     observed = _observed("v2-c5")
     observed["screen"]["values"] = [item for item in observed["screen"]["values"] if item["name"] != "Oscuro"]
-    assert cu.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
 
 
 def test_two_values_named_by_the_noun_is_the_model_s() -> None:
     observed = _observed("v2-v3")
     observed["screen"]["values"].append({"name": "Volumen del sistema", "value": "35"})
-    assert cu.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
 
 
 def test_no_value_named_by_the_noun_is_the_model_s() -> None:
     observed = _observed("v2-v3")
     observed["goal"] = observed["goal"].replace("decime el volumen", "decime el brillo")
-    assert cu.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
 
 
 def test_two_time_zones_on_screen_is_the_model_s() -> None:
     observed = _observed("v2-z10")
     observed["screen"]["numbers"].append("(UTC-03:00) Buenos Aires")
-    assert cu.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
 
 
 def test_open_question_is_the_model_s() -> None:
     observed = _observed("v2-v3")
     observed["goal"] = observed["goal"].replace("decime el volumen", "decime cómo está el sonido")
-    assert cu.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
 
 
 def test_unreached_mission_with_a_question_is_not_answered() -> None:
     observed = _observed("v2-c5")
     observed["reached"] = False
-    assert cu.floor_first(observed, False, True) == ""
-    assert cu.floor_first(_observed("v2-c5"), False, False) == ""
+    assert cu_finals.floor_first(observed, False, True) == ""
+    assert cu_finals.floor_first(_observed("v2-c5"), False, False) == ""
 
 
 @pytest.mark.parametrize("case", ["v2-c5", "v2-z10"])
 def test_arrival_at_a_value_is_an_extra_claim(case: str) -> None:
     payload = _PAYLOADS[case]
-    assert cu.mission_defect(fold(payload["draft"]), payload["seen"]) == "extra_claim"
+    assert cu_reply_checks.mission_defect(fold(payload["draft"]), payload["seen"]) == "extra_claim"
 
 
 @pytest.mark.parametrize(
@@ -106,4 +107,4 @@ def test_arrival_at_a_value_is_an_extra_claim(case: str) -> None:
     ],
 )
 def test_arrival_at_a_mission_place_passes(reply: str) -> None:
-    assert cu._arrived_off_mission(fold(reply), _PAYLOADS["v2-v3"]["seen"]) is False
+    assert cu_reply_checks._arrived_off_mission(fold(reply), _PAYLOADS["v2-v3"]["seen"]) is False

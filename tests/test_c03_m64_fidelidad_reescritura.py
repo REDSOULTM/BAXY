@@ -22,11 +22,12 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision, catalog_line, faithful_request
 from baxy_mind.semantic.web import searched_clause
+from baxy_mind import turn_audit
+from baxy_mind import turn_decide
 
 RECORDED = json.loads(
     (Path(__file__).parent / "data" / "c03_m64_fidelity_situations.json").read_text(encoding="utf-8")
@@ -189,9 +190,9 @@ class _Decider:
 
 def _turn(row: dict, decision: ContextDecision, monkeypatch: pytest.MonkeyPatch) -> tuple[dict, list[dict]]:
     audits: list[dict] = []
-    monkeypatch.setattr(sidecar, "_append_turn_audit", audits.append)
+    monkeypatch.setattr(turn_audit, "_append_turn_audit", audits.append)
     tools = {name: _tool(name) for name in OPERATIONS}
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m64", "text": row["text"], "history": [*row["history"], {"role": "user", "content": row["text"]}]},
         llm=_Decider(decision),
         planner_catalog=PlannerCatalog(list(tools.values())),

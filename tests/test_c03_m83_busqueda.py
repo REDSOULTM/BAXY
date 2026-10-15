@@ -29,14 +29,24 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import consulted_answers
+from baxy_mind import llm_compose
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
 from baxy_mind.semantic.dialogue import DialogueState, asks_attribute_of_the_last, leans_on_context
 from baxy_mind.semantic.knowledge import reference_lookup, works_recommendation
 from baxy_mind.semantic.web import asks_upcoming, memory_may_answer
+from baxy_mind import turn_decide
+from baxy_mind import context_decision
+from baxy_mind import search_report
+from baxy_mind.semantic.request import fold
+
+
+# Every mind module whose code reads the day a search report is judged on: it is patched in each one.
+_REPORT_DAY_READERS = (llm_compose, search_report)
 
 TURNS = json.loads(
     (Path(__file__).parent / "data" / "c03_m83_v3o_search_turns.json").read_text(encoding="utf-8")
@@ -61,9 +71,9 @@ def _blocked(draft: str, ident: str, user: str | None = None) -> str:
     payload = TURNS[ident]["payload"]
     user = TURNS[ident]["text"] if user is None else user
     return (
-        llm.compose_visible_defect(draft, "status", user, _facts(ident))
-        or ("invented" if llm._truncated_fact_word(draft, payload) else "")
-        or llm._payload_fact_defect(draft, payload, user, said=user)
+        visible_defect.compose_visible_defect(draft, "status", user, _facts(ident))
+        or ("invented" if visible_defect._truncated_fact_word(draft, payload) else "")
+        or payload_fact_checks._payload_fact_defect(draft, payload, user, said=user)
     )
 
 
@@ -84,7 +94,8 @@ class _Writer(LlmRuntime):
 
 @pytest.fixture
 def recorded_day(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_report_today", lambda: RECORDED_DAY)
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: RECORDED_DAY)
 
 
 # ------------------------------------------------------------------ 1. a dish joined by «and»
@@ -130,7 +141,7 @@ def test_d_w10_t1_d_s017_a_recipe_read_from_no_recipe_is_not_said_from_memory(id
     # What v3o published instead: the encyclopedia's arepa, and «not found»; the read carried no recipe.
     assert TURNS["D-w10-t1"]["reply"].startswith("Las arepas de queso se elaboran")
     assert TURNS["D-s017"]["reply"] == "I did not find a mac and cheese recipe."
-    assert llm._read_no_recipe(_situation(ident))
+    assert consulted_answers._read_no_recipe(_situation(ident))
 
 
 def test_a_search_that_is_not_a_recipe_keeps_the_ordinary_composition() -> None:
@@ -168,7 +179,7 @@ def test_d_p34_t1_what_pertinent_pages_state_is_said() -> None:
     writer = _Writer([partial])
     answer = writer._answer_after_not_found(reply, TURNS["D-p34-t1"]["text"], _facts("D-p34-t1"), said=None, deadline=None)
     assert answer == partial
-    assert writer.requests[0]["messages"][0]["content"] == llm.PARTIAL_REPORT_PROMPT
+    assert writer.requests[0]["messages"][0]["content"] == consulted_answers.PARTIAL_REPORT_PROMPT
     shown = json.loads(writer.requests[0]["messages"][1]["content"])["results"]
     assert any("Cripta de la Civilización" in item["text"] for item in shown)
 
@@ -193,11 +204,11 @@ def test_d_p24_t1_with_nothing_pertinent_read_memory_answers_with_its_notice() -
         "a fantasy film starring Elijah Wood."
     )
     reply = TURNS[ident]["reply"]
-    assert llm._SEARCH_NOT_FOUND.match(llm._reading_fold(reply))
+    assert search_report._SEARCH_NOT_FOUND.match(fold(reply))
     writer = _Writer([honest])
     answer = writer._answer_after_not_found(reply, TURNS[ident]["text"], _facts(ident), said=None, deadline=None)
     assert answer == honest
-    assert writer.requests[0]["messages"][0]["content"] == llm._memory_answer_prompt(TURNS[ident]["text"], [], True)
+    assert writer.requests[0]["messages"][0]["content"] == consulted_answers._memory_answer_prompt(TURNS[ident]["text"], [], True)
 
 
 def test_d_s111_a_figure_asked_is_not_said_from_memory() -> None:
@@ -254,12 +265,12 @@ def test_d_p29_t2_scary_movie_is_not_a_scary_movie() -> None:
     assert _blocked("I couldn't find scary movies.", "D-p29-t2") == ""
     text = TURNS["D-p29-t2"]["text"]
     for item in TURNS["D-p29-t2"]["payload"]["seen"]["results"]:
-        assert llm._search_result_is_a_namesake(item, text), item["title"]
+        assert search_report._search_result_is_a_namesake(item, text), item["title"]
     # A kind's own article, a work of the kind and a name the person typed in lower case are not namesakes.
-    assert not llm._search_result_is_a_namesake({"title": "Horror film"}, text)
-    assert not llm._search_result_is_a_namesake({"title": "The Conjuring"}, text)
-    assert not llm._search_result_is_a_namesake({"title": "The Beatles"}, "search for the beatles")
-    assert not llm._search_result_is_a_namesake({"title": "Scary Movie"}, "Search for Scary Movie.")
+    assert not search_report._search_result_is_a_namesake({"title": "Horror film"}, text)
+    assert not search_report._search_result_is_a_namesake({"title": "The Conjuring"}, text)
+    assert not search_report._search_result_is_a_namesake({"title": "The Beatles"}, "search for the beatles")
+    assert not search_report._search_result_is_a_namesake({"title": "Scary Movie"}, "Search for Scary Movie.")
     # D-p29-t1 (Gil Bellows' films) is published as it was.
     assert _blocked(_recorded("D-p29-t1", "retry"), "D-p29-t1") == ""
 
@@ -272,14 +283,15 @@ def test_d_w08_t2_a_past_day_is_not_the_next_match(recorded_day: None) -> None:
     assert not asks_upcoming(TURNS["D-w08-t1"]["text"])
     draft = _recorded("D-w08-t2", "first")
     assert _blocked(draft, "D-w08-t2") == "search_report_past_as_next"
-    assert llm._search_report_past_as_next(draft, TURNS["D-w08-t2"]["payload"], TURNS["D-w08-t2"]["text"]) == "2026-09-27"
+    assert search_report._search_report_past_as_next(draft, TURNS["D-w08-t2"]["payload"], TURNS["D-w08-t2"]["text"]) == "2026-09-27"
     for said in ("No encontré cuándo juega el siguiente partido del América.",
                  "No encontré cuándo juega el siguiente partido del América; el del 27 de septiembre ya se jugó."):
         assert _blocked(said, "D-w08-t2") == ""
 
 
 def test_the_same_day_still_ahead_is_the_next_match(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_report_today", lambda: date(2026, 9, 26))
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: date(2026, 9, 26))
     assert _blocked(_recorded("D-w08-t2", "first"), "D-w08-t2") == ""
 
 
@@ -358,7 +370,7 @@ P19 = [
 def _turn(text: str, model: _Decider, history: list[tuple[str, str]]) -> dict[str, object]:
     tools = {name: _tool(name) for name in ("web.search", "streaming.play.named", "media.control")}
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m83", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog(list(tools.values())),
@@ -422,7 +434,7 @@ def test_d_p27_t1_works_of_a_kind_with_none_named_are_looked_up() -> None:
     text = TURNS["D-p27-t1"]["text"]
     assert works_recommendation(text)
     model = _Decider(decider.ContextDecision("Recommend some good movies to watch.", "talk", (), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m83", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog([_tool("web.search")]),
@@ -442,7 +454,7 @@ def test_a_work_person_or_service_named_is_another_request(text: str) -> None:
 
 def test_talk_that_asks_no_works_stays_talk() -> None:
     model = _Decider(decider.ContextDecision("Tell me a joke.", "talk", (), ""))
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m83", "text": "tell me a joke", "history": [{"role": "user", "content": "tell me a joke"}]},
         llm=model,
         planner_catalog=PlannerCatalog([_tool("web.search")]),

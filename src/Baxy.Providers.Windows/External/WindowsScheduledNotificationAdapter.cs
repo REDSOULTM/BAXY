@@ -420,6 +420,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             || Encoding.UTF8.GetByteCount(title) > 1_024)
             return ExternalJson.Failure(operation, "notification_schedule_invalid");
 
+        await PruneSpentNotificationsAsync(cancellationToken).ConfigureAwait(false);
         effectBoundary.Cross(cancellationToken);
         Directory.CreateDirectory(_alarmRoot);
         string id = Guid.NewGuid().ToString("N");
@@ -509,6 +510,96 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effect);
+    }
+
+    /// <summary>
+    /// How long a ring script stays after its last ring. A recurring notification rewrites its receipt each time
+    /// it rings, so only a one-shot that rang long ago, or a recurring one that stopped ringing, gets this old.
+    /// </summary>
+    internal static readonly TimeSpan SpentRingScriptAge = TimeSpan.FromDays(30);
+
+    /// <summary>
+    /// Removes the ring script and receipt of every notification of this data root whose last ring is older than
+    /// <see cref="SpentRingScriptAge"/> and whose task the scheduler no longer holds (auditoría de estabilidad r19,
+    /// hallazgo 4: scripts and receipts piled up with no live task behind them). A task that is still registered
+    /// keeps its script whatever the age of its receipt: a daily one whose machine stayed off for a month still
+    /// rings when it comes back. A script that never rang has no receipt and stays: it may still be pending.
+    /// </summary>
+    internal static void PruneSpentRingScripts(
+        string alarmRoot, DateTimeOffset now, IReadOnlySet<string> liveTaskNames)
+    {
+        ArgumentNullException.ThrowIfNull(liveTaskNames);
+        foreach (string receipt in SpentReceipts(alarmRoot, now))
+        {
+            if (liveTaskNames.Contains(Path.GetFileNameWithoutExtension(receipt))) continue;
+            try
+            {
+                File.Delete(Path.ChangeExtension(receipt, ".ps1"));
+                File.Delete(receipt);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // A file in use stays for the next notification set.
+            }
+        }
+    }
+
+    private static string[] SpentReceipts(string alarmRoot, DateTimeOffset now)
+    {
+        try
+        {
+            return Directory.GetFiles(alarmRoot, "BAXY-*.fired")
+                .Where(receipt => now - File.GetLastWriteTimeUtc(receipt) > SpentRingScriptAge)
+                .ToArray();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return [];
+        }
+    }
+
+    // Only when a receipt is old enough does the scheduler get read, and only a read that answered with its
+    // task list lets anything go: without that proof every script stays.
+    private async ValueTask PruneSpentNotificationsAsync(CancellationToken cancellationToken)
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        if (SpentReceipts(_alarmRoot, now).Length == 0) return;
+        IReadOnlySet<string>? live;
+        try
+        {
+            ExternalProcessResult process = await _backend.RunAsync(
+                new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
+                cancellationToken).ConfigureAwait(false);
+            live = ReadTaskNames(process);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or UnauthorizedAccessException or TimeoutException or InvalidDataException)
+        {
+            return;
+        }
+        if (live is not null) PruneSpentRingScripts(_alarmRoot, now, live);
+    }
+
+    private static HashSet<string>? ReadTaskNames(ExternalProcessResult process)
+    {
+        string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .LastOrDefault();
+        if (process.ExitCode != 0 || line is null) return null;
+        using JsonDocument document = JsonDocument.Parse(line);
+        JsonElement source = document.RootElement;
+        if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+            || !source.TryGetProperty("tasks", out JsonElement tasks) || tasks.ValueKind != JsonValueKind.Array)
+            return null;
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (JsonElement task in tasks.EnumerateArray())
+        {
+            if (task.ValueKind != JsonValueKind.Object
+                || !task.TryGetProperty("taskName", out JsonElement name)
+                || name.ValueKind != JsonValueKind.String)
+                return null;
+            names.Add(name.GetString()!);
+        }
+        return names;
     }
 
     private static void WriteRingScript(string path, string receiptPath, string title)

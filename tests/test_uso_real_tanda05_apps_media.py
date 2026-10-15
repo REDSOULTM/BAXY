@@ -22,8 +22,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import llm
-from baxy_mind.__main__ import _explicit_arguments_from_evidence, _prepare_turn_result
+from baxy_mind import visible_defect
+from baxy_mind import compose_situation
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.media import radio_station_query
 from baxy_mind.semantic.patterns import resolve_application_catalog_app_id
@@ -349,7 +351,7 @@ def _not_playing_facts() -> dict:
 
 
 def test_the_absence_has_a_fact_to_tell() -> None:
-    fact = llm._cause_in_prose("youtube_playing_video_not_found", "es")
+    fact = compose_situation._cause_in_prose("youtube_playing_video_not_found", "es")
     assert fact.startswith("nothing is playing") and "_" not in fact
 
 
@@ -361,9 +363,9 @@ def test_the_absence_has_a_fact_to_tell() -> None:
     ],
 )
 def test_nothing_playing_is_told_plainly(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", "pausar el audiolibro", _not_playing_facts()) == ""
+    assert visible_defect.compose_visible_defect(draft, "error", "pausar el audiolibro", _not_playing_facts()) == ""
 
 
 @pytest.mark.parametrize("draft", ["Listo, pausé el audiolibro.", "El audiolibro quedó en pausa."])
 def test_a_pause_that_did_not_happen_is_never_claimed(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", "pausar el audiolibro", _not_playing_facts()) != ""
+    assert visible_defect.compose_visible_defect(draft, "error", "pausar el audiolibro", _not_playing_facts()) != ""

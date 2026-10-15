@@ -1,0 +1,731 @@
+{
+  "version": 1,
+  "purpose": "The other names people say for an installed application, folded (no accents, lower case): «spoken» are the words said, «catalog» the Start catalog names they stand for, tried in order (the first one installed wins). «aliases» serve every reader (app.open and computer use, semantic.catalog._CATALOG_NAME_ALIASES); «mission_aliases» only the computer-use readers (semantic.missions._EXTRA_ALIASES), where a word like «configuracion» is the Settings window and not an order to open it. An application's own name, a unique subset of its words or one near spelling needs no row (missions._catalog_key). «companion_words» make a Start entry the companion of an application (its help, uninstaller, readme or website), never the application said when the application itself is also named. «common_words» are ordinary words (folded, singular) one letter away from an application's one-word name («stream» and Steam, «print» and Paint): a near spelling never reaches a name from them, and alone they never reach a name that only starts or ends with them («de la pantalla» is no «Teclado en pantalla»), nor are they the one word that tells a name apart (missions.resolve_application). «folder_application» are the catalog names, tried in order, of the application that shows a folder of the person's: an order said in a folder and in no application is done there (missions._in_named_folder).",
+  "aliases": [
+    {
+      "spoken": [
+        "calc",
+        "calculadora",
+        "calculator"
+      ],
+      "catalog": [
+        "calculadora",
+        "calculator"
+      ]
+    },
+    {
+      "spoken": [
+        "app de notas",
+        "bloc de notas",
+        "coso de notas",
+        "editor de texto",
+        "notepad"
+      ],
+      "catalog": [
+        "bloc de notas",
+        "notepad"
+      ]
+    },
+    {
+      "spoken": [
+        "explorador",
+        "explorador de archivos",
+        "explorador de windows",
+        "explorer",
+        "file explorer",
+        "files explorer",
+        "windows explorer"
+      ],
+      "catalog": [
+        "explorador de archivos",
+        "file explorer"
+      ]
+    },
+    {
+      "note": "UI1731 «Abre Epic Games y navega hasta la biblioteca»: the Start catalog names the client «Epic Games Launcher»; people say «Epic Games» or «Epic».",
+      "spoken": [
+        "epic",
+        "epic games",
+        "epic games launcher",
+        "epic launcher",
+        "launcher de epic"
+      ],
+      "catalog": [
+        "epic games launcher"
+      ]
+    },
+    {
+      "note": "UI1735 «en Opera hacé clic en …»: the Start catalog names the browser «Navegador Opera GX»; people say «Opera» or «Opera GX».",
+      "spoken": [
+        "navegador opera",
+        "navegador opera gx",
+        "opera",
+        "opera browser",
+        "opera gx"
+      ],
+      "catalog": [
+        "navegador opera gx",
+        "opera gx",
+        "opera"
+      ]
+    },
+    {
+      "note": "Tanda 5 «Abre el gallery» asked which folder: Windows names its own apps in the language it is installed in («Fotos» here, «Photos» on an English PC), and people name them in theirs, or by what they show (Photos opens on its Gallery). Each built-in app is found by any of its Spanish or English names, whichever the Start catalog carries.",
+      "spoken": [
+        "aplicacion de fotos",
+        "app de fotos",
+        "fotos",
+        "fotos de microsoft",
+        "galeria",
+        "galeria de fotos",
+        "gallery",
+        "microsoft photos",
+        "photo gallery",
+        "photo viewer",
+        "photos",
+        "photos app",
+        "visor de fotos"
+      ],
+      "catalog": [
+        "fotos",
+        "photos",
+        "microsoft photos"
+      ]
+    },
+    {
+      "spoken": [
+        "app de camara",
+        "camara",
+        "camara de windows",
+        "camera",
+        "camera app",
+        "windows camera"
+      ],
+      "catalog": [
+        "camara",
+        "camera"
+      ]
+    },
+    {
+      "spoken": [
+        "alarmas",
+        "alarmas y reloj",
+        "alarms",
+        "alarms & clock",
+        "alarms and clock",
+        "clock",
+        "reloj"
+      ],
+      "catalog": [
+        "reloj",
+        "clock",
+        "alarmas y reloj",
+        "alarms & clock"
+      ]
+    },
+    {
+      "spoken": [
+        "app de calendario",
+        "calendar",
+        "calendar app",
+        "calendario"
+      ],
+      "catalog": [
+        "calendario",
+        "calendar"
+      ]
+    },
+    {
+      "spoken": [
+        "app de mapas",
+        "mapas",
+        "maps",
+        "maps app"
+      ],
+      "catalog": [
+        "mapas",
+        "maps"
+      ]
+    },
+    {
+      "spoken": [
+        "herramienta de recortes",
+        "herramienta recortes",
+        "recortes",
+        "snipping tool"
+      ],
+      "catalog": [
+        "herramienta recortes",
+        "recortes",
+        "snipping tool"
+      ]
+    },
+    {
+      "spoken": [
+        "grabadora",
+        "grabadora de sonido",
+        "grabadora de voz",
+        "sound recorder",
+        "voice recorder"
+      ],
+      "catalog": [
+        "grabadora de sonido",
+        "sound recorder",
+        "grabadora de voz",
+        "voice recorder"
+      ]
+    },
+    {
+      "spoken": [
+        "media player",
+        "reproductor de medios",
+        "reproductor multimedia"
+      ],
+      "catalog": [
+        "reproductor multimedia",
+        "media player"
+      ]
+    },
+    {
+      "spoken": [
+        "notas adhesivas",
+        "notas rapidas",
+        "sticky notes"
+      ],
+      "catalog": [
+        "notas rapidas",
+        "sticky notes"
+      ]
+    },
+    {
+      "spoken": [
+        "microsoft store",
+        "tienda de microsoft",
+        "tienda de windows",
+        "tienda microsoft",
+        "windows store"
+      ],
+      "catalog": [
+        "microsoft store"
+      ]
+    },
+    {
+      "spoken": [
+        "administrador de tareas",
+        "task manager"
+      ],
+      "catalog": [
+        "administrador de tareas",
+        "task manager"
+      ]
+    },
+    {
+      "spoken": [
+        "control panel",
+        "panel de control"
+      ],
+      "catalog": [
+        "panel de control",
+        "control panel"
+      ]
+    },
+    {
+      "spoken": [
+        "command prompt",
+        "simbolo del sistema"
+      ],
+      "catalog": [
+        "simbolo del sistema",
+        "command prompt"
+      ]
+    },
+    {
+      "spoken": [
+        "lupa",
+        "magnifier"
+      ],
+      "catalog": [
+        "lupa",
+        "magnifier"
+      ]
+    },
+    {
+      "spoken": [
+        "narrador",
+        "narrator"
+      ],
+      "catalog": [
+        "narrador",
+        "narrator"
+      ]
+    },
+    {
+      "note": "2026-10-07 «in the Clock app go to Stopwatch» on a Spanish Windows: more of the apps Windows brings, by their Spanish and English names.",
+      "spoken": [
+        "microsoft paint",
+        "ms paint",
+        "mspaint",
+        "paint"
+      ],
+      "catalog": [
+        "paint"
+      ]
+    },
+    {
+      "spoken": [
+        "terminal",
+        "terminal de windows",
+        "windows terminal"
+      ],
+      "catalog": [
+        "terminal",
+        "windows terminal"
+      ]
+    },
+    {
+      "spoken": [
+        "powershell",
+        "windows powershell"
+      ],
+      "catalog": [
+        "windows powershell",
+        "powershell"
+      ]
+    },
+    {
+      "spoken": [
+        "cmd",
+        "consola de comandos"
+      ],
+      "catalog": [
+        "simbolo del sistema",
+        "command prompt"
+      ]
+    },
+    {
+      "spoken": [
+        "app del clima",
+        "app del tiempo",
+        "el tiempo",
+        "msn el tiempo",
+        "msn weather",
+        "weather app"
+      ],
+      "catalog": [
+        "el tiempo",
+        "msn el tiempo",
+        "weather",
+        "msn weather"
+      ]
+    },
+    {
+      "spoken": [
+        "app de correo",
+        "correo y calendario",
+        "mail and calendar",
+        "mail app"
+      ],
+      "catalog": [
+        "correo",
+        "mail"
+      ]
+    },
+    {
+      "spoken": [
+        "enlace movil",
+        "phone link",
+        "tu telefono",
+        "vinculo movil",
+        "your phone"
+      ],
+      "catalog": [
+        "vinculo movil",
+        "enlace movil",
+        "phone link"
+      ]
+    },
+    {
+      "spoken": [
+        "asistencia rapida",
+        "quick assist"
+      ],
+      "catalog": [
+        "asistencia rapida",
+        "quick assist"
+      ]
+    },
+    {
+      "spoken": [
+        "editor del registro",
+        "regedit",
+        "registry editor"
+      ],
+      "catalog": [
+        "editor del registro",
+        "registry editor"
+      ]
+    },
+    {
+      "spoken": [
+        "administrador de dispositivos",
+        "device manager"
+      ],
+      "catalog": [
+        "administrador de dispositivos",
+        "device manager"
+      ]
+    },
+    {
+      "spoken": [
+        "character map",
+        "mapa de caracteres"
+      ],
+      "catalog": [
+        "mapa de caracteres",
+        "character map"
+      ]
+    },
+    {
+      "spoken": [
+        "on screen keyboard",
+        "on-screen keyboard",
+        "teclado en pantalla"
+      ],
+      "catalog": [
+        "teclado en pantalla",
+        "on-screen keyboard"
+      ]
+    },
+    {
+      "spoken": [
+        "conexion a escritorio remoto",
+        "escritorio remoto",
+        "remote desktop",
+        "remote desktop connection"
+      ],
+      "catalog": [
+        "conexion a escritorio remoto",
+        "remote desktop connection"
+      ]
+    },
+    {
+      "spoken": [
+        "monitor de recursos",
+        "resource monitor"
+      ],
+      "catalog": [
+        "monitor de recursos",
+        "resource monitor"
+      ]
+    },
+    {
+      "spoken": [
+        "event viewer",
+        "visor de eventos"
+      ],
+      "catalog": [
+        "visor de eventos",
+        "event viewer"
+      ]
+    },
+    {
+      "note": "v3-67 «task scheduler: open library > …» on a Spanish Windows, where the Start catalog says «Programador de tareas».",
+      "spoken": [
+        "programador de tareas",
+        "task scheduler"
+      ],
+      "catalog": [
+        "programador de tareas",
+        "task scheduler"
+      ]
+    },
+    {
+      "spoken": [
+        "informacion del sistema",
+        "system information"
+      ],
+      "catalog": [
+        "informacion del sistema",
+        "system information"
+      ]
+    },
+    {
+      "spoken": [
+        "seguridad de windows",
+        "windows defender",
+        "windows security"
+      ],
+      "catalog": [
+        "seguridad de windows",
+        "windows security"
+      ]
+    },
+    {
+      "spoken": [
+        "get help",
+        "obtener ayuda"
+      ],
+      "catalog": [
+        "obtener ayuda",
+        "get help"
+      ]
+    },
+    {
+      "spoken": [
+        "centro de opiniones",
+        "feedback hub"
+      ],
+      "catalog": [
+        "centro de opiniones",
+        "feedback hub"
+      ]
+    },
+    {
+      "spoken": [
+        "movies & tv",
+        "movies and tv",
+        "peliculas y television",
+        "peliculas y tv"
+      ],
+      "catalog": [
+        "peliculas y tv",
+        "movies & tv"
+      ]
+    },
+    {
+      "spoken": [
+        "app de noticias",
+        "microsoft news",
+        "news app"
+      ],
+      "catalog": [
+        "noticias",
+        "microsoft news",
+        "news"
+      ]
+    },
+    {
+      "spoken": [
+        "microsoft solitaire",
+        "microsoft solitaire collection",
+        "solitaire",
+        "solitario"
+      ],
+      "catalog": [
+        "microsoft solitaire collection"
+      ]
+    },
+    {
+      "spoken": [
+        "lista de tareas",
+        "microsoft to do",
+        "to do"
+      ],
+      "catalog": [
+        "microsoft to do",
+        "to do"
+      ]
+    },
+    {
+      "spoken": [
+        "barra de juegos",
+        "game bar",
+        "xbox game bar"
+      ],
+      "catalog": [
+        "xbox game bar",
+        "game bar"
+      ]
+    },
+    {
+      "note": "«windows media player» is the legacy player where it is installed; the new player («Reproductor multimedia») only where it is not (2026-10-07: with both installed it opened the new one).",
+      "spoken": [
+        "reproductor de windows media",
+        "reproductor de windows media heredado",
+        "windows media player",
+        "windows media player legacy"
+      ],
+      "catalog": [
+        "windows media player legacy",
+        "reproductor de windows media heredado",
+        "reproductor de windows media",
+        "reproductor multimedia",
+        "media player"
+      ]
+    }
+  ],
+  "mission_aliases": [
+    {
+      "spoken": [
+        "ajustes",
+        "configuracion",
+        "configuracion de windows",
+        "la configuracion",
+        "los ajustes",
+        "settings",
+        "windows settings"
+      ],
+      "catalog": [
+        "configuracion",
+        "settings"
+      ]
+    },
+    {
+      "spoken": [
+        "chrome",
+        "google chrome",
+        "navegador chrome"
+      ],
+      "catalog": [
+        "google chrome",
+        "chrome"
+      ]
+    },
+    {
+      "spoken": [
+        "edge",
+        "microsoft edge",
+        "navegador edge"
+      ],
+      "catalog": [
+        "microsoft edge",
+        "edge"
+      ]
+    },
+    {
+      "spoken": [
+        "brave",
+        "navegador brave"
+      ],
+      "catalog": [
+        "brave"
+      ]
+    },
+    {
+      "spoken": [
+        "firefox",
+        "mozilla firefox",
+        "navegador firefox"
+      ],
+      "catalog": [
+        "firefox",
+        "mozilla firefox"
+      ]
+    },
+    {
+      "spoken": [
+        "explorador",
+        "explorador de archivos",
+        "explorer",
+        "file explorer"
+      ],
+      "catalog": [
+        "explorador de archivos",
+        "file explorer"
+      ]
+    },
+    {
+      "spoken": [
+        "calc",
+        "calcu",
+        "calculadora",
+        "calculator",
+        "la calcu",
+        "la calculadora",
+        "the calculator"
+      ],
+      "catalog": [
+        "calculadora",
+        "calculator"
+      ]
+    }
+  ],
+  "folder_application": [
+    "explorador de archivos",
+    "file explorer"
+  ],
+  "companion_words": [
+    "ayuda",
+    "desinstalar",
+    "docs",
+    "documentacion",
+    "documentation",
+    "faq",
+    "help",
+    "licencia",
+    "license",
+    "localization",
+    "manual",
+    "readme",
+    "reference",
+    "uninstall",
+    "web",
+    "website"
+  ],
+  "application_mentions_purpose": "Ronda 20 P3, revisión 3 (hallazgos 1 y 2): the names and kinds of an application a person says whether or not it is installed (folded, whole words): the conversation's application never takes an order that mentions one of these, nor any name of «aliases», «mission_aliases» or the catalog (semantic.missions.mentions_an_application). A mention read where none is meant only keeps the turn's own route.",
+  "application_mentions": [
+    "navegador",
+    "navegador web",
+    "browser",
+    "web browser",
+    "procesador de texto",
+    "procesador de textos",
+    "word processor",
+    "hoja de calculo",
+    "spreadsheet",
+    "reproductor",
+    "player",
+    "word",
+    "excel",
+    "powerpoint",
+    "outlook",
+    "onenote",
+    "spotify",
+    "discord",
+    "whatsapp",
+    "telegram",
+    "teams",
+    "slack",
+    "vlc",
+    "obs",
+    "steam",
+    "netflix",
+    "youtube",
+    "gimp",
+    "photoshop",
+    "vscode",
+    "visual studio code",
+    "acrobat"
+  ],
+  "common_words": [
+    "curso",
+    "print",
+    "route",
+    "stream",
+    "pantalla",
+    "escritorio",
+    "sistema",
+    "archivo",
+    "tarea",
+    "equipo",
+    "sonido",
+    "dato",
+    "idioma",
+    "memoria",
+    "disco",
+    "usuario",
+    "ventana",
+    "imagen",
+    "screen",
+    "desktop",
+    "system",
+    "file",
+    "window",
+    "teclado",
+    "keyboard",
+    "consola",
+    "console",
+    "editor",
+    "panel"
+  ]
+}

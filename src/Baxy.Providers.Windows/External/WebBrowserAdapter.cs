@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Baxy.Providers.Windows.Applications;
 using Baxy.Security.Windows;
 
 namespace Baxy.Providers.Windows.External;
@@ -759,9 +760,18 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             }
         }
 
-        bool encyclopedic = WikipediaSearchSource.IsEncyclopedic(query);
+        // Uso real 2026-10-07 («un top 3 peliculas de suspenso del 2026» → el artículo de UNA película): un listado
+        // pedido (la mente lo marca con listing) no es una pregunta de enciclopedia; un artículo sobre una sola obra
+        // no lo responde. Revisión: un titular tampoco es un elemento del listado (tres noticias no son «el top 3»),
+        // así que un listado no pasa por noticias: va al buscador general, cuyas páginas contienen el listado.
+        bool listing = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("listing", out JsonElement listed)
+            && listed.ValueKind == JsonValueKind.True;
+        string[] answerWords = AnswerWords(arguments);
+        string[] notStated = AnswerWords(arguments, "answerWordsNot");
+        bool encyclopedic = !listing && WikipediaSearchSource.IsEncyclopedic(query);
         string terms = string.Join(' ', SearchPertinence.ContentTerms(asked));
-        if (!encyclopedic && near is null && terms.Length > 0
+        if (!listing && !encyclopedic && near is null && terms.Length > 0
             && !WikipediaSearchSource.FoldedWords(asked).Any(NotNewsWords.Contains)
             && !WikipediaSearchSource.AsksWhatIsShowing(asked))
         {
@@ -788,15 +798,40 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             string names = string.Join(' ', SearchPertinence.EntityTerms(asked));
             var asks = languages.Select(language => (Language: language, Words: terms)).ToList();
             if (names.Length > 0 && names != terms) asks.Add((languages[0], names));
-            foreach ((string language, string words) in asks)
+            // Ronda 19 (r17 t2-c01 T4 «cuantos discos de estudio tienen los bunkers?»): a count of an entity's works
+            // found only the page of one of them («Los Bunkers (álbum)»); the entity's own page («Los Bunkers») is
+            // asked by its name once, and it answers the count (its text is read below). Revisión r19: that page is
+            // taken only when it describes the maker the work's page names (SearchPertinence.OwnPageOfTheWork); a
+            // namesake that is something else is judged as any other result.
+            var ownArticles = new Dictionary<string, (string Title, string Snippet)>(StringComparer.Ordinal);
+            for (int ask = 0; ask < asks.Count; ask++)
             {
+                (string language, string words) = asks[ask];
                 cancellationToken.ThrowIfCancellationRequested();
                 List<(string Title, string Url, string Snippet)>? articles = await _wikipedia
                     .SearchAsync(language, words, limit, cancellationToken).ConfigureAwait(false);
                 if (articles is null) continue;
                 var judged = articles
-                    .Select(item => (Item: item, Pertinence: SearchPertinence.Judge(asked, item.Title, item.Snippet)))
+                    .Select(item => (Item: item, Pertinence: ownArticles.TryGetValue(string.Join(' ',
+                            WikipediaSearchSource.FoldedWords(item.Title)), out (string Title, string Snippet) work)
+                        && SearchPertinence.OwnPageOfTheWork(work.Title, work.Snippet, item.Title, item.Snippet)
+                        ? SearchPertinence.Pertinence.About
+                        : SearchPertinence.Judge(asked, item.Title, item.Snippet)))
                     .ToList();
+                if (SearchPertinence.AsksACount(asked))
+                {
+                    foreach ((string Title, string Url, string Snippet) work in judged
+                        .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.NamesOnly)
+                        .Select(static judgement => judgement.Item))
+                    {
+                        if (SearchPertinence.WorkQualifiedEntity(work.Title) is { } entity
+                            && ownArticles.TryAdd(string.Join(' ', WikipediaSearchSource.FoldedWords(entity)),
+                                (work.Title, work.Snippet)))
+                        {
+                            asks.Add((language, entity));
+                        }
+                    }
+                }
                 List<(string Title, string Url, string Snippet)> pertinent = judged
                     .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.About)
                     .Select(static judgement => judgement.Item)
@@ -804,6 +839,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                     .ToList();
                 if (pertinent.Count > 0)
                 {
+                    pertinent = await WithArticleReadAsync(
+                            asked, answerWords, notStated, pertinent, language, cancellationToken)
+                        .ConfigureAwait(false);
                     return SearchReceipt(operation, query, near, pertinent,
                         WikipediaSearchSource.Authority(language));
                 }
@@ -842,7 +880,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             PertinentResults(queryTokens, reading.Candidates, limit, rejected);
         if (results.Count > 0)
         {
-            results = await WithPageExcerptsAsync(asked, results, cancellationToken).ConfigureAwait(false);
+            results = await WithPageExcerptsAsync(
+                    asked, results, answerWords, notStated, listing ? limit : 0, cancellationToken)
+                .ConfigureAwait(false);
             return SearchReceipt(operation, query, near, results, GeneralSearchAuthority);
         }
         RecordSearchRejection(query, queryTokens, reading.Candidates.Count, rejected);
@@ -861,16 +901,33 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private const int ExcerptPages = 3;
     private static readonly TimeSpan ExcerptBudget = TimeSpan.FromMilliseconds(1_500);
 
+    // Uso real v3 tanda 1: a question that asks a relation («quién ganó», «who directed») carries the mind's
+    // answerWords. When a fragment already states it, no page is read; when none does, the pages are read whatever
+    // the length of the query (the relation's verb is no content word), for the sentences that state it.
+    // Ronda 24 (r23 t1-c03 «dame el top 5»): a listing asked (listing, with limit = how many) reads the first pages
+    // whatever the length of the query, and the first ranking of each (SearchPageExcerpt.Rows) follows its snippet:
+    // «Anexo:Películas con las mayores recaudaciones» was the first result and its table never reached the reply.
     private async Task<List<(string Title, string Url, string Snippet)>> WithPageExcerptsAsync(
         string asked,
         List<(string Title, string Url, string Snippet)> results,
+        string[] answerWords,
+        string[] notStated,
+        int listCount,
         CancellationToken cancellationToken)
     {
-        if (SearchPertinence.ContentTerms(asked).Length < 3) return results;
+        if (listCount == 0 && answerWords.Length > 0)
+        {
+            if (FragmentsAnswer(asked, answerWords, notStated, results)) return results;
+        }
+        else if (listCount == 0 && SearchPertinence.ContentTerms(asked).Length < 3)
+        {
+            return results;
+        }
         using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         budget.CancelAfter(ExcerptBudget);
         string[] excerpts = await Task.WhenAll(results.Take(ExcerptPages)
-                .Select(result => ReadPageExcerptAsync(asked, result, budget.Token, cancellationToken)))
+                .Select(result => ReadPageExcerptAsync(
+                    asked, result, answerWords, notStated, listCount, budget.Token, cancellationToken)))
             .ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
         return results
@@ -883,6 +940,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private async Task<string> ReadPageExcerptAsync(
         string asked,
         (string Title, string Url, string Snippet) result,
+        string[] answerWords,
+        string[] notStated,
+        int listCount,
         CancellationToken budget,
         CancellationToken cancellationToken)
     {
@@ -890,7 +950,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         try
         {
             string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
-            return html is null ? string.Empty : SearchPageExcerpt.Read(html, asked, result.Title + " " + result.Snippet);
+            if (html is null) return string.Empty;
+            string excerpt = SearchPageExcerpt.Read(
+                html, asked, result.Title + " " + result.Snippet, answerWords, notStated);
+            string rows = listCount > 0 ? SearchPageExcerpt.Rows(html, asked, listCount) : string.Empty;
+            return rows.Length == 0 ? excerpt : excerpt.Length == 0 ? rows : excerpt + " … " + rows;
         }
         catch (HttpRequestException)
         {
@@ -900,6 +964,68 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return string.Empty;
         }
+    }
+
+    // Uso real v3 tanda 1 («quien gano el mundial del 2014» → «Brasil ganó…»): the word beginnings with which a page
+    // states what was asked, as the mind gave them (web.search answerWords), folded; none when it gave none. With
+    // answerWordsNot, the whole words that begin so and name something else («campeonato», «championship»).
+    internal static string[] AnswerWords(JsonElement arguments, string property = "answerWords") =>
+        arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty(property, out JsonElement stated)
+        && stated.ValueKind == JsonValueKind.String
+            ? WikipediaSearchSource.FoldedWords(stated.GetString() ?? string.Empty)
+                .Where(static word => word.Length >= 3)
+                .Distinct(StringComparer.Ordinal)
+                .Take(40)
+                .ToArray()
+            : [];
+
+    internal static bool FragmentsAnswer(
+        string asked,
+        string[] answerWords,
+        string[] notStated,
+        IEnumerable<(string Title, string Url, string Snippet)> results) =>
+        results.Any(result => SearchPageExcerpt.FragmentAnswers(
+            result.Title + ". " + result.Snippet, asked, answerWords, notStated));
+
+    // Uso real v3 tanda 1: the encyclopedia's snippet is the article's first three sentences («…se realizó en
+    // Brasil…»); who won is said further down. When no fragment states what was asked, the first pertinent article is
+    // read whole (its plain text, from the same open API) within the excerpts' bound, and its sentences that state it
+    // follow its snippet. When the article's own fragment already states it, it is answered as it is: no article is
+    // read. Only that fragment is judged (revisión adversarial, tanda 1 fila 82): the Conmebol qualification's «el
+    // repechaje contra el ganador de la quinta ronda» carries «ganador», «mundial» and «2014» and answers nothing.
+    private async Task<List<(string Title, string Url, string Snippet)>> WithArticleReadAsync(
+        string asked,
+        string[] answerWords,
+        string[] notStated,
+        List<(string Title, string Url, string Snippet)> results,
+        string language,
+        CancellationToken cancellationToken)
+    {
+        if (answerWords.Length == 0 || results.Count == 0
+            || FragmentsAnswer(asked, answerWords, notStated, results.Take(1)))
+            return results;
+        (string Title, string Url, string Snippet) first = results[0];
+        string? article;
+        using (var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        {
+            budget.CancelAfter(ExcerptBudget);
+            try
+            {
+                article = await _wikipedia.ReadArticleAsync(language, first.Title, budget.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                article = null;
+            }
+        }
+        if (article is null) return results;
+        string excerpt = SearchPageExcerpt.Read(
+            article, asked, first.Title + " " + first.Snippet, answerWords, notStated);
+        if (excerpt.Length == 0) return results;
+        var read = new List<(string Title, string Url, string Snippet)>(results);
+        read[0] = (first.Title, first.Url, first.Snippet + " … " + excerpt);
+        return read;
     }
 
     // M102: the first pages of the results are read at once, within the excerpts' bound, and the first in the
@@ -1589,6 +1715,10 @@ internal class CdpBrowserSession : IDisposable
     private Process? _ownedProcess;
     private Uri? _endpoint;
     private int _nextCommandId;
+    // Pasada r15b v3-57 (revisión): null while this session started the browser it drives; after reattaching to the
+    // browser a previous session left open for the person, the page targets this session created there. Only those
+    // are acted on: the person's own tabs in that window are never navigated, read or closed.
+    private HashSet<string>? _sessionTargets;
 
     internal CdpBrowserSession(string profile, string? browserExecutable = null)
     {
@@ -1695,7 +1825,8 @@ internal class CdpBrowserSession : IDisposable
         {
             // H0444 «cerrá todas las pestañas»: every open page target in the
             // product's own CDP browser is closed. The product never attaches to
-            // the owner's browser sessions, so only the tabs it opened are closed.
+            // the owner's browser sessions, so only the tabs it opened are closed;
+            // in a browser it reattached to, only the tabs this session opened.
             // The post-read verifies that no page target remains; when closing the
             // last tab ends the browser, the loss of its endpoint is that absence.
             IReadOnlyList<string> pageTargets = await CollectPageTargetIdsAsync(
@@ -1760,6 +1891,7 @@ internal class CdpBrowserSession : IDisposable
             if (!created.RootElement.TryGetProperty("id", out JsonElement createdId)
                 || createdId.GetString() is not { Length: > 0 } newTargetId)
                 return new(false, true, action, string.Empty, string.Empty, "cdp_new_tab_not_verified");
+            _sessionTargets?.Add(newTargetId);
             for (int attempt = 0; attempt < 20; attempt++)
             {
                 if (await TargetExistsAsync(endpoint, newTargetId, cancellationToken).ConfigureAwait(false))
@@ -2027,6 +2159,7 @@ internal class CdpBrowserSession : IDisposable
                 || !target.TryGetProperty("title", out JsonElement title)
                 || !target.TryGetProperty("url", out JsonElement url)
                 || id.ValueKind != JsonValueKind.String
+                || _sessionTargets is not null && !_sessionTargets.Contains(id.GetString()!)
                 || title.ValueKind != JsonValueKind.String
                 || url.ValueKind != JsonValueKind.String
                 || !Uri.TryCreate(url.GetString(), UriKind.Absolute, out Uri? parsed)
@@ -2070,10 +2203,12 @@ internal class CdpBrowserSession : IDisposable
                 && (pageUrl.Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)
                     || pageUrl.Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase))
                 && target.TryGetProperty("id", out JsonElement id)
+                && id.GetString() is { Length: > 0 } candidateId
+                && (_sessionTargets is null || _sessionTargets.Contains(candidateId))
                 && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socketUrl)
                 && Uri.TryCreate(socketUrl.GetString(), UriKind.Absolute, out Uri? webSocket))
             {
-                candidates.Add((id.GetString()!, webSocket));
+                candidates.Add((candidateId, webSocket));
             }
         }
         const string probe = "(()=>{const v=document.querySelector('video');if(!v)return 'video_missing';"
@@ -2536,20 +2671,107 @@ internal class CdpBrowserSession : IDisposable
             lastObserved + "|remembered=" + chosenHref + "/" + chosenName);
     }
 
+    // Pasada r15b v3-57: the browser is the person's window (the page they asked for), so BAXY closing leaves it open;
+    // only the connection is released. A later session on the same profile reattaches to it (TryReattachAsync).
     public virtual void Dispose()
     {
         _http.Dispose();
+        _ownedProcess?.Dispose();
+    }
+
+    internal const string OwnerRecordName = "baxy-browser-owner";
+
+    /// <summary>The launch of the CDP browser: outside BAXY's kill-on-close job, inheriting none of its handles.</summary>
+    internal static InvokerLaunch.LaunchPlan LaunchPlan(string browser, string profile)
+    {
+        static string Quoted(string argument) =>
+            argument.Contains(' ', StringComparison.Ordinal) ? "\"" + argument + "\"" : argument;
+        string[] arguments =
+        [
+            // The port is bound to loopback and the profile is BAXY's own. No --remote-allow-origins: BAXY's own
+            // client sends no Origin, so it still connects, while any web page (in this browser or in another one
+            // on the machine) that finds the port is refused, now that the browser outlives BAXY.
+            "--remote-debugging-port=0",
+            "--no-first-run",
+            "--no-default-browser-check",
+            // The window is the person's, but it is started while BAXY's local model holds the GPU: GPU
+            // acceleration adds a GPU process and its video memory to the same card (WEB1261: 3874 MiB with the
+            // local model, over the 3800 MiB budget). Pages and video still render in software; a person who
+            // keeps it open for hours of video pays CPU, not the model's VRAM. Owner's call to change.
+            "--disable-gpu",
+            "--user-data-dir=" + profile,
+            "about:blank",
+        ];
+        return new InvokerLaunch.LaunchPlan(
+            browser,
+            string.Join(' ', arguments.Select(Quoted)),
+            Path.GetDirectoryName(browser) ?? Environment.SystemDirectory);
+    }
+
+    /// <summary>The owner record «pid start-ticks» of the browser this profile's sessions started; null when unreadable.</summary>
+    internal static (int ProcessId, long StartTicks)? ParseOwnerRecord(string? record)
+    {
+        string[] parts = (record ?? string.Empty).Trim().Split(' ');
+        return parts.Length == 2
+            && int.TryParse(parts[0], NumberStyles.None, CultureInfo.InvariantCulture, out int processId)
+            && processId > 0
+            && long.TryParse(parts[1], NumberStyles.None, CultureInfo.InvariantCulture, out long startTicks)
+            ? (processId, startTicks)
+            : null;
+    }
+
+    internal static string OwnerRecord(int processId, long startTicks) =>
+        processId.ToString(CultureInfo.InvariantCulture) + " " + startTicks.ToString(CultureInfo.InvariantCulture);
+
+    // The browser a previous session of this profile started and left open for the person: the very process the
+    // owner record names (same id and start time, the same executable) answering on the port its profile published.
+    internal async ValueTask<Uri?> TryReattachAsync(
+        string activePort, string browser, CancellationToken cancellationToken)
+    {
+        string ownerPath = Path.Combine(_profile, OwnerRecordName);
+        if (!File.Exists(activePort) || !File.Exists(ownerPath))
+            return null;
+        Process? process = null;
         try
         {
-            if (_ownedProcess is { HasExited: false })
-            {
-                _ownedProcess.Kill(entireProcessTree: true);
-            }
+            if (ParseOwnerRecord(await File.ReadAllTextAsync(ownerPath, cancellationToken).ConfigureAwait(false))
+                    is not { } owner
+                || (await File.ReadAllLinesAsync(activePort, cancellationToken).ConfigureAwait(false))
+                    is not [string first, ..]
+                || !ushort.TryParse(first, out ushort port) || port == 0)
+                return null;
+            process = Process.GetProcessById(owner.ProcessId);
+            if (process.HasExited
+                || process.StartTime.ToUniversalTime().Ticks != owner.StartTicks
+                || process.MainModule?.FileName is not { } image
+                || !string.Equals(Path.GetFullPath(image), Path.GetFullPath(browser), StringComparison.OrdinalIgnoreCase))
+                return null;
+            Uri candidate = new($"http://127.0.0.1:{port}/");
+            using var readiness = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            readiness.CancelAfter(TimeSpan.FromMilliseconds(500));
+            using HttpResponseMessage response = await _http.GetAsync(
+                new Uri(candidate, "json/version"), readiness.Token).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            _ownedProcess = process;
+            process = null;
+            _sessionTargets = new HashSet<string>(StringComparer.Ordinal);
+            return candidate;
         }
-        catch (InvalidOperationException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.ComponentModel.Win32Exception or NotSupportedException or IOException
+            or UnauthorizedAccessException or HttpRequestException)
         {
+            return null;
         }
-        _ownedProcess?.Dispose();
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+        finally
+        {
+            process?.Dispose();
+        }
     }
 
     private async ValueTask<Uri> EnsureEndpointAsync(CancellationToken cancellationToken)
@@ -2574,26 +2796,32 @@ internal class CdpBrowserSession : IDisposable
             throw new IOException("Browser profile cannot be a link.");
         }
         string activePort = Path.Combine(_profile, "DevToolsActivePort");
+        string browser = _browserExecutable ?? ResolveEdge();
+        if (await TryReattachAsync(activePort, browser, cancellationToken).ConfigureAwait(false) is { } reattached)
+        {
+            _endpoint = reattached;
+            return reattached;
+        }
         if (File.Exists(activePort))
         {
             File.Delete(activePort);
         }
-        string browser = _browserExecutable ?? ResolveEdge();
-        var start = new ProcessStartInfo(browser)
+        int processId = InvokerLaunch.StartOutsideBaxy(LaunchPlan(browser, _profile));
+        try
         {
-            UseShellExecute = _browserExecutable is null,
-        };
-        start.ArgumentList.Add("--remote-debugging-port=0");
-        start.ArgumentList.Add("--remote-allow-origins=*");
-        start.ArgumentList.Add("--no-first-run");
-        start.ArgumentList.Add("--no-default-browser-check");
-        // The private automation session renders for CDP, not for the person:
-        // GPU acceleration only adds a GPU process to the product's tree
-        // (WEB1261: 3874 MiB with the local model, over the 3800 MiB budget).
-        start.ArgumentList.Add("--disable-gpu");
-        start.ArgumentList.Add("--user-data-dir=" + _profile);
-        start.ArgumentList.Add("about:blank");
-        _ownedProcess = Process.Start(start) ?? throw new IOException("CDP browser could not start.");
+            _ownedProcess = processId > 0
+                ? Process.GetProcessById(processId)
+                : throw new IOException("CDP browser could not start.");
+            await File.WriteAllTextAsync(
+                Path.Combine(_profile, OwnerRecordName),
+                OwnerRecord(processId, _ownedProcess.StartTime.ToUniversalTime().Ticks),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            throw new IOException("CDP browser could not start.", exception);
+        }
         for (int attempt = 0; attempt < 80; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -2637,25 +2865,52 @@ internal class CdpBrowserSession : IDisposable
         throw new TimeoutException("Edge did not publish a CDP endpoint.");
     }
 
+    /// <summary>
+    /// The page target this session acts on: the first page of the list, restricted to <paramref name="sessionTargets"/>
+    /// when the session reattached to a browser left open for the person (their own tabs are never chosen). Null when
+    /// no such page exists.
+    /// </summary>
+    internal static (string TargetId, Uri WebSocket)? ChoosePageTarget(
+        JsonElement targets,
+        IReadOnlySet<string>? sessionTargets)
+    {
+        if (targets.ValueKind != JsonValueKind.Array)
+            return null;
+        foreach (JsonElement target in targets.EnumerateArray())
+        {
+            if (target.TryGetProperty("type", out JsonElement type)
+                && type.GetString() == "page"
+                && target.TryGetProperty("id", out JsonElement id)
+                && id.GetString() is { Length: > 0 } targetId
+                && (sessionTargets is null || sessionTargets.Contains(targetId))
+                && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socket)
+                && Uri.TryCreate(socket.GetString(), UriKind.Absolute, out Uri? webSocket))
+            {
+                return (targetId, webSocket);
+            }
+        }
+        return null;
+    }
+
+    /// <summary>The page target the next action of this session would use (opening one when none is its own).</summary>
+    internal async ValueTask<string> PageTargetIdAsync(bool createIfMissing, CancellationToken cancellationToken)
+    {
+        Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        return (await ResolveTargetAsync(endpoint, createIfMissing, cancellationToken).ConfigureAwait(false)).TargetId;
+    }
+
     private async ValueTask<(string TargetId, Uri WebSocket)> ResolveTargetAsync(
         Uri endpoint,
         bool createIfMissing,
         CancellationToken cancellationToken)
     {
-        using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
-            .ConfigureAwait(false);
-        using JsonDocument targets = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-        foreach (JsonElement target in targets.RootElement.EnumerateArray())
+        using (Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
+            .ConfigureAwait(false))
+        using (JsonDocument targets = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
+            .ConfigureAwait(false))
         {
-            if (target.TryGetProperty("type", out JsonElement type)
-                && type.GetString() == "page"
-                && target.TryGetProperty("id", out JsonElement id)
-                && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socket)
-                && Uri.TryCreate(socket.GetString(), UriKind.Absolute, out Uri? webSocket))
-            {
-                return (id.GetString()!, webSocket);
-            }
+            if (ChoosePageTarget(targets.RootElement, _sessionTargets) is { } chosen)
+                return chosen;
         }
         if (createIfMissing)
         {
@@ -2670,10 +2925,12 @@ internal class CdpBrowserSession : IDisposable
                 createdStream, cancellationToken: cancellationToken).ConfigureAwait(false);
             JsonElement root = created.RootElement;
             if (root.TryGetProperty("id", out JsonElement createdId)
+                && createdId.GetString() is { Length: > 0 } createdTarget
                 && root.TryGetProperty("webSocketDebuggerUrl", out JsonElement createdSocket)
                 && Uri.TryCreate(createdSocket.GetString(), UriKind.Absolute, out Uri? webSocket))
             {
-                return (createdId.GetString()!, webSocket);
+                _sessionTargets?.Add(createdTarget);
+                return (createdTarget, webSocket);
             }
         }
         throw new IOException("CDP session has no page target.");
@@ -2693,7 +2950,8 @@ internal class CdpBrowserSession : IDisposable
             if (target.TryGetProperty("type", out JsonElement type)
                 && type.GetString() == "page"
                 && target.TryGetProperty("id", out JsonElement id)
-                && id.GetString() is { Length: > 0 } value)
+                && id.GetString() is { Length: > 0 } value
+                && (_sessionTargets is null || _sessionTargets.Contains(value)))
             {
                 ids.Add(value);
             }

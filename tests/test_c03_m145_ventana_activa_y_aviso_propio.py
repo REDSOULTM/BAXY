@@ -33,6 +33,11 @@ from baxy_mind.semantic.apps import names_the_window_in_front
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.windows import said_snap_side
+from baxy_mind import plan_shape
+from baxy_mind import plan_dependencies
+from baxy_mind import argument_grounding
+from baxy_mind import context_decision
+from baxy_mind import turn_decide
 
 SNAP = {"type": "object", "properties": {"side": {"type": "string", "enum": ["left", "right"]},
                                          "windowId": {"type": "string", "maxLength": 36}},
@@ -58,7 +63,7 @@ def _plan(operation: str, objective: str) -> list[tuple[str, str, list[str]]]:
     """The steps of the plan the App asks for after the decider decided ``operation`` with ``objective``."""
 
     return [(step["operation"], step["argumentsMode"], step["dependsOn"])
-            for step in sidecar._explicit_plan_skeleton((operation,), (objective,))["steps"]]
+            for step in plan_shape._explicit_plan_skeleton((operation,), (objective,))["steps"]]
 
 
 def _front(objective: str) -> dict[str, Any] | None:
@@ -67,12 +72,12 @@ def _front(objective: str) -> dict[str, Any] | None:
     observations = [{"stepId": "step_1", "operation": "window.active", "verified": True, "status": "completed",
                      "result": {"version": 1, "windows": [
                          {"windowId": FRONT_ID, "processId": 4242, "state": "normal", "foreground": True}]}}]
-    arguments = sidecar._verified_dependency_identity_arguments(
+    arguments = plan_dependencies._verified_dependency_identity_arguments(
         "window.snap", objective, observations, _tool("window.snap", SNAP), purpose=objective)
     if arguments is None:
         return None
     return normalize_grounded_arguments(
-        arguments, SNAP, sidecar.trusted_plan_grounding_source(objective, observations))
+        arguments, SNAP, argument_grounding.trusted_plan_grounding_source(objective, observations))
 
 
 FRONT_STEPS = [("window.active", "literal", []), ("window.snap", "after_dependencies", ["step_1"])]
@@ -147,8 +152,8 @@ def test_a_named_window_or_a_pronoun_is_not_the_window_in_front(operation: str, 
 
 def test_closing_is_not_one_of_these_changes() -> None:
     # The changes that read the window in front lose nothing; a close keeps its own rule and its confirmation.
-    assert "app.close" not in sidecar._FRONT_WINDOW_CHANGES
-    assert "window.focus" not in sidecar._FRONT_WINDOW_CHANGES
+    assert "app.close" not in plan_shape._FRONT_WINDOW_CHANGES
+    assert "window.focus" not in plan_shape._FRONT_WINDOW_CHANGES
     assert _plan("app.close", "Cierra la ventana de Chrome.")[0][0] == "window.resolve"
     assert names_the_window_in_front("cierra esta ventana") and not names_the_window_in_front("ciérrala")
 
@@ -212,7 +217,7 @@ def test_a_close_by_pronoun_is_still_never_the_window_in_front() -> None:
             {"role": "assistant", "content": "Un router reparte la conexión entre tus equipos."}]
     tools = [_tool(name) for name in ("app.close", "window.active", "window.snap", "window.resolve")]
     for text, restated in (("cierra aquello", "Cierra la ventana activa."), ("close that one", "Close the active window.")):
-        result = sidecar._context_decided_result(
+        result = context_decision._context_decided_result(
             {"id": "m145", "text": text, "history": [*chat, {"role": "user", "content": text}]},
             llm=_Decider(ContextDecision(restated, "action", ("app.close",), "")), planner_catalog=PlannerCatalog(tools),
         )
@@ -264,7 +269,7 @@ def _turn(said: list[str], decision: ContextDecision, state: DialogueState) -> d
     tools = {name: _tool(name) for name in OPERATIONS}
     tools["notification.cancel.at"] = _tool("notification.cancel.at", CANCEL_AT)
     tools["notification.cancel.latest"] = _tool("notification.cancel.latest", CANCEL_LATEST)
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m145", "text": said[-1], "history": history},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=state,
@@ -324,7 +329,7 @@ def test_a_move_naming_no_clock_is_of_the_last_one_set() -> None:
 
 
 def test_the_plan_takes_the_kind_of_the_one_cancelled_from_the_request() -> None:
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "notification.cancel.latest", "Cambia la alarma de las 7:00 a las 7:15.", CANCEL_LATEST) == {"kind": "alarm"}
 
 

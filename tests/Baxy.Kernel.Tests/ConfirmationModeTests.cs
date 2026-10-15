@@ -148,6 +148,49 @@ public sealed class ConfirmationModeTests
         }
     }
 
+    [Test]
+    public void NoProfileFileIsNormalWhateverTheEnvironmentSays()
+    {
+        // Revisión U, H5: bypass is switched on only by the interface's gesture, which writes the profile's file; an
+        // environment variable no longer switches it on.
+        string root = Path.Combine(Path.GetTempPath(), "baxy-confirmation-env-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        string? previous = Environment.GetEnvironmentVariable("BAXY_CONFIRMATION_MODE");
+        Environment.SetEnvironmentVariable("BAXY_CONFIRMATION_MODE", "bypass");
+        try
+        {
+            Assert.That(ConfirmationModeStore.Read(root), Is.EqualTo(ConfirmationMode.Normal));
+            Assert.That(ConfirmationModeStore.Read(null), Is.EqualTo(ConfirmationMode.Normal));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_CONFIRMATION_MODE", previous);
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void PresentationStoreRoundTripsTheAccessibleModeAndReadsAnythingElseAsNormal()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-presentation-mode-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            Assert.That(PresentationModeStore.ReadAccessible(root), Is.False);
+            PresentationModeStore.WriteAccessible(root, true);
+            Assert.That(PresentationModeStore.ReadAccessible(root), Is.True);
+            PresentationModeStore.WriteAccessible(root, false);
+            Assert.That(PresentationModeStore.ReadAccessible(root), Is.False);
+            // Contracase: the retired modes of the old interface are not the accessible presentation.
+            File.WriteAllText(Path.Combine(root, PresentationModeStore.FileName), "no_vidente");
+            Assert.That(PresentationModeStore.ReadAccessible(root), Is.False);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static OperationRequest Request(string operation, string json) => new(
         ProtocolTypes.OperationRequest,
         Guid.NewGuid().ToString("D"),

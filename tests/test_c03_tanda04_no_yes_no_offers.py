@@ -23,11 +23,17 @@ import json
 import pytest
 
 from baxy_mind import __main__ as mind_main
-from baxy_mind.__main__ import _explicit_arguments_from_evidence, _prepare_turn_result
-from baxy_mind.llm import OPERATION_COMPATIBILITY_PROMPT, LlmRuntime
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.turn_decide import _prepare_turn_result
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.llm_prompts import OPERATION_COMPATIBILITY_PROMPT
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import surface
 from baxy_mind.semantic.reading import read
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind import operation_contract
+from baxy_mind import turn_decisions
+from baxy_mind import llm_prompts
 
 OPERATIONS = (
     "system.time", "task.create", "task.list", "web.search", "media.play.query", "media.play.youtube",
@@ -81,11 +87,9 @@ def test_the_date_or_time_of_something_else_is_never_this_pc_clock(text: str) ->
 def test_the_time_of_another_place_is_this_clock_read_with_that_place() -> None:
     # Tanda 4 (web answers and time arithmetic): another place's time is the
     # clock read together with that place's zone, never this clock recited.
-    from baxy_mind import __main__ as mind_main
-
     text = "i'd like to know what time it is in tokyo"
     assert _effects(text) == ("system.time",)
-    assert mind_main._explicit_arguments_from_evidence("system.time", text) == {"place": "tokyo"}
+    assert semantic_arguments._explicit_arguments_from_evidence("system.time", text) == {"place": "tokyo"}
 
 
 @pytest.mark.parametrize(
@@ -276,7 +280,7 @@ def test_the_unsure_question_names_the_operation_and_never_restates_the_request(
     # The restating «¿Quieres que …?» composer is gone.
     assert not hasattr(llm_module, "DOMAIN_CONFIRMATION_PROMPT")
     assert not hasattr(mind_main, "_domain_confirmation_question")
-    prompt = llm_module.OPERATION_CONFIRMATION_PROMPT
+    prompt = llm_prompts.OPERATION_CONFIRMATION_PROMPT
     assert "No estás seguro" in prompt
     assert "operación concreta que ejecutarías" in prompt
     assert "No repitas ni reformules el pedido" in prompt
@@ -341,12 +345,12 @@ _TOOLS = {
 def test_without_the_surface_only_the_strict_verdict_lets_it_act(verdict: bool | Exception, acts: bool) -> None:
     llm = _Strict(verdict)
     text = "is my machine talking to the outside world right now?"
-    assert mind_main._acts_without_asking(text, ("network.status",), _TOOLS, llm, ()) is acts
+    assert operation_contract._acts_without_asking(text, ("network.status",), _TOOLS, llm, ()) is acts
     assert llm.calls == ["network.status"]
 
 
 def test_a_missing_verifier_never_lets_it_act() -> None:
-    assert not mind_main._acts_without_asking(
+    assert not operation_contract._acts_without_asking(
         "is my machine talking to the outside world right now?", ("network.status",), _TOOLS, object(), (),
     )
 
@@ -354,13 +358,13 @@ def test_a_missing_verifier_never_lets_it_act() -> None:
 @pytest.mark.parametrize("operation", ["app.close", "email.send"])
 def test_what_destroys_or_sends_never_acts_unasked_whatever_grounds_it(operation: str) -> None:
     llm = _Strict(True)
-    assert not mind_main._acts_without_asking("close it", (operation,), _TOOLS, llm, ())
+    assert not operation_contract._acts_without_asking("close it", (operation,), _TOOLS, llm, ())
     assert llm.calls == []
 
 
 def test_one_ungrounded_member_keeps_the_whole_set_from_acting() -> None:
     llm = _Strict(True)
-    assert not mind_main._acts_without_asking(
+    assert not operation_contract._acts_without_asking(
         "is my machine online and send it to ana", ("network.status", "email.send"), _TOOLS, llm, (),
     )
 
@@ -394,13 +398,13 @@ _UNSURE_TEXT = "is my machine talking to the outside world right now?"
 )
 def test_the_three_branches_of_a_withheld_operation(strict: bool, identity: bool, verdict: tuple[str, str]) -> None:
     llm = _Verdicts(strict, identity)
-    assert mind_main._withheld_operation_verdict(_UNSURE_TEXT, ("network.status",), _TOOLS, llm, ()) == verdict
+    assert operation_contract._withheld_operation_verdict(_UNSURE_TEXT, ("network.status",), _TOOLS, llm, ()) == verdict
     assert llm.identity_calls == ([] if strict else ["network.status"])
 
 
 def test_an_unsure_question_that_restates_nothing_valid_is_not_published() -> None:
     llm = _Verdicts(False, True, question="claro que sí")
-    assert mind_main._withheld_operation_verdict(_UNSURE_TEXT, ("network.status",), _TOOLS, llm, ()) == ("", "")
+    assert operation_contract._withheld_operation_verdict(_UNSURE_TEXT, ("network.status",), _TOOLS, llm, ()) == ("", "")
 
 
 class _KnowledgeLlm:
@@ -471,7 +475,7 @@ def _knowledge_turn(llm: _KnowledgeLlm, risk: str = "read_only") -> dict[str, ob
 
 
 def test_the_recovered_decision_is_an_action_that_asks_nothing() -> None:
-    decision = mind_main._recovered_action_decision("system.time", "en")
+    decision = turn_decisions._recovered_action_decision("system.time", "en")
     assert json.loads(json.dumps(decision)) == {
         "mode": "action", "operation": "system.time", "question": "", "conversation_kind": "",
         "effect_count": "one", "effect_operations": ["system.time"], "effect_verification": "recovered",

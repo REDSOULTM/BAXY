@@ -21,10 +21,10 @@ import json
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
-from baxy_mind.__main__ import _prepare_turn_result
-from baxy_mind.llm import LlmRuntime, conversation_claim_defect
+from baxy_mind import visible_defect
+from baxy_mind.turn_decide import _prepare_turn_result
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.reply_claims import conversation_claim_defect
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.notes import list_read_request
 from baxy_mind.semantic.patterns import (
@@ -35,6 +35,7 @@ from baxy_mind.semantic.patterns import (
 )
 from baxy_mind.semantic.reading import read
 from test_c03_pointless_questions import _tool
+from baxy_mind import argument_grounding
 
 OPERATIONS = ("task.list", "task.search", "task.create", "reminder.list", "note.list", "web.search")
 
@@ -98,7 +99,7 @@ def test_the_to_do_list_read_is_every_open_task(text):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.clarification is None
     assert reading.effects is not None and reading.effects.operations == ("task.list",)
-    assert sidecar._ground_explicit_arguments("task.list", reading.effects.evidence[0], SCHEMAS["task.list"]) == {}
+    assert argument_grounding._ground_explicit_arguments("task.list", reading.effects.evidence[0], SCHEMAS["task.list"]) == {}
 
 
 @pytest.mark.parametrize(
@@ -115,7 +116,7 @@ def test_the_to_do_list_read_is_every_open_task(text):
 def test_a_list_with_another_name_is_searched_by_that_name(text, query):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == ("task.search",)
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "task.search", reading.effects.evidence[0], SCHEMAS["task.search"],
     ) == {"query": query}
 
@@ -133,7 +134,7 @@ def test_a_list_with_another_name_is_searched_by_that_name(text, query):
 def test_one_entry_asked_about_is_searched_by_itself(text, query):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == ("task.search",)
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "task.search", reading.effects.evidence[0], SCHEMAS["task.search"],
     ) == {"query": query}
 
@@ -178,8 +179,8 @@ def test_a_conditional_add_reads_the_list_and_defers_the_add(text, query, clause
     assert deferred_clarification_split(text, OPERATIONS) is None
     assert list_read_request(text).absent_clause == clause
     # The App asks the arguments with the whole message: each step reads its own.
-    assert sidecar._ground_explicit_arguments("task.search", text, SCHEMAS["task.search"]) == {"query": query}
-    assert sidecar._ground_explicit_arguments("task.create", text, SCHEMAS["task.create"])["title"] == query
+    assert argument_grounding._ground_explicit_arguments("task.search", text, SCHEMAS["task.search"]) == {"query": query}
+    assert argument_grounding._ground_explicit_arguments("task.create", text, SCHEMAS["task.create"])["title"] == query
 
 
 class _InventingLlm:
@@ -278,7 +279,7 @@ def _search_situation(count):
 def test_the_read_published_alone_found_the_entry_and_never_claims_the_add(reply, defect):
     # Tanda 4c: the App publishes the read alone only when it found the entry; the add never ran.
     facts = {"situation": json.dumps(_search_situation(1))}
-    assert llm.compose_visible_defect(reply, "status", CHEESE, facts) == defect
+    assert visible_defect.compose_visible_defect(reply, "status", CHEESE, facts) == defect
 
 
 @pytest.mark.parametrize(
@@ -289,7 +290,7 @@ def test_no_answer_afterwards_adds_the_entry_again(answer):
     history = [{"role": "user", "content": CHEESE}, {"role": "assistant", "content": "No está. ¿Lo añado?"}]
     effects = resolve_explicit_effects(answer, OPERATIONS, previous_user_text=CHEESE)
     assert effects is None or effects.evidence != ("add cheese to my shopping list",)
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "task.create", answer, SCHEMAS["task.create"], history=history,
     ) != {"title": "cheese", "details": "shopping list"}
 
@@ -318,7 +319,7 @@ def test_agreeing_after_a_plain_list_read_adds_nothing():
 def test_a_random_article_or_fact_is_looked_up(text, topics):
     reading = read(text, available_operations=OPERATIONS)
     assert reading.effects is not None and reading.effects.operations == ("web.search",)
-    grounded = sidecar._ground_explicit_arguments("web.search", reading.effects.evidence[0], SCHEMAS["web.search"])
+    grounded = argument_grounding._ground_explicit_arguments("web.search", reading.effects.evidence[0], SCHEMAS["web.search"])
     assert grounded is not None and grounded["query"] in topics
 
 

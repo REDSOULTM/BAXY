@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import _prepare_turn_result
+from baxy_mind.turn_decide import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import reading
 from baxy_mind.semantic.guards import _unresolved_input_kind, cut_request_tail

@@ -24,7 +24,6 @@ shape as the rows it stands for.
 
 from __future__ import annotations
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import effect_intent
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider
@@ -40,6 +39,7 @@ from baxy_mind.semantic.patterns import (
 from baxy_mind.semantic.system import physical_world_request
 from baxy_mind.semantic.temporal import spoken_clock
 from baxy_mind.semantic.web import names_own_data, near_the_person, record_fact_query
+from baxy_mind import context_decision
 
 OPERATIONS = (
     "audio.mute", "browser.navigate", "calendar.event.create", "calendar.event.list", "capture.active.window",
@@ -87,7 +87,7 @@ def _tool(operation: str) -> dict[str, object]:
 
 
 def _decided(text: str, model: _Decider) -> dict[str, object]:
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m91", "text": text, "history": [{"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog([_tool(name) for name in ("task.create", "web.search", "weather.current")]),

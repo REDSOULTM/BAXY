@@ -25,12 +25,14 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import reading
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from test_c03_m148_avisos_eso_y_cuentas import OPERATIONS, _Decider, _history, _tool
+from baxy_mind import turn_decide
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import arguments as semantic_arguments
 
 S074 = "baxy ponle bluey en disney plus a la sofi"
 W03_I = [
@@ -48,7 +50,7 @@ def _turn(said: list[str], decision: ContextDecision) -> dict:
     """``said``: the conversation, user first and alternating, ending in the person's message."""
 
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m171", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(),
@@ -90,7 +92,7 @@ def _is_limit(result: dict) -> bool:
 )
 def test_a_title_put_on_for_someone_is_that_title(text: str, service: str, title: str) -> None:
     assert _effects(text) == ("streaming.play.named",)
-    assert sidecar._ground_explicit_arguments("streaming.play.named", text, STREAMING) == {"service": service,
+    assert argument_grounding._ground_explicit_arguments("streaming.play.named", text, STREAMING) == {"service": service,
                                                                                              "title": title}
 
 
@@ -109,7 +111,7 @@ def test_h_s074_the_decider_limit_is_the_order() -> None:
     ],
 )
 def test_a_title_that_says_a_place_keeps_it(text: str, title: str) -> None:
-    assert sidecar._explicit_arguments_from_evidence("streaming.play.named", text)["title"] == title
+    assert semantic_arguments._explicit_arguments_from_evidence("streaming.play.named", text)["title"] == title
 
 
 @pytest.mark.parametrize("text", ["ponle hola", "ponle más volumen", "ponle un recordatorio a las 5"])
@@ -140,7 +142,7 @@ def test_an_order_the_restatement_also_reads_is_done(said: list[str], restated: 
 
 
 def test_the_night_light_is_switched_on() -> None:
-    assert sidecar._explicit_arguments_from_evidence("system.settings.set", W03_I[-1]) == {
+    assert semantic_arguments._explicit_arguments_from_evidence("system.settings.set", W03_I[-1]) == {
         "setting": "night_light", "value": 1}
 
 

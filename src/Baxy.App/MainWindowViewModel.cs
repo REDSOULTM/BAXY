@@ -22,17 +22,24 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
     private readonly PendingModelMessageQueue _modelMessages;
     private RetryableOperationRegistry? _retryableOperations;
+    private bool _earlierSessionMissionsRetired;
     private CoreProcessClient? _coreClient;
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
     private volatile MindStartupState _mindStartupState;
+    // Ronda 22, revisión 2: each start of the mind is one attempt; only the latest writes the shared start-up state,
+    // so an attempt a newer one superseded never settles, fails or installs over it.
+    private int _mindStartupAttempt;
     private DateTime _mindRetryAfterUtc = DateTime.MinValue;
+    private MindStartupFailure? _mindStartupFailure;
+    private int _mindStartupFailureCount;
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
     private readonly MemoryTurnSession _memoryTurns;
+    private readonly MemoryPanel _memoryKeys;
     private readonly MindPlanSession _mindPlans;
     private readonly PendingNoteInteractionState _pendingNoteInteraction = new();
     private PreparedOperation? _pendingAudioOperation;
@@ -43,6 +50,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _coreRecoveryPending;
     private Task _coreRecovery = Task.CompletedTask;
     private int _voiceCommandBusy;
+    // The voice the mind turns on by itself at startup yields to the person:
+    // once they give a voice command it never applies, and a command that
+    // arrives while it is starting waits for it first (see AwaitStartupVoiceAsync).
+    private int _personVoiceChoice;
+    private Task _startupVoice = Task.CompletedTask;
     private string _draft = string.Empty;
     private string _statusText = "Iniciando";
     private string _statusDescription = "Preparando BAXY";
@@ -55,8 +67,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
     private string _currentTurnTraceId = "t0";
+    // The turn that was current when the person last submitted input: its greeting lost its moment then.
+    private string? _inputSubmittedDuringTraceId;
+    // When the current turn left the queue: the clock of its TurnBudget.
+    private long _turnStartedTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
     private DateTimeOffset? _lastMilestoneAttemptUtc;
     private Task? _milestoneCompositionTask;
+    // Uso real t2-r4 c01-2: five model-composed «Estoy trabajando…» in one 24 s turn, each competing for the GPU with
+    // the turn's own composer. The model words the first milestone of a turn; the later ones are formulated.
+    private bool _milestoneComposedThisTurn;
 
     /// <summary>
     /// Por qué se descartó la respuesta que la mente había redactado en el
@@ -106,7 +125,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 Publish = PublishBaxy,
                 SetStatus = text => StatusDescription = text,
                 TryMarkResolved = TryMarkResolved,
+                TurnElapsed = TurnElapsed,
             });
+        _memoryKeys = new MemoryPanel(() => _coreClient, () => _memoryProtector);
         _memoryTurns = new MemoryTurnSession(
             new MemoryTurnSession.Host
             {
@@ -119,8 +140,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 RecoverNotes = RecoverPendingNoteInteraction,
                 ContinuePublic = (route, registry, token) =>
                     TryExecuteWithMindAsync(route, registry, token),
+                MemoryChanged = () => MemoryChanged?.Invoke(),
             });
     }
+
+    /// <summary>Estabilización M: the chat changed what the memory holds (the interface reads its count again).</summary>
+    internal event Action? MemoryChanged;
+
+    /// <summary>
+    /// Estabilización M: the engine and the private-memory sealing the interface's memory panel uses, the same the chat
+    /// uses: its list, edit and forget are catalog operations the kernel authorizes and the journal records.
+    /// </summary>
+    internal CoreProcessClient? CoreClient => _coreClient;
+
+    internal MemoryOperationProtector? MemoryProtector => _memoryProtector;
 
     private void PublishBaxy(string body, UserMessageEvent? messageEvent) =>
         AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent);
@@ -143,12 +176,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>
     /// Una bienvenida o aviso de voz anterior a un turno no debe publicarse
     /// encima de su respuesta. El acuse de wake también caduca al cerrar escucha.
+    /// Ronda 25 (latencia): caduca al enviar la persona su pedido, no al empezar el
+    /// turno (0,7–1,2 s después): así no ocupa el carril de la mente delante de él.
     /// </summary>
     private bool IsStalePendingMessage(PendingModelMessage pending)
     {
         bool voiceFeedback = (bool?)pending.Facts["voiceFeedback"] == true;
         bool superseded = !string.Equals(
-            pending.TraceId, _currentTurnTraceId, StringComparison.Ordinal);
+                pending.TraceId, _currentTurnTraceId, StringComparison.Ordinal)
+            || string.Equals(
+                pending.TraceId, Volatile.Read(ref _inputSubmittedDuringTraceId), StringComparison.Ordinal);
         return ((pending.Draft.Intent == "welcome" || voiceFeedback) && superseded)
             || (voiceFeedback
                 && pending.Draft.Intent == "conversation"
@@ -193,20 +230,26 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     return;
                 }
 
-                LastMessageCompositionFailure = failure;
-                LastMindRejectedReply ??= pending.LastRejectedText;
-                HasCompositionError = true;
-                CompositionFailed?.Invoke(pending, failure);
-                // Owner session 2026-09-21 16:08 «que es una verga»: the composition
-                // failed and the transcript stayed empty, twice. The person always
-                // sees a line (and the private log keeps the cause for diagnosis).
-                AddMessageCore(
-                    "BAXY",
-                    CompositionFailureFallback(pending, failure),
-                    isUser: false,
-                    PublicResponseRoute.Error);
+                PublishCompositionFailureNow(pending, failure);
                 RestorePresentationState();
             }).ConfigureAwait(false);
+    }
+
+    // On the UI thread: the failed composition's line, its event and its diagnostic, published now.
+    private void PublishCompositionFailureNow(PendingModelMessage pending, string failure)
+    {
+        LastMessageCompositionFailure = failure;
+        LastMindRejectedReply ??= pending.LastRejectedText;
+        HasCompositionError = true;
+        CompositionFailed?.Invoke(pending, failure);
+        // Owner session 2026-09-21 16:08 «que es una verga»: the composition
+        // failed and the transcript stayed empty, twice. The person always
+        // sees a line (and the private log keeps the cause for diagnosis).
+        AddMessageCore(
+            "BAXY",
+            CompositionFailureFallback(pending, failure),
+            isUser: false,
+            PublicResponseRoute.Error);
     }
 
     // Notebook closure 2026-09-22: the line stays (the transcript is never left
@@ -220,8 +263,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal static string CompositionFailureFallback(PendingModelMessage pending, string failure)
     {
         ArgumentNullException.ThrowIfNull(pending);
+        bool english = ModelMessageComposer.LooksEnglish(pending.UserText);
+        if (OperationFloor.MindStartupSentence(OperationFloor.MindStartupCause(pending.Draft.Source), english)
+            is { } startup)
+        {
+            return startup;
+        }
+
         return OperationFloor.CompositionFailureSentence(
-                pending.Draft.Intent, ModelMessageComposer.LooksEnglish(pending.UserText))
+                pending.Draft.Intent, ModelMessageComposer.LooksEnglish(pending.UserText), pending.Draft.Source)
             ?? "⚠ (" + failure + ")";
     }
 
@@ -287,12 +337,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _turnExecutionActive = true;
         LastMindReplyRejection = null;
         LastMindRejectedReply = null;
+        // The language of the turn being decided, not the last one's (the progress notice reads it).
+        LastMindResponseLanguage = null;
         HasCompositionError = false;
         LastMessageCompositionFailure = null;
         IsBusy = true;
         StatusText = "Trabajando";
         StatusDescription = "understanding";
         ClearProgressLabel();
+        _milestoneComposedThisTurn = false;
         _lastBaxyVisibleUtc = startedUtc;
     }
 
@@ -314,14 +367,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
-        // A computer-use mission shows its own status (acting, step by step):
-        // a composed label would cost the GPU 0.3-0.6 s every few seconds and
-        // evict the prompt cache the next step decision reuses.
-        if (IsComputerUseMissionRunning)
-        {
-            return false;
-        }
-
         // Un aviso de progreso rechazado no puede reintentarse en caliente: sin
         // esta marca, cada tic del temporizador lanzaba otra composición (hasta
         // seis llamadas al modelo) y un turno lento acababa consumiendo miles.
@@ -335,7 +380,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             total = plan.Steps.Count;
         }
 
-        if (UserMessagePolicy.BypassLlmCompositionForTests)
+        // A computer-use mission shows its own status (acting, step by step),
+        // and a label composed by the model would cost the GPU 0.3-0.6 s every
+        // few seconds and evict the prompt cache the next step decision reuses.
+        // lat-apertura-clic (owner's rule: more than 3 s without a signal is
+        // not acceptable; r13a: «acting» pulsed through waits of 10-40 s with no
+        // text): its waits still get the formulated label, never composed, which
+        // says it goes on and claims no result.
+        if (UserMessagePolicy.BypassLlmCompositionForTests || _milestoneComposedThisTurn || IsComputerUseMissionRunning)
         {
             _lastMilestoneAttemptUtc = nowUtc;
             ApplyInProgressSignal(
@@ -343,7 +395,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     userText,
                     FirstSignal.KindMilestone,
                     step,
-                    total),
+                    total,
+                    // Estabilidad cu-v3 2026-10-08: the notice speaks the language this turn was decided in.
+                    LastMindResponseLanguage),
                 nowUtc);
             return true;
         }
@@ -356,6 +410,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         _lastMilestoneAttemptUtc = nowUtc;
+        _milestoneComposedThisTurn = true;
         _milestoneCompositionTask = ComposeMilestoneAsync(
             mind, userText, _currentTurnTraceId, StatusDescription, step, total);
         return true;
@@ -472,6 +527,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public bool IsMindReady => _mindClient is { IsReady: true };
 
+    /// <summary>
+    /// Ronda 22 (r18, the four tandas: «listo» 9-15 s before <c>startup.mind.ready</c>): the shell opened while the
+    /// mind it started is still reading its model. The field says it is preparing, never ready, until the mind is
+    /// ready or its start ended without it; a turn sent meanwhile still queues behind it as before.
+    /// </summary>
+    public bool IsMindPreparing => _startupMindPending;
+
+    private bool _startupMindPending;
+
     public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
 
     internal string? LastMessageCompositionFailure { get; private set; }
@@ -520,6 +584,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _coreDisconnectedHandler = disconnectedHandler;
         client.Disconnected += disconnectedHandler;
         _coreClient = client;
+        TaskCompletionSource<MindStartupCatalog>? startupCatalog = null;
+        using var startupMindAbandoned = new CancellationTokenSource();
 
         try
         {
@@ -528,28 +594,43 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ??= RetryableOperationRegistry.CreateDefault(_memoryProtector);
             _mindPlans.EnsureStore();
             _mindPlans.TryRestore(registry);
-            Task<MindRuntimeDiscoveryResult>? mindDiscovery = null;
+            if (!_earlierSessionMissionsRetired)
+            {
+                // A computer-use mission and its acts were decided on the screen of the
+                // session that prepared them; no later session retries them. A recovered
+                // core keeps this session's entries. Set once the save held, so a start
+                // that failed to save sweeps again when it is retried.
+                registry.RetireWhere(static operation => ComputerUseMission.Prepares(operation.OperationName));
+                _earlierSessionMissionsRetired = true;
+            }
             if (_testTurnResolver is null)
             {
-                _mindStartupState = MindStartupState.Starting;
-                mindDiscovery = StartMindRuntimeDiscovery();
+                // Ronda 22 (r18: the mind verified and started only after the core's hello, «listo» 9-15 s before
+                // startup.mind.ready): the mind's process and model start beside the core's hello; only its
+                // catalog.configure waits for the core's authenticated catalog. A mind already ready (a recovered
+                // core) is not prepared again.
+                startupCatalog = new TaskCompletionSource<MindStartupCatalog>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                _ = BeginStartupMind(startupCatalog.Task, startupMindAbandoned.Token, cancellationToken);
             }
-            await client.StartAsync(TimeSpan.FromSeconds(10), cancellationToken);
+            await client.StartAsync(CoreStartupBudget.HelloTimeout, cancellationToken);
             if (!client.IsReady || Volatile.Read(ref _coreDisconnectObserved) != 0)
             {
                 throw new IOException("El motor local se desconectó durante el arranque.");
             }
+            ShellTraceSink.Record(
+                ShellTraceScopes.Startup,
+                "boot",
+                ShellTraceStages.StartupCoreReady);
 
             // The mind only needs the authenticated capability catalog, which
-            // is available as soon as the core handshake completes. Start its
-            // model warmup while the private-memory session is initialized so
+            // is available as soon as the core handshake completes; it is
+            // configured while the private-memory session is initialized so
             // the first user turn does not pay both costs serially.
-            if (mindDiscovery is not null)
-            {
-                _mindInitializationTask = InitializeMindAsync(
-                    mindDiscovery,
-                    cancellationToken);
-            }
+            startupCatalog?.TrySetResult(new MindStartupCatalog(
+                client.Capabilities,
+                client.ApplicationCatalog,
+                client.GameCatalog));
             await InitializeMemorySessionAsync(client, _memoryProtector, cancellationToken);
             if (!client.IsReady || Volatile.Read(ref _coreDisconnectObserved) != 0)
             {
@@ -574,8 +655,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 throw new IOException("El motor local se desconectó al finalizar el arranque.");
             }
 
-            StatusText = "Lista";
-            StatusDescription = "BAXY disponible";
+            if (_startupMindPending)
+            {
+                StatusText = "Iniciando";
+                StatusDescription = "Preparando BAXY";
+                OnPropertyChanged(nameof(IsMindPreparing));
+            }
+            else
+            {
+                // A mind whose start already failed says why in the status line (arranque honesto).
+                StatusText = "Lista";
+                StatusDescription = MindStartupStatus() ?? "BAXY disponible";
+            }
             if (!recovering)
             {
                 // A recovered core continues the conversation: the disconnect
@@ -612,6 +703,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         finally
         {
+            // A core that never said hello hands the mind no catalog: its start ends without it, and the mind it
+            // started closes now instead of loading beside the next start-up's (ronda 22, revisión 2).
+            if (startupCatalog?.TrySetCanceled(CancellationToken.None) == true)
+            {
+                await startupMindAbandoned.CancelAsync();
+            }
             _isInitializing = false;
         }
     }
@@ -953,8 +1050,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private Task DispatchMissionInputAsync(
         MissionInput input,
         Action? onAccepted,
-        CancellationToken cancellationToken) =>
-        MissionInputPipeline.DispatchAsync(
+        CancellationToken cancellationToken)
+    {
+        Volatile.Write(ref _inputSubmittedDuringTraceId, _currentTurnTraceId);
+        return MissionInputPipeline.DispatchAsync(
             input,
             async (route, token) =>
             {
@@ -962,6 +1061,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 await ExecuteMissionInputAsync(route, token);
             },
             cancellationToken);
+    }
 
     private async Task ExecuteMissionInputAsync(
         MissionInputRoute route,
@@ -993,6 +1093,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string turnTraceId = "t" + Interlocked.Increment(ref _turnTraceSequence)
             .ToString(CultureInfo.InvariantCulture);
         _currentTurnTraceId = turnTraceId;
+        Interlocked.Exchange(ref _turnStartedTimestamp, System.Diagnostics.Stopwatch.GetTimestamp());
         ShellTraceSink.TurnId = turnTraceId;
         ShellTraceSink.Record(
             ShellTraceScopes.Turn,
@@ -1664,6 +1765,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         try
         {
+            bool wantsWake = !IsWakeListening;
+            await AwaitStartupVoiceAsync();
+            if (IsWakeListening == wantsWake)
+            {
+                // The startup voice already left it as the person wanted.
+                if (wantsWake)
+                {
+                    StatusDescription = "Esperando «Baxy»";
+                }
+
+                return;
+            }
+
             await ToggleWakeVoiceCoreAsync(cancellationToken);
         }
         finally
@@ -1752,6 +1866,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         try
         {
+            await AwaitStartupVoiceAsync();
             return await SetWakeVoiceCoreAsync(enabled, cancellationToken);
         }
         finally
@@ -1817,6 +1932,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal async Task<bool> StartDirectVoiceAsync(CancellationToken cancellationToken)
     {
+        await AwaitStartupVoiceAsync();
         MindSidecarClient? mind = _mindClient;
         if (mind is null || !mind.IsReady)
         {
@@ -1861,6 +1977,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         Messages.Clear();
+        // An input rejected before any turn (an unusable transcript, a text too long) marked the current turn's
+        // greeting stale; the new conversation's greeting carries that same turn id and is its moment.
+        Volatile.Write(ref _inputSubmittedDuringTraceId, null);
         AddMessage(
             "BAXY",
             TurnVisibleFacts.Welcome(),
@@ -2006,16 +2125,128 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return InitializeMindAsync(StartMindRuntimeDiscovery(), cancellationToken);
     }
 
-    internal async Task InitializeMindAsync(
+    internal Task InitializeMindAsync(
         Task<MindRuntimeDiscoveryResult> discoveryTask,
+        CancellationToken cancellationToken) =>
+        InitializeMindAsync(discoveryTask, catalog: null, cancellationToken);
+
+    /// <param name="catalog">The core's catalog when it comes later (the start-up starts the mind beside the core's
+    /// hello); null takes the connected core's catalog now.</param>
+    internal Task InitializeMindAsync(
+        Task<MindRuntimeDiscoveryResult> discoveryTask,
+        Task<MindStartupCatalog>? catalog,
+        CancellationToken cancellationToken) =>
+        InitializeMindAsync(discoveryTask, catalog, startupAbandoned: CancellationToken.None, cancellationToken);
+
+    /// <summary>
+    /// Ronda 22: the start-up starts the mind beside the core's hello. The field says «preparing» until this attempt
+    /// settles; <paramref name="startupAbandoned"/> fires when the start-up ended without handing the catalog, and
+    /// the mind this attempt started closes then instead of loading beside the next start-up's.
+    /// </summary>
+    internal Task BeginStartupMind(
+        Task<MindStartupCatalog> catalog,
+        CancellationToken startupAbandoned,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(catalog);
+        // r29: the shell's readers pay their first use while the mind loads, not in the person's first request.
+        _ = MissionInputPipeline.WarmReadersAsync();
+        _ = ComputerUseMission.WarmAsync();
+        _mindStartupState = MindStartupState.Starting;
+        _startupMindPending = _mindClient is not { IsReady: true };
+        Task initialization = InitializeMindAsync(
+            StartMindRuntimeDiscovery(),
+            catalog,
+            startupAbandoned,
+            cancellationToken);
+        _mindInitializationTask = initialization;
+        return initialization;
+    }
+
+    private async Task InitializeMindAsync(
+        Task<MindRuntimeDiscoveryResult> discoveryTask,
+        Task<MindStartupCatalog>? catalog,
+        CancellationToken startupAbandoned,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(discoveryTask);
+        // Taken before the first await: a start that begins after this one supersedes it at once.
+        int attempt = Interlocked.Increment(ref _mindStartupAttempt);
+        try
+        {
+            await InitializeMindCoreAsync(discoveryTask, catalog, attempt, startupAbandoned, cancellationToken);
+        }
+        catch (OperationCanceledException) when (startupAbandoned.IsCancellationRequested
+            && !cancellationToken.IsCancellationRequested)
+        {
+            // The start-up that started this mind ended without it: nothing waits on a cancelled start.
+        }
+        finally
+        {
+            // Ready, failed, not configured or cancelled: this attempt's wait for the mind is over.
+            SettleStartupMind(attempt);
+        }
+    }
+
+    private bool IsCurrentMindAttempt(int attempt) => Volatile.Read(ref _mindStartupAttempt) == attempt;
+
+    /// <summary>Only the latest attempt writes the shared start-up state; a superseded one ends silently.</summary>
+    private void SetMindStartupState(int attempt, MindStartupState state, bool retryLater = false)
+    {
+        if (!IsCurrentMindAttempt(attempt))
+        {
+            return;
+        }
+
+        _mindStartupState = state;
+        if (state == MindStartupState.Ready)
+        {
+            // A mind that came up leaves no earlier failure to say nor any growing wait behind it.
+            _mindStartupFailure = null;
+            _mindStartupFailureCount = 0;
+        }
+
+        if (retryLater)
+        {
+            _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
+        }
+    }
+
+    /// <summary>
+    /// Ronda 22: the start-up's wait for the mind ended. The field leaves «preparing»: ready when the shell already
+    /// opened (the mind ready says «Todo listo» itself; a mind that did not come leaves BAXY available without it).
+    /// An attempt a newer start superseded leaves the field to the newer one (revisión 2). A start that failed says
+    /// its measured cause there (arranque honesto).
+    /// </summary>
+    private void SettleStartupMind(int attempt)
+    {
+        if (!_startupMindPending || !IsCurrentMindAttempt(attempt))
+        {
+            return;
+        }
+
+        _startupMindPending = false;
+        if (IsReady && StatusDescription == "Preparando BAXY")
+        {
+            StatusText = "Lista";
+            StatusDescription = MindStartupStatus() ?? "BAXY disponible";
+        }
+        OnPropertyChanged(nameof(IsMindPreparing));
+    }
+
+    private async Task InitializeMindCoreAsync(
+        Task<MindRuntimeDiscoveryResult> discoveryTask,
+        Task<MindStartupCatalog>? catalog,
+        int attempt,
+        CancellationToken startupAbandoned,
+        CancellationToken cancellationToken)
+    {
         using var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
+            startupAbandoned,
             _mindLifetimeCancellation.Token);
         cancellationToken = linkedCancellation.Token;
-        _mindStartupState = MindStartupState.Starting;
+        SetMindStartupState(attempt, MindStartupState.Starting);
         MindRuntimeDiscoveryResult discovery;
         try
         {
@@ -2023,21 +2254,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            _mindStartupState = MindStartupState.Failed;
-            _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
+            SetMindStartupState(attempt, MindStartupState.Failed, retryLater: true);
             throw;
         }
         cancellationToken.ThrowIfCancellationRequested();
         if (!MindRuntimeDiscovery.ApplyVerified(discovery)
             || !MindSidecarClient.IsConfigured)
         {
-            _mindStartupState = MindStartupState.NotConfigured;
+            SetMindStartupState(attempt, MindStartupState.NotConfigured);
             return;
         }
+        ShellTraceSink.Record(
+            ShellTraceScopes.Startup,
+            "boot",
+            ShellTraceStages.StartupMindVerified);
 
         if (_mindClient is { IsReady: true })
         {
-            _mindStartupState = MindStartupState.Ready;
+            SetMindStartupState(attempt, MindStartupState.Ready);
+            return;
+        }
+
+        if (!IsCurrentMindAttempt(attempt))
+        {
+            // A newer start took over before this one started its mind: it starts nothing beside it.
             return;
         }
 
@@ -2050,65 +2290,270 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindClient = null;
         }
 
-        _mindStartupState = MindStartupState.Starting;
+        SetMindStartupState(attempt, MindStartupState.Starting);
         MindSidecarClient mind = _mindClientFactory();
         try
         {
             bool started = await mind.TryStartAsync(
-                _coreClient?.Capabilities ?? Array.Empty<OperationDescriptor>(),
-                _coreClient?.ApplicationCatalog,
-                _coreClient?.GameCatalog,
+                catalog ?? Task.FromResult(new MindStartupCatalog(
+                    _coreClient?.Capabilities ?? Array.Empty<OperationDescriptor>(),
+                    _coreClient?.ApplicationCatalog,
+                    _coreClient?.GameCatalog)),
                 TimeSpan.FromSeconds(120),
                 cancellationToken);
-            if (started)
+            if (started && !IsCurrentMindAttempt(attempt))
+            {
+                // A newer start owns the field and its own mind: this one is closed, never installed over it.
+                await mind.DisposeAsync();
+            }
+            else if (started)
             {
                 mind.TranscriptReceived += OnMindTranscript;
                 mind.VoiceEventReceived += OnMindVoiceEvent;
                 mind.TurnSignalReceived += OnMindTurnSignal;
+                Volatile.Write(ref _personVoiceChoice, 0);
                 _mindClient = mind;
                 MindVoiceStatus? voice = await mind.VoiceStatusAsync(
                     TimeSpan.FromSeconds(10),
                     cancellationToken);
                 IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
-                _mindStartupState = MindStartupState.Ready;
+                SetMindStartupState(attempt, MindStartupState.Ready);
+                ShellTraceSink.Record(
+                    ShellTraceScopes.Startup,
+                    "boot",
+                    ShellTraceStages.StartupMindReady);
                 OnPropertyChanged(nameof(IsMindReady));
-                if (!IsBusy)
+                SettleStartupMind(attempt);
+                if (!IsBusy && PendingStatusDescription() is null)
                 {
                     StatusDescription = "Todo listo";
                 }
-                if ((IsMicAvailable || voice?.SttAvailable == true) && WakeOnStartRequested())
+                if (voice?.Pending == true)
                 {
-                    bool wakeStarted = await mind.VoiceStartAsync(
-                        "wake",
-                        TimeSpan.FromSeconds(60),
-                        cancellationToken);
-                    IsWakeListening = wakeStarted;
-                    if (wakeStarted)
-                    {
-                        IsMicAvailable = true;
-                        StatusDescription = "Esperando «Baxy»";
-                    }
+                    // The voice runtime is still importing: the mind serves
+                    // turns now and the voice state settles beside them. It
+                    // outlives this method, so it follows the mind's lifetime,
+                    // not this method's linked token (disposed on return).
+                    _ = SettleStartupVoiceAsync(mind, _mindLifetimeCancellation.Token);
+                }
+                else
+                {
+                    Task startupVoice = ApplyStartupVoiceAsync(mind, voice, cancellationToken);
+                    _startupVoice = startupVoice;
+                    await startupVoice;
                 }
             }
             else
             {
+                MindStartupFailure? failure = mind.LastStartupFailure;
                 await mind.DisposeAsync();
-                _mindStartupState = MindStartupState.Failed;
-                _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
+                RecordMindStartupFailure(attempt, failure);
+            }
+        }
+        catch (Exception) when (cancellationToken.IsCancellationRequested)
+        {
+            await mind.DisposeAsync();
+            SetMindStartupState(attempt, MindStartupState.Failed, retryLater: true);
+        }
+        catch (Exception)
+        {
+            MindStartupFailure? failure = mind.LastStartupFailure;
+            await mind.DisposeAsync();
+            RecordMindStartupFailure(attempt, failure);
+        }
+    }
+
+    /// <summary>
+    /// r22 (2026-10-09): a model that could not come up (another llama-server held the VRAM) used to
+    /// leave «iniciando» on screen while the App retried every minute and turns ended in silence. The
+    /// failure is traced with its cause, said in the status line (data prose), and retried on its own
+    /// with a growing wait. Only the latest attempt records (ronda 22): a superseded one ends silently. While the
+    /// start-up still says «Preparando BAXY», the field is left to <see cref="SettleStartupMind"/>, which says the
+    /// cause when the wait ends.
+    /// </summary>
+    private void RecordMindStartupFailure(int attempt, MindStartupFailure? failure)
+    {
+        if (!IsCurrentMindAttempt(attempt))
+        {
+            return;
+        }
+
+        _mindStartupFailure = failure;
+        _mindStartupFailureCount++;
+        _mindStartupState = MindStartupState.Failed;
+        TimeSpan delay = MindRetryDelay(_mindStartupFailureCount);
+        _mindRetryAfterUtc = DateTime.UtcNow + delay;
+        ShellTraceSink.Record(
+            ShellTraceScopes.Startup,
+            "boot",
+            ShellTraceStages.StartupMindFailed,
+            failure?.TraceLabel ?? "desconocida");
+        if (!IsBusy && !_startupMindPending && MindStartupStatus() is { } status)
+        {
+            StatusDescription = status;
+        }
+
+        _ = RetryMindAfterAsync(delay);
+    }
+
+    /// <summary>10 s, 20 s, 40 s, then 60 s between attempts while the model cannot start.</summary>
+    internal static TimeSpan MindRetryDelay(int failures) =>
+        TimeSpan.FromSeconds(Math.Min(60, 10 * Math.Pow(2, Math.Clamp(failures, 1, 16) - 1)));
+
+    /// <summary>The status line for a model that is not up, from data; null when no cause is known.</summary>
+    private string? MindStartupStatus() =>
+        _mindStartupState == MindStartupState.Failed
+            ? OperationFloor.MindStartupSentence(_mindStartupFailure?.Cause, english: false)
+            : null;
+
+    /// <summary>The cause a turn sent while the mind is not ready carries in its facts.</summary>
+    internal string? MindUnavailableCause() =>
+        _mindStartupState == MindStartupState.Starting ? "iniciando" : _mindStartupFailure?.Cause;
+
+    private async Task RetryMindAfterAsync(TimeSpan delay)
+    {
+        try
+        {
+            await Task.Delay(delay, _mindLifetimeCancellation.Token);
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
+        {
+            return;
+        }
+
+        if (_isDisposed
+            || _mindStartupState != MindStartupState.Failed
+            || DateTime.UtcNow < _mindRetryAfterUtc
+            || _mindInitializationTask is { IsCompleted: false })
+        {
+            return;
+        }
+
+        try
+        {
+            Task initialization = InitializeMindAsync(_mindLifetimeCancellation.Token);
+            _mindInitializationTask = initialization;
+            await initialization;
+        }
+        catch (Exception)
+        {
+            // The next attempt is already scheduled by the failure it recorded.
+        }
+    }
+
+    private async Task ApplyStartupVoiceAsync(
+        MindSidecarClient mind,
+        MindVoiceStatus? voice,
+        CancellationToken cancellationToken)
+    {
+        IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
+        if (!StartupWakeApplies(
+                voice,
+                WakeOnStartRequested(),
+                Volatile.Read(ref _personVoiceChoice) != 0,
+                IsListening || IsWakeListening))
+        {
+            return;
+        }
+
+        bool wakeStarted = await mind.VoiceStartAsync(
+            "wake",
+            TimeSpan.FromSeconds(60),
+            cancellationToken);
+        IsWakeListening = wakeStarted;
+        if (wakeStarted)
+        {
+            IsMicAvailable = true;
+            // A turn in flight keeps its own status line, and a voice command
+            // that arrived meanwhile (it waited for this start) sets its own.
+            if (!IsBusy && Volatile.Read(ref _personVoiceChoice) == 0)
+            {
+                StatusDescription = "Esperando «Baxy»";
+            }
+        }
+    }
+
+    /// <summary>
+    /// Whether the mind turns the wake word on by itself at startup: the voice
+    /// state is known (not <c>pending</c>), there is a microphone or a
+    /// recognizer, the product asks for it, and the person has not chosen
+    /// their voice yet (a command given, or dictation or wake already on).
+    /// </summary>
+    internal static bool StartupWakeApplies(
+        MindVoiceStatus? voice,
+        bool wakeOnStartRequested,
+        bool personChoseVoice,
+        bool voiceRunning) =>
+        voice is { Pending: false }
+        && (voice.Available || voice.InputAvailable || voice.SttAvailable)
+        && wakeOnStartRequested
+        && !personChoseVoice
+        && !voiceRunning;
+
+    /// <summary>
+    /// A voice command from the person: from now on the startup voice yields,
+    /// and a startup wake already starting finishes first so the command acts
+    /// on the real state (2026-10-08: «deja de escuchar» during the startup
+    /// read found nothing to stop and the wake came on after it).
+    /// </summary>
+    private async Task AwaitStartupVoiceAsync()
+    {
+        Volatile.Write(ref _personVoiceChoice, 1);
+        try
+        {
+            await _startupVoice;
+        }
+        catch (Exception)
+        {
+            // The startup voice failing leaves the person's command to act.
+        }
+    }
+
+    private async Task SettleStartupVoiceAsync(
+        MindSidecarClient mind,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            MindVoiceStatus? voice = await VoiceStatusSettling.UntilSettledAsync(
+                token => ReferenceEquals(_mindClient, mind) && mind.IsReady
+                    ? mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), token)
+                    : throw new OperationCanceledException("mind_replaced"),
+                static (delay, token) => Task.Delay(delay, token),
+                cancellationToken);
+            if (voice is not null && !voice.Pending && ReferenceEquals(_mindClient, mind))
+            {
+                Task startupVoice = ApplyStartupVoiceAsync(mind, voice, cancellationToken);
+                _startupVoice = startupVoice;
+                await startupVoice;
             }
         }
         catch (Exception)
         {
-            await mind.DisposeAsync();
-            _mindStartupState = MindStartupState.Failed;
-            _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
+            // Voice availability is optional state. Until it settles the
+            // microphone reads as unavailable (the state is not known yet);
+            // a failed read never touches the turn.
         }
     }
+
+    private TimeSpan TurnElapsed() =>
+        TurnBudget.Elapsed(_turnExecutionActive, Interlocked.Read(ref _turnStartedTimestamp));
 
     private static Task<MindRuntimeDiscoveryResult> StartMindRuntimeDiscovery() =>
         Task.Run(static () => MindRuntimeDiscovery.DiscoverVerified());
 
+    private Task<MindSidecarClient?> WaitForMindReadyAsync(CancellationToken cancellationToken) =>
+        WaitForMindReadyAsync(personTurn: false, cancellationToken);
+
+    /// <summary>
+    /// Whether a failed mind is started again now: its wait ran out, or the person just sent a turn
+    /// (review r22: the person asking is the moment to try, not the next scheduled attempt).
+    /// </summary>
+    internal static bool MindRetryDue(bool failed, DateTime nowUtc, DateTime retryAfterUtc, bool personTurn) =>
+        failed && (personTurn || nowUtc >= retryAfterUtc);
+
     private async Task<MindSidecarClient?> WaitForMindReadyAsync(
+        bool personTurn,
         CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _mindClient;
@@ -2130,8 +2575,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         Task? initialization = _mindInitializationTask;
-        if (_mindStartupState == MindStartupState.Failed
-            && DateTime.UtcNow >= _mindRetryAfterUtc
+        if (MindRetryDue(
+                _mindStartupState == MindStartupState.Failed,
+                DateTime.UtcNow,
+                _mindRetryAfterUtc,
+                personTurn)
             && !_isDisposed)
         {
             initialization = InitializeMindAsync(cancellationToken);
@@ -2236,7 +2684,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
-        MindSidecarClient? mind = await WaitForMindReadyAsync(cancellationToken);
+        MindSidecarClient? mind = await WaitForMindReadyAsync(personTurn: true, cancellationToken);
         if (mind is null)
         {
             if (_mindStartupState == MindStartupState.Starting
@@ -2260,9 +2708,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (mind is null && MindSidecarClient.IsConfigured)
             {
+                // r22: the request was never read, so it is told at once (never queued for a mind that is
+                // down), with why the mind is not up when it is known.
+                string? startupCause = MindUnavailableCause();
                 AddMessage(
                     "BAXY",
-                    TurnVisibleFacts.Failure("compose_unavailable"),
+                    TurnVisibleFacts.Failure(
+                        "mind_unavailable",
+                        startupCause is null ? null : new JsonObject { ["startup"] = startupCause }),
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.LocalService));
@@ -2427,19 +2880,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     : null;
                 AddMessage(
                     "BAXY",
+                    // Review r2 finding 2: this question is the App's own reading of an action with no object; asking
+                    // is its whole point, so it never carries understoodAs (whose floor asks nothing).
                     TurnVisibleFacts.Clarification("ambiguous_request"),
                     isUser: false,
                     messageEvent: UserMessageEvent.Clarification);
                 return true;
             }
 
+            JsonObject failureFacts = UnderstoodAs(turn) ?? new JsonObject();
+            failureFacts["operationAttempted"] = false;
+            failureFacts["retryable"] = true;
             AddMessage(
                 "BAXY",
-                TurnVisibleFacts.Failure(failureCode, new JsonObject
-                {
-                    ["operationAttempted"] = false,
-                    ["retryable"] = true,
-                }),
+                TurnVisibleFacts.Failure(failureCode, failureFacts),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
             return true;
@@ -2542,9 +2996,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 expectedOperations: turn.EffectOperations);
             if (plan is null || plan.Kind == "failed")
             {
+                // Ronda 20 P5 (v3-27): a failed plan carries its cause (MindSidecarClient.PlanFailureCause): an
+                // internal fault is never said as a limit of this PC.
                 AddMessage(
                     "BAXY",
-                    TurnVisibleFacts.Failure("plan_incomplete"),
+                    plan is { Kind: "failed", Question: { Length: > 0 } facts }
+                        ? facts
+                        : TurnVisibleFacts.Failure("plan_incomplete"),
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -2572,7 +3030,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                             UserMessageDiagnosticCodes.ActionNotCompleted));
                     return true;
                 }
-                var execution = new PendingMindPlanExecution(route.Text, plan.Steps);
+                var execution = new PendingMindPlanExecution(route.Text, plan.Steps)
+                {
+                    PresentStateCondition = plan.PresentStateCondition,
+                };
                 _mindPlans.Begin(execution);
                 await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
                 return true;
@@ -2608,14 +3069,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         JsonObject? knownArguments = null,
         string? responseLanguage = null)
     {
-        if (operationName.StartsWith("memory.", StringComparison.Ordinal))
+        // Estabilización M (live identity check §3c-§3d): every memory operation the mind chose was refused here, so
+        // «Recordá que mi color favorito…» and «Corrige ese recuerdo…» ran nothing. The mind chooses memory only on the
+        // person's explicit request (semantic/memory.py); what the App's own reader found implicit (a personal fact said
+        // without asking to keep it, a «no lo guardes») is still refused, and the rest runs on the private route below.
+        bool memory = operationName.StartsWith("memory.", StringComparison.Ordinal);
+        if (memory && !MindMemoryAllowed(operationName, route.Memory))
         {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Clarification("memory_needs_explicit_request"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Clarification);
-            return true;
+            return AddMemoryNeedsExplicitRequest();
         }
 
         if (!ProductCatalog.TryGet(
@@ -2667,6 +3128,58 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             groundedArguments = new JsonObject();
         }
 
+        if (memory)
+        {
+            // The same sealed route as the App parser's: the kernel authorizes it, the journal records it, a
+            // destructive one is confirmed, and its final is the verified result (or the failure, said as such).
+            if (operationName == "memory.forget"
+                && await ResolveForgottenKeyAsync(route.Text, groundedArguments, cancellationToken))
+            {
+                return true;
+            }
+
+            MemoryRoutedOperation routed;
+            try
+            {
+                routed = MemoryParseResult.Route(new MemoryRoutedOperation(operationName, groundedArguments))
+                    .Operation!;
+            }
+            catch (ArgumentException)
+            {
+                return AddMemoryNeedsExplicitRequest();
+            }
+
+            if (groundedArguments["sensitivity"] is JsonValue sensitivity
+                && sensitivity.TryGetValue(out string? level)
+                && level is not ("normal" or "personal"))
+            {
+                return AddMemoryNeedsExplicitRequest();
+            }
+
+            // Revisión M H2: the value of a save or a correction passes the App reader's own filters (one source:
+            // credentials, a grant of permissions, a second order, a file path), whoever read it.
+            if (operationName is "memory.save" or "memory.correct")
+            {
+                string value = groundedArguments["value"] is JsonValue scalar && scalar.TryGetValue(out string? text)
+                    ? text
+                    : groundedArguments["value"]?.ToJsonString() ?? string.Empty;
+                switch (NaturalMemoryRequestParser.JudgeValueToKeep(route.Text, value))
+                {
+                    case MemoryValueJudgement.GrantsAuthority:
+                        AddMessage(
+                            "BAXY", TurnVisibleFacts.Status("no_permission_escalation"), isUser: false);
+                        return true;
+                    case MemoryValueJudgement.NotKeepable:
+                        return AddMemoryNeedsExplicitRequest();
+                }
+            }
+
+            await _memoryTurns.ExecuteRouteAsync(
+                routed, registry, durableBeforeSend: true, cancellationToken,
+                route.PublicObjective, route.Source, route.Text);
+            return true;
+        }
+
         var step = new MindPlanStep(
             "step_1",
             operationName,
@@ -2677,6 +3190,69 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         var execution = new PendingMindPlanExecution(route.Text, [step]);
         _mindPlans.Begin(execution);
         await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
+        return true;
+    }
+
+    // Estabilización M3 (live 2026-10-12: «Olvidá mi color favorito de prueba» was asked «¿Qué alcance deseas eliminar
+    // de tus memorias locales: todo, exacto, tipo o tema?»): the datum a forget names in the person's words is resolved
+    // against the keys the memory holds before anything is confirmed (MemoryPanel.Candidates). One key: the forget acts
+    // on it. Several: which one is asked, with the candidates by their names, and the answer completes this request.
+    // None: it was not kept, and nothing is asked. Both said by the floor (data memoryKeys). True when the turn ended.
+    private async Task<bool> ResolveForgottenKeyAsync(
+        string request,
+        JsonObject arguments,
+        CancellationToken cancellationToken)
+    {
+        if (arguments["scope"] is not JsonValue scope
+            || !scope.TryGetValue(out string? scopeText)
+            || scopeText != "exact"
+            || arguments["selector"] is not JsonValue selector
+            || !selector.TryGetValue(out string? asked)
+            || string.IsNullOrWhiteSpace(asked)
+            || await _memoryKeys.KeysAsync(cancellationToken) is not { } stored)
+        {
+            return false;
+        }
+
+        IReadOnlyList<string> candidates = MemoryPanel.Candidates(asked, stored);
+        if (candidates.Count == 1)
+        {
+            arguments["selector"] = candidates[0];
+            return false;
+        }
+
+        bool english = ModelMessageComposer.LooksEnglish(request);
+        IReadOnlyList<string> named = candidates.Count == 0
+            ? [MemoryPanel.Label(asked, english)]
+            : candidates.Select(key => MemoryPanel.Label(key, english)).ToArray();
+        _pendingMindClarificationObjective = candidates.Count == 0 ? null : request;
+        AddMessage(
+            "BAXY",
+            OperationFloor.MemoryKeysSentence(named, english),
+            isUser: false,
+            formulatedByMind: true,
+            route: candidates.Count == 0 ? PublicResponseRoute.Result : PublicResponseRoute.Clarification);
+        return true;
+    }
+
+    // The memory operations the App's private route prepares (MemoryOperationProtector), never one the App's own
+    // reader found implicit: a write when the message only stated a datum or asked not to keep it, a forget when it
+    // named nothing to forget.
+    internal static bool MindMemoryAllowed(string operationName, MemoryParseResult reading) => operationName switch
+    {
+        "memory.save" or "memory.correct" => !reading.MustNotPersist,
+        "memory.forget" => !reading.MustNotDelete,
+        "memory.recall" or "memory.list" or "memory.status" or "memory.export" => !reading.MustNotInvent,
+        _ => false,
+    };
+
+    private bool AddMemoryNeedsExplicitRequest()
+    {
+        AddMessage(
+            "BAXY",
+            TurnVisibleFacts.Clarification("memory_needs_explicit_request"),
+            isUser: false,
+            messageEvent: UserMessageEvent.Clarification);
         return true;
     }
 
@@ -2715,21 +3291,46 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return true;
     }
 
+    // The contract's own value (planner.fixed_arguments on the mind's side): a constant, an integer with one value, a
+    // set of one.
+    internal static bool FixedByContract(OperationArgumentProperty property) =>
+        property.ConstantBoolean is not null
+        || property.AllowedValues.Count == 1
+        || property.Minimum is not null && property.Minimum == property.Maximum;
+
     private bool AddMissingArgumentsClarification(string request, ProductOperationDescriptor descriptor)
     {
         IReadOnlyList<string> fields = descriptor.ArgumentsSchema.Required.Count > 0
             ? descriptor.ArgumentsSchema.Required
             : descriptor.ArgumentsSchema.Properties.Select(static property => property.Name).ToArray();
+        // Estabilización M3 (live 2026-10-12: «¿Qué alcance deseas eliminar…?»; M2: «¿Qué confirmación, alcance y
+        // versión…?»): what the contract fixes (a constant, a payload version, a one-value set) is never named to the
+        // person; the mind leaves out what is internal to the operation (data clarification_fields.v1.json).
+        string[] askable = fields
+            .Where(name => descriptor.ArgumentsSchema.Properties.FirstOrDefault(property => property.Name == name)
+                is not { } property || !FixedByContract(property))
+            .ToArray();
         _pendingMindClarificationObjective = request;
         AddMessage(
             "BAXY",
             TurnVisibleFacts.Clarification(
                 "ambiguous_request",
-                new JsonObject { ["missingValue"] = string.Join(", ", fields) }),
+                new JsonObject
+                {
+                    ["missingValue"] = string.Join(", ", askable),
+                    ["operation"] = descriptor.Name,
+                }),
             isUser: false,
             messageEvent: UserMessageEvent.Clarification);
         return true;
     }
+
+    // Estabilidad cu-v3 2026-10-08 (v2-v3-61, «¿Qué quieres que haga con "en seguridad de windows decime cuándo…"?»):
+    // a recovered turn the mind understood as talk, whose wording failed, carries that kind to the composer, whose
+    // floor then says the short cause instead of asking the person's own words back (llm._not_understood_floor).
+    // Review r2 finding 3: read from the mind's own understoodAs, which travels whatever kinds the attempts decided.
+    private static JsonObject? UnderstoodAs(MindTurnDecision turn) =>
+        turn.UnderstoodAs is { Length: > 0 } kind ? new JsonObject { ["understoodAs"] = kind } : null;
 
     private bool AddMindConversationFallback(string? conversationKind = null)
     {
@@ -2849,7 +3450,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         var projection = OperationResponseProjection.Create(response, routed.Name);
         AddMessage(
             "BAXY",
-            projection.Message,
+            MindPlanBoundary.WithVerifiedContent(
+                projection.Message, JsonNode.Parse(prepared.Arguments.GetRawText()) as JsonObject),
             isUser: false,
             // M69 (guion v3h t47): the asked state that already held is the result, not an error.
             messageEvent: string.Equals(
@@ -3261,7 +3863,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                             facts,
                             mind.ComposeUserMessageAsync,
                             MindSidecarClient.IsCpuFallbackProfile,
-                            allowRecovery: true,
+                            // A spent turn takes no second composition: the deterministic final says it now.
+                            allowRecovery: !TurnBudget.IsSpent(TurnElapsed()),
                             CancellationToken.None)
                         .GetAwaiter()
                         .GetResult();
@@ -3298,7 +3901,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         PublicResponseRoute.FromDraft(draft));
                 }
                 else if (ModelMessageComposer.InTurnFloor(
-                             outcome, draft, userText, facts, _modelMessages.Count > 0) is { } floor)
+                             outcome, draft, userText, facts, _modelMessages.HoldsAnAnswer) is { } floor)
                 {
                     // M153: the floor of a refusal the mind answered is this turn's final, not the next one's.
                     LastMessageCompositionFailure =
@@ -3310,12 +3913,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         isUser: false,
                         PublicResponseRoute.FromDraft(draft));
                 }
+                else if (OperationFloor.DeciderCouldNotRead(draft.Source))
+                {
+                    // Regresiones r2 M5: a request the decider could not read is told now, never after the mind
+                    // comes back (live v2-s02: 171 s of silence), with the line of any failed composition (M75).
+                    PublishCompositionFailureNow(pending, outcome.Failure ?? "no_response");
+                }
                 else
                 {
                     LastMessageCompositionFailure = outcome.Failure;
                     _modelMessages.EnqueueFailed(
                         pending, outcome, _mindLifetimeCancellation.Token);
                 }
+                return;
+            }
+
+            if (OperationFloor.DeciderCouldNotRead(draft.Source))
+            {
+                // The same with no mind ready to word it: queued, it waited for a mind that was not coming back.
+                PublishCompositionFailureNow(pending, "composer_unavailable");
                 return;
             }
 
@@ -3378,7 +3994,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         ClearProgressLabel();
         StatusText = "Lista";
-        StatusDescription = _memoryTurns.HasConfirmation
+        StatusDescription = PendingStatusDescription() ?? "BAXY disponible";
+    }
+
+    /// <summary>
+    /// What BAXY is waiting on from the person, or null when nothing is pending. The one reading of it: the idle
+    /// status and the mind's «Todo listo» both ask here, so a mind that comes up late never hides a pending wait.
+    /// </summary>
+    private string? PendingStatusDescription() =>
+        _memoryTurns.HasConfirmation
             ? "Esperando confirmación de memoria"
             : _pendingAudioOperation is not null
             ? "Esperando comprobar el audio"
@@ -3397,8 +4021,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             : _pendingNoteInteraction.Current
                 is PendingNoteInteraction.AwaitingChoice
                 ? "Esperando tu elección"
-                : "BAXY disponible";
-    }
+                : null;
 
     /// <summary>
     /// La última respuesta publicada, para que un seguimiento («¿por qué

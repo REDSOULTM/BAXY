@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind import effect_intent
+from baxy_mind.semantic import arguments as semantic_arguments
 
 APPS = ("Spotify", "Discord", "Steam", "Google Chrome")
 AVAILABLE = frozenset({"audio.app.volume.set", "audio.app.volume.adjust", "audio.volume", "audio.volume.adjust", "audio.mute", "app.open"})
@@ -36,7 +36,7 @@ def test_an_absolute_application_level_is_set(text: str, level: int) -> None:
     assert intent is not None and intent.operations == ("audio.app.volume.set",)
     catalog = effect_intent.build_game_catalog_index(())
     expected_app = "Discord" if "discord" in text.lower() else "Spotify"
-    assert mind._explicit_arguments_from_evidence("audio.app.volume.set", text, APPS, catalog) == {"app": expected_app, "level": level}
+    assert semantic_arguments._explicit_arguments_from_evidence("audio.app.volume.set", text, APPS, catalog) == {"app": expected_app, "level": level}
 
 
 @pytest.mark.parametrize(

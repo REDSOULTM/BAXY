@@ -30,8 +30,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind.llm import LlmRuntime, _required_compose_input, person_askable_fields
+from baxy_mind.llm import LlmRuntime
+from baxy_mind.compose_payload import _required_compose_input
+from baxy_mind.argument_payload import person_askable_fields
 from baxy_mind.planner import required_predecessors
 from baxy_mind.semantic.arguments import partial_explicit_arguments
 from baxy_mind.semantic.decider import faithful_request
@@ -39,6 +40,9 @@ from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.notes import list_entry_request, list_removal_request, task_completion_title
 from baxy_mind.semantic.system import names_this_place
 from baxy_mind.semantic.temporal import notification_retiming, taken_back_time, timed_break, timed_task
+from baxy_mind import argument_grounding
+from baxy_mind import plan_shape
+from baxy_mind import plan_dependencies
 
 # ------------------------------------------------------------------ the catalog's schemas (ProductCatalog.cs)
 
@@ -143,7 +147,7 @@ def test_an_abstention_on_an_all_optional_schema_reads_the_default_place(row: st
     tool = _tool("weather.current", WEATHER, "Lee el clima del lugar nombrado o de la ubicación de este PC.")
 
     extraction = runtime.extract_direct_arguments(objective, tool)
-    arguments, question = sidecar.prepare_direct_argument_result(runtime, objective, tool, extraction.arguments)
+    arguments, question = argument_grounding.prepare_direct_argument_result(runtime, objective, tool, extraction.arguments)
 
     assert extraction.arguments == {}
     assert (arguments, question) == ({}, "")
@@ -154,10 +158,10 @@ def test_a_place_nobody_said_is_left_out_and_a_place_said_is_kept() -> None:
     runtime.formulate_missing_argument_question = MagicMock(side_effect=AssertionError("asked"))
     tool = _tool("weather.current", WEATHER)
     # D-s014: a town the model brought is this PC's own, never asked and never sent as said.
-    assert sidecar.prepare_direct_argument_result(
+    assert argument_grounding.prepare_direct_argument_result(
         runtime, "¿Qué previsión de tiempo hay para las cuatro?", tool, {"location": "Curicó"},
     ) == ({}, "")
-    assert sidecar.prepare_direct_argument_result(runtime, "Clima en Oviedo", tool, {"location": "Oviedo"}) == (
+    assert argument_grounding.prepare_direct_argument_result(runtime, "Clima en Oviedo", tool, {"location": "Oviedo"}) == (
         {"location": "Oviedo"}, "",
     )
 
@@ -166,7 +170,7 @@ def test_here_names_this_pcs_place() -> None:
     # D-s054's restatement «…oscurecerse aquí?»: «aquí» is read with no place, as this PC's.
     assert names_this_place("aquí") and names_this_place("around here") and names_this_place("mi ciudad")
     assert not names_this_place("Aquino") and not names_this_place("Hereford")
-    assert sidecar._normalize_grounded_operation_arguments(
+    assert argument_grounding._normalize_grounded_operation_arguments(
         "weather.current", {"location": "aquí"}, "¿A qué hora comenzará a oscurecerse aquí?",
     ) == {}
 
@@ -175,11 +179,11 @@ def test_here_names_this_pcs_place() -> None:
 
 
 def test_the_weather_there_is_the_place_visited() -> None:
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "weather.current", "I'm visiting Martinez soon and would like the check the weather there please", WEATHER,
     ) == {"location": "Martinez"}
     # Without «there», or with nobody's place named, nothing is taken for it.
-    assert sidecar._ground_explicit_arguments(
+    assert argument_grounding._ground_explicit_arguments(
         "weather.current", "I'm visiting my mom soon, what's the weather there?", WEATHER,
     ) == {"location": None}
 
@@ -249,7 +253,7 @@ def test_a_time_taken_back_is_not_the_request() -> None:
 def test_the_time_kept_is_scheduled_with_the_task_as_said() -> None:
     assert timed_task(S097) == timed_task(S097).__class__("retomar el entrenamiento de glúteo", "en 3 minutos")
     before = datetime.now(timezone.utc)
-    arguments = sidecar._ground_explicit_arguments(
+    arguments = argument_grounding._ground_explicit_arguments(
         "notification.schedule", S097, SCHEDULE, history=[{"role": "user", "content": S097}],
     )
     assert arguments is not None and arguments["title"] == "retomar el entrenamiento de glúteo"
@@ -264,12 +268,12 @@ def test_the_time_kept_is_scheduled_with_the_task_as_said() -> None:
 
 def test_half_an_hour_before_that_is_not_half_an_hour_from_now() -> None:
     text = "ponme una alarma media hora antes de eso"
-    assert sidecar._ground_explicit_arguments("notification.schedule", text, SCHEDULE) is None
-    assert sidecar._normalize_grounded_operation_arguments(
+    assert argument_grounding._ground_explicit_arguments("notification.schedule", text, SCHEDULE) is None
+    assert argument_grounding._normalize_grounded_operation_arguments(
         "notification.schedule", {"dueUtc": "media hora", "kind": "alarm", "title": "alarma"}, text,
     ) is None
     # From now it still is.
-    assert sidecar._normalize_grounded_operation_arguments(
+    assert argument_grounding._normalize_grounded_operation_arguments(
         "notification.schedule", {"dueUtc": "media hora", "kind": "alarm", "title": "alarma"},
         "ponme una alarma en media hora",
     ) is not None
@@ -280,7 +284,7 @@ def test_half_an_hour_before_that_is_not_half_an_hour_from_now() -> None:
 
 def test_a_list_named_right_after_the_word_is_read() -> None:
     assert list_entry_request("Pon huevos en mi lista Navidad") == ("huevos", "lista Navidad")
-    assert sidecar._ground_explicit_arguments("task.create", "Pon huevos en mi lista Navidad.", TASK_CREATE) == {
+    assert argument_grounding._ground_explicit_arguments("task.create", "Pon huevos en mi lista Navidad.", TASK_CREATE) == {
         "title": "huevos", "details": "lista Navidad",
     }
     # D-p06-t2 «Add to the Walmart list»: in English the name goes before the word.
@@ -323,11 +327,11 @@ def test_a_new_clock_moves_the_alarm_just_set_on_its_day() -> None:
     state.expect("Change the alarm to 6:30 tomorrow morning.", ["notification.cancel.at", "notification.schedule"])
     moved = state.retimed_notification("Actually, make it 6:30.", now=NOW, zone=CHILE)
     assert moved is not None
-    assert sidecar._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) == {
+    assert plan_shape._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) == {
         "hour": 6, "minute": 45, "period": "am", "kind": "alarm",
     }
     # The old title said the old time; the alarm is set again by its kind.
-    assert sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE) == {
+    assert plan_shape._retimed_step_arguments("notification.schedule", moved, SCHEDULE) == {
         "dueUtc": "2026-09-30T09:30:00Z", "kind": "alarm", "title": "alarm",
     }
 
@@ -337,10 +341,10 @@ def test_a_clock_without_its_part_of_the_day_keeps_the_old_one() -> None:
     state.expect("Cambia el recordatorio …", ["notification.cancel.at", "notification.schedule"])
     moved = state.retimed_notification("Mejor a las 6 en punto, que si no no llego al micro", now=NOW, zone=CHILE)
     assert moved is not None
-    assert sidecar._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) == {
+    assert plan_shape._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) == {
         "hour": 6, "minute": 15, "period": "am", "kind": "reminder",
     }
-    assert sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE) == {
+    assert plan_shape._retimed_step_arguments("notification.schedule", moved, SCHEDULE) == {
         "dueUtc": "2026-09-30T09:00:00Z", "kind": "reminder", "title": "cargar el termo y el mate",
     }
 
@@ -350,9 +354,9 @@ def test_a_new_duration_counts_from_now() -> None:
     state.expect("wait no, make it una hora", ["notification.cancel.latest", "notification.schedule"])
     moved = state.retimed_notification("wait no, make it una hora")
     assert moved is not None
-    assert sidecar._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "reminder"}
+    assert plan_shape._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "reminder"}
     before = datetime.now(timezone.utc)
-    scheduled = sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE)
+    scheduled = plan_shape._retimed_step_arguments("notification.schedule", moved, SCHEDULE)
     assert scheduled is not None and (scheduled["kind"], scheduled["title"]) == ("reminder", "tomar un descanso")
     due = datetime.fromisoformat(scheduled["dueUtc"].replace("Z", "+00:00"))
     assert timedelta(minutes=59) < due - before < timedelta(minutes=61)
@@ -380,11 +384,11 @@ def test_a_film_named_without_its_service_asks_only_the_service() -> None:
     restated = "Play the movie After the Wedding with Spanish subtitles."  # turn-audit request 1002
     for text in (said, restated):
         assert partial_explicit_arguments("streaming.play.named", text, STREAMING) == {"title": "After the Wedding"}
-        assert sidecar._stated_argument_fields("streaming.play.named", text, STREAMING) == ("title",)
+        assert argument_grounding._stated_argument_fields("streaming.play.named", text, STREAMING) == ("title",)
     assert partial_explicit_arguments("streaming.play.named", "watch Stranger Things on Netflix", STREAMING) == {}
     runtime = object.__new__(LlmRuntime)
     runtime.formulate_missing_argument_question = MagicMock(return_value="Netflix or Disney+?")
-    arguments, question = sidecar.prepare_direct_argument_result(
+    arguments, question = argument_grounding.prepare_direct_argument_result(
         runtime, restated, _tool("streaming.play.named", STREAMING), {"title": "After the Wedding"},
     )
     assert (arguments, question) == (None, "Netflix or Disney+?")
@@ -417,7 +421,7 @@ def test_the_known_folder_named_is_never_asked_again() -> None:
     for schema, still_missing in ((KNOWN_SEARCH, ("query",)), (PDF_READ, ("fileName",))):
         partial = partial_explicit_arguments("filesystem.known.search", objective, schema)
         assert partial == {"folder": "documents"}
-        assert sidecar.normalize_objective_arguments(partial, schema, objective) == (None, still_missing)
+        assert argument_grounding.normalize_objective_arguments(partial, schema, objective) == (None, still_missing)
     # A folder the operation does not take is not offered; two folders named decide none.
     assert partial_explicit_arguments("streaming.play.named", objective, STREAMING) == {}
     assert partial_explicit_arguments("filesystem.known.search", "de Descargas a Documentos", KNOWN_SEARCH) == {}
@@ -433,7 +437,7 @@ def test_a_rest_of_a_stated_length_is_timed() -> None:
     )
     before = datetime.now(timezone.utc)
     # turn-audit request 702 restated it «Cojamos un descanso de 14 minutos del yoga.»; the person's text is read too.
-    arguments = sidecar._ground_explicit_arguments(
+    arguments = argument_grounding._ground_explicit_arguments(
         "notification.schedule", "Cojamos un descanso de 14 minutos del yoga.", SCHEDULE,
         history=[{"role": "user", "content": text}],
     )
@@ -461,7 +465,7 @@ def test_a_task_marked_done_crosses_the_resolver() -> None:
     assert required_predecessors("task.complete") == ("task.resolve.exact",)
     assert required_predecessors("task.reopen") == ("task.resolve.exact",)
     objective = "Mark the first task on my list as done."  # turn-audit request 1665
-    skeleton = sidecar._explicit_plan_skeleton(("task.complete",), (objective,))
+    skeleton = plan_shape._explicit_plan_skeleton(("task.complete",), (objective,))
     assert [(step["operation"], step["dependsOn"], step["argumentsMode"]) for step in skeleton["steps"]] == [
         ("task.resolve.exact", [], "literal"),
         ("task.complete", ["step_1"], "after_dependencies"),
@@ -471,7 +475,7 @@ def test_a_task_marked_done_crosses_the_resolver() -> None:
         "result": {"taskId": "0fd37d83-6f96-4b82-a1c6-9de123985517", "expectedVersion": 1, "reviewLabel": "tomates",
                    "deleted": False, "status": "open"},
     }]
-    assert sidecar._verified_dependency_identity_arguments(
+    assert plan_dependencies._verified_dependency_identity_arguments(
         "task.complete", objective, observations, _tool("task.complete", TASK_CAS),
     ) == {"taskId": "0fd37d83-6f96-4b82-a1c6-9de123985517", "expectedVersion": 1}
 
@@ -498,6 +502,6 @@ def test_a_task_marked_done_by_its_title() -> None:
     assert task_completion_title("complete the task renew car registration") == "renew car registration"
     assert task_completion_title("mark the first one done") is None
     assert task_completion_title("complete the form") is None
-    assert sidecar._ground_explicit_arguments("task.resolve.exact", "mark buy milk as done", TASK_RESOLVE) == {
+    assert argument_grounding._ground_explicit_arguments("task.resolve.exact", "mark buy milk as done", TASK_RESOLVE) == {
         "title": "buy milk",
     }

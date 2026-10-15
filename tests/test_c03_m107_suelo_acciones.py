@@ -19,10 +19,25 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm, operation_floor
+from baxy_mind import deterministic_finals
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
+from baxy_mind import compose_situation
+from baxy_mind import clock_checks
+from baxy_mind import agenda_facts
+from baxy_mind import weather_facts
+from baxy_mind import reply_claims
+from baxy_mind import conversation_contract
+from baxy_mind import clock_facts
+
+
+# Every mind module whose code reads this PC's clock: the clock is patched in each one.
+_CLOCK_READERS = (
+    agenda_facts, clock_checks, clock_facts, compose_situation, conversation_contract, deterministic_finals,
+    reply_claims, weather_facts,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 TWINS = json.loads((ROOT / "tests" / "data" / "c03_m107_floor_twins.json").read_text(encoding="utf-8"))
@@ -103,7 +118,7 @@ def test_every_completable_result_has_a_floor(operation: str, shape: str, langua
     if opening:
         assert floor.startswith(opening), floor
     # The last resort has a final for it (its own sentence or the floor).
-    assert llm._deterministic_final(situation, {}, "", language)
+    assert deterministic_finals._deterministic_final(situation, {}, "", language)
 
 
 @pytest.mark.parametrize("case", TWINS["cases"], ids=lambda case: case["id"])
@@ -134,10 +149,13 @@ def test_no_action_named_has_no_floor(situation: dict) -> None:
 
 
 def test_the_typed_failures_said_whole_come_from_the_shared_data() -> None:
-    assert llm._DETERMINISTIC_FAILURES["external_verification_failed"] == (
+    assert deterministic_finals._DETERMINISTIC_FAILURES["external_verification_failed"] == (
         "No pude confirmar que se hiciera el cambio.", "I couldn't confirm that the change was made.",
     )
-    assert set(llm._DETERMINISTIC_FAILURES) == set(operation_floor.floor_data()["failures"])
+    # Encargo H2: the codes of a device the computer lacks (computerUse.limits.devices «absent») are shared data too.
+    devices = operation_floor.floor_data()["computerUse"]["limits"]["devices"].values()
+    absent = {code for device in devices for code in device["absent"]}
+    assert set(deterministic_finals._DETERMINISTIC_FAILURES) == set(operation_floor.floor_data()["failures"]) | absent
 
 
 # ------------------------------------------------------------------ 2. what was observed, never more
@@ -151,7 +169,7 @@ def test_the_typed_failures_said_whole_come_from_the_shared_data() -> None:
          "Abrí la aplicación «Calculadora»."),
         ("cerrá el bloc", _op("app.close", {"processId": 3, "windowClosed": True}), "status", "Cerré la ventana."),
         ("pegá la ventana a la derecha", _op("window.snap", {"side": "right"}), "status",
-         "Coloqué la ventana: a la derecha."),
+         "Coloqué la ventana a la derecha."),
         ("silenciá todo", _op("audio.mute", {"state": {"muted": True, "volumePercent": 25}, "applied": True}),
          "status", "Silencié el sonido: volumen al 25 %."),
         ("apagame el bluetooth", _op("bluetooth.radio.set", {"state": False, "changed": True}), "status",
@@ -175,7 +193,7 @@ def test_the_typed_failures_said_whole_come_from_the_shared_data() -> None:
                                                                  "amount": 10, "baselineValues": [45],
                                                                  "values": [35]}), "status", "Cambié el brillo."),
         ("activá no molestar", _op("system.settings.set", {"setting": "do_not_disturb", "value": 1, "before": 0}),
-         "status", "Cambié el modo no molestar."),
+         "status", "Listo, activé el modo no molestar."),
         ("could you launch obsidian", _op("app.open", ok=False, error="app_not_found"), "error",
          "I couldn't open the app."),
         ("pasá el informe a la carpeta de trabajo", _op("filesystem.move", ok=False, error="verification_failed",
@@ -208,7 +226,8 @@ NOW = datetime(2026, 3, 4, 15, 0, tzinfo=CHILE)
 
 @pytest.fixture
 def fixed_clock(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_local_now", lambda: NOW.astimezone())
+    for module in _CLOCK_READERS:
+        monkeypatch.setattr(module, "_local_now", lambda: NOW.astimezone())
 
 
 def _scheduled(due: datetime, title: str = "sacar la ropa de la lavadora", kind: str = "reminder") -> dict:
@@ -247,7 +266,7 @@ def test_the_move_is_a_plan_and_its_floor_says_each_step(fixed_clock: None) -> N
         "risk": "low_reversible",
         "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False},
     }}
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m107", "text": MOVE, "history": history},
         llm=NoDecider(), planner_catalog=PlannerCatalog([tool]), encoder=lambda _texts: (), tool_by_name={},
         dialogue_state=state,

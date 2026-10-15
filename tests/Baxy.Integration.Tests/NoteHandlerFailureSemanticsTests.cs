@@ -184,6 +184,11 @@ public sealed class NoteHandlerFailureSemanticsTests
             CancellationToken cancellationToken) =>
             _inner.FindCompletedAsync(invocationId, cancellationToken);
 
+        public ValueTask<bool> IsRetiredAsync(
+            string invocationId,
+            CancellationToken cancellationToken) =>
+            _inner.IsRetiredAsync(invocationId, cancellationToken);
+
         public ValueTask RecordStartedAsync(
             OperationRequest request,
             string requestFingerprint,

@@ -31,10 +31,12 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import agenda_facts
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.system import _weather_location
+from baxy_mind.semantic import arguments as semantic_arguments
 
 OPERATIONS = (
     "audio.mute", "audio.volume", "audio.volume.adjust", "media.control", "media.play.query", "media.play.youtube",
@@ -165,7 +167,7 @@ def test_other_screens_are_not_the_desktop(text: str) -> None:
 )
 def test_a_note_ordered_with_anota_or_apunta_is_the_literal_note(text: str, content: str) -> None:
     assert _effects(text) == ("note.create",)
-    arguments = sidecar._explicit_arguments_from_evidence("note.create", text)
+    arguments = semantic_arguments._explicit_arguments_from_evidence("note.create", text)
     assert arguments is not None and arguments["content"] == content
 
 
@@ -200,12 +202,12 @@ def test_another_created_thing_named_after_anota_is_that_thing_alone(text: str, 
 def test_a_work_named_with_its_maker_is_played(text: str, query: str) -> None:
     effects = _effects(text)
     assert len(effects) == 1 and effects[0] in {"media.play.youtube", "media.play.query"}
-    arguments = sidecar._explicit_arguments_from_evidence(effects[0], text)
+    arguments = semantic_arguments._explicit_arguments_from_evidence(effects[0], text)
     assert arguments is not None and arguments["query"] == query
 
 
 def test_a_maker_said_by_a_pronoun_is_not_named_here() -> None:
-    assert sidecar._explicit_arguments_from_evidence("media.play.query", "pon la canción que sacó él") is None
+    assert semantic_arguments._explicit_arguments_from_evidence("media.play.query", "pon la canción que sacó él") is None
 
 
 # ------------------------------------------------------------------ a page describing itself is page voice
@@ -247,7 +249,7 @@ _RECIPE = [
     ],
 )
 def test_a_page_describing_itself_is_page_voice(asked: str, answer: str, results: list[dict]) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_page_voice"
 
 
 @pytest.mark.parametrize(
@@ -260,7 +262,7 @@ def test_a_page_describing_itself_is_page_voice(asked: str, answer: str, results
     ],
 )
 def test_an_answer_or_a_not_found_is_not_page_voice(asked: str, answer: str, results: list[dict]) -> None:
-    assert llm._payload_fact_defect(answer, _search_payload(results), asked) != "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(answer, _search_payload(results), asked) != "search_report_page_voice"
 
 
 # ------------------------------------------------------------------ «no se puede verificar» is a failure said
@@ -285,7 +287,7 @@ _NO_OUTLOOK = json.dumps(
     ],
 )
 def test_a_check_that_cannot_be_made_is_a_failure_said(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
+    assert visible_defect.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
                                       {"situation": _NO_OUTLOOK}) == ""
 
 
@@ -298,7 +300,7 @@ def test_a_check_that_cannot_be_made_is_a_failure_said(draft: str) -> None:
     ],
 )
 def test_inventing_the_mailbox_state_is_still_not_the_failure(draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
+    assert visible_defect.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
                                       {"situation": _NO_OUTLOOK}) == "missing_failure"
 
 
@@ -323,14 +325,14 @@ def test_the_alarm_listing_carries_the_local_clock_and_the_day_only_when_not_tod
             {"kind": "alarm", "nextRunUtc": _utc(later_at)},
         ],
     }
-    projected = llm._project_notification_listing(observed, "es")
+    projected = agenda_facts._project_notification_listing(observed, "es")
     assert projected["count"] == 4
     assert projected["scheduled"] == [
         {"kind": "alarma", "time": "23:58", "howMany": 2},
         {"kind": "recordatorio", "title": "Pastilla", "time": "06:15", "day": "mañana"},
         {"kind": "alarma", "time": "07:00", "date": later_at.date().isoformat()},
     ]
-    english = llm._project_notification_listing(observed, "en")
+    english = agenda_facts._project_notification_listing(observed, "en")
     assert english["scheduled"][1]["day"] == "tomorrow"
     # No UTC instant, no «YYYY-MM-DD HH:MM» string reaches the model.
     assert "nextRun" not in json.dumps(projected) and "T" not in json.dumps(projected["scheduled"][0])

@@ -16,12 +16,14 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.apps import bare_close_pronoun, close_request_for_opened
 from baxy_mind.semantic.arguments import closes_the_active_window
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.grammar import _fold
+from baxy_mind import context_decision
+from baxy_mind import plan_shape
+from baxy_mind import argument_grounding
 
 OPERATIONS = ("app.open", "app.close", "window.resolve", "window.active", "web.search", "audio.volume.adjust")
 APPLICATIONS = ("Bloc de notas", "Notepad", "Calculadora", "Calculator", "Spotify", "Discord", "Visual Studio Code")
@@ -67,7 +69,7 @@ class _Decider:
 def _turn(text: str, history: list[tuple[str, str]], decider: _Decider) -> dict[str, object]:
     tools = [_tool(name) for name in OPERATIONS]
     turns = [{"role": role, "content": content} for role, content in history]
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m96", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=decider,
         planner_catalog=PlannerCatalog(tools),
@@ -106,7 +108,7 @@ def test_the_pronoun_closes_the_application_just_opened_by_its_name(said: str, a
     assert result["objective"] == objective
     # The close goes through window.resolve by name; never the window in front.
     assert not closes_the_active_window(str(result["objective"]))
-    first, _ = sidecar._expand_effect_plan(("app.close",), (str(result["objective"]),))
+    first, _ = plan_shape._expand_effect_plan(("app.close",), (str(result["objective"]),))
     assert first[0] == "window.resolve"
 
 
@@ -213,14 +215,14 @@ FILM_HISTORY = [
     ],
 )
 def test_an_opinion_of_a_named_work_is_looked_up_with_the_works_name(objective: str, query: str) -> None:
-    arguments = sidecar._ground_explicit_arguments("web.search", objective, WEB_SEARCH, history=FILM_HISTORY)
+    arguments = argument_grounding._ground_explicit_arguments("web.search", objective, WEB_SEARCH, history=FILM_HISTORY)
 
     assert arguments == {"query": query}
 
 
 def test_a_search_said_as_an_order_keeps_the_persons_question() -> None:
     # conv-v3j…v3s: «Buscá qué dijo la crítica sobre Oppenheimer.» was already read in the person's words.
-    arguments = sidecar._ground_explicit_arguments(
+    arguments = argument_grounding._ground_explicit_arguments(
         "web.search", "Buscá qué dijo la crítica sobre Oppenheimer.", WEB_SEARCH, history=FILM_HISTORY,
     )
 

@@ -11,12 +11,10 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import effect_intent
-from baxy_mind.__main__ import (
-    _explicit_arguments_from_evidence,
-    _unresolved_input_kind,
-    _verified_dependency_identity_arguments,
-    _with_session_alarm_selector,
-)
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.semantic.guards import _unresolved_input_kind
+from baxy_mind.plan_dependencies import _verified_dependency_identity_arguments
+from baxy_mind.direct_arguments import _with_session_alarm_selector
 
 # The Start catalog of this PC holds two «Shell» names two edits from «steel» (NEAR1995); Teams is not installed here.
 APPLICATIONS = ("Steam", "Google Cloud SDK Shell", "OpenSSL Shell", "Google Chrome", "Discord", "Calculadora", "Bloc de notas")

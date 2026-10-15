@@ -3,10 +3,13 @@
 
 from __future__ import annotations
 
+import functools
+import json
 import re
 from datetime import date
+from pathlib import Path
 from typing import Iterable
-from .grammar import _CLOCK_READ_HEAD, _fold, _match, _has, _REQUEST_PREFIX, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _system_status_domain, _process_list_domain, _network_status_domain, _LIST, _COVERAGE_ACTION_HEAD, _MACHINE_STATUS_OBSERVATION_HEAD, _MACHINE_STATUS_HEAD, _MACHINE_STATUS_OBSERVATION
+from .grammar import _CLOCK_READ_HEAD, _fold, _match, _has, _REQUEST_PREFIX, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _system_status_domain, _process_list_domain, _network_status_domain, _LIST, _COVERAGE_ACTION_HEAD, _MACHINE_STATUS_OBSERVATION_HEAD, _MACHINE_STATUS_HEAD, _MACHINE_STATUS_OBSERVATION, _request_clauses
 from .audio import _volume_domain
 from .intent import EffectIntent, _is_negated_match, _append
 from .normalize import alternation
@@ -637,6 +640,90 @@ def _wifi_state_question(text: str) -> bool:
     )
 
 
+@functools.lru_cache(maxsize=1)
+def _loose_words() -> dict:
+    path = Path(__file__).resolve().parent.parent / "data" / "loose_word_readers.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))["machine_status"]
+
+
+def _is_one_of(token: str, nouns: set[str]) -> bool:
+    """A noun of the list said in the singular or in the plural («disco», «discos», «baterias», «temps», «drives»)."""
+
+    if token in nouns:
+        return True
+    return token.endswith("s") and (token[:-1] in nouns or (token.endswith("es") and token[:-2] in nouns))
+
+
+def _clause_object_is_elsewhere(clause: str) -> bool:
+    """One clause asks for things the machine only hosts: a counted list of a kind that is neither the machine nor its
+    state («5 juegos»), or an object of the observation head that is neither, with every machine said in a complement
+    of place or purpose («en la pc», «para mi pc», «on my pc») or as a class («juegos de pc»). «de la pc», «del equipo»,
+    «of my pc» own what precedes them: «revisa los discos de la pc» reads the machine."""
+
+    from .listing import enumeration_asked
+
+    words = _loose_words()
+    machine = set(words["machine_nouns"])
+    state = set(words["status_nouns"])
+    tokens = re.findall(r"[a-z0-9]+", clause)
+    said_machine = [position for position, token in enumerate(tokens) if _is_one_of(token, machine)]
+    enumeration = enumeration_asked(clause)
+    if enumeration is not None:
+        return not (_is_one_of(enumeration.kind, state) or _is_one_of(enumeration.kind, machine))
+    head = re.search(rf"\b{_MACHINE_STATUS_OBSERVATION_HEAD}\b", clause)
+    if head is None or not said_machine:
+        return False
+    after = len(re.findall(r"[a-z0-9]+", clause[:head.end()]))
+    skipped = set(words["skipped_before_object"])
+    index = after
+    while index < len(tokens) and (tokens[index] in skipped or tokens[index].isdigit()):
+        index += 1
+    if index >= len(tokens):
+        return False
+    noun = tokens[index]
+    if _is_one_of(noun, machine) or _is_one_of(noun, state) or noun in set(words["clause_openers"]):
+        return False
+    places = set(words["complement_prepositions"])
+    owners = set(words["owner_prepositions"])
+    owners_with_article = set(words["owner_prepositions_with_article"])
+    determiners = skipped - places - owners
+    for position in said_machine:
+        if position <= index:
+            return False
+        before = position - 1
+        while before > index and tokens[before] in determiners:
+            before -= 1
+        if before <= index:
+            return False
+        if tokens[before] in owners and (before < position - 1 or tokens[before] in owners_with_article):
+            # «los discos de la pc», «the stats of my pc»: the machine owns the object. Revisión adversarial 3: «del»
+            # carries its article («la tarjeta gráfica del computador», «la bios del equipo»), so it owns too.
+            return False
+        if tokens[before] not in places | owners:
+            return False
+    return True
+
+
+def _machine_status_object_is_elsewhere(folded: str) -> bool:
+    """Uso real v3 r17 t3 c03/1 «dame 5 juegos cooperativos pa jugar con mis primos en la pc que no pidan mucha compu»
+    → ``system.status`` («funcionan bien en tu equipo»): «dame» opens an observation and «pc» names the machine, but
+    what is asked is games; the machine is only where they are played. Each clause is read apart
+    (``_clause_object_is_elsewhere``): the request is no reading of the machine only when some clause asks for things
+    the machine hosts and no other clause names the machine or its state: in «dame 5 juegos que corran en mi pc y dime
+    cuánta ram tengo» the games veto only their own clause, never «dime cuánta ram tengo». The words are data
+    (``data/loose_word_readers.v1.json``)."""
+
+    words = _loose_words()
+    named = set(words["machine_nouns"]) | set(words["status_nouns"])
+    elsewhere = False
+    for clause in _request_clauses(folded) or (folded,):
+        if _clause_object_is_elsewhere(clause):
+            elsewhere = True
+        elif any(_is_one_of(token, named) for token in re.findall(r"[a-z0-9]+", clause)):
+            return False
+    return elsewhere
+
+
 def _review_system_and_network_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -686,6 +773,8 @@ def _review_system_and_network_effects(
         # «el volumen del sistema» nombra el equipo solo como poseedor del
         # audio: esa lectura pertenece a audio.status, no a system.status.
         and not _volume_domain(folded)
+        # Ronda 19: the machine named only where the asked things are («5 juegos … en la pc») is no reading of it.
+        and not _machine_status_object_is_elsewhere(folded)
         and (
             _has(folded, r"\b(?:como|health)\b")
             or _has(folded, _MACHINE_STATUS_OBSERVATION)

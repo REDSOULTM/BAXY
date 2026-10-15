@@ -41,12 +41,16 @@ from typing import Any
 import pytest
 
 from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import talk_memory_figures
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.notes import question_with_its_reason
 from baxy_mind.semantic.web import asks_currency_conversion, currency_conversion_request
+from baxy_mind import turn_decide
+from baxy_mind import context_decision
+from baxy_mind import direct_arguments
+from baxy_mind import argument_payload
 
 OPERATIONS = tuple(
     json.loads(
@@ -130,8 +134,8 @@ class _Decider:
 class _Abstaining:
     """The model's own extraction abstains: only BAXY's steps ground the arguments."""
 
-    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> llm.DirectArgumentExtraction:
-        return llm.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué busco?")
+    def extract_direct_arguments(self, *_args: object, **_kwargs: object) -> argument_payload.DirectArgumentExtraction:
+        return argument_payload.DirectArgumentExtraction(arguments=None, evidence=(), fallback_question="¿Qué busco?")
 
     def formulate_missing_argument_question(self, *_args: object, **_kwargs: object) -> str:
         return "¿Qué busco?"
@@ -149,7 +153,7 @@ def _tools() -> dict[str, dict[str, Any]]:
 
 def _turn(said: list[str], decision: ContextDecision) -> dict:
     tools = _tools()
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m154", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=DialogueState(),
@@ -159,14 +163,14 @@ def _turn(said: list[str], decision: ContextDecision) -> dict:
 def _decided(said: list[str], decision: ContextDecision) -> dict:
     """The contextual decider's turn alone, with its decision already given."""
 
-    return sidecar._context_decided_result(
+    return context_decision._context_decided_result(
         {"id": "m154", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(_tools().values())), decided_beforehand=decision,
     )
 
 
 def _query(said: list[str], objective: str) -> str | None:
-    arguments, _ = sidecar._direct_arguments_result(
+    arguments, _ = direct_arguments._direct_arguments_result(
         {"operation": "web.search", "text": objective, "history": _history(said)},
         llm=_Abstaining(), tool=_tool("web.search"), dialogue_state=DialogueState(),
     )
@@ -362,7 +366,7 @@ BITCOIN = ["ok y cuánto está el bitcoin en dólares", "Hoy el Bitcoin está en
 def test_an_amount_in_another_currency_from_memory_is_held(
     reply: str, asked: str, dialogue: list[str], held: list[str],
 ) -> None:
-    assert llm.talk_memory_figures(reply, asked, dialogue, dialogue[:1]) == held
+    assert talk_memory_figures.talk_memory_figures(reply, asked, dialogue, dialogue[:1]) == held
 
 
 @pytest.mark.parametrize(
@@ -378,7 +382,7 @@ def test_an_amount_in_another_currency_from_memory_is_held(
     ],
 )
 def test_what_is_computed_or_no_conversion_passes(reply: str, asked: str, dialogue: list[str]) -> None:
-    assert llm.talk_memory_figures(reply, asked, dialogue, dialogue[:1]) == []
+    assert talk_memory_figures.talk_memory_figures(reply, asked, dialogue, dialogue[:1]) == []
 
 
 # ------------------------------------------------------------------ 5. the reason beside the question is no own data (M81)

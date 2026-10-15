@@ -1401,11 +1401,14 @@ public sealed class ExternalAdaptersTests
         Assert.That(worker.Commands[^1], Does.Contain("\"hwnd\":77"));
     }
 
+    // v3 point 0, fix 1 (this test used to want nothing read while the opened window was not in front, because the
+    // tree stage read the window in front; it now reads the bound window by its handle). The opened window behind
+    // the person's is read and pressed where it is, and never any other window: every command names its handle.
     [Test]
-    public async Task VisibleClickDoesNotReadAnotherWindowWhenTheOpenedOneLostTheFront()
+    public async Task VisibleClickReadsOnlyTheOpenedWindowWhenItIsBehindThePersonsWindow()
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
-        var focus = new ScriptedFocus(launched: false, windowAfter: 0, holds: false);
+        var focus = new ScriptedFocus(launched: false, windowAfter: 0);
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr: null, vision: null, focus, ShortTiming);
 
@@ -1415,7 +1418,8 @@ public sealed class ExternalAdaptersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(worker.Commands.Count, Is.Zero);
+            Assert.That(worker.Commands, Is.Not.Empty);
+            Assert.That(worker.Commands, Has.All.Contain("\"hwnd\":77"));
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
         });
@@ -1610,6 +1614,93 @@ public sealed class ExternalAdaptersTests
             Assert.That(worker.Commands.Count - before, Is.EqualTo(1));
         });
     }
+
+    // Goal v3, analysis r3a M7 (t-scroll-2: 31 s on a label the Character Map just opened never had): once the opened
+    // application's interface is up (a tree of InterfaceUp elements or more), a tree that stopped growing on a window
+    // that stays still is not drawing the label: «not found» comes well before the opened label's whole wait.
+    [Test]
+    public async Task VisibleClickAfterAnOpeningStopsWaitingWhenTheTreeStoppedGrowingOnAStillWindow()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundWithTree(120));
+        var focus = new ScriptedFocus(launched: true, windowAfter: 0);
+        var ocr = new CountingLocator("ocr", hit: false);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, ocr, vision: null, focus, TreeTiming,
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"omega"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(worker.Commands.Count, Is.GreaterThanOrEqualTo(2), "two looks tell the tree did not grow");
+            Assert.That(clock.Elapsed, Is.LessThan(TreeTiming.OpenedLabel / 2));
+            Assert.That(VisibleClickTiming.Default.OpenedLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(8)));
+        });
+    }
+
+    // Counter-case (a client launched cold, UI1731): a loading screen has a handful of elements; still and not growing,
+    // it is waited on the whole opened label's stretch, since its interface is not up yet.
+    [Test]
+    public async Task VisibleClickAfterAnOpeningKeepsWaitingOnALoadingScreen()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundWithTree(4));
+        var focus = new ScriptedFocus(launched: true, windowAfter: 0);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, new CountingLocator("ocr", hit: false), vision: null, focus, TreeTiming,
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(TreeTiming.OpenedLabel));
+        });
+    }
+
+    // Counter-case: a tree that keeps growing is an interface still being built; it is looked at again and the label
+    // that appears is pressed.
+    [Test]
+    public async Task VisibleClickAfterAnOpeningKeepsLookingWhileTheTreeGrows()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
+            NotFoundWithTree(30), NotFoundWithTree(45), NotFoundWithTree(60), NotFoundWithTree(80), NotFoundWithTree(100));
+        var focus = new ScriptedFocus(launched: true, windowAfter: 0);
+        var ocr = new CountingLocator("ocr", hit: true, hitFromCall: 5);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, ocr, vision: null, focus, TreeTiming with { SettledLabel = TimeSpan.Zero },
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
+            Assert.That(ocr.Calls, Is.EqualTo(5));
+        });
+    }
+
+    private static string NotFoundWithTree(int elements) =>
+        NotFoundByUia[..^1] + ",\"treeSize\":" + elements + "}";
+
+    private static readonly VisibleClickTiming TreeTiming = VisibleClickTiming.Default with
+    {
+        LaunchSurface = TimeSpan.FromMilliseconds(200),
+        OpenedLabel = TimeSpan.FromMilliseconds(2400),
+        SettledLabel = TimeSpan.FromMilliseconds(200),
+        Interval = TimeSpan.FromMilliseconds(60),
+        StillSample = TimeSpan.FromMilliseconds(20),
+        StillFor = TimeSpan.FromMilliseconds(50),
+    };
 
     private static readonly VisibleClickTiming StillTiming = VisibleClickTiming.Default with
     {
@@ -2096,6 +2187,116 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("values")[0].GetInt32(), Is.EqualTo(30));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("wmi_monitor_brightness_relative_postread"));
+        });
+    }
+
+    [Test]
+    public async Task BrightnessAlreadyAtTheAskedLevelReturnsAtOnceUnchanged()
+    {
+        // Ronda 22 (r18 t4-c04 t2): «pon el brillo al 40» again with it at 40 took 10.2 s waiting for a change.
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(
+            "{\"ok\":true,\"effectObserved\":false,\"changed\":false," +
+            "\"baselineValues\":[40],\"values\":[40]}");
+        var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.settings.set",
+            Json("""{"setting":"brightness","value":40}"""),
+            CancellationToken.None);
+        string script = runner.LastArguments[3];
+        int sameLevel = script.IndexOf("changed=$false", StringComparison.Ordinal);
+        int firstSet = script.IndexOf("WmiSetBrightness", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.Result?.GetProperty("changed").GetBoolean(), Is.False);
+            Assert.That(receipt.Result?.GetProperty("baselineValues")[0].GetInt32(), Is.EqualTo(40));
+            Assert.That(sameLevel, Is.GreaterThanOrEqualTo(0));
+            Assert.That(firstSet, Is.GreaterThan(sameLevel), "the same level is answered before any set");
+        });
+    }
+
+    [Test]
+    public async Task BrightnessAtAnotherLevelStillSetsAndVerifiesTheChange()
+    {
+        // Contracaso: 30 → 40 still applies and verifies the change.
+        using TemporaryDirectory temporary = new();
+        var adapter = new WindowsDeviceControlAdapter(
+            temporary.Path, temporary.Path,
+            new StubProcessRunner(
+                "{\"ok\":true,\"effectObserved\":true,\"changed\":true," +
+                "\"baselineValues\":[30],\"values\":[40]}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.settings.set",
+            Json("""{"setting":"brightness","value":40}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.StateAlreadyReached, Is.False);
+            Assert.That(receipt.Result?.GetProperty("changed").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("baselineValues")[0].GetInt32(), Is.EqualTo(30));
+        });
+    }
+
+    [Test]
+    public async Task BrightnessSetThatDidNotReachTheLevelStillFails()
+    {
+        // Contracaso: a set whose post-read differs is not done, whatever was asked.
+        using TemporaryDirectory temporary = new();
+        var adapter = new WindowsDeviceControlAdapter(
+            temporary.Path, temporary.Path,
+            new StubProcessRunner(
+                "{\"ok\":false,\"effectObserved\":true,\"changed\":true," +
+                "\"baselineValues\":[30],\"values\":[30]}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.settings.set",
+            Json("""{"setting":"brightness","value":40}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("brightness_postread_failed"));
+            Assert.That(receipt.StateAlreadyReached, Is.False);
+        });
+    }
+
+    [TestCase("system.settings.set", """{"setting":"brightness","value":30}""")]
+    [TestCase("system.settings.adjust", """{"setting":"brightness","direction":"down","amount":10}""")]
+    [TestCase("system.settings.status", """{"setting":"brightness"}""")]
+    public async Task BrightnessOnAMonitorThatDoesNotExposeItIsTheComputersLimit(string operation, string arguments)
+    {
+        // Encargo H2 (redpc, estado_antes «Brightness []»: WMI answers its brightness classes with «not supported»): the
+        // absence is read before anything is changed and answered as such, never as a change left unconfirmed.
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(
+            "{\"ok\":false,\"effectObserved\":false,\"error\":\"brightness_not_supported\"}");
+        var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+        string script = runner.LastArguments[3];
+        int absent = script.IndexOf("Write-BaxyBrightnessAbsent;exit 2", StringComparison.Ordinal);
+        int firstSet = script.IndexOf("Invoke-CimMethod", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(WindowsDeviceControlAdapter.BrightnessNotSupported));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(script, Does.Contain("-ne 'NotSupported'"), "only WMI's «not supported» is the absence");
+            Assert.That(absent, Is.GreaterThan(0));
+            Assert.That(firstSet < 0 || absent < firstSet, Is.True, "the absence is answered before any set");
         });
     }
 
@@ -2594,6 +2795,298 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Uso real 2026-10-07 («un top 3 peliculas de suspenso del 2026» → el artículo de UNA película): un listado
+    // pedido (listing) no es una pregunta de enciclopedia; la misma consulta sin listing sí lo es (prueba de arriba).
+    [Test]
+    public async Task AListingAskedIsNeverAnsweredByAnEncyclopediaArticle()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es",
+                ("The Eyes (película de 2026)", "The Eyes es una película surcoreana de suspenso de 2026.", false)),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt listing = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"un top 3 de películas de suspenso del 2026","limit":3,"listing":true}"""),
+            CancellationToken.None);
+        int askedForTheListing = handler.Asked.Count;
+        ExternalCapabilityReceipt single = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"un top 3 de películas de suspenso del 2026","limit":3}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(handler.Asked.Take(askedForTheListing).Select(asked => asked.Uri.Host),
+                Has.None.Contains("wikipedia"));
+            Assert.That(listing.Result?.GetRawText() ?? "", Does.Not.Contain("The Eyes"));
+            Assert.That(handler.Asked.Skip(askedForTheListing).Select(asked => asked.Uri.Host),
+                Has.Some.Contains("wikipedia"));
+            Assert.That(single.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_es_api"));
+        });
+    }
+
+    // Revisión 2026-10-07: tres titulares pertinentes no son «el top 3»; un titular no es un elemento del listado.
+    // Con listing no se pregunta a noticias: responde el buscador general (sin listing, las noticias siguen
+    // respondiendo lo del día: ADayBoundQuestionIsAnsweredByTheNewsFeedWithItsPertinentHeadlines).
+    [Test]
+    public async Task AListingAskedIsNeverAnsweredByNewsHeadlines()
+    {
+        const string feed = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <rss version="2.0"><channel><title>Noticias</title>
+            <item><title>Películas de suspenso 2026: los estrenos del año - Diario Uno</title><link>https://news.google.com/rss/articles/a1?oc=5</link><pubDate>Mon, 28 Sep 2026 12:00:00 GMT</pubDate><source url="https://www.example.com">Diario Uno</source></item>
+            <item><title>Las mejores películas de suspenso de 2026, según la crítica - Diario Dos</title><link>https://news.google.com/rss/articles/a2?oc=5</link><pubDate>Mon, 28 Sep 2026 11:00:00 GMT</pubDate><source url="https://www.example.org">Diario Dos</source></item>
+            <item><title>Suspenso en 2026: películas que no te puedes perder - Diario Tres</title><link>https://news.google.com/rss/articles/a3?oc=5</link><pubDate>Mon, 28 Sep 2026 10:00:00 GMT</pubDate><source url="https://www.example.net">Diario Tres</source></item>
+            </channel></rss>
+            """;
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["news.google.com"] = new(HttpStatusCode.OK, feed, "application/rss+xml"),
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Top 3 películas de suspenso de 2026", "https://example.cl/top",
+                    "Las tres mejores películas de suspenso de 2026: The Eyes, Silencio y La Presa.")), "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"las 3 mejores películas de suspenso de 2026","limit":3,"listing":true}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Has.None.EqualTo("news.google.com"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.Not.EqualTo("google_news_rss_search"));
+            Assert.That(receipt.Result?.GetRawText() ?? "", Does.Not.Contain("Diario"));
+        });
+    }
+
+    // Uso real v3 tanda 1 («quien gano el mundial del 2014» → «Brasil ganó la Copa Mundial de Fútbol de 2014.»): the
+    // article's first three sentences, as the tanda read them (compose_audit fila 82), name Brasil as the host and say
+    // nobody won. With the mind's answerWords, the article is read whole and the sentence that states it follows.
+    private const string Mundial2014Intro =
+        "La Copa Mundial de la FIFA Brasil 2014 (en portugués: Copa do Mundo FIFA de 2014) fue la vigésima edición de "
+        + "la Copa Mundial de Fútbol. Se realizó en Brasil entre el 12 de junio y el 13 de julio de 2014, por segunda "
+        + "vez en dicho país, tras el campeonato de 1950. Después de que el presidente de la FIFA, Joseph Blatter, "
+        + "estableció en 2001 el criterio de rotación continental de la sede del torneo, América del Sur fue "
+        + "seleccionada en 2004 para celebrar en 2014 su primera copa desde Argentina 1978.";
+
+    private const string Mundial2014Article = Mundial2014Intro + "\n\nLa final se jugó en el estadio Maracaná de Río "
+        + "de Janeiro ante 74 738 espectadores.\nEn la final, Alemania derrotó por 1-0 a Argentina en la prórroga y se "
+        + "coronó por cuarta vez como campeón mundial.\nLa organización del torneo recibió críticas por los costes.";
+
+    private static SearchSourcesHttpHandler Mundial2014Sources()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es", ("Copa Mundial de Fútbol de 2014", Mundial2014Intro, false)),
+        };
+        handler.Routes.Add(("&titles=", WikipediaAnswer("es", ("Copa Mundial de Fútbol de 2014", Mundial2014Article, false))));
+        return handler;
+    }
+
+    [Test]
+    public async Task ARelationNoFragmentStatesReadsTheFirstArticleForTheSentenceThatStatesIt()
+    {
+        SearchSourcesHttpHandler handler = Mundial2014Sources();
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"quien gano el mundial del 2014","limit":5,"answerWords":"gan campeon vencio derroto corono titulo won champion"}"""),
+            CancellationToken.None);
+
+        string read = receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString() ?? "";
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_es_api"));
+            Assert.That(handler.Asked.Select(asked => Uri.UnescapeDataString(asked.Uri.AbsoluteUri)),
+                Has.Some.Contains("&titles=Copa Mundial de Fútbol de 2014"));
+            Assert.That(read, Does.Contain("Alemania derrotó por 1-0 a Argentina"));
+            Assert.That(read, Does.Not.Contain("críticas por los costes"));
+        });
+    }
+
+    [Test]
+    public async Task WithoutAnswerWordsTheEncyclopediaSnippetStandsAlone()
+    {
+        SearchSourcesHttpHandler handler = Mundial2014Sources();
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"quien gano el mundial del 2014","limit":5}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Query), Has.None.Contains("titles="));
+            Assert.That(receipt.Result?.GetRawText() ?? "", Does.Not.Contain("Alemania"));
+        });
+    }
+
+    // Contracaso: the datum is in the fragment («dirigida por James Cameron»), so no article is read.
+    [Test]
+    public async Task AFragmentThatStatesTheRelationIsAnsweredWithoutReadingTheArticle()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es", ("Titanic (película de 1997)",
+                "Titanic es una película estadounidense de 1997 escrita y dirigida por James Cameron.", false)),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"quien dirigio titanic","limit":5,"answerWords":"dirig direct"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.GetRawText() ?? "", Does.Contain("James Cameron"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Query), Has.None.Contains("titles="));
+        });
+    }
+
+    [Test]
+    public void AFragmentAnswersOnlyWithTheRelationAndEveryContentWordInOneSentence()
+    {
+        string[] win = ["gan", "campeon", "derroto", "corono"];
+        Assert.Multiple(() =>
+        {
+            // «tras el campeonato de 1950» sits beside Brasil and 2014, without the «mundial» asked.
+            Assert.That(SearchPageExcerpt.FragmentAnswers(
+                "Copa Mundial de Fútbol de 2014. " + Mundial2014Intro, "quien gano el mundial del 2014", win), Is.False);
+            Assert.That(SearchPageExcerpt.FragmentAnswers(
+                "En la final de 2014, Alemania se coronó campeón mundial.", "quien gano el mundial del 2014", win), Is.True);
+            Assert.That(SearchPageExcerpt.FragmentAnswers("Cualquier cosa.", "quien gano el mundial del 2014", []), Is.True);
+        });
+    }
+
+    // Revisión adversarial (tanda 1, compose_audit fila 82): the four results the tanda read. The Conmebol
+    // qualification's «el repechaje contra el ganador de la quinta ronda» carries «ganador», «mundial» and «2014» and
+    // answers nothing; only the fragment of the article that would be read is judged, so the article is read.
+    private static readonly (string Title, string Extract, bool Disambiguation)[] Mundial2014Results =
+    [
+        ("Copa Mundial de Fútbol de 2014", Mundial2014Intro, false),
+        ("Clasificación de Conmebol para la Copa Mundial de Fútbol de 2014",
+            "La clasificación de Conmebol para la Copa Mundial de Fútbol de 2014 contó con cuatro cupos directos y un "
+            + "cupo para el repechaje contra el ganador de la quinta ronda de la clasificatoria asiática. Como "
+            + "anfitrión, Brasil no pasó por la clasificación, por lo que en esta edición participaron las nueve "
+            + "selecciones restantes.", false),
+        ("Clasificación para la Copa Mundial de Fútbol de 2014",
+            "Fueron 32 equipos los que compitieron en la Copa Mundial de Fútbol de 2014, con una plaza destinada al "
+            + "país organizador, Brasil. En el programa publicado inicialmente se preveían 824 partidos para decidir "
+            + "las 31 plazas en disputa para el Mundial de Brasil 2014, pero con el retiro de Bahamas y Mauricio, "
+            + "solo se necesitaron 816.", false),
+        ("Copa Mundial de Baloncesto de 2014",
+            "Fue la segunda vez que se celebró un mundial de baloncesto en España (el anterior, en 1986), entrando así "
+            + "en el grupo de países con más de un mundial organizado, en el que están Brasil (1954 y 1963) y "
+            + "Argentina (1950 y 1990). Con un equipo NBA, Estados Unidos derrotó ampliamente a todos sus rivales y "
+            + "logró defender de manera invicta y exitosa el título de 2010.", false),
+    ];
+
+    private const string WinWords =
+        "gan campeon campeona vencio derroto corono consagro titulo won win champion beat defeat victor triumph";
+
+    private const string WinWordsNot = "campeonato campeonatos championship championships ganancia ganancias";
+
+    [Test]
+    public async Task OnlyTheReadArticlesFragmentIsJudgedNotAnotherResultThatSaysWinner()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es", Mundial2014Results),
+        };
+        handler.Routes.Add(("&titles=", WikipediaAnswer("es", ("Copa Mundial de Fútbol de 2014", Mundial2014Article, false))));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("{\"query\":\"quien gano el mundial del 2014\",\"limit\":5,\"answerWords\":\"" + WinWords
+                + "\",\"answerWordsNot\":\"" + WinWordsNot + "\"}"),
+            CancellationToken.None);
+
+        string read = receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString() ?? "";
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("results").GetArrayLength(), Is.GreaterThan(1));
+            Assert.That(handler.Asked.Select(asked => Uri.UnescapeDataString(asked.Uri.AbsoluteUri)),
+                Has.Some.Contains("&titles=Copa Mundial de Fútbol de 2014"));
+            Assert.That(read, Does.Contain("Alemania derrotó por 1-0 a Argentina"));
+        });
+    }
+
+    // Revisión adversarial: the English article's opening, as the open API gives it, calls the cup «the quadrennial
+    // world championship»; «championship» begins as «champion» and says nobody won. With the mind's answerWordsNot it
+    // states nothing, and the article is read for the sentence that does.
+    private const string WorldCup2014EnglishIntro =
+        "The 2014 FIFA World Cup was the 20th FIFA World Cup, the quadrennial world championship for men's national "
+        + "football teams organised by FIFA. It took place in Brazil from 12 June to 13 July 2014, after the country "
+        + "was awarded the hosting rights in 2007.";
+
+    [Test]
+    public async Task AWordThatOnlyBeginsLikeTheRelationDoesNotSpareTheArticleRead()
+    {
+        string article = WorldCup2014EnglishIntro + "\n\nThe final was played at the Maracanã Stadium in Rio de "
+            + "Janeiro.\nGermany won the tournament and its fourth World Cup title, beating Argentina 1–0 in extra "
+            + "time in the final.\nThe tournament was criticised for its costs.";
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["en.wikipedia.org"] = WikipediaAnswer("en", ("2014 FIFA World Cup", WorldCup2014EnglishIntro, false)),
+        };
+        handler.Routes.Add(("&titles=", WikipediaAnswer("en", ("2014 FIFA World Cup", article, false))));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("{\"query\":\"who won the 2014 world cup\",\"limit\":5,\"answerWords\":\"" + WinWords
+                + "\",\"answerWordsNot\":\"" + WinWordsNot + "\"}"),
+            CancellationToken.None);
+
+        string read = receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString() ?? "";
+        string[] win = WinWords.Split(' ');
+        string[] notStated = WinWordsNot.Split(' ');
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(read, Does.Contain("Germany won the tournament"));
+            Assert.That(read, Does.Not.Contain("criticised"));
+            // The cause, and its counter-case: without the exclusions «championship» passed for the relation.
+            Assert.That(SearchPageExcerpt.FragmentAnswers(
+                "2014 FIFA World Cup. " + WorldCup2014EnglishIntro, "who won the 2014 world cup", win), Is.True);
+            Assert.That(SearchPageExcerpt.FragmentAnswers(
+                "2014 FIFA World Cup. " + WorldCup2014EnglishIntro, "who won the 2014 world cup", win, notStated),
+                Is.False);
+            Assert.That(SearchPageExcerpt.FragmentAnswers(
+                "Germany won the 2014 World Cup.", "who won the 2014 world cup", win, notStated), Is.True);
+        });
+    }
+
     [Test]
     public async Task AnEnglishQuestionAsksEnglishWikipediaFirstAndSpanishOnlyWhenItHasNothing()
     {
@@ -3051,6 +3544,185 @@ public sealed class ExternalAdaptersTests
             Assert.That(brief.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(),
                 Is.EqualTo("El arroz integral sube..."));
             Assert.That(shortHandler.Asked.Select(asked => asked.Uri.Host), Does.Not.Contain("cocina.example.com"));
+        });
+    }
+
+    // Ronda 24 (r23 t1-c03 «cuales son las peliculas mas taquilleras de la historia? dame el top 5» → «No lo
+    // encontré.»): the annex's ranking is a table, as es.wikipedia writes it (a sorting key hidden with display:none,
+    // references as <sup>); its rows were cut cell by cell and never read.
+    private const string GrossingAnnexPage = """
+        <html><head><title>Anexo:Películas con las mayores recaudaciones</title></head><body>
+        <nav>Portada Categorías</nav>
+        <h1>Anexo:Películas con las mayores recaudaciones</h1>
+        <p>La película más taquillera de la historia es la primera de la tabla de abajo, en dólares sin ajustar.</p>
+        <h2>Mayores recaudaciones por año</h2>
+        <table><tr><th>Año</th><th>Película</th></tr><tr><td>1915</td><td>El nacimiento de una nación</td></tr>
+        <tr><td>1939</td><td>Lo que el viento se llevó</td></tr></table>
+        <h3>Lista</h3>
+        <table class="wikitable"><caption>Películas con las mayores recaudaciones a nivel mundial (en USD)<sup class="mw-ref reference"><a href="#n1">[1]</a></sup></caption>
+        <tr><th>N.º</th><th>Película</th><th>Recaudación mundial</th><th>Año de estreno</th></tr>
+        <tr><th>1</th><td><i><a href="/wiki/Avatar">Avatar</a></i></td><td><span style="display:none">&amp;&amp;02923706026</span>2&nbsp;923&nbsp;706&nbsp;026</td><td>2009</td></tr>
+        <tr><th>2</th><td><i>Avengers: Endgame</i></td><td>2&nbsp;799&nbsp;439&nbsp;100</td><td>2019</td></tr>
+        <tr><th>3</th><td><i>Avatar: el sentido del agua</i></td><td>2&nbsp;320&nbsp;250&nbsp;281</td><td>2022</td></tr>
+        <tr><th>4</th><td><i>Titanic</i></td><td>2&nbsp;264&nbsp;750&nbsp;694</td><td>1997</td></tr>
+        <tr><th>5</th><td><i>Star Wars: el despertar de la Fuerza</i></td><td>2&nbsp;071&nbsp;310&nbsp;218</td><td>2015</td></tr>
+        <tr><th>6</th><td><i>Avengers: Infinity War</i></td><td>2&nbsp;052&nbsp;415&nbsp;039</td><td>2018</td></tr>
+        </table>
+        <h3>Ajuste debido a la inflación</h3>
+        <table class="wikitable"><caption>Películas más taquilleras por ajuste de inflación</caption>
+        <tr><th>N.º</th><th>Película</th><th>Recaudación ajustada</th></tr>
+        <tr><td>1</td><td>Lo que el viento se llevó</td><td>3&nbsp;700&nbsp;000&nbsp;000</td></tr>
+        <tr><td>2</td><td>Avatar</td><td>3&nbsp;300&nbsp;000&nbsp;000</td></tr>
+        </table>
+        <h2>Referencias</h2><ol class="references"><li>Box Office Mojo, consultado en 2026.</li><li>The Numbers.</li></ol>
+        </body></html>
+        """;
+
+    [Test]
+    public void AListingAskedReadsThePagesFirstRankingAsRows()
+    {
+        const string asked = "cuales son las peliculas mas taquilleras de la historia? dame el top 5";
+        string rows = SearchPageExcerpt.Rows(GrossingAnnexPage, asked, 5);
+        string three = SearchPageExcerpt.Rows(GrossingAnnexPage, asked, 3);
+        const string listicle = """
+            <html><body><h2>Las 3 películas más taquilleras de la historia</h2>
+            <ol><li>Avatar (2009)</li><li>Avengers: Endgame (2019)</li><li>Avatar: el sentido del agua (2022)</li></ol>
+            </body></html>
+            """;
+        Assert.Multiple(() =>
+        {
+            Assert.That(rows, Does.StartWith("1. Avatar · 2 923 706 026 · 2009 | 2. Avengers: Endgame · 2 799 439 100 · 2019"));
+            Assert.That(rows, Does.Contain("5. Star Wars: el despertar de la Fuerza · 2 071 310 218 · 2015"));
+            Assert.That(rows, Does.Not.Contain("Infinity War"));
+            // The sorting key hidden from the reader and the reference mark are no part of a row.
+            Assert.That(rows, Does.Not.Contain("&").And.Not.Contain("[1]").And.Not.Contain("02923706026"));
+            // A later ranking (adjusted for inflation) and a table ordered by year are not the ranking asked.
+            Assert.That(rows, Does.Not.Contain("Lo que el viento").And.Not.Contain("nacimiento"));
+            Assert.That(three.Split(" | "), Has.Length.EqualTo(3));
+            Assert.That(SearchPageExcerpt.Rows(listicle, "las peliculas mas taquilleras", 5),
+                Is.EqualTo("1. Avatar (2009) | 2. Avengers: Endgame (2019) | 3. Avatar: el sentido del agua (2022)"));
+            // A ranking under a heading that names nothing asked (the references) is not read.
+            Assert.That(SearchPageExcerpt.Rows(GrossingAnnexPage, "fuentes de box office mojo", 5), Is.Empty);
+            Assert.That(SearchPageExcerpt.Rows(RicePage, asked, 5), Is.Empty);
+        });
+    }
+
+    // Revisión 2 de la ronda 24: en.wikipedia's «List of highest-grossing films» writes Rank · Peak · Title; the peak
+    // column was read as the row's name («1. 1 · Avengers: Endgame †»), and the mind took «1» for the first.
+    [Test]
+    public void ARankingsPeakColumnIsNoPartOfItsRows()
+    {
+        const string page = """
+            <html><body><h2>Highest-grossing films</h2>
+            <table class="wikitable"><caption>Highest-grossing films worldwide</caption>
+            <tr><th>Rank</th><th>Peak</th><th>Title</th><th>Worldwide gross</th><th>Year</th></tr>
+            <tr><td>1</td><td>1</td><th><i>Avengers: Endgame</i> †</th><td>$2,926,896,227</td><td>2019</td></tr>
+            <tr><td>2</td><td>1</td><th><i>Avatar</i></th><td>$2,923,706,026</td><td>2009</td></tr>
+            <tr><td>3</td><td>3</td><th><i>Avatar: The Way of Water</i></th><td>$2,320,250,281</td><td>2022</td></tr>
+            </table></body></html>
+            """;
+        const string scored = """
+            <html><body><h2>Top scorers of the league</h2>
+            <table><tr><th>Rank</th><th>Player</th><th>Goals</th></tr>
+            <tr><td>1</td><td>Ana Pérez</td><td>12</td></tr><tr><td>2</td><td>Lucía Gómez</td><td>9</td></tr></table>
+            </body></html>
+            """;
+        Assert.Multiple(() =>
+        {
+            Assert.That(SearchPageExcerpt.Rows(page, "what are the highest grossing films", 3), Is.EqualTo(
+                "1. Avengers: Endgame † · $2,926,896,227 · 2019 | 2. Avatar · $2,923,706,026 · 2009 | "
+                + "3. Avatar: The Way of Water · $2,320,250,281 · 2022"));
+            // Counter-case: a figure after the name (the goals) stays a cell of its row.
+            Assert.That(SearchPageExcerpt.Rows(scored, "top scorers of the league", 2),
+                Is.EqualTo("1. Ana Pérez · 12 | 2. Lucía Gómez · 9"));
+        });
+    }
+
+    // Revisión 1 de la ronda 24: an <ol> under a heading that names what was asked is a ranking only when its items
+    // are short entries. A WordPress comment list (h2.comments-title + ol.comment-list, each comment an <article>) and
+    // a list of steps (sentences) are not; the listicle whose places are <h3> gives no rows from them.
+    [Test]
+    public void AnOrderedListOfCommentsOrStepsIsNoRanking()
+    {
+        const string asked = "cuales son las peliculas mas taquilleras de la historia? dame el top 5";
+        const string comments = """
+            <html><body><h1>Las 10 películas más taquilleras de la historia</h1>
+            <h3>1. Avatar</h3><p>Dirigida por James Cameron.</p><h3>2. Avengers: Endgame</h3><p>De Marvel.</p>
+            <h2 class="comments-title">2 comentarios en «Las 10 películas más taquilleras de la historia»</h2>
+            <ol class="comment-list">
+            <li id="comment-1" class="comment"><article class="comment-body"><footer class="comment-meta"><b class="fn">Juan Pérez</b> <span class="says">dice:</span></footer>
+            <div class="comment-content"><p>Faltó Titanic, para mí es la mejor de todas.</p></div></article></li>
+            <li id="comment-2" class="comment"><article class="comment-body"><footer class="comment-meta"><b class="fn">María</b> <span class="says">dice:</span></footer>
+            <div class="comment-content"><p>Excelente artículo, gracias.</p></div></article></li>
+            </ol></body></html>
+            """;
+        // Encargo W: comments that end with no mark and run short are told by their blocks (<article>, <p>): the check of
+        // a block inside an item was written with a backspace character for its word boundary and never matched.
+        const string bareComments = """
+            <html><body><h2 class="comments-title">2 comentarios en «Las 10 películas más taquilleras de la historia»</h2>
+            <ol class="comment-list">
+            <li class="comment"><article class="comment-body"><b class="fn">Juan</b><p>Faltó Titanic</p></article></li>
+            <li class="comment"><article class="comment-body"><b class="fn">María</b><p>Buenísimo el artículo</p></article></li>
+            </ol></body></html>
+            """;
+        const string steps = """
+            <html><body><h2>Cómo ver las películas más taquilleras gratis</h2>
+            <ol><li>Abre la app y crea una cuenta.</li><li>Busca la película en el catálogo.</li><li>Pulsa reproducir.</li></ol>
+            </body></html>
+            """;
+        const string entries = """
+            <html><body><h2>Las 3 películas más taquilleras de la historia</h2>
+            <ol><li><a href="/avatar">Avatar</a> (2009) – 2 923 millones</li><li>Avengers: Endgame (2019)</li><li>Titanic (1997)</li></ol>
+            </body></html>
+            """;
+        Assert.Multiple(() =>
+        {
+            Assert.That(SearchPageExcerpt.Rows(comments, asked, 5), Is.Empty);
+            Assert.That(SearchPageExcerpt.Rows(bareComments, asked, 5), Is.Empty);
+            Assert.That(SearchPageExcerpt.Rows(steps, asked, 5), Is.Empty);
+            // Counter-case: short entries, a link and a figure among them, are still the ranking.
+            Assert.That(SearchPageExcerpt.Rows(entries, asked, 5),
+                Is.EqualTo("1. Avatar (2009) – 2 923 millones | 2. Avengers: Endgame (2019) | 3. Titanic (1997)"));
+        });
+    }
+
+    // Ronda 24: with listing (limit = how many), the first pages are read even for a short query and the ranking's
+    // rows follow the snippet; the same query without listing reads no page (TheGeneralEnginesFirstPagesAreRead…).
+    [Test]
+    public async Task AListingAskedCarriesTheRankingRowsOfTheFirstPages()
+    {
+        static SearchSourcesHttpHandler Sources() => new()
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Anexo:Películas con las mayores recaudaciones - Wikipedia", "https://anexo.example.org/recaudaciones",
+                    "La película más taquillera de la historia es la primera de la tabla.")), "text/html"),
+            ["anexo.example.org"] = new(HttpStatusCode.OK, GrossingAnnexPage, "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        SearchSourcesHttpHandler listed = Sources();
+        using var listedHttp = new HttpClient(listed);
+        using var listedAdapter = new WebBrowserAdapter(browser, listedHttp);
+        ExternalCapabilityReceipt listing = await listedAdapter.InvokeAsync(
+            "web.search", Json("""{"query":"peliculas mas taquilleras","limit":3,"listing":true}"""),
+            CancellationToken.None);
+        SearchSourcesHttpHandler plain = Sources();
+        using var plainHttp = new HttpClient(plain);
+        using var plainAdapter = new WebBrowserAdapter(browser, plainHttp);
+        ExternalCapabilityReceipt single = await plainAdapter.InvokeAsync(
+            "web.search", Json("""{"query":"peliculas mas taquilleras","limit":3}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listing.Verified, Is.True, listing.ErrorCode);
+            string snippet = listing.Result!.Value.GetProperty("results")[0].GetProperty("snippet").GetString()!;
+            Assert.That(snippet, Does.StartWith("La película más taquillera de la historia es la primera de la tabla."));
+            Assert.That(snippet, Does.Contain(" … ").And.Contain("1. Avatar · 2 923 706 026 · 2009 | 2. Avengers: Endgame"));
+            Assert.That(snippet, Does.Contain("3. Avatar: el sentido del agua").And.Not.Contain("4. Titanic"));
+            Assert.That(single.Verified, Is.True, single.ErrorCode);
+            Assert.That(single.Result!.Value.GetProperty("results")[0].GetProperty("snippet").GetString(),
+                Does.Not.Contain("1. Avatar"));
+            Assert.That(plain.Asked.Select(asked => asked.Uri.Host), Does.Not.Contain("anexo.example.org"));
         });
     }
 
@@ -5086,8 +5758,7 @@ public sealed class ExternalAdaptersTests
         bool launched,
         int windowAfter,
         int drawnAfter = 0,
-        TimeSpan noted = default,
-        bool holds = true) : IOpenedApplicationFocus
+        TimeSpan noted = default) : IOpenedApplicationFocus
     {
         private bool _taken;
 
@@ -5109,8 +5780,12 @@ public sealed class ExternalAdaptersTests
         public ValueTask<VisibleControlSurface.OpenedSurface> FrontAsync(
             VisibleControlSurface.OpenedApplication opened,
             bool judgeDrawn,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool bringToFront = false)
         {
+            // v3 point 0, fix 1: a click on the opened application locates its window and presses it where it is,
+            // behind the person's; only the pointer, inside a burst of the lease, takes the front (a look never does).
+            Assert.That(bringToFront, Is.False, "a click on the opened application never asks for its window in front");
             FrontCalls++;
             JudgedDrawn.Add(judgeDrawn);
             if (FrontCalls <= windowAfter)
@@ -5118,8 +5793,6 @@ public sealed class ExternalAdaptersTests
             return ValueTask.FromResult(new VisibleControlSurface.OpenedSurface(
                 77, Drawn: !judgeDrawn || FrontCalls > drawnAfter));
         }
-
-        public bool Holds(nint window) => holds;
     }
 
     private sealed class CountingLocator : IVisibleControlLocator

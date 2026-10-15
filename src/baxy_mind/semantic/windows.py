@@ -3,10 +3,19 @@
 
 from __future__ import annotations
 
+import json
 import re
+from functools import lru_cache
+from pathlib import Path
+
 from .grammar import _fold, _has, _strip_request_envelope, window_inventory_arguments
+from .lexicon import REASONS_AFTER_A_PLACING, reason_opening
 from .normalize import fold
 
+# After the side or the pair of a placing, a clause of why (``lexicon.REASONS_AFTER_A_PLACING``) or what for («so»,
+# «para») ends it: «… a la derecha para ver los dos», «… so I can compare». The same six openings as before r31, said
+# once: a wider list cut the second name of a pair («… y just cause 3 lado a lado»).
+_PLACING_REASON_TAIL = rf"(?:\s*,?\s+(?:{reason_opening(REASONS_AFTER_A_PLACING)}|so|para)\b.*)?[\s.!?]*$"
 
 _CLOSE_WINDOW_WRAPPER = re.compile(
     r"^(?:(?:la|el|the)\s+)?(?:ventana|window|app|aplicacion|programa|application|program)\s+(?:de|del|of)\s+(?P<name>.+)$"
@@ -57,11 +66,28 @@ _FOCUS_TAIL = (
 )
 
 
+# v3 point 0 (arreglo 4): a computer-use mission opens its application behind the person's window; only a request
+# that asks to see it in front («abrí Spotify y traelo al frente», «bring Paint to the front», «enfocá Discord») opens
+# it in front. A bare «adelante»/«forward» says go on, not the front: it counts only after a carry or put head.
+_FRONT_REQUEST = re.compile(
+    rf"\b(?:{_FOCUS_HEAD_WITH_TAIL}\w*\s+(?:\S+\s+){{0,3}}?{_FOCUS_TAIL}"
+    r"|al\s+frente|al\s+primer\s+plano|en\s+primer\s+plano|to\s+the\s+front|in\s+the\s+foreground"
+    # Only the focus verbs themselves: «cambiá a» / «switch to» also choose a mode or a tab inside the application.
+    r"|enfoca|enfocame|enfocar|focus)\b"
+)
+
+
+def asks_for_the_front(text: str | None) -> bool:
+    """The request asks to see the application in front (app.open «foreground»), not just to work in it."""
+
+    return _FRONT_REQUEST.search(_fold(text or "")) is not None
+
+
 _MINIMIZE_HEAD = r"(?:minimiza|minimizame|minimizar|minimise|minimize|minimisa|minimisame)"
 
 
 _SNAP_HEAD = (
-    r"(?:pon|pone|poneme|poner|ponla|ponlo|mueve|mover|moveme|muevela|muevelo|lleva|llevame|llevar|"
+    r"(?:pon|pone|poneme|ponme|poner|ponla|ponlo|mueve|mover|moveme|muevela|muevelo|lleva|llevame|llevar|"
     r"coloca|colocame|colocar|acomoda|acomodame|acomodar|arrastra|arrastrame|arrastrar|"
     r"put|move|snap|dock|place|drag)"
 )
@@ -72,6 +98,72 @@ _SNAP_SIDE = (
     r"(?:on|to|at)\s+the\s+(?:left|right)(?:\s+(?:side|half))?(?:\s+of\s+the\s+screen)?|"
     r"(?:left|right))"
 )
+
+
+# v3 r6 lectores (t2-r4 c18 «pon el Word y el Edge uno al lado del otro» → a YouTube video): two windows placed
+# beside each other with no side said. The first named goes on the left half, the second on the right.
+_SIDE_BY_SIDE = (
+    r"(?:uno\s+al\s+lado\s+del\s+otro|una\s+al\s+lado\s+de\s+la\s+otra|uno\s+junto\s+al\s+otro|"
+    r"una\s+junto\s+a\s+la\s+otra|(?:de\s+)?lado\s+a\s+lado|(?:en|a)\s+pantalla\s+(?:dividida|partida)|"
+    r"(?:en|a)\s+dos\s+mitades|side\s+by\s+side|next\s+to\s+each\s+other|(?:in|on)\s+(?:a\s+)?split\s+screen)"
+)
+# «divide la pantalla entre Word y Edge», «split the screen between Word and Edge».
+_SPLIT_SCREEN_HEAD = (
+    r"(?:divide|dividi|dividir|dividime|parte|parti|partir|split)\s+(?:la\s+|the\s+|my\s+|mi\s+)?(?:pantalla|screen)\s+"
+    r"(?:entre|between)"
+)
+_ENGLISH_SNAP_HEAD = re.compile(r"^(?:put|move|snap|dock|place|drag|split)\b")
+
+
+# Tanda t4-r6 c19: Opera was snapped to the left, Word's step failed, and the final only said it could not place them.
+# A window placed earlier in the same turn is a fact of the turn: a final that leaves it out tells less than was done.
+WINDOW_PLACEMENT_OPERATIONS = frozenset(
+    {"window.snap", "window.move", "window.resize", "window.maximize", "window.minimize", "window.restore"}
+)
+# How a placed window is told (folded): the act done (a preterite or a participle) or how it was left. An infinitive
+# («no puedo colocarlos») tells what could not be done, never what was.
+_PLACEMENT_TOLD = re.compile(
+    r"\b(?:acomode|coloque|puse|movi|ajuste|deje|maximice|minimice|restaure|redimensione|quedo|"
+    r"(?:acomodad|colocad|puest|movid|ajustad|dejad|maximizad|minimizad|restaurad|redimensionad)[oa]s?|"
+    # Ronda 19 (r17 t3-c18 «Word se acomodó a la izquierda» → a fallback «Coloqué la ventana: a la izquierda»): the
+    # reflexive passive tells the placement as the first person does.
+    r"se\s+(?:(?:acomod|coloc|ajust|maximiz|minimiz|restaur|redimension)(?:o|aron)|movi(?:o|eron)|puso|pusieron)|"
+    # Where it ended up, in both languages: «Opera está a la izquierda» tells it as «Opera is on the left» does.
+    r"(?:esta|estan|estaba|estaban|queda|quedan|quedaron)\s+(?:ya\s+|ahora\s+)?(?:a|en)\s+la\s+(?:izquierda|derecha)|"
+    r"placed|moved|snapped|docked|resized|restored|maximized|minimized|i\s+put|"
+    r"(?:is|are|was|were)\s+(?:now\s+|already\s+)?(?:on|at)\s+the\s+(?:left|right))\b"
+)
+
+
+def tells_a_window_placement(text: str) -> bool:
+    """The reply says a window was placed, sized or where it ended up (``_PLACEMENT_TOLD``)."""
+
+    return _PLACEMENT_TOLD.search(fold(str(text or ""))) is not None
+
+
+def side_by_side_placement(text: str) -> bool:
+    """The text says two things go beside each other on the screen (``_SIDE_BY_SIDE`` or the split head)."""
+
+    return _has(_fold(str(text or "")), rf"\b(?:{_SIDE_BY_SIDE}|{_SPLIT_SCREEN_HEAD})\b")
+
+
+def two_things_side_by_side(text: str) -> bool:
+    """The text places two things joined by y/and beside each other: the placing phrase after both («Word y Edge
+    lado a lado»), before both and followed by them («lado a lado Word y Edge»), or the split head («divide la
+    pantalla entre Word y Edge»). A title that only contains the phrase («Side by Side de Ariana Grande y Nicki
+    Minaj») or one window alone («Word en pantalla dividida») places nothing beside anything.
+    """
+
+    conjoined = r"\S\s*,?\s+(?:y|e|and)\s+\S"
+    return any(
+        re.search(pattern, line, re.IGNORECASE) is not None
+        for line in map(_fold, str(text or "").splitlines())
+        for pattern in (
+            rf"{conjoined}.*\s{_SIDE_BY_SIDE}(?:\s+(?:en|on|in)\s+\S.*)?{_PLACING_REASON_TAIL}",
+            rf"(?:^|\s){_SIDE_BY_SIDE}\s+(?!(?:de|del|by|of|from|con|with)\b)\S.*{conjoined}",
+            rf"\b{_SPLIT_SCREEN_HEAD}\s+\S.*{conjoined}",
+        )
+    )
 
 
 # M145: the half of the screen said for a window with no name («esta ventana a la mitad izquierda», «al lado
@@ -396,3 +488,69 @@ def window_size_asked(user_text: str) -> str | None:
     if not _WINDOW_SIZE_QUESTION.search(folded):
         return None
     return "smallest" if re.search(r"\b(?:mas\s+(?:chica|pequena)|smallest)\b", folded) is not None else "largest"
+
+
+# Review of pasada r15b2 (v3-22 t3): a look at a window that runs as administrator reads its frame — title, process,
+# that it is elevated — and no text. A question about that frame is answered from it («¿qué ventana tengo delante?»,
+# «¿cómo se llama esta app?», «¿corre como administrador?»); only a question about what the window shows («¿cuáles
+# tienen impacto alto?», «¿qué dice la ventana?») is the limit the read hit.
+# One window or application, singular: «¿qué programas tienen impacto alto?» asks what the window lists.
+_FRAME_NOUN = r"(?:ventana|app|aplicacion|programa|window|application|program)"
+# What may follow the noun in a question about which one it is: «¿qué ventana tengo delante?», «¿en qué app estoy?»,
+# «what window is this»; «¿qué app consume más?» asks what the window shows.
+_FRAME_AFTER = (
+    r"(?:es|esta|estoy|tengo|hay|tienes|ves|activa|actual|abierta|abierto|delante|adelante|enfrente|se\s+llama|is|am|"
+    r"do|i|active|current|open|in|this|that|called)"
+)
+_FRAME_ONE = rf"(?:(?:la|el|esta|este|the|this)\s+)?{_FRAME_NOUN}(?:\s+{_FRAME_AFTER}\b|[\s?!.]*$)"
+_FRAME_QUESTION = re.compile(
+    rf"\b(?:que|cual|which|what)\s+(?:(?:es|is)\s+)?{_FRAME_ONE}|"
+    rf"\b(?:como\s+se\s+llama|nombre\s+del?|titulo\s+del?|title\s+of|name\s+of)\s+{_FRAME_ONE}|"
+    r"\b(?:que|what)\s+(?:tengo|hay|have\s+i|is)\s+"
+    r"(?:abiert[oa]|delante|adelante|enfrente|en\s+frente|open|in\s+front)\b|"
+    r"\b(?:administrador|administrator|admin|elevad[oa]|elevated)\b"
+)
+
+
+def asks_about_the_window_frame(user_text: object) -> bool:
+    """Whether the question asks about the window itself (which one, its name, whether it runs as administrator),
+    which its frame answers, rather than about what it shows."""
+
+    return _FRAME_QUESTION.search(fold(str(user_text or ""))) is not None
+
+
+_NAMING_DATA = Path(__file__).resolve().parent.parent / "data" / "window_naming.v1.json"
+
+
+@lru_cache(maxsize=1)
+def _naming_data() -> dict:
+    return json.loads(_NAMING_DATA.read_text(encoding="utf-8"))
+
+
+def asks_to_name_windows(user_text: object) -> bool:
+    """Ronda 22 (r18 t4-c19): whether the request asks to list or name windows («¿qué ventanas tengo abiertas?», «lista
+    las ventanas del navegador», «dime los títulos de las pestañas») or what they show («¿qué documento tengo abierto
+    en Word?», «¿qué tengo abierto en el navegador?»), so a window read's titles are what was asked.
+    «ponme el navegador y el word uno al lado del otro» names no window to list: its read travels as a count. Words in
+    data/window_naming.v1.json."""
+
+    if not isinstance(user_text, str) or not user_text.strip():
+        return False
+    if _inventory_identity_request(user_text):
+        return True
+    data = _naming_data()
+    words = re.findall(r"\w+", fold(user_text))
+    nouns = set(data["windowNouns"])
+    asking = set(data["listVerbs"]) | set(data["titleNouns"])
+    # Revisión 2: a which-word asks only in a question, or as the request's opening word after its leads; inside an
+    # order it is a relative («minimiza lo que tengo abierto»).
+    leads = set(data["questionLeads"])
+    opening = next((index for index, word in enumerate(words) if word not in leads), len(words))
+    question = "?" in user_text
+    which = set(data["whichWords"])
+    # The asking word goes before the window noun, within the same short phrase («dime qué ventanas…»).
+    return any(
+        word in asking or (word in which and (question or index == opening))
+        for position, noun in enumerate(words) if noun in nouns
+        for index, word in enumerate(words[max(0, position - 4):position], start=max(0, position - 4))
+    )

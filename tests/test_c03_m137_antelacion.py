@@ -19,8 +19,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import arguments, decider, temporal
+from baxy_mind import argument_grounding
 
 # Saturday 3 October 2026, 12:30 in Chile (UTC-3).
 LOCAL = timezone(timedelta(hours=-3))
@@ -38,7 +38,7 @@ def _local(due: str) -> datetime:
 
 
 def _normalized(operation: str, raw: dict, context: str, said: str | None = None) -> dict | None:
-    return sidecar._normalize_grounded_operation_arguments(operation, dict(raw), context, now_utc=NOW, said=said)
+    return argument_grounding._normalize_grounded_operation_arguments(operation, dict(raw), context, now_utc=NOW, said=said)
 
 
 # ------------------------------------------------------------------ 1. the advance, through the readers that read it

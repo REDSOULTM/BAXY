@@ -195,6 +195,65 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         }
     }
 
+    // Uso real v3 tanda 1 («quien gano el mundial del 2014»): las tres primeras oraciones del artículo nombraban a
+    // Brasil como sede y no decían quién ganó; el artículo entero lo dice más abajo. Su texto plano se pide a la misma
+    // API abierta, con el mismo User-Agent; sale sólo el título del artículo que la búsqueda ya devolvió.
+    internal static Uri ArticleUri(string language, string title) =>
+        new("https://" + language + ".wikipedia.org/w/api.php"
+            + "?action=query&format=json&formatversion=2&prop=extracts&explaintext=1&redirects=1"
+            + "&titles=" + Uri.EscapeDataString(title));
+
+    // Null cuando Wikipedia no contestó o el artículo no trae texto.
+    internal async Task<string?> ReadArticleAsync(string language, string title, CancellationToken cancellationToken)
+    {
+        if (title.Length == 0) return null;
+        using var request = new HttpRequestMessage(HttpMethod.Get, ArticleUri(language, title));
+        request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
+        try
+        {
+            using HttpResponseMessage response = await _http
+                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode) return null;
+            string body = await WebBrowserAdapter.ReadBoundedTextAsync(response, 1_000_000, cancellationToken)
+                .ConfigureAwait(false);
+            return ParseArticleResponse(body);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    // El texto plano del primer artículo de la respuesta, con sus párrafos en líneas; null sin texto.
+    internal static string? ParseArticleResponse(string body)
+    {
+        using JsonDocument document = JsonDocument.Parse(body);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object
+            || !root.TryGetProperty("query", out JsonElement query)
+            || !query.TryGetProperty("pages", out JsonElement pages)
+            || pages.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+        foreach (JsonElement page in pages.EnumerateArray())
+        {
+            if (page.ValueKind != JsonValueKind.Object) continue;
+            string extract = StringOf(page, "extract").Replace("\u200B", string.Empty, StringComparison.Ordinal);
+            if (extract.Trim().Length > 0) return extract;
+        }
+        return null;
+    }
+
     // Cada página trae su puesto en la búsqueda («index»), su dirección y el inicio
     // del artículo en texto plano. Las desambiguaciones no contestan nada y se
     // descartan; una dirección que no es de esa Wikipedia, también.

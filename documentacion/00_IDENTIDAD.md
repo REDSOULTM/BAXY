@@ -325,3 +325,22 @@ Tres pruebas, y hacen falta las tres:
 
 Y lo que hay que quitarle de encima al usuario, en sus palabras: **levantarse del
 teclado**.
+
+## Aclaraciones del dueño, 2026-10-10
+
+Respondidas una por una al fijar la misión de estabilización
+(`computer-use/PROMPT_ESTABILIZACION_2026-10-10.md`). Donde afinan una decisión de arriba, vale ésta.
+
+- **Confirmación.** En modo Normal BAXY confirma lo que destruye datos **y también lo que sale al mundo**: enviar un
+  mensaje, entrar a un canal de voz, publicar, comprar, instalar o desinstalar. El modo bypass sigue sin frenos, y
+  las pruebas del producto se corren en bypass sobre blancos seguros.
+- **Estable antes que amplio.** No existe un computer use «mágico»: BAXY corre con un modelo local pequeño y hace,
+  al máximo y siempre, lo que puede hacer con sus requisitos. Lo que no puede hacer de forma fiable no se fuerza ni
+  se hardcodea: se declara límite y BAXY lo dice («Eso no lo hago») dejando a la persona lo más cerca posible.
+  Se acepta perder casos que pasaban a veces a cambio de que los demás pasen siempre.
+- **Velocidad.** La meta es acercarse al máximo al tiempo del propio modelo: se mide la sobrecarga de BAXY sobre el
+  tiempo de modelo y se reduce quitando capas.
+- **Apps.** Steam, WhatsApp y Discord importan al dueño, pero se cubren con mecanismos genéricos más datos por
+  aplicación, nunca con código que nombre una app.
+- **«No molestar».** BAXY nunca escribe ni hace clic en la ventana de la persona; puede traer su aplicación al
+  frente mientras actúa y devolver el frente al terminar.

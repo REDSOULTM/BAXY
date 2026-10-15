@@ -81,6 +81,88 @@ public sealed class VoiceFeedbackTests
         }
     }
 
+    // Ronda 25 (latency): the boot greeting loses its moment when the person submits, not when the turn starts 0.7-1.2 s
+    // later (after the request's own parsing), so its composition never takes the mind's serial lane ahead of the request
+    // (35 of 72 first turns of the bench waited ~1 s behind it). Contracase: a greeting queued in the turn that asked for
+    // it («hola») keeps its moment.
+    [Test]
+    public async Task AWelcomeLosesItsMomentWhenThePersonSubmitsNotWhenTheTurnStarts()
+    {
+        SynchronizationContext? previous = SynchronizationContext.Current;
+        MainWindowViewModel viewModel;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(new InlineContext());
+            viewModel = new MainWindowViewModel();
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previous);
+        }
+
+        await using (viewModel)
+        {
+            var isStale = typeof(MainWindowViewModel)
+                .GetMethod("IsStalePendingMessage", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .CreateDelegate<Func<PendingModelMessage, bool>>(viewModel);
+            MethodInfo dispatch = typeof(MainWindowViewModel)
+                .GetMethod("DispatchMissionInputAsync", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            FieldInfo currentTurn = typeof(MainWindowViewModel)
+                .GetField("_currentTurnTraceId", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            PendingModelMessage greeting = Welcome("t0");
+            Assert.That(isStale(greeting), Is.False);
+
+            // The input stops in the pipeline before any turn starts (it is empty): the current turn is still t0.
+            Assert.ThrowsAsync<MissionInputRejectedException>(async () => await (Task)dispatch.Invoke(
+                viewModel, [new MissionInput(string.Empty, MissionInputSource.Text), null, CancellationToken.None])!);
+            Assert.That(currentTurn.GetValue(viewModel), Is.EqualTo("t0"));
+            Assert.That(isStale(greeting), Is.True, "the person spoke: the greeting lost its moment");
+
+            currentTurn.SetValue(viewModel, "t1");
+            Assert.That(isStale(Welcome("t1")), Is.False, "a greeting asked for in the current turn is its answer");
+        }
+    }
+
+    // Review of ronda 25: an input rejected before any turn opens marks the current turn's greeting stale. A new
+    // conversation started after it greets under that same turn id, and its greeting is never dropped (the conversation
+    // would stay empty).
+    [Test]
+    public async Task ANewConversationAfterARejectedInputStillGetsItsWelcome()
+    {
+        SynchronizationContext? previous = SynchronizationContext.Current;
+        MainWindowViewModel viewModel;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(new InlineContext());
+            viewModel = new MainWindowViewModel();
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previous);
+        }
+
+        await using (viewModel)
+        {
+            var isStale = typeof(MainWindowViewModel)
+                .GetMethod("IsStalePendingMessage", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .CreateDelegate<Func<PendingModelMessage, bool>>(viewModel);
+            MethodInfo dispatch = typeof(MainWindowViewModel)
+                .GetMethod("DispatchMissionInputAsync", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            Assert.ThrowsAsync<MissionInputRejectedException>(async () => await (Task)dispatch.Invoke(
+                viewModel, [new MissionInput(string.Empty, MissionInputSource.Text), null, CancellationToken.None])!);
+            Assert.That(isStale(Welcome("t0")), Is.True, "the rejected input still lost the old greeting its moment");
+
+            Assert.That(viewModel.StartNewUiSession(), Is.True);
+            Assert.That(isStale(Welcome("t0")), Is.False, "the new conversation's greeting under the same turn id");
+        }
+    }
+
+    private static PendingModelMessage Welcome(string traceId)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        return new PendingModelMessage(draft, string.Empty, ModelMessageComposer.CreateFacts(draft), traceId);
+    }
+
     private static PendingModelMessage Pending(string eventName, string? reason)
     {
         UserMessageDraft draft = TurnVisibleFacts.VoiceFeedback(eventName, reason)!;

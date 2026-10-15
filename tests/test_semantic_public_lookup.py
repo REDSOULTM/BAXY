@@ -9,10 +9,10 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
 from baxy_mind.effect_intent import EffectIntent
 from baxy_mind.semantic.ui import literal_clipboard_write_text
 from baxy_mind.semantic.web import public_opinion_query, record_fact_query
+from baxy_mind.semantic import reading as semantic_reading
 
 
 @pytest.mark.parametrize(
@@ -83,7 +83,7 @@ def _resolve_orders(tail: str) -> EffectIntent | None:
     ],
 )
 def test_the_order_after_talk_is_the_request(text):
-    found = mind._order_with_talk(text, _resolve_orders)
+    found = semantic_reading._order_with_talk(text, _resolve_orders)
     assert found is not None and found.evidence[0].lower().startswith(("poné", "abrí", "subí"))
 
 
@@ -97,7 +97,7 @@ def test_the_order_after_talk_is_the_request(text):
     ],
 )
 def test_conditions_and_reported_speech_do_not_become_orders(text):
-    assert mind._order_with_talk(text, _resolve_orders) is None
+    assert semantic_reading._order_with_talk(text, _resolve_orders) is None
 
 
 def test_a_dictated_literal_without_its_closing_quote_is_still_the_literal():

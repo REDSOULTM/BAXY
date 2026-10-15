@@ -25,24 +25,52 @@ EspnScheduleSourceTests); every phrasing beyond the rows is our own.
 
 from __future__ import annotations
 
+import datetime as _dt
 import json
 from datetime import date
 
 import pytest
 
+from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
+from baxy_mind import llm_compose
+from baxy_mind import payload_fact_checks
+from baxy_mind import agenda_facts, clock_checks, clock_facts, compose_situation, search_report
+from baxy_mind.semantic import arguments as semantic_arguments
+from baxy_mind.semantic import dialogue as semantic_dialogue
 from baxy_mind.semantic import temporal
 from baxy_mind.semantic.decider import ContextDecision
+from baxy_mind.semantic.request import fold
 from test_c03_m148_avisos_eso_y_cuentas import REMINDER, SCHEDULE, _arguments, _local
 from test_c03_m152_aviso_antes_de_lo_dicho import _turn
+
+
+# Every mind module whose code reads the day a search report is judged on: it is patched in each one.
+_REPORT_DAY_READERS = (llm_compose, search_report)
 
 # Monday 5 October 2026, the day ESPN's answers were read (Santiago, UTC-03:00).
 TODAY = date(2026, 10, 5)
 
 
+class _FixedDatetime(_dt.datetime):
+    """Monday 5 October 2026, 12:00 in Santiago (UTC-3): the rows' clock, so a date they name stays ahead of it."""
+
+    @classmethod
+    def now(cls, tz=None):  # noqa: ANN001, ANN206
+        fixed = _dt.datetime(2026, 10, 5, 15, 0, 0, tzinfo=_dt.timezone.utc)
+        return fixed.astimezone(tz) if tz is not None else fixed.astimezone(_dt.timezone(_dt.timedelta(hours=-3))).replace(
+            tzinfo=None
+        )
+
+
 @pytest.fixture(autouse=True)
 def _fixed_day(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(llm, "_report_today", lambda: TODAY)
+    for module in _REPORT_DAY_READERS:
+        monkeypatch.setattr(module, "_report_today", lambda: TODAY)
+    for module in (llm, agenda_facts, clock_checks, clock_facts, compose_situation, search_report, sidecar,
+                   semantic_arguments, semantic_dialogue, temporal):
+        if getattr(module, "datetime", None) is _dt.datetime:
+            monkeypatch.setattr(module, "datetime", _FixedDatetime)
 
 
 def _espn(snippet: str, title: str, query: str) -> dict:
@@ -95,7 +123,7 @@ I26 = "a que hora juega chile el martes"
     ],
 )
 def test_the_match_read_is_said_in_the_persons_words(payload: dict, said: str, draft: str) -> None:
-    assert llm._payload_fact_defect(draft, payload, said, said=said) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said, said=said) == ""
 
 
 @pytest.mark.parametrize(
@@ -118,21 +146,21 @@ def test_the_match_read_is_said_in_the_persons_words(payload: dict, said: str, d
     ],
 )
 def test_what_the_read_does_not_give_is_unsourced(payload: dict, said: str, draft: str, unread: str) -> None:
-    assert llm._payload_fact_defect(draft, payload, said, said=said) == "search_report_unsourced_claim"
-    assert unread in llm._search_report_unsourced_words(draft, payload, said)
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said, said=said) == "search_report_unsourced_claim"
+    assert unread in search_report._search_report_unsourced_words(draft, payload, said)
 
 
 def test_a_weekday_the_person_said_may_be_said_back() -> None:
     # «¿Juega Chile el lunes?» answered with the match on Tuesday: the person's Monday is theirs to repeat.
     draft = "Chile no juega el lunes; juega el martes a las 23:30 contra México."
-    assert llm._match_report_unread(draft, CHILE, "¿juega chile el lunes?") == []
+    assert search_report._match_report_unread(draft, CHILE, "¿juega chile el lunes?") == []
 
 
 def test_espn_is_a_structured_source() -> None:
-    assert "espn_public_schedule" in llm._SEARCH_STRUCTURED_AUTHORITIES
+    assert "espn_public_schedule" in search_report._SEARCH_STRUCTURED_AUTHORITIES
     # Its one result is about the team by construction: never «no pertinent result».
     draft = "Boca juega el viernes a las 19:30 contra Instituto."
-    assert not llm._search_report_from_no_pertinent_result(draft, BOCA, I12)
+    assert not search_report._search_report_from_no_pertinent_result(draft, BOCA, I12)
 
 
 def test_another_source_is_judged_as_before() -> None:
@@ -149,12 +177,12 @@ def test_another_source_is_judged_as_before() -> None:
         {"title": "1 USD = 981.19 CLP", "url": "https://api.frankfurter.dev/v2/rates",
          "snippet": "Reference rate on 2026-10-02: 1 USD = 981.19 CLP."}]}, "operation": "web.search"}
     for payload in (wikipedia, news, rate):
-        assert llm._match_reads(payload) == [] and llm._match_report_grounds(payload) == ""
-        assert llm._match_report_unread("El sábado a las 15:00 contra Perú.", payload, "") == []
+        assert search_report._match_reads(payload) == [] and search_report._match_report_grounds(payload) == ""
+        assert search_report._match_report_unread("El sábado a las 15:00 contra Perú.", payload, "") == []
     # The Frankfurter report of M146 still passes, and a wrong figure still does not.
     said = "oye, ¿me podrias decir a como anda el dolar hoy?"
-    assert llm._payload_fact_defect("Hoy el dólar está a 981.19 pesos chilenos.", rate, said, said=said) == ""
-    assert llm._payload_fact_defect("Hoy el dólar está a 975 pesos chilenos.", rate, said, said=said) \
+    assert payload_fact_checks._payload_fact_defect("Hoy el dólar está a 981.19 pesos chilenos.", rate, said, said=said) == ""
+    assert payload_fact_checks._payload_fact_defect("Hoy el dólar está a 975 pesos chilenos.", rate, said, said=said) \
         == "search_report_unsourced_claim"
 
 
@@ -163,7 +191,7 @@ def test_another_source_is_judged_as_before() -> None:
 
 def test_a_clock_with_its_minutes_is_not_a_length() -> None:
     def read(text: str) -> list[tuple[int, int]]:
-        return [(clock.hour, clock.minute) for clock in temporal.spoken_clocks(llm._reading_fold(text))]
+        return [(clock.hour, clock.minute) for clock in temporal.spoken_clocks(fold(text))]
 
     assert read("Chile juega el martes a las 23:30 hora local contra México.") == [(23, 30)]
     assert read("América juega el sábado a las 19:30 horas contra Necaxa.") == [(19, 30)]
@@ -313,5 +341,5 @@ def test_the_payload_receipt_shape_is_the_providers() -> None:
     # receives it: its authority and the one sentence the moment is read from.
     observed = json.loads(json.dumps(LAKERS["seen"]))
     assert observed["authority"] == "espn_public_schedule"
-    assert llm._match_reads(LAKERS) == [("monday", date(2026, 10, 5), (23, 0))]
-    assert llm._match_reads(BOCA_TBD) == [("sunday", date(2026, 10, 18), None)]
+    assert search_report._match_reads(LAKERS) == [("monday", date(2026, 10, 5), (23, 0))]
+    assert search_report._match_reads(BOCA_TBD) == [("sunday", date(2026, 10, 18), None)]

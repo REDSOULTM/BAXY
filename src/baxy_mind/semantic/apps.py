@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 import re
-from typing import Iterable
+from typing import Callable, Iterable
+from . import lexicon
 from .grammar import _fold, _match, _has, _strip_request_envelope, _KNOWN_APPLICATION, _OPEN, _LIST, _READ, _CREATE, _SEARCH
 from .windows import _CLOSE_WINDOW_WRAPPER
 from .intent import _is_negated_match
@@ -127,34 +128,32 @@ _DEICTIC_CLOSE_REQUEST = re.compile(
     r"(?:the\s+)?(?:active|current|foreground|front)\s+window|"
     r"(?:esta|this|esa|that)\s+(?:ventana|window)|"
     r"(?:la\s+)?ventana\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?(?:primer\s+plano|adelante|al\s+frente)|"
-    r"(?:the\s+)?window\s+(?:in\s+front|in\s+the\s+foreground|on\s+top)|"
-    r"esto|eso|this|that|it"
-    r")|"
-    r"cierrala|cierralo|cerrala|cerralo|close\s+it"
-    r")[\s?!.]*$",
+    r"(?:the\s+)?window\s+(?:in\s+front|in\s+the\s+foreground|on\s+top)"
+    r"))[\s?!.]*$",
     re.IGNORECASE,
 )
 
 
 def deictic_close_request(folded: str) -> bool:
-    """«cerrá esta ventana», «cerrala», «close the active window»: close what is in front.
+    """«cerrá esta ventana», «close the active window»: close what is in front, named as such.
 
     The referent is the foreground window, which window.active observes and
     the reviewed confirmation names before anything closes. A referent from
-    earlier dialogue («la que te mencioné antes») is not deictic here.
+    earlier dialogue («la que te mencioné antes») is not deictic here, and
+    neither is a bare pronoun («cerrala», «cierra eso», «close it»): it points
+    back at what the conversation named (``bare_close_pronoun``), else it is
+    asked (Estabilización X2: read here, a first «ya ciérrala» was planned as
+    the close of the window in front).
     """
 
     return _DEICTIC_CLOSE_REQUEST.match(folded) is not None
 
 
 # M96 (held-out t11 «cerralo» right after «abrí el bloc de notas», 28/30 oscillating): the pronoun alone, with the
-# fillers said around it. Never «esta ventana» or «the active window»: those name the window in front.
-_CLOSE_FILLER = (
-    r"(?:ya|ok|okay|okey|vale|dale|bueno|listo|bien|perfecto|ahora|entonces|y|pues|oye|che|baxy|"
-    r"now|alright|right|then|so|and|hey|por\s+favor|porfa|please)"
-)
+# fillers said around it (``lexicon.POINTER_LINK``, its view of the one list since r31). Never «esta ventana» or «the
+# active window»: those name the window in front.
 _BARE_CLOSE_PRONOUN = re.compile(
-    rf"^[¿¡\s]*(?:{_CLOSE_FILLER}\b[\s,.;:!]*)*"
+    rf"^[¿¡\s]*(?:{lexicon.POINTER_LINK}\b[\s,.;:!]*)*"
     r"(?:(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you)\s+)?"
     r"(?:(?:cierr|cerr)[ae](?:me|te)?(?:lo|la)|cerrarlo|cerrarla|"
     r"(?:cierra|cierre|cerra|cerrar)\s+(?:eso|esto|aquello)|"
@@ -333,6 +332,175 @@ _OPEN_STATE_CONDITION = (
     r"(?:(?:el|la|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,30}?)\s+"
     r"(?:(?:esta|is)\s+)?(?:abiert[oa]|open|running|corriendo|prendid[oa]|activ[oa])\s*,?\s*"
 )
+
+# Ronda 19 (revisión 3): any condition on whether an application is there now, said anywhere in the request and with
+# any of its leads —«si», «solo si», «only if», «en caso de que», «siempre que», «mientras», «as long as», «provided»,
+# «in case», «while»— or with an inverted one —«unless», «a menos que», «salvo que», «excepto si»—. The predicate
+# follows the lead within a few words of the same clause: an open state («si tengo el word abierto», «if word's open»,
+# «if chrome is still up», «si el word está en pantalla»), a closed one («si está cerrado», «if it's closed») or plain
+# presence («si hay una ventana de word», «if there's a word window», «si lo encontrás», «solo si lo tengo», «if it's
+# there», «y si no está, nada»).
+_PRESENT_STATE_LEADS = (
+    r"(?:(?:solo|only|just)\s+)?(?:si|if)",
+    r"en\s+caso\s+de(?:\s+que)?",
+    r"siempre\s+(?:y\s+cuando|que)",
+    r"mientras(?:\s+que)?",
+    r"as\s+long\s+as",
+    r"provided(?:\s+that)?",
+    r"in\s+case",
+    r"while",
+)
+# Leads that invert the predicate: «a menos que esté cerrado» is the condition that it is there.
+_PRESENT_STATE_INVERTED_LEADS = (
+    r"unless",
+    r"a\s+menos\s+que",
+    r"salvo\s+(?:que|si)",
+    r"excepto\s+(?:que|si|cuando)",
+    r"except\s+(?:if|when)",
+)
+# The predicate that the application is there now.
+_PRESENT_STATE_WORDS = (
+    r"abiert[oa]s?",
+    r"opened",
+    r"running",
+    r"corriendo",
+    r"prendid[oa]s?",
+    r"activ[oa]s?",
+    r"ejecutandose",
+    r"en\s+ejecucion",
+    r"en\s+pantalla",
+    r"on\s+(?:the\s+)?screen",
+    r"visible",
+    r"up",
+    r"there",
+    r"ahi",
+    r"alli",
+    r"hay",
+    r"existen?",
+    r"exists?",
+    r"ten(?:go|es|emos|er|ga|gas|gan)",
+    r"tien(?:es|e|en)",
+    r"have",
+    r"has",
+    r"encontr(?:as|es|aste|e)",
+    r"encuentr(?:as|es|a|o|en)",
+    r"find",
+    r"found",
+    r"ves",
+    r"veo",
+    r"sees?",
+)
+# «open» is the state only when no object follows it: «if you can open it» / «si podes, open the app» are the order.
+_PRESENT_STATE_OPEN = r"open(?!\s+(?:it|them|the|a|an|my|up)(?![a-z]))"
+# «está» / «is» closing the clause is presence too: «y si no está, nada», «if it isn't, skip it».
+_PRESENT_STATE_CLAUSE_END = r"(?:esta|is|isn't)(?=\s*(?:[,;:.!?]|$))"
+# The predicate that the application is not there.
+_ABSENT_STATE_WORDS = (
+    r"cerrad[oa]s?",
+    r"closed",
+    r"apagad[oa]s?",
+    r"shut",
+)
+# Words of the clause that negate its predicate («si word no esta abierto», «if chrome isn't open», «if you don't have
+# it», «si ya no tengo el chrome»); any word ending in «n't» negates too.
+_PRESENT_STATE_REVERSERS = frozenset(("no", "not", "nunca", "never", "ni", "cannot"))
+# A negation right after the predicate: «if there's no word window», «if there isn't one», «if you have none».
+_PRESENT_STATE_NEGATED_AFTER = re.compile(r"(?:'s|\s+(?:is|are))?\s+(?:no|not|none|isn't|aren't)(?![a-z])")
+_PRESENT_STATE_CONDITION = re.compile(
+    r"(?:^|[\s,;:¿?¡!(])(?:(?P<inverted>" + "|".join(_PRESENT_STATE_INVERTED_LEADS) + r")|"
+    + "|".join(_PRESENT_STATE_LEADS) + r")"
+    r"(?P<between>(?:\s+[a-z0-9.+'-]+){0,6}?)"
+    r"(?:\s+|'s\s+)(?:(?P<absent>" + "|".join(_ABSENT_STATE_WORDS) + r")|(?P<predicate>"
+    + "|".join(_PRESENT_STATE_WORDS) + "|" + _PRESENT_STATE_OPEN + "|" + _PRESENT_STATE_CLAUSE_END + r"))(?![a-z])"
+)
+
+# Ronda 19 (revisión 2): an order not to open what is absent —«no lo abras», «sin abrirlo», «don't open it»,
+# «without opening it»—. Then the window read is again the only check: what is absent stays closed.
+_OPENING_FORBIDDEN = re.compile(
+    r"(?:^|[\s,;:¿?¡!(])(?:"
+    r"no\s+(?:me\s+|te\s+)?(?:l[oa]s?\s+)?(?:re)?abr(?:as|a|an|ais|ir)"
+    r"|sin\s+(?:re)?abrir(?:l[oa]s?)?"
+    r"|nunca\s+(?:l[oa]s?\s+)?(?:re)?abras"
+    r"|(?:don't|do\s+not|never)\s+(?:re)?open"
+    r"|without\s+(?:re)?opening"
+    r")(?![a-z])"
+)
+
+# Ronda 19 (revisión 3): an order to open or start what is absent —«abrilo», «ábrelo», «que se abra», «hay que abrirlo»,
+# «prendelo», «open it», «, open word», «launch it», «start it»—: the opening is the consequence the person asked for.
+_OPENING_ORDERED = re.compile(
+    r"(?<![a-z])(?:re)?abr(?:i|e|a|ir)(?:l[oa]s?|me(?:l[oa])?)?(?![a-z])"
+    r"|(?<![a-z])(?:lanz|ejecut|inici|arranc|prend)[ae]l[oa]s?(?![a-z])"
+    r"|(?:^|[,;:.!?]\s*|(?<![a-z])(?:and|then|please|just|first|so|otherwise|else|but|y|pero|entonces|sino)\s+)"
+    r"(?:re)?(?:open|launch|start)(?![a-z])"
+    r"|(?<![a-z])(?:re)?(?:open|launch|start)\s+(?:it|them|up)(?![a-z])"
+)
+
+# Ronda 19 (revisión 3): the request says what to do when the condition fails —«si no», «sino», «otherwise», «else»,
+# «if not», «de lo contrario», «if needed», «si hace falta»—: an order to open there is the opening the person wants;
+# without it, an opening of another thing («si está abierto ponelo a la izquierda y abrí chrome») is not that one.
+_CONDITION_FAILS = re.compile(
+    r"(?<![a-z])(?:si\s+no|sino|if\s+not|otherwise|else|de\s+lo\s+contrario|(?:en\s+)?caso\s+contrario"
+    r"|if\s+(?:needed|necessary)|si\s+(?:hace\s+falta|es\s+necesario)|de\s+ser\s+necesario)(?![a-z])"
+)
+
+# Ronda 19 (revisión 3): the person abstains when the condition fails —«no hagas nada», «dejalo», «olvidalo», «nada»,
+# «never mind», «skip it», «leave it», «don't do anything»—.
+_ABSTENTION = re.compile(
+    r"(?<![a-z])(?:"
+    r"no\s+(?:hagas|haga|hagan|haces|hace|hacer|toques|toque)(?:\s+nada)?"
+    r"|nada|dejal[oa]s?|olvidal[oa]s?|olvidate|ignoral[oa]s?|saltal[oa]s?|saltealo"
+    r"|no\s+importa|da\s+igual"
+    r"|never\s*mind|skip(?:\s+it)?|leave\s+it|forget(?:\s+about)?\s+it|ignore\s+it"
+    r"|(?:don't|do\s+not)\s+(?:do\s+anything|bother|touch)|do\s+nothing|nothing"
+    r")(?![a-z])"
+)
+
+
+def _condition_holds_on_presence(match: re.Match[str]) -> bool:
+    """Whether one condition read by ``_PRESENT_STATE_CONDITION`` holds when the application is there: its predicate,
+    negated by a word of its clause («no», «not», «n't») and inverted by its lead («unless», «a menos que»)."""
+
+    tokens = match.group("between").split()
+    if match.group("predicate"):
+        tokens.append(match.group("predicate"))
+    holds = not any(token in _PRESENT_STATE_REVERSERS or token.endswith("n't") for token in tokens)
+    if _PRESENT_STATE_NEGATED_AFTER.match(match.string, match.end()) is not None:
+        holds = not holds
+    if match.group("absent"):
+        holds = not holds
+    if match.group("inverted"):
+        holds = not holds
+    return holds
+
+
+def present_state_condition(text: str) -> bool:
+    """Ronda 19 (MUSIC1675, CLOSE1371, revisiones 2 y 3): the request is conditioned on an application being there now,
+    or forbids opening it, so the window read IS the check and no window means nothing is done: what is absent is never
+    opened to satisfy it.
+
+    - An order not to open it: «pon word a la izquierda sin abrirlo», «put word on the left, don't open it».
+    - Otherwise an order to open it when the condition fails makes the opening the consequence: «si no está abierto,
+      abrilo», «if word is closed, open it and snap it left», «si está abierto ponelo a la izquierda, si no abrilo» are
+      not this condition; an opening of another thing («si está abierto ponelo a la izquierda y abrí chrome») keeps it.
+    - A condition that it is there: «si tengo word abierto», «only if chrome is open», «si hay una ventana de word»,
+      «if you find it», «snap word left unless it is closed», «pon word a la izquierda salvo que esté cerrado».
+    - A condition that it is not there with the person abstaining: «si no está abierto no hagas nada», «if it's not
+      running, skip it», «if word is closed don't do anything, otherwise snap it left». Without the abstention («snap
+      chrome to the right if it isn't open») the request does not forbid the opening.
+    """
+
+    folded = _strip_request_envelope(_fold(text or "")).replace("’", "'").replace("‘", "'")
+    if _OPENING_FORBIDDEN.search(folded) is not None:
+        return True
+    conditions = tuple(_PRESENT_STATE_CONDITION.finditer(folded))
+    if not conditions:
+        return False
+    on_presence = tuple(_condition_holds_on_presence(match) for match in conditions)
+    opening_ordered = _OPENING_ORDERED.search(folded) is not None
+    if opening_ordered and (not all(on_presence) or _CONDITION_FAILS.search(folded) is not None):
+        return False
+    return any(on_presence) or _ABSTENTION.search(folded) is not None
 
 
 _CLOSE_ALL_REQUEST = re.compile(
@@ -516,3 +684,94 @@ def wants_to_work_in_it(user_text: str | None) -> bool:
         re.search(r"\b(?:editar|retocar|usar|trabajar|edit|retouch|use|work)\b", folded)
         and not re.search(r"\b(?:abr[ií]|abre|open)", folded)
     )
+
+
+def asks_new_document(
+    text: str | None,
+    names_the_application: Callable[[str], bool] | None = None,
+    names_another_application: Callable[[str], bool] | None = None,
+    nouns: frozenset[str] | None = None,
+) -> bool:
+    """«un bloc de notas nuevo», «abre un documento nuevo de word», «crea un blank workbook», «otro documento»: the
+    person asked for a new document of what is opened, never one of theirs already open (uso real t4-r6 c14, c06). A
+    marker (``lexicon.NEW_DOCUMENT_MARKERS``) right next to a document noun (``lexicon.DOCUMENT_NOUNS``) or to the
+    application's own name (``names_the_application``: whether some words name the application opened), led by a word
+    that asks for one that does not exist yet (``lexicon.NEW_DOCUMENT_INDEFINITE``; review of cu-v3-documento-nuevo,
+    finding 3: «el documento nuevo que hice», «mi nota nueva», «el nuevo outlook» point at what is there). A noun is the
+    opened application's document unless the text names another application, or this one only as where something comes
+    from (``names_another_application``), and no
+    «de/en X» ties the document to this one (finding 2: «copia de chrome y pegalo en un bloc de notas nuevo» asks
+    nothing new of Chrome). «abrí el bloc de notas», «pegá en mi nota de compras» and «abre de nuevo el bloc de notas»
+    ask for none. ``nouns``: the document kinds that count (``lexicon.DOCUMENT_NOUNS`` by default; revisión 2 de r24b,
+    B1: ``lexicon.WHOLE_DOCUMENT_NOUNS`` where a part of a document or a folder's item must not count)."""
+
+    tokens = re.findall(r"[a-z0-9]+", _fold(text or ""))
+    grammar = lexicon.NEW_DOCUMENT_GRAMMAR_WORDS
+    kinds = lexicon.DOCUMENT_NOUNS if nouns is None else nouns
+
+    def names_application(span: list[str]) -> bool:
+        return (
+            bool(span) and span[0] not in grammar and span[-1] not in grammar
+            and names_the_application is not None and names_the_application(" ".join(span))
+        )
+
+    def phrase_at(position: int) -> bool:
+        return tuple(tokens[position:position + 2]) in lexicon.NEW_DOCUMENT_AFTER_PHRASES
+
+    def lead_allows(position: int, plain: bool) -> bool:
+        lead = tokens[position] if position >= 0 else ""
+        if lead in lexicon.NEW_DOCUMENT_THEIRS:
+            return False
+        return lead in lexicon.NEW_DOCUMENT_INDEFINITE or lead in lexicon.NEW_DOCUMENT_BEFORE_ONLY or plain
+
+    def of_this_application(after: int) -> bool:
+        """A document said by its kind is the opened application's: «de/en X» right after it names this one, or the
+        text names no other."""
+
+        if after < len(tokens) and tokens[after] in lexicon.NEW_DOCUMENT_OF:
+            rest = tokens[after + 1:after + 5]
+            if any(names_application(rest[:size]) for size in range(1, len(rest) + 1)):
+                return True
+        return names_another_application is None or not names_another_application(text or "")
+
+    for index, token in enumerate(tokens):
+        after_phrase = phrase_at(index)
+        marker = token in lexicon.NEW_DOCUMENT_MARKERS
+        before_only = token in lexicon.NEW_DOCUMENT_BEFORE_ONLY
+        if not (marker or after_phrase or before_only):
+            continue
+        if marker and index > 0 and tokens[index - 1] in lexicon.NEW_DOCUMENT_AGAIN_LEAD:
+            continue
+        said = "en blanco" if after_phrase else token
+        if not after_phrase:
+            # Said before the document: «un nuevo documento», «a new blank document», «otro bloc de notas».
+            plain = said in lexicon.NEW_DOCUMENT_PLAIN_MARKERS
+            start = index + 1
+            while start < len(tokens) and (tokens[start] in lexicon.NEW_DOCUMENT_MARKERS or phrase_at(start)):
+                plain = plain or tokens[start] in lexicon.NEW_DOCUMENT_PLAIN_MARKERS or phrase_at(start)
+                start += 2 if phrase_at(start) else 1
+            led = (
+                index == 0 or tokens[index - 1] not in lexicon.NEW_DOCUMENT_THEIRS
+                if before_only
+                else lead_allows(index - 1, plain)
+            )
+            if led:
+                if start < len(tokens) and tokens[start] in kinds and of_this_application(start + 1):
+                    return True
+                if any(names_application(tokens[start:start + size]) for size in range(1, 5)):
+                    return True
+        if marker or after_phrase:
+            # Said after the document: «un bloc de notas nuevo», «un excel en blanco».
+            end = index + (2 if after_phrase else 1)
+            plain = said in lexicon.NEW_DOCUMENT_PLAIN_MARKERS
+            for size in range(1, min(4, index) + 1):
+                span = tokens[index - size:index]
+                if span[0] in grammar or not lead_allows(index - size - 1, plain):
+                    continue
+                if size == 1 and span[0] in kinds:
+                    if of_this_application(end):
+                        return True
+                    continue
+                if names_application(span):
+                    return True
+    return False

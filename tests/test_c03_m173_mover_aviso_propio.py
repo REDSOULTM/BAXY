@@ -36,6 +36,9 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import temporal
 from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
+from baxy_mind import turn_followups
+from baxy_mind import plan_shape
 
 
 def _schema(properties: dict, required: list[str]) -> dict:
@@ -183,7 +186,7 @@ def _turn(said: list[str], decision: ContextDecision | None, state: DialogueStat
     """``said``: the conversation as lived, user first and alternating, ending in the person's message."""
 
     tools = {name: _tool(name) for name in OPERATIONS}
-    return sidecar._prepare_turn_result(
+    return turn_decide._prepare_turn_result(
         {"id": "m173", "text": said[-1], "history": _history(said)},
         llm=_Decider(decision), planner_catalog=PlannerCatalog(list(tools.values())), encoder=lambda _t: (),
         tool_by_name=tools, dialogue_state=state,
@@ -195,12 +198,12 @@ def _planned(said: list[str], result: dict, state: DialogueState) -> dict[str, o
 
     objective = str(result["objective"])
     state.expect(objective, result["effectOperations"])
-    moved = sidecar._retimed_conversation_notice(state, _history(said), objective)
+    moved = turn_followups._retimed_conversation_notice(state, _history(said), objective)
     assert moved is not None
-    steps = sidecar._explicit_plan_skeleton(tuple(result["effectOperations"]))["steps"]
+    steps = plan_shape._explicit_plan_skeleton(tuple(result["effectOperations"]))["steps"]
     return {
         step["operation"]: (
-            sidecar._retimed_step_arguments(step["operation"], moved, SCHEMAS[step["operation"]])
+            plan_shape._retimed_step_arguments(step["operation"], moved, SCHEMAS[step["operation"]])
             if step["argumentsMode"] == "literal" else step["argumentsMode"]
         )
         for step in steps
@@ -396,9 +399,9 @@ def test_a_reminder_of_the_store_never_takes_a_task_scheduler_cancel() -> None:
     state.expect("Change the dentist reminder to 3:30 PM on Friday.", list(MOVE))
     moved = state.retimed_notification("actually make it half three", moving=True)
     assert moved is not None and moved.set_by == "reminder.create"
-    assert sidecar._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) is None
-    assert sidecar._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) is None
-    assert sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE) is None
+    assert plan_shape._retimed_step_arguments("notification.cancel.at", moved, CANCEL_AT) is None
+    assert plan_shape._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) is None
+    assert plan_shape._retimed_step_arguments("notification.schedule", moved, SCHEDULE) is None
 
 
 def test_a_deleted_or_undated_reminder_result_is_no_notice() -> None:

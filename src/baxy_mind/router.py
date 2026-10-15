@@ -24,10 +24,13 @@ import subprocess
 import sys
 import threading
 import time
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
+from collections.abc import Iterator
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 from .process_lifecycle import (
     MAX_PROCESS_REAP_TIMEOUT_SECONDS,
@@ -69,8 +72,47 @@ DEFAULT_INTERACTIVE_ENCODER_TIMEOUT_SECONDS = 0.75
 ROUTER_CLOSE_TOTAL_TIMEOUT_SECONDS = 0.75
 ROUTER_CLOSE_GRACEFUL_LOCK_TIMEOUT_SECONDS = 0.05
 ROUTER_CLOSE_FINAL_REAP_TIMEOUT_SECONDS = 0.25
+# Un canal del encoder se retira (y se relanza) sólo si su worker muere, rompe
+# el protocolo, encadena este número de fallos seguidos dentro de la ventana, o
+# no devuelve una respuesta abandonada dentro del margen (colgado). Una sola
+# codificación lenta ya no lo retira (ver ``ProcessIntentRouter``).
+ROUTER_FAILURE_STREAK = 3
+ROUTER_FAILURE_WINDOW_SECONDS = 30.0
+ROUTER_LATE_REPLY_GRACE_SECONDS = 30.0
+ROUTER_MAX_RESTARTS = 3
+ROUTER_RESTART_DELAY_SECONDS = 0.0
+# The first worker starts with the mind (no delay); overridable by
+# BAXY_MIND_ROUTER_START_DELAY for measurements.
+ROUTER_START_DELAY_SECONDS = 0.0
 MAX_ENCODER_BATCH_SIZE = 4_096
 MAX_ENCODER_TEXT_CHARS = 4_096
+# Una petición interactiva (un paso de computer use, un turno) no espera detrás
+# de un lote de fondo entero (pasada r7 del goal v3, 2026-10-08: la promoción del
+# catálogo arranca en cuanto E5 queda listo y toma el worker; el primer paso de
+# cada misión esperaba ~11–14 s y aun así se quedaba sin encoder, y el segundo
+# lo encontraba ocupado: 36 pasos «e5_failed»/«e5_cold» en 21 casos). El fondo
+# codifica en trozos de este tamaño y, entre trozo y trozo, cede el worker
+# mientras una petición interactiva lo espera, a lo sumo
+# ``BACKGROUND_YIELD_SECONDS`` por trozo para que el fondo nunca quede parado.
+# Ocho textos: con el banco corriendo un trozo de 32 pasaba de los 0,75 s del
+# paso (verificación en vivo, v3-17: el paso seguía «e5_failed» con la
+# promoción en curso); en reposo 40 nombres tardan 0,2–0,4 s.
+BACKGROUND_ENCODER_CHUNK = 8
+BACKGROUND_YIELD_SECONDS = 2.0
+# Mientras dura una misión de computer use el fondo no toma el worker entre sus
+# pasos (lat-e5, r13a: con la promoción del catálogo en curso, 13 pasos salieron
+# «e5_failed» con el presupuesto de 0,75 s agotado detrás de un trozo). Cada paso
+# renueva la reserva por estos segundos; vencida (la misión terminó o se quedó
+# quieta), el fondo sigue. La espera del fondo queda acotada: una misión tiene
+# su propio tope de tiempo y la reserva no se renueva sola.
+MISSION_BACKGROUND_HOLD_SECONDS = 15.0
+# Ronda 22 (tandas de uso real sobre r20, 2026-10-09: 12 pasos «e5_failed», todos en el tope de 0,75 s con el worker
+# listo). Una petición interactiva que pasa de su plazo queda abandonada por su id, pero el worker la termina: sus filas
+# se guardan aquí al llegar (validadas por id y forma) y la petición siguiente las usa en vez de codificar otra vez. Antes
+# se descartaban y cada paso volvía a pedir los mismos nombres de la vista, otra vez sobre el tope: la regla quedaba
+# ciega en todos los pasos aunque el worker contestara medio segundo después.
+LATE_ROWS_LIMIT = 4_096
+LATE_ROWS_COLLECT_SECONDS = 0.05
 
 
 @dataclass(frozen=True, slots=True)
@@ -430,6 +472,32 @@ class ProcessIntentRouter:
     SentenceTransformer/OpenMP initialization can stall when performed in a
     background thread. A single encoder-only worker preserves serialized model
     access while making semantic routing unavailable at this boundary.
+
+    Una codificación que pasa de su plazo no retira el canal (2026-10-08).
+    Antes cualquier timeout lo retiraba para siempre, para que la respuesta
+    tardía nunca se leyera como la de otra petición; pero una sola codificación
+    lenta (la primera tras cargar E5, o con el PC cargado: medido una vez) dejaba
+    toda la vida de la mente en literal, sin emparejamiento semántico en
+    computer use ni router en ``turn.decide``. Ahora:
+
+    - la petición vencida queda *abandonada* por su id; la siguiente petición
+      descarta primero esa respuesta por id (resultado o error) y no envía nada
+      mientras siga pendiente, así que una respuesta tardía nunca se entrega a
+      otra petición y el worker no acumula trabajo atrasado; sus filas, si
+      llegan bien formadas, se guardan para los mismos textos (``late_rows``,
+      ronda 22) y nunca se codifican dos veces;
+    - el canal sólo se retira si el worker muere o rompe el protocolo, si
+      encadena ``ROUTER_FAILURE_STREAK`` fallos seguidos (timeouts o errores de
+      su propia petición) dentro de ``ROUTER_FAILURE_WINDOW_SECONDS``, o si la
+      respuesta abandonada no llega en ``ROUTER_LATE_REPLY_GRACE_SECONDS``
+      (worker colgado);
+    - un canal retirado se relanza con un worker nuevo (cola y ids nuevos; el
+      proceso viejo se mata y se recoge fuera del turno) a lo sumo
+      ``ROUTER_MAX_RESTARTS`` veces en la vida de la mente; agotados, el canal
+      queda retirado para siempre como antes.
+
+    Ninguna espera sale del plazo de la petición: el descarte usa lo que le
+    queda y un relanzamiento no bloquea al llamador.
     """
 
     def __init__(self) -> None:
@@ -441,24 +509,64 @@ class ProcessIntentRouter:
         self._failed = False
         self._failure = ""
         self._next_request_id = 1
+        self._late_request_id: int | None = None
+        self._late_since = 0.0
+        self._late_batch: tuple[str, ...] = ()
+        self._late_prefix = "query"
+        self._late_rows: OrderedDict[tuple[str, str], Any] = OrderedDict()
+        self.last_cause = ""
+        self._failure_times: list[float] = []
+        self._restarts_left = ROUTER_MAX_RESTARTS
         self._closed = threading.Event()
+        self._foreground_for()
         self._launcher = threading.Thread(
             target=self._launch_and_read,
+            kwargs={"responses": self._responses},
             name="baxy-router-launcher",
             daemon=True,
         )
         self._launcher.start()
 
-    def _launch_and_read(self) -> None:
-        # 3 s keeps the worker spawn clear of the llama warmup burst that
-        # motivated the original 6 s guard, while shortening the degraded
-        # lexical window ~2-4 s. Paired A/B in both orders kept the first
-        # turn at or below the 6 s baseline (router_delay_{6,0,3}_{a,b}
-        # artifacts, 2026-07-30); 0 s showed an unstable first-turn cost.
-        try:
-            delay = float(os.environ.get("BAXY_MIND_ROUTER_START_DELAY", "3"))
-        except ValueError:
-            delay = 3.0
+    def _launch_and_read(
+        self,
+        delay: float | None = None,
+        responses: queue.Queue[dict] | None = None,
+        previous: subprocess.Popen | None = None,
+    ) -> None:
+        if responses is None:
+            responses = self._responses
+        if previous is not None:
+            # A relaunch reaps the retired worker here, off the request path.
+            status = terminate_and_reap_bounded(
+                previous,
+                timeout=ROUTER_CLOSE_FINAL_REAP_TIMEOUT_SECONDS,
+                final_wait=ROUTER_CLOSE_FINAL_REAP_TIMEOUT_SECONDS / 2.0,
+            )
+            report_incomplete_reap(ReapResource.ROUTER_PROCESS, status)
+        if delay is None:
+            # Was 3 s (2026-07-30: kept the spawn clear of the llama warmup
+            # burst; 0 s showed an unstable first-turn cost then). lat-e5
+            # (r13a, 104 missions): those 3 s left E5 loading through the
+            # first steps of half the missions (5–15 s each; in the bench
+            # every case starts a mind, in real use only the first mission
+            # after start pays it). Measured again on 2026-10-08 with the
+            # gate's GPU profile (measure_mind_budget.run_profile, clean GPU
+            # before each run): first turn.decide 2.16/1.26/1.03 s at 0 s
+            # against 1.25/1.46 s at 3 s, catalog ready 16.0–19.3 s against
+            # 16.2–18.8 s, turn max 3.3–4.1 s against 4.3–5.1 s, the process
+            # tree's VRAM peak 3207.6 MiB in all five: no stable cost left.
+            # The worker warms itself up before «ready»
+            # (router_worker.WARM_UP_TEXTS), and no turn waits for it (the
+            # lexical catalog and the step's no-wait probe cover the load).
+            try:
+                delay = float(
+                    os.environ.get(
+                        "BAXY_MIND_ROUTER_START_DELAY",
+                        str(ROUTER_START_DELAY_SECONDS),
+                    )
+                )
+            except ValueError:
+                delay = ROUTER_START_DELAY_SECONDS
         if self._closed.wait(timeout=max(0.0, min(15.0, delay))):
             return
         creation_flags = 0x08000000 if os.name == "nt" else 0
@@ -474,13 +582,14 @@ class ProcessIntentRouter:
                 creationflags=creation_flags,
             )
         except OSError:
-            self._responses.put({"type": "closed"})
+            responses.put({"type": "closed"})
             return
-        with self._lifecycle_lock:
+        with self._lifecycle_lock_for():
             # ``request_close`` sets the event before entering this small
-            # publication section. A child created during shutdown is killed
-            # locally and never becomes the router's active process.
-            if self._closed.is_set():
+            # publication section. A child created during shutdown, or for a
+            # generation already superseded, is killed locally and never
+            # becomes the router's active process.
+            if self._closed.is_set() or responses is not self._responses:
                 status = terminate_and_reap_bounded(
                     process,
                     timeout=ROUTER_CLOSE_FINAL_REAP_TIMEOUT_SECONDS,
@@ -492,32 +601,39 @@ class ProcessIntentRouter:
                     ReapResource.ROUTER_PROCESS,
                     status,
                 )
-                self._responses.put({"type": "closed"})
+                responses.put({"type": "closed"})
                 return
             self._process = process
-        self._read_responses()
+        self._read_responses(process, responses)
 
-    def _read_responses(self) -> None:
-        process = self._process
+    def _read_responses(
+        self,
+        process: subprocess.Popen | None = None,
+        responses: queue.Queue[dict] | None = None,
+    ) -> None:
+        if process is None:
+            process = self._process
+        if responses is None:
+            responses = self._responses
         stream = process.stdout if process is not None else None
         if stream is None:
-            self._responses.put({"type": "closed"})
+            responses.put({"type": "closed"})
             return
         try:
             for line in stream:
                 try:
                     response = json.loads(line)
                 except (ValueError, json.JSONDecodeError):
-                    self._responses.put({"type": "protocol.error"})
+                    responses.put({"type": "protocol.error"})
                     return
                 if not isinstance(response, dict):
-                    self._responses.put({"type": "protocol.error"})
+                    responses.put({"type": "protocol.error"})
                     return
-                self._responses.put(response)
+                responses.put(response)
         except OSError:
             pass
         finally:
-            self._responses.put({"type": "closed"})
+            responses.put({"type": "closed"})
 
     def _receive(self, timeout: float | None = None) -> dict:
         try:
@@ -552,6 +668,18 @@ class ProcessIntentRouter:
         if not math.isfinite(timeout):
             return False
         timeout = max(0.0, timeout)
+        # A worker already loaded is ready even while another request holds it (live check of the r7 fix, v3-15: a
+        # chunk of the catalog's promotion held the lock and the mission's second step read «not ready», went cold
+        # and literal). Its own request then waits for the worker within its budget.
+        with self._lifecycle_lock_for():
+            closed = getattr(self, "_closed", None)
+            if (
+                getattr(self, "_is_ready", False)
+                and not getattr(self, "_failed", False)
+                and closed is not None
+                and not closed.is_set()
+            ):
+                return True
         deadline = time.monotonic() + timeout
         if not self._lock.acquire(timeout=timeout):
             return False
@@ -568,8 +696,8 @@ class ProcessIntentRouter:
                 )
             except TimeoutError:
                 return False
-            except Exception as error:  # noqa: BLE001 - terminal protocol fault
-                self._fail_closed_locked(type(error).__name__)
+            except Exception as error:  # noqa: BLE001 - worker died or desynced
+                self._retire_channel_locked(type(error).__name__)
                 return False
             return True
         finally:
@@ -634,7 +762,7 @@ class ProcessIntentRouter:
         return request_id
 
     def _fail_closed_locked(self, reason: str) -> None:
-        """Permanently retire a channel after synchronization is uncertain."""
+        """Permanently retire a channel once no relaunch is left."""
 
         if self._failed:
             return
@@ -650,6 +778,198 @@ class ProcessIntentRouter:
             ReapResource.ROUTER_PROCESS,
             status,
         )
+
+    def _retire_channel_locked(self, reason: str) -> None:
+        """Retire this worker; relaunch a fresh one while relaunches remain.
+
+        The new generation gets its own response queue, so nothing the old
+        worker wrote (a late reply, its EOF) can reach a request of the new
+        one. The old process is killed now and reaped by the relaunch thread,
+        outside the caller's request deadline.
+        """
+
+        if self._failed or self._closed.is_set():
+            return
+        restarts_left = int(getattr(self, "_restarts_left", 0))
+        if restarts_left <= 0:
+            self._fail_closed_locked(reason)
+            return
+        responses: queue.Queue[dict] = queue.Queue()
+        with self._lifecycle_lock_for():
+            if self._closed.is_set():
+                return
+            previous = self._process
+            self._process = None
+            self._responses = responses
+            self._is_ready = False
+        self._restarts_left = restarts_left - 1
+        self._failure = reason[:128]
+        self._late_request_id = None
+        self._late_batch = ()
+        self._failure_times = []
+        if previous is not None:
+            try:
+                if previous.poll() is None:
+                    previous.kill()
+            except (OSError, ValueError):
+                pass
+        launcher = threading.Thread(
+            target=self._launch_and_read,
+            kwargs={
+                "delay": ROUTER_RESTART_DELAY_SECONDS,
+                "responses": responses,
+                "previous": previous,
+            },
+            name="baxy-router-relauncher",
+            daemon=True,
+        )
+        self._launcher = launcher
+        launcher.start()
+
+    def _count_failure_locked(self, reason: str) -> None:
+        """One more failure of a request the worker received; a short streak retires."""
+
+        now = time.monotonic()
+        streak = [
+            at
+            for at in getattr(self, "_failure_times", [])
+            if now - at <= ROUTER_FAILURE_WINDOW_SECONDS
+        ]
+        streak.append(now)
+        self._failure_times = streak
+        if len(streak) >= ROUTER_FAILURE_STREAK:
+            self._retire_channel_locked(f"streak:{reason}")
+
+    def _drain_late_reply_locked(self, deadline: float, timeout: float) -> None:
+        """Discard the abandoned request's reply by its id before sending anything.
+
+        While it is still pending nothing is sent: the request times out
+        without queueing more work behind a slow worker, and without counting
+        as a new failure. A reply overdue past the grace means a hung worker.
+        """
+
+        while self._late_request_id is not None:
+            try:
+                response = self._receive(self._remaining(deadline, timeout))
+            except TimeoutError:
+                if (
+                    time.monotonic() - self._late_since
+                    >= ROUTER_LATE_REPLY_GRACE_SECONDS
+                ):
+                    self._retire_channel_locked("late_reply_overdue")
+                raise
+            response_id = response.get("id")
+            if (
+                response.get("type") in {"encode.result", "error"}
+                and isinstance(response_id, int)
+                and not isinstance(response_id, bool)
+                and response_id == self._late_request_id
+            ):
+                self._late_request_id = None
+                if response.get("type") == "encode.result":
+                    self._keep_late_rows_locked(response.get("rows"))
+                self._late_batch = ()
+                continue
+            raise RuntimeError("router worker returned a mismatched response")
+
+    def _keep_late_rows_locked(self, rows: object) -> None:
+        """Keep the rows of an abandoned request whose reply arrived (ronda 22): its texts are the ones it sent."""
+
+        import numpy as np
+
+        batch = tuple(getattr(self, "_late_batch", ()) or ())
+        prefix = str(getattr(self, "_late_prefix", "query"))
+        self._late_batch = ()
+        if not batch:
+            return
+        try:
+            matrix = np.asarray(rows, dtype=np.float32)
+        except (TypeError, ValueError):
+            return
+        if not (
+            matrix.ndim == 2
+            and matrix.shape[0] == len(batch)
+            and 1 <= matrix.shape[1] <= 4_096
+            and bool(np.isfinite(matrix).all())
+        ):
+            return
+        store = getattr(self, "_late_rows", None)
+        if store is None:
+            store = OrderedDict()
+            self._late_rows = store
+        for text, row in zip(batch, matrix):
+            kept = row.copy()
+            kept.setflags(write=False)
+            store[(prefix, text)] = kept
+            store.move_to_end((prefix, text))
+        while len(store) > LATE_ROWS_LIMIT:
+            store.popitem(last=False)
+
+    def late_rows(
+        self, texts: list[str] | tuple[str, ...], prefix: str = "query",
+    ) -> dict[str, Any]:
+        """The kept rows of abandoned requests for ``texts`` (ronda 22), after collecting a late reply that already
+        arrived. Never waits for the worker: a channel in use or a reply still pending give what is kept."""
+
+        lock = getattr(self, "_lock", None)
+        if (
+            getattr(self, "_late_request_id", None) is not None
+            and lock is not None
+            and lock.acquire(blocking=False)
+        ):
+            try:
+                if (
+                    self._late_request_id is not None
+                    and not self._failed
+                    and not self._closed.is_set()
+                ):
+                    if not self._responses.empty():
+                        # The reply already waits in the queue: read with the drain's own rules (by id), at once.
+                        try:
+                            self._drain_late_reply_locked(
+                                time.monotonic() + LATE_ROWS_COLLECT_SECONDS,
+                                LATE_ROWS_COLLECT_SECONDS,
+                            )
+                        except TimeoutError:
+                            pass
+                        except Exception as error:  # noqa: BLE001 - worker died or desynced
+                            self._retire_channel_locked(type(error).__name__)
+            finally:
+                lock.release()
+        store = getattr(self, "_late_rows", None)
+        if not store:
+            return {}
+        found: dict[str, Any] = {}
+        for text in texts:
+            row = store.get((prefix, text))
+            if row is not None:
+                found[text] = row
+        return found
+
+    def _receive_reply_locked(
+        self,
+        request_id: int,
+        deadline: float,
+        timeout: float,
+    ) -> dict:
+        response = self._receive(self._remaining(deadline, timeout))
+        response_id = response.get("id")
+        if (
+            isinstance(response_id, bool)
+            or response_id != request_id
+            or (
+                not (
+                    response.get("type") == "encode.result"
+                    and set(response) == {"type", "id", "rows"}
+                )
+                and not (
+                    response.get("type") == "error"
+                    and set(response) == {"type", "id", "code"}
+                )
+            )
+        ):
+            raise RuntimeError("router worker returned a mismatched response")
+        return response
 
     def _ensure_usable_locked(self) -> None:
         if self._failed:
@@ -671,10 +991,16 @@ class ProcessIntentRouter:
         batch = self._validated_texts(texts)
         timeout = self._validated_timeout(timeout)
         deadline = time.monotonic() + timeout
+        # Why the last request failed (ronda 22), for the encoder's trace: «busy» (another request held the worker),
+        # «loading», «late_pending» (the previous abandoned reply had not arrived), «timeout» (its own encoding),
+        # «error», «invalid_rows», «unavailable» or the retire reason.
+        self.last_cause = "busy"
         if not self._lock.acquire(timeout=timeout):
             raise TimeoutError("router worker is busy")
         try:
+            self.last_cause = "unavailable"
             self._ensure_usable_locked()
+            self.last_cause = "loading"
             # Esperar a que el worker termine de cargar no es un desajuste de
             # protocolo: no se ha enviado nada, así que el canal sigue
             # sincronizado. Tratarlo como tal retiraba el router para siempre
@@ -687,10 +1013,14 @@ class ProcessIntentRouter:
                 self._wait_ready(self._remaining(deadline, timeout))
             except TimeoutError:
                 raise
-            except Exception as error:  # noqa: BLE001 - terminal launch fault
-                self._fail_closed_locked(type(error).__name__)
+            except Exception as error:  # noqa: BLE001 - worker died at launch
+                self.last_cause = f"retired:{type(error).__name__}"
+                self._retire_channel_locked(type(error).__name__)
                 raise
             try:
+                self.last_cause = "late_pending"
+                self._drain_late_reply_locked(deadline, timeout)
+                self.last_cause = "timeout"
                 request_id = self._allocate_request_id_locked()
                 self._send(
                     {
@@ -700,35 +1030,52 @@ class ProcessIntentRouter:
                         "prefix": prefix,
                     }
                 )
-                response = self._receive(self._remaining(deadline, timeout))
-                if (
-                    set(response) != {"type", "id", "rows"}
-                    or response.get("type") != "encode.result"
-                    or response.get("id") != request_id
-                    or isinstance(response.get("id"), bool)
-                ):
-                    raise RuntimeError(
-                        "router worker returned a mismatched response"
+                try:
+                    response = self._receive_reply_locked(
+                        request_id,
+                        deadline,
+                        timeout,
                     )
-                matrix = np.asarray(response["rows"], dtype=np.float32)
-                if (
-                    matrix.ndim != 2
-                    or matrix.shape[0] != len(batch)
-                    or not 1 <= matrix.shape[1] <= 4_096
-                    or not np.isfinite(matrix).all()
-                ):
-                    raise RuntimeError(
-                        "router worker returned invalid embeddings"
-                    )
-                return matrix
+                except TimeoutError:
+                    # Abandoned by id: its reply is discarded by the next
+                    # request and never read as anyone else's.
+                    self._late_request_id = request_id
+                    self._late_since = time.monotonic()
+                    self._late_batch = batch
+                    self._late_prefix = prefix
+                    self._count_failure_locked("timeout")
+                    raise
             except TimeoutError:
-                self._fail_closed_locked("timeout")
                 raise
-            except Exception as error:  # noqa: BLE001 - terminal protocol fault
-                self._fail_closed_locked(type(error).__name__)
+            except Exception as error:  # noqa: BLE001 - worker died or desynced
+                self.last_cause = f"retired:{type(error).__name__}"
+                self._retire_channel_locked(type(error).__name__)
                 if isinstance(error, RuntimeError):
                     raise
                 raise RuntimeError("router worker protocol failed") from error
+            # The reply carries this request's id: the channel is in sync, so a
+            # bad answer is one failure of this request, not a desync.
+            if response.get("type") == "error":
+                self.last_cause = "error"
+                self._count_failure_locked("error")
+                raise RuntimeError("router worker could not encode the batch")
+            try:
+                matrix = np.asarray(response["rows"], dtype=np.float32)
+                valid = (
+                    matrix.ndim == 2
+                    and matrix.shape[0] == len(batch)
+                    and 1 <= matrix.shape[1] <= 4_096
+                    and bool(np.isfinite(matrix).all())
+                )
+            except (TypeError, ValueError):
+                valid = False
+            if not valid:
+                self.last_cause = "invalid_rows"
+                self._count_failure_locked("invalid_rows")
+                raise RuntimeError("router worker returned invalid embeddings")
+            self._failure_times = []
+            self.last_cause = ""
+            return matrix
         finally:
             self._lock.release()
 
@@ -751,6 +1098,71 @@ class ProcessIntentRouter:
             lifecycle_lock = threading.Lock()
             self._lifecycle_lock = lifecycle_lock
         return lifecycle_lock
+
+    def _foreground_for(self) -> threading.Condition:
+        foreground = getattr(self, "_foreground", None)
+        if foreground is None:
+            # Boundary tests construct minimal instances with ``__new__``.
+            foreground = threading.Condition(threading.Lock())
+            self._foreground_waiting = 0
+            self._foreground = foreground
+        return foreground
+
+    @contextmanager
+    def foreground(self) -> Iterator[None]:
+        """Mark an interactive request while it waits for (and uses) the worker: background batches yield to it."""
+
+        foreground = self._foreground_for()
+        with foreground:
+            self._foreground_waiting += 1
+        try:
+            yield
+        finally:
+            with foreground:
+                self._foreground_waiting -= 1
+                if self._foreground_waiting <= 0:
+                    foreground.notify_all()
+
+    def hold_background(self, seconds: float = MISSION_BACKGROUND_HOLD_SECONDS) -> None:
+        """A computer-use mission is under way: background batches leave the worker to it for ``seconds`` from now
+        (each step renews it; never shortened by a later, shorter hold)."""
+
+        foreground = self._foreground_for()
+        until = time.monotonic() + max(0.0, float(seconds))
+        with foreground:
+            if until > getattr(self, "_held_until", 0.0):
+                self._held_until = until
+
+    def release_background(self) -> None:
+        """The mission ended: background batches may take the worker again at once."""
+
+        foreground = self._foreground_for()
+        with foreground:
+            self._held_until = 0.0
+            foreground.notify_all()
+
+    def yield_to_foreground(self, timeout: float = BACKGROUND_YIELD_SECONDS) -> bool:
+        """A background batch waits, at most ``timeout``, while an interactive request is marked, and while a mission
+        holds the worker (``hold_background``) until that hold runs out; True if neither is."""
+
+        foreground = self._foreground_for()
+        deadline = time.monotonic() + max(0.0, float(timeout))
+        closed = getattr(self, "_closed", None)
+        with foreground:
+            while True:
+                now = time.monotonic()
+                held = getattr(self, "_held_until", 0.0) - now
+                if held > 0.0 and not (closed is not None and closed.is_set()):
+                    # The mission's hold: waited out whole, bounded by itself (only a step renews it); a closing
+                    # router is seen within a short slice.
+                    foreground.wait(min(held, 0.25))
+                    continue
+                if self._foreground_waiting <= 0:
+                    return True
+                left = deadline - now
+                if left <= 0.0:
+                    return False
+                foreground.wait(left)
 
     def _process_snapshot(self) -> subprocess.Popen | None:
         with self._lifecycle_lock_for():
@@ -882,6 +1294,36 @@ class ProcessIntentRouter:
             )
 
 
+def _capture_encoder_call_timing(
+    *, texts: int, reused: int, prefix: str, elapsed_ms: float, budget_ms: float, cause: str,
+) -> None:
+    """Append an opt-in, content-free row for one interactive encoder call (ronda 22), beside the model's rows
+    (``BAXY_MIND_MODEL_CALL_AUDIT_PATH``): the r20 tandas said «e5_failed» and nothing of why."""
+
+    configured = os.environ.get("BAXY_MIND_MODEL_CALL_AUDIT_PATH", "").strip()
+    if not configured:
+        return
+    try:
+        record = {
+            "schema": "baxy.encoder-call-timing.v1",
+            "thread": threading.current_thread().name,
+            "prefix": prefix,
+            "texts": int(texts),
+            "reused_late": int(reused),
+            "elapsed_ms": round(float(elapsed_ms), 1),
+            "budget_ms": round(float(budget_ms), 1),
+            "outcome": "failed" if cause else "ok",
+            "cause": cause,
+        }
+        path = Path(configured).expanduser()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8", newline="\n") as stream:
+            stream.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
+    except (OSError, ValueError, TypeError):
+        # Opt-in diagnostics never change the step.
+        return
+
+
 class RequestBudgetEncoder:
     """Apply a short monotonic deadline only on the interactive thread.
 
@@ -910,6 +1352,8 @@ class RequestBudgetEncoder:
             offline_timeout,
         )
         self._request_state = threading.local()
+        # Why this encoder's last interactive call failed (ronda 22), «» after one that answered.
+        self.last_cause = ""
 
     def begin_request(self, budget_seconds: float) -> None:
         """Start one thread-local budget measured from the monotonic clock."""
@@ -937,11 +1381,7 @@ class RequestBudgetEncoder:
     ):
         deadline = getattr(self._request_state, "deadline", None)
         if deadline is None:
-            return self._router.encode(
-                texts,
-                timeout=self._offline_timeout,
-                prefix=prefix,
-            )
+            return self._background_encode(texts, prefix)
         maximum_timeout = float(self._request_state.maximum_timeout)
         remaining = remaining_seconds(
             float(deadline),
@@ -963,17 +1403,43 @@ class RequestBudgetEncoder:
                     text for text in batch if (prefix, text) not in row_cache
                 )
             )
+        late = self._late_rows(missing, prefix) if missing else {}
+        if late:
+            # Ronda 22: what an abandoned request of an earlier step encoded after its deadline is used, never encoded
+            # again past the step's deadline.
+            for text, row in late.items():
+                row_cache[(prefix, text)] = row
+            missing = tuple(text for text in missing if text not in late)
         if missing:
-            encoded = self._router.encode(
-                missing,
-                timeout=min(self._interactive_timeout, remaining),
-                prefix=prefix,
-            )
+            started = time.monotonic()
+            call_timeout = min(self._interactive_timeout, remaining)
+            cause = ""
+            try:
+                with self._foreground():
+                    encoded = self._router.encode(
+                        missing,
+                        timeout=call_timeout,
+                        prefix=prefix,
+                    )
+            except Exception as error:
+                cause = str(getattr(self._router, "last_cause", "") or type(error).__name__)
+                self.last_cause = cause
+                raise
+            finally:
+                _capture_encoder_call_timing(
+                    texts=len(missing),
+                    reused=len(late),
+                    prefix=prefix,
+                    elapsed_ms=(time.monotonic() - started) * 1000.0,
+                    budget_ms=call_timeout * 1000.0,
+                    cause=cause,
+                )
+            self.last_cause = ""
             for text, row in zip(missing, encoded, strict=True):
                 cached_row = row.copy()
                 cached_row.setflags(write=False)
                 row_cache[(prefix, text)] = cached_row
-            if len(missing) == len(batch):
+            if len(missing) == len(batch) and not late:
                 return encoded
 
         rows = [row_cache[(prefix, text)] for text in batch]
@@ -981,7 +1447,41 @@ class RequestBudgetEncoder:
 
         return np.stack(rows, axis=0)
 
-    def try_ready(self, timeout: float = 0.0) -> bool:
-        """Observe worker readiness without starting or invalidating a request."""
+    def _late_rows(self, texts: tuple[str, ...], prefix: str) -> dict[str, Any]:
+        collect = getattr(self._router, "late_rows", None)
+        if not callable(collect):
+            return {}
+        try:
+            found = collect(texts, prefix)
+        except Exception:  # noqa: BLE001 - kept rows are advisory like the encoder
+            return {}
+        return found if isinstance(found, dict) else {}
 
-        return self._router.try_ready(timeout)
+    def try_ready(self, timeout: float = 0.0) -> bool:
+        """Observe worker readiness without starting or invalidating a request; a background batch yields to it."""
+
+        with self._foreground():
+            return self._router.try_ready(timeout)
+
+    def _foreground(self) -> Any:
+        mark = getattr(self._router, "foreground", None)
+        return mark() if callable(mark) else nullcontext()
+
+    def _background_encode(self, texts: list[str] | tuple[str, ...], prefix: str) -> Any:
+        """A batch outside a request, in chunks that yield the worker to an interactive request between them."""
+
+        batch = list(texts) if isinstance(texts, (list, tuple)) else texts
+        step = BACKGROUND_ENCODER_CHUNK
+        yield_to = getattr(self._router, "yield_to_foreground", None)
+        if not isinstance(batch, list) or len(batch) <= step or not callable(yield_to):
+            if callable(yield_to):
+                # A small batch yields too: a mission's hold covers every background batch (lat-e5).
+                yield_to(BACKGROUND_YIELD_SECONDS)
+            return self._router.encode(texts, timeout=self._offline_timeout, prefix=prefix)
+        import numpy as np
+
+        parts = []
+        for start in range(0, len(batch), step):
+            yield_to(BACKGROUND_YIELD_SECONDS)
+            parts.append(self._router.encode(batch[start:start + step], timeout=self._offline_timeout, prefix=prefix))
+        return np.concatenate(parts, axis=0)

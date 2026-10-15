@@ -24,9 +24,15 @@ from datetime import datetime
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
 from baxy_mind import llm
-from baxy_mind.llm import ConversationReplyContractError
+from baxy_mind import deterministic_finals
+from baxy_mind import payload_fact_checks
+from baxy_mind import visible_defect
+from baxy_mind import unsupported_answers
+from baxy_mind import limit_voice
+from baxy_mind import reply_language_checks
+from baxy_mind import weather_facts
+from baxy_mind.llm_chat import ConversationReplyContractError
 from baxy_mind.semantic import reading as semantic_reading
 from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
 from baxy_mind.semantic.audio import asks_a_timed_silence
@@ -38,6 +44,9 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_clarification_intent,
 )
 from baxy_mind.semantic.temporal import agenda_window
+from baxy_mind import turn_audit
+from baxy_mind import turn_recovery
+from baxy_mind.semantic.request import fold
 
 OPERATIONS = (
     "audio.mute", "calendar.event.list", "calendar.event.create", "email.send", "email.latest.reply", "system.status",
@@ -95,16 +104,16 @@ def _mute_facts() -> dict:
 
 def test_the_mute_reply_never_promises_the_timer() -> None:
     text = "silencia todo por media hora"
-    assert llm.compose_visible_defect("Silencié el sonido por media hora.", "status", text, _mute_facts()) == (
+    assert visible_defect.compose_visible_defect("Silencié el sonido por media hora.", "status", text, _mute_facts()) == (
         "timed_mute_promised"
     )
     for reply in (
         "Silencié el sonido; sigue así hasta que me pidas reactivarlo.",
         "Silencié el sonido. No lo reactivo solo cuando pase la media hora.",
     ):
-        assert llm.compose_visible_defect(reply, "status", text, _mute_facts()) != "timed_mute_promised", reply
+        assert visible_defect.compose_visible_defect(reply, "status", text, _mute_facts()) != "timed_mute_promised", reply
     # A mute with no span is judged as before.
-    assert llm.compose_visible_defect("Silencié el sonido por media hora.", "status", "silencia el sonido",
+    assert visible_defect.compose_visible_defect("Silencié el sonido por media hora.", "status", "silencia el sonido",
                                       _mute_facts()) != "timed_mute_promised"
 
 
@@ -120,8 +129,8 @@ def test_the_mute_reply_never_promises_the_timer() -> None:
     ],
 )
 def test_a_limit_with_a_broken_or_vulgar_verb_is_refused(reply: str, asked: str) -> None:
-    assert llm.limit_voice_defect(reply, asked) == "limit_broken_person"
-    assert llm._unsupported_answer_contract_failure(reply, asked) == "unsupported_broken_person"
+    assert limit_voice.limit_voice_defect(reply, asked) == "limit_broken_person"
+    assert unsupported_answers._unsupported_answer_contract_failure(reply, asked) == "unsupported_broken_person"
 
 
 @pytest.mark.parametrize(
@@ -135,22 +144,22 @@ def test_a_limit_with_a_broken_or_vulgar_verb_is_refused(reply: str, asked: str)
     ],
 )
 def test_a_plain_limit_with_the_verb_asked_passes(reply: str, asked: str) -> None:
-    assert llm.limit_voice_defect(reply, asked) == ""
+    assert limit_voice.limit_voice_defect(reply, asked) == ""
 
 
 def test_a_vulgarity_the_person_said_first_is_theirs() -> None:
-    assert llm.visible_reply_says_a_vulgarity("Eso no lo hago: no cago por un rato.", "quédate callado")
-    assert not llm.visible_reply_says_a_vulgarity("No repito «mierda».", "repite mierda")
+    assert reply_language_checks.visible_reply_says_a_vulgarity("Eso no lo hago: no cago por un rato.", "quédate callado")
+    assert not reply_language_checks.visible_reply_says_a_vulgarity("No repito «mierda».", "repite mierda")
     # Ordinary words that only look alike are not vulgar.
-    assert not llm.visible_reply_says_a_vulgarity("Abrí la computadora en el cono sur.", "")
+    assert not reply_language_checks.visible_reply_says_a_vulgarity("Abrí la computadora en el cono sur.", "")
 
 
 def test_a_limit_never_denies_the_persons_own_act() -> None:
     # DEV-D v3x D-p29-t3.
     request = "Scary stories sounds great to me. I would like to watch this movie with English subtitles."
-    assert llm.limit_voice_defect("I do not watch movies with English subtitles.", request) == "limit_persons_act"
-    assert llm.limit_voice_defect("I don't put on movies with subtitles.", request) == ""
-    assert llm.limit_voice_defect("No veo series con subtítulos.", "quiero ver la serie con subtítulos") == (
+    assert limit_voice.limit_voice_defect("I do not watch movies with English subtitles.", request) == "limit_persons_act"
+    assert limit_voice.limit_voice_defect("I don't put on movies with subtitles.", request) == ""
+    assert limit_voice.limit_voice_defect("No veo series con subtítulos.", "quiero ver la serie con subtítulos") == (
         "limit_persons_act"
     )
 
@@ -268,13 +277,13 @@ def test_without_the_listing_the_alarm_check_keeps_its_diagnosis() -> None:
     ],
 )
 def test_what_happens_between_two_hours_is_the_agenda(text: str) -> None:
-    assert happening_in_a_span_of_hours(llm._reading_fold(text))
+    assert happening_in_a_span_of_hours(fold(text))
     assert _effects(text) == ("calendar.event.list",), text
 
 
 @pytest.mark.parametrize("text", ["qué pasa hoy en el mundo", "what is happening in Peru", "qué está pasando en Chile"])
 def test_what_happens_with_no_hours_is_still_the_news(text: str) -> None:
-    assert not happening_in_a_span_of_hours(llm._reading_fold(text))
+    assert not happening_in_a_span_of_hours(fold(text))
     assert _effects(text) != ("calendar.event.list",), text
 
 
@@ -308,9 +317,9 @@ def test_a_decided_limit_whose_wording_failed_any_contract_is_the_limit() -> Non
     # DEV-D v3x D-s064: «shaped_presentation» on a decided limit was recovered as an empty conversation and the App
     # published «No he podido procesar tu solicitud porque no entendí bien tu mensaje».
     error = ConversationReplyContractError("shaped_presentation", "unsupported")
-    assert sidecar._turn_failure_kind(error) == sidecar.LIMIT_WORDING_FAILURE
-    assert sidecar._turn_failure_kind(ConversationReplyContractError("echo", "knowledge")) == (
-        sidecar.CONVERSATION_WORDING_FAILURE
+    assert turn_audit._turn_failure_kind(error) == turn_audit.LIMIT_WORDING_FAILURE
+    assert turn_audit._turn_failure_kind(ConversationReplyContractError("echo", "knowledge")) == (
+        turn_audit.CONVERSATION_WORDING_FAILURE
     )
 
 
@@ -331,10 +340,10 @@ class _Composer:
 
 def test_talk_whose_wording_failed_is_answered_as_talk() -> None:
     composer = _Composer({"conversation": "¡Qué bien! Que te vaya genial en la reunión del mediodía."})
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m97", "text": "hoy almuerzo con mi jefa a las doce", "history": []},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
     )
     assert composer.asked == ["conversation"]
     assert result["kind"] == "conversation" and result["reply"].startswith("¡Qué bien!")
@@ -342,10 +351,10 @@ def test_talk_whose_wording_failed_is_answered_as_talk() -> None:
 
 def test_talk_the_composer_cannot_answer_asks_back_instead_of_publishing_nothing() -> None:
     composer = _Composer({"clarification": "¿Quieres que lo anote en tu agenda?"})
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m97", "text": "hoy almuerzo con mi jefa a las doce", "history": []},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE, sidecar.CONVERSATION_WORDING_FAILURE),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE, turn_audit.CONVERSATION_WORDING_FAILURE),
     )
     assert composer.asked == ["conversation", "clarification"]
     assert result["kind"] == "clarify" and result["question"] == "¿Quieres que lo anote en tu agenda?"
@@ -354,10 +363,10 @@ def test_talk_the_composer_cannot_answer_asks_back_instead_of_publishing_nothing
 def test_a_talk_reply_that_says_the_message_back_is_not_published() -> None:
     text = "hoy almuerzo con mi jefa a las doce"
     composer = _Composer({"conversation": text})
-    result = sidecar._recover_failed_turn(
+    result = turn_recovery._recover_failed_turn(
         {"id": "m97", "text": text, "history": []},
         composer,
-        failure_kinds=(sidecar.CONVERSATION_WORDING_FAILURE,),
+        failure_kinds=(turn_audit.CONVERSATION_WORDING_FAILURE,),
     )
     assert result.get("reply") != text
 
@@ -380,10 +389,10 @@ def test_an_hour_asked_of_the_forecast_has_a_final() -> None:
     text = "¿qué previsión de tiempo hay para las cuatro?"
     situation, payload = _weather()
     draft = "No tengo el pronóstico para las cuatro, pero hoy en Temuco irá de 6,5 a 17,5 °C, con 20 % de lluvia."
-    assert llm._weather_fact_defect(draft, payload, text) == ""
-    final = llm._deterministic_final(situation, payload, text, "es")
+    assert weather_facts._weather_fact_defect(draft, payload, text) == ""
+    final = deterministic_finals._deterministic_final(situation, payload, text, "es")
     assert "por horas" in final and "Temuco" in final and "17,5" in final
-    assert llm._payload_fact_defect(final, payload, text, said=text) == ""
+    assert payload_fact_checks._payload_fact_defect(final, payload, text, said=text) == ""
 
 
 class _Silent(llm.LlmRuntime):

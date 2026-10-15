@@ -58,7 +58,7 @@ Medido en el journal del 2026-10-07, sobre 1 063 actos:
 - Utilidades: `jsteps.py` (journal), `dialog.py`, `sumbench.py`, `benchtable.py`, `uia_dump.ps1`, `close_window.ps1`, `clear_notepad.ps1`, `idle.ps1`, `screen.ps1`, `spotify_find.ps1`.
 - 127 casos en `cases/`.
 - Perfil de banco: `%LOCALAPPDATA%\BAXY\cu-universal-perfil`.
-- Evidencia: `%LOCALAPPDATA%\BAXY\cu-universal-evidencia\<tag>\`, con `events.jsonl` (utf-8-sig), `trace.jsonl` (la última corrida va al final), `compose_audit.jsonl` y `after.png`.
+- Evidencia: `%LOCALAPPDATA%\BAXY\cu-universal-evidencia\<tag>\`, con `events.jsonl` (utf-8-sig), `trace.jsonl` (la última corrida va al final), `compose_audit.jsonl` y `after.png`. Si la carpeta tiene `no_corrio.json`, el caso no corrió en ese lote y no se juzga con lo que haya allí (lo de una corrida anterior queda en `anterior/`).
 - Journal: `<perfil>\journal\missions.jsonl`, con cada vista y cada recibo.
 - `cu_live.sh` espera a que el PC esté inactivo. Eso contradice el punto 0: sustitúyelo por el medidor de molestia.
 </contexto>
@@ -80,7 +80,7 @@ Medido en el journal del 2026-10-07, sobre 1 063 actos:
   - El eco de lo que se tecleó nunca es prueba de nada.
   - Cada regla nueva de llegada necesita su contracaso.
   - Los procedimientos aprendidos de una corrida mala envenenan las siguientes.
-  - El modelo 4B se distrae con el contenido de la pantalla. Los finales deterministas (`computer_use.floor_first`) ganan; el modelo sólo redacta lo que no cabe en una plantilla.
+  - El modelo 4B se distrae con el contenido de la pantalla. Los finales deterministas (`cu_finals.floor_first`) ganan; el modelo sólo redacta lo que no cabe en una plantilla.
 </reutiliza>
 
 <tareas>

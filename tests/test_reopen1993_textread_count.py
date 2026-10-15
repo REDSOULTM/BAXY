@@ -8,8 +8,12 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import payload_fact_checks
+from baxy_mind import compose_situation
+from baxy_mind import listing_facts
+from baxy_mind import argument_grounding
+from baxy_mind.semantic import guards as semantic_guards
 
 AVAILABLE = frozenset({"document.text.read", "document.pdf.read", "filesystem.explorer.count", "filesystem.known.search", "app.open"})
 TEXT_SCHEMA = {
@@ -35,17 +39,17 @@ def test_a_pasted_path_under_a_known_folder_is_read(text: str, operation: str, a
     assert effect_intent.known_folder_file_path(text) == (operation, arguments)
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == (operation,)
-    assert mind._ground_explicit_arguments(operation, text, TEXT_SCHEMA) == arguments
+    assert argument_grounding._ground_explicit_arguments(operation, text, TEXT_SCHEMA) == arguments
     assert effect_intent.operation_domain_is_grounded(text, operation) is True
     # A Windows-shaped path is still the «bare_path» shape; the decide flow lifts it when the reader serves it.
-    assert mind._unresolved_input_kind(text) == ("bare_path" if "\\" in text else None)
+    assert semantic_guards._unresolved_input_kind(text) == ("bare_path" if "\\" in text else None)
 
 
 @pytest.mark.parametrize("text", [r"D:\Perfil\Escritorio\ETC\x.md", r"C:\Users\usuario\Downloads\setup.exe", r"C:\Windows\System32\drivers\etc\hosts"])
 def test_paths_outside_the_known_folders_or_not_text_keep_the_honest_question(text: str) -> None:
     assert effect_intent.known_folder_file_path(text) is None
     assert effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ()) is None
-    assert mind._unresolved_input_kind(text) in {"bare_path", None}
+    assert semantic_guards._unresolved_input_kind(text) in {"bare_path", None}
 
 
 @pytest.mark.parametrize(
@@ -61,7 +65,7 @@ def test_the_current_directory_is_the_explorer_folder_in_front(text: str, extens
     assert effect_intent.explorer_count_request(text) == extension
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, (), ())
     assert intent is not None and intent.operations == ("filesystem.explorer.count",)
-    assert mind._ground_explicit_arguments("filesystem.explorer.count", text, COUNT_SCHEMA) == {"extension": extension}
+    assert argument_grounding._ground_explicit_arguments("filesystem.explorer.count", text, COUNT_SCHEMA) == {"extension": extension}
     assert effect_intent.resolve_explicit_clarification_intent(text, AVAILABLE) is None
     assert effect_intent.operation_domain_is_grounded(text, "filesystem.explorer.count") is True
 
@@ -86,16 +90,16 @@ def test_without_the_counting_tool_the_folder_is_still_asked_and_negations_do_no
 )
 def test_the_count_reply_gives_the_figure_and_names_the_folder(text: str, defect: str) -> None:
     payload = {"operation": "filesystem.explorer.count", "seen": {"folderName": "gemma4_agent", "source": "explorer_foreground", "extension": ".py", "count": 3, "filesInFolder": 7}}
-    assert llm._payload_fact_defect(text, payload, "Dime cuantos archivos .py hay en el directorio actual") == defect
+    assert payload_fact_checks._payload_fact_defect(text, payload, "Dime cuantos archivos .py hay en el directorio actual") == defect
 
 
 def test_the_text_read_is_presented_like_a_pdf_with_its_line_count() -> None:
-    projected = llm._project_pdf_read({"reviewLabel": "ROADMAP.md", "lines": 12, "text": "# ROADMAP\n\nFase 1: agente local. Fase 2: memoria.\n", "truncated": False}, "es")
+    projected = listing_facts._project_pdf_read({"reviewLabel": "ROADMAP.md", "lines": 12, "text": "# ROADMAP\n\nFase 1: agente local. Fase 2: memoria.\n", "truncated": False}, "es")
     assert projected["document"] == "ROADMAP.md" and projected["lines"] == 12 and projected["pages"] is None
     assert projected["lead"].startswith("# ROADMAP")
     payload = {"operation": "document.text.read", "seen": projected}
-    assert llm._pdf_read_in_payload(payload) is not None
-    assert llm._payload_fact_defect("Leí ROADMAP.md, 12 líneas; dice «# ROADMAP Fase 1: agente local.»", payload, ROADMAP) == ""
-    assert llm._payload_fact_defect("Leí ROADMAP.md; dice «Fase 9: nada».", payload, ROADMAP) == "pdf_unquoted_passage"
+    assert listing_facts._pdf_read_in_payload(payload) is not None
+    assert payload_fact_checks._payload_fact_defect("Leí ROADMAP.md, 12 líneas; dice «# ROADMAP Fase 1: agente local.»", payload, ROADMAP) == ""
+    assert payload_fact_checks._payload_fact_defect("Leí ROADMAP.md; dice «Fase 9: nada».", payload, ROADMAP) == "pdf_unquoted_passage"
     for code in ("known_file_not_text", "known_text_too_large", "explorer_folder_unavailable", "extension_invalid"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT

@@ -57,11 +57,16 @@ tomar el navegador.
    se cierra ni se reinicia el navegador de la persona.**
 3. **Verificar sin secuestrar.**
    - **Navegación**: antes de abrir se anotan los títulos de las ventanas del
-     navegador; después, en la ventana cuyo título cambió, UI Automation lee el
+     navegador y la dirección de la del frente (vacía en una pestaña nueva);
+     después, en la ventana cuyo título cambió, UI Automation lee el
      **campo de dirección** recorriendo sólo el marco del navegador (nunca
-     entra en el `Document` de la página). Sólo se compara el sitio con el
-     abierto (`www.` y subdominios incluidos). Una dirección de otro sitio no
-     se reporta nunca. Sin lectura del sitio abierto, el resultado es
+     entra en el `Document` de la página). Llega la dirección pedida (ruta y
+     cada parámetro pedido, con las grafías del navegador normalizadas;
+     `UserBrowserArrival.cs`). Otra dirección del mismo sitio (`www.` y
+     subdominios incluidos) vale sólo como redirección: no es la misma ruta
+     con otra consulta (uso real v3 t4, c10) y es nueva en esa ventana (ventana
+     nueva, o la del frente cuando antes mostraba otra cosa). Una dirección de
+     otro sitio no se reporta nunca. Sin lectura que valga, el resultado es
      **incierto** (`user_browser_navigation_unconfirmed`, efecto posible): se
      dice que se abrió y que la persona puede comprobarlo.
    - **YouTube**: la búsqueda HTTP de siempre da el id y el título del primer
@@ -70,7 +75,9 @@ tomar el navegador.
      Si aparece en pausa (el navegador frenó la reproducción automática) se
      pulsa **una vez** el `Play` de esa misma sesión. Nunca se pulsa otra
      sesión (lo que la persona tenía en pausa). Sin sesión que lo pruebe:
-     incierto (`user_browser_playback_unconfirmed`).
+     incierto (`user_browser_playback_unconfirmed`). La espera es de 15 s con
+     el navegador abierto y de 30 s si el pedido lo arrancó (Opera GX en frío
+     tardó 9–16,5 s en `Playing`, tandas de redpc 2026-10-12).
    - **Streaming con recurso** (`streaming.navigate`): como la navegación, más
      una segunda lectura a los 2,5 s para ver si el servicio redirigió a
      iniciar sesión (`streaming_authentication_required`).
@@ -287,7 +294,7 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   honestas tras una página en el navegador de la persona.
 - `.../NamedBrowserAdapter.cs` — el navegador nombrado que es el
   predeterminado abre en la sesión de la persona.
-- `src/baxy_mind/llm.py` — hechos de causa para los códigos nuevos
+- `src/baxy_mind/compose_situation.py` — hechos de causa para los códigos nuevos
   (`user_browser_*`, `hbo_max_*`); `data/operation_floor.v1.json`, las
   frases de suelo de `hbo_max_authentication_required` y
   `user_browser_streaming_profile_choice`.
@@ -296,7 +303,7 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   `UserBrowserPlatform.cs` publica `WM_APPCOMMAND`/`WM_COMMAND`, el clic
   central y mira si la ventana cubre su monitor. En la mente,
   `_project_tab_listing`, `_tab_listing_fact_defect` y `_tab_listing_final`
-  (`llm.py`) y los hechos de causa de los códigos de pestaña.
+  (`listing_facts.py`) y los hechos de causa de los códigos de pestaña (`compose_situation.py`).
 
 ## Verificación
 

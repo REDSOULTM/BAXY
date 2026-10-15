@@ -39,8 +39,9 @@ TESTS = REPO / "tests"
 if str(TESTS) not in sys.path:
     sys.path.insert(0, str(TESTS))
 
-from baxy_mind import __main__ as sidecar  # noqa: E402
 from baxy_mind import effect_intent  # noqa: E402
+from baxy_mind import turn_decide  # noqa: E402
+from baxy_mind import turn_decisions  # noqa: E402
 
 OUTPUT = REPO / "artifacts" / "fixes" / "social_envelope_equivalence_20260731.json"
 
@@ -109,11 +110,11 @@ def _install(arm: str, candidate: dict[str, Any]) -> None:
         effect_intent._REQUEST_PREFIX = _BASELINE_REQUEST_PREFIX
         effect_intent._is_social_clause = (
             lambda text: effect_intent._has(text, _BASELINE_SOCIAL_CLAUSE))
-        sidecar._explicit_social_turn_decision = candidate["baseline_social"]
+        turn_decide._explicit_social_turn_decision = candidate["baseline_social"]
     else:
         effect_intent._REQUEST_PREFIX = candidate["prefix"]
         effect_intent._is_social_clause = candidate["clause"]
-        sidecar._explicit_social_turn_decision = candidate["social"]
+        turn_decide._explicit_social_turn_decision = candidate["social"]
 
 
 def _resolve(text: str, available: Any) -> dict[str, Any] | None:
@@ -131,8 +132,8 @@ def run() -> dict[str, Any]:
     candidate = {
         "prefix": effect_intent._REQUEST_PREFIX,
         "clause": effect_intent._is_social_clause,
-        "social": sidecar._explicit_social_turn_decision,
-        "baseline_social": sidecar._explicit_social_turn_decision,
+        "social": turn_decisions._explicit_social_turn_decision,
+        "baseline_social": turn_decisions._explicit_social_turn_decision,
     }
 
     results: dict[str, dict[str, Any]] = {}

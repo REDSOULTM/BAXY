@@ -27,11 +27,16 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind import __main__ as sidecar
-from baxy_mind import llm
+from baxy_mind import consulted_answers
+from baxy_mind import visible_defect
+from baxy_mind import payload_fact_checks
+from baxy_mind import search_report
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, dialogue
 from baxy_mind.semantic.dialogue import DialogueState
+from baxy_mind import turn_decide
+from baxy_mind import plan_shape
+from baxy_mind import context_decision
 
 EVIDENCE = json.loads(
     (Path(__file__).resolve().parent / "data" / "c03_m102_evidence.json").read_text(encoding="utf-8")
@@ -97,7 +102,7 @@ def test_a_new_duration_moves_the_reminder_just_set_without_the_decider() -> Non
         {"role": "assistant", "content": W18_REPLY},
         {"role": "user", "content": MOVE},
     ]
-    result = sidecar._prepare_turn_result(
+    result = turn_decide._prepare_turn_result(
         {"id": "m102", "text": MOVE, "history": history},
         llm=NoDecider(), planner_catalog=PlannerCatalog([_tool("notification.schedule")]), encoder=lambda _texts: (),
         tool_by_name={},
@@ -112,8 +117,8 @@ def test_a_new_duration_moves_the_reminder_just_set_without_the_decider() -> Non
     state.expect(result["objective"], result["effectOperations"])
     moved = state.retimed_notification(MOVE, now=NOW)
     assert moved is not None
-    assert sidecar._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "reminder"}
-    scheduled = sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE)
+    assert plan_shape._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "reminder"}
+    scheduled = plan_shape._retimed_step_arguments("notification.schedule", moved, SCHEDULE)
     assert scheduled is not None and (scheduled["kind"], scheduled["title"]) == ("reminder", "tomar un descanso")
     due_utc = datetime.fromisoformat(scheduled["dueUtc"].replace("Z", "+00:00"))
     assert due_utc - NOW == timedelta(hours=1)
@@ -209,7 +214,7 @@ P24 = [
 def test_a_yes_after_a_failure_is_no_limit(text: str) -> None:
     model = _Decider("Sign in to Netflix and play Hustlers.", "limit")
     turns = [{"role": role, "content": content} for role, content in P24]
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m102", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog([_tool("streaming.play.named"), _tool("web.search")]),
@@ -224,7 +229,7 @@ def test_a_request_after_a_failure_keeps_its_limit() -> None:
     model = _Decider("Log into my Netflix account.", "limit")
     turns = [{"role": role, "content": content} for role, content in P24]
     text = "log into my Netflix account for me"
-    result = sidecar._context_decided_result(
+    result = context_decision._context_decided_result(
         {"id": "m102", "text": text, "history": [*turns, {"role": "user", "content": text}]},
         llm=model,
         planner_catalog=PlannerCatalog([_tool("streaming.play.named"), _tool("web.search")]),
@@ -243,7 +248,7 @@ def _row(rid: str) -> tuple[str, dict, str]:
 def test_a_finder_or_a_map_available_is_the_page_describing_itself() -> None:
     draft, payload, said = _row("D-p12-t2")
     assert draft == "There are 24/7 delivery services and verified store maps available near Curico."
-    assert llm._payload_fact_defect(draft, payload, said) == "search_report_page_voice"
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said) == "search_report_page_voice"
     # v3o and v3u published the same pages told as a finder.
     for told in (
         "I found a 24/7 store finder for liquor, vape, and cannabis shops in Curico. There is also a 24-hour "
@@ -251,29 +256,29 @@ def test_a_finder_or_a_map_available_is_the_page_describing_itself() -> None:
         "I found on-demand delivery services and a verified store finder for liquor, vape shops, and cannabis "
         "dispensaries near Curico.",
     ):
-        assert llm._payload_fact_defect(told, payload, said) == "search_report_page_voice"
+        assert payload_fact_checks._payload_fact_defect(told, payload, said) == "search_report_page_voice"
     # The honest report stands.
-    assert llm._payload_fact_defect("I couldn't find 24/7 stores near Curico.", payload, said) == ""
+    assert payload_fact_checks._payload_fact_defect("I couldn't find 24/7 stores near Curico.", payload, said) == ""
 
 
 def test_the_places_mentioned_and_the_site_read_are_the_search_shown() -> None:
     draft, payload, said = _row("D-p26-t2")
-    assert llm._search_result_site_brands(payload) == {"fandango"}
-    assert llm._payload_fact_defect(draft, payload, said) == "search_report_shows_the_search"
+    assert search_report._search_result_site_brands(payload) == {"fandango"}
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said) == "search_report_shows_the_search"
     # Each defect on its own.
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Santa Rosa Cinemas, Roxy Stadium 14 and Airport Stadium 12 are the places mentioned.", payload, said,
     ) == "search_report_shows_the_search"
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Santa Rosa Cinemas, Roxy Stadium 14 and Fandango show movies in Santa Rosa.", payload, said,
     ) == "search_report_shows_the_search"
     # The cinemas read, said as such, are the answer.
-    assert llm._payload_fact_defect(
+    assert payload_fact_checks._payload_fact_defect(
         "Santa Rosa Cinemas, Roxy Stadium 14 and Airport Stadium 12 show movies in Santa Rosa.", payload, said,
     ) == ""
     # FINAL v1 F-p08-t2 (reviewed right): sites offered as sites, where to look.
     draft, payload, said = _row("F-p08-t2")
-    assert llm._payload_fact_defect(draft, payload, said) == ""
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said) == ""
 
 
 def test_a_name_the_pages_are_about_is_no_site() -> None:
@@ -281,7 +286,7 @@ def test_a_name_the_pages_are_about_is_no_site() -> None:
         {"title": "Tesla Model Y | Tesla", "url": "https://www.tesla.com/modely", "snippet": "Model Y is an SUV."},
         {"title": "Electric cars 2026 - El País", "url": "https://elpais.com/motor/", "snippet": "Los mejores."},
     ], "authority": "duckduckgo_lite_https"}}
-    assert llm._search_result_site_brands(payload) == {"el pais"}
+    assert search_report._search_result_site_brands(payload) == {"el pais"}
 
 
 # ------------------------------------------------------------------ 5. the partial report without its frame
@@ -309,17 +314,17 @@ def test_the_partial_report_is_said_without_the_results_as_its_speaker() -> None
         "sueldos ni el ascenso social.",
     }
     for draft, expected in drafts.items():
-        assert llm.compose_visible_defect(draft, "status", said, facts) or llm._payload_fact_defect(draft, payload, said)
-        unframed = llm._unframed_partial(draft, english=False)
+        assert visible_defect.compose_visible_defect(draft, "status", said, facts) or payload_fact_checks._payload_fact_defect(draft, payload, said)
+        unframed = consulted_answers._unframed_partial(draft, english=False)
         assert unframed == expected
-        assert llm.compose_visible_defect(unframed, "status", said, facts) == ""
-        assert llm._payload_fact_defect(unframed, payload, said) == ""
-    assert llm._unframed_partial(
+        assert visible_defect.compose_visible_defect(unframed, "status", said, facts) == ""
+        assert payload_fact_checks._payload_fact_defect(unframed, payload, said) == ""
+    assert consulted_answers._unframed_partial(
         "The results mention that Javier Milei is the 13th president since 1983, but they do not list the others.",
         english=True,
     ) == "Javier Milei is the 13th president since 1983. I couldn't find the others."
     # A narration with no statement of its own is left as it is (and stays vetoed).
-    assert llm._unframed_partial("Los resultados no mencionan nada de eso.", english=False) == (
+    assert consulted_answers._unframed_partial("Los resultados no mencionan nada de eso.", english=False) == (
         "Los resultados no mencionan nada de eso."
     )
 
@@ -336,20 +341,20 @@ def test_a_recipe_a_page_publishes_is_a_reference() -> None:
                      "authority": "recipe_page_jsonld",
                      "results": [{"title": "Arepas de queso", "url": "https://cocina.example.com/arepas",
                                   "snippet": evidence}]}}
-    reference = llm._reference_of(situation)
+    reference = consulted_answers._reference_of(situation)
     assert reference is not None and reference["kind"] == "recipe" and reference["servings"] == 4
     assert "2 1/2 tazas de agua tibia" in reference["text"]
-    assert not llm._read_no_recipe(situation)
+    assert not consulted_answers._read_no_recipe(situation)
 
 
 @pytest.mark.parametrize("rid", ["D-s017", "D-w10-t1"])
 def test_what_was_read_about_a_dish_is_not_its_recipe(rid: str) -> None:
     draft, payload, said = _row(rid)
-    assert llm._payload_fact_defect(draft, payload, said) == "search_report_recipe_not_read"
+    assert payload_fact_checks._payload_fact_defect(draft, payload, said) == "search_report_recipe_not_read"
     # Saying the recipe was not found is the report.
     not_found = "I couldn't find a recipe for southern-style mac and cheese." if rid == "D-s017" else (
         "No encontré una receta de arepas de queso."
     )
-    assert llm._payload_fact_defect(not_found, payload, said) == ""
+    assert payload_fact_checks._payload_fact_defect(not_found, payload, said) == ""
     # What is asked about the dish, not its recipe, is answered from the same reading.
-    assert not llm._search_report_recipe_not_read(draft, payload, "¿de dónde son las arepas?")
+    assert not payload_fact_checks._search_report_recipe_not_read(draft, payload, "¿de dónde son las arepas?")

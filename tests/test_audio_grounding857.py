@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import _explicit_arguments_from_evidence
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
 from baxy_mind.effect_intent import (
     operation_domain_is_grounded,
     resolve_explicit_clarification_intent,

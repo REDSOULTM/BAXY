@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Capture;
@@ -93,6 +94,76 @@ public sealed class CaptureHandlerTests
         });
     }
 
+    // Ronda 22 (uso real r18 t3-c11 «hazme una captura de pantalla y guárdala en el escritorio porfa»): the folder
+    // asked reaches the provider and the receipt says where the verified copy is (the folder's key and the file's
+    // name, never a path).
+    [TestCase("capture.screenshot", false)]
+    [TestCase("capture.active.window", true)]
+    public async Task AFolderAskedSavesAVerifiedCopyAndTheReceiptSaysWhere(string operation, bool activeWindow)
+    {
+        var provider = new StubProvider();
+        var handler = new ScreenshotCaptureHandler(provider, operation, activeWindow);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"folder":"desktop"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(provider.Saved, Is.EqualTo(new[] { ("capture_0123456789abcdef0123456789abcdef", "desktop") }));
+            Assert.That(result.GetProperty("savedFolder").GetString(), Is.EqualTo("desktop"));
+            Assert.That(result.GetProperty("fileName").GetString(), Is.EqualTo("Screenshot 1970-01-01 000000.png"));
+            Assert.That(result.TryGetProperty("path", out _), Is.False);
+        });
+    }
+
+    // Contracaso: «hazme una captura y dime qué ves», «sacale un screenshot a la pantalla» carry no folder; the capture
+    // stays private and no copy is written.
+    [TestCase("{}")]
+    [TestCase(null)]
+    public async Task WithoutAFolderTheCaptureStaysPrivateAndNothingIsSaved(string? arguments)
+    {
+        var provider = new StubProvider();
+        var handler = new ScreenshotCaptureHandler(provider);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            arguments is null ? default! : Invocation(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(provider.Saved, Is.Empty);
+            Assert.That(outcome.Result!.Value.TryGetProperty("savedFolder", out _), Is.False);
+            Assert.That(outcome.Result.Value.TryGetProperty("fileName", out _), Is.False);
+        });
+    }
+
+    // A copy that could not be saved is the request's failure, never a capture told as kept.
+    [TestCase("io", "capture_save_failed")]
+    [TestCase("unavailable", "capture_folder_unavailable")]
+    public async Task ACopyThatCannotBeSavedIsAFailedOperation(string failure, string expectedError)
+    {
+        var provider = new StubProvider(saveFailure: failure == "io"
+            ? new IOException("Saved capture verification failed.")
+            : new ScreenshotUnavailableException("capture_folder_unavailable", "The known folder is not available."));
+        var handler = new ScreenshotCaptureHandler(provider);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"folder":"pictures"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(expectedError));
+            Assert.That(outcome.Result, Is.Null);
+        });
+    }
+
+    private static OperationInvocation Invocation(string arguments)
+    {
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        return new OperationInvocation("request", "mission", "invocation", document.RootElement.Clone());
+    }
+
     private sealed class FailingProvider(Exception failure) : IScreenshotProvider
     {
         public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken) =>
@@ -102,8 +173,20 @@ public sealed class CaptureHandlerTests
             throw failure;
     }
 
-    private sealed class StubProvider(ActiveWindowCaptureProvenance? activeWindow = null) : IScreenshotProvider
+    private sealed class StubProvider(
+        ActiveWindowCaptureProvenance? activeWindow = null,
+        Exception? saveFailure = null) : IScreenshotProvider
     {
+        public List<(string CaptureId, string Folder)> Saved { get; } = [];
+
+        public ValueTask<SavedCaptureCopy> SaveCopyAsync(string captureId, string folder, CancellationToken cancellationToken)
+        {
+            if (saveFailure is not null)
+                throw saveFailure;
+            Saved.Add((captureId, folder));
+            return ValueTask.FromResult(new SavedCaptureCopy(folder, "Screenshot 1970-01-01 000000.png", new string('b', 64)));
+        }
+
         public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

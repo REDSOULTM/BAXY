@@ -16,6 +16,8 @@ from __future__ import annotations
 import json
 
 from baxy_mind import llm, operation_floor
+from baxy_mind import compose_payload
+from baxy_mind import device_facts
 
 
 class _Scripted(llm.LlmRuntime):
@@ -88,8 +90,8 @@ def test_the_row_is_told_on_its_side_and_not_in_half_the_screen() -> None:
 
 def test_the_fact_reaches_the_writer_single_step_and_in_a_plan() -> None:
     for situation in (SPOTIFY_RIGHT, _plan(SPOTIFY_RIGHT)):
-        payload = llm._compose_situation_payload(situation, "es", "pasame la ventana de spotify a la derecha")
-        seen = llm._snap_beyond_half(payload)
+        payload = compose_payload._compose_situation_payload(situation, "es", "pasame la ventana de spotify a la derecha")
+        seen = device_facts._snap_beyond_half(payload)
         assert seen is not None
         assert (seen["side"], seen["fitsInHalf"], seen["halfWidth"], seen["window"]["width"]) == (
             "right", False, 768, 814)
@@ -142,6 +144,6 @@ def test_a_window_that_fits_is_told_as_before() -> None:
 def test_a_failed_snap_carries_no_such_fact() -> None:
     failed = {"kind": "operation", "operation": "window.snap", "polarity": "failure", "verified": False,
               "succeeded": False, "error": "verification_failed", "attempted": {"side": "right"}}
-    payload = llm._compose_situation_payload(failed, "es", "pasame la ventana de spotify a la derecha")
-    assert llm._snap_beyond_half(payload) is None
-    assert not llm._snap_beyond_half_untold("No pude colocar la ventana a la derecha.", payload)
+    payload = compose_payload._compose_situation_payload(failed, "es", "pasame la ventana de spotify a la derecha")
+    assert device_facts._snap_beyond_half(payload) is None
+    assert not device_facts._snap_beyond_half_untold("No pude colocar la ventana a la derecha.", payload)

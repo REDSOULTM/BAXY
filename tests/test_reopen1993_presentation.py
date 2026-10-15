@@ -8,7 +8,10 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import __main__ as mind
-from baxy_mind import effect_intent, llm
+from baxy_mind import effect_intent
+from baxy_mind import payload_fact_checks
+from baxy_mind import compose_situation
+from baxy_mind import argument_grounding
 
 AVAILABLE = frozenset({"document.presentation.create", "file.open", "office.document.create", "app.open", "web.search"})
 
@@ -56,7 +59,7 @@ def test_the_model_writes_the_slides_and_the_request_owns_title_and_count() -> N
     assert len(arguments["slides"]) == 6 and arguments["slides"][0] == "Diapositiva 1\nUna idea\nOtra idea"
     assert mind._presentation_arguments(_FakeModel(["solo una"]), "Haz un powerpoint hablando de amor de 6 diapositivas") is None
     schema = {"type": "object", "properties": {"folder": {"type": "string"}, "name": {"type": "string"}}, "required": ["folder", "name"], "additionalProperties": False}
-    assert mind._ground_explicit_arguments("file.open", "Haz un powerpoint hablando de amor de 6 diapositivas", schema) == {"folder": "documents", "name": "Amor.pptx"}
+    assert argument_grounding._ground_explicit_arguments("file.open", "Haz un powerpoint hablando de amor de 6 diapositivas", schema) == {"folder": "documents", "name": "Amor.pptx"}
 
 
 @pytest.mark.parametrize(
@@ -70,9 +73,9 @@ def test_the_model_writes_the_slides_and_the_request_owns_title_and_count() -> N
 )
 def test_the_reply_names_the_file_and_the_slide_count(text: str, defect: str) -> None:
     payload = {"operation": "document.presentation.create", "seen": {"name": "Amor.pptx", "folder": "documents", "slideCount": 6, "slideTitles": []}}
-    assert llm._payload_fact_defect(text, payload, "Haz un powerpoint hablando de amor de 6 diapositivas") == defect
+    assert payload_fact_checks._payload_fact_defect(text, payload, "Haz un powerpoint hablando de amor de 6 diapositivas") == defect
 
 
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("presentation_slides_invalid", "presentation_write_failed", "presentation_postread_failed"):
-        assert code in llm._CAUSE_FACT
+        assert code in compose_situation._CAUSE_FACT
