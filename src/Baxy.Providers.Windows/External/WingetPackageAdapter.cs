@@ -197,6 +197,10 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         bool installed = exited && await IsInstalledSoonAsync(packageId, cancellationToken).ConfigureAwait(false);
         if (exited && !installed)
             return effectBoundary.Failure(operation, "winget_install_not_verified", effectObserved: true);
+        // An installer still running is a started install, not a verified one (BAXY Renew audit 2026-10-15: it was a
+        // success with installing:true).
+        if (!installed)
+            return effectBoundary.Failure(operation, "winget_install_still_running", effectObserved: true);
 
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -206,10 +210,9 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             writer.WriteString("packageId", packageId);
             writer.WriteString("name", record.GetValueOrDefault("name") ?? packageId);
             writer.WriteString("requestedVersion", requestedVersion);
-            writer.WriteBoolean("installed", installed);
-            writer.WriteBoolean("installing", !installed);
+            writer.WriteBoolean("installed", true);
             writer.WriteNumber("processId", processId.Value);
-            writer.WriteString("authority", installed ? "winget_list_exact_postread" : "winget_install_process_running");
+            writer.WriteString("authority", "winget_list_exact_postread");
             writer.WriteEndObject();
         });
         File.Delete(recordPath);
@@ -262,6 +265,8 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         bool stillInstalled = await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false);
         if (exited && stillInstalled)
             return effectBoundary.Failure(operation, "winget_uninstall_not_verified", effectObserved: true);
+        if (stillInstalled)
+            return effectBoundary.Failure(operation, "winget_uninstall_still_running", effectObserved: true);
 
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -271,10 +276,9 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             writer.WriteString("packageId", package.Id);
             writer.WriteString("name", package.Name);
             writer.WriteString("previousVersion", package.Version);
-            writer.WriteBoolean("removed", !stillInstalled);
-            writer.WriteBoolean("uninstalling", stillInstalled);
+            writer.WriteBoolean("removed", true);
             writer.WriteNumber("processId", processId.Value);
-            writer.WriteString("authority", stillInstalled ? "winget_uninstall_process_running" : "winget_list_exact_absence_postread");
+            writer.WriteString("authority", "winget_list_exact_absence_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
