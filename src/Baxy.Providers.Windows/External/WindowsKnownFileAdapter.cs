@@ -1036,20 +1036,25 @@ if __name__ == "__main__":
         Directory.Delete(source, recursive: true);
     }
 
+    // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps
+    // files: they are not walked (BAXY Renew 2026-10-15).
+    private static EnumerationOptions WalkOptions(string label) => new()
+    {
+        RecurseSubdirectories = true,
+        IgnoreInaccessible = true,
+        AttributesToSkip = label == "home"
+            ? FileAttributes.ReparsePoint | FileAttributes.Hidden | FileAttributes.System
+            : FileAttributes.ReparsePoint,
+        MaxRecursionDepth = 12,
+    };
+
     private static IEnumerable<KnownEntry> EnumerateDirectories(
         IReadOnlyList<(string Label, string Root)> roots)
     {
-        var options = new EnumerationOptions
-        {
-            RecurseSubdirectories = true,
-            IgnoreInaccessible = true,
-            AttributesToSkip = FileAttributes.ReparsePoint,
-            MaxRecursionDepth = 12,
-        };
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
-            foreach (string directory in Directory.EnumerateDirectories(root, "*", options))
+            foreach (string directory in Directory.EnumerateDirectories(root, "*", WalkOptions(label)))
                 yield return new KnownEntry(label, root, directory);
         }
     }
@@ -1058,20 +1063,13 @@ if __name__ == "__main__":
         IReadOnlyList<(string Label, string Root)> roots,
         List<(string Label, string Root)>? enumerationRoots = null)
     {
-        var options = new EnumerationOptions
-        {
-            RecurseSubdirectories = true,
-            IgnoreInaccessible = true,
-            AttributesToSkip = FileAttributes.ReparsePoint,
-            MaxRecursionDepth = 12,
-        };
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
             // Record the attempted enumeration scope, not exhaustive access.
             // IgnoreInaccessible may skip descendants without reporting them.
             enumerationRoots?.Add((label, root));
-            foreach (string file in Directory.EnumerateFiles(root, "*", options))
+            foreach (string file in Directory.EnumerateFiles(root, "*", WalkOptions(label)))
                 yield return new KnownEntry(label, root, file);
         }
     }

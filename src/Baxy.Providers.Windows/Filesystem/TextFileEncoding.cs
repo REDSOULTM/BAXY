@@ -71,7 +71,18 @@ internal static class TextFileEncoding
         return [.. original[..preamble], .. encoding.GetBytes(text)];
     }
 
-    /// <summary>Text to be appended to the file, in the file's encoding (no mark: it is already at the start).</summary>
-    internal static byte[] EncodeAppended(ReadOnlySpan<byte> original, string text) =>
-        Detect(original).Encoding.GetBytes(text);
+    /// <summary>
+    /// Text appended to the file as a line of its own, in the file's encoding (no mark: it is already at the start):
+    /// when the file does not end in a line break, one in the file's own style («\r\n» if it uses them) goes first.
+    /// BAXY Renew e2e 2026-10-15: «añade la línea 'revisar el router'» twice gave «revisar el routerrevisar el router».
+    /// </summary>
+    internal static byte[] EncodeAppended(ReadOnlySpan<byte> original, string text)
+    {
+        (Encoding encoding, int preamble) = Detect(original);
+        string existing = encoding.GetString(original[preamble..]);
+        string separator = existing.Length == 0 || existing.EndsWith('\n')
+            ? string.Empty
+            : existing.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
+        return encoding.GetBytes(separator + text);
+    }
 }

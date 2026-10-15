@@ -1,7 +1,9 @@
 param(
     [Parameter(Mandatory=$true)]
     [ValidateSet('desktop','documents','downloads','home','pictures')]
-    [string]$Folder
+    [string]$Folder,
+    # A folder inside the known one («BAXY-bench», «proyectos/tesis»), never above it.
+    [string]$Subdirectory
 )
 $ErrorActionPreference='Stop'
 $effect=$false
@@ -25,6 +27,11 @@ try {
         'downloads' {(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path}
     }
     $path=[IO.Path]::GetFullPath($path)
+    if($Subdirectory){
+        $parts=@($Subdirectory -split '[\/]')
+        if([IO.Path]::IsPathRooted($Subdirectory) -or ($parts | Where-Object {$_ -in @('','.','..')})){throw 'known_subdirectory_invalid'}
+        $path=[IO.Path]::GetFullPath((Join-Path $path $Subdirectory))
+    }
     if(-not (Test-Path -LiteralPath $path -PathType Container)){throw 'known_folder_missing'}
     Start-Process explorer.exe -ArgumentList @($path)
     $effect=$true
@@ -43,7 +50,7 @@ try {
         }
         if($verified){break}
     } while((Wait-BaxyPoll $deadline 250))
-    [pscustomobject]@{version=1;ok=$verified;effectObserved=$effect;folder=$Folder;verifiedPathName=[IO.Path]::GetFileName($path);authority='windows_shell_location_postread';error=$(if($verified){$null}else{'known_folder_window_not_verified'})}|ConvertTo-Json -Compress
+    [pscustomobject]@{version=1;ok=$verified;effectObserved=$effect;folder=$Folder;subdirectory=$Subdirectory;verifiedPathName=[IO.Path]::GetFileName($path);authority='windows_shell_location_postread';error=$(if($verified){$null}else{'known_folder_window_not_verified'})}|ConvertTo-Json -Compress
     if(-not $verified){exit 2}
 } catch {
     [pscustomobject]@{version=1;ok=$false;effectObserved=$effect;error='known_folder_open_failed'}|ConvertTo-Json -Compress

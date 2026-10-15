@@ -193,7 +193,17 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             else if (operation == "clipboard.paste")
                 command.Add("-PasteClipboard");
             else if (operation is "filesystem.folder.open" or "filesystem.file.open.latest")
+            {
                 command.Add(ExternalJson.RequiredString(arguments, "folder"));
+                if (operation == "filesystem.folder.open"
+                    && arguments.TryGetProperty("subdirectory", out JsonElement subdirectory)
+                    && subdirectory.ValueKind == JsonValueKind.String
+                    && !string.IsNullOrWhiteSpace(subdirectory.GetString()))
+                {
+                    command.Add("-Subdirectory");
+                    command.Add(subdirectory.GetString()!);
+                }
+            }
             else if (operation == "input.keyboard.layout")
             {
                 command.Add("-Layout");

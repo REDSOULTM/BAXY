@@ -578,11 +578,16 @@ public static class ProductCatalog
             "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y verifica el proceso observado."),
         Descriptor(
             "filesystem.folder.open",
-            Schema([String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"])], ["folder"]),
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.folder.open.windows.shell.postread.v1",
             ToolExposure.Public,
-            "Abre una carpeta conocida de Windows y verifica la ventana de Explorer observada."),
+            "Abre una carpeta conocida de Windows, o una subcarpeta suya, y verifica la ventana de Explorer observada."),
         Descriptor(
             "filesystem.hash",
             FilesystemResourceSchema(),
@@ -607,7 +612,8 @@ public static class ProductCatalog
             Schema(
                 [
                     String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["fileName", "folder"]),
             OperationRisks.RecoverableDelete,
