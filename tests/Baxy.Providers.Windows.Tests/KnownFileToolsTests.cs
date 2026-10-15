@@ -175,6 +175,9 @@ public sealed class KnownFileToolsTests
             "file.read", Json(Args("fileName", Path.Combine(temporary.Path, "fuera.txt"))), CancellationToken.None);
         ExternalCapabilityReceipt outsideFolder = await adapter.InvokeAsync(
             "file.find", Json(Args("subdirectory", temporary.Path)), CancellationToken.None);
+        // A full path to a file directly in the folder that is not there is not another file of that name below it.
+        ExternalCapabilityReceipt elsewhere = await adapter.InvokeAsync(
+            "file.read", Json(Args("fileName", Path.Combine(home, "lista.txt"))), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -187,6 +190,8 @@ public sealed class KnownFileToolsTests
             Assert.That(outside.ErrorCode, Is.EqualTo("known_path_outside_folder"));
             Assert.That(outside.Result?.ToString() ?? string.Empty, Does.Not.Contain("secreto"));
             Assert.That(outsideFolder.ErrorCode, Is.EqualTo("known_path_outside_folder"));
+            Assert.That(elsewhere.Verified, Is.False);
+            Assert.That(elsewhere.Result?.ToString() ?? string.Empty, Does.Not.Contain("pan"));
         });
     }
 

@@ -737,7 +737,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     {
         located = default;
         string name = requested.Trim().Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-        if (Path.IsPathFullyQualified(name))
+        // A full path names that one file: it is looked up at its place, never by its name elsewhere under the folder
+        // (BAXY Renew audit 2026-10-15: one directly in the folder became a bare name searched in its subfolders).
+        bool fullPath = Path.IsPathFullyQualified(name);
+        if (fullPath)
         {
             (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, name))];
             if (holding.Length == 0) return ExternalJson.Failure(operation, "known_path_outside_folder");
@@ -749,7 +752,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             || parts.Any(part => part is "" or "." or ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
             return ExternalJson.Failure(operation, "known_file_name_invalid");
         List<KnownEntry> matches = [];
-        if (parts.Length > 1)
+        if (fullPath || parts.Length > 1)
         {
             foreach ((string label, string root) in roots)
             {
