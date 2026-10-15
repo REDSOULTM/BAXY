@@ -145,7 +145,7 @@ def main():
         except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
             result, error = {"kind": "error"}, repr(exc)[:200]
         latency = time.monotonic() - started
-        arguments = mind._decided.get(result.get("operation")) if result.get("operation") else None
+        arguments = result.get("arguments") if result.get("operation") else None
         ok = error is None and judge(case["expect"], result, arguments)
         fam = by_family.setdefault(str(case.get("family", "-")), [0, 0])
         fam[0] += ok

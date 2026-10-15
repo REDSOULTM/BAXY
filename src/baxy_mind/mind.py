@@ -224,7 +224,6 @@ class Mind:
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self.op_to_tool: dict[str, dict[str, Any]] = {}
-        self._decided: dict[str, dict[str, Any]] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -309,7 +308,6 @@ class Mind:
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
     def decide(self, request_id: Any, text: str) -> dict[str, Any]:
-        self._decided = {}
         turn = self._turn
         if turn and turn.get("asked"):
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
@@ -331,7 +329,6 @@ class Mind:
         something. Same system prompt and tools, so the cached prefix is the person's; what it did joins the person's
         conversation only if it intervened."""
         started = time.monotonic()
-        self._decided = {}
         conv = [{"role": "user", "content": beat_message(context)}]
         reply = self.server.chat({"messages": [{"role": "system", "content": self._system()}, *conv],
                                   "tools": self.tools, "tool_choice": "none", "max_tokens": 200,
@@ -427,7 +424,6 @@ class Mind:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
         started = time.monotonic()
-        self._decided = {}
         self._close_open_calls()
         call_id = f"confirm_{len(self.conversation)}"
         self.conversation.append({"role": "user", "content": label})
@@ -496,7 +492,6 @@ class Mind:
             turn["awaiting"] = call["id"]
             turn["calling"] = name
             arguments = {**call["arguments"], **self.constants.get(name, {})}
-            self._decided = {name: arguments}
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)

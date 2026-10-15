@@ -70,7 +70,7 @@ class LlmServer:
             if self._failure is not None or time.monotonic() > deadline:
                 raise RuntimeError(self._failure or "llama-server is not ready")
 
-    def startup_failure(self, error: Exception) -> dict[str, Any]:
+    def startup_failure(self) -> dict[str, Any]:
         """The App's startup-failure shape (MindStartupFailure): why the model did not come up."""
         code = self._process.poll() if self._process is not None else None
         if code is not None:
