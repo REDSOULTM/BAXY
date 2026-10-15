@@ -104,12 +104,9 @@ internal sealed class NativeScheduledNotificationBackend(
     {
         int hour = request.Hour;
         int minute = request.Minute;
-        string? period = string.IsNullOrEmpty(request.Period) ? null : request.Period;
-        if (hour is < 0 or > 23 || minute is < 0 or > 59 || period is not null && hour is < 1 or > 12)
+        // The clock is a 24-hour local time (schedule's «at»): it selects that exact hour and minute.
+        if (hour is < 0 or > 23 || minute is < 0 or > 59)
             throw new ScriptFailure("invalid_clock_selector");
-        int targetHour = hour;
-        if (Is(period, "am")) targetHour = hour % 12;
-        else if (Is(period, "pm")) targetHour = hour % 12 + 12;
         string prefix = Is(request.Kind, "alarm") ? "BAXY-Alarm-" : "BAXY-Reminder-";
         DateTimeOffset now = DateTimeOffset.Now;
         List<(string TaskName, string NextRunUtc)> matches = [];
@@ -121,10 +118,7 @@ internal sealed class NativeScheduledNotificationBackend(
             if (info.NextRunLocal is not DateTime nextLocal) continue;
             DateTimeOffset next = new(nextLocal);
             if (next <= now) continue;
-            bool hourMatches = period is not null
-                ? next.Hour == targetHour
-                : hour <= 12 ? next.Hour % 12 == hour % 12 : next.Hour == hour;
-            if (hourMatches && next.Minute == minute)
+            if (next.Hour == hour && next.Minute == minute)
                 matches.Add((info.Name, Utc(next)));
         }
         return Json(writer =>

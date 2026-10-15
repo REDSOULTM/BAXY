@@ -100,7 +100,7 @@ public sealed class ScheduledNotificationPruneTests
             var adapter = new WindowsScheduledNotificationAdapter(dataRoot, runner, scheduler);
 
             ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-                "notification.schedule",
+                "schedule.alarms",
                 Arguments(now.AddHours(1)),
                 CancellationToken.None);
 
@@ -137,7 +137,7 @@ public sealed class ScheduledNotificationPruneTests
             var adapter = new WindowsScheduledNotificationAdapter(dataRoot, runner, scheduler);
 
             ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-                "notification.schedule",
+                "schedule.alarms",
                 Arguments(now.AddHours(1)),
                 CancellationToken.None);
 
@@ -165,7 +165,8 @@ public sealed class ScheduledNotificationPruneTests
     {
         using JsonDocument document = JsonDocument.Parse(JsonSerializer.Serialize(new
         {
-            dueUtc = due.ToString("O"),
+            action = "create",
+            at = due.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
             kind = "alarm",
             title = "Prueba",
         }));

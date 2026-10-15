@@ -217,3 +217,30 @@ Banco de práctica 2 (`renew_v1/practica/decision2.json`, 270 casos), Q4_K_M, se
   arnés crece.
 - **El contexto alcanza:** el prefijo de ~34k tokens, más el historial (24 000 caracteres, ~7k tokens), más el
   turno, entran en 49 152. La lista de apps se queda, porque quitarla cuesta aciertos.
+
+## `schedule.alarms`: una sola operación para alarmas y recordatorios
+
+- **Qué reemplaza.** Las 12 operaciones de antes: `notification.schedule`, `list`, `cancel.at`, `cancel.latest`,
+  `diagnose`, `dismiss` y `list.due`, más `reminder.create`, `delete`, `list`, `resolve.exact` y `restore`. Se
+  retiraron con sus descripciones, su manejador de Core (`ReminderHandlers.cs`), sus relaciones de plan y sus entradas
+  del suelo.
+- **Hallazgo de honestidad.** `reminder.*` sólo guardaba un JSON que nada leía, así que esos recordatorios nunca
+  sonaban: BAXY podía decir «te lo recuerdo» sin que nada fuera a avisar. Sólo `notification.schedule` sonaba de
+  verdad, por el Programador de tareas de Windows, y ése es el camino que queda.
+- **Argumentos.**
+  - `action` puede ser `create`, `list`, `cancel` o `diagnose`.
+  - `kind` (alarma o recordatorio) y `recurrence` (diaria u horaria) son opcionales.
+  - Al crear, la hora es la de la persona: `inMinutes`, `inSeconds` para temporizadores cortos, o `at` en hora local
+    (`HH:mm` en 24 horas, la próxima vez que llega esa hora, o `YYYY-MM-DDTHH:mm`).
+  - El modelo ya no escribe UTC. En la prueba de punta a punta E004 del líder, el modelo escribía mal `dueUtc` y
+    repetía la llamada fallida 15 veces.
+- **Qué devuelve.** El resultado trae `dueLocal`, para que BAXY diga la hora tal como la vive la persona.
+- **Cancelar.** Con `at` cancela la de esa hora exacta, en 24 horas; sin `at`, la última. Se retiró el camino am/pm
+  (`Period`) del backend nativo, del script y de la petición.
+- **Medido.**
+  - Kernel 591/591, Providers 2160/2160 (`ScheduleTimeTests`: minutos, segundos, una hora que ya pasó salta a mañana,
+    fecha y hora local, entradas inválidas), Contracts 70 y Setup 477.
+  - Prueba en vivo contra el Programador de tareas real del notebook: crear un recordatorio a 30 minutos, listarlo
+    y cancelarlo, y la tarea desaparece. Pasó en 321 ms.
+- **Cobertura.** Se perdió restaurar un recordatorio borrado y su campo de «detalles», que eran de un sistema que no
+  sonaba. Cancelar por título no existe: se lista y se cancela por hora.

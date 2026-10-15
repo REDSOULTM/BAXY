@@ -158,11 +158,9 @@ public static class MissionPlanValidator
             // M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la
             // nota…?»): a note is changed by its identity and revision, which only the verified read of it gives.
             "note.update" => ["note.read"],
-            "notification.dismiss" => ["notification.list.due"],
             "ocr.read" => ["capture.screenshot", "capture.active.window"],
             "package.install.commit" => ["package.install.prepare"],
             "peripheral.print" or "peripheral.scan" => ["peripheral.list"],
-            "reminder.delete" => ["reminder.resolve.exact"],
             // The mind already binds task.delete to task.resolve.exact
             // (planner._required_predecessors); without the same relation here
             // the shell rejected that plan as incomplete (M44 F-p02-t3).
@@ -227,7 +225,6 @@ public static class MissionPlanValidator
                 or "package.install.commit" => ["confirmationId"],
             "message.send" => ["recipientId"],
             "note.read" or "note.update" => ["noteId"],
-            "notification.dismiss" or "reminder.delete" => ["reminderId"],
             "task.delete" or "task.complete" or "task.reopen" => ["taskId"],
             "ocr.read" or "vision.describe" => ["captureId"],
             "office.document.read" => ["documentId"],

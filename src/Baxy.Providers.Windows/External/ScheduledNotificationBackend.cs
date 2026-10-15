@@ -15,7 +15,6 @@ internal sealed record ScheduledNotificationRequest(string Mode, string Kind)
     public string? Recurrence { get; init; }
     public int Hour { get; init; } = -1;
     public int Minute { get; init; }
-    public string? Period { get; init; }
 }
 
 internal interface IScheduledNotificationBackend
@@ -51,7 +50,6 @@ internal sealed class ScriptScheduledNotificationBackend(
         }
         Add(arguments, "-AlarmRoot", request.AlarmRoot);
         Add(arguments, "-Recurrence", request.Recurrence);
-        Add(arguments, "-Period", request.Period);
         return _runner.RunAsync(
             "powershell.exe", arguments, TimeSpan.FromSeconds(30), cancellationToken);
     }

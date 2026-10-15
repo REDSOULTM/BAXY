@@ -92,7 +92,6 @@ internal static class Program
     {
         var noteStore = new LocalNoteStore(Path.Combine(dataRoot, "notes-store"));
         var taskStore = new LocalTaskStore(Path.Combine(dataRoot, "tasks-store"));
-        var reminderStore = new LocalTaskStore(Path.Combine(dataRoot, "reminders-store"));
         var routineStore = new LocalRoutineStore(Path.Combine(dataRoot, "routines-store"));
         var clipboardProvider = new WindowsClipboardProvider();
         var screenshotProvider = new WindowsScreenshotProvider(Path.Combine(dataRoot, "captures"));
@@ -171,7 +170,6 @@ internal static class Program
             new SystemStatusHandler(systemStatusProvider, gpuStatusProvider),
             new ProcessListHandler(processStatusProvider),
             new TimeStatusHandler(timeStatusProvider, placeTimeZoneResolver),
-            .. ReminderHandlers.Create(reminderStore),
             .. RoutineHandlers.Create(routineStore),
             .. TaskHandlers.Create(taskStore),
             .. WindowControlHandlers.Create(windowControlProvider),
