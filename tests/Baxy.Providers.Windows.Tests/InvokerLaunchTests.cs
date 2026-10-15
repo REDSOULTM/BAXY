@@ -105,7 +105,7 @@ public sealed class InvokerLaunchTests
     }
 
     // Review of M5: the core runs in the App's kill-on-close job. The program leaves the job (it outlives BAXY and a
-    // restart of the core) and inherits none of the core's handles (its stdio pipes), like WindowsApplicationLauncher.
+    // restart of the core) and inherits none of the core's handles (its stdio pipes).
     [Test]
     public void TheProgramLeavesTheJobInheritsNoHandleAndRunsAsInvoker()
     {
@@ -121,7 +121,7 @@ public sealed class InvokerLaunchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(request.CreationFlags, Is.EqualTo(WindowsApplicationLauncher.CreateBreakawayFromJob | 0x00000400u));
+            Assert.That(request.CreationFlags, Is.EqualTo(InvokerLaunch.CreateBreakawayFromJob | 0x00000400u));
             Assert.That(request.InheritHandles, Is.False);
             Assert.That(request.CommandLine, Is.EqualTo("\"" + Tool + "\" \"C:\\Windows\\system32\\view.msc\" /s"));
             Assert.That(request.WorkingDirectory, Is.EqualTo(@"C:\Windows\system32"));
