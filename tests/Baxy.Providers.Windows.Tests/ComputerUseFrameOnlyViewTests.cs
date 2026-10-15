@@ -72,7 +72,7 @@ public sealed class ComputerUseFrameOnlyViewTests
             $tokens=$null;$errors=$null
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_FRAME_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
-            $wanted=@('Test-RectWithin','Test-OffscreenUsable','Get-UnfilteredBox','Find-ById','Find-Named','Test-NameMatch','Get-LookupScope')
+            $wanted=@('Test-RectWithin','Test-OffscreenUsable','Get-UnfilteredBox','Find-ById','Find-Named','Test-NameMatch','Get-LabelFolded','Get-LookupScope')
             $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $wanted -contains $node.Name },$true))
             if($found.Count -ne $wanted.Count){ throw 'rule functions missing' }
             foreach($definition in $found){ . ([scriptblock]::Create($definition.Extent.Text)) }

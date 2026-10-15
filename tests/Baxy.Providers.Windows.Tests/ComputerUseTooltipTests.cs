@@ -170,7 +170,7 @@ public sealed class ComputerUseTooltipTests
         var locator = new WindowsVisibleTooltipLocator(worker, desktop, cache);
 
         ExternalCapabilityReceipt? receipt = await locator.TryClickAsync(
-            "input.visible.click", "configuración", press, CancellationToken.None);
+            "input.visible.click", "configuración de usuario", press, CancellationToken.None);
 
         Assert.That(receipt, Is.Not.Null);
         JsonElement result = receipt!.Result!.Value;

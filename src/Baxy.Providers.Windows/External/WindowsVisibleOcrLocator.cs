@@ -215,16 +215,15 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         string needle = Fold(label);
         if (needle.Length == 0)
             return false;
-        HashSet<string> needles = Needles(needle);
-        if (needles.Any(item => Fold(recognized.Text ?? "").Contains(item, StringComparison.Ordinal)))
+        if (Fold(recognized.Text ?? "").Contains(needle, StringComparison.Ordinal))
             return true;
         foreach (OcrLine line in recognized.Lines)
         {
-            if (needles.Contains(Fold(line.Text)))
+            if (Fold(line.Text) == needle)
                 return true;
             foreach (OcrWord word in line.Words)
             {
-                if (needles.Contains(Fold(word.Text)))
+                if (Fold(word.Text) == needle)
                     return true;
             }
         }
@@ -240,20 +239,6 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         double top = Math.Min(first.Y, last.Y);
         double bottom = Math.Max(first.Y + first.Height, last.Y + last.Height);
         return new global::Windows.Foundation.Rect(first.X, top, Math.Max(1, last.X + last.Width - first.X), bottom - top);
-    }
-
-    private static HashSet<string> Needles(string needle)
-    {
-        HashSet<string> needles = new(StringComparer.Ordinal) { needle };
-        if (needle is "biblioteca")
-            needles.Add("library");
-        if (needle is "library")
-            needles.Add("biblioteca");
-        if (needle is "configuracion")
-            needles.Add("settings");
-        if (needle is "settings")
-            needles.Add("configuracion");
-        return needles;
     }
 
     /// <summary>One OCR line with its box in capture pixels (contract §1.2, text by zone) and its words' boxes, which
@@ -370,7 +355,6 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         string needle = Fold(label);
         if (needle.Length == 0)
             return null;
-        HashSet<string> needles = Needles(needle);
         OcrResult[] passes = enhanced is null ? [recognized] : [recognized, enhanced];
         List<global::Windows.Foundation.Rect> words = [];
         foreach (OcrResult pass in passes)
@@ -395,7 +379,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 IReadOnlyList<OcrWord> lineWords = line.Words;
                 for (int start = 0; start + span <= lineWords.Count; start++)
                 {
-                    if (!needles.Contains(string.Join(' ', lineWords.Skip(start).Take(span).Select(each => Fold(each.Text)))))
+                    if (string.Join(' ', lineWords.Skip(start).Take(span).Select(each => Fold(each.Text))) != needle)
                         continue;
                     OcrWord word = lineWords[start];
                     global::Windows.Foundation.Rect box = SpanBox(lineWords, start, span);
@@ -462,32 +446,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             }
             return heights[smallest] <= next * 0.95 ? hits[smallest] : null;
         }
-        foreach (OcrLine line in recognized.Lines)
-        {
-            if (!needles.Any(item => Fold(line.Text).Contains(item, StringComparison.Ordinal)))
-                continue;
-            global::Windows.Foundation.Rect box = default;
-            bool started = false;
-            foreach (OcrWord word in line.Words)
-            {
-                if (!started)
-                {
-                    box = word.BoundingRect;
-                    started = true;
-                }
-                else
-                {
-                    box.Union(word.BoundingRect);
-                }
-            }
-            if (!started)
-                continue;
-            hits.Add(new WordHit(
-                line.Text,
-                (int)(box.X + box.Width / 2),
-                (int)(box.Y + box.Height / 2)));
-        }
-        return hits.Count == 1 ? hits[0] : null;
+        // Auditoría P3: a line that only holds the label among other words is not its control; nothing is pressed.
+        return null;
     }
 
     // H0101: el boton «Instalar» del dialogo del lanzador de juegos es texto blanco sobre azul

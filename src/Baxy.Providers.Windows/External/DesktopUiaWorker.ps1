@@ -13,7 +13,7 @@
 #   {"cmd":"view","hwnd":123,"limit":60}
 #   {"cmd":"signature","hwnd":123,"limit":60,"budgetMs":1200}   (tipo y nombre de los primeros controles y si hay texto
 #      seleccionado, acotado en tiempo; no toca la ultima vista: Do-Signature)
-#   {"cmd":"click","hwnd":123,"aliases":["Biblioteca","Library"],"controlId":"42.1837.4"}
+#   {"cmd":"click","hwnd":123,"aliases":["Biblioteca"],"controlId":"42.1837.4"}
 #      (con «manner»: open | menu | double, ese control de la vista abierto por su flecha, su menu contextual o un doble
 #      clic, solo por su identidad: Invoke-MannerControl)
 #   {"cmd":"at","hwnd":123,"x":640,"y":380,"aliases":["Biblioteca"]}   (el control con patron del punto que la etiqueta nombra, sin raton;
@@ -1295,13 +1295,23 @@ function Get-Rect($el){
 function Get-Id($el){
   try { return (($el.GetRuntimeId() | ForEach-Object { [string]$_ }) -join '.') } catch { return '' }
 }
+# Auditoria P3: la etiqueta nombra un control solo si es su nombre, plegado como el Fold del adaptador (sin tildes, en
+# minusculas, los espacios juntos; Get-LabelFolded). Ni alias, ni contener, ni erratas.
 function Test-NameMatch([string]$name,[string[]]$aliases){
+  $seen=Get-LabelFolded $name
+  if($seen.Length -eq 0){ return $false }
   foreach($alias in $aliases){
-    if([string]::Equals($alias,$name,[StringComparison]::OrdinalIgnoreCase)){ return $true }
+    if((Get-LabelFolded $alias) -ceq $seen){ return $true }
     # Un nombre largo se muestra recortado (Format-Name): la etiqueta que lo da entero (Get-AskingName) es el mismo.
-    if($alias.Length -gt 80 -and [string]::Equals((Format-Name $alias),$name,[StringComparison]::OrdinalIgnoreCase)){ return $true }
+    if($alias.Length -gt 80 -and (Get-LabelFolded (Format-Name $alias)) -ceq $seen){ return $true }
   }
   return $false
+}
+function Get-LabelFolded([string]$text){
+  if([string]::IsNullOrWhiteSpace($text)){ return '' }
+  # Un par sustituto suelto (un emoji cortado) no se normaliza: se compara tal cual.
+  $plain=$text; try { $plain=$text.Normalize([Text.NormalizationForm]::FormD) -replace '\p{Mn}','' } catch {}
+  return ([regex]::Replace($plain.ToLowerInvariant(),'\s+',' ')).Trim()
 }
 # Plegado: sin acentos, en minusculas, solo letras y digitos separados por un espacio.
 function Get-Folded([string]$text){
@@ -3609,7 +3619,9 @@ function Do-ClickJudged($request){
   }
   return $pressed
 }
-# El nombre de un control o el texto de dentro lleva la etiqueta: igual, o como palabras enteras.
+# El nombre de un control o el texto de dentro lleva la etiqueta: igual, o como palabras enteras. Auditoria P3: aqui no
+# se elige un control por su nombre; el punto es donde el OCR o la vision leyeron la etiqueta exacta, y esto solo
+# comprueba que lo que hay en ese punto la lleva (una fila de chat «Juan Perez 12:30 Hola» donde se leyo «Juan Perez»).
 function Test-NamesLabel($names,[string[]]$aliases){
   foreach($name in @($names)){
     $text=[string]$name

@@ -297,7 +297,7 @@ public sealed class ComputerUseClickMethodTests
             $answers=@(
               (Pick @(@{names=@('Tienda');area=40},@{names=@('','Biblioteca');area=200},@{names=@('Biblioteca');area=5000}) @('Biblioteca','Library')),
               (Pick @(@{names=@('Ir a la biblioteca');area=40},@{names=@('Biblioteca');area=90}) @('Biblioteca')),
-              (Pick @(@{names=@('Library');area=60}) @('Biblioteca','Library')),
+              (Pick @(@{names=@('Library');area=60}) @('Biblioteca')),
               (Pick @(@{names=@('Tienda');area=40},@{names=@('Inicio','Tienda');area=300}) @('Biblioteca')),
               (Pick @(@{names=@('Biblioteca');area=0}) @('Biblioteca'))
             )
@@ -307,8 +307,8 @@ public sealed class ComputerUseClickMethodTests
         Assert.That(answer.Split(','), Is.EqualTo(new[]
         {
             "1",   // the control whose text inside is the label; not the unnamed-by-label inner one, not one too large
-            "0 1", // the label as whole words of a longer name counts too, innermost first
-            "0",   // a bilingual alias
+            "0 1", // the label as whole words of a longer name counts too, innermost first (the label was read there)
+            "",    // auditoría P3: a translation of the label is not it
             "",    // counter-case: nothing there names the label, so nothing is pressed without the mouse
             "",    // a control with no area is no holder of the point
         }));
@@ -746,7 +746,7 @@ public sealed class ComputerUseClickMethodTests
             Assert.That(worker.Commands[0], Does.Contain("\"cmd\":\"at\""));
             Assert.That(worker.Commands[0], Does.Contain("\"x\":640"));
             Assert.That(worker.Commands[0], Does.Contain("\"y\":380"));
-            Assert.That(worker.Commands[0], Does.Contain("\"aliases\":[\"Biblioteca\",\"Library\",\"biblioteca\"]"),
+            Assert.That(worker.Commands[0], Does.Contain("\"aliases\":[\"biblioteca\"]"),
                 "the worker is told the label the locator read, to press only a control that it names");
         });
     }
@@ -1099,7 +1099,7 @@ public sealed class ComputerUseClickMethodTests
             $tokens=$null;$errors=$null
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_CLICK_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
-            foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-CurrentRect','Test-NameMatch','Get-Folded','Test-NameHolds','Test-NamesLabel','Select-PointHolders','Test-HoldsPressed','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitNamesLabel')){
+            foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-CurrentRect','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-NameHolds','Test-NamesLabel','Select-PointHolders','Test-HoldsPressed','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitNamesLabel')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name },$true))
               if($found.Count -ne 1){ throw ('function missing: '+$name) }
               . ([scriptblock]::Create($found[0].Extent.Text))

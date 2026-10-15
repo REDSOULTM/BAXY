@@ -908,11 +908,10 @@ internal sealed class WindowsVisibleControlAdapter
             ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == position);
             if (chosen is null)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
-            if (!LabelNames(label, chosen.Name))
-                return ExternalJson.FailureBeforeEffect(operation, "visible_control_label_mismatch");
+            // Auditoría P3: the label is the index's name as the view gave it (folded), and the receipt says that name.
+            if (!SameLabel(label, chosen.Name))
+                return NotNamed(operation, "visible_control_label_mismatch", [chosen.Name]);
             controlId = chosen.Id.Length > 0 ? chosen.Id : null;
-            if (controlId is null && !LabelNames(label, chosen.Name))
-                return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
         }
 
         // Ronda 20 (P7): the opener the previous click noted is taken before any branch, so every click right after it
@@ -1374,7 +1373,7 @@ internal sealed class WindowsVisibleControlAdapter
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
-            if (waitForLabel is null || view.Names.Any(name => LabelNames(waitForLabel, name))
+            if (waitForLabel is null || view.Names.Any(name => SameLabel(waitForLabel, name))
                 || DateTime.UtcNow >= deadline)
             {
                 NoteOpenedLooked(view.Receipt, processId, view.Names);
@@ -2576,17 +2575,10 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     /// <summary>
-    /// The one control of the mission's last view a label names, by its identity, with the very rule of the mind's
-    /// find_control (computer_use.py), so it never resolves what the mind found absent or ambiguous: the only control of
-    /// exactly that name; else the controls whose name holds the label (<see cref="LabelNames"/>) and that are not
-    /// descriptive (<see cref="NamedDescriptiveKinds"/>) or are short enough to be what they name (at most six words beyond
-    /// the label's own): the only one, or, when several, the only actionable one among them
-    /// (<see cref="NamedActionableKinds"/>). Null when the last view is of another window, the label names none or several,
-    /// or the chosen control has no identity. Revision 1 of the branch: a descriptive control whose long sentence merely
-    /// mentions the label is never pressed for it («Activar modo oscuro automáticamente al anochecer…» for «Modo oscuro»).
-    /// Revision 3: a long actionable sentence that holds the label counts as a candidate, as in the mind, so a short switch
-    /// and a long button that both hold «Modo oscuro» are ambiguous and the label is left to its cascade; the mind sends a
-    /// label alone exactly when it found it so, and its guards (a setting, a switch, the account) only ran on that label.
+    /// The one control of the mission's last view a label names, by its identity: the only control of exactly that name
+    /// (<see cref="SameLabel"/>). Null when the last view is of another window, the label names none or several, or the
+    /// control has no identity: the label is then left to its cascade, which presses nothing it does not name exactly.
+    /// Auditoría P3: a control whose name only holds the label is never chosen for it.
     /// </summary>
     private string? NamedInView(nint window, string label)
     {
@@ -2594,41 +2586,15 @@ internal sealed class WindowsVisibleControlAdapter
         {
             if (window == 0 || _lastView is not { } view || view.Hwnd != window)
                 return null;
-            string folded = WindowsVisibleOcrLocator.Fold(label);
-            ViewControl[] exact = [.. view.Controls.Where(control =>
-                string.Equals(WindowsVisibleOcrLocator.Fold(control.Name), folded, StringComparison.Ordinal))];
-            if (exact.Length == 1)
-                return IdentityOf(exact[0]);
-            int words = folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-            ViewControl[] loose = [.. view.Controls.Where(control => LabelNames(label, control.Name)
-                && (!NamedDescriptiveKinds.Contains(control.Kind)
-                    || WindowsVisibleOcrLocator.Fold(control.Name).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length <= words + 6))];
-            if (loose.Length == 1)
-                return IdentityOf(loose[0]);
-            if (loose.Length > 1)
-            {
-                ViewControl[] actionable = [.. loose.Where(control => NamedActionableKinds.Contains(control.Kind))];
-                if (actionable.Length == 1)
-                    return IdentityOf(actionable[0]);
-            }
-
-            return null;
+            ViewControl[] exact = [.. view.Controls.Where(control => SameLabel(label, control.Name))];
+            return exact.Length == 1 && exact[0].Id.Length > 0 ? exact[0].Id : null;
         }
-
-        static string? IdentityOf(ViewControl control) => control.Id.Length > 0 ? control.Id : null;
     }
 
-    // The kinds that describe rather than act (the mind's _DESCRIPTIVE_KINDS): one of them holds a label only in a short name.
+    // The kinds that describe rather than act: a name only they show is no name of an acting control (OpenerNames).
     private static readonly HashSet<string> NamedDescriptiveKinds = new(StringComparer.Ordinal)
     {
         "Text", "Group", "Pane", "Custom", "Document",
-    };
-
-    // The kinds that win among several that hold a label (the mind's effect_intent_actionable_kinds), mirroring find_control.
-    private static readonly HashSet<string> NamedActionableKinds = new(StringComparer.Ordinal)
-    {
-        "Button", "MenuItem", "ListItem", "TabItem", "Hyperlink", "CheckBox", "RadioButton", "Edit", "ComboBox", "TreeItem",
-        "SplitButton", "Slider", "Document",
     };
 
     // The last control of a mission's window pressed by its identity, with the names its view showed before the press:
@@ -2785,14 +2751,12 @@ internal sealed class WindowsVisibleControlAdapter
         IReadOnlyList<nint> popupsBefore = PopupsOf(hwnd);
         // Ronda 20b, palanca 8, objetivo 3 (v3-44): the desktop's root windows before the click.
         HandoffWatch? roots = RootsBefore(hwnd);
-        var aliases = new JsonArray();
-        foreach (string alias in Aliases(label))
-            aliases.Add((JsonNode?)JsonValue.Create(alias));
         var clickRequest = new JsonObject
         {
             ["cmd"] = "click",
             ["hwnd"] = hwnd,
-            ["aliases"] = aliases,
+            // Auditoría P3: the label as the model wrote it, never a translation of it.
+            ["aliases"] = new JsonArray(label),
             ["controlId"] = controlId ?? string.Empty,
             ["asks"] = AsksRequest(),
         };
@@ -2936,16 +2900,13 @@ internal sealed class WindowsVisibleControlAdapter
     {
         if (window == 0)
             return PointPressed.NothingThere;
-        var aliases = new JsonArray();
-        foreach (string alias in Aliases(label))
-            aliases.Add((JsonNode?)JsonValue.Create(alias));
         var request = new JsonObject
         {
             ["cmd"] = "at",
             ["hwnd"] = window,
             ["x"] = screenX,
             ["y"] = screenY,
-            ["aliases"] = aliases,
+            ["aliases"] = new JsonArray(label),
             ["asks"] = AsksRequest(),
         };
         if (!string.IsNullOrEmpty(controlId))
@@ -3349,6 +3310,12 @@ internal sealed class WindowsVisibleControlAdapter
             // The control left unpressed is named («name»), for the step that names it.
             if (!effect && error == NeedsConfirmation)
                 return new ExternalCapabilityReceipt(operation, false, false, root.Clone(), error);
+            // Auditoría P3 y C10: the controls whose name holds the label, none of them pressed, go with the «not found»
+            // so the model can name one exactly.
+            if (!effect && BeforeAnyPress.Contains(error)
+                && root.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.Array)
+                return NotNamed(operation, error, [.. candidates.EnumerateArray()
+                    .Where(candidate => candidate.ValueKind == JsonValueKind.String).Select(candidate => candidate.GetString()!)]);
             return !effect && BeforeAnyPress.Contains(error)
                 ? ExternalJson.FailureBeforeEffect(operation, error)
                 : effectBoundary.Failure(operation, error, effect);
@@ -3359,55 +3326,27 @@ internal sealed class WindowsVisibleControlAdapter
         return ExternalJson.Success(operation, root.Clone(), true);
     }
 
-    // Alias bilingües del catálogo y nombres de dígitos: una persona dice
-    // «aceptar» y «5»; UI Automation anuncia «Accept» o «Cinco» (UI1273).
-    internal static IReadOnlyList<string> Aliases(string label)
+    // Etiqueta pedida frente a nombre visto (auditoría P3): iguales tras plegar mayúsculas, tildes y espacios. Ni alias,
+    // ni «contiene», ni erratas: el modelo copia la etiqueta tal como la vio en la vista.
+    internal static bool SameLabel(string label, string name)
     {
-        string folded = WindowsVisibleOcrLocator.Fold(label);
-        switch (folded)
-        {
-            case "accept" or "aceptar":
-                return ["Accept", "Aceptar", label];
-            case "ok" or "okay":
-                return ["OK", "Okay", "Aceptar", label];
-            case "validate" or "valider":
-                return ["Validate", "Valider", label];
-            case "biblioteca" or "library":
-                return ["Biblioteca", "Library", label];
-            case "configuracion" or "settings":
-                return ["Configuración", "Configuracion", "Settings", label];
-        }
-
-        string[][] digits =
-        [
-            ["0", "Cero", "Zero"], ["1", "Uno", "One"], ["2", "Dos", "Two"], ["3", "Tres", "Three"],
-            ["4", "Cuatro", "Four"], ["5", "Cinco", "Five"], ["6", "Seis", "Six"], ["7", "Siete", "Seven"],
-            ["8", "Ocho", "Eight"], ["9", "Nueve", "Nine"],
-        ];
-        foreach (string[] digit in digits)
-        {
-            if (digit.Any(form => string.Equals(WindowsVisibleOcrLocator.Fold(form), folded, StringComparison.Ordinal)))
-                return digit;
-        }
-
-        return [label];
+        string wanted = WindowsVisibleOcrLocator.Fold(label);
+        return wanted.Length > 0 && string.Equals(wanted, WindowsVisibleOcrLocator.Fold(name), StringComparison.Ordinal);
     }
 
-    // Etiqueta pedida frente a nombre visto: iguales plegados, o el nombre
-    // contiene la etiqueta como palabra, con una errata por cada cinco letras.
-    internal static bool LabelNames(string label, string name)
-    {
-        string needle = WindowsVisibleOcrLocator.Fold(label);
-        string haystack = WindowsVisibleOcrLocator.Fold(name);
-        if (needle.Length == 0 || haystack.Length == 0)
-            return false;
-        if (string.Equals(needle, haystack, StringComparison.Ordinal))
-            return true;
-        if (haystack.Contains(needle, StringComparison.Ordinal))
-            return true;
-        int allowed = needle.Length / 5;
-        return allowed > 0 && EditDistance(needle, haystack, allowed) <= allowed;
-    }
+    // Nothing was pressed: the failure says the names seen instead (auditoría P3), for the model to name one exactly.
+    internal static ExternalCapabilityReceipt NotNamed(string operation, string error, IReadOnlyList<string> candidates) =>
+        candidates.Count == 0
+            ? ExternalJson.FailureBeforeEffect(operation, error)
+            : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteStartArray("candidates");
+                foreach (string candidate in candidates)
+                    writer.WriteStringValue(candidate);
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }), error);
 
     internal static int EditDistance(string left, string right, int cap)
     {

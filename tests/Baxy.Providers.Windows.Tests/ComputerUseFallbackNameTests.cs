@@ -243,7 +243,7 @@ public sealed class ComputerUseFallbackNameTests
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_FALLBACK_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
             $wanted=@('Format-Name','Get-Cut','Get-Name','Get-Prop','Get-ReadableId','Get-FallbackName','Get-ShownName',
-                      'Test-NameMatch','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
+                      'Test-NameMatch','Get-LabelFolded','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
                       'Test-SystemMenu','Test-SystemMenuChain','Select-NumberedEntry','Get-LookupScope',
                       'Test-OffscreenUsable','Get-Rect')
             $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $wanted -contains $node.Name },$true))

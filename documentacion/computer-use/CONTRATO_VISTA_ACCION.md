@@ -308,7 +308,7 @@ El clic por identidad ya no trae la ventana al frente: los patrones llegan a una
 vieja, la cascada por etiqueta sigue atada a la ventana de esa vista (UIA la alcanza detrás; OCR y visión sólo leen y
 pulsan mientras está al frente), nunca a la ventana que la persona tenga al frente.
 
-OCR y visión, antes del puntero, piden al worker el comando `at` con los alias de la etiqueta: sólo es candidato un
+OCR y visión, antes del puntero, piden al worker el comando `at` con la etiqueta: sólo es candidato un
 control con patrón (o campo que toma texto) cuyo nombre, o el texto de dentro, nombra la etiqueta, sin pasar de un
 cuarto de la ventana, del más interior al más exterior. Con la ventana visible en el punto, la cadena de
 `AutomationElement.FromPoint` (lo que se ve: una capa o un modal tapan lo de debajo); con la ventana tapada ahí, los
@@ -374,9 +374,9 @@ Pruebas: `ForegroundRightTests`; en vivo, `AppOpenFrontLiveDesktopCheck` (BAXY_C
 Orden fijo; el primero que resuelve gana; con dos candidatos se pregunta, nunca se adivina.
 
 1. **Texto.** Nombre UIA (o su respaldo, §8.1), `aria-label` (es el nombre UIA en Electron/Chromium) o línea OCR,
-   tolerante a errata: comparación plegada (sin acentos, minúsculas) y distancia de edición
-   ≤ 1 por cada 5 caracteres; alias bilingües del catálogo (`biblioteca`/`library`,
-   `configuración`/`settings`, dígitos ↔ nombres).
+   por igualdad plegada (sin acentos, minúsculas, espacios juntos). Sin errata, sin alias y sin
+   contención (auditoría P3): sin coincidencia exacta no se pulsa nada y el «no encontrado» lleva
+   `candidates`, los nombres que contienen la etiqueta, para que el modelo nombre uno tal cual.
 2. **Plantilla local (OpenCV).** Para «el icono de X» sin texto: el icono se obtiene del
    sistema (`IShellItemImageFactory` para accesos directos y apps instaladas; carátulas de
    Steam en `librarycache`) y se busca en la captura por `matchTemplate` (TM_CCOEFF_NORMED
@@ -568,7 +568,7 @@ de esquema JSON (gramática, temperatura 0):
 
 Comprobaciones deterministas antes de devolver al shell (sin modelo):
 
-- `click`: `label` debe coincidir (plegado, errata ≤ 1/5) con `controls[i].name` o con una
+- `click`: `label` debe coincidir (plegado) con `controls[i].name` o con una
   línea OCR; si no, se busca por texto en la vista y se corrige `i`; si sigue sin estar →
   `none` con `why`.
 - `done`: `evidence` debe estar (plegada) en la vista; si no, se rechaza y se pide otro paso
@@ -1279,7 +1279,7 @@ tiene delante fuera de una misión, y nunca en una ventana protegida (`Protected
 5. **Restaurar.** Cada ráfaga se devuelve al terminar su candidato (frente, orden y cursor, salvo que la persona lo
    moviera). Si la persona actúa durante la ráfaga, se corta en el acto y no se aprende nada de ese candidato ni se
    sigue con los demás. Nunca un clic mientras se pasa el cursor.
-6. **Clic.** El control cuyo tooltip nombra la etiqueta (`LabelNames`) se pulsa como un punto que encontró el OCR
+6. **Clic.** El control cuyo tooltip es la etiqueta (`SameLabel`, igualdad plegada) se pulsa como un punto que encontró el OCR
    (`LocatedPointPress`: por el árbol en el punto si algo ahí tiene patrón y nombre; si no, el puntero en otra ráfaga
    tras otra pausa) y se prueba por cambio de la ventana **fuera de las marcas del hover** (hasta 1,5 s;
    `TooltipImage.ChangedOutside`: ≥ 20 píxeles fuera del control inflado 6 px y de la caja de su tooltip, o de la
