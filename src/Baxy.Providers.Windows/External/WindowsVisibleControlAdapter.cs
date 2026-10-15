@@ -1294,14 +1294,6 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 waitForLabel = waited.GetString()!.Trim();
             }
-
-            // Ronda 21, destino por contenido: a mission with no application asks for the windows on the desktop, each
-            // with a cheap signature of its tree, to find the one its request's referent is in. Nothing is brought to
-            // the front nor captured.
-            if (AsksForCandidates(arguments, processId, application))
-            {
-                return await DestinationCandidatesAsync(limit, cancellationToken).ConfigureAwait(false);
-            }
         }
 
         // M132: a look right after an opening reads the application opened, not what was in front before it. A look
@@ -1381,152 +1373,6 @@ internal sealed class WindowsVisibleControlAdapter
                     && member.TryGetInt64(out long id) && id == opened.ProcessId));
         if (ofIt)
             _openedLooked = new OpenedLook(opened.ProcessId, opened.NotedUtc, (nint)hwnd, [.. names]);
-    }
-
-    /// <summary>How many windows on the desktop a request's referent is looked for in (top of the Z order first).</summary>
-    internal const int DestinationCandidateLimit = 8;
-
-    /// <summary>
-    /// Revision 1 of r21 (B4): the whole listing's budget. Each window's signature is read under what is left of it (at
-    /// most <see cref="DestinationWindowBudgetMs"/>); a window not read in time goes out marked <c>unread</c>, never
-    /// guessed, and the listing always answers well inside the App's own timeout.
-    /// </summary>
-    internal const int DestinationBudgetMs = 4000;
-
-    /// <summary>Revision 1 of r21 (B4): one window's signature budget; the worker's own walk stops at it.</summary>
-    internal const int DestinationWindowBudgetMs = 1200;
-
-    // Below this much budget left a window is not asked for: its answer could not come in time.
-    private const int DestinationWindowMinimumMs = 200;
-
-    // How much after the window's budget the worker's answer may still come (its own reading of the clock, the pipe).
-    private static readonly TimeSpan DestinationAnswerMargin = TimeSpan.FromMilliseconds(1500);
-
-    /// <summary>
-    /// Revision 1 of r21 (B5): the desktop as the destination's search reads it (a test names its own windows).
-    /// </summary>
-    internal Func<(IReadOnlyList<VisibleControlSurface.DestinationWindow> Windows, nint Front)> DestinationDesktop { get; init; } =
-        VisibleControlSurface.DestinationDesktop;
-
-    /// <summary>Revision 1 of r21 (B5): the listing's clock in milliseconds (a test advances its own).</summary>
-    internal Func<long> DestinationClockMs { get; init; } = static () => Environment.TickCount64;
-
-    /// <summary>
-    /// Ronda 21, destino por contenido: whether a look asks for the desktop's windows instead of one window. Only a look
-    /// of a mission with no process and no application does: one that has either of them reads it as always, and the
-    /// request for candidates is ignored.
-    /// </summary>
-    internal static bool AsksForCandidates(JsonElement arguments, int processId, string? application) =>
-        arguments.ValueKind == JsonValueKind.Object
-        && arguments.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.True
-        && processId == 0 && application is null;
-
-    /// <summary>
-    /// Ronda 21, destino por contenido: the desktop's windows (top of the Z order first, cloaked ones left out), each
-    /// with its title, process, whether it holds the front, whether it is a developer's or BAXY's own (<c>protected</c>,
-    /// listed without its tree), the person's input to it, and a signature of its accessible tree (no capture, no OCR).
-    /// The App weighs them against the request's referent; the provider decides nothing. Revision 1 of r21 (B2, B4): the
-    /// signature is the worker's cheap one (<c>signature</c>: a walk bounded in nodes and in time, without the client
-    /// re-read, the HMENU entries or the disabled re-read, and leaving the worker's last view alone), with
-    /// <c>selection</c> read from the text pattern of the window's documents and fields (a non-empty selected range);
-    /// the whole listing runs under <see cref="DestinationBudgetMs"/>, and a window it could not read goes out
-    /// <c>unread</c>.
-    /// </summary>
-    private async ValueTask<ExternalCapabilityReceipt> DestinationCandidatesAsync(int limit, CancellationToken cancellationToken)
-    {
-        const string operation = "input.visible.controls";
-        long started = DestinationClockMs();
-        (IReadOnlyList<VisibleControlSurface.DestinationWindow> desktop, nint front) = DestinationDesktop();
-        var read = new List<(VisibleControlSurface.DestinationWindow Window, bool Protected, bool Unread, bool Selection, List<ViewControl> Controls)>();
-        foreach (VisibleControlSurface.DestinationWindow window in desktop.Where(window => !window.Cloaked).Take(DestinationCandidateLimit))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            List<ViewControl> controls = [];
-            bool selection = false;
-            bool unread = false;
-            bool isProtected = VisibleControlSurface.ProtectedFrom(window.Process, null);
-            // A developer's or BAXY's own window is listed without its tree: nothing of it is read for a mission.
-            if (!isProtected)
-            {
-                long left = DestinationBudgetMs - (DestinationClockMs() - started);
-                if (left < DestinationWindowMinimumMs)
-                {
-                    unread = true;
-                }
-                else
-                {
-                    int budget = (int)Math.Min(DestinationWindowBudgetMs, left);
-                    using JsonDocument? answer = await _worker.SendAsync(
-                            new JsonObject { ["cmd"] = "signature", ["hwnd"] = window.Window, ["limit"] = limit, ["budgetMs"] = budget }
-                                .ToJsonString(),
-                            TimeSpan.FromMilliseconds(budget) + DestinationAnswerMargin, cancellationToken)
-                        .ConfigureAwait(false);
-                    if (answer is not null && answer.RootElement.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True)
-                    {
-                        controls = ParseControls(answer.RootElement);
-                        selection = answer.RootElement.TryGetProperty("selection", out JsonElement selected)
-                            && selected.ValueKind == JsonValueKind.True;
-                        // A walk the budget cut before any control came is no reading of the window.
-                        unread = controls.Count == 0 && !selection
-                            && answer.RootElement.TryGetProperty("complete", out JsonElement complete)
-                            && complete.ValueKind == JsonValueKind.False;
-                    }
-                    else
-                    {
-                        unread = true;
-                    }
-                }
-            }
-
-            read.Add((window, isProtected, unread, selection, controls));
-        }
-
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 2);
-            writer.WriteStartArray("candidateWindows");
-            foreach ((VisibleControlSurface.DestinationWindow window, bool isProtected, bool unread, bool selection, List<ViewControl> controls) in read)
-            {
-                writer.WriteStartObject();
-                writer.WriteNumber("hwnd", window.Window);
-                writer.WriteNumber("processId", window.ProcessId);
-                writer.WriteString("process", window.Process);
-                writer.WriteString("title", window.Title);
-                writer.WriteBoolean("foreground", window.Window == front);
-                if (isProtected)
-                    writer.WriteBoolean("protected", true);
-                if (unread)
-                    writer.WriteBoolean("unread", true);
-                if (selection)
-                    writer.WriteBoolean("selection", true);
-                if (window.PersonInputAgoMs is long ago)
-                    writer.WriteNumber("personInputAgoMs", ago);
-                writer.WriteStartArray("controls");
-                foreach (ViewControl control in controls)
-                {
-                    writer.WriteStartObject();
-                    writer.WriteString("kind", control.Kind);
-                    writer.WriteString("name", control.Name);
-                    // Revision 1 of ronda 24 (B1): a control inside a Document is the content the window shows, never
-                    // its frame (a page's «Guardar» or «Archivo»).
-                    if (control.Content)
-                        writer.WriteBoolean("content", true);
-                    writer.WriteEndObject();
-                }
-
-                writer.WriteEndArray();
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndArray();
-            if (WindowsUserInputPause.Shared.UnknownInputAgoMs is long unknownAgo)
-                writer.WriteNumber("personInputUnknownAgoMs", unknownAgo);
-            writer.WriteNumber("elapsedMs", DestinationClockMs() - started);
-            writer.WriteString("authority", "windows_uia_snapshot_candidates");
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, false);
     }
 
     /// <summary>Ronda 21: the goal's words the mission's look carries («wanted», declared in the catalog), at most 24
@@ -2298,7 +2144,6 @@ internal sealed class WindowsVisibleControlAdapter
                     && systemMenu.ValueKind == JsonValueKind.True,
                 Body = item.TryGetProperty("body", out JsonElement body) && body.ValueKind == JsonValueKind.True,
                 Reserved = item.TryGetProperty("reserved", out JsonElement reserved) && reserved.ValueKind == JsonValueKind.True,
-                Content = item.TryGetProperty("content", out JsonElement content) && content.ValueKind == JsonValueKind.True,
             });
         }
 
@@ -3508,9 +3353,6 @@ internal sealed class WindowsVisibleControlAdapter
         // past the cap by its kind and rectangle.
         internal bool Body { get; set; }
         internal bool Reserved { get; set; }
-        // Revision 1 of ronda 24 (B1): the signature's control lies inside a Document (a page's content, never the
-        // window's frame).
-        internal bool Content { get; set; }
     }
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls);
