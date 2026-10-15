@@ -1,13 +1,12 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
 /// <summary>
-/// Production gate boundary for account-, application- and hardware-bound tools.
-/// It probes prerequisites but delegates no effect until an authenticated official
-/// adapter is injected. Failure is explicit and can never be mistaken for success.
+/// The Windows adapters of the external tools (apps, media, web, files, devices, accounts): each call goes to the
+/// adapters that claim its operation, in order, until one verifies it or crosses its effect; a failure before any
+/// effect lets the next one try, and the last failure that read something is the answer.
 /// </summary>
 public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvider, IDisposable
 {
@@ -358,83 +357,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             return lastFailure;
         }
 
-        string error = operation switch
-        {
-            "media.play.exact" or "media.play.query" => ProcessExists("Spotify")
-                ? "spotify_session_authority_required" : "spotify_client_not_running",
-            "media.play.youtube" => "youtube_cdp_playback_required",
-            "media.control" => "smtc_session_adapter_required",
-            "media.seek.relative" => "smtc_session_adapter_required",
-            "media.status" => "smtc_session_adapter_required",
-            "audio.microphone.mute" => "default_microphone_endpoint_required",
-            "audio.volume.adjust" => "default_audio_output_endpoint_required",
-            "browser.control" or "browser.navigate" or "browser.navigate.named"
-                or "browser.page.read" or "browser.tabs.list" =>
-                "cdp_browser_session_required",
-            "filesystem.folder.open" => "windows_shell_folder_adapter_required",
-            "filesystem.file.open.latest" => "windows_shell_file_adapter_required",
-            "file.edit" or "file.find" or "file.read" or "filesystem.known.duplicates"
-                or "filesystem.known.trash.named" =>
-                "windows_known_folder_authority_required",
-            "filesystem.explorer.count" => "windows_shell_explorer_folder_authority_required",
-            "filesystem.sandbox.diff.named" or "filesystem.sandbox.move.named" =>
-                "sandbox_named_file_authority_required",
-            "backup.known.create" or "backup.known.list" or "backup.known.restore.latest"
-                or "backup.known.verify.latest" =>
-                "windows_known_backup_authority_required",
-            "clipboard.copy" => "focused_window_clipboard_copy_sendinput_required",
-            "clipboard.paste" => "focused_window_clipboard_sendinput_required",
-            "input.key.press" => "focused_window_sendinput_required",
-            "input.keyboard.layout" => "focused_window_keyboard_layout_required",
-            "input.keyboard.open" => "windows_on_screen_keyboard_required",
-            "input.keyboard.status" => "focused_window_keyboard_layout_required",
-            "input.pointer.control" => "pointer_win32_adapter_required",
-            "input.select.all" => "focused_uia_control_required",
-            "input.text.type" => "focused_window_text_input_required",
-            "input.visible.click" => "visible_uia_control_required",
-            "input.visible.controls" => "visible_uia_control_required",
-            "input.scroll" => "visible_window_surface_required",
-            "streaming.navigate" or "streaming.play.named" =>
-                "streaming_authenticated_session_required",
-            "web.search" => "web_search_provider_not_configured",
-            "web.fetch" => "web_page_reader_not_configured",
-            "calendar.event.create" or "calendar.event.list" => "calendar_account_adapter_required",
-            "email.latest.read" or "email.latest.reply" or "email.send" => "outlook_authenticated_profile_required",
-            "office.document.create" or "office.document.read" =>
-                "office_authenticated_adapter_required",
-            "schedule.alarms" => "windows_task_scheduler_required",
-            "game.installed.named" => "steam_epic_game_manifest_inventory_required",
-            "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set"
-                or "bluetooth.radio.status" =>
-                "bluetooth_hardware_gate_required",
-            "game.install.named" or "game.install.status" or "game.install.cancel"
-                or "game.catalog.list" or "game.launch" =>
-                ProcessExists("steam") ? "steam_session_adapter_required" : "steam_client_not_running",
-            "vision.describe" => string.IsNullOrWhiteSpace(
-                Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT"))
-                    ? "vision_provider_not_configured" : "vision_session_adapter_required",
-            "peripheral.list" or "peripheral.print" or "peripheral.scan" =>
-                "peripheral_hardware_gate_required",
-            "display.status" => "windows_display_api_required",
-            "calculator.expression.evaluate" => "windows_calculator_uia_required",
-            "software.python.status" => "windows_registry_read_required",
-            "software.python.package.status" => "python_pip_read_required",
-            "storage.removable.list" => "windows_driveinfo_read_required",
-            "client.channel.locate" => "client_quick_switcher_uia_required",
-            "ocr.read" => "windows_ocr_language_pack_gate_required",
-            "package.install" => "winget_adapter_gate_required",
-            "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
-                "windows_setting_hardware_gate_required",
-            "system.power" => "power_transition_physical_gate_required",
-            "system.application.crash.diagnose" => "windows_application_eventlog_required",
-            "system.process.terminate.named" => "windows_process_termination_authority_required",
-            "system.recyclebin.empty" => "windows_recycle_bin_authority_required",
-            "wifi.connect" or "wifi.connect.named" or "wifi.disconnect" or "wifi.ensure.connected"
-                or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.status" =>
-                "wlan_profile_hardware_gate_required",
-            _ => "external_operation_not_supported",
-        };
-        return new ExternalCapabilityReceipt(operation, false, false, null, error);
+        // Every operation of the catalog has an adapter that claims it; one none claims is not supported here.
+        return ExternalJson.FailureBeforeEffect(operation, "external_operation_not_supported");
     }
 
     /// <summary>A verified playback BAXY started tells the media session adapter which session is its own.</summary>
@@ -483,12 +407,5 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         {
             media.RememberAssistantPlayback(named, title, operation);
         }
-    }
-
-    private static bool ProcessExists(string name)
-    {
-        Process[] processes = Process.GetProcessesByName(name);
-        try { return processes.Length > 0; }
-        finally { foreach (Process process in processes) process.Dispose(); }
     }
 }

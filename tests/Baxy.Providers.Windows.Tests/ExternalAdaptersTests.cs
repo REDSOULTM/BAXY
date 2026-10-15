@@ -302,7 +302,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("smtc_session_adapter_required"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("external_operation_not_supported"));
         });
     }
 
@@ -320,7 +320,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("smtc_session_adapter_required"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("external_operation_not_supported"));
         });
     }
 
