@@ -64,39 +64,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
 
     private static readonly ExternalProcessRunner MailRunner = new();
 
-    private const string OutlookTestSendScript = """
-        $ErrorActionPreference='Stop'
-        $input=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))|ConvertFrom-Json
-        $effect=$false
-        try {
-          $outlook=New-Object -ComObject Outlook.Application
-          $session=$outlook.GetNamespace('MAPI')
-          $to=[string]$input.to;$text=[string]$input.text;$subject=[string]$input.subject
-          $baseline=[DateTime]::UtcNow
-          $mail=$outlook.CreateItem(0)
-          $mail.To=$to;$mail.Subject=$subject;$mail.Body=$text
-          $mail.Send();$effect=$true
-          $sentFolder=$session.GetDefaultFolder(5)
-          $sent=$null
-          for($attempt=0;$attempt -lt 40 -and $null -eq $sent;$attempt++){
-            Start-Sleep -Milliseconds 500
-            $sentItems=$sentFolder.Items;$sentItems.Sort('[SentOn]',$true);$seen=0
-            foreach($candidate in $sentItems){
-              if($seen++ -ge 50){break}
-              try {
-                $sentOn=([DateTime]$candidate.SentOn).ToUniversalTime()
-                if($sentOn -ge $baseline.AddMinutes(-2) -and ([string]$candidate.To).ToLowerInvariant().Contains($to.ToLowerInvariant()) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;break}
-              }catch{}
-            }
-          }
-          if($null -eq $sent){throw 'outlook_sent_postread_missing'}
-          [pscustomobject]@{ok=$true;effectObserved=$true;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O');sentTo=[string]$sent.To}|ConvertTo-Json -Compress
-        } catch {
-          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_mail_failed'}|ConvertTo-Json -Compress
-          exit 2
-        }
-        """;
-
     public void Dispose() => _interaction.Dispose();
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
@@ -281,7 +248,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string input = JsonObject(("to", forced), ("subject", subject), ("text", text)).GetRawText();
         ExternalProcessResult process = await MailRunner.RunAsync(
             "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + OutlookTestSendScript + "\n}",
+            ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + MicrosoftAccountAdapter.SendMailScript + "\n}",
                 Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
             TimeSpan.FromSeconds(90),
             cancellationToken).ConfigureAwait(false);
