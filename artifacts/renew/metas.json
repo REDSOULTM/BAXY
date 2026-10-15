@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T05:30:00-03:00",
+  "actualizado": "2026-10-15T14:00:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -54,8 +54,8 @@
     },
     "falsedades": {
       "umbral": "0 en el banco automático",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "práctica p3 (juez Qwen3.6-35B): 2 en 26 líneas (F013 ruta pedida, F015 presuposición); arreglos: regla 2 ampliada, rutas absolutas pedidas al notebook"
     },
     "instinto": {
       "umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20",
@@ -64,18 +64,18 @@
     },
     "velocidad_decision_p50": {
       "umbral": "<= 1 s",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "decision2 270 d4: p50 0,672 s, p90 1,344 s (F:/BAXYeval/renew_v1/runs/d4.jsonl)"
     },
     "velocidad_texto_a_voz_p50": {
       "umbral": "<= 2,5 s",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "e2e práctica p3: primer sonido p50 2520 ms desde el texto de la persona (incluye turnos de varios pasos)"
     },
     "recursos": {
       "umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "d4 en PC: VRAM 3921 MiB; USS llama-server 3435 MiB + mente 22 MiB (en el notebook USS 659 MiB: por investigar en el PC)"
     },
     "ronda_final_auditoria": {
       "umbral": "nada que viole <reglas>",
@@ -108,9 +108,9 @@
     },
     {
       "id": "marco.renew_check",
-      "estado": "en_curso",
+      "estado": "cumplida",
       "quien": "PC",
-      "evidencia": "bench_decision, bench_e2e, bench_escenas escritos; falta falsedades y unificar en renew_check.ps1"
+      "evidencia": "scripts/renew_check.ps1 corre decisión, escenas, e2e, falsedades y latido; -Holdout comprueba los sellos de metas.json"
     },
     {
       "id": "falsedades.diagnostico",
@@ -126,8 +126,9 @@
     },
     {
       "id": "voz.piper",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "Piper residente (voice_output.py, notebook): voice.speak→primer sonido 365 ms p50; en el producto la voz empieza ~0,4 s tras el texto (e2e p3)"
     },
     {
       "id": "arnes.nuevo",
@@ -139,23 +140,25 @@
       "id": "computer_use",
       "estado": "en_curso",
       "quien": "PC",
-      "evidencia": "vista compacta; Steam biblioteca 3 pasos; e2e práctica cu 3/8 (p1)"
+      "evidencia": "e2e práctica p3 cu 3/8; auditoría: clic sólo por etiqueta exacta o candidatos, worker sin frente implícito, app.open exacto con candidatos y windowId; vista con 'window N'"
     },
     {
       "id": "herramientas_agente",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "notebook: file.find/read/write/edit, web.fetch, shell que confirma lo no-lectura, schedule.alarms, carpeta home; e2e práctica agente 3/8 (p3), límites de subcarpetas pedidos al notebook"
     },
     {
       "id": "latido",
       "estado": "en_curso",
       "quien": "PC",
-      "evidencia": "escenas práctica 29/40 (p5); producto: propuesta y silencio verificados (runs/beat1)"
+      "evidencia": "escenas práctica 35/40 (87,5 %), molestas 0, riesgo solo 0 (p10); producto: propuesta, silencio y botones Sí/No verificados"
     },
     {
       "id": "limpieza_codigo_muerto",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "en_curso",
+      "quien": "NB",
+      "evidencia": "~25k líneas de legado fuera; Roslyn del notebook −1310; auditoría kernel (misión de pantalla, planificador, HonestyCorrection, FirstSignal…); routine.* retiradas; falta barrido final en la ronda de auditoría"
     },
     {
       "id": "perfil_4gb",
@@ -183,6 +186,11 @@
       "estado": "cumplida",
       "quien": "NB",
       "evidencia": "decision2 270: A todas con guías 220 (81,5 %), B compacto 210, C skill_read 213 (el 4B nunca llamó skill_read), D sin lista de apps 214; cases.json D 79 vs A 83 → se queda A"
+    },
+    {
+      "id": "auditoria_reglas_1",
+      "estado": "cumplida",
+      "evidencia": "artifacts/renew/investigacion/auditoria-reglas-1.md (55 violaciones); arreglos fusionados: App (confirm_pending, memoria, interfaz, windowId), kernel K1-K12 (K8 revertido, razón en PROGRESO), mensajería C1-C14, clic/apertura P3/B1/C8-C10/D1-D9, proveedores del notebook; web.search W1-W21 en curso (notebook)"
     }
   ],
   "linea_base_recursos": {
