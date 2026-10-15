@@ -46,29 +46,26 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         return directory;
     }
 
-    private static readonly Dictionary<string, Environment.SpecialFolder> KnownFolders = new(StringComparer.OrdinalIgnoreCase)
+    // «cwd» is a known folder as the catalog names it (desktop, documents, downloads, home), or a folder inside one
+    // («documents/proyecto»), or an absolute path; anything else is refused. The names are the catalog's own keys, not
+    // words of the person (BAXY Renew audit 2026-10-15: «escritorio», «descargas» were read here).
+    private static string? KnownFolder(string name) => name switch
     {
-        ["desktop"] = Environment.SpecialFolder.DesktopDirectory,
-        ["escritorio"] = Environment.SpecialFolder.DesktopDirectory,
-        ["documents"] = Environment.SpecialFolder.MyDocuments,
-        ["documentos"] = Environment.SpecialFolder.MyDocuments,
-        ["downloads"] = Environment.SpecialFolder.UserProfile,
-        ["descargas"] = Environment.SpecialFolder.UserProfile,
+        "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+        "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        "downloads" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        "home" => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        _ => null,
     };
 
-    // «cwd» may be a known folder name (desktop/documents/downloads, or a subfolder of
-    // one as «documents/proyecto») or an absolute path; anything else is refused.
     private static string? ResolveWorkingDirectory(string cwd)
     {
         string trimmed = cwd.Trim().Replace('/', Path.DirectorySeparatorChar);
         if (Path.IsPathFullyQualified(trimmed))
             return trimmed;
         string[] parts = trimmed.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 0 || !KnownFolders.TryGetValue(parts[0], out Environment.SpecialFolder folder))
+        if (parts.Length == 0 || KnownFolder(parts[0]) is not { } root)
             return null;
-        string root = Environment.GetFolderPath(folder);
-        if (parts[0].Equals("downloads", StringComparison.OrdinalIgnoreCase) || parts[0].Equals("descargas", StringComparison.OrdinalIgnoreCase))
-            root = Path.Combine(root, "Downloads");
         if (parts.Skip(1).Any(part => part is "." or ".."))
             return null;
         return Path.Combine([root, .. parts.Skip(1)]);
