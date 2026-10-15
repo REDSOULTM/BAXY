@@ -216,7 +216,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation
 
     /// <summary>
     /// Polls the window until it shows interactive content, within <paramref name="budget"/>. When no read ever
-    /// answered, the caller cannot tell and keeps its timed path.
+    /// answered it says so (Unanswered); either way the window is not said ready (C14).
     /// </summary>
     internal static async ValueTask<ContentWait> AwaitClientContentAsync(
         Func<CancellationToken, ValueTask<ClientInteraction>> read,

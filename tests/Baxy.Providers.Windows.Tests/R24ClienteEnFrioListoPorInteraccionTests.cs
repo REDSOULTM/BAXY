@@ -37,13 +37,12 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     // --------------------------------------------------------------- 1. ready is interaction, not a title
 
     [Test]
-    public void TheLoadingScreenTitleAloneIsNotReadiness()
+    public void ReadinessIsContentShown()
     {
         Assert.Multiple(() =>
         {
-            // The title test still passes the loading screen (it is not the updater) ...
-            Assert.That(WindowsDesktopMessagingAutomation.ClientWindowReady("Discord"), Is.True);
-            // ... so readiness also asks for content: a loading screen shows none, nothing read is not ready.
+            // Readiness is content (C14: no title test, no fixed settle): a loading screen shows none, and nothing
+            // read is not ready.
             Assert.That(WindowsDesktopMessagingAutomation.ClientInteractionReady(Loading), Is.False);
             Assert.That(WindowsDesktopMessagingAutomation.ClientInteractionReady(ClientInteraction.Unanswered), Is.False);
             Assert.That(WindowsDesktopMessagingAutomation.ClientInteractionReady(Shown()), Is.True);
@@ -67,9 +66,10 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         Assert.That(wait, Is.EqualTo(WindowsDesktopMessagingAutomation.ContentWait.NotShown));
     }
 
-    // Contracaso: a window nobody can read keeps the timed path of before (the caller's settle), never «not ready».
+    // Contracaso: a window nobody can read is said as such (Unanswered), not as a window without content; the caller
+    // does not say it ready either way (C14).
     [Test]
-    public async Task AWindowThatCannotBeReadKeepsTheTimedPath()
+    public async Task AWindowThatCannotBeReadIsSaidUnanswered()
     {
         WindowsDesktopMessagingAutomation.ContentWait wait = await WindowsDesktopMessagingAutomation.AwaitClientContentAsync(
             Script(ClientInteraction.Unanswered), TimeSpan.FromMilliseconds(60), TimeSpan.FromMilliseconds(5),

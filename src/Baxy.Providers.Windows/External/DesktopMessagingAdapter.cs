@@ -590,11 +590,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
 
-    // D59 §1: after the client's open is verified, its main window must show
-    // (Discord draws an updater splash first) within its cold-start clock
-    // (ClientColdStart, data), and then gets a short settle so its chat list is
-    // drawn before the chat is searched.
-    private static readonly TimeSpan ClientSettleDelay = TimeSpan.FromSeconds(2);
+    // D59 §1: after the client's open is verified, its main window must show its content (Discord draws an updater
+    // splash first) within its cold-start clock (ClientColdStart, data).
     private static readonly TimeSpan ClientReadyPoll = TimeSpan.FromMilliseconds(250);
 
     private WindowsInstalledApplicationOpenProvider? _clientOpener;
@@ -723,43 +720,45 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // application); a window still without content when it runs out says the client is still starting.
         TimeSpan coldStart = ClientColdStart.For(ClientApplicationName(channel));
         var clock = Stopwatch.StartNew();
+        ContentWait content = ContentWait.Unanswered;
         while (clock.Elapsed < coldStart)
         {
             (nint handle, _) = FindWindow(channel);
-            if (handle != 0 && ClientWindowReady(WindowTitle(handle)))
+            if (handle != 0)
             {
-                // Ronda 24 (t1-c09, t2-c07, t3-c07): the loading screen already carries the client's name as its
-                // title, so a title is not readiness. Ready is a window that shows content a person interacts with
-                // (an editable field or a list). Only when nothing can be read is the old settle kept.
+                // Ronda 24 (t1-c09, t2-c07, t3-c07), C14: ready is a window that shows content a person interacts
+                // with (an editable field or a list), read by the probe. Its title is not (the loading screen and the
+                // updater splash already carry the client's name), nor is a fixed settle. Encargo CS: a splash gives
+                // way to the main window, another window, so it is looked for again while the clock lasts; so is a
+                // window the probe could not read yet.
                 TimeSpan left = coldStart - clock.Elapsed;
-                ContentWait content = await AwaitClientContentAsync(
+                content = await AwaitClientContentAsync(
                     token => Probe.ReadAsync(handle, content: true, token),
                     left < ClientContentBudget ? left : ClientContentBudget,
                     ClientReadyPoll,
                     cancellationToken).ConfigureAwait(false);
-                if (content == ContentWait.NotShown)
+                if (content == ContentWait.Ready)
                 {
-                    // Encargo CS: a splash titled as the client (its updater) gives way to its main window, another
-                    // window: it is looked for again while the clock lasts.
-                    continue;
+                    return new(true, true, null);
                 }
 
-                if (content == ContentWait.Unanswered)
-                {
-                    await Task.Delay(ClientSettleDelay, cancellationToken).ConfigureAwait(false);
-                }
-
-                return new(true, true, null);
+                continue;
             }
 
             await Task.Delay(ClientReadyPoll, cancellationToken).ConfigureAwait(false);
         }
 
-        return new(false, true, ClientStillStarting(channel));
+        return new(
+            false,
+            true,
+            content == ContentWait.NotShown ? ClientStillStarting(channel) : ClientReadyUnread(channel));
     }
 
     /// <summary>Encargo CS: the client was launched and its main window did not show its content within its cold start.</summary>
     internal static string ClientStillStarting(string channel) => $"{channel}_client_still_starting";
+
+    /// <summary>C14: the client was launched and its window could not be read within its cold start: not said ready.</summary>
+    internal static string ClientReadyUnread(string channel) => $"{channel}_client_ready_not_verified";
 
     internal static string ClientApplicationName(string channel) =>
         string.Equals(channel, "whatsapp", StringComparison.Ordinal) ? "WhatsApp" : "Discord";
@@ -772,12 +771,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             : string.Equals(opened.ErrorCode, ApplicationOpenErrorCodes.ApplicationNotFound, StringComparison.Ordinal)
                 ? new(false, false, $"{channel}_client_not_installed")
                 : new(false, opened.Receipt.LaunchIssued, $"{channel}_client_open_not_verified");
-
-    // A titled main window that is not the updater splash.
-    internal static bool ClientWindowReady(string title) =>
-        title.Trim().Length > 0
-        && !title.Contains("Updater", StringComparison.OrdinalIgnoreCase)
-        && !title.Contains("Updating", StringComparison.OrdinalIgnoreCase);
 
     public async ValueTask<DesktopRecipientObservation> ResolveAsync(
         string channel,

@@ -228,17 +228,8 @@ public sealed class M120ClienteCerradoTests
                 Is.EqualTo(TimeSpan.FromSeconds(15)), "not listed: the default of D59 §1");
             Assert.That(ClientColdStart.For("discord"), Is.EqualTo(TimeSpan.FromSeconds(60)), "matched without case");
             Assert.That(WindowsDesktopMessagingAutomation.ClientStillStarting("discord"), Is.EqualTo("discord_client_still_starting"));
+            Assert.That(WindowsDesktopMessagingAutomation.ClientReadyUnread("discord"), Is.EqualTo("discord_client_ready_not_verified"));
         });
-    }
-
-    [TestCase("WhatsApp", true)]
-    [TestCase("#general | Amigos - Discord", true)]
-    [TestCase("Discord", true)]
-    [TestCase("Discord Updater", false)]
-    [TestCase("", false)]
-    public void OnlyTheClientsMainWindowIsReady(string title, bool ready)
-    {
-        Assert.That(WindowsDesktopMessagingAutomation.ClientWindowReady(title), Is.EqualTo(ready));
     }
 
     [TestCase("whatsapp", "WhatsApp")]
