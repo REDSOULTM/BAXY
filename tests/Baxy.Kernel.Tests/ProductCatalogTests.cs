@@ -37,7 +37,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Auditoría semántica 2026-09-20 (REOPEN1993): herramientas tipadas que la
-    // encuesta pedía y el catálogo no tenía (document.text.read se retiró en BAXY Renew).
+    // encuesta pedía y el catálogo no tenía (document.text.read y web.news.headlines se retiraron en BAXY Renew).
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
         "desktop.wallpaper.set",
@@ -51,7 +51,6 @@ public sealed class ProductCatalogTests
         "shell.command.run",
         "weather.current",
         "web.download",
-        "web.news.headlines",
     ];
 
 
@@ -80,7 +79,8 @@ public sealed class ProductCatalogTests
     // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
     // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9). Y la
     // pareja preparar/confirmar de winget, que package.install sustituye. Y el paso interno que mandaba una ruta a una
-    // papelera privada sin vuelta, que nada invocaba.
+    // papelera privada sin vuelta, que nada invocaba. Y, en la auditoría final, los titulares del día, que leían el
+    // mismo canal que web.search con source=news.
     internal static readonly string[] RenewRetired =
     [
         "app.status",
@@ -113,9 +113,10 @@ public sealed class ProductCatalogTests
         "package.install.commit",
         "package.install.prepare",
         "filesystem.path.ensure.absent",
+        "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 31;
 
     // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
     // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).

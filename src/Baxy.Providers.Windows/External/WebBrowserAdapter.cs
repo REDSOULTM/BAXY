@@ -789,7 +789,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int limit,
         CancellationToken cancellationToken)
     {
-        List<GoogleNewsHeadlinesAdapter.Headline>? items = await ReadNewsAsync(query, language, cancellationToken)
+        List<GoogleNewsFeed.Headline>? items = await ReadNewsAsync(query, language, cancellationToken)
             .ConfigureAwait(false);
         if (items is null) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
         return SearchReceipt(operation, "news", query, NewsSearchAuthority, items.Take(limit).ToList(),
@@ -954,13 +954,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     // The search feed of Google News, in the edition of «language»: each item with its outlet and time. Null when the
     // feed did not answer with its RSS.
-    private async Task<List<GoogleNewsHeadlinesAdapter.Headline>?> ReadNewsAsync(
+    private async Task<List<GoogleNewsFeed.Headline>?> ReadNewsAsync(
         string query,
         string language,
         CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get,
-            GoogleNewsHeadlinesAdapter.SearchUri(query, language));
+            GoogleNewsFeed.SearchUri(query, language));
         request.Headers.TryAddWithoutValidation("User-Agent", WikipediaSearchSource.UserAgent);
         try
         {
@@ -970,7 +970,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             if (!response.IsSuccessStatusCode) return null;
             string feed = await ReadBoundedTextAsync(response, 2_000_000, cancellationToken)
                 .ConfigureAwait(false);
-            return GoogleNewsHeadlinesAdapter.Parse(feed, 20)
+            return GoogleNewsFeed.Parse(feed, 20)
                 .Where(static headline => Uri.TryCreate(headline.Url, UriKind.Absolute, out Uri? link)
                     && link.Scheme == Uri.UriSchemeHttps)
                 .Select(static headline => headline with { Url = headline.Url.Split('?')[0] })
@@ -2477,14 +2477,7 @@ internal class CdpBrowserSession : IDisposable
         return null;
     }
 
-    /// <summary>The page target the next action of this session would use (opening one when none is its own).</summary>
-    internal async ValueTask<string> PageTargetIdAsync(bool createIfMissing, CancellationToken cancellationToken)
-    {
-        Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
-        return (await ResolveTargetAsync(endpoint, createIfMissing, cancellationToken).ConfigureAwait(false)).TargetId;
-    }
-
-    private async ValueTask<(string TargetId, Uri WebSocket)> ResolveTargetAsync(
+    internal async ValueTask<(string TargetId, Uri WebSocket)> ResolveTargetAsync(
         Uri endpoint,
         bool createIfMissing,
         CancellationToken cancellationToken)

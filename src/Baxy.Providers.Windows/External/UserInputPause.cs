@@ -99,7 +99,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
     private long _lastForeign;
     private long _lastOwn;
-    private long _missed;
     private long _lastFrontMoving;
     private long _lastReaching;
     private long _lastBeyondFront;
@@ -143,9 +142,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
     public string Source => _rawInput ? "raw_input" : "last_input_info";
 
-    /// <summary>Inputs Windows recorded that Raw Input did not deliver (each one counted as the person's).</summary>
-    internal long Missed => Interlocked.Read(ref _missed);
-
     public long LastForeignInputMs
     {
         get
@@ -166,7 +162,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
             {
                 // v3 r22 revisión 3: input the detector missed is the person's and went to the window in front.
                 Windows.WindowsPersonInputWitness.NoteReached(Front());
-                _ = Interlocked.Increment(ref _missed);
                 InterlockedMax(ref _lastForeign, reconciled);
                 InterlockedMax(ref _lastMissedAt, reconciled);
             }

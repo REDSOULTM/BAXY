@@ -1,15 +1,14 @@
-using System.Text.Json;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): los titulares se
-/// leen del canal tal cual, cada uno con su medio; las ausencias tienen nombre.
+/// Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): los titulares se leen del canal tal cual, cada uno con su
+/// medio y su hora (web.search con source=news).
 /// </summary>
 [TestFixture]
-public sealed class GoogleNewsHeadlinesAdapterTests
+public sealed class GoogleNewsFeedTests
 {
     private const string Feed =
         """
@@ -22,62 +21,24 @@ public sealed class GoogleNewsHeadlinesAdapterTests
         """;
 
     [Test]
-    public async Task TodaysHeadlinesAreReadWithTheirSourceAndTime()
+    public void HeadlinesAreReadWithTheirSourceAndTimeUpToTheLimit()
     {
-        string? asked = null;
-        var adapter = new GoogleNewsHeadlinesAdapter((url, _) => { asked = url; return Task.FromResult(Feed); });
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.news.headlines",
-            JsonSerializer.SerializeToElement(new { limit = 2 }),
-            CancellationToken.None);
+        List<GoogleNewsFeed.Headline> parsed = GoogleNewsFeed.Parse(Feed, 2);
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(asked, Is.EqualTo("https://news.google.com/rss?hl=es-419&gl=CL&ceid=CL:es-419"));
-        });
-        JsonElement result = receipt.Result!.Value;
-        JsonElement headlines = result.GetProperty("headlines");
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.GetProperty("count").GetInt32(), Is.EqualTo(2));
-            Assert.That(headlines.GetArrayLength(), Is.EqualTo(2));
-            Assert.That(headlines[0].GetProperty("title").GetString(), Is.EqualTo("Bachelet se retira de la carrera por la ONU"));
-            Assert.That(headlines[0].GetProperty("source").GetString(), Is.EqualTo("BBC"));
-            Assert.That(headlines[0].GetProperty("publishedAt").GetString(), Is.EqualTo("Sun, 20 Sep 2026 21:10:00 GMT"));
-            Assert.That(headlines[1].GetProperty("source").GetString(), Is.EqualTo("Emol"));
-            Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("google_news_rss_es419_cl"));
-            // NEWS2029: the redirect link is not part of the result (it blew the visible-facts cap).
-            Assert.That(headlines[0].TryGetProperty("url", out _), Is.False);
-            Assert.That(result.GetRawText().Length, Is.LessThan(2048));
-        });
-    }
-
-    [Test]
-    public async Task ATopicAsksTheSearchFeedAndTravelsInTheReceipt()
-    {
-        string? asked = null;
-        var adapter = new GoogleNewsHeadlinesAdapter((url, _) => { asked = url; return Task.FromResult(Feed); });
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.news.headlines",
-            JsonSerializer.SerializeToElement(new { topic = "tecnología" }),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(asked, Does.StartWith("https://news.google.com/rss/search?q=tecnolog%C3%ADa&"));
-            Assert.That(receipt.Result!.Value.GetProperty("topic").GetString(), Is.EqualTo("tecnología"));
-            Assert.That(receipt.Result!.Value.GetProperty("count").GetInt32(), Is.EqualTo(3));
+            Assert.That(parsed, Has.Count.EqualTo(2));
+            Assert.That(parsed[0].Title, Is.EqualTo("Bachelet se retira de la carrera por la ONU"));
+            Assert.That(parsed[0].Source, Is.EqualTo("BBC"));
+            Assert.That(parsed[0].PublishedAt, Is.EqualTo("Sun, 20 Sep 2026 21:10:00 GMT"));
+            Assert.That(parsed[1].Source, Is.EqualTo("Emol"));
         });
     }
 
     [Test]
     public void ATitleWithoutASourceElementKeepsItsTrailingMediumAsSource()
     {
-        List<GoogleNewsHeadlinesAdapter.Headline> parsed = GoogleNewsHeadlinesAdapter.Parse(
+        List<GoogleNewsFeed.Headline> parsed = GoogleNewsFeed.Parse(
             Feed.Replace("Sin medio en el elemento", "Titular con cola - La Tercera", StringComparison.Ordinal), 10);
 
         Assert.Multiple(() =>
@@ -88,21 +49,12 @@ public sealed class GoogleNewsHeadlinesAdapterTests
     }
 
     [Test]
-    public async Task AnEmptyFeedAndAnUnreadableOneAreNamedBeforeAnyRead()
-    {
-        var empty = new GoogleNewsHeadlinesAdapter((_, _) => Task.FromResult("<rss><channel></channel></rss>"));
-        var broken = new GoogleNewsHeadlinesAdapter((_, _) => Task.FromResult("<html>not a feed"));
-
-        ExternalCapabilityReceipt emptyReceipt = await empty.InvokeAsync(
-            "web.news.headlines", JsonSerializer.SerializeToElement(new { topic = "xyzzy" }), CancellationToken.None);
-        ExternalCapabilityReceipt brokenReceipt = await broken.InvokeAsync(
-            "web.news.headlines", JsonSerializer.SerializeToElement(new { }), CancellationToken.None);
-
+    public void TheSearchAsksTheEditionOfTheLanguageChosen() =>
         Assert.Multiple(() =>
         {
-            Assert.That(emptyReceipt.ErrorCode, Is.EqualTo("news_topic_without_headlines"));
-            Assert.That(emptyReceipt.EffectMayHaveOccurred, Is.False);
-            Assert.That(brokenReceipt.ErrorCode, Is.EqualTo("news_feed_unreadable"));
+            Assert.That(GoogleNewsFeed.SearchUri("tecnología", "es").AbsoluteUri,
+                Is.EqualTo("https://news.google.com/rss/search?q=tecnolog%C3%ADa&hl=es-419&gl=CL&ceid=CL:es-419"));
+            Assert.That(GoogleNewsFeed.SearchUri("chips", "en").AbsoluteUri,
+                Is.EqualTo("https://news.google.com/rss/search?q=chips&hl=en-US&gl=US&ceid=US:en"));
         });
-    }
 }

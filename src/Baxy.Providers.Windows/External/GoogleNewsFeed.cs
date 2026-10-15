@@ -1,123 +1,21 @@
-using System.Net.Http;
-using System.Text.Json;
 using System.Xml.Linq;
 
 namespace Baxy.Providers.Windows.External;
 
 /// <summary>
-/// Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): la encuesta pide las
-/// noticias, no nombres de portales. Esta lectura trae los titulares del día
-/// (o los de un tema nombrado) de un canal RSS público, cada uno con su medio
-/// y su hora; el final los cita tal cual y no resume nada en voz propia.
+/// The public Google News RSS search that web.search with source=news asks, in the edition of the language the model
+/// chose (es or en). Auditoría final de BAXY Renew: web.news.headlines, which read the same feed, was retired as a
+/// second door to it.
 /// </summary>
-internal sealed class GoogleNewsHeadlinesAdapter : IExternalOperationAdapter, IDisposable
+internal static class GoogleNewsFeed
 {
     private const string FeedAuthority = "https://news.google.com/rss";
     private const string Edition = "hl=es-419&gl=CL&ceid=CL:es-419";
+    private const string EnglishEdition = "hl=en-US&gl=US&ceid=US:en";
 
-    private readonly HttpClient _http;
-    private readonly Func<string, CancellationToken, Task<string>>? _fetch;
-
-    internal GoogleNewsHeadlinesAdapter()
-    {
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 news-read");
-    }
-
-    // Las pruebas entregan el canal sin red.
-    internal GoogleNewsHeadlinesAdapter(Func<string, CancellationToken, Task<string>> fetch)
-    {
-        _http = new HttpClient();
-        _fetch = fetch;
-    }
-
-    public bool CanHandle(string operation) => operation is "web.news.headlines";
-
-    public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
-        string operation,
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        string? topic = null;
-        if (arguments.ValueKind == JsonValueKind.Object
-            && arguments.TryGetProperty("topic", out JsonElement named)
-            && named.ValueKind == JsonValueKind.String
-            && !string.IsNullOrWhiteSpace(named.GetString()))
-        {
-            topic = named.GetString()!.Trim();
-        }
-
-        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 10);
-        string url = topic is null
-            ? FeedAuthority + "?" + Edition
-            : SearchUri(topic, "es").AbsoluteUri;
-        string xml;
-        try
-        {
-            xml = _fetch is not null
-                ? await _fetch(url, cancellationToken).ConfigureAwait(false)
-                : await _http.GetStringAsync(url, cancellationToken).ConfigureAwait(false);
-        }
-        catch (HttpRequestException)
-        {
-            return ExternalJson.FailureBeforeEffect(operation, "news_feed_unavailable");
-        }
-        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return ExternalJson.FailureBeforeEffect(operation, "news_feed_unavailable");
-        }
-
-        List<Headline> headlines;
-        try
-        {
-            headlines = Parse(xml, limit);
-        }
-        catch (System.Xml.XmlException)
-        {
-            return ExternalJson.FailureBeforeEffect(operation, "news_feed_unreadable");
-        }
-
-        if (headlines.Count == 0)
-        {
-            return ExternalJson.FailureBeforeEffect(
-                operation, topic is null ? "news_feed_empty" : "news_topic_without_headlines");
-        }
-
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            if (topic is not null)
-                writer.WriteString("topic", topic);
-            writer.WriteString("edition", "es-419/CL");
-            writer.WriteNumber("count", headlines.Count);
-            writer.WriteStartArray("headlines");
-            foreach (Headline headline in headlines)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("title", headline.Title);
-                writer.WriteString("source", headline.Source);
-                writer.WriteString("publishedAt", headline.PublishedAt);
-                // NEWS2029: the Google News redirect link (hundreds of bytes each) pushed five
-                // headlines past the visible-facts cap and the mind saw no headlines at all;
-                // the link says nothing to the person, so the result keeps only what is read aloud.
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndArray();
-            writer.WriteString("authority", "google_news_rss_es419_cl");
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: false);
-    }
-
-    // web.search with source=news asks this same feed's search, in the edition of the
-    // language the model chose (es or en).
     internal static Uri SearchUri(string topic, string language) =>
         new(FeedAuthority + "/search?q=" + Uri.EscapeDataString(topic) + "&"
             + (language == "en" ? EnglishEdition : Edition));
-
-    private const string EnglishEdition = "hl=en-US&gl=US&ceid=US:en";
 
     internal static List<Headline> Parse(string xml, int limit)
     {
@@ -155,8 +53,6 @@ internal sealed class GoogleNewsHeadlinesAdapter : IExternalOperationAdapter, ID
 
         return headlines;
     }
-
-    public void Dispose() => _http.Dispose();
 
     internal readonly record struct Headline(string Title, string Source, string PublishedAt, string Url);
 }
