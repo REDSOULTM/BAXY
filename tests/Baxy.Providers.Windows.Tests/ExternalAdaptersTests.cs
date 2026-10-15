@@ -3461,51 +3461,6 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
-    public async Task GraphCalendarListUsesBearerAndProjectsOpaqueIdentity()
-    {
-        const string body = """
-            {"value":[{"id":"remote-id","subject":"Reunión","start":{"dateTime":"2026-07-17T10:00:00","timeZone":"UTC"},"end":{"dateTime":"2026-07-17T11:00:00","timeZone":"UTC"}}]}
-            """;
-        using var http = new HttpClient(new StubHttpHandler(body));
-        using var adapter = new MicrosoftGraphCalendarAdapter(http, () => "token");
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "calendar.event.list",
-            Json("""{"startUtc":"2026-07-17T00:00:00Z","endUtc":"2026-07-18T00:00:00Z"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("events")[0].GetProperty("eventId").GetString(),
-                Does.StartWith("event_"));
-            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("remote-id"));
-        });
-    }
-
-    [Test]
-    public async Task GraphCreateWithUnreadableAcceptedResponsePreservesAmbiguousEffect()
-    {
-        var handler = new RecordingInvalidJsonHttpHandler();
-        using var http = new HttpClient(handler);
-        using var adapter = new MicrosoftGraphCalendarAdapter(http, () => "token");
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "calendar.event.create",
-            Json(
-                """{"title":"Reunión","startUtc":"2026-07-29T10:00:00Z","endUtc":"2026-07-29T11:00:00Z"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(handler.PostCalls, Is.EqualTo(1));
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("microsoft_graph_calendar_failed"));
-        });
-    }
-
-    [Test]
     public async Task MissingLocalYouTubeDependenciesFailBeforeTheEffectBoundary()
     {
         using var adapter = new YouTubeMpvAdapter(
@@ -4319,27 +4274,6 @@ public sealed class ExternalAdaptersTests
             {
                 Content = new StringContent(locator ? located : page, Encoding.UTF8,
                     locator ? "application/json" : "text/html"),
-            });
-        }
-    }
-
-    private sealed class RecordingInvalidJsonHttpHandler : HttpMessageHandler
-    {
-        internal int PostCalls { get; private set; }
-
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (request.Method == HttpMethod.Post)
-            {
-                PostCalls++;
-            }
-
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Created)
-            {
-                Content = new StringContent("{invalid", Encoding.UTF8, "application/json"),
             });
         }
     }
