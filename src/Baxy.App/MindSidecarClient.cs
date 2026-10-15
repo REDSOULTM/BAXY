@@ -408,8 +408,11 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
         switch ((string?)reply["kind"])
         {
+            // A name the model made up keeps the wire's «_» (the mind gives back the dotted name only of a catalog
+            // tool): it goes on to the loop, which answers unknown_operation for the model to read, instead of the turn
+            // failing with decision_unavailable.
             case "action" when (string?)reply["operation"] is { Length: > 0 and <= 256 } operation
-                && operation.All(static c => char.IsAsciiLetterOrDigit(c) || c == '.'):
+                && operation.All(static c => char.IsAsciiLetterOrDigit(c) || c is '.' or '_'):
                 return new MindStep(
                     "action",
                     operation,
