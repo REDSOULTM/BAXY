@@ -54,11 +54,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return Path.Combine(dataRoot, leaf + "-browser-profile");
     }
 
-    internal WebBrowserAdapter(string dataRoot)
-        : this(dataRoot, sessionContext: null)
-    {
-    }
-
     internal WebBrowserAdapter(string dataRoot, CdpBrowserSessionContext? sessionContext)
     {
         _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
@@ -1345,10 +1340,8 @@ internal class CdpBrowserSession : IDisposable
             socket,
             "String(performance.timeOrigin || performance.timing.navigationStart)",
             cancellationToken).ConfigureAwait(false);
-        int navigateId = Interlocked.Increment(ref _nextCommandId);
-        await SendAsync(socket, navigateId, "Page.navigate", target.AbsoluteUri, cancellationToken)
-            .ConfigureAwait(false);
-        JsonElement navigate = await ReceiveCommandAsync(socket, navigateId, cancellationToken)
+        JsonElement navigate = await CommandAsync(
+            socket, "Page.navigate", writer => writer.WriteString("url", target.AbsoluteUri), cancellationToken)
             .ConfigureAwait(false);
         if (navigate.TryGetProperty("error", out _))
         {
@@ -2615,36 +2608,6 @@ internal class CdpBrowserSession : IDisposable
             writer.WriteBoolean("returnByValue", true);
         }, cancellationToken).ConfigureAwait(false);
         return response.GetProperty("result").GetProperty("result").GetProperty("value").GetDouble();
-    }
-
-    private static async ValueTask SendAsync(
-        ClientWebSocket socket,
-        int id,
-        string method,
-        string? value,
-        CancellationToken cancellationToken)
-    {
-        var buffer = new ArrayBufferWriter<byte>();
-        using (var writer = new Utf8JsonWriter(buffer))
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("id", id);
-            writer.WriteString("method", method);
-            writer.WriteStartObject("params");
-            if (method == "Page.navigate")
-            {
-                writer.WriteString("url", value);
-            }
-            else
-            {
-                writer.WriteString("expression", "location.href");
-                writer.WriteBoolean("returnByValue", true);
-            }
-            writer.WriteEndObject();
-            writer.WriteEndObject();
-        }
-        await socket.SendAsync(buffer.WrittenMemory, WebSocketMessageType.Text, true, cancellationToken)
-            .ConfigureAwait(false);
     }
 
     private static async ValueTask<JsonElement> ReceiveCommandAsync(

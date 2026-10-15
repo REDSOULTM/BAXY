@@ -50,7 +50,6 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // WEB1739: error codes and the post-read authority name the browser family
         // («chrome_not_installed», «edge_cdp_url_postread»), never Opera for another browser.
         string family = browser is "opera" or "opera_gx" ? "opera" : browser;
-        string requestedBrowser = browser;
         // The browser the model named is the one used: «opera» is Opera, «opera_gx» is Opera GX, and an absent one
         // fails as not installed (BAXY Renew audit 2026-10-15; it was Opera GX in place of Opera, WEB1797).
         // M122 (owner 2026-10-02): the browser named is the person's own default
@@ -138,7 +137,6 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("browser", browser);
-            writer.WriteString("requestedBrowser", requestedBrowser);
             writer.WriteString("executablePath", executablePath);
             writer.WriteString("finalUrl", navigation.FinalUrl);
             writer.WriteString("targetId", navigation.TargetId);
@@ -167,26 +165,10 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // any other host or path (a login page, a redirect elsewhere) is not.
         static string BareHost(string host) =>
             host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? host[4..] : host;
-        if (requested.Scheme == observed.Scheme
+        return requested.Scheme == observed.Scheme
             && string.Equals(BareHost(requested.Host), BareHost(observed.Host), StringComparison.OrdinalIgnoreCase)
             && observed.UserInfo.Length == 0
-            && string.Equals(requested.AbsolutePath, observed.AbsolutePath, StringComparison.Ordinal))
-            return true;
-        // Search may add presentation parameters, but must retain the exact
-        // public query on the same results page, never its first result.
-        if (requested.Scheme != "https" || requested.Host != "www.bing.com"
-            || requested.AbsolutePath != "/search"
-            || requested.Scheme != observed.Scheme || requested.Host != observed.Host
-            || requested.Port != observed.Port || requested.AbsolutePath != observed.AbsolutePath
-            || observed.UserInfo.Length != 0)
-            return false;
-        var expected = System.Web.HttpUtility.ParseQueryString(requested.Query);
-        var actual = System.Web.HttpUtility.ParseQueryString(observed.Query);
-        string[]? expectedQuery = expected.GetValues("q");
-        string[]? actualQuery = actual.GetValues("q");
-        return expected.Count == 1 && expectedQuery is { Length: 1 }
-            && actualQuery is { Length: 1 }
-            && string.Equals(expectedQuery[0], actualQuery[0], StringComparison.Ordinal);
+            && string.Equals(requested.AbsolutePath, observed.AbsolutePath, StringComparison.Ordinal);
     }
 
     private static string? ResolveBrowser(string browser)
