@@ -501,7 +501,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             Collect(facts, remembered);
             return remembered;
         }
-        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+        catch (Exception exception) when (exception is IOException or InvalidDataException or MemoryRequestRefusedException or JsonException
             or ProtectedPayloadException or TimeoutException or InvalidOperationException)
         {
             return [];
@@ -574,7 +574,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 });
             }
         }
-        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+        catch (Exception exception) when (exception is IOException or InvalidDataException or MemoryRequestRefusedException or JsonException
             or TimeoutException or InvalidOperationException or ArgumentException)
         {
             // The moment goes without them.

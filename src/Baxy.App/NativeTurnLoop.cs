@@ -235,6 +235,11 @@ internal sealed class NativeTurnLoop
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
                 "memory_value_needs_sensitive_channel"));
         }
+        catch (MemoryRequestRefusedException refused)
+        {
+            // The protector's own reason, by its code; the call's values stay out of the observation.
+            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code));
+        }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
@@ -469,7 +474,8 @@ internal sealed class NativeTurnLoop
                     ? projection.Message
                     : Observation(prepared.OperationName, "completed", false, "result_unreadable");
         }
-        catch (Exception exception) when (exception is System.IO.InvalidDataException or ProtectedPayloadException)
+        catch (Exception exception) when (exception is System.IO.InvalidDataException or MemoryRequestRefusedException
+            or ProtectedPayloadException)
         {
             return Observation(prepared.OperationName, "completed", false, "result_unreadable");
         }

@@ -181,7 +181,7 @@ internal sealed class MemoryOperationProtector
     {
         if (payload.ValueKind != JsonValueKind.Object)
         {
-            throw new InvalidDataException("La peticion privada no tiene la forma esperada.");
+            throw new MemoryRequestRefusedException("memory_arguments_shape", "La peticion privada no tiene la forma esperada.");
         }
 
         switch (operation)
@@ -189,14 +189,14 @@ internal sealed class MemoryOperationProtector
             case "memory.enable":
                 if (!RequiredBoolean(payload, "enabled"))
                 {
-                    throw new InvalidDataException("La operacion no coincide con su riesgo.");
+                    throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
                 }
 
                 break;
             case "memory.disable":
                 if (RequiredBoolean(payload, "enabled"))
                 {
-                    throw new InvalidDataException("La operacion no coincide con su riesgo.");
+                    throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
                 }
 
                 break;
@@ -204,7 +204,7 @@ internal sealed class MemoryOperationProtector
                 {
                     if (RequiredString(payload, "sensitivity") is not ("normal" or "personal"))
                     {
-                        throw new InvalidDataException("La operacion no coincide con su riesgo.");
+                        throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
                     }
 
                     if (payload.TryGetProperty("value", out JsonElement value)
@@ -219,7 +219,7 @@ internal sealed class MemoryOperationProtector
             case "memory.sensitive.save":
                 if (RequiredString(payload, "sensitivity") is not ("sensitive" or "secret"))
                 {
-                    throw new InvalidDataException("La operacion no coincide con su riesgo.");
+                    throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
                 }
 
                 break;
@@ -227,7 +227,7 @@ internal sealed class MemoryOperationProtector
                 if (RequiredString(payload, "scope") == "session"
                     || !RequiredBoolean(payload, "confirmationRequired"))
                 {
-                    throw new InvalidDataException("La eliminacion requiere confirmacion.");
+                    throw new MemoryRequestRefusedException("memory_forget_needs_confirmation", "La eliminacion requiere confirmacion.");
                 }
 
                 break;
@@ -238,7 +238,7 @@ internal sealed class MemoryOperationProtector
                     || !payload.TryGetProperty("selector", out JsonElement selector)
                     || selector.ValueKind != JsonValueKind.Null)
                 {
-                    throw new InvalidDataException("La limpieza de sesion excede su alcance.");
+                    throw new MemoryRequestRefusedException("memory_session_scope", "La limpieza de sesion excede su alcance.");
                 }
 
                 break;
@@ -254,7 +254,7 @@ internal sealed class MemoryOperationProtector
             return value.GetString()!;
         }
 
-        throw new InvalidDataException("La peticion privada no tiene la forma esperada.");
+        throw new MemoryRequestRefusedException("memory_arguments_shape", "La peticion privada no tiene la forma esperada.");
     }
 
     private static bool RequiredBoolean(JsonElement arguments, string name)
@@ -265,7 +265,7 @@ internal sealed class MemoryOperationProtector
             return value.GetBoolean();
         }
 
-        throw new InvalidDataException("La peticion privada no tiene la forma esperada.");
+        throw new MemoryRequestRefusedException("memory_arguments_shape", "La peticion privada no tiene la forma esperada.");
     }
 
     private static void EnsureNoReservedPayloadProperties(JsonObject arguments)
@@ -276,7 +276,7 @@ internal sealed class MemoryOperationProtector
             || arguments.ContainsKey("sessionId")
             || arguments.ContainsKey("payload"))
         {
-            throw new InvalidDataException("La peticion privada contiene estado reservado.");
+            throw new MemoryRequestRefusedException("memory_arguments_reserved", "La peticion privada contiene estado reservado.");
         }
     }
 
@@ -305,6 +305,15 @@ internal sealed class ProtectedMemoryOperation
 
     public override string ToString() =>
         $"{nameof(ProtectedMemoryOperation)} {{ Operation = {Prepared.OperationName}, Arguments = [PROTECTED] }}";
+}
+
+/// <summary>
+/// A memory call whose arguments do not fit the operation's risk or shape, with a closed code the model reads so it
+/// knows what to change (audit 2026-10-15, App 5: every such refusal came back as a bare «arguments_invalid»).
+/// </summary>
+internal sealed class MemoryRequestRefusedException(string code, string message) : Exception(message)
+{
+    internal string Code { get; } = code;
 }
 
 /// <summary>
