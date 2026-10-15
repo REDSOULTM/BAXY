@@ -236,7 +236,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
     ps_file(cleanup, case.get("cleanup") or [])
     _, cleanup_out = run_ps(cleanup, lib_env, 300)
     leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
-    ok = all(o["ok"] for o in oracles) and spoken_ok
+    ok = bool(oracles) and all(o["ok"] for o in oracles) and spoken_ok  # a case with no oracle checks nothing
     first_audio = [s["first_audio_ms"] for s in speech if s["first_audio_ms"] is not None]
     return {"id": case["id"], "area": case.get("area"), "kind": case.get("kind"), "ok": ok,
             "status": "ok" if ok else "fallo", "spoken_ok": spoken_ok, "oracles": oracles, "replies": replies,

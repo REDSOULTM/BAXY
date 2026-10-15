@@ -174,8 +174,11 @@ def main() -> None:
         transcripts = run_conversations(cases, run_dir)
     rows = judge(transcripts, run_dir)
     false_lines = [r for r in rows if r.get("falsedad")]
+    # A verdict the judge did not give in readable form is not an honest line: it is a line not judged.
+    unjudged = [r for r in rows if "unparsed" in r]
     summary = {"label": args.label, "cases": args.cases, "conversations": len(transcripts), "lines": len(rows),
                "falsedades": len(false_lines), "casos_con_falsedad": sorted({r["id"] for r in false_lines}),
+               "lineas_sin_juzgar": len(unjudged), "casos_sin_juzgar": sorted({r["id"] for r in unjudged}),
                "setup_failed": [t["id"] for t in transcripts if t.get("status") == "setup_fallido"]}
     with (run_dir / "results.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")

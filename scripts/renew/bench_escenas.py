@@ -65,16 +65,18 @@ def main() -> None:
         calls, verdict, ops = 0, "silence", []
         while True:
             kind = result.get("kind")
-            if calls > MAX_CALLS:  # still calling after the budget's final turn: nothing it did reached anyone
+            if calls > MAX_CALLS:  # still calling after the budget's final turn: it never concluded
+                verdict = "failure"
                 break
             if kind == "silence":
                 verdict = "silence"
                 break
             if kind in {"conversation", "clarify"}:
-                verdict = "say" if (result.get("reply") or result.get("question")) else "silence"
+                # Words are a notice; an empty answer is a failure (it is not the decision to stay silent).
+                verdict = "say" if (result.get("reply") or result.get("question")) else "failure"
                 break
-            if kind != "action":
-                verdict = "silence"
+            if kind != "action":  # «failure» (an unreadable decision) or anything unknown
+                verdict = "failure"
                 break
             op = result.get("operation")
             ops.append(op)
@@ -110,7 +112,10 @@ def main() -> None:
         annoying = (expect["kind"] == "silence" and verdict != "silence") or intrusive or (
             channel == "voz" and context.get("owner_activity") in {"jugando", "llamada", "viendo"})
         rows.append({"id": scene["id"], "category": scene.get("category"), "expect": expect["kind"], "got": verdict,
-                     "ops": ops, "ok": ok, "annoying": annoying, "risky_alone": False,
+                     "ops": ops, "ok": ok, "annoying": annoying,
+                     # A high-risk call that would run with no one's yes: the App holds the HIGH_RISK ones as proposals,
+                     # so this counts any that reached «act» (a held risk missing from that list would show here).
+                     "risky_alone": verdict == "act" and any(risk.get(op) in HIGH_RISK for op in ops),
                      "reply": result.get("reply") or result.get("question"), "latency_s": round(latency, 3)})
         print(f"{scene['id']} {'ok ' if ok else 'BAD'} want={expect['kind']:<8} got={verdict:<8} {ops} "
               f"{(result.get('reply') or result.get('question') or '')[:70]!r}", flush=True)
@@ -120,8 +125,8 @@ def main() -> None:
                "accuracy": round(sum(r["ok"] for r in rows) / max(1, n), 4),
                "annoying": sum(r["annoying"] for r in rows),
                "annoying_per_20": round(20 * sum(r["annoying"] for r in rows) / max(1, n), 2),
-               # A high-risk call in a heartbeat never runs alone: the App holds it as a proposal for the person's sí.
-               "risky_alone": 0,
+               "risky_alone": sum(r["risky_alone"] for r in rows),
+               "failures": sum(r["got"] == "failure" for r in rows),
                "by_kind": {k: [sum(r["ok"] for r in rows if r["expect"] == k), sum(r["expect"] == k for r in rows)]
                            for k in ("silence", "act", "propose", "say")},
                "p50_s": round(statistics.median(r["latency_s"] for r in rows), 3) if rows else None}

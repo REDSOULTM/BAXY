@@ -13,10 +13,9 @@ from typing import Any
 
 
 class LlmServer:
-    # One slot: every request (the person's turns and the heartbeat, which keeps the same system prompt and tools)
-    # starts from the same cached prefix. A second slot only served the composition and the forced arguments, which
-    # the native loop no longer makes; it cost 950 MiB of VRAM (measured on the notebook, 2026-10-15).
-    DECIDE = 0
+    # One slot (slot 0): every request (the person's turns and the heartbeat, which keeps the same system prompt and
+    # tools) starts from the same cached prefix. A second slot only served the composition and the forced arguments,
+    # which the native loop no longer makes; it cost 950 MiB of VRAM (measured on the notebook, 2026-10-15).
 
     def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768,
                  extra_args: list[str] | None = None, log_name: str = "llama-server.log") -> None:
@@ -30,7 +29,6 @@ class LlmServer:
         self._process: subprocess.Popen | None = None
         self._ready = threading.Event()
         self._failure: str | None = None
-        self._lock = threading.Lock()
 
     @property
     def name(self) -> str:
@@ -80,15 +78,15 @@ class LlmServer:
             return {"cause": "proceso_salio", "exitCode": code}
         return {"cause": "tiempo"}
 
-    def chat(self, body: dict[str, Any], *, slot: int, timeout: float = 120.0) -> dict[str, Any]:
-        """One chat completion on a pinned slot, so each slot keeps its own prefix cached between turns."""
+    def chat(self, body: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:
+        """One chat completion on the one slot, whose prefix stays cached between turns."""
         if self._process is not None and self._process.poll() is not None:
             # The model server died: the sidecar exits, so the App sees the mind close and relaunches it.
             os._exit(70)
         self.wait_ready(timeout)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
-            data=json.dumps({**body, "id_slot": slot, "cache_prompt": True}).encode("utf-8"),
+            data=json.dumps({**body, "id_slot": 0, "cache_prompt": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
         with urllib.request.urlopen(request, timeout=timeout) as reply:
