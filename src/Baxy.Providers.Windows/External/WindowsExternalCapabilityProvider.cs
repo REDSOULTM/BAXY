@@ -67,9 +67,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new YouTubeMpvAdapter(),
             new WindowsMediaSessionAdapter(),
             // 2026-09-22 (owner's turn 148): the YouTube tab this session plays answers
-            // media.control/media.status after SMTC and before the Spotify automation,
-            // so «para la canción» stops what was just played instead of reaching for
-            // a player that is not running.
+            // media.control/media.status after SMTC, so «para la canción» stops what was
+            // just played. The Spotify client is controlled through its SMTC session.
             new WebBrowserAdapter(root, browserSessionContext),
             new SpotifyDesktopAdapter(),
             new SteamLocalAdapter(visibleControls),

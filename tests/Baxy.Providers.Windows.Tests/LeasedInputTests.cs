@@ -153,9 +153,9 @@ public sealed class LeasedInputTests
         var runner = new CountingRunner("{\"ok\":true,\"effectObserved\":true,\"playbackStatus\":\"paused\"}");
         var refusing = new ScriptedLease { Refusal = "input_user_not_paused" };
 
-        var adapter = new SpotifyDesktopAdapter(runner, scripts.Play, scripts.Control) { InputLease = refusing };
+        var adapter = new SpotifyDesktopAdapter(runner, scripts.Play) { InputLease = refusing };
         ExternalCapabilityReceipt refused = await adapter.InvokeAsync(
-            "media.control", Json("""{"action":"pause"}"""), CancellationToken.None);
+            "media.play.exact", Json("""{"provider":"spotify","title":"Yellow"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -274,7 +274,7 @@ public sealed class LeasedInputTests
         using var scripts = new Scripts();
         var runner = new BlockingRunner();
         var lease = new ScriptedLease();
-        var adapter = new SpotifyDesktopAdapter(runner, scripts.Play, scripts.Control) { InputLease = lease };
+        var adapter = new SpotifyDesktopAdapter(runner, scripts.Play) { InputLease = lease };
         Task<ExternalCapabilityReceipt> playing = adapter.InvokeAsync(
             "media.play.query", Json("""{"provider":"spotify","query":"lofi"}"""), CancellationToken.None).AsTask();
 
@@ -344,7 +344,7 @@ public sealed class LeasedInputTests
             foreach (string name in new[]
             {
                 "KnownFolderOpen.ps1", "KnownFileOpen.ps1", "DesktopSelectAll.ps1", "DesktopKeyPress.ps1",
-                "Play.ps1", "Control.ps1",
+                "Play.ps1",
             })
             {
                 File.WriteAllText(Path.Combine(_root, name), "# test fixture");
@@ -352,8 +352,6 @@ public sealed class LeasedInputTests
         }
 
         internal string Play => Path.Combine(_root, "Play.ps1");
-
-        internal string Control => Path.Combine(_root, "Control.ps1");
 
         internal WindowsDesktopInteractionAdapter Interaction(IExternalProcessRunner runner, IForegroundLease lease) =>
             new(runner,

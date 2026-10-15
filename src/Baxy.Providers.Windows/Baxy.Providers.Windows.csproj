@@ -15,9 +15,6 @@
     <None Include="External\SpotifyDesktopAutomation.ps1"
           CopyToOutputDirectory="PreserveNewest"
           TargetPath="SpotifyDesktopAutomation.ps1" />
-    <None Include="External\SpotifyMediaControl.ps1"
-          CopyToOutputDirectory="PreserveNewest"
-          TargetPath="SpotifyMediaControl.ps1" />
     <None Include="External\KnownFolderOpen.ps1"
           CopyToOutputDirectory="PreserveNewest"
           TargetPath="KnownFolderOpen.ps1" />

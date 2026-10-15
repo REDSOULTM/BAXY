@@ -198,7 +198,7 @@
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
   },
   "media.control": {
-   "sourceApp": "Only to control a player other than what is playing now: the sourceAppUserModelId media.status gave for it, exactly as it gave it, or spotify for the Spotify app. Leave it out to control what is playing."
+   "sourceApp": "Only to control a player other than what is playing now: the sourceAppUserModelId media.status gave for it, exactly as it gave it. Leave it out to control what is playing."
   },
   "input.key.press": {
    "target": "Where the keyboard is: message_composer when the focused field holds a message to someone, so Enter or Space sends it (BAXY then asks the person first); text_field when it is any other text field, so Delete only erases characters (without it, Delete deletes what is selected and BAXY asks first). Leave it out otherwise.",

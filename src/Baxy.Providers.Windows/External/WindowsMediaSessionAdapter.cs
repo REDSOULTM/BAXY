@@ -5,39 +5,20 @@ using Windows.Media.Control;
 
 namespace Baxy.Providers.Windows.External;
 
-internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, IDisposable
+internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
 {
-    private const int SpotifyPlaybackPollIntervals = 20;
     private const int SmtcPostreadPollIntervals = 7;
     private const int SmtcControlPostreadPollIntervals = 40;
-    private static readonly TimeSpan SpotifyPlaybackPollInterval =
-        TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan SmtcPostreadPollInterval =
         TimeSpan.FromMilliseconds(50);
-    private readonly HttpClient _spotifyHttp;
-    private readonly Func<string?> _token;
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
-    private readonly bool _ownsHttp;
     private readonly MediaSessionAccess _sessions;
 
-    internal WindowsMediaSessionAdapter()
-        : this(new HttpClient { Timeout = TimeSpan.FromSeconds(20) },
-            () => Environment.GetEnvironmentVariable("BAXY_SPOTIFY_ACCESS_TOKEN"),
-            ownsHttp: true)
-    {
-    }
-
     internal WindowsMediaSessionAdapter(
-        HttpClient spotifyHttp,
-        Func<string?> token,
-        bool ownsHttp = false,
         Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
         MediaSessionAccess? sessions = null)
     {
-        _spotifyHttp = spotifyHttp ?? throw new ArgumentNullException(nameof(spotifyHttp));
-        _token = token ?? throw new ArgumentNullException(nameof(token));
         _delay = delay ?? DefaultDelayAsync;
-        _ownsHttp = ownsHttp;
         _sessions = sessions ?? MediaSessionAccess.System;
     }
 
@@ -59,8 +40,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         _sessions.Snapshot();
 
     public bool CanHandle(string operation) =>
-        operation is "media.control" or "media.seek.relative" or "media.play.exact"
-            or "media.play.query" or "media.status";
+        operation is "media.control" or "media.seek.relative" or "media.play.exact" or "media.status";
 
     private string? _assistantSource;
 
@@ -265,14 +245,6 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (operation is "media.play.exact" or "media.play.query"
-            && !string.IsNullOrWhiteSpace(_token()))
-        {
-            return await PlayWithSpotifyApiAsync(operation, arguments, cancellationToken)
-                .ConfigureAwait(false);
-        }
-        if (operation == "media.play.query")
-            return ExternalJson.Failure(operation, "spotify_api_authentication_required");
         GlobalSystemMediaTransportControlsSession? session;
         try
         {
@@ -371,200 +343,6 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         };
     }
 
-    public void Dispose()
-    {
-        if (_ownsHttp)
-        {
-            _spotifyHttp.Dispose();
-        }
-    }
-
-    private async ValueTask<ExternalCapabilityReceipt> PlayWithSpotifyApiAsync(
-        string operation,
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        bool effectBoundaryCrossed = false;
-        try
-        {
-            bool exactSelection = operation == "media.play.exact";
-            string requested = ExternalJson.RequiredString(
-                arguments, exactSelection ? "title" : "query");
-            string? token = _token();
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                return ExternalJson.Failure(operation, "spotify_api_authentication_required");
-            }
-            using JsonDocument search = await SpotifyJsonAsync(
-                HttpMethod.Get,
-                "https://api.spotify.com/v1/search?q="
-                    + Uri.EscapeDataString(exactSelection ? "track:" + requested : requested)
-                    + "&type=track&limit=20",
-                token,
-                null,
-                cancellationToken).ConfigureAwait(false);
-            if (!search.RootElement.TryGetProperty("tracks", out JsonElement tracks)
-                || !tracks.TryGetProperty("items", out JsonElement items)
-                || items.ValueKind != JsonValueKind.Array)
-            {
-                return ExternalJson.Failure(operation, "spotify_search_response_invalid");
-            }
-            JsonElement[] matches = items.EnumerateArray()
-                .Where(item => item.TryGetProperty("name", out JsonElement name)
-                    && (!exactSelection || string.Equals(
-                        Fold(name.GetString() ?? string.Empty), Fold(requested), StringComparison.Ordinal))
-                    && item.TryGetProperty("id", out JsonElement id)
-                    && id.ValueKind == JsonValueKind.String)
-                .Select(item => item.Clone())
-                .ToArray();
-            if (matches.Length == 0)
-            {
-                return ExternalJson.Failure(operation,
-                    exactSelection ? "spotify_exact_track_not_found" : "spotify_query_track_not_found");
-            }
-            // The query result is the first of Spotify's own order; an exact title shared by several tracks is not
-            // chosen here: they go back as candidates and nothing plays.
-            if (exactSelection && matches.Length > 1)
-            {
-                return SpotifyTrackCandidates(operation, requested, matches);
-            }
-            JsonElement selected = matches[0];
-            string trackId = selected.GetProperty("id").GetString()!;
-            string uri = selected.GetProperty("uri").GetString()!;
-            string selectedTitle = selected.GetProperty("name").GetString()!;
-            string artist = FirstArtist(selected);
-
-            using JsonDocument devices = await SpotifyJsonAsync(
-                HttpMethod.Get,
-                "https://api.spotify.com/v1/me/player/devices",
-                token,
-                null,
-                cancellationToken).ConfigureAwait(false);
-            JsonElement[] available = devices.RootElement.TryGetProperty("devices", out JsonElement deviceArray)
-                && deviceArray.ValueKind == JsonValueKind.Array
-                    ? deviceArray.EnumerateArray()
-                        .Where(item => item.TryGetProperty("is_restricted", out JsonElement restricted)
-                            && restricted.ValueKind == JsonValueKind.False
-                            && item.TryGetProperty("id", out JsonElement id)
-                            && id.ValueKind == JsonValueKind.String)
-                        .Select(item => item.Clone())
-                        .ToArray()
-                    : [];
-            JsonElement? device = available.FirstOrDefault(item => item.TryGetProperty("is_active", out JsonElement active)
-                && active.ValueKind == JsonValueKind.True);
-            device ??= available.FirstOrDefault();
-            if (device is null || device.Value.ValueKind == JsonValueKind.Undefined)
-            {
-                return ExternalJson.Failure(operation, "spotify_playback_device_not_available");
-            }
-            string deviceId = device.Value.GetProperty("id").GetString()!;
-            JsonElement playBody = ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteStartArray("uris");
-                writer.WriteStringValue(uri); writer.WriteEndArray(); writer.WriteEndObject();
-            });
-            effectBoundaryCrossed = true;
-            using JsonDocument _ = await SpotifyJsonAsync(
-                HttpMethod.Put,
-                "https://api.spotify.com/v1/me/player/play?device_id=" + Uri.EscapeDataString(deviceId),
-                token,
-                playBody.GetRawText(),
-                cancellationToken,
-                allowEmpty: true).ConfigureAwait(false);
-            for (int attempt = 0; attempt <= SpotifyPlaybackPollIntervals; attempt++)
-            {
-                if (attempt > 0)
-                {
-                    await _delay(SpotifyPlaybackPollInterval, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-
-                try
-                {
-                    using JsonDocument nowPlaying = await SpotifyJsonAsync(
-                        HttpMethod.Get,
-                        "https://api.spotify.com/v1/me/player/currently-playing",
-                        token,
-                        null,
-                        cancellationToken,
-                        allowEmpty: true).ConfigureAwait(false);
-                    if (nowPlaying.RootElement.ValueKind == JsonValueKind.Object
-                        && nowPlaying.RootElement.TryGetProperty(
-                            "is_playing",
-                            out JsonElement playing)
-                        && playing.ValueKind == JsonValueKind.True
-                        && nowPlaying.RootElement.TryGetProperty("item", out JsonElement item)
-                        && item.ValueKind == JsonValueKind.Object
-                        && item.TryGetProperty("id", out JsonElement observedId)
-                        && string.Equals(
-                            observedId.GetString(),
-                            trackId,
-                            StringComparison.Ordinal))
-                    {
-                        JsonElement result = ExternalJson.Create(writer =>
-                        {
-                            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                            writer.WriteString("provider", "spotify");
-                            writer.WriteString("trackId", trackId);
-                            writer.WriteString("title", selectedTitle);
-                            if (!exactSelection) writer.WriteString("query", requested);
-                            writer.WriteString("artist", artist);
-                            writer.WriteString("playbackStatus", "playing");
-                            writer.WriteString("deviceId", deviceId);
-                            writer.WriteString("authority", "spotify_web_api_postread");
-                            writer.WriteEndObject();
-                        });
-                        return ExternalJson.Success(operation, result, effectObserved: true);
-                    }
-                }
-                catch (Exception exception) when (
-                    attempt == 0
-                    && !cancellationToken.IsCancellationRequested
-                    && exception is HttpRequestException or JsonException)
-                {
-                    // The immediate read is additive. A transient failure here
-                    // must not pre-empt the first observation in the original
-                    // 500 ms schedule.
-                }
-            }
-            return ExternalJson.Failure(operation, "spotify_now_playing_not_verified", true);
-        }
-        catch (HttpRequestException)
-        {
-            return ExternalJson.Failure(operation, "spotify_api_request_failed", effectBoundaryCrossed);
-        }
-        catch (JsonException)
-        {
-            return ExternalJson.Failure(operation, "spotify_api_response_invalid", effectBoundaryCrossed);
-        }
-    }
-
-    private async ValueTask<JsonDocument> SpotifyJsonAsync(
-        HttpMethod method,
-        string url,
-        string token,
-        string? body,
-        CancellationToken cancellationToken,
-        bool allowEmpty = false)
-    {
-        using var request = new HttpRequestMessage(method, url);
-        request.Headers.Authorization = new("Bearer", token);
-        if (body is not null)
-        {
-            request.Content = new StringContent(body, Encoding.UTF8, "application/json");
-        }
-        using HttpResponseMessage response = await _spotifyHttp.SendAsync(request, cancellationToken)
-            .ConfigureAwait(false);
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new HttpRequestException("Spotify API rejected the operation.", null, response.StatusCode);
-        }
-        byte[] payload = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-        return payload.Length == 0 && allowEmpty
-            ? JsonDocument.Parse("{}")
-            : JsonDocument.Parse(payload);
-    }
-
     private async ValueTask<ExternalCapabilityReceipt> PlayExactCurrentAsync(
         string operation,
         JsonElement arguments,
@@ -636,8 +414,9 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     .ConfigureAwait(false);
             }
 
+            // The title already playing is the state asked for, reached by no press of this call.
             return verified
-                ? ExternalJson.Success(operation,
+                ? ExternalJson.Switched(operation,
                     MediaResult(after, "playing", session.SourceAppUserModelId, provider: "spotify"), dispatched)
                 : ExternalJson.Failure(operation, "spotify_now_playing_not_verified", dispatched);
         }
@@ -760,10 +539,12 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                 && status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
                     ? "stopped"
                     : status.ToString().ToLowerInvariant();
+            // A session already in the state asked for (paused on «pausa») is done with no effect of this call.
             return verified
-                ? ExternalJson.Success(
+                ? ExternalJson.Switched(
                     operation,
-                    MediaResult(after, observedStatus, session.SourceAppUserModelId))
+                    MediaResult(after, observedStatus, session.SourceAppUserModelId),
+                    effectObserved: !alreadySatisfiedBeforeDispatch)
                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -941,36 +722,6 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
     {
         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
     }
-
-    private static string FirstArtist(JsonElement track) =>
-        track.TryGetProperty("artists", out JsonElement artists)
-        && artists.ValueKind == JsonValueKind.Array
-        && artists.GetArrayLength() > 0
-        && artists[0].TryGetProperty("name", out JsonElement artistName)
-            ? artistName.GetString() ?? string.Empty
-            : string.Empty;
-
-    private static ExternalCapabilityReceipt SpotifyTrackCandidates(
-        string operation,
-        string requested,
-        IReadOnlyList<JsonElement> tracks) =>
-        new(operation, false, false, ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            writer.WriteString("requested", requested);
-            writer.WriteStartArray("candidates");
-            foreach (JsonElement track in tracks)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("title", track.GetProperty("name").GetString());
-                writer.WriteString("artist", FirstArtist(track));
-                writer.WriteString("trackId", track.GetProperty("id").GetString());
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-            writer.WriteEndObject();
-        }), "spotify_exact_track_ambiguous");
 
     private static string Fold(string value)
     {

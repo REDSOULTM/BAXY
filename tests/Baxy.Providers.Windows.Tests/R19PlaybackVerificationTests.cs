@@ -137,7 +137,7 @@ public sealed class R19PlaybackVerificationTests
     {
         var sessions = new FakeSessions((Client, "aruarian dance", false));
         var spotify = new SpotifyDesktopAdapter(new Runner(NotConfirmedOutput, () => sessions.Play(Client)));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         var youtube = new Browser(sessions);
         using var provider = new WindowsExternalCapabilityProvider([spotify, media, youtube]);
 
@@ -166,7 +166,7 @@ public sealed class R19PlaybackVerificationTests
     {
         var sessions = new FakeSessions((Client, "su propia cancion", true));
         var spotify = new SpotifyDesktopAdapter(new Runner(NotConfirmedOutput));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([spotify, media, new Browser(sessions)]);
 
         _ = await provider.InvokeAsync(
@@ -185,7 +185,7 @@ public sealed class R19PlaybackVerificationTests
         var spotify = new SpotifyDesktopAdapter(new Runner(
             "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_result_not_found\"}",
             () => sessions.Play(Client)));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([spotify, media, new Browser(sessions)]);
 
         _ = await provider.InvokeAsync(
@@ -211,7 +211,7 @@ public sealed class R19PlaybackVerificationTests
         });
         var youtube = new Player("media.play.youtube", sessions,
             () => ExternalJson.FailureBeforeEffect("media.play.youtube", error));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([client, media, youtube]);
 
         ExternalCapabilityReceipt first = await provider.InvokeAsync(
@@ -245,7 +245,7 @@ public sealed class R19PlaybackVerificationTests
         });
         var youtube = new Player("media.play.youtube", sessions,
             () => ExternalJson.FailureBeforeEffect("media.play.youtube", "youtube_search_unavailable"));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null,
+        var media = new WindowsMediaSessionAdapter(
             delay: (_, _) => ValueTask.CompletedTask, sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([client, media, youtube]);
 
@@ -279,7 +279,7 @@ public sealed class R19PlaybackVerificationTests
         });
         var client = new Player("media.play.query", sessions,
             () => ExternalJson.Success("media.play.query", Json($$"""{"sourceAppUserModelId":"{{Client}}"}""")));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([client, media, youtube]);
 
         ExternalCapabilityReceipt first = await provider.InvokeAsync(
@@ -311,7 +311,7 @@ public sealed class R19PlaybackVerificationTests
         });
         var youtube = new Player("media.play.youtube", sessions,
             () => ExternalJson.Success("media.play.youtube", Json($$"""{"sourceAppUserModelId":"{{Opera}}"}""")));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([client, media, youtube]);
 
         _ = await provider.InvokeAsync(
@@ -340,7 +340,7 @@ public sealed class R19PlaybackVerificationTests
         });
         var client = new Player("media.play.query", sessions,
             () => ExternalJson.Success("media.play.query", Json($$"""{"sourceAppUserModelId":"{{Client}}"}""")));
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: sessions.Access);
+        var media = new WindowsMediaSessionAdapter(sessions: sessions.Access);
         using var provider = new WindowsExternalCapabilityProvider([client, media, youtube]);
 
         _ = await provider.InvokeAsync(

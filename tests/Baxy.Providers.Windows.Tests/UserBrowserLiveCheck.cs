@@ -48,7 +48,7 @@ public sealed class UserBrowserLiveCheck
         if (playback.Verified
             && playback.Result?.GetProperty("sourceAppUserModelId").GetString() is { Length: > 0 } source)
         {
-            using var media = new WindowsMediaSessionAdapter();
+            var media = new WindowsMediaSessionAdapter();
             string pause = JsonSerializer.Serialize(new Dictionary<string, string>
             {
                 ["action"] = "pause",
