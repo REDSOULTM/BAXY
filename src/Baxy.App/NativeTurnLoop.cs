@@ -181,8 +181,10 @@ internal sealed class NativeTurnLoop
             _moves++;
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
-            // so the model answers from what it has, as at the call budget.
-            bool final = calls >= MaximumModelCalls || _host.Core() is not { IsReady: true };
+            // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
+            // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
+            // at the call budget.
+            bool final = calls >= MaximumModelCalls || _host.Core() is not { IsReady: true } || HasPendingConfirmation;
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }

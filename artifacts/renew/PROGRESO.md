@@ -144,3 +144,16 @@ tocan lo cambiado; en el notebook pasan).
 - Falsedades práctica p3 (sesión desbloqueada, juez con «hechos de Windows»): **2** en 26 líneas (p1: 4). F013 (ruta
   pedida dicha como hecha, el archivo fue a la raíz del perfil) y F015 (aceptó «¿ya cerraste…?»): regla 2 ampliada;
   F013 espera que file.* acepte rutas absolutas (pedido al notebook).
+- e2e práctica p4: **16/30** (herr 7/10, cu 4/8, agente 3/8, voz 2/4), primer sonido p50 2861 ms. E007 (minimizar) y
+  E011 (calculadora) pasan. Arreglos tras p4:
+  - Instrumento: la librería del banco (`lib\bench.ps1`) leía una ventana abierta como ausente (Windows PowerShell 5.1
+    no da `.Count` a un `[pscustomobject]` solo): E003 fallaba siempre y el oráculo de Configuración (E014) también.
+    Arreglado con `Update-TypeData` en la librería; los casos no se tocan; sello nuevo de la librería en metas.json.
+  - Con una llamada esperando el sí de la persona, el siguiente paso del modelo es final (E021: repitió la terminal 8
+    veces y acabó en «no puedo ejecutar comandos»).
+  - `app.open` con un lugar que la app no tiene falla con `place_not_of_application` y las apps que sí lo tienen
+    (E014: «Configuración del sistema» + sound, 8 veces con `invalid_arguments`).
+- Volumen «sube/baja … a/hasta N» (E028, P257): el 4B elige `audio.volume.adjust` y calcula la diferencia. Medido en un
+  juego propio de 10 frases (no copiadas de los bancos): descripciones actuales 6/10; descripciones «TO a level» frente
+  a «BY an amount» 4/10; una sola herramienta `audio.volume {level|change}` 6/10 (cambia los errores: «baja al 15» →
+  change −85). Nada mejora: **límite medido**, el catálogo se queda como está.

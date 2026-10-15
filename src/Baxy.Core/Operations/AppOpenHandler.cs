@@ -50,7 +50,9 @@ internal sealed class AppOpenHandler(
             placeAddress = ApplicationPlaces.Address(arguments.AppId, arguments.Place, arguments.PlaceValue);
             if (placeAddress is null)
             {
-                return OperationOutcome.Failure("invalid_arguments");
+                // Said with the applications that do have that place, so the next opening can name the right one.
+                return OperationOutcome.Failure(
+                    "place_not_of_application", result: Names("placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place)));
             }
         }
 
@@ -74,7 +76,7 @@ internal sealed class AppOpenHandler(
             string errorCode = NormalizeErrorCode(providerResult.ErrorCode, providerResult.Verified);
             return OperationOutcome.Failure(
                 errorCode,
-                result: Candidates(providerResult.Candidates),
+                result: Names("candidates", providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
         }
 
@@ -127,8 +129,9 @@ internal sealed class AppOpenHandler(
         return OperationOutcome.Success(serialized);
     }
 
-    // Auditoría D1: the installed names closest to one that matched none, said with the failure (nothing was opened).
-    private static JsonElement? Candidates(IReadOnlyList<string>? names)
+    // Auditoría D1: the installed names closest to one that matched none (or the applications that have a place),
+    // said with the failure (nothing was opened).
+    private static JsonElement? Names(string property, IReadOnlyList<string>? names)
     {
         if (names is not { Count: > 0 })
             return null;
@@ -136,7 +139,7 @@ internal sealed class AppOpenHandler(
         using (var writer = new Utf8JsonWriter(buffer))
         {
             writer.WriteStartObject();
-            writer.WriteStartArray("candidates");
+            writer.WriteStartArray(property);
             foreach (string name in names)
                 writer.WriteStringValue(name);
             writer.WriteEndArray();

@@ -33,9 +33,12 @@
         "archivo": "F:/BAXYeval/renew_v1/e2e/sealed.json",
         "casos": 50,
         "sha256": "e803902f7b1e87291bad751232a593f5f2e7aa0da28294101ec25d7324781b76",
-        "lib_bench_ps1_sha256": "972c5b9f6f7132624d12754f5856b25eb4efba41dad5186ca1376964c5ce9211",
+        "lib_bench_ps1_sha256": "d82eed38d13aba469ed3d421320eb808e4625a0690bd7d64f0ebda46aaa05372",
         "sellado": "2026-10-15T12:24:45-03:00",
-        "nota": "sello final del subagente que lo escribió (SEALED-e2e.md); el sello de las 04:05 era un borrador que el subagente siguió puliendo (oráculos probados, limpieza). La sesión de ajuste no lo abrió."
+        "nota": "sello final del subagente que lo escribió (SEALED-e2e.md); el sello de las 04:05 era un borrador que el subagente siguió puliendo (oráculos probados, limpieza). La sesión de ajuste no lo abrió.",
+        "lib_cambios": [
+          "2026-10-15 15:00, líder: Update-TypeData da Count 1 a un [pscustomobject] solo (Windows PowerShell 5.1 no lo da; un oráculo leía una ventana abierta como ausente). Arreglo del instrumento; los casos sellados no se abrieron ni se cambiaron. sha anterior 972c5b9f…"
+        ]
       },
       "falsedades": {
         "archivo": "F:/BAXYeval/renew_v1/falsedades/sealed.json",

@@ -35,6 +35,21 @@ public static class ApplicationPlaces
         [.. Loaded.Value.Values.SelectMany(application => application.Places.Keys).Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal)];
 
+    private static readonly Lazy<IReadOnlyList<(string Name, IReadOnlyCollection<string> Places)>> Named = new(() =>
+    {
+        using JsonDocument document = Load();
+        IReadOnlyDictionary<string, Application> applications = Read(document);
+        return [.. document.RootElement.GetProperty("applications").EnumerateObject()
+            .Select(entry => (entry.Name, (IReadOnlyCollection<string>)[.. applications[Fold(entry.Name)].Places.Keys]))];
+    });
+
+    /// <summary>
+    /// The applications, as the data name them, that declare <paramref name="place"/> with an address of its own: what an
+    /// opening refused for that place is told with (e2e p3/p4 E014: «Configuración del sistema» with «sound», eight times).
+    /// </summary>
+    public static IReadOnlyList<string> ApplicationsWith(string? place) =>
+        place is null ? [] : [.. Named.Value.Where(entry => entry.Places.Contains(place)).Select(entry => entry.Name)];
+
     /// <summary>
     /// The address of <paramref name="place"/> of <paramref name="application"/> (its name in the Start catalog, as
     /// app.open says it) filled with <paramref name="value"/>; null when the data declares no such application or place,
