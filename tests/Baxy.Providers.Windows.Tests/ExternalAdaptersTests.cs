@@ -4060,6 +4060,51 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // media.control's sourceApp names a player by the id media.status gave it, compared whole (BAXY Renew audit
+    // 2026-10-15): the tab and the local player stand aside before any effect for any other, so «pausa Spotify» never
+    // pauses them, and a word of the id is not the id.
+    [TestCase("spotify", "media_source_app_not_youtube_tab")]
+    [TestCase("youtube", "media_source_app_not_youtube_tab")]
+    [TestCase("BAXY YouTube (Edge)", "youtube_tab_not_found")]
+    public async Task TheYouTubeTabIsNamedOnlyByItsOwnId(string sourceApp, string error)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: false);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control",
+            Json(JsonSerializer.Serialize(new Dictionary<string, string> { ["action"] = "pause", ["sourceApp"] = sourceApp })),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(browser.Calls, Is.Zero);
+        });
+    }
+
+    [TestCase("spotify", "media_source_app_not_local_player")]
+    [TestCase("mpv", "media_source_app_not_local_player")]
+    [TestCase("BAXY YouTube (mpv)", "local_player_inactive")]
+    public async Task TheLocalPlayerIsNamedOnlyByItsOwnId(string sourceApp, string error)
+    {
+        using var adapter = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control",
+            Json(JsonSerializer.Serialize(new Dictionary<string, string> { ["action"] = "pause", ["sourceApp"] = sourceApp })),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     [Test]
     public async Task YouTubeTabControlNeverLaunchesABrowserToLookForATab()
     {

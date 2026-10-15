@@ -517,6 +517,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // failure. The tab this session plays is driven and read here; with no such
     // tab the adapter stands aside (no effect, no browser launched) and the chain
     // goes on to the next player.
+    // How media.status names the YouTube tab this session plays, and so how media.control's sourceApp names it.
+    private const string YouTubeTabSourceAppUserModelId = "BAXY YouTube (Edge)";
+
     private async ValueTask<ExternalCapabilityReceipt> ControlYouTubeTabAsync(
         string operation,
         JsonElement arguments,
@@ -532,12 +535,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.FailureBeforeEffect(operation, "media_control_action_invalid");
         }
+        // The tab is the player the model named only by the id media.status gives it, compared whole (BAXY Renew
+        // audit 2026-10-15: «youtube», «edge» or «browser» anywhere in the argument).
         if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
             && sourceApp.ValueKind == JsonValueKind.String
             && sourceApp.GetString() is { Length: > 0 } requestedSource
-            && !requestedSource.Contains("youtube", StringComparison.OrdinalIgnoreCase)
-            && !requestedSource.Contains("edge", StringComparison.OrdinalIgnoreCase)
-            && !requestedSource.Contains("browser", StringComparison.OrdinalIgnoreCase))
+            && !string.Equals(requestedSource, YouTubeTabSourceAppUserModelId, StringComparison.OrdinalIgnoreCase))
         {
             return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_youtube_tab");
         }
@@ -578,7 +581,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
-            writer.WriteString("sourceAppUserModelId", "BAXY YouTube (Edge)");
+            writer.WriteString("sourceAppUserModelId", YouTubeTabSourceAppUserModelId);
             writer.WriteString("action", action);
             writer.WriteString("title", control.Title);
             writer.WriteBoolean("titleObserved", control.Title.Length > 0);
@@ -608,7 +611,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
-            writer.WriteString("sourceAppUserModelId", "BAXY YouTube (Edge)");
+            writer.WriteString("sourceAppUserModelId", YouTubeTabSourceAppUserModelId);
             writer.WriteString("title", status.Title);
             writer.WriteBoolean("titleObserved", status.Title.Length > 0);
             writer.WriteString("artist", string.Empty);

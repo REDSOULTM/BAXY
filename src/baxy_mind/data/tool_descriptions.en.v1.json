@@ -199,6 +199,9 @@
   },
   "filesystem.folder.open": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+  },
+  "media.control": {
+   "sourceApp": "Only to control a player other than what is playing now: the sourceAppUserModelId media.status gave for it, exactly as it gave it, or spotify for the Spotify app. Leave it out to control what is playing."
   }
  }
 }
