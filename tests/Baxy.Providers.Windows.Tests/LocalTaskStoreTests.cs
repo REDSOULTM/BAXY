@@ -39,6 +39,16 @@ public sealed class LocalTaskStoreTests
         });
     }
 
+    // «due» without an offset is the person's local time, as the model is told (only fields ending in Utc are UTC).
+    [Test]
+    public void ADueWithoutOffsetIsLocalTime()
+    {
+        using TemporaryDirectory temporary = new();
+        var store = new LocalTaskStore(Path.Combine(temporary.Path, "tasks"));
+        LocalTaskRecord created = store.Create("Pagar la luz", string.Empty, "2026-10-20T08:00:00");
+        Assert.That(created.DueUtc?.ToLocalTime().DateTime, Is.EqualTo(new DateTime(2026, 10, 20, 8, 0, 0)));
+    }
+
     [Test]
     public void SearchIsBoundedToTitleAndDetailsAndStatus()
     {
