@@ -91,7 +91,8 @@ class Mind:
         except OSError:
             pass
         apps = [str(n) for n in ((message.get("applicationCatalog") or {}).get("names") or []) if str(n).strip()]
-        games = sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
+        games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
+                        for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op, op_to_tool = [ASK_USER], {}, {}
         for cap in capabilities:
@@ -102,8 +103,8 @@ class Mind:
             description = self.english.get(name) or spanish
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
-            if name.startswith("game.") and games:
-                description += " Games in the person's libraries: " + "; ".join(games) + "."
+            if name == "game.launch" and games:
+                description += " The person's game library: " + "; ".join(games) + "."
             raw = cap.get("argumentsSchema")
             schema = {k: v for k, v in (raw if isinstance(raw, dict) else {}).items()
                       if k not in {"$schema", "$id", "title"}}
