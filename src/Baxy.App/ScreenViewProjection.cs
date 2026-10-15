@@ -10,7 +10,10 @@ namespace Baxy.App;
 /// order. Pixel rectangles, colours, repeated OCR marks and the reader's own bookkeeping are left out: the model acts by
 /// index or label, and a 4B reads a short text view far better than a long JSON one (AgentOccam, ICLR 2025: the same
 /// agent +161 % from the observation alone; OSWorld and UFO2 filter the tree to visible, enabled, named controls).
-/// Presentation only: every control and every line the reader returned is kept, nothing is ranked or chosen.
+/// Presentation only: every control and every line the reader returned is kept, nothing is ranked or chosen, and what
+/// the reader said about its own reading stays said: a cut walk, a frame without content, a tree it could not read, text
+/// it could not read, the disabled controls, the window being a modal dialog, protected or run as administrator (audit
+/// 2026-10-15: those were dropped, and a cut walk read as «(ninguno)» with no cause).
 /// </summary>
 internal static class ScreenViewProjection
 {
@@ -61,6 +64,23 @@ internal static class ScreenViewProjection
                 text.Append(", tapada por «").Append((string?)cover["title"]).Append('»');
             }
 
+            if ((bool?)window["modal"] == true)
+            {
+                text.Append(", es el diálogo modal que bloquea la ventana");
+            }
+
+            if ((bool?)window["protected"] == true)
+            {
+                text.Append(", ventana protegida (no se actúa en ella sin que la persona la nombre)");
+            }
+
+            if ((bool?)window["elevated"] == true)
+            {
+                text.Append((bool?)window["reopensUnraised"] == true
+                    ? ", corre como administrador (se puede reabrir sin permisos de administrador)"
+                    : ", corre como administrador");
+            }
+
             text.Append('\n');
             if (window["focused"] is JsonObject focused)
             {
@@ -85,7 +105,34 @@ internal static class ScreenViewProjection
         int count = (int?)view["controlCount"] ?? controls.Count;
         if (count > controls.Count)
         {
-            text.Append("(+").Append(count - controls.Count).Append(" más fuera de la vista)\n");
+            text.Append("(+").Append(count - controls.Count).Append(" más, sin listar por el tope)\n");
+        }
+
+        if (view["disabled"] is JsonArray disabled && disabled.Count > 0)
+        {
+            text.Append("Desactivados: ").Append(string.Join(" | ", disabled.OfType<JsonObject>()
+                .Select(static control => $"{(string?)control["kind"]} «{(string?)control["name"]}»"))).Append('\n');
+        }
+
+        // What the reader said about its own reading.
+        if ((bool?)view["partial"] == true)
+        {
+            text.Append("(la lectura se cortó por tiempo: puede haber más controles sin listar)\n");
+        }
+
+        if ((bool?)view["frameOnly"] == true)
+        {
+            text.Append("(sólo se leyó el marco de la ventana: su contenido no se pudo leer)\n");
+        }
+
+        if ((string?)view["uiaFailed"] is { Length: > 0 } walkFailed)
+        {
+            text.Append("(no se pudo leer el árbol accesible de la ventana: ").Append(walkFailed).Append(")\n");
+        }
+
+        if ((string?)view["textAuthority"] == "unavailable")
+        {
+            text.Append("(no se pudo leer el texto en pantalla)\n");
         }
 
         if (view["text"] is JsonObject zones)
@@ -124,11 +171,12 @@ internal static class ScreenViewProjection
         }
 
         // The kernel's facts of the look travel whole (status, error, cause, effectUncertain included); only what it
-        // observed is re-presented, as the view.
+        // observed is re-presented, as the view, made from the whole receipt: the kernel's mark that its own copy of the
+        // observation was cut (observedLimit) does not describe this view.
         var projection = new JsonObject();
         foreach ((string key, JsonNode? fact) in facts)
         {
-            if (key != "observed")
+            if (key is not ("observed" or "observedLimit"))
             {
                 projection[key] = fact?.DeepClone();
             }
@@ -160,6 +208,11 @@ internal static class ScreenViewProjection
         if ((int?)control["repeated"] is > 1 and int repeated)
         {
             line.Append(" ×").Append(repeated);
+        }
+
+        if ((string?)control["shortcut"] is { Length: > 0 } shortcut)
+        {
+            line.Append(" [atajo ").Append(shortcut).Append(']');
         }
 
         return line.ToString();
