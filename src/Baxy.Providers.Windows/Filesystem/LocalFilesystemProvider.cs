@@ -228,6 +228,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "downloads" => Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+            "home" => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             _ => throw Error("invalid_folder"),
         };
         if (string.IsNullOrWhiteSpace(path) || !Path.IsPathFullyQualified(path) || !Directory.Exists(path))

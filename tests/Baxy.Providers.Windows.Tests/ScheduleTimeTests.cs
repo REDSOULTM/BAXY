@@ -83,6 +83,34 @@ public sealed class ScheduleTimeTests
         });
     }
 
+    // On the real scheduler: a reminder 15 seconds from now rings, and its receipt — written after ringing — says the
+    // Windows notification was read back from the notification history and which sound played.
+    [Test]
+    [Explicit("Rings one real BAXY reminder on this PC (a notification and a sound).")]
+    public async Task A_reminder_rings_with_a_notification_read_back_from_the_history()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-schedule-ring-" + Guid.NewGuid().ToString("N"));
+        using var cleanup = new Cleanup(root);
+        var adapter = new WindowsScheduledNotificationAdapter(root);
+        using JsonDocument request = JsonDocument.Parse(
+            """{"action":"create","kind":"reminder","title":"Prueba de BAXY: este aviso se puede cerrar","inSeconds":15}""");
+        ExternalCapabilityReceipt created = await adapter.InvokeAsync(
+            "schedule.alarms", request.RootElement.Clone(), CancellationToken.None);
+        Assert.That(created.Verified, Is.True, created.ErrorCode);
+        string receipt = Path.Combine(root, "scheduled-notifications",
+            created.Result!.Value.GetProperty("taskName").GetString() + ".fired");
+        DateTime deadline = DateTime.UtcNow.AddSeconds(90);
+        while (!File.Exists(receipt) && DateTime.UtcNow < deadline)
+            await Task.Delay(500);
+        await Task.Delay(500);
+        using JsonDocument rang = JsonDocument.Parse(File.ReadAllText(receipt));
+        Assert.Multiple(() =>
+        {
+            Assert.That(rang.RootElement.GetProperty("notificationShown").GetBoolean(), Is.True, rang.RootElement.ToString());
+            Assert.That(rang.RootElement.GetProperty("sound").GetString(), Is.AnyOf("wav", "beep"));
+        });
+    }
+
     private sealed class Cleanup(string path) : IDisposable
     {
         public void Dispose()
