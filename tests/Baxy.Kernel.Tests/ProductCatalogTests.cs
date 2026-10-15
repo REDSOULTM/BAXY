@@ -251,12 +251,14 @@ public sealed class ProductCatalogTests
         Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
     }
 
-    // Goal v3 point 2: a scroll may name the element to bring into view (label), a text the field it sets (field) and
-    // whether it replaces its value (replace), a click what it writes over (consequence, only «overwrite»).
+    // Goal v3 point 2: a scroll may name the element to bring into view (label), a text whether it replaces the value of
+    // the field it sets (replace), a click what it writes over (consequence, only «overwrite»). Auditoría final 2, fila
+    // 12: a field named by its label (field) was resolved only by the retired mission and is no argument.
     [TestCase("input.scroll", """{"amount":3,"direction":"down","label":"Omega","window":4660}""", true)]
     [TestCase("input.scroll", """{"amount":3,"direction":"down","label":null}""", true)]
     [TestCase("input.scroll", """{"amount":3,"direction":"down","label":5}""", false)]
-    [TestCase("input.text.type", """{"text":"800","field":"Ancho","replace":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"800","index":2,"replace":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"800","field":"Ancho","index":2,"window":4660}""", false)]
     [TestCase("input.text.type", """{"text":"800","replace":"yes"}""", false)]
     // Ronda 19 (r17 t2-c13): the country the person's speech marks goes with the place as a declared hint.
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"ES"}""", true)]
@@ -265,7 +267,7 @@ public sealed class ProductCatalogTests
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"España"}""", false)]
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"FR"}""", false)]
     // Review of combos-galerias (finding 1): the entry of a list chosen by pattern, as the mind sends it.
-    [TestCase("input.text.type", """{"text":"Wingdings","field":"Fuente","replace":true,"entry":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"Wingdings","index":3,"replace":true,"entry":true,"window":4660}""", true)]
     [TestCase("input.text.type", """{"text":"Wingdings","entry":null}""", true)]
     [TestCase("input.text.type", """{"text":"Wingdings","entry":"yes"}""", false)]
     [TestCase("input.visible.click", """{"label":"Sí","consequence":"overwrite"}""", true)]

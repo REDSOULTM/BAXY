@@ -746,9 +746,8 @@ public static class ProductCatalog
                 // salvo que el paso declare que el teclado está en un campo de
                 // texto (text_field): fuera de uno borra lo seleccionado.
                 String("target", types: NullableString, values: ["message_composer", "text_field"]),
-                // La ventana de la misión (el hwnd de su última vista): la tecla
-                // va sólo a ella; si no está delante y no se la puede traer, nada
-                // se envía.
+                // La ventana mirada (el número que dio la vista): la tecla va sólo
+                // a ella; si no está delante y no se la puede traer, nada se envía.
                 Integer("window", 1, uint.MaxValue, types: NullableInteger),
             ], ["key"]),
             OperationRisks.LowReversible,
@@ -791,10 +790,10 @@ public static class ProductCatalog
                     // se desplaza ese control y no el centro de la ventana.
                     Integer("index", 0, VisibleViewNumbering.HighestIndex, types: NullableInteger),
                     // Goal v3 punto 2 (revelar): el elemento con este nombre que la
-                    // ventana de la misión tiene fuera de vista se trae a la vista por
+                    // ventana mirada tiene fuera de vista se trae a la vista por
                     // UI Automation, sin rueda ni puntero; la prueba es verlo.
                     String("label", types: NullableString, maximumUtf8Bytes: 256),
-                    // La ventana de la misión (el hwnd de la vista sobre la que se
+                    // La ventana mirada (el número que dio la vista sobre la que se
                     // decidió): la vista ya no la trae al frente, así que la rueda
                     // la trae ella; si Windows no se la da, no se mueve nada.
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),
@@ -818,10 +817,6 @@ public static class ProductCatalog
                     // patrón; si la lista no tiene una entrada así, no cambia nada y
                     // nunca se escribe como texto libre.
                     Boolean("entry", types: NullableBoolean),
-                    // Goal v3 punto 2 (formularios): el rótulo del campo que recibe el
-                    // valor («Ancho», «Nombre de archivo»); sin su índice en la vista
-                    // (index) no se escribe nada.
-                    String("field", types: NullableString, maximumUtf8Bytes: 256),
                     // El campo de la última vista que recibe el texto (goal v3,
                     // punto 0): se le entrega sin teclado ni primer plano
                     // (SetValue o mensajes a su ventana) cuando lo acepta.
@@ -831,15 +826,17 @@ public static class ProductCatalog
                     // releído; sin el campo mismo, por teclado no se envía nada.
                     Boolean("replace", types: NullableBoolean),
                     String("text", maximumUtf8Bytes: 8_192, nonWhitespace: true),
-                    // La ventana de la misión: el texto va dirigido sólo a ella
-                    // (hwnd, proceso y hora de creación); por teclado, sólo
-                    // mientras ella está delante, y si deja de estarlo, se para.
+                    // La ventana mirada: el texto va dirigido sólo a ella (hwnd,
+                    // proceso y hora de creación); por teclado, sólo mientras ella
+                    // está delante, y si deja de estarlo, se para. Con o sin ella, un
+                    // texto no lleva caracteres de control: un salto de línea es una
+                    // tecla (input.key.press).
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),
                 ],
                 ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
-            "Escribe texto Unicode literal en el control enfocado y verifica que Windows aceptó cada evento SendInput."),
+            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput."),
         Descriptor(
             "input.visible.click",
             // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): el clic por la
@@ -864,14 +861,13 @@ public static class ProductCatalog
                     // ExpandCollapse (la flecha de un botón dividido, un desplegable),
                     // nunca su Invoke; menu: su menú contextual (ShowContextMenu o
                     // WM_CONTEXTMENU); double: doble clic por mensaje. Sin él, el clic
-                    // de siempre. Los mismos guards de etiqueta y confirmación. (collapse y
-                    // dismiss, que sólo mandaba la misión retirada, salieron: auditoría K9.)
+                    // de siempre. Los mismos guards de etiqueta y confirmación.
                     String("manner", types: NullableString, values: ["double", "menu", "open"]),
                     // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el destino que se
                     // escribe en lo que el clic abre y cuyo resultado se elige por su
                     // nombre, en una sola ráfaga dentro de una pausa de la persona.
                     String("search", types: NullableString, maximumUtf8Bytes: 256),
-                    // La ventana de la misión (el hwnd de la vista sobre la que se
+                    // La ventana mirada (el número que dio la vista sobre la que se
                     // decidió): el clic la trae al frente y actúa sólo en ella; si
                     // Windows no se la da, no se pulsa nada.
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),

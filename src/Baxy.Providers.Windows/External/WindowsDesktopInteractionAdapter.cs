@@ -340,8 +340,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// classic control. Only what no message reaches (a chord, a field drawn by Chromium or XAML without a writable
     /// value) goes by the keyboard: the window is brought to the front and nothing is sent unless it holds it; a text
     /// stops the moment the window loses the front or the request is cancelled, and a text whose foreground process
-    /// changed while it was typed is not verified. A mission's text carries no line break or tab (each would be a key
-    /// of its own).
+    /// changed while it was typed is not verified. A text carries no line break or tab (each would be a key of its
+    /// own).
     /// Companion rule (GOAL_COMPUTER_USE_V3 point 0, fix 3): on the keyboard path the mission's window is brought to
     /// the front only inside a burst of the foreground lease, after a pause of the person; the keys stop at the
     /// person's first input, and the window in front and the cursor are given back afterwards (the receipt says
@@ -360,7 +360,6 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         int? index = null;
         bool replace = false;
         bool entry = false;
-        bool fieldNamed = false;
         try
         {
             if (typing)
@@ -394,19 +393,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     throw new InvalidDataException("entry");
                 entry = listed.ValueKind == JsonValueKind.True;
             }
-
-            fieldNamed = typing && arguments.TryGetProperty("field", out JsonElement label)
-                && label.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(label.GetString());
         }
         catch (InvalidDataException)
         {
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         }
 
-        // Goal v3 point 2 (forms): a field named by its label that the mission found in no view has no index; the text
-        // goes nowhere rather than to whatever holds the keyboard.
-        if (fieldNamed && index is null)
-            return ExternalJson.FailureBeforeEffect(operation, "input_field_not_found");
         // A replaced value needs the field it replaces: the window's own focus may be a document.
         if (replace && index is null)
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_replaceable");
@@ -415,9 +407,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         if (entry && (index is null || window == 0 || _delivery is null || _fields is null))
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_found");
 
-        // A field is named only inside a mission's window.
+        // A field (index) is named only inside a looked-at window. A text carries no control character, with or without
+        // a window (auditoría final 2, fila 11): a line break or a tab is a key of its own, and an Enter that sends what
+        // was written goes through input.key.press and its confirmation, never inside a text.
         if ((typing && text.Length > MaximumTypedText) || (!typing && !VirtualKeys.TryGetValue(key!, out chord!))
-            || (typing && window != 0 && text.Any(char.IsControl)) || (index is not null && window == 0))
+            || (typing && text.Any(char.IsControl)) || (index is not null && window == 0))
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         if (window != 0 && _delivery is not null)
         {
