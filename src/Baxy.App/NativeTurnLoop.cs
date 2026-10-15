@@ -28,9 +28,10 @@ internal sealed record NativeTurnStep(
 /// directly). The kernel's token is bound to the exact invocation it challenged; anything else the person asks drops it.
 /// </para>
 /// <para>
-/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: what it does on its own is only the
-/// low-risk; a high-risk call (by the catalog's risk) or one that would type or click in the person's windows is held
-/// as a proposal and never reaches the kernel until the person says «sí» to that exact invocation.
+/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call with one of the catalog's
+/// risks in <see cref="ProposedRisks"/>, or one that sends keys, clicks or commands to a window
+/// (<see cref="SendsInputToAWindow"/>), is held as a proposal and never reaches the kernel until the person says «sí» to
+/// that exact invocation; any other call runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -63,7 +64,7 @@ internal sealed class NativeTurnLoop
 
     private static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
 
-    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, comprar, instalar, cerrar con trabajo).
+    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, instalar, cerrar con trabajo).
     private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
     {
         "work_loss", "recoverable_delete", "external_communication", "installation",
@@ -133,6 +134,13 @@ internal sealed class NativeTurnLoop
             return;
         }
 
+        // The caller holds the turn: a confirmation the person's turn left waiting while the moment was gathered is
+        // theirs, and a heartbeat's call would drop it (audit 2, H4).
+        if (HasPendingConfirmation)
+        {
+            return;
+        }
+
         _beat = true;
         try
         {
@@ -197,7 +205,8 @@ internal sealed class NativeTurnLoop
             return await AnswerPendingAsync(arguments, started, cancellationToken);
         }
 
-        // Anything else the person asked for replaces a confirmation still waiting: it is dropped, never run later.
+        // Anything else the person asked for replaces a confirmation still waiting: it is dropped, never run later (a
+        // heartbeat never starts with one waiting, RunBeatAsync).
         DropPending();
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
@@ -229,34 +238,52 @@ internal sealed class NativeTurnLoop
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
             // Arguments that do not fit the operation are a result the model reads, with what it gave, so it can call
-            // again with the right ones; nothing here fills or rewrites them.
+            // again with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
-                "arguments_invalid", new JsonObject { ["argumentsGiven"] = arguments.DeepClone() }));
+                "arguments_invalid", WithArguments(new JsonObject(), "argumentsGiven", operation, arguments)));
         }
 
-        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || WritesInThePersonsWindow(operation)))
+        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation)))
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
             _proposalExpiresUtc = DateTimeOffset.UtcNow + ProposalLifetime;
             _askedInTurn = _turn;
-            return Record(operation, arguments, started, new JsonObject
+            return Record(operation, arguments, started, WithArguments(new JsonObject
             {
                 ["kind"] = "operation",
                 ["operation"] = operation,
                 ["status"] = "needs_confirmation",
-                ["next"] = "ask the person whether to do it and wait for their answer",
-                ["arguments"] = arguments.DeepClone(),
-            }.ToJsonString());
+                ["next"] = AskThePerson,
+            }, "arguments", operation, arguments).ToJsonString());
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, started, cancellationToken)
             ;
     }
 
-    private static bool WritesInThePersonsWindow(string operation) =>
+    // Every operation whose provider sends keys, clicks or window commands (SendInput, UI Automation's Invoke or
+    // SetValue, posted commands) to a window that may be the person's. The catalog has no typed fact for it yet, so the
+    // list is by name: an operation that starts sending input joins it.
+    private static bool SendsInputToAWindow(string operation) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
-            or "input.select.all" or "input.scroll" or "clipboard.copy" or "clipboard.paste" or "message.draft";
+            or "input.select.all" or "input.scroll" or "clipboard.copy" or "clipboard.paste" or "message.draft"
+            or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate";
+
+    // What the model reads with a call that waits for the person: who answers and how the answer comes back.
+    private const string AskThePerson =
+        "ask the person whether to do it; when they answer, call confirm_pending with their answer";
+
+    // A memory call's values never travel in an observation (it reaches the trace and the conductor's events).
+    private static JsonObject WithArguments(JsonObject facts, string key, string operation, JsonObject arguments)
+    {
+        if (!MemoryOperationProtector.IsMemoryOperation(operation))
+        {
+            facts[key] = arguments.DeepClone();
+        }
+
+        return facts;
+    }
 
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
@@ -270,7 +297,7 @@ internal sealed class NativeTurnLoop
                 ["operation"] = MindStep.ConfirmationAnswer,
                 ["status"] = "rejected",
                 ["error"] = "only_the_person_answers",
-                ["next"] = "ask the person whether to do it and wait for their answer",
+                ["next"] = AskThePerson,
             }.ToJsonString());
         }
 
@@ -376,15 +403,15 @@ internal sealed class NativeTurnLoop
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
             _askedInTurn = _turn;
-            return Record(operation, arguments, started, new JsonObject
+            JsonObject asked = WithArguments(new JsonObject
             {
                 ["kind"] = "operation",
                 ["operation"] = operation,
                 ["status"] = "needs_confirmation",
-                ["next"] = "ask the person whether to do it and wait for their answer",
-                ["arguments"] = arguments.DeepClone(),
-                ["effectStarted"] = challenge.ReconciliationRequired,
-            }.ToJsonString(), response);
+                ["next"] = AskThePerson,
+            }, "arguments", operation, arguments);
+            asked["effectStarted"] = challenge.ReconciliationRequired;
+            return Record(operation, arguments, started, asked.ToJsonString(), response);
         }
 
         Resolve(prepared, memory);
