@@ -34,10 +34,14 @@ def main() -> None:
     }
     summary = {"label": label, "parts": parts}
     if holdout:
-        counted = [parts[name] for name in ("decision", "e2e", "latido") if parts[name]]
-        ok = sum(part["ok"] for part in counted)
-        n = sum(part["n"] for part in counted)
-        summary["holdout_final"] = {"ok": ok, "n": n, "accuracy": round(ok / n, 4) if n else None}
+        missing = [name for name in ("decision", "e2e", "latido") if not parts[name]]
+        if missing:  # a part that did not run never leaves the holdout smaller in silence
+            summary["holdout_final"] = {"ok": None, "n": None, "accuracy": None, "missing": missing}
+        else:
+            counted = [parts[name] for name in ("decision", "e2e", "latido")]
+            ok = sum(part["ok"] for part in counted)
+            n = sum(part["n"] for part in counted)
+            summary["holdout_final"] = {"ok": ok, "n": n, "accuracy": round(ok / n, 4) if n else None}
     print(json.dumps(summary, ensure_ascii=False, indent=1))
     (RUNS / f"{label}-resumen.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
 

@@ -124,8 +124,6 @@ def beat_message(context: dict[str, Any]) -> str:
     windows = [f"{w.get('title', '')} ({w.get('process', '')})" for w in context.get("windows") or []]
     if windows:
         lines.append("Ventanas abiertas: " + "; ".join(windows))
-    if context.get("screen_text"):
-        lines.append("Texto en pantalla: " + str(context["screen_text"]))
     pc = context.get("pc") or {}
     if pc:
         lines.append("PC: " + ", ".join(f"{k}={v}" for k, v in pc.items() if v is not None))
@@ -288,7 +286,7 @@ class Mind:
         self.server.chat({"messages": [{"role": "system", "content": self._system()},
                                            {"role": "user", "content": "hola"}],
                               "tools": self.tools, "max_tokens": 1,
-                          "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.DECIDE, timeout=600)
+                          "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
@@ -341,19 +339,23 @@ class Mind:
         conv = [{"role": "user", "content": beat_message(context)}]
         # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.
         reply = self.server.chat({"messages": [{"role": "system", "content": self._system(beat=True)}, *conv],
-                                  "tools": self.tools, "tool_choice": "none", "max_tokens": 200,
+                                  "tools": self.tools, "tool_choice": "none", "max_tokens": 400,
                                   "chat_template_kwargs": {"enable_thinking": False},
                                   "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
                                   "seed": 0,
                                   "response_format": {"type": "json_schema",
-                                                      "json_schema": {"name": "latido", "schema": BEAT_DECISION}}},
-                                 slot=LlmServer.DECIDE)
+                                                      "json_schema": {"name": "latido", "schema": BEAT_DECISION}}})
         content = (reply["choices"][0]["message"].get("content") or "").strip()
         try:
             decision = json.loads(content)
         except json.JSONDecodeError:
-            decision = {}
-        intervene = bool(decision.get("intervenir")) if isinstance(decision, dict) else False
+            decision = None
+        if not isinstance(decision, dict) or not isinstance(decision.get("intervenir"), bool):
+            # Unreadable (cut by the token budget, or not the schema): said as what it is, never as a silence.
+            self._log("turn.beat.decide", started, reply, text="[latido]", content=content, failure="unreadable")
+            return {"type": "turn.result", "id": request_id, "kind": "failure", "failure": "beat_decision_unreadable",
+                    "operation": None, "arguments": None, "question": "", "reply": ""}
+        intervene = decision["intervenir"]
         self._log("turn.beat.decide", started, reply, text="[latido]", content=content, intervene=intervene)
         self._beat = {"conv": conv, "queue": [], "awaiting": None, "text": "[latido]", "beat": True,
                       "silent": not intervene}
@@ -462,20 +464,21 @@ class Mind:
             # XML text, which reached the person (llama.cpp #20837; 2026-10-15 E017). The prefix is read again only
             # for this last answer of an exhausted turn.
             del body["tools"], body["parallel_tool_calls"]
-        reply = self.server.chat(body, slot=LlmServer.DECIDE)
+        reply = self.server.chat(body)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
         for index, call in enumerate(message.get("tool_calls") or []):
             wire = call["function"]["name"]
+            raw = call["function"].get("arguments") or "{}"
             try:
-                arguments = json.loads(call["function"].get("arguments") or "{}")
+                arguments = json.loads(raw)
             except json.JSONDecodeError:
-                arguments = {}
-            arguments = arguments if isinstance(arguments, dict) else {}
-            if wire in {"ask_user", CONFIRM["function"]["name"]} or wire in self.wire_to_op:
-                calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire,
-                              "arguments": arguments})
+                arguments = None
+            if not isinstance(arguments, dict):
+                # Not an object: it travels as written, so the rejection says what the model gave.
+                arguments = {"unparsedArguments": raw}
+            calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire, "arguments": arguments})
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
@@ -498,7 +501,8 @@ class Mind:
                 turn["asked"] = call["id"]
                 result.update(kind="clarify", question=question)
         elif call is not None:
-            name = CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"] else self.wire_to_op[call["wire"]]
+            name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
+                    else self.wire_to_op.get(call["wire"], call["wire"]))
             turn["awaiting"] = call["id"]
             turn["calling"] = name
             arguments = {**call["arguments"], **self.constants.get(name, {})}

@@ -19,9 +19,8 @@ def main() -> int:
     if not gguf or not server_path:
         sys.stderr.write("baxy_mind_renew_failure: BAXY_MIND_LLM_GGUF and BAXY_MIND_LLAMA_SERVER are required\n")
         return 2
-    extra = os.environ.get("BAXY_RENEW_SERVER_ARGS", "").split()
     server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
-                       context=int(os.environ.get("BAXY_RENEW_CTX", "49152")), extra_args=extra)
+                       context=int(os.environ.get("BAXY_RENEW_CTX", "49152")))
     server.start()
     trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
     trace.parent.mkdir(parents=True, exist_ok=True)

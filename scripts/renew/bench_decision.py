@@ -23,8 +23,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 # The catalog changed after the banks were written (operations merged or replaced, 2026-10-15): an expectation that
 # names a retired operation is met by the operation that replaced it, with its fixed arguments and its arguments
-# renamed; an argument with no counterpart is not checked. An operation retired with nothing in its place (op null) is
-# met by saying so. Public, versioned, and applied without opening the banks.
+# renamed; an argument with no counterpart is not checked. A case whose operation was retired with nothing in its
+# place (op null) is left out of the count: no answer can be checked honestly against an action BAXY no longer has. Public, versioned, and applied without opening the banks.
 EQUIVALENCE_FILE = Path(__file__).with_name("catalog_equivalence.json")
 EQUIVALENCE = json.loads(EQUIVALENCE_FILE.read_text(encoding="utf-8")) if EQUIVALENCE_FILE.is_file() else {}
 
@@ -66,15 +66,17 @@ def judge(expect, result, arguments):
     kind = result.get("kind")
     if expect["kind"] == "call":
         op, args, fixed = current(expect["op"], expect.get("args"))
-        if op is None:  # retired with no replacement: BAXY says it does not do that
-            return kind == "conversation" and bool(str(result.get("reply", "")).strip())
+        if op is None:  # retired with no replacement: not counted
+            return None
         return (kind == "action" and result.get("operation") == op
                 and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
-        for candidate in expect["ops"]:
-            op, _, fixed = current(candidate)
-            if op is None and kind == "conversation":
-                return True
+        live = [current(candidate) for candidate in expect["ops"]]
+        if all(op is None for op, _, _ in live):
+            return None
+        for op, _, fixed in live:
+            if op is None:
+                continue
             if kind == "action" and result.get("operation") == op and all(
                     arg_ok(v, (arguments or {}).get(k)) for k, v in fixed.items()):
                 return True
@@ -149,21 +151,27 @@ def main():
             result, error = {"kind": "error"}, repr(exc)[:200]
         latency = time.monotonic() - started
         arguments = result.get("arguments") if result.get("operation") else None
-        ok = error is None and judge(case["expect"], result, arguments)
-        fam = by_family.setdefault(str(case.get("family", "-")), [0, 0])
-        fam[0] += ok
-        fam[1] += 1
-        rows.append({"id": case["id"], "family": case.get("family"), "ok": ok, "latency_s": round(latency, 3),
+        verdict = judge(case["expect"], result, arguments)
+        excluded = verdict is None
+        ok = error is None and bool(verdict)
+        if not excluded:
+            fam = by_family.setdefault(str(case.get("family", "-")), [0, 0])
+            fam[0] += ok
+            fam[1] += 1
+        rows.append({"id": case["id"], "family": case.get("family"), "ok": ok, "excluded": excluded,
+                     "latency_s": round(latency, 3),
                      "kind": result.get("kind"), "operation": result.get("operation"), "arguments": arguments,
                      "reply": result.get("reply") or result.get("question"), "error": error})
-        print(f"{case['id']} {'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
+        print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
               flush=True)
     measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
     server.close()
     latencies = [r["latency_s"] for r in rows]
+    counted = [r for r in rows if not r["excluded"]]
     summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
-               "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in rows),
-               "n": len(rows), "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4),
+               "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
+               "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
+               "excluded_retired": [r["id"] for r in rows if r["excluded"]],
                "p50": round(statistics.median(latencies), 3),
                "p90": round(statistics.quantiles(latencies, n=10)[8], 3) if len(latencies) > 2 else None,
                "warm_s": round(warm_s, 1), "families": by_family, "resources": measured}
