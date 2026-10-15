@@ -34,7 +34,8 @@ public sealed class PlaceTimeZoneResolverTests
     }
 
     [Test]
-    public async Task ASharedNameIsTheMostPopulatedPlaceWithOrWithoutItsArticle()
+    // The place is asked as the model wrote it (no word list strips «la»), and a shared name is the most populated.
+    public async Task ASharedNameIsTheMostPopulatedPlaceAskedAsWritten()
     {
         var asked = new List<string>();
         var resolver = new OpenMeteoPlaceTimeZoneResolver((url, _) =>
@@ -53,8 +54,7 @@ public sealed class PlaceTimeZoneResolverTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(asked, Has.Count.EqualTo(2));
-            Assert.That(asked, Has.Some.Contains("name=paz"));
+            Assert.That(asked, Has.Count.EqualTo(1));
             Assert.That(asked, Has.All.Contains("count=10"));
             Assert.That(reading.Place!.Name, Is.EqualTo("La Paz"));
             Assert.That(reading.Place.Country, Is.EqualTo("Bolivia"));

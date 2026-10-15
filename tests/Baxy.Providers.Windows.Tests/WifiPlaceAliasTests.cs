@@ -65,7 +65,7 @@ public sealed class WifiPlaceAliasTests
             CancellationToken.None);
         ExternalCapabilityReceipt answered = await adapter.InvokeAsync(
             "wifi.connect.named",
-            Json("""{"profileName":"fibertel","place":"casa"}"""),
+            Json("""{"profileName":"Fibertel-2G","place":"casa"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt remembered = await adapter.InvokeAsync(
             "wifi.connect.named",

@@ -801,8 +801,9 @@ internal sealed partial class WindowsCoreAudioPlatform
 
     /// <summary>
     /// «Spotify» ↔ spotify.exe, «Google Chrome» ↔ chrome.exe, «Opera GX» ↔ opera.exe:
-    /// a folded token of the application's display name (three letters or more)
-    /// equals the process name or one starts with the other.
+    /// a folded word of the application's name (three letters or more) is the process
+    /// name, exactly. A prefix is another application («Windows Media Player» is not
+    /// WindowsTerminal; BAXY Renew audit 2026-10-15).
     /// </summary>
     internal static bool ApplicationSessionMatches(string processName, string applicationName)
     {
@@ -820,9 +821,7 @@ internal sealed partial class WindowsCoreAudioPlatform
             {
                 continue;
             }
-            if (token == process
-                || process.StartsWith(token, StringComparison.Ordinal)
-                || token.StartsWith(process, StringComparison.Ordinal))
+            if (token == process)
             {
                 return true;
             }

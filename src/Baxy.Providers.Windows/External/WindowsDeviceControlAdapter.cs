@@ -1571,17 +1571,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string[] exact = profiles
             .Where(profile => FoldProfile(profile) == folded)
             .ToArray();
-        string[] matches = ordinal.Length > 0
-            ? ordinal
-            : exact.Length > 0
-                ? exact
-                : profiles.Where(profile =>
-                {
-                    string candidate = FoldProfile(profile);
-                    return folded.Length >= 3
-                        && (candidate.Contains(folded, StringComparison.Ordinal)
-                            || folded.Contains(candidate, StringComparison.Ordinal));
-                }).ToArray();
+        // The network the model named, exactly (or folded for case and accents): a part of a name is another network
+        // («MiCasa5G» is not «MiCasa»; BAXY Renew audit 2026-10-15). wifi.profile.list says which ones are saved.
+        string[] matches = ordinal.Length > 0 ? ordinal : exact;
         bool byPlace = false;
         if (matches.Length == 0 && place is not null)
         {

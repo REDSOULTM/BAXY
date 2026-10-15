@@ -514,11 +514,17 @@ public sealed class ExternalAdaptersTests
         string? model = Environment.GetEnvironmentVariable("BAXY_VISION_MODEL");
         try
         {
+            // A remote vision service would receive the person's screen: refused before anything is sent.
             Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "https://vision.example/v1/chat/completions");
             Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "vision-test");
             using var http = new HttpClient(new VisionHttpHandler());
             using var adapter = new CaptureVisionAdapter(directory.Path, http);
+            ExternalCapabilityReceipt remote = await adapter.InvokeAsync(
+                "vision.describe",
+                Json($$"""{"captureId":"{{captureId}}","prompt":"describe"}"""),
+                CancellationToken.None);
 
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8090/v1/chat/completions");
             ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
                 "vision.describe",
                 Json($$"""{"captureId":"{{captureId}}","prompt":"describe"}"""),
@@ -526,6 +532,8 @@ public sealed class ExternalAdaptersTests
 
             Assert.Multiple(() =>
             {
+                Assert.That(remote.Verified, Is.False);
+                Assert.That(remote.ErrorCode, Is.EqualTo("vision_provider_not_configured"));
                 Assert.That(receipt.Verified, Is.True);
                 Assert.That(receipt.EffectObserved, Is.False);
                 Assert.That(receipt.Result?.GetProperty("description").GetString(),
@@ -2340,23 +2348,31 @@ public sealed class ExternalAdaptersTests
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
             "{\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
+            "{\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
             "",
             "{\"connected\":true,\"profile\":\"Galaxy Phone 5G 0000\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner, delays.DelayAsync);
 
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+        // A part of the name is another network: nothing is connected (BAXY Renew audit 2026-10-15).
+        ExternalCapabilityReceipt partial = await adapter.InvokeAsync(
             "wifi.connect.named",
             Json("""{"profileName":"galaxy"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "wifi.connect.named",
+            Json("""{"profileName":"galaxy phone 5g 0000"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
         {
+            Assert.That(partial.Verified, Is.False);
+            Assert.That(partial.ErrorCode, Is.EqualTo("wifi_profile_not_found"));
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("connected").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("Galaxy"));
-            Assert.That(runner.Calls, Is.EqualTo(3));
+            Assert.That(runner.Calls, Is.EqualTo(4));
             Assert.That(delays.Calls, Is.Zero);
         });
     }
@@ -2632,8 +2648,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
             Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("hoteles en Madrid"));
             Assert.That(receipt.Result?.TryGetProperty("near", out _), Is.False);
-            Assert.That(handler.Asked, Has.None.Matches<Uri>(uri => uri.Host.Contains("ipwho", StringComparison.Ordinal)
-                || uri.Host.Contains("ip-api", StringComparison.Ordinal)));
+            Assert.That(handler.Asked, Has.None.Matches<Uri>(uri => uri.Host.Contains("ipwho", StringComparison.Ordinal)));
         });
     }
 
@@ -5667,8 +5682,7 @@ public sealed class ExternalAdaptersTests
         {
             Uri uri = request.RequestUri!;
             Asked.Add(uri);
-            bool locator = uri.Host.Contains("ipwho", StringComparison.Ordinal)
-                || uri.Host.Contains("ip-api", StringComparison.Ordinal);
+            bool locator = uri.Host.Contains("ipwho", StringComparison.Ordinal);
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(locator ? located : page, Encoding.UTF8,
@@ -6144,7 +6158,7 @@ public sealed class ExternalAdaptersTests
             string body = await request.Content!.ReadAsStringAsync(cancellationToken);
             Assert.Multiple(() =>
             {
-                Assert.That(request.RequestUri?.Scheme, Is.EqualTo("https"));
+                Assert.That(request.RequestUri?.IsLoopback, Is.True);
                 Assert.That(body, Does.Contain("data:image/bmp;base64,"));
                 Assert.That(body, Does.Contain("vision-test"));
             });

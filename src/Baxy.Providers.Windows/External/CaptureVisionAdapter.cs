@@ -388,11 +388,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        string? endpoint = Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT");
-        string? model = Environment.GetEnvironmentVariable("BAXY_VISION_MODEL");
-        if (!Uri.TryCreate(endpoint, UriKind.Absolute, out Uri? uri)
-            || uri.Scheme != Uri.UriSchemeHttps
-            || string.IsNullOrWhiteSpace(model))
+        if (!LocalVisionEndpoint.TryResolve(out Uri uri, out string model))
         {
             return ExternalJson.Failure(operation, "vision_provider_not_configured");
         }

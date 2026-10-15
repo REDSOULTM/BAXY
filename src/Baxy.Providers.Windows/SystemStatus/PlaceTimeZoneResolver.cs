@@ -50,17 +50,14 @@ public sealed class OpenMeteoPlaceTimeZoneResolver : IPlaceTimeZoneResolver, IDi
             return new PlaceTimeZoneReading(new PlaceTimeZone(named, string.Empty, zone, "time_zone_id"), null);
         }
 
-        // «La Paz», «la India»: a Spanish article may belong to the name or not, and
-        // a name is shared by many places («La Paz» of Bolivia and of Mexico). Both
-        // spellings are asked and the most populated place is the one meant.
-        string[] names = ArticleLess(named) is { } bare ? [named, bare] : [named];
-        var candidates = new List<GeocodedPlace>();
+        // The place is asked as the model wrote it (BAXY Renew audit 2026-10-15: no word list strips «la», «el»). A name
+        // shared by many places («París» of France and of Texas) is the most populated one, as a geocoder answers it,
+        // and the reading names that place and its country.
+        IReadOnlyList<GeocodedPlace> candidates;
         try
         {
-            IReadOnlyList<GeocodedPlace>[] found = await Task.WhenAll(names.Select(
-                name => OpenMeteoGeocoder.SearchAsync(name, 10, FetchAsync, cancellationToken))).ConfigureAwait(false);
-            foreach (IReadOnlyList<GeocodedPlace> places in found)
-                candidates.AddRange(places);
+            candidates = await OpenMeteoGeocoder.SearchAsync(named, 10, FetchAsync, cancellationToken)
+                .ConfigureAwait(false);
         }
         catch (Exception exception) when (
             exception is HttpRequestException or JsonException or InvalidOperationException
@@ -83,16 +80,6 @@ public sealed class OpenMeteoPlaceTimeZoneResolver : IPlaceTimeZoneResolver, IDi
         return new PlaceTimeZoneReading(
             new PlaceTimeZone(geocoded.Name, geocoded.Country, placeZone, "named_place_geocoded"),
             null);
-    }
-
-    private static string? ArticleLess(string name)
-    {
-        foreach (string article in new[] { "la ", "el ", "los ", "las " })
-        {
-            if (name.StartsWith(article, StringComparison.OrdinalIgnoreCase) && name.Length > article.Length + 1)
-                return name[article.Length..].Trim();
-        }
-        return null;
     }
 
     private Task<string> FetchAsync(string url, CancellationToken cancellationToken) =>

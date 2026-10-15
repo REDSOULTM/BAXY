@@ -51,14 +51,8 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // («chrome_not_installed», «edge_cdp_url_postread»), never Opera for another browser.
         string family = browser is "opera" or "opera_gx" ? "opera" : browser;
         string requestedBrowser = browser;
-        // WEB1797 «busca operagx en opera»: the person names the Opera family;
-        // when plain Opera is absent and Opera GX is installed, the navigation
-        // runs in Opera GX and the receipt names the browser actually used.
-        // A session already held for «opera» is Opera: it is never redirected
-        // (an injected session, or one this adapter opened when Opera resolved).
-        if (browser == "opera" && !_browsers.ContainsKey("opera")
-            && ResolveBrowser("opera") is null && ResolveBrowser("opera_gx") is not null)
-            browser = "opera_gx";
+        // The browser the model named is the one used: «opera» is Opera, «opera_gx» is Opera GX, and an absent one
+        // fails as not installed (BAXY Renew audit 2026-10-15; it was Opera GX in place of Opera, WEB1797).
         // M122 (owner 2026-10-02): the browser named is the person's own default
         // one, so the page opens there, in their profile and signed-in sessions,
         // not in a private profile of the same browser.

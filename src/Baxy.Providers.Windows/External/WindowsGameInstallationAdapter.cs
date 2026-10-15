@@ -211,10 +211,9 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
             ? value.GetString() ?? string.Empty
             : string.Empty;
 
-    private static bool TitleMatches(string candidate, string requested) =>
-        candidate == requested
-        || candidate.Contains(requested, StringComparison.Ordinal)
-        || requested.Contains(candidate, StringComparison.Ordinal);
+    // The game the model named, folded for case, accents and punctuation, and nothing else: «Portal» is not
+    // «Portal 2» (BAXY Renew audit 2026-10-15).
+    private static bool TitleMatches(string candidate, string requested) => candidate == requested;
 
     private static string Fold(string value)
     {
