@@ -589,6 +589,11 @@ public static class OperationArgumentValidator
             expected += ", not empty";
         }
 
+        if (contract.MinimumLength is int minimumLength and > 0)
+        {
+            expected += $", at least {minimumLength.ToString(CultureInfo.InvariantCulture)} characters";
+        }
+
         if (contract.MaximumUtf8Bytes is int bytes)
         {
             expected += $", at most {bytes.ToString(CultureInfo.InvariantCulture)} bytes";
@@ -602,6 +607,20 @@ public static class OperationArgumentValidator
         {
             expected += $", {contract.MinimumItems?.ToString(CultureInfo.InvariantCulture) ?? "0"}"
                 + $" to {contract.MaximumItems?.ToString(CultureInfo.InvariantCulture) ?? "any"} items";
+        }
+
+        if (contract.Types.HasFlag(OperationJsonType.Array) && contract.ItemTypes != OperationJsonType.None)
+        {
+            expected += contract.ItemTypes.HasFlag(OperationJsonType.String) ? ", each item text" : ", each item a value";
+            if (contract.ItemNonWhitespace)
+            {
+                expected += " not empty";
+            }
+
+            if (contract.ItemMaximumUtf8Bytes is int itemBytes)
+            {
+                expected += $" of at most {itemBytes.ToString(CultureInfo.InvariantCulture)} bytes";
+            }
         }
 
         return expected;

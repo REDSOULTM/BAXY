@@ -264,7 +264,7 @@ internal sealed class MemoryOperationProtector
             return value.GetString()!;
         }
 
-        throw new MemoryRequestRefusedException("memory_argument_missing", $"The argument {name} is missing or empty.");
+        throw new MemoryRequestRefusedException("memory_argument_missing", $"The argument {name} must be non-empty text.");
     }
 
     private static bool RequiredBoolean(JsonElement arguments, string name)
@@ -275,7 +275,7 @@ internal sealed class MemoryOperationProtector
             return value.GetBoolean();
         }
 
-        throw new MemoryRequestRefusedException("memory_argument_missing", $"The argument {name} is missing or empty.");
+        throw new MemoryRequestRefusedException("memory_argument_missing", $"The argument {name} must be true or false.");
     }
 
     private static void EnsureNoReservedPayloadProperties(JsonObject arguments)
