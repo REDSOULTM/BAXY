@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace Baxy.App;
 
 /// <summary>
-/// Remembers the SHA-256 of large runtime files (model, speech, interpreter)
+/// Remembers the SHA-256 of large runtime files (model, server, interpreter)
 /// by (path, size, creation and last-write time), so a start whose files did
 /// not change since the last verified start does not read gigabytes again.
 /// The store lives beside the runtime registration, which already names the
@@ -23,18 +23,15 @@ internal sealed class RuntimeFileHashCache
 
     private readonly string? _storePath;
     private readonly Func<string, string> _hasher;
-    private readonly Func<DateTime> _utcNow;
     private readonly Dictionary<string, Entry> _entries = new(StringComparer.OrdinalIgnoreCase);
     private bool _dirty;
 
     internal RuntimeFileHashCache(
         string? storePath,
-        Func<string, string> hasher,
-        Func<DateTime>? utcNow = null)
+        Func<string, string> hasher)
     {
         _storePath = storePath;
         _hasher = hasher;
-        _utcNow = utcNow ?? (static () => DateTime.UtcNow);
         Load();
     }
 
@@ -60,7 +57,7 @@ internal sealed class RuntimeFileHashCache
             return known.Sha256;
         }
 
-        DateTime hashedAt = _utcNow();
+        DateTime hashedAt = DateTime.UtcNow;
         string digest = _hasher(path);
         Entry? after = Identify(new FileInfo(path));
         if (identity is not null

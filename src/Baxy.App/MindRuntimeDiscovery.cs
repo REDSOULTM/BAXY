@@ -1,19 +1,16 @@
 using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 
 namespace Baxy.App;
 
 internal sealed record MindRuntimeConfiguration(
-    string Source,
     string Python,
     string PythonPath,
     string Gguf,
     string LlamaServer,
-    int GpuLayers,
-    bool WakeOnStart);
+    int GpuLayers);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
     string? Disabled,
@@ -21,28 +18,25 @@ internal sealed record MindRuntimeEnvironmentSnapshot(
     string? PythonPath,
     string? Gguf,
     string? LlamaServer,
-    string? GpuLayers,
-    string? WakeOnStart,
-    string? Offline,
-    string? AssetDescriptor);
+    string? GpuLayers);
 
 internal sealed record MindRuntimeDiscoveryResult(
     MindRuntimeEnvironmentSnapshot Environment,
     MindRuntimeConfiguration? Runtime,
-    AssetManifestDiagnostic? AssetDiagnostic,
-    bool UpdateAssetDiagnostic,
     bool CanConfigure,
     bool Disabled);
 
 /// <summary>
 /// Loads a deliberately registered local mind runtime. The registration is
-/// fail-closed, and an explicit environment configuration always wins.
+/// fail-closed, and an explicit environment configuration always wins. Only what
+/// the App publishes (interpreter, mind path, model, server, GPU layers) is
+/// verified; the voice entries (stt, wake, tts) and the adapters belong to the
+/// launcher (scripts/run_renew.cmd) and are accepted by shape only.
 /// </summary>
 internal static class MindRuntimeDiscovery
 {
     private const string RegistrationSchema = "baxy-mind-runtime-v1";
     private const int MaximumRegistrationBytes = 16 * 1024;
-    private const int MaximumWakeManifestBytes = 64 * 1024;
 
     private static readonly string[] RegistrationProperties =
     [
@@ -64,17 +58,7 @@ internal static class MindRuntimeDiscovery
         "wake_on_start",
     ];
 
-    private static readonly string[] SttFiles =
-    [
-        "encoder.int8.onnx",
-        "decoder.int8.onnx",
-        "joiner.int8.onnx",
-        "tokens.txt",
-    ];
-
     private static readonly object ApplyLock = new();
-
-    internal static AssetManifestDiagnostic? LastAssetDiagnostic { get; private set; }
 
     internal static MindRuntimeDiscoveryResult DiscoverVerified() =>
         DiscoverVerified(DefaultRegistrationPath());
@@ -91,8 +75,6 @@ internal static class MindRuntimeDiscovery
             return new(
                 environment,
                 Runtime: null,
-                AssetDiagnostic: null,
-                UpdateAssetDiagnostic: false,
                 CanConfigure: false,
                 Disabled: true);
         }
@@ -106,32 +88,15 @@ internal static class MindRuntimeDiscovery
             return new(
                 environment,
                 Runtime: null,
-                AssetDiagnostic: null,
-                UpdateAssetDiagnostic: false,
                 CanConfigure: false,
                 Disabled: false);
         }
 
         MindRuntimeConfiguration? runtime = LoadRegistered(registrationPath);
-        if (runtime is null)
-        {
-            AssetManifestDiagnostic diagnostic =
-                AssetManifestDiscovery.InspectRequiredAssets(environment.AssetDescriptor);
-            return new(
-                environment,
-                Runtime: null,
-                diagnostic,
-                UpdateAssetDiagnostic: true,
-                CanConfigure: hasExplicitPython,
-                Disabled: false);
-        }
-
         return new(
             environment,
             runtime,
-            AssetDiagnostic: null,
-            UpdateAssetDiagnostic: true,
-            CanConfigure: true,
+            CanConfigure: runtime is not null || hasExplicitPython,
             Disabled: false);
     }
 
@@ -147,10 +112,6 @@ internal static class MindRuntimeDiscovery
                 return false;
             }
 
-            if (discovery.UpdateAssetDiagnostic)
-            {
-                LastAssetDiagnostic = discovery.AssetDiagnostic;
-            }
             if (!discovery.CanConfigure)
             {
                 return false;
@@ -171,15 +132,6 @@ internal static class MindRuntimeDiscovery
             SetIfMissing(
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
-            // The voice models (BAXY_RENEW_STT_DIR, _WAKE_DIR, _TTS_MODEL, _PIPER_DIR) are the
-            // launcher's (scripts/run_renew.cmd); the registration's stt, wake and adapter
-            // entries are still verified by hash, but nothing of them is published.
-            if (runtime.WakeOnStart)
-            {
-                SetIfMissing("BAXY_VOICE_WAKE_ON_START", "1");
-            }
-
-            SetIfMissing("HF_HUB_OFFLINE", "1");
             if (string.IsNullOrWhiteSpace(discovery.Environment.Python))
             {
                 SetIfMissing(MindSidecarClient.PythonEnvironmentVariable, runtime.Python);
@@ -197,18 +149,12 @@ internal static class MindRuntimeDiscovery
             : Path.Combine(localData, "BAXYRuntime", "mind-runtime-v1.json");
     }
 
-    internal static MindRuntimeConfiguration? LoadRegistered(string manifestPath) =>
-        LoadRegistered(manifestPath, hasher: null);
-
     /// <summary>
-    /// Every declared asset is still compared with its registered SHA-256; a
+    /// Every published asset is still compared with its registered SHA-256; a
     /// file whose size and timestamps did not change since a verified start is
-    /// not read again (see <see cref="RuntimeFileHashCache"/>). Tests inject the
-    /// hasher to count the reads.
+    /// not read again (see <see cref="RuntimeFileHashCache"/>).
     /// </summary>
-    internal static MindRuntimeConfiguration? LoadRegistered(
-        string manifestPath,
-        Func<string, string>? hasher)
+    private static MindRuntimeConfiguration? LoadRegistered(string manifestPath)
     {
         if (string.IsNullOrWhiteSpace(manifestPath)
             || !Path.IsPathFullyQualified(manifestPath))
@@ -224,7 +170,7 @@ internal static class MindRuntimeDiscovery
                 return null;
             }
 
-            RuntimeFileHashCache hashes = RuntimeFileHashCache.ForRegistration(info.FullName, hasher ?? FileSha256);
+            RuntimeFileHashCache hashes = RuntimeFileHashCache.ForRegistration(info.FullName, FileSha256);
             MindRuntimeConfiguration? runtime = LoadRegistered(info, hashes);
             hashes.Save();
             return runtime;
@@ -282,90 +228,30 @@ internal static class MindRuntimeDiscovery
                 RequiredString(root, "llama_server"),
                 "llama-server.exe",
                 RequiredString(root, "llama_server_sha256"));
-            string? stt = ExistingDirectory(RequiredString(root, "stt_dir"));
             if (python is null
                 || pythonPath is null
                 || gguf is null
                 || !gguf.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase)
                 || server is null
-                || stt is null
-                || !File.Exists(Path.Combine(pythonPath, "baxy_mind", "__main__.py"))
-                || !MatchesSttHash(hashes, stt, RequiredString(root, "stt_sha256")))
+                || !File.Exists(Path.Combine(pythonPath, "baxy_mind", "__main__.py")))
             {
                 return null;
             }
 
             JsonElement nglElement = root.GetProperty("ngl");
-            JsonElement wakeElement = root.GetProperty("wake_on_start");
             if (nglElement.ValueKind != JsonValueKind.Number
                 || !nglElement.TryGetInt32(out int ngl)
-                || ngl is < 0 or > 999
-                || wakeElement.ValueKind is not JsonValueKind.True and not JsonValueKind.False)
-            {
-                return null;
-            }
-            bool wakeOnStart = wakeElement.GetBoolean();
-            JsonElement wakeManifestElement = root.GetProperty("wake_manifest");
-            JsonElement wakeHashElement = root.GetProperty("wake_manifest_sha256");
-            if (wakeManifestElement.ValueKind == JsonValueKind.Null
-                && wakeHashElement.ValueKind == JsonValueKind.Null)
-            {
-                if (wakeOnStart)
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                if (wakeManifestElement.ValueKind != JsonValueKind.String
-                    || wakeHashElement.ValueKind != JsonValueKind.String)
-                {
-                    return null;
-                }
-
-                string? wakeManifest = ExistingFile(
-                    hashes,
-                    wakeManifestElement.GetString(),
-                    expectedName: null,
-                    wakeHashElement.GetString());
-                if (wakeManifest is null || !HasSupportedWakeManifestSchema(wakeManifest))
-                {
-                    return null;
-                }
-            }
-
-            JsonElement ttsModelElement = root.GetProperty("tts_model");
-            JsonElement ttsHashElement = root.GetProperty("tts_sha256");
-            if (ttsModelElement.ValueKind == JsonValueKind.Null
-                && ttsHashElement.ValueKind == JsonValueKind.Null)
-            {
-                // Neural TTS is optional: SAPI remains the documented fallback.
-            }
-            else if (ttsModelElement.ValueKind != JsonValueKind.String
-                || ttsHashElement.ValueKind != JsonValueKind.String
-                || ExistingFile(
-                    hashes,
-                    ttsModelElement.GetString(),
-                    expectedName: null,
-                    ttsHashElement.GetString()) is null)
-            {
-                return null;
-            }
-
-            if (!IsBoundAdapter(hashes, root, "cpu_prose_adapter", "baxy-cpu-prose-adapter-v1")
-                || !IsBoundAdapter(hashes, root, "decider_adapter", "baxy-decider-adapter-v1"))
+                || ngl is < 0 or > 999)
             {
                 return null;
             }
 
             return new MindRuntimeConfiguration(
-                info.FullName,
                 python,
                 pythonPath,
                 gguf,
                 server,
-                ngl,
-                wakeOnStart);
+                ngl);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -378,28 +264,6 @@ internal static class MindRuntimeDiscovery
     }
 
     private static readonly string[] OptionalAdapterProperties = ["cpu_prose_adapter", "decider_adapter"];
-
-    // A LoRA the manifest binds by hash to its own base GGUF; absent is valid, malformed rejects the manifest.
-    private static bool IsBoundAdapter(RuntimeFileHashCache hashes, JsonElement root, string property, string schema)
-    {
-        if (!root.TryGetProperty(property, out JsonElement adapter))
-        {
-            return true;
-        }
-        if (adapter.ValueKind != JsonValueKind.Object
-            || !HasExactProperties(adapter, ["schema", "gguf", "gguf_sha256", "base_gguf_sha256"])
-            || RequiredString(adapter, "schema") != schema
-            || RequiredString(adapter, "base_gguf_sha256") != RequiredString(root, "gguf_sha256"))
-        {
-            return false;
-        }
-        string? adapterFile = ExistingFile(
-            hashes,
-            RequiredString(adapter, "gguf"),
-            expectedName: null,
-            RequiredString(adapter, "gguf_sha256"));
-        return adapterFile is not null && adapterFile.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase);
-    }
 
     private static string? ExistingFile(
         RuntimeFileHashCache hashes,
@@ -427,67 +291,12 @@ internal static class MindRuntimeDiscovery
         return canonical;
     }
 
-    private static bool HasSupportedWakeManifestSchema(string path)
-    {
-        var info = new FileInfo(path);
-        if (!info.Exists || info.Length is <= 0 or > MaximumWakeManifestBytes)
-        {
-            return false;
-        }
-
-        using FileStream stream = info.OpenRead();
-        using JsonDocument document = JsonDocument.Parse(
-            stream,
-            new JsonDocumentOptions
-            {
-                AllowTrailingCommas = false,
-                CommentHandling = JsonCommentHandling.Disallow,
-                MaxDepth = 8,
-            });
-        if (document.RootElement.ValueKind != JsonValueKind.Object
-            || !document.RootElement.TryGetProperty("schema", out JsonElement schema)
-            || schema.ValueKind != JsonValueKind.String)
-        {
-            return false;
-        }
-
-        return schema.GetString() is "baxy-wakeword-v1" or "baxy-wake-cascade-v1";
-    }
-
-    private static bool MatchesSttHash(RuntimeFileHashCache hashes, string directory, string? expectedSha256)
-    {
-        if (!IsSha256(expectedSha256))
-        {
-            return false;
-        }
-
-        var fingerprint = new StringBuilder();
-        foreach (string name in SttFiles)
-        {
-            string path = Path.Combine(directory, name);
-            if (!File.Exists(path))
-            {
-                return false;
-            }
-            fingerprint.Append(name)
-                .Append(':')
-                .Append(hashes.Sha256(path))
-                .Append('\n');
-        }
-
-        byte[] digest = SHA256.HashData(Encoding.UTF8.GetBytes(fingerprint.ToString()));
-        return string.Equals(
-            Convert.ToHexStringLower(digest),
-            expectedSha256,
-            StringComparison.Ordinal);
-    }
-
     /// <summary>
     /// The App's own reading of a runtime file: the whole stream is hashed
     /// here, never taken from a launcher or a manifest. The cache only spares
     /// this read for a file whose identity did not change.
     /// </summary>
-    internal static string FileSha256(string path)
+    private static string FileSha256(string path)
     {
         using FileStream stream = File.OpenRead(path);
         return Convert.ToHexStringLower(SHA256.HashData(stream));
@@ -592,10 +401,7 @@ internal static class MindRuntimeDiscovery
             Environment.GetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable),
             Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
             Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER"),
-            Environment.GetEnvironmentVariable("BAXY_MIND_NGL"),
-            Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
-            Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
-            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"));
+            Environment.GetEnvironmentVariable("BAXY_MIND_NGL"));
 
     private static bool EnvironmentMatches(MindRuntimeEnvironmentSnapshot expected) =>
         string.Equals(
@@ -621,18 +427,6 @@ internal static class MindRuntimeDiscovery
         && string.Equals(
             Environment.GetEnvironmentVariable("BAXY_MIND_NGL"),
             expected.GpuLayers,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
-            expected.WakeOnStart,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
-            expected.Offline,
-            StringComparison.Ordinal)
-        && string.Equals(
-            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),
-            expected.AssetDescriptor,
             StringComparison.Ordinal);
 
     private static bool IsDisabled(string? value) =>
