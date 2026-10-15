@@ -55,74 +55,9 @@ internal static class ModelMessageComposer
             facts["traceId"] = traceId;
         }
 
-        var forbiddenResponseTerms = new JsonArray();
-        foreach (string term in UserMessagePolicy.ForbiddenResponseTerms)
-        {
-            forbiddenResponseTerms.Add(term);
-        }
-        facts["forbiddenResponseTerms"] = forbiddenResponseTerms;
+        // BAXY Renew: the facts are what was verified, nothing more. No terms extracted by readers are imposed on the
+        // model's wording (forbidden terms, required words, actions or facts).
         facts["route"] = PublicResponseRoute.FromDraft(draft);
-        if (UserMessagePolicy.IsStructuredFacts(draft.Source)
-            && draft.Intent == "confirmation")
-        {
-            var requiredWords = new JsonArray();
-            foreach (string word in UserMessagePolicy.RequiredConfirmationWords(draft.Source))
-            {
-                requiredWords.Add(word);
-            }
-
-            facts["requiredResponseWords"] = requiredWords;
-        }
-
-        if (draft.Intent is "status" or "error")
-        {
-            facts["mustNotAskFollowUp"] = true;
-            IReadOnlyList<string> requiredActions =
-                UserMessagePolicy.RequiredBaxyActions(draft.Source);
-            if (requiredActions.Count > 0)
-            {
-                facts["actor"] = "BAXY (yo, primera persona)";
-                facts["mustPreserveFirstPerson"] = true;
-                facts["requiredAction"] = requiredActions[0];
-                var actions = new JsonArray();
-                foreach (string action in requiredActions)
-                {
-                    actions.Add(action);
-                }
-
-                facts["requiredActions"] = actions;
-            }
-            IReadOnlyList<string> requiredFacts =
-                UserMessagePolicy.RequiredFactualFragments(draft.Source);
-            IReadOnlyList<string> requiredLiteralFacts =
-                UserMessagePolicy.RequiredLiteralFacts(draft.Source);
-            if (requiredFacts.Count > 0 || requiredLiteralFacts.Count > 0)
-            {
-                var factualFragments = new JsonArray();
-                foreach (string fact in requiredFacts.Concat(requiredLiteralFacts))
-                {
-                    factualFragments.Add(fact);
-                }
-
-                facts["requiredFacts"] = factualFragments;
-                if (draft.Intent == "error" && requiredFacts.Count > 0)
-                {
-                    facts["partialMission"] = true;
-                }
-            }
-        }
-        else if (draft.Intent == "confirmation")
-        {
-            var requiredWords = new JsonArray();
-            foreach (string word in UserMessagePolicy.RequiredConfirmationWords(
-                         draft.Source))
-            {
-                requiredWords.Add(word);
-            }
-
-            facts["requiredResponseWords"] = requiredWords;
-        }
-
         return facts;
     }
 

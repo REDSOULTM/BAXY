@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import os
 import sys
-import threading
 from pathlib import Path
 
 from . import protocol
@@ -47,11 +46,21 @@ def main() -> int:
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)
+                    # Ready means ready: the model is loaded and the catalog prefix is cached before the App is told so
+                    # (a first turn sent earlier waited behind the warm-up and timed out, 2026-10-15).
+                    try:
+                        server.wait_ready(600)
+                        mind.warm()
+                    except Exception as error:  # noqa: BLE001 - told to the App as a startup failure
+                        reply = protocol.error_reply(request_id, "request_failed", "catalog_runtime_failure")
+                        reply["startup"] = server.startup_failure(error)
+                        protocol.write_message(reply)
+                        continue
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
-                    threading.Thread(target=mind.warm, daemon=True).start()
                 elif kind == "turn.decide":
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
-                                                       list(message.get("history") or [])))
+                                                       list(message.get("history") or []),
+                                                       bool(message.get("pendingClarification"))))
                 elif kind == "turn.continue":
                     protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or "")))
                 elif kind == "arguments":

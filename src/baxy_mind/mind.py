@@ -63,6 +63,43 @@ ASK_USER = {
 }
 
 
+# What the model sees of an argument schema: meaning only. Validation-only keywords stay with the kernel, which
+# validates the exact schema anyway; contract constants (a const or a one-value enum) are not the model's to write and
+# are added back when its call is handed to the App (measured 2026-10-15: −4k tokens of prefix; memory.save wrote 114
+# output tokens, its constants among them).
+_MEANING_KEYS = {"type", "properties", "required", "items", "enum", "description", "minimum", "maximum", "anyOf",
+                 "oneOf", "default", "format"}
+
+
+def _model_schema(schema: Any, constants: dict[str, Any] | None = None) -> Any:
+    if not isinstance(schema, dict):
+        return schema
+    out: dict[str, Any] = {}
+    for key, value in schema.items():
+        if key not in _MEANING_KEYS:
+            continue
+        if key == "type" and isinstance(value, list):
+            kinds = [kind for kind in value if kind != "null"]
+            value = kinds[0] if len(kinds) == 1 else kinds
+        if key == "properties" and isinstance(value, dict):
+            props = {}
+            for name, prop in value.items():
+                if constants is not None and isinstance(prop, dict) and (
+                        "const" in prop or (isinstance(prop.get("enum"), list) and len(prop["enum"]) == 1)):
+                    constants[name] = prop["const"] if "const" in prop else prop["enum"][0]
+                    continue
+                props[name] = _model_schema(prop)
+            value = props
+        elif key == "items":
+            value = _model_schema(value)
+        elif key in {"anyOf", "oneOf"} and isinstance(value, list):
+            value = [_model_schema(item) for item in value]
+        out[key] = value
+    if constants and isinstance(out.get("required"), list):
+        out["required"] = [name for name in out["required"] if name not in constants]
+    return out
+
+
 def _env_float(name: str, default: float) -> float:
     try:
         return float(os.environ.get(name, default))
@@ -78,6 +115,8 @@ class Mind:
         self.wire_to_op: dict[str, str] = {}
         self.op_to_tool: dict[str, dict[str, Any]] = {}
         self._decided: dict[str, dict[str, Any]] = {}
+        self._turn: dict[str, Any] | None = None
+        self.constants: dict[str, dict[str, Any]] = {}
         language = os.environ.get("BAXY_RENEW_DESCRIPTIONS", "en")
         self.english = (
             json.loads(_ENGLISH_FILE.read_text(encoding="utf-8"))["tools"]
@@ -101,17 +140,19 @@ class Mind:
         for cap in capabilities:
             name = str(cap.get("name") or "")
             spanish = _SPANISH.get(name) or str(cap.get("description") or "")
-            if spanish.startswith("Paso interno"):
-                continue  # internal steps are the kernel's, never a choice of the model
+            if spanish.startswith("Paso interno") or name == "mission.computer.use":
+                continue  # internal steps are the kernel's; screen missions are not served by this mind
             description = self.english.get(name) or spanish
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
                 description += " The person's game library: " + "; ".join(games) + "."
             raw = cap.get("argumentsSchema")
-            schema = {k: v for k, v in (raw if isinstance(raw, dict) else {}).items()
-                      if k not in {"$schema", "$id", "title"}}
-            schema.setdefault("type", "object")
+            constants: dict[str, Any] = {}
+            schema = _model_schema(raw if isinstance(raw, dict) else {}, constants)
+            if constants:
+                self.constants[name] = constants
+            schema["type"] = "object"
             schema.setdefault("properties", {})
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
@@ -123,32 +164,44 @@ class Mind:
 
     def warm(self) -> None:
         """Process the tools and the system prompt once, so every turn starts from a cached prefix."""
-        try:
-            self.server.chat({"messages": [{"role": "system", "content": self._system()},
+        self.server.chat({"messages": [{"role": "system", "content": self._system()},
                                            {"role": "user", "content": "hola"}],
                               "tools": self.tools, "max_tokens": 1,
-                              "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.DECIDE, timeout=600)
-        except Exception:  # noqa: BLE001 - warming is an optimization only
-            pass
+                          "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.DECIDE, timeout=600)
 
     def _system(self) -> str:
-        # Qwen3.5's template places the tools before the system text, so the time changing here re-reads only the
-        # short system text, never the cached catalog.
+        # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
+        return SYSTEM
+
+    @staticmethod
+    def _with_clock(text: str) -> str:
+        # The time travels at the end of the person's message: the only part of the prompt that is new anyway.
         now = _dt.datetime.now().astimezone()
         offset = now.strftime("%z")
-        return (f"{SYSTEM}\nAhora es {now.strftime('%A %d/%m/%Y, %H:%M')}, hora local del PC "
-                f"(UTC{offset[:3]}:{offset[3:]}); los campos que terminan en Utc van en UTC.")
+        return (f"{text}\n\n[{now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
+                "los campos que terminan en Utc van en UTC]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
     # One conversation per turn (native loop): the model's tool calls stay in it, each verified result comes back as a
     # tool message, and the model decides the next call or answers. Parallel calls run in order, one per round trip.
-    def decide(self, request_id: Any, text: str, history: list[dict[str, Any]]) -> dict[str, Any]:
+    def decide(self, request_id: Any, text: str, history: list[dict[str, Any]],
+               pending_clarification: bool = False) -> dict[str, Any]:
+        self._decided = {}
+        turn = self._turn
+        if pending_clarification and turn and turn.get("asked"):
+            # The person answered the model's own ask_user: the answer is that call's result, in the same loop, so the
+            # steps already run stay in the conversation and are never run again.
+            turn["messages"].append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
+            turn["text"] = text
+            return self._next(request_id, "turn.decide")
+        items = [item for item in history[-13:]
+                 if item.get("role") in {"user", "assistant"} and isinstance(item.get("content"), str)
+                 and item["content"].strip()]
+        if items and items[-1].get("role") == "user" and items[-1]["content"].strip() == text.strip():
+            items = items[:-1]  # the App's history already ends with this message
         messages = [{"role": "system", "content": self._system()}]
-        for item in history[-12:]:
-            role = item.get("role")
-            if role in {"user", "assistant"} and isinstance(item.get("content"), str) and item["content"].strip():
-                messages.append({"role": role, "content": item["content"]})
-        messages.append({"role": "user", "content": text})
+        messages += [{"role": item["role"], "content": item["content"]} for item in items[-12:]]
+        messages.append({"role": "user", "content": self._with_clock(text)})
         self._turn = {"messages": messages, "queue": [], "awaiting": None, "text": text}
         return self._next(request_id, "turn.decide")
 
@@ -196,11 +249,10 @@ class Mind:
     def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,
                 stage: str, started: float, content: str) -> dict[str, Any]:
         result: dict[str, Any] = {"type": "turn.result", "id": request_id, "operation": None,
-                                  "intentOperations": [], "effectOperations": [], "question": "", "reply": "",
-                                  "objective": turn["text"]}
+                                  "intentOperations": [], "effectOperations": [], "question": "", "reply": ""}
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
-            turn["queue"], turn["awaiting"] = [], None
+            turn["queue"], turn["awaiting"], turn["asked"] = [], None, call["id"]
             if question.endswith("?") and question.count("?") == 1:
                 result.update(kind="clarify", question=question)
             elif question:
@@ -210,7 +262,7 @@ class Mind:
         elif call is not None:
             name = self.wire_to_op[call["wire"]]
             turn["awaiting"] = call["id"]
-            self._decided = {name: call["arguments"]}
+            self._decided = {name: {**call["arguments"], **self.constants.get(name, {})}}
             result.update(kind="action", operation=name, intentOperations=[name], effectOperations=[name])
         elif content:
             result.update(kind="conversation", reply=content)
@@ -230,11 +282,13 @@ class Mind:
         tool = self.op_to_tool.get(operation)
         if tool is None:
             raise RuntimeError(f"unknown operation {operation}")
-        messages = [{"role": "system", "content": self._system()}]
-        messages += [m for m in history[-6:] if m.get("role") in {"user", "assistant"}]
-        messages.append({"role": "user", "content": text})
+        items = [m for m in history[-7:] if m.get("role") in {"user", "assistant"}]
+        if items and items[-1].get("role") == "user" and str(items[-1].get("content", "")).strip() == text.strip():
+            items = items[:-1]
+        messages = [{"role": "system", "content": self._system()}] + items[-6:]
+        messages.append({"role": "user", "content": self._with_clock(text)})
         reply = self.server.chat({"messages": messages, "tools": [tool], "max_tokens": 256,
-                                  "tool_choice": {"type": "function", "function": {"name": tool["function"]["name"]}},
+                                  "tool_choice": "required",
                                   "chat_template_kwargs": {"enable_thinking": False}, "temperature": 0.0},
                                  slot=LlmServer.SHORT)
         calls = reply["choices"][0]["message"].get("tool_calls") or []
@@ -245,6 +299,7 @@ class Mind:
                 arguments = parsed if isinstance(parsed, dict) else {}
             except json.JSONDecodeError:
                 arguments = {}
+        arguments = {**arguments, **self.constants.get(operation, {})}
         self._log("arguments", started, reply, operation=operation, reused=False, arguments=arguments)
         return {"type": "arguments.result", "id": request_id, "operation": operation, "ok": True,
                 "arguments": arguments, "question": ""}

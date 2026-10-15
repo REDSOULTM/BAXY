@@ -39,7 +39,9 @@ class LlmServer:
     def start(self) -> None:
         command = [
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
-            "-ngl", self.gpu_layers, "-c", str(self.context * 2), "-np", "2", "-fa", "on",
+            # One KV pool shared by both slots (-kvu): the decision prefix (~39k tokens) gets the room it needs
+            # without doubling the cache; the composition slot only uses a few hundred tokens.
+            "-ngl", self.gpu_layers, "-c", str(self.context * 2), "-np", "2", "-kvu", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
         ] + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
@@ -65,11 +67,23 @@ class LlmServer:
         self._failure = "llama-server did not become healthy"
 
     def wait_ready(self, timeout: float) -> None:
-        if not self._ready.wait(timeout):
-            raise RuntimeError(self._failure or "llama-server is not ready")
+        deadline = time.monotonic() + timeout
+        while not self._ready.wait(0.25):
+            if self._failure is not None or time.monotonic() > deadline:
+                raise RuntimeError(self._failure or "llama-server is not ready")
+
+    def startup_failure(self, error: Exception) -> dict[str, Any]:
+        """The App's startup-failure shape (MindStartupFailure): why the model did not come up."""
+        code = self._process.poll() if self._process is not None else None
+        if code is not None:
+            return {"cause": "proceso_salio", "exitCode": code}
+        return {"cause": "tiempo"}
 
     def chat(self, body: dict[str, Any], *, slot: int, timeout: float = 120.0) -> dict[str, Any]:
         """One chat completion on a pinned slot, so each slot keeps its own prefix cached between turns."""
+        if self._process is not None and self._process.poll() is not None:
+            # The model server died: the sidecar exits, so the App sees the mind close and relaunches it.
+            os._exit(70)
         self.wait_ready(timeout)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",

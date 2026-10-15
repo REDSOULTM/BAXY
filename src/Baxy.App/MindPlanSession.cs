@@ -218,44 +218,22 @@ internal sealed class MindPlanSession
                     step.Operation,
                     arguments))
             {
-                arguments = await mind.GroundPlanStepAsync(
-                    execution.Objective,
-                    step,
-                    groundingObservations,
-                    TimeSpan.FromSeconds(30),
-                    cancellationToken);
-
-                if (arguments is null)
-                {
-                    // Ronda 22 (r18 t4-c19): the step that lacked a detail is named with the effects left
-                    // undone, so the end says «no pude colocar la ventana», never only the read before it.
-                    FinishWithFailure(
-                        execution,
-                        MindPlanBoundary.WithNotDone(
-                            MindPlanBoundary.WithStepFacts(
-                                TurnVisibleFacts.Failure(
-                                    "step_data_missing",
-                                    new JsonObject { ["operation"] = step.Operation }),
-                                step.Arguments),
-                            execution,
-                            []));
-                    return;
-                }
-
-                if (identityArguments is not null)
-                {
-                    foreach ((string key, JsonNode? value) in identityArguments)
-                    {
-                        arguments[key] = value?.DeepClone();
-                    }
-                }
+                // BAXY Renew: the arguments the model wrote do not fit the operation's schema. That is a result the
+                // model sees (its own arguments next to the operation), so it can call again with the right ones;
+                // nothing grounds or rewrites them here.
+                FinishWithFailure(
+                    execution,
+                    TurnVisibleFacts.Failure(
+                        "step_data_missing",
+                        new JsonObject
+                        {
+                            ["operation"] = step.Operation,
+                            ["argumentsGiven"] = arguments?.DeepClone() ?? new JsonObject(),
+                            ["detail"] = "the arguments do not match this operation's schema",
+                        }));
+                return;
             }
 
-            arguments = MindArgumentNormalization.Normalize(
-                step.Operation,
-                execution.Objective,
-                arguments,
-                beforeComputerUse: execution.Steps.Any(planned => planned.Operation == "mission.computer.use"));
             if (string.Equals(
                     step.ArgumentsMode,
                     "after_dependencies",

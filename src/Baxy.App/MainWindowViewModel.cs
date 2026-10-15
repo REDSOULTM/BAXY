@@ -39,7 +39,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
     private readonly MemoryTurnSession _memoryTurns;
-    private readonly MemoryPanel _memoryKeys;
     private readonly MindPlanSession _mindPlans;
     private readonly PendingNoteInteractionState _pendingNoteInteraction = new();
     private PreparedOperation? _pendingAudioOperation;
@@ -125,13 +124,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 TryMarkResolved = TryMarkResolved,
                 TurnElapsed = TurnElapsed,
             });
-        _memoryKeys = new MemoryPanel(() => _coreClient, () => _memoryProtector);
         _memoryTurns = new MemoryTurnSession(
             new MemoryTurnSession.Host
             {
                 Core = () => _coreClient,
                 Protector = () => _memoryProtector,
-                Publish = PublishBaxy,
+                Publish = PublishPlanResult,
                 PublishForObjective = PublishBaxyForObjective,
                 SetStatus = text => StatusDescription = text,
                 HasPendingAudio = () => _pendingAudioOperation is not null,
@@ -161,12 +159,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _loopCapturing;
     private (string Body, UserMessageEvent? Event)? _loopObservation;
 
+    private bool _loopAwaitingConfirmation;
+
     private void PublishPlanResult(string body, UserMessageEvent? messageEvent)
     {
         if (_loopCapturing && messageEvent != UserMessageEvent.Confirmation)
         {
             _loopObservation = (body, messageEvent);
             return;
+        }
+
+        if (_loopCapturing)
+        {
+            // The loop waits for the person's answer; after a «sí» the result goes back to the model (Resume…).
+            _loopAwaitingConfirmation = true;
         }
 
         PublishBaxy(body, messageEvent);
@@ -1056,41 +1062,24 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             MindTurnDecision? preclassifiedTurn = null;
             if (_mindPlans.HasPending)
             {
-                bool startsNewObjective = false;
-                // A plan that waits on the recovery challenge of an uncertain effect
-                // (no confirmation staged) is superseded the same way as an unstarted
-                // confirmation: the uncertainty was said once; nothing repeats itself.
-                bool supersedable = _mindPlans.Current is { CanAbandonConfirmation: true }
-                    or { PendingEffectMayHaveOccurred: true, Confirmation: null };
-                if (supersedable
-                    && ConfirmationReplyParser.Parse(text) == ConfirmationReplyKind.Invalid)
+                // BAXY Renew: a risk confirmation is the person's, so its yes/no is read here (the kernel's contract).
+                // Any other message supersedes it and goes to the model like any turn; an uncertain effect was already
+                // told once. No reader classifies the message beyond that.
+                if (_mindPlans.Current?.Confirmation is not null
+                    && ConfirmationReplyParser.Parse(text) != ConfirmationReplyKind.Invalid)
                 {
-                    // Private typed requests stay on their private route. Other
-                    // requests reuse the ordinary independent turn decision;
-                    // a fragment never confirms or replaces the pending action.
-                    startsNewObjective = memory.Outcome is not (MemoryParseOutcome.NoRoute or MemoryParseOutcome.AskToSave)
-                        || NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text)
-                        || UserMessagePolicy.ShouldNotResumePriorObjective(text);
-                    if (!startsNewObjective
-                        && await WaitForMindReadyAsync(cancellationToken) is { } readyMind)
-                    {
-                        preclassifiedTurn = await DecideMindTurnAsync(
-                            readyMind, route, BuildMindHistory(), cancellationToken);
-                        // Talk while a confirmation waits is talk: it replaces the
-                        // unstarted confirmation (nothing ran) instead of re-asking it.
-                        startsNewObjective = preclassifiedTurn is { RecoveryFailureCode: null }
-                            && (MindClarificationPolicy.IsSelfContainedRequest(text, preclassifiedTurn)
-                                || preclassifiedTurn is { Kind: "conversation", Reply.Length: > 0 });
-                    }
+                    await ResumeAfterConfirmationAsync(route, registry, cancellationToken);
+                    return;
                 }
 
-                if (!startsNewObjective
-                    || !(_mindPlans.TrySupersedeUnstartedConfirmation(registry)
+                if (!(_mindPlans.TrySupersedeUnstartedConfirmation(registry)
                         || _mindPlans.TrySupersedeUncertainEffect(registry)))
                 {
                     await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
                     return;
                 }
+
+                _loopAwaitingConfirmation = false;
             }
 
             if (!_memoryTurns.HasConfirmation && !_memoryTurns.HasPendingOperation
@@ -1109,14 +1098,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     memory = route.Memory;
                     _pendingMindClarificationObjective = null;
                 }
-            }
-
-            // An explicit private request already has its own typed route or
-            // missing-value contract. It supersedes a public clarification;
-            // personal context alone still follows the ordinary mind policy.
-            if (memory.Outcome is not (MemoryParseOutcome.NoRoute or MemoryParseOutcome.AskToSave))
-            {
-                _pendingMindClarificationObjective = null;
             }
 
             if (_pendingMindClarificationObjective is { } pendingObjective)
@@ -2655,63 +2636,127 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         RetryableOperationRegistry registry,
         CancellationToken cancellationToken)
     {
+        _loopAwaitingConfirmation = false;
         MindTurnDecision current = turn;
-        for (int modelCalls = 1; ; modelCalls++)
+        for (int steps = 1; ; steps++)
         {
-            _loopObservation = null;
-            _loopCapturing = true;
-            try
-            {
-                await TryExecuteMindOperationAsync(
+            MindTurnDecision step = current;
+            (string Body, UserMessageEvent? Event)? observation = await CaptureLoopStepAsync(
+                () => TryExecuteMindOperationAsync(
                     mind,
                     route,
-                    current.Operation!,
+                    step.Operation!,
                     registry,
                     cancellationToken,
-                    responseLanguage: current.ResponseLanguage);
-            }
-            finally
+                    responseLanguage: step.ResponseLanguage));
+            if (observation is not { } verified)
             {
-                _loopCapturing = false;
-            }
-
-            if (_loopObservation is not { } observation)
-            {
-                // The step ended the turn itself: a question, a confirmation, or a private memory route.
                 return true;
             }
 
-            MindTurnDecision? next = modelCalls < NativeLoopModelCalls
-                ? await mind.ContinueTurnAsync(observation.Body, NativeLoopContinueTimeout, cancellationToken)
-                : null;
-            if (next is { Kind: "action", Operation.Length: > 0 })
+            MindTurnDecision? next = await NextLoopDecisionAsync(mind, route, verified, steps, cancellationToken);
+            if (next is null)
             {
-                current = next;
-                continue;
-            }
-
-            if (next is { Kind: "conversation", Reply.Length: > 0 })
-            {
-                AddMessage(
-                    "BAXY",
-                    next.Reply,
-                    isUser: false,
-                    formulatedByMind: true,
-                    route: PublicResponseRoute.Conversation);
                 return true;
             }
 
-            if (next is { Kind: "clarify", Question.Length: > 0 })
-            {
-                return AddMindClarification(route.Text, next.Question, next.ResponseLanguage);
-            }
-
-            PublishBaxy(observation.Body, observation.Event);
-            return true;
+            current = next;
         }
     }
 
-    private static readonly TimeSpan NativeLoopContinueTimeout = TimeSpan.FromSeconds(15);
+    // Runs one step with its verified result captured. Null when the step ended the turn itself (a question, a risk
+    // confirmation the person must answer, a private memory route) or left an uncertain effect, which the person sees.
+    private async Task<(string Body, UserMessageEvent? Event)?> CaptureLoopStepAsync(Func<Task> step)
+    {
+        _loopObservation = null;
+        _loopCapturing = true;
+        try
+        {
+            await step();
+        }
+        finally
+        {
+            _loopCapturing = false;
+        }
+
+        if (_loopObservation is { } observation && _mindPlans.HasPending)
+        {
+            PublishBaxy(observation.Body, observation.Event);
+            return null;
+        }
+
+        return _loopObservation;
+    }
+
+    // The model's next move after a verified result: another action (returned), or the end of the turn (its own text,
+    // its question, or — past the step budget or when the mind does not answer — the verified result itself).
+    private async Task<MindTurnDecision?> NextLoopDecisionAsync(
+        MindSidecarClient mind,
+        MissionInputRoute route,
+        (string Body, UserMessageEvent? Event) observation,
+        int steps,
+        CancellationToken cancellationToken)
+    {
+        MindTurnDecision? next = steps < NativeLoopModelCalls
+            ? await mind.ContinueTurnAsync(observation.Body, NativeLoopContinueTimeout, cancellationToken)
+            : null;
+        if (next is { Kind: "action", Operation.Length: > 0 })
+        {
+            return next;
+        }
+
+        if (next is { Kind: "conversation", Reply.Length: > 0 })
+        {
+            AddMessage(
+                "BAXY",
+                next.Reply,
+                isUser: false,
+                formulatedByMind: true,
+                route: PublicResponseRoute.Conversation);
+            return null;
+        }
+
+        if (next is { Kind: "clarify", Question.Length: > 0 })
+        {
+            _ = AddMindClarification(route.Text, next.Question, next.ResponseLanguage);
+            return null;
+        }
+
+        PublishBaxy(observation.Body, observation.Event);
+        return null;
+    }
+
+    // After the person answers a risk confirmation that suspended the loop, the confirmed step's verified result goes
+    // back to the model, which goes on with the steps that were left (BFCL multi-turn: the loop resumes on the result).
+    private async Task ResumeAfterConfirmationAsync(
+        MissionInputRoute route,
+        RetryableOperationRegistry registry,
+        CancellationToken cancellationToken)
+    {
+        bool resume = _loopAwaitingConfirmation && _mindClient is { IsTurnContinueAvailable: true };
+        _loopAwaitingConfirmation = false;
+        if (!resume)
+        {
+            await _mindPlans.HandlePendingAsync(route.Text, registry, cancellationToken);
+            return;
+        }
+
+        MindSidecarClient mind = _mindClient!;
+        (string Body, UserMessageEvent? Event)? observation = await CaptureLoopStepAsync(
+            () => _mindPlans.HandlePendingAsync(route.Text, registry, cancellationToken));
+        if (observation is not { } verified)
+        {
+            return;
+        }
+
+        MindTurnDecision? next = await NextLoopDecisionAsync(mind, route, verified, steps: 1, cancellationToken);
+        if (next is not null)
+        {
+            _ = await RunNativeToolLoopAsync(mind, route, next, registry, cancellationToken);
+        }
+    }
+
+    private static readonly TimeSpan NativeLoopContinueTimeout = TimeSpan.FromSeconds(25);
 
     /// <summary>
     /// An operation whose schema carries an identity only a verified producer
@@ -2734,10 +2779,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         JsonObject? knownArguments = null,
         string? responseLanguage = null)
     {
-        // Estabilización M (live identity check §3c-§3d): every memory operation the mind chose was refused here, so
-        // «Recordá que mi color favorito…» and «Corrige ese recuerdo…» ran nothing. The mind chooses memory only on the
-        // person's explicit request (semantic/memory.py); what the App's own reader found implicit (a personal fact said
-        // without asking to keep it, a «no lo guardes») is still refused, and the rest runs on the private route below.
         bool memory = operationName.StartsWith("memory.", StringComparison.Ordinal);
         if (!ProductCatalog.TryGet(
                 operationName,
@@ -2764,24 +2805,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (extraction is null)
             {
-                // A7 (FINAL t23/t199/t320): the action was decided and its arguments came back without values
-                // and without a usable question. That is a question to ask, not a failure to report, and the
-                // question names the field the operation still needs.
-                return AddMissingArgumentsClarification(route.Text, descriptor);
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Failure("decision_unavailable"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
+                return true;
             }
 
             if (extraction.Arguments is null)
             {
-                // M47 (FINAL F-w09-t5 «Sure, tomorrow at noon, please» → «¿Es
-                // una alarma o un recordatorio?»): the question is checked in
-                // the language the mind decided for this turn, not re-derived.
                 return AddMindClarification(route.Text, extraction.Question, responseLanguage);
             }
 
-            groundedArguments = MindArgumentNormalization.Normalize(
-                operationName,
-                route.Text,
-                extraction.Arguments);
+            groundedArguments = extraction.Arguments;
         }
         else
         {
@@ -2790,14 +2827,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (memory)
         {
-            // The same sealed route as the App parser's: the kernel authorizes it, the journal records it, a
-            // destructive one is confirmed, and its final is the verified result (or the failure, said as such).
-            if (operationName == "memory.forget"
-                && await ResolveForgottenKeyAsync(route.Text, groundedArguments, cancellationToken))
-            {
-                return true;
-            }
-
             MemoryRoutedOperation routed;
             try
             {
@@ -2806,32 +2835,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
             catch (ArgumentException)
             {
-                return AddMemoryNeedsExplicitRequest();
-            }
-
-            if (groundedArguments["sensitivity"] is JsonValue sensitivity
-                && sensitivity.TryGetValue(out string? level)
-                && level is not ("normal" or "personal"))
-            {
-                return AddMemoryNeedsExplicitRequest();
-            }
-
-            // Revisión M H2: the value of a save or a correction passes the App reader's own filters (one source:
-            // credentials, a grant of permissions, a second order, a file path), whoever read it.
-            if (operationName is "memory.save" or "memory.correct")
-            {
-                string value = groundedArguments["value"] is JsonValue scalar && scalar.TryGetValue(out string? text)
-                    ? text
-                    : groundedArguments["value"]?.ToJsonString() ?? string.Empty;
-                switch (NaturalMemoryRequestParser.JudgeValueToKeep(route.Text, value))
-                {
-                    case MemoryValueJudgement.GrantsAuthority:
-                        AddMessage(
-                            "BAXY", TurnVisibleFacts.Status("no_permission_escalation"), isUser: false);
-                        return true;
-                    case MemoryValueJudgement.NotKeepable:
-                        return AddMemoryNeedsExplicitRequest();
-                }
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Failure("memory_arguments_invalid"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.MissingData));
+                return true;
             }
 
             await _memoryTurns.ExecuteRouteAsync(
@@ -2853,48 +2862,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return true;
     }
 
-    // Estabilización M3 (live 2026-10-12: «Olvidá mi color favorito de prueba» was asked «¿Qué alcance deseas eliminar
-    // de tus memorias locales: todo, exacto, tipo o tema?»): the datum a forget names in the person's words is resolved
-    // against the keys the memory holds before anything is confirmed (MemoryPanel.Candidates). One key: the forget acts
-    // on it. Several: which one is asked, with the candidates by their names, and the answer completes this request.
-    // None: it was not kept, and nothing is asked. Both said by the floor (data memoryKeys). True when the turn ended.
-    private async Task<bool> ResolveForgottenKeyAsync(
-        string request,
-        JsonObject arguments,
-        CancellationToken cancellationToken)
-    {
-        if (arguments["scope"] is not JsonValue scope
-            || !scope.TryGetValue(out string? scopeText)
-            || scopeText != "exact"
-            || arguments["selector"] is not JsonValue selector
-            || !selector.TryGetValue(out string? asked)
-            || string.IsNullOrWhiteSpace(asked)
-            || await _memoryKeys.KeysAsync(cancellationToken) is not { } stored)
-        {
-            return false;
-        }
-
-        IReadOnlyList<string> candidates = MemoryPanel.Candidates(asked, stored);
-        if (candidates.Count == 1)
-        {
-            arguments["selector"] = candidates[0];
-            return false;
-        }
-
-        bool english = ModelMessageComposer.LooksEnglish(request);
-        IReadOnlyList<string> named = candidates.Count == 0
-            ? [MemoryPanel.Label(asked, english)]
-            : candidates.Select(key => MemoryPanel.Label(key, english)).ToArray();
-        _pendingMindClarificationObjective = candidates.Count == 0 ? null : request;
-        AddMessage(
-            "BAXY",
-            OperationFloor.MemoryKeysSentence(named, english),
-            isUser: false,
-            formulatedByMind: true,
-            route: candidates.Count == 0 ? PublicResponseRoute.Result : PublicResponseRoute.Clarification);
-        return true;
-    }
-
     // The memory operations the App's private route prepares (MemoryOperationProtector), never one the App's own
     // reader found implicit: a write when the message only stated a datum or asked not to keep it, a forget when it
     // named nothing to forget.
@@ -2905,16 +2872,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         "memory.recall" or "memory.list" or "memory.status" or "memory.export" => !reading.MustNotInvent,
         _ => false,
     };
-
-    private bool AddMemoryNeedsExplicitRequest()
-    {
-        AddMessage(
-            "BAXY",
-            TurnVisibleFacts.Clarification("memory_needs_explicit_request"),
-            isUser: false,
-            messageEvent: UserMessageEvent.Clarification);
-        return true;
-    }
 
     private bool AddMindClarification(
         string request,
@@ -2941,33 +2898,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         property.ConstantBoolean is not null
         || property.AllowedValues.Count == 1
         || property.Minimum is not null && property.Minimum == property.Maximum;
-
-    private bool AddMissingArgumentsClarification(string request, ProductOperationDescriptor descriptor)
-    {
-        IReadOnlyList<string> fields = descriptor.ArgumentsSchema.Required.Count > 0
-            ? descriptor.ArgumentsSchema.Required
-            : descriptor.ArgumentsSchema.Properties.Select(static property => property.Name).ToArray();
-        // Estabilización M3 (live 2026-10-12: «¿Qué alcance deseas eliminar…?»; M2: «¿Qué confirmación, alcance y
-        // versión…?»): what the contract fixes (a constant, a payload version, a one-value set) is never named to the
-        // person; the mind leaves out what is internal to the operation (data clarification_fields.v1.json).
-        string[] askable = fields
-            .Where(name => descriptor.ArgumentsSchema.Properties.FirstOrDefault(property => property.Name == name)
-                is not { } property || !FixedByContract(property))
-            .ToArray();
-        _pendingMindClarificationObjective = request;
-        AddMessage(
-            "BAXY",
-            TurnVisibleFacts.Clarification(
-                "ambiguous_request",
-                new JsonObject
-                {
-                    ["missingValue"] = string.Join(", ", askable),
-                    ["operation"] = descriptor.Name,
-                }),
-            isUser: false,
-            messageEvent: UserMessageEvent.Clarification);
-        return true;
-    }
 
     private bool AddMindConversationFallback(string? conversationKind = null)
     {
@@ -3708,7 +3638,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // latencia de cada turno, sólo en el perfil local.
         _conversationLog?.Append(message);
         MindSidecarClient? mind = _mindClient;
-        if (mind is { IsReady: true })
+        if (mind is { IsVoiceAvailable: true })
         {
             _ = isUser
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)

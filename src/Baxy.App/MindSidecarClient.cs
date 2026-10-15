@@ -308,6 +308,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private volatile bool _plannerAvailable;
     private volatile bool _turnDecisionAvailable;
     private volatile bool _turnContinueAvailable;
+    private volatile bool _voiceAvailable;
     private bool _disposed;
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
@@ -323,6 +324,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     /// <summary>BAXY Renew: the mind keeps the turn's conversation and takes each verified result back.</summary>
     public bool IsTurnContinueAvailable => IsReady && _turnContinueAvailable;
+
+    /// <summary>Whether the mind serves voice (BAXY Renew does not yet): no voice request is sent otherwise.</summary>
+    public bool IsVoiceAvailable => IsReady && _voiceAvailable;
 
     internal static bool IsCpuFallbackProfile =>
         string.Equals(
@@ -586,6 +590,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 && requests?.Any(static request => (string?)request == "turn.decide") == true;
             _turnContinueAvailable = hasLlm
                 && requests?.Any(static request => (string?)request == "turn.continue") == true;
+            _voiceAvailable = requests?.Any(static request => (string?)request == "voice.speak") == true;
             MindStartupCatalog inputs = await catalog
                 .WaitAsync(startupCancellation.Token)
                 .ConfigureAwait(false);

@@ -269,15 +269,6 @@ internal sealed class PendingModelMessageQueue
     {
         RemoveHead(pending);
         string exhausted = $"{failure};retry_exhausted";
-        // A7 (goal v3 paso 5): a verified result can always be said. Before the composition-failure line, its
-        // observed values are told in one short sentence that passes the same acceptance as a composed one.
-        if (ModelMessageComposer.DeterministicFinal(
-                pending.Draft, pending.UserText, pending.Facts, pending.LastRejectedText) is { } deterministic)
-        {
-            await _publishAsync(deterministic, $"{failure};deterministic_fallback", pending).ConfigureAwait(false);
-            return;
-        }
-
         await _reportFailureAsync(exhausted).ConfigureAwait(false);
         await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
         await _onSettledAsync().ConfigureAwait(false);
