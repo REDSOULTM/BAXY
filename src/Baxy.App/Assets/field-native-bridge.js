@@ -4,12 +4,6 @@
   const CHANNEL = 'baxy.field.v1';
   const pending = new Map();
   const sockets = new Map();
-  const managedSettingsTabs = new Set([
-    'connection',
-    'transcript',
-    'prompt',
-    'about',
-  ]);
   let sequence = 0;
 
   function nextId(prefix) {
@@ -138,12 +132,6 @@
 
     const method = String(init.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
     let body = null;
-    if (init.body instanceof FormData) {
-      return new Response(JSON.stringify({ error: 'attachments_not_supported' }), {
-        status: 501,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
     if (typeof init.body === 'string') body = init.body;
     else if (init.body != null) body = String(init.body);
 
@@ -181,121 +169,4 @@
     if (!target?.closest('.pywebview-drag-region')) return;
     post('window_drag', {});
   }, true);
-
-  function applyNativeBranding() {
-    const title = document.querySelector('.titlebar-title');
-    if (title && /gemma\s*4/i.test(title.textContent || '')) {
-      const brand = document.createElement('span');
-      brand.className = 'accent';
-      brand.textContent = 'BAXY';
-      const surface = document.createElement('span');
-      surface.className = 'dim';
-      surface.textContent = ' · desktop';
-      title.replaceChildren(brand, surface);
-    }
-
-    const aboutTitle = document.querySelector('.st-about-title');
-    if (aboutTitle && /gemma\s*4/i.test(aboutTitle.textContent || '')) {
-      aboutTitle.textContent = 'BAXY · desktop';
-    }
-    const aboutSubtitle = document.querySelector('.st-about-sub');
-    if (aboutSubtitle && /gemma/i.test(aboutSubtitle.textContent || '')) {
-      aboutSubtitle.textContent = 'asistente local · modelo administrado por BAXY';
-    }
-    const aboutRows = aboutTitle?.closest('.st-section')?.querySelectorAll('.kv-row');
-    const aboutFacts = [
-      ['host', 'Baxy.App · .NET 10'],
-      ['settings', 'managed by native host'],
-      ['mind', 'baxy_mind'],
-      ['build', 'BAXY · source'],
-      ['runtime', 'llama.cpp · local'],
-    ];
-    if (aboutRows?.length === aboutFacts.length) {
-      aboutRows.forEach((row, index) => {
-        const key = row.querySelector('.k');
-        const value = row.querySelector('.v');
-        const [expectedKey, expectedValue] = aboutFacts[index];
-        if (key && key.textContent !== expectedKey) key.textContent = expectedKey;
-        if (value && value.textContent !== expectedValue) value.textContent = expectedValue;
-      });
-    }
-
-    for (const heading of document.querySelectorAll('.st-sub-head')) {
-      if (/^system prompt/i.test(heading.textContent || '')
-          && !/managed by BAXY/i.test(heading.textContent || '')) {
-        heading.textContent = 'system prompt · read-only · managed by BAXY';
-      }
-    }
-    for (const tip of document.querySelectorAll('.st-tip')) {
-      if (/gemma4_agent\/agent\.py/i.test(tip.textContent || '')) {
-        tip.textContent = 'BAXY administra este prompt dentro de su sidecar local.';
-      } else if (/llama-server you start separately/i.test(tip.textContent || '')) {
-        tip.textContent = 'BAXY administra el modelo local; esta vista es de solo lectura.';
-      } else if (/stt\/tts settings/i.test(tip.textContent || '')) {
-        tip.textContent = 'STT y TTS locales administrados por BAXY. Esta pantalla no descarga modelos.';
-      }
-    }
-
-    const settingsPanel = document.querySelector('.settings-panel');
-    if (!settingsPanel) return;
-    const subtitle = settingsPanel.querySelector('.panel-subtitle');
-    if (subtitle && subtitle.textContent !== 'diagnóstico local') {
-      subtitle.textContent = 'diagnóstico local';
-    }
-    for (const tab of settingsPanel.querySelectorAll('.settings-tab')) {
-      const supported = managedSettingsTabs.has((tab.textContent || '').trim());
-      if (tab.hidden === supported) tab.hidden = !supported;
-      const hiddenValue = supported ? 'false' : 'true';
-      if (tab.dataset.baxyManagedHidden !== hiddenValue) {
-        tab.dataset.baxyManagedHidden = hiddenValue;
-      }
-    }
-    const settingsBody = settingsPanel.querySelector('.settings-body');
-    if (settingsBody) {
-      const readOnlyMessage = 'Configuración administrada por BAXY; datos de solo lectura.';
-      if (settingsBody.getAttribute('aria-label') !== readOnlyMessage) {
-        settingsBody.setAttribute('aria-label', readOnlyMessage);
-      }
-      if (settingsBody.getAttribute('title') !== readOnlyMessage) {
-        settingsBody.setAttribute('title', readOnlyMessage);
-      }
-      for (const control of settingsBody.querySelectorAll('input, select, textarea, button')) {
-        if (!control.disabled) control.disabled = true;
-      }
-    }
-    for (const footerButton of settingsPanel.querySelectorAll('.settings-footer button')) {
-      const label = (footerButton.textContent || '').trim().toLowerCase();
-      const isClose = label === 'cancel' || label === 'later' || label === 'cerrar';
-      if (footerButton.hidden === isClose) footerButton.hidden = !isClose;
-      const hiddenValue = isClose ? 'false' : 'true';
-      if (footerButton.dataset.baxyManagedHidden !== hiddenValue) {
-        footerButton.dataset.baxyManagedHidden = hiddenValue;
-      }
-      if (isClose && footerButton.textContent !== 'cerrar') {
-        footerButton.textContent = 'cerrar';
-      }
-    }
-  }
-
-  function startNativePresentationOverlay() {
-    const style = document.createElement('style');
-    style.dataset.baxyNativeOverlay = 'true';
-    style.textContent = [
-      '.settings-panel{width:960px!important}',
-      '.settings-panel [data-baxy-managed-hidden="true"]{display:none!important}',
-      '.settings-body :disabled{opacity:.62!important;cursor:not-allowed!important}',
-    ].join('');
-    document.head.appendChild(style);
-    applyNativeBranding();
-    new MutationObserver(applyNativeBranding).observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const composer = document.querySelector('input[aria-label="message input"]');
-    if (composer instanceof HTMLInputElement) composer.maxLength = 4096;
-    startNativePresentationOverlay();
-  }, { once: true });
 })();
