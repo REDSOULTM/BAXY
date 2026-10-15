@@ -1,6 +1,6 @@
 """Decision bench: Renew's own Mind on its own llama-server, one model decision per case (no tool runs).
 
-usage: py -3.12 -X utf8 scripts/renew/bench_decision.py <label> --cases FILE [--desc en|es] [--temp 0.2]
+usage: py -3.12 -X utf8 scripts/renew/bench_decision.py <label> --cases FILE [--temp 0.2]
        [--gguf PATH] [--server-args "..."] [--catalog FILE] [--ctx 40960]
 Cases: list of {id, family, history?, text, expect{kind: call|call_any|ask|text, op?, ops?, args?}} (see README of the
 banks). Writes <banks>/runs/<label>.jsonl: a summary line (accuracy, decision p50/p90, VRAM and RAM of llama-server and
@@ -112,7 +112,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
     parser.add_argument("--cases", required=True)
-    parser.add_argument("--desc", default="en")
     parser.add_argument("--temp", default="0.2")
     parser.add_argument("--gguf", default=os.environ.get("BAXY_MIND_LLM_GGUF", r"F:\BAXYeval\models\Qwen3.5-4B-Q4_K_M.gguf"))
     parser.add_argument("--server", default=os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe"))
@@ -121,7 +120,6 @@ def main():
     parser.add_argument("--ctx", default="49152")
     parser.add_argument("--src", default=str(ROOT / "src"), help="the mind to measure (a copy for an A/B of the prompt)")
     args = parser.parse_args()
-    os.environ["BAXY_RENEW_DESCRIPTIONS"] = args.desc
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
     sys.path.insert(0, args.src)
     from baxy_mind.llm_server import LlmServer  # noqa: E402
@@ -163,7 +161,7 @@ def main():
     measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
     server.close()
     latencies = [r["latency_s"] for r in rows]
-    summary = {"label": args.label, "cases": str(args.cases), "desc": args.desc, "temp": args.temp,
+    summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
                "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in rows),
                "n": len(rows), "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4),
                "p50": round(statistics.median(latencies), 3),

@@ -1,4 +1,5 @@
-"""The turn: one native tool call decides and writes the arguments; one call speaks the verified result.
+"""The turn: native tool calls decide and write the arguments, and after each verified result the model either calls
+again or answers in words (one conversation per session, calls and results included).
 
 Nothing here authorizes or verifies: the kernel authorizes the proposed operation and the provider verifies its
 effect. What the model cannot do becomes an honest limit (a question, «no pude», «eso no lo hago»), never a veto.
@@ -17,7 +18,6 @@ from typing import Any
 from .llm_server import LlmServer
 
 _DATA = Path(__file__).with_name("data")
-_SPANISH = json.loads((_DATA / "decider_catalog.es.v1.json").read_text(encoding="utf-8"))["operations"]
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
 SYSTEM = (
@@ -238,9 +238,7 @@ class Mind:
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
         self.constants: dict[str, dict[str, Any]] = {}
-        language = os.environ.get("BAXY_RENEW_DESCRIPTIONS", "en")
-        english = (json.loads(_ENGLISH_FILE.read_text(encoding="utf-8"))
-                   if language == "en" and _ENGLISH_FILE.is_file() else {})
+        english = json.loads(_ENGLISH_FILE.read_text(encoding="utf-8")) if _ENGLISH_FILE.is_file() else {}
         self.english: dict[str, str] = english.get("tools") or {}
         self.arguments: dict[str, dict[str, str]] = english.get("arguments") or {}
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
@@ -260,8 +258,7 @@ class Mind:
         tools, wire_to_op, op_to_tool = [ASK_USER, CONFIRM], {}, {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
-            spanish = _SPANISH.get(name) or str(cap.get("description") or "")
-            description = self.english.get(name) or spanish
+            description = self.english.get(name) or str(cap.get("description") or "")
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
@@ -420,7 +417,7 @@ class Mind:
         done = turn.setdefault("done", [])
         done.append(f"{turn.get('calling', '?')} → {_outcome(observation)}")
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": observation[:6000] + "\n[En este turno: " + "; ".join(done) + "]"})
+                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
         if final:
             # The App's step budget is spent: said where the model reads it, at the end of the last result.
@@ -443,7 +440,8 @@ class Mind:
         self.conversation.append({"role": "assistant", "content": "", "tool_calls": [
             {"id": call_id, "type": "function",
              "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
-        self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label}
+        self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label,
+                      "calling": CONFIRM_OPERATION}
         self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
                   arguments={"approve": approve})
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
@@ -495,11 +493,10 @@ class Mind:
                                   "arguments": None, "question": "", "reply": ""}
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
-            turn["queue"], turn["awaiting"], turn["asked"] = [], None, call["id"]
+            turn["queue"], turn["awaiting"] = [], None
             if question:
+                turn["asked"] = call["id"]
                 result.update(kind="clarify", question=question)
-            else:
-                result.update(failure="empty_question")
         elif call is not None:
             name = CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"] else self.wire_to_op[call["wire"]]
             turn["awaiting"] = call["id"]
@@ -508,10 +505,10 @@ class Mind:
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)
-        else:
-            result.update(failure="empty_reply")
         self._log(stage, started, reply, text=turn["text"], kind=result["kind"], operation=result["operation"],
-                  arguments=call["arguments"] if call else None, content=content)
+                  # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop).
+                  arguments=(call["arguments"] if call and not str(result["operation"] or "").startswith("memory.")
+                             else None), content=content)
         return result
 
     # ---- trace ---------------------------------------------------------------------------------------------

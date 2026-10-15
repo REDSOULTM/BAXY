@@ -1,60 +1,54 @@
 {
  "schema": "baxy.app-places.v1",
- "source": "Estabilización, encargo C (2026-10-11; banco r30 x10: el clic por OCR en «TIENDA» no cambió la página de Steam; g1 0/3: Steam no deja escribir en su buscador; u1 y y8 inestables en Spotify). Los lugares de una aplicación que tienen dirección propia (un protocolo que la aplicación registró en Windows): una misión que va a uno de ellos abre su dirección con la apertura de la aplicación (app.open con «place») y la vista de la ventana comprueba que llegó; un lugar que no está aquí sigue con computer use. Cada aplicación: su nombre del catálogo Inicio, los esquemas que puede abrir (el kernel no abre ninguno que no esté aquí), el catálogo de juegos cuyos identificadores llenan {game}, y sus lugares: la dirección con a lo sumo un hueco ({query}: lo buscado, escapado; {game}: el identificador numérico del juego) y los nombres con que se dice el lugar (plegados: minúsculas, sin acentos; «{game}» marca dónde va el título). El lugar que lleva {query} es donde se buscan cosas en la aplicación. Lo leen Baxy.Kernel (ApplicationPlaces: los lugares permitidos y la dirección) y la mente (semantic/app_places: el lugar de un sub-objetivo); los ejemplos atan a los dos lectores en sus tests. Direcciones comprobadas a mano en vivo el 2026-10-11 con el lanzamiento del shell, como lo hace el producto (detalle en el informe del encargo). Un lugar sin «address» se nombra pero no tiene dirección (medido: spotify:collection y spotify:library abren «Tus Me Gusta», no «Tu biblioteca»): sigue con computer use. «within» ata el lugar que lleva {query} al lugar donde se busca (la tienda de Steam busca en la tienda): un pedido que nombra otro lugar de la aplicación («andá a la biblioteca y buscá X», «en mi biblioteca») no usa esa dirección. «shows» (encargo S2, banco f3 v8: el botón «Inicio» no tiene estado y la página principal se titula con la canción que suena): el nombre entero de un control que sólo muestra la página de ese lugar, medido en vivo el 2026-10-11 en redpc (Spotify en español: la lista «Filtros de Inicio» sólo en Inicio; ni en Buscar ni en Tus Me Gusta); la llegada se prueba con él, se haya llegado como se haya llegado. La llegada a un lugar abierto con un valor se prueba con el valor nacido en la ventana después de abrirlo (átomo opened:), nunca con el valor en cualquier parte. «search»: false (estabilización L3, g1 0/3, 3/3 y 0/1: Steam, dibujado con CEF, no deja escribir de forma fiable en el buscador de su biblioteca) declara un límite: buscar dentro de ese lugar no se intenta; la misión va al lugar, que es lo seguro, y dice corto que no puede buscar ahí y ofrece buscarlo en el lugar donde busca la dirección con {query} (su «within»). «said» es cómo dice el final cada lugar en cada idioma.",
+ "source": "Los lugares de una aplicación con dirección propia (un protocolo que la aplicación registró en Windows): app.open con «place» abre esa dirección, y una mirada a la ventana dice si llegó. Cada aplicación: su nombre del catálogo Inicio, los esquemas que puede abrir (el kernel no abre ninguno que no esté aquí), el catálogo de juegos cuyos identificadores llenan {game}, sus actos y sus lugares, con a lo sumo un hueco ({query}: lo buscado, escapado; {game}: el número del juego). Direcciones comprobadas en vivo el 2026-10-11. Lo lee Baxy.Kernel (ApplicationPlaces); los ejemplos atan los datos a sus pruebas.",
  "applications": {
   "Configuración": {
    "_about": "Estabilización G2 (tandas f2 del notebook, t2-c03 «abre configuracion que quiero ver lo de la pantalla»: la Configuración del notebook abre en «Inicio», que recomienda «Pantalla de bloqueo»; la misión vagó por Personalización y escribió en el buscador una fecha leída por OCR). Las secciones de Configuración tienen dirección propia (ms-settings:), así que se va a ellas sin clics. Cada dirección se comprobó en vivo en redpc el 2026-10-11 con el lanzamiento del shell (sonda estab/G2_sonda: título, elemento seleccionado de la navegación y miga de pan). No tienen dirección, y siguen con computer use: «Aplicaciones» (ms-settings:apps abre «Aplicaciones instaladas»), «Hora e idioma» (ms-settings:time-language abre «Sistema») y «Juegos» (ms-settings:gaming abre «Game Bar»). Estabilización L4 (en vivo t-scroll-3: el clic por nombre en «Fonts», fuera de la vista de Personalización, tardó 33 s y agotó el plazo del sub-objetivo): «fonts» se comprobó igual en redpc el 2026-10-11 (sonda estab/L4_sonda: abre Personalización › Fuentes, «Fuentes disponibles»).",
    "schemes": ["ms-settings"],
    "places": {
-    "about": {"address": "ms-settings:about", "names": ["informacion", "acerca de", "about"]},
-    "accessibility": {"address": "ms-settings:easeofaccess", "names": ["accesibilidad", "accessibility"]},
-    "accounts": {"address": "ms-settings:accounts", "names": ["cuentas", "accounts"]},
-    "background": {"address": "ms-settings:personalization-background", "names": ["fondo", "fondo de pantalla", "fondo de escritorio", "background", "wallpaper"]},
-    "bluetooth": {"address": "ms-settings:bluetooth", "names": ["bluetooth y dispositivos", "bluetooth & dispositivos", "bluetooth & devices", "bluetooth and devices", "bluetooth"]},
-    "colors": {"address": "ms-settings:colors", "names": ["colores", "colors", "colours"]},
-    "datetime": {"address": "ms-settings:dateandtime", "names": ["fecha y hora", "date & time", "date and time"]},
-    "fonts": {"address": "ms-settings:fonts", "names": ["fuentes", "fonts"]},
-    "defaultapps": {"address": "ms-settings:defaultapps", "names": ["aplicaciones predeterminadas", "default apps"]},
-    "display": {"address": "ms-settings:display", "names": ["pantalla", "display", "configuracion de pantalla", "display settings"]},
-    "home": {"address": "ms-settings:home", "names": ["inicio", "home"]},
-    "installedapps": {"address": "ms-settings:appsfeatures", "names": ["aplicaciones instaladas", "installed apps"]},
-    "language": {"address": "ms-settings:regionlanguage", "names": ["idioma y region", "idioma", "language & region", "language and region", "language"]},
-    "lockscreen": {"address": "ms-settings:lockscreen", "names": ["pantalla de bloqueo", "lock screen"]},
-    "mouse": {"address": "ms-settings:mousetouchpad", "names": ["mouse", "raton"]},
-    "network": {"address": "ms-settings:network", "names": ["red e internet", "red", "redes", "network & internet", "network and internet", "network"]},
-    "notifications": {"address": "ms-settings:notifications", "names": ["notificaciones", "notifications"]},
-    "personalization": {"address": "ms-settings:personalization", "names": ["personalizacion", "personalization"]},
-    "power": {"address": "ms-settings:powersleep", "names": ["inicio/apagado", "energia", "energia y bateria", "power", "power & battery", "power and battery"]},
-    "printers": {"address": "ms-settings:printers", "names": ["impresoras y escaneres", "impresoras", "printers & scanners", "printers and scanners", "printers"]},
-    "privacy": {"address": "ms-settings:privacy", "names": ["privacidad y seguridad", "privacidad", "privacy & security", "privacy and security", "privacy"]},
-    "sound": {"address": "ms-settings:sound", "names": ["sonido", "sound"]},
-    "storage": {"address": "ms-settings:storagesense", "names": ["almacenamiento", "storage"]},
-    "system": {"address": "ms-settings:system", "names": ["sistema", "system"]},
-    "taskbar": {"address": "ms-settings:taskbar", "names": ["barra de tareas", "taskbar"]},
-    "themes": {"address": "ms-settings:themes", "names": ["temas", "themes"]},
-    "update": {"address": "ms-settings:windowsupdate", "names": ["windows update"]},
-    "wifi": {"address": "ms-settings:network-wifi", "names": ["wi-fi", "wifi", "wi fi"]}
+    "about": {"address": "ms-settings:about"},
+    "accessibility": {"address": "ms-settings:easeofaccess"},
+    "accounts": {"address": "ms-settings:accounts"},
+    "background": {"address": "ms-settings:personalization-background"},
+    "bluetooth": {"address": "ms-settings:bluetooth"},
+    "colors": {"address": "ms-settings:colors"},
+    "datetime": {"address": "ms-settings:dateandtime"},
+    "fonts": {"address": "ms-settings:fonts"},
+    "defaultapps": {"address": "ms-settings:defaultapps"},
+    "display": {"address": "ms-settings:display"},
+    "home": {"address": "ms-settings:home"},
+    "installedapps": {"address": "ms-settings:appsfeatures"},
+    "language": {"address": "ms-settings:regionlanguage"},
+    "lockscreen": {"address": "ms-settings:lockscreen"},
+    "mouse": {"address": "ms-settings:mousetouchpad"},
+    "network": {"address": "ms-settings:network"},
+    "notifications": {"address": "ms-settings:notifications"},
+    "personalization": {"address": "ms-settings:personalization"},
+    "power": {"address": "ms-settings:powersleep"},
+    "printers": {"address": "ms-settings:printers"},
+    "privacy": {"address": "ms-settings:privacy"},
+    "sound": {"address": "ms-settings:sound"},
+    "storage": {"address": "ms-settings:storagesense"},
+    "system": {"address": "ms-settings:system"},
+    "taskbar": {"address": "ms-settings:taskbar"},
+    "themes": {"address": "ms-settings:themes"},
+    "update": {"address": "ms-settings:windowsupdate"},
+    "wifi": {"address": "ms-settings:network-wifi"}
    }
   },
   "Discord": {
    "_about": "Encargo IMP2 (banco fix1 c6: «en Discord abrí el chat con Ron92…» empezó en la página de un canal de voz de un servidor, donde ni el chat ni el buscador de conversaciones están; el clic no encontró nada y Ctrl+F buscó en el canal). Los mensajes directos tienen dirección propia (medido en redpc el 2026-10-12 con el lanzamiento del shell: discord://-/channels/@me lleva a «Amigos - Discord» en 0,9 s, 2 de 2, desde un MD). «chats»: el lugar donde la aplicación lista sus chats; un sub-objetivo que va a un lugar que estos datos no declaran («ir a ron92») y que la vista no nombra empieza allí (cu_address), y desde allí sigue con computer use (el enlace del chat o el buscador de conversaciones).",
    "schemes": ["discord"],
    "places": {
-    "directs": {"address": "discord://-/channels/@me", "names": ["mensajes directos", "direct messages"]}
+    "directs": {"address": "discord://-/channels/@me"}
    }
-  },
-  "WhatsApp": {
-   "_about": "Encargo IMP4 (imp3 imp-wa-leer: el árbol UIA de un chat abierto de WhatsApp no trae el texto de los mensajes —61 controles: «Enviado», «Tú:», fechas— y la copia de pantalla de la ventana tapada leyó la de encima). «conversation»: dónde dibuja la conversación, en fracciones de su ventana (dibujada por sí misma), y cómo se ve lo propio. Medido en redpc el 2026-10-12 con el grupo Música abierto (1920×1044, 3 lecturas iguales): la lista de chats acaba en x≈0,23; la cabecera hasta y≈0,09 y el cuadro de mensaje desde y≈0,93; las burbujas propias empiezan a la derecha del centro (x≥0,79) y acaban en x≈0,93-0,96 con la hora y la marca de leído; las fechas («20/9/2026», «Hoy») van centradas (centro ≈0,61). Las ajenas empiezan junto al borde izquierdo de la conversación. Sin lugares con dirección.",
-   "schemes": ["whatsapp"],
-   "places": {}
   },
   "Spotify": {
    "schemes": ["spotify"],
    "places": {
-    "home": {"address": "spotify:home", "names": ["inicio", "home", "pagina principal"], "shows": ["filtros de inicio"]},
-    "library": {"names": ["tu biblioteca", "biblioteca", "your library", "library"]},
-    "search": {"address": "spotify:search", "names": ["buscar", "search", "busqueda"]},
-    "results": {"address": "spotify:search:{query}", "within": "search"}
+    "home": {"address": "spotify:home"},
+    "search": {"address": "spotify:search"},
+    "results": {"address": "spotify:search:{query}"}
    }
   },
   "Steam": {
@@ -68,11 +62,11 @@
     "uninstall": {"address": "steam://uninstall/{game}", "confirm": ["Desinstalar", "Uninstall"]}
    },
    "places": {
-    "community": {"address": "steam://url/CommunityHome", "names": ["comunidad", "community"]},
-    "game": {"address": "steam://store/{game}", "names": ["pagina de {game}", "pagina del juego {game}", "page of {game}", "page for {game}", "{game} page"]},
-    "library": {"address": "steam://open/games", "names": ["biblioteca", "library"], "search": false, "said": {"es": "la biblioteca", "en": "the library"}},
-    "results": {"address": "steam://openurl/https://store.steampowered.com/search/?term={query}", "within": "store"},
-    "store": {"address": "steam://store", "names": ["tienda", "store", "shop"], "said": {"es": "la tienda", "en": "the store"}}
+    "community": {"address": "steam://url/CommunityHome"},
+    "game": {"address": "steam://store/{game}"},
+    "library": {"address": "steam://open/games"},
+    "results": {"address": "steam://openurl/https://store.steampowered.com/search/?term={query}"},
+    "store": {"address": "steam://store"}
    }
   }
  },
