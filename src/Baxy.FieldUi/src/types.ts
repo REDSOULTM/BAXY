@@ -25,17 +25,18 @@ export interface ModelInfo {
   mmproj: boolean;
 }
 
+/** Each reading is null when the PC did not give it; the view shows «—», never a 0 as if measured. */
 export interface MetricSnapshot {
-  cpu: number;
-  mem: number;
+  cpu: number | null;
+  mem: number | null;
   /** memory used in gb (display value for the mem row), separate from the %
-   *  that drives the bar. zero when it can't be read. */
-  mem_used_gb?: number;
+   *  that drives the bar. */
+  mem_used_gb?: number | null;
   /** null when no GPU adapter reports a usage counter. */
   gpu: number | null;
-  dsk: number;
+  dsk: number | null;
   /** time since Windows started, "HH:MM:SS". */
-  uptime?: string;
+  uptime?: string | null;
 }
 
 /* WS event union — matches the contract in the task brief */
