@@ -296,9 +296,8 @@ public sealed class LocalMemoryStore : IMemoryStore
             EnsureEnabled(state);
             DateTimeOffset now = AdvanceClockAndPersistHousekeepingUnsafe(state);
             MemoryRecord[] records = state.Records
-                .Where(record => IsVisible(record, sessionId, now) && MatchesQuery(record, query))
-                .OrderByDescending(record => string.Equals(record.Selector, query, StringComparison.Ordinal))
-                .ThenByDescending(record => record.UpdatedAtUtc)
+                .Where(record => IsVisible(record, sessionId, now) && SameSelector(record.Selector, query))
+                .OrderByDescending(record => record.UpdatedAtUtc)
                 .ThenBy(record => record.Selector, StringComparer.Ordinal)
                 .Take(request.MaximumResults)
                 .Select(ToPublicRecord)
@@ -311,9 +310,6 @@ public sealed class LocalMemoryStore : IMemoryStore
     {
         ArgumentNullException.ThrowIfNull(request);
         string? sessionId = NormalizeOptionalIdentifier(request.SessionId, nameof(request.SessionId));
-        string? topic = request.Topic is null
-            ? null
-            : NormalizeSelector(request.Topic, nameof(request.Topic));
         if (request.MaximumResults is < 1 or > MaximumListResults)
         {
             throw new ArgumentOutOfRangeException(nameof(request));
@@ -332,8 +328,7 @@ public sealed class LocalMemoryStore : IMemoryStore
             DateTimeOffset now = AdvanceClockAndPersistHousekeepingUnsafe(state);
             MemoryRecord[] records = state.Records
                 .Where(record => IsVisible(record, sessionId, now)
-                    && (!request.Kind.HasValue || record.Kind == request.Kind.Value)
-                    && (topic is null || MatchesQuery(record, topic)))
+                    && (!request.Kind.HasValue || record.Kind == request.Kind.Value))
                 .OrderByDescending(record => record.UpdatedAtUtc)
                 .ThenBy(record => record.Selector, StringComparer.Ordinal)
                 .Take(request.MaximumResults)
@@ -476,6 +471,23 @@ public sealed class LocalMemoryStore : IMemoryStore
             CommitMutationUnsafe(state, allowPrivacyHeadroom: true);
             VerifyForgetAbsentUnsafe(normalized);
             return new MemoryForgetResult(deleted, Replayed: false);
+        }
+    }
+
+    /// <summary>
+    /// Whether the store still holds a memory the forget names, read again from the authoritative state with the
+    /// forget's own criterion (auditoría final 2, otros proveedores 7: a kind or topic forget is checked against that
+    /// kind or topic, not against an empty store).
+    /// </summary>
+    public bool Holds(MemoryForgetRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        NormalizedForget normalized = NormalizeForgetRequest(request);
+        lock (_rootLock)
+        {
+            MemoryStateDocument state = LoadAuthoritativeStateUnsafe();
+            EnsureActiveSession(state, normalized.SessionId);
+            return state.Records.Exists(record => MatchesForget(record, normalized));
         }
     }
 
@@ -1126,18 +1138,14 @@ public sealed class LocalMemoryStore : IMemoryStore
         && record.ExpiresAtUtc == request.ExpiresAtUtc
         && record.Tags.SequenceEqual(request.Tags, StringComparer.Ordinal);
 
-    private static bool MatchesQuery(MemoryRecordDocument record, string query)
-    {
-        if (string.Equals(record.Selector, query, StringComparison.Ordinal)
-            || record.Selector.Contains(query, StringComparison.Ordinal))
-        {
-            return true;
-        }
+    // Auditoría final 2 (otros proveedores, 6): recall «exact» is the memory named so, folded (case and whitespace by
+    // NormalizeSelector, accents here); never one whose name, label or tag merely contains the words asked.
+    private static bool SameSelector(string stored, string query) =>
+        string.Equals(WithoutAccents(stored), WithoutAccents(query), StringComparison.Ordinal);
 
-        string normalizedLabel = NormalizeSearchText(record.Label);
-        return normalizedLabel.Contains(query, StringComparison.Ordinal)
-            || record.Tags.Exists(tag => tag.Contains(query, StringComparison.Ordinal));
-    }
+    private static string WithoutAccents(string value) => string.Concat(
+        value.Normalize(NormalizationForm.FormD)
+            .Where(static character => CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark));
 
     private static bool MatchesForget(MemoryRecordDocument record, NormalizedForget request)
     {
@@ -1874,9 +1882,6 @@ public sealed class LocalMemoryStore : IMemoryStore
 
         return normalized;
     }
-
-    private static string NormalizeSearchText(string value) =>
-        NormalizeCollapsedText(value, "value", MaximumLabelUtf8Bytes, caseFold: true);
 
     private static DateTimeOffset? NormalizeOptionalUtc(DateTimeOffset? value) =>
         value?.ToUniversalTime();

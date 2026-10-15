@@ -103,7 +103,6 @@ public sealed record MemoryRecallResult(IReadOnlyList<MemoryRecord> Records);
 public sealed record MemoryListRequest(
     string? SessionId = null,
     MemoryKind? Kind = null,
-    string? Topic = null,
     int MaximumResults = LocalMemoryStore.MaximumListResults);
 
 public sealed record MemoryListResult(IReadOnlyList<MemoryRecord> Records);

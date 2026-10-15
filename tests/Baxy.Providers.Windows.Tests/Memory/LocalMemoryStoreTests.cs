@@ -221,6 +221,51 @@ public sealed class LocalMemoryStoreTests
         });
     }
 
+    // Auditoría final 2 (otros proveedores, 6): recall «exact» is the memory named so, folded in case, accents and
+    // spacing; «color» never brings «color favorito», nor a label or a tag that contains it.
+    [Test]
+    public void ExactRecallMatchesTheFoldedSelectorOnly()
+    {
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector);
+        _ = store.Save(Save("save-a", "canción", "Yesterday"));
+        _ = store.Save(Save("save-b", "canción favorita", "Help"));
+        _ = store.Save(new MemorySaveRequest("save-c", "disco", "mi canción", "Abbey Road", Tags: ["canción"]));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(store.Recall(new("  CANCION ")).Records.Select(record => record.Value),
+                Is.EqualTo(new[] { "Yesterday" }));
+            Assert.That(store.Recall(new("canc")).Records, Is.Empty);
+        });
+    }
+
+    // Auditoría final 2 (otros proveedores, 7): a forget is read back with its own criterion; the memories of another
+    // kind or topic that remain do not make it look undone.
+    [Test]
+    public void HoldsReadsAForgetBackWithItsOwnCriterion()
+    {
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector);
+        _ = store.Save(Save("save-a", "color", "azul"));
+        _ = store.Save(new MemorySaveRequest("save-b", "pintura", "pintura", "óleo", Tags: ["color"]));
+        _ = store.Save(Save("save-c", "ciudad", "Santiago"));
+        var topic = new MemoryForgetRequest("forget-topic", MemoryForgetScope.Topic, Topic: "color");
+
+        bool before = store.Holds(topic);
+        MemoryForgetResult forgotten = store.Forget(topic);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(before, Is.True);
+            Assert.That(forgotten.DeletedCount, Is.EqualTo(2));
+            Assert.That(store.Holds(topic), Is.False);
+            Assert.That(store.Holds(new MemoryForgetRequest("check-all", MemoryForgetScope.All)), Is.True);
+        });
+    }
+
     [Test]
     public void BeginningANewSessionPurgesTheOldSessionAndPreservesPersistentRecords()
     {

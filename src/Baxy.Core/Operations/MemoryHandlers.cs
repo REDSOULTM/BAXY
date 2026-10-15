@@ -378,7 +378,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             _ => throw new JsonException("The forget scope is invalid."),
         };
         MemoryForgetResult result = _store.Forget(request);
-        if (!ForgottenStateMatches(request, result, opened.SessionId))
+        if (!ForgottenStateMatches(request, result))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -417,8 +417,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                     invocation.InvocationId,
                     MemoryForgetScope.Session,
                     SessionId: opened.SessionId),
-                result,
-                opened.SessionId))
+                result))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -755,37 +754,10 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                     StringComparison.Ordinal));
     }
 
-    private bool ForgottenStateMatches(
-        MemoryForgetRequest request,
-        MemoryForgetResult result,
-        string? sessionId)
-    {
-        if (result.DeletedCount <= 0)
-        {
-            return true;
-        }
-
-        if (request.Scope == MemoryForgetScope.Exact && request.Selector is not null)
-        {
-            return !_store.Recall(new MemoryRecallRequest(
-                    request.Selector,
-                    sessionId,
-                    LocalMemoryStore.MaximumRecallResults))
-                .Records
-                .Any(record => string.Equals(
-                    record.Selector,
-                    request.Selector,
-                    StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (request.Scope == MemoryForgetScope.Session)
-        {
-            return _store.Status(new MemoryStatusRequest(sessionId)).SessionRecords == 0;
-        }
-
-        MemoryStatusResult status = _store.Status(new MemoryStatusRequest(sessionId));
-        return status.TotalRecords == 0;
-    }
+    // Auditoría final 2 (otros proveedores, 7): the forget is read back with its own criterion (that selector, kind,
+    // topic, session or everything); other memories that remain do not make a correct forget a failure.
+    private bool ForgottenStateMatches(MemoryForgetRequest request, MemoryForgetResult result) =>
+        result.DeletedCount <= 0 || !_store.Holds(request);
 
     private static OperationOutcome Failure(
         string errorCode,

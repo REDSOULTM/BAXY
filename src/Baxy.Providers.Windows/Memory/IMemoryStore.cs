@@ -19,4 +19,6 @@ public interface IMemoryStore
     MemoryCorrectResult Correct(MemoryCorrectRequest request);
 
     MemoryForgetResult Forget(MemoryForgetRequest request);
+
+    bool Holds(MemoryForgetRequest request);
 }
