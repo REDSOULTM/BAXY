@@ -293,7 +293,8 @@ public sealed class ProductCatalogTests
     [TestCase("input.visible.controls", """{"limit":60,"known":[4660]}""", false)]
     [TestCase("input.visible.controls", """{"limit":60,"processId":4242}""", false)]
     [TestCase("input.visible.controls", """{"limit":60,"starting":true}""", false)]
-    [TestCase("input.visible.controls", """{"limit":60,"windows":[4660],"tail":true}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"tail":true}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"windows":[4660]}""", false)]
     public void TheTypesOfTaskOfV3AreArgumentsOfThePrimitives(string operation, string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);

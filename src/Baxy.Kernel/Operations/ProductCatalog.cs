@@ -905,13 +905,6 @@ public static class ProductCatalog
                         maximumItems: 24,
                         itemMaximumUtf8Bytes: 64,
                         itemNonWhitespace: true),
-                    // Las ventanas a mirar por su número (el «window N» que dio una vista anterior); la
-                    // mirada sólo lee ésas.
-                    new OperationArgumentProperty(
-                        "windows",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        itemTypes: OperationJsonType.Integer,
-                        maximumItems: 16),
                 ],
                 []),
             OperationRisks.ReadOnly,
