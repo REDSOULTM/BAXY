@@ -137,6 +137,36 @@ public sealed class ComputerUseFallbackNameTests
         }));
     }
 
+    // Auditoría C10: a row whose title only holds the label is never the control pressed for it; its name comes back as
+    // a candidate. Counter-case: the exact name, folded (case, accents), is the one found and no candidate is noted.
+    [Test]
+    public void ARowThatOnlyHoldsTheLabelIsACandidateNeverTheControlFound()
+    {
+        JsonElement answer = RunWorker("""
+            Add-Type -AssemblyName UIAutomationClient
+            $Actionable=@('Button','ListItem')
+            $script:TitledKinds=@('ControlType.TabItem','ControlType.ListItem','ControlType.TreeItem','ControlType.Hyperlink')
+            function Test-SystemMenu($el){ return $false }
+            function Fake([string]$name,[string]$kind){
+              $props=[pscustomobject]@{ Name=$name; ControlType=[pscustomobject]@{ ProgrammaticName=('ControlType.'+$kind) }; IsOffscreen=$false }
+              return [pscustomobject]@{ Cached=$props; Current=$props; Tag=$name }
+            }
+            $script:Fakes=@((Fake 'Bloc de notas, 11.2, Microsoft' 'ListItem'), (Fake 'Configuración' 'Button'))
+            function Get-ShownDescendants($root,$hwnd,$seconds){ return $script:Fakes }
+            $script:NamedCandidates=@()
+            $held=@(Find-Named $null @('bloc de notas'))
+            $heldCandidates=@($script:NamedCandidates)
+            $script:NamedCandidates=@()
+            $exact=@(Find-Named $null @('configuracion'))
+            [Console]::Out.Write((ConvertTo-Json -Compress @($held.Count, ($heldCandidates -join ';'), ($exact | ForEach-Object { $_.Tag }), $script:NamedCandidates.Count)))
+            """);
+
+        Assert.That(answer.EnumerateArray().Select(item => item.ToString()), Is.EqualTo(new[]
+        {
+            "0", "Bloc de notas, 11.2, Microsoft", "Configuración", "0",
+        }));
+    }
+
     // Ronda 22 (r18 t2-c04) and review 1 of motor-listas-abiertas (finding 3): a box's entry is chosen by a number
     // asked only when exactly one entry says it as a whole number; the integer part of a decimal («2» of «2,5»,
     // «125» of «125,5 %») or a longer number («150» of «1500») is never it, as the mind reads numbers.
