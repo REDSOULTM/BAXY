@@ -1251,7 +1251,6 @@ internal sealed class WindowsVisibleControlAdapter
         int processId = 0;
         string? application = null;
         bool starting = false;
-        bool identityIfAbsent = false;
         bool tail = false;
         bool lines = false;
         IReadOnlyList<string> wanted = [];
@@ -1283,8 +1282,6 @@ internal sealed class WindowsVisibleControlAdapter
                 && wantsText.ValueKind == JsonValueKind.True;
             starting = arguments.TryGetProperty("starting", out JsonElement startingValue)
                 && startingValue.ValueKind == JsonValueKind.True;
-            identityIfAbsent = arguments.TryGetProperty("identityIfAbsent", out JsonElement identityValue)
-                && identityValue.ValueKind == JsonValueKind.True;
             tail = arguments.TryGetProperty("tail", out JsonElement tailValue) && tailValue.ValueKind == JsonValueKind.True;
             lines = arguments.TryGetProperty("lines", out JsonElement linesValue) && linesValue.ValueKind == JsonValueKind.True;
             includeText |= lines;
@@ -1317,7 +1314,7 @@ internal sealed class WindowsVisibleControlAdapter
         {
             ViewResult view = await BuildViewAsync(
                     limit, includeText, processId, application, openedWindow, cancellationToken, frontReturned,
-                    wanted, identityIfAbsent, tail, lines)
+                    wanted, tail, lines)
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
@@ -1489,12 +1486,11 @@ internal sealed class WindowsVisibleControlAdapter
         CancellationToken cancellationToken,
         bool frontReturned = false,
         IReadOnlyList<string>? wanted = null,
-        bool identityIfAbsent = false,
         bool tail = false,
         bool lines = false) =>
         await BuildViewOfAsync(
             limit, includeText, processId, application, openedWindow, frontReturned,
-            wanted ?? [], identityIfAbsent, tail, lines,
+            wanted ?? [], tail, lines,
             cancellationToken)
             .ConfigureAwait(false);
 
@@ -1506,7 +1502,6 @@ internal sealed class WindowsVisibleControlAdapter
         nint openedWindow,
         bool frontReturned,
         IReadOnlyList<string> wanted,
-        bool identityIfAbsent,
         bool tail,
         bool lines,
         CancellationToken cancellationToken)
@@ -1518,7 +1513,6 @@ internal sealed class WindowsVisibleControlAdapter
         bool requested = false;
         // Encargo EX: the window was read through the modal dialog that disabled it (ModalSurface).
         bool modal = false;
-        bool frontOnly = false;
         // The top-level window the look is of, before its modal dialog is taken (said as «root»).
         nint windowRoot = 0;
         try
@@ -1538,9 +1532,6 @@ internal sealed class WindowsVisibleControlAdapter
             // place (the person's in front): the visible windows go back as candidates and nothing is looked at.
             if (hwnd == 0 && application is not null)
                 return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop().Windows), []);
-            // Ronda 26 (banco c24b: 54 first looks of 1.2 s read the person's window before an opening already decided):
-            // the application has no window and the look asked only who is in front then: no tree, capture or text.
-            frontOnly = identityIfAbsent && hwnd == 0;
             if (hwnd == 0)
             {
                 hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
@@ -1584,13 +1575,10 @@ internal sealed class WindowsVisibleControlAdapter
         // the screen (imp3: the screen copy of a chat client covered by another window read the other window's text).
         bool covered = cover != 0 || lines;
         nint firstLooked = hwnd;
-        Task<VisibleControlSurface.CapturedWindow?> captureTask = frontOnly
-            ? Task.FromResult<VisibleControlSurface.CapturedWindow?>(null)
-            : Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken), CancellationToken.None);
-        Task<WrittenText>? textTask = includeText && !frontOnly ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
-        JsonDocument? answer = frontOnly
-            ? JsonDocument.Parse("""{"ok":true,"controls":[]}""")
-            : await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
+        Task<VisibleControlSurface.CapturedWindow?> captureTask =
+            Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken), CancellationToken.None);
+        Task<WrittenText>? textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
+        JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
         if (answer is null)
         {
             return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
@@ -1603,7 +1591,7 @@ internal sealed class WindowsVisibleControlAdapter
         // family surface over it is: the look's root stays the application's window. What was found, or why nothing was,
         // is said.
         VisibleControlSurface.ContentChoice? surfaceChoice = null;
-        if (!frontOnly && hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
+        if (hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
             && answer.RootElement.TryGetProperty("ok", out JsonElement frameOk) && frameOk.ValueKind == JsonValueKind.True
             && VisibleControlSurface.TryBounds(hwnd, out int frameLeft, out int frameTop, out int frameRight, out int frameBottom))
         {
@@ -1763,13 +1751,6 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteNumber("version", 2);
                 writer.WriteBoolean("ok", true);
                 writer.WriteString("error", string.Empty);
-                if (frontOnly)
-                    writer.WriteBoolean("identityOnly", true);
-                // r29 (pasada r27 v3-20, v3-22, v3-72): the application the look was asked for is a live process
-                // raised above this one that shows no window a lower process can find: the look says so, and the
-                // mission stops with that cause instead of reading the window in front in its place.
-                if (frontOnly && VisibleControlSurface.LiveProcessRunsAboveUs(processId))
-                    writer.WriteBoolean("applicationElevated", true);
                 // Fronts an application opened just before took by itself and the guard handed back (v3 point 0), and
                 // those Windows refused to hand back (the application kept the front).
                 long activationsReturned = Applications.ForegroundHandBack.TakeGuardReturns();

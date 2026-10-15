@@ -1457,11 +1457,6 @@ internal static partial class VisibleControlSurface
         return Elevated(processId) != false;
     }
 
-    /// <summary>r29: <see cref="RunsAboveUs"/> of a process that is still running (a process that already ended
-    /// cannot be opened either, and is not «raised»).</summary>
-    internal static bool LiveProcessRunsAboveUs(int processId) =>
-        processId > 0 && ProcessIdentity(unchecked((uint)processId)).ProcessName.Length > 0 && RunsAboveUs(processId);
-
     internal static bool? Elevated(int processId)
     {
         nint process = OpenProcess(0x1000, false, unchecked((uint)processId));
