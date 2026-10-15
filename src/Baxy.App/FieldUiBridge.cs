@@ -30,9 +30,7 @@ internal sealed record FieldModelIdentity(
     string Alias,
     string FileName,
     string Family,
-    string Parameters,
-    string Quantization,
-    long SizeBytes);
+    string Parameters);
 
 internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
 {

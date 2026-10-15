@@ -1,5 +1,5 @@
 /* Bottom-right toast stack. Rendered once near the root; reacts to
- * pushToast() calls anywhere in the tree via the global event bus. */
+ * toastError() calls anywhere in the tree via the global event bus. */
 
 import { useToasts } from '../hooks/useToast';
 import { Icon } from './Icon';
@@ -10,7 +10,7 @@ export function ToastHost() {
   return (
     <div className="toast-host" aria-live="polite" aria-atomic="false">
       {toasts.map((t) => (
-        <div key={t.id} className={`toast toast-${t.kind}`} role="status">
+        <div key={t.id} className="toast toast-error" role="status">
           <span className="toast-msg">{t.msg}</span>
           <button
             type="button"
