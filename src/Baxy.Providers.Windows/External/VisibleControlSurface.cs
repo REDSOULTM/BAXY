@@ -1271,25 +1271,35 @@ internal static partial class VisibleControlSurface
         }
     }
 
-    private static unsafe Dictionary<uint, List<uint>> ChildrenByParent()
+    private static Dictionary<uint, List<uint>> ChildrenByParent()
     {
         var children = new Dictionary<uint, List<uint>>();
+        foreach ((uint process, uint parent) in ParentByProcess())
+        {
+            if (!children.TryGetValue(parent, out List<uint>? list))
+                children[parent] = list = [];
+            list.Add(process);
+        }
+
+        return children;
+    }
+
+    /// <summary>Each running process with the process that started it (one Toolhelp snapshot).</summary>
+    internal static unsafe Dictionary<uint, uint> ParentByProcess()
+    {
+        var parents = new Dictionary<uint, uint>();
         nint snapshot = CreateToolhelp32Snapshot(0x00000002, 0);
         if (snapshot == -1 || snapshot == 0)
-            return children;
+            return parents;
         try
         {
             var entry = new ProcessEntry32 { Size = (uint)sizeof(ProcessEntry32) };
             if (!Process32FirstW(snapshot, ref entry))
-                return children;
+                return parents;
             do
             {
                 if (entry.ProcessId != 0 && entry.ParentProcessId != entry.ProcessId)
-                {
-                    if (!children.TryGetValue(entry.ParentProcessId, out List<uint>? list))
-                        children[entry.ParentProcessId] = list = [];
-                    list.Add(entry.ProcessId);
-                }
+                    parents[entry.ProcessId] = entry.ParentProcessId;
                 entry.Size = (uint)sizeof(ProcessEntry32);
             }
             while (Process32NextW(snapshot, ref entry));
@@ -1299,7 +1309,7 @@ internal static partial class VisibleControlSurface
             _ = CloseHandle(snapshot);
         }
 
-        return children;
+        return parents;
     }
 
     private static nint LargestUsableWindow(HashSet<uint> family)

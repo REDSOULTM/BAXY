@@ -1678,6 +1678,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         Dictionary<uint, nint>? hostedFrames = null;
+        Dictionary<uint, uint>? parents = null;
         try
         {
             foreach (Process process in processes)
@@ -1751,7 +1752,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                             continue;
                     }
                     if (!packaged
-                        && !ExecutableIsLaunchedImage(Path.GetFullPath(executablePath), expectedExecutable!))
+                        && !ExecutableIsLaunchedImage(Path.GetFullPath(executablePath), expectedExecutable!)
+                        && !DescendsFromLaunchedImage(
+                            process, expectedExecutable!, parents ??= External.VisibleControlSurface.ParentByProcess()))
                         continue;
 
                     long creationTime = process.StartTime.ToUniversalTime().Ticks;
@@ -1937,6 +1940,41 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     /// belongs to the copy inside (t4-r6: «cierra discord» → window_not_found).
     /// A same-named executable anywhere else is a different program.
     /// </summary>
+    /// <summary>
+    /// A window drawn by a helper the application started (Steam's windows belong to steamwebhelper.exe, a child of
+    /// steam.exe; measured on the PC 2026-10-15 after the identity by words was removed): the window's process descends,
+    /// within three generations, from a process running the launched image, each parent older than its child so a reused
+    /// process id never passes for a parent.
+    /// </summary>
+    internal static bool DescendsFromLaunchedImage(
+        Process process, string expectedPath, IReadOnlyDictionary<uint, uint> parents)
+    {
+        try
+        {
+            uint id = unchecked((uint)process.Id);
+            DateTime childStart = process.StartTime;
+            for (int generation = 0; generation < 3 && parents.TryGetValue(id, out uint parentId) && parentId != 0;
+                 generation++)
+            {
+                using Process parent = Process.GetProcessById(unchecked((int)parentId));
+                if (parent.StartTime > childStart)
+                    return false;
+                if (ExecutableImagePath(parent.Id) is { } path && Path.IsPathFullyQualified(path)
+                    && ExecutableIsLaunchedImage(Path.GetFullPath(path), expectedPath))
+                    return true;
+                id = parentId;
+                childStart = parent.StartTime;
+            }
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            // A parent that exited or cannot be read proves nothing.
+        }
+
+        return false;
+    }
+
     internal static bool ExecutableIsLaunchedImage(string actualPath, string expectedPath)
     {
         if (string.Equals(actualPath, expectedPath, StringComparison.OrdinalIgnoreCase))
