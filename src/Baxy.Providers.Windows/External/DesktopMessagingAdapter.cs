@@ -555,8 +555,7 @@ internal interface IDesktopMessagingAutomation
 {
     ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
         string channel,
-        CancellationToken cancellationToken) =>
-        ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+        CancellationToken cancellationToken);
 
     ValueTask<DesktopRecipientObservation> ResolveAsync(
         string channel,
@@ -571,8 +570,7 @@ internal interface IDesktopMessagingAutomation
     ValueTask<DesktopMessageObservation> DraftAsync(
         ResolvedRecipient recipient,
         string text,
-        CancellationToken cancellationToken) =>
-        throw new NotSupportedException("message drafts are not supported by this automation");
+        CancellationToken cancellationToken);
 }
 
 internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessagingAutomation
@@ -583,9 +581,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyA = 0x41;
     private const ushort VirtualKeyBack = 0x08;
     private const ushort VirtualKeyEscape = 0x1B;
-    private const ushort VirtualKeyShift = 0x10;
-    private const ushort VirtualKeyAlt = 0x12;
-    private const ushort VirtualKeyDown = 0x28;
     private const ushort VirtualKeyRight = 0x27;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
@@ -1476,8 +1471,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return text;
     }
 
-    // Opt-in evidence of what the OCR saw (crop and the joined readings), like
-    // the mind's compose audit: set BAXY_MESSAGING_OCR_AUDIT_DIR to a directory.
+    // Opt-in evidence of what the OCR saw (crop and the joined readings): set
+    // BAXY_MESSAGING_OCR_AUDIT_DIR to a directory.
     private static void AuditReading(byte[] bitmap, string text)
     {
         string? directory = Environment.GetEnvironmentVariable("BAXY_MESSAGING_OCR_AUDIT_DIR");
@@ -1861,11 +1856,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string.Equals(channel, "whatsapp", StringComparison.Ordinal)
             ? WhatsAppConversationPaneOffsetAt96Dpi
             : DiscordConversationPaneOffsetAt96Dpi;
-
-    // Discord's own title bar (a thin band above the header row): an empty spot
-    // right of the navigation arrows, left of the centered title.
-    private const int DiscordTitleBarClickLogicalX = 600;
-    private const int DiscordTitleBarClickLogicalY = 14;
 
     // Outgoing bubbles are right-aligned, so the delivery is read from the right
     // end of the last-messages band alone: over the full band the doodle

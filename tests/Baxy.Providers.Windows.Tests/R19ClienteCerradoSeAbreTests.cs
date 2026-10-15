@@ -53,6 +53,9 @@ public sealed class R19ClienteCerradoSeAbreTests
             Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
+
+        public ValueTask<DesktopMessageObservation> DraftAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("no draft in these tests");
     }
 
     private static async Task<(ExternalCapabilityReceipt Receipt, List<string> Steps)> ResolveAsync(

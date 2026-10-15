@@ -389,6 +389,9 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
+
+        public ValueTask<DesktopMessageObservation> DraftAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("no draft in these tests");
     }
 
     // t1-c09#1 («Ron92»), t2-c07#1 («Ron92»), t3-c07 t1 («ron92»); a recipient that does not exist ends the same way.

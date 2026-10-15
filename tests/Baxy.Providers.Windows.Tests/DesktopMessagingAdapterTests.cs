@@ -326,6 +326,17 @@ public sealed class DesktopMessagingAdapterTests
         internal ResolvedRecipient? SentRecipient { get; private set; }
         internal string? SentText { get; private set; }
 
+        public ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
+            string channel,
+            CancellationToken cancellationToken) =>
+            ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+
+        public ValueTask<DesktopMessageObservation> DraftAsync(
+            ResolvedRecipient recipient,
+            string text,
+            CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("no draft in these tests");
+
         public ValueTask<DesktopRecipientObservation> ResolveAsync(
             string channel,
             string recipient,
