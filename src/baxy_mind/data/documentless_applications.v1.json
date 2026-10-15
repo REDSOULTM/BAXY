@@ -1,0 +1,52 @@
+{
+ "version": 1,
+ "source": "v3 r6 lectores (tanda t2-r4 c04-5 «ya quedó, cierra configuración porfa» pidió confirmación, 2026-10-08). Applications whose windows hold no document of the person: closing one loses nothing that opening it again does not bring back, so app.close on such a window is a low reversible act (RiskPolicy, D3) and goes without asking. Everything not listed here (Word, Notepad, Paint, any editor, an unknown application, a window whose application is not known) keeps asking. Calculator and Character Map are not listed (review r10a, 2026-10-08): closing the Calculator loses the calculation in progress and its memory and history of the session, and closing Character Map loses the «Characters to copy» field; reopening brings back neither. A window matches by the catalog identity it was resolved from (the package family before «!», or the whole AppUserModelID of a desktop entry) or by the file name of its executable; a shared frame host (ApplicationFrameHost.exe) is never listed, so a frame matches only through its resolved identity. File Explorer (explorer.exe, Microsoft.Windows.Explorer) is never listed: the same process owns the desktop, the taskbar, property sheets and the copy/move progress dialog, its window resolution does not keep only the folder windows, and closing a progress dialog cancels a transfer (adversarial review 2026-10-08). Compared case-insensitively. Read by the App's providers (Baxy.Providers.Windows, embedded resource).",
+ "packageFamilies": [
+  "windows.immersivecontrolpanel_cw5n1h2txyewy",
+  "Microsoft.WindowsAlarms_8wekyb3d8bbwe"
+ ],
+ "appUserModelIds": [],
+ "executables": [
+  "SystemSettings.exe",
+  "Time.exe",
+  "Taskmgr.exe"
+ ],
+ "accountBacked": {
+  "source": "v3 r22 uso real (pasada r18 t4-c03 t4 «ya cierra discord» → «¿Quieres confirmar que cierre Discord…?» y no se cerró, 2026-10-09). Applications whose content lives in the person's account and comes back when they are opened again: chats and their drafts, music and its queue, stores and game launchers and their libraries. Closing one of their windows asks the application politely (WM_CLOSE, the process is never killed) and loses nothing that opening it again does not bring back, so app.close on such a window is a low reversible act (RiskPolicy, D3) and goes without asking. If the application still asks something of its own when closed, the close receipt says closePrompted and BAXY never answers it. Same matching rules as the top-level lists. A window whose application is capturing the microphone (a call, a meeting, a recording in progress, read from Windows' own microphone-in-use record) keeps asking whatever this list says: leaving a call is not brought back by opening the application again (v3 r22 revisión). Editors, office suites and drawing applications are never listed here: their content lives in a file of the person. Sources: each application's own sign-in model (account libraries and chats synced by the service).",
+  "packageFamilies": [
+   "SpotifyAB.SpotifyMusic_zpdnekdrzrea0",
+   "5319275A.WhatsAppDesktop_cv1g1gvanyjgm",
+   "Microsoft.WindowsStore_8wekyb3d8bbwe",
+   "Microsoft.GamingApp_8wekyb3d8bbwe",
+   "MSTeams_8wekyb3d8bbwe"
+  ],
+  "appUserModelIds": [],
+  "executables": [
+   "Discord.exe",
+   "DiscordPTB.exe",
+   "DiscordCanary.exe",
+   "Spotify.exe",
+   "steam.exe",
+   "steamwebhelper.exe",
+   "EpicGamesLauncher.exe",
+   "Battle.net.exe",
+   "EADesktop.exe",
+   "upc.exe",
+   "GalaxyClient.exe",
+   "Telegram.exe",
+   "WhatsApp.exe",
+   "slack.exe",
+   "ms-teams.exe"
+  ]
+ },
+ "neverWithoutAsking": {
+  "source": "v3 r22 uso real: identities that never close without asking, neither through a list above nor because BAXY launched their window in this session (launch provenance). File Explorer's process also owns the desktop, the taskbar, property sheets and the copy/move progress dialog, and a folder window BAXY opened may live in the shell process the person was already using (adversarial review 2026-10-08).",
+  "packageFamilies": [],
+  "appUserModelIds": [
+   "Microsoft.Windows.Explorer"
+  ],
+  "executables": [
+   "explorer.exe"
+  ]
+ }
+}

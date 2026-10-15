@@ -153,14 +153,7 @@ def test_source_quality_gate_dispatches_non_mutating_checks(mode: str) -> None:
     assert result["powershell_source_checks"] == 1
     assert set(calls) == expected_stages
     assert "--no-cache" in calls["python-ruff"]["arguments"]
-    assert any(
-        argument.endswith("experiments\\mind_llm_tournament")
-        for argument in calls["python-ruff"]["arguments"]
-    )
-    assert any(
-        argument.endswith("experiments\\mind_router_spike")
-        for argument in calls["python-ruff"]["arguments"]
-    )
+    assert not any("experiments" in argument for argument in calls["python-ruff"]["arguments"])
     assert "--max-warnings" in calls["field-ui-eslint"]["arguments"]
     for stage in ("field-ui-tsc-app", "field-ui-tsc-node"):
         arguments = calls[stage]["arguments"]

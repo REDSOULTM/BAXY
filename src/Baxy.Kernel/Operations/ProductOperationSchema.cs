@@ -43,7 +43,8 @@ public sealed class OperationArgumentProperty
         int? minimumItems = null,
         int? maximumItems = null,
         int? itemMaximumUtf8Bytes = null,
-        bool itemNonWhitespace = false)
+        bool itemNonWhitespace = false,
+        OperationArgumentsSchema? itemSchema = null)
     {
         if (!IsCanonicalPropertyName(name))
         {
@@ -76,7 +77,19 @@ public sealed class OperationArgumentProperty
             throw new ArgumentOutOfRangeException(nameof(itemMaximumUtf8Bytes));
         }
 
-        if (types.HasFlag(OperationJsonType.Array))
+        if (types.HasFlag(OperationJsonType.Array) && itemSchema is not null)
+        {
+            // Items that are closed objects (the sub-goals of a chained
+            // mission): one level only, never arrays inside them.
+            if (itemTypes != OperationJsonType.None
+                || itemMaximumUtf8Bytes.HasValue
+                || itemNonWhitespace
+                || itemSchema.Properties.Any(static property => property.Types.HasFlag(OperationJsonType.Array)))
+            {
+                throw new ArgumentException("Object items carry only their own closed, array-free schema.", nameof(itemSchema));
+            }
+        }
+        else if (types.HasFlag(OperationJsonType.Array))
         {
             ValidateTypes(itemTypes, nameof(itemTypes));
             if (itemTypes.HasFlag(OperationJsonType.Array))
@@ -88,7 +101,8 @@ public sealed class OperationArgumentProperty
             || minimumItems.HasValue
             || maximumItems.HasValue
             || itemMaximumUtf8Bytes.HasValue
-            || itemNonWhitespace)
+            || itemNonWhitespace
+            || itemSchema is not null)
         {
             throw new ArgumentException("Array item constraints require the array type.", nameof(itemTypes));
         }
@@ -142,6 +156,7 @@ public sealed class OperationArgumentProperty
         MaximumItems = maximumItems;
         ItemMaximumUtf8Bytes = itemMaximumUtf8Bytes;
         ItemNonWhitespace = itemNonWhitespace;
+        ItemSchema = itemSchema;
     }
 
     public string Name { get; }
@@ -173,6 +188,9 @@ public sealed class OperationArgumentProperty
     public int? ItemMaximumUtf8Bytes { get; }
 
     public bool ItemNonWhitespace { get; }
+
+    /// <summary>The closed object schema every item satisfies, when the items are objects.</summary>
+    public OperationArgumentsSchema? ItemSchema { get; }
 
     private static void ValidateTypes(OperationJsonType types, string parameterName)
     {
@@ -298,7 +316,12 @@ public sealed class OperationArgumentsSchema
 
                 WriteNumber(writer, "minItems", property.MinimumItems);
                 WriteNumber(writer, "maxItems", property.MaximumItems);
-                if (property.ItemTypes != OperationJsonType.None)
+                if (property.ItemSchema is { } itemSchema)
+                {
+                    writer.WritePropertyName("items");
+                    writer.WriteRawValue(itemSchema.CanonicalJson);
+                }
+                else if (property.ItemTypes != OperationJsonType.None)
                 {
                     writer.WritePropertyName("items");
                     writer.WriteStartObject();
@@ -403,7 +426,8 @@ public sealed class ProductOperationDescriptor
         string risk,
         string verifierContractId,
         ToolExposure toolExposure,
-        string description)
+        string description,
+        bool? requiresObservedEffect = null)
     {
         if (!Baxy.Contracts.ContractValidator.IsOperationName(name))
         {
@@ -437,6 +461,7 @@ public sealed class ProductOperationDescriptor
         VerifierContractId = verifierContractId;
         ToolExposure = toolExposure;
         Description = description;
+        RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
     }
 
     public string Name { get; }
@@ -450,6 +475,9 @@ public sealed class ProductOperationDescriptor
     public ToolExposure ToolExposure { get; }
 
     public string Description { get; }
+
+    // Privacy risk and requiring an observed mutation are separate contract facts.
+    public bool RequiresObservedEffect { get; }
 
     private static bool IsCanonicalContractId(string? value)
     {
@@ -521,6 +549,36 @@ public static class OperationArgumentValidator
         return schema.Required.All(seen.Contains);
     }
 
+    /// <summary>
+    /// Ronda 23 (índices de vista y esquema): the arguments that make <see cref="IsValid"/> false, by name and in
+    /// the order seen: one not declared, one whose value the schema refuses, one repeated, then each required one
+    /// missing. Empty for arguments the schema takes (and for a non-object, which names none).
+    /// </summary>
+    public static IReadOnlyList<string> InvalidArguments(JsonElement arguments, OperationArgumentsSchema schema)
+    {
+        ArgumentNullException.ThrowIfNull(schema);
+        var invalid = new List<string>();
+        if (arguments.ValueKind != JsonValueKind.Object)
+        {
+            return invalid;
+        }
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (JsonProperty supplied in arguments.EnumerateObject())
+        {
+            OperationArgumentProperty? contract = schema.Properties.FirstOrDefault(property =>
+                string.Equals(property.Name, supplied.Name, StringComparison.Ordinal));
+            if ((!seen.Add(supplied.Name) || contract is null || !IsValidValue(supplied.Value, contract))
+                && !invalid.Contains(supplied.Name, StringComparer.Ordinal))
+            {
+                invalid.Add(supplied.Name);
+            }
+        }
+
+        invalid.AddRange(schema.Required.Where(name => !seen.Contains(name)));
+        return invalid;
+    }
+
     private static bool IsValidValue(JsonElement value, OperationArgumentProperty contract)
     {
         if (!MatchesType(value, contract.Types))
@@ -576,6 +634,16 @@ public static class OperationArgumentValidator
 
             foreach (JsonElement item in value.EnumerateArray())
             {
+                if (contract.ItemSchema is { } itemSchema)
+                {
+                    if (!IsValid(item, itemSchema))
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
                 if (!MatchesType(item, contract.ItemTypes))
                 {
                     return false;

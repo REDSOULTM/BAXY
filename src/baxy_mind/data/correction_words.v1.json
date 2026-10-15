@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "purpose": "Uso real v3 ronda 19 (t1-c03 «no wey te pedi 5 nomas…», t3-c16 «no, en YouTube» with YouTube already playing, t3-c18 «esa no es la de programador wey, sigue en la estandar, cambiala» with Programador already on screen, t2-c04 «no espera se ve muy grande, regresala como estaba» read as a prohibition): the words a correction is said with, folded and without accents. interjections: a denial that only opens a correction, never a prohibition of what follows when what follows gives BAXY an order (semantic.grammar._opens_an_order, revisión adversarial 3 de la ronda 19: the denial is the default; an order is read by the existing request readers, an undo, or what was asked said back). cease_orders: the order heads the readers know (_COVERAGE_ACTION_HEAD) whose order is to do nothing («detente», «stop», «cancela eso», «olvídalo», «deja spotify abierto»): after an interjection they are the denial said again. refusals: the words that refuse the clause they are in («no en YouTube», «YouTube no», «nunca en YouTube»): a provider named in such a clause is never already held (semantic.dialogue.correction_already_holds). repeat_neutral: the words (articles, demonstratives, clitics) an answer may change and still be the last answer said again after a correction (llm._repeats_the_last_answer); a verb, a polarity or any other word changed is another answer. asked_reproaches: what the person says back about what they asked, at the head of a clause (semantic.dialogue.reproaches_what_was_asked); asked_reproach_negations: what follows a reproach that makes it a prohibition («te pedí que no lo abrieras»); asked_reproach_links: the words after which the request's own verb is reported («te pedí que abrieras…», «I asked you to open…»). A reproach of the state is said in clauses of its own (semantic.dialogue.state_reproach): state_denials («esa no es la de X») and state_claims («sigue en X», the state the person believes is still on) followed by state_skips and one word, then state_tags; the other clauses only lead (state_leads) or ask it changed (state_change_orders). another: a correction that asks for another thing never already holds. count_limiters: what may follow a count said back («te pedí 5 nomás»); count_extent: the words of a complaint about how much was told («no me sueltes la lista entera»). What BAXY says when a correction already holds is never a reply of these words: a held effect is said with its sentence (operation_floor heldFact, encargo TZ-HOLD), a held count is composed by the writer (alreadyHolds). Ronda 22 (premisa falsa: t4-c02 «te pedi 3 nomas y me tiraste una lista enorme» and t3-c17 «me tiraste como 7» after exactly the count asked, t4-c04 «te he dicho brillo no volumen» right after the brightness was set): count_extent also holds the past forms of handing over and their clitics («me tiraste»); count_given: the words after which a number is what the person says BAXY handed over («me tiraste como 7»), never what they ask; count_joins: what joins a complaint to a reproach of what was asked without a pause («…3 nomás y me tiraste…»). target_names: the words a person names a setting or a device part with, by the identity the operations observe (observed.setting, observed.provider, observed.appId, the operation's own name): a contrast whose wanted thing is what the last turn did, and whose refused thing it did not touch, already holds (semantic.dialogue.correction_already_holds, kind target).",
+ "interjections": [
+  "no espera", "no esperate", "no wait", "no hold on", "no bro", "no che", "no wey", "no guey", "no man", "no dude",
+  "no mejor", "no loco", "no po", "no pues"
+ ],
+ "cease_orders": ["deten", "detener", "stop", "pausa", "pausar", "pause", "cancela", "cancelar", "cancel", "olvida", "olvidar", "forget", "dejar"],
+ "refusals": ["no", "nunca", "jamas", "ni", "tampoco", "not", "never", "nope", "nah"],
+ "repeat_neutral": [
+  "el", "la", "los", "las", "lo", "le", "les", "un", "una", "unos", "unas", "ese", "esa", "esos", "esas", "este",
+  "esta", "estos", "estas", "the", "a", "an", "this", "that", "these", "those"
+ ],
+ "asked_reproaches": [
+  "te pedi", "te habia pedido", "te he pedido", "te estoy pidiendo", "yo te pedi", "i asked for", "i asked you for",
+  "i asked"
+ ],
+ "asked_reproach_negations": ["que no", "no", "not", "not to", "you not to", "you to not", "nada"],
+ "asked_reproach_links": ["que", "to", "you"],
+ "state_denials": [
+  "esa no es la de", "ese no es el de", "no es la de", "no es el de", "esa no es la", "ese no es el",
+  "that's not the", "thats not the", "that is not the", "it's not the", "its not the"
+ ],
+ "state_claims": [
+  "sigue en", "sigue siendo", "todavia esta en", "aun esta en", "sigue estando en", "still on", "still in",
+  "it's still on", "its still on", "it's still in", "its still in", "it is still on", "it is still in"
+ ],
+ "state_skips": ["el", "la", "los", "las", "lo", "modo", "the", "mode", "on", "in"],
+ "state_tags": ["wey", "guey", "weon", "bro", "po", "pues", "man", "dude", "che", "loco", "eh", "one", "mode", "modo"],
+ "state_leads": [
+  "no", "not", "nah", "nope", "pero", "but", "y", "and", "que", "ya", "oye", "mira", "si", "pues", "bro", "wey", "guey",
+  "weon", "che", "ok", "okay", "man", "dude", "loco", "po"
+ ],
+ "state_change_orders": [
+  "cambiala", "cambialo", "cambiale", "cambia", "cambiar", "cambialo ya", "cambiala ya", "change it", "change that",
+  "fix it", "arreglalo", "arreglala", "corrigelo", "corrigela"
+ ],
+ "another": [
+  "otra", "otro", "otras", "otros", "another", "other", "others", "different", "distinta", "distinto", "diferente",
+  "siguiente", "next", "else"
+ ],
+ "count_limiters": ["nomas", "solo", "solamente", "only", "just", "nada", "mas"],
+ "count_extent": [
+  "lista", "entera", "entero", "completa", "completo", "toda", "todo", "todas", "todos", "larga", "enorme", "list",
+  "whole", "entire", "full", "all", "long", "everything", "sueltes", "tires", "des", "pongas", "mandes", "dump", "give",
+  "send", "many", "much", "tantas", "tantos", "muchas", "muchos", "so", "tiraste", "soltaste", "diste", "mandaste",
+  "pasaste", "pusiste", "me", "gave", "dumped", "threw", "sent", "una", "un", "a", "an", "the", "como", "unos", "unas",
+  "like", "about", "around", "you"
+ ],
+ "count_given": [
+  "tiraste", "soltaste", "diste", "mandaste", "pasaste", "pusiste", "dijiste", "listaste", "gave", "dumped", "threw",
+  "sent", "listed", "told"
+ ],
+ "count_joins": ["y", "e", "and", "pero", "but"],
+ "target_names": {
+  "brightness": ["brillo", "brightness"],
+  "volume": ["volumen", "volume", "sonido", "audio"],
+  "night_light": ["luz nocturna", "night light"],
+  "do_not_disturb": ["no molestar", "do not disturb"],
+  "airplane_mode": ["modo avion", "airplane mode"],
+  "microphone": ["microfono", "microphone", "mic"]
+ }
+}

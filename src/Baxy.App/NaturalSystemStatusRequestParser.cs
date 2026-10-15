@@ -84,7 +84,10 @@ internal static partial class NaturalSystemStatusRequestParser
             return false;
         }
 
-        string folded = Fold(text);
+        // The language modifier changes presentation, not the requested reading.
+        // Keep the original text outside this recognizer for model composition.
+        string folded = TrailingResponseLanguagePattern().Replace(Fold(text), string.Empty)
+            .TrimEnd(' ', ',');
         if (MatchesTimePattern(folded))
         {
             return true;
@@ -118,8 +121,14 @@ internal static partial class NaturalSystemStatusRequestParser
             && TimePattern().IsMatch(remainder);
     }
 
+    // H0260 «wie spät ist es» y H0347 «che ore sono»: este atajo reconocía la
+    // hora escrita en alemán, italiano y francés y la contestaba en español,
+    // que es contestar en un idioma que no es el del pedido. La superficie de
+    // BAXY es el español y el inglés; un pedido en otro idioma se resuelve
+    // donde ya se resuelven los demás —pidiendo que lo repitan—, como quedó
+    // medido en «alza il volume» y en H0269 «quelle heure est-il».
     [GeneratedRegex(
-        "^(?:(?:dame|dime|decime|me dices|puedes decirme) (?:la hora(?: exacta| actual| local)?|la fecha(?: de hoy)?|que hora es(?: ahora)?)|que (?:hora|fecha) es(?: ahora)?|hora (?:actual|local)(?: por favor)?|what time is it(?: now| right now| ahora)?|what(?:'|’)?s the time(?: now| right now)?|what is today(?:'|’)?s date|tell me the (?:current|local) time|cual es la fecha de hoy|diga la fecha hoy|mi puoi dire che ore sono|quelle heure est il|wie spat ist es|che ore sono)[?!.]?$",
+        "^(?:(?:dame|dime|decime|me dices|puedes decirme) (?:la hora(?: exacta| actual| local)?(?: en este momento| ahora(?: mismo)?)?|la fecha(?: de hoy)?|que hora es(?: ahora)?)|que (?:hora|fecha) es(?: ahora)?|hora (?:actual|local)(?: por favor)?|what time is it(?: now| right now| ahora)?|what(?:'|’)?s the time(?: now| right now)?|what is today(?:'|’)?s date|tell me the (?:current|local) time|cual es la fecha de hoy|diga la fecha hoy)[?!.]?$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex TimePattern();
 
@@ -127,6 +136,11 @@ internal static partial class NaturalSystemStatusRequestParser
         "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa|ey)[,!. \\-—]+)+",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex LeadingCourtesyPattern();
+
+    [GeneratedRegex(
+        "[ ,]+(?:en|in) (?:espanol|spanish|ingles|english|spanglish)[?!. ]*$",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex TrailingResponseLanguagePattern();
 
     [GeneratedRegex(
         "\\b(?:huso|time zone|time zones|timezone|zona horaria|utc)\\b",
@@ -149,7 +163,7 @@ internal static partial class NaturalSystemStatusRequestParser
     private static partial Regex CurrentTimeAskPattern();
 
     [GeneratedRegex(
-        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez[, ]+la hora|finish with the local clock|termina con la hora local|local clock time|now the (?:time|clock)(?:[, ]+please)?|a tiny clock fact|segun el reloj, que (?:dia|hora) (?:es|marca)|la hora ya|clock now|clock\\??|check the time|time now|time once more|hora local, please)[?!. ]*$",
+        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez[, ]+la hora|la hora[, ]+otra vez|finish with the local clock|termina con la hora local|local clock time|now the (?:time|clock)(?:[, ]+please)?|a tiny clock fact|segun el reloj, que (?:dia|hora) (?:es|marca)|la hora ya|clock now|clock\\??|check the time|time now|time once more|hora local, please)[?!. ]*$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex CurrentTimeParaphrasePattern();
 

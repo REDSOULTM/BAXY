@@ -13,14 +13,14 @@ dice tu goal.
 | Quiero… | Empieza por | Y arrastra |
 |---|---|---|
 | Añadir o cambiar una **operación** | `src/Baxy.Kernel/Operations/ProductCatalog.cs` | handler en `src/Baxy.Core/Operations/`, provider en `src/Baxy.Providers.Windows/<área>/`, alias en `src/baxy_mind/data/catalog_operation_aliases.v1.json`, pruebas en `tests/Baxy.Kernel.Tests` y `tests/Baxy.Integration.Tests` |
-| Cambiar **cómo se entiende** una petición | `src/baxy_mind/router.py`, `family_classifier.py`, `semantic_family_arbiter.py` | corpus en `src/baxy_mind/data/`, `tools/router_bank_sources.py`, pruebas `tests/test_catalog_*`, `tests/test_*router*` |
+| Cambiar **cómo se entiende** una petición | `src/baxy_mind/semantic/` (mapa: `documentacion/SEMANTICA.md`; toda lectura del pedido vive ahí), `router.py`, `family_classifier.py`, `semantic_family_arbiter.py` | corpus en `src/baxy_mind/data/`, `tools/router_bank_sources.py`, pruebas `tests/test_catalog_*`, `tests/test_*router*` |
 | Cambiar el **plan** de una misión compuesta | `src/baxy_mind/planner.py`, `src/Baxy.Kernel/Planning/` | `src/Baxy.Kernel/Mission/MissionEngine.cs`, `tests/Baxy.Integration.Tests` |
 | Cambiar **autorización, riesgo o confirmación** | `src/Baxy.Kernel/Policy/`, `src/Baxy.Kernel/Mission/` | journal en `src/Baxy.Kernel/Journal/`, `tests/Baxy.Kernel.Tests` |
 | Cambiar el **protocolo** mente↔kernel | `src/Baxy.Contracts/ProtocolContracts.cs` | `src/baxy_mind/protocol.py` — **los dos extremos, siempre**; `tests/Baxy.Contracts.Tests` |
 | Cambiar un **efecto real** sobre Windows | `src/Baxy.Providers.Windows/<Audio\|Applications\|Filesystem\|Capture\|Network\|Windows\|…>/` | `tests/Baxy.Providers.Windows.Tests` |
-| Cambiar **lo que lee la persona** | Nunca con texto fijo en la App. Ver invariante 5: lo formula el modelo, en `src/baxy_mind/` | `src/Baxy.App/` sólo transporta |
+| Cambiar **lo que lee la persona** | Nunca con texto fijo en la App. Ver invariante 5: lo formula el modelo, en `src/baxy_mind/`: el redactor es `llm_compose.py` (`compose_user_message`), con su payload en `compose_payload.py`, sus vetos en `visible_defect.py` y `payload_fact_checks.py` y sus finales sin borrador en `deterministic_finals.py`; la charla, en `llm_chat.py` | `src/Baxy.App/` sólo transporta; los prompts, en `llm_prompts.py` |
 | Cambiar la **GUI** | `src/Baxy.FieldUi/src/` | `src/Baxy.FieldUi/dist/` es un sello histórico (ADR-0008): **no se regenera de paso** |
-| Cambiar **voz / wake / STT / TTS** | `src/baxy_mind/asr_fusion.py`, `phonetic_es.py`, `scripts/setup_mind_voice.ps1` | `documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md` |
+| Cambiar **voz / wake / STT / TTS** | `src/baxy_mind/voice.py`; AEC en `webrtc_aec.py` (paquete: `scripts/build_webrtc_runtime.py`), captura en `voice_capture.py`, loopback/ducking en `voice_aec.py`, salida en `voice_output.py`/`piper_tts.py`; `scripts/setup_mind_voice.ps1`; extensión ASR y receta en `runtime_wheels/README.md` y `scripts/build_sherpa_runtime.py` | `documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md` |
 | Cambiar **instalación o empaquetado** | `src/Baxy.Setup/` | `scripts/build_product.ps1`, `scripts/package_product.ps1`, `tests/Baxy.Setup.Tests` |
 | Cambiar la **evidencia de un turno** | `src/baxy_mind/turn_evidence*.py` | `tests/data/turn_evidence_public_holdout.v1.jsonl` (3 MB — nunca entero) |
 
@@ -28,7 +28,7 @@ dice tu goal.
 
 | Síntoma | Mira |
 |---|---|
-| La petición va a la operación equivocada | `src/baxy_mind/router.py`, `semantic_family_arbiter.py`, alias del catálogo; corridas en `artifacts/development/goal03*` |
+| La petición va a la operación equivocada | `src/baxy_mind/router.py`, `semantic_family_arbiter.py`, alias del catálogo |
 | «Dice que lo hizo» y no pasó | Handler en `src/Baxy.Core/Operations/` + postlectura del provider. Invariantes 2 y 3 |
 | Confirmación aceptada para otra cosa | `src/Baxy.Kernel/Mission/InMemoryConfirmationAuthority.cs`. Invariante 4 |
 | Frase fija en pantalla | `grep` de `"[A-ZÁÉÍÓÚ][^"]{15,}"` en `src/Baxy.App` y `src/Baxy.FieldUi/src`. Invariante 5 |
@@ -50,38 +50,24 @@ Fast = fuente PowerShell + ruff + compileall + eslint + tsc(app,node) + dotnet f
 + build Release. Full = Fast + suites .NET + pytest completo.
 Nivel 4 (publish, hardware, ciclo instalado) **no** está dentro de Full.
 
-## Qué directorios son ruido por defecto
+## Qué hay en el árbol (limpieza del 2026-10-06)
 
-| Ruta | Ficheros | Regla |
-|---|---|---|
-| `artifacts/` | 2.938 | Evidencia fechada de una corrida concreta. Se abre con ruta exacta, nunca se recorre |
-| `artifacts/_trazas_locales/` | 47 | Trazas crudas de corridas que ningún documento cita. Ignorada por Git; no es evidencia citable |
-| `biblioteca/` | 1.352 | Las cuatro escrituras anteriores. Entrada única: `biblioteca/00_INDICE.md`. Ver skill `evidencia-baxy` |
-| `experiments/` | 879 | Investigación. No entra al runtime por existir |
-| `documentacion/1x_*_CORTE_*.md`, `2x_*.md` | — | Cortes históricos: evidencia, no instrucción |
-| `contexto/` | 41 | Snapshot del intento anterior. Los ADR (`04_arquitectura/ADR/`) siguen vigentes; el resto está fechado |
-| `bin/`, `obj/`, `__pycache__/`, `.ruff_cache/`, `.pytest_cache/` | — | Generados. Nunca se editan ni se leen |
+El repositorio sólo guarda lo que BAXY necesita: `src/`, sus pruebas, los scripts de build, instalación,
+runtime y medición, `runtime_wheels/` (ruedas propias de STT y AEC) y la documentación vigente. La evidencia
+histórica (corridas, corpus, la biblioteca de los BAXY anteriores, experimentos, goals cerrados) salió a
+`..\BAXY-archivo-2026-10-06\` (fuera del repo, con su `LEEME.md`) y sigue en el historial de Git. Una ruta `artifacts/…`, `biblioteca/…`, `experiments/…`, `contexto/…` o
+`documentacion/sprints/…` citada en un documento anterior vive ahí con la misma ruta relativa.
 
-`src/Baxy.FieldUi/dist/` está versionado a propósito: artefacto visual sellado por
-ADR-0008.
+| Ruta | Regla |
+|---|---|
+| `bin/`, `obj/`, `__pycache__/`, `.ruff_cache/`, `.pytest_cache/` | Generados. Nunca se editan ni se leen |
+| `src/Baxy.FieldUi/node_modules/` | Dependencias de la GUI. Nunca se recorren |
+| `src/Baxy.FieldUi/dist/` | Versionado a propósito: artefacto visual sellado por ADR-0008 |
 
 ## Ficheros que no se leen enteros
 
-60 ficheros versionados pasan de 1 MB; 706 pasan de 100 KB. Los peores:
-
-```
-tests/data/historical_messages.jsonl                    69 MB
-artifacts/corpus_cutoff/source_manifest.json            16 MB
-tests/data/historical_message_mapping.jsonl             16 MB
-artifacts/development/r207_cross_encoder_pairs.jsonl    11 MB
-artifacts/research/functiongemma_training_corpus.v3.jsonl  11 MB
-tests/data/historical_missions.jsonl                     5 MB
-tests/data/turn_evidence_public_holdout.v1.jsonl         3 MB
-```
-
-`read_file` por rango, `grep` por clave, y `Get-Content -TotalCount 3` para ver la
-forma de un JSONL. Nunca el fichero entero.
-Comprobar tamaño antes de abrir: `git ls-tree -r -l HEAD -- ruta`.
+Comprobar tamaño antes de abrir: `git ls-tree -r -l HEAD -- ruta`. `read_file` por rango, `grep` por clave,
+y `Get-Content -TotalCount 3` para ver la forma de un JSONL. Nunca un fichero grande entero.
 
 ## Dónde vive el conocimiento profundo
 
@@ -99,8 +85,8 @@ Todo esto es **carga bajo demanda**: no lo leas salvo que la tarea lo pida.
 | Baseline vigente, deuda, hotspots | `documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md` |
 | Topología del producto activo | `documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md` |
 | Piezas sustituibles y qué medición decide | `documentacion/03_COSTURAS.md` |
-| Fronteras aceptadas (ADR) | `contexto/04_arquitectura/ADR/` |
-| Qué se midió y **se rechazó** | `documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md` + biblioteca |
+| Fronteras aceptadas (ADR) | `documentacion/ADR/` |
+| Qué se midió y **se rechazó** | `documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md`; el detalle, en el archivo |
 | Lo que se ve y no se persigue | `documentacion/APLAZADOS.md` |
 
 ## Reglas de mantenimiento de este fichero

@@ -32,6 +32,20 @@ public sealed class MissionPlanValidatorTests
         Assert.That(() => MissionPlanValidator.Validate(plan), Throws.Nothing);
     }
 
+    // MEME2053 «Tienes algun meme?»: the open defers its arguments to the verified download.
+    [Test]
+    public void AcceptsAFileOpenDeferredToTheDownloadThatWroteIt()
+    {
+        MissionPlanProposal plan = Plan(
+            Step("download", "web.download", "Descarga la primera imagen que lista el buscador.", [], "literal", Json("""
+                {"query":"meme","folder":"pictures"}
+                """)),
+            Step("open", "file.open", "Abre la imagen descargada.", ["download"], "after_dependencies", null));
+
+        Assert.That(() => MissionPlanValidator.Validate(plan), Throws.Nothing);
+        Assert.That(MissionPlanValidator.DependencyAuthorityFields("file.open"), Is.EqualTo(new[] { "folder", "name" }));
+    }
+
     [Test]
     public void RejectsPrivateAndInternalOperations()
     {
@@ -169,7 +183,19 @@ public sealed class MissionPlanValidatorTests
 
     [TestCase("notification.dismiss", "notification.list.due")]
     [TestCase("reminder.delete", "reminder.resolve.exact")]
-    public void DeferredMutationFamiliesRequireTheirResolvers(
+    // M44 (FINAL F-p02-t3 «clear out the last item on the list»): the mind
+    // plans task.resolve.exact → task.delete; the shell accepts the same relation.
+    [TestCase("task.delete", "task.resolve.exact")]
+    // M76 (DEV-D v3l D-w17-t2 «mark the first one done» → «Which task ID and expected version…?»): a task marked
+    // done or reopened takes its identity and version from the same resolver.
+    [TestCase("task.complete", "task.resolve.exact")]
+    [TestCase("task.reopen", "task.resolve.exact")]
+    // M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la nota…?»):
+    // a note is changed by the identity and revision its verified read gives.
+    [TestCase("note.update", "note.read")]
+    [TestCase("filesystem.read.text", "filesystem.search")]
+    [TestCase("filesystem.read.text", "filesystem.list")]
+    public void DeferredIdentityConsumersRequireTheirResolvers(
         string consumer,
         string producer)
     {
@@ -189,9 +215,12 @@ public sealed class MissionPlanValidatorTests
                 "Resuelve una identidad exacta.",
                 [],
                 "literal",
-                producer == "notification.list.due"
-                    ? Json("{}")
-                    : Json("""{"title":"Prueba"}""")),
+                producer switch
+                {
+                    "notification.list.due" or "filesystem.list" => Json("{}"),
+                    "filesystem.search" => Json("""{"query":"Prueba"}"""),
+                    _ => Json("""{"title":"Prueba"}"""),
+                }),
             Step(
                 "mutate",
                 consumer,

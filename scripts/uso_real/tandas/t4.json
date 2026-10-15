@@ -1,0 +1,148 @@
+{
+  "conversations": [
+    {
+      "id": "t4-c01",
+      "speaker": "chileno, cocinando",
+      "turns": [
+        {"text": "oye cuanto rato se cuece un huevo a la copa", "expect": "Responde corto el tiempo habitual (unos 3 minutos desde que hierve el agua) sin abrir nada."},
+        {"text": "ya pone un temporizador de eso", "expect": "Crea un temporizador con el tiempo que acaba de decir (p. ej. 3 minutos) y lo confirma."},
+        {"text": "y ponme cumbia mientras", "expect": "Pone música de cumbia en el servicio habitual (Spotify o YouTube) y dice qué puso."},
+        {"text": "no po, en spotify te dije, no en youtube", "expect": "Corrige: detiene lo de YouTube y reproduce cumbia en Spotify, sin discutir."}
+      ]
+    },
+    {
+      "id": "t4-c02",
+      "speaker": "rioplatense, estudiante de letras",
+      "turns": [
+        {"text": "dame 3 libros de cortazar para arrancar", "expect": "Da exactamente 3 libros reales de Julio Cortázar, breve."},
+        {"text": "no, te pedi 3 nomas y me tiraste una lista enorme", "expect": "Se corrige y da exactamente 3 títulos de Cortázar, sin relleno ni disculpas largas."},
+        {"text": "de cual de esos hay pelicula?", "expect": "Responde sobre esos mismos 3 títulos cuál tiene adaptación al cine (p. ej. Blow-Up sale de un cuento de Las armas secretas), sin inventar películas."},
+        {"text": "buscalo en google asi veo el trailer", "expect": "Abre el navegador con una búsqueda en Google del tráiler de la película que acaba de mencionar."}
+      ]
+    },
+    {
+      "id": "t4-c03",
+      "speaker": "mexicano, gamer",
+      "turns": [
+        {"text": "abre discord porfa", "expect": "Abre Discord (o lo trae al frente si ya estaba abierto)."},
+        {"text": "mandale a Ron92 que si se conecta a las 9 pa jugar", "expect": "Envía por MD de Discord a Ron92 un mensaje preguntando si se conecta a las 9 para jugar, y confirma lo enviado."},
+        {"text": "y ponme una alarma a las 8:50 pa acordarme", "expect": "Crea una alarma a las 20:50 de hoy (de noche, por el contexto de las 9 para jugar)."},
+        {"text": "ya cierra discord", "expect": "Cierra Discord y nada más."}
+      ]
+    },
+    {
+      "id": "t4-c04",
+      "speaker": "España, ajustando el portátil",
+      "turns": [
+        {"text": "pon el brillo al 40", "expect": "Ajusta el brillo de la pantalla al 40 % y lo confirma."},
+        {"text": "joder que te he dicho brillo no volumen", "expect": "Se corrige: deja el volumen como estaba y pone el brillo de pantalla al 40 %."},
+        {"text": "vale y ahora en configuracion pon el modo oscuro", "expect": "En Configuración va a Personalización > Colores y elige el modo Oscuro, y confirma el cambio visible."}
+      ]
+    },
+    {
+      "id": "t4-c05",
+      "speaker": "inglés",
+      "turns": [
+        {"text": "whats the weather gonna be like in curico tomorrow", "expect": "Da el pronóstico de mañana para Curicó, Chile, corto y en inglés."}
+      ]
+    },
+    {
+      "id": "t4-c06",
+      "speaker": "spanglish, oficina",
+      "turns": [
+        {"text": "bro abre excel y crea un blank workbook", "expect": "Abre Excel y crea un libro en blanco."}
+      ]
+    },
+    {
+      "id": "t4-c07",
+      "speaker": "chileno, dictado sin puntuación",
+      "turns": [
+        {"text": "crea una carpeta en el escritorio que se llame ramo calculo 2", "expect": "Crea en el Escritorio una carpeta llamada «ramo calculo 2» (o con mayúsculas equivalentes) y confirma dónde."}
+      ]
+    },
+    {
+      "id": "t4-c08",
+      "speaker": "mexicano",
+      "turns": [
+        {"text": "dame 5 ideas de cena con pollo y arroz que no tarden mas de media hora", "expect": "Da exactamente 5 ideas de cena con pollo y arroz rápidas, breve."}
+      ]
+    },
+    {
+      "id": "t4-c09",
+      "speaker": "rioplatense",
+      "turns": [
+        {"text": "saca una captura de pantalla y guardala", "expect": "Toma una captura de la pantalla, la guarda y dice dónde quedó."}
+      ]
+    },
+    {
+      "id": "t4-c10",
+      "speaker": "España",
+      "turns": [
+        {"text": "busca en google los horarios del cercanias de madrid", "expect": "Abre el navegador con una búsqueda en Google de horarios de Cercanías Madrid."}
+      ]
+    },
+    {
+      "id": "t4-c11",
+      "speaker": "chileno",
+      "turns": [
+        {"text": "prende el bluetooth que voy a conectar los audifonos", "expect": "Activa el Bluetooth y lo confirma, sin decir que conectó audífonos que no conectó."}
+      ]
+    },
+    {
+      "id": "t4-c12",
+      "speaker": "inglés",
+      "turns": [
+        {"text": "mute the sound for a sec", "expect": "Silencia el volumen del PC y lo confirma."}
+      ]
+    },
+    {
+      "id": "t4-c13",
+      "speaker": "spanglish, estudiante",
+      "turns": [
+        {"text": "en el word que tengo abierto ponle negrita al texto que tengo seleccionado", "expect": "En la ventana de Word abierta aplica negrita a la selección actual (botón Negrita o Ctrl+N) sin cambiar el texto."}
+      ]
+    },
+    {
+      "id": "t4-c14",
+      "speaker": "chileno",
+      "turns": [
+        {"text": "pegame lo que copie en un bloc de notas nuevo", "expect": "Abre un Bloc de notas nuevo y pega el contenido del portapapeles."}
+      ]
+    },
+    {
+      "id": "t4-c15",
+      "speaker": "mexicano",
+      "turns": [
+        {"text": "ponme en youtube el ultimo video de luisito comunica", "expect": "Busca el canal de Luisito Comunica y reproduce su video más reciente en YouTube, sin inventar el título."}
+      ]
+    },
+    {
+      "id": "t4-c16",
+      "speaker": "inglés, universitario",
+      "turns": [
+        {"text": "remind me at 6pm to submit the lab report", "expect": "Crea un recordatorio hoy a las 18:00 para entregar el informe de laboratorio."}
+      ]
+    },
+    {
+      "id": "t4-c17",
+      "speaker": "rioplatense",
+      "turns": [
+        {"text": "cuantos km hay de buenos aires a cordoba en auto", "expect": "Responde la distancia aproximada por ruta (unos 700 km) y, si quiere, el tiempo de viaje, sin inventar cifras precisas."}
+      ]
+    },
+    {
+      "id": "t4-c18",
+      "speaker": "chileno, con un niño dibujando",
+      "turns": [
+        {"text": "en paint elegi el balde de pintura y el color rojo", "expect": "En Paint selecciona la herramienta Relleno (balde) y el color rojo, y confirma."}
+      ]
+    },
+    {
+      "id": "t4-c19",
+      "speaker": "España, teletrabajo",
+      "turns": [
+        {"text": "ponme el navegador y el word uno al lado del otro", "expect": "Acomoda la ventana del navegador y la de Word en mitades de pantalla, lado a lado."}
+      ]
+    }
+  ]
+}

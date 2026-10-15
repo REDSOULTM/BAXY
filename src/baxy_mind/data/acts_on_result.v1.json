@@ -1,0 +1,45 @@
+{
+ "schema": "baxy.acts-on-result.v1",
+ "source": "Revisión 2 de r22 (bloqueante 3; uso real r18 t2-c16, t3-c11 «…y guárdala en X» lost in silence): a part of the request that acts on what the chosen operation makes («…y mándala por whatsapp», «…y guárdala en mi escritorio con el nombre factura») is received only when the operation's argument schema has a property for it (receivedBy); otherwise it travels as notDone and the final says it was not done. Verbs are stems: Spanish with the result as an enclitic pronoun («mándala», «enviarla», «imprímela»), English followed by it/that/this/them.",
+ "readFor": {
+  "source": "Revisión 3 de r22: the operations whose own effect is making or opening a result and never sending, uploading, printing or keeping it elsewhere, so an act on that result in the same request is a part they did not do unless their schema receives it. Any other operation is left out: its own effect may be the act under another argument name (email.latest.reply sends its text, peripheral.print prints a documentId, audio.volume.adjust raises what «súbelo» names) or its goal carries the whole request (mission.computer.use), and telling such an act as not done would deny what was done.",
+  "operations": ["capture.screenshot", "capture.active.window", "app.open", "file.open"]
+ },
+ "acts": {
+  "send": {
+   "es": ["mand", "envi", "reenvi", "compart"],
+   "en": ["send", "share", "forward", "email", "mail"],
+   "receivedBy": ["to", "recipient", "recipientId", "channel"],
+   "action": {"es": "enviarlo", "en": "send it"},
+   "floor": {"es": "No hice esto: «{said}».", "en": "I did not do this: «{said}»."}
+  },
+  "upload": {
+   "es": ["sub", "public"],
+   "destinationFor": ["sub"],
+   "en": ["upload", "post", "publish"],
+   "receivedBy": ["destination", "site", "channel"],
+   "action": {"es": "subirlo", "en": "upload it"},
+   "floor": {"es": "No hice esto: «{said}».", "en": "I did not do this: «{said}»."}
+  },
+  "print": {
+   "es": ["imprim"],
+   "en": ["print"],
+   "receivedBy": ["printer"],
+   "action": {"es": "imprimirlo", "en": "print it"},
+   "floor": {"es": "No hice esto: «{said}».", "en": "I did not do this: «{said}»."}
+  },
+  "keep": {
+   "es": ["guard", "salv"],
+   "en": ["save", "keep", "store"],
+   "needsPlace": true,
+   "receivedBy": ["folder", "path", "destination", "directory"],
+   "action": {"es": "guardarlo ahí", "en": "save it there"},
+   "floor": {"es": "No hice esto: «{said}».", "en": "I did not do this: «{said}»."}
+  }
+ },
+ "name": {
+  "receivedBy": ["name", "fileName", "title", "newName"],
+  "action": {"es": "ponerle ese nombre", "en": "give it that name"},
+  "floor": {"es": "No le puse el nombre «{said}».", "en": "I did not name it «{said}»."}
+ }
+}

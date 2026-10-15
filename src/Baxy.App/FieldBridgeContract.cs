@@ -61,6 +61,11 @@ internal static class FieldBridgeContract
 
     private const string StepPrefix = "Ejecutando paso ";
 
+    // The computer-use loop's own status («Mirando la pantalla», «Paso 3: clic en
+    // «Biblioteca»»): the mission is acting, and no composed label is asked for.
+    private const string ComputerUseLook = "Mirando la pantalla";
+    private const string ComputerUseStepPrefix = "Paso ";
+
     /// <summary>
     /// Republish the current stage. Must be ≤ 1 s so a 2 s pulse cannot
     /// skip from t=2 (still under budget) to t=4 (first check over 3 s).
@@ -214,6 +219,12 @@ internal static class FieldBridgeContract
                 return Create(FieldProgressNotice.StageActing, progressLabel);
             }
 
+            if (description == ComputerUseLook
+                || description.StartsWith(ComputerUseStepPrefix, StringComparison.Ordinal))
+            {
+                return Create(FieldProgressNotice.StageActing, progressLabel);
+            }
+
             if (DescriptionStages.TryGetValue(description, out string? mapped))
             {
                 return Create(mapped, progressLabel);
@@ -263,8 +274,8 @@ internal static class FieldBridgeContract
 
     /// <summary>
     /// Construye el payload de socket de una indicación. Un lector histórico
-    /// que ya conoce <c>boot_stage</c> lo muestra como estado; uno que no lo
-    /// conoce lo ignora sin cambiar su estado.
+    /// que conoce <c>boot_stage</c> consume su estado. FieldCenter presenta
+    /// la etiqueta fuera del input para no ocultarla tras el texto del turno.
     /// </summary>
     internal static bool ShouldPulseProgress(
         DateTimeOffset? lastPublishedUtc,
@@ -361,12 +372,4 @@ internal static class FieldBridgeContract
         return revision;
     }
 
-    internal static JsonObject CreateContractAnnouncement() => StampEnvelope(
-        new JsonObject
-        {
-            ["channel"] = Channel,
-            ["kind"] = ContractKind,
-            ["revision"] = NativeRevision,
-        },
-        LegacyReaderRevision);
 }

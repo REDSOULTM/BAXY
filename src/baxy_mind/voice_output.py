@@ -1,16 +1,14 @@
 """Salida de voz local de BAXY.
 
-La voz de producto es neural, español latino (Piper ``es_MX-claude-high``
-vía sherpa-onnx, Apache 2.0 + pesos MIT). SAPI queda como degradación si
-el modelo neural no está en disco. El objeto de salida vive en su hilo
+La voz de producto usa Piper local y una voz por idioma. El proveedor completo
+conserva el contrato de fonemas y oraciones; SAPI queda como degradación si
+los activos neurales no están disponibles. El objeto de salida vive en su hilo
 propietario; ``speak`` y ``cancel`` solo publican órdenes acotadas.
 """
 
 from __future__ import annotations
 
-import hashlib
 import html
-import json
 import logging
 import math
 import os
@@ -19,12 +17,17 @@ import re
 import threading
 import time
 
-import numpy as np
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from .assets import AssetDescriptorError, resolve_asset
+from .piper_tts import (
+    PiperEngine,
+    neural_tts_identity,
+    resolve_neural_tts_model,
+    resolve_piper_executable,
+)
+from .semantic.request import spoken_language
 from .time_budget import remaining_seconds
 
 logger = logging.getLogger(__name__)
@@ -339,157 +342,6 @@ class SapiSpeechOutput:
                     self._stopping = False
 
 
-def _espeak_exe() -> Path | None:
-    configured = (os.environ.get("BAXY_ESPEAK_EXE") or "").strip()
-    local_data = os.environ.get("LOCALAPPDATA")
-    candidates = [
-        Path(configured) if configured else None,
-        Path(r"C:\Program Files\eSpeak NG\espeak-ng.exe"),
-        Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng.exe"),
-        Path(r"D:\BAXYRuntime\assets\espeak-ng\espeak-ng.exe"),
-    ]
-    if local_data:
-        candidates.append(
-            Path(local_data) / "BAXYRuntime" / "assets" / "espeak-ng" / "espeak-ng.exe"
-        )
-    for candidate in candidates:
-        if candidate is not None and candidate.is_file():
-            return candidate
-    return None
-
-
-def _espeak_data_dir() -> Path | None:
-    exe = _espeak_exe()
-    if exe is not None:
-        data = exe.parent / "espeak-ng-data"
-        if (data / "phontab").is_file():
-            return data
-    configured = (os.environ.get("BAXY_ESPEAK_DATA") or "").strip()
-    candidates = [
-        Path(configured) if configured else None,
-        Path(r"C:\Program Files\eSpeak NG\espeak-ng-data"),
-        Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng-data"),
-    ]
-    for candidate in candidates:
-        if candidate is not None and (candidate / "phontab").is_file():
-            return candidate
-    return None
-
-
-class _PiperOnnxEngine:
-    """Piper VITS ONNX + eSpeak. Sherpa rejects this export (no sample_rate meta)."""
-
-    def __init__(self, model_path: Path) -> None:
-        import onnxruntime as ort
-
-        config_path = model_path.with_suffix(".onnx.json")
-        if not config_path.is_file():
-            raise FileNotFoundError("piper_config_missing")
-        payload = json.loads(config_path.read_text(encoding="utf-8"))
-        mapping = payload.get("phoneme_id_map")
-        if not isinstance(mapping, dict):
-            raise ValueError("piper_phoneme_map_invalid")
-        self._id_map = {
-            str(phoneme): [int(item) for item in ids]
-            for phoneme, ids in mapping.items()
-            if isinstance(ids, list) and ids
-        }
-        inference = payload.get("inference") if isinstance(payload.get("inference"), dict) else {}
-        audio = payload.get("audio") if isinstance(payload.get("audio"), dict) else {}
-        espeak = payload.get("espeak") if isinstance(payload.get("espeak"), dict) else {}
-        self.sample_rate = int(audio.get("sample_rate") or 22050)
-        self._noise_scale = float(inference.get("noise_scale") or 0.667)
-        self._length_scale = float(inference.get("length_scale") or 1.0)
-        self._noise_w = float(inference.get("noise_w") or 0.8)
-        self._voice = str(espeak.get("voice") or "es-419")
-        self._exe = _espeak_exe()
-        if self._exe is None:
-            raise FileNotFoundError("espeak_missing")
-        self._session = ort.InferenceSession(
-            str(model_path),
-            providers=["CPUExecutionProvider"],
-        )
-
-    def _phonemes(self, text: str) -> str:
-        import subprocess
-
-        env = os.environ.copy()
-        data = _espeak_data_dir()
-        if data is not None:
-            env["ESPEAK_DATA_PATH"] = str(data)
-        completed = subprocess.run(
-            [str(self._exe), "-q", "-v", self._voice, "--ipa=3", text],
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            env=env,
-        )
-        return " ".join(completed.stdout.split())
-
-    def generate(self, text: str) -> np.ndarray:
-        phonemes = self._phonemes(text)
-        ids = list(self._id_map.get("^", [1]))
-        for character in phonemes:
-            ids.extend(self._id_map.get(character, []))
-        ids.extend(self._id_map.get("$", [2]))
-        phoneme = np.array([ids], dtype=np.int64)
-        lengths = np.array([phoneme.shape[1]], dtype=np.int64)
-        scales = np.array(
-            [self._noise_scale, self._length_scale, self._noise_w],
-            dtype=np.float32,
-        )
-        output = self._session.run(
-            None,
-            {"input": phoneme, "input_lengths": lengths, "scales": scales},
-        )[0]
-        audio = np.asarray(output, dtype=np.float32).reshape(-1)
-        peak = float(np.max(np.abs(audio))) if audio.size else 0.0
-        if peak > 1.0:
-            audio = audio / peak
-        return audio
-
-
-def resolve_neural_tts_model() -> Path | None:
-    """Locate the Piper ONNX voice. Missing is an honest SAPI fallback."""
-
-    configured = (os.environ.get("BAXY_NEURAL_TTS_MODEL") or "").strip()
-    if configured:
-        candidate = Path(configured).expanduser()
-        return candidate if candidate.is_file() else None
-    try:
-        resolution = resolve_asset("neural_tts_voice")
-    except AssetDescriptorError:
-        resolution = None
-    directories: list[Path] = []
-    if resolution is not None:
-        if resolution.path is not None:
-            directories.append(resolution.path)
-        directories.extend(resolution.candidates)
-    directories.append(Path.home() / ".gemma4" / "models" / "piper")
-    for directory in directories:
-        if not directory.is_dir():
-            continue
-        direct = directory / "es_MX-claude-high.onnx"
-        if direct.is_file():
-            return direct
-        onnx_files = sorted(directory.glob("*.onnx"))
-        if len(onnx_files) == 1:
-            return onnx_files[0]
-    return None
-
-
-def neural_tts_identity(model_path: Path | None = None) -> tuple[str, str] | None:
-    path = model_path or resolve_neural_tts_model()
-    if path is None or not path.is_file():
-        return None
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return path.name, digest.hexdigest()
-
-
 class NeuralSpeechOutput:
     """Cola TTS neural cancelable; misma frontera pública que SAPI."""
 
@@ -508,6 +360,7 @@ class NeuralSpeechOutput:
         self._speaking = False
         self._model_path: Path | None = None
         self._voice_name = "es_MX-claude-high"
+        self._voice_sha256: str | None = None
         self.last_error: str | None = None
 
     @property
@@ -521,6 +374,10 @@ class NeuralSpeechOutput:
     @property
     def voice_name(self) -> str:
         return self._voice_name
+
+    @property
+    def voice_sha256(self) -> str | None:
+        return self._voice_sha256
 
     def start(self, timeout: float = 8.0) -> bool:
         with self._lock:
@@ -620,10 +477,11 @@ class NeuralSpeechOutput:
             model_path = resolve_neural_tts_model()
             if model_path is None:
                 raise FileNotFoundError("neural_tts_model_missing")
-            tts = _PiperOnnxEngine(model_path)
+            tts = PiperEngine(model_path)
             sample_rate = tts.sample_rate
             self._model_path = model_path
             self._voice_name = model_path.stem
+            self._voice_sha256 = (tts.identity or (None, None))[1]
             self._available = True
             self.last_error = None
         except Exception as error:  # noqa: BLE001
@@ -634,6 +492,7 @@ class NeuralSpeechOutput:
         finally:
             self._ready.set()
 
+        engines = {"es": tts}
         try:
             while self._available and tts is not None and not self._shutdown.is_set():
                 try:
@@ -651,50 +510,56 @@ class NeuralSpeechOutput:
                         continue
                     self._cancel.clear()
                 try:
-                    waveform = tts.generate(item.text)
+                    language = spoken_language(item.text)
+                    selected = engines.get(language)
+                    if selected is None:
+                        selected_path = resolve_neural_tts_model(language)
+                        if selected_path is None:
+                            raise FileNotFoundError("tts_language_voice_missing")
+                        selected = PiperEngine(selected_path)
+                        engines[language] = selected
+                    sample_rate = selected.sample_rate
+                    self._model_path = selected.model_path
+                    self._voice_name = self._model_path.stem
+                    self._voice_sha256 = (selected.identity or (None, None))[1]
+                    waveform = selected.generate(
+                        item.text, cancelled=lambda: self._command_cancelled(item.generation)
+                    )
                     if waveform.size == 0:
                         raise RuntimeError("neural_tts_empty")
                     if self._command_cancelled(item.generation):
                         continue
                     self._set_speaking(True)
-                    sd.play(waveform, samplerate=sample_rate, blocking=False)
+                    # Keep device I/O on this worker. The global play() helper
+                    # drops its CFFI callbacks from inside the native finished
+                    # callback; it cannot own this long-lived product stream.
+                    block_frames = max(1, int(sample_rate * 0.03))
                     deadline = time.monotonic() + min(
                         30.0, (waveform.size / float(sample_rate)) + 1.0
                     )
-                    while not self._command_cancelled(item.generation):
-                        if time.monotonic() >= deadline:
-                            break
-                        try:
-                            stream = sd.get_stream()
-                            active = stream is not None and bool(
-                                getattr(stream, "active", False)
-                            )
-                        except Exception:  # noqa: BLE001
-                            active = True
-                        if not active:
-                            break
-                        remaining = remaining_seconds(
-                            deadline, 30.0, now=time.monotonic()
-                        )
-                        self._cancel.wait(min(0.03, remaining if remaining > 0 else 0.03))
-                    try:
-                        sd.stop()
-                    except Exception:  # noqa: BLE001
-                        pass
+                    with sd.OutputStream(
+                        samplerate=sample_rate,
+                        channels=1,
+                        dtype="float32",
+                        blocksize=block_frames,
+                    ) as stream:
+                        for offset in range(0, waveform.size, block_frames):
+                            if self._command_cancelled(item.generation):
+                                stream.abort()
+                                break
+                            if time.monotonic() >= deadline:
+                                stream.abort()
+                                raise TimeoutError("tts_playback_deadline")
+                            stream.write(waveform[offset : offset + block_frames])
+                    self.last_error = None
+                except InterruptedError:
+                    if not self._command_cancelled(item.generation):
+                        self.last_error = "tts_failed:InterruptedError"
                 except Exception as error:  # noqa: BLE001
                     self.last_error = f"tts_failed:{type(error).__name__}"
-                    try:
-                        sd.stop()
-                    except Exception:  # noqa: BLE001
-                        pass
                 finally:
                     self._set_speaking(False)
         finally:
-            try:
-                if sd is not None:
-                    sd.stop()
-            except Exception:  # noqa: BLE001
-                pass
             self._available = False
             self._set_speaking(False)
             self._stopped.set()
@@ -709,7 +574,7 @@ def create_speech_output(
 ) -> NeuralSpeechOutput | SapiSpeechOutput:
     """Una sola salida viva: neural si el modelo está, SAPI si no."""
 
-    if resolve_neural_tts_model() is not None and _espeak_exe() is not None:
+    if resolve_neural_tts_model() is not None and resolve_piper_executable() is not None:
         return NeuralSpeechOutput(on_state)
     return SapiSpeechOutput(on_state)
 

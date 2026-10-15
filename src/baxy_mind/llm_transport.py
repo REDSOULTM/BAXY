@@ -8,6 +8,7 @@ the closed set of transient loopback failures.
 
 from __future__ import annotations
 
+import contextlib
 import http.client
 import io
 import json
@@ -17,6 +18,8 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -25,15 +28,28 @@ RETRYABLE_HTTP_STATUSES = frozenset({408, 429, 500, 502, 503, 504})
 LLAMA_SERVER_KEEPALIVE_SECONDS = 5.0
 POOL_IDLE_SECONDS = 4.0
 POOL_MAX_USES = 90
+SLOT_RESTORE_SECONDS = 30.0
 
 
-def _endpoint_target(endpoint: str) -> tuple[str, int, str]:
+def _endpoint_target(endpoint: str, route: str = "/v1/chat/completions") -> tuple[str, int, str]:
     target = urlsplit(endpoint)
     if target.scheme != "http" or target.hostname is None:
         raise ValueError("endpoint HTTP local inválido")
     port = target.port if target.port is not None else 80
     path_prefix = target.path.rstrip("/")
-    return target.hostname, port, f"{path_prefix}/v1/chat/completions"
+    return target.hostname, port, f"{path_prefix}{route}"
+
+
+@dataclass(frozen=True)
+class SlotState:
+    """The saved state of a server slot that a request is evaluated from, whatever that slot evaluated before.
+
+    ``path`` is the file in the server's ``--slot-save-path``; ``prefix`` is the ``/completion`` request that
+    evaluates the prompt prefix the state holds, used once to build it.
+    """
+
+    path: Path
+    prefix: dict[str, Any]
 
 
 class _PooledConnection:
@@ -50,6 +66,7 @@ class _PooledConnection:
         self.owner_thread = owner_thread
         self.idle_since = 0.0
         self.uses = 1
+        self.slot: int | None = None
         # Pooled requests connect explicitly. Disabling HTTPConnection's
         # implicit reconnect prevents a close/revoke race from opening a new
         # socket after the lease has been invalidated.
@@ -106,18 +123,55 @@ class _PooledConnection:
             pass
 
 
+def _common_prefix_length(first: bytes, second: bytes) -> int:
+    length = min(len(first), len(second))
+    low, high = 0, length
+    while low < high:
+        middle = (low + high + 1) // 2
+        if first[:middle] == second[:middle]:
+            low = middle
+        else:
+            high = middle - 1
+    return low
+
+
 class ChatCompletionConnectionPool:
-    """Bounded, exclusive HTTP/1.1 connections for one LLM runtime."""
+    """Bounded, exclusive HTTP/1.1 connections for one LLM runtime.
+
+    With ``server_slots`` the pool also owns the server's slots, one per
+    connection: every lease carries one slot, sent as ``id_slot``, so a request
+    lands where its prompt prefix is still cached. Tandas 05e/06 (2026-09-24):
+    left to the server, the tool selector — the fourth of four requests a model
+    turn starts together on three slots — waited ~0.8 s for a connection and
+    then took the slot the progress notice had just left, reusing 3 of its
+    ~2.6k prompt tokens in all 46 turns. The last slot is therefore kept for
+    tool-selection requests; the others take, among the free remaining slots,
+    the one whose previous request shares the longest prefix with theirs.
+    """
 
     def __init__(
         self,
         *,
         max_connections: int = 3,
+        server_slots: bool = False,
         idle_seconds: float = POOL_IDLE_SECONDS,
         max_uses: int = POOL_MAX_USES,
     ) -> None:
-        if max_connections < 1:
+        if max_connections < 1 or (server_slots and max_connections < 2):
             raise ValueError("cantidad de conexiones HTTP inválida")
+        self._server_slots = server_slots
+        self._busy_slots: set[int] = set()
+        self._slot_requests = [b""] * max_connections
+        # Release order, not clock time: Windows' clock ticks every ~16 ms.
+        self._slot_released = [0] * max_connections
+        self._releases = 0
+        # A slot whose response was abandoned (cancelled, failed) may still be
+        # decoding on the server until it notices; a pinned request would wait.
+        self._slot_abandoned = [False] * max_connections
+        # The saved state (``SlotState.path``) each slot was put back in after its last request.
+        self._slot_holds: list[Path | None] = [None] * max_connections
+        # States the server refused to build (no ``--slot-save-path``, a save it cannot write).
+        self._refused_states: set[Path] = set()
         self._maximum = max_connections
         self._idle_seconds = min(
             max(0.0, idle_seconds),
@@ -131,6 +185,26 @@ class ChatCompletionConnectionPool:
         self._generation = 0
         self._closed = False
 
+    def _free_slot(self, reserved: bool, request_data: bytes) -> int | None:
+        """The slot this request may take now, or None while its slots are busy."""
+
+        last = self._maximum - 1
+        free = [
+            slot
+            for slot in ((last,) if reserved else range(last))
+            if slot not in self._busy_slots
+        ]
+        if not free:
+            return None
+        return max(
+            free,
+            key=lambda slot: (
+                not self._slot_abandoned[slot],
+                _common_prefix_length(request_data, self._slot_requests[slot]),
+                -self._slot_released[slot],
+            ),
+        )
+
     def acquire(
         self,
         endpoint: str,
@@ -138,8 +212,15 @@ class ChatCompletionConnectionPool:
         *,
         cancellation: ChatCompletionCancellation | None = None,
         require_fresh: bool = False,
+        reserved: bool = False,
+        request_data: bytes = b"",
     ) -> _PooledConnection:
-        """Lease one connection exclusively, preferring the current thread."""
+        """Lease one connection exclusively, preferring the current thread.
+
+        With server slots the lease also owns one slot (``entry.slot``): the
+        reserved one for ``reserved`` requests, otherwise a shared one chosen by
+        the prefix of ``request_data``.
+        """
 
         hostname, port, _ = _endpoint_target(endpoint)
         owner_thread = threading.get_ident()
@@ -177,6 +258,20 @@ class ChatCompletionConnectionPool:
                         for entry in discarded:
                             entry.connection.close()
 
+                    slot = (
+                        self._free_slot(reserved, request_data)
+                        if self._server_slots
+                        else None
+                    )
+                    if self._server_slots and slot is None:
+                        remaining = deadline - now
+                        if remaining <= 0.0:
+                            raise TimeoutError(
+                                "se agotó la espera del pool HTTP local"
+                            )
+                        self._condition.wait(timeout=remaining)
+                        continue
+
                     preferred_index = None
                     if not require_fresh:
                         preferred_index = next(
@@ -200,8 +295,7 @@ class ChatCompletionConnectionPool:
                         entry = self._idle.pop(preferred_index)
                         entry.owner_thread = owner_thread
                         entry.uses += 1
-                        self._active[id(entry)] = entry
-                        return entry
+                        return self._lease(entry, slot, request_data)
 
                     if self._total < self._maximum:
                         connection = http.client.HTTPConnection(
@@ -216,8 +310,7 @@ class ChatCompletionConnectionPool:
                             owner_thread,
                         )
                         self._total += 1
-                        self._active[id(entry)] = entry
-                        return entry
+                        return self._lease(entry, slot, request_data)
 
                     remaining = deadline - now
                     if remaining <= 0.0:
@@ -228,6 +321,19 @@ class ChatCompletionConnectionPool:
         finally:
             if cancellation is not None:
                 cancellation._unregister_wait_condition(self._condition)
+
+    def _lease(
+        self,
+        entry: _PooledConnection,
+        slot: int | None,
+        request_data: bytes,
+    ) -> _PooledConnection:
+        entry.slot = slot
+        if slot is not None:
+            self._busy_slots.add(slot)
+            self._slot_requests[slot] = request_data
+        self._active[id(entry)] = entry
+        return entry
 
     def retire_generation(self) -> None:
         """Drain potentially stale sockets without aborting valid responses."""
@@ -241,18 +347,44 @@ class ChatCompletionConnectionPool:
         for entry in idle:
             entry.connection.close()
 
+    def refuse_slot_state(self, path: Path) -> None:
+        with self._condition:
+            self._refused_states.add(path)
+
+    def refuses_slot_state(self, path: Path) -> bool:
+        with self._condition:
+            return path in self._refused_states
+
+    def take_slot_hold(self, slot: int) -> Path | None:
+        """The saved state the leased ``slot`` holds, forgotten now that a request will use the slot."""
+
+        with self._condition:
+            held, self._slot_holds[slot] = self._slot_holds[slot], None
+            return held
+
     def release(
         self,
         entry: _PooledConnection,
         *,
         reusable: bool,
+        holds: Path | None = None,
     ) -> None:
-        """Return a complete response connection or invalidate it."""
+        """Return a complete response connection or invalidate it; ``holds`` is the state its slot was put in."""
 
         close_connection = False
         with self._condition:
             if self._active.pop(id(entry), None) is None:
                 return
+            if entry.slot is not None:
+                current = reusable and not self._closed and entry.generation == self._generation
+                self._slot_holds[entry.slot] = holds if current else None
+                self._busy_slots.discard(entry.slot)
+                self._releases += 1
+                self._slot_released[entry.slot] = self._releases
+                self._slot_abandoned[entry.slot] = not reusable
+                entry.slot = None
+                # Waiters may want different slots: wake them all.
+                self._condition.notify_all()
             reusable = (
                 reusable
                 and not self._closed
@@ -279,6 +411,9 @@ class ChatCompletionConnectionPool:
             self._idle = []
             active = list(self._active.values())
             self._total -= len(idle)
+            # A replaced server starts with empty slots.
+            self._slot_holds = [None] * len(self._slot_holds)
+            self._refused_states = set()
             for entry in [*idle, *active]:
                 entry.revoke()
             self._condition.notify_all()
@@ -380,10 +515,11 @@ def _post_on_connection(
     request_data: bytes,
     cancellation: ChatCompletionCancellation | None,
     pooled_entry: _PooledConnection | None = None,
+    route: str = "/v1/chat/completions",
 ) -> tuple[bytes, bool]:
     """Complete one response on an exclusively owned HTTP connection."""
 
-    _, _, path = _endpoint_target(endpoint)
+    _, _, path = _endpoint_target(endpoint, route)
     try:
         if cancellation is not None:
             cancellation.raise_if_cancelled()
@@ -476,14 +612,115 @@ def _post_cancellable(
         connection.close()
 
 
+def _restore_slot_state(
+    connection_pool: ChatCompletionConnectionPool,
+    entry: _PooledConnection,
+    endpoint: str,
+    state: SlotState,
+    cancellation: ChatCompletionCancellation | None,
+) -> bool:
+    """Put the leased slot in ``state``: built and saved the first time, restored every later time.
+
+    Estabilización A (r31-m1): with the server's own prompt cache, a hybrid model resumes from the last context
+    checkpoint that fits, and where that checkpoint lies depends on the length of the slot's previous request. The
+    same request then evaluated 161 or 216 tokens and the decider's first word flipped on a 0.004-0.17 nat tie.
+    A refused restore drops the file, and that request is evaluated whole (another state, so possibly another
+    reply); the next one builds the state again. A refused build means this server cannot keep the state: its
+    requests go without one, as before the state existed.
+    """
+
+    def post(route: str, body: dict[str, Any]) -> None:
+        _post_on_connection(
+            entry.connection,
+            endpoint,
+            json.dumps(body).encode("utf-8"),
+            cancellation,
+            entry,
+            route=route,
+        )
+
+    action = f"/slots/{entry.slot}?action="
+    saved = state.path.is_file()
+    try:
+        if saved:
+            post(action + "restore", {"filename": state.path.name})
+        else:
+            post("/completion", {**state.prefix, "id_slot": entry.slot})
+            post(action + "save", {"filename": state.path.name})
+    except urllib.error.HTTPError as error:
+        error.close()
+        if saved:
+            # A file the server cannot read (a save cut short) is built again by the next request.
+            with contextlib.suppress(OSError):
+                state.path.unlink(missing_ok=True)
+        else:
+            connection_pool.refuse_slot_state(state.path)
+        return False
+    return True
+
+
+def _restore_and_release(
+    connection_pool: ChatCompletionConnectionPool,
+    entry: _PooledConnection,
+    endpoint: str,
+    state: SlotState,
+) -> None:
+    """Once the reply is handed over, put its slot back in ``state`` so the next request finds it there.
+
+    The restore reads the whole saved prefix (≈110 ms measured for the decider's 6 777 tokens); done here it is off
+    the turn's path, and a request that arrives first waits for the slot as it would for the restore.
+    """
+
+    restored = False
+    try:
+        entry.connection.timeout = SLOT_RESTORE_SECONDS
+        if entry.connection.sock is not None:
+            entry.connection.sock.settimeout(SLOT_RESTORE_SECONDS)
+        restored = _restore_slot_state(connection_pool, entry, endpoint, state, None)
+    except Exception:  # noqa: BLE001 - the next request restores the slot itself
+        restored = False
+    finally:
+        connection_pool.release(entry, reusable=restored, holds=state.path if restored else None)
+
+
+def prepare_slot_state(
+    connection_pool: ChatCompletionConnectionPool,
+    endpoint: str,
+    state: SlotState,
+    *,
+    timeout: float,
+    cancellation: ChatCompletionCancellation | None = None,
+) -> None:
+    """Put the reserved slot in ``state`` with no request after it (the decider's warmup)."""
+
+    entry = connection_pool.acquire(endpoint, timeout, cancellation=cancellation, reserved=True)
+    held = connection_pool.take_slot_hold(entry.slot) if entry.slot is not None else None
+    ready = held == state.path
+    try:
+        if not ready and entry.slot is not None and not connection_pool.refuses_slot_state(state.path):
+            entry.connection.timeout = timeout
+            if cancellation is not None:
+                cancellation.attach(entry.connection)
+            try:
+                ready = _restore_slot_state(connection_pool, entry, endpoint, state, cancellation)
+            finally:
+                if cancellation is not None:
+                    ready = cancellation.detach(entry.connection) and ready
+    finally:
+        connection_pool.release(entry, reusable=ready, holds=state.path if ready else None)
+
+
 def _post_pooled(
     connection_pool: ChatCompletionConnectionPool,
     endpoint: str,
+    payload: dict[str, Any],
     request_data: bytes,
     timeout: float,
     cancellation: ChatCompletionCancellation | None,
     *,
     require_fresh: bool,
+    reserved_slot: bool,
+    slot_state: SlotState | None = None,
 ) -> dict[str, Any]:
     """Lease one exclusive connection and return it only after valid JSON."""
 
@@ -493,11 +730,17 @@ def _post_pooled(
         timeout,
         cancellation=cancellation,
         require_fresh=require_fresh,
+        reserved=reserved_slot,
+        request_data=request_data,
     )
     response_reusable = False
     valid_response = False
     cancellation_attached = False
+    if slot_state is not None and connection_pool.refuses_slot_state(slot_state.path):
+        slot_state = None
     try:
+        if entry.slot is not None:
+            request_data = json.dumps({**payload, "id_slot": entry.slot}).encode("utf-8")
         remaining = timeout - (time.monotonic() - started)
         if remaining <= 0.0:
             raise TimeoutError("se agotó la espera del pool HTTP local")
@@ -514,6 +757,9 @@ def _post_pooled(
         if cancellation is not None:
             cancellation.attach(entry.connection)
             cancellation_attached = True
+        held = connection_pool.take_slot_hold(entry.slot) if entry.slot is not None else None
+        if slot_state is not None and entry.slot is not None and held != slot_state.path:
+            _restore_slot_state(connection_pool, entry, endpoint, slot_state, cancellation)
         response_data, response_reusable = _post_on_connection(
             entry.connection,
             endpoint,
@@ -544,14 +790,21 @@ def _post_pooled(
         cancellation_allows_reuse = True
         if cancellation is not None and cancellation_attached:
             cancellation_allows_reuse = cancellation.detach(entry.connection)
-        connection_pool.release(
-            entry,
-            reusable=(
-                valid_response
-                and response_reusable
-                and cancellation_allows_reuse
-            ),
-        )
+        reusable = valid_response and response_reusable and cancellation_allows_reuse
+        if (
+            reusable
+            and slot_state is not None
+            and entry.slot is not None
+            and not connection_pool.refuses_slot_state(slot_state.path)
+        ):
+            threading.Thread(
+                target=_restore_and_release,
+                args=(connection_pool, entry, endpoint, slot_state),
+                name="baxy-slot-restore",
+                daemon=True,
+            ).start()
+        else:
+            connection_pool.release(entry, reusable=reusable)
 
 
 def post_chat_completion(
@@ -562,12 +815,16 @@ def post_chat_completion(
     max_attempts: int = 2,
     cancellation: ChatCompletionCancellation | None = None,
     connection_pool: ChatCompletionConnectionPool | None = None,
+    reserved_slot: bool = False,
+    slot_state: SlotState | None = None,
 ) -> dict[str, Any]:
     """Post one local chat request with an explicitly bounded retry.
 
     The endpoint and timeout callbacks run before every wire attempt.  This is
     intentional: the runtime can replace a dead owned process between attempts
     and every retry remains inside the caller's current monotonic budget.
+    ``reserved_slot`` asks a slot-owning pool for its reserved server slot;
+    ``slot_state`` is the saved state that slot is put in first (``_restore_slot_state``).
     """
 
     if max_attempts not in {1, 2}:
@@ -584,10 +841,13 @@ def post_chat_completion(
                 result = _post_pooled(
                     connection_pool,
                     endpoint,
+                    payload,
                     request_data,
                     timeout,
                     cancellation,
                     require_fresh=attempt > 0,
+                    reserved_slot=reserved_slot,
+                    slot_state=slot_state,
                 )
             elif cancellation is None:
                 request = urllib.request.Request(

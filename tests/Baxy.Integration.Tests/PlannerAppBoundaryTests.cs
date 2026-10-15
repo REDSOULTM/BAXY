@@ -12,12 +12,714 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class PlannerAppBoundaryTests
 {
+    [TestCase("filesystem.search", true, "find", 0, 0, true)]
+    [TestCase("filesystem.list", true, "find", 0, 0, true)]
+    [TestCase("filesystem.known.search", true, "find", 0, 0, false)]
+    [TestCase("filesystem.search", false, "find", 0, 0, false)]
+    [TestCase("filesystem.search", true, "other", 0, 0, false)]
+    [TestCase("filesystem.search", true, "find", 1, 0, false)]
+    [TestCase("filesystem.search", true, "find", 0, 1, false)]
+    [TestCase("filesystem.search", true, "find", null, 0, false)]
+    public void EmptyFileSearchIsDistinguishedFromMissingOrUnverifiedData(
+        string producer, bool verified, string stepId, int? count, int entriesCount, bool expected)
+    {
+        var step = new MindPlanStep("read", "filesystem.read.text", "Lee el archivo.",
+            ["find"], "after_dependencies", null);
+        var entries = new JsonArray();
+        for (int index = 0; index < entriesCount; index++)
+        {
+            entries.Add(new JsonObject { ["resourceId"] = $"fs_{index:x32}" });
+        }
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = stepId,
+            ["operation"] = producer,
+            ["verified"] = verified,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = new JsonObject { ["entries"] = entries, ["count"] = count },
+        });
+        Assert.That(PlanObservationProjector.IsVerifiedEmptyFileSearch(step, observations), Is.EqualTo(expected));
+        Assert.That(PlanObservationProjector.IsVerifiedEmptyFileSearch(
+            step with { Operation = "note.read" }, observations), Is.False);
+    }
+
+    // Tanda 4c «add flour to my shopping list if it's not already on it»: the add
+    // runs only when the search it waits on found nothing.
+    [TestCase("task.search", true, "read", 1, true)]
+    [TestCase("task.search", true, "read", 3, true)]
+    [TestCase("task.search", true, "read", 0, false)]
+    [TestCase("task.search", false, "read", 1, false)]
+    [TestCase("task.search", true, "other", 1, false)]
+    [TestCase("task.list", true, "read", 1, false)]
+    [TestCase("task.search", true, "read", null, false)]
+    public void AnAddGuardedByItsListReadIsSkippedOnlyWhenTheEntryWasFound(
+        string producer, bool verified, string stepId, int? count, bool expected)
+    {
+        var step = new MindPlanStep("add", "task.create", "add flour to my shopping list if it's not already on it",
+            ["read"], "literal", new JsonObject { ["title"] = "flour", ["details"] = "shopping list" });
+        var result = new JsonObject { ["tasks"] = new JsonArray(), ["mode"] = "search" };
+        if (count is { } value)
+        {
+            result["count"] = value;
+        }
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = stepId,
+            ["operation"] = producer,
+            ["verified"] = verified,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = result,
+        });
+        Assert.That(PlanObservationProjector.IsGuardedByAFoundEntry(step, observations), Is.EqualTo(expected));
+        // An add that does not wait on the read, or another effect, is never skipped.
+        Assert.That(PlanObservationProjector.IsGuardedByAFoundEntry(step with { DependsOn = [] }, observations), Is.False);
+        Assert.That(PlanObservationProjector.IsGuardedByAFoundEntry(
+            step with { Operation = "note.create" }, observations), Is.False);
+    }
+
+    [TestCase("filesystem.search", true, 1, true)]
+    [TestCase("filesystem.list", true, 1, true)]
+    [TestCase("filesystem.known.search", true, 1, false)]
+    [TestCase("filesystem.search", false, 1, false)]
+    [TestCase("filesystem.search", true, 0, false)]
+    [TestCase("filesystem.search", true, 2, false)]
+    public void FileReadUsesOnlyAUniqueVerifiedSandboxIdentity(string producer, bool verified, int count, bool expected)
+    {
+        var step = new MindPlanStep("read", "filesystem.read.text", "Lee el archivo del sandbox.",
+            ["find"], "after_dependencies", null);
+        var entries = new JsonArray();
+        for (int index = 0; index < count; index++)
+        {
+            entries.Add(new JsonObject { ["resourceId"] = $"fs_{index:x32}" });
+        }
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = "find",
+            ["operation"] = producer,
+            ["verified"] = verified,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = new JsonObject { ["entries"] = entries },
+        });
+        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments),
+            Is.EqualTo(expected));
+        if (expected)
+        {
+            Assert.That((string?)arguments!["resourceId"], Is.EqualTo("fs_" + new string('0', 32)));
+        }
+    }
+
+    // Tanda t4-r6 «ponme el navegador y el word uno al lado del otro»: Word's resolve also listed an untitled or owned
+    // dialog; placing acts on the application's one titled frame no window owns. Closing, or two real frames, stays
+    // ambiguous.
+    [TestCase("window.snap", "", false, true)]
+    [TestCase("window.move", "Guardar como", true, true)]
+    [TestCase("window.maximize", null, false, true)]
+    [TestCase("window.snap", "Documento2 - Word", false, false)]
+    [TestCase("app.close", "", false, false)]
+    public void ArrangingGroundsTheApplicationsMainFrame(string operation, string? otherTitle, bool otherOwned, bool grounded)
+    {
+        var step = new MindPlanStep("place", operation, "Acomoda Word.", ["find"], "after_dependencies", null);
+        var dialog = new JsonObject
+        {
+            ["windowId"] = "win_" + new string('2', 32),
+            ["processName"] = "WINWORD",
+            ["state"] = "normal",
+        };
+        if (otherTitle is not null)
+            dialog["title"] = otherTitle;
+        if (otherOwned)
+            dialog["owned"] = true;
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = "find",
+            ["operation"] = "window.resolve",
+            ["verified"] = true,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = new JsonObject
+            {
+                ["windows"] = new JsonArray(
+                    new JsonObject
+                    {
+                        ["windowId"] = "win_" + new string('1', 32),
+                        ["processName"] = "WINWORD",
+                        ["title"] = "Documento1 - Word",
+                        ["state"] = "normal",
+                    },
+                    dialog),
+            },
+        });
+        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments),
+            Is.EqualTo(grounded));
+        if (grounded)
+            Assert.That((string?)arguments!["windowId"], Is.EqualTo("win_" + new string('1', 32)));
+    }
+
+    // Ronda 22 (r18 t4-c19 «ponme el navegador y el word uno al lado del otro»): the browser's resolve listed three
+    // titled frames — the real view of the evidence, a picture-in-picture of 365×206 among them — and the snap ended in
+    // step_data_missing. The frame the act is for is grounded: not already in the act's end state, then foreground,
+    // then topmost tool-sized frames out (against the work area), then the provider's z rank, then the clearly larger
+    // one. Two comparable frames with no recency stay ambiguous. Revisión 1: the order of the read proves nothing.
+    private static JsonObject Frame(char id, string title, string state, int width, int height, bool foreground = false,
+        int? zOrder = null, bool topmost = false)
+    {
+        var frame = new JsonObject
+        {
+            ["windowId"] = Id(id),
+            ["processId"] = 4100,
+            ["processName"] = "opera",
+            ["title"] = title,
+            ["state"] = state,
+            ["foreground"] = foreground,
+            ["x"] = 0,
+            ["y"] = 0,
+            ["width"] = width,
+            ["height"] = height,
+            ["workAreaWidth"] = 1934,
+            ["workAreaHeight"] = 1046,
+        };
+        if (zOrder is int rank)
+            frame["zOrder"] = rank;
+        if (topmost)
+            frame["topmost"] = true;
+        return frame;
+    }
+
+    private static string Id(char id) => "win_" + new string(id, 32);
+
+    private static bool GroundSnap(JsonArray windows, out string? windowId, string operation = "window.snap")
+    {
+        var step = new MindPlanStep("place", operation, "Pon el navegador a la izquierda.", ["find"],
+            "after_dependencies", null);
+        // The application read always carries this scope and lists its frames by area: neither is a z-order.
+        var result = new JsonObject
+        {
+            ["windows"] = windows,
+            ["count"] = windows.Count,
+            ["observationScope"] = "visible_top_level_windows",
+        };
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = "find",
+            ["operation"] = "window.resolve",
+            ["verified"] = true,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = result,
+        });
+        bool grounded = PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments);
+        windowId = grounded ? (string?)arguments!["windowId"] : null;
+        return grounded;
+    }
+
+    [Test]
+    public void T4C19ThePersonsBrowserFrameIsGroundedOutOfThreeFrames()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Verification page | Example Platform - Opera", "maximized", 1550, 830, zOrder: 4),
+            Frame('0', "(14) Un día cualquiera en la ciudad | VLOG - YouTube - Opera", "normal", 768, 816, zOrder: 9),
+            Frame('e', "Imagen sobre imagen", "normal", 365, 206, zOrder: 0, topmost: true));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('5')));
+    }
+
+    [Test]
+    public void TheFrameFirstInZOrderWinsNotTheFirstListed()
+    {
+        // Revisión 1: BAXY in front; «Descargas» was used a moment ago and stands above «Documentos», which is larger
+        // and comes first in a read ordered by area.
+        var windows = new JsonArray(
+            Frame('d', "Documentos", "normal", 1100, 750, zOrder: 6),
+            Frame('a', "Descargas", "normal", 1000, 700, zOrder: 2));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseWithNoZRankTheFirstListedIsNotTheOneUsed()
+    {
+        var windows = new JsonArray(
+            Frame('d', "Documentos", "normal", 1100, 750),
+            Frame('a', "Descargas", "normal", 1000, 700));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void TheForegroundFrameWinsOverZOrder()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Página A - Navegador", "normal", 900, 800, zOrder: 1),
+            Frame('0', "Página B - Navegador", "normal", 900, 800, foreground: true, zOrder: 3));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('0')));
+    }
+
+    [Test]
+    public void ASmallForegroundFrameWinsOverAMaximizedOne()
+    {
+        // Revisión 1: the size rule never overrides the window the person acts in.
+        var windows = new JsonArray(
+            Frame('m', "Documentos", "maximized", 1934, 1046, zOrder: 1),
+            Frame('s', "Descargas", "normal", 640, 360, foreground: true, zOrder: 0));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('s')));
+    }
+
+    [Test]
+    public void ContracaseASmallFrameThatIsNotTopmostIsNotATool()
+    {
+        // A small ordinary window above a maximized one is the one used last, not a tool.
+        var windows = new JsonArray(
+            Frame('m', "Documentos", "maximized", 1934, 1046, zOrder: 3),
+            Frame('s', "Descargas", "normal", 640, 360, zOrder: 1));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('s')));
+    }
+
+    [Test]
+    public void ATopmostToolSizedFrameIsATool()
+    {
+        var windows = new JsonArray(
+            Frame('e', "Imagen sobre imagen", "normal", 365, 206, topmost: true),
+            Frame('0', "Página B - Navegador", "normal", 900, 800));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('0')));
+    }
+
+    [Test]
+    public void ContracaseALargeTopmostFrameIsNotATool()
+    {
+        var windows = new JsonArray(
+            Frame('t', "Página A - Navegador", "normal", 900, 800, topmost: true),
+            Frame('0', "Página B - Navegador", "normal", 880, 790));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void RestoreIsForTheMinimizedFrameNotTheNormalOne()
+    {
+        // Revisión 1: a minimized frame measures 160×28; it is the one to restore, never a tool.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, zOrder: 2),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.restore"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('m')));
+    }
+
+    [Test]
+    public void RestoreIsForTheMinimizedFrameEvenWithTheNormalOneInFront()
+    {
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, foreground: true, zOrder: 0),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.restore"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('m')));
+    }
+
+    [Test]
+    public void MaximizeIsForTheForegroundFrameEvenWhenItIsAlreadyMaximized()
+    {
+        // Revisión 2 (D71): «maximiza el explorador» with «Documentos» maximized in front and «Descargas» behind. The
+        // end state never outranks the person's frame: maximizing the one behind would cover the window in use.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "maximized", 1934, 1046, foreground: true, zOrder: 0),
+            Frame('b', "Descargas", "normal", 1000, 700, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.maximize"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void MaximizeIsForTheFrameFirstInZOrderEvenWhenItIsAlreadyMaximized()
+    {
+        // BAXY in front: the explorer frame first in z-order is the person's, maximized or not.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "maximized", 1934, 1046, zOrder: 1),
+            Frame('b', "Descargas", "normal", 1000, 700, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.maximize"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseMaximizeDoesNotBringBackAMinimizedFrameOverTheForegroundOne()
+    {
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "maximized", 1934, 1046, foreground: true, zOrder: 0),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.maximize"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseRestoreOfAMaximizedFrameBehindStaysWithTheForegroundOne()
+    {
+        // Only a minimized frame has no place in front for the foreground to speak of.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, foreground: true, zOrder: 0),
+            Frame('b', "Descargas", "maximized", 1934, 1046, zOrder: 5));
+        Assert.That(GroundSnap(windows, out string? windowId, "window.restore"), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('a')));
+    }
+
+    [Test]
+    public void ContracaseASnapWithAMinimizedAndANormalFrameStaysAmbiguous()
+    {
+        // Where a minimized window stands says nothing of use, and it has no size to compare.
+        var windows = new JsonArray(
+            Frame('a', "Documentos", "normal", 1100, 750, zOrder: 2),
+            Frame('m', "Descargas", "minimized", 160, 28, zOrder: 5));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void ContracaseTwoComparableFramesWithNoRecencyStayAmbiguous()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Página A - Navegador", "normal", 900, 800),
+            Frame('0', "Página B - Navegador", "normal", 860, 790));
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    [Test]
+    public void AClearlyLargerFrameWinsWithNoRecency()
+    {
+        var windows = new JsonArray(
+            Frame('5', "Página A - Navegador", "maximized", 1550, 830),
+            Frame('0', "Página B - Navegador", "normal", 768, 816));
+        Assert.That(GroundSnap(windows, out string? windowId), Is.True);
+        Assert.That(windowId, Is.EqualTo(Id('5')));
+    }
+
+    [Test]
+    public void ContracaseTwoApplicationsKeepTwoIds()
+    {
+        // One frame for each application: the snap of one window is not grounded from two applications' frames.
+        JsonObject word = Frame('1', "Documento1 - Word", "normal", 900, 800, zOrder: 1);
+        word["processId"] = 5200;
+        word["processName"] = "WINWORD";
+        var windows = new JsonArray(Frame('5', "Página A - Navegador", "maximized", 1550, 830, zOrder: 2), word);
+        Assert.That(GroundSnap(windows, out _), Is.False);
+    }
+
+    // MEME2053 «Tienes algun meme?»: the open is grounded from the verified download's folder and name.
+    [Test]
+    public void FileOpenIsGroundedFromTheVerifiedDownload()
+    {
+        var step = new MindPlanStep("open", "file.open", "Abre la imagen descargada.",
+            ["download"], "after_dependencies", null);
+        var observations = new JsonArray(PlanObservationProjector.Create(
+            "download",
+            "web.download",
+            new OperationResponse(
+                "operation.response", "req_download", "mission_meme", "inv_download", OperationStatuses.Completed,
+                "downloaded", true, false,
+                JsonDocument.Parse("""
+                    {"version":1,"sourceUrl":"https://example.org/i/meme.jpg","query":"meme","folder":"pictures","name":"meme.jpg","bytes":12345,"contentType":"image/jpeg","authority":"downloaded_file_size_postread"}
+                    """).RootElement,
+                null)));
+        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments), Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)arguments!["folder"], Is.EqualTo("pictures"));
+            Assert.That((string?)arguments["name"], Is.EqualTo("meme.jpg"));
+            Assert.That(arguments.ContainsKey("sourceUrl"), Is.False);
+            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority("file.open", arguments, observations), Is.True);
+            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("file.open", arguments), Is.True);
+        });
+    }
+
+    [TestCase("filesystem.search")]
+    [TestCase("filesystem.list")]
+    public void FileReadPlanRetainsItsVerifiedProducerAcrossTheAppBoundary(string producer)
+    {
+        var plan = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                new MindPlanStep("find", producer, "Localiza el archivo solicitado.",
+                    [], "literal", new JsonObject()),
+                new MindPlanStep("read", "filesystem.read.text", "Lee el archivo solicitado.",
+                    ["find"], "after_dependencies", null),
+            ]);
+        var unrelated = plan with
+        {
+            Steps = [plan.Steps[0] with { Operation = "filesystem.known.search" }, plan.Steps[1]],
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(plan,
+                ["filesystem.read.text"]), Is.SameAs(plan));
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(unrelated,
+                ["filesystem.read.text"]), Is.Null);
+            Assert.That(MissionPlanValidator.DependencyAuthorityFields("filesystem.read.text"),
+                Is.EqualTo(new[] { "resourceId" }));
+        });
+    }
+
+    // M44 (FINAL F-w06-t1, F-w08-t1, F-p02-t3): an action whose schema carries
+    // an identity only a verified producer issues goes to the planner, never to
+    // the direct argument step that asked «¿Cuál es el ID de la ventana…?».
+    [TestCase("app.close", true)]
+    [TestCase("window.snap", true)]
+    [TestCase("window.maximize", true)]
+    [TestCase("task.delete", true)]
+    // M76 (DEV-D v3l D-w17-t2): marking a task done crosses the planner too, never «¿ID y versión esperada?».
+    [TestCase("task.complete", true)]
+    [TestCase("task.reopen", true)]
+    // M160 (DEV-G v4w G-w12-t2): changing a note crosses its read, never «¿Cuál es el título de la nota…?».
+    [TestCase("note.update", true)]
+    [TestCase("reminder.delete", true)]
+    [TestCase("message.send", true)]
+    [TestCase("game.install.commit", true)]
+    [TestCase("notification.schedule", false)]
+    [TestCase("system.time", false)]
+    [TestCase("app.open", false)]
+    public void DependencyBoundActionsCrossThePlanner(string operation, bool expected)
+    {
+        Assert.That(MainWindowViewModel.ConsumesVerifiedDependency(operation), Is.EqualTo(expected));
+    }
+
+    // M55 (v3b F-w06-t1 «pon el word a la izquierda y el chrome a la derecha», F-w08-t1): the decider lists
+    // window.snap once for two windows; the mind plans one resolve and one snap per window.
+    [Test]
+    public void OneSnapPerWindowCrossesTheSingleExpectedEffect()
+    {
+        static MindPlanStep Resolve(string id, string application) =>
+            new(id, "window.resolve", $"Localiza la ventana de {application}.", [], "literal",
+                new JsonObject { ["applicationName"] = application });
+        static MindPlanStep Snap(string id, string dependency, string purpose) =>
+            new(id, "window.snap", purpose, [dependency], "after_dependencies", null);
+
+        var perWindow = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                Resolve("step_1", "Word"),
+                Snap("step_2", "step_1", "coloca la ventana de word en la mitad izquierda"),
+                Resolve("step_3", "Google Chrome"),
+                Snap("step_4", "step_3", "coloca la de chrome en la mitad derecha"),
+            ]);
+        var sharedIdentity = perWindow with
+        {
+            Steps = perWindow.Steps.Where(static step => step.Id != "step_3").ToArray(),
+        };
+        var addedEffect = perWindow with
+        {
+            Steps =
+            [
+                .. perWindow.Steps,
+                new MindPlanStep("step_5", "capture.screenshot", "Captura la pantalla.", [], "literal",
+                    new JsonObject()),
+            ],
+        };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(perWindow, ["window.snap"]), Is.SameAs(perWindow));
+            Assert.That(() => MindPlanBoundary.ValidateAndConvert(
+                "Coloca la ventana de Word en la mitad izquierda y la de Chrome en la mitad derecha.", perWindow),
+                Throws.Nothing);
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(sharedIdentity, ["window.snap"]), Is.Null);
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(addedEffect, ["window.snap"]), Is.Null);
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(
+                addedEffect, ["window.snap", "capture.screenshot"]), Is.SameAs(addedEffect));
+        });
+    }
+
+    // M56 (v3c-final F-w06-t1/t2, Word installed but closed on the test PC): the first window's
+    // resolve failed with window_not_found, the plan ended, Chrome was never placed and the reply
+    // said «ninguna» window existed. A read that changed nothing ends only its own chain; the other
+    // window's resolve and snap still run, and the failure names its application.
+    [Test]
+    public void AFailedReadEndsOnlyItsOwnChain()
+    {
+        static MindPlanStep Resolve(string id, string application) =>
+            new(id, "window.resolve", $"Localiza la ventana de {application}.", [], "literal",
+                new JsonObject { ["applicationName"] = application });
+        static MindPlanStep Snap(string id, string dependency) =>
+            new(id, "window.snap", "Coloca la ventana.", [dependency], "after_dependencies", null);
+        MindPlanStep[] twoWindows =
+            [Resolve("step_1", "Word"), Snap("step_2", "step_1"), Resolve("step_3", "Google Chrome"), Snap("step_4", "step_3")];
+        OperationResponse notFound = new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Failed,
+            """{"kind":"operation","operation":"window.resolve","polarity":"failure","verified":false,"succeeded":false,"error":"window_not_found"}""",
+            false,
+            false,
+            null,
+            "window_not_found");
+        var firstFailed = new PendingMindPlanExecution("pon el word a la izquierda y el chrome a la derecha", twoWindows);
+        var lastFailed = new PendingMindPlanExecution("pon el word a la izquierda y el chrome a la derecha", twoWindows)
+        {
+            NextIndex = 2,
+        };
+        // An effect with no producer of its own (typing into whatever is in front) never runs past a failure.
+        var typing = new PendingMindPlanExecution(
+            "abre word y escribe hola",
+            [Resolve("step_1", "Word"), new MindPlanStep("step_2", "input.text.type", "Escribe hola.", [], "literal",
+                new JsonObject { ["text"] = "hola" })]);
+        var openFailed = new PendingMindPlanExecution(
+            "abre word y pon chrome a la derecha",
+            [new MindPlanStep("step_1", "app.open", "Abre Word.", [], "literal", new JsonObject { ["appId"] = "word" }),
+             Resolve("step_2", "Google Chrome"), Snap("step_3", "step_2")]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindPlanBoundary.IndependentRemainder(firstFailed, notFound)?.Select(static step => step.Id),
+                Is.EqualTo(new[] { "step_3", "step_4" }));
+            Assert.That(MindPlanBoundary.IndependentRemainder(lastFailed, notFound), Is.Null);
+            Assert.That(MindPlanBoundary.IndependentRemainder(firstFailed, notFound with { EffectMayHaveOccurred = true }),
+                Is.Null);
+            Assert.That(MindPlanBoundary.IndependentRemainder(typing, notFound), Is.Null);
+            Assert.That(MindPlanBoundary.IndependentRemainder(openFailed, notFound), Is.Null, "only a read is stepped over");
+
+            string word = MindPlanBoundary.WithStepFacts(notFound.Message, new JsonObject { ["applicationName"] = "Word" });
+            Assert.That(JsonNode.Parse(word)!["target"]!.GetValue<string>(), Is.EqualTo("Word"));
+            Assert.That(MindPlanBoundary.WithStepFacts(notFound.Message, new JsonObject { ["windowId"] = "w1" }),
+                Is.EqualTo(notFound.Message));
+            Assert.That(MindPlanBoundary.WithStepFacts("prosa", new JsonObject { ["applicationName"] = "Word" }),
+                Is.EqualTo("prosa"));
+            string chrome = MindPlanBoundary.WithStepFacts(
+                notFound.Message, new JsonObject { ["applicationName"] = "Google Chrome" });
+            Assert.That(JsonNode.Parse(MindPlanBoundary.MergeFailures(word, chrome))!["target"]!.AsArray()
+                    .Select(static node => node!.GetValue<string>()),
+                Is.EqualTo(new[] { "Word", "Google Chrome" }));
+            Assert.That(MindPlanBoundary.MergeFailures(null, chrome), Is.EqualTo(chrome));
+            Assert.That(MindPlanBoundary.MergeFailures(word, "prosa"), Is.EqualTo("prosa"));
+        });
+    }
+
+    [Test]
+    public void AFailedStepNamesWhatItWasAbout()
+    {
+        // M94 (DEV-D D-s102, D-s087, D-p24-t4, D-w07-t2, D-w09-t3, D-p37-t3): the facts of a failed or unverified
+        // step said only the cause; the grounded argument that names what was tried goes with them.
+        const string failed =
+            """{"kind":"operation","operation":"app.open","polarity":"failure","verified":false,"succeeded":false,"error":"app_not_found"}""";
+        static string Target(string message) => JsonNode.Parse(message)!["target"]!.GetValue<string>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["appId"] = "Notion" })),
+                Is.EqualTo("Notion"));
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["location"] = "Ushuaia, Argentina" })),
+                Is.EqualTo("Ushuaia, Argentina"));
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(
+                    failed, new JsonObject { ["service"] = "netflix", ["title"] = "Paddington 2" })),
+                Is.EqualTo("Paddington 2"));
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["expression"] = "960/12" })),
+                Is.EqualTo("960/12"));
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["folder"] = "documents" })),
+                Is.EqualTo("documents"));
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(
+                    failed, new JsonObject { ["query"] = "cumbia para cocinar" })),
+                Is.EqualTo("cumbia para cocinar"));
+            // M111 (DEV-F v4d F-s005: a draft for Tyler failed with Discord closed and nothing said for whom): the
+            // person a message was for is what it was about; its words are not.
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(
+                    failed, new JsonObject { ["channel"] = "discord", ["recipient"] = "Tyler", ["text"] = "a las 9" })),
+                Is.EqualTo("Tyler"));
+            // A catalog id is no name, and identifiers, versions or free text are never a target.
+            Assert.That(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["appId"] = "windows.calculator" }),
+                Is.EqualTo(failed));
+            Assert.That(MindPlanBoundary.WithStepFacts(
+                    failed, new JsonObject { ["appId"] = "Microsoft.WindowsCamera_8wekyb3d8bbwe!App" }),
+                Is.EqualTo(failed));
+            // M116: free text is no target, but it is what was attempted; the id and the version are neither.
+            JsonNode taskFacts = JsonNode.Parse(MindPlanBoundary.WithStepFacts(
+                failed, new JsonObject { ["taskId"] = "a1", ["expectedVersion"] = 2, ["text"] = "hola" }))!;
+            Assert.That(taskFacts["target"], Is.Null);
+            Assert.That(taskFacts["attempted"]!.ToJsonString(), Is.EqualTo("""{"text":"hola"}"""));
+            // A target the facts already carry stays theirs.
+            const string named = """{"kind":"operation","target":"Word","error":"window_not_found"}""";
+            JsonNode namedFacts = JsonNode.Parse(MindPlanBoundary.WithStepFacts(named, new JsonObject { ["title"] = "otro" }))!;
+            Assert.That(namedFacts["target"]!.GetValue<string>(), Is.EqualTo("Word"));
+            Assert.That(namedFacts["attempted"]!["title"]!.GetValue<string>(), Is.EqualTo("otro"));
+        });
+    }
+
+    [Test]
+    public void TaskDeletePlanIsGroundedFromTheVerifiedResolver()
+    {
+        var plan = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                new MindPlanStep("resolve", "task.resolve.exact", "Identifica la tarea por su título.",
+                    [], "literal", new JsonObject { ["title"] = "leche" }),
+                new MindPlanStep("delete", "task.delete", "Envía la tarea a la papelera.",
+                    ["resolve"], "after_dependencies", null),
+            ]);
+        var observations = new JsonArray(PlanObservationProjector.Create(
+            "resolve",
+            "task.resolve.exact",
+            new OperationResponse(
+                "operation.response", "req_resolve", "mission_task", "inv_resolve", OperationStatuses.Completed,
+                "resolved", true, false,
+                JsonDocument.Parse("""
+                    {"taskId":"6f1c2d3e-0000-4000-8000-000000000001","expectedVersion":3,"reviewLabel":"leche","deleted":false,"status":"open"}
+                    """).RootElement,
+                null)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(plan, ["task.delete"]), Is.SameAs(plan));
+            Assert.That(() => MindPlanBoundary.ValidateAndConvert("quita la leche de mi lista", plan), Throws.Nothing);
+            Assert.That(PlanObservationProjector.TryGroundIdentityArguments(
+                plan.Steps[1], observations, out JsonObject? arguments), Is.True);
+            Assert.That((string?)arguments!["taskId"], Is.EqualTo("6f1c2d3e-0000-4000-8000-000000000001"));
+            Assert.That((long?)arguments["expectedVersion"], Is.EqualTo(3));
+            Assert.That((string?)arguments["reviewLabel"], Is.EqualTo("leche"));
+            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("task.delete", arguments), Is.True);
+            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority(
+                "task.delete", arguments, observations), Is.True);
+        });
+    }
+
+    // M76 (DEV-D v3l D-w17-t2 «mark the first one done» after a task listing → «Which task ID and expected version
+    // should be marked as complete?»): the task marked done is resolved by the title the listing told, and its
+    // identity and version come from that verified resolver, never from the person.
+    [Test]
+    public void TaskCompletePlanIsGroundedFromTheVerifiedResolver()
+    {
+        var plan = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                new MindPlanStep("resolve", "task.resolve.exact", "Mark the first task on my list as done.",
+                    [], "literal", new JsonObject { ["title"] = "tomates" }),
+                new MindPlanStep("complete", "task.complete", "Mark the first task on my list as done.",
+                    ["resolve"], "after_dependencies", null),
+            ]);
+        var observations = new JsonArray(PlanObservationProjector.Create(
+            "resolve",
+            "task.resolve.exact",
+            new OperationResponse(
+                "operation.response", "req_resolve", "mission_task", "inv_resolve", OperationStatuses.Completed,
+                "resolved", true, false,
+                JsonDocument.Parse("""
+                    {"taskId":"0fd37d83-6f96-4b82-a1c6-9de123985517","expectedVersion":1,"reviewLabel":"tomates","deleted":false,"status":"open"}
+                    """).RootElement,
+                null)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(plan, ["task.complete"]), Is.SameAs(plan));
+            Assert.That(() => MindPlanBoundary.ValidateAndConvert("mark the first one done", plan), Throws.Nothing);
+            Assert.That(PlanObservationProjector.TryGroundIdentityArguments(
+                plan.Steps[1], observations, out JsonObject? arguments), Is.True);
+            Assert.That((string?)arguments!["taskId"], Is.EqualTo("0fd37d83-6f96-4b82-a1c6-9de123985517"));
+            Assert.That((long?)arguments["expectedVersion"], Is.EqualTo(1));
+            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("task.complete", arguments), Is.True);
+            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority(
+                "task.complete", arguments, observations), Is.True);
+        });
+    }
+
     [Test]
     public void EmptyClosedSchemasDoNotRequireModelArgumentExtraction()
     {
+        // Uso real tanda 4: system.time now takes an optional place (the time of
+        // another place), so the empty closed schema here is the audio reading.
         Assert.That(
             ProductCatalog.TryGet(
-                "system.time",
+                "audio.status",
                 out ProductOperationDescriptor? noArguments),
             Is.True);
         Assert.That(
@@ -105,23 +807,9 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 clarification.IntentOperations,
                 Is.EqualTo(new[] { "system.power" }));
-            Assert.That(
-                MindClarificationPolicy.ResumeObjective(
-                    "Crea un recordatorio",
-                    "mañana a las 9"),
-                Is.EqualTo(
-                    "Crea un recordatorio\n"
-                    + "Aclaración confiable del usuario: mañana a las 9"));
-            Assert.That(
-                MindClarificationPolicy.ShouldResumePendingObjective(
-                    "mañana a las 9",
-                    clarification),
-                Is.True);
-            Assert.That(
-                MindClarificationPolicy.ShouldResumePendingObjective(
-                    "Explícame la fotosíntesis",
-                    recoveryClarification),
-                Is.False);
+            // Fase 3.5: the shell no longer rebuilds «pedido + aclaración»; the
+            // mind fills the dialogue slot and returns the request (Objective).
+            Assert.That(recoveryClarification.PreserveObjective, Is.False);
         });
     }
 
@@ -150,6 +838,45 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 MindSidecarClient.TryParsePreserveObjective(malformed, out _),
                 Is.False);
+        });
+    }
+
+    [TestCase("Pon el volumen a...", "audio.volume", "¿A qué nivel?")]
+    [TestCase("Set the volume to...", "audio.volume", "What level should I set?")]
+    [TestCase("Abre una aplicación", "app.open", "¿Qué aplicación?")]
+    [TestCase("Create a reminder", "reminder.create", "What should I remind you about?")]
+    public void NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(
+        string text, string operation, string question)
+    {
+        var decision = new MindTurnDecision("clarify", null, [], question, string.Empty)
+        {
+            IntentOperations = [operation],
+            StartsNewObjective = true,
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindClarificationPolicy.IsSelfContainedRequest(text, decision), Is.True);
+            Assert.That(decision.PreserveObjective, Is.True,
+                "The next slot value must still be able to complete this new request.");
+            Assert.That(decision.EffectOperations, Is.Empty);
+            Assert.That(MindClarificationPolicy.IsSelfContainedRequest("37",
+                new MindTurnDecision("conversation", null, [], string.Empty, "Entendido.")), Is.False);
+        });
+    }
+
+    [Test]
+    public void StartsNewObjectiveIsOptionalBooleanAndDefaultsToLegacyFalse()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(new JsonObject(), out bool legacy)
+                && !legacy, Is.True);
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
+                new JsonObject { ["startsNewObjective"] = true }, out bool enabled) && enabled, Is.True);
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
+                new JsonObject { ["startsNewObjective"] = false }, out bool disabled) && !disabled, Is.True);
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
+                new JsonObject { ["startsNewObjective"] = "true" }, out _), Is.False);
         });
     }
 
@@ -263,7 +990,11 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 MindSidecarClient.SelectMessageCompositionProtocolBudget(
                     TimeSpan.FromSeconds(55)),
-                Is.EqualTo(55d));
+                Is.EqualTo(54d));
+            Assert.That(
+                MindSidecarClient.SelectMessageCompositionProtocolBudget(
+                    TimeSpan.FromSeconds(5)),
+                Is.EqualTo(4d));
             Assert.That(
                 MindSidecarClient.SelectMessageCompositionProtocolBudget(
                     TimeSpan.FromSeconds(60)),
@@ -330,6 +1061,319 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    [TestCase(0, false)]
+    [TestCase(1, false)]
+    [TestCase(7, false)]
+    [TestCase(8, true)]
+    [TestCase(20, true)]
+    [TestCase(50, true)]
+    public void ObservedInventoryUsesItsCompositionBudgetThroughTheSharedFactsPath(
+        int count, bool dense)
+    {
+        var windows = new JsonArray();
+        foreach (int index in Enumerable.Range(0, count))
+        {
+            windows.Add(new JsonObject
+            {
+                ["title"] = $"File {index}",
+                ["processName"] = "editor",
+            });
+        }
+        var situation = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "window.resolve",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["windows"] = windows,
+                ["count"] = count,
+                ["observedCount"] = count + 4,
+                ["totalCount"] = count + 4,
+                ["complete"] = true,
+                ["offset"] = 0,
+            },
+        };
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            situation.ToJsonString(), UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+        string before = facts.ToJsonString();
+
+        Assert.Multiple(() =>
+        {
+            TimeSpan gpu = MindSidecarClient.SelectMessageCompositionTimeout(facts);
+            Assert.That(gpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(gpu),
+                Is.EqualTo(dense ? 9d : 4d));
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)));
+            Assert.That(facts.ToJsonString(), Is.EqualTo(before));
+        });
+    }
+
+    [TestCase("true", "true", true)]
+    [TestCase("false", "true", false)]
+    [TestCase("true", "false", false)]
+    [TestCase("null", "true", false)]
+    [TestCase("true", "null", false)]
+    [TestCase("\"true\"", "true", false)]
+    [TestCase("true", "1", false)]
+    public void LargeInventoryFactsNeedVerifiedSuccessToSelectTheDenseBudget(
+        string verified, string succeeded, bool dense)
+    {
+        var situation = new JsonObject
+        {
+            ["operation"] = "window.resolve",
+            ["verified"] = JsonNode.Parse(verified),
+            ["succeeded"] = JsonNode.Parse(succeeded),
+            ["observed"] = new JsonObject
+            {
+                ["windows"] = new JsonArray(new JsonObject
+                {
+                    ["title"] = new string('a', 512),
+                    ["processName"] = "editor",
+                }),
+            },
+        };
+        var facts = new JsonObject { ["situation"] = situation.ToJsonString() };
+        Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+            Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("Looking at the windows.")]
+    [TestCase("{broken}")]
+    [TestCase("[]")]
+    [TestCase("{\"operation\":\"window.resolve\",\"observed\":{\"windows\":[]}}")]
+    [TestCase("{\"operation\":\"window.resolve\",\"verified\":true,\"succeeded\":true,\"observed\":[]}")]
+    [TestCase("{\"operation\":\"window.resolve\",\"verified\":true,\"succeeded\":true,\"observed\":{\"windows\":8}}")]
+    [TestCase("{\"operation\":\"window.active\",\"verified\":true,\"succeeded\":true,\"observed\":{\"windows\":[1,2,3,4,5,6,7,8]}}")]
+    public void NonInventoryOrMalformedSituationRetainsOrdinaryCompositionBudget(string? situation)
+    {
+        var facts = new JsonObject { ["situation"] = situation };
+        Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+            Is.EqualTo(TimeSpan.FromSeconds(5)));
+    }
+
+    [TestCase(0, false)]
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(5, true)]
+    [TestCase(7, true)]
+    [TestCase(8, true)]
+    [TestCase(50, true)]
+    public void ProcessInventoryCompositionBudgetUsesReturnedRows(int count, bool dense)
+    {
+        var processes = new JsonArray();
+        foreach (int index in Enumerable.Range(0, count))
+        {
+            processes.Add(new JsonObject { ["processId"] = index + 1, ["name"] = "p" });
+        }
+        if (count < 8)
+        {
+            Assert.That(processes.ToJsonString().Length, Is.LessThan(512));
+        }
+        var situation = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "system.process.list",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["processes"] = processes,
+                ["returnedProcessCount"] = count,
+                ["observedProcessCount"] = 200,
+            },
+        };
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            situation.ToJsonString(), UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+        string before = facts.ToJsonString();
+
+        Assert.Multiple(() =>
+        {
+            TimeSpan gpu = MindSidecarClient.SelectMessageCompositionTimeout(facts);
+            TimeSpan cpu = MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true);
+            Assert.That(gpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+            Assert.That(cpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(gpu),
+                Is.EqualTo(dense ? 9d : 4d));
+            Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(cpu),
+                Is.EqualTo(dense ? 120d : 55d));
+            Assert.That(facts.ToJsonString(), Is.EqualTo(before));
+        });
+    }
+
+    [TestCase(511, false)]
+    [TestCase(512, true)]
+    public void ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(int length, bool dense)
+    {
+        var processes = new JsonArray(new JsonObject { ["processId"] = 1, ["name"] = "" });
+        int overhead = processes.ToJsonString().Length;
+        processes[0]!["name"] = new string('a', length - overhead);
+        Assert.That(processes.ToJsonString().Length, Is.EqualTo(length));
+        var situation = new JsonObject
+        {
+            ["operation"] = "system.process.list",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject { ["processes"] = processes },
+        };
+        var facts = new JsonObject { ["situation"] = situation.ToJsonString() };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+                Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)));
+        });
+    }
+
+    [TestCase("false", "true", "{\"processes\":[1,2]}")]
+    [TestCase("true", "false", "{\"processes\":[1,2]}")]
+    [TestCase("false", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("true", "false", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("null", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("\"true\"", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("true", "1", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("true", "true", "[]")]
+    [TestCase("true", "true", "{\"processes\":8}")]
+    [TestCase("true", "true", "{\"processes\":\"12345678\"}")]
+    [TestCase("true", "true", "{\"processes\":{},\"observedProcessCount\":200}")]
+    [TestCase("true", "true", "{\"observedProcessCount\":200}")]
+    [TestCase("true", "true", "{\"processes\":null,\"observedProcessCount\":200}")]
+    public void ProcessCountOrInvalidInventoryRetainsOrdinaryCompositionBudget(
+        string verified, string succeeded, string observed)
+    {
+        var situation = new JsonObject
+        {
+            ["operation"] = "system.process.list",
+            ["verified"] = JsonNode.Parse(verified),
+            ["succeeded"] = JsonNode.Parse(succeeded),
+            ["observed"] = JsonNode.Parse(observed),
+        };
+        var facts = new JsonObject { ["situation"] = situation.ToJsonString() };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+                Is.EqualTo(TimeSpan.FromSeconds(5)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(60)));
+        });
+    }
+
+    [TestCase("Son las 07 horas y 58 minutos.", true)]
+    [TestCase("It is 07 hours and 58 minutes.", true)]
+    [TestCase("Son las 07 horas y 59 minutos.", false)]
+    [TestCase("It is 07 hours and 58 minutes PM.", false)]
+    [TestCase("Son las 07:58, o las 08 horas y 58 minutos.", false)]
+    public void ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-06T10:58:00Z","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
+    [TestCase("Son las 17 horas y 4 minutos.", true)]
+    [TestCase("It is 17 hours and 4 minutes.", true)]
+    [TestCase("Son las 17:04.", true)]
+    [TestCase("Son las 17 horas y 5 minutos.", false)]
+    [TestCase("Son las 17 horas y 40 minutos.", false)]
+    [TestCase("Son las 17:04, o las 18 horas y 4 minutos.", false)]
+    public void SingleDigitMinutesRetainTheExactCapturedClock(string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-06T20:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
+    [TestCase("Hoy es 2026-09-06.", true)]
+    [TestCase("Hoy es 6 de septiembre de 2026.", true)]
+    [TestCase("Es 6 de septiembre.", true)]
+    [TestCase("It is September 6, 2026.", true)]
+    [TestCase("It is 6 September 2026.", true)]
+    [TestCase("Hoy es 7 de septiembre de 2026.", false)]
+    [TestCase("Es 6 de octubre de 2026.", false)]
+    [TestCase("It is September 6, 2025.", false)]
+    [TestCase("Hoy es 2026-09-06, o 2026-09-07.", false)]
+    [TestCase("Son las 22:04.", false)]
+    [TestCase("Hoy es 2026-09-06 y son las 23:04.", false)]
+    public void ObservedDateUsesTheLocalDayAndAllowsNaturalWording(string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-07T01:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string userText = answer.StartsWith("It is", StringComparison.Ordinal) ? "and the date?" : "y la fecha?";
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft, userText);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
+    // Tanda 3 «¿estamos a enero o febrero?» was answered «Son 02:54.»: the month, a month or weekday name or
+    // «a cuántos estamos» ask for the calendar, as in the mind (semantic.network.asks_calendar_part). Tanda 4c
+    // «¿qué mes sale ahora mismo en el calendario de mi casa?» → «Este mes es septiembre.» was rejected for lacking
+    // the day: a month or a year asked is answered with that part (calendar_parts_asked), and a day the narrator
+    // was never given is a guess.
+    [TestCase("¿estamos a enero o febrero?", "Estamos en septiembre.", true)]
+    [TestCase("¿estamos a enero o febrero?", "Estamos en enero.", false)]
+    [TestCase("¿estamos a enero o febrero?", "Son las 22:04.", false)]
+    [TestCase("¿qué mes sale ahora mismo en el calendario de mi casa?", "Este mes es septiembre.", true)]
+    [TestCase("¿qué mes sale ahora mismo en el calendario de mi casa?", "Estamos a 6 de septiembre.", false)]
+    [TestCase("a cuántos estamos", "Es 6 de septiembre.", true)]
+    [TestCase("a cuántos estamos", "Estamos en septiembre.", false)]
+    [TestCase("what month is it", "It is September.", true)]
+    [TestCase("what month is it", "It is October.", false)]
+    [TestCase("what year is it", "It is 2026.", true)]
+    [TestCase("what year is it", "It is 2025.", false)]
+    [TestCase("¿qué mes y año es?", "Es septiembre de 2026.", true)]
+    [TestCase("is today friday", "It is 22:04.", false)]
+    [TestCase("may I know the time", "It is 22:04.", true)]
+    // Tanda 5 «¿estamos a mitad de semana?»: the part of the week is answered with the weekday
+    // (semantic.network.WEEK_PERIOD), never with the clock or a bare yes. Tanda 6b «¿hoy es lunes?» → «No, hoy es
+    // jueves.»: a weekday asked alone is answered by the observed weekday; a date said with it is still checked.
+    [TestCase("¿estamos a mitad de semana?", "No, hoy es domingo 6 de septiembre.", true)]
+    [TestCase("¿estamos a mitad de semana?", "No, hoy es domingo.", true)]
+    [TestCase("¿estamos a mitad de semana?", "Sí, estamos a mitad de semana.", false)]
+    [TestCase("¿estamos a mitad de semana?", "Son las 22:04.", false)]
+    [TestCase("is it the weekend yet?", "Yes, it is Sunday, September 6.", true)]
+    [TestCase("is it the weekend yet?", "It is 22:04.", false)]
+    [TestCase("¿hoy es lunes?", "No, hoy no es lunes. Hoy es domingo.", true)]
+    [TestCase("is today friday", "No, it's Sunday.", true)]
+    [TestCase("what day of the week is it", "It's Sunday.", true)]
+    [TestCase("¿hoy es lunes?", "No, hoy es domingo 7 de septiembre.", false)]
+    [TestCase("¿hoy es lunes?", "No.", false)]
+    [TestCase("¿hoy es lunes 7?", "No, hoy es domingo.", false)]
+    // Tanda 6: a year or a day of the month asked yes or no is the calendar; a day counted from today is not
+    // answered with today's date (the mind computes and checks it: semantic.network.relative_calendar_days).
+    [TestCase("¿estamos en 2025?", "No, estamos en 2026.", true)]
+    [TestCase("¿estamos en 2025?", "Sí, estamos en 2025.", false)]
+    [TestCase("¿estamos en 2025?", "Son las 22:04.", false)]
+    [TestCase("¿hoy es 6?", "Sí, hoy es domingo 6 de septiembre.", true)]
+    [TestCase("¿hoy es 6?", "Son las 22:04.", false)]
+    [TestCase("¿qué día es mañana?", "Mañana es lunes 7 de septiembre.", true)]
+    [TestCase("¿sabes qué días fueron el último fin de semana?", "Fueron el sábado 29 y el domingo 30 de agosto.", true)]
+    [TestCase("what date was yesterday", "Yesterday was Saturday, September 5.", true)]
+    [TestCase("¿cuándo es pasado mañana?", "Pasado mañana es martes 8 de septiembre.", true)]
+    public void AMonthOrADayNamedAsksForTheCalendarPart(string userText, string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-07T01:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft, userText);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
     [Test]
     public void LongMissionCompletionCarriesEveryVerifiedOutcomeToTheComposer()
     {
@@ -369,6 +1413,44 @@ public sealed class PlannerAppBoundaryTests
                     "Listo, completé la misión.",
                     draft),
                 Is.EqualTo("missing_literal_fact"));
+        });
+    }
+
+    [Test]
+    public void MissionFailureKeepsTheStructuredReasonForTheComposer()
+    {
+        string reason = TurnVisibleFacts.Failure(
+            "handler_unavailable",
+            new JsonObject { ["operation"] = "app.close" });
+        JsonNode source = JsonNode.Parse(
+            MissionNarration.CreateFailureMessage([], reason))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source["reason"], Is.InstanceOf<JsonObject>());
+            Assert.That(source["polarity"]!.GetValue<string>(), Is.EqualTo("failure"));
+        });
+        Assert.That(source["reason"]!["cause"]!.GetValue<string>(),
+            Is.EqualTo("handler_unavailable"));
+        Assert.That(source["reason"]!["operation"]!.GetValue<string>(),
+            Is.EqualTo("app.close"));
+        Assert.DoesNotThrow(() => UserMessagePolicy.Create(source.ToJsonString(),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted)));
+    }
+
+    [TestCase("invalid_utf8")]
+    [TestCase("step_data_missing")]
+    public void StructuredMissionFailureRetainsNestedUserLiteralsWithoutTreatingTheObjectAsText(string cause)
+    {
+        string reason = TurnVisibleFacts.Failure(cause, new JsonObject { ["title"] = "Resumen" });
+        string source = MissionNarration.CreateFailureMessage([], reason);
+        UserMessageDraft draft = UserMessagePolicy.Create(source,
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        Assert.Multiple(() =>
+        {
+            Assert.That(draft.Source, Is.EqualTo(source));
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(source), Does.Contain("Resumen"));
+            Assert.That(JsonNode.Parse(draft.Source)!["reason"]!["cause"]!.GetValue<string>(), Is.EqualTo(cause));
         });
     }
 
@@ -472,8 +1554,148 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task WelcomeThatBecomesStaleDuringCompositionCannotPublishOrFailTheNewTurn(bool failed)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        var pending = new PendingModelMessage(
+            draft, string.Empty, ModelMessageComposer.CreateFacts(draft), "t0");
+        bool stale = false;
+        var published = new List<string>();
+        var failures = new List<string?>();
+        var settled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (text, _, _) => { published.Add(text); settled.TrySetResult(true); return Task.CompletedTask; },
+            failure => { failures.Add(failure); return Task.CompletedTask; },
+            () => { },
+            () => { settled.TrySetResult(true); return Task.CompletedTask; },
+            (_, _, _) =>
+            {
+                // The person begins t1 while the boot greeting is being decoded.
+                stale = true;
+                return Task.FromResult(new ModelMessageCompositionOutcome(
+                    failed ? null : "Hello, welcome!", failed ? "no_response" : null, UsedRecovery: false));
+            },
+            (_, _) => Task.CompletedTask,
+            isStale: _ => stale);
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await queue.CloseAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(published, Is.Empty);
+            Assert.That(failures, Is.Empty);
+            Assert.That(queue.Count, Is.Zero);
+        });
+    }
+
+    // Ronda 25 (latency): the person speaks while the boot greeting waits for the mind. The greeting is never composed:
+    // its composition would hold the mind's serial lane ahead of the request.
     [Test]
-    public async Task RejectedModelMessageStopsAfterTheBoundedRetryBudget()
+    public async Task WelcomeThatBecomesStaleWhileWaitingForTheMindIsNeverComposed()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        var pending = new PendingModelMessage(
+            draft, string.Empty, ModelMessageComposer.CreateFacts(draft), "t0");
+        bool stale = false;
+        int compositions = 0;
+        var published = new List<string>();
+        var settled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ =>
+            {
+                // The person submits t1 while the greeting waits for the mind to be ready.
+                stale = true;
+                return Task.FromResult<MindSidecarClient?>(mind);
+            },
+            (text, _, _) => { published.Add(text); settled.TrySetResult(true); return Task.CompletedTask; },
+            _ => Task.CompletedTask,
+            () => { },
+            () => { settled.TrySetResult(true); return Task.CompletedTask; },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(new ModelMessageCompositionOutcome("Hello, welcome!", null, UsedRecovery: false));
+            },
+            (_, _) => Task.CompletedTask,
+            isStale: _ => stale);
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await queue.CloseAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(compositions, Is.Zero);
+            Assert.That(published, Is.Empty);
+            Assert.That(queue.Count, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task RejectedFailureFinalStopsAfterOneCompositionAttempt()
+    {
+        // Owner's test 2026-09-21 (turn 195): the facts of a failure do not change
+        // between attempts; one attempt is the budget and the honest limit follows.
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Failure("mission_failed", new JsonObject { ["reason"] = "external_verification_failed" }),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        var pending = new PendingModelMessage(
+            draft,
+            string.Empty,
+            ModelMessageComposer.CreateFacts(draft),
+            "bounded-failure-composition-test");
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        int compositions = 0;
+        await using var mind = new MindSidecarClient();
+        var exhausted = new List<string>();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (_, _, _) => throw new AssertionException("A rejected draft must not publish BAXY prose."),
+            _ => Task.CompletedTask,
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(
+                    new ModelMessageCompositionOutcome(null, "invented", UsedRecovery: true));
+            },
+            (_, _) => Task.CompletedTask,
+            (_, failure) =>
+            {
+                exhausted.Add(failure);
+                return Task.CompletedTask;
+            });
+
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(compositions, Is.EqualTo(1));
+            Assert.That(queue.Count, Is.Zero);
+            Assert.That(exhausted, Is.EqualTo(new[] { "invented;retry_exhausted" }));
+        });
+    }
+
+    // Latency 2026-09-23: a refused final is not recomposed with the same facts
+    // (the writer is greedy: same request, same refused draft); only a request
+    // the mind never answered is tried again, and still within the budget.
+    [TestCase(false, 1)]
+    [TestCase(true, PendingModelMessageQueue.MaximumCompositionAttempts)]
+    public async Task RejectedModelMessageStopsAfterTheBoundedRetryBudget(
+        bool unanswered,
+        int expectedCompositions)
     {
         UserMessageDraft draft = UserMessagePolicy.Create(
             TurnVisibleFacts.Confirmation(
@@ -493,7 +1715,8 @@ public sealed class PlannerAppBoundaryTests
         var exhausted = new List<(PendingModelMessage Pending, string Failure)>();
         var queue = new PendingModelMessageQueue(
             _ => Task.FromResult<MindSidecarClient?>(mind),
-            (_, _) => throw new AssertionException("A rejected draft must not publish BAXY prose."),
+            (_, _, _) => throw new AssertionException(
+                "A rejected draft must not publish BAXY prose."),
             failure =>
             {
                 failures.Add(failure);
@@ -512,7 +1735,8 @@ public sealed class PlannerAppBoundaryTests
                     new ModelMessageCompositionOutcome(
                         null,
                         "missing_confirmation_choice",
-                        UsedRecovery: false));
+                        UsedRecovery: false,
+                        Unanswered: unanswered));
             },
             (_, _) => Task.CompletedTask,
             (message, failure) =>
@@ -526,7 +1750,7 @@ public sealed class PlannerAppBoundaryTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(compositions, Is.EqualTo(PendingModelMessageQueue.MaximumCompositionAttempts));
+            Assert.That(compositions, Is.EqualTo(expectedCompositions));
             Assert.That(queue.Count, Is.Zero);
             Assert.That(
                 failures[^1],
@@ -537,6 +1761,133 @@ public sealed class PlannerAppBoundaryTests
                 exhausted[0].Failure,
                 Is.EqualTo("missing_confirmation_choice;retry_exhausted"));
         });
+        await queue.CloseAsync();
+    }
+
+    // The first composition runs inline in the turn. Handing a refused one to
+    // the queue used to buy a second identical attempt (1 s backoff + the whole
+    // composition again); it is settled in order, without composing.
+    [TestCase(false, 0)]
+    [TestCase(true, PendingModelMessageQueue.MaximumCompositionAttempts - 1)]
+    public async Task InlineFailureIsRecomposedOnlyWhenTheMindDidNotAnswer(
+        bool unanswered,
+        int expectedCompositions)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.",
+            UserMessageEvent.Status);
+        var pending = new PendingModelMessage(
+            draft,
+            "Abre la calculadora",
+            ModelMessageComposer.CreateFacts(draft),
+            "inline-failure-test");
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        int compositions = 0;
+        var delays = new List<TimeSpan>();
+        var exhausted = new List<string>();
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (_, _, _) => throw new AssertionException("A refused draft must not publish BAXY prose."),
+            _ => Task.CompletedTask,
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(new ModelMessageCompositionOutcome(
+                    null, "no_response", UsedRecovery: false, Unanswered: true));
+            },
+            (delay, _) =>
+            {
+                delays.Add(delay);
+                return Task.CompletedTask;
+            },
+            (_, failure) =>
+            {
+                exhausted.Add(failure);
+                return Task.CompletedTask;
+            });
+
+        queue.EnqueueFailed(
+            pending,
+            new ModelMessageCompositionOutcome(
+                null, "extra_claim", UsedRecovery: false, Unanswered: unanswered),
+            CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(compositions, Is.EqualTo(expectedCompositions));
+            Assert.That(delays, Has.Count.EqualTo(expectedCompositions));
+            Assert.That(queue.Count, Is.Zero);
+            Assert.That(
+                exhausted,
+                Is.EqualTo(new[]
+                {
+                    unanswered ? "no_response;retry_exhausted" : "extra_claim;retry_exhausted",
+                }));
+        });
+        await queue.CloseAsync();
+    }
+
+    [Test]
+    public async Task AnsweredInlineFailureKeepsItsPlaceBehindEarlierMessages()
+    {
+        UserMessageDraft welcome = UserMessagePolicy.Create(
+            TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        UserMessageDraft status = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.", UserMessageEvent.Status);
+        var first = new PendingModelMessage(
+            welcome, string.Empty, ModelMessageComposer.CreateFacts(welcome), "t0");
+        var second = new PendingModelMessage(
+            status, "Abre la calculadora", ModelMessageComposer.CreateFacts(status), "t0");
+        var order = new List<string>();
+        var release = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (text, _, _) =>
+            {
+                order.Add(text);
+                return Task.CompletedTask;
+            },
+            _ => Task.CompletedTask,
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            async (_, _, _) =>
+            {
+                await release.Task;
+                return new ModelMessageCompositionOutcome("Hola.", null, UsedRecovery: false);
+            },
+            (_, _) => Task.CompletedTask,
+            (_, failure) =>
+            {
+                order.Add(failure);
+                return Task.CompletedTask;
+            });
+
+        queue.Enqueue(first, CancellationToken.None);
+        queue.EnqueueFailed(
+            second,
+            new ModelMessageCompositionOutcome(null, "extra_claim", UsedRecovery: false),
+            CancellationToken.None);
+        release.SetResult(true);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.That(order, Is.EqualTo(new[] { "Hola.", "extra_claim;retry_exhausted" }));
         await queue.CloseAsync();
     }
 
@@ -553,6 +1904,70 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(draft.Intent, Is.EqualTo("welcome"));
             Assert.That(draft.DiagnosticCode, Is.Null);
             Assert.That(draft.Source, Is.EqualTo(welcome));
+        });
+    }
+
+    // MEME2057 «Tienes algun meme?»: the mission's status reply names the observed file even
+    // though the fallback classifier still reads the ask as out of catalog.
+    [Test]
+    public async Task ImageMissionReplyMayNameTheDownloadedFile()
+    {
+        string download = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "web.download",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["sourceUrl"] = "http://images.example.org/UPLOADED/6413dfac6a8c7.jpeg",
+                ["query"] = "meme",
+                ["folder"] = "pictures",
+                ["name"] = "meme.jpg",
+                ["bytes"] = 166693,
+                ["contentType"] = "image/jpeg",
+                ["authority"] = "downloaded_file_size_postread",
+            },
+        }.ToJsonString();
+        string opened = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "file.open",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["folder"] = "pictures",
+                ["name"] = "meme.jpg",
+                ["windowTitle"] = "meme.jpg",
+                ["authority"] = "shell_open_window_title_postread",
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            MissionNarration.CreateCompletionMessage([download, opened], "Tienes algun meme?"),
+            UserMessageEvent.Status);
+        var facts = new JsonObject { ["situation"] = draft.Source };
+        const string authored = "Ya tengo el meme, se llama meme.jpg y está abierto en el visor de imágenes.";
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Tienes algun meme?",
+                facts,
+                (_, _, _, _, _) => Task.FromResult<MindComposedMessage?>(new MindComposedMessage(authored)),
+                cpuFallback: false,
+                allowRecovery: false,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserMessagePolicy.ConversationFallbackIntent("Tienes algun meme?"), Is.EqualTo("out_of_catalog"));
+            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason("Tienes algun meme?", authored), Is.EqualTo("internal_code"));
+            Assert.That(outcome.Text, Is.EqualTo(authored));
         });
     }
 
@@ -593,6 +2008,110 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(outcome.Failure, Is.Not.Null.And.Not.Empty);
             Assert.That(observedIntents, Is.EqualTo(new[] { "status", "status" }));
             Assert.That(outcome.Text, Does.Not.Contain("No pude"));
+        });
+    }
+
+    // Latency 2026-09-23: the served writer is greedy, so the recovery call
+    // returned the same refused composition. A reproducible answer — a draft or
+    // the writer's own «no draft» — is final after one call and is not a
+    // transport failure the queue should retry.
+    [TestCase("Listo.")]
+    [TestCase(null)]
+    public async Task ReproducibleWriterIsNotAskedTheSameCompositionTwice(string? draftText)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.",
+            UserMessageEvent.Status);
+        var facts = new JsonObject { ["situation"] = draft.Source };
+        int calls = 0;
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Abre la calculadora",
+                facts,
+                (_, _, _, _, _) =>
+                {
+                    calls++;
+                    return Task.FromResult<MindComposedMessage?>(
+                        new MindComposedMessage(draftText, Reproducible: true));
+                },
+                cpuFallback: false,
+                allowRecovery: true,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(calls, Is.EqualTo(1));
+            Assert.That(outcome.Text, Is.Null);
+            Assert.That(outcome.UsedRecovery, Is.False);
+            Assert.That(outcome.Unanswered, Is.False);
+            Assert.That(outcome.Failure, Is.Not.Null.And.Not.Empty.And.Not.Contain("recovery:"));
+        });
+    }
+
+    [Test]
+    public async Task UnansweredCompositionStillGetsItsRecoveryAndStaysRetryable()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.",
+            UserMessageEvent.Status);
+        var facts = new JsonObject { ["situation"] = draft.Source };
+        int calls = 0;
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Abre la calculadora",
+                facts,
+                (_, _, _, _, _) =>
+                {
+                    calls++;
+                    return Task.FromResult<MindComposedMessage?>(null);
+                },
+                cpuFallback: false,
+                allowRecovery: true,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(calls, Is.EqualTo(2));
+            Assert.That(outcome.Text, Is.Null);
+            Assert.That(outcome.Unanswered, Is.True);
+        });
+    }
+
+    [Test]
+    public void ComposeResultCarriesTheWritersReproducibilityAndItsEmptyAnswer()
+    {
+        MindComposedMessage? drafted = MindSidecarClient.ParseComposeResult(new JsonObject
+        {
+            ["type"] = "message.compose.result",
+            ["text"] = "  Listo, abrí Calculadora. ",
+            ["reproducible"] = true,
+        });
+        MindComposedMessage? refused = MindSidecarClient.ParseComposeResult(new JsonObject
+        {
+            ["type"] = "message.compose.result",
+            ["text"] = "",
+            ["reproducible"] = true,
+        });
+        MindComposedMessage? undeclared = MindSidecarClient.ParseComposeResult(new JsonObject
+        {
+            ["type"] = "message.compose.result",
+            ["text"] = "Hola.",
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(drafted, Is.EqualTo(new MindComposedMessage("Listo, abrí Calculadora.", Reproducible: true)));
+            Assert.That(refused, Is.EqualTo(new MindComposedMessage(null, Reproducible: true)));
+            // A writer that does not declare it may sample: it keeps the recovery.
+            Assert.That(undeclared, Is.EqualTo(new MindComposedMessage("Hola.", Reproducible: false)));
+            Assert.That(
+                MindSidecarClient.ParseComposeResult(new JsonObject { ["type"] = "error", ["code"] = "request_failed" }),
+                Is.Null);
+            Assert.That(MindSidecarClient.ParseComposeResult(null), Is.Null);
         });
     }
 
@@ -829,9 +2348,16 @@ public sealed class PlannerAppBoundaryTests
                     "hOLA",
                     "¡Hola! ¿En qué puedo ayudarte?"),
                 Is.True);
+            // Un saludo pide un saludo: devolverle una pregunta de tarea es
+            // el defecto que C03 persigue, no una respuesta aceptable.
             Assert.That(
                 UserMessagePolicy.IsSafeConversationReply(
                     "hOLA",
+                    "¿Qué necesitas exactamente?"),
+                Is.False);
+            Assert.That(
+                UserMessagePolicy.IsSafeConversationReply(
+                    "dime algo de los husos horarios",
                     "¿Qué necesitas exactamente?"),
                 Is.True);
             Assert.That(
@@ -860,9 +2386,49 @@ public sealed class PlannerAppBoundaryTests
         string reply,
         bool expected)
     {
+        // El pedido no es un saludo: aquí se mide el metadiscurso, no la
+        // pertinencia de contestar a un «Hola» con otra cosa.
         Assert.That(
-            UserMessagePolicy.IsSafeConversationReply("Hola", reply),
+            UserMessagePolicy.IsSafeConversationReply("crea el usuario admin", reply),
             Is.EqualTo(expected));
+    }
+
+    [TestCase("quien soy", "Tú eres el usuario que está hablando conmigo.")]
+    [TestCase("who am I", "You are the user speaking with me.")]
+    [TestCase("explica las cuentas invitadas", "El usuario invitado tiene permisos limitados.")]
+    [TestCase("explain guest accounts", "The user account has limited permissions.")]
+    [TestCase("explica las cuentas", "Los usuarios pueden tener permisos diferentes.")]
+    [TestCase("explain this setting", "This setting controls the user account permissions.")]
+    public async Task ConversationCompositionPreservesUserNounsWithoutNarratingTheRequest(
+        string userText,
+        string reply)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "{\"kind\":\"conversation\"}", UserMessageEvent.Conversation);
+        int attempts = 0;
+        ModelMessageCompositionOutcome result = await ModelMessageComposer.ComposeAsync(
+            draft, userText, ModelMessageComposer.CreateFacts(draft),
+            (_, _, _, _, _) =>
+            {
+                attempts++;
+                return Task.FromResult<MindComposedMessage?>(new MindComposedMessage(reply));
+            }, cpuFallback: false, allowRecovery: true, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Text, Is.EqualTo(reply));
+            Assert.That(result.Failure, Is.Null);
+            Assert.That(attempts, Is.EqualTo(1));
+        });
+    }
+
+    [TestCase("I do not know what the user is referring to with this machine.")]
+    [TestCase("Creo que el usuario quiere ayuda.")]
+    [TestCase("I think the user wants help.")]
+    public void ConversationReplyRejectsEmbeddedNarrationOfThePersonsRequest(string reply)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason("una frase", reply),
+            Is.Not.Null);
     }
 
     [Test]
@@ -1467,6 +3033,108 @@ public sealed class PlannerAppBoundaryTests
         {
             Assert.That(MindPlanBoundary.MustRetainAmbiguousEffect(ambiguous), Is.True);
             Assert.That(MindPlanBoundary.MustRetainAmbiguousEffect(cleanFailure), Is.False);
+        });
+    }
+
+    [Test]
+    public void FailedDirectActionIsNeverReplannedIntoItsOwnRepetition()
+    {
+        // Tandas 01–05: every recovery plan after a failed direct action published
+        // nothing and held the honest failure 3.8 s (median); the only suffix the
+        // boundary accepts for it repeats the invocation that just failed.
+        MindPlanStep weather = new(
+            "step_1",
+            "weather.current",
+            "Cumplir exactamente el efecto solicitado.",
+            [],
+            "literal",
+            new JsonObject());
+        MindPlanStep open = new(
+            "open", "app.open", "Abre Spotify.", [], "literal",
+            new JsonObject { ["appId"] = "spotify" });
+        MindPlanStep play = new(
+            "play", "media.control", "Reanuda la música.", ["open"], "literal",
+            new JsonObject { ["action"] = "play" });
+        OperationResponse failed = new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Failed,
+            "El servicio del tiempo no respondió.",
+            false,
+            false,
+            null,
+            "provider_unavailable");
+        OperationResponse ambiguous = failed with { EffectMayHaveOccurred = true };
+        var direct = new PendingMindPlanExecution("qué tiempo hace", [weather]);
+        var mission = new PendingMindPlanExecution("abre Spotify y dale play", [open, play])
+        {
+            NextIndex = 1,
+        };
+        var replannedTwice = new PendingMindPlanExecution(
+            "abre Spotify y dale play", [open, play], 2);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindPlanBoundary.MayReplan(direct, failed), Is.False);
+            Assert.That(MindPlanBoundary.MayReplan(mission, failed), Is.True);
+            Assert.That(MindPlanBoundary.MayReplan(mission, ambiguous), Is.False);
+            Assert.That(MindPlanBoundary.MayReplan(replannedTwice, failed), Is.False);
+        });
+    }
+
+    [Test]
+    public void AnAbsentTargetBeforeOnlyClosingStepsIsNotReplanned()
+    {
+        // Uso real t2-r4 c03-1 «cierra chrome» with Chrome not open: window.resolve answered window_not_found, the
+        // rest only closed it, and the planner ran twice more (10.5 s) to end in the same failure.
+        MindPlanStep resolve = new(
+            "resolve", "window.resolve", "Encuentra la ventana.", [], "literal",
+            new JsonObject { ["applicationName"] = "Google Chrome" });
+        MindPlanStep close = new(
+            "close", "app.close", "Cierra la aplicación.", ["resolve"], "literal",
+            new JsonObject { ["applicationName"] = "Google Chrome" });
+        MindPlanStep focus = new(
+            "focus", "window.focus", "Trae la ventana.", ["resolve"], "literal",
+            new JsonObject { ["applicationName"] = "Google Chrome" });
+        OperationResponse absent = new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Failed,
+            "No hay ninguna ventana de esa aplicación.",
+            false,
+            false,
+            null,
+            "window_not_found");
+        OperationResponse clientAbsent = absent with { ErrorCode = "spotify_client_not_running" };
+        OperationResponse otherFailure = absent with { ErrorCode = "inventory_failed" };
+        var closing = new PendingMindPlanExecution("cierra chrome", [resolve, close]);
+        var focusing = new PendingMindPlanExecution("trae chrome", [resolve, focus]);
+        // Review: a close of another target that does not hang on the absent one («cierra chrome y spotify», Chrome's
+        // window gone at its own close) is not ended by that absence.
+        MindPlanStep resolveSpotify = new(
+            "resolveSpotify", "window.resolve", "Encuentra Spotify.", [], "literal",
+            new JsonObject { ["applicationName"] = "Spotify" });
+        MindPlanStep closeSpotify = new(
+            "closeSpotify", "app.close", "Cierra Spotify.", ["resolveSpotify"], "literal",
+            new JsonObject { ["applicationName"] = "Spotify" });
+        var closingTwo = new PendingMindPlanExecution(
+            "cierra chrome y spotify", [resolve, resolveSpotify, close, closeSpotify])
+        {
+            NextIndex = 2,
+        };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindPlanBoundary.MayReplan(closingTwo, absent), Is.True);
+            Assert.That(MindPlanBoundary.MayReplan(closing, absent), Is.False);
+            Assert.That(MindPlanBoundary.MayReplan(closing, clientAbsent), Is.False);
+            // Contracases: another failure before the close, and an absence before a step that is no close, replan.
+            Assert.That(MindPlanBoundary.MayReplan(closing, otherFailure), Is.True);
+            Assert.That(MindPlanBoundary.MayReplan(focusing, absent), Is.True);
         });
     }
 

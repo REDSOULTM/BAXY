@@ -18,18 +18,23 @@ internal static class PrivateOperationNarration
                 : result.MustNotInvent
                     ? "memory_recall_needs_query"
                     : "memory_request_underspecified";
-        return TurnVisibleFacts.Clarification(cause);
+        JsonObject? extra = result.MissingSaveSubject == MemorySaveSubject.Name
+            ? new JsonObject { ["missingValue"] = "the person's name", ["saved"] = false }
+            : null;
+        return TurnVisibleFacts.Clarification(cause, extra);
     }
 
     internal static string CreateMemoryConfirmationPrompt(
         PreparedOperation prepared,
-        bool reconciliationRequired = false)
+        bool reconciliationRequired = false,
+        JsonObject? forgotten = null)
     {
         if (reconciliationRequired)
         {
             return TurnVisibleFacts.Confirmation(
                 "memory_reconcile_same_attempt",
-                ["confirmar", "confirm"]);
+                ["confirmar", "confirm"],
+                PendingMemoryAction(prepared));
         }
 
         string cause = prepared.OperationName switch
@@ -40,13 +45,12 @@ internal static class PrivateOperationNarration
             "memory.export" => "memory_export_privacy",
             _ => "memory_needs_confirmation",
         };
-        JsonObject? extra = string.Equals(cause, "memory_export_privacy", StringComparison.Ordinal)
-            ? new JsonObject
-            {
-                ["destination"] = "Documents/BAXY",
-                ["mayRedirectOrSync"] = true,
-            }
-            : null;
+        JsonObject extra = PendingMemoryAction(prepared, forgotten);
+        if (string.Equals(cause, "memory_export_privacy", StringComparison.Ordinal))
+        {
+            extra["destination"] = "Documents/BAXY";
+            extra["mayRedirectOrSync"] = true;
+        }
         return TurnVisibleFacts.Confirmation(cause, TurnVisibleFacts.ConfirmCancel, extra);
     }
 
@@ -70,6 +74,12 @@ internal static class PrivateOperationNarration
                 response.ErrorCode,
                 "memory_disabled",
                 StringComparison.Ordinal) => "memory_disabled",
+            // Estabilización M: a correction of a datum the memory does not hold says so; never a change that did
+            // not happen.
+            OperationStatuses.Failed when string.Equals(
+                response.ErrorCode,
+                "memory_not_found",
+                StringComparison.Ordinal) => "memory_not_found",
             OperationStatuses.Failed => "memory_failed_safe",
             _ => "memory_no_safe_response",
         };
@@ -80,20 +90,43 @@ internal static class PrivateOperationNarration
 
     internal static string CreateMemoryRecoveryPrompt(PreparedOperation prepared)
     {
-        string category = prepared.OperationName switch
-        {
-            "memory.enable" or "memory.disable" => "memory_config",
-            "memory.save" or "memory.sensitive.save" or "memory.correct" =>
-                "memory_update",
-            "memory.forget" or "memory.session.clear" => "memory_erase",
-            "memory.recall" or "memory.list" or "memory.status" => "memory_query",
-            "memory.export" => "memory_export",
-            _ => "memory_request",
-        };
         return TurnVisibleFacts.Confirmation(
             "memory_recovery_pending",
             TurnVisibleFacts.ContinueCancel,
-            new JsonObject { ["category"] = category });
+            PendingMemoryAction(prepared));
+    }
+
+    internal static JsonObject PendingMemoryAction(PreparedOperation prepared, JsonObject? forgotten = null) => new()
+    {
+        ["pendingAction"] = MemoryAction(prepared, forgotten),
+    };
+
+    internal static string CreateMemoryCancellationMessage(PreparedOperation prepared, JsonObject? forgotten = null) =>
+        TurnVisibleFacts.Status(
+            "memory_cancelled",
+            new JsonObject { ["cancelledAction"] = MemoryAction(prepared, forgotten) });
+
+    // Estabilización M2 (live recheck 2026-10-12, I_identidad_notebook_3: «nah» to «¿…borro de mi memoria tu bebida
+    // favorita…?» was told «He borrado de tu memoria tu bebida favorita.»): what a forget acts on — its scope and the
+    // datum's stored name, never its value — so the floor asks and tells it (operation_floor «asked», «cancelled»).
+    private static JsonObject MemoryAction(PreparedOperation prepared, JsonObject? forgotten)
+    {
+        var action = new JsonObject
+        {
+            ["operation"] = prepared.OperationName,
+            ["target"] = "private local memory",
+        };
+        if (forgotten?["scope"] is JsonValue scope && scope.TryGetValue(out string? scopeText))
+        {
+            action["scope"] = scopeText;
+        }
+
+        if (forgotten?["selector"] is JsonValue selector && selector.TryGetValue(out string? selectorText))
+        {
+            action["selector"] = selectorText.ToLowerInvariant();
+        }
+
+        return action;
     }
 
     internal static string CreateAudioRecoveryPrompt(PreparedOperation operation)

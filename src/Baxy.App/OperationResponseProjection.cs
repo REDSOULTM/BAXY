@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 
@@ -20,7 +21,40 @@ internal sealed record OperationResponseProjection(string Message)
 
         if (!string.IsNullOrWhiteSpace(response.Message))
         {
-            return new OperationResponseProjection(TruncateMessage(response.Message.Trim()));
+            if (operationName == "ocr.read")
+            {
+                string message = response.Message.Trim();
+                if (message.Length <= ProtocolLimits.MaximumOperationResponseMessageChars)
+                    return new OperationResponseProjection(message);
+                // An omitted observation does not change the executed operation's outcome.
+                bool completed = response.Status == OperationStatuses.Completed;
+                return new OperationResponseProjection(new JsonObject
+                {
+                    ["kind"] = "operation",
+                    ["operation"] = operationName,
+                    ["status"] = response.Status,
+                    ["verified"] = response.Verified,
+                    ["succeeded"] = completed,
+                    ["polarity"] = response.Status == OperationStatuses.Pending ? "pending"
+                        : completed && response.Verified ? "success" : "failure",
+                    ["error"] = response.ErrorCode,
+                    ["effectUncertain"] = response.EffectMayHaveOccurred,
+                    ["observed"] = new JsonObject
+                    {
+                        ["available"] = false,
+                        ["reason"] = "observation_size_limit",
+                    },
+                }.ToJsonString());
+            }
+            // The process catalog allows fifty verified rows. Keep its bounded
+            // structured facts whole; cutting JSON makes every observation vanish.
+            // SHELL2075 «ejecutá dir en el escritorio»: the console adapter already
+            // bounds its output (8 KiB and sixty lines), and the listing crossed
+            // 16 KiB of JSON, so the cut left the mind without «seen» and the final
+            // said nothing of what came out.
+            return new OperationResponseProjection(TruncateMessage(response.Message.Trim(),
+                maximumLength: operationName is "system.process.list" or "shell.command.run"
+                    ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageLength));
         }
 
         return new OperationResponseProjection(
@@ -31,16 +65,69 @@ internal sealed record OperationResponseProjection(string Message)
                     response.ErrorCode)));
     }
 
+    // M69 (guion v3h t46/t47): «activa mi microfono» with the microphone already
+    // active was published on the error route. The adapter reads the state and
+    // stops before any effect boundary (owner's test 2026-09-21, turn 205) with a
+    // typed code whose asked state already holds; that state is the result the
+    // person asked about, so the turn publishes it as one. Nothing was changed and
+    // the facts keep saying so (polarity failure, the typed code).
+    internal static bool AskedStateAlreadyHeld(OperationResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        return response.Status == OperationStatuses.Failed
+            && !response.EffectMayHaveOccurred
+            && UserMessagePolicy.IsAskedStateAlreadyHeldCode(response.ErrorCode);
+    }
+
+    // NETWORK1721: a confirmed step that fails hands the mind the operation's
+    // own typed facts (kind operation, polarity failure, error) exactly as an
+    // ordinary step does, so the cause reaches the final; anything else keeps
+    // the generic confirmed_no_effect reason.
+    internal static bool CarriesOperationFacts(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return false;
+        }
+
+        string trimmed = message.Trim();
+        if (!trimmed.StartsWith('{') || trimmed.Length > MaximumMessageLength)
+        {
+            return false;
+        }
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(trimmed);
+            JsonElement root = document.RootElement;
+            return root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("kind", out JsonElement kind)
+                && kind.ValueKind == JsonValueKind.String
+                && kind.GetString() == "operation"
+                && root.TryGetProperty("polarity", out JsonElement polarity)
+                && polarity.ValueKind == JsonValueKind.String
+                && polarity.GetString() == "failure"
+                && root.TryGetProperty("error", out JsonElement error)
+                && error.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(error.GetString());
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
     private static string TruncateMessage(
         string value,
-        string suffix = "… [respuesta truncada]")
+        string suffix = "… [respuesta truncada]",
+        int maximumLength = MaximumMessageLength)
     {
-        if (value.Length <= MaximumMessageLength)
+        if (value.Length <= maximumLength)
         {
             return value;
         }
 
-        int keep = Math.Max(0, MaximumMessageLength - suffix.Length);
+        int keep = Math.Max(0, maximumLength - suffix.Length);
         if (keep > 0
             && keep < value.Length
             && char.IsHighSurrogate(value[keep - 1])

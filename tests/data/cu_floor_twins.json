@@ -1,0 +1,4513 @@
+{
+ "source": "Computer-use floor twins (live 2026-10-07, cu-r8): written by the mind (llm._deterministic_final over cu_finals.floor_sentence); the App's OperationFloor says the same (ComputerUseFloorTests).",
+ "cases": [
+  {
+   "id": "cu-reached-place",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a reloj mundial",
+     "application": "Reloj",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Reloj",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Reloj mundial",
+       "ok": true,
+       "name": "Reloj mundial",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Reloj",
+      "values": [
+       {
+        "name": "Reloj mundial",
+        "state": "selected"
+       }
+      ],
+      "numbers": [
+       "Hora local, ‎7‎:‎58‎",
+       "7:58"
+      ],
+      "lines": [
+       "7:58",
+       "Hora local"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Reloj mundial».",
+   "en": "Done, I'm in «Reloj mundial»."
+  },
+  {
+   "id": "cu-reached-tab",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a la pestaña de alarma",
+     "application": "Reloj",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Reloj",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Alarma",
+       "ok": true,
+       "name": "Alarma",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Reloj",
+      "values": [
+       {
+        "name": "Alarma",
+        "state": "selected"
+       }
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Alarma».",
+   "en": "Done, I'm in «Alarma»."
+  },
+  {
+   "id": "cu-reached-chain",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a red e internet; luego ir a wi-fi",
+     "application": "Configuración",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Configuración",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Wi-Fi",
+       "ok": true,
+       "name": "Wi-Fi",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a red e internet",
+       "application": "Configuración",
+       "reached": true
+      },
+      {
+       "goal": "ir a wi-fi",
+       "application": "Configuración",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, estoy en «Wi-Fi».",
+   "en": "Done, I'm in «Wi-Fi»."
+  },
+  {
+   "id": "cu-reached-act",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo oscuro",
+     "application": "Configuración",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Configuración",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Modo oscuro",
+       "ok": true,
+       "name": "Modo oscuro",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración"
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Configuración».",
+   "en": "Done, I did it in «Configuración»."
+  },
+  {
+   "id": "cu-plan-one-step",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "mission_completed",
+    "stepCount": 1,
+    "steps": [
+     "{\"kind\": \"operation\", \"operation\": \"mission.computer.use\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"goal\": \"ir a reloj mundial\", \"application\": \"Reloj\", \"reached\": true, \"steps\": [{\"step\": 1, \"operation\": \"app.open\", \"appId\": \"Reloj\", \"ok\": true, \"changed\": true}, {\"step\": 2, \"operation\": \"input.visible.click\", \"label\": \"Reloj mundial\", \"ok\": true, \"name\": \"Reloj mundial\", \"kind\": \"TabItem\", \"selected\": true, \"changed\": true}], \"window\": {\"title\": \"Reloj\", \"process\": \"ApplicationFrameHost\"}, \"joined\": false, \"screen\": {\"title\": \"Reloj\", \"values\": [{\"name\": \"Reloj mundial\", \"state\": \"selected\"}], \"numbers\": [\"Hora local, ‎7‎:‎58‎\", \"7:58\"], \"lines\": [\"7:58\", \"Hora local\"]}}}"
+    ]
+   },
+   "es": "Listo, estoy en «Reloj mundial».",
+   "en": "Done, I'm in «Reloj mundial»."
+  },
+  {
+   "id": "cu-failed-cause",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_surface_unchanged",
+     "observed": {
+      "goal": "ir a red e internet; luego ir a wi-fi",
+      "application": "Configuración",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "label": "Red e Internet",
+        "ok": true,
+        "name": "Red e Internet",
+        "selected": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "wi-fi",
+        "ok": true,
+        "name": "Wi-Fi",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "ApplicationFrameHost"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Configuración",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_surface_unchanged",
+      "subgoals": [
+       {
+        "goal": "ir a red e internet",
+        "application": "Configuración",
+        "reached": true
+       },
+       {
+        "goal": "ir a wi-fi",
+        "application": "Configuración",
+        "reached": false
+       }
+      ]
+     }
+    }
+   },
+   "es": "No pude llegar a «Wi-Fi»: la pantalla dejó de cambiar tras lo que hice.",
+   "en": "I couldn't get to «Wi-Fi»: the screen stopped changing after what I did."
+  },
+  {
+   "id": "cu-failed-place-not-found",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_place_not_found",
+     "observed": {
+      "goal": "ir a red e internet; luego ir a wi-fi",
+      "application": "Configuración",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "label": "Red e Internet",
+        "ok": true,
+        "name": "Red e Internet",
+        "selected": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "wi-fi",
+        "ok": true,
+        "name": "Wi-Fi",
+        "changed": true
+       },
+       {
+        "step": 3,
+        "operation": "input.text.type",
+        "into": "Cuadro de búsqueda, Buscar una opción",
+        "text": "wi-fi",
+        "ok": true,
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "ApplicationFrameHost"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Configuración",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_place_not_found",
+      "subgoals": [
+       {
+        "goal": "ir a red e internet",
+        "application": "Configuración",
+        "reached": true
+       },
+       {
+        "goal": "ir a wi-fi",
+        "application": "Configuración",
+        "reached": false
+       }
+      ],
+      "missingPlace": "Wi-Fi"
+     }
+    }
+   },
+   "es": "No pude llegar a «Wi-Fi»: no encontré «Wi-Fi» en esta ventana; puede que este equipo no lo tenga; antes de parar escribí «wi-fi».",
+   "en": "I couldn't get to «Wi-Fi»: I did not find «Wi-Fi» in this window; this computer may not have it; before stopping I typed «wi-fi»."
+  },
+  {
+   "id": "tz-dc3-c6-text-not-shown",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_no_step_visible",
+     "observed": {
+      "goal": "ir a ron92; luego escribir prueba BAXY C6; luego enviar",
+      "application": "Discord",
+      "reached": false,
+      "stepCount": 1,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.text.type",
+        "typedOn": "Discord",
+        "into": "@Ron92",
+        "intoDocument": true,
+        "atCaret": true,
+        "subgoal": 1,
+        "text": "prueba BAXY C6",
+        "ok": true,
+        "method": "keyboard",
+        "changed": true,
+        "appeared": [],
+        "arrived": false
+       }
+      ],
+      "window": {
+       "title": "@Ron92 - Discord",
+       "process": "Discord",
+       "requested": true
+      },
+      "joined": false,
+      "stoppedBy": "computer_use_no_step_visible",
+      "subgoals": [
+       {
+        "goal": "ir a ron92",
+        "application": "Discord",
+        "reached": true,
+        "stepCount": 0,
+        "satisfiedBy": "title:ron92",
+        "successCheck": "control:ron92:current|title:ron92|page:ron92|mark:ron92",
+        "acted": false
+       },
+       {
+        "goal": "escribir prueba BAXY C6",
+        "application": "Discord",
+        "reached": false,
+        "stepCount": 1,
+        "successCheck": "stepDone:input.text.type:written"
+       },
+       {
+        "goal": "enviar",
+        "application": "Discord",
+        "reached": false,
+        "stepCount": 0,
+        "successCheck": "stepDone:input.key.press:enter&sent:prueba baxy c6"
+       }
+      ],
+      "screen": {
+       "title": "@Ron92 - Discord"
+      }
+     }
+    }
+   },
+   "es": "No pude hacerlo en «Discord»: no vi en la pantalla un control con el que seguir.",
+   "en": "I couldn't do it in «Discord»: I did not see on the screen a control to go on with."
+  },
+  {
+   "id": "tz-dc3-c6-text-shown",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_no_step_visible",
+     "observed": {
+      "goal": "ir a ron92; luego escribir prueba BAXY C6; luego enviar",
+      "application": "Discord",
+      "reached": false,
+      "stepCount": 1,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.text.type",
+        "typedOn": "Discord",
+        "into": "@Ron92",
+        "intoDocument": true,
+        "atCaret": true,
+        "subgoal": 1,
+        "text": "prueba BAXY C6",
+        "ok": true,
+        "method": "keyboard",
+        "changed": true,
+        "appeared": []
+       }
+      ],
+      "window": {
+       "title": "@Ron92 - Discord",
+       "process": "Discord",
+       "requested": true
+      },
+      "joined": false,
+      "stoppedBy": "computer_use_no_step_visible",
+      "subgoals": [
+       {
+        "goal": "ir a ron92",
+        "application": "Discord",
+        "reached": true,
+        "stepCount": 0,
+        "satisfiedBy": "title:ron92",
+        "successCheck": "control:ron92:current|title:ron92|page:ron92|mark:ron92",
+        "acted": false
+       },
+       {
+        "goal": "escribir prueba BAXY C6",
+        "application": "Discord",
+        "reached": false,
+        "stepCount": 1,
+        "successCheck": "stepDone:input.text.type:written"
+       },
+       {
+        "goal": "enviar",
+        "application": "Discord",
+        "reached": false,
+        "stepCount": 0,
+        "successCheck": "stepDone:input.key.press:enter&sent:prueba baxy c6"
+       }
+      ],
+      "screen": {
+       "title": "@Ron92 - Discord"
+      }
+     }
+    }
+   },
+   "es": "No pude hacerlo en «Discord»: no vi en la pantalla un control con el que seguir; antes de parar escribí «prueba BAXY C6».",
+   "en": "I couldn't do it in «Discord»: I did not see on the screen a control to go on with; before stopping I typed «prueba BAXY C6»."
+  },
+  {
+   "id": "cu-failed-untyped",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_something_new",
+     "observed": {
+      "goal": "ir a red e internet; luego ir a wi-fi",
+      "application": "Configuración",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "label": "Red e Internet",
+        "ok": true,
+        "name": "Red e Internet",
+        "selected": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "wi-fi",
+        "ok": true,
+        "name": "Wi-Fi",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "ApplicationFrameHost"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Configuración",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_something_new",
+      "subgoals": [
+       {
+        "goal": "ir a red e internet",
+        "application": "Configuración",
+        "reached": true
+       },
+       {
+        "goal": "ir a wi-fi",
+        "application": "Configuración",
+        "reached": false
+       }
+      ]
+     }
+    }
+   },
+   "es": "No pude llegar a «Wi-Fi».",
+   "en": "I couldn't get to «Wi-Fi»."
+  },
+  {
+   "id": "cu-failed-covered",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_window_covered",
+     "observed": {
+      "goal": "hacer clic en guardar",
+      "application": "Paint",
+      "reached": false,
+      "steps": [],
+      "window": {
+       "title": "Paint",
+       "process": "mspaint",
+       "coveredBy": {
+        "title": "Sin título: Bloc de notas"
+       }
+      },
+      "joined": false,
+      "screen": {
+       "title": "Paint",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_window_covered"
+     }
+    }
+   },
+   "es": "No pude hacerlo en «Paint»: la ventana «Sin título: Bloc de notas» tapa la aplicación.",
+   "en": "I couldn't do it in «Paint»: the window «Sin título: Bloc de notas» covers the application."
+  },
+  {
+   "id": "cu-failed-protected-by-its-application",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_window_protected",
+     "observed": {
+      "goal": "escribir hola",
+      "reached": false,
+      "steps": [],
+      "window": {
+       "title": "Administrador: Símbolo del sistema - mysql -u root -pHunter2",
+       "process": "cmd.exe",
+       "protected": true
+      },
+      "joined": false,
+      "stoppedBy": "computer_use_window_protected"
+     }
+    }
+   },
+   "es": "No pude hacerlo: la ventana de delante es de «cmd», que está protegida, así que no pulsé ni escribí nada en ella.",
+   "en": "I couldn't do it: the window in front belongs to «cmd», which is protected, so I pressed and typed nothing there."
+  },
+  {
+   "id": "cu-failed-direct",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_budget_exhausted",
+    "observed": {
+     "goal": "ir a bluetooth",
+     "application": "Configuración",
+     "reached": false,
+     "steps": [],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración",
+      "lines": [
+       "Proxy"
+      ]
+     },
+     "stoppedBy": "computer_use_budget_exhausted"
+    }
+   },
+   "es": "No pude llegar a «bluetooth»: se agotaron los pasos previstos sin llegar.",
+   "en": "I couldn't get to «bluetooth»: the planned steps ran out before getting there."
+  },
+  {
+   "id": "cu-parts-select",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar lapiz; luego seleccionar rojo",
+     "application": "Paint",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Paint",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Lápiz",
+       "ok": true,
+       "name": "Lápiz",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "rojo",
+       "ok": true,
+       "name": "rojo",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Sin título: Paint",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Sin título: Paint"
+     },
+     "subgoals": [
+      {
+       "goal": "seleccionar lapiz",
+       "application": "Paint",
+       "reached": true
+      },
+      {
+       "goal": "seleccionar rojo",
+       "application": "Paint",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, elegí «Lápiz» y «rojo».",
+   "en": "Done, I picked «Lápiz» and «rojo»."
+  },
+  {
+   "id": "cu-parts-type",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "escribir hola BAXY",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "hola BAXY",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*hola BAXY: Bloc de notas",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*hola BAXY: Bloc de notas",
+      "values": [
+       {
+        "name": "Editor de texto",
+        "value": "hola BAXY"
+       }
+      ]
+     }
+    }
+   },
+   "es": "Listo, escribí «hola BAXY» en «Bloc de notas».",
+   "en": "Done, I typed «hola BAXY» in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-type-chain",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "escribir lista: pan; luego apretar enter; luego escribir leche",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "lista: pan",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.text.type",
+       "text": "leche",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*lista: pan: Bloc de notas",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*lista: pan: Bloc de notas"
+     },
+     "subgoals": [
+      {
+       "goal": "escribir lista: pan",
+       "application": "Bloc de notas",
+       "reached": true
+      },
+      {
+       "goal": "apretar enter",
+       "application": "Bloc de notas",
+       "reached": true
+      },
+      {
+       "goal": "escribir leche",
+       "application": "Bloc de notas",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, escribí «lista: pan» y «leche» en «Bloc de notas».",
+   "en": "Done, I typed «lista: pan» and «leche» in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-search",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "buscar Spotify",
+     "application": "Microsoft Store",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Microsoft Store",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.text.type",
+       "text": "Spotify",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Microsoft Store",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Microsoft Store"
+     }
+    }
+   },
+   "es": "Listo, busqué «Spotify» en «Microsoft Store».",
+   "en": "Done, I searched for «Spotify» in «Microsoft Store»."
+  },
+  {
+   "id": "cu-parts-calculate",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 37*12",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "37*12=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 37 × 12=",
+       "Se muestra 444"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 37 × 12 = 444.",
+   "en": "Done: 37 × 12 = 444."
+  },
+  {
+   "id": "cu-parts-calculate-grouped",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 1250 × 4",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "1250*4=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 1.250 × 4=",
+       "Se muestra 5.000"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 1250 × 4 = 5.000.",
+   "en": "Done: 1250 × 4 = 5.000."
+  },
+  {
+   "id": "cu-parts-calculate-decimal",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 7 ÷ 2",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "7/2=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 7 ÷ 2=",
+       "Se muestra 3,5"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 7 ÷ 2 = 3,5.",
+   "en": "Done: 7 ÷ 2 = 3,5."
+  },
+  {
+   "id": "cu-parts-calculate-operand-only",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 144 ÷ 12",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "144/12=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 144 ÷ 12="
+      ]
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Calculadora».",
+   "en": "Done, I did it in «Calculadora»."
+  },
+  {
+   "id": "cu-parts-calculate-not-shown",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 9 × 8",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "9*8=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "enter",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "Se muestra 0"
+      ]
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Calculadora».",
+   "en": "Done, I did it in «Calculadora»."
+  },
+  {
+   "id": "cu-parts-places",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a sistema; luego ir a sonido",
+     "application": "Configuración",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Configuración",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Sistema",
+       "ok": true,
+       "name": "Sistema",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Sonido",
+       "ok": true,
+       "name": "Sonido",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a sistema",
+       "application": "Configuración",
+       "reached": true
+      },
+      {
+       "goal": "ir a sonido",
+       "application": "Configuración",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Sistema» y ya estoy en «Sonido».",
+   "en": "Done, I went through «Sistema» and I'm now in «Sonido»."
+  },
+  {
+   "id": "cu-parts-select-then-place",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar documento en blanco; luego ir a la pestaña insertar",
+     "application": "Word",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Word",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Documento en blanco",
+       "ok": true,
+       "name": "Documento en blanco",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Insertar",
+       "ok": true,
+       "name": "Insertar",
+       "kind": "TabItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Documento1 - Word",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Documento1 - Word",
+      "values": [
+       {
+        "name": "Insertar",
+        "state": "selected"
+       }
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "seleccionar documento en blanco",
+       "application": "Word",
+       "reached": true
+      },
+      {
+       "goal": "ir a la pestaña insertar",
+       "application": "Word",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, elegí «Documento en blanco» y ya estoy en «Insertar».",
+   "en": "Done, I picked «Documento en blanco» and I'm now in «Insertar»."
+  },
+  {
+   "id": "cu-parts-place-then-search",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca; luego buscar Cuphead",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "BIBLIOTECA",
+       "ok": true,
+       "name": "BIBLIOTECA",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.key.press",
+       "key": "ctrl_f",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.text.type",
+       "text": "Cuphead",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a biblioteca",
+       "application": "Steam",
+       "reached": true
+      },
+      {
+       "goal": "buscar Cuphead",
+       "application": "Steam",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, busqué «Cuphead» en «Steam».",
+   "en": "Done, I searched for «Cuphead» in «Steam»."
+  },
+  {
+   "id": "cu-parts-typed-other-text",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "escribir el resultado",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "56",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*56: Bloc de notas",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*56: Bloc de notas"
+     }
+    }
+   },
+   "es": "Listo, lo hice en «Bloc de notas».",
+   "en": "Done, I did it in «Bloc de notas»."
+  },
+  {
+   "id": "cu-parts-places-across-apps",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a cotele; luego ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Discord",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "cotele",
+       "name": "Cotele",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.visible.click",
+       "label": "TIENDA",
+       "name": "TIENDA",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     },
+     "subgoals": [
+      {
+       "goal": "ir a cotele",
+       "application": "Discord",
+       "reached": true
+      },
+      {
+       "goal": "ir a tienda",
+       "application": "Steam",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Cotele» en «Discord» y ya estoy en «Tienda» de «Steam».",
+   "en": "Done, I went through «Cotele» in «Discord» and I'm now in «Tienda» in «Steam»."
+  },
+  {
+   "id": "cu-parts-calculate-thousands",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 1.500 + 500",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "1500+500=",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "numbers": [
+       "La expresión es 1.500 + 500=",
+       "Se muestra 2.000"
+      ]
+     }
+    }
+   },
+   "es": "Listo: 1.500 + 500 = 2.000.",
+   "en": "Done: 1.500 + 500 = 2.000."
+  },
+  {
+   "id": "cu-parts-calculate-other-window",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "calcular 6 + 7; luego ir a archivo",
+     "application": "Bloc de notas",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "6+7=",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "app.open",
+       "appId": "Bloc de notas",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 4,
+       "operation": "input.visible.click",
+       "label": "Archivo",
+       "name": "Archivo",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "*13: Bloc de notas",
+      "process": "Notepad"
+     },
+     "joined": false,
+     "screen": {
+      "title": "*13: Bloc de notas",
+      "lines": [
+       "Línea 1, Columna 13"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "calcular 6 + 7",
+       "application": "Calculadora",
+       "reached": true
+      },
+      {
+       "goal": "ir a archivo",
+       "application": "Bloc de notas",
+       "reached": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, estoy en «Archivo».",
+   "en": "Done, I'm in «Archivo»."
+  },
+  {
+   "id": "cu-parts-place-in-capitals",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "TIENDA",
+       "name": "TIENDA",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Steam"
+     }
+    }
+   },
+   "es": "Listo, estoy en «Tienda».",
+   "en": "Done, I'm in «Tienda»."
+  },
+  {
+   "id": "cu-parts-mode-chosen",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo cientifico",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Abrir navegación",
+       "ok": true,
+       "name": "Abrir navegación",
+       "kind": "Button",
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Científica Calculadora",
+       "ok": true,
+       "name": "Científica Calculadora",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "values": [
+       {
+        "name": "Científica Calculadora",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Modo de calculadora Científica",
+       "0"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Científica».",
+   "en": "Done, I'm in «Científica»."
+  },
+  {
+   "id": "cu-parts-mode-chosen-english",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "poner modo scientific",
+     "application": "Calculator",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Abrir navegación",
+       "ok": true,
+       "name": "Abrir navegación",
+       "kind": "Button",
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Scientific Calculator",
+       "ok": true,
+       "name": "Scientific Calculator",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculator",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculator",
+      "values": [
+       {
+        "name": "Scientific Calculator",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Scientific Calculator mode",
+       "0"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Scientific».",
+   "en": "Done, I'm in «Scientific»."
+  },
+  {
+   "id": "cu-failed-already-there",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_already_there_unconfirmed",
+     "observed": {
+      "goal": "ir a biblioteca",
+      "application": "Steam",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "app.open",
+        "appId": "Steam",
+        "ok": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "biblioteca",
+        "ok": true,
+        "name": "BIBLIOTECA",
+        "cascadeStage": "ocr",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Steam",
+       "process": "steamwebhelper"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Steam",
+       "lines": [
+        "BIBLIOTECA",
+        "Colecciones",
+        "Descargas"
+       ]
+      },
+      "stoppedBy": "computer_use_already_there_unconfirmed"
+     }
+    }
+   },
+   "es": "Parece que ya estabas en «Biblioteca», pero no pude confirmarlo en la pantalla.",
+   "en": "It looks like you were already in «Biblioteca», but I couldn't confirm it on the screen."
+  },
+  {
+   "id": "cu-reached-already-there",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca",
+     "application": "Steam",
+     "reached": true,
+     "successCheck": "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library|mark:biblioteca|mark:library",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true,
+       "alreadyRunning": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "satisfiedBy": "mark:biblioteca",
+     "screen": {
+      "title": "Steam",
+      "values": [
+       {
+        "name": "BIBLIOTECA",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "NSTALADO",
+       "FAVORITOS",
+       "BATMAN",
+       "LOCALMENTE"
+      ]
+     },
+     "procedure": "none"
+    }
+   },
+   "es": "Ya estás en «Biblioteca».",
+   "en": "You're already in «Biblioteca»."
+  },
+  {
+   "id": "cu-reached-on-launch-strong",
+   "note": "Review r10a finding 1, contracase: BAXY launched the application (alreadyRunning false) and it opened on the place; the person was not «already» there.",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca",
+     "application": "Steam",
+     "reached": true,
+     "successCheck": "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library|mark:biblioteca|mark:library",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true,
+       "alreadyRunning": false
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "satisfiedBy": "mark:biblioteca",
+     "screen": {
+      "title": "Steam",
+      "values": [
+       {
+        "name": "BIBLIOTECA",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "FAVORITOS"
+      ]
+     },
+     "procedure": "none"
+    }
+   },
+   "es": "Listo, estoy en «Biblioteca».",
+   "en": "Done, I'm in «Biblioteca»."
+  },
+  {
+   "id": "cu-reached-model-evidence-first-look",
+   "note": "Review r10a finding 1, contracase: Steam on its store, «ir a biblioteca», the model said done on the first look citing «Destacados». No check proved it: never «Ya estás en».",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca",
+     "application": "Steam",
+     "reached": true,
+     "successCheck": "control:biblioteca:current|title:biblioteca|page:biblioteca|mark:biblioteca",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true,
+       "alreadyRunning": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "evidence": "Destacados",
+     "screen": {
+      "title": "Steam",
+      "values": [
+       {
+        "name": "BIBLIOTECA"
+       }
+      ],
+      "lines": [
+       "Destacados"
+      ]
+     },
+     "procedure": "none"
+    }
+   },
+   "es": "Parece que ya estabas en «Biblioteca».",
+   "en": "It looks like you were already in «Biblioteca»."
+  },
+  {
+   "id": "cu-reached-after-unverified-click",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca",
+     "application": "Steam",
+     "reached": true,
+     "successCheck": "control:biblioteca:current|title:biblioteca|page:biblioteca|control:library:current|title:library|page:library|mark:biblioteca|mark:library",
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "BIBLIOTECA",
+       "ok": false,
+       "error": "visible_click_postread_invalid",
+       "effectUncertain": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "satisfiedBy": "page:biblioteca",
+     "screen": {
+      "title": "Steam",
+      "values": [
+       {
+        "name": "BIBLIOTECA",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "NSTALADO",
+       "FAVORITOS",
+       "BATMAN",
+       "LOCALMENTE"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Biblioteca».",
+   "en": "Done, I'm in «Biblioteca»."
+  },
+  {
+   "id": "cu-failed-person-busy",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "input_user_not_paused",
+    "observed": {
+     "goal": "escribir hola",
+     "application": "Bloc de notas",
+     "reached": false,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.text.type",
+       "ok": false,
+       "error": "input_user_not_paused"
+      }
+     ],
+     "window": {
+      "title": "Sin título: Bloc de notas",
+      "process": "Notepad"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Sin título: Bloc de notas",
+      "lines": [
+       "Proxy"
+      ]
+     },
+     "stoppedBy": "input_user_not_paused"
+    }
+   },
+   "es": "No pude hacerlo en «Bloc de notas»: estabas usando el PC y no hubo una pausa para seguir sin quitarte el mouse ni el teclado.",
+   "en": "I couldn't do it in «Bloc de notas»: you were using the PC and there was no pause to go on without taking your mouse or keyboard."
+  },
+  {
+   "id": "cu-failed-person-interrupted",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "input_user_interrupted",
+    "observed": {
+     "goal": "ir a bluetooth",
+     "application": "Configuración",
+     "reached": false,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "ok": false,
+       "error": "input_user_interrupted"
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración",
+      "lines": [
+       "Proxy"
+      ]
+     },
+     "stoppedBy": "input_user_interrupted"
+    }
+   },
+   "es": "No pude llegar a «bluetooth»: empezaste a usar el PC mientras lo hacía, así que paré a mitad para no estorbarte.",
+   "en": "I couldn't get to «bluetooth»: you started using the PC while I was doing it, so I stopped halfway so as not to get in your way."
+  },
+  {
+   "id": "cu-seen-not-done",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_seen_not_done",
+    "observed": {
+     "goal": "recortar la imagen en proporcion cuadrada",
+     "application": "Fotos",
+     "reached": false,
+     "steps": [],
+     "window": {
+      "title": "Fotos",
+      "process": "Photos"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Fotos",
+      "lines": [
+       "Galería"
+      ]
+     },
+     "stoppedBy": "computer_use_seen_not_done",
+     "seenNotDone": "Galería"
+    }
+   },
+   "es": "No pude hacerlo en «Fotos»: no hice nada y ya se ve «Galería».",
+   "en": "I couldn't do it in «Fotos»: I did nothing and «Galería» already shows."
+  },
+  {
+   "id": "cu-seen-not-done-after-steps",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_seen_not_done",
+    "observed": {
+     "goal": "recortar la imagen en proporcion cuadrada",
+     "application": "Fotos",
+     "reached": false,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.text.type",
+       "text": "pruebas",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Fotos",
+      "process": "Photos"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Fotos",
+      "lines": [
+       "Galería"
+      ]
+     },
+     "stoppedBy": "computer_use_seen_not_done",
+     "seenNotDone": "Galería"
+    }
+   },
+   "es": "No pude hacerlo en «Fotos»: lo que se ve no prueba que lo haya hecho, porque ya estaba en la pantalla o lo había escrito yo; antes de parar escribí «pruebas».",
+   "en": "I couldn't do it in «Fotos»: what shows does not prove I did it, because it was already on the screen or I had typed it myself; before stopping I typed «pruebas»."
+  },
+  {
+   "id": "cu-failed-app-gate-account",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_app_gate",
+    "observed": {
+     "goal": "ir a calendario",
+     "application": "Outlook (classic)",
+     "reached": false,
+     "steps": [],
+     "window": {
+      "title": "Configuración de cuenta de correo electrónico",
+      "process": "OUTLOOK"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Configuración de cuenta de correo electrónico",
+      "lines": [
+       "Outlook",
+       "¿No tiene ninguna cuenta?",
+       "Opciones avanzadas"
+      ]
+     },
+     "stoppedBy": "computer_use_app_gate",
+     "gate": {
+      "kind": "account",
+      "text": "Configuración de cuenta de correo electrónico"
+     }
+    }
+   },
+   "es": "No pude llegar a «calendario»: la aplicación muestra «Configuración de cuenta de correo electrónico» y pide una cuenta o un inicio de sesión; eso te toca a ti, así que no pulsé nada ahí.",
+   "en": "I couldn't get to «calendario»: the application shows «Configuración de cuenta de correo electrónico» and asks for an account or a sign-in; that is yours to do, so I pressed nothing there."
+  },
+  {
+   "id": "cu-failed-app-gate-pressed",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_app_gate",
+    "observed": {
+     "goal": "ir a notas",
+     "application": "Notas",
+     "reached": false,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Ahora no",
+       "ok": true
+      }
+     ],
+     "window": {
+      "title": "Notas",
+      "process": "NOTAS"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Notas",
+      "lines": [
+       "Notas",
+       "Inicia sesión para sincronizar tus notas"
+      ]
+     },
+     "stoppedBy": "computer_use_app_gate",
+     "gate": {
+      "kind": "account",
+      "text": "Inicia sesión para sincronizar tus notas",
+      "pressed": "Ahora no"
+     }
+    }
+   },
+   "es": "No pude llegar a «notas»: la aplicación muestra «Inicia sesión para sincronizar tus notas» y pide una cuenta o un inicio de sesión; eso te toca a ti; pulsé «Ahora no» y siguió ahí.",
+   "en": "I couldn't get to «notas»: the application shows «Inicia sesión para sincronizar tus notas» and asks for an account or a sign-in; that is yours to do; I pressed «Ahora no» and it stayed there."
+  },
+  {
+   "id": "cu-failed-document-not-named",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_document_not_named",
+    "observed": {
+     "goal": "ponelo en negrita",
+     "application": "Word",
+     "reached": false,
+     "steps": [],
+     "window": {
+      "title": "Proyecto_Puente_15_Dias_Desde_Maqueta  -  Modo de compatibilidad - Word",
+      "process": "WINWORD"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Proyecto_Puente_15_Dias_Desde_Maqueta  -  Modo de compatibilidad - Word",
+      "lines": [
+       "INSTITUTO EJEMPLO DE LA"
+      ]
+     },
+     "stoppedBy": "computer_use_document_not_named"
+    }
+   },
+   "es": "No pude hacerlo en «Word»: ese documento no lo abrí ni lo creé en este pedido y no me lo nombraste, así que no seleccioné, borré ni escribí nada en él.",
+   "en": "I couldn't do it in «Word»: I neither opened nor created that document in this request and you did not name it, so I selected, erased and typed nothing in it."
+  },
+  {
+   "id": "cu-parts-click-reached-v3-43",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "hacer clic en sistema y seguridad",
+     "application": "Panel de control",
+     "reached": true,
+     "successCheck": "stepDone:input.visible.click:sistema y seguridad",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "source": "procedure",
+       "label": "Sistema y seguridad",
+       "index": 9,
+       "ok": true,
+       "cascadeStage": "uia",
+       "method": "invoke",
+       "surfaceChanged": false,
+       "absentOrDisabled": true,
+       "selected": false,
+       "toggled": false,
+       "name": "Sistema y seguridad",
+       "kind": "Hyperlink",
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Panel de control",
+      "process": "explorer",
+      "requested": true,
+      "foreground": true,
+      "rect": {
+       "x": 266,
+       "y": 145,
+       "w": 1408,
+       "h": 742
+      },
+      "coveredBy": {
+       "title": "Administrador de tareas",
+       "process": "Taskmgr"
+      },
+      "focused": {
+       "kind": "Edit",
+       "name": "Cuadro de búsqueda",
+       "nameSource": "",
+       "value": "",
+       "i": 5
+      }
+     },
+     "joined": false,
+     "elapsedMs": 6467,
+     "modelMs": 0,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "procedure": "replayed",
+     "satisfiedBy": "stepDone:input.visible.click:sistema y seguridad",
+     "screen": {
+      "title": "Sistema y seguridad",
+      "values": [
+       {
+        "name": "Cargando",
+        "value": "0"
+       }
+      ],
+      "numbers": [
+       "Actualizar \"Sistema y seguridad\" (F5)",
+       "Copias de seguridad y restauración (Windows 7)"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Sistema y seguridad».",
+   "en": "Done, I'm in «Sistema y seguridad»."
+  },
+  {
+   "id": "cu-parts-click-only-v3-43",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "hacer clic en mostrar planes adicionales",
+     "application": "Panel de control",
+     "reached": true,
+     "successCheck": "stepDone:input.visible.click:mostrar planes adicionales",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "source": "procedure",
+       "label": "Mostrar planes adicionales",
+       "index": 9,
+       "ok": true,
+       "cascadeStage": "uia",
+       "method": "invoke",
+       "surfaceChanged": false,
+       "absentOrDisabled": true,
+       "selected": false,
+       "toggled": false,
+       "name": "Mostrar planes adicionales",
+       "kind": "Button",
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Panel de control",
+      "process": "explorer",
+      "requested": true,
+      "foreground": true,
+      "rect": {
+       "x": 266,
+       "y": 145,
+       "w": 1408,
+       "h": 742
+      },
+      "coveredBy": {
+       "title": "Administrador de tareas",
+       "process": "Taskmgr"
+      },
+      "focused": {
+       "kind": "Edit",
+       "name": "Cuadro de búsqueda",
+       "nameSource": "",
+       "value": "",
+       "i": 5
+      }
+     },
+     "joined": false,
+     "elapsedMs": 6467,
+     "modelMs": 0,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "procedure": "replayed",
+     "satisfiedBy": "stepDone:input.visible.click:mostrar planes adicionales",
+     "screen": {
+      "title": "Opciones de energía",
+      "values": [],
+      "numbers": []
+     }
+    }
+   },
+   "es": "Listo, hice clic en «Mostrar planes adicionales».",
+   "en": "Done, I clicked «Mostrar planes adicionales»."
+  },
+  {
+   "id": "cu-weak-done-model-evidence",
+   "note": "Ronda 22 (pasada r18 t3-c18 t2): the floor said «Listo, lo hice en «Calculadora»» on the model's own evidence. A weak proof counts the acts and never says done.",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "elegir el modo decimal",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Abrir navegación",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Hexadecimal",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence"
+    }
+   },
+   "es": "Llevo dos pasos en «Calculadora», pero la pantalla todavía no muestra que haya quedado hecho.",
+   "en": "I'm two steps into «Calculadora», but the screen doesn't show it done yet."
+  },
+  {
+   "id": "cu-weak-done-strong-contracase",
+   "note": "Ronda 22 contracase: the same mission proved by the control now current still says done.",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "elegir el modo decimal",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Calculadora",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Abrir navegación",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Hexadecimal",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "satisfiedBy": "control:decimal:current"
+    }
+   },
+   "es": "Listo, lo hice en «Calculadora».",
+   "en": "Done, I did it in «Calculadora»."
+  },
+  {
+   "id": "cu-r24b-search-opened-field",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a search",
+     "application": "Spotify",
+     "reached": true,
+     "successCheck": "control:search:current|title:search|control:buscar:current|title:buscar|focus:search",
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.key.press",
+       "key": "ctrl_f",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "focus:search",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Buscar",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "Viva Latino"
+      ]
+     },
+     "focusedField": "¿Qué quieres reproducir?"
+    }
+   },
+   "es": "Listo, se abrió la búsqueda y el cursor está en «¿Qué quieres reproducir?».",
+   "en": "Done, the search is open and the cursor is in «¿Qué quieres reproducir?»."
+  },
+  {
+   "id": "cu-r24b-search-opened-no-field",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a search",
+     "application": "Spotify",
+     "reached": true,
+     "successCheck": "control:search:current|title:search|control:buscar:current|title:buscar|focus:search",
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.key.press",
+       "key": "ctrl_f",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "focus:search",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Buscar",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "Viva Latino"
+      ]
+     }
+    }
+   },
+   "es": "Listo, se abrió la búsqueda.",
+   "en": "Done, the search is open."
+  },
+  {
+   "id": "cu-r24b-chain-search-opened-last",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tu biblioteca; luego ir a search",
+     "application": "Spotify",
+     "reached": true,
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Tu biblioteca",
+       "ok": true,
+       "name": "Tu biblioteca",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "focus:search",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Tu biblioteca",
+        "state": ""
+       },
+       {
+        "name": "Buscar",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "Viva Latino"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a tu biblioteca",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "control:tu biblioteca:current"
+      },
+      {
+       "goal": "ir a search",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "focus:search"
+      }
+     ],
+     "focusedField": "¿Qué quieres reproducir?"
+    }
+   },
+   "es": "Listo, pasé por «Tu biblioteca» y se abrió la búsqueda, con el cursor en «¿Qué quieres reproducir?».",
+   "en": "Done, I went through «Tu biblioteca» and the search is open, with the cursor in «¿Qué quieres reproducir?»."
+  },
+  {
+   "id": "cu-r24b-chain-search-opened-last-no-field",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tu biblioteca; luego ir a search",
+     "application": "Spotify",
+     "reached": true,
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Tu biblioteca",
+       "ok": true,
+       "name": "Tu biblioteca",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "focus:search",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Tu biblioteca",
+        "state": ""
+       },
+       {
+        "name": "Buscar",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "Viva Latino"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a tu biblioteca",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "control:tu biblioteca:current"
+      },
+      {
+       "goal": "ir a search",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "focus:search"
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Tu biblioteca» y se abrió la búsqueda.",
+   "en": "Done, I went through «Tu biblioteca» and the search is open."
+  },
+  {
+   "id": "cu-r24b-chain-place-by-control",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tu biblioteca; luego ir a buscar",
+     "application": "Spotify",
+     "reached": true,
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Tu biblioteca",
+       "ok": true,
+       "name": "Tu biblioteca",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "control:buscar:current",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Tu biblioteca",
+        "state": ""
+       },
+       {
+        "name": "Buscar",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "Viva Latino"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a tu biblioteca",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "control:tu biblioteca:current"
+      },
+      {
+       "goal": "ir a buscar",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "control:buscar:current"
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Tu biblioteca» y ya estoy en «Buscar».",
+   "en": "Done, I went through «Tu biblioteca» and I'm now in «Buscar»."
+  },
+  {
+   "id": "cu-r24b-chain-search-opened-first",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a search; luego ir a tu biblioteca",
+     "application": "Spotify",
+     "reached": true,
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Tu biblioteca",
+       "ok": true,
+       "name": "Tu biblioteca",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Tu biblioteca",
+       "ok": true,
+       "name": "Tu biblioteca",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "control:tu biblioteca:current",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Tu biblioteca",
+        "state": ""
+       },
+       {
+        "name": "Buscar",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "Viva Latino"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a search",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "focus:search"
+      },
+      {
+       "goal": "ir a tu biblioteca",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "control:tu biblioteca:current"
+      }
+     ]
+    }
+   },
+   "es": "Listo, estoy en «Tu biblioteca».",
+   "en": "Done, I'm in «Tu biblioteca»."
+  },
+  {
+   "id": "cu-r24b-chain-search-then-strong-part",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a search; luego abrir el reproductor de lofi",
+     "application": "Spotify",
+     "reached": true,
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Canciones",
+       "ok": true,
+       "name": "Canciones",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "page:lofi",
+     "focusedField": "¿Qué quieres reproducir?",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Buscar",
+        "state": ""
+       },
+       {
+        "name": "Canciones",
+        "state": ""
+       }
+      ],
+      "lines": [
+       "lofi"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a search",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "focus:search"
+      },
+      {
+       "goal": "abrir el reproductor de lofi",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "page:lofi"
+      }
+     ]
+    }
+   },
+   "es": "Listo, lo hice en «Spotify».",
+   "en": "Done, I did it in «Spotify»."
+  },
+  {
+   "id": "cu-r24b-one-part-search-opened",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a search",
+     "application": "Spotify",
+     "reached": true,
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Buscar",
+       "ok": true,
+       "name": "Buscar",
+       "kind": "Button",
+       "changed": true,
+       "surfaceChanged": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "focus:search",
+     "focusedField": "¿Qué quieres reproducir?",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Inicio",
+        "state": ""
+       }
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a search",
+       "application": "Spotify",
+       "reached": true,
+       "satisfiedBy": "focus:search"
+      }
+     ]
+    }
+   },
+   "es": "Listo, se abrió la búsqueda y el cursor está en «¿Qué quieres reproducir?».",
+   "en": "Done, the search is open and the cursor is in «¿Qué quieres reproducir?»."
+  },
+  {
+   "id": "cu-left-created-document",
+   "note": "Ronda 24 (pasada r23 v3-11): a mission that stopped says what it created (the click's createdDocument) before what it typed, never «no hice nada».",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "computer_use_no_step_visible",
+    "observed": {
+     "goal": "crear una pagina nueva",
+     "application": "OneNote",
+     "reached": false,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Agregar página",
+       "ok": true,
+       "changed": true,
+       "createdDocument": "Sin título"
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "text": "comprar pan",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Sin título - OneNote",
+      "process": "ONENOTE"
+     },
+     "joined": false,
+     "stoppedBy": "computer_use_no_step_visible"
+    }
+   },
+   "es": "No pude hacerlo en «OneNote»: no vi en la pantalla un control con el que seguir; antes de parar creé «Sin título» con «Agregar página» y escribí «comprar pan».",
+   "en": "I couldn't do it in «OneNote»: I did not see on the screen a control to go on with; before stopping I created «Sin título» with «Agregar página» and typed «comprar pan»."
+  },
+  {
+   "id": "cu-r24b-already-then-store",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca; luego ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true,
+       "alreadyRunning": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "tienda",
+       "name": "TIENDA",
+       "ok": true,
+       "kind": "Text",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "satisfiedBy": "control:tienda:selected",
+     "screen": {
+      "title": "Steam",
+      "values": [
+       {
+        "name": "TIENDA",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "COMUNIDAD"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a biblioteca",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 0,
+       "satisfiedBy": "mark:biblioteca",
+       "acted": false,
+       "arrivedAs": "BIBLIOTECA"
+      },
+      {
+       "goal": "ir a tienda",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 1,
+       "satisfiedBy": "control:tienda:selected",
+       "acted": true,
+       "arrivedAs": "TIENDA"
+      }
+     ]
+    }
+   },
+   "es": "Listo, ya estaba en «Biblioteca» y ahora estoy en «Tienda».",
+   "en": "Done, it was already in «Biblioteca» and now I'm in «Tienda»."
+  },
+  {
+   "id": "cu-r24b-launched-then-store",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a biblioteca; luego ir a tienda",
+     "application": "Steam",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "changed": true,
+       "alreadyRunning": false
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "tienda",
+       "name": "TIENDA",
+       "ok": true,
+       "kind": "Text",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Steam",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "satisfiedBy": "control:tienda:selected",
+     "screen": {
+      "title": "Steam",
+      "values": [
+       {
+        "name": "TIENDA",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "COMUNIDAD"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a biblioteca",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 0,
+       "satisfiedBy": "mark:biblioteca",
+       "acted": false,
+       "arrivedAs": "BIBLIOTECA"
+      },
+      {
+       "goal": "ir a tienda",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 1,
+       "satisfiedBy": "control:tienda:selected",
+       "acted": true,
+       "arrivedAs": "TIENDA"
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Biblioteca» y ya estoy en «Tienda».",
+   "en": "Done, I went through «Biblioteca» and I'm now in «Tienda»."
+  },
+  {
+   "id": "cu-r24b2-blank-item-created-by-the-opening",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "crear documento en blanco",
+     "application": "Word",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Word",
+       "ok": true,
+       "changed": true,
+       "newDocument": true
+      }
+     ],
+     "window": {
+      "title": "Documento1 - Word",
+      "process": "WINWORD"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Documento1 - Word",
+      "lines": []
+     }
+    }
+   },
+   "es": "Listo, creé «Documento1».",
+   "en": "Done, I created «Documento1»."
+  },
+  {
+   "id": "cu-r24b-earlier-act-not-already",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a opciones; luego ir a general; luego ir a privacidad",
+     "application": "Steam",
+     "reached": true,
+     "chained": true,
+     "satisfiedBy": "control:privacidad:selected",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Steam",
+       "ok": true,
+       "alreadyRunning": true,
+       "subgoal": 0
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "opciones",
+       "name": "Opciones",
+       "ok": true,
+       "changed": true,
+       "subgoal": 0
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "privacidad",
+       "name": "Privacidad",
+       "ok": true,
+       "changed": true,
+       "subgoal": 2
+      }
+     ],
+     "window": {
+      "title": "Opciones",
+      "process": "steamwebhelper"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Opciones",
+      "lines": [
+       "General",
+       "Privacidad"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a opciones",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 2,
+       "satisfiedBy": "title:opciones",
+       "acted": true,
+       "arrivedAs": "Opciones"
+      },
+      {
+       "goal": "ir a general",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 0,
+       "satisfiedBy": "control:general:selected",
+       "acted": false,
+       "arrivedAs": "General"
+      },
+      {
+       "goal": "ir a privacidad",
+       "application": "Steam",
+       "reached": true,
+       "stepCount": 1,
+       "satisfiedBy": "control:privacidad:selected",
+       "acted": true,
+       "arrivedAs": "Privacidad"
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Opciones» y «General» y ya estoy en «Privacidad».",
+   "en": "Done, I went through «Opciones» and «General» and I'm now in «Privacidad»."
+  },
+  {
+   "id": "cu-r24b3-create-folder-is-no-blank-document",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "crear carpeta",
+     "application": "Explorador de archivos",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Explorador de archivos",
+       "ok": true,
+       "changed": false,
+       "alreadyRunning": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "nuevo",
+       "name": "Nuevo",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "carpeta",
+       "name": "Carpeta",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Proyectos - Explorador de archivos",
+      "process": "explorer"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Proyectos - Explorador de archivos",
+      "lines": []
+     }
+    }
+   },
+   "es": "Llevo dos pasos en «Explorador de archivos», pero la pantalla todavía no muestra que haya quedado hecho.",
+   "en": "I'm two steps into «Explorador de archivos», but the screen doesn't show it done yet."
+  },
+  {
+   "id": "cu-r24b3-blank-offer-over-the-person-presentation",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "crear presentacion en blanco",
+     "application": "PowerPoint",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "PowerPoint",
+       "ok": true,
+       "changed": false,
+       "alreadyRunning": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "presentación en blanco",
+       "name": "Presentación en blanco",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Ventas Q3 - PowerPoint",
+      "process": "POWERPNT"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Ventas Q3 - PowerPoint",
+      "lines": []
+     }
+    }
+   },
+   "es": "Llevo un paso en «PowerPoint», pero la pantalla todavía no muestra que haya quedado hecho.",
+   "en": "I'm one step into «PowerPoint», but the screen doesn't show it done yet."
+  },
+  {
+   "id": "cu-r24b3-blank-page-in-a-named-document-is-chosen",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar pagina en blanco",
+     "application": "Word",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Word",
+       "ok": true,
+       "changed": false,
+       "alreadyRunning": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "insertar",
+       "name": "Insertar",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "página en blanco",
+       "name": "Página en blanco",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Informe - Word",
+      "process": "WINWORD"
+     },
+     "joined": false,
+     "satisfiedBy": "stepDone:input.visible.click:=pagina en blanco",
+     "screen": {
+      "title": "Informe - Word",
+      "lines": []
+     }
+    }
+   },
+   "es": "Listo, elegí «Página en blanco».",
+   "en": "Done, I picked «Página en blanco»."
+  },
+  {
+   "id": "cu-r24b3-blank-offer-clicked-is-chosen-not-created",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "crear documento en blanco",
+     "application": "Word",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Word",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "documento en blanco",
+       "name": "Documento en blanco",
+       "ok": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Documento1 - Word",
+      "process": "WINWORD"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Documento1 - Word",
+      "lines": []
+     }
+    }
+   },
+   "es": "Listo, elegí «Documento en blanco».",
+   "en": "Done, I picked «Documento en blanco»."
+  },
+  {
+   "id": "cu-r24b3-click-that-recorded-the-document-created-it",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "crear documento en blanco",
+     "application": "Word",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Word",
+       "ok": true,
+       "changed": false,
+       "alreadyRunning": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "documento en blanco",
+       "name": "Documento en blanco",
+       "ok": true,
+       "changed": true,
+       "createdDocument": "Sin título"
+      }
+     ],
+     "window": {
+      "title": "Sin título - Word",
+      "process": "WINWORD"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Sin título - Word",
+      "lines": []
+     }
+    }
+   },
+   "es": "Listo, creé «Sin título».",
+   "en": "Done, I created «Sin título»."
+  },
+  {
+   "id": "cu-weak-done-seen-value",
+   "note": "Ronda 24 (pasada r23 v3-14): a weak arrival whose screen shows, in a chosen state, the value the last click named says that observed fact, never «todavía no muestra».",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a video library; luego sort by date added",
+     "application": "Reproductor multimedia",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Reproductor multimedia",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Biblioteca de videos",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Opción de ordenación Fecha de modificación seleccionada",
+       "ok": true,
+       "opener": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reproductor multimedia",
+      "process": "Microsoft.Media.Player"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Reproductor multimedia",
+      "values": [
+       {
+        "name": "Fecha de modificación",
+        "state": "on"
+       },
+       {
+        "name": "Biblioteca de videos",
+        "state": "selected"
+       },
+       {
+        "name": "Todos los videos",
+        "state": "selected"
+       },
+       {
+        "name": "Reproductor multimedia",
+        "value": "Reproductor multimedia"
+       }
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a video library",
+       "application": "Reproductor multimedia",
+       "reached": true,
+       "satisfiedBy": "model_evidence"
+      },
+      {
+       "goal": "sort by date added",
+       "application": "Reproductor multimedia",
+       "reached": true,
+       "satisfiedBy": "model_evidence"
+      }
+     ]
+    }
+   },
+   "es": "En «Reproductor multimedia» se ve «Fecha de modificación» activado.",
+   "en": "In «Reproductor multimedia», «Fecha de modificación» shows as on."
+  },
+  {
+   "id": "cu-weak-done-seen-value-unrelated",
+   "note": "Ronda 24 contracase: a weak arrival whose chosen values the last click did not name keeps the count of steps.",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a video library; luego sort by date added",
+     "application": "Reproductor multimedia",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "appId": "Reproductor multimedia",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Biblioteca de videos",
+       "ok": true,
+       "changed": true
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Ordenar",
+       "ok": true,
+       "opener": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reproductor multimedia",
+      "process": "Microsoft.Media.Player"
+     },
+     "joined": false,
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Reproductor multimedia",
+      "values": [
+       {
+        "name": "Fecha de modificación",
+        "state": "on"
+       },
+       {
+        "name": "Biblioteca de videos",
+        "state": "selected"
+       },
+       {
+        "name": "Todos los videos",
+        "state": "selected"
+       },
+       {
+        "name": "Reproductor multimedia",
+        "value": "Reproductor multimedia"
+       }
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a video library",
+       "application": "Reproductor multimedia",
+       "reached": true,
+       "satisfiedBy": "model_evidence"
+      },
+      {
+       "goal": "sort by date added",
+       "application": "Reproductor multimedia",
+       "reached": true,
+       "satisfiedBy": "model_evidence"
+      }
+     ]
+    }
+   },
+   "es": "Llevo dos pasos en «Reproductor multimedia», pero la pantalla todavía no muestra que haya quedado hecho.",
+   "en": "I'm two steps into «Reproductor multimedia», but the screen doesn't show it done yet."
+  },
+  {
+   "id": "cu-r30-place-as-the-window-wrote-it",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a stopwatch",
+     "application": "Reloj",
+     "reached": true,
+     "successCheck": "control:stopwatch:current|title:stopwatch|control:cronometro:current|title:cronometro",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": false,
+       "changed": true,
+       "appId": "Reloj"
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Cronómetro",
+       "ok": true,
+       "name": "Cronómetro",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "Time"
+     },
+     "joined": false,
+     "satisfiedBy": "control:cronometro:current",
+     "arrivedAs": "Cronómetro",
+     "screen": {
+      "title": "Reloj",
+      "values": [
+       {
+        "name": "Cronómetro",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Temporizador",
+       "Alarma"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Cronómetro».",
+   "en": "Done, I'm in «Cronómetro»."
+  },
+  {
+   "id": "cu-r30-place-by-its-page-after-a-click",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a tu biblioteca",
+     "application": "Spotify",
+     "reached": true,
+     "successCheck": "control:tu biblioteca:current|title:tu biblioteca|page:tu biblioteca",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Abre Tu biblioteca",
+       "ok": true,
+       "name": "Abre Tu biblioteca",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Spotify Premium",
+      "process": "Spotify"
+     },
+     "joined": false,
+     "satisfiedBy": "page:tu biblioteca",
+     "arrivedAs": "Tu biblioteca",
+     "screen": {
+      "title": "Spotify Premium",
+      "values": [
+       {
+        "name": "Contraer Tu biblioteca",
+        "state": "on"
+       }
+      ],
+      "lines": [
+       "Listas",
+       "Artistas"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Tu biblioteca».",
+   "en": "Done, I'm in «Tu biblioteca»."
+  },
+  {
+   "id": "cu-r30-pick-as-its-verified-click-named-it",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar eraser",
+     "application": "Paint",
+     "reached": true,
+     "successCheck": "stepDone:input.visible.click:=eraser|stepDone:input.visible.click:=borrador",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": false,
+       "changed": true,
+       "appId": "Paint"
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Borrador",
+       "ok": true,
+       "name": "Borrador",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Sin título: Paint",
+      "process": "mspaint"
+     },
+     "joined": false,
+     "satisfiedBy": "stepDone:input.visible.click:=borrador",
+     "arrivedAs": "Borrador",
+     "screen": {
+      "title": "Sin título: Paint"
+     }
+    }
+   },
+   "es": "Listo, elegí «Borrador».",
+   "en": "Done, I picked «Borrador»."
+  },
+  {
+   "id": "cu-r30-chain-places-as-the-window-wrote-them",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a personalization; luego ir a themes",
+     "application": "Configuración",
+     "reached": true,
+     "chained": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": false,
+       "changed": true,
+       "appId": "Configuración",
+       "subgoal": 0
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Personalización",
+       "ok": true,
+       "name": "Personalización",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true,
+       "subgoal": 0
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "label": "Temas",
+       "ok": true,
+       "name": "Temas",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true,
+       "subgoal": 1
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "SystemSettings"
+     },
+     "joined": false,
+     "satisfiedBy": "page:temas",
+     "screen": {
+      "title": "Configuración",
+      "values": [
+       {
+        "name": "Personalización",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Temas",
+       "Fondo"
+      ]
+     },
+     "subgoals": [
+      {
+       "goal": "ir a personalization",
+       "application": "Configuración",
+       "reached": true,
+       "stepCount": 2,
+       "satisfiedBy": "control:personalizacion:current",
+       "acted": true,
+       "arrivedAs": "Personalización"
+      },
+      {
+       "goal": "ir a themes",
+       "application": "Configuración",
+       "reached": true,
+       "stepCount": 1,
+       "satisfiedBy": "page:temas",
+       "acted": true,
+       "arrivedAs": "Temas"
+      }
+     ]
+    }
+   },
+   "es": "Listo, pasé por «Personalización» y ya estoy en «Temas».",
+   "en": "Done, I went through «Personalización» and I'm now in «Temas»."
+  },
+  {
+   "id": "cu-r30-contracase-weak-arrival-with-no-act-keeps-the-word-asked",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a stopwatch",
+     "application": "Reloj",
+     "reached": true,
+     "successCheck": "control:stopwatch:current|page:stopwatch|control:cronometro:current|page:cronometro",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": true,
+       "changed": true,
+       "appId": "Reloj"
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "Time"
+     },
+     "joined": false,
+     "satisfiedBy": "page:cronometro",
+     "arrivedAs": "Cronómetro",
+     "screen": {
+      "title": "Reloj",
+      "lines": [
+       "Temporizador",
+       "Alarma"
+      ]
+     }
+    }
+   },
+   "es": "Ya estás en «stopwatch».",
+   "en": "You're already in «stopwatch»."
+  },
+  {
+   "id": "cu-r30-contracase-already-there-only-on-a-strong-term",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a stopwatch",
+     "application": "Reloj",
+     "reached": true,
+     "successCheck": "control:stopwatch:current|page:stopwatch|control:cronometro:current|page:cronometro",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": true,
+       "changed": true,
+       "appId": "Reloj"
+      }
+     ],
+     "window": {
+      "title": "Reloj",
+      "process": "Time"
+     },
+     "joined": false,
+     "satisfiedBy": "control:cronometro:current",
+     "arrivedAs": "Cronómetro",
+     "screen": {
+      "title": "Reloj",
+      "values": [
+       {
+        "name": "Cronómetro",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Temporizador",
+       "Alarma"
+      ]
+     }
+    }
+   },
+   "es": "Ya estás en «Cronómetro».",
+   "en": "You're already in «Cronómetro»."
+  },
+  {
+   "id": "estab-e-c6-send-told",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a ron92; luego escribir prueba BAXY C6; luego enviar",
+     "application": "Discord",
+     "reached": true,
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.text.type",
+       "source": "model",
+       "typedOn": "Discord",
+       "into": "@Ron92",
+       "intoDocument": true,
+       "atCaret": true,
+       "subgoal": 1,
+       "text": "prueba BAXY C6",
+       "ok": true,
+       "method": "keyboard",
+       "changed": true,
+       "appeared": []
+      },
+      {
+       "step": 2,
+       "operation": "input.key.press",
+       "source": "model",
+       "process": "Discord",
+       "rule": true,
+       "subgoal": 2,
+       "key": "enter",
+       "target": "message_composer",
+       "ok": true,
+       "method": "keyboard",
+       "changed": true,
+       "appeared": []
+      }
+     ],
+     "window": {
+      "title": "@Ron92 - Discord",
+      "process": "Discord",
+      "requested": true,
+      "foreground": true,
+      "focused": {
+       "kind": "Edit",
+       "name": "Mensaje @Ron92",
+       "value": "﻿",
+       "i": 47
+      }
+     },
+     "joined": false,
+     "screen": {
+      "title": "@Ron92 - Discord",
+      "values": [
+       {
+        "name": "Ron92 (mensaje directo)",
+        "value": "https://discord.com/channels/@me/788990433829060618"
+       },
+       {
+        "name": "@Ron92",
+        "value": "https://discord.com/channels/@me/788990433829060618"
+       },
+       {
+        "name": "Mensajes directos",
+        "state": "selected"
+       },
+       {
+        "name": "Amigos",
+        "value": "https://discord.com/channels/@me"
+       }
+      ],
+      "numbers": [
+       "@Ron92",
+       "Ron92 (mensaje directo)",
+       "Ron92 .wolfsoultm.4191"
+      ]
+     },
+     "satisfiedBy": "stepDone:input.key.press:enter&sent:prueba baxy c6",
+     "subgoals": [
+      {
+       "goal": "ir a ron92",
+       "application": "Discord",
+       "reached": true,
+       "stepCount": 0,
+       "satisfiedBy": "title:ron92",
+       "successCheck": "control:ron92:current|title:ron92|page:ron92|mark:ron92",
+       "numbers": [
+        "@Ron92",
+        "Ron92 (mensaje directo)",
+        "Ron92 .wolfsoultm.4191"
+       ],
+       "acted": false
+      },
+      {
+       "goal": "escribir prueba BAXY C6",
+       "application": "Discord",
+       "reached": true,
+       "stepCount": 1,
+       "satisfiedBy": "stepDone:input.text.type:written",
+       "successCheck": "stepDone:input.text.type:written",
+       "numbers": [
+        "@Ron92",
+        "Ron92 (mensaje directo)",
+        "Ron92 .wolfsoultm.4191"
+       ],
+       "acted": true
+      },
+      {
+       "goal": "enviar",
+       "application": "Discord",
+       "reached": true,
+       "stepCount": 1,
+       "satisfiedBy": "stepDone:input.key.press:enter&sent:prueba baxy c6",
+       "successCheck": "stepDone:input.key.press:enter&sent:prueba BAXY C6",
+       "acted": true
+      }
+     ]
+    }
+   },
+   "es": "Listo, le mandé «prueba BAXY C6» a «Ron92» por «Discord».",
+   "en": "Done, I sent «prueba BAXY C6» to «Ron92» on «Discord»."
+  }
+ ],
+ "floorOnly": [
+  {
+   "id": "cu-r30-contracase-resemblance-gives-no-name",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "ir a language",
+     "application": "Configuración",
+     "reached": true,
+     "successCheck": "control:language:current|title:language|control:idioma:current|title:idioma",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": false,
+       "changed": true,
+       "appId": "Configuración"
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Hora e idioma",
+       "ok": true,
+       "name": "Hora e idioma",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "SystemSettings"
+     },
+     "joined": false,
+     "satisfiedBy": "control:hora e idioma:current&similar:hora e idioma",
+     "arrivedAs": "Hora e idioma",
+     "screen": {
+      "title": "Configuración",
+      "values": [
+       {
+        "name": "Hora e idioma",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Fecha y hora",
+       "Idioma y región"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «language».",
+   "en": "Done, I'm in «language»."
+  },
+  {
+   "id": "mem-forget-all",
+   "source": "Estabilización M (revisión H5): un olvido verificado de todo, dicho por los dos suelos (status con su operación).",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "memory_deleted",
+    "operation": "memory.forget",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "deletedCount": 2,
+     "scope": "all"
+    }
+   },
+   "es": "Listo, olvidé todo lo que recordaba de ti.",
+   "en": "Done, I forgot everything I remembered about you."
+  },
+  {
+   "id": "mem-forget-one",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "memory_deleted",
+    "operation": "memory.forget",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "deletedCount": 1
+    }
+   },
+   "es": "Listo, lo olvidé.",
+   "en": "Done, I forgot it."
+  },
+  {
+   "id": "mem-correct",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "memory_updated",
+    "operation": "memory.correct",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "saved": true,
+     "corrected": true
+    }
+   },
+   "es": "Listo, lo corregí.",
+   "en": "Done, I corrected it."
+  }
+ ],
+ "appAndMindDiffer": [
+  {
+   "id": "cu-r30-shade-of-a-colour",
+   "why": "The mind names the colour's shade (semantic.colours, data the App does not carry); the App says the swatch as the window names it (arrivedAs).",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar blue",
+     "application": "Paint",
+     "reached": true,
+     "successCheck": "stepDone:input.visible.click:=blue|stepDone:input.visible.click:=anil",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": false,
+       "changed": true,
+       "appId": "Paint"
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Añil",
+       "ok": true,
+       "name": "Añil",
+       "kind": "Button",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Sin título: Paint",
+      "process": "mspaint"
+     },
+     "joined": false,
+     "satisfiedBy": "stepDone:input.visible.click:=anil",
+     "arrivedAs": "Añil",
+     "screen": {
+      "title": "Sin título: Paint"
+     }
+    }
+   },
+   "mind": {
+    "es": "Listo, elegí Añil, el azul de la paleta.",
+    "en": "Done, I picked Añil, the blue of the palette."
+   },
+   "app": {
+    "es": "Listo, elegí «Añil».",
+    "en": "Done, I picked «Añil»."
+   }
+  },
+  {
+   "id": "cu-r30-contracase-pick-found-chosen-with-no-act-gives-no-name",
+   "why": "Encargo H1 (tandas fin1/fin2 t4-c04 t3, t3-c18 t2): the mind tells an option found chosen with no act of the mission as it already was (cu_finals._held_before_acting), never «elegí»; the App's floor has no twin of that reading yet and keeps its pick sentence (it speaks only when the mind answered nothing).",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "seleccionar pencil",
+     "application": "Paint",
+     "reached": true,
+     "successCheck": "control:=pencil:selected|control:=lapiz:selected|stepDone:input.visible.click:=lapiz",
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "ok": true,
+       "alreadyRunning": false,
+       "changed": true,
+       "appId": "Paint"
+      }
+     ],
+     "window": {
+      "title": "Sin título: Paint",
+      "process": "mspaint"
+     },
+     "joined": false,
+     "satisfiedBy": "control:=lapiz:selected",
+     "arrivedAs": "Lápiz",
+     "screen": {
+      "title": "Sin título: Paint",
+      "values": [
+       {
+        "name": "Lápiz",
+        "state": "selected"
+       }
+      ]
+     }
+    }
+   },
+   "mind": {
+    "es": "Abrí «Paint» y «Lápiz» ya estaba elegido.",
+    "en": "I opened «Paint» and «Lápiz» was already chosen."
+   },
+   "app": {
+    "es": "Listo, elegí «pencil».",
+    "en": "Done, I picked «pencil»."
+   }
+  }
+ ]
+}

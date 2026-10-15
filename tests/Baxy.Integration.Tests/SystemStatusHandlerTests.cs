@@ -13,6 +13,48 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class SystemStatusHandlerTests
 {
+    [TestCase(null)]
+    [TestCase(15UL)]
+    [TestCase(16UL)]
+    [TestCase(32UL)]
+    public async Task InstalledCapacitySurvivesTheTypedResultAsAnIndependentMeasurement(ulong? installedGiB)
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.Memory) with
+        {
+            Memory = new MemoryStatus(15UL * GiB, 3UL * GiB, installedGiB * GiB),
+        };
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"memory\"}"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True);
+        Assert.That(outcome.Verified, Is.True);
+        JsonElement memory = outcome.Result!.Value.GetProperty("memory");
+        Assert.That(memory.GetProperty("totalBytes").GetUInt64(), Is.EqualTo(15UL * GiB));
+        Assert.That(memory.GetProperty("availableBytes").GetUInt64(), Is.EqualTo(3UL * GiB));
+        if (installedGiB.HasValue)
+        {
+            Assert.That(memory.GetProperty("installedBytes").GetUInt64(), Is.EqualTo(installedGiB * GiB));
+        }
+        else
+        {
+            Assert.That(memory.GetProperty("installedBytes").ValueKind, Is.EqualTo(JsonValueKind.Null));
+        }
+    }
+
+    [Test]
+    public async Task InstalledCapacityBelowUsableMemoryCannotBecomeVerified()
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.Memory) with
+        {
+            Memory = new MemoryStatus(15UL * GiB, 3UL * GiB, 8UL * GiB),
+        };
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"memory\"}"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.False);
+        Assert.That(outcome.Verified, Is.False);
+    }
+
     [Test]
     public void DefinitionIsReadOnly()
     {
@@ -97,12 +139,15 @@ public sealed class SystemStatusHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(result.GetProperty("cpu").GetProperty("usagePercent").GetDouble(), Is.EqualTo(17.5d));
+            Assert.That(result.GetProperty("cpu").GetProperty("physicalCoreCount").GetInt32(), Is.EqualTo(12));
+            Assert.That(result.GetProperty("cpu").GetProperty("logicalProcessorCount").GetInt32(), Is.EqualTo(24));
             Assert.That(result.GetProperty("cpu").GetProperty("model").GetString(), Is.EqualTo("CPU de prueba"));
             Assert.That(result.GetProperty("memory").GetProperty("totalBytes").GetUInt64(), Is.EqualTo(32UL * GiB));
             Assert.That(result.GetProperty("disk").GetProperty("availableBytes").GetInt64(), Is.EqualTo(200L * GiB));
             Assert.That(result.GetProperty("battery").GetProperty("isPresent").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("os").GetProperty("buildNumber").GetInt32(), Is.EqualTo(26100));
             Assert.That(result.GetProperty("os").GetProperty("isWorkstation").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("os").GetProperty("caption").GetString(), Is.EqualTo("Microsoft Windows 11 Pro"));
             Assert.That(result.GetProperty("uptimeSeconds").GetInt64(), Is.EqualTo(5400));
             Assert.That(result.GetProperty("failures").GetArrayLength(), Is.Zero);
             Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
@@ -111,11 +156,29 @@ public sealed class SystemStatusHandlerTests
     }
 
     [Test]
+    public async Task MissingPhysicalCoreObservationRemainsUnknown()
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.Cpu) with
+        {
+            Cpu = new CpuStatus(17.5d, 24, "CPU de prueba"),
+        };
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"cpu\"}"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True);
+        Assert.That(outcome.Verified, Is.True);
+        Assert.That(outcome.Result!.Value.GetProperty("cpu").GetProperty("physicalCoreCount").ValueKind,
+            Is.EqualTo(JsonValueKind.Null));
+        Assert.That(outcome.Result.Value.GetProperty("cpu").GetProperty("logicalProcessorCount").GetInt32(),
+            Is.EqualTo(24));
+    }
+
+    [Test]
     public async Task ServerProductTypeIsNotMisreportedAsWindowsEleven()
     {
         SystemStatusSnapshot snapshot = Complete(SystemStatusScope.OperatingSystem) with
         {
-            OperatingSystem = new OperatingSystemStatus(10, 0, 26100, "x64", false),
+            OperatingSystem = new OperatingSystemStatus(10, 0, 26100, "x64", false, "Microsoft Windows Server 2025 Standard"),
         };
         var handler = Handler(new StubProvider(snapshot));
 
@@ -130,6 +193,31 @@ public sealed class SystemStatusHandlerTests
                 outcome.Result?.GetProperty("os").GetProperty("isWorkstation").GetBoolean(),
                 Is.False);
             Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+            Assert.That(outcome.Result?.GetProperty("os").GetProperty("caption").GetString(),
+                Is.EqualTo("Microsoft Windows Server 2025 Standard"));
+        });
+    }
+
+    [TestCase("")]
+    [TestCase(" ")]
+    [TestCase("Windows\n11")]
+    [TestCase(null)]
+    public async Task MissingOrInvalidOsCaptionCannotPassVerification(string? caption)
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.OperatingSystem);
+        snapshot = snapshot with
+        {
+            OperatingSystem = snapshot.OperatingSystem! with { Caption = caption! },
+        };
+
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"os\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.Verified, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
         });
     }
 
@@ -282,6 +370,8 @@ public sealed class SystemStatusHandlerTests
     [TestCase("unknown_failure")]
     [TestCase("cpu_percentage")]
     [TestCase("cpu_count")]
+    [TestCase("cpu_physical_zero")]
+    [TestCase("cpu_physical_exceeds_logical")]
     [TestCase("cpu_model")]
     [TestCase("cpu_model_invalid_unicode")]
     [TestCase("battery_absent_percentage")]
@@ -324,7 +414,7 @@ public sealed class SystemStatusHandlerTests
 
     private static SystemStatusSnapshot Complete(SystemStatusScope scope) => new(
         scope.HasFlag(SystemStatusScope.Cpu)
-            ? new CpuStatus(17.5d, 24, "CPU de prueba")
+            ? new CpuStatus(17.5d, 24, "CPU de prueba", 12)
             : null,
         scope.HasFlag(SystemStatusScope.Memory)
             ? new MemoryStatus(32UL * GiB, 12UL * GiB)
@@ -336,7 +426,7 @@ public sealed class SystemStatusHandlerTests
             ? new BatteryStatus(true, 73, false, false)
             : null,
         scope.HasFlag(SystemStatusScope.OperatingSystem)
-            ? new OperatingSystemStatus(10, 0, 26100, "x64", true)
+            ? new OperatingSystemStatus(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro")
             : null,
         scope.HasFlag(SystemStatusScope.Uptime) ? 5400 : null,
         []);
@@ -401,6 +491,14 @@ public sealed class SystemStatusHandlerTests
             {
                 Cpu = new CpuStatus(17.5d, 24, "e\u0301"),
             }),
+            "cpu_physical_zero" => (cpuJson, Complete(SystemStatusScope.Cpu) with
+            {
+                Cpu = new CpuStatus(17.5d, 24, null, 0),
+            }),
+            "cpu_physical_exceeds_logical" => (cpuJson, Complete(SystemStatusScope.Cpu) with
+            {
+                Cpu = new CpuStatus(17.5d, 24, null, 25),
+            }),
             "cpu_model_invalid_unicode" => (cpuJson, Complete(SystemStatusScope.Cpu) with
             {
                 Cpu = new CpuStatus(17.5d, 24, "\ud800"),
@@ -417,7 +515,7 @@ public sealed class SystemStatusHandlerTests
                 }),
             "os_major" => ("{\"scope\":\"os\"}", Complete(SystemStatusScope.OperatingSystem) with
             {
-                OperatingSystem = new OperatingSystemStatus(0, 0, 26100, "x64", true),
+                OperatingSystem = new OperatingSystemStatus(0, 0, 26100, "x64", true, "Microsoft Windows 11 Pro"),
             }),
             "uptime" => ("{}", Complete(SystemStatusScope.All) with { UptimeSeconds = -1 }),
             _ => throw new AssertionException($"Unknown contradiction: {defect}"),

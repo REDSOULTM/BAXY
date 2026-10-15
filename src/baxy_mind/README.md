@@ -131,7 +131,7 @@ Solicitudes anunciadas por `hello.requests`:
 |---|---|---|
 | `catalog.configure {capabilities, applicationCatalog?, gameCatalog?}` | `catalog.ready {count}` | catálogo cerrado del core y entidades verificadas de aplicaciones y juegos instalados; una sola configuración por proceso |
 | `turn.decide {text, history}` | `turn.result {kind, operation, effectOperations, question, reply}` | única decisión contextual y única generación conversacional; reconoce efectos explícitos contra el catálogo cerrado y la evidencia semántica sólo puede reforzar conversación o abstenerse |
-| `plan {text, history, recovery?, expectedOperations?}` | `plan.result {kind, question, steps}` | se solicita sólo tras `turn.result.kind == "plan"`; conserva exactamente los efectos reconocidos, incorpora dependencias observables, mantiene DAG ≤16 y argumentos literales con evidencia |
+| `plan {text, history, recovery?, expectedOperations?}` | `plan.result {kind, question, steps, presentStateCondition?}` | se solicita sólo tras `turn.result.kind == "plan"`; conserva exactamente los efectos reconocidos, incorpora dependencias observables, mantiene DAG ≤16 y argumentos literales con evidencia; `presentStateCondition: true` (semantic/apps.py `present_state_condition`) sólo con `kind == "plan"`, dice que el pedido está condicionado a que una app esté ahí ahora («si está abierto», «si hay una ventana de word», «unless it is closed») o a que no esté con abstención («si no está abierto no hagas nada», «if it's not running, skip it»), o prohíbe abrirla («sin abrirlo», «don't open it»); una orden de abrirla cuando la condición falla («si no está abierto, abrilo») no lo marca: el shell nunca abre una app ausente para cumplirlo, e ignora la marca fuera de un plan |
 | `plan.ground {objective, operation, purpose, observations}` | `plan.ground.result {arguments}` | materializa IDs/estado sólo después de dependencias verificadas |
 | `narrate {userText, operation, outcome}` | `narrate.result {text}` | resultado tipado → lenguaje natural |
 | `voice.start` / `voice.stop` | `voice.started/stopped` | acuses del handler, no prueba de cleanup físico final; `direct`: VAD → ASR; `wake`: KWS acústico o VAD → score acústico + prefijo canónico → ASR/AEC |
@@ -144,11 +144,12 @@ Implementadas y consumidas por App, pero no anunciadas:
 | Solicitud omitida del anuncio | Respuesta | Semántica |
 |---|---|---|
 | `arguments {operation, text}` | `arguments.result {arguments, ok, question}` | JSON Schema, evidencia literal, grounding determinista y abstención |
-| `message.compose {userText, intent, facts}` | `message.compose.result {text}` | compone lenguaje natural desde hechos acotados |
+| `message.compose {userText, intent, facts}` | `message.compose.result {text, reproducible}` | compone lenguaje natural desde hechos acotados; `text` vacío = ningún borrador aceptado dentro del presupuesto; `reproducible` = el mismo pedido da el mismo borrador, y el App no lo repite |
 
-`turn.evidence.status` también está implementada sin anuncio y la usa tooling
-de gates. Es una deuda de contrato vigente: `arguments` y `message.compose` ya
-tienen consumidores, por lo que corregirla exige actualizar ambos extremos, el
+`turn.evidence.status` ya no existe: el sidecar dejó de arrancar el índice de
+evidencia (ley 2, G4) y la solicitud recibe `unknown_request`. La deuda de
+contrato vigente es la de `arguments` y `message.compose`: ya tienen
+consumidores, por lo que corregirla exige actualizar ambos extremos, el
 handshake y las pruebas de compatibilidad.
 
 ## Evidencia semántica de turnos
@@ -159,6 +160,9 @@ débiles o ruidosas: participan únicamente en el índice y en diagnósticos de
 familia, no entrenan la sonda y su texto nunca llega al LLM. Dev/test público
 permanece en un holdout disjunto de 9.172 filas; el gate comprobó cero
 solapamientos de texto normalizado con runtime.
+
+El sidecar ya no arranca este índice: ningún turno leía su resultado. El módulo
+queda como sello de investigación hasta que el dueño decida retirarlo (G6).
 
 `TurnEvidenceService` construye en segundo plano embeddings normalizados de
 `intfloat/multilingual-e5-small`. El caché `baxy.turn-evidence.v4` es un par
@@ -234,3 +238,22 @@ journal HMAC validado:
 - Regresión: `scripts/test_mind_router_oracles.py` (675/675 contra oráculos),
   `scripts/measure_mind_budget.py` (gate 12), `scripts/test_mind_voice.py`
   (gate 7 headless).
+
+
+## Adaptador opcional de prosa CPU
+
+El perfil `cpu_prose_adapter` de `mind-runtime-v1.json` contiene `schema`
+(`baxy-cpu-prose-adapter-v1`), `gguf`, `gguf_sha256` y `base_gguf_sha256`.
+El registro verifica el adaptador y su correspondencia con el modelo base.
+`register_mind_runtime.ps1 -CpuProseAdapter <archivo.gguf>` prepara ese perfil
+con hashes calculados; omitirlo mantiene el runtime sin adaptador. Esta capacidad
+no equivale a promover automáticamente un archivo ni a validar otros modelos.
+
+El shell exporta el perfil verificado al sidecar. El owner `cpu_prose_adapter.py`
+comprueba los bytes, verifica la carga en llama.cpp y establece/consulta escala
+cero antes de publicar readiness. Cada petición ajena a la prosa CPU lleva escala
+cero explícita. Sólo las observaciones completas de CPU en composición usan el
+perfil cualificado; conversación, clasificación, progreso, confirmaciones,
+observaciones mixtas y fallos conservan el modelo base. No se crean respuestas
+fijas ni llamadas adicionales de composición. Los errores de identidad/carga del
+adaptador detienen el arranque; no se ocultan desactivándolo silenciosamente.

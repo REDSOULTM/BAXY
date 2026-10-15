@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind.__main__ import _explicit_stable_no_effect_turn_decision
+from baxy_mind.turn_decisions import _explicit_stable_no_effect_turn_decision
 
 
 # The four denial frames R27 generated per language. They are reworded from the

@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from baxy_mind.__main__ import (
-    _explicit_arguments_from_evidence,
-    _explicit_plan_skeleton,
-    apply_compound_effect_conservation_veto,
-)
+import pytest
+
+from baxy_mind.planner import PlannerContractError
+
+from baxy_mind.semantic.arguments import _explicit_arguments_from_evidence
+from baxy_mind.plan_shape import _explicit_plan_skeleton
+from baxy_mind.turn_gates import apply_compound_effect_conservation_veto
 from baxy_mind.effect_intent import (
     operation_domain_is_grounded,
     resolve_explicit_effects,
@@ -94,18 +96,17 @@ def test_unrecognized_second_clause_does_not_run_as_silent_subset() -> None:
     contract = unresolved_compound_contract(text, AVAILABLE, application_names=APPS)
     assert contract is not None
     assert contract.minimum_effects >= 2
-    vetoed = apply_compound_effect_conservation_veto(
-        {
-            "mode": "plan",
-            "operation": "app.open",
-            "effect_operations": ["app.open"],
-            "effect_count": "one",
-            "effect_verification": "pending",
-        },
-        contract,
-    )
-    assert vetoed["mode"] == "conversation"
-    assert vetoed["effect_operations"] == []
+    with pytest.raises(PlannerContractError, match="unresolved_compound_effects"):
+        apply_compound_effect_conservation_veto(
+            {
+                "mode": "plan",
+                "operation": "app.open",
+                "effect_operations": ["app.open"],
+                "effect_count": "one",
+                "effect_verification": "pending",
+            },
+            contract,
+        )
 
 
 def test_click_domain_accepts_go_to_after_an_open_and_rejects_a_coat_button() -> None:
@@ -130,12 +131,17 @@ def test_web_destination_is_not_a_visible_click() -> None:
 
 
 def test_visible_click_cascade_source_has_no_app_names() -> None:
+    # Computer use (CONTRATO_VISTA_ACCION.md): the persistent UIA worker replaced
+    # DesktopClickVisible.ps1; the scroll adapter and the worker host joined the cascade.
     files = (
-        REPO / "src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1",
+        REPO / "src/Baxy.Providers.Windows/External/DesktopUiaWorker.ps1",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs",
         REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleVisionLocator.cs",
+        REPO / "src/Baxy.Providers.Windows/External/WindowsVisibleTooltipLocator.cs",
         REPO / "src/Baxy.Providers.Windows/External/VisibleControlSurface.cs",
+        REPO / "src/Baxy.Providers.Windows/External/UiaWorkerHost.cs",
+        REPO / "src/Baxy.Providers.Windows/External/WindowsScrollAdapter.cs",
     )
     banned = ("steam", "spotify", "discord", "chrome")
     for path in files:

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using Baxy.Providers.Windows.Applications;
 
 namespace Baxy.Providers.Windows.Windows;
 
@@ -16,18 +17,42 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     private const int FallbackCloseVerificationAttempts = 20;
 
     private readonly IWindowControlPlatform _platform;
+    private readonly WindowsInstalledApplicationOpenProvider _applications;
     private readonly WindowsWindowControlVerifier _verifier;
     private readonly object _gate = new();
     private readonly Dictionary<string, WindowIdentity> _handles = new(StringComparer.Ordinal);
+    private readonly LaunchProvenance _provenance;
 
     public WindowsWindowControlProvider()
-        : this(new Win32WindowControlPlatform())
+        : this(new Win32WindowControlPlatform(), new WindowsInstalledApplicationOpenProvider(), LaunchProvenance.Shared)
+    {
+    }
+
+    public WindowsWindowControlProvider(WindowsInstalledApplicationOpenProvider applications)
+        : this(new Win32WindowControlPlatform(), applications, LaunchProvenance.Shared)
     {
     }
 
     internal WindowsWindowControlProvider(IWindowControlPlatform platform)
+        : this(platform, new WindowsInstalledApplicationOpenProvider())
+    {
+    }
+
+    internal WindowsWindowControlProvider(
+        IWindowControlPlatform platform,
+        WindowsInstalledApplicationOpenProvider applications)
+        : this(platform, applications, new LaunchProvenance())
+    {
+    }
+
+    internal WindowsWindowControlProvider(
+        IWindowControlPlatform platform,
+        WindowsInstalledApplicationOpenProvider applications,
+        LaunchProvenance provenance)
     {
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
+        _applications = applications ?? throw new ArgumentNullException(nameof(applications));
+        _provenance = provenance ?? throw new ArgumentNullException(nameof(provenance));
         _verifier = new WindowsWindowControlVerifier(platform);
     }
 
@@ -36,9 +61,23 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
         WindowSnapshot? snapshot;
+        WindowSnapshot? baxyInFront = null;
         try
         {
             snapshot = _platform.FindForegroundWindow();
+            // M149 (D71.2, dueño 2026-10-03 «cierra la ventana activa … la ventana en la que yo estoy actuando»):
+            // when the person writes to BAXY its own window takes the foreground, but it is not the person's
+            // window: theirs is the one they were using right before, the next one down the z-order that a
+            // person sees (titled, root owner, not minimized) and that is not BAXY's. With Opera in front and
+            // YouTube behind it, that is Opera. Any other foreground (the harness guard Notepad included) stays
+            // exactly what it was. Nothing behind BAXY → nothing is named and nothing is acted on.
+            if (snapshot is not null && OwnProcessNames.Contains(snapshot.Identity.ProcessName))
+            {
+                baxyInFront = snapshot;
+                snapshot = _platform.DesktopWindowsBehind(baxyInFront.Identity)
+                    .FirstOrDefault(static window => window.State != "minimized"
+                        && !OwnProcessNames.Contains(window.Identity.ProcessName));
+            }
         }
         catch (Exception exception) when (exception is Win32Exception
             or InvalidOperationException
@@ -56,34 +95,66 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
 
         string windowId = Issue(snapshot.Identity);
         WindowCandidate candidate = ToCandidate(snapshot, windowId);
-        if (!candidate.Foreground
-            || !_verifier.Verify(snapshot.Identity, candidate, expectedAction: null))
+        bool verified = baxyInFront is null
+            ? candidate.Foreground && _verifier.Verify(snapshot.Identity, candidate, expectedAction: null)
+            : !candidate.Foreground && _verifier.Verify(snapshot.Identity, candidate, expectedAction: null)
+                && ForegroundIsStill(baxyInFront.Identity);
+        if (!verified)
         {
             Revoke(windowId);
             return ValueTask.FromResult(new WindowResolveResult(
                 false, false, [], WindowControlErrorCodes.VerificationFailed));
         }
 
+        // M149: «foreground» on window.active is the window the person is acting in (the mind reads it as
+        // is_current_window_for_user_interaction); behind BAXY's own window that is the verified one under it.
+        if (baxyInFront is not null)
+            candidate = candidate with { Foreground = true };
         return ValueTask.FromResult(new WindowResolveResult(true, true, [candidate], null));
+    }
+
+    // M149: the person's window was read under BAXY's; it stays theirs only while BAXY still holds the front.
+    private bool ForegroundIsStill(WindowIdentity front)
+    {
+        try
+        {
+            return _platform.FindForegroundWindow() is { } now && now.Identity.Handle == front.Handle
+                && now.Identity.ProcessId == front.ProcessId;
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException
+            or NotSupportedException)
+        {
+            return false;
+        }
     }
 
     public ValueTask<WindowResolveResult> ResolveAsync(
         string processName,
         int limit,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool byTitle = false,
+        int offset = 0)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        string? selector = NormalizeProcessName(processName);
-        if (selector is null || limit is < 1 or > 50)
+        // Recognize this before normalizing .exe; "*.exe" remains a process
+        // selector and byTitle=true always keeps title matching semantics.
+        bool allWindows = !byTitle && string.Equals(processName?.Trim(), "*", StringComparison.Ordinal);
+        string? selector = byTitle
+            ? (!string.IsNullOrWhiteSpace(processName) && processName.Length <= 260
+                && !processName.Contains('\0') ? processName.Trim() : null)
+            : NormalizeProcessName(processName);
+        if (selector is null || limit is < 1 or > 50 || offset < 0)
         {
             return ValueTask.FromResult(new WindowResolveResult(
                 false, false, [], WindowControlErrorCodes.InvalidSelector));
         }
 
-        IReadOnlyList<WindowSnapshot> snapshots;
+        WindowEnumeration enumeration;
         try
         {
-            snapshots = _platform.FindVisibleWindows(selector, limit);
+            enumeration = _platform.FindVisibleWindows(
+                selector, limit, byTitle, offset, allWindows, cancellationToken);
         }
         catch (Exception exception) when (exception is Win32Exception
             or InvalidOperationException
@@ -93,7 +164,9 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 false, false, [], WindowControlErrorCodes.InventoryFailed));
         }
 
-        if (snapshots.Count == 0)
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<WindowSnapshot> snapshots = enumeration.Windows;
+        if (!allWindows && enumeration.ObservedCount == 0)
         {
             return ValueTask.FromResult(new WindowResolveResult(
                 false, false, [], WindowControlErrorCodes.WindowNotFound));
@@ -104,7 +177,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             cancellationToken.ThrowIfCancellationRequested();
             string windowId = Issue(snapshot.Identity);
-            WindowCandidate candidate = ToCandidate(snapshot, windowId);
+            WindowCandidate candidate = WithStanding(ToCandidate(snapshot, windowId), snapshot.Identity);
             if (!_verifier.Verify(snapshot.Identity, candidate, expectedAction: null))
             {
                 Revoke(windowId);
@@ -115,7 +188,78 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             candidates.Add(candidate);
         }
 
-        return ValueTask.FromResult(new WindowResolveResult(true, true, candidates, null));
+        int? nextOffset = (long)offset + snapshots.Count < enumeration.ObservedCount
+            ? offset + snapshots.Count
+            : null;
+        var page = new WindowInventoryPage(limit, offset,
+            enumeration.ObservedCount, enumeration.Complete, nextOffset);
+        return ValueTask.FromResult(new WindowResolveResult(true, true, candidates, null, page));
+    }
+
+    public async ValueTask<WindowResolveResult> ResolveApplicationAsync(
+        string applicationName,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!ApplicationIds.IsValidRequest(applicationName) || limit is < 1 or > 50)
+            return new(false, false, [], WindowControlErrorCodes.InvalidSelector);
+
+        var issued = new List<string>();
+        bool published = false;
+        try
+        {
+            var resolution = await _applications.ResolveApplicationWindowsAsync(
+                applicationName, cancellationToken).ConfigureAwait(false);
+            if (resolution.ErrorCode is not null)
+                return new(false, false, [], resolution.ErrorCode);
+            InstalledApplicationObservation[] observations = resolution.Windows
+                .DistinctBy(static item => (item.WindowHandle, item.ProcessId, item.ProcessCreationTimeUtcTicks))
+                .ToArray();
+            if (observations.Length == 0)
+                return new(false, false, [], WindowControlErrorCodes.WindowNotFound);
+            // A partial application selection must not look like one unambiguous
+            // dependency result. Never issue a first-page-only close candidate.
+            if (observations.Length > limit)
+                return new(false, false, [], "application_window_selection_incomplete");
+
+            var candidates = new List<WindowCandidate>(observations.Length);
+            foreach (InstalledApplicationObservation observation in observations)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!observation.Visible || observation.WindowHandle == 0
+                    || string.IsNullOrWhiteSpace(observation.ProcessName)
+                    || !Path.IsPathFullyQualified(observation.ExecutablePath))
+                    return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
+                var identity = new WindowIdentity(
+                    checked((nint)observation.WindowHandle), observation.ProcessId,
+                    observation.ProcessCreationTimeUtcTicks, observation.ProcessName,
+                    _platform.UtcNow, Path.GetFullPath(observation.ExecutablePath),
+                    resolution.AppUserModelId);
+                WindowSnapshot snapshot = _platform.Observe(identity);
+                string windowId = Issue(identity);
+                issued.Add(windowId);
+                WindowCandidate candidate = WithStanding(ToCandidate(snapshot, windowId), identity);
+                if (!_verifier.Verify(identity, candidate, expectedAction: null))
+                    return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
+                candidates.Add(candidate);
+            }
+            published = true;
+            return new(true, true, candidates, null,
+                new WindowInventoryPage(limit, 0, candidates.Count, true, null));
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException or NotSupportedException
+            or ArgumentException or OverflowException)
+        {
+            return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
+        }
+        finally
+        {
+            if (!published)
+                foreach (string windowId in issued)
+                    Revoke(windowId);
+        }
     }
 
     public async ValueTask<WindowActionResult> ExecuteAsync(
@@ -191,6 +335,179 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
 
         return new WindowActionResult(
             false, false, null, WindowControlErrorCodes.VerificationFailed);
+    }
+
+    public async ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken)
+    {
+        // MINALL1687 «minimizá todas las ventanas»: every desktop window that is
+        // not already minimized gets the minimize command, and the result is
+        // verified by re-observing each one until it is iconic. Nothing is
+        // closed; a window that refuses to minimize keeps the effect unverified.
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<WindowSnapshot> desktop;
+        try
+        {
+            desktop = _platform.DesktopWindows();
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException or NotSupportedException)
+        {
+            return new WindowMinimizeAllResult(false, false, 0, 0, 0, WindowControlErrorCodes.InventoryFailed);
+        }
+
+        // Uso real (tandas 4–7, the official window): «abre el homescreen» minimized BAXY's own window with the
+        // rest; its reply was written into a minimized window and the person saw nothing. Showing the desktop
+        // leaves the companion the person is talking to on screen.
+        List<WindowSnapshot> targets = desktop
+            .Where(static window => window.State != "minimized" && !OwnProcessNames.Contains(window.Identity.ProcessName))
+            .ToList();
+        if (targets.Count == 0)
+        {
+            return new WindowMinimizeAllResult(true, true, desktop.Count, 0, 0, null);
+        }
+
+        foreach (WindowSnapshot target in targets)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                _ = _platform.Execute(target.Identity, WindowControlAction.Minimize);
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or WindowIdentityChangedException)
+            {
+                // A window that vanished meanwhile is not visible any more.
+            }
+        }
+
+        int remaining = targets.Count;
+        for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            remaining = 0;
+            foreach (WindowSnapshot target in targets)
+            {
+                try
+                {
+                    if (_platform.Observe(target.Identity).State != "minimized")
+                        remaining++;
+                }
+                catch (Exception exception) when (exception is Win32Exception
+                    or InvalidOperationException or WindowIdentityChangedException)
+                {
+                    // Gone windows are not visible windows.
+                }
+            }
+            if (remaining == 0)
+            {
+                return new WindowMinimizeAllResult(true, true, desktop.Count, targets.Count, 0, null);
+            }
+            if (attempt + 1 < StateVerificationAttempts)
+            {
+                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return new WindowMinimizeAllResult(
+            true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed);
+    }
+
+    // CLOSEALL1733 «cerrame todo» (owner 2026-09-16: everything except Visual
+    // Studio Code): every desktop window is asked to close the way a person
+    // would (WM_CLOSE, then the system-menu close) except the editor hosting
+    // the person's work, the terminal and this product; a window that stays —
+    // an application asking whether to save, a client that refuses — is
+    // counted as remaining and never forced, so no document is lost.
+    // The product's own windows: the App runs as «Baxy» (Baxy.exe), and «Baxy.App» in development hosts.
+    // Also what tells an opening that the request was written in BAXY's own window (ForegroundHandBack.PersonWorkingIn).
+    internal static readonly HashSet<string> OwnProcessNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Baxy", "Baxy.App", "baxy-core",
+    };
+
+    private static readonly HashSet<string> KeptProcessNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Code", "Code - Insiders", "WindowsTerminal", "baxy-core", "Baxy.App", "Baxy",
+    };
+
+    public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<WindowSnapshot> desktop;
+        try
+        {
+            desktop = _platform.DesktopWindows();
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException or NotSupportedException)
+        {
+            return new WindowCloseAllResult(false, false, 0, 0, 0, 0, [], [], WindowControlErrorCodes.InventoryFailed);
+        }
+
+        List<WindowSnapshot> kept = desktop.Where(static window => KeptProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<WindowSnapshot> targets = desktop.Where(static window => !KeptProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<string> keptNames = kept.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        if (targets.Count == 0)
+        {
+            return new WindowCloseAllResult(true, true, desktop.Count, 0, 0, kept.Count, keptNames, [], null);
+        }
+
+        foreach (WindowSnapshot target in targets)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                _ = _platform.RequestClose(target.Identity);
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or WindowIdentityChangedException)
+            {
+                // A window that vanished meanwhile is closed already.
+            }
+        }
+
+        List<WindowSnapshot> remaining = await RemainingOpenAsync(targets, PrimaryCloseVerificationAttempts, cancellationToken).ConfigureAwait(false);
+        if (remaining.Count > 0)
+        {
+            foreach (WindowSnapshot target in remaining)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    _ = _platform.Observe(target.Identity);
+                    _ = _platform.RequestSystemClose(target.Identity);
+                }
+                catch (Exception exception) when (exception is Win32Exception
+                    or InvalidOperationException or WindowIdentityChangedException)
+                {
+                    // Gone or changed: nothing more to ask.
+                }
+            }
+            remaining = await RemainingOpenAsync(remaining, FallbackCloseVerificationAttempts, cancellationToken).ConfigureAwait(false);
+        }
+
+        List<string> remainingNames = remaining.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        return new WindowCloseAllResult(
+            true, true, desktop.Count, targets.Count - remaining.Count, remaining.Count, kept.Count, keptNames, remainingNames, null);
+    }
+
+    private async ValueTask<List<WindowSnapshot>> RemainingOpenAsync(
+        IReadOnlyList<WindowSnapshot> targets,
+        int attempts,
+        CancellationToken cancellationToken)
+    {
+        List<WindowSnapshot> open = targets.ToList();
+        for (int attempt = 0; attempt < attempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            open = open.Where(window => !_verifier.VerifyClosed(window.Identity)).ToList();
+            if (open.Count == 0 || attempt + 1 >= attempts)
+            {
+                break;
+            }
+            await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+        }
+        return open;
     }
 
     public ValueTask<WindowActionResult> SetBoundsAsync(
@@ -272,6 +589,199 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return ValueTask.FromResult(new WindowActionResult(true, true, candidate, null));
     }
 
+    public async ValueTask<WindowActionResult> SnapAsync(
+        string windowId,
+        string side,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        bool left = string.Equals(side, "left", StringComparison.Ordinal);
+        if (!left && !string.Equals(side, "right", StringComparison.Ordinal))
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InvalidSelector);
+        }
+        if (!TryConsume(windowId, out WindowIdentity? identity))
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InvalidOrExpiredWindowId);
+        }
+
+        WindowSnapshot before;
+        WindowBounds? workArea;
+        try
+        {
+            before = _platform.Observe(identity!);
+            workArea = _platform.WorkArea(before.Identity);
+        }
+        catch (WindowIdentityChangedException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.WindowIdentityChanged);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InventoryFailed);
+        }
+        if (workArea is null || workArea.Width < 2 || workArea.Height < 1)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InventoryFailed);
+        }
+
+        // A maximized or minimized window keeps no bounds of its own: it is
+        // restored first, the way the desktop does before docking it.
+        if (!string.Equals(before.State, "normal", StringComparison.Ordinal))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_platform.Execute(before.Identity, WindowControlAction.Restore))
+            {
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.ActionFailed);
+            }
+            await _platform.DelayAsync(VerificationDelay, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        int half = workArea.Width / 2;
+        var expected = new WindowBounds(
+            left ? workArea.X : workArea.X + half,
+            workArea.Y,
+            left ? half : workArea.Width - half,
+            workArea.Height);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!_platform.SetBounds(before.Identity, expected))
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.ActionFailed);
+        }
+
+        (WindowSnapshot? placed, bool larger) = await ObserveSnapAsync(
+                before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+            .ConfigureAwait(false);
+        if (placed is null)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.VerificationFailed);
+        }
+
+        WindowRequestedSize? largerThanRequested = null;
+        if (larger)
+        {
+            // M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): Spotify's
+            // minimum width (814) is larger than half of this 1536 work area. Windows keeps
+            // the asked position and clamps the size, so the window ended at x 768, width
+            // 814, past the right edge, and the exact-half check answered «la verificación
+            // del lado derecho falló» on every try. The window is put flush against the
+            // asked edge at the size it imposes, and that placement is what is verified:
+            // on the edge, inside the work area, with the window's own larger size.
+            largerThanRequested = new WindowRequestedSize(expected.Width, expected.Height);
+            var flush = new WindowBounds(
+                left ? workArea.X : workArea.X + workArea.Width - placed.Bounds.Width,
+                expected.Y,
+                placed.Bounds.Width,
+                placed.Bounds.Height);
+            if (placed.Bounds != flush)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!_platform.SetBounds(before.Identity, flush))
+                {
+                    return new WindowActionResult(
+                        false, false, null, WindowControlErrorCodes.ActionFailed);
+                }
+                (placed, _) = await ObserveSnapAsync(
+                        before.Identity, flush, acceptLarger: false, workArea, cancellationToken)
+                    .ConfigureAwait(false);
+                if (placed is null)
+                {
+                    return new WindowActionResult(
+                        false, false, null, WindowControlErrorCodes.VerificationFailed);
+                }
+            }
+        }
+
+        string refreshedId = Issue(placed.Identity);
+        WindowCandidate candidate = ToCandidate(placed, refreshedId);
+        if (_verifier.Verify(placed.Identity, candidate, expectedAction: null))
+        {
+            return new WindowActionResult(true, true, candidate, null, largerThanRequested);
+        }
+        Revoke(refreshedId);
+        return new WindowActionResult(
+            false, false, null, WindowControlErrorCodes.VerificationFailed);
+    }
+
+    // The placement read back: the exact target, or (acceptLarger) the window held at a
+    // size larger than the target that it imposes itself. Null when neither settles.
+    private async ValueTask<(WindowSnapshot? Window, bool Larger)> ObserveSnapAsync(
+        WindowIdentity identity,
+        WindowBounds target,
+        bool acceptLarger,
+        WindowBounds workArea,
+        CancellationToken cancellationToken)
+    {
+        WindowBounds? held = null;
+        for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            WindowSnapshot after;
+            try
+            {
+                after = _platform.Observe(identity);
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException
+                or WindowIdentityChangedException)
+            {
+                return (null, false);
+            }
+            bool normal = string.Equals(after.State, "normal", StringComparison.Ordinal);
+            if (normal && after.Bounds == target)
+            {
+                return (after, false);
+            }
+            if (acceptLarger && normal && KeepsLargerMinimum(after.Bounds, target, workArea))
+            {
+                // M159: the same larger bounds on two reads, one delay apart: the window
+                // settled there; a read taken before the move had landed is not trusted.
+                if (after.Bounds == held)
+                {
+                    return (after, true);
+                }
+                held = after.Bounds;
+            }
+            else
+            {
+                held = null;
+            }
+            if (attempt + 1 < StateVerificationAttempts)
+            {
+                await _platform.DelayAsync(VerificationDelay, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        return (null, false);
+    }
+
+    // M159: the window refused the asked size only by being larger (its minimum), never
+    // smaller; that size still fits the work area; it kept the asked top edge and either
+    // the asked near edge (Windows clamps the size, not the position) or the asked far
+    // edge (the window pulled itself back onto the screen).
+    internal static bool KeepsLargerMinimum(
+        WindowBounds observed,
+        WindowBounds requested,
+        WindowBounds workArea) =>
+        observed.Width >= requested.Width
+        && observed.Height >= requested.Height
+        && (observed.Width > requested.Width || observed.Height > requested.Height)
+        && observed.Width <= workArea.Width
+        && observed.Height <= workArea.Height
+        && observed.Y == requested.Y
+        && (observed.X == requested.X
+            || observed.X + observed.Width == requested.X + requested.Width);
+
     public async ValueTask<WindowCloseResult> CloseAsync(
         string windowId,
         CancellationToken cancellationToken)
@@ -283,9 +793,10 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 false, false, null, WindowControlErrorCodes.InvalidOrExpiredWindowId);
         }
 
+        string? title;
         try
         {
-            _ = _platform.Observe(identity!);
+            title = _platform.Observe(identity!).Title;
         }
         catch (WindowIdentityChangedException)
         {
@@ -297,6 +808,10 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             return new WindowCloseResult(false, false, null, WindowControlErrorCodes.InventoryFailed);
         }
 
+        // v3 r22 uso real: the dialogs the window already owned before the close; a new one after it is the
+        // application asking something of its own (whether to save), which BAXY never answers.
+        IReadOnlySet<nint> dialogsBefore = OwnedDialogs(identity!);
+
         bool primaryAccepted;
         try
         {
@@ -305,7 +820,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
         catch (WindowIdentityChangedException)
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null);
+            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
@@ -320,7 +835,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                     cancellationToken)
                 .ConfigureAwait(false))
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null);
+            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
+        }
+
+        if (primaryAccepted && AskedOnClose(identity!, dialogsBefore))
+        {
+            return Prompted(identity!);
         }
 
         // Some system-hosted and UIAccess windows deliberately ignore or reject
@@ -336,7 +856,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
         catch (WindowIdentityChangedException)
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null);
+            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
@@ -350,7 +870,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                     cancellationToken)
                 .ConfigureAwait(false))
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null);
+            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
+        }
+
+        if (fallbackAccepted && AskedOnClose(identity!, dialogsBefore))
+        {
+            return Prompted(identity!);
         }
 
         return new WindowCloseResult(
@@ -360,6 +885,36 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             primaryAccepted || fallbackAccepted
                 ? WindowControlErrorCodes.VerificationFailed
                 : WindowControlErrorCodes.ActionFailed);
+    }
+
+    private static WindowCloseResult Prompted(WindowIdentity identity) =>
+        new(false, true, identity.ProcessId, WindowControlErrorCodes.ClosePrompted, ClosePrompted: true);
+
+    private HashSet<nint> OwnedDialogs(WindowIdentity identity)
+    {
+        try
+        {
+            return _platform.OwnedDialogs(identity).ToHashSet();
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return new HashSet<nint>();
+        }
+    }
+
+    // The window is still there (the close was not verified) and now owns a visible dialog it did not own before.
+    private bool AskedOnClose(WindowIdentity identity, IReadOnlySet<nint> before)
+    {
+        try
+        {
+            _ = _platform.Observe(identity);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return false;
+        }
+
+        return OwnedDialogs(identity).Any(dialog => !before.Contains(dialog));
     }
 
     private async ValueTask<bool> WaitForClosedAsync(
@@ -434,6 +989,65 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
     }
 
+    /// <summary>
+    /// v3 r6 lectores (t2-r4 c04-5 «cierra configuración» pidió confirmación): whether the window an id names holds no
+    /// document of the person, read without consuming the id. Its application is the catalog identity it was resolved
+    /// from or its executable, looked up in <see cref="DocumentlessApplications"/>; an unknown, expired or malformed id
+    /// holds one (fail-closed).
+    /// v3 r22 uso real (t3-c18 «ya ciérrala» sobre la Calculadora que BAXY abrió y sólo clicó; t4-c03 «ya cierra
+    /// discord»): a window of an application whose content lives in the person's account (data «accountBacked»), or
+    /// a window of a process a verified app.open of BAXY launched in this session and BAXY never wrote into
+    /// (<see cref="LaunchProvenance"/>), holds nothing of the person either. An identity listed as never closing
+    /// without asking (data «neverWithoutAsking») always holds one.
+    /// </summary>
+    public bool HoldsNoDocument(string windowId)
+    {
+        if (string.IsNullOrEmpty(windowId) || windowId.Length != 36
+            || !windowId.StartsWith("win_", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        WindowIdentity? identity;
+        lock (_gate)
+        {
+            RemoveExpired();
+            if (!_handles.TryGetValue(windowId, out identity))
+            {
+                return false;
+            }
+        }
+
+        if (DocumentlessApplications.NeverWithoutAsking(identity.AppUserModelId, identity.ExecutablePath))
+        {
+            return false;
+        }
+
+        // v3 r22 revisión (la persona en plena reunión pide cerrar la app): an application capturing the microphone
+        // is in a call or a recording; closing its window may leave it, and opening the application again does not
+        // bring it back.
+        if (CapturesMicrophone(identity))
+        {
+            return false;
+        }
+
+        return DocumentlessApplications.Contains(identity.AppUserModelId, identity.ExecutablePath)
+            || _provenance.LaunchedAndUnwritten(
+                identity.Handle, identity.ProcessId, identity.ProcessCreationTimeUtcTicks);
+    }
+
+    private bool CapturesMicrophone(WindowIdentity identity)
+    {
+        try
+        {
+            return _platform.CapturesMicrophone(identity);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return true;
+        }
+    }
+
     private void Revoke(string id)
     {
         lock (_gate)
@@ -454,7 +1068,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
     }
 
-    private static string? NormalizeProcessName(string value)
+    private static string? NormalizeProcessName(string? value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > 260
             || value.IndexOfAny(['\\', '/', ':', '\0']) >= 0)
@@ -471,10 +1085,37 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return normalized.Length == 0 ? null : normalized;
     }
 
+    // Ronda 22 (revisión 1): a resolve publishes where each window stands (z rank, topmost, its monitor's work
+    // area) so the person's frame is chosen from the desktop itself, never from the order a read listed it in.
+    private WindowCandidate WithStanding(WindowCandidate candidate, WindowIdentity identity)
+    {
+        WindowStanding? standing;
+        try
+        {
+            standing = _platform.Standing(identity);
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException
+            or NotSupportedException)
+        {
+            standing = null;
+        }
+
+        return standing is null
+            ? candidate
+            : candidate with
+            {
+                ZOrder = standing.WindowsAbove,
+                Topmost = standing.Topmost,
+                WorkAreaWidth = standing.WorkArea?.Width,
+                WorkAreaHeight = standing.WorkArea?.Height,
+            };
+    }
+
     private static WindowCandidate ToCandidate(WindowSnapshot snapshot, string id) =>
         new(id, snapshot.Identity.ProcessId, snapshot.Identity.ProcessName,
             snapshot.State, snapshot.Foreground, snapshot.Bounds.X, snapshot.Bounds.Y,
-            snapshot.Bounds.Width, snapshot.Bounds.Height);
+            snapshot.Bounds.Width, snapshot.Bounds.Height, snapshot.Title, snapshot.Owned);
 }
 
 internal sealed class WindowsWindowControlVerifier(IWindowControlPlatform platform)
@@ -518,6 +1159,7 @@ internal sealed class WindowsWindowControlVerifier(IWindowControlPlatform platfo
             && string.Equals(candidate.ProcessName, observed.Identity.ProcessName,
                 StringComparison.OrdinalIgnoreCase)
             && string.Equals(candidate.State, observed.State, StringComparison.Ordinal)
+            && string.Equals(candidate.Title, observed.Title, StringComparison.Ordinal)
             && candidate.Foreground == observed.Foreground
             && candidate.X == observed.Bounds.X
             && candidate.Y == observed.Bounds.Y
@@ -544,7 +1186,9 @@ internal sealed record WindowIdentity(
     int ProcessId,
     long ProcessCreationTimeUtcTicks,
     string ProcessName,
-    DateTimeOffset IssuedAtUtc);
+    DateTimeOffset IssuedAtUtc,
+    string? ExecutablePath = null,
+    string? AppUserModelId = null);
 
 internal sealed record WindowBounds(int X, int Y, int Width, int Height);
 
@@ -552,19 +1196,46 @@ internal sealed record WindowSnapshot(
     WindowIdentity Identity,
     string State,
     bool Foreground,
-    WindowBounds Bounds);
+    WindowBounds Bounds,
+    string? Title = null,
+    bool Owned = false);
+
+// Ronda 22 (revisión 1): the top-level windows above this one in the desktop's z-order, WS_EX_TOPMOST, and the work
+// area of the monitor that shows it.
+internal sealed record WindowStanding(int WindowsAbove, bool Topmost, WindowBounds? WorkArea);
+
+internal sealed record WindowEnumeration(
+    IReadOnlyList<WindowSnapshot> Windows,
+    int ObservedCount,
+    bool Complete);
 
 internal interface IWindowControlPlatform
 {
     DateTimeOffset UtcNow { get; }
     WindowSnapshot? FindForegroundWindow();
-    IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit);
+    WindowEnumeration FindVisibleWindows(string processName, int limit,
+        bool byTitle = false, int offset = 0, bool allWindows = false,
+        CancellationToken cancellationToken = default);
     WindowSnapshot Observe(WindowIdentity identity);
+    // MINALL1687: the windows a person sees on the desktop (visible, not cloaked,
+    // not a tool window, root owner, titled), excluding the shell and this process.
+    IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
+    // M149: the same desktop windows, only those below `front` in the z-order, nearest first.
+    IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
+    // ARRANGE1781: the work area (desktop minus taskbar) of the monitor
+    // that shows the window; null when the platform cannot tell.
+    WindowBounds? WorkArea(WindowIdentity identity) => null;
+    // Ronda 22 (revisión 1): where the window stands on the desktop; null when the platform cannot tell.
+    WindowStanding? Standing(WindowIdentity identity) => null;
     bool RequestClose(WindowIdentity identity);
     bool RequestSystemClose(WindowIdentity identity);
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
+    // v3 r22 uso real: the visible top-level windows of the same process that the window owns (its dialogs).
+    IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity) => [];
+    // v3 r22 revisión: whether the window's application is capturing the microphone now (MicrophoneInUse).
+    bool CapturesMicrophone(WindowIdentity identity) => false;
 }
 
 internal sealed class WindowIdentityChangedException : InvalidOperationException;
@@ -574,7 +1245,6 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     private const uint CloseMessage = 0x0010;
     private const uint SystemCommandMessage = 0x0112;
     private const int SystemCloseCommand = 0xF060;
-    private const int ShowNormal = 1;
     private const int ShowMinimized = 6;
     private const int ShowMaximized = 3;
     private const int Restore = 9;
@@ -606,53 +1276,59 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return Observe(identity);
     }
 
-    public IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit)
+    public WindowEnumeration FindVisibleWindows(string processName, int limit,
+        bool byTitle = false, int offset = 0, bool allWindows = false,
+        CancellationToken cancellationToken = default)
     {
-        var result = new List<WindowSnapshot>();
-        Process[] processes = Process.GetProcessesByName(processName);
-        try
+        var result = new List<WindowSnapshot>(limit);
+        int observedCount = 0;
+        bool complete = true;
+        string selector = InstalledApplicationResolver.Normalize(processName);
+        EnumWindowsProc callback = (handle, _) =>
         {
-            foreach (Process process in processes.OrderBy(static item => item.Id))
+            if (cancellationToken.IsCancellationRequested)
+                return false;
+            if (!IsWindowVisible(handle))
+                return true;
+            GetWindowThreadProcessId(handle, out uint owner);
+            if (owner == 0 || owner > int.MaxValue)
             {
-                if (result.Count >= limit)
-                {
-                    break;
-                }
-
-                try
-                {
-                    process.Refresh();
-                    nint handle = process.MainWindowHandle;
-                    if (handle == 0 || !IsWindowVisible(handle))
-                    {
-                        continue;
-                    }
-
-                    var identity = new WindowIdentity(
-                        handle,
-                        process.Id,
-                        process.StartTime.ToUniversalTime().Ticks,
-                        process.ProcessName,
-                        UtcNow);
-                    result.Add(Observe(identity));
-                }
-                catch (Exception exception) when (exception is Win32Exception
-                    or InvalidOperationException
-                    or NotSupportedException)
-                {
-                    // A candidate can disappear while the bounded inventory is read.
-                }
+                complete = false;
+                return true;
             }
-        }
-        finally
-        {
-            foreach (Process process in processes)
+            try
             {
-                process.Dispose();
+                using Process process = Process.GetProcessById(checked((int)owner));
+                string title = ReadWindowTitle(handle);
+                bool matches = allWindows || (byTitle
+                    ? string.Equals(title.Trim(), processName, StringComparison.OrdinalIgnoreCase)
+                        || selector.Length > 0 && WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
+                            InstalledApplicationResolver.Normalize(title), selector)
+                    : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
+                if (!matches)
+                    return true;
+                var identity = new WindowIdentity(handle, process.Id,
+                    process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
+                WindowSnapshot snapshot = Observe(identity);
+                if (observedCount >= offset && result.Count < limit)
+                    result.Add(snapshot);
+                observedCount++;
             }
-        }
-
-        return result;
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or NotSupportedException or ArgumentException)
+            {
+                // A window or its owner can disappear during enumeration.
+                complete = false;
+            }
+            // Count the rest without retaining another page or issuing handles.
+            return true;
+        };
+        bool enumerated = EnumWindows(callback, nint.Zero);
+        int error = Marshal.GetLastPInvokeError();
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!enumerated)
+            throw new Win32Exception(error);
+        return new WindowEnumeration(result, observedCount, complete);
     }
 
     public WindowSnapshot Observe(WindowIdentity identity)
@@ -671,7 +1347,10 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         using Process process = Process.GetProcessById(identity.ProcessId);
         if (process.StartTime.ToUniversalTime().Ticks != identity.ProcessCreationTimeUtcTicks
             || !string.Equals(process.ProcessName, identity.ProcessName,
-                StringComparison.OrdinalIgnoreCase))
+                StringComparison.OrdinalIgnoreCase)
+            || (identity.ExecutablePath is not null
+                && !string.Equals(process.MainModule?.FileName, identity.ExecutablePath,
+                    StringComparison.OrdinalIgnoreCase)))
         {
             throw new WindowIdentityChangedException();
         }
@@ -691,22 +1370,96 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
                 rectangle.Left,
                 rectangle.Top,
                 checked(rectangle.Right - rectangle.Left),
-                checked(rectangle.Bottom - rectangle.Top)));
+                checked(rectangle.Bottom - rectangle.Top)),
+            ReadWindowTitle(identity.Handle),
+            Owned: GetWindow(identity.Handle, OwnerWindow) != 0);
     }
 
     public bool Execute(WindowIdentity identity, WindowControlAction action)
     {
-        _ = Observe(identity);
+        WindowSnapshot snapshot = Observe(identity);
         return action switch
         {
-            WindowControlAction.Focus => ShowWindowAsync(identity.Handle, ShowNormal)
-                && SetForegroundWindow(identity.Handle),
+            WindowControlAction.Focus => ExecuteFocus(snapshot, ShowWindowAsync, SetForegroundWindow),
             WindowControlAction.Minimize => ShowWindowAsync(identity.Handle, ShowMinimized),
             WindowControlAction.Maximize => ShowWindowAsync(identity.Handle, ShowMaximized),
             WindowControlAction.Restore => ShowWindowAsync(identity.Handle, Restore),
             _ => false,
         };
     }
+
+    public IReadOnlyList<WindowSnapshot> DesktopWindows() => EnumerateDesktopWindows(below: 0);
+
+    // M149: EnumWindows walks the top-level windows in z-order, top first; collection starts right after
+    // `front`. A front window that is gone meanwhile yields nothing rather than a guess.
+    public IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) =>
+        front.Handle == 0 ? [] : EnumerateDesktopWindows(front.Handle);
+
+    private List<WindowSnapshot> EnumerateDesktopWindows(nint below)
+    {
+        // MINALL1687: what the taskbar would show as windows. The shell's own
+        // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
+        // popups and untitled windows are not windows a person minimizes; the
+        // product's own window is left alone.
+        var found = new List<WindowSnapshot>();
+        int self = Environment.ProcessId;
+        bool collecting = below == 0;
+        EnumWindowsProc callback = (handle, _) =>
+        {
+            if (!collecting)
+            {
+                collecting = handle == below;
+                return true;
+            }
+            if (!IsWindowVisible(handle) || GetAncestor(handle, GetRootOwner) != handle)
+                return true;
+            long exStyle = GetWindowLongPtr(handle, ExtendedStyleIndex).ToInt64();
+            if ((exStyle & ToolWindowStyle) != 0)
+                return true;
+            if (DwmGetWindowAttribute(handle, CloakedAttribute, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
+                return true;
+            string className = ReadClassName(handle);
+            if (className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
+                return true;
+            GetWindowThreadProcessId(handle, out uint owner);
+            if (owner == 0 || owner > int.MaxValue || (int)owner == self)
+                return true;
+            try
+            {
+                using Process process = Process.GetProcessById(checked((int)owner));
+                string title = ReadWindowTitle(handle);
+                if (string.IsNullOrWhiteSpace(title))
+                    return true;
+                var identity = new WindowIdentity(handle, process.Id,
+                    process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
+                found.Add(Observe(identity));
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or NotSupportedException or ArgumentException)
+            {
+                // A window or its owner can disappear during enumeration.
+            }
+            return true;
+        };
+        if (!EnumWindows(callback, nint.Zero))
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+        return found;
+    }
+
+    private static unsafe string ReadClassName(nint window)
+    {
+        const int capacity = 256;
+        char* buffer = stackalloc char[capacity];
+        int length = GetClassName(window, buffer, capacity);
+        return length <= 0 ? string.Empty : new string(buffer, 0, length);
+    }
+
+    internal static bool ExecuteFocus(
+        WindowSnapshot snapshot,
+        Func<nint, int, bool> showWindowAsync,
+        Func<nint, bool> setForegroundWindow) =>
+        (snapshot.State != "minimized" || showWindowAsync(snapshot.Identity.Handle, Restore))
+        && setForegroundWindow(snapshot.Identity.Handle);
 
     public bool RequestClose(WindowIdentity identity)
     {
@@ -720,8 +1473,71 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return PostMessage(identity.Handle, SystemCommandMessage, SystemCloseCommand, 0);
     }
 
+    public bool CapturesMicrophone(WindowIdentity identity) => MicrophoneInUse.Capturing(identity);
+
+    public IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity)
+    {
+        var dialogs = new List<nint>();
+        EnumWindowsProc callback = (handle, _) =>
+        {
+            if (handle != identity.Handle && IsWindowVisible(handle)
+                && GetWindow(handle, OwnerWindow) == identity.Handle)
+            {
+                GetWindowThreadProcessId(handle, out uint owner);
+                if (owner == unchecked((uint)identity.ProcessId))
+                {
+                    dialogs.Add(handle);
+                }
+            }
+
+            return true;
+        };
+        if (!EnumWindows(callback, nint.Zero))
+        {
+            throw new InvalidOperationException("The owned windows could not be enumerated.");
+        }
+
+        GC.KeepAlive(callback);
+        return dialogs;
+    }
+
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>
         new(Task.Delay(delay, cancellationToken));
+
+    public WindowStanding? Standing(WindowIdentity identity)
+    {
+        _ = Observe(identity);
+        long exStyle = GetWindowLongPtr(identity.Handle, ExtendedStyleIndex).ToInt64();
+        int above = 0;
+        nint previous = identity.Handle;
+        // GW_HWNDPREV walks up the top-level windows; the bound only guards against a list that changes under it.
+        while ((previous = GetWindow(previous, PreviousWindow)) != 0)
+        {
+            if (++above > MaximumWindowsAbove)
+                return null;
+        }
+        return new WindowStanding(above, (exStyle & TopmostStyle) != 0, WorkArea(identity));
+    }
+
+    public WindowBounds? WorkArea(WindowIdentity identity)
+    {
+        _ = Observe(identity);
+        nint monitor = MonitorFromWindow(identity.Handle, MonitorDefaultToNearest);
+        if (monitor == nint.Zero)
+        {
+            return null;
+        }
+        var info = new NativeMonitorInfo { Size = (uint)Marshal.SizeOf<NativeMonitorInfo>() };
+        if (!GetMonitorInfo(monitor, ref info))
+        {
+            return null;
+        }
+        return new WindowBounds(
+            info.Work.Left,
+            info.Work.Top,
+            info.Work.Right - info.Work.Left,
+            info.Work.Bottom - info.Work.Top);
+    }
 
     public bool SetBounds(WindowIdentity identity, WindowBounds bounds)
     {
@@ -734,6 +1550,24 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             bounds.Height,
             repaint: true);
     }
+
+    private static unsafe string ReadWindowTitle(nint handle)
+    {
+        const int capacity = 1024;
+        char* buffer = stackalloc char[capacity];
+        int length = GetWindowText(handle, buffer, capacity);
+        return length > 0 ? new string(buffer, 0, length) : string.Empty;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
+    private static unsafe partial int GetWindowText(nint window, char* text, int capacity);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct NativeRect
@@ -791,4 +1625,47 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool PostMessage(nint windowHandle, uint message, nint wParam, nint lParam);
+
+    private const uint GetRootOwner = 3;
+    private const int ExtendedStyleIndex = -20;
+    private const long ToolWindowStyle = 0x00000080;
+    private const uint CloakedAttribute = 14;
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetAncestor(nint windowHandle, uint flags);
+
+    private const uint OwnerWindow = 4;
+    private const uint PreviousWindow = 3;
+    private const long TopmostStyle = 0x00000008;
+    private const int MaximumWindowsAbove = 65536;
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetWindow(nint windowHandle, uint command);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial nint GetWindowLongPtr(nint windowHandle, int index);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetClassNameW")]
+    private static unsafe partial int GetClassName(nint windowHandle, char* className, int capacity);
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmGetWindowAttribute(nint windowHandle, uint attribute, out int value, int size);
+
+    private const uint MonitorDefaultToNearest = 2;
+
+    [LibraryImport("user32.dll")]
+    private static partial nint MonitorFromWindow(nint windowHandle, uint flags);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetMonitorInfo(nint monitor, ref NativeMonitorInfo info);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeMonitorInfo
+    {
+        public uint Size;
+        public NativeRect Monitor;
+        public NativeRect Work;
+        public uint Flags;
+    }
 }

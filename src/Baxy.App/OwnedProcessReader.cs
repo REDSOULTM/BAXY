@@ -266,6 +266,8 @@ internal sealed class OwnedProcessReader : IPresenceProcessReader
         return parents;
     }
 
+    private const int NvidiaQueryBudget = 2_000;
+
     internal static IReadOnlyDictionary<int, long> ReadNvidiaComputeApps()
     {
         var result = new Dictionary<int, long>();
@@ -292,8 +294,13 @@ internal sealed class OwnedProcessReader : IPresenceProcessReader
                 return result;
             }
 
-            string output = process.StandardOutput.ReadToEnd();
-            if (!process.WaitForExit(2_000))
+            // The deadline holds for real: the output is read beside the wait,
+            // so a tool that never closes its output is killed at 2 s instead
+            // of holding the reader (r19b estab2 #3).
+            Task<string> pending = process.StandardOutput.ReadToEndAsync();
+            _ = process.StandardError.ReadToEndAsync();
+            if (!process.WaitForExit(NvidiaQueryBudget)
+                || !pending.Wait(NvidiaQueryBudget))
             {
                 try
                 {
@@ -306,6 +313,7 @@ internal sealed class OwnedProcessReader : IPresenceProcessReader
                 return result;
             }
 
+            string output = pending.Result;
             foreach (string raw in output.Split(
                 ['\r', '\n'],
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
@@ -332,7 +340,8 @@ internal sealed class OwnedProcessReader : IPresenceProcessReader
         catch (Exception exception) when (
             exception is System.ComponentModel.Win32Exception
                 or InvalidOperationException
-                or IOException)
+                or IOException
+                or AggregateException)
         {
             return result;
         }

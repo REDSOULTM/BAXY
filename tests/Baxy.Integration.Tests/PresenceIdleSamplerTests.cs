@@ -119,13 +119,17 @@ public sealed class PresenceIdleSamplerTests
                 [Sample(7, "Baxy", 12_000_000, 40, 2.0, 0)],
             ]);
             var host = new PresenceHost(
-                new WindowsAutostartRegistration(run, () => exe),
+                new WindowsAutostartRegistration(
+                    run,
+                    () => exe,
+                    installationRoot: root,
+                    configuredDataRoot: static () => null),
                 new PresenceStatusStore(Path.Combine(root, "presence")),
                 new PresenceIdleSampler(reader),
                 registerNativeTray: false);
 
             host.Start([]);
-            PresenceIdleSnapshot sample = host.CaptureIdleSample();
+            PresenceIdleSnapshot? sample = host.CaptureIdleSampleAsync().GetAwaiter().GetResult();
 
             Assert.That(File.Exists(host.StatusPath), Is.True);
             string status = File.ReadAllText(host.StatusPath);
@@ -133,7 +137,7 @@ public sealed class PresenceIdleSamplerTests
             Assert.That(status, Does.Contain("autostart_registered"));
             Assert.That(host.AutostartCommand, Does.Contain(exe));
             Assert.That(run.Read(PresenceLimits.AutostartValueName), Is.EqualTo(host.AutostartCommand));
-            Assert.That(sample.Processes[0].Name, Is.EqualTo("Baxy"));
+            Assert.That(sample!.Processes[0].Name, Is.EqualTo("Baxy"));
             Assert.That(File.Exists(Path.Combine(root, "presence", "idle-samples.v1.jsonl")), Is.True);
             host.Dispose();
         }

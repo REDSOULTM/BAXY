@@ -6,6 +6,7 @@ using Baxy.App;
 using Baxy.Contracts;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
+using Baxy.Providers.Windows.Memory;
 using Baxy.Security.Windows;
 using NUnit.Framework;
 
@@ -18,38 +19,41 @@ public sealed class MemoryAppFlowTests
     private const string Canary = "BAXY-MEMORY-APP-private-Alex";
     private const string Timestamp = "2026-07-15T15:00:00.0000000+00:00";
 
+    // MEMORY1249 (8317b26ff, tras MEMORY1247): las banderas falsas (replayed/corrected/sensitive) no son
+    // hechos y el compositor las verbalizaba («no se realizaron correcciones ni acciones de replay»); la
+    // proyección sólo emite las verdaderas. Sólo se esperan aquí las que son true.
     [TestCase(
         "memory.enable",
         "{\"version\":1,\"enabled\":true,\"replayed\":false}",
-        "habilitada")]
+        "{\"enabled\":true}")]
     [TestCase(
         "memory.disable",
         "{\"version\":1,\"enabled\":false,\"replayed\":true}",
-        "deshabilitada")]
+        "{\"enabled\":false,\"replayed\":true}")]
     [TestCase(
         "memory.save",
         "{\"version\":1,\"recordId\":\"52dc83f9-cee9-49e6-bd99-20c9b1c67dda\",\"revision\":1,\"selector\":\"favorite_color\",\"replayed\":false}",
-        "Guardé")]
+        "{\"saved\":true}")]
     [TestCase(
         "memory.correct",
         "{\"version\":1,\"recordId\":\"52dc83f9-cee9-49e6-bd99-20c9b1c67dda\",\"revision\":2,\"selector\":\"favorite_color\",\"replayed\":false}",
-        "Corregí")]
+        "{\"saved\":true,\"corrected\":true}")]
     [TestCase(
         "memory.forget",
         "{\"version\":1,\"deletedCount\":2,\"replayed\":false}",
-        "2 memorias")]
+        "{\"deletedCount\":2}")]
     [TestCase(
         "memory.status",
         "{\"version\":1,\"enabled\":true,\"totalRecords\":3,\"persistentRecords\":1,\"sessionRecords\":1,\"temporaryRecords\":1,\"maximumRecords\":512}",
-        "3 en total")]
+        "{\"enabled\":true,\"totalRecords\":3,\"persistentRecords\":1,\"sessionRecords\":1,\"temporaryRecords\":1,\"maximumRecords\":512}")]
     [TestCase(
         "memory.export",
         "{\"version\":1,\"path\":\"C:\\\\Users\\\\local\\\\Documents\\\\BAXY\\\\memory-export-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.json\",\"recordCount\":3,\"sha256\":\"abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789\",\"replayed\":false}",
-        "Documentos/BAXY")]
+        "{\"destination\":\"Documents/BAXY\",\"recordCount\":3,\"integrityVerified\":true,\"mayRedirectOrSync\":true}")]
     public void StrictProjectionAcceptsOnlyKnownCompletedShapes(
         string operation,
         string json,
-        string expectedNaturalText)
+        string expectedObservations)
     {
         bool accepted = MemoryOperationResponseProjection.TryCreateCompleted(
             operation,
@@ -59,20 +63,138 @@ public sealed class MemoryAppFlowTests
             projection?.Message ?? "proyección ausente",
             UserMessageEvent.Status);
 
+        Assert.That(accepted, Is.True);
+        Assert.That(projection, Is.Not.Null);
+        Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True);
+        JsonElement facts = Parse(projection.Message);
+        JsonElement observed = facts.GetProperty("observed");
         Assert.Multiple(() =>
         {
-            Assert.That(accepted, Is.True);
-            Assert.That(projection, Is.Not.Null);
-            Assert.That(projection!.Message, Does.Contain(expectedNaturalText));
-            Assert.That(projection.Message, Does.Not.StartWith("{"));
+            Assert.That(facts.GetProperty("operation").GetString(), Is.EqualTo(operation));
+            Assert.That(facts.GetProperty("verified").GetBoolean(), Is.True);
+            Assert.That(facts.GetProperty("succeeded").GetBoolean(), Is.True);
+            foreach (JsonProperty expected in Parse(expectedObservations).EnumerateObject())
+            {
+                Assert.That(JsonElement.DeepEquals(observed.GetProperty(expected.Name), expected.Value), Is.True,
+                    expected.Name);
+            }
+            foreach (string flag in new[] { "replayed", "corrected", "sensitive" })
+            {
+                Assert.That(
+                    observed.TryGetProperty(flag, out JsonElement value) && !value.GetBoolean(),
+                    Is.False,
+                    $"{flag}=false no es un hecho (MEMORY1249)");
+            }
             Assert.That(projection.Message, Does.Not.Contain("52dc83f9-cee9-49e6-bd99-20c9b1c67dda"));
             Assert.That(projection.Message, Does.Not.Contain("favorite_color"));
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
                     projection.Message,
                     draft),
-                Is.Null);
+                Is.EqualTo("structured_facts_not_prose"));
         });
+    }
+
+    [Test]
+    public void RecalledValuesAndRedactionAreObservationsForTheComposer()
+    {
+        JsonElement payload = ToElement(RecordsPayload(
+            [Record("name", "Lina", "personal", "persistent"),
+             Record("token", Canary, "secret", "persistent")], 2, 0, 20));
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.recall", payload,
+            out MemoryOperationResponseProjection? projection), Is.True);
+        JsonElement observed = Parse(projection!.Message).GetProperty("observed");
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("shown").GetInt32(), Is.EqualTo(2));
+            Assert.That(observed.GetProperty("total").GetInt32(), Is.EqualTo(2));
+            Assert.That(observed.GetProperty("records")[0].GetProperty("value").GetString(), Is.EqualTo("Lina"));
+            Assert.That(observed.GetProperty("records")[1].GetProperty("value").GetString(), Is.EqualTo("[REDACTED]"));
+            Assert.That(projection.Message, Does.Not.Contain(Canary));
+        });
+    }
+
+    [TestCase("memory.recall", "name", "Priya", "The stored name is Priya.")]
+    [TestCase("memory.recall", "color", "turquesa", "El color guardado es turquesa.")]
+    [TestCase("memory.list", "name", "Renata", "El nombre guardado es Renata.")]
+    [TestCase("memory.list", "color", "indigo", "The stored color is indigo.")]
+    public void SingleRecalledValueCrossesTheComposerLiteralContract(
+        string operation, string label, string value, string correctReply)
+    {
+        JsonElement payload = ToElement(RecordsPayload(
+            [Record(label, value, "personal", "persistent")], 1, 0, 20));
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted(operation, payload,
+            out MemoryOperationResponseProjection? projection), Is.True);
+        UserMessageDraft draft = UserMessagePolicy.Create(projection!.Message, UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(draft.Source), Is.EqualTo(new[] { value }));
+            Assert.That(facts["requiredFacts"]?.AsArray().Select(item => item!.GetValue<string>()),
+                Is.EqualTo(new[] { value }));
+            Assert.That(UserMessagePolicy.ModelResponseRejectionReason("No stored information.", draft),
+                Is.EqualTo("missing_literal_fact"));
+            Assert.That(UserMessagePolicy.ModelResponseRejectionReason(correctReply, draft), Is.Null);
+        });
+    }
+
+    [TestCase("empty")]
+    [TestCase("multiple")]
+    [TestCase("long")]
+    [TestCase("secret")]
+    [TestCase("unverified")]
+    public void MemoryLiteralContractDoesNotForceUnboundedOrProtectedRecords(string condition)
+    {
+        JsonObject[] records = condition switch
+        {
+            "empty" => [],
+            "multiple" => [Record("first", "Lina", "personal", "persistent"),
+                           Record("second", "Priya", "personal", "persistent")],
+            "long" => [Record("note", new string('a', 257), "personal", "persistent")],
+            "secret" => [Record("token", Canary, "secret", "persistent")],
+            _ => [Record("name", "Lina", "personal", "persistent")],
+        };
+        JsonElement payload = ToElement(RecordsPayload(records, records.Length, 0, 20));
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.recall", payload,
+            out MemoryOperationResponseProjection? projection), Is.True);
+        JsonObject source = JsonNode.Parse(projection!.Message)!.AsObject();
+        if (condition == "unverified")
+        {
+            source["verified"] = false;
+        }
+        UserMessageDraft draft = UserMessagePolicy.Create(source.ToJsonString(), UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(draft.Source), Is.Empty);
+            Assert.That(facts.ContainsKey("requiredFacts"), Is.False);
+            Assert.That(facts.ToJsonString(), Does.Not.Contain(Canary));
+        });
+    }
+
+    [Test]
+    public void PrivateConfirmationAndRecoveryNameThePreparedActionWithoutPrivateArguments()
+    {
+        using TemporaryDirectory temporary = new();
+        MemoryOperationProtector protector = CreateProtector(temporary, Guid.NewGuid().ToString("D"));
+        PreparedOperation prepared = protector.Prepare(SaveRoute(Canary, "persistent", "secret")).Prepared;
+        foreach (string prompt in new[] {
+            PrivateOperationNarration.CreateMemoryConfirmationPrompt(prepared),
+            PrivateOperationNarration.CreateMemoryConfirmationPrompt(prepared, reconciliationRequired: true),
+            PrivateOperationNarration.CreateMemoryRecoveryPrompt(prepared) })
+        {
+            JsonElement action = Parse(prompt).GetProperty("pendingAction");
+            Assert.Multiple(() =>
+            {
+                Assert.That(action.GetProperty("operation").GetString(), Is.EqualTo("memory.sensitive.save"));
+                Assert.That(action.GetProperty("target").GetString(), Is.EqualTo("private local memory"));
+                Assert.That(action.TryGetProperty("arguments", out _), Is.False);
+                Assert.That(prompt, Does.Not.Contain(Canary));
+                Assert.That(prompt, Does.Not.Contain(prepared.InvocationId));
+                Assert.That(prompt, Does.Not.Contain(prepared.MissionId));
+            });
+        }
     }
 
     [TestCase(OperationStatuses.Pending)]
@@ -165,8 +287,11 @@ public sealed class MemoryAppFlowTests
         Assert.Multiple(() =>
         {
             Assert.That(accepted, Is.True);
-            Assert.That(projection!.Message, Does.Contain("Documentos/BAXY"));
-            Assert.That(projection.Message, Does.Contain("redirigida o sincronizada"));
+            JsonElement observed = Parse(projection!.Message).GetProperty("observed");
+            Assert.That(observed.GetProperty("destination").GetString(), Is.EqualTo("Documents/BAXY"));
+            Assert.That(observed.GetProperty("mayRedirectOrSync").GetBoolean(), Is.True);
+            // replayed=false no se emite (MEMORY1249).
+            Assert.That(observed.TryGetProperty("replayed", out _), Is.False);
             Assert.That(projection.Message, Does.Not.Contain("local"));
             Assert.That(projection.Message, Does.Not.Contain(path));
             Assert.That(projection.Message, Does.Not.Contain(digest));
@@ -197,8 +322,10 @@ public sealed class MemoryAppFlowTests
         Assert.Multiple(() =>
         {
             Assert.That(accepted, Is.True);
-            Assert.That(projection!.Message, Does.Contain("ya estaba disponible"));
-            Assert.That(projection.Message, Does.Contain("integridad SHA-256 fue verificada"));
+            JsonElement observed = Parse(projection!.Message).GetProperty("observed");
+            Assert.That(observed.GetProperty("replayed").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("integrityVerified").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("integrityAlgorithm").GetString(), Is.EqualTo("SHA-256"));
             Assert.That(projection.Message, Does.Not.Contain(digest));
         });
     }
@@ -477,6 +604,190 @@ public sealed class MemoryAppFlowTests
         });
     }
 
+    // D3 (DECISIONES_DUENO_2026-09-20.md): enabling the private memory is not
+    // destructive, so a requested save with the memory disabled enables it and
+    // saves at once; no «memory_disabled» failure and no question in between.
+    [Test]
+    public async Task MissingNameFlowEnablesMemoryAndSavesWithoutAsking()
+    {
+        using TemporaryDirectory temporary = new();
+        string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", temporary.Path);
+        try
+        {
+            await using var viewModel = new MainWindowViewModel();
+            await viewModel.InitializeAsync(CancellationToken.None);
+            Assert.That(viewModel.IsReady, Is.True);
+            await SubmitAsync(viewModel, "Recuerda mi nombre");
+            Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_save_needs_content"));
+            await SubmitAsync(viewModel, "me llamo Lina");
+            Assert.That(viewModel.Messages, Has.None.Matches<ConversationMessage>(
+                static message => !message.IsUser && message.Body.Contains("memory_disabled", StringComparison.Ordinal)));
+            Assert.That(viewModel.Messages, Has.None.Matches<ConversationMessage>(
+                static message => !message.IsUser && message.Body.Contains("\"kind\":\"confirmation\"", StringComparison.Ordinal)));
+            JsonElement saved = Parse(LastAssistantMessage(viewModel));
+            Assert.That(saved.GetProperty("operation").GetString(), Is.EqualTo("memory.save"));
+            Assert.That(saved.GetProperty("observed").GetProperty("saved").GetBoolean(), Is.True);
+            var store = new LocalMemoryStore(
+                Path.Combine(temporary.Path, "memory-store"),
+                new WindowsProtectedPayload(Path.Combine(
+                    temporary.Path, "security", "private-payload.v1.key")));
+            MemoryStatusResult status = store.Status(new MemoryStatusRequest(null));
+            Assert.Multiple(() =>
+            {
+                Assert.That(status.Enabled, Is.True);
+                Assert.That(status.TotalRecords, Is.EqualTo(1));
+            });
+            Assert.That(new DurableRetryStore(Path.Combine(
+                temporary.Path, "shell", "retry-outbox.v1.json")).Load(), Is.Empty);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_DATA_DIR", previousDataRoot);
+        }
+    }
+
+    [TestCase("cómo me llamo")]
+    [TestCase("What name have you saved in private memory?")]
+    [TestCase("¿Qué nombre tienes guardado en tu memoria privada?")]
+    public async Task ViewModelBindsRequestedNameAndRecallsItAfterANewSession(string recallRequest)
+    {
+        using TemporaryDirectory temporary = new();
+        string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", temporary.Path);
+        string outbox = Path.Combine(temporary.Path, "shell", "retry-outbox.v1.json");
+        string name = "Nimbo" + new string(Guid.NewGuid().ToString("N")
+            .Select(static character => (char)('a' + character % 26)).ToArray());
+        try
+        {
+            await using (var first = new MainWindowViewModel())
+            {
+                await first.InitializeAsync(CancellationToken.None);
+                Assert.That(first.IsReady, Is.True);
+                await SubmitAsync(first, "activa la memoria");
+                await SubmitAsync(first, "confirmar");
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                await SubmitAsync(first, "Recuerda mi nombre");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                    Assert.That(LastAssistantMessage(first), Does.Contain("memory_save_needs_content"));
+                    Assert.That(LastAssistantMessage(first), Does.Not.Contain(name));
+                });
+                await SubmitAsync(first, "me llamo " + name);
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(Parse(LastAssistantMessage(first)).GetProperty("observed")
+                    .GetProperty("saved").GetBoolean(), Is.True);
+            }
+
+            await using var second = new MainWindowViewModel();
+            await second.InitializeAsync(CancellationToken.None);
+            await SubmitAsync(second, recallRequest);
+            Assert.Multiple(() =>
+            {
+                Assert.That(second.IsReady, Is.True);
+                Assert.That(LastAssistantMessage(second), Does.Contain("memory_records"));
+                Assert.That(LastAssistantMessage(second), Does.Contain(name));
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_DATA_DIR", previousDataRoot);
+        }
+    }
+
+    // D3 (2026-09-20): the requested save enables the memory itself and resumes at
+    // once — one enable and one save, no challenge, the name never in the outbox.
+    [Test]
+    public async Task RequestedSaveEnablesMemoryAndResumesWithoutAChallenge()
+    {
+        using TemporaryDirectory temporary = new();
+        string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", temporary.Path);
+        string outbox = Path.Combine(temporary.Path, "shell", "retry-outbox.v1.json");
+        string name = "Nimbo" + new string(Guid.NewGuid().ToString("N")
+            .Select(static character => (char)('a' + character % 26)).ToArray());
+        try
+        {
+            await using (var first = new MainWindowViewModel())
+            {
+                await first.InitializeAsync(CancellationToken.None);
+                await SubmitAsync(first, "Recuerda mi nombre");
+                await SubmitAsync(first, "me llamo " + name);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                    Assert.That(first.Messages, Has.None.Matches<ConversationMessage>(
+                        static message => !message.IsUser
+                            && message.Body.Contains("\"kind\":\"confirmation\"", StringComparison.Ordinal)));
+                    Assert.That(Parse(LastAssistantMessage(first)).GetProperty("observed")
+                        .GetProperty("saved").GetBoolean(), Is.True);
+                    Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.True);
+                    Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.EqualTo(1));
+                });
+            }
+
+            JsonElement[] saveStarts = File.ReadLines(Path.Combine(temporary.Path, "journal", "missions.jsonl"))
+                .Select(static line => Parse(line).GetProperty("payload"))
+                .Where(static row => row.GetProperty("operation").GetString() == "memory.save"
+                    && row.GetProperty("phase").GetString() == "started")
+                .ToArray();
+            Assert.That(saveStarts, Has.Length.EqualTo(2));
+            Assert.That(saveStarts[0].GetProperty("invocationId").GetString(),
+                Is.Not.EqualTo(saveStarts[1].GetProperty("invocationId").GetString()));
+
+            await using var second = new MainWindowViewModel();
+            await second.InitializeAsync(CancellationToken.None);
+            await SubmitAsync(second, "cómo me llamo");
+            Assert.That(LastAssistantMessage(second), Does.Contain(name));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_DATA_DIR", previousDataRoot);
+        }
+    }
+
+    // D3 (2026-09-20): there is no enable offer to cancel; a later «cancelar» has
+    // nothing pending and the record stays.
+    [Test]
+    public async Task CancelAfterADirectEnableAndSaveChangesNothing()
+    {
+        using TemporaryDirectory temporary = new();
+        string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", temporary.Path);
+        string outbox = Path.Combine(temporary.Path, "shell", "retry-outbox.v1.json");
+        try
+        {
+            await using var viewModel = new MainWindowViewModel();
+            await viewModel.InitializeAsync(CancellationToken.None);
+            await SubmitAsync(viewModel, "remember my name");
+            await SubmitAsync(viewModel, "my name is Taylor");
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.True);
+                Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.EqualTo(1));
+            });
+            await SubmitAsync(viewModel, "cancelar");
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.True);
+                Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_DATA_DIR", previousDataRoot);
+        }
+    }
+
+    private static MemoryStatusResult ReadMemoryStatus(string dataRoot) => new LocalMemoryStore(
+        Path.Combine(dataRoot, "memory-store"),
+        new WindowsProtectedPayload(Path.Combine(dataRoot, "security", "private-payload.v1.key")))
+        .Status(new MemoryStatusRequest(null));
+
     [Test]
     public async Task ViewModelRunsProtectedMemoryConfirmationProjectionAndCancellationEndToEnd()
     {
@@ -496,35 +807,24 @@ public sealed class MemoryAppFlowTests
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
             });
 
+            // D3 (2026-09-20): enabling the memory is not destructive; it runs
+            // without a challenge and the outbox never holds it.
             await SubmitAsync(viewModel, "activa la memoria");
-            PreparedOperation enable = new DurableRetryStore(outbox).Load().Single();
-            Assert.Multiple(() =>
-            {
-                Assert.That(enable.OperationName, Is.EqualTo("memory.enable"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("confirmar"));
-            });
-
-            await SubmitAsync(viewModel, "sí y guarda");
-            PreparedOperation stillPending = new DurableRetryStore(outbox).Load().Single();
-            Assert.Multiple(() =>
-            {
-                Assert.That(stillPending.MissionId, Is.EqualTo(enable.MissionId));
-                Assert.That(stillPending.InvocationId, Is.EqualTo(enable.InvocationId));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_confirm_or_cancel"));
-            });
-
-            await SubmitAsync(viewModel, "confirmar");
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memoria local está habilitada"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("operation").GetString(),
+                    Is.EqualTo("memory.enable"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("observed")
+                    .GetProperty("enabled").GetBoolean(), Is.True);
             });
 
             await SubmitAsync(viewModel, "recuerda que mi color favorito es azul");
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("Guardé el dato"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("observed")
+                    .GetProperty("saved").GetBoolean(), Is.True);
             });
 
             await SubmitAsync(viewModel, "qué color me gusta");
@@ -535,12 +835,17 @@ public sealed class MemoryAppFlowTests
                 Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_records"));
             });
 
+            // D3 (2026-09-20): a sensitive save is not destructive either; it is
+            // stored at once and the secret never reaches a visible message.
             const string sensitiveRequest = "save my api key sk-12345 in your memory";
             await SubmitAsync(viewModel, sensitiveRequest);
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_sensitive_save"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("operation").GetString(),
+                    Is.EqualTo("memory.sensitive.save"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("observed")
+                    .GetProperty("sensitive").GetBoolean(), Is.True);
                 Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("sk-12345"));
                 Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain("sk-12345"));
                 Assert.That(
@@ -555,17 +860,13 @@ public sealed class MemoryAppFlowTests
                     Is.True);
             });
 
-            await SubmitAsync(viewModel, "cancelar");
-            Assert.Multiple(() =>
-            {
-                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_cancelled"));
-            });
-
+            // Forgetting destroys a record: it still asks (work_loss).
             await SubmitAsync(viewModel, "borra mi color favorito");
             Assert.That(new DurableRetryStore(outbox).Load(), Has.Count.EqualTo(1));
             await SubmitAsync(viewModel, "cancelar");
             Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+            Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("cancelledAction")
+                .GetProperty("operation").GetString(), Is.EqualTo("memory.forget"));
 
             await SubmitAsync(viewModel, "qué color me gusta");
             Assert.That(LastAssistantMessage(viewModel), Does.Contain("favorite_color"));
@@ -770,6 +1071,12 @@ public sealed class MemoryAppFlowTests
                 Assert.That(
                     LastAssistantMessage(viewModel),
                     Does.Contain("memory_cancelled"));
+                JsonElement cancelled = Parse(LastAssistantMessage(viewModel)).GetProperty("cancelledAction");
+                Assert.That(cancelled.GetProperty("operation").GetString(), Is.EqualTo("memory.save"));
+                Assert.That(cancelled.GetProperty("target").GetString(), Is.EqualTo("private local memory"));
+                Assert.That(cancelled.EnumerateObject().Count(), Is.EqualTo(2));
+                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain(Canary));
+                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain(persistent.InvocationId));
             });
 
             await SubmitAsync(viewModel, "hola, preséntate en una frase y no toques el sistema");
@@ -783,6 +1090,9 @@ public sealed class MemoryAppFlowTests
         }
     }
 
+    // D3 (2026-09-20): a sensitive save no longer challenges, so its uncertain
+    // start is retried like any reversible operation; the reconciliation
+    // challenge is exercised on memory.forget, which destroys and still asks.
     [Test]
     public async Task ReconciliationChallengeCannotBeCancelledWithAFalseNoEffectClaim()
     {
@@ -798,7 +1108,13 @@ public sealed class MemoryAppFlowTests
                 Guid.NewGuid().ToString("D"));
             var registry = RetryableOperationRegistry.CreateDefault(previous);
             PreparedOperation uncertain = registry.GetOrAdd(previous.Prepare(
-                SaveRoute(Canary + "-uncertain", "persistent", "secret")));
+                new MemoryRoutedOperation("memory.forget", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["confirmationRequired"] = true,
+                    ["scope"] = "exact",
+                    ["selector"] = Canary + "-uncertain",
+                })));
             OperationRequest startedRequest = uncertain.CreateRequest();
             string fingerprint = RequestFingerprint.Compute(startedRequest);
             await using (FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
@@ -815,6 +1131,7 @@ public sealed class MemoryAppFlowTests
             await using var viewModel = new MainWindowViewModel();
             await viewModel.InitializeAsync(CancellationToken.None);
             await SubmitAsync(viewModel, "continuar");
+            string initialReconciliation = LastAssistantMessage(viewModel);
             Assert.Multiple(() =>
             {
                 Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_reconcile_same_attempt"));
@@ -822,6 +1139,8 @@ public sealed class MemoryAppFlowTests
                 Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("memory_cancelled"));
             });
 
+            await SubmitAsync(viewModel, "qué operación estoy confirmando");
+            Assert.That(LastAssistantMessage(viewModel), Is.EqualTo(initialReconciliation));
             await SubmitAsync(viewModel, "cancelar");
 
             PreparedOperation preserved = new DurableRetryStore(outbox).Load().Single();
@@ -831,6 +1150,11 @@ public sealed class MemoryAppFlowTests
                 Assert.That(preserved.InvocationId, Is.EqualTo(uncertain.InvocationId));
                 Assert.That(LastAssistantMessage(viewModel), Does.Contain("cannot_withdraw_uncertain"));
                 Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("memory_cancelled"));
+                JsonElement facts = Parse(LastAssistantMessage(viewModel));
+                Assert.That(facts.GetProperty("pendingAction").GetProperty("operation").GetString(),
+                    Is.EqualTo(uncertain.OperationName));
+                Assert.That(facts.GetProperty("choices").EnumerateArray()
+                    .Select(static choice => choice.GetString()), Is.EqualTo(new[] { "confirmar", "confirm" }));
                 Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain(Canary));
                 Assert.That(
                     viewModel.Messages.All(message =>

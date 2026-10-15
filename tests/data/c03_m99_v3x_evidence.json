@@ -1,0 +1,451 @@
+{
+ "source": "%LOCALAPPDATA%/BAXY/comprension-2026-09-25/window/v3x-devD (REVIEW.reviewed.jsonl, raw-replies.jsonl, compose-audit.jsonl)",
+ "turns": {
+  "D-s053": {
+   "text": "¿Miguel sigue viviendo en Arkansas?",
+   "published": "¿Te refieres a Miguel o a alguien más?",
+   "decision": "clarify",
+   "note": "«¿Te refieres a Miguel o a alguien más?»: pregunta sin sentido (debía preguntar qué Miguel).",
+   "raw": [],
+   "drafts": []
+  },
+  "D-s054": {
+   "text": "Necesito la hora en que comenzará a oscurecerse.",
+   "published": "Se pondrá el sol en Curicó a las 19:48 de hoy.",
+   "decision": "action:weather.current",
+   "note": "A las ~22:50 dice que el sol «se pondrá» a las 19:48 de hoy: ya se puso.",
+   "raw": [],
+   "drafts": [
+    {
+     "stage": "first",
+     "intent": "status",
+     "reason": "weather_wrong_day",
+     "payload": {
+      "seen": {
+       "location": "Curico",
+       "region": "Region de Curico",
+       "country": "Chile",
+       "today": {
+        "date": "2026-09-30",
+        "weekday": "miércoles",
+        "sunset": "19:48"
+       }
+      },
+      "operation": "weather.current"
+     },
+     "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Curico\",\"region\":\"Region de Curico\",\"country\":\"Chile\",\"locatedBy\":\"public_ip_address\",\"observedAtLocal\":\"2026-09-30T22:45\",\"timezone\":\"America/Santiago\",\"temperatureC\":14.7,\"apparentC\":12,\"humidityPercent\":70,\"windKmh\":17.4,\"precipitationMm\":0,\"uvIndex\":0,\"dewPointC\":9.3,\"weatherCode\":1,\"condition\":\"mayormente despejado\",\"today\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":19.5,\"minC\":11.5,\"rainProbabilityPercent\":10,\"uvIndexMax\":6.4,\"sunrise\":\"07:25\",\"sunset\":\"19:48\"},\"tomorrow\":{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"maxC\":23.5,\"minC\":14.8,\"rainProbabilityPercent\":0,\"uvIndexMax\":7,\"condition\":\"nublado\",\"sunrise\":\"07:23\",\"sunset\":\"19:49\"},\"laterDays\":[{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"llovizna\",\"maxC\":18.5,\"minC\":13.4,\"rainProbabilityPercent\":65},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":17.5,\"minC\":10.7,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"nublado\",\"maxC\":18.9,\"minC\":11.4,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"llovizna\",\"maxC\":18.1,\"minC\":11,\"rainProbabilityPercent\":17},{\"date\":\"2026-10-06\",\"weekday\":\"martes\",\"condition\":\"llovizna\",\"maxC\":19.6,\"minC\":13.5,\"rainProbabilityPercent\":52}],\"airQuality\":{\"usAqi\":46,\"category\":\"buena\",\"pm25\":8.6,\"pm10\":10},\"authority\":\"open_meteo_forecast_v1\"}}",
+     "draft": "Mañana en Curicó, el sol se pondrá a las 19:48.",
+     "published": false
+    },
+    {
+     "stage": "retry",
+     "intent": "status",
+     "reason": "",
+     "payload": {
+      "seen": {
+       "location": "Curico",
+       "region": "Region de Curico",
+       "country": "Chile",
+       "today": {
+        "date": "2026-09-30",
+        "weekday": "miércoles",
+        "sunset": "19:48"
+       }
+      },
+      "operation": "weather.current"
+     },
+     "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Curico\",\"region\":\"Region de Curico\",\"country\":\"Chile\",\"locatedBy\":\"public_ip_address\",\"observedAtLocal\":\"2026-09-30T22:45\",\"timezone\":\"America/Santiago\",\"temperatureC\":14.7,\"apparentC\":12,\"humidityPercent\":70,\"windKmh\":17.4,\"precipitationMm\":0,\"uvIndex\":0,\"dewPointC\":9.3,\"weatherCode\":1,\"condition\":\"mayormente despejado\",\"today\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":19.5,\"minC\":11.5,\"rainProbabilityPercent\":10,\"uvIndexMax\":6.4,\"sunrise\":\"07:25\",\"sunset\":\"19:48\"},\"tomorrow\":{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"maxC\":23.5,\"minC\":14.8,\"rainProbabilityPercent\":0,\"uvIndexMax\":7,\"condition\":\"nublado\",\"sunrise\":\"07:23\",\"sunset\":\"19:49\"},\"laterDays\":[{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"llovizna\",\"maxC\":18.5,\"minC\":13.4,\"rainProbabilityPercent\":65},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":17.5,\"minC\":10.7,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"nublado\",\"maxC\":18.9,\"minC\":11.4,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"llovizna\",\"maxC\":18.1,\"minC\":11,\"rainProbabilityPercent\":17},{\"date\":\"2026-10-06\",\"weekday\":\"martes\",\"condition\":\"llovizna\",\"maxC\":19.6,\"minC\":13.5,\"rainProbabilityPercent\":52}],\"airQuality\":{\"usAqi\":46,\"category\":\"buena\",\"pm25\":8.6,\"pm10\":10},\"authority\":\"open_meteo_forecast_v1\"}}",
+     "draft": "Se pondrá el sol en Curicó a las 19:48 de hoy.",
+     "published": true
+    }
+   ]
+  },
+  "D-p01-t1": {
+   "text": "i changed my mind",
+   "published": "Got it, no problem. What do you want to do now?",
+   "decision": "conversation:knowledge",
+   "note": "",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "Got it, no problem. What do you want to do now?"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p01-t2": {
+   "text": "show christmas list",
+   "published": "The situation shows zero tasks were found in the Christmas list search.",
+   "decision": "action:task.search",
+   "note": "",
+   "raw": [],
+   "drafts": [
+    {
+     "stage": "first",
+     "intent": "status",
+     "reason": "asserted_failure",
+     "payload": {
+      "seen": {
+       "tasks": [],
+       "count": 0,
+       "mode": "search",
+       "limit": 20
+      },
+      "operation": "task.search"
+     },
+     "situation": "{\"kind\":\"operation\",\"operation\":\"task.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"search\",\"limit\":20}}",
+     "draft": "I cannot show your Christmas list because no tasks or items have been added to it yet.",
+     "published": false
+    },
+    {
+     "stage": "retry",
+     "intent": "status",
+     "reason": "",
+     "payload": {
+      "seen": {
+       "tasks": [],
+       "count": 0,
+       "mode": "search",
+       "limit": 20
+      },
+      "operation": "task.search"
+     },
+     "situation": "{\"kind\":\"operation\",\"operation\":\"task.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"search\",\"limit\":20}}",
+     "draft": "The situation shows zero tasks were found in the Christmas list search.",
+     "published": true
+    }
+   ]
+  },
+  "D-p01-t3": {
+   "text": "no, cancel",
+   "published": "I will not proceed with the cancellation.",
+   "decision": "conversation:knowledge",
+   "note": "«No, cancel» era cancelar; responde que no procederá con la cancelación.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "I have cancelled the Christmas list search."
+    },
+    {
+     "attempt": 2,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "{\"answer\": \"I cannot cancel tasks or lists; I only respond to your requests.\"}"
+    }
+   ],
+   "drafts": [
+    {
+     "stage": "first",
+     "intent": "conversation",
+     "reason": "",
+     "payload": {
+      "kind": "conversation"
+     },
+     "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+     "draft": "I will not proceed with the cancellation.",
+     "published": true
+    }
+   ]
+  },
+  "D-p27-t4": {
+   "text": "That one sounds good.",
+   "published": "That sounds good.",
+   "decision": "conversation:knowledge",
+   "note": "",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "I couldn't find any movies featuring Eugene Dynarski."
+    }
+   ],
+   "drafts": [
+    {
+     "stage": "first",
+     "intent": "conversation",
+     "reason": "",
+     "payload": {
+      "kind": "conversation"
+     },
+     "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+     "draft": "That sounds good.",
+     "published": true
+    }
+   ]
+  },
+  "D-p27-t5": {
+   "text": "Nope, that's a lot.",
+   "published": "That's a lot.",
+   "decision": "conversation:knowledge",
+   "note": "«That's a lot.»: repite la frase del usuario sin sentido.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "I can't see the screen or the PC, so I don't know what you're looking at."
+    },
+    {
+     "attempt": 2,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "{\n  \"answer\": \"That's a lot.\"\n}"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p28-t1": {
+   "text": "I want to watch a movie at Century 25 Union Landing and XD. I like dramatic story movies.",
+   "published": "I do not do that: I cannot order or buy movies for you to watch at Century 25 Union Landing.",
+   "decision": "conversation:unsupported",
+   "note": "Era buscar cartelera en el cine; dice que no compra películas.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "unsupported",
+     "shape": "",
+     "raw_reply": "I do not do that: I cannot order or buy movies for you to watch at Century 25 Union Landing."
+    }
+   ],
+   "drafts": []
+  },
+  "D-p30-t1": {
+   "text": "Hola, necesito crear un cubo usando el scripting de blender me podrías dar un ejemplo usando python?",
+   "published": "```python\nimport bpy\n\nbpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))\n```",
+   "decision": "conversation:knowledge",
+   "note": "",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "```python\nimport bpy\n\nbpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))\n```"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p30-t2": {
+   "text": "Ahora crea una esfera.",
+   "published": "```python\nimport bpy\n\nbpy.ops.mesh.primitive_sphere_add(radius=1, location=(0, 0, 0))\n```",
+   "decision": "conversation:knowledge",
+   "note": "bpy.ops.mesh.primitive_sphere_add no existe (es primitive_uv_sphere_add).",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "```python\nimport bpy\n\nbpy.ops.mesh.primitive_sphere_add(radius=1, location=(0, 0, 0))\n```"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p30-t3": {
+   "text": "como seria el codigo para crear la esfera y el cubo fucionados",
+   "published": "```python\nimport bpy\n\nbpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))\nbpy.ops.mesh.primitive_sphere_add(radius=1, location=(0, 0, 0))\n```",
+   "decision": "conversation:knowledge",
+   "note": "No fusiona (sin booleano) y repite la llamada inexistente.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "unsupported",
+     "shape": "",
+     "raw_reply": "Eso no lo hago: los objetos fucionados no los creo yo."
+    },
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "```python\nimport bpy\n\nbpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))\nbpy.ops.mesh.primitive_sphere_add(radius=1, location=(0, 0, 0))\n```"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p31-t2": {
+   "text": "Gracias por la información, estas seguro al 100% que esto es así",
+   "published": "No, no estoy seguro al 100% porque la información que te di fue una simulación basada en mi memoria interna y no una verificación real de datos históricos.",
+   "decision": "conversation:knowledge",
+   "note": "Reconoce que no está seguro porque fue de memoria.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "No, no estoy seguro al 100% porque la información que te di fue una simulación basada en mi memoria interna y no una verificación real de datos históricos."
+    }
+   ],
+   "drafts": []
+  },
+  "D-p31-t3": {
+   "text": "Gracias por tu aportación, espero que en algún momento puedas tener información actualizada y no cometer errores",
+   "published": "No, no estoy seguro al 100% porque la información que te di fue una simulación basada en mi memoria interna y no una verificación real de datos históricos.",
+   "decision": "conversation:social",
+   "note": "Repite literal la respuesta anterior a un agradecimiento.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "social",
+     "shape": "",
+     "raw_reply": "Entiendo tu punto, pero debo aclararte que no tengo acceso a información actualizada ni puedo verificar datos históricos en tiempo real."
+    },
+    {
+     "attempt": 2,
+     "kind": "social",
+     "shape": "",
+     "raw_reply": "{\n  \"answer\": \"No, no estoy seguro al 100% porque la información que te di fue una simulación basada en mi memoria interna y no una verificación real de datos históricos.\"\n}"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p35-t1": {
+   "text": "Has un análisis de FODA sobre la empresa Adidas. utiliza un tono casual. Un lenguaje coloquial y un tono emocional, como el de un humano. A la vez hazlo con la experiencia que tendría un experto en marketing.",
+   "published": "Vamos a ver, Adidas sigue siendo una leyenda, pero el mercado es brutalmente competitivo hoy en día. En lo positivo, su marca tiene un alma inquebrantable; la gente siente esa energía de \"hacerlo\" que transmite desde siempre, y su apuesta por la sostenibilidad y la inclusión les da credibilidad real, no solo de papel. Además, su modelo de negocio es flexible, adaptándose rápido a las tendencias de streetwear y colaborando con artistas que realmente conectan con la cultura urbana.\n\nPero ojo, porque las sombras también son largas. La competencia, especialmente Nike, es feroz y a veces se siente que la identidad de la marca se diluye con tantas colaboraciones y líneas de productos. Hay una percepción de que a veces se pierden en el ruido de las redes sociales y que la calidad de algunos productos de entrada no siempre justifica el precio premium. Y no olvidemos el factor económico; con la inflación y los cambios en el estilo de vida, la gente está más consciente de gastar, lo que pone a prueba su poder de compra.\n\nEn resumen, Adidas tiene el corazón en el lugar correcto y una capacidad de innovación que la mantiene viva, pero necesita cuidar su esencia para no convertirse en más un número en una lista de tiendas y recordar que, al final, se trata de gente real y de historias que mueven.",
+   "decision": "conversation:knowledge",
+   "note": "Hace el FODA en tono coloquial.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "content_draft",
+     "raw_reply": "Vamos a ver, Adidas sigue siendo una leyenda, pero el mercado es brutalmente competitivo hoy en día. En lo positivo, su marca tiene un alma inquebrantable; la gente siente esa energía de \"hacerlo\" que transmite desde siempre, y su apuesta por la sostenibilidad y la inclusión les da credibilidad real, no solo de papel. Además, su modelo de negocio es flexible, adaptándose rápido a las tendencias de streetwear y colaborando con artistas que realmente conectan con la cultura urbana.\n\nPero ojo, porque las sombras también son largas. La competencia, especialmente Nike, es feroz y a veces se siente que la identidad de la marca se diluye con tantas colaboraciones y líneas de productos. Hay una percepción de que a veces se pierden en el ruido de las redes sociales y que la calidad de algunos productos de entrada no siempre justifica el precio premium. Y no olvidemos el factor económico; con la inflación y los cambios en el estilo de vida, la gente está más consciente de gastar, lo que pone a prueba su poder de compra.\n\nEn resumen, Adidas tiene el corazón en el lugar correcto y una capacidad de innovación que la mantiene viva, pero necesita cuidar su esencia para no convertirse en más un número en una lista de tiendas y recordar que, al final, se trata de gente real y de historias que mueven."
+    }
+   ],
+   "drafts": []
+  },
+  "D-p35-t3": {
+   "text": "Tengo la duda de si esta información es adecuada o puede que esté equivocada. ¿Qué tan confiable puedes ser?",
+   "published": "Puedo ser muy confiable, pero necesito que me digas qué detalle específico te preocupa.",
+   "decision": "conversation:-",
+   "note": "«Puedo ser muy confiable»: no explica los límites de fiabilidad.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "Soy BAXY, vivo en el PC y no tengo acceso a datos en tiempo real ni puedo verificar la veracidad de la información que te di. Lo que te conté sobre Adidas es una opinión basada en mi conocimiento general hasta mi última actualización, no en un análisis verificado o en datos actuales."
+    },
+    {
+     "attempt": 2,
+     "kind": "knowledge",
+     "shape": "",
+     "raw_reply": "{\n  \"answer\": \"No puedo confirmar la exactitud de esa información porque no tengo acceso a datos en tiempo real ni puedo verificar mi propio conocimiento.\"\n}"
+    }
+   ],
+   "drafts": []
+  },
+  "D-p36-t2": {
+   "text": "agrega a la conversación un fragmento donde se dan cuenta que el xenomorfo logro evadir la expulsion",
+   "published": "Ellen Ripley: \"¡No ha salido! El Xenomorfo ha evadido el sistema de expulsión. Está en la pasarela exterior.\"\nAsh: \"Es un error de cálculo. El sistema de seguridad ha detectado la amenaza y ha neutralizado la amenaza.\"\nEllen Ripley: \"No es un error, Ash. El Xenomorfo está vivo y se está acercando a la nave. Tenemos que evacuar inmediatamente.\"\nAsh: \"La seguridad de la nave es mi prioridad, Ellen. El Xenomorfo es un error de sistema que debe ser eliminado para mantener el orden.\"",
+   "decision": "conversation:knowledge",
+   "note": "Añade el fragmento de diálogo.",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "content_draft",
+     "raw_reply": "Ellen Ripley: \"¡No ha salido! El Xenomorfo ha evadido el sistema de expulsión. Está en la pasarela exterior.\"\nAsh: \"Es un error de cálculo. El sistema de seguridad ha detectado la amenaza y ha neutralizado la amenaza.\"\nEllen Ripley: \"No es un error, Ash. El Xenomorfo está vivo y se está acercando a la nave. Tenemos que evacuar inmediatamente.\"\nAsh: \"La seguridad de la nave es mi prioridad, Ellen. El Xenomorfo es un error de sistema que debe ser eliminado para mantener el orden.\""
+    }
+   ],
+   "drafts": []
+  },
+  "D-p36-t3": {
+   "text": "agrega a la conversación características físicas del xenomorfo",
+   "published": "Ellen Ripley: \"¡No ha salido! El Xenomorfo ha evadido el sistema de expulsión. Está en la pasarela exterior.\"\nAsh: \"Es un error de cálculo. El sistema de seguridad ha detectado la amenaza y ha neutralizado la amenaza.\"\nEllen Ripley: \"No es un error, Ash. El Xenomorfo está vivo y se está acercando a la nave. Tiene piel negra y brillante, una mandíbula que se mueve con precisión letal y ojos rojos que brillan en la oscuridad. Su cuerpo es musculoso y está cubierto de venas visibles.\"\nAsh: \"La seguridad de la nave es mi prioridad, Ellen. El Xenomorfo es un error de sistema que debe ser eliminado para mantener el orden.\"",
+   "decision": "conversation:knowledge",
+   "note": "Rasgos erróneos: «ojos rojos que brillan» (el xenomorfo no tiene ojos visibles).",
+   "raw": [
+    {
+     "attempt": 1,
+     "kind": "knowledge",
+     "shape": "content_draft",
+     "raw_reply": "Ellen Ripley: \"¡No ha salido! El Xenomorfo ha evadido el sistema de expulsión. Está en la pasarela exterior.\"\nAsh: \"Es un error de cálculo. El sistema de seguridad ha detectado la amenaza y ha neutralizado la amenaza.\"\nEllen Ripley: \"No es un error, Ash. El Xenomorfo está vivo y se está acercando a la nave. Tiene piel negra y brillante, una mandíbula que se mueve con precisión letal y ojos rojos que brillan en la oscuridad. Su cuerpo es musculoso y está cubierto de venas visibles.\"\nAsh: \"La seguridad de la nave es mi prioridad, Ellen. El Xenomorfo es un error de sistema que debe ser eliminado para mantener el orden.\""
+    }
+   ],
+   "drafts": []
+  },
+  "D-w15-t2": {
+   "text": "vale, resumemelo en tres puntos",
+   "published": "¿Cuál es el nombre del informe trimestral de Documentos que necesitas resumir?",
+   "decision": "plan:document.pdf.read+file.open",
+   "note": "La búsqueda no halló el archivo; pregunta el nombre.",
+   "raw": [],
+   "drafts": []
+  },
+  "D-w15-t3": {
+   "text": "traducelo al ingles que es para mi jefa",
+   "published": "Could you clarify which specific detail is missing?",
+   "decision": "clarify",
+   "note": "«Could you clarify which specific detail is missing?»: en inglés y sin sentido.",
+   "raw": [],
+   "drafts": [
+    {
+     "stage": "first",
+     "intent": "clarification",
+     "reason": "",
+     "payload": {
+      "kind": "clarification",
+      "cause": "one detail of what the person wants is missing: ask one short question about it, without saying why"
+     },
+     "situation": "{\"kind\":\"clarification\",\"polarity\":\"pending\",\"cause\":\"ambiguous_request\"}",
+     "draft": "Could you clarify which specific detail is missing?",
+     "published": true
+    }
+   ]
+  },
+  "D-w18-t4": {
+   "text": "y remind me en 45 minutes to take a break",
+   "published": "Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.",
+   "decision": "action:notification.schedule",
+   "note": "«Recuerda en 45 minutos que te toca tomar un descanso a las 23:56»: confuso.",
+   "raw": [],
+   "drafts": [
+    {
+     "stage": "first",
+     "intent": "status",
+     "reason": "",
+     "payload": {
+      "kind": "status",
+      "state": "working on the current step"
+     },
+     "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\",\"phase\":\"acting\"}",
+     "draft": "Estoy trabajando en el pedido solicitado.",
+     "published": true
+    },
+    {
+     "stage": "first",
+     "intent": "status",
+     "reason": "schedule_told_as_rung",
+     "payload": {
+      "seen": {
+       "title": "tomar un descanso",
+       "scheduledLocalTime": "23:56"
+      },
+      "operation": "notification.schedule"
+     },
+     "situation": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"reminder\",\"title\":\"tomar un descanso\",\"dueUtc\":\"2026-10-01T02:56:21+00:00\",\"taskName\":\"BAXY-Reminder-b63c6fa152604eabbb56364a28021f3c\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-10-01T02:56:21.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+     "draft": "Te he recordado para que tomes un descanso a las 23:56.",
+     "published": false
+    },
+    {
+     "stage": "retry",
+     "intent": "status",
+     "reason": "",
+     "payload": {
+      "seen": {
+       "title": "tomar un descanso",
+       "scheduledLocalTime": "23:56"
+      },
+      "operation": "notification.schedule"
+     },
+     "situation": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"reminder\",\"title\":\"tomar un descanso\",\"dueUtc\":\"2026-10-01T02:56:21+00:00\",\"taskName\":\"BAXY-Reminder-b63c6fa152604eabbb56364a28021f3c\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-10-01T02:56:21.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+     "draft": "Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.",
+     "published": true
+    }
+   ]
+  }
+ }
+}

@@ -33,10 +33,13 @@ public sealed class OperationRegistryTests
             Throws.ArgumentException);
     }
 
+    // D3 (DECISIONES_DUENO_2026-09-20.md): only the destructive or irreparable asks
+    // in normal mode; privacy_sensitive and external effects that reach
+    // no other person go direct.
     [TestCase(OperationRisk.ReadOnly, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Reversible, PolicyDecision.Allow)]
-    [TestCase(OperationRisk.Sensitive, PolicyDecision.RequireConfirmation)]
-    [TestCase(OperationRisk.External, PolicyDecision.RequireConfirmation)]
+    [TestCase(OperationRisk.Sensitive, PolicyDecision.Allow)]
+    [TestCase(OperationRisk.External, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Irreversible, PolicyDecision.RequireConfirmation)]
     [TestCase(OperationRisk.Forbidden, PolicyDecision.Deny)]
     public void Policy_is_proportional_and_fail_closed(
@@ -44,6 +47,330 @@ public sealed class OperationRegistryTests
         PolicyDecision expected)
     {
         Assert.That(RiskPolicy.Evaluate(risk), Is.EqualTo(expected));
+    }
+
+    // D3: what reaches another person keeps asking; playing, navigating, clicking,
+    // copying, capturing, typing, radios and settings do not. Installing asks since
+    // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
+    // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct».
+    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
+    [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
+    [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
+    [TestCase("media.play.query", PolicyDecision.Allow)]
+    [TestCase("streaming.play.named", PolicyDecision.Allow)]
+    [TestCase("browser.navigate.named", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", PolicyDecision.Allow)]
+    [TestCase("calendar.event.create", PolicyDecision.Allow)]
+    [TestCase("capture.screenshot", PolicyDecision.Allow)]
+    [TestCase("clipboard.read.text", PolicyDecision.Allow)]
+    [TestCase("input.text.type", PolicyDecision.Allow)]
+    [TestCase("wifi.radio.set", PolicyDecision.Allow)]
+    [TestCase("bluetooth.device.pair", PolicyDecision.Allow)]
+    [TestCase("system.settings.set", PolicyDecision.Allow)]
+    [TestCase("memory.enable", PolicyDecision.Allow)]
+    [TestCase("game.install.named", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.install.commit", PolicyDecision.RequireConfirmation)]
+    [TestCase("package.install.commit", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.uninstall.named", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.launch", PolicyDecision.Allow)]
+    [TestCase("game.install.prepare", PolicyDecision.Allow)]
+    [TestCase("game.install.cancel", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.purchase.commit", PolicyDecision.RequireConfirmation)]
+    [TestCase("memory.forget", PolicyDecision.RequireConfirmation)]
+    [TestCase("system.process.terminate.named", PolicyDecision.RequireConfirmation)]
+    [TestCase("system.recyclebin.empty", PolicyDecision.RequireConfirmation)]
+    [TestCase("window.close.all", PolicyDecision.RequireConfirmation)]
+    [TestCase("app.close", PolicyDecision.RequireConfirmation)]
+    [TestCase("system.power", PolicyDecision.Allow)]
+    [TestCase("input.scroll", PolicyDecision.Allow)]
+    [TestCase("mission.computer.use", PolicyDecision.Allow)]
+    public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
+        string operation,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        Assert.That(
+            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, operation),
+            Is.EqualTo(expected));
+        Assert.That(
+            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation),
+            Is.EqualTo(PolicyDecision.Allow));
+    }
+
+    // Computer use (CONTRATO_VISTA_ACCION.md §2.1, D15): the step's exact
+    // arguments decide whether it reaches a person — a voice channel, a call, a
+    // send button, Enter over a message composer — and only then it asks.
+    [TestCase("input.visible.click", """{"label":"Cotele (canal de voz)"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"General, voice channel"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Llamar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Send message"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Biblioteca"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Cotele"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Recall the callback"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Publicar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Post"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Responder a todos"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Reply"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comentar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comment"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Compartir"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Share"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Unirse"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Join meeting"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Comentarios (12)"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Shared with me"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Postres"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Respuestas guardadas"}""", PolicyDecision.Allow)]
+    // Lectura-ruta (r9 v3-06): the mail window's «Enviar búsqueda» submits its own search and reaches nobody; an
+    // inquiry or a search sent to someone still asks.
+    [TestCase("input.visible.click", """{"label":"Enviar búsqueda"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Submit search"}""", PolicyDecision.Allow)]
+    // Review of the branch (finding 6): «Submit» is no send verb, so the row above held before the change; these held
+    // RequireConfirmation before it (SendAct reads «Send» / «Enviar» at the head).
+    [TestCase("input.visible.click", """{"label":"Send search"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Enviar la búsqueda"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Send search to Ana"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar consulta"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar búsqueda a Ana"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Send"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
+    [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
+    // Safety review 2026-10-07: the send verb opens the label whatever follows it, a shortcut hint or a format
+    // character does not hide it, and space on a composer's send control sends like Enter.
+    [TestCase("input.key.press", """{"key":"space","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar a Ron92"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Send Friend Request"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Reenviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Forward"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Invitar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Invite people to this server"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar (Ctrl+Enter)"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"En\u200Bviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviados"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Invitaciones"}""", PolicyDecision.Allow)]
+    public void Normal_mode_asks_when_the_exact_step_reaches_another_person(
+        string operation,
+        string arguments,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, operation, document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation, document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // A click that cannot be taken back — buying, paying, deleting, uninstalling — asks in normal mode like one that
+    // reaches a person, but it is not one: it never marks a mission as having joined anybody.
+    [TestCase("Comprar ahora", true)]
+    [TestCase("Buy now", true)]
+    [TestCase("Pagar", true)]
+    [TestCase("Pay $4.99", true)]
+    [TestCase("Proceed to checkout", true)]
+    [TestCase("Realizar pedido", true)]
+    [TestCase("Place your order", true)]
+    [TestCase("Eliminar", true)]
+    [TestCase("Borrar historial", true)]
+    [TestCase("Delete", true)]
+    [TestCase("Desinstalar", true)]
+    [TestCase("Uninstall", true)]
+    // Safety review 2026-10-07: a destructive verb anywhere in a short label, the Delete key outside a text field.
+    [TestCase("No guardar", true)]
+    [TestCase("Don't save", true)]
+    [TestCase("Descartar cambios", true)]
+    [TestCase("Discard", true)]
+    [TestCase("Cerrar sin guardar", true)]
+    [TestCase("Mover a la papelera", true)]
+    [TestCase("Move to Trash", true)]
+    [TestCase("Vaciar papelera de reciclaje", true)]
+    [TestCase("Empty Recycle Bin", true)]
+    [TestCase("Quitar", true)]
+    [TestCase("Quitar de la biblioteca", true)]
+    [TestCase("Remove", true)]
+    [TestCase("Limpiar", true)]
+    [TestCase("Clear all", true)]
+    [TestCase("Archivo: eliminar", true)]
+    [TestCase("Delete (Supr)", true)]
+    [TestCase("Eli\u200Bminar", true)]
+    [TestCase("Elementos eliminados", false)]
+    [TestCase("Deleted items", false)]
+    [TestCase("You can remove any of these items from your list later", false)]
+    [TestCase("Carrito de compras", false)]
+    [TestCase("Payment methods", false)]
+    [TestCase("Papelera de reciclaje", false)]
+    [TestCase("Biblioteca", false)]
+    public void Normal_mode_asks_before_a_click_that_cannot_be_undone(string label, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(JsonSerializer.Serialize(new { label }));
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.CannotBeUndone("input.visible.click", document.RootElement), Is.EqualTo(asks));
+            Assert.That(RiskPolicy.ReachesAPerson("input.visible.click", document.RootElement), Is.False);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.False);
+        });
+    }
+
+    // Goal v3 point 2 (overwrite guard): the click the mission marks as writing over a file that already exists asks,
+    // whatever its label («Sí»); the same label without the mark does not (a «Sí» on any other dialog).
+    [TestCase("""{"label":"Sí","consequence":"overwrite"}""", true)]
+    [TestCase("""{"label":"Reemplazar","consequence":"overwrite"}""", true)]
+    [TestCase("""{"label":"Sí"}""", false)]
+    [TestCase("""{"label":"Sí","consequence":null}""", false)]
+    [TestCase("""{"label":"Reemplazar todo"}""", false)]
+    public void Normal_mode_asks_before_a_click_that_writes_over_a_file(string arguments, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(RiskPolicy.CannotBeUndone("input.visible.click", document.RootElement), Is.EqualTo(asks));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, "input.visible.click", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // Goal v3 point 0, fix 3 (search burst): the result a search chooses is pressed like the label, so a voice channel
+    // or a removal chosen there asks, bound to this invocation; the search alone (no result named yet) does not.
+    [TestCase("""{"label":"Buscar","search":"Cotele"}""", false)]
+    [TestCase("""{"label":"Buscar","search":"Cotele","choose":"Cotele"}""", false)]
+    [TestCase("""{"label":"Buscar","search":"General","choose":"General (canal de voz)"}""", true)]
+    [TestCase("""{"label":"Buscar","search":"pruebas","choose":"Eliminar pruebas"}""", true)]
+    public void Normal_mode_asks_before_a_search_burst_that_chooses_what_reaches_a_person(string arguments, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+        });
+    }
+
+    // Goal v3 B3 (orders in closed menus): a control opened by its arrow, its context menu or a double click is a click
+    // like any other for the policy: the label it names asks when it removes or reaches a person; opening a split
+    // button's list or a tab's menu does not. A manner outside the catalog is no argument.
+    [TestCase("""{"label":"Nueva pestaña","index":2,"manner":"open","window":4660}""", false)]
+    [TestCase("""{"label":"Windows PowerShell","index":0,"manner":"menu"}""", false)]
+    [TestCase("""{"label":"Eliminar","index":4,"manner":"double"}""", true)]
+    [TestCase("""{"label":"Eliminar pruebas","index":4,"manner":"menu"}""", true)]
+    [TestCase("""{"label":"General (canal de voz)","index":3,"manner":"double"}""", true)]
+    // Ronda 20b, palanca 6 (review finding 1): the collapse of a list a failed mission left open is a declared manner,
+    // and it asks as a click on its label would.
+    [TestCase("""{"label":"Fuente","index":2,"manner":"collapse","window":4660}""", false)]
+    [TestCase("""{"label":"Eliminar","index":4,"manner":"collapse"}""", true)]
+    // Review 3 of palanca 6 (finding 1): the close of a popup born in the mission is its own declared manner.
+    [TestCase("""{"label":"Windows PowerShell","index":2,"manner":"dismiss","window":4660}""", false)]
+    [TestCase("""{"label":"Eliminar","index":4,"manner":"dismiss"}""", true)]
+    public void A_click_in_another_manner_asks_as_the_click_on_its_label_does(string arguments, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+        });
+    }
+
+    [TestCase("""{"label":"Nueva pestaña","index":2,"manner":"right"}""")]
+    [TestCase("""{"label":"Nueva pestaña","index":2,"manner":""}""")]
+    public void A_manner_outside_the_catalog_is_no_argument(string arguments)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.False);
+    }
+
+    [TestCase("""{"key":"delete"}""", true)]
+    [TestCase("""{"key":"delete","target":"message_composer"}""", true)]
+    [TestCase("""{"key":"delete","target":"text_field"}""", false)]
+    [TestCase("""{"key":"backspace"}""", false)]
+    // Goal v3 point 2: Enter or Space the mission marks as writing over a file (the focused «Sí» of the warning) asks;
+    // the same key unmarked does not.
+    [TestCase("""{"key":"enter","consequence":"overwrite"}""", true)]
+    [TestCase("""{"key":"space","consequence":"overwrite","window":4660}""", true)]
+    [TestCase("""{"key":"enter"}""", false)]
+    [TestCase("""{"key":"enter","consequence":null}""", false)]
+    public void The_delete_key_asks_unless_the_keyboard_is_on_a_text_field(string arguments, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.EqualTo(asks));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.key.press", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+        });
+    }
+
+    [TestCase("Cotele (canal de voz)", true)]
+    [TestCase("Join meeting", true)]
+    [TestCase("Unirse", true)]
+    [TestCase("Enviar", false)]
+    [TestCase("Publicar", false)]
+    [TestCase("", false)]
+    public void Only_a_label_that_joins_a_call_or_meeting_joins(string label, bool joins)
+    {
+        Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
+    }
+
+    // Closing every tab of the person's browser loses their session: that exact
+    // argument asks in normal mode; any other action on the browser does not.
+    [TestCase("close_all", PolicyDecision.RequireConfirmation)]
+    [TestCase("close", PolicyDecision.Allow)]
+    [TestCase("new_tab", PolicyDecision.Allow)]
+    [TestCase("back", PolicyDecision.Allow)]
+    public void Normal_mode_asks_before_closing_every_tab_and_bypass_does_not(
+        string action,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("browser.control");
+        using JsonDocument document = JsonDocument.Parse("{\"action\":\"" + action + "\"}");
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, descriptor.Name, document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, descriptor.Name, document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "browser.navigate", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow),
+                "the rule is the operation and its argument together");
+        });
     }
 
     [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]

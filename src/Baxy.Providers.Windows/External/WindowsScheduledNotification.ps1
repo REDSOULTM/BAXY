@@ -19,6 +19,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# M80 (DEV-D v3m D-w16-t2, D-w18-t5): the Task Scheduler is shared by every BAXY data root of this Windows user;
+# a BAXY resolves and cancels only the notifications it set, the ones whose ring script is in its own AlarmRoot.
+function Test-OwnNotification([string]$Name) {
+    if (-not $AlarmRoot) { return $true }
+    return [IO.File]::Exists([IO.Path]::Combine($AlarmRoot, $Name + '.ps1'))
+}
+
 if ($Mode -eq 'diagnose') {
     $service = Get-Service -Name 'Schedule' -ErrorAction Stop
     $tasks = @(Get-ScheduledTask -TaskName 'BAXY-*' -ErrorAction SilentlyContinue)
@@ -77,6 +84,7 @@ if ($Mode -eq 'resolve-at') {
     $now = [DateTimeOffset]::Now
     $matches = @()
     foreach ($task in @(Get-ScheduledTask -TaskName $prefix -ErrorAction SilentlyContinue)) {
+        if (-not (Test-OwnNotification $task.TaskName)) { continue }
         $info = Get-ScheduledTaskInfo -TaskName $task.TaskName -ErrorAction Stop
         if ($info.NextRunTime -le [datetime]::MinValue) { continue }
         $next = [DateTimeOffset]$info.NextRunTime
@@ -223,8 +231,20 @@ if ($Mode -eq 'cancel-exact') {
 }
 
 $prefix = if ($Kind -eq 'alarm') { 'BAXY-Alarm-*' } else { 'BAXY-Reminder-*' }
-$candidate = Get-ScheduledTask -TaskName $prefix -ErrorAction SilentlyContinue |
-    Sort-Object { $_.RegistrationInfo.Date } -Descending |
+# M80 (DEV-D v3m D-w18-t5): Register-ScheduledTask leaves RegistrationInfo.Date empty, so ordering by it picked an
+# arbitrary task, even one that already rang. The latest is the pending notification of this BAXY whose ring script
+# was written last (it is written just before the task is registered).
+$now = [DateTimeOffset]::Now
+$candidate = @(Get-ScheduledTask -TaskName $prefix -ErrorAction SilentlyContinue |
+    Where-Object { Test-OwnNotification $_.TaskName } |
+    Where-Object {
+        $pending = Get-ScheduledTaskInfo -TaskName $_.TaskName -ErrorAction Stop
+        $pending.NextRunTime -gt [datetime]::MinValue -and ([DateTimeOffset]$pending.NextRunTime) -gt $now
+    } |
+    Sort-Object {
+        if ($AlarmRoot) { [IO.File]::GetLastWriteTimeUtc([IO.Path]::Combine($AlarmRoot, $_.TaskName + '.ps1')) }
+        else { [datetime]::MinValue }
+    } -Descending) |
     Select-Object -First 1
 if ($null -eq $candidate) {
     [pscustomobject]@{

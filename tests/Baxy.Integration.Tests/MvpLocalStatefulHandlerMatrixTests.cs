@@ -21,6 +21,37 @@ public sealed class MvpLocalStatefulHandlerMatrixTests
     };
 
     [Test]
+    public async Task AbsoluteFileSearchKeepsItsProviderCauseAndAllowsTheNextNameSearch()
+    {
+        using var temporary = new TemporaryDirectory();
+        var provider = new LocalFilesystemProvider(temporary.Path);
+        provider.WriteText("control.txt", "control", null);
+        IOperationHandler handler = FilesystemHandlers.Create(provider)
+            .Single(item => item.Definition.Name == "filesystem.search");
+        using JsonDocument absolute = JsonDocument.Parse("""{"query":"C:/outside/control.txt"}""");
+        using JsonDocument name = JsonDocument.Parse("""{"query":"control.txt"}""");
+        var invocation = new OperationInvocation(
+            Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"), absolute.RootElement.Clone());
+
+        OperationOutcome failed = await handler.ExecuteAsync(invocation, CancellationToken.None);
+        OperationOutcome recovered = await handler.ExecuteAsync(
+            invocation with { Arguments = name.RootElement.Clone() }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failed.Succeeded, Is.False);
+            Assert.That(failed.Verified, Is.False);
+            Assert.That(failed.Result, Is.Null);
+            Assert.That(failed.ErrorCode, Is.EqualTo("absolute_path_search_unsupported"));
+            Assert.That(failed.EffectMayHaveOccurred, Is.False);
+            Assert.That(recovered.Succeeded, Is.True);
+            Assert.That(recovered.Verified, Is.True);
+            Assert.That(recovered.Result!.Value.GetProperty("count").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public async Task EveryLocalStatefulHandlerReachesVerifiedStateInIsolatedStores()
     {
         using var temporary = new TemporaryDirectory();

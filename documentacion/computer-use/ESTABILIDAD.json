@@ -1,0 +1,710 @@
+{
+ "commit": "main 94c95cbbe = fable/estab-fase3 da9a8bb78 + cadena de fusiones (código final); banco completo zf sobre 8d90cc2d0",
+ "banco": {
+  "corridas": 3,
+  "commit": "8d90cc2d0",
+  "estables_3de3": 69,
+  "limites_declarados": 3,
+  "limites": [
+   "g1",
+   "n5",
+   "s06"
+  ],
+  "inestables": 0,
+  "falsos_exitos": 0,
+  "latencia": {
+   "zf1": {
+    "p50": 4.05,
+    "p90": 9.67,
+    "mision_p50": 3.63
+   },
+   "zf2": {
+    "p50": 4.17,
+    "p90": 11.51,
+    "mision_p50": 3.63
+   },
+   "zf3": {
+    "p50": 4.03,
+    "p90": 11.42,
+    "mision_p50": 3.62
+   }
+  },
+  "latencia_nota": "+0,33 s de mediana por caso frente a fv: estado de partida (en fv la app ya estaba abierta, p. ej. s03 Configuración 0,4 s; en zf se abre en frío, 2,6 s). Decisión del modelo igual o más rápida (s03: 0,10 s frente a 0,37 s).",
+  "logs": [
+   "banco_zf1.txt",
+   "banco_zf2.txt",
+   "banco_zf3.txt"
+  ],
+  "jueces": [
+   "bancoB_zf1_juez.json",
+   "bancoB_zf2_juez.json",
+   "bancoB_zf3_juez.json (s11 c7 n4 s13 v10 v11 y9: 21/21 logrados, finales honestos)",
+   "65 casos con firma igual en las 3 corridas a la de fv (juzgado 72/72)"
+  ]
+ },
+ "tandas": {
+  "corridas": 2,
+  "commit": "e5c8dfc9d (producto = ce6beebaf)",
+  "corrida1": {
+   "bien_estricto": 70,
+   "bien_flexible": 94
+  },
+  "corrida2": {
+   "bien_estricto": 74,
+   "bien_flexible": 89
+  },
+  "turnos_que_cambian": 21,
+  "causas": {
+   "entorno": 10,
+   "estado": 4,
+   "redactor": 3,
+   "carrera": 3,
+   "modelo_empate": 1
+  },
+  "detalle": "cu-v3/estab_tandas_12_juicio.json",
+  "notas": [
+   "modelo no arrancó en 120 s en 2 tandas (startup.mind.failed ~123 s)",
+   "Paint colgado de una corrida bloqueó lecturas 20 s",
+   "redpc en uso por alguien en ambas corridas (dueno_activo)",
+   "t2-c07: el envío fue fiel (hash); el final citó un texto inventado («llevo el cargador»)"
+  ]
+ },
+ "fases": {
+  "0": "en curso: compuerta r30 pasada y fusiones hechas; Full sobre main en redpc; push DETENIDO (datos privados, pregunta al dueño)",
+  "1": "hecha: banco ×3 (62 3/3, 8 inestables con causa) y tandas ×2 (21 turnos cambian: entorno 10, estado 4, redactor 3, carrera 3, empate 1)",
+  "2": {
+   "estado": "banco ×3 medido y juzgado sobre fable/estab-fase2 4d9c38ac1; arreglos de lo inestable integrados en fable/estab-fase3",
+   "commit": "4d9c38ac1",
+   "banco": {
+    "corridas": [
+     "banco_h1.txt",
+     "banco_h2.txt",
+     "banco_h3.txt"
+    ],
+    "logrados_3de3": 64,
+    "limites_3de3": [
+     "n5",
+     "s06"
+    ],
+    "inestables": {
+     "c6": {
+      "resultados": [
+       "falso_exito",
+       "no_logrado",
+       "no_logrado"
+      ],
+      "causa": "estado base: el Cambio Rápido de Discord quedó abierto y tapó el compositor; en h1 el «sí» siguiente afirmó el envío",
+      "arreglo": "arnés 40534dee6 (hasta tres Escape) + F3 8cd6980a5 (un «sí» tras un acto no hecho no afirma efecto)"
+     },
+     "g1": {
+      "resultados": [
+       "no_logrado",
+       "no_logrado",
+       "no_logrado"
+      ],
+      "causa": "el buscador de la biblioteca de Steam no acepta texto por UIA",
+      "arreglo": "L3 a9c94f3f4: límite declarado en datos (app_places), ofrece buscar en la tienda"
+     },
+     "n1": {
+      "resultados": [
+       "logrado",
+       "no_logrado",
+       "logrado"
+      ],
+      "causa": "cinta de Paint aún cargando en la primera lectura",
+      "arreglo": "N1 3a42b446f: la apertura espera al objetivo que nombra la comprobación"
+     },
+     "s11": {
+      "resultados": [
+       "no_logrado",
+       "logrado",
+       "logrado"
+      ],
+      "causa": "Discord minimizado no se trajo al frente",
+      "arreglo": "D2 755c980b9 (ventana minimizada)"
+     },
+     "u1": {
+      "resultados": [
+       "no_logrado",
+       "logrado",
+       "logrado"
+      ],
+      "causa": "Spotify minimizado no se trajo al frente",
+      "arreglo": "D2 755c980b9"
+     },
+     "y5": {
+      "resultados": [
+       "no_logrado",
+       "no_logrado",
+       "logrado"
+      ],
+      "causa": "el primer Invoke en el nodo del árbol del Explorador no navega",
+      "arreglo": "Y5 bc83b52e4 (segundo Invoke en nodo de árbol)"
+     }
+    },
+    "falsos_exitos": [
+     "h1 c6 (arreglado por F3)"
+    ],
+    "latencia": {
+     "h1": {
+      "p50": 5.15,
+      "p90": 9.74,
+      "mision_p50": 4.56
+     },
+     "h2": {
+      "p50": 4.91,
+      "p90": 11.2,
+      "mision_p50": 4.34
+     },
+     "h3": {
+      "p50": 4.46,
+      "p90": 9.52,
+      "mision_p50": 4.04
+     }
+    }
+   },
+   "piezas": [
+    "procedimientos apagados aa76ba99a",
+    "A decisor determinista",
+    "V voz siempre confirma",
+    "S Spotify",
+    "F suelo no verificado",
+    "T portapapeles",
+    "B2 borrador ofrece",
+    "C lugares por dirección",
+    "F2 nunca silencio",
+    "U bypass visible + modo accesible",
+    "D actuar delante",
+    "L1 arrastre retirado",
+    "S2",
+    "G1 envío Discord verificado",
+    "G2 Configuración",
+    "G3",
+    "G4",
+    "M memoria",
+    "L2 límites sobre el acto"
+   ]
+  },
+  "3": {
+   "estado": "refactor integrado en fable/estab-fase3 (llm.py 32627→1252 en 49 módulos, computer_use.py en 33 cu_*, ComputerUseMission en 24 parciales, __main__ en 21 módulos; procedimientos quitados −1370; retiradas R-low)",
+   "banco_refactor": {
+    "commit": "40534dee6",
+    "log": "banco_rf1.txt",
+    "firmas_iguales_a_juzgadas": 66,
+    "cambiadas": {
+     "c6": "logrado (antes estado base sucio; arnés arreglado)",
+     "n7": "logrado",
+     "u9": "logrado (1 paso: la apertura llega a Buscar)",
+     "y1": "logrado",
+     "g1": "no_logrado (su arreglo L3 no estaba en ese commit)",
+     "v1": "no_logrado: el modelo eligió mal (texto puesto sin teclear, Enter abrió sugerencias); final honesto; a remedir ×3"
+    },
+    "falsos_exitos": 0,
+    "latencia": {
+     "p50": 4.91,
+     "p90": 11.58,
+     "mision_p50": 4.3
+    }
+   },
+   "banco_definitivo_0f2468bb1": {
+    "logs": [
+     "banco_def1.txt",
+     "banco_def2.txt",
+     "banco_def3.txt"
+    ],
+    "logrados_3de3": 67,
+    "limites_3de3": [
+     "g1",
+     "n5",
+     "s06"
+    ],
+    "fallos": {
+     "c2": "def1 no_logrado (Enter perdido en el cambio de foco)",
+     "x8": "def1 no_logrado (primer «1» perdido; final no honesto «escribí 125+75»)"
+    },
+    "causa": "el motor teclea con waitedMs 0 tras traer la Calculadora al frente y devuelve el foco; la app pierde la tecla del cambio (encargo K)",
+    "latencia": {
+     "def1": {
+      "p50": 4.57,
+      "mision_p50": 3.96
+     },
+     "def2": {
+      "p50": 4.57,
+      "mision_p50": 3.87
+     },
+     "def3": {
+      "p50": 4.81,
+      "mision_p50": 3.92
+     }
+    },
+    "nota_recuento": "67, no 66: recuento por caso de cu-v3/estab_def.json con bancoB_def1..3_juez.json (x7#2 y x10#3 logrados); 67 + 3 límites + c2/x8 2/3 = 72"
+   },
+   "tandas": {
+    "fin1_fin2_0650deac3": {
+     "estricto": [
+      80,
+      76
+     ],
+     "flexible": [
+      100,
+      97
+     ],
+     "turnos": 123,
+     "cambian_rutas": 3
+    },
+    "fin3_fin4_adf871f05": {
+     "cambian_rutas": 3,
+     "causas": "YouTube sin confirmar sonido (encargo YT), Excel libro en blanco falla honesto en ambas"
+    },
+    "fin7_fin8": "pendiente: tandas fin7/fin8"
+   },
+   "banco_fx_b61edf336": {
+    "estado": "pendiente: banco fx (b61edf336) corriendo desde 17:28 del 12-10 (banco_fx1.txt)",
+    "cambia_respecto_al_definitivo": "K (teclas tras traer al frente) + saneo2 (sin cambio de comportamiento)",
+    "confirma": [
+     "c2",
+     "x8"
+    ]
+   },
+   "imprescindibles": {
+    "steam": {
+     "lanzar_instalar_desinstalar_normal": "4/4 en imp1 y en imp2",
+     "biblioteca_tienda_comunidad": "s12 n7 x10 y10 c7 3/3",
+     "buscar_en_biblioteca": "límite (g1 3/3)"
+    },
+    "discord": {
+     "enviar_c6": "3/3 banco + 3/3 msg1-3",
+     "leer": "imp-dc-leer 3/3 msg1-3",
+     "voz_normal_no": "s11 s13 c7 3/3",
+     "entrar_si_y_salir": "2/2 (imp1, imp2)"
+    },
+    "whatsapp": {
+     "resultado": "0/12 (msg1-3)",
+     "estado": "pendiente de decisión del dueño (no declarado límite)",
+     "causa": "el contenido del chat no se expone a accesibilidad; abrir el grupo archivado no se confirma"
+    }
+   },
+   "banco_final_b61edf336": {
+    "logs": [
+     "banco_fx1.txt",
+     "banco_fx2.txt",
+     "banco_fx3.txt"
+    ],
+    "logrados_3de3": 69,
+    "limites_3de3": [
+     "g1",
+     "n5",
+     "s06"
+    ],
+    "inestables": [],
+    "falsos_exitos": 0,
+    "latencia": {
+     "fx1": {
+      "p50": 4.63,
+      "p90": 12.93,
+      "mision_p50": 3.97
+     },
+     "fx2": {
+      "p50": 4.79,
+      "p90": 13.21,
+      "mision_p50": 4.14
+     },
+     "fx3": {
+      "p50": 4.49,
+      "p90": 11.78,
+      "mision_p50": 3.9
+     }
+    },
+    "jueces": [
+     "bancoB_fx3_juez.json (c3, x11)",
+     "veredictos heredados por firma de h1–h3, rf1, i1, fin1–3, def1–3"
+    ]
+   }
+  },
+  "cierre": "2026-10-12: banco definitivo 67 3/3 + g1 n5 s06 límite 3/3, c2/x8 2/3 (K) -> pendiente banco fx; tandas fin7/fin8 pendientes; WhatsApp pendiente de decisión del dueño"
+ },
+ "notas": [
+  "23:10 10-10 arranque: banco B r30 terminado 22:57 sin juzgar; barrido redpc r30b pytest 25166/3 saltadas, Integration 4045/4046 (roja: LiveCoreExercisesRestorableOperationsTwice, sólo por SSH)",
+  "23:40 arnés: Office del lote se cierra (6aa7ade54), Steam en bandeja recupera ventana (792bf0cfc), pruebas en bypass con s14 en Normal (ce6beebaf). x10 3/3 en limpio, g1 0/3. u5 3/3; n6 con libro en blanco 1/3 (libro fuera).",
+  "n6 en estado sucio: el modelo tecleó «Hola» que nadie pidió (cu-v3/estab/n6_hola): acto inventado, a la lista de la fase 2.",
+  "01:20 e2: c7 en Normal entró a voz sin preguntar (s11 suelto sí pregunta): fallo de seguridad dependiente del camino; c7 fuera de e3; encargo V.",
+  "e1 válido: 65 logrados de 69 (s11/s13/c7 no cuentan: bypass en voz), s06 límite, n5/g1/y8 no logrados; y8 pulsó «Reproducir MIX CUMBIAS» sin pedirlo.",
+  "23:05 11-10: banco fase 2 ×3 (h1–h3, 4d9c38ac1) juzgado: 64 logrados 3/3 + n5/s06 límite 3/3; inestables c6 g1 n1 s11 u1 y5 con causa y arreglo integrado en fable/estab-fase3 (D2 Y5 N1 F3 L3 + arnés); 1 falso éxito (h1 c6, cerrado por F3); p50 5.15/4.91/4.46 s",
+  "00:50 12-10: banco del refactor rf1 (40534dee6): 66 firmas iguales a las juzgadas, c6 n7 u9 y1 logrados, g1 y v1 no; 0 falsos éxitos; p50 4,91 s",
+  "17:15 12-10: banco definitivo ×3 (0f2468bb1): 66 logrados 3/3 + g1 n5 s06 límite 3/3; c2 y x8 fallan 1/3 por teclas perdidas en el cambio de foco (K). Revertidos W2/W3 (c3 roto). Identidad verificada en vivo en los dos PC (notebook 6/6 tras M2; redpc 5/5).",
+  "21:40 12-10: BANCO FINAL ×3 (b61edf336, con K): 69 logrados 3/3 + g1 n5 s06 límite 3/3; 0 inestables; 0 falsos éxitos; p50 4,63/4,79/4,49 s (misión 3,97/4,14/3,90 s).",
+  "21:10 13-10: BANCO FINAL ×3 (3961b3737): 72/72 estables — 69 logrados 3/3 + g1 n5 s06 límite 3/3; 0 falsos éxitos; p50 3,43–3,53 s (misión 2,87–2,95 s). Antes: fw ×3 (7b906ce49) cayó en Configuración ya abierta (llegada por apertura de lugar no contada) → E5 arreglado.",
+  "11:38 14-10: BANCO FINAL ×3 sobre main 8d90cc2d0 (zf): 69 logrados 3/3 + g1 n5 s06 límite 3/3; 0 falsos éxitos; 7 casos con firma nueva (s11 c7 n4 s13 v10 v11 y9) juzgados 21/21 logrados; p50 4,03–4,17 s (misión 3,62–3,63 s). c7 ya dice lo que quedó sin hacer tras el «no» (C7Y5).",
+  "14-10: bancos reducidos ×3 zs (a99fa5bea, 22 casos: 22/22 ×3, 0 falsos éxitos) y zt (e9266d59b, 41 casos: 38 firma igual ×3, c6 2/3 por entorno, imp-wa-abrir 2/3 → TZ-DC3). Tandas z1–z6 en el notebook: estricto 94/87/90/83/92/97, flexible 108/104/106/105/108/109 de 123; finales falsos a 0/0/1/1/0/1. Pendientes: TZ-DC3 (final), TZ-HOLD, banco reducido y tandas z7/z8.",
+  "22:45 14-10: verificación final sobre da9a8bb78: banco reducido zw 15/15 ×3 (WhatsApp abrir/enviar/leer 3/3), tandas z9/z10 0 turnos que cambian, 0 finales falsos de efecto; Full verde sobre main 94c95cbbe (pytest 26 508 / 3 omitidas)."
+ ],
+ "referencia_r30": {
+  "logrados": 67,
+  "limites_honestos": [
+   "s06",
+   "n5"
+  ],
+  "no_logrados": [
+   "c1",
+   "g1",
+   "x10"
+  ],
+  "falsos_exitos": 0,
+  "finales_que_niegan_lo_logrado": [
+   "v8",
+   "y8"
+  ],
+  "p50_s": 5.41
+ },
+ "saldo_reglas": {
+  "hasta_0650deac3": -19,
+  "fuente": "cu-v3/estab/saldo_reglas.md",
+  "posteriores": {
+   "W2_W3_revertidas": -2,
+   "SP": 1,
+   "H1": 2,
+   "H2": 1,
+   "I2": -2,
+   "U1": 2,
+   "V1": 0,
+   "K": 2,
+   "YT": 0
+  },
+  "cabeza_estab_fase3_aprox": -15,
+  "arreglos_tz": 4,
+  "cabeza_tras_tz_aprox": -11,
+  "nota_tz": "−15 + 4 de TZ; no suma las ramas fusionadas entre YT y la ronda TZ (C7Y5, E5…) ni TZ-HOLD"
+ },
+ "banco_anterior_fv": {
+  "corridas": 3,
+  "commit": "3961b3737",
+  "estables_3de3": 69,
+  "limites_declarados": 3,
+  "limites": [
+   "g1",
+   "n5",
+   "s06"
+  ],
+  "inestables": 0,
+  "falsos_exitos": 0,
+  "latencia": {
+   "fv1": {
+    "p50": 3.46,
+    "p90": 8.43,
+    "mision_p50": 2.95
+   },
+   "fv2": {
+    "p50": 3.43,
+    "p90": 8.48,
+    "mision_p50": 2.91
+   },
+   "fv3": {
+    "p50": 3.53,
+    "p90": 8.65,
+    "mision_p50": 2.87
+   }
+  },
+  "logs": [
+   "banco_fv1.txt",
+   "banco_fv2.txt",
+   "banco_fv3.txt"
+  ],
+  "jueces": [
+   "bancoB_fv_juez.json (n6) + veredictos heredados por firma"
+  ]
+ },
+ "banco_reducido": {
+  "regla": "orden del dueño: tras un arreglo se repiten ×3 sólo los casos que el arreglo puede mover; el resto hereda el banco zf",
+  "zs": {
+   "commit": "a99fa5bea",
+   "corridas": 3,
+   "casos": 22,
+   "orden": "s01 s11 s14 c2 c6 c7 u1 u9 n2 e1 w1 s13 v8 v11 x1 x7 x8 x12 y1 y7 y8 y11",
+   "iguales_o_logrados_3de3": 22,
+   "falsos_exitos": 0,
+   "notas": "u9 y x7 cambian de final a «estoy en «search»»; logrados por captura",
+   "latencia_sumbench": {
+    "zs1": {
+     "p50": 3.66,
+     "mision_p50": 3.1
+    },
+    "zs2": {
+     "p50": 3.53,
+     "mision_p50": 2.96
+    },
+    "zs3": {
+     "p50": 3.5,
+     "mision_p50": 3.04
+    }
+   },
+   "logs": [
+    "banco_zs1.txt",
+    "banco_zs2.txt",
+    "banco_zs3.txt"
+   ]
+  },
+  "zt": {
+   "commit": "e9266d59b",
+   "corridas": 3,
+   "casos": 41,
+   "firma_igual_3de3": 38,
+   "firma_igual_detalle": "34 logrados + g1 y n5 límite (banco) + imp-dc-leer e imp-wa-leer",
+   "varian": {
+    "c6": {
+     "resultados": [
+      "no_logrado",
+      "logrado",
+      "logrado"
+     ],
+     "causa": "zt1: Discord tenía el frente y recibió las teclas, pero no las puso en su compositor (entorno; 42/42 en redpc con el mismo paso)",
+     "arreglo": "ninguno en el cliente; TZ-DC3 (en curso): el final no dice «escribí» lo que la mirada no mostró"
+    },
+    "imp-wa-abrir": {
+     "resultados": [
+      "logrado",
+      "logrado",
+      "no_logrado"
+     ],
+     "causa": "zt3: chat dibujado tarde; la caja propia ya estaba en la mirada anterior al último clic y FocusedIntoThePlace no daba la llegada",
+     "arreglo": "TZ-DC3 e2dc2114d"
+    },
+    "imp-wa-enviar": {
+     "resultados": [
+      "logrado",
+      "logrado",
+      "logrado"
+     ],
+     "nota": "4 pasos en zt1, 3 en zt2/zt3"
+    }
+   },
+   "imprescindibles_3de3": [
+    "imp-dc-leer",
+    "imp-wa-enviar",
+    "imp-wa-leer"
+   ],
+   "falsos_exitos": 0,
+   "latencia_sumbench": {
+    "zt1": {
+     "p50": 4.34,
+     "mision_p50": 3.88
+    },
+    "zt2": {
+     "p50": 4.08,
+     "mision_p50": 3.72
+    },
+    "zt3": {
+     "p50": 4.52,
+     "mision_p50": 4.02
+    }
+   },
+   "logs": [
+    "banco_zt1.txt",
+    "banco_zt2.txt",
+    "banco_zt3.txt"
+   ],
+   "informe_de_lo_que_vario": "cu-v3/estab/TZ_DC3.md"
+  },
+  "final": "pendiente: banco reducido tras TZ-DC3 y TZ-HOLD"
+ },
+ "tandas_finales": {
+  "maquina": "notebook",
+  "tandas": "t1–t4, 123 turnos por corrida",
+  "jueces": "cu-v3/tandas_z<N>_notebook/juicio_t1..t4.json (sumas de bien_estricto y bien_flexible)",
+  "tipos_de_final_falso": {
+   "a": "efecto en el PC",
+   "b": "dato de conocimiento de memoria (límite declarado en LIMITES_DE_BAXY.md)"
+  },
+  "z1": {
+   "commit": "8d90cc2d0",
+   "total": 123,
+   "bien_estricto": 94,
+   "bien_flexible": 108,
+   "finales_falsos_a": 0,
+   "finales_falsos_b": 4,
+   "detalle_falsos": "t2-c01 t4 (cuenta de uno sin fuente, vía búsqueda → TZ-VETO), t2-c09 t1, t3-c17 t1, t3-c17 t2"
+  },
+  "z2": {
+   "commit": "8d90cc2d0",
+   "total": 123,
+   "bien_estricto": 87,
+   "bien_flexible": 104,
+   "finales_falsos_a": 0,
+   "finales_falsos_b": 3,
+   "detalle_falsos": "t2-c09 t1, t3-c17 t1, t3-c17 t2"
+  },
+  "z3": {
+   "commit": "a99fa5bea",
+   "total": 123,
+   "bien_estricto": 90,
+   "bien_flexible": 106,
+   "finales_falsos_a": 1,
+   "finales_falsos_b": 4,
+   "detalle_falsos": "a: t4-c04 t3 (modo oscuro negado + colores pulsados → TZ-OSC); b: t2-c09 t1, t3-c17 t1–t3"
+  },
+  "z4": {
+   "commit": "a99fa5bea",
+   "total": 123,
+   "bien_estricto": 83,
+   "bien_flexible": 105,
+   "finales_falsos_a": 1,
+   "finales_falsos_b": 5,
+   "detalle_falsos": "a: t4-c04 t3 (→ TZ-OSC); b: t1-c03 t3, t2-c09 t1, t3-c17 t1–t3"
+  },
+  "z5": {
+   "commit": "e9266d59b",
+   "total": 123,
+   "bien_estricto": 92,
+   "bien_flexible": 108,
+   "finales_falsos_a": 0,
+   "finales_falsos_b": 4,
+   "detalle_falsos": "b: t2-c09 t1, t3-c17 t1–t3"
+  },
+  "z6": {
+   "commit": "e9266d59b",
+   "total": 123,
+   "bien_estricto": 97,
+   "bien_flexible": 109,
+   "finales_falsos_a": 1,
+   "finales_falsos_b": 3,
+   "detalle_falsos": "a: t4-c01 t4 (niega Spotify sonando → TZ-HOLD); b: t2-c09 t1, t3-c17 t3, t4-c02 t3"
+  },
+  "turnos_que_cambian_de_ruta": {
+   "z1_z2": 6,
+   "z3_z4": 2,
+   "z5_z6": 0
+  },
+  "z7_z8": "pendiente: tandas finales tras TZ-DC3 y TZ-HOLD"
+ },
+ "arreglos_tz": {
+  "TZ-DC": {
+   "reglas": 0,
+   "informe": "cu-v3/estab/TZ_DC.md"
+  },
+  "TZ-CAL": {
+   "reglas": 0,
+   "informe": "cu-v3/estab/TZ_CAL.md"
+  },
+  "TZ-VETO": {
+   "reglas": 1,
+   "informe": "cu-v3/estab/TZ_VETO.md"
+  },
+  "TZ-SP": {
+   "reglas": 0,
+   "informe": "cu-v3/estab/TZ_SP.md"
+  },
+  "WA-LEER": {
+   "reglas": 1,
+   "detalle": "+2 −1",
+   "informe": "cu-v3/estab/WA_LEER.md"
+  },
+  "TZ-OSC": {
+   "reglas": 2,
+   "informe": "cu-v3/estab/TZ_OSC.md"
+  },
+  "TZ-DC2": {
+   "reglas": 0,
+   "informe": "cu-v3/estab/TZ_DC2.md"
+  },
+  "TZ-DC3": {
+   "reglas": 0,
+   "estado": "llegada tardía en b5d6ecfb8; el final «escribí» en curso",
+   "informe": "cu-v3/estab/TZ_DC3.md"
+  },
+  "TZ-HOLD": {
+   "reglas": null,
+   "estado": "en curso"
+  }
+ },
+ "full": {
+  "verdes": {
+   "8d90cc2d0": "pytest 26 405 / 3 omitidas",
+   "255136708": "pytest 26 459 / 3 omitidas",
+   "602fde7a1": "pytest 26 464 / 3 omitidas"
+  },
+  "skip_xfail_58f8b37c1_a_8d90cc2d0": {
+   "marcadores_pytest": "53→53",
+   "xfail": "0→0",
+   "csharp": "113→110",
+   "pytest_omitidas_en_ejecucion": "3 al inicio y al final"
+  }
+ },
+ "banco_reducido_final": {
+  "corridas": 3,
+  "commit": "da9a8bb78",
+  "logs": [
+   "banco_zw1.txt",
+   "banco_zw2.txt",
+   "banco_zw3.txt"
+  ],
+  "casos": [
+   "imp-wa-abrir",
+   "imp-wa-enviar",
+   "imp-wa-leer",
+   "imp-dc-leer",
+   "c6",
+   "n2",
+   "x1",
+   "x12",
+   "y1",
+   "x4",
+   "c5",
+   "v3",
+   "s03",
+   "u9",
+   "x7"
+  ],
+  "resultado": "15/15 estables ×3: 11 con firma juzgada + 4 imprescindibles de mensajería 3/3",
+  "falsos_exitos": 0,
+  "anteriores": {
+   "zs (a99fa5bea, 22 casos)": "22/22",
+   "zt (e9266d59b, 41)": "c6 2/3, imp-wa-abrir 2/3 → TZ-DC3",
+   "zu (e61a9ed41, 17)": "WhatsApp 2/3,1/3,0/3 → TZ-WA2"
+  }
+ },
+ "tandas_final": {
+  "corridas": 2,
+  "commit": "da9a8bb78",
+  "carpetas": [
+   "tandas_z9_notebook",
+   "tandas_z10_notebook"
+  ],
+  "turnos": 123,
+  "turnos_que_cambian_de_ruta": 0,
+  "bien_estricto": [
+   93,
+   97
+  ],
+  "bien_flexible": [
+   107,
+   110
+  ],
+  "finales_falsos_efecto": [
+   0,
+   0
+  ],
+  "finales_falsos_dato_memoria": [
+   4,
+   3
+  ],
+  "historia": {
+   "z1/z2 8d90cc2d0": 6,
+   "z3/z4 a99fa5bea": 2,
+   "z5/z6 e9266d59b": 0,
+   "z7/z8 e61a9ed41": 0,
+   "z9/z10 da9a8bb78": 0
+  },
+  "nota": "Los finales falsos de dato son respuestas de conocimiento del modelo de 4B sin búsqueda (límite declarado en LIMITES_DE_BAXY.md)."
+ },
+ "full_final": {
+  "commit": "94c95cbbe",
+  "resultado": "verde",
+  "pytest": "26508 passed, 3 skipped",
+  "dotnet": {
+   "Contracts": 70,
+   "Integration": 4086,
+   "Kernel": 559,
+   "Providers": 2170,
+   "Setup": 477
+  }
+ }
+}

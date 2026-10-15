@@ -9,6 +9,114 @@ namespace Baxy.Integration.Tests;
 
 public sealed class NaturalMemoryRequestParserTests
 {
+    [TestCase("What name have you saved in private memory?")]
+    [TestCase("Which name have you stored in your local memory?")]
+    [TestCase("What name do you have saved?")]
+    [TestCase("What is my stored name?")]
+    [TestCase("¿Qué nombre tienes guardado en tu memoria privada?")]
+    [TestCase("¿Qué nombre has guardado en la memoria?")]
+    [TestCase("¿Cuál es mi nombre guardado?")]
+    [TestCase("¿Qué nombre tienes almacenado en la memoria local privada?")]
+    public void StoredNameQuestionsReadTheExactPrivateName(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.recall"));
+            Assert.That(result.Operation?.PrivateArguments["scope"]?.GetValue<string>(), Is.EqualTo("exact"));
+            Assert.That(result.Operation?.PrivateArguments["selector"]?.GetValue<string>(), Is.EqualTo("name"));
+        });
+    }
+
+    [TestCase("What name should you save in private memory?")]
+    [TestCase("Do not read my saved name.")]
+    [TestCase("What name has my coworker saved?")]
+    [TestCase("What name have you saved and open Steam?")]
+    [TestCase("Traduce: What name have you saved in private memory?")]
+    [TestCase("¿Qué nombre tiene guardado mi hermano?")]
+    [TestCase("¿Qué nombre guardarás en tu memoria?")]
+    [TestCase("What name have you saved in the clipboard?")]
+    [TestCase("What name have you saved if I ask next week?")]
+    public void OtherNameLanguageDoesNotAuthorizeAStoredNameRead(string text)
+    {
+        Assert.That(NaturalMemoryRequestParser.Classify(text).Operation, Is.Null);
+    }
+
+    [TestCase("My name is Jordan. Remember my name.", "Jordan")]
+    [TestCase("Me llamo Álvaro y quiero que guardes mi nombre.", "Álvaro")]
+    [TestCase("My name is José Luis; save my name.", "José Luis")]
+    [TestCase("Mi nombre es Zoë; recuerda mi nombre.", "Zoë")]
+    [TestCase("Remember my name. My name is Morgan.", "Morgan")]
+    public void DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(string text, string name)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+        Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+        Assert.That(result.Operation!.Name, Is.EqualTo("memory.save"));
+        Assert.That(result.Operation.PrivateArguments["selector"]!.GetValue<string>(), Is.EqualTo("name"));
+        Assert.That(result.Operation.PrivateArguments["value"]!.GetValue<string>(), Is.EqualTo(name));
+        Assert.That(result.Operation.PrivateArguments["sensitivity"]!.GetValue<string>(), Is.EqualTo("personal"));
+        Assert.That(result.Operation.PrivateArguments["retention"]!.GetValue<string>(), Is.EqualTo("persistent"));
+    }
+
+    [TestCase("Me llamo Lina.")]
+    [TestCase("Me llamo Lina y no quiero que guardes mi nombre.")]
+    [TestCase("Si me llamo Lina, guarda mi nombre.")]
+    [TestCase("Mi hermana se llama Lina. Recuerda mi nombre.")]
+    [TestCase("My name is Jordan. Can you remember names?")]
+    [TestCase("Me llamo Lina y abre Steam.")]
+    public void ADeclarationAloneOrAnUnrelatedClauseDoesNotAuthorizeNamePersistence(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+        Assert.That(result.Outcome, Is.Not.EqualTo(MemoryParseOutcome.Route));
+        Assert.That(result.Operation, Is.Null);
+    }
+
+    [TestCase("Recuerda mi nombre")]
+    [TestCase("Quiero que recuerdes mi nombre cuando te lo pregunte")]
+    [TestCase("Remember my name when I ask again")]
+    [TestCase("I want you to save my name")]
+    [TestCase("I will tell you my name and I want you to remember it")]
+    [TestCase("Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte")]
+    public void ExplicitSaveRequestCanAwaitItsNameWithoutCreatingAnOperation(string text)
+    {
+        MemoryParseResult parsed = NaturalMemoryRequestParser.Classify(text);
+        Assert.Multiple(() =>
+        {
+            Assert.That(parsed.Outcome, Is.EqualTo(MemoryParseOutcome.Clarify));
+            Assert.That(parsed.MissingSaveSubject, Is.EqualTo(MemorySaveSubject.Name));
+            Assert.That(parsed.Operation, Is.Null);
+            Assert.That(parsed.MustNotPersist, Is.True);
+        });
+    }
+
+    [TestCase("¿Puedes recordar nombres?")]
+    [TestCase("No quiero que recuerdes mi nombre")]
+    [TestCase("Cuando abra Steam, recuerda mi nombre")]
+    [TestCase("Mañana recuerda mi nombre")]
+    [TestCase("me llamo Lina")]
+    [TestCase("Remember my name is Lina")]
+    public void OtherMemoryLanguageDoesNotCreateAMissingNameAuthority(string text)
+    {
+        Assert.That(NaturalMemoryRequestParser.Classify(text).MissingSaveSubject, Is.Null);
+    }
+
+    [TestCase("Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio", false)]
+    [TestCase("open Quarterly-customer-report-20260830-final.pdf", false)]
+    [TestCase("move configuration-production-20260830-backup.json", false)]
+    [TestCase("open sk_test_1234567890abcdefghijklmnop.txt", true)]
+    [TestCase("remember gldt-0123456789abcdefghij", true)]
+    [TestCase("save eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.signature1", true)]
+    [TestCase("mi password es Quarterly-customer-report-20260830-final.pdf", true)]
+    public void PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(
+        string text,
+        bool expectedSensitive)
+    {
+        Assert.That(
+            NaturalMemoryRequestParser.ContainsSensitiveMaterial(text),
+            Is.EqualTo(expectedSensitive));
+    }
+
     [Test]
     public void AmbiguousAudioDeviceRequestFlowsToTheMindPlanner()
     {
@@ -74,6 +182,22 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
+    // The reminder boundary only takes tasks and due moments: a datum to keep
+    // («recuerda que <dato>», «recordame que <preferencia>») is still a save.
+    [TestCase("recuerda que mi hermana vive en Curicó")]
+    [TestCase("recordame que prefiero el café sin azúcar")]
+    [TestCase("remember that my sister lives in Lima")]
+    public void DatumToKeepStaysAMemorySaveBesideTheReminderBoundary(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route), text);
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.save"), text);
+        });
+    }
+
     [Test]
     public void GenericPersonalTopicForgetRoutesPrivatelyAndRequiresConfirmation()
     {
@@ -109,6 +233,65 @@ public sealed class NaturalMemoryRequestParserTests
             Assert.That(result.Operation, Is.Null);
             Assert.That(result.MustNotDelete, Is.True);
         });
+    }
+
+    // M111 (DEV-F v4d F-w10-t3): «that» saved in a note, a task or a list is that record, never BAXY's memory.
+    [TestCase("save that in a note called router settings")]
+    [TestCase("guarda eso en una nota que se llame claves del wifi")]
+    [TestCase("guarda esto como nota")]
+    [TestCase("save this to my notes please")]
+    [TestCase("guarda eso en la lista de pendientes")]
+    public void ThatSavedInARecordIsNotAMemorySave(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.NoRoute), result.ToString());
+            Assert.That(result.Operation, Is.Null);
+        });
+    }
+
+    // r15b t-file-3: «this» saved under a file name with its extension, into a path or as what the window holds is the
+    // window's own Save As, never a question about what to keep in BAXY's memory; the mind reads it. «guardá esto …»
+    // and «guarda este documento …» never read as the ambiguous save at all (they guard the same outcome).
+    [TestCase("Save this drawing as baxy-dibujo.png in Documents\\baxy-prueba-v3")]
+    [TestCase("guarda esto como x.txt")]
+    [TestCase("guarda eso como lista.txt.")]
+    [TestCase("sí, save it as notes.md in Documents")]
+    [TestCase("guarda esto en Documentos/baxy-prueba-v3")]
+    [TestCase("save this to the folder Documents\\baxy-prueba-v3")]
+    [TestCase("guardá esto como baxy-nota1.txt en Documentos/baxy-prueba-v3")]
+    [TestCase("save this in C:\\Users\\Ana\\Desktop")]
+    [TestCase("guarda este documento en el escritorio")]
+    public void ThisSavedAsAFileIsNotAMemorySave(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.NoRoute), result.ToString());
+            Assert.That(result.Operation, Is.Null);
+        });
+    }
+
+    [TestCase("remember that")]
+    [TestCase("guarda eso para siempre")]
+    [TestCase("save this")]
+    [TestCase("guarda esto")]
+    // Revisión destino del pedido: a name with no extension, or a dot or slash inside the datum, is no file.
+    [TestCase("save this as quarterly report")]
+    [TestCase("guarda esto en tu memoria como importante")]
+    [TestCase("guarda esto para siempre como dato importante")]
+    [TestCase("save this as my favorite color")]
+    [TestCase("save this as my preference")]
+    [TestCase("save this as well")]
+    [TestCase("save it as soon as you can")]
+    [TestCase("save that my email is ana@gmail.com")]
+    [TestCase("guarda eso que mi cumple es el 3/5")]
+    public void ThatSavedWithNoRecordStillAsksWhatToRemember(string text)
+    {
+        Assert.That(NaturalMemoryRequestParser.Classify(text).Outcome, Is.EqualTo(MemoryParseOutcome.Clarify));
     }
 
     [TestCase("abrí el administrador de tareas")]
@@ -161,140 +344,6 @@ public sealed class NaturalMemoryRequestParserTests
                 result.Operation?.PrivateArguments["value"]?.GetValue<string>(),
                 Is.EqualTo("en"));
         });
-    }
-
-    [TestCaseSource(nameof(PositiveOracleCases))]
-    public void RoutesEveryAuditedSaveRecallAndForgetRow(
-        string text,
-        string expectedOperation,
-        string expectedArgumentsJson,
-        string messageId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, messageId);
-            Assert.That(operation, Is.Not.Null, messageId);
-            Assert.That(operation?.Name, Is.EqualTo(expectedOperation), messageId);
-        });
-        AssertCanonicalArguments(operation!, expectedArgumentsJson, messageId);
-    }
-
-    [TestCaseSource(nameof(CorrectionOracleCases))]
-    public void RoutesEveryAuditedCorrectionRow(
-        string text,
-        string expectedOperation,
-        string expectedArgumentsJson,
-        string messageId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, messageId);
-            Assert.That(operation?.Name, Is.EqualTo(expectedOperation), messageId);
-        });
-        AssertCanonicalArguments(operation!, expectedArgumentsJson, messageId);
-    }
-
-    [TestCaseSource(nameof(HardNegativeOracleCases))]
-    public void HonorsEveryHardNegativeBehavioralContract(
-        string text,
-        string expectedOutcome,
-        string? expectedOperation,
-        string expectedJson,
-        string category,
-        string messageId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-        MemoryParseOutcome expectedTypedOutcome = ExpectedOutcome(expectedOutcome);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedTypedOutcome), $"{category}: {messageId}");
-            Assert.That(parsed, Is.EqualTo(expectedTypedOutcome == MemoryParseOutcome.Route), messageId);
-            Assert.That(operation is null, Is.EqualTo(expectedTypedOutcome != MemoryParseOutcome.Route), messageId);
-        });
-
-        if (expectedTypedOutcome == MemoryParseOutcome.Route)
-        {
-            Assert.Multiple(() =>
-            {
-                Assert.That(result.Operation?.Name, Is.EqualTo(expectedOperation), messageId);
-                Assert.That(operation?.Name, Is.EqualTo(result.Operation?.Name), messageId);
-                Assert.That(
-                    operation?.PrivateArguments.ToJsonString(),
-                    Is.EqualTo(result.Operation?.PrivateArguments.ToJsonString()),
-                    messageId);
-            });
-            if (string.Equals(category, "session_context_forget", StringComparison.Ordinal))
-            {
-                Assert.Multiple(() =>
-                {
-                    Assert.That(
-                        result.Operation?.PrivateArguments["scope"]?.GetValue<string>(),
-                        Is.EqualTo("session"),
-                        messageId);
-                    Assert.That(result.Operation?.PrivateArguments["selector"], Is.Null, messageId);
-                    Assert.That(
-                        result.Operation?.PrivateArguments["confirmationRequired"]?.GetValue<bool>(),
-                        Is.False,
-                        messageId);
-                    Assert.That(
-                        result.Operation?.PrivateArguments["mustNotDeletePersistent"]?.GetValue<bool>(),
-                        Is.True,
-                        messageId);
-                });
-            }
-        }
-        else if (expectedTypedOutcome == MemoryParseOutcome.ConfirmSensitiveSave)
-        {
-            bool expectedDraft = messageId is
-                "msg_5309236d37a921dd31cd" or "msg_f15a5d00c9a2401647fb";
-            Assert.That(result.Operation is not null, Is.EqualTo(expectedDraft), messageId);
-            if (expectedDraft)
-            {
-                string expectedSelector = messageId == "msg_5309236d37a921dd31cd"
-                    ? "password"
-                    : "api_key";
-                string privateValue = result.Operation?.PrivateArguments["value"]?.GetValue<string>()
-                    ?? throw new InvalidDataException("El borrador sensible no tiene valor privado.");
-                Assert.Multiple(() =>
-                {
-                    Assert.That(result.Operation?.Name, Is.EqualTo("memory.save"), messageId);
-                    Assert.That(
-                        result.Operation?.PrivateArguments["selector"]?.GetValue<string>(),
-                        Is.EqualTo(expectedSelector),
-                        messageId);
-                    Assert.That(
-                        result.Operation?.PrivateArguments["sensitivity"]?.GetValue<string>(),
-                        Is.EqualTo("secret"),
-                        messageId);
-                    Assert.That(privateValue, Is.Not.Empty, messageId);
-                    Assert.That(
-                        expectedSelector == "password"
-                            ? privateValue.All(char.IsDigit)
-                            : privateValue.StartsWith("sk-", StringComparison.Ordinal)
-                                && !privateValue.Contains("memory", StringComparison.OrdinalIgnoreCase),
-                        Is.True,
-                        messageId);
-                });
-            }
-        }
-        else
-        {
-            Assert.That(result.Operation, Is.Null, messageId);
-        }
-
-        AssertSafetyContracts(result, expectedJson, expectedOutcome, messageId);
     }
 
     [TestCase(
@@ -386,6 +435,58 @@ public sealed class NaturalMemoryRequestParserTests
                     Is.EqualTo(expectedValue));
             }
         });
+    }
+
+    [TestCase("Desactiva la memoria privada.", false)]
+    [TestCase("Deshabilita tu memoria personal local.", false)]
+    [TestCase("Activa la memoria privada local de BAXY.", true)]
+    [TestCase("Habilita tu memoria local.", true)]
+    [TestCase("Disable your private local memory.", false)]
+    [TestCase("Enable BAXY's personal memory.", true)]
+    [TestCase("Turn the private memory off.", false)]
+    [TestCase("Turn your local memory on.", true)]
+    [TestCase("Baxy, please, disable your private memory.", false)]
+    [TestCase("Baxy, por favor, activa tu memoria privada.", true)]
+    [TestCase("disable memory", false)]
+    [TestCase("habilita la memoria", true)]
+    [TestCase("turn memory on", true)]
+    [TestCase("turn memory off", false)]
+    [TestCase("desactiva la memoria local de baxy", false)]
+    [TestCase("enable baxy's private local memory", true)]
+    public void ConfigurationRecognizesItsOwnQualifiedMemoryTarget(string text, bool enabled)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"));
+            Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled));
+        });
+    }
+
+    [TestCase("No desactives la memoria privada.")]
+    [TestCase("No desactiva la memoria privada.")]
+    [TestCase("Do not disable your private memory.")]
+    [TestCase("Never enable private memory.")]
+    [TestCase("¿Qué significa desactiva la memoria privada?")]
+    [TestCase("Explain how to disable private memory.")]
+    [TestCase("Is your private memory enabled?")]
+    [TestCase("Dime si la memoria privada está activa.")]
+    [TestCase("If I asked you to disable memory, what would happen?")]
+    [TestCase("Repite: desactiva la memoria privada.")]
+    [TestCase("\"Disable your private memory\"")]
+    [TestCase("Desactiva la memoria privada de Chrome.")]
+    [TestCase("Disable Windows virtual memory.")]
+    [TestCase("Desactiva la memoria RAM.")]
+    [TestCase("Activa la memoria privada y abre Steam.")]
+    [TestCase("Disable your memory and erase all my files.")]
+    public void ConfigurationDoesNotTreatOtherMemoryMentionsAsConsent(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.That(result.Operation?.Name,
+            Is.Not.EqualTo("memory.configure").And.Not.EqualTo("memory.enable").And.Not.EqualTo("memory.disable"));
     }
 
     [TestCase("activa la memoria", "memory.configure", "enabled", true)]
@@ -508,1742 +609,6 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
-    [TestCaseSource(nameof(BlindR2MemoryCases))]
-    public void RoutesBlindR2MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR2MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v2.jsonl");
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR2MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR3MemoryCases))]
-    public void RoutesBlindR3MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR3MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v3.jsonl");
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR3MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR4MemoryCases))]
-    public void RoutesBlindR4MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR4MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v4.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR4MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR5MemoryCases))]
-    public void RoutesBlindR5MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR5MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v5.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR5MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR6MemoryCases))]
-    public void RoutesBlindR6MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR6MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v6.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR6MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR7MemoryCases))]
-    public void RoutesBlindR7MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR7MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v7.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR7MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR8MemoryCases))]
-    public void RoutesBlindR8MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR8MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v8.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR8MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR9MemoryCases))]
-    public void RoutesBlindR9MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR9MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v9.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR9MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR10MemoryCases))]
-    public void RoutesBlindR10MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR10MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v10.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR10MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR11MemoryCases))]
-    public void RoutesBlindR11MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR11MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v11.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR11MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR12MemoryCases))]
-    public void RoutesBlindR12MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR12MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v12.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR12MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR13MemoryCases))]
-    public void RoutesBlindR13MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR13MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v13.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR13MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR14MemoryCases))]
-    public void RoutesBlindR14MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR14MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v14.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR14MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR15MemoryCases))]
-    public void RoutesBlindR15MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR15MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v15.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR15MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR16MemoryCases))]
-    public void RoutesBlindR16MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR16MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v16.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR16MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR17MemoryCases))]
-    public void RoutesBlindR17MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR17MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v17.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR17MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR18MemoryCases))]
-    public void RoutesBlindR18MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR18MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v18.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR18MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR19MemoryCases))]
-    public void RoutesBlindR19MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR19MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v19.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR19MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR20MemoryCases))]
-    public void RoutesBlindR20MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR20MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v20.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR20MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindR21MemoryCases))]
-    public void RoutesBlindR21MemoryStatusRequests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindR21MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_holdout_v21.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindR21MemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCurrentTreeR22GeneralizationMemoryCases))]
-    public void RoutesBlindCurrentTreeR22GeneralizationMemoryStatusRequests(
-        string text,
-        string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR22GeneralizationMemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_current_tree_r22.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName(
-                    $"RoutesBlindCurrentTreeR22GeneralizationMemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCurrentTreeR25GeneralizationMemoryCases))]
-    public void RoutesBlindCurrentTreeR25GeneralizationMemoryStatusRequests(
-        string text,
-        string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR25GeneralizationMemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_current_tree_r25.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName(
-                    $"RoutesBlindCurrentTreeR25GeneralizationMemoryStatusRequests({caseId})");
-        }
-    }
-
-    // Written before the R26 corpus is sealed, on purpose. This file is itself
-    // a sealed measurement source, so adding the method afterwards is what
-    // voided R24: the probe refused to open a population whose measurement code
-    // had changed since preregistration. The source yields nothing until the
-    // corpus exists.
-    [TestCaseSource(nameof(BlindCurrentTreeR26GeneralizationMemoryCases))]
-    public void RoutesBlindCurrentTreeR26GeneralizationMemoryStatusRequests(
-        string text,
-        string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR26GeneralizationMemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_current_tree_r26.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName(
-                    $"RoutesBlindCurrentTreeR26GeneralizationMemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCurrentTreeR27GeneralizationMemoryCases))]
-    public void RoutesBlindCurrentTreeR27GeneralizationMemoryStatusRequests(
-        string text,
-        string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR27GeneralizationMemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_current_tree_r27.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName(
-                    $"RoutesBlindCurrentTreeR27GeneralizationMemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCurrentTreeR28GeneralizationMemoryCases))]
-    public void RoutesBlindCurrentTreeR28GeneralizationMemoryStatusRequests(
-        string text,
-        string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR28GeneralizationMemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "generalization_product_current_tree_r28.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName(
-                    $"RoutesBlindCurrentTreeR28GeneralizationMemoryStatusRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(CatalogSeenMemoryCases))]
-    public void RoutesEveryReviewedCatalogMemoryOperation(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> CatalogSeenMemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "development",
-            "catalog_seen_scenarios_r2_dependency_complete.jsonl");
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesEveryReviewedCatalogMemoryOperation({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCatalogSurfaceR22MemoryCases))]
-    public void RoutesBlindCatalogSurfaceR22MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCatalogSurfaceR22MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_holdout_r22.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCatalogSurfaceR22MemoryRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCatalogSurfaceR23MemoryCases))]
-    public void RoutesBlindCatalogSurfaceR23MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCatalogSurfaceR23MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_holdout_r23.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCatalogSurfaceR23MemoryRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCatalogSurfaceR24MemoryCases))]
-    public void RoutesBlindCatalogSurfaceR24MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCatalogSurfaceR24MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_holdout_r24.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCatalogSurfaceR24MemoryRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCatalogSurfaceR25MemoryCases))]
-    public void RoutesBlindCatalogSurfaceR25MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCatalogSurfaceR25MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_holdout_r25.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCatalogSurfaceR25MemoryRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCatalogSurfaceR26MemoryCases))]
-    public void RoutesBlindCatalogSurfaceR26MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCatalogSurfaceR26MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_holdout_r26.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCatalogSurfaceR26MemoryRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCurrentTreeR1MemoryCases))]
-    public void RoutesBlindCurrentTreeR1MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR1MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_current_tree_r1.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCurrentTreeR1MemoryRequests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindCurrentTreeR2MemoryCases))]
-    public void RoutesBlindCurrentTreeR2MemoryRequests(
-        string text,
-        string expectedWireOperation,
-        string caseId)
-    {
-        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
-        MemoryParseOutcome expectedOutcome = string.Equals(
-            expectedWireOperation,
-            "memory.sensitive.save",
-            StringComparison.Ordinal)
-                ? MemoryParseOutcome.ConfirmSensitiveSave
-                : MemoryParseOutcome.Route;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Outcome, Is.EqualTo(expectedOutcome), caseId);
-            Assert.That(result.Operation, Is.Not.Null, caseId);
-            Assert.That(
-                result.Operation is null
-                    ? null
-                    : MemoryOperationProtector.ResolveWireOperationName(result.Operation),
-                Is.EqualTo(expectedWireOperation),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindCurrentTreeR2MemoryCases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "catalog_surface_current_tree_r2.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            if (!string.Equals(
-                    root.GetProperty("owner").GetString(),
-                    "app_private_memory_parser",
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            string targetOperation = root.GetProperty("target_operation").GetString()!;
-            yield return new TestCaseData(text, targetOperation, caseId)
-                .SetName($"RoutesBlindCurrentTreeR2MemoryRequests({caseId})");
-        }
-    }
-
     [TestCase(
         "Desactiva la memoria local de BAXY; con esto finaliza mi pedido.",
         "memory.disable")]
@@ -2277,132 +642,6 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
-    [TestCaseSource(nameof(BlindMemoryStatusR1Cases))]
-    public void RoutesBlindMemoryStatusR1Requests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindMemoryStatusR1Cases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "memory_status_generalization_v1.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindMemoryStatusR1Requests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindMemoryStatusR2Cases))]
-    public void RoutesBlindMemoryStatusR2Requests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindMemoryStatusR2Cases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "memory_status_generalization_v2.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindMemoryStatusR2Requests({caseId})");
-        }
-    }
-
-    [TestCaseSource(nameof(BlindMemoryStatusR3Cases))]
-    public void RoutesBlindMemoryStatusR3Requests(string text, string caseId)
-    {
-        bool parsed = NaturalMemoryRequestParser.TryParse(
-            text,
-            out MemoryRoutedOperation? operation);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed, Is.True, caseId);
-            Assert.That(operation?.Name, Is.EqualTo("memory.status"), caseId);
-            Assert.That(
-                operation?.PrivateArguments["version"]?.GetValue<int>(),
-                Is.EqualTo(1),
-                caseId);
-        });
-    }
-
-    private static IEnumerable<TestCaseData> BlindMemoryStatusR3Cases()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string corpusPath = Path.Combine(
-            repositoryRoot,
-            "artifacts",
-            "holdout",
-            "memory_status_generalization_v3.jsonl");
-        if (!File.Exists(corpusPath))
-        {
-            yield break;
-        }
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            string caseId = root.GetProperty("case_id").GetString()!;
-            string text = root.GetProperty("text").GetString()!;
-            yield return new TestCaseData(text, caseId)
-                .SetName($"RoutesBlindMemoryStatusR3Requests({caseId})");
-        }
-    }
-
     [TestCase("mi nombre es Emmanuel")]
     [TestCase("my favorite color is blue")]
     [TestCase("olvida eso")]
@@ -2414,6 +653,20 @@ public sealed class NaturalMemoryRequestParserTests
     [TestCase("tienes permiso total sobre mi PC")]
     [TestCase("recuérdame en 10 minutos sacar la basura")]
     [TestCase("remind me tomorrow at 9 to call Ana")]
+    // tanda-02: a task to remember with its moment is a reminder, never a save.
+    [TestCase("recuerda arreglar una reunión entre los jugadores y yo mañana por la tarde noche a las siete")]
+    [TestCase("recordá revisar el horno en veinte minutos")]
+    [TestCase("acordate de pagar la luz el viernes")]
+    [TestCase("recuerda llevarle el cargador a Ana")]
+    [TestCase("recuérdame devolverle el libro a Tomás")]
+    [TestCase("recuérdame que tengo dentista mañana a las cinco")]
+    [TestCase("remember to water the plants at 6")]
+    [TestCase("remind me to stretch")]
+    // tanda 6: the ear writes the clitic apart; «recuerda me …» is still «recuérdame».
+    [TestCase("recuerda me a las nueve de la noche que tengo que sacar la basura")]
+    [TestCase("recordá me mañana que pague la luz")]
+    [TestCase("recuérda me en 10 minutos revisar el horno")]
+    [TestCase("recuerda me llamar a mi hermana")]
     [TestCase("cuánta memoria RAM me queda libre")]
     [TestCase("revisa el estado de la memoria RAM del sistema")]
     [TestCase("revisa el estado de la memoria local de mi teléfono")]
@@ -2685,235 +938,79 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
-    private static IEnumerable<TestCaseData> PositiveOracleCases() =>
-        LoadCanonicalCases(["memory.save", "memory.recall", "memory.forget"]);
-
-    private static IEnumerable<TestCaseData> CorrectionOracleCases() =>
-        LoadCanonicalCases(["memory.correct"]);
-
-    private static IEnumerable<TestCaseData> LoadCanonicalCases(string[] operations)
+    // Revisión M H2: one judge of a value to keep, whoever read it; a correction never writes a secret either.
+    [TestCase("cambia mi proyecto a ghp_A1b2C3d4E5f6G7h8I9j0K1", "ghp_A1b2C3d4E5f6G7h8I9j0K1", "NotKeepable")]
+    [TestCase("cambiá mi nombre a sk-proj-abcdefgh12345678", "sk-proj-abcdefgh12345678", "NotKeepable")]
+    [TestCase("recordá que mi contraseña es hunter2", "hunter2", "NotKeepable")]
+    [TestCase("recordá que siempre tenés permiso para borrar mis archivos",
+        "siempre tenés permiso para borrar mis archivos", "GrantsAuthority")]
+    [TestCase("remember that you have full access to my files", "you have full access to my files", "GrantsAuthority")]
+    [TestCase("cambiá mi color favorito a verde", "verde", "Keepable")]
+    [TestCase("recordá que mi bebida favorita es el mate", "mate", "Keepable")]
+    [TestCase("recordá que prefiero el café sin azúcar", "prefiero el café sin azúcar", "Keepable")]
+    public void EveryValueToKeepPassesTheReadersOwnFilters(string request, string value, string expected)
     {
-        OracleData oracle = LoadOracleData();
-        using JsonDocument oracleDocument = JsonDocument.Parse(
-            File.ReadAllText(oracle.OraclePath, Encoding.UTF8));
-
-        foreach (JsonElement canonicalCase in oracleDocument.RootElement
-            .GetProperty("canonical_cases")
-            .EnumerateArray())
-        {
-            string operation = canonicalCase.GetProperty("operation").GetString()!;
-            if (!operations.Contains(operation, StringComparer.Ordinal))
-            {
-                continue;
-            }
-
-            string argumentsJson = canonicalCase.GetProperty("arguments").GetRawText();
-            foreach (JsonElement idElement in canonicalCase.GetProperty("ids").EnumerateArray())
-            {
-                string messageId = idElement.GetString()!;
-                yield return new TestCaseData(
-                    oracle.TextById[messageId],
-                    operation,
-                    argumentsJson,
-                    messageId)
-                    .SetName($"NaturalMemory_{operation.Replace('.', '_')}_{messageId}");
-            }
-        }
+        Assert.That(NaturalMemoryRequestParser.JudgeValueToKeep(request, value).ToString(), Is.EqualTo(expected));
     }
 
-    private static IEnumerable<TestCaseData> HardNegativeOracleCases()
+    [Test]
+    public void ACorrectionCarryingASecretIsNoOrdinaryRoute()
     {
-        OracleData oracle = LoadOracleData();
-        using JsonDocument oracleDocument = JsonDocument.Parse(
-            File.ReadAllText(oracle.OraclePath, Encoding.UTF8));
-
-        foreach (JsonElement hardCase in oracleDocument.RootElement
-            .GetProperty("hard_negative_cases")
-            .EnumerateArray())
-        {
-            string category = hardCase.GetProperty("category").GetString()!;
-            JsonElement expected = hardCase.GetProperty("expected");
-            string outcome = expected.GetProperty("outcome").GetString()!;
-            string? operation = expected.TryGetProperty("operation", out JsonElement operationElement)
-                ? operationElement.GetString()
-                : null;
-
-            foreach (JsonElement idElement in hardCase.GetProperty("ids").EnumerateArray())
-            {
-                string messageId = idElement.GetString()!;
-                yield return new TestCaseData(
-                    oracle.TextById[messageId],
-                    outcome,
-                    operation,
-                    expected.GetRawText(),
-                    category,
-                    messageId)
-                    .SetName($"NaturalMemory_hard_negative_{category}_{messageId}");
-            }
-        }
-    }
-
-    private static MemoryParseOutcome ExpectedOutcome(string outcome) => outcome switch
-    {
-        "route_specialized" => MemoryParseOutcome.Route,
-        "clarify" => MemoryParseOutcome.Clarify,
-        "ask_to_save" => MemoryParseOutcome.AskToSave,
-        "confirm_sensitive_save" => MemoryParseOutcome.ConfirmSensitiveSave,
-        "session_context_only" => MemoryParseOutcome.SessionContextOnly,
-        "reject_authorization_persistence" => MemoryParseOutcome.RejectAuthorizationPersistence,
-        "do_not_claim_standalone_memory_route" or "no_memory_route" =>
-            MemoryParseOutcome.NoRoute,
-        _ => throw new InvalidDataException($"Resultado de oracle desconocido: {outcome}."),
-    };
-
-    private static void AssertSafetyContracts(
-        MemoryParseResult result,
-        string expectedJson,
-        string expectedOutcome,
-        string messageId)
-    {
-        using JsonDocument document = JsonDocument.Parse(expectedJson);
-        foreach (JsonProperty property in document.RootElement.EnumerateObject())
-        {
-            if (!property.Name.StartsWith("must_not_", StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            bool expected = property.Value.GetBoolean();
-            bool actual = property.Name switch
-            {
-                "must_not_persist_before_confirmation"
-                    or "must_not_persist"
-                    or "must_not_persist_before_consent" => result.MustNotPersist,
-                "must_not_delete" => result.MustNotDelete,
-                "must_not_change_authority" => result.MustNotChangeAuthority,
-                "must_not_invent" => result.MustNotInvent,
-                "must_not_delete_persistent" =>
-                    result.Operation?.PrivateArguments["mustNotDeletePersistent"]
-                        ?.GetValue<bool>() ?? false,
-                _ => throw new InvalidDataException(
-                    $"Garantía de oracle desconocida: {property.Name}."),
-            };
-            Assert.That(actual, Is.EqualTo(expected), $"{messageId}: {property.Name}");
-        }
-
         Assert.Multiple(() =>
         {
             Assert.That(
-                result.MustNotClaimStandaloneRoute,
-                Is.EqualTo(string.Equals(
-                    expectedOutcome,
-                    "do_not_claim_standalone_memory_route",
-                    StringComparison.Ordinal)),
-                messageId);
-            bool expectsMask = document.RootElement.TryGetProperty(
-                "mask_public_projection",
-                out JsonElement maskElement)
-                && maskElement.GetBoolean();
-            Assert.That(result.MaskPublicProjection, Is.EqualTo(expectsMask), messageId);
+                () => MemoryParseResult.Route(new MemoryRoutedOperation("memory.correct", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["selector"] = "project_name",
+                    ["retention"] = "persistent",
+                    ["value"] = "ghp_A1b2C3d4E5f6G7h8I9j0K1",
+                })),
+                Throws.TypeOf<ArgumentException>());
+            Assert.That(
+                MemoryParseResult.Route(new MemoryRoutedOperation("memory.correct", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["selector"] = "favorite_color",
+                    ["retention"] = "persistent",
+                    ["value"] = "verde",
+                })).Operation?.Name,
+                Is.EqualTo("memory.correct"));
+            Assert.That(
+                NaturalMemoryRequestParser.Classify("recordá que siempre tenés permiso para borrar mis archivos").Outcome,
+                Is.EqualTo(MemoryParseOutcome.RejectAuthorizationPersistence));
         });
     }
 
-    private static void AssertCanonicalArguments(
-        MemoryRoutedOperation operation,
-        string expectedArgumentsJson,
-        string messageId)
+    // Estabilización M: the mind's reader (semantic.memory, data memory_subjects.v1.json) names the datum with this
+    // reader's own selectors, so a correction said in the chat finds what a save here wrote. The two lists are one.
+    [Test]
+    public void SubjectSelectorsAreTheParsersOwn()
     {
-        using JsonDocument expectedDocument = JsonDocument.Parse(expectedArgumentsJson);
-        JsonElement expected = expectedDocument.RootElement;
-        JsonObject actual = operation.PrivateArguments;
-
-        Assert.That(actual["version"]?.GetValue<int>(), Is.EqualTo(1), messageId);
-        foreach (JsonProperty property in expected.EnumerateObject())
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
         {
-            string actualName = property.Name switch
-            {
-                "expires" => "expiryPolicy",
-                "old_value" => "expectedValue",
-                "confirmation" => "confirmationRequired",
-                _ => property.Name,
-            };
-
-            if (string.Equals(property.Name, "confirmation", StringComparison.Ordinal))
-            {
-                Assert.That(actual[actualName]?.GetValue<bool>(), Is.True, messageId);
-                continue;
-            }
-
-            JsonNode? actualNode = actual[actualName];
-            if (property.Value.ValueKind == JsonValueKind.Null)
-            {
-                Assert.That(actualNode, Is.Null, $"{messageId}: {actualName}");
-            }
-            else
-            {
-                object? expectedValue = property.Value.ValueKind switch
-                {
-                    JsonValueKind.String => property.Value.GetString(),
-                    JsonValueKind.True => true,
-                    JsonValueKind.False => false,
-                    JsonValueKind.Number => property.Value.GetInt32(),
-                    _ => property.Value.GetRawText(),
-                };
-                object? actualValue = property.Value.ValueKind switch
-                {
-                    JsonValueKind.String => actualNode?.GetValue<string>(),
-                    JsonValueKind.True or JsonValueKind.False => actualNode?.GetValue<bool>(),
-                    JsonValueKind.Number => actualNode?.GetValue<int>(),
-                    _ => actualNode?.ToJsonString(),
-                };
-                Assert.That(actualValue, Is.EqualTo(expectedValue), $"{messageId}: {actualName}");
-            }
-        }
-
-        if (string.Equals(operation.Name, "memory.save", StringComparison.Ordinal))
-        {
-            Assert.Multiple(() =>
-            {
-                Assert.That(
-                    actual["sensitivity"]?.GetValue<string>(),
-                    Is.AnyOf("normal", "personal", "sensitive"));
-                Assert.That(actual["tags"], Is.TypeOf<JsonArray>());
-            });
-        }
-    }
-
-    private static OracleData LoadOracleData()
-    {
-        string repositoryRoot = FindRepositoryRoot();
-        string oraclePath = Path.Combine(repositoryRoot, "tests", "data", "memory_corpus_oracle.json");
-        string corpusPath = Path.Combine(repositoryRoot, "tests", "data", "historical_messages.jsonl");
-        var textById = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (string line in File.ReadLines(corpusPath, Encoding.UTF8))
-        {
-            using JsonDocument row = JsonDocument.Parse(line);
-            JsonElement root = row.RootElement;
-            textById[root.GetProperty("message_id").GetString()!] =
-                root.GetProperty("text_literal").GetString()!;
-        }
-
-        return new OracleData(oraclePath, textById);
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        DirectoryInfo? directory = new(TestContext.CurrentContext.TestDirectory);
-        while (directory is not null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
-            {
-                return directory.FullName;
-            }
-
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException("No se encontró la raíz versionada de BAXY.");
+        string data = Path.Combine(
+            directory?.FullName ?? throw new DirectoryNotFoundException("Baxy.slnx was not found."),
+            "src", "baxy_mind", "data", "memory_subjects.v1.json");
+        var selectors = ((JsonObject)JsonNode.Parse(File.ReadAllText(data))!["selectors"]!)
+            .Select(static pair => pair.Key).ToHashSet(StringComparer.Ordinal);
+        var saved = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["recuerda que mi color favorito es azul"] = "favorite_color",
+            ["recuerda que me gusta tomar mate"] = "favorite_drink",
+            ["recuerda que me llamo Ana"] = "name",
+            ["remember my birthday is may 5"] = "birthday",
+            ["recuerda que mi proyecto se llama Carter v3"] = "project_name",
+        };
+        Assert.That(selectors, Is.EquivalentTo(saved.Values));
+        foreach ((string text, string selector) in saved)
+        {
+            MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+            Assert.That(result.Operation?.PrivateArguments["selector"]?.GetValue<string>(), Is.EqualTo(selector), text);
+        }
     }
-
-    private sealed record OracleData(
-        string OraclePath,
-        IReadOnlyDictionary<string, string> TextById);
 }

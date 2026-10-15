@@ -47,7 +47,10 @@ internal sealed class AudioStatusHandler(IAudioControlProvider provider) : IOper
             receipt.Operation,
             receipt.TargetId,
             receipt.EndpointIdHash!,
-            new AudioEndpointStateResult(state.VolumePercent, state.Muted));
+            new AudioEndpointStateResult(state.VolumePercent, state.Muted))
+        {
+            EndpointName = receipt.EndpointName,
+        };
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.AudioStatusResult);

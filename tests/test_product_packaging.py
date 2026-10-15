@@ -5,7 +5,9 @@ import hashlib
 import json
 import os
 import shutil
+import stat
 import subprocess
+import tempfile
 import unittest
 import uuid
 import zipfile
@@ -20,9 +22,9 @@ SCHEMA = "baxy-product-build-v4"
 PRODUCT_PATHS = [
     "Baxy.exe",
     "D3DCompiler_47_cor3.dll",
-    "DesktopClickVisible.ps1",
     "DesktopKeyPress.ps1",
     "DesktopSelectAll.ps1",
+    "DesktopUiaWorker.ps1",
     "FieldUi/assets/index-CjozYCnU.css",
     "FieldUi/assets/index-D3QuhrLm.js",
     "FieldUi/index.html",
@@ -38,9 +40,9 @@ PRODUCT_PATHS = [
     "SpotifyMediaControl.ps1",
     "WebView2Loader.dll",
     "WindowsScheduledNotification.ps1",
-    "core/DesktopClickVisible.ps1",
     "core/DesktopKeyPress.ps1",
     "core/DesktopSelectAll.ps1",
+    "core/DesktopUiaWorker.ps1",
     "core/KnownFileOpen.ps1",
     "core/KnownFolderOpen.ps1",
     "core/SpotifyDesktopAutomation.ps1",
@@ -101,6 +103,47 @@ def source_identity() -> tuple[str, int]:
     return commit, epoch
 
 
+def remove_git_tree(path: Path) -> None:
+    def clear_read_only(function, target, _error) -> None:
+        os.chmod(target, stat.S_IWRITE)
+        function(target)
+
+    if path.exists():
+        shutil.rmtree(path, onexc=clear_read_only)
+
+
+def committed_repository(parent: Path, files: dict[str, bytes]) -> tuple[Path, str]:
+    """A small committed Git repository for the tests whose subject is Git itself.
+
+    The gate's worktree on redpc lives on a 5400 rpm disk shared with other builds: a
+    cold `git status` there spent 4.0 of 4.7 s in lstat (warm: 0.06 s) and a full
+    `git worktree add` of the product tree took minutes, so a fixed timeout measured
+    the disk, not the scripts. The scripts under test are the same bytes either way.
+    """
+    repository = parent / "repository"
+    for relative, data in files.items():
+        destination = repository / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(data)
+    identity = ["-c", "user.name=BAXY", "-c", "user.email=baxy@localhost"]
+    for arguments in (
+        ["init", "-q"],
+        ["config", "core.autocrlf", "false"],
+        ["add", "--all"],
+        [*identity, "-c", "commit.gpgsign=false", "commit", "-q", "-m", "fixture"],
+    ):
+        subprocess.run(
+            ["git", "-C", str(repository), *arguments],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    commit = subprocess.check_output(
+        ["git", "-C", str(repository), "rev-parse", "HEAD"], text=True
+    ).strip()
+    return repository, commit
+
+
 class ProductPackagingTests(unittest.TestCase):
     def setUp(self) -> None:
         BUILD_AREA.mkdir(parents=True, exist_ok=True)
@@ -117,6 +160,18 @@ class ProductPackagingTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         shutil.rmtree(self.sandbox, ignore_errors=True)
+
+    def isolated_area(self) -> Path:
+        area = Path(tempfile.mkdtemp(prefix="baxy-packaging-git-"))
+        self.addCleanup(remove_git_tree, area)
+        return area
+
+    def isolated_build_script(self) -> tuple[Path, Path]:
+        area = self.isolated_area()
+        repository, _ = committed_repository(
+            area, {"scripts/build_product.ps1": BUILD_SCRIPT.read_bytes()}
+        )
+        return area, repository / "scripts" / "build_product.ps1"
 
     def test_sendinput_script_uses_the_complete_native_input_union(self) -> None:
         script = (
@@ -224,63 +279,76 @@ class ProductPackagingTests(unittest.TestCase):
         self.assertEqual(sentinel.read_bytes(), b"preserve-me")
 
     def test_release_build_rejects_dirty_tree_before_mutating_output(self) -> None:
-        dirty_marker = ROOT / "tests" / f".baxy-dirty-gate-{uuid.uuid4().hex}"
-        guarded_output = self.sandbox / "guarded-build"
+        area, build_script = self.isolated_build_script()
+        repository = build_script.parents[1]
+        guarded_output = area / "guarded-build"
         guarded_output.mkdir()
         sentinel = guarded_output / "sentinel.bin"
         sentinel.write_bytes(b"preserve-me")
-        dirty_marker.write_text("force dirty worktree", encoding="utf-8")
-        try:
-            result = run_powershell(
-                BUILD_SCRIPT,
-                "-Configuration",
-                "Release",
-                "-OutputRoot",
-                str(guarded_output),
-                timeout=20,
-            )
-        finally:
-            dirty_marker.unlink(missing_ok=True)
+        (repository / "tests").mkdir()
+        (repository / "tests" / ".baxy-dirty-gate").write_text(
+            "force dirty worktree", encoding="utf-8"
+        )
+        result = run_powershell(
+            build_script,
+            "-Configuration",
+            "Release",
+            "-OutputRoot",
+            str(guarded_output),
+            timeout=20,
+            cwd=repository,
+        )
         self.assert_failed_without_mutating_output(result, sentinel)
         self.assertIn("worktree is dirty", result.stderr.lower())
 
     def test_release_dirty_rejection_is_independent_of_callers_cwd(self) -> None:
-        dirty_marker = ROOT / "tests" / f".baxy-dirty-cwd-{uuid.uuid4().hex}"
-        guarded_output = self.sandbox / "guarded-cwd-build"
+        area, build_script = self.isolated_build_script()
+        guarded_output = area / "guarded-cwd-build"
         guarded_output.mkdir()
         sentinel = guarded_output / "sentinel.bin"
         sentinel.write_bytes(b"preserve-me")
-        dirty_marker.write_text("force dirty worktree", encoding="utf-8")
-        try:
-            result = run_powershell(
-                BUILD_SCRIPT,
-                "-Configuration",
-                "Release",
-                "-OutputRoot",
-                str(guarded_output),
-                timeout=20,
-                cwd=self.sandbox,
-            )
-        finally:
-            dirty_marker.unlink(missing_ok=True)
+        (build_script.parents[1] / ".baxy-dirty-cwd").write_text(
+            "force dirty worktree", encoding="utf-8"
+        )
+        result = run_powershell(
+            build_script,
+            "-Configuration",
+            "Release",
+            "-OutputRoot",
+            str(guarded_output),
+            timeout=20,
+            cwd=area,
+        )
         self.assert_failed_without_mutating_output(result, sentinel)
+        self.assertIn("worktree is dirty", result.stderr.lower())
 
     def test_detached_head_snapshot_is_exact_and_cleanup_removes_it(self) -> None:
-        snapshot = self.sandbox / "head-snapshot"
+        area = self.isolated_area()
+        repository, commit = committed_repository(
+            area,
+            {
+                "scripts/build_product.ps1": BUILD_SCRIPT.read_bytes(),
+                "src/nested/payload.txt": b"payload\n",
+            },
+        )
+        allowed_root = area / "build"
+        allowed_root.mkdir()
+        snapshot = allowed_root / "head-snapshot"
         command = f"""
 $ErrorActionPreference = 'Stop'
 . '{ROOT / 'scripts' / 'path_safety.ps1'}'
 . '{ROOT / 'scripts' / 'product_build_common.ps1'}'
 $created = $false
 try {{
-    $path = New-BaxyHeadWorktreeSnapshot -RepositoryRoot '{ROOT}' -AllowedRoot '{BUILD_AREA}' -SnapshotRoot '{snapshot}' -Commit '{self.commit}'
+    $path = New-BaxyHeadWorktreeSnapshot -RepositoryRoot '{repository}' -AllowedRoot '{allowed_root}' -SnapshotRoot '{snapshot}' -Commit '{commit}'
     $created = $true
     $actual = ([string](& git -C $path rev-parse HEAD)).Trim()
-    if ($actual -cne '{self.commit}') {{ throw 'snapshot commit mismatch' }}
+    if ($actual -cne '{commit}') {{ throw 'snapshot commit mismatch' }}
+    if (-not (Test-Path -LiteralPath (Join-Path $path 'src/nested/payload.txt'))) {{ throw 'snapshot is incomplete' }}
     if (@(& git -C $path status --porcelain=v1 --untracked-files=all).Count -ne 0) {{ throw 'snapshot is dirty' }}
 }} finally {{
     if ($created -or (Test-Path -LiteralPath '{snapshot}')) {{
-        Remove-BaxyHeadWorktreeSnapshot -RepositoryRoot '{ROOT}' -AllowedRoot '{BUILD_AREA}' -SnapshotRoot '{snapshot}'
+        Remove-BaxyHeadWorktreeSnapshot -RepositoryRoot '{repository}' -AllowedRoot '{allowed_root}' -SnapshotRoot '{snapshot}'
     }}
 }}
 """
@@ -295,7 +363,7 @@ try {{
                 "-Command",
                 command,
             ],
-            cwd=self.sandbox,
+            cwd=area,
             text=True,
             encoding="utf-8",
             errors="replace",
@@ -305,6 +373,10 @@ try {{
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(snapshot.exists())
+        worktrees = subprocess.check_output(
+            ["git", "-C", str(repository), "worktree", "list", "--porcelain"], text=True
+        )
+        self.assertNotIn("head-snapshot", worktrees)
 
     def test_package_is_byte_reproducible_and_self_verifying(self) -> None:
         first_output = self.sandbox / "package-a"

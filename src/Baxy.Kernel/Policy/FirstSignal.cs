@@ -30,7 +30,6 @@ public static class FirstSignal
     private const double ClosedConversationSeconds = 0.9;
     private const double ModelSeconds = 2.5;
     private const double ExtraStepSeconds = 2.0;
-    private const int SnippetChars = 42;
 
     public static double EstimateTurnSeconds(string path, int stepCount = 1)
     {
@@ -53,6 +52,13 @@ public static class FirstSignal
         double budgetSeconds = SilenceBudgetSeconds) =>
         lastVisibleUtc is { } last && (nowUtc - last).TotalSeconds > budgetSeconds;
 
+    /// <summary>
+    /// The formulated progress notice: short, in the person's language, claiming no result. Estabilidad cu-v3
+    /// 2026-10-08 (FirstSignal «Sigo con abre obs y agrega una escena nueva que se.», 16 times in one case; «Sigo con
+    /// search my onenote notebooks for receta.»): it never repeats the person's words, raw, cut mid-sentence or in
+    /// another language. <paramref name="language"/> is the turn's decided language when known; the request's own
+    /// reading is only the fallback before the turn is decided.
+    /// </summary>
     public static string FormulateProgress(
         string userText,
         string kind = KindEarly,
@@ -60,46 +66,18 @@ public static class FirstSignal
         int total = 0,
         string? language = null)
     {
-        string lang = language ?? ResponseLanguage(userText);
-        string snippet = Snippet(userText);
-        if (string.Equals(lang, "en", StringComparison.Ordinal))
-        {
-            if (kind == KindMilestone && total > 1 && step > 0)
-            {
-                string body = string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Still working on step {0} of {1}",
-                    step,
-                    total);
-                if (snippet.Length > 0)
-                {
-                    body = body + ": " + snippet;
-                }
-
-                return body + ".";
-            }
-
-            return snippet.Length > 0
-                ? "Still working on " + snippet + "."
-                : "Still working.";
-        }
-
+        bool english = string.Equals(
+            language is "es" or "en" ? language : ResponseLanguage(userText), "en", StringComparison.Ordinal);
         if (kind == KindMilestone && total > 1 && step > 0)
         {
-            string body = string.Format(
+            return string.Format(
                 CultureInfo.InvariantCulture,
-                "Sigo en el paso {0} de {1}",
+                english ? "Still working, step {0} of {1}." : "Sigo en el paso {0} de {1}.",
                 step,
                 total);
-            if (snippet.Length > 0)
-            {
-                body = body + ": " + snippet;
-            }
-
-            return body + ".";
         }
 
-        return snippet.Length > 0 ? "Sigo con " + snippet + "." : "Sigo.";
+        return english ? "Still working on it." : "Sigo trabajando en ello.";
     }
 
     public static string VisibleAfterVerification(string inProgress, string correction)
@@ -144,53 +122,6 @@ public static class FirstSignal
         }
 
         return english > spanish ? "en" : "es";
-    }
-
-    private static string Snippet(string text)
-    {
-        string collapsed = Collapse(text).Trim().Trim(" \t.,;:¡!¿?".ToCharArray());
-        if (collapsed.Length <= SnippetChars)
-        {
-            return collapsed;
-        }
-
-        string clipped = collapsed[..SnippetChars];
-        int lastSpace = clipped.LastIndexOf(' ');
-        if (lastSpace > 0)
-        {
-            clipped = clipped[..lastSpace];
-        }
-
-        return clipped.Trim(" \t.,;:¡!¿?".ToCharArray());
-    }
-
-    private static string Collapse(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return string.Empty;
-        }
-
-        var builder = new StringBuilder(text.Length);
-        bool pendingSpace = false;
-        foreach (char character in text.Trim())
-        {
-            if (char.IsWhiteSpace(character))
-            {
-                pendingSpace = true;
-                continue;
-            }
-
-            if (pendingSpace && builder.Length > 0)
-            {
-                builder.Append(' ');
-            }
-
-            pendingSpace = false;
-            builder.Append(character);
-        }
-
-        return builder.ToString();
     }
 
     private static IEnumerable<string> Tokenize(string text)

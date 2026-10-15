@@ -17,11 +17,37 @@ internal static class ExternalJson
         return document.RootElement.Clone();
     }
 
+    /// <summary>A receipt's result object (a new one when it has none) with more properties written after its own.</summary>
+    internal static JsonElement Extended(JsonElement? result, Action<Utf8JsonWriter> more) => Create(writer =>
+    {
+        writer.WriteStartObject();
+        if (result is { ValueKind: JsonValueKind.Object } read)
+        {
+            foreach (JsonProperty property in read.EnumerateObject())
+            {
+                property.WriteTo(writer);
+            }
+        }
+
+        more(writer);
+        writer.WriteEndObject();
+    });
+
     internal static ExternalCapabilityReceipt Success(
         string operation,
         JsonElement result,
         bool effectObserved = true) =>
         new(operation, effectObserved, true, result, null);
+
+    // v3 r6 lectores: a verified switch whose post-read already showed the requested state before any change: the
+    // effect was observed when something changed; otherwise the state was already reached (changed:false).
+    internal static ExternalCapabilityReceipt Switched(
+        string operation,
+        JsonElement result,
+        bool effectObserved) =>
+        effectObserved
+            ? Success(operation, result)
+            : new(operation, false, true, result, null) { StateAlreadyReached = true };
 
     internal static ExternalCapabilityReceipt Failure(
         string operation,

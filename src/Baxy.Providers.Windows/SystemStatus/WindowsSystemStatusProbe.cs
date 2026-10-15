@@ -1,7 +1,10 @@
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Text.Json;
+using Baxy.Providers.Windows.External;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.SystemStatus;
@@ -13,7 +16,8 @@ internal readonly record struct CpuTimeSample(
 
 internal readonly record struct MemoryReading(
     ulong TotalBytes,
-    ulong AvailableBytes);
+    ulong AvailableBytes,
+    ulong? InstalledBytes = null);
 
 internal readonly record struct DiskReading(
     long TotalBytes,
@@ -29,13 +33,16 @@ internal readonly record struct OperatingSystemReading(
     int MinorVersion,
     int BuildNumber,
     string Architecture,
-    bool IsWorkstation);
+    bool IsWorkstation,
+    string Caption);
 
 internal interface ISystemStatusProbe
 {
     CpuTimeSample ReadCpuTimes();
 
     int ReadLogicalProcessorCount();
+
+    int ReadPhysicalCoreCount();
 
     string? ReadCpuModel();
 
@@ -47,7 +54,7 @@ internal interface ISystemStatusProbe
 
     PowerReading ReadPowerStatus();
 
-    OperatingSystemReading ReadOperatingSystem();
+    ValueTask<OperatingSystemReading> ReadOperatingSystemAsync(CancellationToken cancellationToken);
 
     ulong ReadUptimeMilliseconds();
 }
@@ -55,14 +62,20 @@ internal interface ISystemStatusProbe
 internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
 {
     private const ushort AllProcessorGroups = 0xFFFF;
-    private const int OsVersionInformationSize = 284;
-    private const int OsProductTypeOffset = 282;
-    private const byte NtWorkstation = 1;
-    private const byte NtDomainController = 2;
-    private const byte NtServer = 3;
     private const int MaximumCpuModelUtf8Bytes = 512;
     private const string CpuRegistryPath = @"HARDWARE\DESCRIPTION\System\CentralProcessor\0";
     private const string CpuRegistryValue = "ProcessorNameString";
+    private readonly IExternalProcessRunner _processRunner;
+
+    public WindowsSystemStatusProbe()
+        : this(new ExternalProcessRunner())
+    {
+    }
+
+    internal WindowsSystemStatusProbe(IExternalProcessRunner processRunner)
+    {
+        _processRunner = processRunner ?? throw new ArgumentNullException(nameof(processRunner));
+    }
 
     public CpuTimeSample ReadCpuTimes()
     {
@@ -83,6 +96,76 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
         }
 
         return checked((int)count);
+    }
+
+    public int ReadPhysicalCoreCount()
+    {
+        const int relationProcessorCore = 0;
+        const int errorInsufficientBuffer = 122;
+        uint length = 0;
+        if (GetLogicalProcessorInformationEx(relationProcessorCore, IntPtr.Zero, ref length) != 0
+            || Marshal.GetLastPInvokeError() != errorInsufficientBuffer)
+        {
+            throw CreateLastWin32Exception("Windows did not return processor topology size.");
+        }
+
+        if (length is < 32 or > 16 * 1024 * 1024)
+        {
+            throw new IOException("Windows returned an invalid processor topology size.");
+        }
+
+        int capacity = checked((int)length);
+        IntPtr buffer = Marshal.AllocHGlobal(capacity);
+        try
+        {
+            if (GetLogicalProcessorInformationEx(relationProcessorCore, buffer, ref length) == 0)
+            {
+                throw CreateLastWin32Exception("Windows did not return processor topology.");
+            }
+
+            if (length == 0 || length > capacity)
+            {
+                throw new IOException("Windows returned an invalid processor topology length.");
+            }
+
+            var topology = new byte[checked((int)length)];
+            Marshal.Copy(buffer, topology, 0, topology.Length);
+            return CountPhysicalCores(topology);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    internal static int CountPhysicalCores(ReadOnlySpan<byte> topology)
+    {
+        // RelationProcessorCore returns one variable-size record per active physical core.
+        // Processor masks describe its logical processors; their bit count is not a core count.
+        int count = 0;
+        while (!topology.IsEmpty)
+        {
+            if (topology.Length < 32)
+            {
+                throw new IOException("Windows returned truncated processor topology.");
+            }
+
+            uint relationship = BinaryPrimitives.ReadUInt32LittleEndian(topology);
+            uint size = BinaryPrimitives.ReadUInt32LittleEndian(topology[4..]);
+            ushort groups = BinaryPrimitives.ReadUInt16LittleEndian(topology[30..]);
+            int requiredSize = 32 + groups * (IntPtr.Size + 8);
+            if (relationship != 0 || groups == 0 || size < requiredSize || size > topology.Length)
+            {
+                throw new IOException("Windows returned invalid processor core data.");
+            }
+
+            count++;
+            topology = topology[checked((int)size)..];
+        }
+
+        return count > 0
+            ? count
+            : throw new IOException("Windows returned no physical processor cores.");
     }
 
     public string? ReadCpuModel()
@@ -132,7 +215,15 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
             throw CreateLastWin32Exception("Windows did not return memory status.");
         }
 
-        return new MemoryReading(status.TotalPhysical, status.AvailablePhysical);
+        // SMBIOS reports installed capacity; GlobalMemoryStatusEx reports what
+        // Windows can use after hardware reservations. A failed optional read
+        // must not turn usable memory into a claim about installed capacity.
+        ulong? installedBytes = GetPhysicallyInstalledSystemMemory(out ulong installedKilobytes) != 0
+            && installedKilobytes <= ulong.MaxValue / 1024
+            && installedKilobytes * 1024 >= status.TotalPhysical
+                ? installedKilobytes * 1024
+                : null;
+        return new MemoryReading(status.TotalPhysical, status.AvailablePhysical, installedBytes);
     }
 
     public DiskReading ReadSystemDisk()
@@ -166,38 +257,55 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
             status.BatteryLifePercent);
     }
 
-    public OperatingSystemReading ReadOperatingSystem()
+    public async ValueTask<OperatingSystemReading> ReadOperatingSystemAsync(
+        CancellationToken cancellationToken)
     {
-        nint buffer = Marshal.AllocHGlobal(OsVersionInformationSize);
+        cancellationToken.ThrowIfCancellationRequested();
+        const string script = """
+            $ErrorActionPreference = 'Stop'
+            [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+            Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption,Version,ProductType |
+                Select-Object Caption,Version,ProductType | ConvertTo-Json -Compress
+            """;
+        ExternalProcessResult result = await _processRunner.RunAsync(
+            "powershell.exe",
+            ["-NoProfile", "-NonInteractive", "-Command", script],
+            TimeSpan.FromSeconds(5),
+            cancellationToken).ConfigureAwait(false);
+        if (result.ExitCode != 0)
+        {
+            throw new IOException("Windows did not return its operating-system identity.");
+        }
+
         try
         {
-            byte[] zeros = new byte[OsVersionInformationSize];
-            Marshal.Copy(zeros, 0, buffer, zeros.Length);
-            Marshal.WriteInt32(buffer, OsVersionInformationSize);
-            int result = RtlGetVersion(buffer);
-            if (result != 0)
+            using JsonDocument document = JsonDocument.Parse(result.Output);
+            JsonElement os = document.RootElement;
+            if (os.ValueKind != JsonValueKind.Object
+                || !os.TryGetProperty("Caption", out JsonElement captionValue)
+                || captionValue.ValueKind != JsonValueKind.String
+                || !os.TryGetProperty("Version", out JsonElement versionValue)
+                || versionValue.ValueKind != JsonValueKind.String
+                || !Version.TryParse(versionValue.GetString(), out Version? version)
+                || !os.TryGetProperty("ProductType", out JsonElement productTypeValue)
+                || productTypeValue.ValueKind != JsonValueKind.Number
+                || !productTypeValue.TryGetInt32(out int productType)
+                || productType is not (1 or 2 or 3))
             {
-                throw new Win32Exception(result, "Windows did not return its version.");
+                throw new IOException("Windows returned an invalid operating-system identity.");
             }
 
-            byte productType = Marshal.ReadByte(buffer, OsProductTypeOffset);
-            bool isWorkstation = productType switch
-            {
-                NtWorkstation => true,
-                NtDomainController or NtServer => false,
-                _ => throw new InvalidOperationException(
-                    "Windows returned an unknown operating-system product type."),
-            };
             return new OperatingSystemReading(
-                Marshal.ReadInt32(buffer, sizeof(int)),
-                Marshal.ReadInt32(buffer, sizeof(int) * 2),
-                Marshal.ReadInt32(buffer, sizeof(int) * 3),
+                version.Major,
+                version.Minor,
+                version.Build,
                 GetArchitectureName(RuntimeInformation.OSArchitecture),
-                isWorkstation);
+                productType == 1,
+                captionValue.GetString()!.Trim().Normalize(NormalizationForm.FormC));
         }
-        finally
+        catch (JsonException exception)
         {
-            Marshal.FreeHGlobal(buffer);
+            throw new IOException("Windows returned an invalid operating-system identity.", exception);
         }
     }
 
@@ -259,7 +367,16 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
     private static partial uint GetActiveProcessorCount(ushort groupNumber);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial int GetLogicalProcessorInformationEx(
+        int relationship,
+        IntPtr buffer,
+        ref uint returnedLength);
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial int GlobalMemoryStatusEx(ref NativeMemoryStatus buffer);
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial int GetPhysicallyInstalledSystemMemory(out ulong totalMemoryInKilobytes);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial int GetSystemPowerStatus(out NativePowerStatus systemPowerStatus);
@@ -267,6 +384,4 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
     [LibraryImport("kernel32.dll")]
     private static partial ulong GetTickCount64();
 
-    [LibraryImport("ntdll.dll", EntryPoint = "RtlGetVersion")]
-    private static partial int RtlGetVersion(nint versionInformation);
 }

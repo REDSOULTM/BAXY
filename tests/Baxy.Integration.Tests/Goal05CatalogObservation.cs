@@ -91,6 +91,70 @@ internal static class Goal05CatalogObservation
             "audio.microphone.mute" or "audio.volume.adjust" => Unverifiable(
                 descriptor,
                 "El adapter externo puede postleer el endpoint, pero no se muta el audio del usuario fuera de audio.volume/mute restaurables."),
+            // Operaciones de C03 (2026-09-12 … 2026-09-20): cada una se verifica en su tanda sellada con su
+            // postlectura; esta matriz no las recorre porque tocan apps, radios o carpetas del usuario, o
+            // exigen un cliente con sesión (plan post-goal 2026-09-20, Fase 1 grupo B).
+            "audio.app.volume.adjust" or "audio.app.volume.set" => Unverifiable(
+                descriptor,
+                "Postlectura de la sesión de audio de la app (autoridad windows_core_audio_session_postread, AUDIO1801); la matriz no muta el volumen de una app del usuario ni tiene una app con sesión de audio garantizada."),
+            "bluetooth.radio.status" or "wifi.radio.status" => Unverifiable(
+                descriptor,
+                "Lectura de Windows.Devices.Radios (NETWORK1823/1827); esta sonda no acredita el estado de las radios del usuario sin observación."),
+            "wifi.radio.set" => Unverifiable(
+                descriptor,
+                "Mutaría la radio Wi-Fi del usuario (postlectura de Radios en su tanda); no restaurable aquí."),
+            "wifi.scan" => Unverifiable(
+                descriptor,
+                "netsh wlan show networks mode=bssid enumera redes vecinas del usuario; no se toma como pass simulado."),
+            "calculator.expression.evaluate" => Unverifiable(
+                descriptor,
+                "Escribe en la Calculadora de Windows por UIA y lee su display (UI1731); abriría y teclearía en una app del usuario."),
+            "client.channel.locate" => Unverifiable(
+                descriptor,
+                "Ctrl+K por UIA en Discord (DISCORD1839); exige el cliente con sesión y robaría el foco."),
+            "display.status" or "storage.removable.list" or "software.python.status"
+                or "software.python.package.status" or "notification.list" => Unverifiable(
+                descriptor,
+                "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "document.presentation.create" => Unverifiable(
+                descriptor,
+                "Escribiría un .pptx en Documentos del usuario (REOPEN1957 H0188); su postlectura cuenta las diapositivas del paquete, no se recorre aquí."),
+            "file.compress" or "file.open" or "desktop.wallpaper.set" or "web.download" => Unverifiable(
+                descriptor,
+                "Escribiría un zip, abriría un archivo, cambiaría el fondo del escritorio o guardaría una descarga en las carpetas del usuario (REOPEN1957 H0542/H0459/H0077); no restaurable desde esta matriz."),
+            "game.uninstall.named" => Unverifiable(
+                descriptor,
+                "Desinstalaría un juego instalado del usuario por la consola de Steam y verificaría la ausencia de su manifiesto (REOPEN1993 grupo S); no restaurable desde esta sesión."),
+            "shell.command.run" => Unverifiable(
+                descriptor,
+                "Correría un comando en una consola del usuario y capturaría su salida (REOPEN1993 comandos, D11); esta matriz no ejecuta comandos ni toma una salida ajena como pass simulado."),
+            "package.uninstall" => Unverifiable(
+                descriptor,
+                "Desinstalaría por winget un paquete del usuario y verificaría su ausencia (REOPEN1993 grupo G); no restaurable desde esta sesión."),
+            "web.news.headlines" => Unverifiable(
+                descriptor,
+                "Lectura de un canal RSS público de noticias (REOPEN1993 grupo N); esta matriz no sale a internet ni toma titulares ajenos como pass simulado."),
+            "weather.current" => Unverifiable(
+                descriptor,
+                "Lectura de un servicio público de pronóstico (Open-Meteo) y de la ubicación de este PC por su IP (REOPEN1993 grupo W); esta matriz no sale a internet ni toma un pronóstico ajeno como pass simulado."),
+            "document.text.read" or "filesystem.explorer.count" => Unverifiable(
+                descriptor,
+                "Leería archivos de texto de carpetas conocidas y la carpeta del Explorador del usuario (REOPEN1957 H0299/H0701); no se rellena la celda con su contenido."),
+            "document.pdf.read" or "filesystem.known.list" => Unverifiable(
+                descriptor,
+                "Leería PDFs y carpetas conocidas (Desktop/Documents/…) del usuario; no se rellena la celda con su contenido."),
+            "game.entitlement.named" => Unverifiable(
+                descriptor,
+                "Manifiestos y librarycache de Steam (STEAM1825); sin cliente autorizado el adapter no observa una biblioteca."),
+            "input.visible.controls" => Unverifiable(
+                descriptor,
+                "Instantánea UIA de la ventana en foreground; aquí sería la de esta sesión de pruebas."),
+            "message.draft" or "message.send.test" => Unverifiable(
+                descriptor,
+                "Exige WhatsApp/Discord/Outlook con sesión; el borrador y el envío al destino forzado se verifican por OCR del compositor y la burbuja (MSGSEND1845/1847)."),
+            "window.close.all" or "window.minimize.all" or "window.snap" => Unverifiable(
+                descriptor,
+                "Cerraría, minimizaría o movería las ventanas del escritorio del usuario (postlectura del inventario en CLOSEALL1733/MINALL1687); no restaurable desde esta sesión."),
             "bluetooth.device.list" => Unverifiable(
                 descriptor,
                 "Requiere radio Bluetooth y el adapter de hardware; no se recorre aquí para no enumerar dispositivos del usuario como pass simulado."),
@@ -115,7 +179,7 @@ internal static class Goal05CatalogObservation
                 descriptor,
                 "Segunda lectura de la secuencia del portapapeles de Windows.",
                 "isolated_store"),
-            "email.latest.read" or "email.latest.reply" => Unverifiable(
+            "email.latest.read" or "email.latest.reply" or "email.send" => Unverifiable(
                 descriptor,
                 "Exige un perfil Outlook autenticado."),
             "filesystem.file.open.latest" or "filesystem.folder.open" => Unverifiable(
@@ -137,6 +201,12 @@ internal static class Goal05CatalogObservation
                 or "game.purchase.commit" or "game.purchase.prepare" => Unverifiable(
                 descriptor,
                 "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."),
+            "input.scroll" => Unverifiable(
+                descriptor,
+                "Rueda Win32 sobre la ventana en primer plano verificada por el cambio de superficie; aquí desplazaría esta sesión."),
+            "mission.computer.use" => Unverifiable(
+                descriptor,
+                "Bucle del shell (vista → mente → primitiva verificada); el core solo contesta computer_use_requires_shell sin tocar nada."),
             "input.key.press" or "input.text.type" => Unverifiable(
                 descriptor,
                 "Win32 SendInput aceptado no es el efecto semántico en la app enfocada; dispararlo aquí escribiría en esta sesión."),
@@ -214,7 +284,7 @@ internal static class Goal05CatalogObservation
                 "Mutaría la radio WLAN del usuario; no restaurable."),
             "wifi.ensure.connected" or "wifi.profile.list" or "wifi.status" => Unverifiable(
                 descriptor,
-                "WLAN netsh/WlanApi puede leerse, pero wifi.status es privacy_sensitive y exige confirmación; no se afirma un SSID ni se toma un pending como pass."),
+                "WLAN netsh/WlanApi es de lectura; esta sonda no la ejecuta ni acredita conectividad o SSID sin observación."),
             "window.active" or "window.application.status" or "window.resolve" => Observed(
                 descriptor,
                 "Identidad HWND: proceso, visibilidad y geometría observados, sin mutar.",

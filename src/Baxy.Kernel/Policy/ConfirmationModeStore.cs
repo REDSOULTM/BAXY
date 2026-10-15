@@ -1,14 +1,14 @@
 namespace Baxy.Kernel.Policy;
 
 /// <summary>
-/// El ajuste de confirmación vive en un fichero del data root y, si falta,
-/// en <c>BAXY_CONFIRMATION_MODE</c>. El motor lo relee en cada invocación
-/// para que bypass quede encendido hasta que se apague, sin un segundo camino.
+/// El ajuste de confirmación vive sólo en un fichero del data root, que escribe
+/// el gesto de la interfaz propia; sin fichero, Normal. El motor lo relee en cada
+/// invocación para que bypass quede encendido hasta que se apague, sin un segundo
+/// camino (revisión U, H5: se retiró el respaldo de la variable de entorno).
 /// </summary>
 public static class ConfirmationModeStore
 {
     public const string FileName = "confirmation-mode";
-    public const string EnvironmentVariable = "BAXY_CONFIRMATION_MODE";
 
     public static ConfirmationMode Read(string? dataRoot = null)
     {
@@ -31,8 +31,7 @@ public static class ConfirmationModeStore
             }
         }
 
-        return Parse(Environment.GetEnvironmentVariable(EnvironmentVariable))
-            ?? ConfirmationMode.Normal;
+        return ConfirmationMode.Normal;
     }
 
     public static void Write(string dataRoot, ConfirmationMode mode)

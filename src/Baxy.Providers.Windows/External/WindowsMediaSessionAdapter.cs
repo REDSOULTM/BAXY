@@ -9,6 +9,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
 {
     private const int SpotifyPlaybackPollIntervals = 20;
     private const int SmtcPostreadPollIntervals = 7;
+    private const int SmtcControlPostreadPollIntervals = 40;
     private static readonly TimeSpan SpotifyPlaybackPollInterval =
         TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan SmtcPostreadPollInterval =
@@ -17,6 +18,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
     private readonly Func<string?> _token;
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly bool _ownsHttp;
+    private readonly MediaSessionAccess _sessions;
 
     internal WindowsMediaSessionAdapter()
         : this(new HttpClient { Timeout = TimeSpan.FromSeconds(20) },
@@ -29,17 +31,233 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         HttpClient spotifyHttp,
         Func<string?> token,
         bool ownsHttp = false,
-        Func<TimeSpan, CancellationToken, ValueTask>? delay = null)
+        Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
+        MediaSessionAccess? sessions = null)
     {
         _spotifyHttp = spotifyHttp ?? throw new ArgumentNullException(nameof(spotifyHttp));
         _token = token ?? throw new ArgumentNullException(nameof(token));
         _delay = delay ?? DefaultDelayAsync;
         _ownsHttp = ownsHttp;
+        _sessions = sessions ?? MediaSessionAccess.System;
     }
+
+    /// <summary>
+    /// The system media sessions as BAXY's own-playback bookkeeping reads and pauses them (ronda 19). The product reads
+    /// Windows' sessions; tests give a fake.
+    /// </summary>
+    internal sealed record MediaSessionAccess(
+        Func<ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>>> Snapshot,
+        Func<string, string, ValueTask> Pause,
+        Func<string, string, ValueTask> Resume)
+    {
+        internal static MediaSessionAccess System { get; } =
+            new(SnapshotAsync, PauseSystemSessionAsync, ResumeSystemSessionAsync);
+    }
+
+    /// <summary>The system media sessions now, as this adapter reads them.</summary>
+    internal ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>> SessionsAsync() =>
+        _sessions.Snapshot();
 
     public bool CanHandle(string operation) =>
         operation is "media.control" or "media.seek.relative" or "media.play.exact"
             or "media.play.query" or "media.status";
+
+    private string? _assistantSource;
+
+    /// <summary>The media session of the last playback BAXY verified (its SMTC source).</summary>
+    internal void RememberAssistantPlayback(string sourceAppUserModelId) =>
+        Volatile.Write(ref _assistantSource, sourceAppUserModelId);
+
+    private (string Source, string Title, string Operation)? _assistantPlaying;
+
+    private readonly object _assistantGate = new();
+
+    /// <summary>
+    /// The media session of the last playback BAXY started, the title it was playing then and the operation that
+    /// started it. Without a title nothing is remembered for pausing: a session BAXY cannot tell from a later one of
+    /// the person's is never paused. The source alone still answers unnamed media requests, as before.
+    /// </summary>
+    internal void RememberAssistantPlayback(string sourceAppUserModelId, string? title, string operation)
+    {
+        Volatile.Write(ref _assistantSource, sourceAppUserModelId);
+        lock (_assistantGate)
+        {
+            _assistantPlaying = string.IsNullOrWhiteSpace(title) ? null : (sourceAppUserModelId, title, operation);
+        }
+    }
+
+    /// <summary>
+    /// The way a play operation plays: the desktop music client (an exact or searched track) or the person's browser
+    /// (a video, a streaming title).
+    /// </summary>
+    internal static string PlaybackWay(string operation) =>
+        operation is "media.play.exact" or "media.play.query" ? "client" : "browser";
+
+    /// <summary>
+    /// Ronda 19 (t2-c01 T2 «no mejor en youtube…» right after BAXY put music on in the desktop client, which kept
+    /// playing): a new playback that changes the way of playing first pauses the session BAXY itself left playing.
+    /// Only that session (the same source still playing the same title BAXY left playing) and only while it plays.
+    /// Revisión 2: a session of the person's is never touched, not even in the app BAXY used (the person's own stream
+    /// in the browser after BAXY's video ended, a song the person put on by hand in the client), and a new playback
+    /// the same way replaces nothing here.
+    /// </summary>
+    internal static (string Source, string Title)? AssistantSessionToPause(
+        IReadOnlyList<(string Source, string Title, bool Playing)> sessions,
+        (string Source, string Title, string Operation)? assistant,
+        string newOperation)
+    {
+        if (assistant is not { } own || string.IsNullOrEmpty(own.Source) || string.IsNullOrWhiteSpace(own.Title)
+            || PlaybackWay(own.Operation) == PlaybackWay(newOperation))
+        {
+            return null;
+        }
+
+        return sessions.Any(session => session.Playing
+                && string.Equals(session.Source, own.Source, StringComparison.Ordinal)
+                && string.Equals(session.Title, own.Title, StringComparison.Ordinal))
+            ? (own.Source, own.Title)
+            : null;
+    }
+
+    /// <summary>
+    /// The session a playback BAXY started when its receipt does not name one: a session playing now whose source and
+    /// title were not playing before the operation. Null when none or more than one source did.
+    /// </summary>
+    internal static string? NewlyPlayingSource(
+        IReadOnlyList<(string Source, string Title, bool Playing)> before,
+        IReadOnlyList<(string Source, string Title, bool Playing)> after)
+    {
+        string[] started = Started(before, after, source: null)
+            .Select(session => session.Source)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        return started.Length == 1 ? started[0] : null;
+    }
+
+    /// <summary>
+    /// The title a playback BAXY started plays in <paramref name="source"/>: the one title of that source that started
+    /// playing during the operation. Null when none or more than one did (nothing is then remembered for pausing).
+    /// </summary>
+    internal static string? NewlyPlayingTitle(
+        IReadOnlyList<(string Source, string Title, bool Playing)> before,
+        IReadOnlyList<(string Source, string Title, bool Playing)> after,
+        string source)
+    {
+        string[] titles = Started(before, after, source)
+            .Select(session => session.Title)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        return titles.Length == 1 ? titles[0] : null;
+    }
+
+    private static IEnumerable<(string Source, string Title, bool Playing)> Started(
+        IReadOnlyList<(string Source, string Title, bool Playing)> before,
+        IReadOnlyList<(string Source, string Title, bool Playing)> after,
+        string? source) =>
+        after.Where(session => session.Playing
+            && (source is null || string.Equals(session.Source, source, StringComparison.Ordinal))
+            && !before.Any(earlier => earlier.Playing
+                && string.Equals(earlier.Source, session.Source, StringComparison.Ordinal)
+                && string.Equals(earlier.Title, session.Title, StringComparison.Ordinal)));
+
+    /// <summary>The system media sessions now: source, title and whether each plays. Empty when unreadable.</summary>
+    internal static async ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>> SnapshotAsync() =>
+        (await MediaSessionCalls.ReadAsync().ConfigureAwait(false))
+            .Select(session => (session.SourceAppUserModelId, session.Title, session.PlaybackStatus == "playing"))
+            .ToArray();
+
+    /// <summary>
+    /// Pauses the session BAXY left playing when <paramref name="newOperation"/> changes the way of playing, and says
+    /// which one it paused (null when none: nothing remembered, the person's, or no longer playing). Revisión 2: the
+    /// caller resumes it when the new playback fails before its effect, so a failure never silences the music.
+    /// </summary>
+    internal async ValueTask<(string Source, string Title)?> PauseAssistantPlaybackBeforeAsync(string newOperation)
+    {
+        (string Source, string Title, string Operation)? own;
+        lock (_assistantGate)
+        {
+            own = _assistantPlaying;
+        }
+        if (own is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            (string Source, string Title)? pause = AssistantSessionToPause(
+                await _sessions.Snapshot().ConfigureAwait(false), own, newOperation);
+            if (pause is { } session)
+            {
+                await _sessions.Pause(session.Source, session.Title).ConfigureAwait(false);
+                return session;
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            // Nothing paused is the state before: the new playback goes on.
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Resumes a session this adapter paused for a playback that then failed before its effect, and says whether the
+    /// session reads playing again. False when it could not be resumed or read.
+    /// </summary>
+    internal async ValueTask<bool> ResumeAssistantPlaybackAsync((string Source, string Title) paused)
+    {
+        try
+        {
+            await _sessions.Resume(paused.Source, paused.Title).ConfigureAwait(false);
+            for (int attempt = 0; attempt < SmtcControlPostreadPollIntervals; attempt++)
+            {
+                IReadOnlyList<(string Source, string Title, bool Playing)> sessions =
+                    await _sessions.Snapshot().ConfigureAwait(false);
+                if (sessions.Any(session => session.Playing
+                        && string.Equals(session.Source, paused.Source, StringComparison.Ordinal)
+                        && string.Equals(session.Title, paused.Title, StringComparison.Ordinal)))
+                {
+                    return true;
+                }
+
+                await _delay(SmtcPostreadPollInterval, CancellationToken.None).ConfigureAwait(false);
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            // Unread is unverified.
+        }
+
+        return false;
+    }
+
+    private static async ValueTask PauseSystemSessionAsync(string source, string title) =>
+        _ = await MediaSessionCalls.ControlAsync(source, title, pause: true).ConfigureAwait(false);
+
+    private static async ValueTask ResumeSystemSessionAsync(string source, string title) =>
+        _ = await MediaSessionCalls.ControlAsync(source, title, pause: false).ConfigureAwait(false);
+
+    /// <summary>
+    /// The session an unnamed media request means when BAXY played something itself: that session while it plays, or
+    /// while it is paused and nothing else plays (so «sigue» resumes it). Otherwise null: Windows' current session.
+    /// </summary>
+    internal static string? PreferAssistantSession(
+        IReadOnlyList<(string Source, bool Playing, bool Paused)> sessions,
+        string? assistantSource)
+    {
+        if (string.IsNullOrEmpty(assistantSource))
+            return null;
+        (string Source, bool Playing, bool Paused)? own = sessions
+            .Where(candidate => string.Equals(candidate.Source, assistantSource, StringComparison.Ordinal))
+            .Select(candidate => ((string, bool, bool)?)candidate)
+            .FirstOrDefault();
+        if (own is null)
+            return null;
+        bool otherPlaying = sessions.Any(candidate =>
+            candidate.Playing && !string.Equals(candidate.Source, assistantSource, StringComparison.Ordinal));
+        return own.Value.Playing || (own.Value.Paused && !otherPlaying) ? own.Value.Source : null;
+    }
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -59,7 +277,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         try
         {
             GlobalSystemMediaTransportControlsSessionManager manager =
-                await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
+                await GlobalSystemMediaTransportControlsSessionManager.RequestAsync().Bounded(cancellationToken);
             if (operation is "media.status" or "media.control" or "media.seek.relative")
             {
                 session = manager.GetCurrentSession();
@@ -78,6 +296,21 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     }
                 }
                 session ??= sessions.Count > 0 ? sessions[0] : null;
+                // Owner's live check 2026-10-06: Spotify kept playing while BAXY played a YouTube video in Opera
+                // GX, Windows still named Spotify as the current session, and «para la música» paused Spotify.
+                // What BAXY itself just played answers an unnamed media request while it is the one playing.
+                string? preferred = PreferAssistantSession(
+                    sessions.Select(candidate => (candidate.SourceAppUserModelId,
+                        candidate.GetPlaybackInfo().PlaybackStatus
+                            == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing,
+                        candidate.GetPlaybackInfo().PlaybackStatus
+                            == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused)).ToArray(),
+                    Volatile.Read(ref _assistantSource));
+                if (preferred is not null)
+                {
+                    session = sessions.First(candidate =>
+                        string.Equals(candidate.SourceAppUserModelId, preferred, StringComparison.Ordinal));
+                }
                 if (arguments.TryGetProperty("sourceApp", out JsonElement sourceAppValue)
                     && sourceAppValue.ValueKind == JsonValueKind.String
                     && !string.IsNullOrWhiteSpace(sourceAppValue.GetString()))
@@ -86,6 +319,22 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     session = sessions.FirstOrDefault(candidate =>
                         candidate.SourceAppUserModelId.Contains(
                             requestedSource, StringComparison.OrdinalIgnoreCase));
+                }
+                // Owner's test 2026-09-21 (turn 148, «para la canción» right after a
+                // YouTube playback): Edge kept a session whose status was Closed, so
+                // «stop» was verified against nothing and the final said nothing was
+                // playing. A closed session is not a player: it stands aside so the
+                // tab that actually plays answers.
+                if (session is not null
+                    && session.GetPlaybackInfo().PlaybackStatus
+                        == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed)
+                {
+                    string closedSource = session.SourceAppUserModelId;
+                    session = sessions.FirstOrDefault(candidate =>
+                        candidate.GetPlaybackInfo().PlaybackStatus
+                            != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
+                        && candidate.SourceAppUserModelId.Contains(
+                            closedSource, StringComparison.OrdinalIgnoreCase));
                 }
             }
             else
@@ -328,7 +577,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         {
             string requested = ExternalJson.RequiredString(arguments, "title");
             GlobalSystemMediaTransportControlsSessionMediaProperties properties =
-                await session.TryGetMediaPropertiesAsync();
+                await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
             if (!string.Equals(Fold(properties.Title), Fold(requested), StringComparison.Ordinal))
             {
                 return ExternalJson.Failure(operation, "spotify_exact_selection_requires_verified_uia");
@@ -341,7 +590,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                 != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
             {
                 effectBoundaryCrossed = true;
-                dispatched = await session.TryPlayAsync();
+                dispatched = await session.TryPlayAsync().Bounded(cancellationToken);
                 if (!dispatched)
                 {
                     return ExternalJson.Failure(operation, "spotify_play_dispatch_rejected");
@@ -357,7 +606,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
             {
                 try
                 {
-                    after = await session.TryGetMediaPropertiesAsync();
+                    after = await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
                     status = session.GetPlaybackInfo().PlaybackStatus;
                     verified = string.Equals(
                             Fold(after.Title),
@@ -367,7 +616,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                             == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
                     observationError = null;
                 }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+                catch (Exception exception) when (!cancellationToken.IsCancellationRequested
+                    && exception is not TimeoutException)
                 {
                     observationError = exception;
                     verified = false;
@@ -388,7 +638,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
             }
 
             return verified
-                ? ExternalJson.Success(operation, MediaResult(after, "playing"), dispatched)
+                ? ExternalJson.Success(operation,
+                    MediaResult(after, "playing", session.SourceAppUserModelId, provider: "spotify"), dispatched)
                 : ExternalJson.Failure(operation, "spotify_now_playing_not_verified", dispatched);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -411,21 +662,21 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         {
             string action = ExternalJson.RequiredString(arguments, "action");
             GlobalSystemMediaTransportControlsSessionMediaProperties before =
-                await session.TryGetMediaPropertiesAsync();
+                await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
             GlobalSystemMediaTransportControlsSessionPlaybackStatus beforeStatus =
                 session.GetPlaybackInfo().PlaybackStatus;
             effectBoundaryCrossed = true;
             bool dispatched = action switch
             {
-                "play" => await session.TryPlayAsync(),
-                "pause" => await session.TryPauseAsync(),
-                "stop" => await session.TryStopAsync(),
-                "next" => await session.TrySkipNextAsync(),
-                "previous" => await session.TrySkipPreviousAsync(),
+                "play" => await session.TryPlayAsync().Bounded(cancellationToken),
+                "pause" => await session.TryPauseAsync().Bounded(cancellationToken),
+                "stop" => await session.TryStopAsync().Bounded(cancellationToken),
+                "next" => await session.TrySkipNextAsync().Bounded(cancellationToken),
+                "previous" => await session.TrySkipPreviousAsync().Bounded(cancellationToken),
                 "toggle" => beforeStatus
                     == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing
-                        ? await session.TryPauseAsync()
-                        : await session.TryPlayAsync(),
+                        ? await session.TryPauseAsync().Bounded(cancellationToken)
+                        : await session.TryPlayAsync().Bounded(cancellationToken),
                 _ => false,
             };
             if (!dispatched)
@@ -470,22 +721,23 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
             };
             bool verified = false;
             Exception? observationError = null;
-            for (int attempt = 0; attempt <= SmtcPostreadPollIntervals; attempt++)
+            for (int attempt = 0; attempt <= SmtcControlPostreadPollIntervals; attempt++)
             {
                 try
                 {
-                    after = await session.TryGetMediaPropertiesAsync();
+                    after = await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
                     status = session.GetPlaybackInfo().PlaybackStatus;
                     verified = IsVerified();
                     observationError = null;
                 }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+                catch (Exception exception) when (!cancellationToken.IsCancellationRequested
+                    && exception is not TimeoutException)
                 {
                     observationError = exception;
                     verified = false;
                 }
 
-                bool terminal = attempt == SmtcPostreadPollIntervals;
+                bool terminal = attempt == SmtcControlPostreadPollIntervals;
                 if ((verified && (!alreadySatisfiedBeforeDispatch || terminal)) || terminal)
                 {
                     if (!verified && observationError is not null)
@@ -501,10 +753,18 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     .ConfigureAwait(false);
             }
 
+            // Owner's test 2026-09-21 (turn 148): a session that closed on «stop» is
+            // the stopped playback, not «nothing was playing»; the narrator reads
+            // playing/paused/stopped and the observed status said «closed».
+            string observedStatus = verified
+                && action == "stop"
+                && status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
+                    ? "stopped"
+                    : status.ToString().ToLowerInvariant();
             return verified
                 ? ExternalJson.Success(
                     operation,
-                    MediaResult(after, status.ToString().ToLowerInvariant()))
+                    MediaResult(after, observedStatus, session.SourceAppUserModelId))
                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -525,7 +785,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         {
             cancellationToken.ThrowIfCancellationRequested();
             GlobalSystemMediaTransportControlsSessionMediaProperties properties =
-                await session.TryGetMediaPropertiesAsync();
+                await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
             GlobalSystemMediaTransportControlsSessionPlaybackStatus status =
                 session.GetPlaybackInfo().PlaybackStatus;
             JsonElement result = ExternalJson.Create(writer =>
@@ -535,6 +795,13 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                 writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
                 writer.WriteString("title", properties.Title);
                 writer.WriteString("artist", properties.Artist);
+                // M89 (DEV-D v3r D-w05-t3 «de qué disco es esta»): the album is part of what the session
+                // publishes; without it the reply could only repeat the song's name.
+                if (!string.IsNullOrWhiteSpace(properties.AlbumTitle))
+                {
+                    writer.WriteString("album", properties.AlbumTitle);
+                }
+
                 writer.WriteString("playbackStatus", status.ToString().ToLowerInvariant());
                 writer.WriteString("authority", "windows_smtc_current_session_read");
                 writer.WriteEndObject();
@@ -576,7 +843,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     ? before.EndTime
                     : requested;
             effectBoundaryCrossed = true;
-            if (!await session.TryChangePlaybackPositionAsync(desired.Ticks))
+            if (!await session.TryChangePlaybackPositionAsync(desired.Ticks).Bounded(cancellationToken))
             {
                 return ExternalJson.Failure(operation, "media_seek_dispatch_rejected");
             }
@@ -597,7 +864,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     verified = (after.Position - desired).Duration() <= tolerance;
                     observationError = null;
                 }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+                catch (Exception exception) when (!cancellationToken.IsCancellationRequested
+                    && exception is not TimeoutException)
                 {
                     observationError = exception;
                     verified = false;
@@ -652,11 +920,15 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
 
     private static JsonElement MediaResult(
         GlobalSystemMediaTransportControlsSessionMediaProperties properties,
-        string status) => ExternalJson.Create(writer =>
+        string status,
+        string sourceAppUserModelId,
+        string? provider = null) => ExternalJson.Create(writer =>
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 1);
-        writer.WriteString("provider", "spotify");
+        if (provider is not null)
+            writer.WriteString("provider", provider);
+        writer.WriteString("sourceAppUserModelId", sourceAppUserModelId);
         writer.WriteString("title", properties.Title);
         writer.WriteString("artist", properties.Artist);
         writer.WriteString("playbackStatus", status);

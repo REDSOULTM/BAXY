@@ -6,6 +6,18 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class NaturalSystemStatusRequestParserTests
 {
+    [TestCase("Dime la hora, please, en spanglish", true)]
+    [TestCase("Tell me the time in Spanish.", true)]
+    [TestCase("Dime la hora en inglés", true)]
+    [TestCase("What time is it in spanglish?", true)]
+    [TestCase("Explica qué es un reloj en spanglish", false)]
+    [TestCase("Translate what time is it to Spanish", false)]
+    [TestCase("Tell me the time in London", false)]
+    public void ResponseLanguageDoesNotReplaceTheClockRequest(string text, bool expected)
+    {
+        Assert.That(NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text), Is.EqualTo(expected));
+    }
+
     [TestCase("qué hora es")]
     [TestCase("¿Qué hora es ahora?")]
     [TestCase("dime la hora actual")]
@@ -15,7 +27,6 @@ public sealed class NaturalSystemStatusRequestParserTests
     [TestCase("Dime la hora exacta")]
     [TestCase("what is today's date")]
     [TestCase("cual es la fecha de hoy")]
-    [TestCase("Mi puoi dire che ore sono?")]
     [TestCase("¿Me dices la hora?")]
     [TestCase("Could you tell me the time?")]
     [TestCase("the time, please")]
@@ -63,6 +74,10 @@ public sealed class NaturalSystemStatusRequestParserTests
     [TestCase("what is a time zone")]
     [TestCase("inventa una hora")]
     [TestCase("make up a time")]
+    // LANG1909 (ecc19b60a; H0260/H0347): la hora pedida en otro idioma ya no se contesta en
+    // español por el atajo; se pide repetir, como cualquier pedido fuera de es/en.
+    [TestCase("Mi puoi dire che ore sono?")]
+    [TestCase("wie spät ist es")]
     public void TimeZoneEssaysAndInventedClockAsksAreNotCurrentTimeReads(string text)
     {
         Assert.That(NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text), Is.False);

@@ -26,11 +26,16 @@ internal sealed class MindPlanSession
             get;
             init;
         }
+
+        /// <summary>The time the current turn has taken so far (<see cref="TurnBudget"/>); null: no budget.</summary>
+        internal Func<TimeSpan>? TurnElapsed { get; init; }
     }
 
     private readonly Host _host;
     private DurablePlanStore? _store;
     private PendingMindPlanExecution? _pending;
+    private ComputerUseLabelTranslations? _labelTranslations;
+    private readonly ComputerUseTypedLedger _typedInSession = new();
 
     internal MindPlanSession(Host host)
     {
@@ -48,11 +53,35 @@ internal sealed class MindPlanSession
         _store = store ?? throw new ArgumentNullException(nameof(store));
     }
 
+    /// <summary>
+    /// The unfinished plan of a previous session that this start dropped (2026-09-21:
+    /// a message.send.test left awaiting confirmation the evening before re-prompted
+    /// at every new request of the next session, and a «sí» meant for the new
+    /// request confirmed the stale one). A plan never resumes across sessions: the
+    /// person's consent must be fresh and the app must be usable at once. The start
+    /// announces what was dropped; when the step's effect may have occurred, the
+    /// announcement says so instead of claiming it did not happen.
+    /// </summary>
+    internal PendingMindPlanExecution? DroppedRestoredPlan { get; private set; }
+
     internal void TryRestore(RetryableOperationRegistry registry)
     {
         ArgumentNullException.ThrowIfNull(registry);
         EnsureStore();
+        // Each start says only what it dropped itself; a core recovery must not
+        // repeat the plan an earlier start already announced.
+        DroppedRestoredPlan = null;
         _pending ??= _store!.Load(registry);
+        if (_pending is { } restored)
+        {
+            if (restored.PendingOperation is { } pending)
+            {
+                registry.MarkResolved(pending);
+            }
+
+            DroppedRestoredPlan = restored;
+            Clear();
+        }
     }
 
     internal void Begin(PendingMindPlanExecution execution)
@@ -66,6 +95,42 @@ internal sealed class MindPlanSession
     {
         _pending = null;
         _store?.Clear();
+    }
+
+    internal bool TrySupersedeUnstartedConfirmation(RetryableOperationRegistry registry)
+    {
+        ArgumentNullException.ThrowIfNull(registry);
+        if (_pending is not { CanAbandonConfirmation: true, Confirmation: { } confirmation })
+        {
+            return false;
+        }
+
+        registry.MarkResolved(confirmation.Prepared);
+        Clear();
+        return true;
+    }
+
+    /// <summary>
+    /// A self-contained new request supersedes a plan that only waits on the
+    /// recovery challenge of an uncertain effect: the uncertainty was already
+    /// said, the step is never repeated on its own, and the conversation goes on
+    /// (ctx-dueno-01, 2026-09-22).
+    /// </summary>
+    internal bool TrySupersedeUncertainEffect(RetryableOperationRegistry registry)
+    {
+        ArgumentNullException.ThrowIfNull(registry);
+        if (_pending is not { PendingEffectMayHaveOccurred: true, Confirmation: null } execution)
+        {
+            return false;
+        }
+
+        if (execution.PendingOperation is { } pending)
+        {
+            registry.MarkResolved(pending);
+        }
+
+        Clear();
+        return true;
     }
 
     internal async Task ExecuteAsync(
@@ -83,6 +148,30 @@ internal sealed class MindPlanSession
         while (execution.NextIndex < execution.Steps.Count)
         {
             MindPlanStep step = execution.CurrentStep;
+            if (PlanObservationProjector.IsGuardedByAFoundEntry(step, execution.Observations))
+            {
+                // The read that guards this add found the entry: the plan ends with that read.
+                break;
+            }
+
+            if (execution.CompletedMessages.Count > 0 && TurnBudgetSpent())
+            {
+                // The turn's budget is spent and something is done: no further step starts. The end
+                // says what was done, this step and the effects after it as not done, and nothing
+                // stays pending to hold the conversation (ctx-dueno-01).
+                FinishWithFailure(
+                    execution,
+                    MindPlanBoundary.WithNotDone(
+                        MindPlanBoundary.WithStepFacts(
+                            TurnVisibleFacts.Failure(
+                                "turn_budget_exhausted",
+                                new JsonObject { ["operation"] = step.Operation }),
+                            step.Arguments),
+                        execution,
+                        []));
+                return;
+            }
+
             _host.SetStatus(
                 execution.Steps.Count == 1
                     ? "acting"
@@ -101,6 +190,12 @@ internal sealed class MindPlanSession
                         out groundingObservations))
                 {
                     FinishWithFailure(execution, TurnVisibleFacts.Failure("step_unverified"));
+                    return;
+                }
+
+                if (PlanObservationProjector.IsVerifiedEmptyFileSearch(step, groundingObservations))
+                {
+                    FinishWithFailure(execution, TurnVisibleFacts.Failure("file_search_no_matches"));
                     return;
                 }
 
@@ -132,7 +227,18 @@ internal sealed class MindPlanSession
 
                 if (arguments is null)
                 {
-                    FinishWithFailure(execution, TurnVisibleFacts.Failure("step_data_missing"));
+                    // Ronda 22 (r18 t4-c19): the step that lacked a detail is named with the effects left
+                    // undone, so the end says «no pude colocar la ventana», never only the read before it.
+                    FinishWithFailure(
+                        execution,
+                        MindPlanBoundary.WithNotDone(
+                            MindPlanBoundary.WithStepFacts(
+                                TurnVisibleFacts.Failure(
+                                    "step_data_missing",
+                                    new JsonObject { ["operation"] = step.Operation }),
+                                step.Arguments),
+                            execution,
+                            []));
                     return;
                 }
 
@@ -148,7 +254,8 @@ internal sealed class MindPlanSession
             arguments = MindArgumentNormalization.Normalize(
                 step.Operation,
                 execution.Objective,
-                arguments);
+                arguments,
+                beforeComputerUse: execution.Steps.Any(planned => planned.Operation == "mission.computer.use"));
             if (string.Equals(
                     step.ArgumentsMode,
                     "after_dependencies",
@@ -164,15 +271,52 @@ internal sealed class MindPlanSession
             }
 
             MindPlanBoundary.ValidateGroundedArguments(step.Operation, arguments);
+            if (step.Operation == ComputerUseMission.OperationName)
+            {
+                // The general computer-use engine: the shell runs the loop; every
+                // primitive it takes is its own journaled, policed operation.
+                ComputerUseMission.Result loop = await ComputerUseMission.RunAsync(
+                    new ComputerUseMission.Context
+                    {
+                        Execute = (prepared, timeout, token) => client.SendOperationAsync(prepared, timeout, token),
+                        ExecuteConfirmed = (prepared, confirmationToken, timeout, token) =>
+                            client.SendOperationAsync(prepared, timeout, token, confirmationToken),
+                        Decide = mind.DecideComputerUseStepAsync,
+                        Registry = registry,
+                        MarkResolved = _host.TryMarkResolved,
+                        SetStatus = _host.SetStatus,
+                        LabelTranslations = _labelTranslations ??= ComputerUseLabelTranslations.CreateDefault(),
+                        TypedInSession = _typedInSession,
+                        Front = Providers.Windows.External.WindowsMissionFrontSignal.Instance,
+                    },
+                    execution,
+                    arguments,
+                    cancellationToken);
+                if (loop.Confirmation is { } primitiveConfirmation)
+                {
+                    execution.PendingOperation = null;
+                    StageConfirmation(execution, primitiveConfirmation);
+                    return;
+                }
+
+                OperationResponse missionResponse = loop.Response!;
+                if (missionResponse.Status == OperationStatuses.Completed && missionResponse.Verified)
+                {
+                    CompleteStep(execution, registry, loop.MissionPrepared, step, missionResponse);
+                    continue;
+                }
+
+                FinishWithFailure(execution, missionResponse.Message);
+                return;
+            }
+
             var routed = new RoutedOperation(step.Operation, arguments);
             PreparedOperation prepared = execution.PendingOperation
                 ?? registry.GetOrAdd(routed);
             execution.PendingOperation = prepared;
             Persist(execution);
-            OperationResponse response = await client.SendOperationAsync(
-                prepared,
-                TimeSpan.FromSeconds(20),
-                cancellationToken);
+            OperationResponse response = await SendClosingOnCoreLossAsync(
+                client, registry, prepared, cancellationToken);
             if (PendingOperationConfirmation.TryCreate(
                     response,
                     prepared,
@@ -205,7 +349,11 @@ internal sealed class MindPlanSession
                 return;
             }
 
-            if (response.Status == OperationStatuses.Completed && response.Verified)
+            // M69 (guion v3h t47 «activa mi microfono» already active): a step whose asked
+            // state already held changed nothing and needs nothing; the state read is its
+            // outcome, told as a result (one step) or in the summary, and the plan goes on.
+            if ((response.Status == OperationStatuses.Completed && response.Verified)
+                || OperationResponseProjection.AskedStateAlreadyHeld(response))
             {
                 CompleteStep(execution, registry, prepared, step, response);
                 continue;
@@ -215,10 +363,37 @@ internal sealed class MindPlanSession
             {
                 execution.PendingOperation = prepared;
                 execution.PendingEffectMayHaveOccurred = true;
-                _pending = execution;
-                Persist(execution);
+                if (MindPlanBoundary.CanRefreshConfirmationChallenge(execution))
+                {
+                    // Un paso de riesgo (confirmado) cuyo efecto pudo ocurrir no se repite
+                    // solo: la evidencia queda y la persona decide con el desafío.
+                    _pending = execution;
+                    Persist(execution);
+                    _host.Publish(
+                        MissionNarration.CreateUncertainEffectMessage(execution),
+                        UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+                    return;
+                }
+
+                // ctx-dueno-01 (2026-09-22): una reproducción de YouTube sin verificar
+                // dejó el plan pendiente y los 42 turnos siguientes de la conversación
+                // recibieron el mismo «no pude confirmar»; ni «cancelar» lo soltaba. Un
+                // efecto incierto de una operación sin confirmación de riesgo es un
+                // estado terminal honesto: se dice una vez, con la causa de la
+                // operación cuando la trae, y la conversación sigue.
+                _ = _host.TryMarkResolved(registry, prepared);
+                execution.PendingOperation = null;
+                Clear();
+                // M94 (DEV-D D-p24-t4 «Hustlers» on Netflix behind a sign-in, D-w09-t3): the
+                // unverified step names what it was about, like a failed one. M116: and what
+                // it attempted, and the effects left undone after it.
                 _host.Publish(
-                    $"El paso {execution.NextIndex + 1} no pudo verificarse y el efecto puede haber ocurrido. Conservé su identidad durable; no continuaré, replanearé ni lo repetiré hasta reconciliarlo.",
+                    OperationResponseProjection.CarriesOperationFacts(response.Message)
+                        ? MissionNarration.CreateFailureMessage(
+                            execution.CompletedMessages,
+                            MindPlanBoundary.WithNotDone(
+                                MindPlanBoundary.WithStepFacts(response.Message, arguments), execution, []))
+                        : MissionNarration.CreateUncertainEffectMessage(execution, terminal: true),
                     UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
                 return;
             }
@@ -226,8 +401,48 @@ internal sealed class MindPlanSession
             _ = _host.TryMarkResolved(registry, prepared);
             execution.PendingOperation = null;
             Persist(execution);
+            string failure = MindPlanBoundary.WithStepFacts(response.Message, arguments);
 
-            if (!response.EffectMayHaveOccurred && execution.ReplanCount < 2)
+            if (MindPlanBoundary.OpenBeforeResolvingAgain(execution, response, arguments) is { } reopened)
+            {
+                // Ronda 19 (t2-c18 «pon el Word y el Edge uno al lado del otro» with Edge closed): an installed
+                // application with no window, about to be placed, is opened and resolved once more.
+                _pending = reopened;
+                Persist(reopened);
+                execution = reopened;
+                continue;
+            }
+
+            if (MindPlanBoundary.IndependentRemainder(execution, response) is { } remainder)
+            {
+                // M56 (v3c-final F-w06-t1 «pon el word a la izquierda y el chrome a la derecha» with
+                // Word closed): the first window's resolve failed and Chrome was never placed. A step
+                // that changed nothing ends only its own chain; the steps that do not depend on it
+                // still run, and the end says what was done and what was not, with its target.
+                var continued = new PendingMindPlanExecution(
+                    execution.Objective,
+                    remainder,
+                    execution.ReplanCount)
+                {
+                    DeferredFailure = MindPlanBoundary.MergeFailures(
+                        execution.DeferredFailure,
+                        MindPlanBoundary.WithNotDone(failure, execution, remainder)),
+                    InsertedOpens = execution.InsertedOpens,
+                    PresentStateCondition = execution.PresentStateCondition,
+                };
+                foreach (JsonNode? observation in execution.Observations)
+                {
+                    continued.Observations.Add(observation?.DeepClone());
+                }
+
+                continued.CompletedMessages.AddRange(execution.CompletedMessages);
+                _pending = continued;
+                Persist(continued);
+                execution = continued;
+                continue;
+            }
+
+            if (MindPlanBoundary.MayReplan(execution, response) && !TurnBudgetSpent())
             {
                 MindPlanResult? replacement = await TryReplanAsync(
                     execution,
@@ -250,7 +465,13 @@ internal sealed class MindPlanSession
                     var replanned = new PendingMindPlanExecution(
                         execution.Objective,
                         replacement.Steps,
-                        execution.ReplanCount + 1);
+                        execution.ReplanCount + 1)
+                    {
+                        DeferredFailure = execution.DeferredFailure,
+                        InsertedOpens = execution.InsertedOpens,
+                        PresentStateCondition = execution.PresentStateCondition
+                            || replacement.PresentStateCondition,
+                    };
                     foreach (JsonNode? observation in execution.Observations)
                     {
                         replanned.Observations.Add(observation?.DeepClone());
@@ -266,13 +487,19 @@ internal sealed class MindPlanSession
 
             FinishWithFailure(
                 execution,
-                TurnVisibleFacts.Failure(
-                    "step_failed",
-                    new JsonObject { ["step"] = execution.NextIndex + 1 }));
+                MindPlanBoundary.WithNotDone(failure, execution, []));
             return;
         }
 
         Clear();
+        if (execution.DeferredFailure is { } deferred)
+        {
+            _host.Publish(
+                MissionNarration.CreateFailureMessage(execution.CompletedMessages, deferred),
+                UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+            return;
+        }
+
         if (execution.CompletedMessages.Count == 1)
         {
             _host.Publish(
@@ -282,7 +509,7 @@ internal sealed class MindPlanSession
         }
 
         _host.Publish(
-            MissionNarration.CreateCompletionMessage(execution.CompletedMessages),
+            MissionNarration.CreateCompletionMessage(execution.CompletedMessages, execution.Objective),
             null);
     }
 
@@ -302,48 +529,78 @@ internal sealed class MindPlanSession
                 case ConfirmationReplyKind.Invalid:
                     _host.Publish(
                         confirmation.ReconciliationRequired
-                            ? TurnVisibleFacts.Confirmation(
+                            ? MissionNarration.CreateConfirmationMessage(execution,
                                 "step_started_needs_check",
                                 TurnVisibleFacts.ConfirmCancel)
-                            : TurnVisibleFacts.Confirmation(
+                            : MissionNarration.CreateConfirmationMessage(execution,
                                 "step_confirm_or_cancel",
                                 TurnVisibleFacts.ConfirmCancel),
                         UserMessageEvent.Confirmation);
                     return;
                 case ConfirmationReplyKind.Cancel:
-                    if (!execution.CanAbandonConfirmation)
+                    if (!TrySupersedeUnstartedConfirmation(registry))
                     {
                         Persist(execution);
                         _host.Publish(
-                            TurnVisibleFacts.Confirmation(
+                            MissionNarration.CreateConfirmationMessage(execution,
                                 "cannot_cancel_started_step",
                                 TurnVisibleFacts.ConfirmCancel),
                             UserMessageEvent.Confirmation);
                         return;
                     }
 
-                    registry.MarkResolved(confirmation.Prepared);
-                    Clear();
                     _host.Publish(
-                        TurnVisibleFacts.Status(
-                            "mission_cancelled_partial",
-                            new JsonObject
-                            {
-                                ["step"] = execution.NextIndex + 1,
-                                ["completed"] = execution.CompletedMessages.Count,
-                            }),
+                        MissionNarration.CreateCancellationMessage(execution),
                         null);
                     return;
                 case ConfirmationReplyKind.Confirm:
                     CoreProcessClient client = _host.Core()
                         ?? throw new InvalidOperationException("El motor local no está disponible.");
-                    OperationResponse response = await client.SendOperationAsync(
-                        confirmation.Prepared,
-                        TimeSpan.FromSeconds(20),
-                        cancellationToken,
-                        confirmation.Token);
+                    // A mission's act confirmed runs as part of its mission (the Core brings its window up only while
+                    // one runs), and the mission ends with it whatever happens next: the Core gives the person's window
+                    // the front back unless the loop resumes (IMissionFrontSignal).
+                    OperationResponse response;
+                    bool missionAct = execution.ComputerUse is not null;
+                    if (missionAct)
+                    {
+                        Providers.Windows.External.WindowsMissionFrontSignal.Instance.MissionBegins();
+                    }
+
+                    try
+                    {
+                        response = await SendClosingOnCoreLossAsync(
+                            client, registry, confirmation.Prepared, cancellationToken,
+                            confirmation.Token);
+                    }
+                    finally
+                    {
+                        if (missionAct)
+                        {
+                            Providers.Windows.External.WindowsMissionFrontSignal.Instance.MissionEnds();
+                        }
+                    }
+
                     execution.Confirmation = null;
-                    if (response.Status == OperationStatuses.Completed && response.Verified)
+                    if (execution.ComputerUse is not null
+                        && execution.CurrentStep.Operation == ComputerUseMission.OperationName
+                        && confirmation.Prepared.OperationName != ComputerUseMission.OperationName
+                        && !PendingOperationConfirmation.TryCreate(
+                            response, confirmation.Prepared, TimeProvider.System, out _))
+                    {
+                        // The confirmed primitive belongs to a computer-use mission:
+                        // its result joins the mission's steps and the loop resumes.
+                        ComputerUseMission.RecordConfirmedStep(execution, confirmation.Prepared, response);
+                        _ = _host.TryMarkResolved(registry, confirmation.Prepared);
+                        execution.PendingOperation = null;
+                        execution.PendingEffectMayHaveOccurred = false;
+                        Persist(execution);
+                        await ExecuteAsync(execution, registry, cancellationToken);
+                        return;
+                    }
+
+                    // M69: a confirmed step whose asked state already held is done, as above.
+                    if ((response.Status == OperationStatuses.Completed && response.Verified)
+                        || OperationResponseProjection.AskedStateAlreadyHeld(response))
                     {
                         CompleteStep(
                             execution,
@@ -375,8 +632,8 @@ internal sealed class MindPlanSession
                         Persist(execution);
                         _host.Publish(
                             response.EffectMayHaveOccurred
-                                ? TurnVisibleFacts.Status("confirmed_uncertain")
-                                : TurnVisibleFacts.Confirmation(
+                                ? MissionNarration.CreateUncertainEffectMessage(execution)
+                                : MissionNarration.CreateConfirmationMessage(execution,
                                     "confirmed_pending",
                                     TurnVisibleFacts.ContinueCancel),
                             null);
@@ -385,9 +642,24 @@ internal sealed class MindPlanSession
 
                     _ = _host.TryMarkResolved(registry, confirmation.Prepared);
                     execution.PendingOperation = null;
+                    // NETWORK1721 «conectate al wifi de casa» confirmed and ended
+                    // wifi_profile_not_found: the generic confirmed_no_effect reason
+                    // hid the operation's own failure facts, so the final said «no
+                    // hubo efecto» instead of the cause. A confirmed step that fails
+                    // with a typed error carries the same facts as an ordinary step
+                    // (M116: what it attempted and what it left undone, too).
                     FinishWithFailure(
                         execution,
-                        TurnVisibleFacts.Failure("confirmed_no_effect"));
+                        string.Equals(response.Status, OperationStatuses.Failed, StringComparison.Ordinal)
+                        && !string.IsNullOrWhiteSpace(response.ErrorCode)
+                        && OperationResponseProjection.CarriesOperationFacts(response.Message)
+                            ? MindPlanBoundary.WithNotDone(
+                                MindPlanBoundary.WithStepFacts(
+                                    response.Message,
+                                    JsonNode.Parse(confirmation.Prepared.Arguments.GetRawText()) as JsonObject),
+                                execution,
+                                [])
+                            : TurnVisibleFacts.Failure("confirmed_no_effect"));
                     return;
                 default:
                     throw new InvalidDataException("La respuesta de confirmación no es válida.");
@@ -397,22 +669,21 @@ internal sealed class MindPlanSession
         ConfirmationReplyKind reply = ConfirmationReplyParser.Parse(text);
         if (reply == ConfirmationReplyKind.Cancel)
         {
-            if (execution.PendingEffectMayHaveOccurred)
+            if (execution.PendingOperation is not null)
             {
-                Persist(execution);
-                _host.Publish(TurnVisibleFacts.Status("stopped_keeping_evidence"), null);
-            }
-            else
-            {
-                if (execution.PendingOperation is not null)
-                {
-                    registry.MarkResolved(execution.PendingOperation);
-                }
-
-                Clear();
-                _host.Publish(TurnVisibleFacts.Status("remaining_steps_cancelled"), null);
+                registry.MarkResolved(execution.PendingOperation);
             }
 
+            // «Cancelar» cierra el plan también cuando el efecto pudo ocurrir: se dice
+            // la incertidumbre una última vez y no se vuelve a preguntar (2026-09-22).
+            Clear();
+            _host.Publish(
+                execution.PendingEffectMayHaveOccurred
+                    ? MissionNarration.CreateUncertainEffectMessage(execution, terminal: true)
+                    : MissionNarration.CreateCancellationMessage(execution),
+                execution.PendingEffectMayHaveOccurred
+                    ? UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted)
+                    : null);
             return;
         }
 
@@ -435,11 +706,13 @@ internal sealed class MindPlanSession
 
             _host.Publish(
                 MindPlanBoundary.CanRefreshConfirmationChallenge(execution)
-                    ? TurnVisibleFacts.Confirmation(
-                        "keep_recovery_evidence",
+                    ? MissionNarration.CreateConfirmationMessage(execution,
+                                "keep_recovery_evidence",
                         TurnVisibleFacts.ConfirmCancel)
-                    : "No repetiré este paso porque el efecto anterior puede haber ocurrido. Debe reconciliarse con el estado real antes de continuar.",
-                null);
+                    : MissionNarration.CreateUncertainEffectMessage(execution),
+                MindPlanBoundary.CanRefreshConfirmationChallenge(execution)
+                    ? UserMessageEvent.Confirmation
+                    : UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
             return;
         }
 
@@ -448,7 +721,8 @@ internal sealed class MindPlanSession
             && !string.Equals(text.Trim(), "continue", StringComparison.OrdinalIgnoreCase))
         {
             _host.Publish(
-                "Di «continuar» para reintentar el paso pendiente o «cancelar» para detener el resto del plan.",
+                MissionNarration.CreateConfirmationMessage(execution,
+                    "confirmed_pending", TurnVisibleFacts.ContinueCancel),
                 UserMessageEvent.Confirmation);
             return;
         }
@@ -464,15 +738,11 @@ internal sealed class MindPlanSession
         _pending = execution;
         Persist(execution);
         _host.Publish(
-            confirmation.ReconciliationRequired
-                ? TurnVisibleFacts.Confirmation(
-                    "step_interrupted_uncertain",
-                    TurnVisibleFacts.ConfirmCancel,
-                    new JsonObject { ["step"] = execution.NextIndex + 1 })
-                : TurnVisibleFacts.Confirmation(
-                    "step_needs_confirmation",
-                    TurnVisibleFacts.ConfirmCancel,
-                    new JsonObject { ["step"] = execution.NextIndex + 1 }),
+            MissionNarration.CreateConfirmationMessage(execution,
+                confirmation.ReconciliationRequired
+                    ? "step_interrupted_uncertain"
+                    : "step_needs_confirmation",
+                TurnVisibleFacts.ConfirmCancel),
             UserMessageEvent.Confirmation);
     }
 
@@ -488,8 +758,9 @@ internal sealed class MindPlanSession
         execution.PendingEffectMayHaveOccurred = false;
         execution.Observations.Add(
             PlanObservationProjector.Create(step.Id, step.Operation, response));
-        execution.CompletedMessages.Add(
-            OperationResponseProjection.Create(response, step.Operation).Message);
+        execution.CompletedMessages.Add(MindPlanBoundary.WithVerifiedContent(
+            OperationResponseProjection.Create(response, step.Operation).Message,
+            JsonNode.Parse(prepared.Arguments.GetRawText()) as JsonObject));
         execution.NextIndex++;
         if (execution.NextIndex < execution.Steps.Count)
         {
@@ -529,11 +800,46 @@ internal sealed class MindPlanSession
             expectedSuffix: pendingSuffix);
     }
 
+    /// <summary>
+    /// Sends one step. 2026-09-28: the core ended mid-step and the plan stayed
+    /// pending with input disabled, so every later turn, «cancelar» and a new
+    /// session were refused. A step whose core is gone ends the plan here — the
+    /// same drop a restart already gives a stale plan — and the failure still
+    /// reaches the turn, which says the step was sent and not confirmed.
+    /// </summary>
+    private async Task<OperationResponse> SendClosingOnCoreLossAsync(
+        CoreProcessClient client,
+        RetryableOperationRegistry registry,
+        PreparedOperation prepared,
+        CancellationToken cancellationToken,
+        string? confirmationToken = null)
+    {
+        try
+        {
+            return await client.SendOperationAsync(
+                prepared,
+                TimeSpan.FromSeconds(20),
+                cancellationToken,
+                confirmationToken);
+        }
+        catch (Exception) when (!client.IsReady && !cancellationToken.IsCancellationRequested)
+        {
+            _ = _host.TryMarkResolved(registry, prepared);
+            Clear();
+            throw;
+        }
+    }
+
+    private bool TurnBudgetSpent() =>
+        _host.TurnElapsed is { } elapsed && TurnBudget.IsSpent(elapsed());
+
     private void FinishWithFailure(PendingMindPlanExecution execution, string reason)
     {
         Clear();
         _host.Publish(
-            MissionNarration.CreateFailureMessage(execution.CompletedMessages, reason),
+            MissionNarration.CreateFailureMessage(
+                execution.CompletedMessages,
+                MindPlanBoundary.MergeFailures(execution.DeferredFailure, reason)),
             UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
     }
 

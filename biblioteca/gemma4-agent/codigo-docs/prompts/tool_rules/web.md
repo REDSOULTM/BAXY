@@ -1,1 +1,0 @@
-For internet research, current facts, sources, or requests like "investiga", use web(action="research", query="<topic>") and answer from the returned source excerpts. browser(action="search"|"open") only navigates a visible browser; it does not mean you have read or researched the content.

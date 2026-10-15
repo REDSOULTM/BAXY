@@ -4,14 +4,9 @@ include = [
     "scripts/**/*.py",
     "src/baxy_mind/**/*.py",
     "tests/**/*.py",
-    "experiments/mind_llm_tournament/**/*.py",
-    "experiments/mind_router_spike/**/*.py",
 ]
 force-exclude = true
 extend-exclude = [
-    "artifacts",
-    "experiments/**/.venv",
-    "experiments/technology_tournament",
     "legacy",
 ]
 

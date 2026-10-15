@@ -539,7 +539,7 @@ internal enum ConfirmationReplyKind
     Cancel,
 }
 
-internal static partial class ConfirmationReplyParser
+internal static class ConfirmationReplyParser
 {
     internal static ConfirmationReplyKind Parse(string? text)
     {
@@ -550,23 +550,54 @@ internal static partial class ConfirmationReplyParser
         }
 
         string normalized = text.Trim().Normalize(NormalizationForm.FormC);
-        if (ConfirmPattern().IsMatch(normalized))
+        if (!normalized.Contains('?', StringComparison.Ordinal)
+            && !normalized.Contains('¿', StringComparison.Ordinal)
+            && ConfirmPattern.Value.IsMatch(Folded(normalized)))
         {
             return ConfirmationReplyKind.Confirm;
         }
 
-        return CancelPattern().IsMatch(normalized)
+        return CancelPattern.Value.IsMatch(Folded(normalized))
             ? ConfirmationReplyKind.Cancel
             : ConfirmationReplyKind.Invalid;
     }
 
-    [GeneratedRegex(
-        "^(?:s[i\\u00ed]|confirmo|confirmar|dale|adelante|yes|confirm|go[ \\t]+ahead|do[ \\t]+it)[.!]?$",
-        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex ConfirmPattern();
+    // A reply made only of assent words confirms («sí, dale», «ok, confirmo», «sí, estoy seguro»); anything else in it
+    // («sí, pero abrí Paint») or a question mark («¿seguro?») is not a bare confirmation. Revisión M H5: the words are
+    // one list with the mind's (src/baxy_mind/data/assent_words.v1.json, embedded).
+    private static readonly Lazy<Regex> ConfirmPattern = new(() => WholeAnswer("words"));
 
-    [GeneratedRegex(
-        "^(?:no|cancela|cancelar|d[e\\u00e9]jalo|cancel|never[ \\t]+mind|don['\\u2019]t|do[ \\t]+not)[.!]?$",
-        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex CancelPattern();
+    // Estabilización M2 (identity live check 2026-10-11: «No, cancelá» to «¿confirmar o cancelar?» asked again; only a
+    // lone word cancelled): a reply made only of decline words cancels («no, cancelá», «no, dejalo», «cancelalo», «nah»,
+    // «no thanks»); «no, mandalo igual» says something else. The words are one list with the mind's refusal
+    // (declineWords in the same file).
+    private static readonly Lazy<Regex> CancelPattern = new(() => WholeAnswer("declineWords"));
+
+    private static Regex WholeAnswer(string list)
+    {
+        using Stream stream = typeof(ConfirmationReplyParser).Assembly.GetManifestResourceStream("Baxy.App.AssentWords.json")
+            ?? throw new InvalidOperationException("The assent words are not embedded.");
+        IEnumerable<string> words = ((JsonArray)JsonNode.Parse(stream)![list]!)
+            .Select(static word => (string)word!)
+            .OrderByDescending(static word => word.Length)
+            .Select(static word => Regex.Escape(word).Replace("\\ ", "[ \\t]+", StringComparison.Ordinal));
+        return new Regex(
+            "^(?:(?:" + string.Join('|', words) + ")[ \\t]*[,.!]*[ \\t]*){1,4}$",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    private static string Folded(string text)
+    {
+        var builder = new StringBuilder(text.Length);
+        foreach (char character in text.Normalize(NormalizationForm.FormD).ToLowerInvariant())
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                != System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                builder.Append(character == '’' ? '\'' : character);
+            }
+        }
+
+        return builder.ToString();
+    }
 }

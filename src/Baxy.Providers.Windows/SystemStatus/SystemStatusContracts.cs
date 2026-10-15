@@ -26,11 +26,13 @@ public static class SystemStatusErrorCodes
 public sealed record CpuStatus(
     double UsagePercent,
     int LogicalProcessorCount,
-    string? Model);
+    string? Model,
+    int? PhysicalCoreCount = null);
 
 public sealed record MemoryStatus(
     ulong TotalBytes,
-    ulong AvailableBytes);
+    ulong AvailableBytes,
+    ulong? InstalledBytes = null);
 
 public sealed record SystemDiskStatus(
     long TotalBytes,
@@ -47,7 +49,8 @@ public sealed record OperatingSystemStatus(
     int MinorVersion,
     int BuildNumber,
     string Architecture,
-    bool IsWorkstation);
+    bool IsWorkstation,
+    string Caption);
 
 public sealed record SystemStatusFailure(
     SystemStatusScope Scope,

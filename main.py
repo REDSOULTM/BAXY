@@ -81,6 +81,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--turns-file", help="JSONL de comandos públicos (text/session.new/upload/cancel)")
     parser.add_argument("--text", help="un turno de texto natural")
     parser.add_argument("--timeout-ms", type=int, default=120000)
+    parser.add_argument(
+        "--ui-probe",
+        help="JSONL de turnos que la ventana teclea en su propio compositor",
+    )
+    parser.add_argument("--ui-capture", help="JSONL de lo que la ventana muestra")
     return parser.parse_args()
 
 
@@ -250,7 +255,13 @@ def compile_if_needed(*, force: bool) -> None:
 CONDUCTOR_SCRIPT = ROOT / "scripts" / "run_baxy_conductor.ps1"
 
 
-def launch(*, cpu: bool, without_mind: bool) -> None:
+def launch(
+    *,
+    cpu: bool,
+    without_mind: bool,
+    ui_probe: str | None = None,
+    ui_capture: str | None = None,
+) -> None:
     environment = environment_for_dotnet(dotnet_executable())
     command = [
         "powershell",
@@ -264,6 +275,10 @@ def launch(*, cpu: bool, without_mind: bool) -> None:
         command.append("-Cpu")
     if without_mind:
         command.append("-SinMente")
+    if ui_probe:
+        command.extend(["-UiProbe", ui_probe])
+    if ui_capture:
+        command.extend(["-UiCapture", ui_capture])
     run_checked(command, environment=environment)
 
 
@@ -301,7 +316,12 @@ def main() -> int:
     if args.conductor:
         launch_conductor(args)
         return 0
-    launch(cpu=args.cpu, without_mind=args.sin_mente)
+    launch(
+        cpu=args.cpu,
+        without_mind=args.sin_mente,
+        ui_probe=args.ui_probe,
+        ui_capture=args.ui_capture,
+    )
     return 0
 
 

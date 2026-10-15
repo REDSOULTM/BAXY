@@ -81,21 +81,26 @@ public sealed class WindowsApplicationOpenVerifier : IApplicationOpenVerifier
                 // identity bound by the receipt. Observe() independently proves
                 // that the current main HWND belongs to that same process, so bind
                 // the converged HWND instead of requiring a transient handle.
+                //
+                // Holding the foreground is asked for, never required. Windows
+                // refuses the handoff while a system flyout owns the foreground —
+                // REPAIR1031 lost seventeen turns to «Configuración rápida» while
+                // every target sat visible on screen — and «the app is open» is
+                // proven by a visible window of the bound process, not by focus.
                 if (observation.WindowHandle != 0
-                    && observation.WindowVisible
-                    && observation.Foreground)
+                    && observation.WindowVisible)
                 {
+                    // Only an opening the person asked to see in front asks for it (v3 point 0, arreglo 4).
+                    if (request.Foreground && !observation.Foreground)
+                    {
+                        reopened.RequestForeground(observation.WindowHandle);
+                    }
+
                     return new ApplicationVerificationResult(
                         Verified: true,
                         processId,
                         observation.WindowHandle.ToInt64(),
                         ErrorCode: null);
-                }
-
-                if (observation.WindowHandle != 0
-                    && observation.WindowVisible)
-                {
-                    reopened.RequestForeground(observation.WindowHandle);
                 }
             }
             catch (ApplicationProcessExitedException)

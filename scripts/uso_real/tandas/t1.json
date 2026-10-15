@@ -1,0 +1,252 @@
+{
+ "conversations": [
+  {
+   "id": "t1-c01",
+   "speaker": "chileno, 20s, chat informal",
+   "turns": [
+    {
+     "text": "ponme algo de los prisioneros",
+     "expect": "Pone música de Los Prisioneros (p. ej. en Spotify) y dice brevemente qué está sonando; no inventa una canción que no puso."
+    },
+    {
+     "text": "no, en youtube po",
+     "expect": "Entiende que quiere lo mismo (Los Prisioneros) pero en YouTube: lo reproduce ahí y deja de sonar lo anterior; no pregunta de nuevo qué artista."
+    },
+    {
+     "text": "subele un poco mas",
+     "expect": "Sube el volumen un paso moderado (o pregunta cuánto si no lo puede decidir) y confirma el cambio en una frase corta."
+    },
+    {
+     "text": "ya ahora pausalo",
+     "expect": "Pausa la reproducción de YouTube que acaba de poner y lo confirma; no cierra el navegador ni otra cosa."
+    }
+   ]
+  },
+  {
+   "id": "t1-c02",
+   "speaker": "rioplatense, chat con voseo",
+   "turns": [
+    {
+     "text": "che baja el brillo que me esta quemando los ojos",
+     "expect": "Baja el brillo de la pantalla y confirma en qué nivel quedó o que lo bajó; no toca el volumen."
+    },
+    {
+     "text": "no, el brillo te dije, no el volumen. bajalo mas",
+     "expect": "Baja el brillo un poco más (no el volumen); si antes tocó el volumen por error lo reconoce y lo deja como estaba, sin discutir."
+    },
+    {
+     "text": "abri configuracion y anda a pantalla",
+     "expect": "Abre Configuración de Windows en la sección Pantalla y avisa que está ahí, sin cambiar ningún ajuste por su cuenta."
+    },
+    {
+     "text": "listo dejalo ahi nomas, cerralo",
+     "expect": "Cierra la ventana de Configuración (no otra ventana) y lo confirma brevemente."
+    }
+   ]
+  },
+  {
+   "id": "t1-c03",
+   "speaker": "mexicano, chat casual",
+   "turns": [
+    {
+     "text": "cuales son las peliculas mas taquilleras de la historia? dame el top 5",
+     "expect": "Da exactamente 5 películas en orden de recaudación mundial (p. ej. Avatar, Avengers: Endgame, Avatar: El camino del agua, Titanic, Star Wars: El despertar de la Fuerza), sin inventar cifras dudosas."
+    },
+    {
+     "text": "no wey te pedi 5 nomas, no me sueltes la lista entera",
+     "expect": "Reconoce sin rodeos y entrega sólo las 5 primeras, cortas, sin repetir el párrafo largo."
+    },
+    {
+     "text": "y la primera quien la dirigio",
+     "expect": "Entiende que 'la primera' es la n.º 1 de su propia lista y responde su director correctamente (si es Avatar, James Cameron)."
+    },
+    {
+     "text": "ponme el trailer en youtube",
+     "expect": "Busca y reproduce en YouTube el tráiler de esa misma película (la n.º 1), no de otra."
+    },
+    {
+     "text": "gracias carnal",
+     "expect": "Responde cálido y muy breve, sin volver a ofrecer la lista ni hacer otra acción."
+    }
+   ]
+  },
+  {
+   "id": "t1-c04",
+   "speaker": "España, tuteo peninsular",
+   "turns": [
+    {
+     "text": "ponme un recordatorio para mañana a las 9 de llamar al dentista",
+     "expect": "Crea un recordatorio para mañana a las 9:00 con el texto 'llamar al dentista' y lo confirma con fecha y hora."
+    },
+    {
+     "text": "no, mejor a las nueve y media",
+     "expect": "Cambia ese mismo recordatorio a las 9:30 (no crea uno duplicado) y lo confirma."
+    },
+    {
+     "text": "y otro para el viernes de pagar la luz, a la hora que sea por la tarde",
+     "expect": "Crea un segundo recordatorio para este viernes por la tarde ('pagar la luz'); si necesita hora exacta, propone una o pregunta brevemente, y dice cuál quedó."
+    }
+   ]
+  },
+  {
+   "id": "t1-c05",
+   "speaker": "chileno, porteño de Curicó",
+   "turns": [
+    {
+     "text": "va a llover mañana en valpo?",
+     "expect": "Da el pronóstico de mañana para Curicó indicando si hay probabilidad de lluvia, con datos reales y sin inventar."
+    }
+   ]
+  },
+  {
+   "id": "t1-c06",
+   "speaker": "inglés nativo",
+   "turns": [
+    {
+     "text": "what's the weather gonna be like in Madrid this weekend",
+     "expect": "Answers in English with the weekend forecast for Madrid (Saturday and Sunday) from real weather data, short."
+    }
+   ]
+  },
+  {
+   "id": "t1-c07",
+   "speaker": "spanglish, joven",
+   "turns": [
+    {
+     "text": "pon lo-fi para estudiar en spotify plis",
+     "expect": "Abre Spotify y reproduce música lo-fi para estudiar (playlist o radio), confirmando qué puso."
+    }
+   ]
+  },
+  {
+   "id": "t1-c08",
+   "speaker": "chileno, mamá de 40s",
+   "turns": [
+    {
+     "text": "buscame en google recetas de sopaipillas pasadas",
+     "expect": "Abre el navegador con una búsqueda en Google de 'recetas de sopaipillas pasadas' y avisa que la abrió; no recita una receta inventada en vez de buscar."
+    }
+   ]
+  },
+  {
+   "id": "t1-c09",
+   "speaker": "rioplatense, gamer",
+   "turns": [
+    {
+     "text": "mandale a Ron92 por discord que hoy no llego a jugar, que arranquen sin mi",
+     "expect": "Envía por Discord, en el MD de Ron92, un mensaje con ese contenido (o lo muestra y pide confirmar antes de enviar) y confirma que se mandó a Ron92 y a nadie más."
+    }
+   ]
+  },
+  {
+   "id": "t1-c10",
+   "speaker": "mexicano",
+   "turns": [
+    {
+     "text": "a que red wifi estoy conectado?",
+     "expect": "Dice el nombre real de la red wifi a la que está conectado el PC (o que no hay conexión wifi), sin inventarlo."
+    }
+   ]
+  },
+  {
+   "id": "t1-c11",
+   "speaker": "España, dictado por voz sin puntuación",
+   "turns": [
+    {
+     "text": "enciende el bluetooth que quiero conectar los cascos",
+     "expect": "Activa el Bluetooth del PC y lo confirma; si ofrece emparejar los cascos lo hace como pregunta, sin inventar dispositivos."
+    }
+   ]
+  },
+  {
+   "id": "t1-c12",
+   "speaker": "chilena, tierna",
+   "turns": [
+    {
+     "text": "dame 3 ideas de nombre para mi gata negra",
+     "expect": "Da exactamente 3 nombres para una gata negra, breve y simpático."
+    }
+   ]
+  },
+  {
+   "id": "t1-c13",
+   "speaker": "chileno, oficina",
+   "turns": [
+    {
+     "text": "crea una carpeta en el escritorio que se llame facturas octubre",
+     "expect": "Crea en el Escritorio la carpeta 'facturas octubre' y confirma dónde quedó; no crea otra con nombre distinto."
+    }
+   ]
+  },
+  {
+   "id": "t1-c14",
+   "speaker": "chileno, cocinando, voz",
+   "turns": [
+    {
+     "text": "pone un temporizador de 12 minutos pa los fideos",
+     "expect": "Inicia un temporizador de 12 minutos y lo confirma; avisa al terminar."
+    }
+   ]
+  },
+  {
+   "id": "t1-c15",
+   "speaker": "rioplatense",
+   "turns": [
+    {
+     "text": "que tengo copiado?",
+     "expect": "Lee el portapapeles y dice qué texto hay copiado (o que está vacío / no es texto), sin inventarlo."
+    }
+   ]
+  },
+  {
+   "id": "t1-c16",
+   "speaker": "spanglish",
+   "turns": [
+    {
+     "text": "sacale un screenshot a la pantalla",
+     "expect": "Toma una captura de pantalla y dice dónde la guardó o que quedó copiada, sin describir contenido que no vio."
+    }
+   ]
+  },
+  {
+   "id": "t1-c17",
+   "speaker": "chileno, dictado por voz sin puntuación",
+   "turns": [
+    {
+     "text": "oye baxy abre la calculadora y despues el bloc de notas",
+     "expect": "Abre la Calculadora y luego el Bloc de notas (ambas) y confirma las dos cosas en una frase."
+    }
+   ]
+  },
+  {
+   "id": "t1-c18",
+   "speaker": "mexicano, futbolero",
+   "turns": [
+    {
+     "text": "quien gano el mundial del 2014",
+     "expect": "Responde que lo ganó Alemania (1-0 a Argentina en la final, en Brasil), corto y sin inventar."
+    }
+   ]
+  },
+  {
+   "id": "t1-c19",
+   "speaker": "inglés nativo",
+   "turns": [
+    {
+     "text": "mute the sound for a sec",
+     "expect": "Mutes the system audio and confirms briefly in English."
+    }
+   ]
+  },
+  {
+   "id": "t1-c20",
+   "speaker": "España",
+   "turns": [
+    {
+     "text": "qué hora es ahora mismo en Tokio",
+     "expect": "Da la hora actual real en Tokio (UTC+9), calculada correctamente desde la hora del PC."
+    }
+   ]
+  }
+ ]
+}

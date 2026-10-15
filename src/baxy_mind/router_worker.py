@@ -32,8 +32,24 @@ def _write_error(request_id: object, code: str) -> None:
     )
 
 
+# Ready means it answers within a step's budget. The first inference after loading pays the model's warm-up (r9 of
+# goal v3, 2026-10-08: of 12 steps «e5_failed», 10 were the first or second request right after the worker turned
+# ready, each past the step's 0.75 s, and the abandoned reply then held the next step too). One batch of both
+# prefixes is encoded before «ready», off any request; a warm-up that fails changes nothing.
+WARM_UP_TEXTS = ("ver", "configuración de pantalla", "video library", "Agregar nueva pestaña")
+
+
+def _warm_up(encoder: object) -> None:
+    try:
+        for prefix in ENCODER_PREFIXES:
+            encoder.encode(WARM_UP_TEXTS, prefix=prefix)  # type: ignore[attr-defined]
+    except Exception:  # noqa: BLE001 - a warm-up is never a failure of the worker
+        pass
+
+
 def main() -> int:
     encoder = SemanticEncoder()
+    _warm_up(encoder)
     _write({"type": "ready"})
     for line in sys.stdin:
         request_id: object = None

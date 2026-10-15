@@ -1,0 +1,1331 @@
+{
+ "source": "Encargo H1 (2026-10-12): the real situations of the finals that told what did not happen or denied what did, in both tandas on redpc over fable/estab-fase3 0650deac3 (cu-v3/tandas_fin1_redpc, tandas_fin2_redpc, compose_audit.jsonl). Read by tests/test_estab_h1_finales.py.",
+ "cases": [
+  {
+   "id": "dark-mode-already-fin1",
+   "run": "tandas_fin1_redpc",
+   "turn": "t4-c04 t3",
+   "said": "vale y ahora en configuracion pon el modo oscuro",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo oscuro",
+     "application": "Configuración",
+     "reached": true,
+     "successCheck": "control:modo oscuro:on|control:dark mode:on|control:oscuro:selected",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "source": "model",
+       "appId": "Configuración",
+       "ok": true,
+       "alreadyRunning": false,
+       "windowsActivation": true,
+       "frontRestored": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "SystemSettings",
+      "requested": true,
+      "root": 2428808,
+      "foreground": false,
+      "rect": {
+       "x": 0,
+       "y": 0,
+       "w": 1920,
+       "h": 1044
+      }
+     },
+     "joined": false,
+     "elapsedMs": 3199,
+     "modelMs": 13,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "satisfiedBy": "control:oscuro:selected",
+     "arrivedAs": "Oscuro",
+     "screen": {
+      "title": "Configuración",
+      "values": [
+       {
+        "name": "Modo de color",
+        "value": "Oscuro"
+       },
+       {
+        "name": "Oscuro",
+        "state": "selected"
+       },
+       {
+        "name": "Inicio",
+        "state": "selected"
+       },
+       {
+        "name": "Configuración",
+        "value": "Configuración"
+       }
+      ],
+      "numbers": [
+       "Windows Update Última comprobación: hace 38 minutos",
+       "Obtener Microsoft 365",
+       "Windows (oscuro), 1 imágenes",
+       "Movimiento capturado, 4 imágenes",
+       "Windows (claro), 1 imágenes",
+       "Resplandor, 4 imágenes"
+      ],
+      "lines": [
+       "Q",
+       "Buscar una opción de configuración",
+       "REDPC",
+       "B760V H",
+       "B760M H",
+       "Cambiar nombre"
+      ],
+      "controlLines": [
+       5
+      ]
+     }
+    }
+   },
+   "published": "Lo hice en la aplicación «Configuración».",
+   "es": "Abrí «Configuración» y «Oscuro» ya estaba elegido.",
+   "en": "I opened «Configuración» and «Oscuro» was already chosen."
+  },
+  {
+   "id": "dark-mode-already-fin2",
+   "run": "tandas_fin2_redpc",
+   "turn": "t4-c04 t3",
+   "said": "vale y ahora en configuracion pon el modo oscuro",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo oscuro",
+     "application": "Configuración",
+     "reached": true,
+     "successCheck": "control:modo oscuro:on|control:dark mode:on|control:oscuro:selected",
+     "stepCount": 1,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "app.open",
+       "source": "model",
+       "appId": "Configuración",
+       "ok": true,
+       "alreadyRunning": false,
+       "windowsActivation": true,
+       "frontRestored": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "SystemSettings",
+      "requested": true,
+      "root": 1576998,
+      "foreground": false,
+      "rect": {
+       "x": 0,
+       "y": 0,
+       "w": 1920,
+       "h": 1044
+      }
+     },
+     "joined": false,
+     "elapsedMs": 3202,
+     "modelMs": 18,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "satisfiedBy": "control:oscuro:selected",
+     "arrivedAs": "Oscuro",
+     "screen": {
+      "title": "Configuración",
+      "values": [
+       {
+        "name": "Modo de color",
+        "value": "Oscuro"
+       },
+       {
+        "name": "Oscuro",
+        "state": "selected"
+       },
+       {
+        "name": "Inicio",
+        "state": "selected"
+       },
+       {
+        "name": "Wi-Fi",
+        "state": "on"
+       },
+       {
+        "name": "Configuración",
+        "value": "Configuración"
+       }
+      ],
+      "numbers": [
+       "Windows Update Última comprobación: hace 1 hora",
+       "Obtener Microsoft 365",
+       "Windows (oscuro), 1 imágenes",
+       "Movimiento capturado, 4 imágenes",
+       "Windows (claro), 1 imágenes",
+       "Resplandor, 4 imágenes"
+      ],
+      "lines": [
+       "Q",
+       "Buscar una opción de configuración",
+       "REDPC",
+       "B760V H",
+       "B760M H",
+       "Cambiar nombre"
+      ],
+      "controlLines": [
+       5
+      ]
+     }
+    }
+   },
+   "published": "Lo hice en la aplicación «Configuración».",
+   "es": "Abrí «Configuración» y «Oscuro» ya estaba elegido.",
+   "en": "I opened «Configuración» and «Oscuro» was already chosen."
+  },
+  {
+   "id": "programmer-already-fin1",
+   "run": "tandas_fin1_redpc",
+   "turn": "t3-c18 t2",
+   "said": "ahora ponla en modo programador",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo programador",
+     "application": "Calculadora",
+     "reached": true,
+     "successCheck": "control:modo programador:on|control:programador:selected|title:programador|page:programador|header:programador|control:programmer:selected|title:programmer|page:programmer|header:programmer|mark:programador|mark:programmer",
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "programador",
+       "ok": false,
+       "error": "visible_button_not_found"
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "Abrir navegación",
+       "index": 4,
+       "ok": true,
+       "cascadeStage": "uia_surface",
+       "method": "invoke",
+       "surfaceChanged": true,
+       "absentOrDisabled": false,
+       "selected": false,
+       "toggled": false,
+       "name": "Abrir navegación",
+       "kind": "Button",
+       "changed": true,
+       "broughtNew": true,
+       "appeared": [
+        "cerrar navegacion",
+        "cerrar",
+        "estandar calculadora",
+        "cientifica calculadora",
+        "graficar calculadora",
+        "programador calculadora",
+        "calculo de fecha calculadora",
+        "divisa conversor",
+        "volumen conversor",
+        "longitud conversor",
+        "peso y masa conversor",
+        "temperatura conversor",
+        "energia conversor",
+        "area conversor",
+        "velocidad conversor",
+        "tiempo conversor",
+        "potencia conversor",
+        "datos conversor",
+        "presion conversor",
+        "angulo conversor"
+       ]
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "CalculatorApp",
+      "requested": true,
+      "root": 3671130,
+      "foreground": true,
+      "rect": {
+       "x": 0,
+       "y": 0,
+       "w": 1920,
+       "h": 1044
+      },
+      "focused": {
+       "kind": "ListItem",
+       "name": "Estándar Calculadora",
+       "nameSource": "",
+       "i": 5
+      }
+     },
+     "joined": false,
+     "elapsedMs": 6643,
+     "modelMs": 131,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "satisfiedBy": "control:programador:selected",
+     "arrivedAs": "Programador",
+     "screen": {
+      "title": "Calculadora",
+      "values": [
+       {
+        "name": "Programador Calculadora",
+        "state": "selected"
+       },
+       {
+        "name": "Decimal 0",
+        "state": "selected"
+       },
+       {
+        "name": "Teclado numérico completo",
+        "state": "selected"
+       },
+       {
+        "name": "No hay nada guardado en la memoria. Memoria",
+        "state": "selected"
+       }
+      ],
+      "numbers": [
+       "Hexadecimal 0",
+       "Decimal 0",
+       "Octal 0",
+       "Binario 0"
+      ],
+      "lines": [
+       "QWORD",
+       "c",
+       "Calculadora",
+       "Estándar",
+       "Científica",
+       "Graficar"
+      ]
+     }
+    }
+   },
+   "rebuilt": "compose_audit keeps 2048 characters of the situation: observed.screen (and evidence) come from the same row's payload.seen",
+   "published": "Llegué a la Calculadora y elegí el modo Programador.",
+   "es": "«Programador» ya estaba elegido en «Calculadora».",
+   "en": "«Programador» was already chosen in «Calculadora»."
+  },
+  {
+   "id": "programmer-already-fin2",
+   "run": "tandas_fin2_redpc",
+   "turn": "t3-c18 t2",
+   "said": "ahora ponla en modo programador",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo programador",
+     "application": "Calculadora",
+     "reached": true,
+     "successCheck": "control:modo programador:on|control:programador:selected|title:programador|page:programador|header:programador|control:programmer:selected|title:programmer|page:programmer|header:programmer|mark:programador|mark:programmer",
+     "stepCount": 2,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "programador",
+       "ok": false,
+       "error": "visible_button_not_found"
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "Abrir navegación",
+       "index": 4,
+       "ok": true,
+       "cascadeStage": "uia_surface",
+       "method": "invoke",
+       "surfaceChanged": true,
+       "absentOrDisabled": false,
+       "selected": false,
+       "toggled": false,
+       "name": "Abrir navegación",
+       "kind": "Button",
+       "changed": true,
+       "broughtNew": true,
+       "appeared": [
+        "cerrar navegacion",
+        "cerrar",
+        "estandar calculadora",
+        "cientifica calculadora",
+        "graficar calculadora",
+        "programador calculadora",
+        "calculo de fecha calculadora",
+        "divisa conversor",
+        "volumen conversor",
+        "longitud conversor",
+        "peso y masa conversor",
+        "temperatura conversor",
+        "energia conversor",
+        "area conversor",
+        "velocidad conversor",
+        "tiempo conversor",
+        "potencia conversor",
+        "datos conversor",
+        "presion conversor",
+        "angulo conversor"
+       ]
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "CalculatorApp",
+      "requested": true,
+      "root": 4066298,
+      "foreground": true,
+      "rect": {
+       "x": 0,
+       "y": 0,
+       "w": 1920,
+       "h": 1044
+      },
+      "focused": {
+       "kind": "ListItem",
+       "name": "Estándar Calculadora",
+       "nameSource": "",
+       "i": 5
+      }
+     },
+     "joined": false,
+     "elapsedMs": 6767,
+     "modelMs": 55,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "satisfiedBy": "control:programador:selected",
+     "arrivedAs": "Programador",
+     "screen": {
+      "title": "Calculadora",
+      "values": [
+       {
+        "name": "Programador Calculadora",
+        "state": "selected"
+       },
+       {
+        "name": "Decimal 0",
+        "state": "selected"
+       },
+       {
+        "name": "Teclado numérico completo",
+        "state": "selected"
+       },
+       {
+        "name": "No hay nada guardado en la memoria. Memoria",
+        "state": "selected"
+       }
+      ],
+      "numbers": [
+       "Hexadecimal 0",
+       "Decimal 0",
+       "Octal 0",
+       "Binario 0"
+      ],
+      "lines": [
+       "QWORD",
+       "c",
+       "Calculadora",
+       "Estándar",
+       "Científica",
+       "Graficar"
+      ]
+     }
+    }
+   },
+   "rebuilt": "compose_audit keeps 2048 characters of the situation: observed.screen (and evidence) come from the same row's payload.seen",
+   "published": "Llegué a la Calculadora y elegí el modo Programador.",
+   "es": "«Programador» ya estaba elegido en «Calculadora».",
+   "en": "«Programador» was already chosen in «Calculadora»."
+  },
+  {
+   "id": "scale-already-100-fin1",
+   "run": "tandas_fin1_redpc",
+   "turn": "t2-c04 t4",
+   "said": "te dije la escala no el brillo, regresa la escala a 100",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "en Configuración, regresa la escala a 100",
+     "application": "Configuración",
+     "reached": true,
+     "stepCount": 3,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "Mostrar más valores de configuración",
+       "index": 28,
+       "ok": true,
+       "cascadeStage": "uia_surface",
+       "method": "expand",
+       "surfaceChanged": true,
+       "absentOrDisabled": false,
+       "selected": false,
+       "toggled": false,
+       "name": "Mostrar más valores de configuración",
+       "kind": "Button",
+       "changed": true,
+       "broughtNew": true,
+       "appeared": [
+        "hdr",
+        "escala",
+        "resolucion de pantalla",
+        "orientacion de la pantalla",
+        "host de ventanas emergentes",
+        "100% (recomendado)",
+        "1920 × 1080 (recomendada)",
+        "horizontal"
+       ]
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "source": "model",
+       "typedOn": "SystemSettings",
+       "into": "Escala",
+       "index": 34,
+       "text": "100",
+       "field": "Escala",
+       "replace": true,
+       "entry": true,
+       "ok": false,
+       "error": "input_entry_not_found"
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "Escala",
+       "index": 34,
+       "opener": true,
+       "ok": true,
+       "cascadeStage": "uia_surface",
+       "method": "expand",
+       "surfaceChanged": true,
+       "absentOrDisabled": false,
+       "selected": false,
+       "toggled": false,
+       "name": "Escala",
+       "kind": "ComboBox",
+       "changed": true,
+       "broughtNew": true,
+       "appeared": [
+        "cerrar",
+        "125%",
+        "150%",
+        "175%"
+       ]
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "SystemSettings",
+      "requested": true,
+      "root": 593768,
+      "foreground": true,
+      "rect": {
+       "x": 0,
+       "y": 0,
+       "w": 1920,
+       "h": 1044
+      },
+      "focused": {
+       "kind": "ListItem",
+       "name": "100% (recomendado)",
+       "nameSource": "",
+       "i": 35
+      }
+     },
+     "joined": false,
+     "elapsedMs": 4456,
+     "modelMs": 2217,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Configuración",
+      "values": [
+       {
+        "name": "Escala",
+        "value": "100% (recomendado)"
+       },
+       {
+        "name": "Configuración",
+        "value": "Configuración"
+       },
+       {
+        "name": "Sistema",
+        "state": "selected"
+       },
+       {
+        "name": "Pantalla 1",
+        "state": "selected"
+       },
+       {
+        "name": "Varias pantallas",
+        "value": "Extender escritorio a esta pantalla"
+       },
+       {
+        "name": "Extender escritorio a esta pantalla",
+        "state": "selected"
+       },
+       {
+        "name": "100% (recomendado)",
+        "state": "selected"
+       },
+       {
+        "name": "Resolución de pantalla",
+        "value": "1920 × 1080 (recomendada)"
+       }
+      ],
+      "numbers": [
+       "Pantalla 1",
+       "Pantalla 2",
+       "Pantalla 3",
+       "Pantalla 4",
+       "100% (recomendado)",
+       "125%"
+      ]
+     },
+     "evidence": "100% (recomendado)"
+    }
+   },
+   "rebuilt": "compose_audit keeps 2048 characters of the situation: observed.screen (and evidence) come from the same row's payload.seen",
+   "published": "Llevo dos pasos en «Configuración», pero la pantalla todavía no muestra que haya quedado hecho.",
+   "es": "«100% (recomendado)» ya estaba elegido en «Configuración».",
+   "en": "«100% (recomendado)» was already chosen in «Configuración»."
+  },
+  {
+   "id": "scale-already-100-fin2",
+   "run": "tandas_fin2_redpc",
+   "turn": "t2-c04 t4",
+   "said": "te dije la escala no el brillo, regresa la escala a 100",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "en Configuración, regresa la escala a 100",
+     "application": "Configuración",
+     "reached": true,
+     "stepCount": 3,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "Mostrar más valores de configuración",
+       "index": 28,
+       "ok": true,
+       "cascadeStage": "uia_surface",
+       "method": "expand",
+       "surfaceChanged": true,
+       "absentOrDisabled": false,
+       "selected": false,
+       "toggled": false,
+       "name": "Mostrar más valores de configuración",
+       "kind": "Button",
+       "changed": true,
+       "broughtNew": true,
+       "appeared": [
+        "hdr",
+        "escala",
+        "resolucion de pantalla",
+        "orientacion de la pantalla",
+        "host de ventanas emergentes",
+        "100% (recomendado)",
+        "1920 × 1080 (recomendada)",
+        "horizontal"
+       ]
+      },
+      {
+       "step": 2,
+       "operation": "input.text.type",
+       "source": "model",
+       "typedOn": "SystemSettings",
+       "into": "Escala",
+       "index": 34,
+       "text": "100",
+       "field": "Escala",
+       "replace": true,
+       "entry": true,
+       "ok": false,
+       "error": "input_entry_not_found"
+      },
+      {
+       "step": 3,
+       "operation": "input.visible.click",
+       "source": "model",
+       "label": "Escala",
+       "index": 34,
+       "opener": true,
+       "ok": true,
+       "cascadeStage": "uia_surface",
+       "method": "expand",
+       "surfaceChanged": true,
+       "absentOrDisabled": false,
+       "selected": false,
+       "toggled": false,
+       "name": "Escala",
+       "kind": "ComboBox",
+       "changed": true,
+       "broughtNew": true,
+       "appeared": [
+        "cerrar",
+        "125%",
+        "150%",
+        "175%"
+       ]
+      }
+     ],
+     "window": {
+      "title": "Configuración",
+      "process": "SystemSettings",
+      "requested": true,
+      "root": 332412,
+      "foreground": true,
+      "rect": {
+       "x": 0,
+       "y": 0,
+       "w": 1920,
+       "h": 1044
+      },
+      "focused": {
+       "kind": "ListItem",
+       "name": "100% (recomendado)",
+       "nameSource": "",
+       "i": 35
+      }
+     },
+     "joined": false,
+     "elapsedMs": 5107,
+     "modelMs": 2321,
+     "authority": "shell_loop_over_uia_ocr_postread",
+     "satisfiedBy": "model_evidence",
+     "screen": {
+      "title": "Configuración",
+      "values": [
+       {
+        "name": "Escala",
+        "value": "100% (recomendado)"
+       },
+       {
+        "name": "Configuración",
+        "value": "Configuración"
+       },
+       {
+        "name": "Sistema",
+        "state": "selected"
+       },
+       {
+        "name": "Pantalla 1",
+        "state": "selected"
+       },
+       {
+        "name": "Varias pantallas",
+        "value": "Extender escritorio a esta pantalla"
+       },
+       {
+        "name": "Extender escritorio a esta pantalla",
+        "state": "selected"
+       },
+       {
+        "name": "100% (recomendado)",
+        "state": "selected"
+       },
+       {
+        "name": "Resolución de pantalla",
+        "value": "1920 × 1080 (recomendada)"
+       }
+      ],
+      "numbers": [
+       "Pantalla 1",
+       "Pantalla 2",
+       "Pantalla 3",
+       "Pantalla 4",
+       "100% (recomendado)",
+       "125%"
+      ]
+     },
+     "evidence": "100% (recomendado)"
+    }
+   },
+   "rebuilt": "compose_audit keeps 2048 characters of the situation: observed.screen (and evidence) come from the same row's payload.seen",
+   "published": "Llevo dos pasos en «Configuración», pero la pantalla todavía no muestra que haya quedado hecho.",
+   "es": "«100% (recomendado)» ya estaba elegido en «Configuración».",
+   "en": "«100% (recomendado)» was already chosen in «Configuración»."
+  },
+  {
+   "id": "excel-opened-not-said-fin1",
+   "run": "tandas_fin1_redpc",
+   "turn": "t3-c02 t1",
+   "said": "en el excel que tengo abierto seleccioná la fila 1 y ponela en negrita",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_no_document_open",
+     "observed": {
+      "goal": "seleccionar fila 1; luego ponela en negrita",
+      "application": "Excel",
+      "reached": false,
+      "stepCount": 1,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "app.open",
+        "source": "model",
+        "subgoal": 0,
+        "appId": "Excel",
+        "ok": true,
+        "alreadyRunning": false,
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Excel",
+       "process": "EXCEL",
+       "requested": true,
+       "root": 2297446,
+       "foreground": false,
+       "rect": {
+        "x": 51,
+        "y": 41,
+        "w": 1011,
+        "h": 521
+       },
+       "coveredBy": {
+        "title": "(3) WhatsApp",
+        "process": "msedgewebview2"
+       },
+       "focused": {
+        "kind": "ListItem",
+        "name": "Libro en blanco",
+        "nameSource": "",
+        "i": 12
+       }
+      },
+      "joined": false,
+      "elapsedMs": 3964,
+      "modelMs": 27,
+      "authority": "shell_loop_over_uia_ocr_postread",
+      "subgoals": [
+       {
+        "goal": "seleccionar fila 1",
+        "application": "Excel",
+        "reached": false,
+        "stepCount": 1,
+        "successCheck": "control:=fila 1:selected|control:=fila 1:on|stepDone:input.visible.click:=fila 1"
+       },
+       {
+        "goal": "ponela en negrita",
+        "application": "Excel",
+        "reached": false,
+        "stepCount": 0
+       }
+      ],
+      "screen": {
+       "title": "Excel",
+       "values": [
+        {
+         "name": "Inicio",
+         "state": "selected"
+        },
+        {
+         "name": "Ocultar o mostrar región",
+         "state": "on"
+        },
+        {
+         "name": "Libro en blanco",
+         "state": "selected"
+        }
+       ],
+       "numbers": [
+        "Libro1.xlsx",
+        "4)"
+       ],
+       "lines": [
+        "Realizar un",
+        "Fórmulas",
+        "recorrido",
+        "4)",
+        "Le damos la bienvenida a Ex...",
+        "Tutorial de fórmula"
+       ],
+       "controlLines": [
+        1,
+        5
+       ]
+      },
+      "stoppedBy": "computer_use_no_document_open"
+     }
+    }
+   },
+   "published": "Llegué a Excel pero no pude seleccionar la fila 1 porque no hay ningún documento abierto."
+  },
+  {
+   "id": "excel-opened-not-said-fin2",
+   "run": "tandas_fin2_redpc",
+   "turn": "t3-c02 t1",
+   "said": "en el excel que tengo abierto seleccioná la fila 1 y ponela en negrita",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_no_document_open",
+     "observed": {
+      "goal": "seleccionar fila 1; luego ponela en negrita",
+      "application": "Excel",
+      "reached": false,
+      "stepCount": 1,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "app.open",
+        "source": "model",
+        "subgoal": 0,
+        "appId": "Excel",
+        "ok": true,
+        "alreadyRunning": false,
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Excel",
+       "process": "EXCEL",
+       "requested": true,
+       "root": 3280668,
+       "foreground": false,
+       "rect": {
+        "x": 51,
+        "y": 41,
+        "w": 1011,
+        "h": 521
+       },
+       "coveredBy": {
+        "title": "(3) WhatsApp",
+        "process": "msedgewebview2"
+       },
+       "focused": {
+        "kind": "ListItem",
+        "name": "Libro en blanco",
+        "nameSource": "",
+        "i": 12
+       }
+      },
+      "joined": false,
+      "elapsedMs": 2905,
+      "modelMs": 26,
+      "authority": "shell_loop_over_uia_ocr_postread",
+      "subgoals": [
+       {
+        "goal": "seleccionar fila 1",
+        "application": "Excel",
+        "reached": false,
+        "stepCount": 1,
+        "successCheck": "control:=fila 1:selected|control:=fila 1:on|stepDone:input.visible.click:=fila 1"
+       },
+       {
+        "goal": "ponela en negrita",
+        "application": "Excel",
+        "reached": false,
+        "stepCount": 0
+       }
+      ],
+      "screen": {
+       "title": "Excel",
+       "values": [
+        {
+         "name": "Inicio",
+         "state": "selected"
+        },
+        {
+         "name": "Ocultar o mostrar región",
+         "state": "on"
+        },
+        {
+         "name": "Libro en blanco",
+         "state": "selected"
+        }
+       ],
+       "numbers": [
+        "Libro1.xlsx",
+        "4)"
+       ],
+       "lines": [
+        "Realizar un",
+        "Fórmulas",
+        "recorrido",
+        "4)",
+        "Le damos la bienvenida a Ex...",
+        "Tutorial de fórmula"
+       ],
+       "controlLines": [
+        1,
+        5
+       ]
+      },
+      "stoppedBy": "computer_use_no_document_open"
+     }
+    }
+   },
+   "published": "Llegué a Excel pero no pude seleccionar la fila 1 porque no hay ningún documento abierto."
+  },
+  {
+   "id": "close-named-from-request-fin1",
+   "run": "tandas_fin1_redpc",
+   "turn": "t2-c03 t2",
+   "said": "ya cierra configuracion que me esta laggeando el valorant",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "mission_completed",
+    "stepCount": 2,
+    "steps": [
+     "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_f52cabeaad5ba45c995692f22a44996a\",\"processName\":\"ApplicationFrameHost\",\"title\":\"Configuraci\\u00F3n\",\"state\":\"maximized\",\"foreground\":false,\"x\":-8,\"y\":-8,\"width\":1936,\"height\":1060,\"zOrder\":70,\"workAreaWidth\":1920,\"workAreaHeight\":1044}],\"count\":1,\"limit\":20,\"offset\":0,\"observedCount\":1,\"complete\":true,\"totalCount\":1,\"hasMore\":false,\"observationScope\":\"visible_top_level_windows\",\"pageConsistency\":\"fresh_enumeration_per_request\"},\"readOnly\":true}",
+     "{\"kind\":\"operation\",\"operation\":\"app.close\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windowClosed\":true},\"readOnly\":false}"
+    ],
+    "completedRequest": "Cierra Configuración."
+   },
+   "published": "He cerrado la ventana de Configuración de Valorant para detener el lag."
+  },
+  {
+   "id": "close-named-from-request-fin2",
+   "run": "tandas_fin2_redpc",
+   "turn": "t2-c03 t2",
+   "said": "ya cierra configuracion que me esta laggeando el valorant",
+   "situation": {
+    "kind": "status",
+    "polarity": "success",
+    "cause": "mission_completed",
+    "stepCount": 2,
+    "steps": [
+     "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6b176887b6ef5efcb65f8dad0b45c25c\",\"processName\":\"ApplicationFrameHost\",\"title\":\"Configuraci\\u00F3n\",\"state\":\"maximized\",\"foreground\":false,\"x\":-8,\"y\":-8,\"width\":1936,\"height\":1060,\"zOrder\":59,\"workAreaWidth\":1920,\"workAreaHeight\":1044}],\"count\":1,\"limit\":20,\"offset\":0,\"observedCount\":1,\"complete\":true,\"totalCount\":1,\"hasMore\":false,\"observationScope\":\"visible_top_level_windows\",\"pageConsistency\":\"fresh_enumeration_per_request\"},\"readOnly\":true}",
+     "{\"kind\":\"operation\",\"operation\":\"app.close\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windowClosed\":true},\"readOnly\":false}"
+    ],
+    "completedRequest": "Cierra Configuración."
+   },
+   "published": "He cerrado la ventana de Configuración de Valorant como se solicitó."
+  },
+  {
+   "id": "scale-failed-before-undo-fin1",
+   "run": "tandas_fin1_redpc",
+   "turn": "t2-c04 t2",
+   "said": "ahi ponle la escala en 125",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_no_step_visible",
+     "observed": {
+      "goal": "activar escala de la pantalla en 125",
+      "application": "Configuración",
+      "reached": false,
+      "successCheck": "control:escala de la pantalla en 125:on",
+      "stepCount": 2,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "source": "model",
+        "label": "Pantalla",
+        "index": 20,
+        "ok": true,
+        "cascadeStage": "uia_surface",
+        "method": "invoke",
+        "surfaceChanged": true,
+        "absentOrDisabled": false,
+        "selected": false,
+        "toggled": false,
+        "name": "Pantalla",
+        "kind": "Button",
+        "changed": true,
+        "broughtNew": false,
+        "appeared": []
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "source": "model",
+        "label": "Pantalla",
+        "index": 20,
+        "ok": true,
+        "cascadeStage": "uia_surface",
+        "method": "invoke",
+        "surfaceChanged": true,
+        "absentOrDisabled": false,
+        "selected": false,
+        "toggled": false,
+        "name": "Pantalla",
+        "kind": "Button",
+        "changed": true,
+        "broughtNew": true,
+        "appeared": [
+         "host de ventanas emergentes"
+        ]
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "SystemSettings",
+       "requested": true,
+       "root": 593768,
+       "foreground": true,
+       "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 1044
+       },
+       "focused": {
+        "kind": "Button",
+        "name": "Pantalla",
+        "nameSource": "",
+        "i": 20
+       }
+      },
+      "joined": false,
+      "elapsedMs": 4170,
+      "modelMs": 1932,
+      "authority": "shell_loop_over_uia_ocr_postread",
+      "screen": {
+       "title": "Configuración",
+       "values": [
+        {
+         "name": "Pantalla 1",
+         "state": "selected"
+        },
+        {
+         "name": "Extender escritorio a esta pantalla",
+         "state": "selected"
+        },
+        {
+         "name": "Sistema",
+         "state": "selected"
+        },
+        {
+         "name": "Varias pantallas",
+         "value": "Extender escritorio a esta pantalla"
+        },
+        {
+         "name": "Minimizar las ventanas cuando se desconecte un monitor",
+         "state": "on"
+        },
+        {
+         "name": "Facilitar el movimiento del cursor entre pantallas",
+         "state": "on"
+        },
+        {
+         "name": "Configuración",
+         "value": "Configuración"
+        }
+       ],
+       "numbers": [
+        "Pantalla 1",
+        "Pantalla 2",
+        "Pantalla 3",
+        "Pantalla 4",
+        "1",
+        "2"
+       ]
+      }
+     }
+    }
+   },
+   "rebuilt": "compose_audit keeps 2048 characters of the situation: observed.screen (and evidence) come from the same row's payload.seen",
+   "published": "No pude hacerlo en «Configuración»: no vi en la pantalla un control con el que seguir."
+  },
+  {
+   "id": "scale-failed-before-undo-fin2",
+   "run": "tandas_fin2_redpc",
+   "turn": "t2-c04 t2",
+   "said": "ahi ponle la escala en 125",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_no_step_visible",
+     "observed": {
+      "goal": "activar escala de la pantalla en 125",
+      "application": "Configuración",
+      "reached": false,
+      "successCheck": "control:escala de la pantalla en 125:on",
+      "stepCount": 2,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "source": "model",
+        "label": "Pantalla",
+        "index": 20,
+        "ok": true,
+        "cascadeStage": "uia_surface",
+        "method": "invoke",
+        "surfaceChanged": true,
+        "absentOrDisabled": false,
+        "selected": false,
+        "toggled": false,
+        "name": "Pantalla",
+        "kind": "Button",
+        "changed": true,
+        "broughtNew": false,
+        "appeared": []
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "source": "model",
+        "label": "Pantalla",
+        "index": 20,
+        "ok": true,
+        "cascadeStage": "uia_surface",
+        "method": "invoke",
+        "surfaceChanged": true,
+        "absentOrDisabled": false,
+        "selected": false,
+        "toggled": false,
+        "name": "Pantalla",
+        "kind": "Button",
+        "changed": true,
+        "broughtNew": true,
+        "appeared": [
+         "host de ventanas emergentes"
+        ]
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "SystemSettings",
+       "requested": true,
+       "root": 332412,
+       "foreground": true,
+       "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 1044
+       },
+       "focused": {
+        "kind": "Button",
+        "name": "Pantalla",
+        "nameSource": "",
+        "i": 20
+       }
+      },
+      "joined": false,
+      "elapsedMs": 4557,
+      "modelMs": 2046,
+      "authority": "shell_loop_over_uia_ocr_postread",
+      "screen": {
+       "title": "Configuración",
+       "values": [
+        {
+         "name": "Pantalla 1",
+         "state": "selected"
+        },
+        {
+         "name": "Extender escritorio a esta pantalla",
+         "state": "selected"
+        },
+        {
+         "name": "Sistema",
+         "state": "selected"
+        },
+        {
+         "name": "Varias pantallas",
+         "value": "Extender escritorio a esta pantalla"
+        },
+        {
+         "name": "Minimizar las ventanas cuando se desconecte un monitor",
+         "state": "on"
+        },
+        {
+         "name": "Facilitar el movimiento del cursor entre pantallas",
+         "state": "on"
+        },
+        {
+         "name": "Configuración",
+         "value": "Configuración"
+        }
+       ],
+       "numbers": [
+        "Pantalla 1",
+        "Pantalla 2",
+        "Pantalla 3",
+        "Pantalla 4",
+        "1",
+        "2"
+       ]
+      }
+     }
+    }
+   },
+   "rebuilt": "compose_audit keeps 2048 characters of the situation: observed.screen (and evidence) come from the same row's payload.seen",
+   "published": "No pude hacerlo en «Configuración»: no vi en la pantalla un control con el que seguir."
+  }
+ ]
+}

@@ -1,5 +1,9 @@
 using System.Buffers;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using Baxy.App;
+using Baxy.Contracts;
 using Baxy.Core;
 using NUnit.Framework;
 
@@ -8,6 +12,57 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class CoreJsonlProtocolTests
 {
+    private static readonly JsonSerializerOptions VisibleFactOptions = new()
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
+    [Test]
+    public async Task DenseUnicodeResponseCrossesCoreWriterAndAppReaderWithoutLosingFollowingFrame()
+    {
+        string message = JsonSerializer.Serialize(new
+        {
+            observed = new
+            {
+                text = string.Concat(Enumerable.Repeat("á中🙂\"\\\n", 1000)),
+                layout = new { available = true, lines = Array.Empty<object>() },
+            },
+        }, VisibleFactOptions);
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
+            OperationStatuses.Completed, message, true, false, JsonSerializer.SerializeToElement(new { text = message }), null);
+        OperationResponse following = response with { RequestId = Guid.NewGuid().ToString("D"), Message = "next", Result = null };
+        byte[] firstWire = ProtocolJson.SerializeBoundedToUtf8Bytes(response, CoreProcessClient.MaximumProtocolLineLength);
+        byte[] nextWire = ProtocolJson.SerializeBoundedToUtf8Bytes(following, CoreProcessClient.MaximumProtocolLineLength);
+        await using var output = new RecordingMemoryStream();
+        await Program.WriteMessageAsync(output, firstWire, CancellationToken.None);
+        await Program.WriteMessageAsync(output, nextWire, CancellationToken.None);
+        await using var input = new ChunkedReadStream(output.ToArray(), maximumReadBytes: 7);
+        var reader = new BoundedUtf8LineReader(input, CoreProcessClient.MaximumProtocolLineLength);
+
+        BoundedUtf8Line? first = await reader.ReadAsync(CancellationToken.None);
+        BoundedUtf8Line? next = await reader.ReadAsync(CancellationToken.None);
+        BoundedUtf8Line? end = await reader.ReadAsync(CancellationToken.None);
+        OperationResponse restored = ProtocolJson.DeserializeResponse(first!.Value.Utf8!);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.Length, Is.GreaterThan(4096).And.LessThanOrEqualTo(48_000));
+            Assert.That(first.Value.TooLarge, Is.False);
+            Assert.That(first.Value.Utf8, Is.EqualTo(firstWire));
+            Assert.That(restored.Message, Is.EqualTo(message));
+            Assert.That(JsonElement.DeepEquals(restored.Result!.Value, response.Result!.Value), Is.True);
+            Assert.That(restored.InvocationId, Is.EqualTo(response.InvocationId));
+            Assert.That(restored.Verified, Is.True);
+            Assert.That(ProtocolJson.DeserializeResponse(next!.Value.Utf8!).RequestId, Is.EqualTo(following.RequestId));
+            Assert.That(next.Value.Utf8, Is.EqualTo(nextWire));
+            Assert.That(output.WriteCalls, Is.EqualTo(2));
+            Assert.That(output.FlushCalls, Is.EqualTo(2));
+            Assert.That(end, Is.Null);
+        });
+    }
+
     [Test]
     public async Task ReaderPreservesLfCrLfLimitsAndFollowingFrames()
     {

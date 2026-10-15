@@ -1,0 +1,149 @@
+{
+  "conversations": [
+    {
+      "id": "t2-c01",
+      "speaker": "chileno, estudiante universitario",
+      "turns": [
+        {"text": "pone los bunkers en spotify pa estudiar", "expect": "Reproduce música de Los Bunkers en Spotify."},
+        {"text": "no mejor en youtube, algun video largo con sus temas", "expect": "Cambia a YouTube y pone un video largo/recopilatorio de Los Bunkers (deja de sonar Spotify)."},
+        {"text": "subele un poco mas", "expect": "Sube el volumen un poco (o pregunta cuánto) sin cortar la música."},
+        {"text": "oye y cuantos discos de estudio tienen los bunkers?", "expect": "Responde cuántos discos de estudio tiene Los Bunkers con dato verificado, sin inventar títulos."}
+      ]
+    },
+    {
+      "id": "t2-c02",
+      "speaker": "rioplatense, cocinando",
+      "turns": [
+        {"text": "dame 5 ideas de cena con pollo y arroz que no tarden mas de media hora", "expect": "Da exactamente 5 ideas breves de cena con pollo y arroz rápidas."},
+        {"text": "no, te pedí 5 che, me tiraste menos", "expect": "Reconoce el error y entrega la lista completa de 5 ideas, sin discutir."},
+        {"text": "dale, la segunda como se hace? pasame los pasos cortitos", "expect": "Da los pasos breves de la segunda idea de la lista anterior, no de otra receta."}
+      ]
+    },
+    {
+      "id": "t2-c03",
+      "speaker": "spanglish, gamer",
+      "turns": [
+        {"text": "abre configuracion que quiero ver lo de la pantalla", "expect": "Abre Configuración de Windows (en Pantalla o en su inicio)."},
+        {"text": "ya cierra configuracion que me esta laggeando el valorant", "expect": "Cierra la ventana de Configuración que abrió en el turno anterior (sin tocar Valorant ni otras apps)."},
+        {"text": "no bro cerraste el que no era, te dije CONFIGURACION", "expect": "Comprueba Configuración: si sigue abierta la cierra, si ya se cerró lo dice; no cierra nada más ni pide confirmaciones innecesarias."},
+        {"text": "ok y ahora baja el brillo a like 30", "expect": "Pone el brillo de la pantalla en 30 %."}
+      ]
+    },
+    {
+      "id": "t2-c04",
+      "speaker": "mexicano, en la oficina",
+      "turns": [
+        {"text": "abre configuracion y ve a pantalla", "expect": "Abre Configuración de Windows en la sección Pantalla."},
+        {"text": "ahi ponle la escala en 125", "expect": "En Configuración > Pantalla cambia la escala a 125 %."},
+        {"text": "no espera se ve muy grande, regresala como estaba", "expect": "Devuelve la escala al valor anterior (el que tenía antes del cambio)."},
+        {"text": "te dije la escala no el brillo, regresa la escala a 100", "expect": "Reconoce la confusión y pone la escala en 100 % (y si tocó el brillo, lo deja como estaba)."},
+        {"text": "ya quedo, cierra configuracion porfa", "expect": "Cierra la ventana de Configuración."}
+      ]
+    },
+    {
+      "id": "t2-c05",
+      "speaker": "España, autónoma",
+      "turns": [
+        {"text": "créame en el escritorio una carpeta que se llame Facturas 2026", "expect": "Crea la carpeta «Facturas 2026» en el Escritorio."}
+      ]
+    },
+    {
+      "id": "t2-c06",
+      "speaker": "inglés, cocinando",
+      "turns": [
+        {"text": "set a timer for 12 minutes, pasta's on", "expect": "Starts a 12-minute timer."}
+      ]
+    },
+    {
+      "id": "t2-c07",
+      "speaker": "chileno",
+      "turns": [
+        {"text": "mandale a Ron92 por discord que llego en 10 min y que lleve el cargador", "expect": "Envía por MD de Discord a Ron92 un mensaje que diga que llega en 10 minutos y que lleve el cargador."}
+      ]
+    },
+    {
+      "id": "t2-c08",
+      "speaker": "mexicano",
+      "turns": [
+        {"text": "busca en google cuanto cuesta el game pass ultimate en mexico", "expect": "Abre el navegador con una búsqueda en Google del precio de Game Pass Ultimate en México."}
+      ]
+    },
+    {
+      "id": "t2-c09",
+      "speaker": "chileno, estudiando geografía",
+      "turns": [
+        {"text": "dame 4 paises de sudamerica que no tengan salida al mar", "expect": "Dice que solo hay 2 (Bolivia y Paraguay) en vez de inventar 4."}
+      ]
+    },
+    {
+      "id": "t2-c10",
+      "speaker": "rioplatense, trabajo",
+      "turns": [
+        {"text": "en word poné el titulo en negrita y centralo", "expect": "En el documento abierto de Word selecciona el título, lo pone en negrita y lo centra."}
+      ]
+    },
+    {
+      "id": "t2-c11",
+      "speaker": "mexicano, con su hijo",
+      "turns": [
+        {"text": "abre paint y elige el lapiz con color azul", "expect": "Abre Paint, selecciona la herramienta Lápiz y elige el color azul."}
+      ]
+    },
+    {
+      "id": "t2-c12",
+      "speaker": "spanglish",
+      "turns": [
+        {"text": "baja el volume a like 20 porfa", "expect": "Pone el volumen del sistema en 20 %."}
+      ]
+    },
+    {
+      "id": "t2-c13",
+      "speaker": "España",
+      "turns": [
+        {"text": "¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?", "expect": "Da el pronóstico de mañana en Valencia (España) y responde si conviene llevar paraguas según la probabilidad de lluvia."}
+      ]
+    },
+    {
+      "id": "t2-c14",
+      "speaker": "chileno, en la casa",
+      "turns": [
+        {"text": "recuerdame a las 6 y media sacar la ropa de la lavadora", "expect": "Crea un recordatorio para hoy a las 18:30 (o la próxima 6:30 lógica) con «sacar la ropa de la lavadora»."}
+      ]
+    },
+    {
+      "id": "t2-c15",
+      "speaker": "inglés",
+      "turns": [
+        {"text": "turn bluetooth on, gonna connect my headphones", "expect": "Turns Bluetooth on."}
+      ]
+    },
+    {
+      "id": "t2-c16",
+      "speaker": "mexicano, dictado por voz",
+      "turns": [
+        {"text": "toma una captura de pantalla y guardala en mis imagenes", "expect": "Hace una captura de pantalla y la guarda en la carpeta Imágenes, diciendo dónde quedó."}
+      ]
+    },
+    {
+      "id": "t2-c17",
+      "speaker": "chileno, trabajo",
+      "turns": [
+        {"text": "copia al portapapeles esto: reunion jueves 15:00 sala 3", "expect": "Copia al portapapeles el texto «reunion jueves 15:00 sala 3» tal cual."}
+      ]
+    },
+    {
+      "id": "t2-c18",
+      "speaker": "España, oficina",
+      "turns": [
+        {"text": "pon el Word y el Edge uno al lado del otro", "expect": "Acomoda las ventanas de Word y Edge en pantalla dividida, una a cada lado."}
+      ]
+    },
+    {
+      "id": "t2-c19",
+      "speaker": "inglés, teletrabajo",
+      "turns": [
+        {"text": "give me 3 stretches i can do at my desk, keep it short", "expect": "Gives exactly 3 short desk stretches, concise."}
+      ]
+    }
+  ]
+}

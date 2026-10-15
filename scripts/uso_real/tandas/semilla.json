@@ -1,0 +1,7 @@
+{"conversations": [
+ {"id": "semilla-c01", "speaker": "dueño, chileno, chat (2026-10-07)", "turns": [
+  {"text": "Podrias buscarme en google un top 3 peliculas de suspenso del 2026", "expect": "Abre en el navegador de la persona la búsqueda de Google pedida o da un top 3 real de una fuente; respeta «top 3» y «en google»."},
+  {"text": "si pero quiero buscar un top 3", "expect": "Sigue la corrección: busca o abre el top 3, sin repetir la respuesta anterior."},
+  {"text": "ok pero lo puedes buscar en google no me importa the ice", "expect": "Abre la búsqueda en Google en el navegador de la persona; no repite la misma frase."}
+ ]}
+]}

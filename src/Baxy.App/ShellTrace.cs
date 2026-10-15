@@ -24,6 +24,18 @@ internal static class ShellTraceStages
     internal const string StartupReady = "startup.ready";
     internal const string StartupFailed = "startup.failed";
 
+    /// <summary>
+    /// «Tiempo hasta lista»: el saludo del core llegó, el runtime de la mente
+    /// quedó verificado y la mente respondió lista. Se marcan al ocurrir, no
+    /// al cerrar la ventana.
+    /// </summary>
+    internal const string StartupCoreReady = "startup.core.ready";
+    internal const string StartupMindVerified = "startup.mind.verified";
+    internal const string StartupMindReady = "startup.mind.ready";
+
+    /// <summary>r22: the mind did not come up; the detail is its stable cause (never the server's lines).</summary>
+    internal const string StartupMindFailed = "startup.mind.failed";
+
     internal const string SubmitReceived = "submit.received";
     internal const string BridgeCrossed = "bridge.crossed";
     internal const string DecisionStart = "decision.start";
@@ -91,6 +103,10 @@ internal static class ShellTraceStages
         StartupShellReady,
         StartupReady,
         StartupFailed,
+        StartupCoreReady,
+        StartupMindVerified,
+        StartupMindReady,
+        StartupMindFailed,
         SubmitReceived,
         BridgeCrossed,
         DecisionStart,

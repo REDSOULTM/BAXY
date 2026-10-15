@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.App;
 using Baxy.Contracts;
@@ -8,8 +9,140 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MindPlanSessionTests
 {
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public void SupersedingConfirmationResolvesDurableIdentityOnlyBeforeAnyPossibleEffect(
+        bool reconciliationRequired, bool uncertainEffect)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-supersede-confirmation-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = static () => throw new AssertionException("Superseding cannot execute Core."),
+                Mind = static () => throw new AssertionException("Superseding cannot execute the mind."),
+                Publish = static (_, _) => throw new AssertionException("Superseding does not claim an effect."),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (_, _) => true,
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var arguments = new JsonObject { ["appId"] = "windows.notepad" };
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation("app.open", arguments));
+            var execution = new PendingMindPlanExecution("abre notepad",
+                [new MindPlanStep("open", "app.open", "Abre notepad.", [], "literal", arguments)])
+            {
+                PendingOperation = prepared,
+                PendingEffectMayHaveOccurred = uncertainEffect,
+            };
+            var response = new OperationResponse(
+                ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"),
+                prepared.MissionId, prepared.InvocationId, OperationStatuses.Pending,
+                "Confirmación requerida.", false, false,
+                JsonSerializer.SerializeToElement(new
+                {
+                    version = 1,
+                    token = Convert.ToBase64String(new byte[32]).TrimEnd('='),
+                    expiresAtUtc = DateTimeOffset.UtcNow.AddMinutes(2)
+                        .ToString("O", System.Globalization.CultureInfo.InvariantCulture),
+                    reconciliationRequired,
+                }), "confirmation_required");
+            Assert.That(PendingOperationConfirmation.TryCreate(
+                response, prepared, TimeProvider.System, out PendingOperationConfirmation? confirmation), Is.True);
+            execution.RequireConfirmation(confirmation!);
+            session.Begin(execution);
+
+            bool canSupersede = !reconciliationRequired && !uncertainEffect;
+            Assert.That(session.TrySupersedeUnstartedConfirmation(registry), Is.EqualTo(canSupersede));
+            Assert.That(session.HasPending, Is.EqualTo(!canSupersede));
+            if (canSupersede)
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(store.Load(registry), Is.Null);
+            }
+            else
+            {
+                Assert.That(session.Current, Is.SameAs(execution));
+                Assert.That(session.Current!.Confirmation, Is.SameAs(confirmation));
+                Assert.That(new DurableRetryStore(outbox).Load().Single().InvocationId, Is.EqualTo(prepared.InvocationId));
+                Assert.That(store.Load(registry)!.PendingOperation!.InvocationId, Is.EqualTo(prepared.InvocationId));
+            }
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    // 2026-09-28: baxy-core ended during «captura la ventana activa»; the send threw,
+    // the plan stayed pending and the App refused every later turn. A step whose core
+    // is gone ends the plan and its retry identity; the failure still reaches the turn.
     [Test]
-    public async Task CancelWithoutAnUncertainEffectClearsThePendingPlan()
+    public async Task CoreLostDuringAStepEndsThePlanAndStillFailsTheTurn()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-plan-core-lost-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        var core = new CoreProcessClient();
+        var mind = new MindSidecarClient();
+        try
+        {
+            var published = new List<(string Body, UserMessageEvent? Event)>();
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = () => core,
+                Mind = () => mind,
+                Publish = (body, messageEvent) => published.Add((body, messageEvent)),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (registry, prepared) =>
+                {
+                    registry.MarkResolved(prepared);
+                    return true;
+                },
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var execution = new PendingMindPlanExecution(
+                "captura la ventana activa",
+                [new MindPlanStep("capture", "capture.active.window", "Captura la ventana activa.",
+                    [], "literal", new JsonObject())]);
+            session.Begin(execution);
+
+            // A client whose core is gone: not ready, and every send fails.
+            Assert.That(core.IsReady, Is.False);
+            Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await session.ExecuteAsync(execution, registry, CancellationToken.None));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(session.HasPending, Is.False);
+                Assert.That(store.Load(registry), Is.Null);
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(published, Is.Empty, "the turn says the failure once");
+            });
+        }
+        finally
+        {
+            await mind.DisposeAsync();
+            await core.DisposeAsync();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    // ctx-dueno-01 (2026-09-22): an uncertain effect used to keep the plan pending on
+    // «cancelar» too, and the whole conversation stayed hostage. Cancel now closes it
+    // with one terminal uncertain message; only an unrecognised reply keeps the
+    // recovery challenge (the view model supersedes it with a self-contained request).
+    [TestCase(false, "cancelar")]
+    [TestCase(true, "cancelar")]
+    [TestCase(true, "cierra la calculadora")]
+    public async Task PendingRepliesPreserveUncertainEffects(bool uncertain, string text)
     {
         string root = Path.Combine(Path.GetTempPath(), "baxy-plan-session-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
@@ -39,25 +172,128 @@ public sealed class MindPlanSessionTests
                         [],
                         "literal",
                         new JsonObject { ["appId"] = "windows.notepad" }),
-                ]);
+                ])
+            { PendingEffectMayHaveOccurred = uncertain };
             session.Begin(execution);
             var registry = new RetryableOperationRegistry(Path.Combine(root, "outbox.bin"));
 
-            await session.HandlePendingAsync("cancelar", registry, CancellationToken.None);
+            await session.HandlePendingAsync(text, registry, CancellationToken.None);
 
+            bool cancelled = text == "cancelar";
             Assert.Multiple(() =>
             {
-                Assert.That(session.HasPending, Is.False);
+                Assert.That(session.HasPending, Is.EqualTo(uncertain && !cancelled));
                 Assert.That(published, Has.Count.EqualTo(1));
-                Assert.That(
-                    published[0].Body,
-                    Is.EqualTo(TurnVisibleFacts.Status("remaining_steps_cancelled")));
+                if (uncertain)
+                {
+                    var facts = JsonNode.Parse(published[0].Body)!;
+                    Assert.That((string?)facts["polarity"], Is.EqualTo("failure"));
+                    Assert.That((bool?)facts["effectUncertain"], Is.True);
+                    Assert.That((bool?)facts["pending"], Is.EqualTo(!cancelled));
+                    Assert.That((bool?)facts["canRepeat"], Is.EqualTo(cancelled));
+                    Assert.That((bool?)facts["evidenceRetained"], Is.EqualTo(!cancelled));
+                    Assert.That((string?)facts["pendingRequest"], Is.EqualTo("abre notepad"));
+                    Assert.That(published[0].Event?.Type, Is.EqualTo(UserMessageEventType.Error));
+                }
+                else
+                {
+                    var facts = JsonNode.Parse(published[0].Body)!;
+                    Assert.That((string?)facts["cause"], Is.EqualTo("remaining_steps_cancelled"));
+                    Assert.That((string?)facts["cancelledRequest"], Is.EqualTo("abre notepad"));
+                    Assert.That((string?)facts["cancelledAction"]?["operation"], Is.EqualTo("app.open"));
+                    Assert.That(facts["pendingAction"], Is.Null);
+                }
             });
         }
         finally
         {
             Directory.Delete(root, recursive: true);
         }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SelfContainedRequestSupersedesUncertainEffectOnlyWithoutStagedConfirmation(bool staged)
+    {
+        // ctx-dueno-01 (2026-09-22): the recovery challenge of an uncertain effect never
+        // blocks the next request; a staged confirmation still has to be answered.
+        string root = Path.Combine(Path.GetTempPath(), "baxy-supersede-uncertain-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = static () => throw new AssertionException("Superseding cannot execute Core."),
+                Mind = static () => throw new AssertionException("Superseding cannot execute the mind."),
+                Publish = static (_, _) => throw new AssertionException("Superseding does not claim an effect."),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (_, _) => true,
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var arguments = new JsonObject { ["query"] = "cancion de amor" };
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation("media.play.youtube", arguments));
+            var execution = new PendingMindPlanExecution("pon una cancion de amor en youtube",
+                [new MindPlanStep("play", "media.play.youtube", "Reproduce.", [], "literal", arguments)])
+            {
+                PendingOperation = prepared,
+                PendingEffectMayHaveOccurred = true,
+            };
+            if (staged)
+            {
+                var response = new OperationResponse(
+                    ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"),
+                    prepared.MissionId, prepared.InvocationId, OperationStatuses.Pending,
+                    "Confirmación requerida.", false, false,
+                    JsonSerializer.SerializeToElement(new
+                    {
+                        version = 1,
+                        token = Convert.ToBase64String(new byte[32]).TrimEnd('='),
+                        expiresAtUtc = DateTimeOffset.UtcNow.AddMinutes(2)
+                            .ToString("O", System.Globalization.CultureInfo.InvariantCulture),
+                        reconciliationRequired = true,
+                    }), "confirmation_required");
+                Assert.That(PendingOperationConfirmation.TryCreate(
+                    response, prepared, TimeProvider.System, out PendingOperationConfirmation? confirmation), Is.True);
+                execution.RequireConfirmation(confirmation!);
+            }
+
+            session.Begin(execution);
+
+            Assert.That(session.TrySupersedeUncertainEffect(registry), Is.EqualTo(!staged));
+            Assert.That(session.HasPending, Is.EqualTo(staged));
+            if (!staged)
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(store.Load(registry), Is.Null);
+            }
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void TerminalUncertainEffectMessageClosesTheMission()
+    {
+        var execution = new PendingMindPlanExecution("pon una cancion de amor en youtube",
+            [new MindPlanStep("play", "media.play.youtube", "Reproduce.", [], "literal", new JsonObject())]);
+        var pending = JsonNode.Parse(MissionNarration.CreateUncertainEffectMessage(execution))!;
+        var terminal = JsonNode.Parse(MissionNarration.CreateUncertainEffectMessage(execution, terminal: true))!;
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)pending["pending"], Is.True);
+            Assert.That((bool?)pending["evidenceRetained"], Is.True);
+            Assert.That((bool?)terminal["effectUncertain"], Is.True);
+            Assert.That((bool?)terminal["verified"], Is.False);
+            Assert.That((bool?)terminal["pending"], Is.False);
+            Assert.That((bool?)terminal["canRepeat"], Is.True);
+            Assert.That((bool?)terminal["evidenceRetained"], Is.False);
+            Assert.That((string?)terminal["pendingRequest"], Is.EqualTo("pon una cancion de amor en youtube"));
+        });
     }
 
     [Test]
@@ -108,5 +344,153 @@ public sealed class MindPlanSessionTests
         {
             Directory.Delete(root, recursive: true);
         }
+    }
+
+    // 2026-09-21: a message.send.test left awaiting confirmation the evening before was restored at the next
+    // start and re-prompted at every new request; the «sí» meant for the new request confirmed the stale one.
+    // A restored plan is dropped (outbox and store cleared) and announced at start: cancelled, or «may have
+    // happened, check it» when its effect is uncertain. It never hijacks the new session's requests.
+    [TestCase(false)]
+    [TestCase(true)]
+    public void RestoringAPreviousSessionPlanDropsItAndOnlyTheAnnouncementDependsOnTheEffect(bool uncertainEffect)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-restore-stale-plan-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var arguments = new JsonObject { ["channel"] = "whatsapp", ["requestedRecipient"] = "amor", ["text"] = "la amo" };
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation("message.send.test", arguments));
+            var execution = new PendingMindPlanExecution("escribile a amor en WhatsApp que la amo",
+                [new MindPlanStep("send", "message.send.test", "Envía el mensaje.", [], "literal", arguments)])
+            {
+                PendingOperation = prepared,
+                PendingEffectMayHaveOccurred = uncertainEffect,
+            };
+            store.Save(execution);
+
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = static () => throw new AssertionException("Restoring cannot execute Core."),
+                Mind = static () => throw new AssertionException("Restoring cannot execute the mind."),
+                Publish = static (_, _) => throw new AssertionException("Restoring does not publish."),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (_, _) => true,
+            });
+            session.UseStore(store);
+            var restoredRegistry = new RetryableOperationRegistry(outbox);
+            session.TryRestore(restoredRegistry);
+
+            // Either way the plan is dropped; the uncertain flag only changes the start announcement.
+            Assert.That(session.HasPending, Is.False);
+            Assert.That(session.DroppedRestoredPlan!.Objective, Is.EqualTo("escribile a amor en WhatsApp que la amo"));
+            Assert.That(session.DroppedRestoredPlan.PendingEffectMayHaveOccurred, Is.EqualTo(uncertainEffect));
+            Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+            Assert.That(store.Load(restoredRegistry), Is.Null);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    // Tanda t4-r6 (2026-10-08): a spent turn budget starts no further step. The end says
+    // what was done and what was left, and nothing stays pending. Contracases: inside the
+    // budget, or with nothing done yet, the step is attempted (here against a core that is
+    // gone, so the attempt is the thrown send).
+    [TestCase(60, 1, true)]
+    [TestCase(10, 1, false)]
+    [TestCase(60, 0, false)]
+    public async Task ASpentTurnBudgetStartsNoFurtherStepAndSaysWhatWasDone(
+        int elapsedSeconds, int doneSteps, bool stopsBeforeTheStep)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-plan-turn-budget-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        var core = new CoreProcessClient();
+        var mind = new MindSidecarClient();
+        try
+        {
+            var published = new List<(string Body, UserMessageEvent? Event)>();
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = () => core,
+                Mind = () => mind,
+                Publish = (body, messageEvent) => published.Add((body, messageEvent)),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (registry, prepared) =>
+                {
+                    registry.MarkResolved(prepared);
+                    return true;
+                },
+                TurnElapsed = () => TimeSpan.FromSeconds(elapsedSeconds),
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            var registry = new RetryableOperationRegistry(Path.Combine(root, "outbox.bin"));
+            var execution = new PendingMindPlanExecution(
+                "abre el bloc de notas y la calculadora",
+                [
+                    new MindPlanStep("open", "app.open", "Abre el Bloc de notas.", [], "literal",
+                        new JsonObject { ["appId"] = "windows.notepad" }),
+                    new MindPlanStep("calculator", "app.open", "Abre la calculadora.", [], "literal",
+                        new JsonObject { ["appId"] = "windows.calculator" }),
+                ])
+            {
+                NextIndex = doneSteps,
+            };
+            if (doneSteps > 0)
+            {
+                execution.CompletedMessages.Add("Abrí Bloc de notas.");
+                execution.Observations.Add(new JsonObject { ["stepId"] = "open", ["operation"] = "app.open" });
+            }
+
+            session.Begin(execution);
+            if (!stopsBeforeTheStep)
+            {
+                Assert.ThrowsAsync<InvalidOperationException>(
+                    async () => await session.ExecuteAsync(execution, registry, CancellationToken.None));
+                return;
+            }
+
+            await session.ExecuteAsync(execution, registry, CancellationToken.None);
+            Assert.That(published, Has.Count.EqualTo(1));
+            JsonNode facts = JsonNode.Parse(published[0].Body)!;
+            Assert.Multiple(() =>
+            {
+                Assert.That(session.HasPending, Is.False);
+                Assert.That(store.Load(registry), Is.Null);
+                Assert.That(published[0].Body, Does.Contain("Bloc de notas"));
+                Assert.That(facts["reason"]!["cause"]!.GetValue<string>(), Is.EqualTo("turn_budget_exhausted"));
+                Assert.That(facts["reason"]!["operation"]!.GetValue<string>(), Is.EqualTo("app.open"));
+            });
+        }
+        finally
+        {
+            await mind.DisposeAsync();
+            await core.DisposeAsync();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [TestCase(44, false)]
+    [TestCase(45, true)]
+    [TestCase(90, true)]
+    public void TheTurnBudgetIsSpentAtItsTotal(int elapsedSeconds, bool spent) =>
+        Assert.That(TurnBudget.IsSpent(TimeSpan.FromSeconds(elapsedSeconds)), Is.EqualTo(spent));
+
+    // Review 2026-10-08: the clock only resets when a turn starts, so between turns it kept growing. A message
+    // published outside a turn is not a spent turn.
+    [Test]
+    public void OutsideATurnNoBudgetIsSpent()
+    {
+        long longAgo = System.Diagnostics.Stopwatch.GetTimestamp()
+            - (long)(System.Diagnostics.Stopwatch.Frequency * 120.0);
+        Assert.Multiple(() =>
+        {
+            Assert.That(TurnBudget.Elapsed(turnActive: false, longAgo), Is.EqualTo(TimeSpan.Zero));
+            Assert.That(TurnBudget.IsSpent(TurnBudget.Elapsed(turnActive: true, longAgo)), Is.True);
+        });
     }
 }

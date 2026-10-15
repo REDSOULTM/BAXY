@@ -1,0 +1,339 @@
+{
+ "_source": "v3e2-final compose-audit.jsonl (window/v3e2-final, 2026-09-29): the situation each case was composed from; F-w13-t2's situation was cut in the audit, so its observed is the payload's seen.",
+ "F-s040": {
+  "situation": {
+   "kind": "operation",
+   "operation": "notification.list",
+   "polarity": "success",
+   "verified": true,
+   "succeeded": true,
+   "observed": {
+    "version": 1,
+    "count": 38,
+    "notifications": [
+     {
+      "kind": "reminder",
+      "title": "Reanuda el ejercicio",
+      "nextRunUtc": "2026-09-29T08:00:22.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T08:20:58.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T09:00:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "reminder",
+      "nextRunUtc": "2026-09-29T09:15:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "reminder",
+      "nextRunUtc": "2026-09-29T09:15:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "reminder",
+      "nextRunUtc": "2026-09-29T09:15:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T09:45:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T09:45:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T09:45:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:30:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:30:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:30:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:30:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:40:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:40:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T11:40:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T12:00:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T12:00:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T12:00:00.0000000+00:00",
+      "state": "Ready"
+     },
+     {
+      "kind": "alarm",
+      "nextRunUtc": "2026-09-29T12:00:00.0000000+00:00",
+      "state": "Ready"
+     }
+    ],
+    "staleTaskCount": 25,
+    "resultLimit": 20,
+    "resultsMayBeTruncated": true,
+    "authority": "windows_task_scheduler_notification_list_postread"
+   }
+  },
+  "drafts": [
+   "Hay 5 alarmas programadas para las 05:20, 06:00, 06:45, 08:30 y 08:40. ¿Las cancelo todas?",
+   "Tienes tres alarmas programadas para las 05:20, 06:00 y 06:45, ¿las cancelo todas?",
+   "Hay ocho alarmas a las 05:20, 06:00, 06:45, 08:30, 08:40 y 09:00; ¿las cancelo todas?"
+  ]
+ },
+ "F-s019": {
+  "situation": {
+   "kind": "failure",
+   "polarity": "failure",
+   "cause": "mission_failed",
+   "stepCount": 0,
+   "steps": [],
+   "reason": {
+    "kind": "operation",
+    "operation": "notification.cancel.at",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "notification_clock_not_found"
+   }
+  },
+  "drafts": [
+   "No se pudo cambiar la alarma porque el reloj de notificaciones no se encontró."
+  ]
+ },
+ "F-w13-t2": {
+  "situation": {
+   "kind": "operation",
+   "operation": "web.search",
+   "polarity": "success",
+   "verified": true,
+   "succeeded": true,
+   "observed": {
+    "version": 1,
+    "query": "¿Cuánto me sale cargar 40 litros de nafta Super en Córdoba?",
+    "count": 5,
+    "results": [
+     {
+      "title": "Cuánto sale cargar el tanque en Córdoba y cómo pagar menos con ...",
+      "url": "https://www.cba24n.com.ar/cordoba-motor/cuanto-sale-cargar-el-tanque-en-cordoba-y-como-pagar-menos-con-descuentos-de-hasta-30-_a69f0c928632e9785848c404d",
+      "snippet": "Con los valores actuales de los combustibles, llenar un auto o una camioneta implica un gasto cada vez mayor. Cuánto cuesta según el tamaño del tanque y qué promociones bancarias y beneficios se pueden aprovechar."
+     },
+     {
+      "title": "Calculadora interactiva: cuánto cuesta llenar el tanque de nafta tras ...",
+      "url": "https://www.infobae.com/economia/2024/01/03/cuanto-cuesta-llenar-el-tanque-de-nafta-tras-el-nuevo-aumento-en-las-estaciones-de-servicio/",
+      "snippet": "Según fuentes del sector, la Nafta Súper en las estaciones de YPF quedó en $716 y la Infinia -la versión premium- llegó a $890. El litro de Diésel, por su parte, trepa ahora a $755 y la ..."
+     },
+     {
+      "title": "Calculadora de combustibles: conocé cuánto cuesta llenar el tanque de ...",
+      "url": "https://www.infobae.com/autos/2023/11/15/calculadora-de-combustibles-conoce-cuanto-cuesta-llenar-el-tanque-de-cada-auto/",
+      "snippet": "Estos precios de referencia son entonces los siguientes para 1 litro de los distintos combustibles que hay en el mercado: Nafta Súper $272, Infinia $349, diésel 500 $292 e Infinia diésel $398 ..."
+     },
+     {
+      "title": "Calcular cargar combustible | elcerokm.com",
+      "url": "https://elcerokm.com/cuanto-sale-llenar-el-tanque",
+      "snippet": "Cuánto sale llenar el tanque en Argentina en 2026. Calculá cuánto cuesta llenar el tanque según tipo de combustible, capacidad del auto y el precio promedio en Argentina. Podés ingresar los litros o seleccionar el modelo del vehículo."
+     },
+     {
+      "title": "Cuánto sale cargar nafta en cada provincia y dónde es más barato",
+      "url": "https://www.quepasasalta.com.ar/argentina/precio-nafta-hoy/",
+      "snippet": "En Córdoba , el litro de nafta súper se ubica en $1.460 y el de gasoil en $1.464, lo que equivale a $73.000 y $73.200 $73.000 y $73.200 por un tanque completo, respectivamente."
+     }
+    ],
+    "authority": "duckduckgo_lite_https"
+   }
+  },
+  "drafts": [
+   "En Córdoba el litro de nafta súper cuesta $1.460, lo que suma $73.000 por 40 litros."
+  ]
+ },
+ "F-p07-t1": {
+  "situation": {
+   "kind": "operation",
+   "operation": "weather.current",
+   "polarity": "success",
+   "verified": true,
+   "succeeded": true,
+   "observed": {
+    "version": 1,
+    "location": "Foster City",
+    "region": "California",
+    "country": "Estados Unidos",
+    "locatedBy": "named_place_geocoded",
+    "observedAtLocal": "2026-09-29T00:45",
+    "timezone": "America/Los_Angeles",
+    "temperatureC": 11.7,
+    "apparentC": 10.7,
+    "humidityPercent": 84,
+    "windKmh": 4.8,
+    "precipitationMm": 0,
+    "uvIndex": 0,
+    "dewPointC": 9.1,
+    "weatherCode": 0,
+    "condition": "despejado",
+    "today": {
+     "date": "2026-09-29",
+     "weekday": "martes",
+     "maxC": 30,
+     "minC": 9.3,
+     "rainProbabilityPercent": 0,
+     "uvIndexMax": 6.1,
+     "sunrise": "07:03",
+     "sunset": "18:54"
+    },
+    "tomorrow": {
+     "date": "2026-09-30",
+     "weekday": "miércoles",
+     "maxC": 29.7,
+     "minC": 12.6,
+     "rainProbabilityPercent": 0,
+     "uvIndexMax": 6,
+     "condition": "despejado",
+     "sunrise": "07:03",
+     "sunset": "18:53"
+    },
+    "laterDays": [
+     {
+      "date": "2026-10-01",
+      "weekday": "jueves",
+      "condition": "despejado",
+      "maxC": 29.4,
+      "minC": 15.7,
+      "rainProbabilityPercent": 0
+     },
+     {
+      "date": "2026-10-02",
+      "weekday": "viernes",
+      "condition": "nublado",
+      "maxC": 32.9,
+      "minC": 18.8,
+      "rainProbabilityPercent": 0
+     },
+     {
+      "date": "2026-10-03",
+      "weekday": "sábado",
+      "condition": "nublado",
+      "maxC": 34.4,
+      "minC": 20.7,
+      "rainProbabilityPercent": 0
+     },
+     {
+      "date": "2026-10-04",
+      "weekday": "domingo",
+      "condition": "despejado",
+      "maxC": 32.8,
+      "minC": 20.2,
+      "rainProbabilityPercent": 0
+     },
+     {
+      "date": "2026-10-05",
+      "weekday": "lunes",
+      "condition": "despejado",
+      "maxC": 32.5,
+      "minC": 21.1,
+      "rainProbabilityPercent": 0
+     }
+    ],
+    "airQuality": {
+     "usAqi": 53,
+     "category": "moderada",
+     "pm25": 10.4,
+     "pm10": 14.6
+    },
+    "authority": "open_meteo_forecast_v1"
+   }
+  },
+  "drafts": [
+   "It is 11.7°C and clear in Foster City, so you should wear a light jacket."
+  ]
+ },
+ "F-p05-t1": {
+  "situation": {
+   "kind": "operation",
+   "operation": "web.search",
+   "polarity": "success",
+   "verified": true,
+   "succeeded": true,
+   "observed": {
+    "version": 1,
+    "query": "aparcamiento en Plaza del Polvorista",
+    "count": 5,
+    "results": [
+     {
+      "title": "parking",
+      "url": "https://www.openstreetmap.org/way/205499074",
+      "snippet": "Calle Aurora, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"
+     },
+     {
+      "title": "parking",
+      "url": "https://www.openstreetmap.org/way/301877931",
+      "snippet": "Avenida de Valdelagrana, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"
+     },
+     {
+      "title": "parking",
+      "url": "https://www.openstreetmap.org/way/1106171484",
+      "snippet": "Avenida de Europa, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"
+     },
+     {
+      "title": "parking",
+      "url": "https://www.openstreetmap.org/way/952407272",
+      "snippet": "Calle Viñador, Bahía Mar, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"
+     },
+     {
+      "title": "parking",
+      "url": "https://www.openstreetmap.org/way/301871359",
+      "snippet": "Calle Río Barbate, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"
+     }
+    ],
+    "authority": "openstreetmap_nominatim"
+   }
+  },
+  "drafts": [
+   "No encontré aparcamiento en Plaza del Polvorista.",
+   "Encontré aparcamiento en Calle Aurora, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España y en Avenida de Valdelagrana, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España."
+  ]
+ }
+}

@@ -9,17 +9,38 @@ public sealed class WindowsSystemStatusProviderTests
 {
     private const ulong Gibibyte = 1024UL * 1024 * 1024;
 
+    [TestCase(null)]
+    [TestCase(0UL)]
+    [TestCase(8UL)]
+    [TestCase(15UL)]
+    [TestCase(16UL)]
+    [TestCase(32UL)]
+    public async Task InstalledCapacityDoesNotReplaceUsableMemory(ulong? installedGiB)
+    {
+        var probe = new FakeSystemStatusProbe
+        {
+            Memory = new MemoryReading(15 * Gibibyte, 3 * Gibibyte, installedGiB * Gibibyte),
+        };
+        SystemStatusSnapshot snapshot = await CreateProvider(probe).GetStatusAsync(
+            SystemStatusScope.Memory, CancellationToken.None);
+
+        Assert.That(snapshot.Failures, Is.Empty);
+        Assert.That(snapshot.Memory, Is.EqualTo(new MemoryStatus(
+            15 * Gibibyte, 3 * Gibibyte, installedGiB >= 15 ? installedGiB * Gibibyte : null)));
+    }
+
     [Test]
     public async Task FullSnapshotReturnsOnlyCorroboratedMeasurements()
     {
         var probe = new FakeSystemStatusProbe
         {
             LogicalProcessorCount = 16,
+            PhysicalCoreCount = 10,
             CpuModel = "  Example CPU  ",
             Memory = new MemoryReading(32 * Gibibyte, 12 * Gibibyte),
             Disk = new DiskReading(512L * (long)Gibibyte, 123L * (long)Gibibyte),
             Power = new PowerReading(1, 0x08, 77),
-            OperatingSystem = new OperatingSystemReading(10, 0, 26100, "x64", true),
+            OperatingSystem = new OperatingSystemReading(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro"),
             UptimeMilliseconds = 9_876_543,
         };
         probe.CpuSamples.Enqueue(new CpuTimeSample(100, 300, 100));
@@ -36,6 +57,7 @@ public sealed class WindowsSystemStatusProviderTests
             Assert.That(snapshot.Cpu, Is.Not.Null);
             Assert.That(snapshot.Cpu!.UsagePercent, Is.EqualTo(66.6666666667d).Within(0.000001d));
             Assert.That(snapshot.Cpu.LogicalProcessorCount, Is.EqualTo(16));
+            Assert.That(snapshot.Cpu.PhysicalCoreCount, Is.EqualTo(10));
             Assert.That(snapshot.Cpu.Model, Is.EqualTo("Example CPU"));
             Assert.That(snapshot.Memory, Is.EqualTo(new MemoryStatus(32 * Gibibyte, 12 * Gibibyte)));
             Assert.That(
@@ -46,7 +68,7 @@ public sealed class WindowsSystemStatusProviderTests
             Assert.That(snapshot.Battery, Is.EqualTo(new BatteryStatus(true, 77, true, true)));
             Assert.That(
                 snapshot.OperatingSystem,
-                Is.EqualTo(new OperatingSystemStatus(10, 0, 26100, "x64", true)));
+                Is.EqualTo(new OperatingSystemStatus(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro")));
             Assert.That(snapshot.UptimeSeconds, Is.EqualTo(9_876));
             Assert.That(probe.DelayCalls, Is.EqualTo(1));
             Assert.That(probe.LastDelay, Is.EqualTo(TimeSpan.FromMilliseconds(10)));
@@ -194,6 +216,35 @@ public sealed class WindowsSystemStatusProviderTests
             Is.EqualTo(new SystemStatusFailure(
                 SystemStatusScope.Cpu,
                 SystemStatusErrorCodes.InvalidMeasurement)));
+    }
+
+    [TestCase(0)]
+    [TestCase(-1)]
+    [TestCase(9)]
+    public async Task InvalidPhysicalCoreCountFailsCpuMetric(int physicalCoreCount)
+    {
+        var probe = ValidCpuProbe();
+        probe.PhysicalCoreCount = physicalCoreCount;
+        SystemStatusSnapshot snapshot = await CreateProvider(probe).GetStatusAsync(
+            SystemStatusScope.Cpu, CancellationToken.None);
+
+        Assert.That(snapshot.Cpu, Is.Null);
+        Assert.That(snapshot.Failures.Single(), Is.EqualTo(new SystemStatusFailure(
+            SystemStatusScope.Cpu, SystemStatusErrorCodes.InvalidMeasurement)));
+    }
+
+    [Test]
+    public async Task PhysicalTopologyFailureDoesNotInferCoresFromLogicalCount()
+    {
+        var probe = ValidCpuProbe();
+        probe.PhysicalCoreException = new IOException("private probe detail");
+        SystemStatusSnapshot snapshot = await CreateProvider(probe).GetStatusAsync(
+            SystemStatusScope.Cpu | SystemStatusScope.Memory, CancellationToken.None);
+
+        Assert.That(snapshot.Cpu, Is.Null);
+        Assert.That(snapshot.Memory, Is.Not.Null);
+        Assert.That(snapshot.Failures.Single(), Is.EqualTo(new SystemStatusFailure(
+            SystemStatusScope.Cpu, SystemStatusErrorCodes.MeasurementFailed)));
     }
 
     [Test]
@@ -390,6 +441,10 @@ public sealed class WindowsSystemStatusProviderTests
 
         public int LogicalProcessorCount { get; set; } = 8;
 
+        public int PhysicalCoreCount { get; set; } = 4;
+
+        public Exception? PhysicalCoreException { get; set; }
+
         public string? CpuModel { get; set; } = "Example CPU";
 
         public MemoryReading Memory { get; set; } = new(16 * Gibibyte, 8 * Gibibyte);
@@ -399,7 +454,7 @@ public sealed class WindowsSystemStatusProviderTests
         public PowerReading Power { get; set; } = new(1, 0, 50);
 
         public OperatingSystemReading OperatingSystem { get; set; } =
-            new(10, 0, 26100, "x64", true);
+            new(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro");
 
         public ulong UptimeMilliseconds { get; set; } = 1_000;
 
@@ -454,6 +509,10 @@ public sealed class WindowsSystemStatusProviderTests
 
         public int ReadLogicalProcessorCount() => LogicalProcessorCount;
 
+        public int ReadPhysicalCoreCount() => PhysicalCoreException is null
+            ? PhysicalCoreCount
+            : throw PhysicalCoreException;
+
         public string? ReadCpuModel() => CpuModel;
 
         public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
@@ -498,7 +557,7 @@ public sealed class WindowsSystemStatusProviderTests
             return Power;
         }
 
-        public OperatingSystemReading ReadOperatingSystem()
+        public ValueTask<OperatingSystemReading> ReadOperatingSystemAsync(CancellationToken cancellationToken)
         {
             OperatingSystemCalls++;
             if (OperatingSystemException is not null)
@@ -506,7 +565,7 @@ public sealed class WindowsSystemStatusProviderTests
                 throw OperatingSystemException;
             }
 
-            return OperatingSystem;
+            return ValueTask.FromResult(OperatingSystem);
         }
 
         public ulong ReadUptimeMilliseconds()

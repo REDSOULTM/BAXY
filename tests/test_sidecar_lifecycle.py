@@ -6,7 +6,6 @@ import sys
 import threading
 import time
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -15,6 +14,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind import protocol
+from baxy_mind import sidecar_lifecycle
+from baxy_mind import request_lane
+from baxy_mind import sidecar_budgets
 
 
 @pytest.mark.parametrize(
@@ -35,7 +37,7 @@ def test_message_composition_budget_preserves_the_certified_cpu_window(
     raw: object,
     expected: float,
 ) -> None:
-    assert sidecar._message_composition_budget(raw) == expected
+    assert sidecar_budgets._message_composition_budget(raw) == expected
 
 
 def _exercise_sidecar(
@@ -140,6 +142,45 @@ def _exercise_sidecar(
     }
 
 
+# A child sidecar's deadlines start at its hello, i.e. once its dispatcher runs.
+# Interpreter start-up and the import of baxy_mind are not the behaviour under
+# test: with the Full gate's PYTHONDONTWRITEBYTECODE=1 and no bytecode cache
+# they alone take 2.8-3.1 s on redpc (once 8.2 s), so a window opened at spawn
+# measured that import and not the exit or the DSP answer.
+CHILD_STARTUP_LIMIT_SECONDS = 120.0
+
+
+def _drain_until_hello(
+    process: subprocess.Popen[bytes],
+) -> tuple[list[bytes], threading.Thread]:
+    """Read the child's stdout on a thread and return once it said hello."""
+
+    lines: list[bytes] = []
+    hello_seen = threading.Event()
+
+    def drain() -> None:
+        assert process.stdout is not None
+        for line in process.stdout:
+            lines.append(line)
+            if b'"type":"hello"' in line:
+                hello_seen.set()
+
+    reader = threading.Thread(target=drain, daemon=True)
+    reader.start()
+    if not hello_seen.wait(timeout=CHILD_STARTUP_LIMIT_SECONDS):
+        _reap_child(process)
+        pytest.fail("sidecar never started its dispatcher")
+    return lines, reader
+
+
+def _reap_child(process: subprocess.Popen[bytes]) -> None:
+    if process.poll() is None:
+        process.kill()
+        process.wait(timeout=10.0)
+    if process.stdin is not None:
+        process.stdin.close()
+
+
 def test_dispatch_crash_exits_while_redirected_stdin_remains_open() -> None:
     source_root = Path(__file__).resolve().parents[1] / "src"
     script = """
@@ -182,7 +223,6 @@ sys.exit(sidecar.main())
 """
     environment = os.environ.copy()
     environment["PYTHONPATH"] = str(source_root)
-    started_at = time.monotonic()
     process = subprocess.Popen(
         [sys.executable, "-c", script],
         stdin=subprocess.PIPE,
@@ -190,24 +230,77 @@ sys.exit(sidecar.main())
         stderr=subprocess.PIPE,
         env=environment,
     )
+    stdout_lines, stdout_reader = _drain_until_hello(process)
     try:
+        started_at = time.monotonic()
         return_code = process.wait(timeout=3.0)
     except subprocess.TimeoutExpired:
-        process.kill()
-        process.wait(timeout=3.0)
         pytest.fail("sidecar did not exit after its dispatcher failed")
     finally:
-        if process.stdin is not None:
-            process.stdin.close()
+        _reap_child(process)
+    exited_after = time.monotonic() - started_at
+    stdout_reader.join(timeout=10.0)
 
-    stdout = process.stdout.read() if process.stdout is not None else b""
+    stdout = b"".join(stdout_lines)
     stderr = process.stderr.read() if process.stderr is not None else b""
 
     assert return_code == 1
-    assert time.monotonic() - started_at < 3.0
+    assert exited_after < 3.0
     assert b'"type":"hello"' in stdout
     assert b"forced_dispatch_crash" in stderr
     assert b"_enter_buffered_busy" not in stderr
+
+
+def test_cold_voice_dsp_responds_while_redirected_stdin_remains_open() -> None:
+    """Native SciPy initialization must not race a blocking Windows pipe read."""
+    source_root = Path(__file__).resolve().parents[1] / "src"
+    script = """
+import sys
+from baxy_mind import __main__ as sidecar
+from baxy_mind.voice_aec import _resample
+import numpy as np
+
+def probe_dispatch(lifecycle, *, read_message, write_message, request_finished):
+    write_message({"type": "hello", "protocol": "test"})
+    assert read_message()["type"] == "probe"
+    # This is intentionally the first DSP request in a fresh process. Require
+    # SciPy itself so a missing dependency cannot pass through interpolation.
+    from scipy.signal import resample_poly
+    assert callable(resample_poly)
+    audio = _resample(np.zeros(1536, dtype=np.int16), 48000)
+    assert audio.shape == (512,)
+    write_message({"type": "probe.done"})
+    return 0
+
+sidecar._run_sidecar = probe_dispatch
+sys.exit(sidecar.main())
+"""
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = str(source_root)
+    process = subprocess.Popen(
+        [sys.executable, "-c", script],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=environment,
+    )
+    stdout_lines, stdout_reader = _drain_until_hello(process)
+    try:
+        assert process.stdin is not None
+        process.stdin.write(b'{"type":"probe"}\n')
+        process.stdin.flush()
+        # Keep stdin open: communicate() would send EOF and hide the deadlock.
+        return_code = process.wait(timeout=10.0)
+    except subprocess.TimeoutExpired:
+        pytest.fail("cold voice DSP stalled with the protocol input still open")
+    finally:
+        _reap_child(process)
+    stdout_reader.join(timeout=10.0)
+    stdout = b"".join(stdout_lines)
+    stderr = process.stderr.read() if process.stderr is not None else b""
+    assert return_code == 0, stderr.decode("utf-8", errors="replace")
+    assert b'"type":"probe.done"' in stdout
+    assert not stderr
 
 
 def test_eof_closes_only_the_constructed_router(
@@ -287,11 +380,6 @@ def test_lifecycle_close_is_directly_idempotent_and_joins_owned_worker() -> None
     events: list[str] = []
     planner_stop = threading.Event()
 
-    class Evidence:
-        def stop(self, timeout: float) -> bool:
-            events.append(f"evidence.stop:{timeout}")
-            return True
-
     class Voice:
         @staticmethod
         def shutdown() -> None:
@@ -313,10 +401,9 @@ def test_lifecycle_close_is_directly_idempotent_and_joins_owned_worker() -> None
         daemon=True,
     )
     planner.start()
-    lifecycle = sidecar._SidecarLifecycle()
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
     lifecycle.own_voice_engine(Voice())
     lifecycle.own_llm(Llm())
-    lifecycle.own_turn_evidence(Evidence())
     lifecycle.own_planner_promotion(planner, planner_stop)
     lifecycle.own_router(Router())
 
@@ -325,16 +412,14 @@ def test_lifecycle_close_is_directly_idempotent_and_joins_owned_worker() -> None
 
     assert not planner.is_alive()
     assert events == [
-        "evidence.stop:0.0",
         "voice.shutdown",
         "llm.close",
-        f"evidence.stop:{sidecar.BACKGROUND_WORKER_JOIN_TIMEOUT_SECONDS}",
         "router.close",
     ]
 
 
 def test_rejected_lazy_voice_candidate_is_closed_outside_ownership_lock() -> None:
-    lifecycle = sidecar._SidecarLifecycle()
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
     constructor_entered = threading.Event()
     finish_constructor = threading.Event()
     shutdown_calls: list[bool] = []
@@ -384,19 +469,13 @@ def test_lifecycle_aborts_router_before_final_join_when_worker_is_stuck(
 ) -> None:
     events: list[str] = []
     release_worker = threading.Event()
+    planner_stop = threading.Event()
     worker = threading.Thread(
         target=release_worker.wait,
-        name="fixture-stuck-evidence",
+        name="fixture-stuck-planner-promotion",
         daemon=True,
     )
     worker.start()
-
-    class Evidence:
-        @staticmethod
-        def stop(timeout: float) -> bool:
-            events.append(f"evidence.stop:{timeout}")
-            worker.join(timeout=timeout)
-            return not worker.is_alive()
 
     class Router:
         @staticmethod
@@ -410,25 +489,33 @@ def test_lifecycle_aborts_router_before_final_join_when_worker_is_stuck(
             events.append("router.close")
 
     monkeypatch.setattr(
-        sidecar,
+        sidecar_lifecycle,
         "BACKGROUND_WORKER_JOIN_TIMEOUT_SECONDS",
         0.02,
     )
-    lifecycle = sidecar._SidecarLifecycle()
-    lifecycle.own_turn_evidence(Evidence())
+    # The abort join gets a window no scheduler or collector pause reaches:
+    # close() returning inside it means that join was ended by the released
+    # worker, not by its timeout (a 0.3 s bound could not tell the two apart,
+    # 0.02 + 0.25 s, and a 0.4 s collector pause of the test run broke it).
+    abort_window = 30.0
+    monkeypatch.setattr(
+        sidecar_lifecycle,
+        "BACKGROUND_WORKER_ABORT_JOIN_SECONDS",
+        abort_window,
+    )
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
+    lifecycle.own_planner_promotion(worker, planner_stop)
     lifecycle.own_router(Router())
 
     started_at = time.monotonic()
     lifecycle.close()
     elapsed = time.monotonic() - started_at
 
-    assert elapsed < 0.3
+    assert elapsed < abort_window
+    assert planner_stop.is_set()
     assert not worker.is_alive()
     assert events == [
-        "evidence.stop:0.0",
-        "evidence.stop:0.02",
         "router.request_close",
-        f"evidence.stop:{sidecar.BACKGROUND_WORKER_ABORT_JOIN_SECONDS}",
         "router.close",
     ]
 
@@ -437,7 +524,6 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    evidence_timeouts: list[float] = []
     router_events: list[str] = []
     release_worker = threading.Event()
     planner_stop = threading.Event()
@@ -454,12 +540,6 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
     planner.start()
     dispatch.start()
 
-    class Evidence:
-        @staticmethod
-        def stop(timeout: float) -> bool:
-            evidence_timeouts.append(timeout)
-            return False
-
     class Router:
         @staticmethod
         def request_close() -> None:
@@ -470,37 +550,37 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
             router_events.append("close")
 
     monkeypatch.setattr(
-        sidecar,
+        sidecar_lifecycle,
         "BACKGROUND_WORKER_JOIN_TIMEOUT_SECONDS",
         0.01,
     )
     monkeypatch.setattr(
-        sidecar,
+        sidecar_lifecycle,
         "BACKGROUND_WORKER_ABORT_JOIN_SECONDS",
         0.01,
     )
-    lifecycle = sidecar._SidecarLifecycle()
-    lifecycle.own_turn_evidence(Evidence())
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
     lifecycle.own_planner_promotion(planner, planner_stop)
     lifecycle.own_dispatch_thread(dispatch)
     lifecycle.own_router(Router())
 
     try:
-        started_at = time.monotonic()
         lifecycle.close()
-        elapsed = time.monotonic() - started_at
+        # The workers only end when the test releases them, so close() came
+        # back without waiting for them: its abort is bounded. (A wall-clock
+        # bound here measured the test process, whose collector stopped every
+        # thread for up to 0.5 s in a full run.)
+        workers_alive_after_close = [planner.is_alive(), dispatch.is_alive()]
         captured = capsys.readouterr()
     finally:
         release_worker.set()
         planner.join(timeout=1.0)
         dispatch.join(timeout=1.0)
 
-    assert elapsed < 0.2
-    assert evidence_timeouts == [0.0, 0.01, 0.01, 0.0]
+    assert workers_alive_after_close == [True, True]
     assert router_events == ["request_close", "close"]
     assert captured.out == ""
     assert captured.err.splitlines() == [
-        "baxy_mind_reap_incomplete:turn_evidence_thread:timed_out",
         "baxy_mind_reap_incomplete:planner_promotion_thread:timed_out",
         "baxy_mind_reap_incomplete:request_dispatch_thread:timed_out",
     ]
@@ -517,15 +597,9 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
 )
 def test_catalog_background_workers_stop_before_router_on_exit(
     monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
     tail: dict[str, Any] | None,
 ) -> None:
-    from baxy_mind import turn_evidence as evidence_module
-
-    corpus = tmp_path / "turn-evidence.jsonl"
-    corpus.write_text("", encoding="utf-8")
     encode_started = threading.Event()
-    service_instances: list[evidence_module.TurnEvidenceService] = []
     router_instances: list[object] = []
     encoder_timeouts: list[float] = []
     calls_after_close: list[str] = []
@@ -563,34 +637,19 @@ def test_catalog_background_workers_stop_before_router_on_exit(
             self.closed = True
 
         def close(self) -> None:
-            service = service_instances[0]
-            if service._thread is not None and service._thread.is_alive():
-                calls_after_close.append("evidence.worker_alive")
+            if any(
+                thread.name == "baxy-planner-e5-promotion" and thread.is_alive()
+                for thread in threading.enumerate()
+            ):
+                calls_after_close.append("planner.worker_alive")
             self.closed = True
             cleanup.append("router.close")
 
-    def evidence_factory() -> evidence_module.TurnEvidenceService:
-        service = evidence_module.TurnEvidenceService(corpus)
-        service_instances.append(service)
-        return service
-
-    fake_index = SimpleNamespace(
-        count=1,
-        dimensions=1,
-        encoder_identity="fixture-encoder",
-        report=SimpleNamespace(source_sha256="a" * 64),
-    )
-
-    def build_index(
-        _cls: object,
-        _path: Path,
-        encoder: Any,
-        *,
-        is_cancelled: Any = None,
-    ):
-        del is_cancelled
-        encoder(["fixture corpus"])
-        return fake_index
+    def planner_resources(_tools: object, encoder: Any = None):
+        # The lexical snapshot takes no encoder; the E5 promotion encodes.
+        if encoder is not None:
+            encoder(["fixture catalog"])
+        return object(), object()
 
     tools = [
         {
@@ -601,7 +660,6 @@ def test_catalog_background_workers_stop_before_router_on_exit(
     ]
     monkeypatch.delenv("BAXY_MIND_LLM_GGUF", raising=False)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
-    monkeypatch.setattr(sidecar, "TurnEvidenceService", evidence_factory)
     monkeypatch.setattr(sidecar, "configure_tools", lambda _value: tools)
     monkeypatch.setattr(
         sidecar,
@@ -611,19 +669,9 @@ def test_catalog_background_workers_stop_before_router_on_exit(
     monkeypatch.setattr(
         sidecar,
         "_create_planner_resources",
-        lambda *_args, **_kwargs: (object(), object()),
+        planner_resources,
     )
     monkeypatch.setattr(sidecar, "_write", replies.append)
-    monkeypatch.setattr(
-        evidence_module,
-        "load_abstention_policy",
-        lambda _path=None: None,
-    )
-    monkeypatch.setattr(
-        evidence_module.TurnEvidenceIndex,
-        "from_corpus",
-        classmethod(build_index),
-    )
     read_count = 0
 
     def read_message() -> dict[str, Any] | None:
@@ -645,15 +693,11 @@ def test_catalog_background_workers_stop_before_router_on_exit(
 
     assert result == 0
     assert len(router_instances) == 1
-    assert len(service_instances) == 1
-    assert service_instances[0].state == "stopped"
-    assert service_instances[0]._thread is not None
-    assert not service_instances[0]._thread.is_alive()
     assert not any(
         thread.name == "baxy-planner-e5-promotion" and thread.is_alive()
         for thread in threading.enumerate()
     )
-    assert encoder_timeouts == [sidecar.BACKGROUND_ENCODER_TIMEOUT_SECONDS]
+    assert encoder_timeouts == [sidecar_budgets.BACKGROUND_ENCODER_TIMEOUT_SECONDS]
     assert calls_after_close == []
     assert cleanup == ["router.close"]
     if tail is not None:
@@ -756,7 +800,7 @@ def test_failed_llm_scope_entry_finishes_the_attempt_exactly_once(
         "outcome": {},
     }
     pending = iter([message])
-    lifecycle = sidecar._SidecarLifecycle()
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
 
     try:
         with pytest.raises(RuntimeError, match="fixture begin failure"):
@@ -771,6 +815,157 @@ def test_failed_llm_scope_entry_finishes_the_attempt_exactly_once(
 
     assert scope_events == ["llm.begin", "llm.end"]
     assert finished == [message]
+
+
+@pytest.mark.parametrize(
+    ("outcome", "expected_text"),
+    [
+        ("Listo, abrí Calculadora.", "Listo, abrí Calculadora."),
+        ("", ""),
+        (TimeoutError("se agotó el presupuesto local del LLM"), ""),
+    ],
+)
+@pytest.mark.parametrize("reproducible", [True, False])
+def test_message_compose_answers_its_outcome_with_the_writers_reproducibility(
+    monkeypatch: pytest.MonkeyPatch,
+    outcome: str | BaseException,
+    expected_text: str,
+    reproducible: bool,
+) -> None:
+    """Latency 2026-09-23: a refused or out-of-budget composition is the
+    writer's answer, not a lost request; the shell repeats only what the mind
+    never answered, and only when the writer could answer differently."""
+
+    written: list[dict[str, Any]] = []
+    composed_facts: list[dict[str, Any]] = []
+
+    class FakeLlmRuntime:
+        @staticmethod
+        def start_warmup() -> None:
+            return None
+
+        @staticmethod
+        def begin_request(*_args: object, **_kwargs: object) -> None:
+            return None
+
+        @staticmethod
+        def end_request() -> None:
+            return None
+
+        @staticmethod
+        def compose_user_message(_user_text: str, _intent: str, facts: dict, *, said: str | None = None) -> str:
+            # M71: the shell's message.compose passes the person's own message beside the understood request.
+            composed_facts.append(facts)
+            if isinstance(outcome, BaseException):
+                raise outcome
+            return outcome
+
+        @staticmethod
+        def composition_is_reproducible(facts: dict) -> bool:
+            assert facts is composed_facts[-1]
+            return reproducible
+
+        @staticmethod
+        def close() -> None:
+            return None
+
+    class FakeRouter:
+        @staticmethod
+        def close() -> None:
+            return None
+
+    monkeypatch.setattr(sidecar, "LlmRuntime", FakeLlmRuntime)
+    monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "fixture.gguf")
+    pending = iter([
+        {
+            "type": "message.compose",
+            "id": "compose-1",
+            "userText": "Abre la calculadora",
+            "intent": "status",
+            "facts": {"situation": '{"kind":"status","polarity":"success"}'},
+        }
+    ])
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
+    try:
+        sidecar._run_sidecar(
+            lifecycle,
+            read_message=lambda: next(pending, None),
+            write_message=written.append,
+        )
+    finally:
+        lifecycle.close()
+
+    replies = [reply for reply in written if reply.get("id") == "compose-1"]
+    assert replies == [
+        {
+            "type": "message.compose.result",
+            "id": "compose-1",
+            "text": expected_text,
+            "reproducible": reproducible,
+        }
+    ]
+
+
+def test_message_compose_runtime_failure_stays_an_unanswered_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    written: list[dict[str, Any]] = []
+
+    class FakeLlmRuntime:
+        @staticmethod
+        def start_warmup() -> None:
+            return None
+
+        @staticmethod
+        def begin_request(*_args: object, **_kwargs: object) -> None:
+            return None
+
+        @staticmethod
+        def end_request() -> None:
+            return None
+
+        @staticmethod
+        def compose_user_message(*_args: object, **_kwargs: object) -> str:
+            raise RuntimeError("llama-server no está disponible")
+
+        @staticmethod
+        def composition_is_reproducible(_facts: dict) -> bool:
+            raise AssertionError("a lost request is not the writer's answer")
+
+        @staticmethod
+        def close() -> None:
+            return None
+
+    class FakeRouter:
+        @staticmethod
+        def close() -> None:
+            return None
+
+    monkeypatch.setattr(sidecar, "LlmRuntime", FakeLlmRuntime)
+    monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "fixture.gguf")
+    pending = iter([
+        {
+            "type": "message.compose",
+            "id": "compose-2",
+            "userText": "Abre la calculadora",
+            "intent": "status",
+            "facts": {"situation": '{"kind":"status","polarity":"success"}'},
+        }
+    ])
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
+    try:
+        sidecar._run_sidecar(
+            lifecycle,
+            read_message=lambda: next(pending, None),
+            write_message=written.append,
+        )
+    finally:
+        lifecycle.close()
+
+    replies = [reply for reply in written if reply.get("id") == "compose-2"]
+    assert [reply["type"] for reply in replies] == ["error"]
 
 
 def test_failed_encoder_scope_entry_closes_both_attempted_scopes_once(
@@ -825,7 +1020,7 @@ def test_failed_encoder_scope_entry_closes_both_attempted_scopes_once(
         "text": "fixture",
     }
     pending = iter([message])
-    lifecycle = sidecar._SidecarLifecycle()
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
 
     try:
         with pytest.raises(
@@ -853,8 +1048,10 @@ def test_failed_encoder_scope_entry_closes_both_attempted_scopes_once(
 
 def test_shutdown_ack_interrupts_heavy_work_and_is_terminal(
     monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     narrate_started = threading.Event()
+    narrate_returned = threading.Event()
     release_narrate = threading.Event()
     llm_closed = threading.Event()
     replies: list[dict[str, Any]] = []
@@ -876,7 +1073,10 @@ def test_shutdown_ack_interrupts_heavy_work_and_is_terminal(
         @staticmethod
         def narrate(*_args: object, **_kwargs: object) -> str:
             narrate_started.set()
-            assert release_narrate.wait(timeout=2.0)
+            try:
+                assert release_narrate.wait(timeout=2.0)
+            finally:
+                narrate_returned.set()
             return "late reply"
 
         @staticmethod
@@ -897,9 +1097,21 @@ def test_shutdown_ack_interrupts_heavy_work_and_is_terminal(
         def close() -> None:
             return None
 
+    # Whether the narration was still inside the model when the ack went out:
+    # the ack interrupts heavy work instead of waiting for it (a 1 s wall-clock bound
+    # here also counted the test process's own pauses).
+    narrate_blocked_at_ack: list[bool] = []
+
+    def capture_reply(reply: dict[str, Any]) -> None:
+        if reply.get("type") == "shutdown.ack":
+            narrate_blocked_at_ack.append(
+                narrate_started.is_set() and not narrate_returned.is_set()
+            )
+        replies.append(reply)
+
     monkeypatch.setattr(sidecar, "LlmRuntime", FakeLlmRuntime)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
-    monkeypatch.setattr(sidecar, "_write", replies.append)
+    monkeypatch.setattr(sidecar, "_write", capture_reply)
     monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "fixture.gguf")
     read_count = 0
 
@@ -919,12 +1131,12 @@ def test_shutdown_ack_interrupts_heavy_work_and_is_terminal(
 
     monkeypatch.setattr(sidecar, "_open_protocol_reader", lambda: read_message)
 
-    started_at = time.monotonic()
     result = sidecar.main()
-    elapsed = time.monotonic() - started_at
 
     assert result == 0
-    assert elapsed < 1.0
+    assert narrate_blocked_at_ack == [True]
+    # Every worker ended inside its bounded join: nothing was left running.
+    assert "baxy_mind_reap_incomplete" not in capsys.readouterr().err
     assert llm_closed.is_set()
     assert request_scopes == ["begin", "end"]
     assert [reply["type"] for reply in replies] == [
@@ -1112,8 +1324,8 @@ def test_serial_shutdown_ack_is_terminal_for_voice_cleanup_events(
             {"type": "shutdown", "id": "shutdown-serial"},
         ]
     )
-    lifecycle = sidecar._SidecarLifecycle()
-    writer = sidecar._TerminalProtocolWriter(replies.append)
+    lifecycle = sidecar_lifecycle._SidecarLifecycle()
+    writer = request_lane._TerminalProtocolWriter(replies.append)
 
     try:
         result = sidecar._run_sidecar(
@@ -1135,6 +1347,7 @@ def test_serial_shutdown_ack_is_terminal_for_voice_cleanup_events(
 
 def test_voice_cancel_replays_when_speak_finishes_during_fast_cancel(
     monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     voice_ready = threading.Event()
     speak_started = threading.Event()
@@ -1144,6 +1357,15 @@ def test_voice_cancel_replays_when_speak_finishes_during_fast_cancel(
     replies: list[dict[str, Any]] = []
     cancel_calls = 0
     spoke_after_cancel = False
+    # Every fixture wait, in order: a wait that ran out its timeout means the
+    # cancel took the slow path. (A 1 s wall-clock bound on main() measured
+    # the test process too, and its collector pauses reach 0.5 s.)
+    waits_ended_by_their_event: list[bool] = []
+
+    def wait_for(event: threading.Event, timeout: float) -> bool:
+        ended_by_event = event.wait(timeout=timeout)
+        waits_ended_by_their_event.append(ended_by_event)
+        return ended_by_event
 
     class FakeRouter:
         @staticmethod
@@ -1163,7 +1385,7 @@ def test_voice_cancel_replays_when_speak_finishes_during_fast_cancel(
         def speak(_text: str) -> bool:
             nonlocal spoke_after_cancel
             speak_started.set()
-            assert release_speak.wait(timeout=2.0)
+            assert wait_for(release_speak, 2.0)
             spoke_after_cancel = cancel_observed.is_set()
             return True
 
@@ -1174,7 +1396,7 @@ def test_voice_cancel_replays_when_speak_finishes_during_fast_cancel(
             cancel_observed.set()
             release_speak.set()
             if cancel_calls == 1:
-                assert speak_result_written.wait(timeout=1.0)
+                assert wait_for(speak_result_written, 1.0)
                 time.sleep(0.05)
 
         @staticmethod
@@ -1213,12 +1435,12 @@ def test_voice_cancel_replays_when_speak_finishes_during_fast_cancel(
 
     monkeypatch.setattr(sidecar, "_open_protocol_reader", lambda: read_message)
 
-    started_at = time.monotonic()
     result = sidecar.main()
-    elapsed = time.monotonic() - started_at
 
     assert result == 0
-    assert elapsed < 1.0
+    assert waits_ended_by_their_event == [True, True]
+    # Every worker ended inside its bounded join: nothing was left running.
+    assert "baxy_mind_reap_incomplete" not in capsys.readouterr().err
     assert cancel_calls == 2
     assert spoke_after_cancel
     reply_types = [reply["type"] for reply in replies]
@@ -1366,12 +1588,12 @@ def test_fast_shutdown_does_not_wait_for_voice_start_lifecycle_lock(
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
     monkeypatch.setattr(sidecar, "_write", replies.append)
     monkeypatch.setattr(
-        sidecar,
+        sidecar_lifecycle,
         "BACKGROUND_WORKER_JOIN_TIMEOUT_SECONDS",
         0.01,
     )
     monkeypatch.setattr(
-        sidecar,
+        sidecar_lifecycle,
         "BACKGROUND_WORKER_ABORT_JOIN_SECONDS",
         0.01,
     )
@@ -1392,13 +1614,15 @@ def test_fast_shutdown_does_not_wait_for_voice_start_lifecycle_lock(
 
     monkeypatch.setattr(sidecar, "_open_protocol_reader", lambda: read_message)
 
-    started_at = time.monotonic()
     result = sidecar.main()
-    elapsed = time.monotonic() - started_at
+    # voice.start still holds the lock until the test releases it, so the
+    # shutdown came back without waiting for that lock (a wall-clock bound
+    # here measured the test process's collector pauses, up to 0.5 s).
+    start_still_held_the_lock = lifecycle_lock.locked() and not release_start.is_set()
     captured = capsys.readouterr()
 
     assert result == 0
-    assert elapsed < 0.3
+    assert start_still_held_the_lock
     assert [reply["type"] for reply in replies] == [
         "hello",
         "shutdown.ack",
@@ -1418,26 +1642,26 @@ def test_fast_shutdown_does_not_wait_for_voice_start_lifecycle_lock(
 
 
 def test_serial_lane_bounds_backlog_and_reserves_control_barriers() -> None:
-    lane = sidecar._SerialRequestLane(pending_limit=2)
+    lane = request_lane._SerialRequestLane(pending_limit=2)
     active = {"type": "voice.speak", "id": "active"}
     pending = {"type": "voice.start", "id": "pending"}
 
     assert (
         lane.submit(active)
-        is sidecar._LaneSubmission.ACCEPTED
+        is request_lane._LaneSubmission.ACCEPTED
     )
     assert lane.read_message() is active
     assert (
         lane.submit(pending)
-        is sidecar._LaneSubmission.ACCEPTED
+        is request_lane._LaneSubmission.ACCEPTED
     )
     assert (
         lane.submit({"type": "narrate", "id": "queued"})
-        is sidecar._LaneSubmission.ACCEPTED
+        is request_lane._LaneSubmission.ACCEPTED
     )
     assert (
         lane.submit({"type": "plan", "id": "overflow"})
-        is sidecar._LaneSubmission.FULL
+        is request_lane._LaneSubmission.FULL
     )
     blocking_work, replay_token = lane.voice_cancel_snapshot()
     assert blocking_work
@@ -1449,7 +1673,7 @@ def test_serial_lane_bounds_backlog_and_reserves_control_barriers() -> None:
             {"type": "shutdown", "id": "reserved"},
             reserved=True,
         )
-        is sidecar._LaneSubmission.ACCEPTED
+        is request_lane._LaneSubmission.ACCEPTED
     )
     assert len(lane._pending) == 4
 
@@ -1462,20 +1686,20 @@ def test_serial_lane_bounds_backlog_and_reserves_control_barriers() -> None:
     finally:
         lane._kind = original_kind
 
-    failure_lane = sidecar._SerialRequestLane(pending_limit=1)
+    failure_lane = request_lane._SerialRequestLane(pending_limit=1)
     accepted = {"type": "narrate", "id": "accepted-before-failure"}
     violation = protocol.ProtocolViolation("malformed_json", "fixture")
     assert (
         failure_lane.submit(accepted)
-        is sidecar._LaneSubmission.ACCEPTED
+        is request_lane._LaneSubmission.ACCEPTED
     )
     assert (
         failure_lane.submit({"type": "plan", "id": "overflow"})
-        is sidecar._LaneSubmission.FULL
+        is request_lane._LaneSubmission.FULL
     )
     assert (
-        failure_lane.submit(sidecar._ReadFailure(violation))
-        is sidecar._LaneSubmission.ACCEPTED
+        failure_lane.submit(request_lane._ReadFailure(violation))
+        is request_lane._LaneSubmission.ACCEPTED
     )
     failure_lane.close(drop_pending=False)
     assert failure_lane.read_message() is accepted
@@ -1554,7 +1778,7 @@ def test_bounded_control_plane_rejects_overload_once_and_keeps_controls_fast(
     monkeypatch.setattr(sidecar, "VoiceEngine", FakeVoiceEngine)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
     monkeypatch.setattr(sidecar, "_write", replies.append)
-    monkeypatch.setattr(sidecar, "SERIAL_PENDING_REQUEST_LIMIT", 2)
+    monkeypatch.setattr(request_lane, "SERIAL_PENDING_REQUEST_LIMIT", 2)
     monkeypatch.setattr(sidecar, "CONTROL_EVENT_QUEUE_LIMIT", 2)
     monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "fixture.gguf")
     queue_instances: list[Any] = []

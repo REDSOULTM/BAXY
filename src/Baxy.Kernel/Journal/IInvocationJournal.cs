@@ -12,6 +12,15 @@ public interface IInvocationJournal
         string invocationId,
         CancellationToken cancellationToken);
 
+    /// <summary>
+    /// True when the invocation completed but its recorded response is no longer
+    /// kept (a rotated journal's retention deleted it). Such an id must be refused,
+    /// never executed again.
+    /// </summary>
+    ValueTask<bool> IsRetiredAsync(
+        string invocationId,
+        CancellationToken cancellationToken);
+
     ValueTask RecordStartedAsync(
         OperationRequest request,
         string requestFingerprint,

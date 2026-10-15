@@ -1,1 +1,0 @@
-Knowledge/RAG rule: use knowledge(action="ingest") only when the user asks to store documents or build a local knowledge base. Use knowledge(action="search") when the user asks about previously ingested local documents.

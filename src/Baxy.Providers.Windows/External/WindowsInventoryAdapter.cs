@@ -9,7 +9,6 @@ internal sealed partial class WindowsInventoryAdapter : IExternalOperationAdapte
 {
     private static readonly TimeSpan BluetoothInventoryTimeout = TimeSpan.FromSeconds(4);
     private static readonly TimeSpan PeripheralInventoryTimeout = TimeSpan.FromSeconds(60);
-    private static readonly TimeSpan PackageInventoryTimeout = TimeSpan.FromSeconds(30);
     private const string BluetoothScript =
         "Get-PnpDevice -Class Bluetooth -ErrorAction SilentlyContinue | "
         + "Select-Object FriendlyName,Status,InstanceId | ConvertTo-Json -Depth 3 -Compress";
@@ -51,8 +50,7 @@ internal sealed partial class WindowsInventoryAdapter : IExternalOperationAdapte
 
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
-        or "peripheral.list" or "peripheral.print" or "peripheral.scan"
-        or "package.install.prepare" or "package.install.commit";
+        or "peripheral.list" or "peripheral.print" or "peripheral.scan";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -67,19 +65,11 @@ internal sealed partial class WindowsInventoryAdapter : IExternalOperationAdapte
                     .ConfigureAwait(false),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken)
                     .ConfigureAwait(false),
-                "package.install.prepare" => await PackagePrepareAsync(operation, arguments, cancellationToken)
-                    .ConfigureAwait(false),
                 "bluetooth.device.pair" => ExternalJson.Failure(operation, "bluetooth_pairing_consent_ui_required"),
                 "peripheral.print" => ExternalJson.Failure(operation, "print_job_physical_gate_required"),
                 "peripheral.scan" => ExternalJson.Failure(operation, "scanner_physical_gate_required"),
-                "package.install.commit" => ExternalJson.Failure(operation, "winget_install_dispatch_not_configured"),
                 _ => ExternalJson.Failure(operation, "external_operation_not_supported"),
             };
-        }
-        catch (System.ComponentModel.Win32Exception)
-            when (operation.StartsWith("package.install.", StringComparison.Ordinal))
-        {
-            return ExternalJson.Failure(operation, "winget_adapter_unavailable");
         }
         catch (TimeoutException)
         {
@@ -88,7 +78,6 @@ internal sealed partial class WindowsInventoryAdapter : IExternalOperationAdapte
                 operation switch
                 {
                     "bluetooth.device.list" => "bluetooth_inventory_timeout",
-                    "package.install.prepare" => "winget_adapter_timeout",
                     _ => "windows_inventory_adapter_timeout",
                 });
         }
@@ -188,64 +177,6 @@ internal sealed partial class WindowsInventoryAdapter : IExternalOperationAdapte
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private async ValueTask<ExternalCapabilityReceipt> PackagePrepareAsync(
-        string operation,
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        string packageId = ExternalJson.RequiredString(arguments, "packageId");
-        string? version = arguments.TryGetProperty("version", out JsonElement value)
-            && value.ValueKind == JsonValueKind.String ? value.GetString() : null;
-        var args = new List<string>
-        {
-            "show", "--id", packageId, "--exact", "--disable-interactivity",
-        };
-        if (!string.IsNullOrWhiteSpace(version))
-        {
-            args.Add("--version");
-            args.Add(version);
-        }
-
-        ExternalProcessResult process = await _runner.RunAsync(
-            "winget.exe", args, PackageInventoryTimeout, cancellationToken)
-            .ConfigureAwait(false);
-        if (process.ExitCode != 0)
-        {
-            return ExternalJson.Failure(operation, "winget_package_not_resolved");
-        }
-
-        Match identity = PackageIdentityRegex().Match(process.Output);
-        Match observedVersion = PackageVersionRegex().Match(process.Output);
-        if (!identity.Success
-            || !string.Equals(identity.Groups[1].Value, packageId, StringComparison.OrdinalIgnoreCase)
-            || !observedVersion.Success)
-        {
-            return ExternalJson.Failure(operation, "winget_exact_identity_not_verified");
-        }
-
-        string resolvedVersion = observedVersion.Groups[1].Value.Trim();
-        if (!string.IsNullOrWhiteSpace(version)
-            && !string.Equals(version, resolvedVersion, StringComparison.OrdinalIgnoreCase))
-        {
-            return ExternalJson.Failure(operation, "winget_version_not_verified");
-        }
-
-        string confirmationId = "winget_" + Convert.ToHexStringLower(SHA256.HashData(
-            Encoding.UTF8.GetBytes(packageId + "\n" + resolvedVersion)))[..24];
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            writer.WriteString("confirmationId", confirmationId);
-            writer.WriteString("packageId", identity.Groups[1].Value);
-            writer.WriteString("resolvedVersion", resolvedVersion);
-            writer.WriteString("source", "winget_exact_show");
-            writer.WriteBoolean("installed", false);
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: false);
-    }
-
     private static JsonDocument ParseArrayOrSingleton(string text) =>
         string.IsNullOrWhiteSpace(text) ? JsonDocument.Parse("[]") : JsonDocument.Parse(text);
 
@@ -285,12 +216,4 @@ internal sealed partial class WindowsInventoryAdapter : IExternalOperationAdapte
 
     private static string OpaqueId(string prefix, string value) =>
         prefix + "_" + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)))[..24];
-
-    private static Regex PackageIdentityRegex() => new(
-        @"^(?:Encontrado|Found) .* \[([^\]]+)\]\r?$",
-        RegexOptions.Multiline | RegexOptions.CultureInvariant);
-
-    [GeneratedRegex(@"^(?:Versión|Version):\s*(.+)$", RegexOptions.Multiline | RegexOptions.CultureInvariant)]
-    private static partial Regex PackageVersionRegex();
-
 }

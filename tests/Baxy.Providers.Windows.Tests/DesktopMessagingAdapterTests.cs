@@ -21,68 +21,53 @@ public sealed class DesktopMessagingAdapterTests
             WindowsDesktopMessagingAutomation.ContainsPhrase(source, expected),
             Is.EqualTo(result));
 
+    // G1 (2026-10-11): the typed draft is read only once the composer band's
+    // content changed; a blinking caret (one or two columns) is not a change, so
+    // it never starts an OCR pass that holds the CPU the client needs to draw.
     [Test]
-    public async Task ExactObservationReturnsWithoutWaitingWhenAlreadyVerified()
+    public void CaretBlinkIsNotAContentChange()
     {
-        int observations = 0;
-        int delays = 0;
-
-        bool result = await WindowsDesktopMessagingAutomation.ObserveNowOrAtDeadlineAsync(
-            cancellationToken =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                observations++;
-                return ValueTask.FromResult(true);
-            },
-            static observation => observation,
-            TimeSpan.FromMinutes(1),
-            CancellationToken.None,
-            (delay, cancellationToken) =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                delays++;
-                return ValueTask.CompletedTask;
-            });
+        byte[] before = Band(static (_, _) => false);
+        byte[] caret = Band(static (x, y) => x is 40 or 41 && y is > 5 and < 25);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.True);
-            Assert.That(observations, Is.EqualTo(1));
-            Assert.That(delays, Is.Zero);
+            Assert.That(WindowsDesktopMessagingAutomation.ContentChanged(before, caret), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.ContentChanged(before, before), Is.False);
         });
     }
 
     [Test]
-    public async Task FailedImmediateObservationRetainsDeadlineProbe()
+    public void TypedGlyphsAreAContentChange()
     {
-        int observations = 0;
-        var delays = new List<TimeSpan>();
-
-        bool result = await WindowsDesktopMessagingAutomation.ObserveNowOrAtDeadlineAsync(
-            cancellationToken =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                observations++;
-                return ValueTask.FromResult(observations == 2);
-            },
-            static observation => observation,
-            TimeSpan.FromMinutes(1),
-            CancellationToken.None,
-            (delay, cancellationToken) =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                delays.Add(delay);
-                return ValueTask.CompletedTask;
-            });
+        byte[] before = Band(static (x, y) => x is 40 && y is > 5 and < 25);
+        byte[] typed = Band(static (x, y) => x is >= 40 and < 52 && y is > 8 and < 20);
+        byte[] resized = WindowsDesktopMessagingAutomation.EncodeBmp(100, 31, new byte[100 * 31 * 4]);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.True);
-            Assert.That(observations, Is.EqualTo(2));
-            Assert.That(delays, Has.Count.EqualTo(1));
-            Assert.That(delays[0], Is.GreaterThan(TimeSpan.FromSeconds(59)));
-            Assert.That(delays[0], Is.LessThanOrEqualTo(TimeSpan.FromMinutes(1)));
+            Assert.That(WindowsDesktopMessagingAutomation.ContentChanged(before, typed), Is.True);
+            Assert.That(WindowsDesktopMessagingAutomation.ContentChanged(before, resized), Is.True);
         });
+    }
+
+    private static byte[] Band(Func<int, int, bool> lit)
+    {
+        const int width = 100;
+        const int height = 30;
+        byte[] pixels = new byte[width * height * 4];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (lit(x, y))
+                {
+                    pixels.AsSpan((y * width + x) * 4, 3).Fill(220);
+                }
+            }
+        }
+
+        return WindowsDesktopMessagingAutomation.EncodeBmp(width, height, pixels);
     }
 
     [Test]

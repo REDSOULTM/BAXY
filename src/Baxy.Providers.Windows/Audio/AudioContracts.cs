@@ -46,7 +46,10 @@ public sealed record AudioStatusReceipt(
     string? EndpointIdHash,
     AudioEndpointState? State,
     bool Verified,
-    string? ErrorCode);
+    string? ErrorCode)
+{
+    public string? EndpointName { get; init; }
+}
 
 /// <summary>
 /// Durable, sanitized evidence for one audio mutation. The physical endpoint id is never

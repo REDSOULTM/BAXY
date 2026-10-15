@@ -462,14 +462,91 @@ public sealed class MemoryOperationProtectionTests
     [TestCase("confirmo", "Confirm")]
     [TestCase("yes", "Confirm")]
     [TestCase("go ahead", "Confirm")]
+    // Fase 3.5 (DECISIONES_OPUS_2026-09-22 §4): a reply made only of assent words confirms.
+    [TestCase("s\u00ed, dale", "Confirm")]
+    [TestCase("dale, confirmo.", "Confirm")]
+    [TestCase("ok", "Confirm")]
+    [TestCase("s\u00ed, pero abr\u00ed Paint", "Invalid")]
+    [TestCase("s\u00ed no", "Invalid")]
     [TestCase("no", "Cancel")]
     [TestCase("cancelar", "Cancel")]
     [TestCase("never mind", "Cancel")]
+    [TestCase("cancel that", "Cancel")]
+    [TestCase("Cancel it!", "Cancel")]
+    [TestCase("cancela eso", "Cancel")]
+    [TestCase("cancelar eso.", "Cancel")]
+    [TestCase("cancel that and delete the file", "Invalid")]
+    [TestCase("cancela eso y abre Paint", "Invalid")]
+    [TestCase("cancel the download", "Invalid")]
     [TestCase("yes and export it", "Invalid")]
     [TestCase("maybe", "Invalid")]
     public void ConfirmationReplyIsStandaloneAndFinite(string text, string expected)
     {
         Assert.That(ConfirmationReplyParser.Parse(text).ToString(), Is.EqualTo(expected));
+    }
+
+    // Revisión M H5/H6: the bare yes is one list with the mind (src/baxy_mind/data/assent_words.v1.json; the mind's
+    // side is tests/test_estab_m_memoria.py::test_every_word_of_the_one_yes_list_is_a_yes). A doubt is no yes.
+    [Test]
+    public void EveryAssentWordConfirmsAndAQuestionDoesNot()
+    {
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
+        {
+            directory = directory.Parent;
+        }
+
+        string data = Path.Combine(
+            directory?.FullName ?? throw new DirectoryNotFoundException("Baxy.slnx was not found."),
+            "src", "baxy_mind", "data", "assent_words.v1.json");
+        string[] words = ((JsonArray)JsonNode.Parse(File.ReadAllText(data))!["words"]!)
+            .Select(static word => (string)word!).ToArray();
+        Assert.Multiple(() =>
+        {
+            foreach (string word in words)
+            {
+                Assert.That(ConfirmationReplyParser.Parse(word), Is.EqualTo(ConfirmationReplyKind.Confirm), word);
+                Assert.That(ConfirmationReplyParser.Parse($"Sí, {word}."), Is.EqualTo(ConfirmationReplyKind.Confirm), word);
+            }
+
+            Assert.That(ConfirmationReplyParser.Parse("Sí, estoy seguro"), Is.EqualTo(ConfirmationReplyKind.Confirm));
+            Assert.That(ConfirmationReplyParser.Parse("I’m sure"), Is.EqualTo(ConfirmationReplyKind.Confirm));
+            foreach (string doubt in new[] { "¿Seguro?", "¿Estoy seguro?", "seguro?", "¿sí?", "no estoy seguro" })
+            {
+                Assert.That(ConfirmationReplyParser.Parse(doubt), Is.Not.EqualTo(ConfirmationReplyKind.Confirm), doubt);
+            }
+        });
+    }
+
+    // Estabilización M2: the bare no is one list with the mind's refusal (declineWords; the mind's side is
+    // tests/test_estab_m2_identidad.py::test_every_word_of_the_one_no_list_is_a_refusal_and_never_a_yes).
+    [Test]
+    public void EveryDeclineWordCancelsAndAnOrderDoesNot()
+    {
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Baxy.slnx")))
+        {
+            directory = directory.Parent;
+        }
+
+        string data = Path.Combine(
+            directory?.FullName ?? throw new DirectoryNotFoundException("Baxy.slnx was not found."),
+            "src", "baxy_mind", "data", "assent_words.v1.json");
+        string[] words = ((JsonArray)JsonNode.Parse(File.ReadAllText(data))!["declineWords"]!)
+            .Select(static word => (string)word!).ToArray();
+        Assert.Multiple(() =>
+        {
+            foreach (string word in words)
+            {
+                Assert.That(ConfirmationReplyParser.Parse(word), Is.EqualTo(ConfirmationReplyKind.Cancel), word);
+                Assert.That(ConfirmationReplyParser.Parse($"No, {word}."), Is.EqualTo(ConfirmationReplyKind.Cancel), word);
+            }
+
+            foreach (string order in new[] { "no, mandalo igual", "cancela la suscripción", "no, en YouTube" })
+            {
+                Assert.That(ConfirmationReplyParser.Parse(order), Is.EqualTo(ConfirmationReplyKind.Invalid), order);
+            }
+        });
     }
 
     private static BoundProtectedJsonCodec CreateCodec(TemporaryDirectory temporary) =>
@@ -550,8 +627,10 @@ public sealed class MemoryOperationProtectionTests
 
     private sealed class ConfirmationOnlyMemoryHandler : IOperationHandler
     {
+        // D3 (2026-09-20): a sensitive save no longer challenges; the App parser
+        // round trip is exercised on a destructive (Irreversible) memory operation.
         public OperationDefinition Definition { get; } =
-            new("memory.save", OperationRisk.Sensitive, "Test memory confirmation.");
+            new("memory.save", OperationRisk.Irreversible, "Test memory confirmation.");
 
         public ValueTask<OperationOutcome> ExecuteAsync(
             OperationInvocation invocation,

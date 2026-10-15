@@ -30,13 +30,12 @@ obligatoria antes de cualquier goal.
 
 ## Por dónde se empieza
 
-El trabajo está organizado en **once goals**, uno por prompt, en
-[`documentacion/sprints/`](documentacion/sprints/). Cada uno se pega entero en una
-sesión nueva y **se deja correr hasta que se cumple**; cuando entrega, se lanza el
-siguiente.
-
-Empieza por [`00_INDICE.md`](documentacion/sprints/00_INDICE.md) y luego por el
-goal 01.
+El trabajo se organizó en **once goals**, uno por prompt, más la Fase 3.5 de
+comprensión. Están cerrados; sus prompts y su evidencia salieron del repositorio el
+2026-10-06 y viven en `..\BAXY-archivo-2026-10-06\` (y en el historial de Git). El
+último estado medido de la comprensión está en
+[`documentacion/SEMANTICA.md`](documentacion/SEMANTICA.md). El trabajo nuevo llega
+como un goal del dueño; un agente empieza por [`AGENTS.md`](AGENTS.md).
 
 | # | Goal | Cumplido cuando |
 |---|---|---|
@@ -55,7 +54,7 @@ goal 01.
 Los once llevan dentro las mismas **cinco leyes**: heredar antes que construir,
 nada de sobreingeniería, arreglar sólo lo que bloquea, quedarse con la opción más
 ligera que cumpla, y dejar cada pieza sustituible —pero sólo las que de verdad se
-van a sustituir. Están explicadas en el índice.
+van a sustituir. Están en `AGENTS.md`.
 
 ## De dónde viene este repositorio
 
@@ -110,10 +109,10 @@ asistente.
 
 - [`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md) — qué es BAXY.
   Decisiones tomadas, no preferencias. Léelo primero.
-- [`biblioteca/`](biblioteca/00_INDICE.md) — **1.350 documentos** de las cuatro
-  escrituras anteriores: estudios, auditorías, investigaciones y rechazos medidos.
-  Se busca aquí **antes** de abrir cualquier línea de investigación.
-- [`documentacion/sprints/`](documentacion/sprints/) — los once prompts.
+- `..\BAXY-archivo-2026-10-06\` — fuera del repositorio: la biblioteca de las
+  cuatro escrituras anteriores (estudios, auditorías y rechazos medidos), los once
+  prompts, las corridas y los experimentos. Se busca ahí **antes** de abrir cualquier
+  línea de investigación.
 - [`documentacion/APLAZADOS.md`](documentacion/APLAZADOS.md) — lo que los goals
   01–10 ven y no persiguen; el 11 lo vacía.
 - [`documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md`](documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md)

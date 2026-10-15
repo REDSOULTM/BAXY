@@ -1,0 +1,96 @@
+{
+  "schema": "baxy.c03-m109-evidence.v1",
+  "run": "%LOCALAPPDATA%/BAXY/comprension-2026-09-25/window/v4d-devD",
+  "code": "194e12f6",
+  "set": "DEV-D (development)",
+  "sources": "RUN.jsonl, events.jsonl (posterior.mindReplyRejection), raw-replies.jsonl (pre_veto drafts), compose-audit.jsonl (message.compose drafts and vetoes), shell-trace.jsonl",
+  "not_done_and_why_twins": [
+    {"reply": "I have not done it yet because the store asks me to sign in on this PC first.", "told": true},
+    {"reply": "I haven't done that: the service wants a sign-in on this PC first.", "told": true},
+    {"reply": "I haven’t done it yet, since the app still waits for your password.", "told": true},
+    {"reply": "Todavía no lo he hecho: el servicio pide iniciar sesión en este PC antes.", "told": true},
+    {"reply": "No lo hice porque falta que inicies sesión en el servicio.", "told": true},
+    {"reply": "I have not done it yet.", "told": false},
+    {"reply": "Done, it is on its way.", "told": false},
+    {"reply": "No lo he hecho.", "told": false}
+  ],
+  "turns": [
+    {
+      "id": "D-p23-t5",
+      "trace": "t203",
+      "conversation": [
+        {"user": "I'd like to search for some online movies.", "baxy": "I did not find any online movies."},
+        {"user": "Look for a drama film.", "baxy": "I did not find a specific drama film."},
+        {"user": "I like After the Wedding.", "baxy": "Glad you like After the Wedding."},
+        {"user": "Yes, and put on Hindi subtitles.", "baxy": "I do not add subtitles to movies."}
+      ],
+      "text": "Actually do English subtitles.",
+      "terminal": "composition_failed",
+      "conversation_kind": "knowledge",
+      "decision_path": "context_decider",
+      "reply": "",
+      "error": "composition_failed: no_response;retry_exhausted",
+      "mind_reply": {"attempt": 1, "raw_reply": "I cannot add English subtitles to the movie.", "accepted_by_mind": true},
+      "app_refusal": "looks_like_failure",
+      "app_fallback_compose": {
+        "intent": "conversation",
+        "situation": {"kind": "conversation", "polarity": "success"},
+        "drafts": [
+          {"stage": "first", "draft": "I can add English subtitles to your videos.", "veto": "claimed_ability"},
+          {"stage": "retry", "draft": "I did not add English subtitles to the movie.", "veto": "own_write_denied"},
+          {"stage": "third", "draft": "I have not added English subtitles.", "veto": "own_write_denied"}
+        ],
+        "last_resort": ""
+      },
+      "why_empty": "The M105 claimed_ability hint told the writer «say plainly that you have not done it»; the bare denial it wrote died as own_write_denied (the request does not name the verb «add»), and the accumulated third hint said both «say you have not done it» and «do not say what you did or did not do». The composer's last resort has no floor for talk, and the App's queue has no deterministic final for a conversation."
+    },
+    {
+      "id": "D-p24-t5",
+      "trace": "t208",
+      "conversation": [
+        {"user": "I am in a mood to watch movie online and I need your help to search for a nice Fantasy Movie like Elijah Wood.", "baxy": "The Lord of the Rings trilogy features Elijah Wood as Frodo Baggins."},
+        {"user": "Search for something else and I change my mind. Now I want to watch Drama movies like Lizzo.", "baxy": "The drama movie like Lizzo is Hustlers."},
+        {"user": "Yes, Hustlers is okay for me.", "baxy": "The streaming of Hustlers failed because Netflix requires a sign-in on this PC before playback can begin."},
+        {"user": "Yes, do it for me.", "baxy": "What specific detail is missing from what you want me to do?",
+         "note": "t207: the mind's M88 answer «I have not done it yet because the service asks to sign in on this PC first.» was refused by the App as ambiguous_without_question; the App's clarification replaced it."}
+      ],
+      "text": "That is confirmed to proceed.",
+      "terminal": "composition_failed",
+      "conversation_kind": "knowledge",
+      "decision_path": "context_decider",
+      "reply": "",
+      "error": "composition_failed: no_response;retry_exhausted",
+      "mind_reply": {"attempt": 1, "raw_reply": "I cannot sign you in or access your PC's account.", "accepted_by_mind": true},
+      "app_refusal": "looks_like_failure",
+      "app_fallback_compose": {
+        "intent": "conversation",
+        "situation": {"kind": "conversation", "polarity": "success"},
+        "context": "What specific detail is missing from what you want me to do?",
+        "drafts": [
+          {"stage": "first", "draft": "The plan is confirmed to proceed.", "veto": "effect_claim"},
+          {"stage": "retry", "draft": "Confirmed, the procedure will proceed.", "veto": "effect_claim"},
+          {"stage": "third", "draft": "I confirm the action will proceed.", "veto": "effect_claim"}
+        ],
+        "last_resort": ""
+      },
+      "why_empty": "After a question of BAXY's the go-ahead is not «with nothing pending», so the M88 go-ahead instruction was never given; the generic effect_claim hint («do not say you did, are doing or will do anything») left the writer confirming three times. No talk floor followed."
+    },
+    {
+      "id": "D-w17-t4",
+      "trace": "t318",
+      "text": "anything big in the news today",
+      "terminal": "filtered",
+      "operation": "web.news.headlines",
+      "reply": "",
+      "error": "filtered: reversed_result",
+      "compose": [
+        {"stage": "first", "veto": "wrong_language"},
+        {"stage": "retry", "veto": "wrong_language"},
+        {"stage": "deterministic_fallback", "published_by_mind": true,
+         "draft": "Headlines: «La economía no despega y el Imacec anota nueva caída en agosto debido al derrumbe de la minería»; «Presupuesto 2027 crece 1,5 %: Kast asegura cumplirá la meta fiscal, pero no precisa su cifra»; «La réplica del senador Núñez (PC) al embajador Judd luego de que lo acusara de mentir: “No acepto que se ponga en duda mi palabra”»."}
+      ],
+      "app_refusal": "reversed_result",
+      "why_empty": "The App's failure lens read «No acepto que se ponga en duda mi palabra», a senator's words inside a headline, as a failure told over a verified read. The mind masks the words the headlines carry (_without_observed_search_vocabulary); the App's twin masked only web.search results."
+    }
+  ]
+}

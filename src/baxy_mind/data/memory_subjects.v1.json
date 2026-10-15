@@ -1,0 +1,27 @@
+{
+ "_doc": "Estabilización M (2026-10-11, comprobación en vivo de identidad §3c-§3d): el dato que la persona nombra al guardarlo o corregirlo («mi color favorito», «my name») y el selector con que la memoria privada lo guarda. Son los selectores que ya escribe el lector tipado del App (NaturalMemoryRequestParser: favorite_color, favorite_drink, name, birthday, project_name), para que «cambiá mi color favorito a verde» corrija lo que «recuerda que mi color favorito es el azul» guardó; el test NaturalMemoryRequestParserTests.SubjectSelectorsAreTheParsersOwn ata las dos listas. Un dato que no está aquí se guarda con su propio nombre (semantic.memory.memory_request). Frases plegadas (sin tildes, minúsculas), en español e inglés.",
+ "_withoutNamingMemory": "Revisión M H1: los datos que se corrigen sin nombrar la memoria («cambiá mi color favorito a verde»). Nombre y proyecto no: «actualizá mi proyecto a la versión 2», «fix my project to build» son órdenes sobre una cosa; corregirlos pide nombrar la memoria («cambiá en tu memoria mi nombre a Ana»).",
+ "withoutNamingMemory": ["favorite_color", "favorite_drink", "birthday"],
+ "_labels": "Estabilización M2 (identidad en vivo 2026-10-11 §5: el panel de memoria mostraba FAVORITE_COLOR, BIRTHDAY): el nombre de cada dato en palabras de la persona, por selector (los que escriben la mente y el lector del App), para el panel (MemoryPanel del App, embebido). Un selector que no está aquí se muestra con sus propias palabras («perro»); un hecho guardado entero (historical_fact_…), como factLabel. Las frases del suelo para estos datos (operation_floor.v1.json, memory.save «told») las ata tests/test_estab_m2_identidad.py.",
+ "labels": {
+  "favorite_color": {"es": "color favorito", "en": "favorite color"},
+  "favorite_drink": {"es": "bebida favorita", "en": "favorite drink"},
+  "name": {"es": "nombre", "en": "name"},
+  "birthday": {"es": "cumpleaños", "en": "birthday"},
+  "project_name": {"es": "proyecto", "en": "project"},
+  "employer": {"es": "trabajo", "en": "employer"},
+  "language": {"es": "idioma", "en": "language"},
+  "display_mode": {"es": "modo de pantalla", "en": "display mode"},
+  "response_style": {"es": "estilo de respuesta", "en": "response style"},
+  "operating_system": {"es": "sistema operativo", "en": "operating system"},
+  "preferred_editor": {"es": "editor preferido", "en": "preferred editor"}
+ },
+ "factLabel": {"es": "dato", "en": "fact"},
+ "selectors": {
+  "favorite_color": ["color favorito", "color preferido", "favorite color", "favourite color"],
+  "favorite_drink": ["bebida favorita", "bebida preferida", "favorite drink", "favourite drink"],
+  "name": ["nombre", "name"],
+  "birthday": ["cumpleanos", "fecha de cumpleanos", "birthday"],
+  "project_name": ["proyecto", "project", "project name", "nombre del proyecto"]
+ }
+}

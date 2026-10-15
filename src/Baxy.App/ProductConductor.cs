@@ -30,7 +30,9 @@ internal sealed record ProductPosteriorState(
     int PendingCompositionCount,
     string? CompositionFailure,
     bool HasCompositionError,
-    string? StatusDescription);
+    string? StatusDescription,
+    string? MindReplyRejection,
+    string? MindRejectedReply = null);
 
 /// <summary>
 /// Windowless adapter over <see cref="FieldProductChannel"/>. Same admission,
@@ -92,6 +94,47 @@ internal sealed class ProductConductor : IAsyncDisposable
         TimeSpan timeout,
         CancellationToken cancellationToken) =>
         TurnAsync("cancelar", timeout, cancellationToken);
+
+    internal Task<ProductTurnResult> ConfirmPendingAsync(
+        ProductTurnResult initial,
+        PendingOperationConfirmation? observed,
+        string expectedOperation,
+        JsonObject expectedArguments,
+        TimeSpan timeout,
+        CancellationToken cancellationToken,
+        bool allowVerifiedReadPrefix = false)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (initial.TimedOut || initial.Terminal != ProductTurnTerminal.PublishedFinal
+            || initial.Diagnostic is not null || observed is null
+            || !string.Equals(
+                observed.Prepared.OperationName, expectedOperation, StringComparison.Ordinal)
+            || !JsonNode.DeepEquals(
+                JsonNode.Parse(observed.Prepared.Arguments.GetRawText()), expectedArguments)
+            || !ReferenceEquals(observed, _viewModel.CaptureConductorConfirmation(allowVerifiedReadPrefix)))
+        {
+            return Task.FromResult(RejectConfirmation("confirmation_expectation_not_met"));
+        }
+
+        // No await between rechecking the same challenge/immutable Prepared
+        // (including mission/invocation) and ordinary POST /turn. Its synchronous
+        // submission reaches HandlePendingAsync and captures Confirmation before
+        // its first await. The kernel still validates the token and expiry.
+        string confirmation = string.Equals(
+            _viewModel.LastMindResponseLanguage, "en", StringComparison.OrdinalIgnoreCase)
+            ? "confirm" : "confirmar";
+        return TurnAsync(confirmation, timeout, cancellationToken);
+    }
+
+    internal ProductTurnResult RejectConfirmation(string diagnostic) =>
+        new(
+            FieldHttpResponse.Json(new JsonObject { ["error"] = diagnostic }, 409),
+            ProductTurnTerminal.Rejected,
+            FinalText: null,
+            Diagnostic: diagnostic,
+            TimedOut: false,
+            PublicEvents: [],
+            CapturePosterior());
 
     internal async Task<ProductTurnResult> TurnAsync(
         string text,
@@ -205,7 +248,9 @@ internal sealed class ProductConductor : IAsyncDisposable
             _viewModel.PendingModelMessageCount,
             _viewModel.LastMessageCompositionFailure,
             _viewModel.HasCompositionError,
-            _viewModel.StatusDescription);
+            _viewModel.StatusDescription,
+            _viewModel.LastMindReplyRejection,
+            _viewModel.LastMindRejectedReply);
 
     private ProductTurnResult? TryClassify(
         FieldHttpResponse admission,
@@ -261,6 +306,13 @@ internal sealed class ProductConductor : IAsyncDisposable
                 TimedOut: false,
                 events,
                 CapturePosterior());
+        }
+
+        // Una composición encolada sigue siendo este turno: cerrarlo aquí lo
+        // deja mudo y publica la respuesta después, fuera de su pregunta.
+        if (_viewModel.PendingModelMessageCount > 0 && !timedOut)
+        {
+            return null;
         }
 
         if (!busy && !string.IsNullOrWhiteSpace(compositionFailure) && newBaxyMessages == 0)

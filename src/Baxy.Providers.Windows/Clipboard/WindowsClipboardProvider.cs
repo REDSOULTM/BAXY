@@ -169,9 +169,21 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
         }
     }
 
-    private static void Open()
+    // Another process (a clipboard sync such as Synergy, a clipboard history, the app just copied from) holds the
+    // clipboard open for an instant after each change; uso real estab t2-c17 and t3-c10 failed a copy on that instant.
+    // The open is retried for at most about a second before the clipboard is called busy.
+    internal const int OpenAttempts = 20;
+    internal static readonly TimeSpan OpenPause = TimeSpan.FromMilliseconds(50);
+
+    private static void Open() => OpenRetrying(static () => OpenClipboard(0), Thread.Sleep);
+
+    internal static void OpenRetrying(Func<bool> tryOpen, Action<TimeSpan> wait)
     {
-        if (!OpenClipboard(0)) throw new ClipboardProviderException("clipboard_busy");
+        for (int attempt = 1; !tryOpen(); attempt++)
+        {
+            if (attempt >= OpenAttempts) throw new ClipboardProviderException("clipboard_busy");
+            wait(OpenPause);
+        }
     }
 
     [LibraryImport("user32.dll", SetLastError = true)]

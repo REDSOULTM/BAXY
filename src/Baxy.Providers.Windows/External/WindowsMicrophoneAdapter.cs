@@ -39,6 +39,15 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
         {
             using IWindowsAudioEndpoint endpoint = _openDefaultInput();
             bool baseline = endpoint.ReadMuted();
+            if (baseline == requested)
+            {
+                // Owner's test 2026-09-21 (turn 205): setting the state the
+                // endpoint already has cannot be observed as an effect; the
+                // honest fact is the state, said before any boundary is crossed.
+                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
+                    operation,
+                    requested ? "microphone_already_muted" : "microphone_already_unmuted"));
+            }
             effectBoundary.Cross(cancellationToken);
             endpoint.SetMuted(requested, Guid.NewGuid());
             bool observed = endpoint.ReadMuted();

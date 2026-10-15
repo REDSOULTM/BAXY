@@ -28,10 +28,10 @@ public sealed class PresenceAutostartTests
             "autostart-baxy.exe");
         File.WriteAllBytes(exe, [0x4D, 0x5A]);
         var run = new MemoryRunKey();
-        var registration = new WindowsAutostartRegistration(run, () => exe);
+        var registration = InstalledRegistration(run, exe);
 
-        string first = registration.EnsureRegistered();
-        string second = registration.EnsureRegistered();
+        string? first = registration.EnsureRegistered([]);
+        string? second = registration.EnsureRegistered([]);
 
         Assert.Multiple(() =>
         {
@@ -61,16 +61,29 @@ public sealed class PresenceAutostartTests
         run.Write(
             PresenceLimits.AutostartValueName,
             "\"C:\\old\\Debug\\Baxy.exe\" --tray");
-        var registration = new WindowsAutostartRegistration(run, () => exe);
+        var registration = InstalledRegistration(run, exe);
 
-        string command = registration.EnsureRegistered();
+        string command = registration.EnsureRegistered([])!;
 
         Assert.That(command, Does.Contain(Path.GetFullPath(exe)));
         Assert.That(command, Does.Not.Contain("Debug"));
         Assert.That(run.Read(PresenceLimits.AutostartValueName), Is.EqualTo(command));
     }
 
-    private sealed class MemoryRunKey : IWindowsRunKey
+    // The executable sits in the test's work directory, which stands for the
+    // installation root; the profile is the default one (no BAXY_DATA_DIR).
+    internal static WindowsAutostartRegistration InstalledRegistration(
+        IWindowsRunKey run,
+        string exe,
+        string? configuredDataRoot = null) =>
+        new(
+            run,
+            () => exe,
+            installationRoot: Path.GetDirectoryName(Path.GetFullPath(exe)),
+            defaultDataRoot: Path.Combine(TestContext.CurrentContext.WorkDirectory, "profile-1"),
+            configuredDataRoot: () => configuredDataRoot);
+
+    internal sealed class MemoryRunKey : IWindowsRunKey
     {
         private readonly Dictionary<string, string> _values = new(StringComparer.Ordinal);
         internal int Writes { get; private set; }

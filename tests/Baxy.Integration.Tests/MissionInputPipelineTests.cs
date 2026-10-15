@@ -13,6 +13,39 @@ namespace Baxy.Integration.Tests;
 [NonParallelizable]
 public sealed class MissionInputPipelineTests
 {
+    /// <summary>
+    /// Ronda 29 (banco Br27: bridge.crossed→queue.wait.end 654 ms p50 in the first turn, 1 ms later): after the
+    /// start-up's warm-up the first request is read at the cost of a later one. Run alone, the line it writes gives
+    /// what the warm-up took out of the first turn.
+    /// </summary>
+    [Test]
+    public async Task AfterTheWarmupTheFirstRequestIsReadAtTheCostOfALaterOne()
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        await MissionInputPipeline.WarmReadersAsync();
+        double warmup = clock.Elapsed.TotalMilliseconds;
+        double first = ReadMilliseconds("en el Reloj andá a Alarma");
+        double second = ReadMilliseconds("en la calculadora calculá 9 por 8");
+        TestContext.Out.WriteLine(FormattableString.Invariant(
+            $"r29 ms: calentamiento {warmup:F1}, primer pedido {first:F1}, segundo {second:F1}"));
+
+        Assert.That(first, Is.LessThan(3 * second + 50));
+    }
+
+    private static double ReadMilliseconds(string text)
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        MissionInputRoute route = MissionInputPipeline.Route(new MissionInput(text, MissionInputSource.Text));
+        bool listens = VoiceListenCommand.TryParse(route.Text, out _);
+        bool clockAsked = NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text);
+        bool greets = UserMessagePolicy.IsGreetingRequest(route.Text);
+        double spent = clock.Elapsed.TotalMilliseconds;
+        Assert.That(
+            (route.Memory.Outcome, listens, clockAsked, greets),
+            Is.EqualTo((MemoryParseOutcome.NoRoute, false, false, false)));
+        return spent;
+    }
+
     [TestCase(
         "es",
         "Pon el volumen del PC al 20%",
@@ -43,12 +76,13 @@ public sealed class MissionInputPipelineTests
         "audio.status",
         OperationRisks.ReadOnly,
         PolicyDecision.Allow)]
+    // D3 2026-09-20: privacy_sensitive goes direct; only the destructive asks.
     [TestCase(
-        "es-confirmacion",
+        "es-directo",
         "activa la memoria",
         "memory.enable",
         OperationRisks.PrivacySensitive,
-        PolicyDecision.RequireConfirmation)]
+        PolicyDecision.Allow)]
     [TestCase(
         "en-confirmation",
         "forget my favorite color",
@@ -296,9 +330,11 @@ public sealed class MissionInputPipelineTests
     public void LanguageRoutingRegexesStayInsideTheDeclaredInterimParserLayer()
     {
         string appRoot = RepositoryPath("src", "Baxy.App");
+        // Estabilización M2 (6edced495) took MemoryOperationProtection.cs out of the layer: its last literal pattern
+        // (ConfirmationReplyParser.CancelPattern) became the declineWords list of assent_words.v1.json, one list with
+        // the mind's. A literal pattern written there again would have to be declared here.
         string[] expectedParserFiles =
         [
-            "MemoryOperationProtection.cs",
             "NaturalApplicationRequestParser.cs",
             "NaturalAudioRequestParser.cs",
             "NaturalMemoryRequestParser.cs",

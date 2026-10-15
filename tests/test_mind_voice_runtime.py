@@ -25,12 +25,10 @@ from baxy_mind.voice import (
     _lexical_wake_fallback_enabled,
     _streaming_stt_enabled,
     _wake_activity_onset_sample,
-    _wake_turn_start_sample,
     resolve_streaming_stt_directory,
     resolve_stt_directory,
 )
 from baxy_mind.corrector import FuzzyCorrector
-from baxy_mind.voice_aec import EchoCanceller
 from baxy_mind.voice_output import (
     SapiSpeechOutput,
     _speech_markup,
@@ -55,6 +53,18 @@ from baxy_mind.wake_verifier import WakeVerifierConfig, WakeVerifierDecision
 class _FakeStream:
     def __init__(self, text: str) -> None:
         self.result = SimpleNamespace(text=text)
+        self.options: dict[str, str] = {}
+
+    def set_option(self, key: str, value: str) -> None:
+        self.options[key] = value
+
+    def get_option(self, key: str) -> str:
+        return self.options.get(key, "")
+
+    def acknowledge_decode(self) -> None:
+        self.options["applied_decoding_method"] = self.options.get(
+            "decoding_method", "modified_beam_search"
+        )
 
     def accept_waveform(self, _sample_rate: int, _audio: np.ndarray) -> None:
         return None
@@ -68,7 +78,7 @@ class _FakeRecognizer:
         return _FakeStream(self.text)
 
     def decode_stream(self, _stream: _FakeStream) -> None:
-        return None
+        _stream.acknowledge_decode()
 
 
 class _FakeWakeVerifier:
@@ -206,14 +216,6 @@ def test_mismatched_verifier_cannot_lower_direct_stage1_threshold(
     )
 
 
-def test_wake_turn_start_ignores_old_history_and_keeps_context() -> None:
-    flags = [True] * 4 + [False] * 24 + [True] * 10 + [False] * 3
-
-    start = _wake_turn_start_sample(flags, frame_samples=512)
-
-    assert start == 20 * 512
-
-
 def test_wake_activity_onset_uses_low_vad_threshold_and_ctc_alignment() -> None:
     probabilities = [0.0] * 138 + [0.042, 0.185, 0.12]
 
@@ -233,7 +235,7 @@ class _ContextualFakeRecognizer:
         return _FakeStream("Spotify" if hotwords else "Open spati")
 
     def decode_stream(self, _stream: _FakeStream) -> None:
-        return None
+        _stream.acknowledge_decode()
 
 
 class _FakeOnlineStream:
@@ -406,6 +408,12 @@ def _install_sounddevice(monkeypatch, factory) -> None:
         "max_input_channels": 1,
     }
     monkeypatch.setitem(sys.modules, "sounddevice", sounddevice)
+    monkeypatch.setattr(
+        voice_module, "WasapiCaptureStream",
+        lambda _event: factory(
+            samplerate=SAMPLE_RATE, channels=1, dtype="float32", blocksize=512
+        ),
+    )
 
 
 def _engine(text: str, transcripts: list[str], events: list[dict]) -> VoiceEngine:
@@ -1763,7 +1771,7 @@ def test_acoustic_wake_emits_command_without_a_textual_wake_prefix() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
     )
 
@@ -1785,7 +1793,7 @@ def test_attested_verifier_authorizes_an_acoustic_proposal() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
         wake_confidence=0.1,
     )
@@ -1804,7 +1812,7 @@ def test_attested_verifier_rejection_cannot_open_a_turn() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
         wake_confidence=0.1,
     )
@@ -1825,7 +1833,7 @@ class _SequenceRecognizer:
         return _FakeStream(self.texts.pop(0))
 
     def decode_stream(self, _stream: _FakeStream) -> None:
-        return None
+        _stream.acknowledge_decode()
 
 
 class _EndpointCascade(HyperspotterCascadeDetector):
@@ -1860,7 +1868,7 @@ def test_score_gated_endpoint_authorizes_a_leading_canonical_name() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "endpoint_wake_candidate",
     )
 
@@ -1886,7 +1894,7 @@ def test_score_gated_endpoint_rejects_weak_acoustic_evidence_before_asr() -> Non
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "endpoint_wake_candidate",
     )
 
@@ -1917,7 +1925,7 @@ def test_score_gated_endpoint_rejects_basi_even_with_acoustic_evidence() -> None
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "endpoint_wake_candidate",
     )
 
@@ -1961,6 +1969,392 @@ class _FiniteInputStream:
             return np.zeros((samples, 1), dtype=np.float32), False
         self.reads += 1
         return np.full((samples, 1), 0.02, dtype=np.float32), False
+
+
+@pytest.mark.parametrize(
+    ("probabilities", "speaking", "expected_frames"),
+    [
+        ([0.9, 0.0, 0.9, 0.0, 0.9], [True] * 5, []),
+        ([0.9] * 3, [True] * 3, [3]),
+        ([0.9, 0.9, 0.0, 0.9, 0.9, 0.9], [True] * 6, [6]),
+        ([0.9] * 6, [True, True, False, True, True, True], [6]),
+        ([0.9] * 6, [True] * 6, [3]),
+    ],
+)
+def test_barge_in_requires_consecutive_speech_during_output(
+    monkeypatch, probabilities, speaking, expected_frames,
+):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+    stop = threading.Event()
+    stream = _FiniteInputStream(stop, len(probabilities))
+    cancelled_at = []
+    # Audio cancellation is asynchronous: speaking may remain true for a few
+    # more frames after the cancellation request. One sustained run emits once.
+    monkeypatch.setattr(
+        VoiceEngine, "speaking",
+        property(lambda _: speaking[max(0, min(stream.reads - 1, len(speaking) - 1))]),
+    )
+    monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+    _install_sounddevice(monkeypatch, lambda **_: stream)
+    try:
+        engine._capture_loop(  # noqa: SLF001
+            stop_event=stop, decode_queue=queue.Queue(),
+            streaming_queue=queue.Queue(), capture_ready_event=threading.Event(),
+        )
+        assert cancelled_at == expected_frames
+        assert sum(item["event"] == "barge_in" for item in events) == len(expected_frames)
+        assert not any(item["event"] == "error" for item in events)
+    finally:
+        engine.shutdown()
+
+
+@pytest.mark.parametrize(
+    ("speaking", "amplitude", "expected_segments", "expected_cancellations"),
+    [(True, 0.001, 0, 0), (True, 0.02, 1, 1), (False, 0.001, 1, 0)],
+)
+def test_output_energy_rejection_also_controls_transcription(
+    monkeypatch, speaking, amplitude, expected_segments, expected_cancellations,
+):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    probabilities = [0.0] * 8 + [0.9] * 6 + [0.0] * 32
+    engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+    stop = threading.Event()
+
+    class Stream(_FiniteInputStream):
+        def read(self, samples):
+            frame, overflow = super().read(samples)
+            frame.fill(amplitude if 9 <= self.reads <= 14 else 0.0)
+            return frame, overflow
+
+    stream = Stream(stop, len(probabilities))
+    requests = queue.Queue()
+    cancelled_at = []
+    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: speaking))
+    monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+    monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
+    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+    _install_sounddevice(monkeypatch, lambda **_: stream)
+    try:
+        engine._capture_loop(  # noqa: SLF001
+            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+        )
+        assert requests.qsize() == expected_segments
+        assert len(cancelled_at) == expected_cancellations
+        assert not any(item["event"] == "error" for item in events)
+        if expected_cancellations:
+            assert cancelled_at == [11]
+        if expected_segments:
+            # Keep all six voiced blocks, including the two before cancellation.
+            audio = requests.get_nowait().audio
+            voiced = audio[audio != 0]
+            np.testing.assert_array_equal(voiced, np.full(6 * 512, amplitude, np.float32))
+    finally:
+        engine.shutdown()
+
+
+@pytest.mark.parametrize("speech_blocks", [1, 2])
+def test_unconfirmed_barge_candidate_does_not_open_a_transcription(monkeypatch, speech_blocks):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    probabilities = [0.0] * 8 + [0.9] * speech_blocks + [0.0] * 32
+    engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+    stop = threading.Event()
+    stream = _FiniteInputStream(stop, len(probabilities))
+    requests = queue.Queue()
+    cancellations = []
+    streaming = []
+    ducked_at = []
+    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
+    monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads))
+    monkeypatch.setattr(engine._ducker, "duck", lambda: ducked_at.append(stream.reads))  # noqa: SLF001
+    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+    monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+    _install_sounddevice(monkeypatch, lambda **_: stream)
+    try:
+        engine._capture_loop(  # noqa: SLF001
+            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+        )
+        assert requests.empty()
+        assert cancellations == []
+        assert streaming == []
+        assert ducked_at == []
+        assert not any(item["event"] == "error" for item in events)
+    finally:
+        engine.shutdown()
+
+
+@pytest.mark.parametrize("output_finishes", [False, True])
+def test_barge_candidate_preserves_prefix_until_admitted(monkeypatch, output_finishes):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    amplitudes = [0.0] * 8 + [0.02] + [0.001] * 10 + [0.02] * 3 + [0.0] * 32
+    engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 14 + [0.0] * 32)  # noqa: SLF001
+    stop = threading.Event()
+
+    class Stream(_FiniteInputStream):
+        def read(self, samples):
+            frame, overflow = super().read(samples)
+            frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
+            return frame, overflow
+
+    stream = Stream(stop, len(amplitudes))
+    requests = queue.Queue()
+    streaming, ducked_at = [], []
+    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads < 20))
+    monkeypatch.setattr(engine, "cancel_speech", lambda: None)
+    monkeypatch.setattr(engine._ducker, "duck", lambda: ducked_at.append(stream.reads))  # noqa: SLF001
+    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+    monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+    _install_sounddevice(monkeypatch, lambda **_: stream)
+    try:
+        engine._capture_loop(  # noqa: SLF001
+            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+        )
+        assert requests.qsize() == 1
+        assert not any(item["event"] == "error" for item in events)
+        audio = requests.get_nowait().audio
+        expected = np.repeat(np.asarray(amplitudes[8:22], dtype=np.float32), 512)
+        np.testing.assert_array_equal(audio[audio != 0], expected)
+        assert ducked_at == [20 if output_finishes else 22]
+        starts = [item for item in streaming if item[0] == "start"]
+        assert len(starts) == 1
+        prefix = np.concatenate(starts[0][2])
+        np.testing.assert_array_equal(prefix[prefix != 0], expected[:len(prefix[prefix != 0])])
+    finally:
+        engine.shutdown()
+
+
+def test_barge_energy_threshold_does_not_split_an_active_utterance(monkeypatch):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    amplitudes = [0.0] * 8 + [0.02] * 3 + [0.001] * 24 + [0.02] * 3 + [0.0] * 32
+    engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 30 + [0.0] * 32)  # noqa: SLF001
+    stop = threading.Event()
+
+    class Stream(_FiniteInputStream):
+        def read(self, samples):
+            frame, overflow = super().read(samples)
+            frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
+            return frame, overflow
+
+    stream = Stream(stop, len(amplitudes))
+    requests = queue.Queue()
+    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
+    monkeypatch.setattr(engine, "cancel_speech", lambda: None)
+    monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
+    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+    _install_sounddevice(monkeypatch, lambda **_: stream)
+    try:
+        engine._capture_loop(  # noqa: SLF001
+            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+        )
+        assert requests.qsize() == 1
+        assert not any(item["event"] == "error" for item in events)
+        audio = requests.get_nowait().audio
+        expected = np.repeat(np.asarray(amplitudes[8:38], dtype=np.float32), 512)
+        np.testing.assert_array_equal(audio[audio != 0], expected)
+    finally:
+        engine.shutdown()
+
+
+@pytest.mark.parametrize("failure", [None, "open", "read", "reference", "confirmation_vad"])
+def test_capture_owns_aec_and_closes_it_after_success_or_failure(monkeypatch, failure):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    engine._loopback._stream = object()  # noqa: SLF001 - no real audio device
+    allocations, releases, failures = [], [], []
+    anchors, reference_ends = [], []
+    seen_frames = []
+    stop_event = threading.Event()
+    decode_queue: queue.Queue[object] = queue.Queue()
+    probabilities = iter([0.0, 0.0, *([0.9] * 12), *([0.0] * 23)])
+
+    class Canceller:
+        sha256 = "fixture-native-hash"
+
+        def __init__(self):
+            allocations.append(threading.get_ident())
+
+        @staticmethod
+        def process(mic, reference):
+            return mic * 3, mic * 2, mic * 32768, reference
+
+        @staticmethod
+        def close():
+            releases.append(threading.get_ident())
+
+    class Vad:
+        @staticmethod
+        def process(frame):
+            seen_frames.append(frame.copy())
+            return next(probabilities, 0.0)
+
+        @staticmethod
+        def reset():
+            return None
+
+    class Stream(_FiniteInputStream):
+        adc_time = 100.0
+
+        def __enter__(self):
+            if failure == "open":
+                raise RuntimeError("fixture_open_failed")
+            return self
+
+        def read(self, samples):
+            if failure == "read":
+                raise RuntimeError("fixture_read_failed")
+            return super().read(samples)
+
+    monkeypatch.setattr(voice_module, "EchoCanceller", Canceller)
+    def sample_index(adc_time, _event):
+        anchors.append(adc_time)
+        return 128
+
+    def window_at(end, count, _event):
+        if failure == "reference":
+            raise RuntimeError("loopback_reference_timeout")
+        reference_ends.append(end)
+        return np.zeros(count, np.int16)
+
+    monkeypatch.setattr(engine._loopback, "sample_index", sample_index)  # noqa: SLF001
+    monkeypatch.setattr(engine._loopback, "window_at", window_at)  # noqa: SLF001
+    monkeypatch.setattr(engine, "_fail_capture_session", lambda *args: failures.append(args))
+    engine._vad = Vad()  # noqa: SLF001
+    def confirmation_vad():
+        if failure == "confirmation_vad":
+            raise RuntimeError("fixture_confirmation_vad_failed")
+        return _SequenceVad([0.0, 0.0, *([0.9] * 12), *([0.0] * 23)])
+
+    monkeypatch.setattr(voice_module, "SileroVad", confirmation_vad)
+    _install_sounddevice(monkeypatch, lambda **_: Stream(stop_event, 37))
+    ready = threading.Event()
+    try:
+        engine._capture_loop(  # noqa: SLF001
+            stop_event=stop_event, decode_queue=decode_queue,
+            streaming_queue=queue.Queue(), capture_ready_event=ready,
+        )
+        assert allocations == releases == [threading.get_ident()]
+        assert ready.is_set()
+        assert engine.status()["aec"] is False
+        if failure:
+            assert failures and decode_queue.empty()
+        else:
+            assert not failures
+            assert anchors == [100.0]
+            assert reference_ends == list(range(640, 640 + len(seen_frames) * 512, 512))
+            assert any(row["event"] == "ready" and row["aec"] for row in events)
+            assert seen_frames and np.allclose(seen_frames[0], 0.06)
+            request = decode_queue.get_nowait()
+            assert request.aec_applied is True
+            assert np.allclose(request.audio, 0.06)
+            assert not hasattr(request, "reference")
+    finally:
+        engine.shutdown()
+
+
+@pytest.mark.parametrize("case,expected_admission,expected_first", [
+    ("human_during_output", 16, 0),
+    ("human_after_output", 24, 0),
+    ("confirmation_only", 16, 6),
+    ("echo_tail", None, None),
+    ("transient_confirmation", None, None),
+])
+def test_two_aec_views_preserve_onset_but_require_independent_admission(
+    monkeypatch, case, expected_admission, expected_first,
+):
+    events = []
+    engine = _prepare_voice_engine(monkeypatch, events)
+    engine._mode = "direct"  # noqa: SLF001
+    engine._loopback._stream = object()  # noqa: SLF001
+    linear_probabilities = [0.0] * 8 + [0.9] * 25 + [0.0] * 30
+    confirmation_probabilities = [0.0] * 14 + [0.9] * 19 + [0.0] * 30
+    if case == "confirmation_only":
+        linear_probabilities = [0.0] * 63
+    elif case == "human_after_output":
+        confirmation_probabilities = [0.0] * 24 + [0.9] * 9 + [0.0] * 30
+    elif case == "echo_tail":
+        confirmation_probabilities = [0.0] * 63
+    elif case == "transient_confirmation":
+        confirmation_probabilities = [0.0] * 14 + [0.9] + [0.0] * 48
+    linear_vad = _SequenceVad(linear_probabilities)
+    confirmation_vad = _SequenceVad(confirmation_probabilities)
+    seen = [[], []]
+
+    def observe(vad, index):
+        original = vad.process
+
+        def process(frame):
+            seen[index].append(frame.copy())
+            return original(frame)
+
+        return process
+
+    monkeypatch.setattr(linear_vad, "process", observe(linear_vad, 0))
+    monkeypatch.setattr(confirmation_vad, "process", observe(confirmation_vad, 1))
+    engine._vad = linear_vad  # noqa: SLF001
+    monkeypatch.setattr(voice_module, "SileroVad", lambda: confirmation_vad)
+    stop = threading.Event()
+    stream = _FiniteInputStream(stop, 63)
+    stream.adc_time = 100.0
+
+    class Canceller:
+        sha256 = "fixture-native"
+
+        @staticmethod
+        def process(_mic, reference):
+            index = stream.reads - 1
+            recognition = np.full(512, (index + 1) / 1000, np.float32)
+            confirmation = np.full(512, .02 if confirmation_probabilities[index] else 0, np.float32)
+            return recognition, confirmation, np.zeros(512, np.float32), reference
+
+        @staticmethod
+        def close():
+            pass
+
+    monkeypatch.setattr(voice_module, "EchoCanceller", Canceller)
+    monkeypatch.setattr(engine._loopback, "sample_index", lambda *_: 0)  # noqa: SLF001
+    monkeypatch.setattr(engine._loopback, "window_at", lambda _end, count, _stop: np.zeros(count, np.int16))  # noqa: SLF001
+    output_finishes = case in {"human_after_output", "echo_tail", "transient_confirmation"}
+    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads <= 20))
+    admissions, cancellations, streaming = [], [], []
+    monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads - 1))
+    monkeypatch.setattr(engine._ducker, "duck", lambda: admissions.append(stream.reads - 1))  # noqa: SLF001
+    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+    monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+    _install_sounddevice(monkeypatch, lambda **_: stream)
+    requests = queue.Queue()
+    try:
+        engine._capture_loop(stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event())  # noqa: SLF001
+        assert not any(item["event"] == "error" for item in events)
+        assert len(seen[0]) == len(seen[1]) == 63
+        assert linear_vad is not confirmation_vad
+        assert linear_vad.resets == confirmation_vad.resets == 1
+        assert not np.array_equal(seen[0][14], seen[1][14])
+        if expected_admission is None:
+            assert requests.empty() and not admissions and not cancellations and not streaming
+        else:
+            assert admissions == [expected_admission]
+            assert cancellations == ([16] if not output_finishes else [])
+            assert requests.qsize() == 1
+            actual = requests.get_nowait().audio
+            # Existing capture quantizes0.7s to21 complete512-sample frames.
+            expected = np.concatenate(seen[0][expected_first:54])
+            np.testing.assert_array_equal(actual, expected)
+            starts = [item for item in streaming if item[0] == "start"]
+            assert len(starts) == 1
+            np.testing.assert_array_equal(np.concatenate(starts[0][2]), np.concatenate(seen[0][expected_first:expected_admission]))
+    finally:
+        engine.shutdown()
 
 
 def _endpoint_capture_engine(monkeypatch, probabilities: list[float]) -> VoiceEngine:
@@ -2068,7 +2462,7 @@ def test_cascade_lexical_rescue_decodes_only_the_candidate_window() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
         wake_confidence=0.1,
         wake_method="strict_lexical_rescue",
@@ -2098,7 +2492,7 @@ def test_cascade_lexical_rescue_rejects_a_confusable_candidate() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
         wake_confidence=0.1,
         wake_method="strict_lexical_rescue",
@@ -2135,7 +2529,7 @@ def test_direct_lexical_proposal_uses_a_bounded_speed_retry() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
         wake_confidence=0.1,
         wake_method="direct_lexical_proposal",
@@ -2172,7 +2566,7 @@ def test_direct_lexical_proposal_fails_closed_after_all_retries() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
         wake_confidence=0.1,
         wake_method="direct_lexical_proposal",
@@ -2198,10 +2592,50 @@ def test_contextual_second_pass_supplies_independent_entity_evidence() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
     )
 
     assert transcripts == ["Open spotify"]
+
+
+def test_pcm_transcription_uses_the_same_conservative_context(monkeypatch) -> None:
+    engine = VoiceEngine(lambda _text: None)
+    engine._recognizer = _ContextualFakeRecognizer()  # noqa: SLF001
+    engine._corrector = FuzzyCorrector(("spotify",))  # noqa: SLF001
+    engine._contextual_hotwords = "tokenized-spotify"  # noqa: SLF001
+    monkeypatch.setattr(engine, "load", lambda: None)
+
+    assert engine.transcribe_pcm(np.zeros(SAMPLE_RATE, np.float32)) == "Open spotify"
+
+
+def test_primary_decode_rejects_a_backend_that_ignores_stream_selection() -> None:
+    class IgnoringRecognizer(_FakeRecognizer):
+        def decode_stream(self, _stream: _FakeStream) -> None:
+            return None
+
+    with pytest.raises(RuntimeError, match="^final_stt_decoder_not_applied$"):
+        voice_module._decode_offline_text(  # noqa: SLF001
+            IgnoringRecognizer("unverified text"), np.zeros(16000, np.float32)
+        )
+
+
+@pytest.mark.parametrize(
+    ("hotwords", "expected"), [("", "greedy_search"), ("▁b ax y", "modified_beam_search")]
+)
+def test_decode_routes_primary_and_context_to_their_native_methods(
+    hotwords: str, expected: str,
+) -> None:
+    class SelectingRecognizer(_FakeRecognizer):
+        def create_stream(self, **_kwargs) -> _FakeStream:
+            return _FakeStream("")
+
+        def decode_stream(self, stream: _FakeStream) -> None:
+            stream.acknowledge_decode()
+            stream.result.text = stream.get_option("applied_decoding_method")
+
+    assert voice_module._decode_offline_text(  # noqa: SLF001
+        SelectingRecognizer(""), np.zeros(16000, np.float32), hotwords=hotwords,
+    ) == expected
 
 
 def test_contextual_hotwords_are_derived_from_the_runtime_token_vocabulary(
@@ -2224,7 +2658,7 @@ def test_lexical_fallback_ignores_ordinary_background_speech() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "lexical_fallback",
     )
 
@@ -2243,7 +2677,7 @@ def test_lexical_fallback_remains_a_compatibility_path() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "lexical_fallback",
     )
 
@@ -2260,20 +2694,38 @@ def test_acoustic_bare_wake_arms_exactly_one_followup(monkeypatch) -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
     )
-    assert spoken == ["Sí."]
+    assert spoken == []
+    assert events[-1]["event"] == "wake"
     assert engine._armed_until > time.monotonic()  # noqa: SLF001
 
     engine._recognizer = _FakeRecognizer("dime la hora")  # noqa: SLF001
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
         "acoustic_wake",
     )
     assert transcripts == ["dime la hora"]
     assert engine._armed_until == 0.0  # noqa: SLF001
+
+
+def test_doubtful_voice_requests_model_feedback_without_fixed_speech(monkeypatch) -> None:
+    transcripts: list[str] = []
+    events: list[dict] = []
+    engine = _engine("123", transcripts, events)
+    engine._mode = "direct"  # noqa: SLF001
+    spoken: list[str] = []
+    monkeypatch.setattr(engine, "speak", lambda text: not spoken.append(text))
+
+    engine._decode_utterance(  # noqa: SLF001
+        np.zeros(SAMPLE_RATE, dtype=np.float32), False,
+    )
+
+    assert transcripts == []
+    assert spoken == []
+    assert events[-1] == {"event": "ignored", "reason": "transcript_doubtful"}
 
 
 def test_direct_mode_never_requires_wake() -> None:
@@ -2283,7 +2735,7 @@ def test_direct_mode_never_requires_wake() -> None:
 
     engine._decode_utterance(  # noqa: SLF001
         np.zeros(SAMPLE_RATE, dtype=np.float32),
-        np.empty(0, dtype=np.int16),
+        False,
     )
 
     assert transcripts == ["crea una nota"]
@@ -2299,17 +2751,23 @@ def test_echo_guard_distinguishes_correlated_output_from_near_speech() -> None:
     assert not _looks_like_echo(near_speech, reference)
 
 
-def test_nlms_aec_reduces_a_delayed_reference() -> None:
-    rng = np.random.default_rng(11)
-    reference = rng.normal(0, 800, 8_000).astype(np.int16)
-    microphone = np.zeros_like(reference)
-    microphone[80:] = (reference[:-80].astype(np.float64) * 0.65).astype(np.int16)
+@pytest.mark.parametrize("delay", [0, 1, 73, 127, 128, 513, 3999, 4000])
+def test_echo_guard_covers_every_sample_delay_in_its_declared_window(delay) -> None:
+    rng = np.random.default_rng(21)
+    reference = rng.normal(0, 1000, 4512).astype(np.float32)
+    end = reference.size - delay
+    echo = reference[end - 512 : end] * 0.4
+    assert _looks_like_echo(echo, reference)
 
-    clean = EchoCanceller(filter_samples=128).process(microphone, reference)
-    before = float(np.sqrt(np.mean(microphone[4_000:].astype(np.float64) ** 2)))
-    after = float(np.sqrt(np.mean((clean[4_000:] * 32_768.0) ** 2)))
 
-    assert after < before * 0.7
+def test_echo_guard_keeps_independent_near_speech_audible_over_echo() -> None:
+    rng = np.random.default_rng(23)
+    reference = rng.normal(0, 1000, 4512).astype(np.float32)
+    near_speech = rng.normal(0, 1000, 512).astype(np.float32)
+    microphone = near_speech + reference[-585:-73] * 0.15
+    assert not _looks_like_echo(microphone, reference)
+
+
 
 
 def test_tts_tail_grace_is_bounded(monkeypatch) -> None:

@@ -26,6 +26,7 @@ public sealed class WindowsAudioControlProviderTests
             Assert.That(result.Operation, Is.EqualTo(AudioOperationIds.Status));
             Assert.That(result.TargetId, Is.EqualTo(AudioTargetIds.DefaultOutput));
             Assert.That(result.EndpointIdHash, Has.Length.EqualTo(64));
+            Assert.That(result.EndpointName, Is.EqualTo("Test Speakers"));
             Assert.That(result.State,
                 Is.EqualTo(new AudioEndpointState(expectedPercent, muted)));
             Assert.That(result.Verified, Is.True);
@@ -34,6 +35,25 @@ public sealed class WindowsAudioControlProviderTests
             Assert.That(environment.Platform.SetVolumeCalls, Is.Zero);
             Assert.That(environment.Platform.SetMuteCalls, Is.Zero);
             Assert.That(File.Exists(environment.StatePath(invocationId)), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task StatusKeepsMissingDisplayNameDistinctFromMissingAudioState()
+    {
+        using TestEnvironment environment = new(volumeScalar: 0.5f, muted: false);
+        environment.Platform.DisplayName = null;
+
+        AudioStatusReceipt result = await environment.Provider().GetStatusAsync(
+            new AudioStatusQuery(InvocationId()), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.State!.VolumePercent, Is.EqualTo(50));
+            Assert.That(result.EndpointName, Is.Null);
+            Assert.That(environment.Platform.SetVolumeCalls, Is.Zero);
+            Assert.That(environment.Platform.SetMuteCalls, Is.Zero);
         });
     }
 
@@ -1014,6 +1034,8 @@ public sealed class WindowsAudioControlProviderTests
 
         public string DefaultEndpointId { get; set; }
 
+        public string? DisplayName { get; set; } = "Test Speakers";
+
         public Func<float, float> VolumeQuantizer { get; set; } = static value => value;
 
         public Action? AfterVolumeSet { get; set; }
@@ -1099,6 +1121,12 @@ public sealed class WindowsAudioControlProviderTests
             private bool _disposed;
 
             public string EndpointId { get; } = endpointId;
+
+            public string? ReadDisplayName()
+            {
+                ObjectDisposedException.ThrowIf(_disposed, this);
+                return owner.DisplayName;
+            }
 
             public float ReadVolumeScalar()
             {

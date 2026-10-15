@@ -1,0 +1,46 @@
+{
+  "schema": "baxy.conversation-acts.v1",
+  "source": "Estabilización, imprescindibles de mensajería (dueño 2026-10-10, decisión 4): leer lo último que le escribieron a la persona en un chat y salir del canal de voz. Ninguna operación tipada lee un chat ni sale de una llamada; las dos son una misión sobre la aplicación que la persona nombra (semantic.missions). Lo leído aquí son las palabras de la persona, plegadas (minúsculas, sin acentos), después de quitar el marco de la aplicación («en Discord …», «… en WhatsApp»). Ningún nombre de aplicación: otra aplicación de chat sirve sin tocar código.",
+  "lastWritten": {
+    "source": "«qué me escribió Ron92», «leé lo último que me escribió Ron92», «lo último que me escribieron en Música», «what did Ron92 write me», «read the last message from Ron92». who: la persona o el chat. author: sólo cuando la frase dice quién escribió (no «me escribieron en Música», que es el chat). Se lee la cláusula entera.",
+    "patterns": [
+      "^(?:(?:dec[i]?me|dime|conta(?:me)?|fijate|mira|lee(?:me)?|lei|leer|revisa|chequea)\\s+)?(?:que\\s+(?:fue\\s+)?)?(?:lo\\s+ultimo\\s+que\\s+|que\\s+)me\\s+(?:escribio|mando|envio|dijo|puso)\\s+(?P<author>(?!en\\s|in\\s)\\S.{0,60}?)$",
+      "^(?:(?:dec[i]?me|dime|conta(?:me)?|fijate|mira|lee(?:me)?|lei|leer|revisa|chequea)\\s+)?(?:que\\s+(?:fue\\s+)?)?(?:lo\\s+ultimo\\s+que\\s+|que\\s+)me\\s+(?:escribieron|mandaron|enviaron|dijeron|pusieron)\\s+(?:en|por)\\s+(?:(?:el|la)\\s+)?(?:(?:grupo|chat|canal)\\s+(?:de\\s+)?)?(?P<chat>\\S.{0,60}?)$",
+      "^(?:(?:dec[i]?me|dime|lee(?:me)?|lei|leer|cual\\s+(?:fue|es))\\s+)?(?:el\\s+)?ultimo\\s+mensaje\\s+(?:de\\s+|que\\s+me\\s+(?:escribio|mando|envio)\\s+)(?P<author>(?!en\\s)\\S.{0,60}?)$",
+      "^what\\s+did\\s+(?P<author>\\S.{0,60}?)\\s+(?:last\\s+)?(?:write|send|text|say)(?:\\s+(?:to\\s+)?me)?(?:\\s+last)?$",
+      "^what\\s+(?:was|is|'s)\\s+the\\s+last\\s+(?:thing|message)\\s+(?P<author>\\S.{0,60}?)\\s+(?:wrote|sent|texted)(?:\\s+(?:to\\s+)?me)?$",
+      "^(?:(?:read|tell)\\s+(?:me\\s+)?|what\\s+(?:was|is|'s)\\s+)the\\s+last\\s+message\\s+from\\s+(?P<author>\\S.{0,60}?)$",
+      "^(?:(?:read|tell)\\s+(?:me\\s+)?|what\\s+(?:was|is|'s)\\s+)the\\s+last\\s+message\\s+in\\s+(?:the\\s+)?(?:(?:group|chat|channel)\\s+)?(?P<chat>\\S.{0,60}?)$"
+    ],
+    "authorSeparator": "\\s+,\\s+",
+    "examples": [
+      {"said": "que me escribio ron92", "author": "ron92"},
+      {"said": "lee lo ultimo que me escribio ron92", "author": "ron92"},
+      {"said": "que fue lo ultimo que me escribio ron92", "author": "ron92"},
+      {"said": "fijate que me escribio musica", "author": "musica"},
+      {"said": "lee lo ultimo que me escribieron en musica", "chat": "musica"},
+      {"said": "lee lo ultimo que me escribieron en el grupo musica", "chat": "musica"},
+      {"said": "cual fue el ultimo mensaje de ron92", "author": "ron92"},
+      {"said": "what did ron92 last write me", "author": "ron92"},
+      {"said": "read me the last message from ron92", "author": "ron92"},
+      {"said": "what was the last message in the group musica", "chat": "musica"}
+    ],
+    "notExamples": ["que me escribio", "mandale a ron92 que llego tarde", "el pdf que me mando el banco", "escribi que me escribio ron92"]
+  },
+  "sendInPlace": {
+  "source": "Encargo IMP2 (imp1 imp-wa-enviar y -normal: la ruta tipada de WhatsApp —clics en posiciones fijas y la foto del compositor— falló con search_focus_not_verified; ningún envío por WhatsApp en v3). Un mensaje a alguien en un cliente de esta lista se envía como la misión que ya envía en Discord (c6): ir al chat por su búsqueda, escribir el texto y enviar (el Enter con texto lo confirma la política en Normal). Medido en redpc el 2026-10-12 sobre la ventana msedgewebview2 de WhatsApp: el árbol UIA está completo, el resultado «Música» llega 750-880 ms tras escribir y la pulsación «render» abre el chat (3/3). Los nombres son los de messaging.message_draft_request.",
+  "clients": ["whatsapp"]
+ },
+ "leaveCall": {
+    "source": "«salí del canal de voz», «desconectate de la llamada», «colgá», «leave the voice channel», «hang up». Salir no sale al mundo (decisión 8: lo que sale al mundo es enviar, publicar, unirse, llamar): termina la presencia propia y se deshace volviendo a entrar, así que no se confirma; las palabras de salir ya están fuera de la familia «call» de world_acts.v1.json. labels: los nombres con que una aplicación rotula el control que deja la llamada, el primero es el del objetivo y todos prueban el clic.",
+    "patterns": [
+      "^(?:sali|salite|salime|salir|salgamos|abandona|abandonar|desconectate|desconectame|desconecta|desconectar|desconectarme)\\s+(?:de\\s+(?:la\\s+|el\\s+)?|del\\s+|la\\s+|el\\s+)?(?:canal\\s+de\\s+voz|llamada|videollamada|voz|chat\\s+de\\s+voz)(?:\\s+(?:actual|de\\s+voz))?$",
+      "^(?:colga|colgar|corta\\s+la\\s+llamada|cortar\\s+la\\s+llamada)(?:\\s+(?:la\\s+)?(?:llamada|videollamada))?$",
+      "^(?:leave|exit|disconnect\\s+from|get\\s+out\\s+of|drop\\s+out\\s+of)\\s+(?:the\\s+|this\\s+)?(?:voice\\s+channel|voice\\s+chat|voice\\s+call|call|voice)$",
+      "^(?:hang\\s+up|disconnect)(?:\\s+(?:the\\s+)?(?:call|voice))?$"
+    ],
+    "labels": ["Desconectar", "Disconnect", "Colgar", "Hang up", "Salir de la llamada", "Leave call"],
+    "examples": ["sali del canal de voz", "desconectate de la llamada", "colga", "leave the voice channel", "hang up", "salite de la voz"],
+    "notExamples": ["sali", "entra al canal de voz", "desconecta el wifi", "sali de configuracion", "leave"]
+  }
+}

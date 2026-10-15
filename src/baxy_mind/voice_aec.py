@@ -1,4 +1,4 @@
-"""Frontend acústico local: loopback WASAPI, AEC NLMS y ducking reversible.
+"""Frontend acústico local: loopback WASAPI y ducking reversible.
 
 Recupera las piezas medibles de los BAXY anteriores sin depender del wake ni
 del TTS históricos. La referencia es exactamente lo que Windows reproduce.
@@ -9,7 +9,9 @@ micrófono crudo y lo reporta en capacidades; nunca simula que hubo AEC.
 from __future__ import annotations
 
 import logging
+import math
 import threading
+import time
 from contextlib import contextmanager
 from math import gcd
 from typing import Iterator
@@ -19,8 +21,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 SAMPLE_RATE = 16_000
-CHUNK = 512
-_RING_SECONDS = 35
+_RING_SECONDS = 4
 
 
 def _resample(audio: np.ndarray, source_rate: int) -> np.ndarray:
@@ -43,65 +44,76 @@ def _resample(audio: np.ndarray, source_rate: int) -> np.ndarray:
 
 
 class LoopbackReference:
-    """Ring thread-safe del output predeterminado capturado por WASAPI."""
+    """WASAPI reference ring indexed by samples from its first native ADC timestamp."""
 
     def __init__(self) -> None:
         self._backend = None
         self._stream = None
         self._ring = np.zeros(SAMPLE_RATE * _RING_SECONDS, dtype=np.int16)
-        self._lock = threading.Lock()
+        self._condition = threading.Condition()
+        self._written = 0
+        self._origin_time: float | None = None
+        self._stopped = False
         self.last_error: str | None = None
 
     @property
     def active(self) -> bool:
         return self._stream is not None
 
+    def _append(self, block: np.ndarray, adc_time: float) -> None:
+        if not math.isfinite(adc_time) or adc_time <= 0:
+            raise RuntimeError("loopback_adc_clock_unavailable")
+        if block.size > self._ring.size:
+            raise RuntimeError("loopback_block_too_large")
+        with self._condition:
+            if self._stopped:
+                return
+            if self._origin_time is None:
+                self._origin_time = adc_time
+            start = self._written % self._ring.size
+            first = min(block.size, self._ring.size - start)
+            self._ring[start : start + first] = block[:first]
+            self._ring[: block.size - first] = block[first:]
+            self._written += block.size
+            self._condition.notify_all()
+
     def start(self) -> bool:
         if self._stream is not None:
             return True
+        with self._condition:
+            self._ring.fill(0)
+            self._written = 0
+            self._origin_time = None
+            self._stopped = False
+            self.last_error = None
         try:
             import pyaudiowpatch as pyaudio
 
             backend = pyaudio.PyAudio()
-            wasapi = backend.get_host_api_info_by_type(pyaudio.paWASAPI)
-            output = backend.get_device_info_by_index(
-                int(wasapi["defaultOutputDevice"])
-            )
-            loopback = next(
-                (
-                    backend.get_device_info_by_index(index)
-                    for index in range(backend.get_device_count())
-                    if backend.get_device_info_by_index(index).get("isLoopbackDevice")
-                    and str(output["name"])
-                    in str(backend.get_device_info_by_index(index)["name"])
-                ),
-                None,
-            )
-            if loopback is None:
-                backend.terminate()
-                self.last_error = "loopback_device_unavailable"
-                return False
+            self._backend = backend
+            loopback = backend.get_default_wasapi_loopback()
             source_rate = int(loopback["defaultSampleRate"])
             channels = int(loopback["maxInputChannels"])
+            # Load resampling code before starting the real-time callback.
+            _resample(np.zeros(int(source_rate * 0.032)), source_rate)
 
-            def callback(data, _frame_count, _time_info, _status):
+            def callback(data, _frames, timing, status):
                 try:
+                    if status:
+                        raise RuntimeError("loopback_callback_overflow")
                     block = np.frombuffer(data, dtype=np.int16)
                     if channels > 1:
                         block = block.reshape(-1, channels).mean(axis=1)
                     block = _resample(block, source_rate)
-                    with self._lock:
-                        size = min(block.size, self._ring.size)
-                        if size:
-                            self._ring = np.concatenate((
-                                self._ring[size:],
-                                block[-size:].astype(np.int16),
-                            ))
-                except Exception:  # noqa: BLE001 - callback nunca propaga
-                    pass
+                    self._append(block, float(timing["input_buffer_adc_time"]))
+                except Exception as error:  # noqa: BLE001 - callback never propagates
+                    with self._condition:
+                        self.last_error = str(error) or type(error).__name__
+                        self._condition.notify_all()
+                    return (None, pyaudio.paAbort)
                 return (None, pyaudio.paContinue)
 
-            stream = backend.open(
+            self._stream = backend.open(
                 format=pyaudio.paInt16,
                 channels=channels,
                 rate=source_rate,
@@ -109,28 +121,87 @@ class LoopbackReference:
                 input_device_index=int(loopback["index"]),
                 frames_per_buffer=max(128, int(source_rate * 0.032)),
                 stream_callback=callback,
+                start=False,
             )
-            stream.start_stream()
-            self._backend = backend
-            self._stream = stream
-            self.last_error = None
+            self._stream.start_stream()
             return True
-        except Exception as error:  # noqa: BLE001 - capa opcional
+        except Exception as error:  # noqa: BLE001 - optional capability
             self.last_error = f"loopback_unavailable:{type(error).__name__}"
             self.stop()
             return False
 
+    def _check_wait(self, stop_event: threading.Event, deadline: float) -> None:
+        if stop_event.is_set():
+            raise InterruptedError("loopback_read_cancelled")
+        if self._stopped:
+            raise RuntimeError("loopback_stopped")
+        if self.last_error is not None:
+            raise RuntimeError(self.last_error)
+        if time.monotonic() >= deadline:
+            raise RuntimeError("loopback_reference_timeout")
+
+    def sample_index(
+        self, adc_time: float, stop_event: threading.Event, *, timeout: float = 0.25
+    ) -> int:
+        """Anchor a consumer once; it advances its own cursor by samples thereafter."""
+        if not math.isfinite(adc_time) or adc_time <= 0:
+            raise ValueError("capture_adc_clock_unavailable")
+        deadline = time.monotonic() + timeout
+        with self._condition:
+            while self._origin_time is None:
+                self._check_wait(stop_event, deadline)
+                self._condition.wait(min(0.02, max(0, deadline - time.monotonic())))
+            self._check_wait(stop_event, deadline)
+            return round((adc_time - self._origin_time) * SAMPLE_RATE)
+
+    def _window(self, end: int, samples: int) -> np.ndarray:
+        start = end - samples
+        available_start = max(0, self._written - self._ring.size)
+        if max(0, start) < available_start:
+            raise RuntimeError("loopback_reader_overrun")
+        result = np.zeros(samples, dtype=np.int16)
+        first = max(0, start)
+        last = max(first, end)
+        if last > first:
+            index = first % self._ring.size
+            count = last - first
+            prefix = min(count, self._ring.size - index)
+            offset = first - start
+            result[offset : offset + prefix] = self._ring[index : index + prefix]
+            result[offset + prefix : offset + count] = self._ring[: count - prefix]
+        return result
+
+    def window_at(
+        self, end: int, samples: int, stop_event: threading.Event,
+        *, timeout: float = 0.25,
+    ) -> np.ndarray:
+        if samples < 0 or samples > self._ring.size:
+            raise ValueError("loopback_window_size_invalid")
+        deadline = time.monotonic() + timeout
+        with self._condition:
+            while self._written < end:
+                self._check_wait(stop_event, deadline)
+                self._condition.wait(min(0.02, max(0, deadline - time.monotonic())))
+            self._check_wait(stop_event, deadline)
+            return self._window(end, samples)
+
     def latest(self, samples: int) -> np.ndarray:
         count = max(0, min(self._ring.size, int(samples)))
-        with self._lock:
-            return self._ring[-count:].copy()
+        with self._condition:
+            return self._window(self._written, count)
 
     def stop(self) -> bool:
+        with self._condition:
+            self._stopped = True
+            self._condition.notify_all()
         stream, backend = self._stream, self._backend
         complete = True
         if stream is not None:
             try:
                 stream.stop_stream()
+            except Exception:  # noqa: BLE001
+                complete = False
+            try:
                 stream.close()
             except Exception:  # noqa: BLE001
                 complete = False
@@ -142,82 +213,6 @@ class LoopbackReference:
         self._stream = None
         self._backend = None
         return complete
-
-
-class EchoCanceller:
-    """Cancelador NLMS offline con estimación acotada de retardo."""
-
-    def __init__(self, filter_samples: int = 1_024, learning_rate: float = 0.35) -> None:
-        self._filter_samples = filter_samples
-        self._learning_rate = learning_rate
-
-    @staticmethod
-    def _estimate_delay(microphone: np.ndarray, reference: np.ndarray) -> int:
-        length = min(microphone.size, reference.size, SAMPLE_RATE * 2)
-        if length < SAMPLE_RATE // 4:
-            return 0
-        mic = microphone[-length:].astype(np.float64)
-        ref = reference[-length:].astype(np.float64)
-        if np.sqrt(np.mean(ref * ref)) < 25.0:
-            return 0
-        mic /= np.sqrt(np.mean(mic * mic)) + 1e-9
-        ref /= np.sqrt(np.mean(ref * ref)) + 1e-9
-        best_delay, best_score = 0, 0.0
-        for delay in range(0, int(0.25 * SAMPLE_RATE), 16):
-            if delay >= length - 256:
-                break
-            score = abs(float(np.dot(mic[delay:], ref[: length - delay]))) / (
-                length - delay
-            )
-            if score > best_score:
-                best_delay, best_score = delay, score
-        return best_delay if best_score >= 0.04 else 0
-
-    def process(self, microphone: np.ndarray, reference: np.ndarray) -> np.ndarray:
-        mic = np.asarray(microphone, dtype=np.float64).reshape(-1)
-        ref = np.asarray(reference, dtype=np.float64).reshape(-1)
-        if mic.size == 0 or ref.size == 0:
-            return mic.astype(np.float32) / 32768.0
-        count = min(mic.size, ref.size)
-        mic, ref = mic[-count:], ref[-count:]
-        delay = self._estimate_delay(mic, ref)
-        aligned = np.zeros_like(ref)
-        if delay:
-            aligned[delay:] = ref[:-delay]
-        else:
-            aligned[:] = ref
-
-        # Retira primero el camino directo (ganancia + retardo), que suele
-        # dominar en parlantes de escritorio. NLMS aprende después las
-        # reflexiones/multipath restantes. El clip completo da una estimación
-        # más estable que intentar adivinar la ganancia bloque a bloque.
-        reference_power = float(np.dot(aligned, aligned)) + 1e-9
-        direct_gain = float(np.dot(mic, aligned)) / reference_power
-        direct_gain = max(-4.0, min(4.0, direct_gain))
-        residual = mic - direct_gain * aligned
-
-        taps = self._filter_samples
-        weights = np.zeros(taps, dtype=np.float64)
-        history = np.zeros(taps, dtype=np.float64)
-        output = np.empty(count, dtype=np.float64)
-        adapted_samples = 0
-        for start in range(0, count, CHUNK):
-            mic_block = residual[start : start + CHUNK]
-            ref_block = aligned[start : start + CHUNK]
-            for index, sample in enumerate(ref_block):
-                history[1:] = history[:-1]
-                history[0] = sample
-                predicted = float(np.dot(weights, history))
-                error = mic_block[index] - predicted
-                output[start + index] = error
-                power = float(np.dot(history, history)) + 1e5
-                # Freeze-on-double-talk: no aprender la voz cercana como eco.
-                if adapted_samples < SAMPLE_RATE // 2 or abs(error) < 4.0 * (
-                    abs(predicted) + 80.0
-                ):
-                    weights += self._learning_rate * error * history / power
-                adapted_samples += 1
-        return np.clip(output / 32768.0, -1.0, 1.0).astype(np.float32)
 
 
 @contextmanager
@@ -290,4 +285,4 @@ class AudioDucker:
                 return False
 
 
-__all__ = ["AudioDucker", "EchoCanceller", "LoopbackReference"]
+__all__ = ["AudioDucker", "LoopbackReference"]

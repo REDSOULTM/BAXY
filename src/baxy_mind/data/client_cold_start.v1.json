@@ -1,0 +1,8 @@
+{
+ "version": 1,
+ "source": "Encargo CS (banco fz1 s14, primera corrida tras reiniciar el notebook, 2026-10-13: «en Discord mandale a Ron92 \"prueba BAXY 14\"» con Discord cerrado). Discord en frío pasa por su actualizador antes de su ventana principal; la resolución del destinatario se rindió a los 20,6 s (15 s de espera tras su apertura) y Discord quedó abierto y usable poco después. Cuánto puede tardar, en frío, la ventana principal de cada cliente de mensajería tras su apertura antes de que la ruta diga que sigue arrancando, sin escribir ni enviar nada. La clave es el nombre de la aplicación que se abre (WindowsDesktopMessagingAutomation.ClientApplicationName); un cliente que no figura usa «defaultSeconds» (la espera medida de D59 §1). La leen los providers de la App (Baxy.Providers.Windows, recurso incrustado).",
+ "defaultSeconds": 15,
+ "applications": {
+  "Discord": 60
+ }
+}

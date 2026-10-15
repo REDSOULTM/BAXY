@@ -1,0 +1,28 @@
+{
+ "schema": "baxy.place-words.v1",
+ "source": "Uso real v3 ronda 19 (r17 t1-c05 «va a llover mañana en valpo?» → weather_place_not_found; t2-c13 «¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): a town said by its colloquial short form is looked up by its official name, and the words of a regional way of speaking point at the country when several towns of comparable size share the name (only a tie-break: the adapter never prefers a much smaller namesake). Only a whole place equal to a colloquial form is rewritten.",
+ "colloquialPlaces": {
+  "valpo": "Curicó",
+  "stgo": "Santiago de Chile",
+  "conce": "Concepción",
+  "baires": "Buenos Aires",
+  "bs as": "Buenos Aires",
+  "bsas": "Buenos Aires",
+  "cdmx": "Ciudad de México",
+  "nyc": "New York",
+  "frisco": "San Francisco",
+  "philly": "Philadelphia",
+  "vegas": "Las Vegas",
+  "bcn": "Barcelona",
+  "mardel": "Mar del Plata",
+  "guayaco": "Guayaquil"
+ },
+ "dialectCountries": {
+  "AR": ["che", "boludo", "boluda", "laburo", "vos sabes"],
+  "CL": ["cachai", "weon", "bacan", "pololo", "polola", "altiro"],
+  "CO": ["parce", "parcero", "bacano"],
+  "ES": ["cojo", "coges", "coger el", "coger un", "cogere", "vosotros", "vosotras", "vuestro", "vuestra", "guay", "mola", "ordenador", "chaval", "chavala"],
+  "MX": ["chido", "guey", "wey", "padrisimo", "orale"],
+  "VE": ["chamo", "chama", "burda de"]
+ }
+}

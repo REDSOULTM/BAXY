@@ -1,0 +1,93 @@
+{
+  "schema": "baxy.world-acts.v1",
+  "source": "Ronda 29 (pasada r27, v3-53: «Iniciar Transmisión» pulsado en OBS sin que nadie lo pidiera; v3-08 y v3-09: la lista de «Compartir» abierta a ciegas). Una sola fuente de las palabras con que un control dice que su clic sale al mundo o llega a otra persona: enviar, publicar, compartir, unirse, llamar, emitir en directo. La leen Baxy.Kernel (RiskPolicy: pregunta antes del clic) y la mente (semantic/account_acts.world_act: una regla nunca lo pulsa ni lo sugiere si el objetivo no lo nombra). Palabras plegadas: minúsculas, sin acentos. Grabar en el disco, reproducir o abrir una cámara virtual no salen del equipo: no están aquí.",
+  "shortcutHint": "\\s*[(\\[](?:ctrl|control|ctl|alt|shift|mayus|mayusculas|supr|del|enter|intro|cmd|win)\\b[^)\\]]*[)\\]]$",
+  "where": {
+    "anywhere": "the words as whole words wherever they stand in the label",
+    "first": "the first word of the label, whatever follows",
+    "firstShort": "the first word of the label and at most three more"
+  },
+  "families": [
+    {
+      "name": "call",
+      "where": "anywhere",
+      "words": [
+        "canal de voz", "voice channel", "voice call", "videollamada", "video llamada", "video call",
+        "join call", "join the call", "join voice", "join the voice", "unirse a la llamada", "unirse a llamada",
+        "unirse a la voz", "unirse a voz", "start call", "start a call", "iniciar llamada", "iniciar una llamada"
+      ]
+    },
+    {
+      "name": "call",
+      "where": "anywhere",
+      "words": ["llamar", "llamada", "call"],
+      "unless": "\\b(?:ajustes|configuracion|opciones|registro|historial) de (?:la |las )?llamadas?\\b|\\bcalls? (?:of|stack|hierarchy|history|log|settings)\\b|\\bllamar a (?:la )?funcion\\b|^(?:abandonar|salir de|colgar|finalizar|terminar|leave|end|hang up)\\b"
+    },
+    {
+      "name": "send",
+      "where": "first",
+      "words": [
+        "enviar", "envia", "enviale", "mandar", "manda", "send", "reenviar", "reenvia", "forward", "invitar",
+        "invita", "invite", "responder", "responde", "reply"
+      ],
+      "unless": "^(?:enviar|envia|send|submit)\\s+(?:(?:la|una|the|a)\\s+)?(?:busqueda|search)$"
+    },
+    {
+      "name": "publish",
+      "where": "firstShort",
+      "words": [
+        "publicar", "publica", "publish", "post", "postear", "tweet", "twittear", "tuitear", "responder",
+        "responde", "reply", "comentar", "comenta", "comment", "compartir", "comparte", "share"
+      ]
+    },
+    {
+      "name": "join",
+      "where": "firstShort",
+      "words": ["unirse", "unirme", "unete", "join"]
+    },
+    {
+      "name": "broadcast",
+      "where": "firstShort",
+      "words": ["transmitir", "transmite", "retransmitir", "retransmite"]
+    },
+    {
+      "name": "broadcast",
+      "where": "anywhere",
+      "words": [
+        "iniciar transmision", "iniciar la transmision", "iniciar una transmision", "iniciar retransmision",
+        "iniciar la retransmision", "iniciar emision", "iniciar la emision", "iniciar directo", "iniciar el directo",
+        "iniciar stream", "iniciar el stream", "iniciar streaming", "empezar transmision",
+        "empezar la transmision", "empezar a transmitir", "empezar emision", "empezar la emision",
+        "empezar directo", "empezar el directo", "comenzar transmision", "comenzar la transmision",
+        "comenzar a transmitir", "comenzar emision", "comenzar la emision", "comenzar directo",
+        "comenzar el directo", "emitir en directo", "emitir en vivo", "go live", "going live",
+        "start streaming", "start stream", "start the stream", "start live stream", "start livestream",
+        "start broadcast", "start broadcasting", "start the broadcast", "begin streaming", "begin broadcast"
+      ]
+    }
+  ],
+  "joins": ["call", "join"],
+  "formSendButton": "\\b(?:envia\\w*|send\\w*|submit\\w*|mand(?:a|ar|alo|ala|e|en)\\b|compart\\w*|share\\w*|publica\\w*|publish\\w*|post(?:ea\\w*|eo|s)?\\b|tweet\\w*|tuit\\w*|respond\\w*|reply|coment\\w*|comment\\w*)",
+  "formSendFamilies": ["send", "publish"],
+  "examples": {
+    "asks": [
+      "Iniciar Transmisión", "Iniciar transmisión", "Start Streaming", "Go Live", "Transmitir", "Transmitir en vivo",
+      "Emitir en directo", "Iniciar emisión", "Publicar", "Publish", "Post", "Compartir", "Compartir pantalla",
+      "Share", "Share screen", "Enviar", "Enviar comentarios", "Send message", "Enviar (Ctrl+Enter)", "Llamar",
+      "Unirse", "Unirse a la reunión", "Join meeting", "Cotele (canal de voz)", "General, voice channel",
+      "Call of Duty (canal de voz)", "Iniciar llamada", "Call", "Llamada de voz",
+      "Responder a todos", "Comentar", "Invitar", "Reenviar"
+    ],
+    "free": [
+      "Iniciar sesión", "Iniciar Grabación", "Iniciar Cámara Virtual", "Start Recording", "Reproducir", "Play",
+      "Grabar macro", "Agregar página", "Nueva pestaña", "Dibujar", "Añadir transición configurable",
+      "Abrir filtros de la escena", "Mover abajo", "Abrir Ajustes", "Aceptar", "Detener transmisión",
+      "Mostrar diálogo de confirmación cuando se inicia una transmisión", "Grabar automáticamente cuando se transmite",
+      "Comentarios (12)", "Shared with me", "Postres", "Enviados", "Invitaciones", "Enviar búsqueda",
+      "Submit search", "Biblioteca", "Recall the callback", "Silenciar 'Audio del escritorio'",
+      "Propiedades de Audio avanzadas", "Streaming", "Transmisiones recientes",
+      "Ajustes de llamada", "Registro de llamadas", "Llamar a la función", "Call Stack", "Call Hierarchy",
+      "Call of Duty®: Black Ops 6", "Abandonar llamada", "Leave Call"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+s14
+s11
+s13
+c7
+imp-steam-instalar-normal
+imp-wa-enviar-normal
+imp-dc-voz

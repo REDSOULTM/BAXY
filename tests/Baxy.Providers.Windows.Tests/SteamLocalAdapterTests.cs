@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
@@ -204,12 +205,10 @@ public sealed class SteamLocalAdapterTests
     {
         SteamLocalGame? observed = null;
         var delays = new RecordingDelay();
-        var automation = new FakeSteamAutomation(uri =>
-        {
-            Assert.That(uri, Is.EqualTo("steam://install/777"));
-            observed = new SteamLocalGame("777", "Owned Game", new string('c', 64),
-                StateFlags: 1, BytesDownloaded: 10, BytesToDownload: 100);
-        });
+        var automation = new FakeSteamAutomation(
+            uri => Assert.That(uri, Is.EqualTo("steam://install/777")),
+            onConfirm: () => observed = new SteamLocalGame("777", "Owned Game", new string('c', 64),
+                StateFlags: 1, BytesDownloaded: 10, BytesToDownload: 100));
         var adapter = new SteamLocalAdapter(
             () => observed is null ? [] : [observed],
             () => new HashSet<string>(["777"], StringComparer.Ordinal),
@@ -230,6 +229,7 @@ public sealed class SteamLocalAdapterTests
             Assert.That(committed.EffectObserved, Is.True);
             Assert.That(committed.Result?.GetProperty("state").GetString(), Is.EqualTo("downloading"));
             Assert.That(automation.DispatchCount, Is.EqualTo(1));
+            Assert.That(automation.Confirmed, Is.EqualTo(new[] { "Instalar", "Install" }));
             Assert.That(delays.Calls, Is.Zero);
         });
     }
@@ -241,7 +241,7 @@ public sealed class SteamLocalAdapterTests
             StateFlags: 1, BytesDownloaded: 50, BytesToDownload: 100);
         var delays = new RecordingDelay();
         var automation = new FakeSteamAutomation(
-            onDispatch: null,
+            onDispatch: uri => Assert.That(uri, Is.EqualTo("steam://uninstall/888")),
             onCancel: appId =>
             {
                 Assert.That(appId, Is.EqualTo("888"));
@@ -262,6 +262,7 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo("paused"));
             Assert.That(automation.CancelCount, Is.EqualTo(1));
+            Assert.That(automation.Confirmed, Is.EqualTo(new[] { "Desinstalar", "Uninstall" }));
             Assert.That(delays.Calls, Is.Zero);
         });
     }
@@ -429,6 +430,7 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("steam_launch_process_not_verified"));
             Assert.That(processReads, Is.EqualTo(72));
             Assert.That(automation.ContinueCount, Is.EqualTo(1));
+            Assert.That(automation.Confirmed, Is.EqualTo(new[] { "Jugar", "Play" }));
             Assert.That(dialogAt, Is.EqualTo(TimeSpan.FromSeconds(5)));
             AssertRetryHorizon(delays, expectedIntervals: 70, intervalMilliseconds: 500);
         });
@@ -476,7 +478,9 @@ public sealed class SteamLocalAdapterTests
         IReadOnlyList<SteamLocalGame> Snapshot()
         {
             snapshots++;
-            if (snapshots >= 3)
+            // Encargo imp-steam: the title resolves on the manifests (no title is written in code any more), the
+            // install reads them, the dispatch takes its baseline: the first read after the accepted dispatch fails.
+            if (snapshots >= 4)
             {
                 throw new IOException("simulated post-dispatch manifest read failure");
             }
@@ -505,6 +509,134 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Encargo imp-steam: a game that is not installed (the owner's test game, Super Meat Boy) turns into its catalog
+    // number by the store's title search, whose exact title wins over its namesakes; the account's local cache is no
+    // gate (measured: it does not list that game although the account holds it). The address is the data's, the dialog
+    // is confirmed by its labels, and the manifest born for it is the proof.
+    [Test]
+    public async Task ATitleNotInstalledResolvesByTheStoreSearchAndItsDialogIsConfirmed()
+    {
+        SteamLocalGame? observed = null;
+        string? searched = null;
+        var automation = new FakeSteamAutomation(
+            uri => Assert.That(uri, Is.EqualTo("steam://install/40800")),
+            onConfirm: () => observed = new SteamLocalGame("40800", "Super Meat Boy", new string('a', 64), StateFlags: 1026));
+        var adapter = new SteamLocalAdapter(
+            () => observed is null ? Catalog : [.. Catalog, observed],
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (title, _) =>
+            {
+                searched = title;
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
+                [
+                    new("40800", "Super Meat Boy"),
+                    new("581660", "Super Meat Boy Forever"),
+                    new("3288210", "Super Meat Boy 3D"),
+                ]);
+            });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json("""{"title":"super meat boy","store":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(searched, Is.EqualTo("super meat boy"));
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.Result?.GetProperty("appId").GetString(), Is.EqualTo("40800"));
+            Assert.That(receipt.Result?.GetProperty("name").GetString(), Is.EqualTo("Super Meat Boy"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("steam_manifest_transition"));
+            Assert.That(automation.Confirmed, Is.EqualTo(new[] { "Instalar", "Install" }));
+        });
+    }
+
+    // Counter-cases: an installed title never asks the store; a store answer with no game of exactly that title, two of
+    // them, or no answer at all resolves nothing and nothing is opened.
+    [TestCase("Portal 2", true)]
+    [TestCase("Super Meat", false)]
+    [TestCase("Doubled", false)]
+    [TestCase("Offline", false)]
+    public async Task OnlyOneExactTitleResolvesAndNothingElseIsOpened(string title, bool installed)
+    {
+        bool asked = false;
+        var automation = new FakeSteamAutomation(onDispatch: null);
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (said, _) =>
+            {
+                asked = true;
+                return said == "Offline"
+                    ? throw new HttpRequestException("simulated offline store")
+                    : ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
+                    [
+                        new("40800", "Super Meat Boy"),
+                        new("11", "Doubled"),
+                        new("12", "DOUBLED"),
+                    ]);
+            });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json($$"""{"title":"{{title}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Is.EqualTo(!installed));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(installed ? null : "steam_title_not_resolved"));
+            Assert.That(automation.DispatchCount, Is.Zero);
+        });
+    }
+
+    // The dialog left unconfirmed (its button not found, nothing pressed) is said as such and the manifest is not
+    // waited on; a press that may have landed is judged by the manifest, which here never comes.
+    [TestCase(false, "steam_install_dialog_not_confirmed", 3)]
+    [TestCase(true, "steam_install_transition_not_verified", 64)]
+    public async Task AnUnconfirmedDialogClaimsNothing(bool pressed, string code, int reads)
+    {
+        int snapshots = 0;
+        var automation = new FakeSteamAutomation(
+            onDispatch: null, confirmation: new SteamDispatchResult(false, pressed));
+        var adapter = new SteamLocalAdapter(
+            () =>
+            {
+                snapshots++;
+                return Catalog;
+            },
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) => ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([new("40800", "Super Meat Boy")]));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json("""{"title":"Super Meat Boy"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(snapshots, Is.EqualTo(reads));
+        });
+    }
+
+    // The store's answer is read by the fields the data name; an item without a number or a name is skipped.
+    [Test]
+    public void TheStoreAnswerIsReadByTheDataFields()
+    {
+        ApplicationPlaces.TitleSearch search = ApplicationPlaces.TitleSearchOf("steam", "Super Meat Boy")!;
+        using JsonDocument answer = JsonDocument.Parse("""
+            {"total":4,"items":[{"type":"app","name":"Super Meat Boy","id":40800},{"name":"Super Meat Boy Forever","id":"581660"},
+            {"name":"no number"},{"name":"zero","id":"0123"},{"id":7}]}
+            """);
+
+        IReadOnlyList<SteamStoreTitle> titles = SteamLocalAdapter.StoreTitles(answer.RootElement, search);
+
+        Assert.That(titles, Is.EqualTo(new[] { new SteamStoreTitle("40800", "Super Meat Boy"), new SteamStoreTitle("581660", "Super Meat Boy Forever") }));
+    }
+
     private static JsonElement Json(string value) =>
         JsonDocument.Parse(value).RootElement.Clone();
 
@@ -523,42 +655,63 @@ public sealed class SteamLocalAdapterTests
                 expectedIntervals * intervalMilliseconds)));
     }
 
-    private sealed class FakeSteamAutomation(
+    internal sealed class FakeSteamAutomation(
         Action<string>? onDispatch,
         Action<string>? onCancel = null,
-        Action? onContinue = null) : ISteamClientAutomation
+        Action? onContinue = null,
+        Action? onConfirm = null,
+        SteamDispatchResult? confirmation = null) : ISteamClientAutomation
     {
+        private string _lastUri = string.Empty;
+
         internal int DispatchCount { get; private set; }
         internal int CancelCount { get; private set; }
         internal int ContinueCount { get; private set; }
+        internal IReadOnlyList<string> Confirmed { get; private set; } = [];
 
         public ValueTask<SteamDispatchResult> DispatchAsync(
             string uri, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             DispatchCount++;
+            _lastUri = uri;
             onDispatch?.Invoke(uri);
             return ValueTask.FromResult(new SteamDispatchResult(true, true));
         }
 
-        public ValueTask<SteamDispatchResult> ContinueLaunchDialogAsync(
+        // Steam's own dialog for the last address, confirmed by its labels: an uninstall's removes the game.
+        public ValueTask<SteamDispatchResult> ConfirmAsync(
             SteamDispatchResult dispatch,
+            IReadOnlyList<string> labels,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ContinueCount++;
-            onContinue?.Invoke();
-            return ValueTask.FromResult(new SteamDispatchResult(false, dispatch.EffectObserved));
+            Confirmed = labels;
+            if (_lastUri.StartsWith("steam://rungameid/", StringComparison.Ordinal))
+            {
+                // The launch's dialog, when no process came by itself: nothing found to press.
+                ContinueCount++;
+                onContinue?.Invoke();
+                return ValueTask.FromResult(new SteamDispatchResult(false, false));
+            }
+
+            SteamDispatchResult result = confirmation ?? new SteamDispatchResult(true, true);
+            if (result.Accepted || result.EffectObserved)
+            {
+                const string Uninstall = "steam://uninstall/";
+                if (_lastUri.StartsWith(Uninstall, StringComparison.Ordinal))
+                {
+                    CancelCount++;
+                    onCancel?.Invoke(_lastUri[Uninstall.Length..]);
+                }
+
+                onConfirm?.Invoke();
+            }
+
+            return ValueTask.FromResult(result);
         }
 
-        public ValueTask<SteamDispatchResult> CancelPartialAsync(
-            string appId, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            CancelCount++;
-            onCancel?.Invoke(appId);
-            return ValueTask.FromResult(new SteamDispatchResult(true, true));
-        }
+
     }
 
     private sealed class RecordingDelay

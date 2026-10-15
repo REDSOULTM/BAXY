@@ -1,0 +1,6697 @@
+{
+ "source": "Encargo S de estabilización: vistas reales congeladas (lo que el Core devolvió a input.visible.controls, sacado del journal de misiones del perfil cu-universal-perfil; el journal guarda los primeros 20 controles de cada vista) de los casos u1, y8 y x7 del banco B, fases e1 y e2 (2026-10-11), Spotify en el notebook. Evidencia: cu-v3/evidencia_e1|e2/v2-<caso>/ y bancoB_e1|e2_juez.json. Fase 2 con S integrada (fable/estab-fase2 44b33cf98, 2026-10-11): f2_* de la última corrida de u1, x7 y v8 (cu-v3/estab/f2_inest_evidencia), Spotify tapado por Discord. f3_*: fase 2 integrada (fable/estab-fase2 964126af0), v8 y c6 (cu-v3/estab/f3_sub_evidencia; c6 del primer intento, del journal del perfil, 13:09 UTC).",
+ "views": {
+  "e1_u1_tras_abrir": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "Cotele!!!😎 | Choche - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Comprimir Tu biblioteca",
+     "nameSource": "",
+     "i": 9
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Comprimir Tu biblioteca",
+     "state": "focused",
+     "rect": {
+      "x": 903,
+      "y": 103,
+      "w": 153,
+      "h": 38
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 1142,
+      "y": 100,
+      "w": 115,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Expandir Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1266,
+      "y": 100,
+      "w": 45,
+      "h": 44
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 216,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Reproducir Tus me gusta",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 226,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 296,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Reproducir Los Bunkers",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 306,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "red"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 376,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Reproducir Tu Top de canciones 2017",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 386,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 456,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Reproducir Guardianes de la galaxia",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 466,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "L",
+     "color": "red"
+    }
+   ],
+   "controlCount": 125,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Tu biblioteca",
+     "+ Crear",
+     "Crear",
+     "Playlists",
+     "Playlists Álbumes",
+     "Álbumes",
+     "Artistas",
+     "Tus me gusta",
+     "Playlist • personaejemplomusica",
+     "Los Bunkers",
+     "I os Bunkers"
+    ],
+    "T": [
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "2026",
+     "Lista Ejemplo Uno",
+     "Lo-Fi Focus I"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Podcasts",
+     "Audiolibros",
+     "Musica Lofi",
+     "Para Estudiar.",
+     "Para Estudiarm",
+     "Prayer -",
+     "Kendrickm",
+     "Lo-Fi Para"
+    ],
+    "L": [
+     "Artista",
+     "Tu Top de canciones 2017",
+     "Playlist • Creada para personaejempm",
+     "Playlist • Creada para personaejemp...",
+     "Guardianes de la galaxia",
+     "Playlist • usuarioej19",
+     "OOS Rock Anthems",
+     "Playlist • Spotify"
+    ],
+    "C": [
+     "Study & Work„",
+     "Study & Workm",
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomus...",
+     "personaejemplomus„."
+    ],
+    "R": [
+     "Concentrarse",
+     "Mostrar todo"
+    ],
+    "BL": [
+     "Las que casi se te pasan",
+     "ARTISTA EJEMPLO",
+     "Lista Ejemplo Dos",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Tus mixes más...",
+     "1:56",
+     "325"
+    ],
+    "BR": [
+     "Mix diario 2",
+     "Soda Stereo, Gustavo",
+     "Six",
+     "Cerati, Charly García"
+    ]
+   }
+  },
+  "e2_u1_inicio": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "others": [],
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "Cotele!!!😎 | Choche - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "nameSource": "",
+     "i": 9
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "focused",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "gray"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 112,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "20261*",
+     "2026 A",
+     "Lista Ejemplo Uno"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "Prayer - Kendrick Lamar ( ONLY",
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED SONG"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Musica Lofi Para Estudiar",
+     "Lo-Fi Para Concentrarse",
+     "Lo-Fi Focus I Study & Work Beats."
+    ],
+    "L": [
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "R": [
+     "Musica para concentrarte en.",
+     "Musica para concentrarte enm",
+     "(Really) Early Arctic",
+     "Really) Early Arctic Monkeys"
+    ],
+    "BL": [
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "o:02",
+     "002",
+     "325"
+    ],
+    "BR": [
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PJ",
+     "Mostrar todo"
+    ]
+   }
+  },
+  "e2_u1_tras_clic_sin_efecto": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "Cotele!!!😎 | Choche - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "nameSource": "",
+     "i": 9
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "focused",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "gray"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 112,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "20261*",
+     "2026 A",
+     "Lista Ejemplo Uno"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "Prayer - Kendrick Lamar ( ONLY",
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED SONG"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Musica Lofi Para Estudiar",
+     "Lo-Fi Para Concentrarse",
+     "Lo-Fi Focus I Study & Work Beats."
+    ],
+    "L": [
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "R": [
+     "Musica para concentrarte en.",
+     "Musica para concentrarte enm",
+     "(Really) Early Arctic",
+     "Really) Early Arctic Monkeys"
+    ],
+    "BL": [
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "o:02",
+     "002",
+     "325"
+    ],
+    "BR": [
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PJ",
+     "Mostrar todo"
+    ]
+   }
+  },
+  "e2_u1_resultados_de_busqueda": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "Cotele!!!😎 | Choche - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "nameSource": "",
+     "value": "tu biblioteca",
+     "i": 5
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "expanded focused",
+     "value": "tu biblioteca",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 520,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Reproducir Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 125,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "pink"
+    },
+    {
+     "i": 7,
+     "kind": "Hyperlink",
+     "name": "Tu biblioteca",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/2vyNXjPhiOIfsBqPMyaE07",
+     "rect": {
+      "x": 1238,
+      "y": 127,
+      "w": 115,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "Guardar Tu biblioteca en Tu Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1617,
+      "y": 135,
+      "w": 21,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Reproducir La biblioteca de media noche",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 205,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 10,
+     "kind": "Hyperlink",
+     "name": "La biblioteca de media noche",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/2dfojl44xx5bGmd5BIfA6G",
+     "rect": {
+      "x": 1238,
+      "y": 207,
+      "w": 265,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Guardar La biblioteca de media noche en Tu Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1617,
+      "y": 215,
+      "w": 21,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Seguir a Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1541,
+      "y": 295,
+      "w": 97,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Reproducir Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 365,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "orange",
+     "repeated": 1
+    },
+    {
+     "i": 14,
+     "kind": "Hyperlink",
+     "name": "Biblioteca",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/intl-es/track/3orqespa10JOVkKQSdAKrd",
+     "rect": {
+      "x": 1238,
+      "y": 367,
+      "w": 91,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Guardar Biblioteca en Tu Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1617,
+      "y": 375,
+      "w": 21,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Reproducir La Biblioteca Ancestral",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 525,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "orange"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "La Biblioteca Ancestral",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/show/0iblRpScKey37XZ5iKfvqG",
+     "rect": {
+      "x": 1238,
+      "y": 527,
+      "w": 205,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Seguir a La Biblioteca Ancestral",
+     "state": "",
+     "rect": {
+      "x": 1541,
+      "y": 535,
+      "w": 97,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Borrar campo de búsqueda",
+     "state": "",
+     "rect": {
+      "x": 1536,
+      "y": 24,
+      "w": 61,
+      "h": 32
+     },
+     "zone": "T",
+     "color": "black"
+    }
+   ],
+   "controlCount": 159,
+   "text": {
+    "TL": [
+     ">",
+     "Q tu biblioteca",
+     "Tu biblioteca",
+     "Playlists",
+     "Playlists Álbumes",
+     "Álbumes",
+     "Tus me gusta",
+     "Playlist • perE",
+     "Playlist •"
+    ],
+    "T": [
+     "Navegar",
+     "Ingresar búsqueda Buscar",
+     "Ingresar búsqueda",
+     "Playlist",
+     "Playlist • v",
+     "La biblioteca de media noche",
+     "Playlist • Persona Creadora Ejemplo",
+     "Perfil"
+    ],
+    "TR": [
+     "x",
+     "Buscar",
+     "Audiolibros",
+     "Musica Lofi",
+     "Para Estudiar.",
+     "Lo-Fi Para",
+     "Seguir",
+     "Lo-Fi Focus I"
+    ],
+    "L": [
+     "Los Bunkers",
+     "I os Bunkers",
+     "Artista",
+     "Tu Top de canci",
+     "Playlist • Creada",
+     "Guardianes de",
+     "Playlist • usuarioej1Ç",
+     "Lista Ejemplo Uno",
+     "Playlist • personaejemplomusica"
+    ],
+    "C": [
+     "Biblioteca",
+     "Canción • Proyectosolo",
+     "E",
+     "Canción • EnSecreto",
+     "La Biblioteca Ancestral"
+    ],
+    "R": [
+     "Study & Work.",
+     "(Really) Early",
+     "Arctic",
+     "Mostrar todo"
+    ],
+    "BL": [
+     "OOS Rock Anthems",
+     "Playlist • Spotify",
+     "Las que casi se te pasan",
+     "Playlist • Creada para personaejempm",
+     "ARTISTA EJEMPLO",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Tus mixes más...",
+     "o:02",
+     "325"
+    ],
+    "BR": [
+     "Mix diario 2",
+     "Soda Stereo, Gustavo",
+     "Six",
+     "Cerati, Charly García"
+    ]
+   }
+  },
+  "e2_u1_lista_ajena_sonando": {
+   "window": {
+    "title": "Lady Gaga - Shallow",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": true,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "focused": {
+     "kind": "Hyperlink",
+     "name": "Tu biblioteca",
+     "nameSource": "",
+     "value": "https://xpui.app.spotify.com/playlist/2vyNXjPhiOIfsBqPMyaE07",
+     "i": 7
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "expanded",
+     "value": "tu biblioteca",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 520,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Pausar Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 125,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "pink"
+    },
+    {
+     "i": 7,
+     "kind": "Hyperlink",
+     "name": "Tu biblioteca",
+     "state": "readonly focused",
+     "value": "https://xpui.app.spotify.com/playlist/2vyNXjPhiOIfsBqPMyaE07",
+     "rect": {
+      "x": 1238,
+      "y": 127,
+      "w": 115,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black",
+     "repeated": 2
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "Guardar Tu biblioteca en Tu Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1617,
+      "y": 135,
+      "w": 21,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Reproducir La biblioteca de media noche",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 205,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 10,
+     "kind": "Hyperlink",
+     "name": "La biblioteca de media noche",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/2dfojl44xx5bGmd5BIfA6G",
+     "rect": {
+      "x": 1238,
+      "y": 207,
+      "w": 265,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Guardar La biblioteca de media noche en Tu Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1617,
+      "y": 215,
+      "w": 21,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Seguir a Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1541,
+      "y": 295,
+      "w": 97,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Reproducir Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 365,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "orange",
+     "repeated": 1
+    },
+    {
+     "i": 14,
+     "kind": "Hyperlink",
+     "name": "Biblioteca",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/intl-es/track/3orqespa10JOVkKQSdAKrd",
+     "rect": {
+      "x": 1238,
+      "y": 367,
+      "w": 91,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Guardar Biblioteca en Tu Biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1617,
+      "y": 375,
+      "w": 21,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Reproducir La Biblioteca Ancestral",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 525,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "orange"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "La Biblioteca Ancestral",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/show/0iblRpScKey37XZ5iKfvqG",
+     "rect": {
+      "x": 1238,
+      "y": 527,
+      "w": 205,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Seguir a La Biblioteca Ancestral",
+     "state": "",
+     "rect": {
+      "x": 1541,
+      "y": 535,
+      "w": 97,
+      "h": 40
+     },
+     "zone": "R",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Borrar campo de búsqueda",
+     "state": "",
+     "rect": {
+      "x": 1536,
+      "y": 24,
+      "w": 61,
+      "h": 32
+     },
+     "zone": "T",
+     "color": "black"
+    }
+   ],
+   "controlCount": 106,
+   "text": {
+    "TL": [
+     "Q tu biblioteca"
+    ],
+    "T": [
+     "X",
+     "Navegar",
+     "Ingresar búsqueda",
+     "Tu biblioteca",
+     "Playlist",
+     "Playlist • v",
+     "La biblioteca de media noche",
+     "Playlist • Persona Creadora Ejemplo",
+     "Perfil"
+    ],
+    "TR": [
+     "c:",
+     "Buscar",
+     "teca",
+     "Seguir"
+    ],
+    "C": [
+     "Biblioteca",
+     "Canción • Proyectosolo",
+     "E",
+     "Canción • EnSecreto",
+     "La Biblioteca Ancestral",
+     "• 1 2 Rihlimtar-a Anr-actral"
+    ],
+    "R": [
+     "w",
+     "1, Bradley Cooper",
+     "Bradley Cooper"
+    ],
+    "BL": [
+     "Shallow",
+     "Lady Gaga, Bradley",
+     "Lady Gaga, Bradley COOF"
+    ],
+    "B": [
+     "o:oo",
+     "335"
+    ]
+   }
+  },
+  "e2_u1_final": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": true,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "focused": {
+     "kind": "Document",
+     "name": "Tu biblioteca - playlist by ♡ | Spotify",
+     "nameSource": "",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "i": 1
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Tu biblioteca - playlist by ♡ | Spotify",
+     "state": "readonly focused",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "tu biblioteca",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 520,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Borrar campo de búsqueda",
+     "state": "",
+     "rect": {
+      "x": 1536,
+      "y": 24,
+      "w": 61,
+      "h": 32
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Explorar",
+     "state": "",
+     "rect": {
+      "x": 1612,
+      "y": 25,
+      "w": 31,
+      "h": 31
+     },
+     "zone": "TR",
+     "color": "gray"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 159,
+   "text": {
+    "TL": [
+     "Q"
+    ],
+    "T": [
+     "tu biblioteca",
+     "Playlist pública",
+     "v • 58 veces guardada •",
+     "837 canciones, 50 h 16 min"
+    ],
+    "TR": [
+     "c:",
+     "x"
+    ],
+    "L": [
+     "Título",
+     "1",
+     "Lady Gaga, Bradley",
+     "100 ways",
+     "2",
+     "Jackson Wang",
+     "Orlando",
+     "3",
+     "E"
+    ],
+    "C": [
+     "Q Orden",
+     "Orden",
+     "3:36",
+     "Lady Gaga, Bradley „",
+     "2:49",
+     "2:44",
+     "XXXTENTACION"
+    ],
+    "R": [
+     "Lady Gaga, Bradley Cooper",
+     "Muestra de la letra",
+     "Tell me something,"
+    ],
+    "BL": [
+     "Robbers",
+     "4",
+     "The 1975",
+     "Style",
+     "5",
+     "Taylor Swift",
+     "Shake It Off",
+     "6",
+     "Shallow",
+     "ady Gaga, Bradley Coc",
+     "idy Gaga. Bradley Coc"
+    ],
+    "B": [
+     "4:15",
+     "3:51",
+     "3:39",
+     "o:ol",
+     "001",
+     "335"
+    ],
+    "BR": [
+     "Are '.,'0\" hanov in",
+     "Videos musicales relacionados"
+    ]
+   }
+  },
+  "e1_y8_dibujando": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "nameSource": "",
+     "value": "",
+     "i": 5
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "expanded focused",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 367,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Reproducir MIX CUMBIAS | 2026 🎊🪅🥂🍾🎉",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 138,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "gray"
+    },
+    {
+     "i": 7,
+     "kind": "Hyperlink",
+     "name": "MIX CUMBIAS | 2026 🎊🪅🥂🍾🎉",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/0Zkjp7ANnyntZGmyf8r3Pn",
+     "rect": {
+      "x": 1238,
+      "y": 140,
+      "w": 202,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "Reproducir Los Bunkers",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 218,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "Hyperlink",
+     "name": "Los Bunkers",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/intl-es/artist/3RTAXX6KGdljBsOIupyZgT",
+     "rect": {
+      "x": 1238,
+      "y": 220,
+      "w": 129,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Reproducir Musica Lofi Para Estudiar 📖📚",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 298,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Hyperlink",
+     "name": "Musica Lofi Para Estudiar 📖📚",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/5d3w2ZMVsUgYNnYdrdbNLg",
+     "rect": {
+      "x": 1238,
+      "y": 300,
+      "w": 202,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Reproducir Cumbias del Recuerdo",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 378,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Hyperlink",
+     "name": "Cumbias del Recuerdo",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/37i9dQZF1DWYpQJx6k6xat",
+     "rect": {
+      "x": 1238,
+      "y": 380,
+      "w": 202,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Reproducir Rock Chileno",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 458,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "Hyperlink",
+     "name": "Rock Chileno",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/37i9dQZF1DX3TKWnpd3vOb",
+     "rect": {
+      "x": 1238,
+      "y": 460,
+      "w": 118,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Reproducir Lo-Fi Focus | Study & Work Beats. Musica para con ... udiar o trabajar",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 538,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "white"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "Lo-Fi Focus | Study & Work Beats. Musica para concentrarte e ... udiar o trabajar",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/320aQSeMeN2qy6mOqBjXxf",
+     "rect": {
+      "x": 1238,
+      "y": 540,
+      "w": 202,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    }
+   ],
+   "controlCount": 139,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "20261*",
+     "2026 A",
+     "Lo-Fi Para Concentrarse"
+    ],
+    "T": [
+     "¿Qué quieres reproducir?",
+     "Podcasts",
+     "Audiolibros",
+     "Prayer - Kendrick Lamar ( ONLY",
+     "Lista Ejemplo Uno",
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED SONG"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Musica Lofi Para Estudiar",
+     "Lo-Fi Focus I Study & Work Beats."
+    ],
+    "L": [
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "C": [
+     "ROSALÍA"
+    ],
+    "R": [
+     "Musica para concentrarte en.",
+     "Musica para concentrarte enm",
+     "Mostrar todo",
+     "infc"
+    ],
+    "BL": [
+     "Mixdiario 1",
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Mix diario",
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "o:02",
+     "002",
+     "325"
+    ],
+    "BR": [
+     "Mix diario 4",
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PI"
+    ]
+   }
+  },
+  "e1_y8_abierta": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Comprimir Tu biblioteca",
+     "nameSource": "",
+     "i": 9
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Comprimir Tu biblioteca",
+     "state": "focused",
+     "rect": {
+      "x": 933,
+      "y": 103,
+      "w": 153,
+      "h": 38
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 1142,
+      "y": 100,
+      "w": 115,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Expandir Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1266,
+      "y": 100,
+      "w": 45,
+      "h": 44
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 216,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Reproducir Tus me gusta",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 226,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 296,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Reproducir Los Bunkers",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 306,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "red"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 376,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Reproducir Tu Top de canciones 2017",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 386,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 456,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Reproducir Guardianes de la galaxia",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 466,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "L",
+     "color": "red"
+    }
+   ],
+   "controlCount": 125,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Tu biblioteca",
+     "Playlists",
+     "Playlists Álbumes",
+     "Álbumes",
+     "Artistas",
+     "Tus me gusta",
+     "Playlist • personaejemplomusica",
+     "I os Bunkers",
+     "Los Bunkers"
+    ],
+    "T": [
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "2026",
+     "Prayer -",
+     "Kendrick.",
+     "Kendrickm",
+     "Lo-Fi Para"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Podcasts",
+     "Audiolibros",
+     "Musica Lofi",
+     "Para Estudiar.",
+     "Para Estudiarm",
+     "Lista Ejemplo Uno",
+     "Lo-Fi Focus I"
+    ],
+    "L": [
+     "Artista",
+     "Tu Top de canciones 2017",
+     "Playlist • Creada para personaejempm",
+     "Playlist • Creada para personaejemp...",
+     "Guardianes de la galaxia",
+     "Playlist • usuarioej19",
+     "OOS Rock Anthems",
+     "Playlist • Spotify"
+    ],
+    "C": [
+     "Concentrarse",
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomus...",
+     "personaejemplomus„."
+    ],
+    "R": [
+     "Study & Work„",
+     "Study & Work.",
+     "ROSALÍA",
+     "Mostrar todo"
+    ],
+    "BL": [
+     "Las que casi se te pasan",
+     "ARTISTA EJEMPLO",
+     "Lista Ejemplo Dos",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Tus mixes más...",
+     "o:02",
+     "325"
+    ],
+    "BR": [
+     "Mix diario 2",
+     "Soda Stereo, Gustavo",
+     "Six",
+     "Cerati, Charly García"
+    ]
+   }
+  },
+  "e1_y8_mix": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "nameSource": "",
+     "value": "",
+     "i": 5
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "expanded focused",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 180,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Reproducir MIX CUMBIAS | 2026 🎊🪅🥂🍾🎉",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 166,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Reproducir Los Bunkers",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 246,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "red",
+     "repeated": 1
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "Reproducir Musica Lofi Para Estudiar 📖📚",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 326,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "orange"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Reproducir Cumbias del Recuerdo",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 406,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "pink"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Reproducir Rock Chileno",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 486,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "gray"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Reproducir Lo-Fi Focus | Study & Work Beats. Musica para con ... udiar o trabajar",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 566,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Comprimir Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 903,
+      "y": 103,
+      "w": 153,
+      "h": 38
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 1142,
+      "y": 100,
+      "w": 115,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Expandir Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 1266,
+      "y": 100,
+      "w": 45,
+      "h": 44
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 923,
+      "y": 216,
+      "w": 398,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Reproducir Tus me gusta",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 226,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "blue"
+    }
+   ],
+   "controlCount": 142,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Búsc",
+     "Tu biblioteca",
+     "rear",
+     "recie",
+     "Playlists Álbumes",
+     "• tas",
+     "tas",
+     "Tus me gusta",
+     "Playlist • perE",
+     "I os Bunkers"
+    ],
+    "T": [
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "2026",
+     "emplomusica",
+     "Kendrick."
+    ],
+    "TR": [
+     "x",
+     "Podcasts",
+     "Audiolibros",
+     "Musica Lofi",
+     "Para Estudiar.",
+     "Lo-Fi Para",
+     "Lo-Fi Focus I"
+    ],
+    "L": [
+     "Artista",
+     "Tu Top de canci",
+     "7",
+     "Playlist • Creada",
+     "Guardianes de",
+     "*Kia",
+     "Playlist • usuarioej1Ç",
+     "Lista Ejemplo Uno",
+     "Playlist • personaejemplomusica",
+     "OOS Rock Anthems",
+     "Playlist • Spotify"
+    ],
+    "C": [
+     "Jazz Tranquilo",
+     "sonaejemplm",
+     "Hecho para",
+     "personaejemplomus„."
+    ],
+    "R": [
+     "Study & Work.",
+     "(Really) Early",
+     "Arctic",
+     "Mostrar todo"
+    ],
+    "BL": [
+     "Las que casi se te pasan",
+     "Playlist • Creada para personaejempm",
+     "ARTISTA EJEMPLO",
+     "Lista Ejemplo Dos",
+     "Sera porque te am",
+     "La Caravana Magica,"
+    ],
+    "B": [
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Tus mixes más...",
+     "o:02",
+     "325"
+    ],
+    "BR": [
+     "Mix diario 2",
+     "Soda Stereo, Gustavo",
+     "Six",
+     "Cerati, Charly García"
+    ]
+   }
+  },
+  "e2_y8_inicio": {
+   "window": {
+    "title": "Jackson Wang - 100 Ways",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "others": [],
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Inicio",
+     "nameSource": "",
+     "i": 3
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "focused",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 125,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "2026",
+     "Prayer -",
+     "Kendrick Lamam",
+     "Lo-Fi Para"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "Musica Lofi Para",
+     "Estudiar",
+     "Lista Ejemplo Uno",
+     "Lo-Fi Focus I"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Tu biblioteca"
+    ],
+    "L": [
+     "Concentrarse",
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomusi..."
+    ],
+    "C": [
+     "Study & Work„",
+     "Study & Workm",
+     "(Really) Early",
+     "Arctic Monkeys",
+     "Mostrar todo"
+    ],
+    "R": [
+     "Lady Gaga, Bradley Cooper",
+     "Muestra de la letra",
+     "Tell me something,"
+    ],
+    "BL": [
+     "Mix diario 1",
+     "Mixdiario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Tus mixes más...",
+     "Shallow",
+     "Lady Gaga, Bradley cc",
+     "Lady Gaga, BradleyC"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Soda Stereo, Gustavo",
+     "Six SE",
+     "Cerati, Charly García ,",
+     "Cerati, Charly García",
+     "y más",
+     "o:ol",
+     "001",
+     "335"
+    ],
+    "BR": [
+     "Are '.,'0\" hanov in",
+     "Videos musicales relacionados"
+    ]
+   }
+  },
+  "e2_x7_inicio": {
+   "window": {
+    "title": "Spotify Premium",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "others": [],
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Inicio",
+     "nameSource": "",
+     "i": 3
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Spotify - Reproductor web: música para todos",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "focused",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 125,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "MIX CUMBIAS I",
+     "2026",
+     "Prayer -",
+     "Kendrick Lamam",
+     "Lo-Fi Para"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "Musica Lofi Para",
+     "Estudiar",
+     "Lista Ejemplo Uno",
+     "Lo-Fi Focus I"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Tu biblioteca"
+    ],
+    "L": [
+     "Concentrarse",
+     "Jazz Tranquilo",
+     "Hecho para",
+     "personaejemplomusi..."
+    ],
+    "C": [
+     "Study & Work„",
+     "Study & Workm",
+     "(Really) Early",
+     "Arctic Monkeys",
+     "Mostrar todo"
+    ],
+    "R": [
+     "Lady Gaga, Bradley Cooper",
+     "Muestra de la letra",
+     "Tell me something,"
+    ],
+    "BL": [
+     "Mix diario 1",
+     "Mixdiario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Tus mixes más...",
+     "Shallow",
+     "Lady Gaga, Bradley cc",
+     "Lady Gaga, BradleyC"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Soda Stereo, Gustavo",
+     "Six SE",
+     "Cerati, Charly García ,",
+     "Cerati, Charly García",
+     "y más",
+     "o:ol",
+     "001",
+     "335"
+    ],
+    "BR": [
+     "Are '.,'0\" hanov in",
+     "Videos musicales relacionados"
+    ]
+   }
+  },
+  "f2_v8_inicio": {
+   "window": {
+    "title": "Sam Smith - Too Good At Goodbyes - Live From The Royal Albert Hall",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "others": [],
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "@Ron92 - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "nameSource": "",
+     "i": 9
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Cough Syrup • Glee Cast",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "focused",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 113,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "Tu biblioteca",
+     "Musica Lofi Para Estudiar"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "MIX CUMBIAS I",
+     "11,1",
+     "2026",
+     "20261*",
+     "Prayer - Kendrick Lamar ( ONLY"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Ruido Blanco Para Estudiar",
+     "Lo-Fi Para Concentrarse"
+    ],
+    "L": [
+     "Lista Ejemplo Uno",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "C": [
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED PRAYER SONG"
+    ],
+    "R": [
+     "Tu Top de canciones 2017",
+     "Mostrar todo",
+     "infc"
+    ],
+    "BL": [
+     "Mixdiario 1",
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Cough Syrup",
+     "Glee Cast"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Mix diario",
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "1:29",
+     "4:11"
+    ],
+    "BR": [
+     "Mix diario 4",
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PI"
+    ]
+   }
+  },
+  "f2_v8_tras_clic_sin_efecto": {
+   "window": {
+    "title": "Sam Smith - Too Good At Goodbyes - Live From The Royal Albert Hall",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "@Ron92 - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "nameSource": "",
+     "value": "",
+     "i": 5
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Too Good At Goodbyes - Live From The Royal Albert Hall • Sam Smith",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "expanded focused",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 410,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Reproducir MIX CUMBIAS | 2026 🎊🪅🥂🍾🎉",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 138,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "gray"
+    },
+    {
+     "i": 7,
+     "kind": "Hyperlink",
+     "name": "MIX CUMBIAS | 2026 🎊🪅🥂🍾🎉",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/0Zkjp7ANnyntZGmyf8r3Pn",
+     "rect": {
+      "x": 1238,
+      "y": 140,
+      "w": 245,
+      "h": 30
+     },
+     "zone": "T",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "Reproducir Los Bunkers",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 218,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "Hyperlink",
+     "name": "Los Bunkers",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/intl-es/artist/3RTAXX6KGdljBsOIupyZgT",
+     "rect": {
+      "x": 1238,
+      "y": 220,
+      "w": 129,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Reproducir Musica Lofi Para Estudiar 📖📚",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 298,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Hyperlink",
+     "name": "Musica Lofi Para Estudiar 📖📚",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/5d3w2ZMVsUgYNnYdrdbNLg",
+     "rect": {
+      "x": 1238,
+      "y": 300,
+      "w": 245,
+      "h": 29
+     },
+     "zone": "T",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Reproducir Cumbias del Recuerdo",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 378,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "Hyperlink",
+     "name": "Cumbias del Recuerdo",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/37i9dQZF1DWYpQJx6k6xat",
+     "rect": {
+      "x": 1238,
+      "y": 380,
+      "w": 204,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Reproducir Rock Chileno",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 458,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "Hyperlink",
+     "name": "Rock Chileno",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/37i9dQZF1DX3TKWnpd3vOb",
+     "rect": {
+      "x": 1238,
+      "y": 460,
+      "w": 118,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Reproducir Lo-Fi Focus | Study & Work Beats. Musica para con ... udiar o trabajar",
+     "state": "",
+     "rect": {
+      "x": 1163,
+      "y": 538,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "L",
+     "color": "white"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "Lo-Fi Focus | Study & Work Beats. Musica para concentrarte e ... udiar o trabajar",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/playlist/320aQSeMeN2qy6mOqBjXxf",
+     "rect": {
+      "x": 1238,
+      "y": 540,
+      "w": 245,
+      "h": 29
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    }
+   ],
+   "controlCount": 137,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "Tu biblioteca",
+     "Musica Lofi Para Estudiar"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "MIX CUMBIAS I",
+     "11,1",
+     "2026",
+     "20261*",
+     "Prayer - Kendrick Lamar ( ONLY"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Ruido Blanco Para Estudiar",
+     "Lo-Fi Para Concentrarse"
+    ],
+    "L": [
+     "Lista Ejemplo Uno",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "C": [
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED PRAYER SONG"
+    ],
+    "R": [
+     "Tu Top de canciones 2017",
+     "Mostrar todo",
+     "infc"
+    ],
+    "BL": [
+     "Mixdiario 1",
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Cough Syrup",
+     "Glee Cast"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Mix diario",
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "1:29",
+     "4:11"
+    ],
+    "BR": [
+     "Mix diario 4",
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PI"
+    ]
+   }
+  },
+  "f2_u1_tras_clic_sin_efecto": {
+   "window": {
+    "title": "Glee Cast - Cough Syrup",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "@Ron92 - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Inicio",
+     "nameSource": "",
+     "i": 3
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Cough Syrup • Glee Cast",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "focused",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 123,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "Tu biblioteca",
+     "Musica Lofi Para Estudiar"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "MIX CUMBIAS I",
+     "11,1",
+     "2026",
+     "20261*",
+     "Prayer - Kendrick Lamar ( ONLY"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Ruido Blanco Para Estudiar",
+     "Lo-Fi Para Concentrarse"
+    ],
+    "L": [
+     "Lista Ejemplo Uno",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "C": [
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED PRAYER SONG"
+    ],
+    "R": [
+     "Tu Top de canciones 2017",
+     "Mostrar todo",
+     "infc"
+    ],
+    "BL": [
+     "Mixdiario 1",
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Cough Syrup",
+     "Glee Cast"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Mix diario",
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "o:oo",
+     "4:11"
+    ],
+    "BR": [
+     "Mix diario 4",
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PI"
+    ]
+   }
+  },
+  "f2_x7_tras_clic_sin_efecto": {
+   "window": {
+    "title": "Glee Cast - Cough Syrup",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "@Ron92 - Discord",
+     "process": "Discord"
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "nameSource": "",
+     "i": 9
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Cough Syrup • Glee Cast",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "focused",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 113,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "Tu biblioteca",
+     "Musica Lofi Para Estudiar"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "MIX CUMBIAS I",
+     "11,1",
+     "2026",
+     "20261*",
+     "Prayer - Kendrick Lamar ( ONLY"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Ruido Blanco Para Estudiar",
+     "Lo-Fi Para Concentrarse"
+    ],
+    "L": [
+     "Lista Ejemplo Uno",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "C": [
+     "REAL LEAKED PUYER SONG",
+     "REAL LEAKED PRAYER SONG"
+    ],
+    "R": [
+     "Tu Top de canciones 2017",
+     "Mostrar todo",
+     "infc"
+    ],
+    "BL": [
+     "Mixdiario 1",
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Cough Syrup",
+     "Glee Cast"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Mix diario",
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "1:29",
+     "4:11"
+    ],
+    "BR": [
+     "Mix diario 4",
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PI"
+    ]
+   }
+  },
+  "f3_c6_selector_abierto": {
+   "window": {
+    "title": "@Ron92 - Discord",
+    "process": "Discord",
+    "requested": true,
+    "root": 68208,
+    "others": [],
+    "foreground": false,
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "Window",
+     "name": "Cambio Rápido",
+     "nameSource": ""
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Document",
+     "name": "@Ron92",
+     "state": "readonly",
+     "value": "https://discord.com/channels/@me/788990433829060618",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 1920,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Minimizar",
+     "state": "",
+     "rect": {
+      "x": 1790,
+      "y": 0,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Maximizar",
+     "state": "",
+     "rect": {
+      "x": 1835,
+      "y": 0,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Cerrar",
+     "state": "",
+     "rect": {
+      "x": 1880,
+      "y": 0,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Atrás",
+     "state": "",
+     "rect": {
+      "x": 16,
+      "y": 5,
+      "w": 33,
+      "h": 30
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Bandeja de entrada",
+     "state": "collapsed",
+     "rect": {
+      "x": 1684,
+      "y": 5,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Hyperlink",
+     "name": "Ayuda",
+     "state": "readonly",
+     "value": "https://support.discord.com/",
+     "rect": {
+      "x": 1729,
+      "y": 5,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Ayuda",
+     "state": "",
+     "rect": {
+      "x": 1729,
+      "y": 5,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "TreeItem",
+     "name": "Mensajes directos",
+     "state": "selected",
+     "rect": {
+      "x": 25,
+      "y": 40,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 9,
+     "kind": "TreeItem",
+     "name": "GROK COMMUNITY",
+     "state": "",
+     "rect": {
+      "x": 25,
+      "y": 116,
+      "w": 50,
+      "h": 51
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "TreeItem",
+     "name": "Juegos y Software, carpeta Juegos y Software",
+     "state": "expanded",
+     "rect": {
+      "x": 20,
+      "y": 178,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 11,
+     "kind": "TreeItem",
+     "name": "CPUCores",
+     "state": "",
+     "rect": {
+      "x": 25,
+      "y": 246,
+      "w": 50,
+      "h": 51
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "TreeItem",
+     "name": "Lossless Scaling",
+     "state": "",
+     "rect": {
+      "x": 25,
+      "y": 308,
+      "w": 50,
+      "h": 51
+     },
+     "zone": "TL",
+     "color": "yellow"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Buscar o iniciar una conversación",
+     "state": "",
+     "rect": {
+      "x": 113,
+      "y": 51,
+      "w": 343,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "Hyperlink",
+     "name": "Amigos",
+     "state": "readonly",
+     "value": "https://discord.com/channels/@me",
+     "rect": {
+      "x": 111,
+      "y": 113,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "Hyperlink",
+     "name": "Nitro",
+     "state": "readonly",
+     "value": "https://discord.com/store",
+     "rect": {
+      "x": 111,
+      "y": 163,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Hyperlink",
+     "name": "Tienda",
+     "state": "readonly",
+     "value": "https://discord.com/shop",
+     "rect": {
+      "x": 111,
+      "y": 213,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "Misiones",
+     "state": "readonly",
+     "value": "https://discord.com/quest-home",
+     "rect": {
+      "x": 111,
+      "y": 263,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Más",
+     "state": "collapsed",
+     "rect": {
+      "x": 396,
+      "y": 346,
+      "w": 20,
+      "h": 20
+     },
+     "zone": "L",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Crear mensaje",
+     "state": "",
+     "rect": {
+      "x": 426,
+      "y": 346,
+      "w": 20,
+      "h": 20
+     },
+     "zone": "L",
+     "color": "black"
+    }
+   ],
+   "controlCount": 181,
+   "text": {
+    "TL": [
+     "m",
+     "Buscar o iniciar una conversación",
+     "RED",
+     "Misiones"
+    ],
+    "T": [
+     "Mensajes directos",
+     "hoy no llego a jugar, que arranquen sin mi",
+     "si se conecta a las 9 para jugar",
+     "¿A dónde quieres ir?"
+    ],
+    "L": [
+     "Ron92",
+     "C Cotele!!!",
+     "ContactoC",
+     "ContactoE",
+     "ContactoC, contactod.",
+     "BORRADORES",
+     "Contacto F"
+    ],
+    "C": [
+     "CANALES RECIENTES",
+     "CbaYeah cbayeah",
+     "CbaYeah i:",
+     "ContactoE contactoe",
+     "Contacto_G",
+     "Contacto_G contacto_g"
+    ],
+    "R": [
+     ".wolfsoultm.4191",
+     "Miembro desde",
+     "Choche",
+     "17 dic 2020"
+    ],
+    "BL": [
+     "CbaYeah",
+     "Contacto H",
+     "CONSEJO UTII-:",
+     "prueba BAXY C6",
+     "RED 4-DEMO",
+     "contactod., ContactoC"
+    ],
+    "B": [
+     "Comienza las búsquedas con @ # ! * $ para limitar los resultados."
+    ],
+    "BR": [
+     "Ver perfil completo"
+    ]
+   }
+  },
+  "f3_c6_tras_escribir_sin_campo": {
+   "window": {
+    "title": "@Ron92 - Discord",
+    "process": "Discord",
+    "requested": true,
+    "root": 68208,
+    "foreground": false,
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "Window",
+     "name": "Cambio Rápido",
+     "nameSource": ""
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Document",
+     "name": "@Ron92",
+     "state": "readonly",
+     "value": "https://discord.com/channels/@me/788990433829060618",
+     "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 1920,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Minimizar",
+     "state": "",
+     "rect": {
+      "x": 1790,
+      "y": 0,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Maximizar",
+     "state": "",
+     "rect": {
+      "x": 1835,
+      "y": 0,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Cerrar",
+     "state": "",
+     "rect": {
+      "x": 1880,
+      "y": 0,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Atrás",
+     "state": "",
+     "rect": {
+      "x": 16,
+      "y": 5,
+      "w": 33,
+      "h": 30
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Bandeja de entrada",
+     "state": "collapsed",
+     "rect": {
+      "x": 1684,
+      "y": 5,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Hyperlink",
+     "name": "Ayuda",
+     "state": "readonly",
+     "value": "https://support.discord.com/",
+     "rect": {
+      "x": 1729,
+      "y": 5,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Ayuda",
+     "state": "",
+     "rect": {
+      "x": 1729,
+      "y": 5,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "TreeItem",
+     "name": "Mensajes directos",
+     "state": "selected",
+     "rect": {
+      "x": 25,
+      "y": 40,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 9,
+     "kind": "TreeItem",
+     "name": "GROK COMMUNITY",
+     "state": "",
+     "rect": {
+      "x": 25,
+      "y": 116,
+      "w": 50,
+      "h": 51
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "TreeItem",
+     "name": "Juegos y Software, carpeta Juegos y Software",
+     "state": "expanded",
+     "rect": {
+      "x": 20,
+      "y": 178,
+      "w": 60,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 11,
+     "kind": "TreeItem",
+     "name": "CPUCores",
+     "state": "",
+     "rect": {
+      "x": 25,
+      "y": 246,
+      "w": 50,
+      "h": 51
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "TreeItem",
+     "name": "Lossless Scaling",
+     "state": "",
+     "rect": {
+      "x": 25,
+      "y": 308,
+      "w": 50,
+      "h": 51
+     },
+     "zone": "TL",
+     "color": "yellow"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Buscar o iniciar una conversación",
+     "state": "",
+     "rect": {
+      "x": 113,
+      "y": 51,
+      "w": 343,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "Hyperlink",
+     "name": "Amigos",
+     "state": "readonly",
+     "value": "https://discord.com/channels/@me",
+     "rect": {
+      "x": 111,
+      "y": 113,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "Hyperlink",
+     "name": "Nitro",
+     "state": "readonly",
+     "value": "https://discord.com/store",
+     "rect": {
+      "x": 111,
+      "y": 163,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Hyperlink",
+     "name": "Tienda",
+     "state": "readonly",
+     "value": "https://discord.com/shop",
+     "rect": {
+      "x": 111,
+      "y": 213,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "Misiones",
+     "state": "readonly",
+     "value": "https://discord.com/quest-home",
+     "rect": {
+      "x": 111,
+      "y": 263,
+      "w": 348,
+      "h": 48
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "Más",
+     "state": "collapsed",
+     "rect": {
+      "x": 396,
+      "y": 346,
+      "w": 20,
+      "h": 20
+     },
+     "zone": "L",
+     "color": "black",
+     "repeated": 1
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Crear mensaje",
+     "state": "",
+     "rect": {
+      "x": 426,
+      "y": 346,
+      "w": 20,
+      "h": 20
+     },
+     "zone": "L",
+     "color": "black"
+    }
+   ],
+   "controlCount": 181
+  },
+  "f3_v8_inicio": {
+   "window": {
+    "title": "League of Legends - Get Jinxed",
+    "process": "Spotify",
+    "requested": true,
+    "root": 788146,
+    "others": [],
+    "foreground": false,
+    "rect": {
+     "x": 903,
+     "y": 0,
+     "w": 1017,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "/goal Repo BAXY en C:\\Us… - BAXY DEFINITIVO - Visual Studio Code",
+     "process": "Code"
+    },
+    "focused": {
+     "kind": "Group",
+     "name": "Spotify - Reproductor web: música para todos",
+     "nameSource": ""
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Edit",
+     "name": "Address and search bar",
+     "state": "readonly",
+     "value": "xpui.app.spotify.com/index.html",
+     "shortcut": "Ctrl+L",
+     "zone": "",
+     "color": ""
+    },
+    {
+     "i": 1,
+     "kind": "Document",
+     "name": "Get Jinxed • League of Legends, Djerv",
+     "state": "readonly",
+     "value": "https://xpui.app.spotify.com/index.html",
+     "rect": {
+      "x": 903,
+      "y": 0,
+      "w": 1018,
+      "h": 1020
+     },
+     "zone": "C",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Volver",
+     "state": "",
+     "rect": {
+      "x": 993,
+      "y": 10,
+      "w": 30,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Inicio",
+     "state": "",
+     "rect": {
+      "x": 1073,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "ComboBox",
+     "name": "¿Qué quieres reproducir?",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 1143,
+      "y": 10,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Novedades",
+     "state": "",
+     "rect": {
+      "x": 1572,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actividad reciente",
+     "state": "",
+     "rect": {
+      "x": 1622,
+      "y": 20,
+      "w": 41,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "personaejemplomusica",
+     "state": "collapsed",
+     "rect": {
+      "x": 1672,
+      "y": 10,
+      "w": 61,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "green"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Abre Tu biblioteca",
+     "state": "",
+     "rect": {
+      "x": 933,
+      "y": 100,
+      "w": 50,
+      "h": 50
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Crear",
+     "state": "",
+     "rect": {
+      "x": 936,
+      "y": 160,
+      "w": 44,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Tus me gusta Fijado Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 223,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "TL",
+     "color": "blue"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Los Bunkers Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 303,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Tu Top de canciones 2017 Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 383,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "green"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Guardianes de la galaxia Playlist • usuarioej19",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 463,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "red"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Lista Ejemplo Uno Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 543,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "00s Rock Anthems Playlist • Spotify",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 623,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "Las que casi se te pasan Playlist • Creada para personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 703,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "pink"
+    },
+    {
+     "i": 18,
+     "kind": "Button",
+     "name": "ARTISTA EJEMPLO Artista",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 783,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "red"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Lista Ejemplo Dos Playlist • personaejemplomusica",
+     "state": "",
+     "rect": {
+      "x": 918,
+      "y": 863,
+      "w": 80,
+      "h": 81
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 115,
+   "text": {
+    "TL": [
+     ">",
+     "Q",
+     "Todo",
+     "Música",
+     "Tu biblioteca",
+     "Musica Lofi Para Estudiar",
+     "Lista Ejemplo Uno"
+    ],
+    "T": [
+     "Podcasts",
+     "Audiolibros",
+     "MIX CUMBIAS I",
+     "11.1",
+     "20261*",
+     "2026"
+    ],
+    "TR": [
+     "c:",
+     "x",
+     "Prayer - Kendrick Lamar ( ONLY",
+     "REAL LEAKED PUYER SONG",
+     "Lo-Fi Para Concentrarse"
+    ],
+    "L": [
+     "Entrenar 2026",
+     "Musica Para Entrenar",
+     "Hecho para",
+     "personaejemplomusica"
+    ],
+    "R": [
+     "Lo-Fi Focus I Study & Work Beats.",
+     "Musica para concentrarte en.",
+     "Musica para concentrarte enm",
+     "Mostrar todo",
+     "infc"
+    ],
+    "BL": [
+     "Mixdiario 1",
+     "Mix diario 1",
+     "J Balvin, Daddy",
+     "Yankee, Bad Bunnyy...",
+     "Get Jinxed",
+     "League of Legends, D]",
+     "League of Legends, C"
+    ],
+    "B": [
+     "Mix diario 2",
+     "Mix diario",
+     "Soda Stereo, Gustavo",
+     "Cerati, Charly García",
+     "y más",
+     "Tus mixes más escuchados",
+     "1:35",
+     "2:34",
+     "234"
+    ],
+    "BR": [
+     "Mix diario 4",
+     "Six Sex, Rels B, Caverg",
+     "EI Reino Infantil, I",
+     "Payaso Plim Plim",
+     "Payaso PI"
+    ]
+   }
+  }
+ }
+}

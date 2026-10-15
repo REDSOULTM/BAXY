@@ -12,9 +12,6 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-. (Join-Path $PSScriptRoot 'path_safety.ps1')
-. (Join-Path $PSScriptRoot 'product_build_common.ps1')
-. (Join-Path $PSScriptRoot 'asset_resolver.ps1')
 
 function Get-GitState {
     param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
@@ -31,6 +28,18 @@ function Get-GitState {
         status = [string]($statusLines -join "`n")
     }
 }
+
+# A dirty worktree is refused before anything else runs: the helpers below compile C# types
+# (Add-Type spawns csc.exe and cvtres.exe) and resolve runtime assets, which the refusal never needs.
+$root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$initialGit = Get-GitState -RepositoryRoot $root
+if ($initialGit.dirty -and -not $AllowDirtyDevelopmentBuild) {
+    throw 'The Git worktree is dirty. Refusing to build until it is clean; use -AllowDirtyDevelopmentBuild only for an explicitly non-release development artifact.'
+}
+
+. (Join-Path $PSScriptRoot 'path_safety.ps1')
+. (Join-Path $PSScriptRoot 'product_build_common.ps1')
+. (Join-Path $PSScriptRoot 'asset_resolver.ps1')
 
 function Assert-DetachedSnapshotUnchanged {
     param(
@@ -104,7 +113,6 @@ function Copy-BaxyRuntimeToolBytes {
     }
 }
 
-$root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $mpvResolution = Resolve-BaxyAsset -Name 'mpv' -RepositoryRoot $root
 $vulkanResolution = Resolve-BaxyAsset -Name 'mpv_vulkan' -RepositoryRoot $root
 $ytDlpResolution = Resolve-BaxyAsset -Name 'yt_dlp' -RepositoryRoot $root
@@ -135,11 +143,6 @@ $null = Assert-ExistingPathChainHasNoReparsePoint -Path $allowedBuildRoot
 $isDebug = [string]::Equals($Configuration, 'Debug', [StringComparison]::Ordinal)
 $isRelease = [string]::Equals($Configuration, 'Release', [StringComparison]::Ordinal)
 if (-not $isDebug -and -not $isRelease) { throw 'Configuration must use canonical casing: Debug or Release.' }
-
-$initialGit = Get-GitState -RepositoryRoot $root
-if ($initialGit.dirty -and -not $AllowDirtyDevelopmentBuild) {
-    throw 'The Git worktree is dirty. Refusing to build until it is clean; use -AllowDirtyDevelopmentBuild only for an explicitly non-release development artifact.'
-}
 
 $epochText = [string](& git -C $root show -s --format=%ct $initialGit.commit)
 if ($LASTEXITCODE -ne 0 -or $epochText.Trim() -notmatch '^[0-9]+$') { throw 'Unable to resolve source_date_epoch from Git.' }

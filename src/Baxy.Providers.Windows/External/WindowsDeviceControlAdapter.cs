@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -110,21 +111,35 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         foreach($line in $text){if($line -match '^\s*(?:State|Estado)\s*:\s*(connected|conectado)\s*$'){$connected=$true};if($line -match '^\s*(?:Profile|Perfil)\s*:\s*(.+?)\s*$'){$profile=$Matches[1]}}
         [pscustomobject]@{connected=$connected;profile=$profile}|ConvertTo-Json -Compress
         """;
-    private const string BrightnessScript = """
+    // Encargo H2 (tandas redpc t2-c03, t3-c04, t4-c04: «Intenté poner el brillo…, pero no pude confirmar si se hizo» on
+    // a monitor that does not expose its brightness): WMI answers its brightness classes there with «not supported»
+    // (CimException NotSupported) or with no instance. That is the computer's limit, read before anything is changed
+    // (BrightnessNotSupported, said as the absent device of data «computerUse.limits.devices»), never a change tried.
+    internal const string BrightnessNotSupported = "brightness_not_supported";
+    private const string BrightnessInstances = """
+        function Get-BaxyBrightness([string]$class){try{@(Get-CimInstance -Namespace root/WMI -ClassName $class -ErrorAction Stop)}catch{if([string]$_.Exception.NativeErrorCode -ne 'NotSupported'){throw}}}
+        function Write-BaxyBrightnessAbsent{[pscustomobject]@{ok=$false;effectObserved=$false;error='brightness_not_supported'}|ConvertTo-Json -Compress}
+
+        """;
+    private const string BrightnessScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$value=[byte]$args[0];$effect=$false
-        try {$methods=Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods;$current=Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness
-          if($null -eq $methods -or $null -eq $current){throw 'brightness_not_supported'}
+        try {$methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods);$current=@(Get-BaxyBrightness WmiMonitorBrightness)
+          if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
+          $baseline=@($current|ForEach-Object {[int]$_.CurrentBrightness})
+          if($baseline.Count -gt 0 -and @($baseline|Where-Object {$_ -ne $value}).Count -eq 0){
+            [pscustomobject]@{ok=$true;effectObserved=$false;changed=$false;baselineValues=$baseline;values=$baseline}|ConvertTo-Json -Compress;exit 0
+          }
           foreach($method in $methods){Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=$value}|Out-Null};$effect=$true;Start-Sleep -Milliseconds 300
           $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness|ForEach-Object {[int]$_.CurrentBrightness})
-          [pscustomobject]@{ok=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0);effectObserved=$true;values=$after}|ConvertTo-Json -Compress
+          [pscustomobject]@{ok=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0);effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessAdjustScript = """
+    private const string BrightnessAdjustScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$delta=[int]$args[0];$effect=$false
         try {
-          $methods=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods)
-          $current=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness)
-          if($methods.Count -eq 0 -or $current.Count -eq 0){throw 'brightness_not_supported'}
+          $methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods)
+          $current=@(Get-BaxyBrightness WmiMonitorBrightness)
+          if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
           $expected=@{};$baseline=@()
           foreach($item in $current){
             $before=[int]$item.CurrentBrightness;$target=[Math]::Max(0,[Math]::Min(100,$before+$delta))
@@ -140,15 +155,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [pscustomobject]@{ok=$ok;effectObserved=$effect;baselineValues=$baseline;values=$values}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_adjust_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessStatusScript = """
+    private const string BrightnessStatusScript = BrightnessInstances + """
         $ErrorActionPreference='Stop'
         try {
           function Read-BaxyBrightness {
-            @(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness -ErrorAction Stop |
+            @(Get-BaxyBrightness WmiMonitorBrightness |
               ForEach-Object {[pscustomobject]@{instanceName=[string]$_.InstanceName;value=[int]$_.CurrentBrightness}} |
               Sort-Object instanceName)
           }
           $first=@(Read-BaxyBrightness)
+          if($first.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
           Start-Sleep -Milliseconds 120
           $second=@(Read-BaxyBrightness)
           $coherent=$first.Count -gt 0 -and $first.Count -eq $second.Count
@@ -210,7 +226,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     internal WindowsDeviceControlAdapter(string dataRoot, string documentsRoot)
         : this(Path.Combine(dataRoot, "scans"), documentsRoot, new ExternalProcessRunner())
     {
+        KeysLease = ForegroundLease.Shared;
     }
+
+    /// <summary>
+    /// v3 point 0, fix 3: the calculator and quick-switcher scripts bring their window up and type into it by SendInput,
+    /// so each runs in one helper burst of this lease (after the person's pause; the front and the cursor given back
+    /// after). Null runs them directly (the test seams, whose runners are fakes).
+    /// </summary>
+    internal IForegroundLease? KeysLease { get; init; }
 
     internal WindowsDeviceControlAdapter(
         string scanRoot,
@@ -267,9 +291,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
-        or "bluetooth.radio.set"
+        or "bluetooth.radio.set" or "bluetooth.radio.status"
+        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "client.channel.locate" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
-        or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+        or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
         or "system.settings.adjust" or "system.settings.status" or "system.settings.set";
 
@@ -288,6 +313,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     operation, arguments, effectBoundary, cancellationToken),
                 "bluetooth.radio.set" => await BluetoothRadioSetAsync(
                     operation, arguments, effectBoundary, cancellationToken),
+                "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
+                "display.status" => DisplayStatus(operation),
+                "software.python.status" => PythonStatus(operation),
+                "storage.removable.list" => RemovableStorageList(operation),
+                "client.channel.locate" => await ClientChannelLocateAsync(operation, arguments, cancellationToken),
+                "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
+                "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
+                    operation, arguments, effectBoundary, cancellationToken),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
                 "peripheral.print" => await PrintAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -302,6 +335,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     operation, effectBoundary, cancellationToken),
                 "wifi.ensure.connected" => await WifiEnsureConnectedAsync(operation, cancellationToken),
                 "wifi.status" => await WifiConnectionStatusAsync(operation, cancellationToken),
+                "wifi.scan" => await WifiScanAsync(operation, cancellationToken),
+                "wifi.radio.set" => await WifiRadioSetAsync(operation, arguments, effectBoundary, cancellationToken),
+                "wifi.radio.status" => await WifiRadioStatusAsync(operation),
                 "system.settings.adjust" => await SettingAdjustAsync(
                     operation, arguments, effectBoundary, cancellationToken),
                 "system.settings.status" => await SettingStatusAsync(operation, arguments, cancellationToken),
@@ -397,6 +433,210 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         writer.WriteString("authority", "windows_device_pairing_postread"); writer.WriteEndObject();
     });
 
+    // NETWORK1737 «qué redes wifi hay» → «sí, prendelo»: the Wi-Fi radio is
+    // switched through the same official Radio API as Bluetooth, with the
+    // person's confirmation, and the state is read back; a read-only status
+    // answers «¿el wifi está prendido?» without touching it.
+    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioSetAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        if (!arguments.TryGetProperty("state", out JsonElement stateElement)
+            || stateElement.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_state_invalid");
+        }
+        bool requested = stateElement.GetBoolean();
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_access_denied");
+        }
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.WiFi)
+            .ToArray();
+        if (radios.Length == 0)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_not_found");
+        }
+        RadioState desired = requested ? RadioState.On : RadioState.Off;
+        bool effectObserved = false;
+        foreach (Radio radio in radios)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (radio.State == desired)
+            {
+                continue;
+            }
+            effectBoundary.Cross(cancellationToken);
+            RadioAccessStatus changed = await radio.SetStateAsync(desired);
+            effectObserved = true;
+            if (changed != RadioAccessStatus.Allowed)
+            {
+                return effectBoundary.Failure(operation, "wifi_radio_change_rejected", effectObserved);
+            }
+        }
+        Radio[] observed = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.WiFi)
+            .ToArray();
+        if (observed.Length == 0 || observed.Any(radio => radio.State != desired))
+        {
+            return effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved);
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteBoolean("state", requested);
+            writer.WriteBoolean("changed", effectObserved);
+            writer.WriteNumber("radioCount", observed.Length);
+            writer.WriteString("authority", "windows_radio_api_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Switched(operation, result, effectObserved);
+    }
+
+    // REOPEN1957 H0107 «poneme el modo avión»: el modo avión de Windows es todas
+    // las radios apagadas. La API de radios apaga y enciende cada una y la
+    // postlectura las vuelve a leer; la lectura de estado dice si están todas
+    // apagadas. Un driver que restaure enciende las que estaban encendidas.
+    private static readonly RadioKind[] AirplaneRadioKinds = [RadioKind.WiFi, RadioKind.Bluetooth, RadioKind.MobileBroadband];
+
+    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeSetAsync(
+        string operation,
+        int value,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        if (value is not (0 or 1))
+            return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_value_invalid");
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+            return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radio_access_denied");
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
+            .ToArray();
+        if (radios.Length == 0)
+            return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radios_not_found");
+        RadioState desired = value == 1 ? RadioState.Off : RadioState.On;
+        var before = radios.ToDictionary(radio => radio.Name + "|" + radio.Kind, radio => radio.State == RadioState.On);
+        // AIRPLANE2043 «sacá el modo avión» with every radio already on: nothing to
+        // switch cannot be observed as an effect; the honest fact is the state,
+        // said before any boundary is crossed (same contract as the microphone).
+        if (radios.All(radio => radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled)))
+        {
+            return ExternalJson.FailureBeforeEffect(
+                operation, value == 1 ? "airplane_mode_already_on" : "airplane_mode_already_off");
+        }
+        bool effectObserved = false;
+        foreach (Radio radio in radios)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled))
+                continue;
+            effectBoundary.Cross(cancellationToken);
+            RadioAccessStatus changed = await radio.SetStateAsync(desired);
+            effectObserved = true;
+            if (changed != RadioAccessStatus.Allowed)
+                return effectBoundary.Failure(operation, "airplane_mode_change_rejected", effectObserved);
+        }
+
+        Radio[] observed = (await Radio.GetRadiosAsync())
+            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
+            .ToArray();
+        bool allOff = observed.All(radio => radio.State != RadioState.On);
+        bool reached = value == 1 ? allOff : observed.All(radio => radio.State is RadioState.On or RadioState.Disabled);
+        if (!reached)
+            return effectBoundary.Failure(operation, "airplane_mode_postread_failed", effectObserved);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("setting", "airplane_mode");
+            writer.WriteNumber("value", value);
+            writer.WriteBoolean("airplaneMode", allOff);
+            writer.WriteBoolean("changed", effectObserved);
+            writer.WriteStartArray("radios");
+            foreach (Radio radio in observed)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", radio.Kind.ToString());
+                writer.WriteString("name", radio.Name);
+                writer.WriteString("state", radio.State.ToString());
+                writer.WriteBoolean("wasOn", before.GetValueOrDefault(radio.Name + "|" + radio.Kind));
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_radio_api_all_radios_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved);
+    }
+
+    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeStatusAsync(string operation)
+    {
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+            return ExternalJson.Failure(operation, "airplane_mode_radio_access_denied");
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
+            .ToArray();
+        if (radios.Length == 0)
+            return ExternalJson.Failure(operation, "airplane_mode_radios_not_found");
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("setting", "airplane_mode");
+            writer.WriteBoolean("airplaneMode", radios.All(radio => radio.State != RadioState.On));
+            writer.WriteNumber("radioCount", radios.Length);
+            writer.WriteStartArray("radios");
+            foreach (Radio radio in radios)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", radio.Kind.ToString());
+                writer.WriteString("name", radio.Name);
+                writer.WriteString("state", radio.State.ToString());
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_radio_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
+    {
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_access_denied");
+        }
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.WiFi)
+            .ToArray();
+        if (radios.Length == 0)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_not_found");
+        }
+        bool on = radios.Any(radio => radio.State == RadioState.On);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteBoolean("radioOn", on);
+            writer.WriteNumber("radioCount", radios.Length);
+            writer.WriteString("authority", "windows_radio_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
     private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioSetAsync(
         string operation,
         JsonElement arguments,
@@ -461,8 +701,684 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteString("authority", "windows_radio_api_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved);
+        return ExternalJson.Switched(operation, result, effectObserved);
     }
+
+    // NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: the radio
+    // state was only observable as the post-read of a change; a read-only
+    // read answers the question without touching the radio.
+    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
+    {
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+        {
+            return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
+        }
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.Bluetooth)
+            .ToArray();
+        if (radios.Length == 0)
+        {
+            return ExternalJson.Failure(operation, "bluetooth_radio_not_found");
+        }
+        bool on = radios.Any(radio => radio.State == RadioState.On);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteBoolean("radioOn", on);
+            writer.WriteNumber("radioCount", radios.Length);
+            writer.WriteNumber("radiosOn", radios.Count(radio => radio.State == RadioState.On));
+            writer.WriteString("authority", "windows_radio_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
+    // monitor»: the desktop's attached display devices and their current mode,
+    // read through the Win32 display API without changing anything.
+    // SYSTEM1697 H0307 «dime la versión de Python instalada»: the installs a
+    // Python distributor registered under Software\Python (PEP 514), read from
+    // the registry only — no interpreter is started, nothing is executed.
+    // UI1725 «multiplicá 6 por 7 en la calc»: the expression is typed into the
+    // Windows Calculator that is already open — brought to the foreground and
+    // verified there, otherwise nothing is typed — and the display is read
+    // back through UI Automation (CalculatorResults / CalculatorExpression).
+    // M93 (DEV-D v3r and v3u D-w07-t2 «órale, y divídeme ahí 1850 entre 7» right after the Calculator was reused →
+    // calculator_not_foreground both times): a bare SetForegroundWindow from this helper process is refused by the
+    // foreground lock whenever BAXY itself is not in front (a spoken turn, or the window run). The handoff attaches to
+    // the foreground thread first, as the application open provider does (RequestForeground).
+    // Review of fable/cu-v3-pausa: SendKeys.SendWait cannot carry BAXY's input mark (BaxyInputMark.cs), so the pause
+    // detector took these keys for the person's and the harness could not tell them from the person's. The scripts
+    // send them with SendInput, marked, mapped through the keyboard layout (VkKeyScan) as SendKeys did; a character
+    // the layout cannot type goes as a Unicode key. C# 5: the scripts run in Windows PowerShell 5.1.
+    private const string MarkedKeysType = """
+        $markedKeys='using System;using System.Collections.Generic;using System.Runtime.InteropServices;public static class BaxyMarkedKeys{[StructLayout(LayoutKind.Sequential)] struct KeyboardInput{public ushort Vk;public ushort Scan;public uint Flags;public uint Time;public UIntPtr Extra;}[StructLayout(LayoutKind.Sequential)] struct MouseInput{public int X;public int Y;public uint Data;public uint Flags;public uint Time;public UIntPtr Extra;}[StructLayout(LayoutKind.Explicit)] struct InputUnion{[FieldOffset(0)] public MouseInput Mouse;[FieldOffset(0)] public KeyboardInput Keyboard;}[StructLayout(LayoutKind.Sequential)] struct Input{public uint Type;public InputUnion Data;}[DllImport("user32.dll",SetLastError=true)] static extern uint SendInput(uint count,Input[] inputs,int size);[DllImport("user32.dll")] static extern short VkKeyScanW(char ch);static readonly UIntPtr Mark=new UIntPtr(0x42415859u);static Input Key(ushort vk,ushort scan,uint flags){Input input=new Input();input.Type=1;input.Data.Keyboard.Vk=vk;input.Data.Keyboard.Scan=scan;input.Data.Keyboard.Flags=flags;input.Data.Keyboard.Extra=Mark;return input;}static uint Send(List<Input> inputs){return SendInput((uint)inputs.Count,inputs.ToArray(),Marshal.SizeOf(typeof(Input)));}static uint Chord(ushort vk,int modifiers){List<Input> inputs=new List<Input>();ushort[] keys={0x10,0x11,0x12};for(int bit=0;bit<3;bit++){if((modifiers&(1<<bit))!=0)inputs.Add(Key(keys[bit],0,0));}inputs.Add(Key(vk,0,0));inputs.Add(Key(vk,0,2));for(int bit=2;bit>=0;bit--){if((modifiers&(1<<bit))!=0)inputs.Add(Key(keys[bit],0,2));}return Send(inputs);}public static uint Press(ushort vk,bool control){return Chord(vk,control?2:0);}public static uint Character(char ch,bool control){short scan=VkKeyScanW(ch);if(scan==-1){List<Input> unicode=new List<Input>();unicode.Add(Key(0,ch,4));unicode.Add(Key(0,ch,6));return Send(unicode);}return Chord((ushort)(scan&0xFF),((scan>>8)&0x7)|(control?2:0));}public static uint Text(string text){uint sent=0;foreach(char ch in text){sent+=Character(ch,false);}return sent;}}'
+        if(-not ([System.Management.Automation.PSTypeName]'BaxyMarkedKeys').Type){Add-Type -TypeDefinition $markedKeys}
+
+        """;
+
+    // Regresiones r2 M4 and molestia r2 (rama B, punto 2): the keys sent with SendInput needed the Calculator in front
+    // (a burst that took the person's front) and were counted as BAXY's keystrokes. The expression is now pressed on
+    // the keypad's own buttons by UI Automation's Invoke: each character is the button the keypad data names
+    // (src/baxy_mind/data/keypad_keys.v1.json, embedded; Spanish and English, compared folded), no window is brought up
+    // and no key is sent. The result is verified on the display: a number read there, and the expression shown ending
+    // with the last operand pressed (Standard mode folds the earlier ones into a running result). Review r4: the clear
+    // button is required and the display must read 0 after it (polled up to 300 ms), and without the expression line
+    // only a number other than 0 proves the presses: a keypad that ignored them would show the previous result.
+    internal const string KeypadFunctions = """
+        function Get-KeyFolded([string]$text){
+          if([string]::IsNullOrEmpty($text)){ return '' }
+          $decomposed=$text.Normalize([Text.NormalizationForm]::FormD);$kept=New-Object Text.StringBuilder
+          foreach($c in $decomposed.ToCharArray()){ if([Globalization.CharUnicodeInfo]::GetUnicodeCategory($c) -ne [Globalization.UnicodeCategory]::NonSpacingMark){ [void]$kept.Append($c) } }
+          return (($kept.ToString().ToLowerInvariant()) -replace '\s+',' ').Trim()
+        }
+        function Find-KeypadButton([string[]]$names,$wanted){
+          $folded=@($wanted | ForEach-Object { Get-KeyFolded ([string]$_) })
+          for($i=0;$i -lt $names.Count;$i++){ if($folded -contains (Get-KeyFolded $names[$i])){ return $i } }
+          return -1
+        }
+        function Select-KeypadPresses([string]$keys,[string[]]$names,$map){
+          $plan=New-Object System.Collections.Generic.List[int]
+          foreach($ch in $keys.ToCharArray()){
+            $at=Find-KeypadButton $names @($map.keys.([string]$ch))
+            if($at -lt 0){ return $null }
+            $plan.Add($at)
+          }
+          return ,$plan.ToArray()
+        }
+        function Test-ShowsZero([string]$value){ return ($value.Trim() -match '^-?0(?:[.,]0*)?$') }
+        function Test-ShowsLastOperand([string]$shown,[string]$value,[string]$keys){
+          if($value -notmatch '^-?\d'){ return $false }
+          if($shown.Trim().Length -eq 0){
+            # Without the expression line the display is the only proof, and it showed 0 right after the clear button: only a
+            # number other than 0 says the buttons were pressed (a result of 0 is not told from a keypad that ignored them).
+            return -not (Test-ShowsZero $value)
+          }
+          $last=([regex]::Match($keys,'(\d+(?:\.\d+)?)\)*$').Groups[1].Value -replace '[^0-9]','')
+          $digits=($shown -replace '[^0-9]','')
+          return ($last.Length -gt 0 -and $digits.EndsWith($last))
+        }
+
+        """;
+
+    internal const string CalculatorScript = """
+        $ErrorActionPreference='Stop';$expr=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
+        $map=([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[1])) | ConvertFrom-Json)
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
+
+        """ + KeypadFunctions + """
+        $root=[System.Windows.Automation.AutomationElement]::RootElement
+        $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
+        $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($f.Current.Name -match '^(Calculadora|Calculator)$'){$calc=$f;break}}
+        if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
+        $keys=($expr -replace '[^0-9+\-*/().]','')
+        if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
+        $buttonCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
+        $buttons=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond))
+        $names=[string[]]@($buttons | ForEach-Object { [string]$_.Current.Name })
+        $plan=Select-KeypadPresses ($keys+'=') $names $map
+        if($null -eq $plan){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
+        function Invoke-KeypadButton($element){ $pattern=$null; if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){ ([System.Windows.Automation.InvokePattern]$pattern).Invoke(); return $true }; return $false }
+        # The clear button is required, and the display must show 0 after it: a keypad that ignored the presses (the window
+        # suspended or minimized) would otherwise leave the previous result there, read as this expression's.
+        $clear=Find-KeypadButton $names @($map.clear)
+        if($clear -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
+        $idCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorResults')
+        $display=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+        if($null -eq $display){[pscustomobject]@{ok=$false;error='calculator_display_not_read'}|ConvertTo-Json -Compress;exit 5}
+        function Read-DisplayValue(){ return (([string]$display.Current.Name) -replace '^[^0-9\-]*','').Trim() }
+        if(-not (Invoke-KeypadButton $buttons[$clear])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=0}|ConvertTo-Json -Compress;exit 7}
+        $cleared=Read-DisplayValue
+        for($waited=0;-not (Test-ShowsZero $cleared) -and $waited -lt 300;$waited+=40){ Start-Sleep -Milliseconds 40; $cleared=Read-DisplayValue }
+        if(-not (Test-ShowsZero $cleared)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';clearedDisplay=$cleared}|ConvertTo-Json -Compress;exit 8}
+        $pressed=0
+        foreach($at in $plan){ if(-not (Invoke-KeypadButton $buttons[$at])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=$pressed}|ConvertTo-Json -Compress;exit 7}; $pressed++; Start-Sleep -Milliseconds 30 }
+        Start-Sleep -Milliseconds 300
+        $exprCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorExpression')
+        $shown=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$exprCond)
+        $name=[string]$display.Current.Name;$exprName=if($shown){[string]$shown.Current.Name}else{''}
+        $value=Read-DisplayValue
+        if(-not (Test-ShowsLastOperand $exprName $value $keys)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
+        [pscustomobject]@{ok=$true;typed=$keys;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value}|ConvertTo-Json -Compress
+        """;
+
+    // The keypad's buttons by the characters they press (src/baxy_mind/data/keypad_keys.v1.json, embedded).
+    private static readonly Lazy<string> KeypadKeys = new(() =>
+    {
+        using Stream stream = typeof(WindowsDeviceControlAdapter).Assembly.GetManifestResourceStream("Baxy.Providers.Windows.KeypadKeys.json")
+            ?? throw new InvalidOperationException("keypad_keys_missing");
+        using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
+        return reader.ReadToEnd();
+    });
+
+    private static readonly Regex CalculatorExpression = new(
+        @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/×÷xX]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
+        RegexOptions.CultureInvariant);
+
+    private async ValueTask<ExternalCapabilityReceipt> CalculatorEvaluateAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken token)
+    {
+        string expression = ExternalJson.RequiredString(arguments, "expression").Trim();
+        if (!CalculatorExpression.IsMatch(expression))
+        {
+            return ExternalJson.Failure(operation, "calculator_expression_invalid");
+        }
+        string normalized = expression
+            .Replace("×", "*", StringComparison.Ordinal)
+            .Replace("÷", "/", StringComparison.Ordinal)
+            .Replace("x", "*", StringComparison.OrdinalIgnoreCase)
+            .Replace(",", ".", StringComparison.Ordinal)
+            .Replace(" ", string.Empty, StringComparison.Ordinal);
+        // Review r4: the buttons are pressed by UI Automation's Invoke, which sends no key, moves no pointer and takes
+        // no front, so the person's keyboard and mouse are never shared: no burst is asked for, the person's pause is
+        // not waited for, and their typing in their own window does not stop the expression half pressed (v3 point 0:
+        // waiting for the pause is only for an act that has no other way than real input).
+        effectBoundary.Cross(token);
+        ExternalProcessResult process = await RunPowerShellAsync(
+            CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], token).ConfigureAwait(false);
+
+        using JsonDocument document = ParseLastJson(process.Output);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return ExternalJson.Failure(operation, "calculator_display_not_read", true);
+        }
+        if (!Bool(root, "ok"))
+        {
+            string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
+                ? error.GetString() ?? "calculator_display_not_read"
+                : "calculator_display_not_read";
+            // A button pressed before the failure (or a display that did not show the expression) may have changed the
+            // Calculator; a keypad without the buttons pressed nothing.
+            return ExternalJson.Failure(operation, code,
+                code is "calculator_display_not_read" or "calculator_display_not_verified" or "calculator_button_not_invokable");
+        }
+        string value = root.TryGetProperty("value", out JsonElement valueElement) && valueElement.ValueKind == JsonValueKind.String
+            ? valueElement.GetString() ?? string.Empty
+            : string.Empty;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return ExternalJson.Failure(operation, "calculator_display_not_read", true);
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("expression", normalized);
+            writer.WriteString("shownExpression", root.TryGetProperty("expressionName", out JsonElement shown) && shown.ValueKind == JsonValueKind.String ? shown.GetString() ?? string.Empty : string.Empty);
+            writer.WriteString("display", root.TryGetProperty("displayName", out JsonElement display) && display.ValueKind == JsonValueKind.String ? display.GetString() ?? string.Empty : string.Empty);
+            writer.WriteString("value", value);
+            writer.WriteString("authority", "windows_calculator_uia_display");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
+    private static List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> EnumerateRegisteredPythons()
+    {
+        var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach ((Microsoft.Win32.RegistryKey hive, string scope) in new[]
+                 {
+                     (Microsoft.Win32.Registry.CurrentUser, "user"),
+                     (Microsoft.Win32.Registry.LocalMachine, "machine"),
+                 })
+        {
+            foreach (string root in new[] { @"Software\Python", @"Software\WOW6432Node\Python" })
+            {
+                try
+                {
+                    using Microsoft.Win32.RegistryKey? python = hive.OpenSubKey(root, writable: false);
+                    if (python is null)
+                    {
+                        continue;
+                    }
+                    foreach (string company in python.GetSubKeyNames())
+                    {
+                        using Microsoft.Win32.RegistryKey? companyKey = python.OpenSubKey(company, writable: false);
+                        if (companyKey is null)
+                        {
+                            continue;
+                        }
+                        foreach (string tag in companyKey.GetSubKeyNames())
+                        {
+                            using Microsoft.Win32.RegistryKey? tagKey = companyKey.OpenSubKey(tag, writable: false);
+                            if (tagKey is null)
+                            {
+                                continue;
+                            }
+                            string version = (tagKey.GetValue("Version") as string ?? tagKey.GetValue("SysVersion") as string ?? tag).Trim();
+                            string displayName = (tagKey.GetValue("DisplayName") as string ?? $"{company} {tag}").Trim();
+                            string? executable = null;
+                            using (Microsoft.Win32.RegistryKey? installPath = tagKey.OpenSubKey("InstallPath", writable: false))
+                            {
+                                string? path = installPath?.GetValue("ExecutablePath") as string;
+                                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                                {
+                                    executable = Path.GetFullPath(path);
+                                }
+                            }
+                            string identity = executable ?? $"{scope}|{company}|{tag}";
+                            if (seen.Add(identity))
+                            {
+                                installs.Add((company, tag, version, displayName, executable, scope));
+                            }
+                        }
+                    }
+                }
+                catch (Exception exception) when (exception is System.Security.SecurityException
+                    or UnauthorizedAccessException or IOException)
+                {
+                    continue;
+                }
+            }
+        }
+        installs.Sort((left, right) => string.CompareOrdinal(right.Version, left.Version));
+        return installs;
+    }
+
+    private static ExternalCapabilityReceipt PythonStatus(string operation)
+    {
+        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("pythonCount", installs.Count);
+            writer.WriteStartArray("pythons");
+            foreach ((string company, string tag, string version, string displayName, string? executable, string scope) in installs)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("company", company);
+                writer.WriteString("tag", tag);
+                writer.WriteString("pythonVersion", version);
+                writer.WriteString("displayName", displayName);
+                writer.WriteBoolean("executableFound", executable is not null);
+                writer.WriteString("scope", scope);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_registry_pep514_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // PIP1817 «instala requests con pip»: whether a package is installed is read
+    // with pip show in every registered Python; nothing is installed or changed.
+    private const string PipShowScript = """
+        $ErrorActionPreference='Continue';$exe=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]));$pkg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[1]))
+        $out = & $exe -m pip show $pkg 2>&1 | Out-String
+        [pscustomobject]@{ok=$true;exit=$LASTEXITCODE;output=$out}|ConvertTo-Json -Compress
+        """;
+
+    private static readonly Regex PythonPackageName = new(
+        @"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,99})$",
+        RegexOptions.CultureInvariant);
+
+    private static string NormalizePythonPackage(string name) =>
+        name.Replace('_', '-').Replace('.', '-').ToLowerInvariant();
+
+    private async ValueTask<ExternalCapabilityReceipt> PythonPackageStatusAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken token)
+    {
+        string package = ExternalJson.RequiredString(arguments, "package").Trim();
+        if (!PythonPackageName.IsMatch(package))
+        {
+            return ExternalJson.Failure(operation, "python_package_name_invalid");
+        }
+        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
+        var rows = new List<(string DisplayName, string Version, bool PipAvailable, bool Installed, string? PackageVersion)>();
+        foreach ((string _, string _, string version, string displayName, string? executable, string _) in installs)
+        {
+            if (executable is null)
+            {
+                rows.Add((displayName, version, false, false, null));
+                continue;
+            }
+            ExternalProcessResult process = await RunPowerShellAsync(PipShowScript, [Encode(executable), Encode(package)], token);
+            string output = process.Output ?? string.Empty;
+            int exit = -1;
+            if (output.Contains('{', StringComparison.Ordinal))
+            {
+                try
+                {
+                    using JsonDocument document = ParseLastJson(output);
+                    JsonElement root = document.RootElement;
+                    if (root.ValueKind == JsonValueKind.Object)
+                    {
+                        output = root.TryGetProperty("output", out JsonElement text) && text.ValueKind == JsonValueKind.String ? text.GetString() ?? string.Empty : string.Empty;
+                        exit = root.TryGetProperty("exit", out JsonElement code) && code.ValueKind == JsonValueKind.Number ? code.GetInt32() : -1;
+                    }
+                }
+                catch (JsonException)
+                {
+                    exit = -1;
+                }
+            }
+            bool pipAvailable = !output.Contains("No module named pip", StringComparison.OrdinalIgnoreCase);
+            Match name = Regex.Match(output, @"(?im)^Name:\s*(\S+)\s*$");
+            Match packageVersion = Regex.Match(output, @"(?im)^Version:\s*(\S+)\s*$");
+            bool installed = pipAvailable && exit == 0 && name.Success
+                && string.Equals(NormalizePythonPackage(name.Groups[1].Value), NormalizePythonPackage(package), StringComparison.Ordinal);
+            rows.Add((displayName, version, pipAvailable, installed, installed && packageVersion.Success ? packageVersion.Groups[1].Value : null));
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("package", package);
+            writer.WriteNumber("pythonCount", rows.Count);
+            writer.WriteNumber("installedCount", rows.Count(row => row.Installed));
+            writer.WriteStartArray("pythons");
+            foreach ((string displayName, string version, bool pipAvailable, bool installed, string? packageVersion) in rows)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("displayName", displayName);
+                writer.WriteString("pythonVersion", version);
+                writer.WriteBoolean("pipAvailable", pipAvailable);
+                writer.WriteBoolean("installed", installed);
+                if (packageVersion is not null)
+                {
+                    writer.WriteString("packageVersion", packageVersion);
+                }
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "python_pip_show_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // USB1823 «hace un backup de mis documentos a un pendrive»: the removable
+    // drives connected right now, read through DriveInfo; nothing is copied.
+    private static ExternalCapabilityReceipt RemovableStorageList(string operation)
+    {
+        var drives = new List<(string Letter, string Label, string Format, double FreeGiB, double TotalGiB)>();
+        foreach (DriveInfo drive in DriveInfo.GetDrives())
+        {
+            try
+            {
+                if (drive.DriveType != DriveType.Removable || !drive.IsReady)
+                {
+                    continue;
+                }
+                string letter = drive.Name.TrimEnd('\\', '/');
+                double free = Math.Round(drive.AvailableFreeSpace / 1073741824d, 1);
+                double total = Math.Round(drive.TotalSize / 1073741824d, 1);
+                drives.Add((letter, drive.VolumeLabel ?? string.Empty, drive.DriveFormat ?? string.Empty, free, total));
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                continue;
+            }
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("driveCount", drives.Count);
+            writer.WriteStartArray("drives");
+            foreach ((string letter, string label, string format, double free, double total) in drives)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("letter", letter);
+                writer.WriteString("label", label);
+                writer.WriteString("format", format);
+                writer.WriteNumber("freeGiB", free);
+                writer.WriteNumber("totalGiB", total);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_driveinfo_removable_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // DISCORD1839 «ve a Cotele en Discord»: the channel is looked up in the
+    // client's quick switcher (Ctrl+K), its matches read by UI Automation and
+    // the switcher closed with Escape; nothing is joined or opened.
+    private const string ClientChannelLocateScript = """
+        $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
+
+        """ + MarkedKeysType + """
+        $sig='using System;using System.Runtime.InteropServices;public static class BaxyClientWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);}'
+        if(-not ([System.Management.Automation.PSTypeName]'BaxyClientWin').Type){Add-Type -TypeDefinition $sig}
+        $root=[System.Windows.Automation.AutomationElement]::RootElement
+        $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
+        $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($c.Current.Name -match 'Discord'){$w=$c;break}}
+        if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
+        $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyClientWin]::ShowWindow($h,9)
+        $needle=$label.ToLowerInvariant()
+        function Read-Items {param($win,$nd) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n -and $n.ToLowerInvariant().Contains($nd)){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}};,$r}
+        # The product and its console compete for the foreground while this runs; a lost focus can drop the
+        # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
+        # and confirming it held, until the switcher shows matches; nothing is joined or opened.
+        $items=@();$foreground=$false
+        for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
+          [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
+          $foreground=$true
+          [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 250
+          [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 150
+          [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);continue}
+          [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
+          for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items $w $needle;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
+          [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
+        }
+        if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
+        [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
+        """;
+
+    private static readonly Regex ClientChannelName = new(
+        @"^[\p{L}\p{N} ._'!?#&-]{1,120}$",
+        RegexOptions.CultureInvariant);
+
+    private async ValueTask<ExternalCapabilityReceipt> ClientChannelLocateAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken token)
+    {
+        string client = ExternalJson.RequiredString(arguments, "client").Trim();
+        string name = ExternalJson.RequiredString(arguments, "name").Trim();
+        if (client != "discord")
+        {
+            return ExternalJson.Failure(operation, "client_not_supported");
+        }
+        if (!ClientChannelName.IsMatch(name))
+        {
+            return ExternalJson.Failure(operation, "channel_name_invalid");
+        }
+        IInputBurst? burst = await LeasedInput.HelperBurstAsync(KeysLease, token).ConfigureAwait(false);
+        using var restore = new BurstRestore(burst);
+        if (burst?.Refusal is string refused)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, refused);
+        }
+
+        (ExternalProcessResult? watched, bool interrupted) = await LeasedInput.WatchHelperAsync(
+            burst, run => RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], run), token);
+        if (interrupted || watched is not { } process)
+        {
+            // The person acted while the switcher was being typed into: the script was stopped there.
+            return ExternalJson.Failure(operation, LeasedInput.Interrupted, true);
+        }
+
+        using JsonDocument document = ParseLastJson(process.Output);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return ExternalJson.Failure(operation, "client_quick_switcher_not_read", true);
+        }
+        if (!Bool(root, "ok"))
+        {
+            string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
+                ? error.GetString() ?? "client_quick_switcher_not_read"
+                : "client_quick_switcher_not_read";
+            return ExternalJson.Failure(operation, code, code == "client_quick_switcher_not_read");
+        }
+        var items = new List<string>();
+        if (root.TryGetProperty("items", out JsonElement itemsElement) && itemsElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement item in itemsElement.EnumerateArray())
+            {
+                if (item.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(item.GetString()))
+                {
+                    items.Add(item.GetString()!);
+                }
+            }
+        }
+        string channelName = string.Empty, channelKind = string.Empty, server = string.Empty;
+        if (items.Count > 0)
+        {
+            string[] parts = items[0].Split(", ", StringSplitOptions.TrimEntries);
+            channelName = parts[0];
+            string kind = parts.Length > 1 ? parts[1].ToLowerInvariant() : string.Empty;
+            channelKind = kind.Contains("voz", StringComparison.Ordinal) || kind.Contains("voice", StringComparison.Ordinal) ? "voice"
+                : kind.Contains("texto", StringComparison.Ordinal) || kind.Contains("text", StringComparison.Ordinal) ? "text"
+                : kind.Length > 0 ? kind : "unknown";
+            server = parts.Length > 2 ? parts[2] : string.Empty;
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("client", client);
+            writer.WriteString("query", name);
+            writer.WriteBoolean("found", items.Count > 0);
+            writer.WriteNumber("matchCount", items.Count);
+            writer.WriteString("channelName", channelName);
+            writer.WriteString("channelKind", channelKind);
+            writer.WriteString("server", server);
+            writer.WriteBoolean("joined", false);
+            writer.WriteString("authority", "client_quick_switcher_uia_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private static ExternalCapabilityReceipt DisplayStatus(string operation)
+    {
+        var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
+        for (uint index = 0; index < 32; index++)
+        {
+            DisplayDevice device = default;
+            device.Size = (uint)Marshal.SizeOf<DisplayDevice>();
+            if (!EnumDisplayDevicesW(null, index, ref device, 0))
+            {
+                break;
+            }
+            const uint attachedToDesktop = 0x1;
+            const uint primaryDevice = 0x4;
+            if ((device.StateFlags & attachedToDesktop) == 0)
+            {
+                continue;
+            }
+            string name;
+            unsafe
+            {
+                name = new string(device.DeviceName).TrimEnd('\0');
+            }
+            DeviceMode mode = default;
+            mode.Size = (ushort)Marshal.SizeOf<DeviceMode>();
+            const int currentSettings = -1;
+            if (!EnumDisplaySettingsW(name, currentSettings, ref mode))
+            {
+                continue;
+            }
+            monitors.Add((name, (device.StateFlags & primaryDevice) != 0, mode.PelsWidth, mode.PelsHeight, mode.DisplayFrequency));
+        }
+        if (monitors.Count == 0)
+        {
+            return ExternalJson.Failure(operation, "display_devices_not_found");
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("monitorCount", monitors.Count);
+            writer.WriteStartArray("monitors");
+            foreach ((string name, bool primary, uint width, uint height, uint hertz) in monitors)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("name", name);
+                writer.WriteBoolean("primary", primary);
+                writer.WriteNumber("width", width);
+                writer.WriteNumber("height", height);
+                writer.WriteNumber("refreshHz", hertz);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_display_devices_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    private unsafe struct DisplayDevice
+    {
+        public uint Size;
+        public fixed char DeviceName[32];
+        public fixed char DeviceString[128];
+        public uint StateFlags;
+        public fixed char DeviceId[128];
+        public fixed char DeviceKey[128];
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    private unsafe struct DeviceMode
+    {
+        public fixed char DeviceName[32];
+        public ushort SpecVersion;
+        public ushort DriverVersion;
+        public ushort Size;
+        public ushort DriverExtra;
+        public uint Fields;
+        public int PositionX;
+        public int PositionY;
+        public uint DisplayOrientation;
+        public uint DisplayFixedOutput;
+        public short Color;
+        public short Duplex;
+        public short YResolution;
+        public short TtOption;
+        public short Collate;
+        public fixed char FormName[32];
+        public ushort LogPixels;
+        public uint BitsPerPel;
+        public uint PelsWidth;
+        public uint PelsHeight;
+        public uint DisplayFlags;
+        public uint DisplayFrequency;
+        public uint IcmMethod;
+        public uint IcmIntent;
+        public uint MediaType;
+        public uint DitherType;
+        public uint Reserved1;
+        public uint Reserved2;
+        public uint PanningWidth;
+        public uint PanningHeight;
+    }
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumDisplayDevicesW(string? device, uint deviceIndex, ref DisplayDevice displayDevice, uint flags);
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumDisplaySettingsW(string deviceName, int modeIndex, ref DeviceMode deviceMode);
 
     private async ValueTask<ExternalCapabilityReceipt> PeripheralListAsync(
         string operation,
@@ -629,6 +1545,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         CancellationToken token)
     {
         string requested = ExternalJson.RequiredString(arguments, "profileName");
+        string? place = arguments.TryGetProperty("place", out JsonElement placeValue)
+            && placeValue.ValueKind == JsonValueKind.String
+            ? placeValue.GetString()
+            : null;
         ExternalProcessResult process = await RunPowerShellAsync(WifiProfilesScript, [], token);
         using JsonDocument source = JsonDocument.Parse(process.Output);
         string[] profiles = source.RootElement.TryGetProperty("profiles", out JsonElement values)
@@ -662,6 +1582,24 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                         && (candidate.Contains(folded, StringComparison.Ordinal)
                             || folded.Contains(candidate, StringComparison.Ordinal));
                 }).ToArray();
+        bool byPlace = false;
+        if (matches.Length == 0 && place is not null)
+        {
+            // REOPEN1957 H0170/H0376: «casa» names a place, not a profile. The
+            // profile the person associated with it earlier is the one.
+            string? remembered = ReadWifiPlace(place);
+            if (remembered is not null)
+            {
+                matches = profiles.Where(profile => string.Equals(profile, remembered, StringComparison.Ordinal)).ToArray();
+                byPlace = matches.Length == 1;
+            }
+
+            if (matches.Length == 0)
+            {
+                return ExternalJson.Failure(operation, "wifi_place_unknown");
+            }
+        }
+
         if (matches.Length == 0)
         {
             return ExternalJson.Failure(operation, "wifi_profile_not_found");
@@ -675,7 +1613,79 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string profile = matches[0];
         string id = Opaque("wifi", profile);
         _wifi[id] = profile;
-        return await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token);
+        ExternalCapabilityReceipt receipt = await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token, place);
+        if (receipt.Verified && place is not null && !byPlace)
+        {
+            WriteWifiPlace(place, profile);
+        }
+
+        return receipt;
+    }
+
+    private string WifiPlacesPath => Path.Combine(_scanRoot, "wifi-places.v1.json");
+
+    private string? ReadWifiPlace(string place)
+    {
+        try
+        {
+            if (!File.Exists(WifiPlacesPath))
+            {
+                return null;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(WifiPlacesPath));
+            return document.RootElement.ValueKind == JsonValueKind.Object
+                && document.RootElement.TryGetProperty(place, out JsonElement value)
+                && value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return null;
+        }
+    }
+
+    private void WriteWifiPlace(string place, string profile)
+    {
+        var places = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        try
+        {
+            if (File.Exists(WifiPlacesPath))
+            {
+                using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(WifiPlacesPath));
+                if (document.RootElement.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (JsonProperty property in document.RootElement.EnumerateObject())
+                    {
+                        if (property.Value.ValueKind == JsonValueKind.String)
+                        {
+                            places[property.Name] = property.Value.GetString() ?? string.Empty;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            places.Clear();
+        }
+
+        places[place] = profile;
+        Directory.CreateDirectory(_scanRoot);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            foreach ((string key, string value) in places)
+            {
+                writer.WriteString(key, value);
+            }
+
+            writer.WriteEndObject();
+        }
+
+        File.WriteAllBytes(WifiPlacesPath, stream.ToArray());
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ConnectWifiProfileAsync(
@@ -683,7 +1693,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id,
         string profile,
         ExternalEffectBoundary effectBoundary,
-        CancellationToken token)
+        CancellationToken token,
+        string? place = null)
     {
         effectBoundary.Cross(token);
         ExternalProcessResult dispatch = await _runner.RunAsync(
@@ -705,7 +1716,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     profile,
                     StringComparison.OrdinalIgnoreCase))
             {
-                return ExternalJson.Success(operation, WifiResult(id, true), true);
+                return ExternalJson.Success(operation, WifiResult(id, true, place), true);
             }
 
             if (observation < 30)
@@ -775,6 +1786,77 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, WifiResult(id, true), false);
     }
 
+    // NETWORK1729 «qué redes wifi hay»: the networks the adapter sees right now.
+    // A powered-down radio is a typed state (wifi_interface_off), never a scan.
+    private const string WifiScanScript = """
+        $text=@(netsh wlan show networks mode=bssid);$joined=($text -join "`n")
+        if($joined -match '(?i)apagada|powered down|is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wifi_interface_off'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_radio_not_found'}|ConvertTo-Json -Compress;exit 0}
+        $networks=@();$current=$null
+        foreach($line in $text){
+          if($line -match '^\s*SSID\s+\d+\s*:\s*(.*?)\s*$'){if($current){$networks+=$current};$current=[ordered]@{ssid=$Matches[1];authentication='';signalPercent=$null};continue}
+          if($null -eq $current){continue}
+          if($line -match '^\s*(?:Authentication|Autenticación)\s*:\s*(.+?)\s*$' -and -not $current.authentication){$current.authentication=$Matches[1];continue}
+          if($line -match '^\s*(?:Signal|Señal)\s*:\s*(\d+)\s*%' -and $null -eq $current.signalPercent){$current.signalPercent=[int]$Matches[1];continue}
+        }
+        if($current){$networks+=$current}
+        [pscustomobject]@{ok=$true;networks=@($networks|ForEach-Object {[pscustomobject]$_})}|ConvertTo-Json -Compress -Depth 4
+        """;
+
+    private async ValueTask<ExternalCapabilityReceipt> WifiScanAsync(
+        string operation,
+        CancellationToken token)
+    {
+        ExternalProcessResult process = await RunPowerShellAsync(WifiScanScript, [], token);
+        using JsonDocument document = ParseLastJson(process.Output);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return ExternalJson.Failure(operation, "wifi_scan_not_read");
+        }
+        if (!Bool(root, "ok"))
+        {
+            string code = String(root, "error");
+            return ExternalJson.Failure(operation, string.IsNullOrWhiteSpace(code) ? "wifi_scan_not_read" : code);
+        }
+        var networks = new List<(string Ssid, string Authentication, int? Signal)>();
+        if (root.TryGetProperty("networks", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement item in list.EnumerateArray())
+            {
+                if (item.ValueKind != JsonValueKind.Object) continue;
+                string ssid = String(item, "ssid");
+                int? signal = item.TryGetProperty("signalPercent", out JsonElement signalElement)
+                    && signalElement.ValueKind == JsonValueKind.Number
+                    && signalElement.TryGetInt32(out int parsed)
+                        ? parsed
+                        : null;
+                networks.Add((ssid, String(item, "authentication"), signal));
+                if (networks.Count >= 50) break;
+            }
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("networkCount", networks.Count);
+            writer.WriteStartArray("networks");
+            foreach ((string ssid, string authentication, int? signal) in networks)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("ssid", string.IsNullOrWhiteSpace(ssid) ? "(oculta)" : ssid);
+                writer.WriteBoolean("hidden", string.IsNullOrWhiteSpace(ssid));
+                writer.WriteString("authentication", authentication);
+                if (signal is int value) writer.WriteNumber("signalPercent", value); else writer.WriteNull("signalPercent");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "netsh_wlan_show_networks_bssid");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> WifiConnectionStatusAsync(
         string operation,
         CancellationToken token)
@@ -823,6 +1905,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         string setting = ExternalJson.RequiredString(arguments, "setting");
         int value = ExternalJson.OptionalInt(arguments, "value", -1);
+        if (setting == "airplane_mode")
+        {
+            return await AirplaneModeSetAsync(operation, value, effectBoundary, token).ConfigureAwait(false);
+        }
+
         if (setting == "do_not_disturb")
         {
             if (value is not (0 or 1))
@@ -882,6 +1969,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             [value.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
         using JsonDocument response = ParseLastJson(process.Output);
+        if (String(response.RootElement, "error") == BrightnessNotSupported)
+            return ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported);
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
@@ -891,16 +1980,33 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 effect);
         }
 
+        // Ronda 22 (r18 t4-c04 t2: the same level asked again took 10.2 s against 3.6 s the first time): a set whose
+        // read before already shows the asked level on every monitor changes nothing, so it does not wait for a
+        // change that will not come; it returns at once with changed:false and the level read.
+        bool changed = !response.RootElement.TryGetProperty("changed", out JsonElement changedElement)
+            || changedElement.ValueKind != JsonValueKind.False;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("setting", setting);
             writer.WriteNumber("value", value);
+            writer.WriteBoolean("changed", changed);
+            // Ronda 19b (r17 t3-c04): the level read before the set is part of the observation, so a final may say
+            // the direction it went («bajé el brillo al 30 %») only when these readings show it.
+            if (response.RootElement.TryGetProperty("baselineValues", out JsonElement baseline)
+                && baseline.ValueKind == JsonValueKind.Array)
+            {
+                writer.WritePropertyName("baselineValues");
+                baseline.WriteTo(writer);
+            }
+
             writer.WriteString("authority", "wmi_monitor_brightness_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, true);
+        return changed
+            ? ExternalJson.Success(operation, result, true)
+            : ExternalJson.Switched(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> SettingAdjustAsync(
@@ -928,6 +2034,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             [delta.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
         using JsonDocument response = ParseLastJson(process.Output);
+        if (String(response.RootElement, "error") == BrightnessNotSupported)
+            return ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported);
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
@@ -960,11 +2068,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string operation, JsonElement arguments, CancellationToken token)
     {
         string setting = ExternalJson.RequiredString(arguments, "setting");
+        if (setting == "airplane_mode")
+            return await AirplaneModeStatusAsync(operation).ConfigureAwait(false);
         if (setting != "brightness")
             return ExternalJson.Failure(operation, "brightness_status_invalid");
         ExternalProcessResult process = await RunPowerShellAsync(
             BrightnessStatusScript, [], token);
         using JsonDocument response = ParseLastJson(process.Output);
+        if (String(response.RootElement, "error") == BrightnessNotSupported)
+            return ExternalJson.Failure(operation, BrightnessNotSupported);
         if (!Bool(response.RootElement, "ok")
             || !response.RootElement.TryGetProperty("monitors", out JsonElement monitors))
             return ExternalJson.Failure(operation, "brightness_status_verification_failed");
@@ -1063,11 +2175,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             token);
     }
 
-    private static JsonElement WifiResult(string? id, bool connected) =>
+    private static JsonElement WifiResult(string? id, bool connected, string? place = null) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
+            if (place is not null)
+            {
+                // The place word is the person's; the SSID stays out of the result.
+                writer.WriteString("place", place);
+            }
+
             if (id is null)
             {
                 writer.WriteNull("profileId");

@@ -1,5 +1,0 @@
-﻿EXIT=0
-wall_before_utc=2026-09-04T16:15:21.8685122+00:00
-wall_after_utc=2026-09-04T16:15:47.3776975+00:00
-profile=C:\Users\usuario\AppData\Local\BAXY\comprobaciones-c02-reval-clone-1
-capture=C:\Users\usuario\AppData\Local\Temp\grok-goal-066eadc5fdae\implementer\c02-clone-launch-1

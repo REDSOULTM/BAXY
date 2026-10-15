@@ -15,6 +15,34 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class FieldProgressContractTests
 {
+    [TestCase("understanding", "understanding", false)]
+    [TestCase("Preparando los pasos", "preparing_steps", false)]
+    [TestCase("acting", "acting", true)]
+    [TestCase("Ejecutando paso 2 de 3", "acting", true)]
+    public void MilestoneFactsKeepActualPhaseAndOnlyCurrentExecutionCounts(
+        string status, string expectedPhase, bool hasStep)
+    {
+        UserMessageDraft draft = MainWindowViewModel.CreateMilestoneDraft(status, 2, 3);
+        JsonNode facts = JsonNode.Parse(draft.Source)!;
+        Assert.That((string?)facts["phase"], Is.EqualTo(expectedPhase));
+        Assert.That((int?)facts["step"], Is.EqualTo(hasStep ? 2 : null));
+        Assert.That((int?)facts["totalSteps"], Is.EqualTo(hasStep ? 3 : null));
+    }
+
+    [Test]
+    public async Task ADelayedMilestoneCannotPublishInAnotherTurnOrPhase()
+    {
+        await using var viewModel = new MainWindowViewModel();
+        const string label = "Estoy revisando los detalles de tu petición.";
+        Assert.That(viewModel.TryApplyMilestone(label, "t0", "understanding"), Is.False);
+        viewModel.BeginTurnPresentation("Lee el archivo de prueba.", DateTimeOffset.UtcNow);
+        Assert.That(viewModel.TryApplyMilestone(label, "previous-turn", "understanding"), Is.False);
+        Assert.That(viewModel.TryApplyMilestone(label, "t0", "acting"), Is.False);
+        Assert.That(viewModel.ProgressLabel, Is.Null);
+        Assert.That(viewModel.TryApplyMilestone(label, "t0", "understanding"), Is.True);
+        Assert.That(viewModel.ProgressLabel, Is.EqualTo(label));
+    }
+
     [Test]
     public void ReadyAndIdleShowsNoIndication()
     {
@@ -136,6 +164,79 @@ public sealed class FieldProgressContractTests
             Is.False,
             "a fresh hito is not due 0.5 s after the last visible label");
         Assert.That(viewModel.ProgressLabel, Is.EqualTo(first));
+    }
+
+    // A computer-use mission shows its own status: its looks and steps are «acting», and no label is composed by
+    // the model while it runs (each one cost 0.3-0.6 s of GPU and evicted the step's prompt cache).
+    [TestCase("Mirando la pantalla")]
+    [TestCase("Paso 2: decidiendo")]
+    [TestCase("Paso 3: clic en «Biblioteca»")]
+    public void ComputerUseStatusIsActing(string status)
+    {
+        FieldProgressNotice? notice = FieldBridgeContract.ResolveProgress(
+            isReady: true, isBusy: true, hasStartupError: false, statusDescription: status);
+        Assert.Multiple(() =>
+        {
+            Assert.That(notice?.Stage, Is.EqualTo(FieldProgressNotice.StageActing));
+            Assert.That(notice?.Label, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task NoMilestoneIsComposedWhileAComputerUseMissionRuns()
+    {
+        DateTimeOffset start = DateTimeOffset.Parse(
+            "2026-08-23T12:00:00Z",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal);
+        string root = Path.Combine(Path.GetTempPath(), "baxy-cu-milestone-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        bool bypass = UserMessagePolicy.BypassLlmCompositionForTests;
+        try
+        {
+            await using var viewModel = new MainWindowViewModel();
+            var plans = (MindPlanSession)typeof(MainWindowViewModel)
+                .GetField("_mindPlans", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(viewModel)!;
+            plans.UseStore(new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key")));
+            var arguments = new JsonObject { ["goal"] = "ir a la biblioteca", ["application"] = "Steam" };
+            var execution = new PendingMindPlanExecution(
+                "Abre Steam y ve a la biblioteca",
+                [new MindPlanStep("step_1", ComputerUseMission.OperationName, "ir a la biblioteca", [], "literal", arguments)])
+            {
+                ComputerUse = new JsonObject { ["goal"] = "ir a la biblioteca", ["steps"] = new JsonArray() },
+            };
+            plans.Begin(execution);
+            viewModel.BeginTurnPresentation("Abre Steam y ve a la biblioteca", start);
+
+            // lat-apertura-clic (owner's rule: more than 3 s without a signal is not acceptable): a wait of the mission
+            // gets the formulated label, which claims no result; the model is never asked to compose one. Review of
+            // the branch (finding 5): the assembly bypasses the model's composition for every test, which took the
+            // formulated path whatever the mission; here the bypass is off, so only the running mission can take it
+            // (with no model ready, the ordinary milestone would emit nothing).
+            UserMessagePolicy.BypassLlmCompositionForTests = false;
+            DateTimeOffset due = FieldBridgeContract.FirstHitoDueAt(start);
+            Assert.That(viewModel.TryEmitDueMilestone(due), Is.True);
+            Assert.That(viewModel.ProgressLabel, Is.EqualTo(FirstSignal.FormulateProgress(
+                "Abre Steam y ve a la biblioteca", FirstSignal.KindMilestone)));
+            Assert.That(viewModel.ProgressLabel, Does.Not.Match("(?i)^\\s*listo\\b"));
+            Assert.That(typeof(MainWindowViewModel)
+                .GetField("_milestoneCompositionTask", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(viewModel), Is.Null, "no label composed by the model while the mission runs");
+            Assert.That(viewModel.TryEmitDueMilestone(due.AddSeconds(1)), Is.False, "not again before 3 s more");
+
+            execution.ComputerUse = null;
+            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(due)), Is.False,
+                "once the mission ends, no formulated label: the model's milestone (none ready here)");
+            UserMessagePolicy.BypassLlmCompositionForTests = true;
+            Assert.That(viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(due).AddSeconds(3)), Is.True,
+                "once the mission ends the ordinary milestone comes back");
+        }
+        finally
+        {
+            UserMessagePolicy.BypassLlmCompositionForTests = bypass;
+            Directory.Delete(root, recursive: true);
+        }
     }
 
     [Test]

@@ -14,6 +14,13 @@ namespace Baxy.Kernel.Journal;
 [JsonSerializable(typeof(JournalPayload))]
 [JsonSerializable(typeof(HonestyCorrectionTrace))]
 [JsonSerializable(typeof(JournalAnchorPosition))]
+[JsonSerializable(typeof(JournalArchiveLink))]
 [JsonSerializable(typeof(JournalAnchorPayload))]
 [JsonSerializable(typeof(JournalAnchorEnvelope))]
+[JsonSerializable(typeof(JournalRetiredState))]
+[JsonSerializable(typeof(JournalRotationIntent))]
+[JsonSerializable(typeof(JournalSegmentManifest))]
+[JsonSerializable(typeof(JournalSegmentManifestEnvelope))]
+[JsonSerializable(typeof(JournalSegmentIndex))]
+[JsonSerializable(typeof(JournalSegmentIndexEnvelope))]
 internal sealed partial class JournalJsonContext : JsonSerializerContext;

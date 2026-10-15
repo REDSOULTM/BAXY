@@ -21,9 +21,15 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
 
     public string Stage => "vision";
 
+    public ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
+        string operation,
+        string label,
+        CancellationToken cancellationToken) => TryClickAsync(operation, label, null, cancellationToken);
+
     public async ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
         string operation,
         string label,
+        IPointPress? press,
         CancellationToken cancellationToken)
     {
         string? endpoint = Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT");
@@ -43,8 +49,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         VisibleControlSurface.CapturedWindow before = captured.Value;
         try
         {
-            byte[] image = await File.ReadAllBytesAsync(before.Path, cancellationToken)
-                .ConfigureAwait(false);
+            byte[] image = before.Bmp;
             using var request = new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new StringContent(
@@ -79,35 +84,78 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             int height = box.Groups[4].Success
                 ? int.Parse(box.Groups[4].Value, CultureInfo.InvariantCulture)
                 : 0;
-            VisibleControlSurface.Click(
-                before.Left + x + Math.Max(0, width) / 2,
-                before.Top + y + Math.Max(0, height) / 2);
-            await Task.Delay(200, cancellationToken).ConfigureAwait(false);
-            VisibleControlSurface.CapturedWindow? after =
-                await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            bool changed = after is not null && after.Value.Sha256 != before.Sha256;
-            if (after is not null)
-                VisibleControlSurface.Delete(after.Value.Path);
+            int screenX = before.Left + x + Math.Max(0, width) / 2;
+            int screenY = before.Top + y + Math.Max(0, height) / 2;
+            // The control at the located point, pressed through the accessible tree when it has a way (no cursor);
+            // the pointer only when the worker says nothing there has one, behind the pointer's guard and inside a
+            // burst of the foreground lease after a pause of the person (GOAL_COMPUTER_USE_V3 point 0, fix 3). The
+            // box was located on a capture taken before the model's answer and the wait: the window is read again
+            // inside the burst, and anything but the same drawing at the same place refuses (no relocation: asking
+            // the model again would hold the front for seconds).
+            LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
+                press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken)
+                .ConfigureAwait(false);
+            if (pressed.Failure is { } refused)
+                return refused;
+            if (pressed.Before is { } fresh)
+                before = fresh;
+            string method = pressed.Method;
+            IInputBurst? burst = pressed.Burst;
+            bool changed = false;
+            bool userActed = false;
+            bool restored = true;
+            try
+            {
+                await Task.Delay(200, cancellationToken).ConfigureAwait(false);
+                // r4a M3: a pointer's burst was given back right after the press; its look reads the window's own
+                // drawing behind the person's, the way its baseline was taken.
+                VisibleControlSurface.CapturedWindow? after = burst is null
+                    ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
+                    : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
+                        .ConfigureAwait(false);
+                changed = after is not null && after.Value.Sha256 != before.Sha256;
+            }
+            finally
+            {
+                if (burst is not null)
+                {
+                    userActed = burst.UserActed;
+                    restored = burst.Restore();
+                }
+            }
+
+            // A surface that changed after the person acted proves nothing of the click.
+            changed &= !userActed;
+            bool targeted = method == "target" && pressed.Focused;
+            bool ok = changed || targeted;
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
-                writer.WriteBoolean("ok", changed);
+                writer.WriteBoolean("ok", ok);
                 writer.WriteBoolean("effectObserved", true);
-                writer.WriteString("error", changed ? "" : "visible_button_postread_unchanged");
+                writer.WriteString("error", ok ? "" : "visible_button_postread_unchanged");
                 writer.WriteString("name", label);
                 writer.WriteString("controlIdentity", "vision." + x + "." + y);
                 writer.WriteBoolean("absentOrDisabled", false);
                 writer.WriteBoolean("selected", false);
                 writer.WriteBoolean("surfaceChanged", changed);
+                writer.WriteString("method", method);
+                if (targeted)
+                {
+                    writer.WriteBoolean("targeted", true);
+                    writer.WriteBoolean("focused", true);
+                }
                 writer.WriteString("cascadeStage", Stage);
+                writer.WriteNumber("waitedMs", burst is null ? 0 : pressed.WaitedMs);
+                writer.WriteBoolean("restored", restored);
                 writer.WriteString("authority", "configured_vision_locate_click_postread");
                 writer.WriteEndObject();
             });
-            return changed
+            return ok
                 ? ExternalJson.Success(operation, result, true)
-                : ExternalJson.Failure(operation, "visible_click_postread_invalid", true);
+                : ExternalJson.Failure(
+                    operation, userActed ? "input_user_interrupted" : "visible_click_postread_invalid", true);
         }
         catch (Exception exception) when (exception is IOException
             or HttpRequestException
@@ -117,10 +165,6 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             or KeyNotFoundException)
         {
             return ExternalJson.Failure(operation, "vision_provider_request_failed");
-        }
-        finally
-        {
-            VisibleControlSurface.Delete(before.Path);
         }
     }
 

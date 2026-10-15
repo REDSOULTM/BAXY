@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "purpose": "Ronda 24, revisión 2 («rap para entrenar» respondido con «Rock para entrenar», «lo fi para estudiar» con «Piano para estudiar»): las palabras con que un pedido de reproducción se compara con lo que la página muestra y lo que suena (SpotifyDesktopAutomation.ps1, Get-BaxySpotifyQueryCoverage, copiado junto al script). function_words: palabras vacías, nunca cuentan sea cual sea su largo; medium_words: palabras que sólo nombran el medio (todo resultado es música), tampoco cuentan; purpose_markers: tras ellas va el propósito («para estudiar»), que sólo desempata; lo que va antes es lo pedido. Plegadas, sin tildes, ordenadas.",
+  "function_words": ["a", "al", "algo", "an", "and", "de", "del", "e", "el", "en", "la", "las", "lo", "los", "me", "mi", "mis", "my", "o", "of", "or", "some", "su", "sus", "the", "tu", "tus", "u", "un", "una", "unas", "unos", "y"],
+  "medium_words": ["cancion", "canciones", "music", "musica", "playlist", "song", "songs", "tema", "temas"],
+  "purpose_markers": ["for", "pa", "pal", "para", "to"]
+}

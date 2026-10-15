@@ -12,8 +12,20 @@ namespace Baxy.Integration.Tests;
 public sealed class MainWindowShellContractTests
 {
     private const string HistoricalCommit = "4a83f2d082d6b0fec8297e801b96a0da620b059e";
+    // Resealed for Estabilización U (identity: bypass and the accessible mode, ADR-0008 reopening of
+    // 2026-10-11): source and dist rebuilt as a unit with the pinned graph. Previous seals:
+    // 12E633C9AF4742B6…FDA06036 (U before review H1), D8C30F3D8213AA92…FD83D6351 (2026-10-06 code audit),
+    // 88415FD01574BA0B…3355C7C1 (M53).
+    // Estabilización M (revisión H7/H8, 2026-10-11): MemoryPanel.tsx edits the chosen entry, confirms a forget in the
+    // panel itself and forgets everything by its own request; dist rebuilt. Previous seal: E0E7B6DBD0E46CC0…AADD96B20.
+    // Estabilización M2 (identity live check 2026-10-11 §5): MemoryPanel.tsx names each memory in the person's words and
+    // edits it inside the panel, in Spanish (no window.prompt); dist rebuilt. Previous seal: 47CB1EF8A6DA5B84…6B5DF640.
+    // Estabilización M2 (live recheck 2026-10-12): the memory card and every panel's close button speak Spanish
+    // («memoria · recuerdos», «cerrar»); dist rebuilt. Previous seal: 34FAFE533EA5BC4B…B97DE8AE.
+    // Encargo I2 (identidad redpc 2026-10-12): the open memory panel reads its list again with the counter's event
+    // (memory_revision); dist rebuilt. Previous seal: 2A30F00E52021893…8ED7F917.
     private const string CurrentFieldTreeSha256 =
-        "0F6DCDA5DCF7DFA8A89C64763EF4E75067967977C5673121197825F8EB0E1C71";
+        "54EAD2D80F8E3487D889E97325567892DE1CC5EA11FC6DCA27CFB582D425625A";
     private static readonly XNamespace XamlNamespace =
         "http://schemas.microsoft.com/winfx/2006/xaml";
 
@@ -46,10 +58,14 @@ public sealed class MainWindowShellContractTests
             Path.Combine(root, "src", "components", "ActivityPanel.tsx"));
         string substrate = File.ReadAllText(
             Path.Combine(root, "src", "components", "SubstratePanel.tsx"));
+        string titleBar = File.ReadAllText(
+            Path.Combine(root, "src", "components", "TitleBar.tsx"));
+        string styles = File.ReadAllText(Path.Combine(root, "src", "styles", "prototype.css"));
+        string memory = File.ReadAllText(Path.Combine(root, "src", "components", "MemoryPanel.tsx"));
 
         Assert.Multiple(() =>
         {
-            Assert.That(files, Has.Length.EqualTo(38));
+            Assert.That(files, Has.Length.EqualTo(34));
             Assert.That(ComputeTreeSha256(root), Is.EqualTo(CurrentFieldTreeSha256));
             Assert.That(origin, Does.Contain(HistoricalCommit));
             Assert.That(app, Does.Contain("<SubstratePanel"));
@@ -59,7 +75,9 @@ public sealed class MainWindowShellContractTests
             Assert.That(substrate, Does.Contain("label: 'triggers'"));
             Assert.That(substrate, Does.Contain("label: 'tools'"));
             Assert.That(activity, Does.Contain("label: 'sessions'"));
-            Assert.That(activity, Does.Contain("label: 'memory'"));
+            // Rewritten by Estabilización M2 (live recheck 2026-10-12: «MEMORY 3 pinned» in an interface asked in
+            // Spanish): the memory surface keeps its place and says its name in Spanish.
+            Assert.That(activity, Does.Contain("{ id: 'memory',   label: 'memoria'"));
             Assert.That(activity, Does.Not.Contain("label: 'docs'"));
             Assert.That(app, Does.Contain("1000 / (active ? 30 : 4)"));
             Assert.That(neuralGraph, Does.Contain("1000 / (active ? 30 : 4)"));
@@ -71,6 +89,29 @@ public sealed class MainWindowShellContractTests
                 Does.Contain("window.setTimeout(() => tick(performance.now()), interval)"));
             Assert.That(app, Does.Not.Contain("requestAnimationFrame(loop)"));
             Assert.That(neuralGraph, Does.Not.Contain("requestAnimationFrame(tick)"));
+            // Estabilización U: the interface's mode is real and unlocked, read from and written to the profile
+            // (no localStorage copy); bypass is switched on only after the view's own question and is seen on.
+            Assert.That(substrate, Does.Not.Contain("locked"));
+            Assert.That(substrate, Does.Contain("{ id: 'accessible', label: 'accesible'"));
+            Assert.That(substrate, Does.Contain("role=\"alertdialog\""));
+            Assert.That(substrate, Does.Contain("onConfirmation('bypass')"));
+            Assert.That(app, Does.Not.Contain("ONLY_ACCESS_MODE"));
+            Assert.That(app, Does.Not.Contain("field.accessMode"));
+            Assert.That(app, Does.Contain("document.documentElement.dataset.access = accessMode"));
+            Assert.That(app, Does.Contain("JSON.stringify({ confirmationPolicy: policy })"));
+            Assert.That(app, Does.Contain("fetch('/confirmation'"));
+            Assert.That(app, Does.Not.Contain("fetch('/settings'"));
+            Assert.That(titleBar, Does.Contain("titlebar-bypass"));
+            Assert.That(styles, Does.Contain(":root[data-access=\"accessible\"] :focus-visible"));
+            Assert.That(styles, Does.Contain("animation: none !important;"));
+            Assert.That(app, Does.Contain("document.documentElement.dataset.access === 'accessible'"));
+            Assert.That(neuralGraph, Does.Contain("document.documentElement.dataset.access === 'accessible'"));
+            // Estabilización M2: the memory is edited inside the panel, never in a browser dialog.
+            Assert.That(memory, Does.Not.Contain("window.prompt("));
+            Assert.That(memory, Does.Contain("it.label || it.key"));
+            // Encargo I2: the open list is read again with the counter's event (its memory_revision), not only on mount.
+            Assert.That(memory, Does.Contain("}, [revision]);"));
+            Assert.That(app, Does.Contain("revision={liveSurfaces?.memory_revision ?? 0}"));
         });
     }
 

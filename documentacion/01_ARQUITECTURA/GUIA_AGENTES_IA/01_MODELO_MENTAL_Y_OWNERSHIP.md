@@ -299,7 +299,11 @@ Ownership: lenguaje natural, propuesta de plan y subsistema de voz local.
 |---|---|
 | `__main__.py` | control plane, lanes seriales, dispatch, lifecycle y protocolo |
 | `protocol.py` | JSONL `baxy.mind.v1` y límite de línea |
-| `llm.py` | runtime LLM, decisiones, extracción, narración y validación |
+| `llm.py` | runtime LLM: proceso llama-server, presupuesto de cada petición y transporte; `LlmRuntime` hereda sus tareas de los mixins de abajo |
+| `llm_chat.py` / `llm_request_checks.py` / `llm_decider.py` / `llm_clarify.py` / `llm_plans.py` / `llm_compose.py` | métodos de `LlmRuntime` por tarea: conversación, chequeos del pedido, decisor en contexto, aclaraciones, planes y argumentos, composición del mensaje visible |
+| `llm_settings.py` / `llm_prompts.py` / `llm_grammar.py` / `llm_audit.py` / `native_selection.py` / `effect_guard.py` | ajustes del servidor, prompts y muestreo, gramáticas, diagnósticos, selección nativa y guarda de efectos |
+| `compose_situation.py` / `compose_payload.py` / `compose_instructions.py` / `deterministic_finals.py` / `computer_use_finals.py` | el redactor: la situación, el payload, la instrucción de forma y los finales sin borrador |
+| `visible_defect.py` / `payload_fact_checks.py` / `reply_claims.py` / `reply_language_checks.py` / `conversation_*.py` / `*_facts.py` / `search_report.py` | vetos y chequeos de lo que se publica, por familia de hecho |
 | `llm_transport.py` | transporte HTTP local acotado hacia llama-server |
 | `planner.py` | shortlist, DAG, schema y grounding |
 | `router.py` / `router_worker.py` | encoder E5 aislado por proceso |

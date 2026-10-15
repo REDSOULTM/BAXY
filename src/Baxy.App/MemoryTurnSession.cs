@@ -19,6 +19,12 @@ internal sealed class MemoryTurnSession
         internal required Func<MemoryOperationProtector?> Protector { get; init; }
 
         internal required Action<string, UserMessageEvent?> Publish { get; init; }
+        /// <summary>
+        /// Publish with the text whose language and intent the reply answers:
+        /// after «confirmar», the final of a continued save answers the original
+        /// request, not the closed reply word (MEMORY1247).
+        /// </summary>
+        internal Action<string, UserMessageEvent?, string?>? PublishForObjective { get; init; }
 
         internal required Action<string> SetStatus { get; init; }
 
@@ -29,20 +35,29 @@ internal sealed class MemoryTurnSession
         internal required Func<MissionInputRoute, RetryableOperationRegistry, CancellationToken, Task<bool>>
             ContinuePublic
         { get; init; }
+
+        /// <summary>
+        /// Estabilización M: a verified change of what the memory holds (saved, corrected, forgotten, switched on or
+        /// off). The interface's memory count is read again from the store, never kept by the App.
+        /// </summary>
+        internal Action? MemoryChanged { get; init; }
     }
 
-    internal sealed record PublicAfterMemory(
+    private sealed record MemoryContinuation(
         PreparedOperation Predecessor,
-        string Objective,
-        MissionInputSource Source);
+        string? Objective,
+        MissionInputSource Source,
+        PreparedOperation? SaveAfterEnable = null,
+        string? RequestText = null);
 
     private readonly Host _host;
     private PendingMemoryConfirmation? _confirmation;
     private bool _confirmationIsDurable;
     private bool _confirmationRequiresReconciliation;
     private PreparedOperation? _pendingOperation;
-    private PublicAfterMemory? _publicAfter;
+    private MemoryContinuation? _continuation;
     private bool _recoveryAnnounced;
+    private MemorySaveSubject? _missingSaveSubject;
 
     internal MemoryTurnSession(Host host)
     {
@@ -57,6 +72,50 @@ internal sealed class MemoryTurnSession
 
     internal PreparedOperation? PendingOperation => _pendingOperation;
 
+    internal void AwaitSaveInput(MemoryParseResult request)
+    {
+        _missingSaveSubject = request.MissingSaveSubject;
+    }
+
+    internal bool TryCancelSaveInput(string text)
+    {
+        if (_missingSaveSubject is null
+            || ConfirmationReplyParser.Parse(text) != ConfirmationReplyKind.Cancel)
+        {
+            return false;
+        }
+
+        _missingSaveSubject = null;
+        return true;
+    }
+
+    internal bool TryResolveSaveInput(MissionInputRoute input, out MissionInputRoute? bound)
+    {
+        bound = null;
+        if (_missingSaveSubject is not { } subject || HasConfirmation || HasPendingOperation)
+        {
+            return false;
+        }
+
+        if (NaturalMemoryRequestParser.WithdrawsPendingSave(input.Text)
+            || input.Memory.Outcome is MemoryParseOutcome.Route
+                or MemoryParseOutcome.ConfirmSensitiveSave
+                or MemoryParseOutcome.RejectAuthorizationPersistence
+                or MemoryParseOutcome.SessionContextOnly)
+        {
+            _missingSaveSubject = null;
+            return false;
+        }
+
+        if (!NaturalMemoryRequestParser.TryBindSaveInput(subject, input, out bound))
+        {
+            return false;
+        }
+
+        _missingSaveSubject = null;
+        return true;
+    }
+
     internal void ClearConfirmation()
     {
         _confirmation = null;
@@ -68,6 +127,14 @@ internal sealed class MemoryTurnSession
     {
         _pendingOperation = null;
         _recoveryAnnounced = false;
+        _missingSaveSubject = null;
+    }
+
+    internal void ResetSession()
+    {
+        ClearConfirmation();
+        ResetOperation();
+        _continuation = null;
     }
 
     internal async Task HandleConfirmationAsync(
@@ -83,13 +150,10 @@ internal sealed class MemoryTurnSession
         {
             case ConfirmationReplyKind.Invalid:
                 _host.Publish(
-                    _confirmationRequiresReconciliation
-                        ? TurnVisibleFacts.Confirmation(
-                            "memory_reconcile_only",
-                            TurnVisibleFacts.ConfirmCancel)
-                        : TurnVisibleFacts.Confirmation(
-                            "memory_confirm_or_cancel",
-                            TurnVisibleFacts.ConfirmCancel),
+                    PrivateOperationNarration.CreateMemoryConfirmationPrompt(
+                        pending.Prepared,
+                        _confirmationRequiresReconciliation,
+                        Forgotten(pending.Prepared)),
                     UserMessageEvent.Confirmation);
                 return;
             case ConfirmationReplyKind.Cancel:
@@ -98,7 +162,8 @@ internal sealed class MemoryTurnSession
                     _host.Publish(
                         TurnVisibleFacts.Confirmation(
                             "cannot_withdraw_uncertain",
-                            TurnVisibleFacts.ConfirmCancel),
+                            ["confirmar", "confirm"],
+                            PrivateOperationNarration.PendingMemoryAction(pending.Prepared)),
                         UserMessageEvent.Confirmation);
                     return;
                 }
@@ -111,9 +176,12 @@ internal sealed class MemoryTurnSession
                     return;
                 }
 
-                ClearPublicAfter(pending.Prepared);
+                ClearContinuation(pending.Prepared);
                 ClearConfirmation();
-                _host.Publish(TurnVisibleFacts.Status("memory_cancelled"), null);
+                _host.Publish(
+                    PrivateOperationNarration.CreateMemoryCancellationMessage(
+                        pending.Prepared, Forgotten(pending.Prepared)),
+                    null);
                 ContinueRecovery(registry);
                 return;
             case ConfirmationReplyKind.Confirm:
@@ -159,8 +227,9 @@ internal sealed class MemoryTurnSession
                 return;
             }
 
+            ClearContinuation(pending);
             ResetOperation();
-            _host.Publish(TurnVisibleFacts.Status("memory_cancelled"), null);
+            _host.Publish(PrivateOperationNarration.CreateMemoryCancellationMessage(pending, Forgotten(pending)), null);
             ContinueRecovery(registry);
             return;
         }
@@ -181,13 +250,34 @@ internal sealed class MemoryTurnSession
             cancellationToken);
     }
 
+    // The scope and datum a forget acts on (PrivateOperationNarration.MemoryAction); null for any other operation.
+    private JsonObject? Forgotten(PreparedOperation prepared)
+    {
+        if (prepared.OperationName != "memory.forget" || _host.Protector() is not { } protector)
+        {
+            return null;
+        }
+
+        try
+        {
+            using OpenedBoundProtectedJson opened = protector.OpenPrivateArguments(prepared);
+            return JsonNode.Parse(opened.Payload.GetRawText()) as JsonObject;
+        }
+        catch (StaleMemorySessionException)
+        {
+            // An attempt recovered from an earlier session is named without its datum («ese dato»).
+            return null;
+        }
+    }
+
     internal async Task ExecuteRouteAsync(
         MemoryRoutedOperation routed,
         RetryableOperationRegistry registry,
         bool durableBeforeSend,
         CancellationToken cancellationToken,
         string? publicObjective = null,
-        MissionInputSource publicSource = MissionInputSource.Text)
+        MissionInputSource publicSource = MissionInputSource.Text,
+        string? requestText = null)
     {
         ArgumentNullException.ThrowIfNull(routed);
         ArgumentNullException.ThrowIfNull(registry);
@@ -197,12 +287,16 @@ internal sealed class MemoryTurnSession
         PreparedOperation prepared = durableBeforeSend
             ? registry.GetOrAdd(protectedOperation)
             : protectedOperation.Prepared;
-        if (!string.IsNullOrWhiteSpace(publicObjective))
+        if (!string.IsNullOrWhiteSpace(publicObjective)
+            || !string.IsNullOrWhiteSpace(requestText))
         {
-            _publicAfter = new PublicAfterMemory(
+            // A memory-only request has no public objective; its completion
+            // still answers the request text, in the request's language.
+            _continuation = new MemoryContinuation(
                 prepared,
                 publicObjective,
-                publicSource);
+                publicSource,
+                RequestText: requestText);
         }
 
         await SendPreparedAsync(
@@ -293,7 +387,8 @@ internal sealed class MemoryTurnSession
         RetryableOperationRegistry registry,
         bool isDurable,
         string? confirmationToken,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool allowEnableOffer = true)
     {
         CoreProcessClient client = _host.Core()
             ?? throw new InvalidOperationException("El motor local no está disponible.");
@@ -323,14 +418,19 @@ internal sealed class MemoryTurnSession
             _host.Publish(
                 PrivateOperationNarration.CreateMemoryConfirmationPrompt(
                     prepared,
-                    challenge.ReconciliationRequired),
+                    challenge.ReconciliationRequired,
+                    Forgotten(prepared)),
                 UserMessageEvent.Confirmation);
             return;
         }
 
-        if (!isDurable)
+        // D3 (2026-09-20): a sensitive save is not destructive and completes
+        // without a challenge; the secret still never enters the outbox. Only a
+        // response that neither challenged nor completed leaves it unsaved.
+        if (!isDurable
+            && !string.Equals(response.Status, OperationStatuses.Completed, StringComparison.Ordinal))
         {
-            ClearPublicAfter(prepared);
+            ClearContinuation(prepared);
             _host.Publish(
                 "No recibí una confirmación segura para guardar ese dato sensible. No lo añadí a la cola de recuperación.",
                 UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -342,17 +442,33 @@ internal sealed class MemoryTurnSession
             try
             {
                 using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
+                using OpenedBoundProtectedJson arguments = protector.OpenPrivateArguments(prepared);
                 if (!MemoryOperationResponseProjection.TryCreateCompleted(
                         prepared.OperationName,
                         opened.Payload,
                         out MemoryOperationResponseProjection? projection,
-                        response.Replayed)
+                        response.Replayed,
+                        arguments.Payload)
                     || projection is null)
                 {
                     throw new InvalidDataException("La respuesta privada no admite una proyección segura.");
                 }
 
-                _host.Publish(projection.Message, null);
+                string? objective = _continuation?.RequestText ?? _continuation?.Objective;
+                // Estabilización M2 (live recheck 2026-10-12: the first save of a session said «Activé la memoria.»
+                // and then «Listo, me acuerdo: …»): the memory switched on for a save is told by that save's own
+                // final, once.
+                bool toldBySave = _continuation is { SaveAfterEnable: not null } enabling
+                    && IsSame(enabling.Predecessor, prepared);
+                if (!toldBySave && _host.PublishForObjective is { } publishForObjective
+                    && !string.IsNullOrWhiteSpace(objective))
+                {
+                    publishForObjective(projection.Message, null, objective);
+                }
+                else if (!toldBySave)
+                {
+                    _host.Publish(projection.Message, null);
+                }
             }
             catch
             {
@@ -362,14 +478,33 @@ internal sealed class MemoryTurnSession
             }
 
             ClearConfirmationFor(prepared);
-            Resolve(registry, prepared);
-            await ContinuePublicAfterAsync(prepared, registry, cancellationToken);
+            if (prepared.OperationName is not ("memory.recall" or "memory.list" or "memory.status" or "memory.export"))
+            {
+                _host.MemoryChanged?.Invoke();
+            }
+
+            if (Resolve(registry, prepared))
+            {
+                await ContinueAfterAsync(prepared, registry, cancellationToken);
+            }
             return;
         }
 
-        _host.Publish(
-            PrivateOperationNarration.CreateMemoryFailureMessage(prepared.OperationName, response),
-            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        bool enableFollows = allowEnableOffer
+            && prepared.OperationName == "memory.save"
+            && response.Status == OperationStatuses.Failed
+            && response.ErrorCode == "memory_disabled"
+            && protector.InspectForRecovery(prepared).OriginatesInCurrentSession;
+        if (!enableFollows)
+        {
+            // D3 (2026-09-20): when the person asked to remember something, the
+            // memory is enabled and the save resumes at once (memory.enable no
+            // longer challenges); a «memory_disabled» failure is not published
+            // in between, since the turn does not end there.
+            _host.Publish(
+                PrivateOperationNarration.CreateMemoryFailureMessage(prepared.OperationName, response),
+                UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        }
         if (MainWindowViewModel.ShouldRetainRetryIdentity(response))
         {
             if (confirmationToken is null || _confirmation is null)
@@ -380,23 +515,81 @@ internal sealed class MemoryTurnSession
             return;
         }
 
-        ClearPublicAfter(prepared);
+        if (enableFollows)
+        {
+            // The failed save is terminal. Enabling has its own invocation;
+            // only a verified enable can create a new save attempt.
+            if (!TryRemove(registry, prepared))
+            {
+                SetPending(registry, prepared);
+                return;
+            }
+
+            ClearConfirmationFor(prepared);
+            if (IsSame(_pendingOperation, prepared))
+            {
+                ResetOperation();
+            }
+
+            MemoryContinuation? previous = _continuation is { } candidate
+                && IsSame(candidate.Predecessor, prepared) ? candidate : null;
+            PreparedOperation enable = registry.GetOrAdd(protector.Prepare(
+                new MemoryRoutedOperation("memory.configure", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["enabled"] = true,
+                })));
+            _continuation = new MemoryContinuation(
+                enable, previous?.Objective, previous?.Source ?? MissionInputSource.Text, prepared,
+                previous?.RequestText);
+            await SendPreparedAsync(enable, registry, isDurable: true,
+                confirmationToken: null, cancellationToken);
+            return;
+        }
+
+        ClearContinuation(prepared);
         ClearConfirmationFor(prepared);
         Resolve(registry, prepared);
     }
 
-    private async Task ContinuePublicAfterAsync(
+    private async Task ContinueAfterAsync(
         PreparedOperation predecessor,
         RetryableOperationRegistry registry,
         CancellationToken cancellationToken)
     {
-        PublicAfterMemory? continuation = _publicAfter;
+        MemoryContinuation? continuation = _continuation;
         if (continuation is null || !IsSame(continuation.Predecessor, predecessor))
         {
             return;
         }
 
-        _publicAfter = null;
+        _continuation = null;
+        if (continuation.SaveAfterEnable is { } originalSave)
+        {
+            MemoryOperationProtector protector = _host.Protector()
+                ?? throw new InvalidOperationException("La protección de memoria no está disponible.");
+            using OpenedBoundProtectedJson opened = protector.OpenPrivateArguments(originalSave);
+            var arguments = JsonNode.Parse(opened.Payload.GetRawText()) as JsonObject
+                ?? throw new InvalidDataException("El guardado pendiente perdió sus argumentos privados.");
+            PreparedOperation next = registry.GetOrAdd(protector.Prepare(
+                new MemoryRoutedOperation("memory.save", arguments)));
+            if (!string.IsNullOrWhiteSpace(continuation.Objective)
+                || !string.IsNullOrWhiteSpace(continuation.RequestText))
+            {
+                _continuation = new MemoryContinuation(
+                    next, continuation.Objective, continuation.Source, RequestText: continuation.RequestText);
+            }
+
+            await SendPreparedAsync(next, registry, isDurable: true,
+                confirmationToken: null, cancellationToken, allowEnableOffer: false);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(continuation.Objective))
+        {
+            return;
+        }
+
         var publicRoute = new MissionInputRoute(
             continuation.Objective,
             continuation.Source,
@@ -409,21 +602,21 @@ internal sealed class MemoryTurnSession
         }
     }
 
-    private void ClearPublicAfter(PreparedOperation predecessor)
+    private void ClearContinuation(PreparedOperation predecessor)
     {
-        if (_publicAfter is { } continuation
+        if (_continuation is { } continuation
             && IsSame(continuation.Predecessor, predecessor))
         {
-            _publicAfter = null;
+            _continuation = null;
         }
     }
 
-    private void Resolve(RetryableOperationRegistry registry, PreparedOperation prepared)
+    private bool Resolve(RetryableOperationRegistry registry, PreparedOperation prepared)
     {
         if (!TryRemove(registry, prepared))
         {
             SetPending(registry, prepared);
-            return;
+            return false;
         }
 
         if (IsSame(_pendingOperation, prepared))
@@ -432,6 +625,7 @@ internal sealed class MemoryTurnSession
         }
 
         ContinueRecovery(registry);
+        return true;
     }
 
     private bool TryRemove(RetryableOperationRegistry registry, PreparedOperation prepared)

@@ -138,6 +138,8 @@ public static class BaxyDesktopSelectAllNative
                 {
                     VirtualKey = virtualKey,
                     Flags = flags,
+                    // BAXY's input mark (BaxyInputMark.cs).
+                    ExtraInfo = new UIntPtr(0x42415859u),
                 },
             },
         };

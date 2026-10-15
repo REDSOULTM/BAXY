@@ -7,6 +7,100 @@ namespace Baxy.Contracts.Tests;
 [TestFixture]
 public sealed class ProtocolContractTests
 {
+    [TestCase(4096)]
+    [TestCase(4097)]
+    [TestCase(48_000)]
+    public void OperationResponseMessageRoundTripsThroughItsDenseContract(int length)
+    {
+        const string prefix = "{\"observed\":{\"text\":\"";
+        const string suffix = "\",\"layout\":{\"available\":true,\"lines\":[]}}}";
+        string message = prefix + new string('x', length - prefix.Length - suffix.Length) + suffix;
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, NewId(), NewId(), NewId(),
+            OperationStatuses.Completed, message, true, false, Json(message), null);
+
+        byte[] encoded = ProtocolJson.SerializeToUtf8Bytes(response);
+        byte[] bounded = ProtocolJson.SerializeBoundedToUtf8Bytes(response, 1024 * 1024);
+        OperationResponse restored = ProtocolJson.DeserializeResponse(bounded);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Has.Length.EqualTo(length));
+            Assert.That(bounded, Is.EqualTo(encoded));
+            Assert.That(restored.Message, Is.EqualTo(message));
+            Assert.That(restored.RequestId, Is.EqualTo(response.RequestId));
+            Assert.That(restored.MissionId, Is.EqualTo(response.MissionId));
+            Assert.That(restored.InvocationId, Is.EqualTo(response.InvocationId));
+            Assert.That(restored.Status, Is.EqualTo(response.Status));
+            Assert.That(restored.Verified, Is.True);
+            Assert.That(restored.Replayed, Is.False);
+            Assert.That(restored.Result!.Value.GetRawText(), Is.EqualTo(response.Result!.Value.GetRawText()));
+        });
+    }
+
+    [Test]
+    public void OperationResponseLimitCountsDecodedUtf16RatherThanWireEscapes()
+    {
+        string unicode = string.Concat(Enumerable.Repeat("á中🙂\"\\\n", 1000));
+        string message = unicode + new string('x', 48_000 - unicode.Length);
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, NewId(), NewId(), NewId(),
+            OperationStatuses.Completed, message, true, false, null, null);
+
+        byte[] encoded = ProtocolJson.SerializeToUtf8Bytes(response);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(encoded.Length, Is.GreaterThan(message.Length).And.LessThan(1024 * 1024));
+            Assert.That(ProtocolJson.DeserializeResponse(encoded).Message, Is.EqualTo(message));
+        });
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("   ")]
+    public void OperationResponseMessageStillRequiresNonWhitespace(string? message)
+    {
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, NewId(), NewId(), NewId(),
+            OperationStatuses.Completed, message!, true, false, null, null);
+        Assert.That(() => ProtocolJson.SerializeToUtf8Bytes(response), Throws.TypeOf<JsonException>());
+    }
+
+    [Test]
+    public void OperationResponseRejectsMessageBeyondDenseLimitOnBothBoundaries()
+    {
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, NewId(), NewId(), NewId(),
+            OperationStatuses.Completed, new string('x', 48_001), true, false, null, null);
+        byte[] uncheckedWire = JsonSerializer.SerializeToUtf8Bytes(response, BaxyJsonContext.Default.OperationResponse);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => ProtocolJson.SerializeToUtf8Bytes(response), Throws.TypeOf<JsonException>());
+            Assert.That(() => ProtocolJson.DeserializeResponse(uncheckedWire), Throws.TypeOf<JsonException>());
+        });
+    }
+
+    [TestCase(4096, true)]
+    [TestCase(4097, false)]
+    public void OtherProtocolTextFieldsKeepTheirOriginalLimit(int length, bool accepted)
+    {
+        string text = new('x', length);
+        var descriptor = new OperationDescriptor("note.create", ClosedEmptyArgumentsSchema(),
+            OperationRisks.LowReversible, "note.create.local.reopen.v1", text);
+        var hello = new ProtocolHello(ProtocolTypes.Hello, ProtocolVersion.Current, text, 42,
+            [descriptor with { Description = "Create a note." }]);
+        var error = new ProtocolError(ProtocolTypes.ProtocolError, "malformed_json", text);
+        TestDelegate[] checks = [() => ContractValidator.Validate(descriptor),
+            () => ContractValidator.Validate(hello), () => ContractValidator.Validate(error)];
+        foreach (TestDelegate check in checks)
+        {
+            if (accepted) Assert.That(check, Throws.Nothing);
+            else Assert.That(check, Throws.TypeOf<JsonException>());
+        }
+    }
+
     [Test]
     public void ProtocolErrorRoundTripsStrictly()
     {

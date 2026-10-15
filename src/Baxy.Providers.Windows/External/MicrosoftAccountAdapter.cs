@@ -130,7 +130,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
 
     public bool CanHandle(string operation) => operation is
         "calendar.event.create" or "calendar.event.list"
-        or "email.latest.read" or "email.latest.reply"
+        or "email.latest.read" or "email.latest.reply" or "email.send"
         or "office.document.create" or "office.document.read";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
@@ -154,6 +154,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
                     .ConfigureAwait(false),
                 "email.latest.reply" => await MailAsync(
                     operation, arguments, true, effectBoundary, cancellationToken)
+                    .ConfigureAwait(false),
+                "email.send" => await SendMailAsync(
+                    operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
                 "office.document.create" => await CreateDocumentAsync(
                     operation, arguments, effectBoundary, cancellationToken)
@@ -204,6 +207,100 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         if (!IsOk(response.RootElement))
             return effectBoundary.Failure(operation, "outlook_mail_operation_failed", effect);
         JsonElement result = EmailResult(response.RootElement, reply, text);
+        return ExternalJson.Success(operation, result, effect);
+    }
+
+    // Fase 7 (D4): a mail to a free address from the owner's classic Outlook profile,
+    // verified by the copy in Sent Items (recipient, text, time). The address is
+    // checked before anything runs; the subject defaults to the text's opening.
+    private const string SendMailScript = """
+        $ErrorActionPreference='Stop'
+        $input=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))|ConvertFrom-Json
+        $effect=$false
+        try {
+          $outlook=New-Object -ComObject Outlook.Application
+          $session=$outlook.GetNamespace('MAPI')
+          $to=[string]$input.to;$text=[string]$input.text;$subject=[string]$input.subject
+          $baseline=[DateTime]::UtcNow
+          $mail=$outlook.CreateItem(0)
+          $mail.To=$to;$mail.Subject=$subject;$mail.Body=$text
+          $mail.Send();$effect=$true
+          $sentFolder=$session.GetDefaultFolder(5)
+          $sent=$null
+          for($attempt=0;$attempt -lt 40 -and $null -eq $sent;$attempt++){
+            Start-Sleep -Milliseconds 500
+            $sentItems=$sentFolder.Items;$sentItems.Sort('[SentOn]',$true);$seen=0
+            foreach($candidate in $sentItems){
+              if($seen++ -ge 50){break}
+              try {
+                $sentOn=([DateTime]$candidate.SentOn).ToUniversalTime()
+                if($sentOn -ge $baseline.AddMinutes(-2) -and ([string]$candidate.To).ToLowerInvariant().Contains($to.ToLowerInvariant()) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;break}
+              }catch{}
+            }
+          }
+          if($null -eq $sent){throw 'outlook_sent_postread_missing'}
+          [pscustomobject]@{ok=$true;effectObserved=$true;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O');sentTo=[string]$sent.To;subject=[string]$sent.Subject}|ConvertTo-Json -Compress
+        } catch {
+          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_mail_failed'}|ConvertTo-Json -Compress
+          exit 2
+        }
+        """;
+
+    private static readonly System.Text.RegularExpressions.Regex MailAddress = new(
+        @"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,63}$",
+        System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private async ValueTask<ExternalCapabilityReceipt> SendMailAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        string to = ExternalJson.RequiredString(arguments, "to").Trim();
+        string text = ExternalJson.RequiredString(arguments, "text");
+        string? subject = arguments.TryGetProperty("subject", out JsonElement subjectElement)
+            && subjectElement.ValueKind == JsonValueKind.String
+            ? subjectElement.GetString()?.Trim()
+            : null;
+        if (!MailAddress.IsMatch(to))
+            return ExternalJson.Failure(operation, "mail_address_invalid");
+        if (_requireOutlookProfileProbe && !HasClassicOutlookProfile())
+            return ExternalJson.Failure(operation, "outlook_profile_not_configured");
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            string firstLine = text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? text;
+            subject = firstLine.Length <= 78 ? firstLine : firstLine[..75] + "…";
+        }
+
+        string input = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteString("to", to);
+            writer.WriteString("subject", subject);
+            writer.WriteString("text", text);
+            writer.WriteEndObject();
+        }).GetRawText();
+        effectBoundary.Cross(cancellationToken);
+        ExternalProcessResult process = await RunPowerShellAsync(SendMailScript, input, cancellationToken)
+            .ConfigureAwait(false);
+        using JsonDocument response = ParseProcessJson(process);
+        JsonElement root = response.RootElement;
+        bool effect = root.TryGetProperty("effectObserved", out JsonElement observed)
+            && observed.ValueKind == JsonValueKind.True;
+        if (!IsOk(root))
+            return effectBoundary.Failure(operation, effect ? "mail_delivery_not_verified" : "outlook_mail_send_failed", effect);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("to", to);
+            writer.WriteString("subject", subject);
+            writer.WriteString("text", text);
+            writer.WriteBoolean("sent", true);
+            writer.WriteString("sentMessageId", Opaque("email", root.GetProperty("sentEntryId").GetString() ?? string.Empty));
+            writer.WriteString("sentUtc", root.GetProperty("sentUtc").GetString());
+            writer.WriteString("authority", "outlook_sent_postread");
+            writer.WriteEndObject();
+        });
         return ExternalJson.Success(operation, result, effect);
     }
 

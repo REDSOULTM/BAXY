@@ -1,0 +1,21 @@
+{
+  "nota": "Textos que los casos de cases/*.turns escriben en el Bloc de notas. bloc_vacio.ps1 sólo vacía una pestaña restaurada cuyo texto entero se compone de estos textos; cualquier otra pestaña es del dueño y no se toca.",
+  "textos": [
+    "lista: pan",
+    "leche",
+    "144",
+    "56",
+    "prueba final de BAXY",
+    "llamar al dentista",
+    "comprar pan y leche",
+    "hola profe, esto lo escribió BAXY",
+    "hola BAXY",
+    "reunión a las 5",
+    "hello world",
+    "compras del lunes",
+    "la casa roja, la casa azul, mi casa es tu casa",
+    "la hogar roja, la hogar azul, mi hogar es tu hogar",
+    "prueba de guardado v3",
+    "1024"
+  ]
+}

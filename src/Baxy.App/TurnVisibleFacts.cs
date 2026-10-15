@@ -25,6 +25,18 @@ internal static class TurnVisibleFacts
 
     internal static string Welcome() => Event("welcome");
 
+    internal static UserMessageDraft? VoiceFeedback(string eventName, string? reason = null) =>
+        eventName switch
+        {
+            "wake" => UserMessagePolicy.Create(
+                Event("conversation", "voice_wake_listening"),
+                UserMessageEvent.Conversation),
+            "ignored" when reason == "transcript_doubtful" => UserMessagePolicy.Create(
+                Clarification("voice_transcript_uncertain"),
+                UserMessageEvent.Clarification),
+            _ => null,
+        };
+
     internal static string Failure(string cause, JsonObject? extra = null) =>
         Event("failure", cause, extra);
 

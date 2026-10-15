@@ -117,22 +117,25 @@ public sealed class Goal05LyingExecutorTests
         });
     }
 
-    [Test]
-    public async Task VerifiedExternalMutationWithoutObservedEffectNeverCompletes()
+    // audio.app.volume.adjust (AUDIO1801) se suma a message.send: un executor que afirma «verificado»
+    // sin efecto observado en la postlectura de sesión nunca completa (plan post-goal 2026-09-20, grupo B).
+    [TestCase("message.send", "{\"recipientId\":\"recipient_test\",\"text\":\"hola\"}")]
+    [TestCase("audio.app.volume.adjust", "{\"amount\":10,\"app\":\"spotify\",\"direction\":\"down\"}")]
+    public async Task VerifiedExternalMutationWithoutObservedEffectNeverCompletes(string operation, string arguments)
     {
         using JsonDocument evidence = JsonDocument.Parse(
-            """{"operation":"message.send","source":"lying_executor"}""");
+            $$"""{"operation":"{{operation}}","source":"lying_executor"}""");
         var handler = new ExternalCapabilityHandler(
-            "message.send",
+            operation,
             new StaticExternalProvider(new ExternalCapabilityReceipt(
-                "message.send",
+                operation,
                 EffectObserved: false,
                 Verified: true,
                 evidence.RootElement.Clone(),
                 ErrorCode: null)));
 
         OperationOutcome outcome = await handler.ExecuteAsync(
-            Invocation("{\"recipientId\":\"recipient_test\",\"text\":\"hola\"}"),
+            Invocation(arguments),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -142,7 +145,7 @@ public sealed class Goal05LyingExecutorTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("external_verification_failed"));
             Assert.That(outcome.CauseCode, Is.EqualTo("external_effect_unobserved"));
             Assert.That(
-                ProductOperationNarrator.Instance.Narrate("message.send", outcome),
+                ProductOperationNarrator.Instance.Narrate(operation, outcome),
                 Does.Not.StartWith("Listo"));
         });
     }

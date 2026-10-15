@@ -468,12 +468,14 @@ internal sealed class SystemStatusHandler : IOperationHandler
                 : new SystemStatusCpuResult(
                     snapshot.Cpu.UsagePercent,
                     snapshot.Cpu.LogicalProcessorCount,
-                    snapshot.Cpu.Model),
+                    snapshot.Cpu.Model,
+                    snapshot.Cpu.PhysicalCoreCount),
             snapshot.Memory is null
                 ? null
                 : new SystemStatusMemoryResult(
                     snapshot.Memory.TotalBytes,
-                    snapshot.Memory.AvailableBytes),
+                    snapshot.Memory.AvailableBytes,
+                    snapshot.Memory.InstalledBytes),
             snapshot.SystemDisk is null
                 ? null
                 : new SystemStatusDiskResult(
@@ -493,7 +495,8 @@ internal sealed class SystemStatusHandler : IOperationHandler
                     snapshot.OperatingSystem.MinorVersion,
                     snapshot.OperatingSystem.BuildNumber,
                     snapshot.OperatingSystem.Architecture,
-                    snapshot.OperatingSystem.IsWorkstation),
+                    snapshot.OperatingSystem.IsWorkstation,
+                    snapshot.OperatingSystem.Caption),
             snapshot.UptimeSeconds,
             failureResults);
         return true;
@@ -544,10 +547,13 @@ internal sealed class SystemStatusHandler : IOperationHandler
         double.IsFinite(status.UsagePercent)
         && status.UsagePercent is >= 0 and <= 100
         && status.LogicalProcessorCount is > 0 and <= 4096
+        && (status.PhysicalCoreCount is null
+            || status.PhysicalCoreCount > 0 && status.PhysicalCoreCount <= status.LogicalProcessorCount)
         && IsValidOptionalText(status.Model, 512);
 
     private static bool IsValid(MemoryStatus status) =>
-        status.TotalBytes > 0 && status.AvailableBytes <= status.TotalBytes;
+        status.TotalBytes > 0 && status.AvailableBytes <= status.TotalBytes
+        && (status.InstalledBytes is null || status.InstalledBytes >= status.TotalBytes);
 
     private static bool IsValid(SystemDiskStatus status) =>
         status.TotalBytes > 0
@@ -571,6 +577,7 @@ internal sealed class SystemStatusHandler : IOperationHandler
         status.MajorVersion > 0
         && status.MinorVersion >= 0
         && status.BuildNumber > 0
+        && IsValidRequiredText(status.Caption, 64)
         && IsValidRequiredText(status.Architecture, 64);
 
     private static bool IsValidOptionalText(string? value, int maximumLength) =>

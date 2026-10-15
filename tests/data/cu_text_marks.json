@@ -1,0 +1,27 @@
+{
+ "source": "v3 punto 5. The navigation row of the bench's own captures (after.png, 768x432, of %LOCALAPPDATA%/BAXY/cu-universal-evidencia): the words' boxes measured on its pixels (rows 25-33) and each label's ink and background brightness (bgV) as VisibleTextMarks reads them from those pixels (tests/Baxy.Providers.Windows.Tests/VisibleTextMarksTests.cs over the crops in Fixtures/TextMarks). v2-c17 and v2-g1: Steam on its library; v2-x10: Steam on its store with the TIENDA menu open; v2-s12 (17:00 run): Steam on its library under the Calculator. The account label is «.MODO_DEMO.™», made of white glyphs of the same row in the crops (no account is published).",
+ "views": {
+  "library": {
+   "captures": ["v2-c17", "v2-g1"],
+   "window": {"title": "Steam", "process": "steamwebhelper"},
+   "text": {"TL": ["Steam", "Ver Amigos Productos Ayuda", "TIENDA", "BIBLIOTECA COMUNIDAD", ".MODO_DEMO.™", "Página principal", "Colecciones", "Descargas", "Resultados de la búsqueda"], "T": ["Novedades", "Jugados recientemente"], "C": ["Mallhalla Chests Regional Availability Changes", "Overwatch Reign of Talon - Season 5:", "Añadir estantería"]},
+   "textMarks": [
+    {"text": "TIENDA", "zone": "TL", "rect": {"x": 49, "y": 25, "w": 40, "h": 9}, "ink": "white", "inkV": 223, "bgV": 37},
+    {"text": "BIBLIOTECA", "zone": "TL", "rect": {"x": 102, "y": 25, "w": 64, "h": 9}, "ink": "blue", "inkV": 255, "bgV": 37},
+    {"text": "COMUNIDAD", "zone": "TL", "rect": {"x": 179, "y": 25, "w": 69, "h": 9}, "ink": "white", "inkV": 223, "bgV": 37},
+    {"text": ".MODO_DEMO.™", "zone": "TL", "rect": {"x": 261, "y": 25, "w": 90, "h": 9}, "ink": "white", "inkV": 223, "bgV": 37}
+   ]
+  },
+  "store": {
+   "captures": ["v2-x10"],
+   "window": {"title": "Steam", "process": "steamwebhelper"},
+   "text": {"TL": ["Steam", "Ver Amigos Productos Ayuda", "TIENDA", "BIBLIOTECA COMUNIDAD", ".MODO_DEMO.™", "Destacados", "Lista de descubrimientos", "Lista de deseados", "Tienda de puntos", "Noticias", "Gráficos"], "T": ["Recomendaciones Categorías Formas de jugar Miscelánea"], "C": ["REBAJAS DE OTOÑO DE STEAM"]},
+   "textMarks": [
+    {"text": "TIENDA", "zone": "TL", "rect": {"x": 48, "y": 25, "w": 41, "h": 9}, "ink": "blue", "inkV": 255, "bgV": 37},
+    {"text": "BIBLIOTECA", "zone": "TL", "rect": {"x": 102, "y": 25, "w": 64, "h": 9}, "ink": "white", "inkV": 223, "bgV": 37},
+    {"text": "COMUNIDAD", "zone": "TL", "rect": {"x": 179, "y": 25, "w": 69, "h": 9}, "ink": "white", "inkV": 223, "bgV": 37},
+    {"text": ".MODO_DEMO.™", "zone": "TL", "rect": {"x": 261, "y": 25, "w": 90, "h": 9}, "ink": "white", "inkV": 223, "bgV": 37}
+   ]
+  }
+ }
+}

@@ -8,15 +8,22 @@ de lo que la verificación observó.
 
 Qué NO cuenta, y por qué:
 
-- `llm.py` — es el prompt. La personalidad vive ahí por decisión del goal 06:
+- `llm.py` y los módulos que salieron de él con texto del prompt o instrucciones al redactor
+  (`MODULOS_DEL_PROMPT`) — es el prompt. La personalidad vive ahí por decisión del goal 06:
   «cambiar el carácter tiene que ser editar un texto». Un literal en el prompt
-  es la solución, no el defecto.
-- `router_bank_sources.py`, `public_turn_corpus.py` — son textos de ENTRADA
-  (anclas de embeddings y corpus de turnos), nunca salen por pantalla.
+  es la solución, no el defecto. `semantic/decider.py`, por lo mismo: es el prompt
+  del decisor en contexto (Fase 3.5b); lo que dice la persona lo redacta el modelo.
+- `router_bank_sources.py`, `public_turn_corpus.py`, `semantic/request.py`,
+  `UserMessagePhrases.cs` — son textos de ENTRADA (anclas de embeddings, corpus
+  de turnos, lectura del pedido y marcas de defecto de un borrador), nunca salen
+  por pantalla.
 - `*Parser*.cs` — parsers de la petición del usuario, mismo motivo.
+- Los docstrings de Python, igual que los comentarios `#` y `//`: documentan
+  el código y no se publican nunca.
 
 Uso:  py -3.12 scripts/censo_voz_visible.py [salida.json]
 """
+import ast
 import io
 import json
 import os
@@ -30,7 +37,39 @@ PALABRAS_ES = re.compile(
     u'encontré)\\b')
 REGEXISH = re.compile(r'[\^\$\|\[\]]')
 
-FICHEROS_DE_ENTRADA = ('llm.py', 'router_bank_sources.py', 'public_turn_corpus.py')
+# llm.py se partió por responsabilidad; estos módulos heredaron su texto de prompt (y las frases fijas que el censo no
+# veía dentro de llm.py, anotadas en documentacion/APLAZADOS.md).
+MODULOS_DEL_PROMPT = ('/llm_prompts.py', '/weather_facts.py', '/context_rewrite.py', '/reply_claims.py',
+                      '/conversation_shape.py', '/clarification_style.py', '/computer_use_finals.py',
+                      '/deterministic_finals.py', '/consulted_answers.py', '/payload_fact_checks.py',
+                      '/visible_defect.py', '/llm_chat.py', '/llm_clarify.py', '/llm_plans.py',
+                      '/llm_compose.py')
+FICHEROS_DE_ENTRADA = ('/llm.py',) + MODULOS_DEL_PROMPT + ('/semantic/decider.py', '/semantic/request.py',
+                                                          '/UserMessagePhrases.cs')
+
+
+def lineas_de_docstring(txt):
+    # Un docstring documenta el codigo; no llega a la pantalla, igual que un
+    # comentario. Se leen del arbol y no por comillas al principio de linea,
+    # para no confundir el cierre de un literal normal con la apertura de uno.
+    try:
+        arbol = ast.parse(txt)
+    except SyntaxError:
+        return set()
+    lineas = set()
+    for nodo in ast.walk(arbol):
+        if not isinstance(nodo, (ast.Module, ast.ClassDef,
+                                 ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        cuerpo = getattr(nodo, 'body', None)
+        if not cuerpo:
+            continue
+        primero = cuerpo[0]
+        if (isinstance(primero, ast.Expr)
+                and isinstance(primero.value, ast.Constant)
+                and isinstance(primero.value.value, str)):
+            lineas.update(range(primero.lineno, primero.end_lineno + 1))
+    return lineas
 
 
 def censar(raiz='src'):
@@ -41,14 +80,17 @@ def censar(raiz='src'):
         for fn in files:
             if not fn.endswith(('.cs', '.py')):
                 continue
-            if 'Parser' in fn or fn.endswith(FICHEROS_DE_ENTRADA):
-                continue
             p = os.path.join(root, fn).replace(os.sep, '/')
+            if 'Parser' in fn or p.endswith(FICHEROS_DE_ENTRADA):
+                continue
             try:
                 txt = io.open(p, encoding='utf-8').read()
             except (OSError, UnicodeDecodeError):
                 continue
+            documentadas = lineas_de_docstring(txt) if fn.endswith('.py') else set()
             for i, line in enumerate(txt.splitlines(), 1):
+                if i in documentadas:
+                    continue
                 st = line.lstrip()
                 if st.startswith(('//', '#', '///', '*')):
                     continue

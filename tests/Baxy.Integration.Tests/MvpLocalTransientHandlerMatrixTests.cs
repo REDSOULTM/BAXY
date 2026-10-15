@@ -15,6 +15,100 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MvpLocalTransientHandlerMatrixTests
 {
+    [TestCase(true, 3)]
+    [TestCase(false, null)]
+    public async Task WindowInventoryPagePreservesObservedCountAndUnknownTotal(bool complete, int? totalCount)
+    {
+        var provider = new WindowProvider
+        {
+            ExpectedProcess = "*",
+            ExpectedLimit = 1,
+            ExpectedOffset = 1,
+            ResolveResult = new WindowResolveResult(true, true,
+                [new WindowCandidate("win_page", 42, "editor", "normal", false, 0, 0, 100, 100, "Documento")],
+                null, new WindowInventoryPage(1, 1, 3, complete, 2)),
+        };
+        using JsonDocument arguments = JsonDocument.Parse("""{"process":"*","limit":1,"offset":1}""");
+        var invocation = new OperationInvocation("request", "mission", "invocation", arguments.RootElement);
+
+        OperationOutcome outcome = await new WindowResolveHandler(provider).ExecuteAsync(invocation, CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded && outcome.Verified, Is.True);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(result.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(result.GetProperty("limit").GetInt32(), Is.EqualTo(1));
+            Assert.That(result.GetProperty("offset").GetInt32(), Is.EqualTo(1));
+            Assert.That(result.GetProperty("observedCount").GetInt32(), Is.EqualTo(3));
+            Assert.That(result.GetProperty("complete").GetBoolean(), Is.EqualTo(complete));
+            Assert.That(result.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("nextOffset").GetInt32(), Is.EqualTo(2));
+            Assert.That(result.GetProperty("pageConsistency").GetString(), Is.EqualTo("fresh_enumeration_per_request"));
+            Assert.That(result.GetProperty("observationScope").GetString(), Is.EqualTo("visible_top_level_windows"));
+            Assert.That(result.GetProperty("totalCount").ValueKind == JsonValueKind.Null
+                ? null : (int?)result.GetProperty("totalCount").GetInt32(), Is.EqualTo(totalCount));
+            Assert.That(provider.ResolveCalls, Is.EqualTo(1));
+        });
+    }
+
+    // CLOSE1060 (b7d005955): the flat v3 schema requires neither selector; the
+    // handler rejects none, both, or applicationName with byTitle/offset before any read.
+    [TestCase("{}")]
+    [TestCase("{\"applicationName\":\"Calculadora\",\"process\":\"*\"}")]
+    [TestCase("{\"applicationName\":\"Calculadora\",\"byTitle\":false}")]
+    [TestCase("{\"applicationName\":\"Calculadora\",\"offset\":0}")]
+    public async Task WindowInventoryRequiresExactlyOneSelectorBeforeAnyRead(string json)
+    {
+        var provider = new WindowProvider();
+        using JsonDocument arguments = JsonDocument.Parse(json);
+        OperationOutcome outcome = await new WindowResolveHandler(provider).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", arguments.RootElement), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.InvalidSelector));
+            Assert.That(provider.ResolveCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task WindowInventoryDefaultsKeepOneReadAndAnHonestEmptyPage()
+    {
+        var provider = new WindowProvider
+        {
+            ExpectedProcess = "*",
+            ExpectedLimit = 20,
+            ResolveResult = new WindowResolveResult(true, true, [], null,
+                new WindowInventoryPage(20, 0, 0, true, null)),
+        };
+        using JsonDocument arguments = JsonDocument.Parse("""{"process":"*"}""");
+        OperationOutcome outcome = await new WindowResolveHandler(provider).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", arguments.RootElement), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("windows").GetArrayLength(), Is.Zero);
+            Assert.That(result.GetProperty("totalCount").GetInt32(), Is.Zero);
+            Assert.That(result.GetProperty("hasMore").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("nextOffset").ValueKind, Is.EqualTo(JsonValueKind.Null));
+            Assert.That(provider.ResolveCalls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task WindowTitleQueryPreservesTheExplicitSelectorKindThroughTheHandler()
+    {
+        var provider = new WindowProvider { ExpectedByTitle = true };
+        await RunAsync(new WindowResolveHandler(provider),
+            """{"process":"notepad","limit":10,"byTitle":true}""",
+            "controlled_provider", "verified_title_query", []);
+        Assert.That(provider.ResolveCalls, Is.EqualTo(1));
+    }
+
     private const int ExpectedOperations = 17;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
@@ -440,6 +534,11 @@ public sealed class MvpLocalTransientHandlerMatrixTests
 
     private sealed class WindowProvider : IWindowControlProvider
     {
+        public bool ExpectedByTitle { get; init; }
+        public string ExpectedProcess { get; init; } = "notepad";
+        public int ExpectedLimit { get; init; } = 10;
+        public int ExpectedOffset { get; init; }
+        public WindowResolveResult? ResolveResult { get; init; }
         public int ActionCalls { get; private set; }
         public int BoundsCalls { get; private set; }
         public int CloseCalls { get; private set; }
@@ -460,16 +559,20 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         public ValueTask<WindowResolveResult> ResolveAsync(
             string processName,
             int limit,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool byTitle = false,
+            int offset = 0)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ResolveCalls++;
             Assert.Multiple(() =>
             {
-                Assert.That(processName, Is.EqualTo("notepad"));
-                Assert.That(limit, Is.EqualTo(10));
+                Assert.That(processName, Is.EqualTo(ExpectedProcess));
+                Assert.That(limit, Is.EqualTo(ExpectedLimit));
+                Assert.That(byTitle, Is.EqualTo(ExpectedByTitle));
+                Assert.That(offset, Is.EqualTo(ExpectedOffset));
             });
-            return ValueTask.FromResult(new WindowResolveResult(
+            return ValueTask.FromResult(ResolveResult ?? new WindowResolveResult(
                 Succeeded: true,
                 Verified: true,
                 [Candidate("normal", foreground: false)],

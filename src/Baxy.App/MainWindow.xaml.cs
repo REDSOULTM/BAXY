@@ -84,36 +84,10 @@ public partial class MainWindow : Window
             // la ruta de arranque el tiempo serie de una sobre la otra sin
             // relajar ninguna comprobación: cada fallo se sigue observando y la
             // cancelación de cierre sigue cortando ambas.
-            ShellTraceSink.Record(
-                ShellTraceScopes.Startup,
-                "boot",
-                ShellTraceStages.StartupShellBegin);
-            Task shell = _viewModel.InitializeAsync(_lifetimeCancellation.Token);
-            try
-            {
-                ShellTraceSink.Record(
-                    ShellTraceScopes.Startup,
-                    "boot",
-                    ShellTraceStages.StartupFieldBegin);
-                await InitializeFieldUiAsync(_lifetimeCancellation.Token);
-                ShellTraceSink.Record(
-                    ShellTraceScopes.Startup,
-                    "boot",
-                    ShellTraceStages.StartupFieldReady);
-            }
-            finally
-            {
-                await shell;
-                ShellTraceSink.Record(
-                    ShellTraceScopes.Startup,
-                    "boot",
-                    ShellTraceStages.StartupShellReady);
-            }
-
-            ShellTraceSink.Record(
-                ShellTraceScopes.Startup,
-                "boot",
-                ShellTraceStages.StartupReady);
+            await ShellStartupSequence.RunAsync(
+                () => _viewModel.InitializeAsync(_lifetimeCancellation.Token),
+                () => InitializeFieldUiAsync(_lifetimeCancellation.Token),
+                RequestedFieldUiProbe());
         }
         catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
         {
@@ -190,6 +164,51 @@ public partial class MainWindow : Window
             _lifetimeCancellation.Token);
         core.Navigate(HistoricalFieldOriginPolicy.EntryPoint);
         await UpdateFieldActivityAsync();
+    }
+
+    // Arranque de comprobación: teclea en el compositor real y lee lo que la
+    // ventana muestra. Sin `--ui-probe` no se ejecuta nada de esto. Corre
+    // cuando la vista ya está lista, fuera de las marcas de arranque.
+    private Func<Task>? RequestedFieldUiProbe()
+    {
+        string[] arguments = Environment.GetCommandLineArgs();
+        if (!FieldUiProbe.IsRequested(arguments))
+        {
+            return null;
+        }
+
+        return async () =>
+        {
+            try
+            {
+                CoreWebView2 core = FieldWebView.CoreWebView2
+                    ?? throw new InvalidOperationException("WebView2 no terminó su inicialización local.");
+                await FieldUiProbe.RunAsync(
+                    core,
+                    arguments,
+                    new FieldProbeWindow(this),
+                    _lifetimeCancellation.Token);
+            }
+            finally
+            {
+                // Cerrar la ventana no basta: la presencia mantiene el proceso
+                // vivo y la siguiente comprobación choca con el mutex de
+                // instancia única. Se apaga también si la sonda falló: si no,
+                // el lanzador esperaría para siempre.
+                // Encargo I2 (tanda fin2 t4: un llama-server huérfano): se sale como
+                // con «Salir» de la bandeja. Application.Shutdown cerraba la ventana
+                // ignorando el Cancel de OnClosing, así que el desmontaje ordenado
+                // (núcleo y mente parados por su canal) no llegaba a correr.
+                if (_presence is not null)
+                {
+                    _presence.RequestExit();
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
+            }
+        };
     }
 
     internal static bool ShouldKeepFieldActive(bool isVisible, WindowState state) =>

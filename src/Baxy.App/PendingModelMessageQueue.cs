@@ -12,12 +12,30 @@ namespace Baxy.App;
 /// </summary>
 internal sealed class PendingModelMessageQueue
 {
+    // Only a composition the mind never answered (restarting, transport or
+    // runtime failure) is tried again, up to this budget.
+    //
+    // Owner's test 2026-09-21 (turn 195): a failure final that the narrator could
+    // not phrase went through three attempts, each with its recovery and the
+    // narrator's own retries, and the person waited 45 s for «No pude armar una
+    // respuesta». The facts of a final do not change between attempts: one
+    // answered attempt is the budget, and the honest limit follows. Latency
+    // 2026-09-23: the same holds for every final. In tanda-01 and uso-real-03
+    // the queue recomposed 16 refused finals with unchanged facts and a greedy
+    // writer; 15 ended refused anyway after 2.6–61 s, one published after 27 s.
     internal const int MaximumCompositionAttempts = 3;
+
+    private static bool MayRetry(PendingModelMessage pending, ModelMessageCompositionOutcome outcome)
+    {
+        ArgumentNullException.ThrowIfNull(pending);
+        ArgumentNullException.ThrowIfNull(outcome);
+        return outcome.Unanswered && pending.Attempts < MaximumCompositionAttempts;
+    }
 
     private readonly object _lock = new();
     private readonly Queue<PendingModelMessage> _pending = new();
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
-    private readonly Func<string, string?, Task> _publishAsync;
+    private readonly Func<string, string?, PendingModelMessage, Task> _publishAsync;
     private readonly Func<string?, Task> _reportFailureAsync;
     private readonly Func<PendingModelMessage, string, Task> _onExhaustedAsync;
     private readonly Action _onQueued;
@@ -25,19 +43,21 @@ internal sealed class PendingModelMessageQueue
     private readonly Func<PendingModelMessage, MindSidecarClient, CancellationToken,
         Task<ModelMessageCompositionOutcome>> _composeAsync;
     private readonly Func<TimeSpan, CancellationToken, Task> _delayAsync;
+    private readonly Func<PendingModelMessage, bool> _isStale;
     private Task? _worker;
     private bool _isClosed;
 
     internal PendingModelMessageQueue(
         Func<CancellationToken, Task<MindSidecarClient?>> waitForMind,
-        Func<string, string?, Task> publishAsync,
+        Func<string, string?, PendingModelMessage, Task> publishAsync,
         Func<string?, Task> reportFailureAsync,
         Action onQueued,
         Func<Task> onSettledAsync,
         Func<PendingModelMessage, MindSidecarClient, CancellationToken,
             Task<ModelMessageCompositionOutcome>>? composeAsync = null,
         Func<TimeSpan, CancellationToken, Task>? delayAsync = null,
-        Func<PendingModelMessage, string, Task>? onExhaustedAsync = null)
+        Func<PendingModelMessage, string, Task>? onExhaustedAsync = null,
+        Func<PendingModelMessage, bool>? isStale = null)
     {
         ArgumentNullException.ThrowIfNull(waitForMind);
         ArgumentNullException.ThrowIfNull(publishAsync);
@@ -53,6 +73,7 @@ internal sealed class PendingModelMessageQueue
         _delayAsync = delayAsync ?? Task.Delay;
         _onExhaustedAsync = onExhaustedAsync
             ?? ((_, _) => Task.CompletedTask);
+        _isStale = isStale ?? (static _ => false);
     }
 
     internal int Count
@@ -62,6 +83,23 @@ internal sealed class PendingModelMessageQueue
             lock (_lock)
             {
                 return _pending.Count;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Estabilización F2 (banco lug-1: a greeting still queued from the startup held the turn's floor back, the turn
+    /// closed with no answer and the floor came after it): whether an answer is queued ahead, the order of which a
+    /// final must keep. A greeting or a progress line answers nothing a final must wait for.
+    /// </summary>
+    internal bool HoldsAnAnswer
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _pending.Any(static item => PublicResponseRoute.FromDraft(item.Draft)
+                    is not (PublicResponseRoute.Welcome or PublicResponseRoute.Progress));
             }
         }
     }
@@ -84,6 +122,26 @@ internal sealed class PendingModelMessageQueue
         }
 
         _onQueued();
+    }
+
+    /// <summary>
+    /// Hands over a message whose first composition, made outside the queue,
+    /// failed. It keeps its place in the order; an answered failure is settled
+    /// there without composing again.
+    /// </summary>
+    internal void EnqueueFailed(
+        PendingModelMessage pending,
+        ModelMessageCompositionOutcome outcome,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(pending);
+        ArgumentNullException.ThrowIfNull(outcome);
+        pending.Attempts = 1;
+        pending.LastRejectedText = outcome.RejectedText;
+        pending.FinalFailure = MayRetry(pending, outcome)
+            ? null
+            : outcome.Failure ?? "model_response_rejected";
+        Enqueue(pending, cancellationToken);
     }
 
     /// <summary>Cierra la cola y espera a que el trabajador en curso termine.</summary>
@@ -126,6 +184,21 @@ internal sealed class PendingModelMessageQueue
                 return;
             }
 
+            // Un saludo que llega cuando la persona ya habló no responde a
+            // nada: se publicaba detrás de la respuesta del primer turno y se
+            // quedaba como su final. No se descarta ninguna respuesta, sólo
+            // una bienvenida que perdió su momento.
+            if (await DroppedStaleAsync(pending).ConfigureAwait(false))
+            {
+                continue;
+            }
+
+            if (pending.FinalFailure is { } finalFailure)
+            {
+                await ExhaustAsync(pending, finalFailure).ConfigureAwait(false);
+                continue;
+            }
+
             MindSidecarClient? mind = await _waitForMind(cancellationToken).ConfigureAwait(false);
             if (mind is null)
             {
@@ -141,28 +214,73 @@ internal sealed class PendingModelMessageQueue
                     .ConfigureAwait(false);
             }
 
+            // Ronda 25 (latency): a greeting stale by now never takes the mind's serial lane ahead of the request.
+            if (await DroppedStaleAsync(pending).ConfigureAwait(false))
+            {
+                continue;
+            }
+
             ModelMessageCompositionOutcome outcome =
                 await _composeAsync(pending, mind, cancellationToken).ConfigureAwait(false);
+            // The greeting may have lost its turn while waiting for the model.
+            // Neither its prose nor its failure belongs to the new request.
+            if (await DroppedStaleAsync(pending).ConfigureAwait(false))
+            {
+                continue;
+            }
             if (outcome.Text is null)
             {
+                pending.LastRejectedText = outcome.RejectedText ?? pending.LastRejectedText;
                 pending.Attempts++;
                 await _reportFailureAsync(outcome.Failure).ConfigureAwait(false);
-                if (pending.Attempts >= MaximumCompositionAttempts)
+                if (!MayRetry(pending, outcome))
                 {
-                    RemoveHead(pending);
-                    string exhausted =
-                        $"{outcome.Failure ?? "model_response_rejected"};retry_exhausted";
-                    await _reportFailureAsync(exhausted).ConfigureAwait(false);
-                    await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
-                    await _onSettledAsync().ConfigureAwait(false);
+                    await ExhaustAsync(pending, outcome.Failure ?? "model_response_rejected")
+                        .ConfigureAwait(false);
                 }
                 continue;
             }
 
             RemoveHead(pending);
 
-            await _publishAsync(outcome.Text, outcome.Failure).ConfigureAwait(false);
+            // La ruta viaja con el texto: un mensaje publicado por la cola sin
+            // ruta no se podía atribuir a la respuesta que lo originó.
+            await _publishAsync(
+                    outcome.Text,
+                    outcome.Failure,
+                    pending)
+                .ConfigureAwait(false);
         }
+    }
+
+    private async Task<bool> DroppedStaleAsync(PendingModelMessage pending)
+    {
+        if (!_isStale(pending))
+        {
+            return false;
+        }
+
+        RemoveHead(pending);
+        await _onSettledAsync().ConfigureAwait(false);
+        return true;
+    }
+
+    private async Task ExhaustAsync(PendingModelMessage pending, string failure)
+    {
+        RemoveHead(pending);
+        string exhausted = $"{failure};retry_exhausted";
+        // A7 (goal v3 paso 5): a verified result can always be said. Before the composition-failure line, its
+        // observed values are told in one short sentence that passes the same acceptance as a composed one.
+        if (ModelMessageComposer.DeterministicFinal(
+                pending.Draft, pending.UserText, pending.Facts, pending.LastRejectedText) is { } deterministic)
+        {
+            await _publishAsync(deterministic, $"{failure};deterministic_fallback", pending).ConfigureAwait(false);
+            return;
+        }
+
+        await _reportFailureAsync(exhausted).ConfigureAwait(false);
+        await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
+        await _onSettledAsync().ConfigureAwait(false);
     }
 
     private void RemoveHead(PendingModelMessage pending)
@@ -202,7 +320,8 @@ internal sealed class PendingModelMessageQueue
             return new ModelMessageCompositionOutcome(
                 null,
                 "composer_request_failed",
-                UsedRecovery: false);
+                UsedRecovery: false,
+                Unanswered: true);
         }
         finally
         {
@@ -222,4 +341,10 @@ internal sealed record PendingModelMessage(
     string TraceId)
 {
     public int Attempts { get; set; }
+
+    /// <summary>An answered failure from a composition made before queueing.</summary>
+    public string? FinalFailure { get; set; }
+
+    /// <summary>The mind's last text the policy refused, for the private audit (A7).</summary>
+    public string? LastRejectedText { get; set; }
 }

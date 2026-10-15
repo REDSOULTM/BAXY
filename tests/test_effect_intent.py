@@ -4,13 +4,13 @@ from time import perf_counter
 
 import pytest
 
+from baxy_mind import effect_intent
 from baxy_mind.effect_intent import (
     CompoundEffectContract,
     build_application_catalog_index,
     build_game_catalog_index,
-    compound_retrieval_clauses,
-    compound_retrieval_operation_hints,
     conversation_only_content_request,
+    explicit_negative_constraint,
     effect_request_is_authoritative,
     enumerated_note_dependency_order,
     known_unsupported_effect_request,
@@ -18,7 +18,6 @@ from baxy_mind.effect_intent import (
     unsupported_live_machine_query,
     operation_domain_is_grounded,
     operation_identity_is_a_near_miss,
-    resolve_explicit_clarification,
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
     resolve_application_catalog_app_id,
@@ -27,45 +26,355 @@ from baxy_mind.effect_intent import (
 )
 
 
-def test_compound_retrieval_clauses_tolerates_voice_punctuation_loss() -> None:
-    text = (
-        "hazme este chequeo por partes la salud global del sistema "
-        "después las copias recuperables después la distribución del teclado "
-        "devolviendo cada resultado por separado"
+def resolve_explicit_clarification(text: str, available_operations) -> str | None:
+    """The single certain operation of an incomplete effect (the product reads it through
+    ``resolve_explicit_clarification_intent``; the wrapper left the product in the 2026-10-06 audit)."""
+
+    intent = resolve_explicit_clarification_intent(text, available_operations)
+    return intent.operation if intent is not None and len(intent.operations) == 1 else None
+
+
+@pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+@pytest.mark.parametrize("surface", [
+    "hay alguna ventana de {name} abierta",
+    "¿Está {name} abierto?",
+    "¿Está abierta la aplicación {name}?",
+    "Baxy, por favor: comprueba si {name} está abierto",
+    "Is {name} open?",
+    "Please check whether {name} is closed",
+    "Are any windows of {name} open?",
+    "Baxy, is {name} open please?",
+    "How many windows of {name} are open?",
+    "How many {name} windows are open?",
+    "¿Cuántas ventanas de {name} están abiertas?",
+    "Baxy, how many windows of {name} are open please?",
+])
+def test_named_window_status_preserves_application_scope(name, surface):
+    from baxy_mind.effect_intent import resolve_application_window_status_name
+
+    text = surface.format(name=name)
+    applications = (name, "Otra aplicación")
+    intent = resolve_explicit_effects(
+        text, ("window.active", "window.application.status", "app.open"),
+        application_names=applications,
     )
-
-    assert compound_retrieval_clauses(text) == (
-        "la salud global del sistema",
-        "las copias recuperables",
-        "la distribucion del teclado",
+    assert intent is not None
+    assert intent.operations == ("window.application.status",)
+    assert resolve_application_window_status_name(text, applications) == name
+    without_status = resolve_explicit_effects(
+        text, ("window.active", "app.open"), application_names=applications,
     )
+    assert without_status is None
 
 
-def test_compound_retrieval_clauses_does_not_split_temporal_after_of() -> None:
-    assert compound_retrieval_clauses("revisa el correo después del almuerzo") == ()
+@pytest.mark.parametrize("text", [
+    "Spotify is open.", "Steam está abierto.",
+    "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+    "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+    "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+    "Is Spotify running in the background?", "Is it open?",
+    "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+    "¿Hay alguna ventana de oportunidad abierta?",
+    "How many windows of Spotify are closed?",
+    "How many windows of opportunity are open?",
+    "How many windows of Spotify are open on my phone?",
+    "Explain how many windows Spotify can open",
+    "How do I open a window of Spotify?",
+    "How many windows of Spotify are open and close Steam",
+])
+def test_named_window_status_does_not_invent_request_or_scope(text):
+    from baxy_mind.effect_intent import resolve_application_window_status_name
+
+    assert resolve_application_window_status_name(text, ("Spotify", "Steam")) is None
 
 
-def test_compound_retrieval_operation_hints_cover_voice_report_fragments() -> None:
-    text = (
-        "hazme este chequeo por partes la salud global del sistema "
-        "después las copias recuperables después la distribución del teclado "
-        "después text ready para paste"
+@pytest.mark.parametrize("text", [
+    "¿Qué ventana está activa?", "Which window has focus?",
+    "Dime qué ventana está en primer plano", "What window receives my keystrokes?",
+])
+def test_named_window_status_preserves_foreground_queries(text):
+    intent = resolve_explicit_effects(text, ("window.active", "window.application.status"))
+    assert intent is not None
+    assert intent.operations == ("window.active",)
+
+
+@pytest.mark.parametrize("text", [
+    "¿Hay alguna ventana de Steam visible?",
+    "Are any windows of Spotify visible?",
+    "¿Está abierta la ventana del dormitorio?",
+    "¿Hay alguna ventana de oportunidad abierta?",
+])
+def test_window_mention_does_not_authorize_foreground_substitution(text):
+    intent = resolve_explicit_effects(text, ("window.active",))
+    assert intent is None
+
+
+@pytest.mark.parametrize("text", [
+    "Identify the front window and the keyboard map in use",
+    "Identifica la ventana frontal y la distribución del teclado",
+    "Show the window above the rest and the keyboard map",
+    "Consulta la ventana por encima del resto y el mapa del teclado",
+    "Name window, tabs, key map",
+    "Consulta pestañas, ventana, teclado",
+])
+def test_foreground_read_preserves_composed_domain_order(text):
+    available = ("window.active", "browser.tabs.list", "input.keyboard.status")
+    intent = resolve_explicit_effects(text, available)
+    assert intent is not None
+    if text.startswith("Name window"):
+        expected = available
+    elif text.startswith("Consulta pestañas"):
+        expected = ("browser.tabs.list", "window.active", "input.keyboard.status")
+    else:
+        expected = ("window.active", "input.keyboard.status")
+    assert intent.operations == expected
+    assert unresolved_compound_contract(text, available, resolved_intent=intent) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Show visible windows", "Muestra ventanas visibles",
+    "Show the visible window", "Muestra la ventana visible",
+    "Show the Spotify window", "Muestra la ventana de Steam",
+    "List tabs and windows of Spotify", "Consulta pestañas y ventanas de Steam",
+    "Show my bedroom window", "Muestra la ventana del dormitorio",
+])
+def test_visible_or_named_window_does_not_become_a_foreground_read(text):
+    intent = resolve_explicit_effects(
+        text, ("window.active", "browser.tabs.list"), ("Spotify", "Steam"),
     )
+    assert intent is None or "window.active" not in intent.operations
 
-    assert compound_retrieval_operation_hints(
-        text,
-        (
-            "system.status",
-            "backup.list",
-            "input.keyboard.status",
-            "clipboard.read.text",
-        ),
-    ) == (
-        "system.status",
-        "backup.list",
-        "input.keyboard.status",
-        "clipboard.read.text",
-    )
+
+@pytest.mark.parametrize("prefix", ["Si, ", "Sí, ", "Yes, ", "Okay, "])
+@pytest.mark.parametrize("user_text,operations", [
+    ("abre steam", ("app.open",)),
+    ("open Orion", ("app.open",)),
+    ("dime la hora", ("system.time",)),
+])
+def test_affirmative_preface_preserves_the_independent_request(
+    prefix: str, user_text: str, operations: tuple[str, ...],
+) -> None:
+    # UI263 supplied the first literal. The cross-language/domain variants are
+    # constructed regression controls, not fresh human acceptance evidence.
+    available = ("app.open", "system.time")
+    apps = ("Steam", "Orion")
+    expected = resolve_explicit_effects(user_text, available, apps)
+    observed = resolve_explicit_effects(prefix + user_text, available, apps)
+
+    assert expected is not None and expected.operations == operations
+    assert observed is not None and observed.operations == expected.operations
+    assert observed.evidence == expected.evidence
+    assert unresolved_compound_contract(
+        prefix + user_text, available, apps, resolved_intent=observed,
+    ) is None
+
+
+@pytest.mark.parametrize("prefix", ["Si, ", "Sí, ", "Yes, ", "Okay, "])
+def test_affirmative_preface_preserves_mixed_positive_and_negative_constraints(prefix: str) -> None:
+    available = ("app.open", "system.time")
+    apps = ("Steam", "Orion")
+    user_text = "no abras Steam y abre Orion"
+    # The bounded resolver defers this whole compound to semantic selection.
+    # A discourse preface must preserve that contract and its prohibition,
+    # not turn the positive suffix into a standalone execution request.
+    assert resolve_explicit_effects(user_text, available, apps) is None
+    assert resolve_explicit_effects(prefix + user_text, available, apps) is None
+    expected = unresolved_compound_contract(user_text, available, apps)
+    assert unresolved_compound_contract(prefix + user_text, available, apps) == expected
+
+
+@pytest.mark.parametrize("prefix", ["Si, ", "Sí, ", "Yes, ", "Okay, ", "Hola, "])
+def test_authenticated_app_argument_uses_the_shared_request_envelope(prefix: str) -> None:
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ("Orion",)) == "Orion"
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ()) is None
+
+
+@pytest.mark.parametrize("user_text", [
+    "Si", "Sí", "Yes", "Okay", "Si, hazlo", "Yes, do it",
+    "Si Steam no responde, abre Orion", "If Steam is closed, open Orion",
+    "Si, no abras Steam", "Yes, do not open Orion",
+    'Explica la frase "Si, abre Steam"', 'Explain "Yes, open Orion"',
+])
+def test_affirmative_preface_does_not_supply_missing_or_forbidden_authority(user_text: str) -> None:
+    assert resolve_explicit_effects(user_text, ("app.open",), ("Steam", "Orion")) is None
+
+
+@pytest.mark.parametrize("user_text", [
+    "Si Steam no responde, abre Orion", "If Steam is closed, open Orion",
+    'Escribe "Si, abre Steam"', 'Type "Yes, open Orion"',
+    "Si,", "Yes,", "Sí", "Yes",
+])
+def test_affirmative_preface_preserves_conditions_and_literal_content(user_text: str) -> None:
+    from baxy_mind.effect_intent import _fold, _strip_request_envelope
+
+    folded = _fold(user_text)
+    assert _strip_request_envelope(folded) == folded
+
+
+@pytest.mark.parametrize("text", [
+    "no subas el volumen", "no silencies el audio", "no bajes el brillo",
+    "nunca cierres spotify", "no pongas música", "no abras el navegador",
+    "don't open chrome", "do not close this window", "never delete that file",
+    "Hola, no me bajes el volumen", "no apagues el PC", "no busques el archivo",
+    "no lances otra aplicación", "no muevas esa carpeta",
+])
+def test_standalone_prohibition_reuses_action_grammar(text: str) -> None:
+    assert explicit_negative_constraint(text)
+
+
+# AUDIO1579 (7bb180bdd): «no toques …» is a prohibition, the same act as «no abras».
+def test_no_toques_is_a_prohibition() -> None:
+    assert explicit_negative_constraint("no toques el archivo")
+
+
+@pytest.mark.parametrize("text", [
+    "no entiendo", "no sé qué es Steam", "no funciona el audio",
+    "nunca he usado Linux", "no tienes que saberlo", "no todas las fotos",
+    "no me molesta, poné música", "don't open Chrome; explain what a browser is",
+    "no abras Chrome y abre Firefox", "no abras Chrome, explica qué es",
+    "no abras Chrome pero explica qué es", "no cierres?", "turn up the volume",
+    "no me subes el volumen", "I don't know what a browser is",
+    "no abras Chrome y no cierres Spotify",
+])
+def test_prohibition_formatter_does_not_take_other_speech_acts(text: str) -> None:
+    assert not explicit_negative_constraint(text)
+
+
+@pytest.mark.parametrize("text", [
+    "turn up the volume", "turn the volume down", "turn volume up please",
+    "raise the volume", "lower volume", "increase the volume", "decrease volume",
+    "sube el volumen", "baja el volumen",
+])
+def test_relative_volume_clarifies_only_the_missing_amount(text: str) -> None:
+    intent = resolve_explicit_clarification_intent(text, ("audio.volume.adjust",))
+    assert intent is not None
+    assert intent.operations == ("audio.volume.adjust",)
+    assert intent.missing_fields == ("amount",)
+
+
+@pytest.mark.parametrize("text", [
+    "turn up the volume by 10%", "turn the volume down by 5%",
+    "turn off the volume", "turn up the brightness", "don't turn up the volume",
+    "turn up the volume on my phone", "no subas el volumen",
+])
+def test_relative_volume_clarification_preserves_complete_and_other_requests(text: str) -> None:
+    assert resolve_explicit_clarification_intent(text, ("audio.volume.adjust",)) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+    "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+    "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+    "Pon el volumen a...", "Fija el volumen del sistema al…",
+    "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+    "Change the volume on my computer to", "Baxy, ponme el volumen a",
+    "Please adjust the volume to...", "Set el volumen to...",
+])
+def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+    available = ("audio.volume", "audio.volume.adjust", "audio.status")
+    intent = resolve_explicit_clarification_intent(text, available)
+    assert intent is not None
+    assert intent.operations == ("audio.volume",)
+    assert intent.missing_fields == ("level",)
+    assert resolve_explicit_clarification_intent(text, ("audio.status",)) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Ajusta el volumen al 80%.", "Set the volume to seventy five percent.",
+    "¿A qué volumen está?", "no ajustes el volumen", "Ajusta el volumen de ventas.",
+    "Ajusta el volumen de datos", "Set the volume on my phone", "Ajusta el volumen de Spotify",
+    "Ajusta el volumen y el brillo", "Pon el volumen, no, mejor déjalo",
+    "Explícame cómo se ajusta el volumen", "Ajusta el volumen; abre Paint",
+    "Pon el volumen a 37", "Set the volume at 62 percent",
+    "Fija el volumen al mínimo", "Set the volume to maximum",
+    "Pon el volumen a la mitad", "Pon el volumen a como estaba antes",
+    "Set the volume to the previous level", "No pongas el volumen a...",
+    "Set the volume on my phone to...", "Pon el volumen de Spotify a...",
+    "Pon el volumen a... y abre Paint", "Traduce al inglés: Pon el volumen a...",
+])
+def test_missing_level_does_not_replace_complete_or_different_requests(text: str) -> None:
+    assert resolve_explicit_clarification_intent(text, ("audio.volume",)) is None
+
+
+@pytest.mark.parametrize("user_text", [
+    "Ponlo a 100 ahora", "fijalo al 40%", "ajustala a 55", "dejalo al 12",
+    "Set it to 45", "put it at 80 percent", "leave it at 20 please",
+])
+def test_numeric_volume_reference_inherits_only_a_known_prior_audio_request(user_text: str) -> None:
+    assert operation_domain_is_grounded(
+        user_text, "audio.volume", previous_user_text="decime cuánto volumen hay",
+        available_operations=("audio.status", "audio.volume", "audio.volume.adjust", "system.time"),
+    ) is True
+    assert operation_domain_is_grounded(user_text, "audio.volume") is False
+
+
+@pytest.mark.parametrize("text", [
+    "Abre una aplicación.", "Open an application.", "Launch an app.",
+    "Inicia un programa", "Open a program", "Abre la app",
+    "¿Puedes abrir una aplicación?", "Could you open an app?",
+    "Hola Baxy, abre una aplicación, por favor.", "Please open an application.",
+    "Open una aplicación, por favor.", "Lanza una app.",
+])
+def test_generic_application_request_clarifies_target_without_launching(text: str) -> None:
+    intent = resolve_explicit_clarification_intent(text, {"app.open"})
+    assert intent is not None
+    assert intent.operations == ("app.open",)
+    assert intent.missing_fields == ("application",)
+    assert resolve_explicit_clarification_intent(text, {"app.installed"}) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Abre Spotify.", "Open VLC.", "Abre la aplicación Calculadora.",
+    "No abras una aplicación.", "Don't open an app.",
+    "¿Cómo se abre una aplicación?", "What is an application?",
+    "If I open an application, does it use RAM?",
+    "Abre una aplicación en mi teléfono.", "Open an app on my phone.",
+    "Abre una aplicación y baja el volumen.", "Open an app; mute the speakers.",
+    "Abre una aplicación abre Steam", "Abre una aplicación, no, mejor no.",
+    "Open an application form.", "Start a program of exercise.",
+])
+def test_generic_application_clarification_keeps_other_requests_intact(text: str) -> None:
+    assert resolve_explicit_clarification_intent(text, {"app.open"}) is None
+
+
+@pytest.mark.parametrize("user_text,previous", [
+    ("Ponlo a 100 ahora", "Dime que hora es"),
+    ("Ponlo a 100 ahora", "no subas el volumen"),
+    ("Ponlo a 100 ahora", "dime la hora y el volumen"),
+    ("Ponlo a 100 ahora", "set the data volume to 20"),
+    ("No lo pongas al 100", "mostrame el volumen"),
+    ("pon el brillo al 100", "mostrame el volumen"),
+    ("ponlo a 100 en otro PC", "mostrame el volumen"),
+    ("ponlo a 100 mañana", "mostrame el volumen"),
+    ("ponlo a 100 y borra el archivo", "mostrame el volumen"),
+    ("set it to 40 frames per second", "show me the volume"),
+])
+def test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent(
+    user_text: str, previous: str,
+) -> None:
+    assert operation_domain_is_grounded(
+        user_text, "audio.volume", previous_user_text=previous,
+        available_operations=("audio.status", "audio.volume", "audio.volume.adjust", "system.time"),
+    ) is False
+
+
+def test_volume_domain_modifiers_are_invariant_to_clause_punctuation() -> None:
+    from baxy_mind.effect_intent import _volume_domain
+
+    for text in (
+        "set the volume, por favor.",
+        "set the volume; please.",
+        "set the volume, por favor.\naclaracion confiable del usuario: al 40%, please.",
+    ):
+        assert _volume_domain(text)
+    for text in (
+        "ajusta el volumen, de ventas al 40%",
+        "set the volume, of data to 40%",
+        "el volumen, de la enciclopedia",
+    ):
+        assert not _volume_domain(text)
+
+
 
 
 @pytest.mark.parametrize(
@@ -213,14 +522,13 @@ def test_public_questions_cannot_gain_local_search_or_alarm_authority(
     assert operation_domain_is_grounded(text, operation) is False
 
 
-def test_bare_spanish_temperature_factoid_does_not_force_a_live_lookup() -> None:
-    assert (
-        resolve_explicit_effects(
-            "cual es la temperatura en barcelona cataluna",
-            {"web.search", "notification.diagnose"},
-        )
-        is None
+# WEB1269 (23f8c73fe): weather and news lookups reach the read-only public search.
+def test_bare_spanish_temperature_factoid_is_a_public_weather_lookup() -> None:
+    result = resolve_explicit_effects(
+        "cual es la temperatura en barcelona cataluna",
+        {"notification.diagnose", "web.search"},
     )
+    assert result is not None and result.operations == ("web.search",)
 
 
 @pytest.mark.parametrize(
@@ -615,8 +923,10 @@ CASES = [
         ("streaming.navigate", "web.search"),
     ),
     (
+        # APP_MISSING952 (d2cf40e0c): a Google search in a named browser is that
+        # browser's navigation to the search page, with the full query kept.
         "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
-        ("web.search", "browser.navigate.named"),
+        ("browser.navigate.named",),
     ),
     (
         "Abre calculadora y pega el portapapeles",
@@ -706,8 +1016,9 @@ CASES = [
     ("que cosas tengo conectadas al equipo", ("peripheral.list",)),
     ("what do I have connected to the computer", ("peripheral.list",)),
     (
+        # NOTE_ROUTING985: the action after «anota que» is stored note content.
         "anota que hay reunion el jueves y avisame ese dia",
-        ("note.create", "reminder.create"),
+        ("note.create",),
     ),
     ("trancame el equipo que me voy", ("system.power",)),
     ("see if 8.8.8.8 answers", ("network.ping",)),
@@ -722,7 +1033,9 @@ CASES = [
     ),
     ("pasa a la siguiente cancion", ("media.control",)),
     ("dale enter", ("input.key.press",)),
-    ("llevame a wikipedia", ("browser.navigate",)),
+    # a2b881c62 / SITE1933: a bare public site is looked up by the verified
+    # search and the navigation opens its first result.
+    ("llevame a wikipedia", ("web.search", "browser.navigate")),
     (
         "apuntame que tengo que llamar al dentista",
         ("note.create",),
@@ -790,6 +1103,8 @@ def test_message_then_reminder_collection_is_a_bounded_composition(text: str) ->
     )
 
 
+# NOTE_ROUTING985 (1c5f8e4d3): after «anota que» everything is the note's literal
+# content, including an action mentioned inside it; nothing else is scheduled.
 def test_note_and_same_day_reminder_is_not_an_incomplete_calendar_event() -> None:
     text = "anota que hay reunion el jueves y avisame ese dia"
     available = AVAILABLE | {
@@ -802,7 +1117,7 @@ def test_note_and_same_day_reminder_is_not_an_incomplete_calendar_event() -> Non
     assert resolve_explicit_clarification_intent(text, available) is None
     result = resolve_explicit_effects(text, available)
     assert result is not None
-    assert result.operations == ("note.create", "reminder.create")
+    assert result.operations == ("note.create",)
 
 
 @pytest.mark.parametrize(("text", "expected"), CASES)
@@ -829,13 +1144,15 @@ def test_deterministic_audit_effect_subset_is_compositional(
             "Open Opera then navigate to https://example.org and read the page",
             ("browser.navigate.named", "browser.page.read"),
         ),
+        # MUSIC1749 (4445dd0f7): a named track on Spotify is the query playback
+        # verified by its observed title; «exactly» adds no exact-match contract.
         (
             "Play Beat It exactly on Spotify and pause afterwards",
-            ("media.play.exact", "media.control"),
+            ("media.play.query", "media.control"),
         ),
         (
             "Play Beat It exactly on Spotify and pause afterwards.",
-            ("media.play.exact", "media.control"),
+            ("media.play.query", "media.control"),
         ),
         (
             "Puedes abrir Spotify y reproducir Beat It",
@@ -943,7 +1260,8 @@ def test_alarm_without_identity_clarifies_instead_of_guessing_latest(
 
     assert result is not None
     assert result.operations == ("notification.cancel.at",)
-    assert result.missing_fields == ("alarm_time",)
+    # AGENDA1337 (8a590711c): an unnamed cancellation asks which alarm.
+    assert result.missing_fields == ("which_alarm",)
 
 
 @pytest.mark.parametrize(
@@ -1055,11 +1373,12 @@ def test_application_launch_identity_is_closed_over_authenticated_inventory() ->
         )
     )
 
+    # APPS1231 (258c9aad2): the English alias names the installed entry itself.
     assert resolve_application_catalog_app_id("Open Notepad", catalog) == (
-        "windows.notepad"
+        "Bloc de notas"
     )
     assert resolve_application_catalog_app_id("Open calc", catalog) == (
-        "windows.calculator"
+        "Calculadora"
     )
     assert resolve_application_catalog_app_id("Open Chrome", catalog) == (
         "Google Chrome"
@@ -1172,12 +1491,18 @@ def test_spotify_context_preserves_exact_play_then_pause_plan() -> None:
     )
 
 
+# fd6eb4f7d (APP_MISSING952): an unresolved application name after «open the
+# application» is read once as a presence check before answering.
+def test_unresolved_application_name_is_a_presence_read() -> None:
+    result = resolve_explicit_effects("Open the application door", AVAILABLE, ("Paint",))
+    assert result is not None and result.operations == ("app.installed",)
+
+
 @pytest.mark.parametrize(
     "text",
     [
         "Abre Paint documentation",
         "Abre Visual Studio Code examples",
-        "Open the application door",
         "Is Word installed in the dictionary?",
     ],
 )
@@ -1409,11 +1734,9 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Translate what time is it into Spanish",
         "What music do you like?",
         "What song should I write?",
-        "Busca cómo crear una tarea",
         "I won't open Spotify",
         "You should not open Spotify",
         "I cannot open Spotify",
-        "What is ping?",
         "Explain the concept of ping",
         "Bluetooth devices use radio waves",
         "List biological processes that use memory",
@@ -1459,7 +1782,6 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Abre calculadora y completa la tarea Auditoría",
         "Abre calculadora y reabre la tarea Auditoría",
         "Abre calculadora y actualiza la tarea Auditoría",
-        "Abre calculadora y describe la pantalla",
         "Abre calculadora y redimensiona la ventana",
         "Abre calculadora y enfoca Spotify",
         "Abre calculadora y presiona Enter",
@@ -1467,9 +1789,7 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Abre calculadora y termina el proceso demo",
         "Abre calculadora y verifica la copia de seguridad",
         "Abre calculadora y no abras Spotify",
-        "Abre calculadora y no silencies el audio",
         "Open calculator and do not open Spotify",
-        "Busca Spotify en Google",
         "Busca Spotify en Wikipedia",
         "Busca la palabra Spotify en este documento",
         "Maximiza la ventana de oportunidad",
@@ -1540,6 +1860,23 @@ def test_mentions_negations_and_how_to_questions_never_gain_effects(
     assert resolve_explicit_effects(text, AVAILABLE) is None
 
 
+# C03 readings that turned former non-effects into bounded reads or chains:
+# KNOWLEDGE1473 (63c287855) what/who a thing is → public search; WEB1831
+# (d7d2272c4) a research order with a question → public search; SCREEN1417
+# (ec963d3ef) describing the screen → capture + OCR after the open; 7d6921e98
+# «busca X en Google» → the search page in the browser.
+@pytest.mark.parametrize(("text", "expected"), [
+    ("Busca cómo crear una tarea", ("web.search",)),
+    ("What is ping?", ("web.search",)),
+    ("Abre calculadora y describe la pantalla", ("app.open", "capture.screenshot", "ocr.read")),
+    ("Busca Spotify en Google", ("browser.navigate",)),
+])
+def test_c03_reads_that_replaced_former_non_effects(text: str, expected: tuple[str, ...]) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None
+    assert result.operations == expected
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -1560,8 +1897,9 @@ def test_mentions_negations_and_how_to_questions_never_gain_effects(
             ("app.open", "browser.navigate.named"),
         ),
         (
+            # MUSIC1749: the Spotify track is the query playback.
             "Abre calculadora y reproduce exactamente Beat It en Spotify",
-            ("app.open", "media.play.exact"),
+            ("app.open", "media.play.query"),
         ),
         (
             "Open Notepad and search Beat It on Spotify",
@@ -1725,6 +2063,87 @@ def test_time_then_system_review_preserves_both_effects(text: str) -> None:
     assert unresolved_compound_contract(text, AVAILABLE) is None
     assert operation_domain_is_grounded(text, "system.time") is True
     assert operation_domain_is_grounded(text, "system.status") is True
+
+
+@pytest.mark.parametrize("text", [
+    "no me molesta, dime la hora",
+    "I don't mind, tell me the time",
+    "no abras Steam, dime la hora",
+])
+def test_negative_clause_is_not_counted_as_an_unresolved_positive_effect(text: str) -> None:
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is None
+
+
+@pytest.mark.parametrize("text", [
+    "dime la hora, no abras Steam",
+    "dime la hora y no abras Steam",
+    "tell me the time, do not open Spotify",
+    "tell me the time and do not mute the audio",
+    "dime la hora y no silencies el audio",
+])
+def test_independent_prohibition_preserves_semantic_read_selection(text: str) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None
+    assert result.operations == ("system.time",)
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is None
+
+
+def test_independent_audio_prohibition_preserves_application_request() -> None:
+    text = "Abre calculadora y no silencies el audio"
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None
+    assert result.operations == ("app.open",)
+    assert unresolved_compound_contract(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", [
+    "¿No está silenciado el audio?",
+    "¿No está abierta la calculadora?",
+    "¿No están instaladas las aplicaciones?",
+])
+def test_negative_state_question_is_not_a_no_effect_contract(text: str) -> None:
+    assert not explicit_negative_constraint(text)
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is None
+
+
+def test_negative_mute_question_resolves_only_the_read() -> None:
+    result = resolve_explicit_effects(
+        "¿No está silenciado el audio?", ("audio.status", "audio.mute", "audio.volume"),
+    )
+    assert result is not None
+    assert result.operations == ("audio.status",)
+
+
+@pytest.mark.parametrize("text", [
+    "No está silenciado el audio",
+    "¿No silencies el audio?",
+    "¿No está silenciado el audio? No lo revises",
+])
+def test_negative_statement_command_and_retraction_are_not_state_reads(text: str) -> None:
+    assert resolve_explicit_effects(text, ("audio.status", "audio.mute")) is None
+
+
+@pytest.mark.parametrize("text", [
+    "dime la hora, no lo hagas",
+    "dime la hora y no me digas la hora",
+    "abre Spotify y no abras Spotify",
+    "silencia el audio y no silencies el audio",
+    "dime la hora, no uses herramientas",
+    "dime la hora, no hagas nada",
+])
+def test_scope_comparison_preserves_retractions_and_global_denials(text: str) -> None:
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is not None
+
+
+@pytest.mark.parametrize("text", [
+    "no me digas la hora",
+    "don't tell me the time",
+    "no uses herramientas, dime la hora",
+    "don't use tools, tell me the time",
+    "dime la hora y envía un mensaje a Ana",
+])
+def test_scoped_conservation_keeps_global_denial_and_missing_effects(text: str) -> None:
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is not None
 
 
 @pytest.mark.parametrize(
@@ -1893,14 +2312,17 @@ def test_ordered_status_sequence_still_rejects_negated_authority() -> None:
         "Bluetooth radio status."
     )
 
-    assert resolve_explicit_effects(
-        text,
-        {
-            "input.keyboard.status",
-            "input.mouse.status",
-            "bluetooth.radio.status",
-        },
-    ) is None
+    assert (
+        resolve_explicit_effects(
+            text,
+            {
+                "input.keyboard.status",
+                "input.mouse.status",
+                "bluetooth.radio.status",
+            },
+        )
+        is None
+    )
 
 
 @pytest.mark.parametrize(
@@ -2070,7 +2492,6 @@ def test_bound_argument_spans_are_opaque_to_unrelated_effect_matchers(
         "Silencia la musica de Spotify",
         "Pon el audio de Spotify al 20%",
         "Sube la musica de Spotify en 2 puntos",
-        "Pon mÃºsica dance de los 80's",
         "Lee la pagina actual del documento",
         "Recarga la pagina actual del documento",
         "Lee la pagina actual de Excel",
@@ -2094,6 +2515,13 @@ def test_modifiers_arguments_and_corrections_never_gain_literal_authority(
     assert resolve_explicit_effects(text, AVAILABLE) is None
 
 
+# MUSIC1559 (f6ef0b010): music named without a provider plays from YouTube in
+# the local player; a genre with an era is a query, not a modifier.
+def test_music_named_without_a_provider_plays_from_youtube() -> None:
+    result = resolve_explicit_effects("Pon música dance de los 80's", AVAILABLE)
+    assert result is not None and result.operations == ("media.play.youtube",)
+
+
 @pytest.mark.parametrize(
     "text",
     [
@@ -2115,6 +2543,49 @@ def test_unresolved_compound_exposes_a_conservative_effect_lower_bound(
         (("note.create",),),
         (("task.create",),),
     }
+
+
+@pytest.mark.parametrize("text", [
+    "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte",
+    "Recuerda mi nombre para cuando te lo pregunte.",
+    "Quiero que recuerdes mi color favorito cuando te pregunte de nuevo.",
+    "Remember my name for when I ask you.",
+    "Remember my favorite color so you can tell me when I ask again.",
+    "Recuerda my favorite color para cuando te lo pregunte.",
+])
+def test_future_recall_purpose_does_not_schedule_the_memory_write(text: str) -> None:
+    from baxy_mind import effect_intent
+
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+
+
+@pytest.mark.parametrize("text", [
+    "Abre Steam cuando te lo pregunte.",
+    "Open Steam when I ask you.",
+    "Recuerda mi nombre mañana para cuando te lo pregunte.",
+    "Remember my name tomorrow for when I ask you.",
+    "Recuerda mi nombre y abre Steam cuando te lo pregunte.",
+    "Remember my name and open Steam when I ask you.",
+    "Remember to open Steam when I ask you.",
+    "Recuerda abrir Steam cuando te lo pregunte.",
+    "Recuerda mi nombre y luego abre Steam cuando te lo pregunte.",
+    "Remember my name and then open Steam when I ask you.",
+    "Remember my name, open Steam when I ask you.",
+])
+def test_recall_purpose_does_not_remove_an_actual_deferred_action(text: str) -> None:
+    from baxy_mind import effect_intent
+
+    assert effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+
+
+def test_recall_purpose_keeps_reminder_routing_separate() -> None:
+    from baxy_mind import effect_intent
+
+    # A reminder is itself a scheduling operation. Its own argument contract
+    # determines supported triggers; this immediate-effect guard does not.
+    assert not effect_intent._has_unsupported_deferred_effect(
+        effect_intent._fold("Recuérdame llamar a Carlos cuando cierre Steam."),
+    )
 
 
 def test_unresolved_compound_sums_real_clause_cardinality() -> None:
@@ -2530,24 +3001,26 @@ def test_product_payment_request_is_known_unsupported_without_commerce() -> None
     )
 
 
-def test_spoken_radio_station_resolves_as_media_query() -> None:
+# Uso real tanda 2 (2026-09-23): a station named without a provider plays in the
+# local player like any music named without one (MUSIC1559); still a play, never a search.
+def test_spoken_radio_station_resolves_as_media_play() -> None:
     result = resolve_explicit_effects(
         "pon kiss f. m. para mí",
-        {"media.play.query"},
+        {"media.play.query", "media.play.youtube", "web.search"},
     )
 
     assert result is not None
-    assert result.operations == ("media.play.query",)
+    assert result.operations == ("media.play.youtube",)
 
 
-def test_spoken_radio_frequency_resolves_as_media_query() -> None:
+def test_spoken_radio_frequency_resolves_as_media_play() -> None:
     result = resolve_explicit_effects(
         "tune in to eight hundred and ninety seven f. m.",
-        {"media.play.query"},
+        {"media.play.query", "media.play.youtube", "web.search"},
     )
 
     assert result is not None
-    assert result.operations == ("media.play.query",)
+    assert result.operations == ("media.play.youtube",)
 
 
 def test_corrected_installed_game_request_keeps_final_launch() -> None:
@@ -3566,11 +4039,9 @@ def test_explicit_text_source_is_grounded_for_clipboard_copy() -> None:
             "ocr.read",
             ("image_or_new_screenshot",),
         ),
-        (
-            "Lista mis próximos eventos del calendario",
-            "calendar.event.list",
-            ("date_range",),
-        ),
+        # «Lista mis próximos eventos del calendario» asked a date range here; since uso real
+        # 2026-09-23 what is coming is the next thirty days, so nothing is missing
+        # (tests/test_uso_real_2026_09_23_agenda.py reads it as a complete listing).
     ],
 )
 def test_incomplete_effect_asks_only_for_its_missing_contract_data(
@@ -3621,6 +4092,34 @@ def test_self_corrected_incomplete_effect_keeps_intent_without_recovery(
 )
 def test_calendar_iso_date_or_datetime_is_complete_contract_data(text: str) -> None:
     assert resolve_explicit_clarification(text, {"calendar.event.list"}) is None
+
+
+@pytest.mark.parametrize("text", [
+    "¿Con qué cuenta de Windows se está ejecutando BAXY?",
+    "Which Windows account is running BAXY?",
+    "What is my Windows username?",
+    "Dime la cuenta actual de Windows.",
+    "Dime mi usuario de Windows y cuánta RAM tengo",
+    "Show my Windows account and CPU usage",
+])
+def test_account_read_is_not_satisfied_by_machine_resource_status(text: str) -> None:
+    # Resource/OS observations cannot supply the effective account. Decline
+    # instead of forcing identity: the ordinary catalog selection owns that.
+    assert resolve_explicit_effects(text, {"system.status", "system.identity"}) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Which Windows version am I running?",
+    "Dime la versión de Windows que tengo",
+    "Qué Windows tengo y cuánta RAM tiene esta máquina",
+    "Dime el uso actual de la CPU.",
+    "Check the GPU identity",
+    "Revisa la identidad de la GPU",
+])
+def test_resource_identity_stays_with_machine_status(text: str) -> None:
+    result = resolve_explicit_effects(text, {"system.status", "system.identity"})
+    assert result is not None
+    assert result.operations == ("system.status",)
 
 
 @pytest.mark.parametrize(
@@ -3674,6 +4173,12 @@ def test_calendar_iso_date_or_datetime_is_complete_contract_data(text: str) -> N
             ("system.status", "audio.mute"),
         ),
         ("Dime la hora y revisa la batería", ("system.time", "system.status")),
+        ("decime la hora y cuánta batería tengo", ("system.time", "system.status")),
+        ("How much battery is left, and what time is it?", ("system.status", "system.time")),
+        ("Dime la fecha y cuánta RAM está libre", ("system.time", "system.status")),
+        ("What time is it and how much memory is available?", ("system.time", "system.status")),
+        ("¿Cuánta batería queda y cuánta RAM tengo?", ("system.status", "system.status")),
+        ("¿Cuánto disco libre hay y cuánta batería queda?", ("system.status", "system.status")),
     ],
 )
 def test_state_questions_are_recognized_across_languages_and_forms(
@@ -3704,7 +4209,6 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         "¿Por qué mi GPU no se usa?",
         "¿Qué está usando la VRAM ahora?",
         "¿Hay algo más usando la GPU ahora?",
-        "¿Qué proceso me come tanta RAM?",
         # Fuera del enum medido.
         "¿A qué temperatura está la GPU?",
         "gpu temp right now",
@@ -3733,9 +4237,13 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         # Memoria privada del asistente, no memoria del equipo.
         "¿Cuánta memoria tienes de mí?",
         "¿Qué recuerdas de mi cumpleaños?",
-        # Dos alcances que el catálogo no mide en una sola lectura.
-        "¿Cuánta batería queda y cuánta RAM tengo?",
-        "¿Cuánto disco libre hay y cuánta batería queda?",
+        # A compound cannot replace historical or hypothetical observations
+        # with current measurements, or silently drop an ungrounded clause.
+        "¿Cuánta batería tenía ayer y cuánta RAM tengo?",
+        "What time is it and how much RAM would a different PC have?",
+        "Dime la hora y cuánta batería tiene mi coche",
+        "¿Qué es una batería y cuánta RAM tengo?",
+        "Dime la hora y cuánta comida queda en la nevera",
         # Casos reales del corpus histórico de 14.836 mensajes.
         "Cuanta ram usa parekeet?",
         "Cuanta vram uisa el modelo de qwen?",
@@ -3745,7 +4253,6 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         "muestra el nombre del PC y el usuario actual",
         "muestra la hora, mi IP y mi RAM",
         "show time, IP and RAM",
-        "decime la hora y cuánta batería tengo",
         "is dictation available on my PC?",
         "cómo cuidas mi PC?",
         "Como va la rapidez del finetuning? cerre todo en mi pc para eso",
@@ -3754,14 +4261,39 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         "VRAM crece > 5.5 GB con --swa-full y OOM",
         "Me interesa el mobile, investiga cuanta vram usara realmente",
         "Dime qué dispositivo de audio está activo",
-        # «apagar la música» detiene la reproducción; no silencia el equipo.
-        "Apaga la musica",
         # Una coordinación con otro dominio no puede ejecutarse a medias.
         "mute the sound and dim the screen",
     ],
 )
 def test_state_lookalikes_never_gain_deterministic_authority(text: str) -> None:
     assert resolve_explicit_effects(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", ["Apaga la musica", "apaga la música", "para de reproducir"])
+def test_turning_off_the_music_stops_playback_never_the_system_sound(text: str) -> None:
+    # «apagar la música» detiene la reproducción; no silencia el equipo
+    # (uso real 2026-09-23: «apaga la música» quedaba en una pregunta).
+    result = resolve_explicit_effects(text, AVAILABLE | {"media.control", "audio.mute"})
+    assert result is not None and result.operations == ("media.control",)
+
+
+@pytest.mark.parametrize("text", [
+    "Dime la hora y cuánta batería tengo",
+    "How much battery is left, and what time is it?",
+])
+@pytest.mark.parametrize("available", [{"system.time"}, {"system.status"}])
+def test_coordinated_questions_require_every_catalog_read(text, available) -> None:
+    assert resolve_explicit_effects(text, available) is None
+
+
+@pytest.mark.parametrize("text", [
+    'Crea una nota titulada Medidas con el texto "hora y cuánta batería tengo"',
+    'Create a note titled Measures with the text "time and how much battery is left"',
+])
+def test_quantity_question_inside_note_content_does_not_add_a_read(text) -> None:
+    result = resolve_explicit_effects(text, {"note.create", "system.time", "system.status"})
+    assert result is not None
+    assert result.operations == ("note.create",)
 
 
 @pytest.mark.parametrize(
@@ -3798,6 +4330,93 @@ def test_recognized_state_questions_never_invent_an_absent_operation(
     text: str,
 ) -> None:
     assert resolve_explicit_effects(text, {"system.time"}) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["y la fecha?", "la fecha", "¿La hora?", "and the date?", "the time?"],
+)
+def test_nominal_datetime_query_does_not_lose_a_contextual_proposal(text: str) -> None:
+    assert operation_domain_is_grounded(text, "system.time") is True
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("Dime la hora, el audio y el uso de CPU.",
+     ("system.time", "audio.status", "system.status")),
+    ("Dime el uso de CPU, el audio y la hora.",
+     ("system.status", "audio.status", "system.time")),
+    ("Tell me the time, audio, and CPU usage.",
+     ("system.time", "audio.status", "system.status")),
+    ("Dime la hora y el estado del audio.", ("system.time", "audio.status")),
+    ("Tell me the time and the volume.", ("system.time", "audio.status")),
+    ("What time is it y cómo está el audio?", ("system.time", "audio.status")),
+    ("Dime el estado del audio y la hora.", ("audio.status", "system.time")),
+    ("Show the date and the volume.", ("system.time", "audio.status")),
+    ("Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+     ("system.time", "audio.status", "system.status")),
+])
+def test_coordinated_clock_reads_preserve_order_and_catalog_completeness(
+    text: str, expected: tuple[str, ...],
+) -> None:
+    available = {"system.time", "audio.status", "system.status"}
+    result = resolve_explicit_effects(text, available)
+    assert result is not None
+    assert result.operations == expected
+    for missing in expected:
+        assert resolve_explicit_effects(text, available - {missing}) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Tell me the CPU time and the volume.",
+    "Dime la fecha de la reunión y el estado del audio.",
+    "Dime la hora de cierre y el estado del audio.",
+    "Tell me the time needed to download it and the volume.",
+    "Read the words time and volume.",
+    "Explica la hora y el estado del audio.",
+])
+def test_coordinated_clock_lookalikes_do_not_authorize_local_time(text: str) -> None:
+    result = resolve_explicit_effects(text, {"system.time", "audio.status", "system.status"})
+    assert result is None or "system.time" not in result.operations
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "la fecha de la reunión",
+        "y la fecha de nacimiento?",
+        "the date of the event?",
+        "the time needed to download it",
+        "qué es una fecha",
+        "what is time?",
+        "no me digas la fecha",
+    ],
+)
+def test_qualified_or_nonrequested_datetime_is_not_the_local_clock(text: str) -> None:
+    assert operation_domain_is_grounded(text, "system.time") is False
+
+
+@pytest.mark.parametrize("current,previous,expected", [
+    ("y la fecha?", "Dime que hora es", True),
+    ("and the date?", "what time is it?", True),
+    ("y la fecha?", None, False),
+    ("y la fecha?", "cuándo nació Ada Lovelace", False),
+    ("y la fecha?", "No me digas la hora", False),
+    ("y la fecha de nacimiento?", "Dime que hora es", False),
+    ("no me digas la fecha", "Dime que hora es", False),
+])
+def test_datetime_followup_inherits_only_a_resolved_user_clock_request(
+    current: str, previous: str | None, expected: bool,
+) -> None:
+    result = resolve_explicit_effects(current, {"system.time"}, previous_user_text=previous)
+    assert (result is not None) is expected
+    if result is not None:
+        assert result.operations == ("system.time",)
+
+
+def test_datetime_followup_does_not_create_an_absent_operation() -> None:
+    assert resolve_explicit_effects(
+        "y la fecha?", {"audio.status"}, previous_user_text="Dime que hora es",
+    ) is None
 
 
 # Un saludo delante de la petición no cambia el acto de habla: sólo desplaza la
@@ -4142,7 +4761,6 @@ def test_calendar_when_query_is_a_time_range_not_a_deferred_effect(
         "Anything I should do after work today",
         "Eventos de esta noche",
         "Qué sucede en Año Nuevo",
-        "What is going on tonight",
         "¿Tengo algo que hacer hoy después del trabajo?",
     ],
 )
@@ -4195,8 +4813,9 @@ def test_bounded_calendar_queries_are_not_deferred_actions(text: str) -> None:
         ("Toma una captura de toda la pantalla.", ("capture.screenshot",)),
         ("Captura solamente la ventana activa.", ("capture.active.window",)),
         ("Capture only the active window.", ("capture.active.window",)),
-        ("Reproduce Bohemian Rhapsody de Queen.", ("media.play.query",)),
-        ("Play Bohemian Rhapsody by Queen.", ("media.play.query",)),
+        # MUSIC1559 (f6ef0b010): no provider named → YouTube in the local player.
+        ("Reproduce Bohemian Rhapsody de Queen.", ("media.play.youtube",)),
+        ("Play Bohemian Rhapsody by Queen.", ("media.play.youtube",)),
         ("¿Qué hora marca este computador?", ("system.time",)),
         ("What time does this computer show?", ("system.time",)),
         (
@@ -4216,8 +4835,9 @@ def test_bounded_calendar_queries_are_not_deferred_actions(text: str) -> None:
             ("system.status", "system.process.list"),
         ),
         (
+            # NOTE_ROUTING985: what follows «que diga» is the note's content.
             "Crea una nota que diga comprar pilas y recuérdamelo mañana a las seis.",
-            ("note.create", "reminder.create"),
+            ("note.create",),
         ),
     ],
 )
@@ -4400,14 +5020,6 @@ def test_game_catalog_index_rejects_untrusted_identity_shapes(
         ("Abre el archivo hola.txt del escritorio", "browser.navigate"),
         ("Abre el archivo hola.txt del escritorio", "filesystem.folder.open"),
         ("Borra la carpeta CarterTest del escritorio", "filesystem.path.ensure.absent"),
-        (
-            "Crea una carpeta en el escritorio llamada CarterTest",
-            "filesystem.create.directory",
-        ),
-        (
-            "Crea un archivo de texto en el escritorio que diga prueba Carter",
-            "filesystem.write.text",
-        ),
         ("Abre Big Picture", "app.open"),
         ("Abre capturas de Steam", "game.catalog.list"),
         ("mutea el micrófono en discord", "audio.microphone.mute"),
@@ -4435,6 +5047,16 @@ def test_operation_domain_preflight_rejects_neighboring_but_different_effects(
     operation: str,
 ) -> None:
     assert operation_domain_is_grounded(text, operation, ("Paint", "Steam")) is False
+
+
+# FILES1205 (cf14c0230): files and folders are created in known folders, so a
+# named folder or text file on the desktop grounds its filesystem operation.
+@pytest.mark.parametrize(("text", "operation"), [
+    ("Crea una carpeta en el escritorio llamada CarterTest", "filesystem.create.directory"),
+    ("Crea un archivo de texto en el escritorio que diga prueba Carter", "filesystem.write.text"),
+])
+def test_known_folder_creations_ground_their_filesystem_operation(text: str, operation: str) -> None:
+    assert operation_domain_is_grounded(text, operation, ("Paint", "Steam")) is True
 
 
 @pytest.mark.parametrize(
@@ -4688,7 +5310,6 @@ def test_default_printer_request_closes_until_the_exact_capability_exists(
         "Find the Save button and tell me what it says",
         "Open the latest file in the repository",
         "Open Paint documentation 2",
-        "Search files containing budget on Google",
         "Abre el archivo hola.txt del escritorio",
         "mutea el micrófono en discord",
     ],
@@ -5062,7 +5683,9 @@ def test_reminder_content_cannot_be_reclassified_by_an_embedded_event_noun() -> 
     assert clarification.missing_fields == ("due_time",)
 
 
-def test_calendar_event_without_duration_remains_a_calendar_clarification() -> None:
+def test_calendar_event_with_an_open_hour_is_not_asked() -> None:
+    # Uso real 2026-09-23: a start without an end lasts an hour, so the end is no longer asked. D61 (owner,
+    # 2026-10-02): «a las 9» with no part of the day is not asked either — it is the next 9 of that day.
     text = "Crea un evento llamado Revisión el domingo a las 9"
 
     clarification = resolve_explicit_clarification_intent(
@@ -5070,9 +5693,7 @@ def test_calendar_event_without_duration_remains_a_calendar_clarification() -> N
         {"calendar.event.create", "reminder.create"},
     )
 
-    assert clarification is not None
-    assert clarification.operations == ("calendar.event.create",)
-    assert clarification.missing_fields == ("end_time_or_duration",)
+    assert clarification is None
 
 
 def test_telegraphic_calendar_invite_requests_missing_event_details() -> None:
@@ -5086,7 +5707,7 @@ def test_telegraphic_calendar_invite_requests_missing_event_details() -> None:
     assert clarification.missing_fields == ("event_title", "event_time")
 
 
-def test_incomplete_calendar_after_an_independent_read_still_clarifies() -> None:
+def test_a_calendar_hour_after_an_independent_read_is_not_asked() -> None:
     text = "Dime la hora local. Después crea una reunión mañana a las 9."
 
     clarification = resolve_explicit_clarification_intent(
@@ -5094,9 +5715,9 @@ def test_incomplete_calendar_after_an_independent_read_still_clarifies() -> None
         {"system.time", "calendar.event.create"},
     )
 
-    assert clarification is not None
-    assert clarification.operations == ("calendar.event.create",)
-    assert clarification.missing_fields == ("end_time_or_duration",)
+    # Uso real 2026-09-23: the end is no longer asked (an hour). D61 (owner, 2026-10-02): nor is the part of the day
+    # of «a las 9» — the next 9 of that day.
+    assert clarification is None
 
 
 @pytest.mark.parametrize(
@@ -5439,16 +6060,6 @@ def test_status_public_discovery_and_stored_note_requests_are_deterministic(
             ("shared_note_source",),
         ),
         (
-            "Get me coffee coffee from Safeway",
-            "web.search",
-            ("product_lookup_or_purchase",),
-        ),
-        (
-            "Get milk, eggs, and bread from uhh from Aldi.",
-            "web.search",
-            ("product_lookup_or_purchase",),
-        ),
-        (
             "In the living room, play League of Legends.",
             "game.launch",
             ("local_pc_or_supported_device",),
@@ -5522,6 +6133,9 @@ def test_dynamic_alert_note_time_and_generic_game_requests_clarify_stably(
         ("puedes decirme donde hay parking gratis en huesca", "web.search"),
         ("Necesito un parking gratuito cerca de esta ubicacion", "web.search"),
         ("buy milk and eggs का memo create करो।", "note.create"),
+        # Uso real 2026-09-23: a start without an end lasts an hour, so this is complete
+        # (it was an incomplete clarification when the end was asked).
+        ("set meeting with joanna on saturday four p. m.", "calendar.event.create"),
     ],
 )
 def test_fresh_gate_families_have_deterministic_effect_identity(
@@ -5540,10 +6154,6 @@ def test_fresh_gate_families_have_deterministic_effect_identity(
         (
             "set notifications on the current weather disasters in america",
             "notification.schedule",
-        ),
-        (
-            "set meeting with joanna on saturday four p. m.",
-            "calendar.event.create",
         ),
         (
             "for every odd numbered sunday set a reminder for",
@@ -5881,7 +6491,9 @@ def test_emptying_the_bin_requires_naming_the_bin(text: str, grounded: bool) -> 
         # A noun is not enough: "sew the button on my coat" reached
         # input.visible.click through the word "button".
         ("Sew the button on my coat.", "input.visible.click", False),
-        ("Aprieta los tornillos de la silla.", "input.visible.click", False),
+        # UI1273 (0e62c26ba): «aprieta» is a click verb; what is on screen is
+        # settled by the reader of visible controls, not by the domain gate.
+        ("Aprieta los tornillos de la silla.", "input.visible.click", True),
         ("Haz clic en el boton azul.", "input.visible.click", True),
         ("Click the blue button.", "input.visible.click", True),
         ("Mueve el puntero al centro de la pantalla.", "input.pointer.control", True),
@@ -5931,7 +6543,11 @@ def test_shared_romance_words_do_not_declare_another_language(
         ("Pega las fotos en el album de papel.", "clipboard.paste", False),
         ("Pega el sello en el sobre.", "clipboard.paste", False),
         ("Glue the stamps into the paper album.", "clipboard.paste", False),
-        ("Paste the current clipboard into the focused field.", "clipboard.paste", True),
+        (
+            "Paste the current clipboard into the focused field.",
+            "clipboard.paste",
+            True,
+        ),
         ("Pega el contenido del portapapeles.", "clipboard.paste", True),
         ("Pega lo que copie recien.", "clipboard.paste", True),
         # A window named as the destination is not the thing being moved.
@@ -6001,6 +6617,44 @@ def test_pasting_requires_the_clipboard_not_just_the_verb(
 )
 def test_moving_a_window_means_the_window_moves(text: str, grounded: bool) -> None:
     assert operation_domain_is_grounded(text, "window.move") is grounded
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "cierra la ventana titulada Ventana C03 de prueba",
+        "Cierra la ventana con el título Informe trimestral — revisión.",
+        "Close the window titled Quarterly report — review.",
+        "Close the window named Untitled document.",
+        "Cierra la window called Project status.",
+    ],
+)
+def test_named_window_close_preserves_effect_and_allows_target_resolution(
+    text: str,
+) -> None:
+    resolved = resolve_explicit_effects(
+        text, ["app.close", "window.resolve", "window.active"]
+    )
+    assert resolved is not None
+    assert resolved.operations == ("app.close",)
+    assert operation_domain_is_grounded(text, "window.resolve") is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Close the window of opportunity.",
+        "Cierra la ventana de la cocina.",
+        "Close the window titled",
+        "Cierra la ventana con el título",
+    ],
+)
+def test_a_window_title_requires_an_actual_named_target(text: str) -> None:
+    assert (
+        resolve_explicit_effects(text, ["app.close", "window.resolve", "window.active"])
+        is None
+    )
+    assert operation_domain_is_grounded(text, "window.resolve") is False
 
 
 @pytest.mark.parametrize(
@@ -6110,9 +6764,9 @@ def test_enumerated_notes_survive_modifiers_and_coordinated_ordinal_reads(
 
     repository = Path(__file__).resolve().parents[1]
     aliases = json.loads(
-        (
-            repository / "src/baxy_mind/data/catalog_operation_aliases.v1.json"
-        ).read_text(encoding="utf-8")
+        (repository / "src/baxy_mind/data/catalog_operation_aliases.v1.json").read_text(
+            encoding="utf-8"
+        )
     )
     available = sorted({op for row in aliases["aliases"] for op in row["operations"]})
 
@@ -6239,9 +6893,7 @@ def test_the_two_borders_share_one_instruction_lexicon() -> None:
     ).read_text(encoding="utf-8")
 
     def csharp_array(name: str) -> set[str]:
-        match = re.search(
-            rf"{name}\s*=\s*\[(.*?)\];", parser, flags=re.DOTALL
-        )
+        match = re.search(rf"{name}\s*=\s*\[(.*?)\];", parser, flags=re.DOTALL)
         assert match is not None, f"{name} not found in the C# parser"
         return set(re.findall(r'"([^"]+)"', match.group(1)))
 
@@ -6339,3 +6991,308 @@ def test_a_catalog_object_is_not_an_instruction_frame(text: str) -> None:
     from baxy_mind.effect_intent import _fold, _strip_request_envelope
 
     assert ":" in _strip_request_envelope(_fold(text))
+
+
+@pytest.mark.parametrize(
+    "user_text",
+    [
+        "What is on my to do list? Do not use tools.",
+        "Don't open Spotify",
+        "Translate what is on my to do list into Spanish",
+        "What is in my notes? Then open Spotify and upload all files to the moon",
+    ],
+)
+def test_real_constraints_survive_personal_question_envelopes(user_text: str) -> None:
+    from baxy_mind.effect_intent import unresolved_compound_contract
+
+    assert unresolved_compound_contract(user_text, AVAILABLE) is not None
+
+
+@pytest.mark.parametrize("verb", ["desmutea", "desmutealo", "desmutéalo", "desmutéala", "desmutearlo"])
+def test_unmute_clitics_preserve_operation_and_compound_coverage(verb: str) -> None:
+    # Development control for the manual session's lost unmute clause.
+    available = ("audio.volume", "audio.mute", "audio.status")
+    single = resolve_explicit_effects(verb, available)
+    assert single is not None and single.operations == ("audio.mute",)
+    compound = resolve_explicit_effects(f"Pon el volumen al 37 y {verb}", available)
+    assert compound is not None
+    assert compound.operations == ("audio.volume", "audio.mute")
+    reverse = resolve_explicit_effects(f"{verb} y pon el volumen al 37", available)
+    assert reverse is not None
+    assert reverse.operations == ("audio.mute", "audio.volume")
+
+
+@pytest.mark.parametrize("text", [
+    "No lo desmutees", "No desmutealo", "Si lo desmuteas, sonará",
+    "Desmutealo en Discord", "Desmutea el micrófono", "Desmutéalo en la tele",
+])
+def test_unmute_clitic_recognition_keeps_scope_and_negative_boundary(text: str) -> None:
+    result = resolve_explicit_effects(text, ("audio.mute", "audio.volume"))
+    assert result is None or "audio.mute" not in result.operations
+
+
+def test_unmute_clitic_cannot_add_an_unavailable_operation() -> None:
+    assert resolve_explicit_effects("Desmutealo", ("audio.volume",)) is None
+
+
+@pytest.mark.parametrize("text,operations", [
+    ("Pon el volumen al 37 pero no quites el silencio", ("audio.volume",)),
+    ("Set the volume to 37 but do not unmute the audio", ("audio.volume",)),
+    ("Dime la hora pero no abras Steam", ("system.time",)),
+    ("Tell me the time but don't open Spotify", ("system.time",)),
+    ("Abre calculadora pero no silencies el audio", ("app.open",)),
+    ("Open Spotify but never mute the audio", ("app.open",)),
+])
+def test_adversative_independent_prohibition_keeps_only_requested_effects(
+    text: str, operations: tuple[str, ...],
+) -> None:
+    # Synthetic cross-domain controls for the false veto observed in mind486.
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None and result.operations == operations
+    assert unresolved_compound_contract(text, AVAILABLE) is None
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Pon el volumen al 37 pero no pongas el volumen al 37",
+    "Set the volume to 37 but do not set the volume to 37",
+    "Abre Spotify pero no abras Spotify",
+    "Open Spotify but don't open Spotify",
+    "Dime la hora pero no",
+    "Tell me the time but do not",
+    "Dime la hora pero no hagas nada",
+    "Tell me the time but do not use tools",
+    "Abre Spotify, no Steam",
+    "Open Spotify, no, open Steam",
+])
+def test_adversative_split_does_not_discharge_retractions_or_object_corrections(
+    text: str,
+) -> None:
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is not None
+
+
+@pytest.mark.parametrize("text,operations", [
+    ("Pon el volumen al 37 pero desmutéalo", ("audio.volume", "audio.mute")),
+    ("Set the volume to 37 but unmute the audio", ("audio.volume", "audio.mute")),
+    ("Desmutéalo pero pon el volumen al 37", ("audio.mute", "audio.volume")),
+    ("Dime la hora pero abre calculadora", ("system.time", "app.open")),
+    ("Open Spotify but tell me the time", ("app.open", "system.time")),
+    ("Abre calculadora pero desmutealo", ("app.open", "audio.mute")),
+])
+def test_positive_adversative_preserves_each_explicit_action(
+    text: str, operations: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None and result.operations == operations
+    assert unresolved_compound_contract(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", [
+    'Crea una nota llamada Sol con el texto "abre calculadora pero desmutealo"',
+    'Create a note called Sol with text "open Spotify but unmute the audio"',
+])
+def test_positive_adversative_inside_note_content_does_not_authorize_actions(text: str) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None and result.operations == ("note.create",)
+
+
+def test_positive_adversative_cannot_drop_an_unavailable_second_effect() -> None:
+    text = "Pon el volumen al 37 pero desmutéalo"
+    assert resolve_explicit_effects(text, ("audio.volume",)) is None
+    contract = unresolved_compound_contract(text, ("audio.volume",))
+    assert contract is not None and contract.minimum_effects == 2
+
+
+@pytest.mark.parametrize("opening,closing", [('"', '"'), ("'", "'"), ("«", "»"), ("“", "”"), ("‘", "’")])
+@pytest.mark.parametrize("note,content,following", [
+    ("crea una nota llamada sol con el texto", "abre calculadora pero desmutealo", "dime la hora"),
+    ("create a note called sol with text", "open spotify but unmute the audio", "tell me the time"),
+])
+def test_positive_adversative_preserves_quoted_payload_and_outside_action(
+    opening: str, closing: str, note: str, content: str, following: str,
+) -> None:
+    literal_note = f"{note} {opening}{content}{closing}"
+    result = resolve_explicit_effects(f"{literal_note} but {following}", AVAILABLE)
+    assert result is not None and result.operations == ("note.create", "system.time")
+    assert result.evidence[0] == literal_note
+
+
+@pytest.mark.parametrize("text,operations", [
+    ("Ponle el volumen al 37", ("audio.volume",)),
+    ("Ponle volumen al pc al 64", ("audio.volume",)),
+    ("Dime la hora pero ponle el volumen al 37", ("system.time", "audio.volume")),
+    ("Ponle volumen al pc\nAclaración confiable del usuario: Al 100, pero desmutealo", ("audio.volume", "audio.mute")),
+])
+def test_volume_dative_clitic_preserves_complete_local_effects(
+    text: str, operations: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None and result.operations == operations
+    assert unresolved_compound_contract(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Ponle volumen al pc", "Ponle el volumen del equipo", "Pon el volumen del pc",
+    "Set the volume of the computer", "Adjust volume on my computer",
+])
+def test_volume_dative_clitic_and_local_device_keep_missing_level(text: str) -> None:
+    intent = resolve_explicit_clarification_intent(text, ("audio.volume", "audio.status"))
+    assert intent is not None and intent.operations == ("audio.volume",)
+    assert intent.missing_fields == ("level",)
+    assert resolve_explicit_clarification_intent(text, ("audio.status",)) is None
+
+
+@pytest.mark.parametrize("text", [
+    "No le pongas el volumen al pc al 37", "Ponle volumen a la tele al 37",
+    "Ponle el volumen de Spotify al 37", 'Crea una nota con el texto "ponle volumen al pc al 37"',
+])
+def test_volume_dative_clitic_cannot_authorize_other_scopes(text: str) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is None or "audio.volume" not in result.operations
+
+
+def test_volume_dative_clitic_cannot_replace_absent_catalog_operation() -> None:
+    assert resolve_explicit_effects("Ponle el volumen al 37", ("audio.status",)) is None
+
+
+@pytest.mark.parametrize("previous,text,operations", [
+    ("Ponle volumen al pc", "Al 100, pero desmutealo", ("audio.volume", "audio.mute")),
+    ("Set the volume of the computer", "37", ("audio.volume",)),
+    ("Ajusta el volumen", "Al 24 por ciento", ("audio.volume",)),
+    ("Set the volume", "To 42 but tell me the time", ("audio.volume", "system.time")),
+    ("Pon el volumen", "Al 37 pero no quites el silencio", ("audio.volume",)),
+    ("Set the volume", "37 but don't unmute the audio", ("audio.volume",)),
+])
+def test_contextual_missing_volume_level_preserves_current_request(
+    previous: str, text: str, operations: tuple[str, ...],
+) -> None:
+    intent = resolve_explicit_effects(text, AVAILABLE, previous_user_text=previous)
+    assert intent is not None and intent.operations == operations
+    assert unresolved_compound_contract(
+        text, AVAILABLE, resolved_intent=intent, previous_user_text=previous,
+    ) is None
+
+
+@pytest.mark.parametrize("previous", [
+    "", "Abre Spotify", "Pon el volumen al 60", "No ajustes el volumen",
+    "Pon el volumen de Spotify", "Set the volume on my phone",
+    "Pon el volumen y ajusta el brillo", "¿Qué nivel de volumen quieres?",
+])
+def test_contextual_missing_volume_level_requires_unique_incomplete_user_target(previous: str) -> None:
+    assert resolve_explicit_effects("Al 37", AVAILABLE, previous_user_text=previous) is None
+
+
+@pytest.mark.parametrize("text,operations", [
+    ("Dime la hora", ("system.time",)),
+    ("Open Spotify", ("app.open",)),
+    ("Desmutealo", ("audio.mute",)),
+])
+def test_contextual_missing_volume_level_does_not_append_old_effect_to_new_request(
+    text: str, operations: tuple[str, ...],
+) -> None:
+    intent = resolve_explicit_effects(text, AVAILABLE, previous_user_text="Pon el volumen")
+    assert intent is not None and intent.operations == operations
+
+
+@pytest.mark.parametrize("text", [
+    "Al 37 pero no hagas nada", "37 but do not use tools", "Al 37, no, mejor nada",
+    "Al 37 en mi teléfono", "37 or 42", "-10", "101", "No, al 37",
+])
+def test_contextual_missing_volume_level_keeps_denials_ambiguity_and_scope(text: str) -> None:
+    assert resolve_explicit_effects(text, AVAILABLE, previous_user_text="Pon el volumen") is None
+
+
+def test_contextual_missing_volume_level_cannot_substitute_available_status() -> None:
+    assert resolve_explicit_effects(
+        "Al 37 pero desmutealo", ("audio.status", "audio.mute"),
+        previous_user_text="Pon el volumen",
+    ) is None
+
+
+@pytest.mark.parametrize("text,operations", [
+    ("Desilencia el audio", ("audio.mute",)),
+    ("Dessilencia el audio", ("audio.mute",)),
+    ("Necesito que lo desilencies", ("audio.mute",)),
+    ("Necesito que desmutees el audio", ("audio.mute",)),
+    ("perfecto, necesito lo dessilencies pls", ("audio.mute",)),
+    ("Perfecto, desmutealo", ("audio.mute",)),
+    ("Perfect, I need you to unmute the audio", ("audio.mute",)),
+    ("Perfecto, necesito abrir Spotify", ("app.open",)),
+    ("Perfect, I would like to open Spotify", ("app.open",)),
+    ("Necesito poner el volumen al 37", ("audio.volume",)),
+    ("Quiero desmutearlo", ("audio.mute",)),
+    ("I need to unmute the audio but tell me the time", ("audio.mute", "system.time")),
+])
+def test_explicit_need_after_acknowledgement_preserves_requested_effect(
+    text: str, operations: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None and result.operations == operations
+    assert unresolved_compound_contract(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", [
+    "No necesito que lo desilencies", "Necesito que no lo desilencies",
+    "Si desilencias el audio, sonará", "Perfecto, si desilencias el audio sonará",
+    "Me dijeron que desilencies el audio", "Necesito una explicación de desilenciar",
+    "Desilencia el micrófono", "Desilencia la tele", "Desilencia el audio en Discord",
+    "Quiero hablar sobre desilenciar el audio", "Perfecto, necesito descansar",
+])
+def test_explicit_need_after_acknowledgement_keeps_non_action_and_device_scope(text: str) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is None or "audio.mute" not in result.operations
+
+
+def test_explicit_need_inside_note_is_payload_after_acknowledgement() -> None:
+    result = resolve_explicit_effects(
+        'Perfecto, crea una nota con el texto "necesito que lo desilencies"', AVAILABLE,
+    )
+    assert result is not None and result.operations == ("note.create",)
+
+
+def test_explicit_need_after_acknowledgement_cannot_add_an_absent_operation() -> None:
+    assert resolve_explicit_effects(
+        "perfecto, necesito lo dessilencies pls", ("audio.volume", "audio.status"),
+    ) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # Owner's test 2026-09-21 (turns 210-213).
+        "baxy, cierra baxy",
+        "cierra BAXY",
+        "Cerrate, BAXY",
+        "apagate baxy",
+        "close yourself",
+        "BAXY, cierra la app de baxy",
+    ],
+)
+def test_closing_the_assistant_itself_is_a_known_limit(text: str) -> None:
+    assert effect_intent.self_close_request(text)
+    assert effect_intent.known_unsupported_effect_request(text, ("window.close", "app.close"))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "baxy, cierra edge",
+        "BAXY cierra el bloc de notas",
+        "cierra la ventana de steam",
+        "baxy apaga la pantalla",
+        "close Spotify",
+    ],
+)
+def test_closing_another_application_is_not_a_self_close(text: str) -> None:
+    assert not effect_intent.self_close_request(text)
+
+
+
+def test_uninstall_of_a_package_with_several_start_entries_goes_to_winget():
+    """WINGET2085 «desinstalá 7-Zip»: Start holds «7-Zip File Manager» and «7-Zip Help»."""
+    catalog = ["7-Zip File Manager", "7-Zip Help", "Steam", "Spotify"]
+    available = {"package.uninstall", "app.installed", "package.install.prepare", "package.install.commit"}
+    intent = resolve_explicit_effects("desinstalá 7-Zip", available, catalog)
+    assert intent is not None and intent.operations == ("package.uninstall",)
+    # A name with a single Start entry keeps the catalog route; a name with none is unchanged.
+    assert resolve_explicit_effects("desinstalá Spotify", available, catalog).operations == ("package.uninstall",)

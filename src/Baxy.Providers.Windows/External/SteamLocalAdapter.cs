@@ -5,12 +5,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Baxy.Kernel.Operations;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.External;
 
 internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 {
+    // The game catalog this adapter reads (InstalledGameCatalogEntry's provider), and the name its application's acts and
+    // title search are declared under in the data (app_places.v1.json «gameCatalog»).
+    private const string GameCatalog = "steam";
     private const int InstallObservationIntervals = 60;
     private const int CancelObservationIntervals = 30;
     private const int LaunchObservationIntervals = 70;
@@ -22,26 +26,18 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly Func<IReadOnlyList<SteamProcessObservation>>? _processSnapshot;
     private readonly ConcurrentDictionary<string, SteamInstallPreparation> _preparations = new();
-    private static readonly Dictionary<string, string> KnownTitleAppIds =
-        new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["batman arkham knight"] = "208650",
-            ["batman arkham knights"] = "208650",
-            ["batman arkham nike"] = "208650",
-            ["diin eternal"] = "782330",
-            ["doom"] = "782330",
-            ["doom eternal"] = "782330",
-            ["fall guys"] = "1097150",
-            ["hades"] = "1145360",
-            ["marvel rivals"] = "2767030",
-            ["mortal kombat 11"] = "976310",
-            ["stardew valley"] = "413150",
-            ["terraria"] = "105600",
-            ["worms rumble"] = "1186040",
-        };
+    private readonly Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? _storeTitles;
 
-    internal SteamLocalAdapter()
-        : this(ReadInstalledCatalog, ReadOwnedAppIds, new WindowsSteamClientAutomation())
+    // Encargo imp-steam: a title turns into its catalog number by the installed games' manifests and, for one not
+    // installed, by the store's public title search the data declare (only the title leaves); 13 titles written here
+    // (KnownTitleAppIds, with misheard variants) were retired. The dialog Steam opens for an act's address is confirmed
+    // by the mission's own click (input.visible.click on Steam's window, the label from the data), handed in here.
+    internal SteamLocalAdapter(IExternalOperationAdapter? clicks = null)
+        : this(
+            ReadInstalledCatalog,
+            ReadOwnedAppIds,
+            new WindowsSteamClientAutomation(press: clicks is null ? null : PressBy(clicks)),
+            storeTitles: SearchStoreAsync)
     {
     }
 
@@ -58,14 +54,30 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         Func<IReadOnlySet<string>> owned,
         ISteamClientAutomation automation,
         Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
-        Func<IReadOnlyList<SteamProcessObservation>>? processSnapshot = null)
+        Func<IReadOnlyList<SteamProcessObservation>>? processSnapshot = null,
+        Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? storeTitles = null)
     {
         _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         _owned = owned ?? throw new ArgumentNullException(nameof(owned));
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
         _delay = delay ?? DelayAsync;
         _processSnapshot = processSnapshot;
+        _storeTitles = storeTitles;
     }
+
+    /// <summary>The mission's click on a window by a label (input.visible.click), as the act's confirmation.</summary>
+    internal static Func<string, long, CancellationToken, ValueTask<ExternalCapabilityReceipt>> PressBy(
+        IExternalOperationAdapter clicks) =>
+        (label, window, cancellationToken) => clicks.InvokeAsync(
+            "input.visible.click",
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("label", label);
+                writer.WriteNumber("window", window);
+                writer.WriteEndObject();
+            }),
+            cancellationToken);
 
     public bool CanHandle(string operation) => operation.StartsWith("game.", StringComparison.Ordinal);
 
@@ -76,7 +88,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .OrderBy(static game => game.Name, StringComparer.OrdinalIgnoreCase)
             .ThenBy(static game => game.AppId, StringComparer.Ordinal)
             .Select(static game => new InstalledGameCatalogEntry(
-                "steam",
+                GameCatalog,
                 game.AppId,
                 game.Name))
             .ToArray();
@@ -98,11 +110,16 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return operation switch
             {
                 "game.catalog.list" => List(operation, arguments),
+                "game.entitlement.named" => await EntitlementNamedAsync(operation, arguments, cancellationToken)
+                    .ConfigureAwait(false),
                 "game.install.prepare" => Prepare(operation, arguments),
                 "game.install.commit" => await CommitAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
                 "game.install.named" => await InstallNamedAsync(
+                    operation, arguments, effectBoundary, cancellationToken)
+                    .ConfigureAwait(false),
+                "game.uninstall.named" => await UninstallNamedAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
                 "game.install.status" => Status(operation, arguments),
@@ -163,6 +180,50 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 WriteGame(writer, game);
             }
             writer.WriteEndArray(); writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // INSTALL1617 «Descarga Worms Rumble en Steam»: before any download the
+    // turn needs a truthful answer to «is this game mine and is it installed?».
+    // The title resolves like game.install.named (the local snapshot, then the
+    // store's title search); an unresolved title is reported as such, never guessed.
+    private async ValueTask<ExternalCapabilityReceipt> EntitlementNamedAsync(
+        string operation, JsonElement arguments, CancellationToken cancellationToken)
+    {
+        string title = ExternalJson.RequiredString(arguments, "title");
+        if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 256)
+        {
+            return ExternalJson.Failure(operation, "steam_title_invalid");
+        }
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("store", out JsonElement store)
+            && store.ValueKind == JsonValueKind.String
+            && string.Equals(store.GetString(), "epic", StringComparison.Ordinal))
+        {
+            return EpicEntitlementNamed(operation, title);
+        }
+        string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        SteamLocalGame? game = appId is null
+            ? null
+            : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
+        bool owned = appId is not null && _owned().Contains(appId);
+        bool installed = game is { Installed: true };
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("query", title);
+            writer.WriteBoolean("resolved", appId is not null);
+            if (appId is null) writer.WriteNull("appId"); else writer.WriteString("appId", appId);
+            writer.WriteString("title", game?.Name ?? title);
+            writer.WriteBoolean("owned", owned);
+            writer.WriteBoolean("installed", installed);
+            writer.WriteString("state", appId is null ? "title_not_resolved"
+                : installed ? "installed"
+                : owned ? "owned_not_installed" : "not_in_library");
+            writer.WriteString("authority", installed
+                ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
+            writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
@@ -231,14 +292,21 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         string title = ExternalJson.RequiredString(arguments, "title");
-        string folded = FoldTitle(title);
-        string? appId = KnownTitleAppIds.TryGetValue(folded, out string? known)
-            ? known
-            : ResolveSnapshotTitle(folded);
+        // REOPEN1993 grupo S (H0578 «Descarga Fall guys en epic games»): the
+        // store named after the title picks the launcher.
+        if (arguments.TryGetProperty("store", out JsonElement store)
+            && store.ValueKind == JsonValueKind.String && store.GetString() == "epic")
+        {
+            return await EpicInstallNamedAsync(operation, title, effectBoundary, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
         if (appId is null)
             return ExternalJson.Failure(operation, "steam_title_not_resolved");
-        if (!_owned().Contains(appId))
-            return ExternalJson.Failure(operation, "steam_entitlement_not_verified");
+        // Encargo imp-steam: the account's library is not read here as a gate. Its local cache is incomplete (measured
+        // 2026-10-11: Super Meat Boy, in the owner's account, is absent from the notebook's userdata librarycache);
+        // Steam's own install dialog only installs what the account holds, and the manifest proves it did.
         SteamLocalGame? game = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
         if (game is { Installed: true })
         {
@@ -262,15 +330,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         SteamLocalGame? before = _snapshot().SingleOrDefault(game => game.AppId == appId);
-        effectBoundary.Cross(cancellationToken);
-        SteamDispatchResult dispatch = await _automation.DispatchAsync(
-            "steam://install/" + appId,
-            cancellationToken).ConfigureAwait(false);
-        if (!dispatch.Accepted)
+        if (await ActAsync(operation, "install", appId, effectBoundary, cancellationToken).ConfigureAwait(false)
+            is { } failed)
         {
-            return effectBoundary.Failure(
-                operation, "steam_install_dispatch_rejected", dispatch.EffectObserved);
+            return failed;
         }
+
         for (int observation = 0; observation <= InstallObservationIntervals; observation++)
         {
             SteamLocalGame? after = _snapshot().SingleOrDefault(game => game.AppId == appId);
@@ -283,6 +348,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 {
                     writer.WriteStartObject(); writer.WriteNumber("version", 1);
                     writer.WriteString("jobId", JobId(appId)); writer.WriteString("appId", appId);
+                    writer.WriteString("name", after.Name);
                     writer.WriteString("state", InstallState(after));
                     writer.WriteNumber("bytesDownloaded", after.BytesDownloaded);
                     writer.WriteNumber("bytesTotal", after.BytesToDownload);
@@ -297,6 +363,249 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             }
         }
         return ExternalJson.Failure(operation, "steam_install_transition_not_verified", effectObserved: true);
+    }
+
+    /// <summary>
+    /// Encargo imp-steam: an act of the game (install, uninstall) is its address in the data handed to Steam, and the
+    /// dialog Steam opens for it confirmed by the mission's click on its own button (the data's «confirm» names); never a
+    /// key or a console command. Null when both happened (or the act has no dialog): the caller proves the effect on the
+    /// game's manifest. Otherwise the failure: before any effect when the data declare no such act; the dialog left open
+    /// when its button was not pressed.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt?> ActAsync(
+        string operation,
+        string act,
+        string appId,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        ApplicationPlaces.GameAct? declared = ApplicationPlaces.GameActOf(GameCatalog, act, appId);
+        if (declared is null)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "steam_act_not_declared");
+        }
+
+        effectBoundary.Cross(cancellationToken);
+        SteamDispatchResult dispatch = await _automation.DispatchAsync(declared.Address, cancellationToken)
+            .ConfigureAwait(false);
+        if (!dispatch.Accepted)
+        {
+            return effectBoundary.Failure(operation, $"steam_{act}_dispatch_rejected", dispatch.EffectObserved);
+        }
+
+        if (declared.Confirm.Count == 0)
+        {
+            return null;
+        }
+
+        SteamDispatchResult confirmed = await _automation.ConfirmAsync(dispatch, declared.Confirm, cancellationToken)
+            .ConfigureAwait(false);
+        // A press that may have landed is judged by the manifest, never by the press's own post-read.
+        return confirmed.Accepted || confirmed.EffectObserved
+            ? null
+            : effectBoundary.Failure(operation, $"steam_{act}_dialog_not_confirmed", effectObserved: true);
+    }
+
+    // H0578 «Descarga Fall guys en epic games»: the Epic Games launcher keeps its
+    // installed games as one JSON manifest each (%ProgramData%\Epic\EpicGamesLauncher\
+    // Data\Manifests\*.item: DisplayName, AppName, CatalogItemId, InstallLocation) and
+    // the authenticated account's catalog as a base64 JSON list (Data\Catalog\
+    // catcache.bin: id, title, namespace). Both are read, nothing is written; a title
+    // that matches exactly one catalog entry is resolved, anything else is not.
+    private static string EpicLauncherDataRoot => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+        "Epic", "EpicGamesLauncher", "Data");
+
+    private static ExternalCapabilityReceipt EpicEntitlementNamed(string operation, string title)
+    {
+        string folded = FoldTitle(title);
+        string manifests = Path.Combine(EpicLauncherDataRoot, "Manifests");
+        string catalogCache = Path.Combine(EpicLauncherDataRoot, "Catalog", "catcache.bin");
+        if (!Directory.Exists(manifests) && !File.Exists(catalogCache))
+        {
+            return ExternalJson.Failure(operation, "epic_launcher_data_not_found");
+        }
+        string? installedName = null;
+        string? installedCatalogId = null;
+        if (Directory.Exists(manifests))
+        {
+            foreach (string file in Directory.EnumerateFiles(manifests, "*.item"))
+            {
+                try
+                {
+                    using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file, Encoding.UTF8));
+                    JsonElement root = document.RootElement;
+                    if (root.ValueKind != JsonValueKind.Object
+                        || !root.TryGetProperty("DisplayName", out JsonElement displayName)
+                        || displayName.ValueKind != JsonValueKind.String
+                        || FoldTitle(displayName.GetString() ?? string.Empty) != folded
+                        || (root.TryGetProperty("bIsIncompleteInstall", out JsonElement incomplete)
+                            && incomplete.ValueKind == JsonValueKind.True))
+                    {
+                        continue;
+                    }
+                    installedName = displayName.GetString();
+                    installedCatalogId = root.TryGetProperty("CatalogItemId", out JsonElement catalogId)
+                        && catalogId.ValueKind == JsonValueKind.String ? catalogId.GetString() : null;
+                    break;
+                }
+                catch (JsonException)
+                {
+                    // A manifest the launcher is rewriting is not evidence either way.
+                }
+                catch (IOException)
+                {
+                }
+            }
+        }
+        string? ownedName = null;
+        string? ownedCatalogId = null;
+        int ownedMatches = 0;
+        if (File.Exists(catalogCache))
+        {
+            try
+            {
+                byte[] decoded = Convert.FromBase64String(File.ReadAllText(catalogCache, Encoding.ASCII).Trim());
+                using JsonDocument document = JsonDocument.Parse(decoded);
+                if (document.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (JsonElement item in document.RootElement.EnumerateArray())
+                    {
+                        if (item.ValueKind != JsonValueKind.Object
+                            || !item.TryGetProperty("title", out JsonElement itemTitle)
+                            || itemTitle.ValueKind != JsonValueKind.String
+                            || FoldTitle(itemTitle.GetString() ?? string.Empty) != folded)
+                        {
+                            continue;
+                        }
+                        ownedMatches++;
+                        ownedName ??= itemTitle.GetString();
+                        ownedCatalogId ??= item.TryGetProperty("id", out JsonElement itemId)
+                            && itemId.ValueKind == JsonValueKind.String ? itemId.GetString() : null;
+                    }
+                }
+            }
+            catch (FormatException)
+            {
+            }
+            catch (JsonException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+        }
+        bool installed = installedName is not null;
+        bool owned = installed || ownedMatches >= 1;
+        string? catalogItemId = installedCatalogId ?? ownedCatalogId;
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("query", title);
+            writer.WriteString("store", "epic");
+            writer.WriteBoolean("resolved", owned);
+            if (catalogItemId is null) writer.WriteNull("appId"); else writer.WriteString("appId", catalogItemId);
+            writer.WriteString("title", installedName ?? ownedName ?? title);
+            writer.WriteBoolean("owned", owned);
+            writer.WriteBoolean("installed", installed);
+            writer.WriteString("state", installed ? "installed"
+                : owned ? "owned_not_installed" : "not_in_library");
+            writer.WriteString("authority", installed
+                ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private async ValueTask<string?> ResolveTitleAsync(string title, CancellationToken cancellationToken)
+    {
+        string folded = FoldTitle(title);
+        string? installed = ResolveSnapshotTitle(folded);
+        if (installed is not null || _storeTitles is null)
+        {
+            return installed;
+        }
+
+        IReadOnlyList<SteamStoreTitle> found;
+        try
+        {
+            found = await _storeTitles(title, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
+            || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
+        {
+            return null;
+        }
+
+        // Exactly one game of the store answer bears the title (folded): «Super Meat Boy» is not «Super Meat Boy Forever».
+        string[] matches = found
+            .Where(item => FoldTitle(item.Name) == folded)
+            .Select(item => item.AppId)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        return matches.Length == 1 ? matches[0] : null;
+    }
+
+    private static readonly HttpClient StoreHttp = new() { Timeout = TimeSpan.FromSeconds(8) };
+
+    /// <summary>The store's public title search the data declare (app_places.v1.json «titles»); only the title leaves.</summary>
+    private static async ValueTask<IReadOnlyList<SteamStoreTitle>> SearchStoreAsync(
+        string title,
+        CancellationToken cancellationToken)
+    {
+        ApplicationPlaces.TitleSearch? search = ApplicationPlaces.TitleSearchOf(GameCatalog, title);
+        if (search is null)
+        {
+            return [];
+        }
+
+        using HttpResponseMessage response = await StoreHttp.GetAsync(search.Address, cancellationToken)
+            .ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            return [];
+        }
+
+        await using Stream body = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using JsonDocument document = await JsonDocument.ParseAsync(body, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+        return StoreTitles(document.RootElement, search);
+    }
+
+    /// <summary>Each game of a title search's answer, by the fields the data name: its number and its name.</summary>
+    internal static IReadOnlyList<SteamStoreTitle> StoreTitles(JsonElement answer, ApplicationPlaces.TitleSearch search)
+    {
+        if (answer.ValueKind != JsonValueKind.Object
+            || !answer.TryGetProperty(search.List, out JsonElement items)
+            || items.ValueKind != JsonValueKind.Array)
+        {
+            return [];
+        }
+
+        var titles = new List<SteamStoreTitle>();
+        foreach (JsonElement item in items.EnumerateArray())
+        {
+            if (item.ValueKind != JsonValueKind.Object
+                || !item.TryGetProperty(search.Id, out JsonElement id)
+                || !item.TryGetProperty(search.Name, out JsonElement name)
+                || name.ValueKind != JsonValueKind.String)
+            {
+                continue;
+            }
+
+            string? number = id.ValueKind switch
+            {
+                JsonValueKind.Number when id.TryGetUInt64(out ulong value) => value.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                JsonValueKind.String => id.GetString(),
+                _ => null,
+            };
+            if (number is { Length: > 0 and <= 10 } && number[0] != '0' && number.All(char.IsAsciiDigit))
+            {
+                titles.Add(new SteamStoreTitle(number, name.GetString()!));
+            }
+        }
+
+        return titles;
     }
 
     private string? ResolveSnapshotTitle(string folded)
@@ -361,14 +670,14 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             return ExternalJson.Failure(operation, "steam_partial_download_not_active");
         }
-        effectBoundary.Cross(cancellationToken);
-        SteamDispatchResult dispatch = await _automation.CancelPartialAsync(appId, cancellationToken)
-            .ConfigureAwait(false);
-        if (!dispatch.Accepted)
+        // Encargo imp-steam: Steam's own uninstall dialog removes a partial download too (it replaces the console's
+        // typed app_uninstall); its manifest says when it stopped.
+        if (await ActAsync(operation, "uninstall", appId, effectBoundary, cancellationToken).ConfigureAwait(false)
+            is { } failed)
         {
-            return effectBoundary.Failure(
-                operation, "steam_cancel_dispatch_rejected", dispatch.EffectObserved);
+            return failed;
         }
+
         long lastBytes = before.BytesDownloaded;
         for (int observation = 0; observation <= CancelObservationIntervals; observation++)
         {
@@ -453,11 +762,16 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             return ExternalJson.Failure(operation, "steam_installed_game_not_verified");
         }
+        ApplicationPlaces.GameAct? launch = ApplicationPlaces.GameActOf(GameCatalog, "launch", appId);
+        if (launch is null)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "steam_act_not_declared");
+        }
+
         HashSet<int> before = ReadProcessIds();
         effectBoundary.Cross(cancellationToken);
-        SteamDispatchResult dispatch = await _automation.DispatchAsync(
-            "steam://rungameid/" + appId,
-            cancellationToken).ConfigureAwait(false);
+        SteamDispatchResult dispatch = await _automation.DispatchAsync(launch.Address, cancellationToken)
+            .ConfigureAwait(false);
         if (!dispatch.Accepted)
         {
             return effectBoundary.Failure(
@@ -479,11 +793,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 return ExternalJson.Success(operation, result, effectObserved: true);
             }
 
-            if (observation == LaunchDialogObservation)
+            // A dialog Steam may show before the game (its launch options) is confirmed as an act's dialog is, by the
+            // mission's click on its own button (the data's names); no key is pressed (encargo imp-steam).
+            if (observation == LaunchDialogObservation && launch.Confirm.Count > 0)
             {
-                await _automation.ContinueLaunchDialogAsync(
-                    dispatch,
-                    cancellationToken).ConfigureAwait(false);
+                await _automation.ConfirmAsync(dispatch, launch.Confirm, cancellationToken).ConfigureAwait(false);
             }
 
             if (observation < LaunchObservationIntervals)
@@ -692,37 +1006,58 @@ internal sealed record SteamLocalGame(
 internal sealed record SteamDispatchResult(
     bool Accepted,
     bool EffectObserved,
-    IReadOnlySet<nint>? VisibleSteamWindowsBefore = null);
+    IReadOnlySet<nint>? VisibleSteamWindowsBefore = null,
+    string? ErrorCode = null);
 
 internal sealed record SteamProcessObservation(int ProcessId, string? ExecutablePath);
+
+/// <summary>A game of the store's title search: its catalog number and its name.</summary>
+internal sealed record SteamStoreTitle(string AppId, string Name);
 
 internal interface ISteamClientAutomation
 {
     ValueTask<SteamDispatchResult> DispatchAsync(string uri, CancellationToken cancellationToken);
-    ValueTask<SteamDispatchResult> ContinueLaunchDialogAsync(
+    /// <summary>Presses, on the dialog Steam opened for <paramref name="dispatch"/>, its control named by one of <paramref name="labels"/>.</summary>
+    ValueTask<SteamDispatchResult> ConfirmAsync(
         SteamDispatchResult dispatch,
+        IReadOnlyList<string> labels,
         CancellationToken cancellationToken);
-    ValueTask<SteamDispatchResult> CancelPartialAsync(string appId, CancellationToken cancellationToken);
 }
 
 internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomation
 {
+    // How long the dialog an act's address opens is waited for, and from which look a Steam window in front counts as
+    // the one it is drawn on (measured 2026-10-11 on redpc: the dialog was up within a second; Steam on screen draws it
+    // over its main window and takes the front, Steam minimized opens it as a window of its own).
+    private const int DialogLooks = 24;
+    private const int FrontLook = 4;
+    private static readonly TimeSpan DialogLookInterval = TimeSpan.FromMilliseconds(250);
+    private readonly Func<string, long, CancellationToken, ValueTask<ExternalCapabilityReceipt>>? _press;
+
+    internal WindowsSteamClientAutomation(
+        Func<string, long, CancellationToken, ValueTask<ExternalCapabilityReceipt>>? press = null)
+    {
+        _press = press;
+    }
+
     public ValueTask<SteamDispatchResult> DispatchAsync(string uri, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? parsed) || parsed.Scheme != "steam")
+        // REOPEN1993 grupo S: the Epic launcher takes its own install links.
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? parsed)
+            || parsed.Scheme is not ("steam" or "com.epicgames.launcher"))
         {
             return ValueTask.FromResult(new SteamDispatchResult(false, false));
         }
-        IReadOnlySet<nint>? visibleBefore = null;
-        if (uri.StartsWith("steam://rungameid/", StringComparison.Ordinal))
+        // The windows Steam shows before the address, so the dialog it opens is told apart (ConfirmAsync). A launch
+        // minimizes them first: a launch dialog then opens as a window of its own, never one drawn over the library.
+        IReadOnlySet<nint>? visibleBefore = parsed.Scheme == "steam" ? SteamTopWindows() : null;
+        if (visibleBefore is not null && uri.StartsWith("steam://rungameid/", StringComparison.Ordinal))
         {
-            HashSet<nint> steamWindows = SteamWindows();
-            foreach (nint window in steamWindows)
+            foreach (nint window in visibleBefore)
             {
                 _ = ShowWindow(window, 6);
             }
-            visibleBefore = steamWindows;
         }
         var start = new ProcessStartInfo(uri) { UseShellExecute = true };
         try
@@ -739,58 +1074,79 @@ internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomat
         }
     }
 
-    public async ValueTask<SteamDispatchResult> ContinueLaunchDialogAsync(
+    /// <summary>
+    /// Encargo imp-steam: the dialog an act's address opened is confirmed as a step of a mission confirms one, by the
+    /// mission's click on that window by a label (input.visible.click: the accessible tree, else OCR and the pointer in a
+    /// burst of the foreground lease); the labels come from the data. Steam's own window only: one it opened for the
+    /// address, or the one of its windows that took the front with the dialog drawn over it. Nothing is pressed when no
+    /// such window shows; a press that may have landed is never followed by another label.
+    /// </summary>
+    public async ValueTask<SteamDispatchResult> ConfirmAsync(
         SteamDispatchResult dispatch,
+        IReadOnlyList<string> labels,
         CancellationToken cancellationToken)
     {
-        if (!dispatch.Accepted || dispatch.VisibleSteamWindowsBefore is null)
+        if (!dispatch.Accepted || _press is null || labels.Count == 0)
         {
-            return new(false, dispatch.EffectObserved);
+            return new(false, false);
         }
 
-        nint handle = SteamWindows().FirstOrDefault(
-            static candidate => IsWindowVisible(candidate) && !IsIconic(candidate));
-        if (handle == 0 || !Focus(handle))
+        nint window = await DialogWindowAsync(dispatch.VisibleSteamWindowsBefore, cancellationToken).ConfigureAwait(false);
+        if (window == 0)
         {
-            return new(false, dispatch.EffectObserved);
+            return new(false, false);
         }
-        await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-        SendVirtualKey(0x0D, false);
-        SendVirtualKey(0x0D, true);
-        return new(true, true);
+
+        foreach (string label in labels)
+        {
+            ExternalCapabilityReceipt pressed = await _press(label, window, cancellationToken).ConfigureAwait(false);
+            if (pressed.Verified)
+            {
+                return new(true, true);
+            }
+
+            if (pressed.EffectObserved || pressed.EffectMayHaveOccurred)
+            {
+                return new(false, true, ErrorCode: pressed.ErrorCode);
+            }
+        }
+
+        return new(false, false);
     }
 
-    public async ValueTask<SteamDispatchResult> CancelPartialAsync(
-        string appId,
-        CancellationToken cancellationToken)
+    private static async ValueTask<nint> DialogWindowAsync(IReadOnlySet<nint>? before, CancellationToken cancellationToken)
     {
-        SteamDispatchResult opened = await DispatchAsync("steam://open/console", cancellationToken)
-            .ConfigureAwait(false);
-        if (!opened.Accepted) return opened;
-        await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
-        Process[] processes = Process.GetProcessesByName("steamwebhelper");
-        nint handle = processes.Select(process => process.MainWindowHandle).FirstOrDefault(value => value != 0);
-        foreach (Process process in processes) process.Dispose();
-        if (handle == 0 || !SetForegroundWindow(handle))
+        for (int look = 0; look < DialogLooks; look++)
         {
-            return new(false, true);
+            HashSet<nint> now = SteamTopWindows();
+            nint front = GetForegroundWindow();
+            nint[] born = [.. now.Where(window => before is null || !before.Contains(window))];
+            if (born.Length > 0)
+            {
+                // The dialog takes the front (measured); a main window shown again beside it does not.
+                return born.Contains(front) ? front : born[0];
+            }
+
+            if (look >= FrontLook && now.Contains(front))
+            {
+                return front;
+            }
+
+            await Task.Delay(DialogLookInterval, cancellationToken).ConfigureAwait(false);
         }
-        await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-        if (GetForegroundWindow() != handle) return new(false, true);
-        SendText("app_uninstall " + appId);
-        SendVirtualKey(0x0D, false); SendVirtualKey(0x0D, true);
-        return new(true, true);
+
+        return 0;
     }
 
-    private static HashSet<nint> SteamWindows()
+    // Every visible, not minimized top-level window of Steam's interface process (its dialogs are windows of their own,
+    // which a process's main window handle does not list).
+    private static HashSet<nint> SteamTopWindows()
     {
         Process[] processes = Process.GetProcessesByName("steamwebhelper");
+        HashSet<uint> owners;
         try
         {
-            return processes
-                .Select(static process => process.MainWindowHandle)
-                .Where(static handle => handle != 0)
-                .ToHashSet();
+            owners = [.. processes.Select(static process => unchecked((uint)process.Id))];
         }
         finally
         {
@@ -799,103 +1155,27 @@ internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomat
                 process.Dispose();
             }
         }
-    }
 
-    private static bool Focus(nint handle)
-    {
-        nint foreground = GetForegroundWindow();
-        uint foregroundThread = foreground == 0
-            ? 0
-            : GetWindowThreadProcessId(foreground, out _);
-        uint currentThread = GetCurrentThreadId();
-        bool attached = foregroundThread != 0
-            && currentThread != foregroundThread
-            && AttachThreadInput(currentThread, foregroundThread, true);
-        try
+        var windows = new HashSet<nint>();
+        if (owners.Count == 0)
         {
-            _ = ShowWindow(handle, 9);
-            _ = BringWindowToTop(handle);
-            _ = SetForegroundWindow(handle);
-            return GetForegroundWindow() == handle;
+            return windows;
         }
-        finally
+
+        EnumWindowsProc callback = (window, _) =>
         {
-            if (attached)
+            if (IsWindowVisible(window) && !IsIconic(window)
+                && GetWindowThreadProcessId(window, out uint owner) != 0 && owners.Contains(owner))
             {
-                _ = AttachThreadInput(currentThread, foregroundThread, false);
+                windows.Add(window);
             }
-        }
+
+            return true;
+        };
+        _ = EnumWindows(callback, 0);
+        GC.KeepAlive(callback);
+        return windows;
     }
-
-    private static void SendText(string text)
-    {
-        foreach (char character in text)
-        {
-            SendUnicode(character, false); SendUnicode(character, true);
-        }
-    }
-
-    private static void SendVirtualKey(ushort key, bool up)
-    {
-        Input[] input = [new() { Type = 1, Union = new InputUnion
-        { Keyboard = new KeyboardInput { VirtualKey = key, Flags = up ? 2U : 0U } } }];
-        if (SendInput(1, input, Marshal.SizeOf<Input>()) != 1) throw new IOException("Steam input failed.");
-    }
-
-    private static void SendUnicode(char character, bool up)
-    {
-        Input[] input = [new() { Type = 1, Union = new InputUnion
-        { Keyboard = new KeyboardInput { ScanCode = character, Flags = 4U | (up ? 2U : 0U) } } }];
-        if (SendInput(1, input, Marshal.SizeOf<Input>()) != 1) throw new IOException("Steam input failed.");
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Input
-    {
-        internal uint Type;
-        internal InputUnion Union;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    private struct InputUnion
-    {
-        [FieldOffset(0)]
-        internal KeyboardInput Keyboard;
-
-        [FieldOffset(0)]
-        internal MouseInput Mouse;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct KeyboardInput
-    {
-        internal ushort VirtualKey;
-        internal ushort ScanCode;
-        internal uint Flags;
-        internal uint Time;
-        internal nint ExtraInfo;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct MouseInput
-    {
-        internal int X;
-        internal int Y;
-        internal uint Data;
-        internal uint Flags;
-        internal uint Time;
-        internal nint ExtraInfo;
-    }
-
-    [LibraryImport("user32.dll")]
-    private static partial uint SendInput(uint count, Input[] inputs, int size);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetForegroundWindow(nint window);
-
-    [LibraryImport("user32.dll")]
-    private static partial nint GetForegroundWindow();
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -903,23 +1183,21 @@ internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomat
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsWindowVisible(nint window);
+
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsIconic(nint window);
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool BringWindowToTop(nint window);
-    [LibraryImport("user32.dll")]
-    private static partial uint GetWindowThreadProcessId(
-        nint window,
-        out uint processId);
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool AttachThreadInput(
-        uint attachThread,
-        uint attachToThread,
-        [MarshalAs(UnmanagedType.Bool)] bool attach);
 
-    [LibraryImport("kernel32.dll")]
-    private static partial uint GetCurrentThreadId();
+    [LibraryImport("user32.dll")]
+    private static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
 }

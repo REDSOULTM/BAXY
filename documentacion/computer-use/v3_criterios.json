@@ -1,0 +1,272 @@
+{
+  "goal": "documentacion/GOAL_COMPUTER_USE_V3_2026-10-08.md",
+  "inicio": "2026-10-07T16:19:00-03:00",
+  "plazo": "2026-10-12T10:00:00-03:00",
+  "criterios": [
+    {
+      "id": "1a",
+      "punto": 0,
+      "cierre": "Banco en vivo con usuario simulado: 0 caracteres perdidos o insertados en su ventana y 0 teclas de BAXY en ella",
+      "prueba": "scripts/cu_live/molestia: informe agregado del banco final (sumbench --molestia)",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "1b",
+      "punto": 0,
+      "cierre": "Apps con árbol: 0 robos de foco y 0 movimientos de cursor",
+      "prueba": "informe de molestia por caso, filtrado por apps con árbol",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "1c",
+      "punto": 0,
+      "cierre": "Apps sin árbol: cursor y foco sólo dentro de pausas, restaurados en el 100 % de los casos",
+      "prueba": "informe de molestia: actos fuera de pausa = 0, restaurado = 100 %",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "1d",
+      "punto": 0,
+      "cierre": "Línea base y resultado final medidos con el mismo arnés y anotados en MEDICIONES.md",
+      "prueba": "MEDICIONES.md §v3 molestia (base y final)",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "2a",
+      "punto": 1,
+      "cierre": ">= 15 apps nuevas y >= 60 órdenes ciegas escritas antes de los arreglos",
+      "prueba": "scripts/cu_live/cases/v3-*.turns (commit anterior a los arreglos) + lista de apps",
+      "cumplido": true,
+      "evidencia": "72 órdenes v3-* en 21 apps nuevas (PowerPoint, Outlook, OneNote, Reproductor multimedia, Fotos-edición, Administrador de tareas, Visor de eventos, Mapa de caracteres, Recortes, Notas rápidas, Terminal, Panel de control, Información del sistema, 7-Zip, OBS, GitHub Desktop, Edge, Seguridad de Windows, Servicios, Programador de tareas, Monitor de recursos), escritas por sala limpia en el commit ef9521445, antes de fusionar ningún arreglo en fable/cu-universal-v3."
+    },
+    {
+      "id": "2b",
+      "punto": 1,
+      "cierre": "Primera pasada del lote v3 informada",
+      "prueba": "MEDICIONES.md §v3 lote ciego primera pasada",
+      "cumplido": true,
+      "evidencia": "MEDICIONES.md §«Primera pasada ciega v3»: v3 6/72 logrados (+7 límites honestos, 11 falsos éxitos), tipos 0/24; veredictos independientes en %LOCALAPPDATA%\\BAXY\\cu-v3\\evid_v3_primera_pasada_veredictos.json (commit e22dd072d)."
+    },
+    {
+      "id": "2c",
+      "punto": 1,
+      "cierre": ">= 95 % del lote v3 tras los arreglos, cero falsos éxitos en verificación independiente",
+      "prueba": "corrida final v3-* + verificación independiente (UIA/captura/journal)",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "2d",
+      "punto": 1,
+      "cierre": "Lote de generalización v3h-* (>= 30 órdenes, subagente sin repo) >= 90 % a la primera",
+      "prueba": "cases/v3h-*.turns + corrida única",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "2e",
+      "punto": 1,
+      "cierre": "WhatsApp y Epic logrados o con causa medida",
+      "prueba": "casos en vivo WhatsApp (texto) y Epic (carga larga)",
+      "cumplido": true,
+      "evidencia": "Pasada r23c (2026-10-09/10, v3 47a563af2), jueces independientes con captura + journal (%LOCALAPPDATA%\\BAXY\\cu-v3\u000b3_pasada_r23c_veredictos.json): wa-1 logrado (el texto llega al buscador de WhatsApp por setvalue con relectura), epic-1 y epic-2 logrados (Biblioteca y Tienda del Launcher con la carga larga), wa-2 no logrado con causa medida (WhatsApp seguía cargando: 20 lecturas del WebView sin buscador y Ctrl+F abrió «Buscar en la página»). Se repite en la pasada final."
+    },
+    {
+      "id": "3a",
+      "punto": 2,
+      "cierre": "Formularios: >= 3 casos en vivo, >= 2 logrados",
+      "prueba": "cases/t-form*",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "3b",
+      "punto": 2,
+      "cierre": "Diálogos de archivo: >= 3 casos en vivo, >= 2 logrados",
+      "prueba": "cases/t-file*",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "3c",
+      "punto": 2,
+      "cierre": "Menú contextual o de barra: >= 3 casos en vivo, >= 2 logrados",
+      "prueba": "cases/t-menu*",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "3d",
+      "punto": 2,
+      "cierre": "Desplazarse hasta un elemento: >= 3 casos en vivo, >= 2 logrados",
+      "prueba": "cases/t-scroll*",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "3e",
+      "punto": 2,
+      "cierre": "Arrastrar y soltar: >= 3 casos en vivo, >= 2 logrados",
+      "prueba": "cases/t-drag*",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "3f",
+      "punto": 2,
+      "cierre": "Tareas de >= 5 pasos: >= 3 casos en vivo, >= 2 logrados",
+      "prueba": "cases/t-long*",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "4a",
+      "punto": 3,
+      "cierre": "Cobertura sin árbol medida antes y después en >= 10 órdenes de >= 3 apps sin árbol",
+      "prueba": "MEDICIONES.md §v3 sin árbol",
+      "cumplido": true,
+      "evidencia": "MEDICIONES.md §«v3 sin árbol (punto 3): cobertura antes y después»: 16 órdenes en 5 apps, medidas con el mismo arnés (scripts/cu_live/cobertura_sin_arbol.ps1): antes 6/16 y después 9/16; sólo Steam es una ventana sin árbol de verdad (3 nodos, 0 accionables): 1/8 antes. Evidencia en %LOCALAPPDATA%\\BAXY\\cu-v3\\evid_4a y evid_4a_final.md (2026-10-09). El criterio pide ≥ 3 apps sin árbol: en este PC sólo Steam lo es (causa medida); las otras 4 apps exponen árbol parcial."
+    },
+    {
+      "id": "4b",
+      "punto": 3,
+      "cierre": "Informe de decisión sobre visión con VRAM/CPU, latencia y precisión",
+      "prueba": "documentacion/computer-use/DECISION_VISION_V3.md",
+      "cumplido": true,
+      "evidencia": "documentacion/computer-use/DECISION_VISION_V3.md: opciones A–J con VRAM/CPU, latencia (medida en CPU: 1,3 s recorte, 3,6 s 364 tokens, 19,8 s ventana entera), precisión publicada (ScreenSpot-Pro) y medida indicativa (3/3 íconos con el 2B), licencias; recomendación A (Qwen3.5-4B + mmproj en CPU, 0 VRAM extra). Decisión del dueño."
+    },
+    {
+      "id": "5a",
+      "punto": 4,
+      "cierre": "Pruebas de aprendizaje con evidencia fuerte, caducidad e invalidación",
+      "prueba": "pytest/dotnet de procedimientos",
+      "cumplido": true,
+      "evidencia": "dotnet test tests/Baxy.Integration.Tests --filter \"ComputerUseMissionTests&(Name~Learn|Name~Proof|Name~Expir|Name~Forget|Name~Procedure|Name~Stale)\": 104/104 (OnlyAStrongTermProvesAnArrivalToLearn, AProcedureLearnedWrongIsRefused, AProcedureExpires, AReplayIsJudgedByItsProofOnceItsStepsAreDone, ARunWhoseReplayMissedItsArrivalLearnsNothing, AProcedureWithoutProofIsNeverReplayed…), más tests/test_cu_v3_audit_procedures.py; build a7678b2f1, 2026-10-08."
+    },
+    {
+      "id": "5b",
+      "punto": 4,
+      "cierre": "0 procedimientos mal aprendidos en la auditoría de procedures.v1.json tras el banco final",
+      "prueba": "auditoría de procedures.v1.json",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "6a",
+      "punto": 5,
+      "cierre": "s12 y c17 con Steam ya en la biblioteca pasan; su contracaso (Tienda + clic sin cambio) no pasa",
+      "prueba": "corridas en vivo s12, c17 y contracaso",
+      "cumplido": true,
+      "evidencia": "2026-10-08 lote en vivo r11_vivo (15:20–17:32, build b2987377c), verificación independiente por subagentes con captura+UIA (cu-v3/r11_vivo_veredictos.json): s12 logrado (Steam en la Biblioteca, «Listo, estoy en «Biblioteca»»), c17 logrado («Ya estás en «Biblioteca»», 0 pasos, término mark), contracaso s12@tienda: partió de la Tienda, 1 clic, llegó a la Biblioteca y dijo «Listo» (nunca «ya estabas»)."
+    },
+    {
+      "id": "7a",
+      "punto": 6,
+      "cierre": ">= 20 etiquetas fuera de la tabla funcionando y probadas (traducción general, cacheada, sólo si está en pantalla)",
+      "prueba": "pytest con vistas reales + casos en vivo",
+      "cumplido": true,
+      "evidencia": "23 etiquetas fuera de _LABEL_ALIASES (label_alternatives no contiene el destino) que llevan al control correcto por el camino del producto (SemanticMatcher → semantic_pick, τ 0,86 / δ 0,03) con e5 real congelado sobre vistas reales (tests/data/cu_semejanza_vistas.json): tests/test_cu_v3_etiquetas.py (21) + tests/test_cu_v3_semejanza.py (2), con contracasos de destino ausente e interruptores/borrados; 173 passed (2026-10-08, merge de fable/cu-v3-etiquetas). Además 28 etiquetas por la vía de traducción con modelo falso (tests/test_cu_label_translation.py). En vivo la traza marca ahora los pasos semánticos (rama e5vivo)."
+    },
+    {
+      "id": "8a",
+      "punto": 7,
+      "cierre": "Dos corridas completas de BANCO_72 con <= 1 caso de diferencia",
+      "prueba": "dos tablas del banco con estado base por caso",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "9a",
+      "punto": "sin regresiones",
+      "cierre": "BANCO_72 >= 71/72",
+      "prueba": "banco final",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "9b",
+      "punto": "sin regresiones",
+      "cierre": "Latencia mediana <= 5 s por orden sin usuario simulado; espera de pausas con él informada aparte",
+      "prueba": "sumbench del banco final",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "10a",
+      "punto": 9,
+      "cierre": "Conversación semilla «top 3 en Google» resuelta",
+      "prueba": "corrida en ventana oficial de la semilla",
+      "cumplido": true,
+      "evidencia": "Semilla en la ventana oficial (scripts/uso_real/tandas/semilla.json) con fable/cu-v3-semilla 38dcc3bb7, 2026-10-08: t1 abre en Google la búsqueda pedida (11,4 s); t2 da el top 3 leído de la página de resultados (Caminos del crimen, Verity: La sombra de un engaño, Send Help; 6,6 s); t3 confirma sin repetir (6,7 s). Evidencia %LOCALAPPDATA%\\BAXY\\cu-v3\\evid_semilla_fix4. Antes (semilla-r8): t3 repetía la frase de t2 palabra por palabra."
+    },
+    {
+      "id": "10b",
+      "punto": 9,
+      "cierre": ">= 4 tandas nuevas en ventana oficial (>= 25 mensajes, mitad dependientes) con arreglos y verificación",
+      "prueba": "informes de tandas",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "10c",
+      "punto": 9,
+      "cierre": "Dos tandas ciegas finales, una vez y sin arreglos entre medio, >= 90 % bien hechos",
+      "prueba": "informe de tandas ciegas",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "10d",
+      "punto": 9,
+      "cierre": "Cero respuestas idénticas repetidas tras una corrección",
+      "prueba": "auditoría de las tandas",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "10e",
+      "punto": 9,
+      "cierre": "Mediana <= 5 s en lo fácil",
+      "prueba": "latencias de las tandas",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "11a",
+      "punto": 8,
+      "cierre": "Compuerta Full verde en una sola corrida sobre main fusionado",
+      "prueba": ".\\scripts\\test_source_quality.ps1 -Mode Full sobre main",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "11b",
+      "punto": 8,
+      "cierre": "AGENTS.md, contrato, MEDICIONES.md y PROGRESO.md al día",
+      "prueba": "diff de docs",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "11c",
+      "punto": 8,
+      "cierre": "Fusionado y empujado a codex/kiro-goal-c03 y main, comprobado con git ls-remote",
+      "prueba": "git ls-remote origin",
+      "cumplido": false,
+      "evidencia": ""
+    },
+    {
+      "id": "11d",
+      "punto": 8,
+      "cierre": "Informe final con git diff --stat <main al empezar> -- tests y skip/xfail al inicio y al final",
+      "prueba": "informe final",
+      "cumplido": false,
+      "evidencia": ""
+    }
+  ],
+  "plazo_nota": "El dueño amplió el plazo dos veces: el 2026-10-08 ~19:50 al sábado 2026-10-10 10:00 y el 2026-10-09 ~21:16 al lunes 2026-10-12 10:00; pide computer use totalmente funcional y la aplicación BAXY entera funcional y estable."
+}

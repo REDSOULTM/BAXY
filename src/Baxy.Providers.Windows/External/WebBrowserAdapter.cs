@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Baxy.Providers.Windows.Applications;
+using Baxy.Security.Windows;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -13,7 +15,45 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 {
     private readonly CdpBrowserSession _browser;
     private readonly CdpBrowserSessionContext? _sessionContext;
+    // Owner 2026-10-02: pages, videos and streaming open in the person's own
+    // browser (their default, their sessions). The product's CDP browser stays
+    // as the fallback when no default browser resolves or it cannot launch.
+    private readonly UserBrowserSurface? _userBrowser;
+    private bool _userBrowserInUse;
     private readonly HttpClient _http;
+    private readonly PublicPlaceLocator _locator;
+    private readonly WikipediaSearchSource _wikipedia;
+    private readonly OpenStreetMapPlaceSource _places;
+    private readonly FrankfurterRateSource _rates;
+    private readonly EspnScheduleSource _sports;
+    private readonly WikimediaReferenceSource _references;
+    private readonly SearchPageReader _pages;
+    private readonly string? _searchDiagnosticPath;
+
+    // El perfil del navegador colgaba del directorio del turno, de modo que cada
+    // turno estrenaba uno. Dos cosas no sobreviven a eso, y las dos hacen falta
+    // para el video: la sesion iniciada en el servicio, y el componente Widevine
+    // —Chrome lo instala como componente, y en un perfil recien creado todavia
+    // no esta—. La sesion del navegador es del equipo y de la persona, como su
+    // Steam o su WhatsApp: no es estado del turno. Vive donde vive el resto de
+    // lo suyo, y un turno con perfil nuevo la encuentra igual.
+    internal static string SharedBrowserProfile(string dataRoot, string leaf)
+    {
+        try
+        {
+            string local = Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData);
+            if (!string.IsNullOrWhiteSpace(local))
+                return Path.Combine(local, "BAXY", "browser-session-v1", leaf);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or PlatformNotSupportedException)
+        {
+            // Sin carpeta de usuario se vuelve al comportamiento anterior.
+        }
+
+        return Path.Combine(dataRoot, leaf + "-browser-profile");
+    }
 
     internal WebBrowserAdapter(string dataRoot)
         : this(dataRoot, sessionContext: null)
@@ -22,25 +62,48 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     internal WebBrowserAdapter(string dataRoot, CdpBrowserSessionContext? sessionContext)
     {
-        _browser = new CdpBrowserSession(Path.Combine(dataRoot, "browser-profile"));
+        _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
         _sessionContext = sessionContext;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform());
+        _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
+        _http = new HttpClient(new SocketsHttpHandler
+        {
+            AutomaticDecompression = System.Net.DecompressionMethods.All,
+        })
+        { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
+        _locator = new PublicPlaceLocator(_http.GetStringAsync);
+        _wikipedia = new WikipediaSearchSource(_http);
+        _places = new OpenStreetMapPlaceSource(_http);
+        _rates = new FrankfurterRateSource(_http);
+        _sports = new EspnScheduleSource(_http);
+        _references = new WikimediaReferenceSource(_http);
+        _pages = new SearchPageReader();
     }
 
     internal WebBrowserAdapter(
         CdpBrowserSession browser,
         HttpClient http,
-        CdpBrowserSessionContext? sessionContext = null)
+        CdpBrowserSessionContext? sessionContext = null,
+        UserBrowserSurface? userBrowser = null,
+        EspnScheduleSource? sports = null)
     {
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
         _http = http ?? throw new ArgumentNullException(nameof(http));
         _sessionContext = sessionContext;
+        _userBrowser = userBrowser;
+        _locator = new PublicPlaceLocator(_http.GetStringAsync);
+        _wikipedia = new WikipediaSearchSource(_http);
+        _places = new OpenStreetMapPlaceSource(_http);
+        _rates = new FrankfurterRateSource(_http);
+        _sports = sports ?? new EspnScheduleSource(_http);
+        _references = new WikimediaReferenceSource(_http);
+        _pages = new SearchPageReader(_http);
     }
 
     public bool CanHandle(string operation) => operation is
         "browser.control" or "browser.navigate" or "browser.page.read" or "browser.tabs.list"
-        or "media.play.youtube"
+        or "media.play.youtube" or "media.control" or "media.status"
         or "streaming.navigate" or "streaming.play.named" or "web.search";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
@@ -65,6 +128,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                     .ConfigureAwait(false),
                 "media.play.youtube" => await PlayYouTubeAsync(
                     operation, arguments, effectBoundary, cancellationToken).ConfigureAwait(false),
+                "media.control" => await ControlYouTubeTabAsync(
+                    operation, arguments, effectBoundary, cancellationToken).ConfigureAwait(false),
+                "media.status" => await ReadYouTubeTabAsync(operation, cancellationToken)
+                    .ConfigureAwait(false),
                 "streaming.navigate" => await StreamingAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
@@ -97,6 +164,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         _browser.Dispose();
         _http.Dispose();
+        _pages.Dispose();
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ControlAsync(
@@ -106,6 +174,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string action = ExternalJson.RequiredString(arguments, "action");
+        // Owner 2026-10-06: the person's tabs are in their own browser; a browser BAXY keeps aside is never the
+        // answer to «cierra la pestaña» or «vuelve atrás».
+        if (_userBrowser?.Resolve() is { } userBrowser)
+            return await _userBrowser.ControlAsync(operation, userBrowser, action, effectBoundary, cancellationToken)
+                .ConfigureAwait(false);
+        if (UserBrowserHoldsThePage)
+            return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         effectBoundary.Cross(cancellationToken);
         CdpBrowserControlResult control = await browser.ControlAsync(action, cancellationToken)
@@ -132,7 +207,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         Uri target = RequireWebUri(ExternalJson.RequiredString(arguments, "url"));
-        _sessionContext?.Activate(_browser);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.NavigateAsync(
+                operation, userBrowser, target, effectBoundary, cancellationToken).ConfigureAwait(false)
+                is { } opened)
+        {
+            UseUserBrowser();
+            return opened;
+        }
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpNavigationResult navigation = await _browser.NavigateAsync(target, cancellationToken)
             .ConfigureAwait(false);
@@ -151,6 +234,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 12_000), 256, 32_768);
+        if (_userBrowser?.Resolve() is { } userBrowser)
+            return await _userBrowser.ReadPageAsync(operation, userBrowser, maximumCharacters, cancellationToken)
+                .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         CdpPageReadResult page = await browser.ReadPageAsync(maximumCharacters, cancellationToken)
             .ConfigureAwait(false);
@@ -176,6 +262,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
+        if (_userBrowser?.Resolve() is { } userBrowser)
+            return await _userBrowser.ListTabsAsync(operation, userBrowser, limit, cancellationToken)
+                .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         CdpBrowserTabsResult tabs = await browser.ListTabsAsync(limit, cancellationToken)
             .ConfigureAwait(false);
@@ -214,7 +303,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.Failure(operation, "streaming_resource_service_mismatch");
         }
-        _sessionContext?.Activate(_browser);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.StreamingNavigateAsync(
+                operation, userBrowser, service, target, effectBoundary, cancellationToken)
+                .ConfigureAwait(false) is { } opened)
+        {
+            UseUserBrowser();
+            return opened;
+        }
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpNavigationResult navigation = await _browser.NavigateAsync(target, cancellationToken)
             .ConfigureAwait(false);
@@ -254,27 +351,79 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         string service = ExternalJson.RequiredString(arguments, "service");
         string title = ExternalJson.RequiredString(arguments, "title").Trim();
-        if (service != "netflix" || title.Length == 0)
+        if (service is not ("netflix" or "disney_plus" or "hbo_max") || title.Length == 0)
             return ExternalJson.Failure(operation, "streaming_named_argument_invalid");
-        _sessionContext?.Activate(_browser);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.PlayStreamingNamedAsync(
+                operation, userBrowser, service, title, effectBoundary, cancellationToken)
+                .ConfigureAwait(false) is { } started)
+        {
+            UseUserBrowser();
+            return started;
+        }
+        // HBO Max only plays where the person is signed in: the product's own browser has no session of theirs and no
+        // route of its own for it, so nothing is opened there.
+        if (service == "hbo_max")
+            return ExternalJson.FailureBeforeEffect(operation, HboMaxNeedsDefaultBrowser);
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
-        CdpStreamingPlaybackResult playback = await _browser.PlayNetflixAsync(
-            title, cancellationToken).ConfigureAwait(false);
+        CdpStreamingPlaybackResult playback = service == "disney_plus"
+            ? await _browser.PlayDisneyAsync(title, cancellationToken).ConfigureAwait(false)
+            : await _browser.PlayNetflixAsync(title, cancellationToken).ConfigureAwait(false);
         if (!playback.Verified)
+        {
+            // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
+            // ultima pagina observada, que es lo que separa «no eligio perfil» de
+            // «no encontro la tarjeta» y de «no vio avanzar el video».
+            RecordStreamingRejection(title, playback);
             return effectBoundary.Failure(
                 operation, playback.ErrorCode, playback.EffectObserved);
+        }
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("service", service); writer.WriteString("title", title);
+            writer.WriteString("service", service);
+            writer.WriteString("title", playback.Title);
             writer.WriteString("finalUrl", playback.FinalUrl);
             writer.WriteString("pageTitle", playback.PageTitle);
             writer.WriteString("targetId", playback.TargetId);
             writer.WriteString("playbackStatus", "playing");
             writer.WriteNumber("observedProgressSeconds", playback.ObservedProgressSeconds);
-            writer.WriteString("authority", "netflix_cdp_video_progress_postread");
+            writer.WriteString("authority", service == "disney_plus"
+                ? "disney_cdp_video_progress_postread" : "netflix_cdp_video_progress_postread");
             writer.WriteEndObject();
         }), playback.EffectObserved);
+    }
+
+    private void RecordStreamingRejection(string title, CdpStreamingPlaybackResult playback)
+    {
+        if (_searchDiagnosticPath is null)
+            return;
+        try
+        {
+            string path = Path.Combine(
+                Path.GetDirectoryName(_searchDiagnosticPath)!,
+                "streaming-playback-rejections.jsonl");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            string line = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", "baxy.streaming-playback-rejection.v1");
+                writer.WriteString("utc", DateTimeOffset.UtcNow.ToString("o"));
+                writer.WriteString("title", title);
+                writer.WriteString("error", playback.ErrorCode);
+                writer.WriteString("lastUrl", playback.FinalUrl);
+                writer.WriteString("lastPageTitle", playback.PageTitle);
+                writer.WriteString("lastObserved", playback.LastObserved);
+                writer.WriteEndObject();
+            }).GetRawText();
+            File.AppendAllText(path, line + Environment.NewLine, Encoding.UTF8);
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException or ArgumentException)
+        {
+            // Un diagnostico que no se puede escribir no cambia el resultado.
+        }
     }
 
     private async ValueTask<ExternalCapabilityReceipt> PlayYouTubeAsync(
@@ -284,24 +433,20 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string query = ExternalJson.RequiredString(arguments, "query");
-        Uri search = new("https://www.youtube.com/results?search_query="
-            + Uri.EscapeDataString(query));
-        using var request = new HttpRequestMessage(HttpMethod.Get, search);
-        request.Headers.UserAgent.ParseAdd("Mozilla/5.0 BAXY/1.0");
-        using HttpResponseMessage response = await _http.SendAsync(
-            request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-        string html = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        if (Encoding.UTF8.GetByteCount(html) > 4_000_000)
-            return effectBoundary.Failure(operation, "youtube_search_response_too_large");
-        Match video = Regex.Match(
-            html,
-            "\\\"videoRenderer\\\":\\{\\\"videoId\\\":\\\"([A-Za-z0-9_-]{11})\\\"",
-            RegexOptions.CultureInvariant);
-        if (!video.Success)
-            return effectBoundary.Failure(operation, "youtube_result_not_found");
-        Uri watchUri = new("https://www.youtube.com/watch?v=" + video.Groups[1].Value);
-        _sessionContext?.Activate(_browser);
+        YouTubeSearchResult video = await YouTubeSearch.FirstVideoAsync(_http, query, cancellationToken)
+            .ConfigureAwait(false);
+        if (!video.Found)
+            return effectBoundary.Failure(operation, video.ErrorCode);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.PlayYouTubeAsync(
+                operation, userBrowser, query, video, effectBoundary, cancellationToken)
+                .ConfigureAwait(false) is { } started)
+        {
+            UseUserBrowser();
+            return started;
+        }
+        Uri watchUri = video.WatchUri;
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpMediaPlaybackResult playback = await _browser.PlayYouTubeAsync(
             query, watchUri, cancellationToken)
@@ -325,156 +470,1034 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, result, playback.EffectObserved);
     }
 
+    // Owner's test 2026-09-21 (turn 148, «para la canción» right after a YouTube
+    // playback): the playback lives in a tab of this session and SMTC may not see
+    // it, so the request fell to the Spotify automation and ended in an ambiguous
+    // failure. The tab this session plays is driven and read here; with no such
+    // tab the adapter stands aside (no effect, no browser launched) and the chain
+    // goes on to the next player.
+    private async ValueTask<ExternalCapabilityReceipt> ControlYouTubeTabAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        string action;
+        try
+        {
+            action = ExternalJson.RequiredString(arguments, "action");
+        }
+        catch (InvalidDataException)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "media_control_action_invalid");
+        }
+        if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
+            && sourceApp.ValueKind == JsonValueKind.String
+            && sourceApp.GetString() is { Length: > 0 } requestedSource
+            && !requestedSource.Contains("youtube", StringComparison.OrdinalIgnoreCase)
+            && !requestedSource.Contains("edge", StringComparison.OrdinalIgnoreCase)
+            && !requestedSource.Contains("browser", StringComparison.OrdinalIgnoreCase))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_youtube_tab");
+        }
+        if (action is not ("play" or "pause" or "stop" or "toggle"))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_action_unsupported");
+        }
+        if (!_browser.HasEndpoint)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        effectBoundary.Cross(cancellationToken);
+        CdpMediaControlResult? control = await _browser.ControlYouTubeAsync(action, cancellationToken)
+            .ConfigureAwait(false);
+        if (control is null)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        if (control.ErrorCode == YouTubeVideoNotPlaying)
+        {
+            // Nothing was sent to the tab. The failure carries what was read, so a later adapter that finds no
+            // player of its own does not replace it (WindowsExternalCapabilityProvider.InvokeAsync).
+            return new ExternalCapabilityReceipt(
+                operation, EffectObserved: false, Verified: false, YouTubeTabResult(action, control), control.ErrorCode);
+        }
+        if (!control.Verified)
+        {
+            return effectBoundary.Failure(operation, control.ErrorCode, control.EffectObserved);
+        }
+        return ExternalJson.Success(operation, YouTubeTabResult(action, control), control.EffectObserved);
+    }
+
+    internal const string YouTubeVideoNotPlaying = "youtube_playing_video_not_found";
+
+    private static JsonElement YouTubeTabResult(string action, CdpMediaControlResult control) =>
+        ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("provider", "youtube");
+            writer.WriteString("sourceAppUserModelId", "BAXY YouTube (Edge)");
+            writer.WriteString("action", action);
+            writer.WriteString("title", control.Title);
+            writer.WriteBoolean("titleObserved", control.Title.Length > 0);
+            writer.WriteString("finalUrl", control.Url);
+            writer.WriteString("targetId", control.TargetId);
+            writer.WriteString("playbackStatus", control.PlaybackStatus);
+            writer.WriteString("authority", "youtube_cdp_video_postread");
+            writer.WriteEndObject();
+        });
+
+    private async ValueTask<ExternalCapabilityReceipt> ReadYouTubeTabAsync(
+        string operation,
+        CancellationToken cancellationToken)
+    {
+        if (!_browser.HasEndpoint)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        CdpMediaControlResult? status = await _browser.ControlYouTubeAsync(null, cancellationToken)
+            .ConfigureAwait(false);
+        if (status is null || !status.Verified)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("provider", "youtube");
+            writer.WriteString("sourceAppUserModelId", "BAXY YouTube (Edge)");
+            writer.WriteString("title", status.Title);
+            writer.WriteBoolean("titleObserved", status.Title.Length > 0);
+            writer.WriteString("artist", string.Empty);
+            writer.WriteString("finalUrl", status.Url);
+            writer.WriteString("playbackStatus", status.PlaybackStatus);
+            writer.WriteString("authority", "youtube_cdp_video_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // web.search asks the source that fits the query and the first one that answers
+    // with something pertinent answers, with the receipt naming it («authority»).
+    //
+    // History of the general engine (WEB1831/H0060, WEB1877, H0463): Bing's RSS feed,
+    // then its HTML page, then DuckDuckGo lite in front of Bing, each one decaying on
+    // this machine. Since 2026-09-26 every engine answers this network with challenge
+    // pages or junk.
+    //
+    // D32 (owner, 2026-09-28): search works on its own, with no account or key of
+    // anybody's, and only the query leaves. M51 (2026-09-28, review of v3a-final) routes
+    // by what the query asks, each source open and keyless, with its terms of use in
+    // artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md:
+    //   1. a conversion between two currencies → Frankfurter (FrankfurterRateSource);
+    //   1b. M168 (D77): when a named team plays next, or how its last match went → ESPN's public calendar
+    //      (EspnScheduleSource); a team it does not know, or no answer, goes on to the sources below;
+    //   2. a kind of place in a named place or near this PC → OpenStreetMap Nominatim
+    //      (OpenStreetMapPlaceSource);
+    //   3. what changes by the day (news, prices, schedules, «hoy») → the search feed of
+    //      Google News (the same feed GoogleNewsHeadlinesAdapter reads);
+    //   3b. M53 (D35): a named dish's recipe or the plot of a named work, asked by the mind
+    //      with its class word («receta …», «resumen …») → Wikibooks' recipes or the plot
+    //      section of the work's Wikipedia article (WikimediaReferenceSource); the receipt
+    //      says «reference» so the reply keeps the recipe's form;
+    //   4. what an encyclopedia answers → Wikipedia's open API (WikipediaSearchSource),
+    //      Spanish or English first by the language of the query;
+    //   5. DuckDuckGo lite, the last attempt for everything. Its terms and policy say
+    //      nothing about automated queries, but the service throttles them and D32
+    //      prefers no loose HTTP requests to engines; it stays until the owner rules.
+    // Wikipedia and the news feed answer only with results that pass SearchPertinence
+    // (the query's proper names, or its content words in the title); DuckDuckGo keeps
+    // its own gate (PertinentResults). Bing's HTML page was retired: the Microsoft
+    // Services Agreement §14.f.i keeps Bing material «for your noncommercial, personal
+    // use only»; §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows
+    // /search.
+    //
+    // M98: a year said by its relation to today reaches every source as its number
+    // (SearchQueryYear); an article that only names what was asked about answers only
+    // when the general engine cannot; the general engine's first pages are read for
+    // the sentences that answer (SearchPageExcerpt), since its snippets stop before
+    // the fact.
+    //
+    // When nothing searched (all unreachable, blocked, or none fits the query) the
+    // receipt says web_search_unavailable, so the reply says it could not look it up
+    // and offers to open the search in the person's browser; when the general engine
+    // answered and nothing was pertinent, web_search_results_irrelevant.
+    private const string GeneralSearchEndpoint = "https://lite.duckduckgo.com/lite/";
+    private const string GeneralSearchAuthority = "duckduckgo_lite_https";
+    private const string NewsSearchAuthority = "google_news_rss_search";
+
+    // A day-bound query that is about a place near the person or the weather is not
+    // the news feed's.
+    private static readonly HashSet<string> NotNewsWords = new(StringComparer.Ordinal)
+    {
+        "cerca", "near", "nearby", "clima", "weather", "forecast", "pronostico",
+    };
+
+    private readonly record struct SearchChannelReading(
+        List<SearchCandidate> Candidates,
+        bool IsResultsPage);
+
     private async ValueTask<ExternalCapabilityReceipt> SearchAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string query = ExternalJson.RequiredString(arguments, "query").Trim();
+        string query = SearchQueryYear.Anchor(
+            ExternalJson.RequiredString(arguments, "query").Trim(), DateTime.Now.Year);
+        string asked = query;
+        // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»
+        // buscó sin lugar y devolvió portales de otro país: lo que se busca cerca
+        // de la persona se busca con la ciudad de este PC, la misma que lee el
+        // clima. Sale sólo el nombre de la ciudad que el servicio público dedujo
+        // de la dirección de este PC; ni coordenadas ni nada de la persona.
+        string? near = null;
+        string? nearCountry = null;
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("nearby", out JsonElement nearby)
+            && nearby.ValueKind == JsonValueKind.True)
+        {
+            PublicPlace? place = await _locator.LocateAsync(cancellationToken).ConfigureAwait(false);
+            if (place is null)
+            {
+                return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+            }
+            near = place.Value.Name;
+            nearCountry = place.Value.CountryCode;
+            // M81 (DEV-D v3m D-p12-t2 «Bring up 24/7 stores near me» → tiendas de Curico, Indiana): una ciudad
+            // sola tiene homónimas en otros países; el motor general recibe también el país de este PC.
+            string country = place.Value.Country.Trim();
+            query = country.Length > 0 && !near.Contains(country, StringComparison.OrdinalIgnoreCase)
+                ? query + " " + near + " " + country
+                : query + " " + near;
+        }
         string[] queryTokens = SearchTokens(query);
         if (queryTokens.Length == 0)
         {
             throw new InvalidDataException("The search query has no verifiable terms.");
         }
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20);
-        Uri endpoint = new("https://www.bing.com/search?format=rss&q=" + Uri.EscapeDataString(query));
-        using Stream stream = await _http.GetStreamAsync(endpoint, cancellationToken)
+        string[] languages = WikipediaSearchSource.Languages(asked, CultureInfo.CurrentCulture);
+
+        if (FrankfurterRateSource.Parse(asked, RegionInfo.CurrentRegion) is { } currencies)
+        {
+            List<(string Title, string Url, string Snippet)>? rate = await _rates
+                .ReadAsync(currencies, cancellationToken).ConfigureAwait(false);
+            if (rate is { Count: > 0 })
+                return SearchReceipt(operation, query, near, rate, FrankfurterRateSource.Authority);
+        }
+
+        if (near is null && EspnScheduleSource.Parse(asked) is { } match)
+        {
+            List<(string Title, string Url, string Snippet)>? fixture = await _sports
+                .ReadAsync(match, cancellationToken).ConfigureAwait(false);
+            if (fixture is { Count: > 0 })
+                return SearchReceipt(operation, query, near, fixture, EspnScheduleSource.Authority);
+        }
+
+        if (OpenStreetMapPlaceSource.Parse(asked, near) is { } placeAsk)
+        {
+            // M54: this PC's city is looked up in this PC's country; a named place prefers the
+            // country of this PC's regional settings among places of the same name.
+            OpenStreetMapPlaceSource.PlaceReading? places = await _places
+                .SearchNearAsync(
+                    placeAsk, limit, languages[0], cancellationToken,
+                    nearCountry ?? RegionInfo.CurrentRegion.TwoLetterISORegionName,
+                    requireCountry: nearCountry is not null)
+                .ConfigureAwait(false);
+            if (places is { Places.Count: > 0 } read)
+            {
+                return SearchReceipt(operation, query, near,
+                    read.Places.Select(static place => (place.Title, place.Url, place.Snippet)).ToList(),
+                    OpenStreetMapPlaceSource.Authority,
+                    read.Places.Select(static place => place.DistanceMeters).ToList());
+            }
+            // M62 (v3e2-final F-p05-t1): sites of that kind exist only farther than the named
+            // place's surroundings; none is near it, and that is the answer.
+            if (places is { AllFar: true })
+                return ExternalJson.FailureBeforeEffect(operation, "web_search_places_not_found_near");
+        }
+
+        // M102: the general engine's reading for a recipe no book had, kept for the rest of the search (it is asked
+        // once), or whether it could not be reached.
+        SearchChannelReading? recipeSearch = null;
+        bool generalUnreachable = false;
+        if (near is null && WikimediaReferenceSource.Parse(asked) is { } reference)
+        {
+            string[] cueLanguages = WikimediaReferenceSource.CueLanguages(asked, languages);
+            WikimediaReferenceSource.ReferenceReading? read = await _references
+                .ReadAsync(reference, cueLanguages, cancellationToken)
+                .ConfigureAwait(false);
+            if (read is { } found)
+                return ReferenceReceipt(operation, query, reference.Kind, found);
+            if (reference.Kind == WikimediaReferenceSource.ReferenceKind.Recipe)
+            {
+                // M102 (DEV-D v3z D-s017, D-w10-t1): neither recipe book has the dish; the general engine's first
+                // pages are read for the recipe they publish as data (SearchPageRecipe), before any encyclopedia.
+                try
+                {
+                    recipeSearch = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
+                }
+                catch (HttpRequestException)
+                {
+                    generalUnreachable = true;
+                }
+                catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+                {
+                    generalUnreachable = true;
+                }
+                if (recipeSearch is { } pages)
+                {
+                    List<(string Title, string Url, string Snippet)> recipePages =
+                        PertinentResults(queryTokens, pages.Candidates, limit, []);
+                    WikimediaReferenceSource.ReferenceReading? published = await ReadPageRecipeAsync(
+                            recipePages, reference.Named, cueLanguages[0], cancellationToken)
+                        .ConfigureAwait(false);
+                    if (published is { } recipe)
+                        return ReferenceReceipt(operation, query, reference.Kind, recipe);
+                }
+            }
+        }
+
+        // Uso real 2026-10-07 («un top 3 peliculas de suspenso del 2026» → el artículo de UNA película): un listado
+        // pedido (la mente lo marca con listing) no es una pregunta de enciclopedia; un artículo sobre una sola obra
+        // no lo responde. Revisión: un titular tampoco es un elemento del listado (tres noticias no son «el top 3»),
+        // así que un listado no pasa por noticias: va al buscador general, cuyas páginas contienen el listado.
+        bool listing = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("listing", out JsonElement listed)
+            && listed.ValueKind == JsonValueKind.True;
+        string[] answerWords = AnswerWords(arguments);
+        string[] notStated = AnswerWords(arguments, "answerWordsNot");
+        bool encyclopedic = !listing && WikipediaSearchSource.IsEncyclopedic(query);
+        string terms = string.Join(' ', SearchPertinence.ContentTerms(asked));
+        if (!listing && !encyclopedic && near is null && terms.Length > 0
+            && !WikipediaSearchSource.FoldedWords(asked).Any(NotNewsWords.Contains)
+            && !WikipediaSearchSource.AsksWhatIsShowing(asked))
+        {
+            List<(string Title, string Url, string Snippet)>? headlines = await ReadNewsAsync(
+                terms, languages[0], cancellationToken).ConfigureAwait(false);
+            List<(string Title, string Url, string Snippet)> pertinent = (headlines ?? [])
+                .Where(item => SearchPertinence.IsPertinent(asked, item.Title, item.Snippet))
+                .Take(Math.Min(limit, 5))
+                .ToList();
+            if (pertinent.Count > 0)
+                return SearchReceipt(operation, query, near, pertinent, NewsSearchAuthority);
+        }
+
+        // What is looked for near the person is never an encyclopedia article. Wikipedia
+        // finds only pages that carry every word it is given, and the article that
+        // answers «who played in the movie directed by Kirill Mikhanovsky» says «film»:
+        // when the words found nothing pertinent, the proper names alone are asked once,
+        // in the query's language, and judged by the same whole query.
+        // M98: an article that only names what was asked about («Barcelona», «París» for their distance) is kept
+        // aside; it answers only when the general engine cannot be asked or has nothing about the query.
+        (List<(string Title, string Url, string Snippet)> Articles, string Authority)? namesOnly = null;
+        if (near is null && encyclopedic && terms.Length > 0)
+        {
+            string names = string.Join(' ', SearchPertinence.EntityTerms(asked));
+            var asks = languages.Select(language => (Language: language, Words: terms)).ToList();
+            if (names.Length > 0 && names != terms) asks.Add((languages[0], names));
+            // Ronda 19 (r17 t2-c01 T4 «cuantos discos de estudio tienen los bunkers?»): a count of an entity's works
+            // found only the page of one of them («Los Bunkers (álbum)»); the entity's own page («Los Bunkers») is
+            // asked by its name once, and it answers the count (its text is read below). Revisión r19: that page is
+            // taken only when it describes the maker the work's page names (SearchPertinence.OwnPageOfTheWork); a
+            // namesake that is something else is judged as any other result.
+            var ownArticles = new Dictionary<string, (string Title, string Snippet)>(StringComparer.Ordinal);
+            for (int ask = 0; ask < asks.Count; ask++)
+            {
+                (string language, string words) = asks[ask];
+                cancellationToken.ThrowIfCancellationRequested();
+                List<(string Title, string Url, string Snippet)>? articles = await _wikipedia
+                    .SearchAsync(language, words, limit, cancellationToken).ConfigureAwait(false);
+                if (articles is null) continue;
+                var judged = articles
+                    .Select(item => (Item: item, Pertinence: ownArticles.TryGetValue(string.Join(' ',
+                            WikipediaSearchSource.FoldedWords(item.Title)), out (string Title, string Snippet) work)
+                        && SearchPertinence.OwnPageOfTheWork(work.Title, work.Snippet, item.Title, item.Snippet)
+                        ? SearchPertinence.Pertinence.About
+                        : SearchPertinence.Judge(asked, item.Title, item.Snippet)))
+                    .ToList();
+                if (SearchPertinence.AsksACount(asked))
+                {
+                    foreach ((string Title, string Url, string Snippet) work in judged
+                        .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.NamesOnly)
+                        .Select(static judgement => judgement.Item))
+                    {
+                        if (SearchPertinence.WorkQualifiedEntity(work.Title) is { } entity
+                            && ownArticles.TryAdd(string.Join(' ', WikipediaSearchSource.FoldedWords(entity)),
+                                (work.Title, work.Snippet)))
+                        {
+                            asks.Add((language, entity));
+                        }
+                    }
+                }
+                List<(string Title, string Url, string Snippet)> pertinent = judged
+                    .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.About)
+                    .Select(static judgement => judgement.Item)
+                    .Take(limit)
+                    .ToList();
+                if (pertinent.Count > 0)
+                {
+                    pertinent = await WithArticleReadAsync(
+                            asked, answerWords, notStated, pertinent, language, cancellationToken)
+                        .ConfigureAwait(false);
+                    return SearchReceipt(operation, query, near, pertinent,
+                        WikipediaSearchSource.Authority(language));
+                }
+                List<(string Title, string Url, string Snippet)> named = judged
+                    .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.NamesOnly)
+                    .Select(static judgement => judgement.Item)
+                    .Take(limit)
+                    .ToList();
+                if (namesOnly is null && named.Count > 0)
+                    namesOnly = (named, WikipediaSearchSource.Authority(language));
+            }
+        }
+
+        if (generalUnreachable) return NamesOnlyOr("web_search_unavailable");
+        SearchChannelReading reading;
+        try
+        {
+            reading = recipeSearch ?? await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
+        }
+        catch (HttpRequestException)
+        {
+            return NamesOnlyOr("web_search_unavailable");
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return NamesOnlyOr("web_search_unavailable");
+        }
+        if (reading.Candidates.Count == 0 && !reading.IsResultsPage)
+        {
+            // A block, a captcha or an error page: nothing was searched, and the
+            // reply must not pretend the web had no answer.
+            return NamesOnlyOr("web_search_unavailable");
+        }
+        var rejected = new List<(string Title, Uri Url, string Snippet)>();
+        List<(string Title, string Url, string Snippet)> results =
+            PertinentResults(queryTokens, reading.Candidates, limit, rejected);
+        if (results.Count > 0)
+        {
+            results = await WithPageExcerptsAsync(
+                    asked, results, answerWords, notStated, listing ? limit : 0, cancellationToken)
+                .ConfigureAwait(false);
+            return SearchReceipt(operation, query, near, results, GeneralSearchAuthority);
+        }
+        RecordSearchRejection(query, queryTokens, reading.Candidates.Count, rejected);
+        return NamesOnlyOr("web_search_results_irrelevant");
+
+        ExternalCapabilityReceipt NamesOnlyOr(string failure) => namesOnly is { } kept
+            ? SearchReceipt(operation, query, near, kept.Articles, kept.Authority)
+            : ExternalJson.FailureBeforeEffect(operation, failure);
+    }
+
+    // M98 (DEV-D v3x D-w01-t2, D-p34-t1): the engine's snippet is cut before what was asked. The pages of the first
+    // results are read at once, within a bound of their own, and the sentences of each that carry the most of the
+    // query (SearchPageExcerpt) follow its snippet. A query of one or two content words names a thing or a site, and
+    // its snippets already say what it is: no page is read. A page that does not answer in time, is not HTML or is
+    // not a public web address (SearchPageReader) keeps its snippet alone.
+    private const int ExcerptPages = 3;
+    private static readonly TimeSpan ExcerptBudget = TimeSpan.FromMilliseconds(1_500);
+
+    // Uso real v3 tanda 1: a question that asks a relation («quién ganó», «who directed») carries the mind's
+    // answerWords. When a fragment already states it, no page is read; when none does, the pages are read whatever
+    // the length of the query (the relation's verb is no content word), for the sentences that state it.
+    // Ronda 24 (r23 t1-c03 «dame el top 5»): a listing asked (listing, with limit = how many) reads the first pages
+    // whatever the length of the query, and the first ranking of each (SearchPageExcerpt.Rows) follows its snippet:
+    // «Anexo:Películas con las mayores recaudaciones» was the first result and its table never reached the reply.
+    private async Task<List<(string Title, string Url, string Snippet)>> WithPageExcerptsAsync(
+        string asked,
+        List<(string Title, string Url, string Snippet)> results,
+        string[] answerWords,
+        string[] notStated,
+        int listCount,
+        CancellationToken cancellationToken)
+    {
+        if (listCount == 0 && answerWords.Length > 0)
+        {
+            if (FragmentsAnswer(asked, answerWords, notStated, results)) return results;
+        }
+        else if (listCount == 0 && SearchPertinence.ContentTerms(asked).Length < 3)
+        {
+            return results;
+        }
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budget.CancelAfter(ExcerptBudget);
+        string[] excerpts = await Task.WhenAll(results.Take(ExcerptPages)
+                .Select(result => ReadPageExcerptAsync(
+                    asked, result, answerWords, notStated, listCount, budget.Token, cancellationToken)))
             .ConfigureAwait(false);
-        var settings = new XmlReaderSettings
+        cancellationToken.ThrowIfCancellationRequested();
+        return results
+            .Select((result, index) => index < excerpts.Length && excerpts[index].Length > 0
+                ? (result.Title, result.Url, result.Snippet + " … " + excerpts[index])
+                : result)
+            .ToList();
+    }
+
+    private async Task<string> ReadPageExcerptAsync(
+        string asked,
+        (string Title, string Url, string Snippet) result,
+        string[] answerWords,
+        string[] notStated,
+        int listCount,
+        CancellationToken budget,
+        CancellationToken cancellationToken)
+    {
+        if (!Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? page)) return string.Empty;
+        try
         {
-            Async = true,
-            DtdProcessing = DtdProcessing.Prohibit,
-            XmlResolver = null,
-            MaxCharactersInDocument = 2_000_000,
-        };
-        using XmlReader reader = XmlReader.Create(stream, settings);
-        var results = new List<(string Title, string Url, string Snippet)>();
-        int structurallyValidItems = 0;
-        var xml = new XmlDocument { XmlResolver = null };
-        xml.Load(reader);
-        XmlNodeList items = xml.GetElementsByTagName("item");
-        foreach (XmlNode item in items)
+            string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
+            if (html is null) return string.Empty;
+            string excerpt = SearchPageExcerpt.Read(
+                html, asked, result.Title + " " + result.Snippet, answerWords, notStated);
+            string rows = listCount > 0 ? SearchPageExcerpt.Rows(html, asked, listCount) : string.Empty;
+            return rows.Length == 0 ? excerpt : excerpt.Length == 0 ? rows : excerpt + " … " + rows;
+        }
+        catch (HttpRequestException)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (results.Count >= limit) break;
-            string title = string.Empty;
-            string url = string.Empty;
-            string snippet = string.Empty;
-            foreach (XmlNode child in item.ChildNodes)
+            return string.Empty;
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return string.Empty;
+        }
+    }
+
+    // Uso real v3 tanda 1 («quien gano el mundial del 2014» → «Brasil ganó…»): the word beginnings with which a page
+    // states what was asked, as the mind gave them (web.search answerWords), folded; none when it gave none. With
+    // answerWordsNot, the whole words that begin so and name something else («campeonato», «championship»).
+    internal static string[] AnswerWords(JsonElement arguments, string property = "answerWords") =>
+        arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty(property, out JsonElement stated)
+        && stated.ValueKind == JsonValueKind.String
+            ? WikipediaSearchSource.FoldedWords(stated.GetString() ?? string.Empty)
+                .Where(static word => word.Length >= 3)
+                .Distinct(StringComparer.Ordinal)
+                .Take(40)
+                .ToArray()
+            : [];
+
+    internal static bool FragmentsAnswer(
+        string asked,
+        string[] answerWords,
+        string[] notStated,
+        IEnumerable<(string Title, string Url, string Snippet)> results) =>
+        results.Any(result => SearchPageExcerpt.FragmentAnswers(
+            result.Title + ". " + result.Snippet, asked, answerWords, notStated));
+
+    // Uso real v3 tanda 1: the encyclopedia's snippet is the article's first three sentences («…se realizó en
+    // Brasil…»); who won is said further down. When no fragment states what was asked, the first pertinent article is
+    // read whole (its plain text, from the same open API) within the excerpts' bound, and its sentences that state it
+    // follow its snippet. When the article's own fragment already states it, it is answered as it is: no article is
+    // read. Only that fragment is judged (revisión adversarial, tanda 1 fila 82): the Conmebol qualification's «el
+    // repechaje contra el ganador de la quinta ronda» carries «ganador», «mundial» and «2014» and answers nothing.
+    private async Task<List<(string Title, string Url, string Snippet)>> WithArticleReadAsync(
+        string asked,
+        string[] answerWords,
+        string[] notStated,
+        List<(string Title, string Url, string Snippet)> results,
+        string language,
+        CancellationToken cancellationToken)
+    {
+        if (answerWords.Length == 0 || results.Count == 0
+            || FragmentsAnswer(asked, answerWords, notStated, results.Take(1)))
+            return results;
+        (string Title, string Url, string Snippet) first = results[0];
+        string? article;
+        using (var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        {
+            budget.CancelAfter(ExcerptBudget);
+            try
             {
-                if (child.LocalName == "title")
-                {
-                    title = child.InnerText;
-                }
-                else if (child.LocalName == "link")
-                {
-                    url = child.InnerText;
-                }
-                else if (child.LocalName == "description")
-                {
-                    snippet = child.InnerText;
-                }
+                article = await _wikipedia.ReadArticleAsync(language, first.Title, budget.Token).ConfigureAwait(false);
             }
-            if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
-                && parsed.Scheme is "http" or "https"
-                && title.Length is > 0 and <= 4_096
-                && snippet.Length <= 16_384)
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                structurallyValidItems++;
-                if (IsSearchResultRelevant(queryTokens, title, parsed, snippet))
-                {
-                    results.Add((title, parsed.AbsoluteUri, snippet));
-                }
+                article = null;
             }
         }
-        if (structurallyValidItems > 0 && results.Count == 0)
+        if (article is null) return results;
+        string excerpt = SearchPageExcerpt.Read(
+            article, asked, first.Title + " " + first.Snippet, answerWords, notStated);
+        if (excerpt.Length == 0) return results;
+        var read = new List<(string Title, string Url, string Snippet)>(results);
+        read[0] = (first.Title, first.Url, first.Snippet + " … " + excerpt);
+        return read;
+    }
+
+    // M102: the first pages of the results are read at once, within the excerpts' bound, and the first in the
+    // results' order that publishes the dish's recipe as data (SearchPageRecipe) is the recipe read; null when none
+    // does. Each page goes through SearchPageReader (public addresses only, no cookie, generic User-Agent).
+    private const int RecipePages = 3;
+    private static readonly TimeSpan RecipeBudget = TimeSpan.FromMilliseconds(2_500);
+
+    private async Task<WikimediaReferenceSource.ReferenceReading?> ReadPageRecipeAsync(
+        List<(string Title, string Url, string Snippet)> results,
+        string[] named,
+        string language,
+        CancellationToken cancellationToken)
+    {
+        if (results.Count == 0) return null;
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budget.CancelAfter(RecipeBudget);
+        var pages = results.Take(RecipePages).ToList();
+        SearchPageRecipe.PageRecipe?[] read = await Task.WhenAll(pages
+                .Select(result => ReadOneRecipeAsync(result.Url, result.Title, named, budget.Token, cancellationToken)))
+            .ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        for (int index = 0; index < read.Length; index++)
         {
-            return ExternalJson.FailureBeforeEffect(
-                operation, "web_search_results_irrelevant");
+            if (read[index] is not { } found) continue;
+            return new WikimediaReferenceSource.ReferenceReading(
+                found.Name,
+                pages[index].Url,
+                WikimediaReferenceSource.RecipeEvidence(found.Name, found.Recipe, language),
+                RecipePageAuthority,
+                found.Recipe.Servings);
         }
+        return null;
+    }
+
+    internal const string RecipePageAuthority = "recipe_page_jsonld";
+
+    private async Task<SearchPageRecipe.PageRecipe?> ReadOneRecipeAsync(
+        string url,
+        string title,
+        string[] named,
+        CancellationToken budget,
+        CancellationToken cancellationToken)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? page)) return null;
+        try
+        {
+            string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
+            return html is null ? null : SearchPageRecipe.Read(html, title, named);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
+
+    // The search feed of Google News: each headline with its outlet and time. Null when
+    // the feed did not answer with its RSS.
+    private async Task<List<(string Title, string Url, string Snippet)>?> ReadNewsAsync(
+        string terms,
+        string language,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get,
+            GoogleNewsHeadlinesAdapter.SearchUri(terms, language));
+        request.Headers.TryAddWithoutValidation("User-Agent", WikipediaSearchSource.UserAgent);
+        try
+        {
+            using HttpResponseMessage response = await _http
+                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode) return null;
+            string feed = await ReadBoundedTextAsync(response, 2_000_000, cancellationToken)
+                .ConfigureAwait(false);
+            return GoogleNewsHeadlinesAdapter.Parse(feed, 20)
+                .Where(static headline => Uri.TryCreate(headline.Url, UriKind.Absolute, out Uri? link)
+                    && link.Scheme == Uri.UriSchemeHttps)
+                .Select(static headline => (
+                    headline.Title,
+                    headline.Url.Split('?')[0],
+                    string.Join(", ", new[] { headline.Source, headline.PublishedAt }.Where(static part => part.Length > 0))))
+                .ToList();
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+        catch (XmlException)
+        {
+            return null;
+        }
+    }
+
+    // The receipt contract the mind reads (seen.results[].title/url/snippet): one
+    // shape whatever source answered; «authority» names that source
+    // (frankfurter_reference_rates, espn_public_schedule, openstreetmap_nominatim, google_news_rss_search,
+    // wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
+    // M62: a place read also carries each site's «distanceMeters» from the named place.
+    private static ExternalCapabilityReceipt SearchReceipt(
+        string operation,
+        string query,
+        string? near,
+        List<(string Title, string Url, string Snippet)> results,
+        string authority,
+        List<int?>? distances = null)
+    {
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("query", query);
+            if (near is not null)
+                writer.WriteString("near", near);
             writer.WriteNumber("count", results.Count);
             writer.WriteStartArray("results");
-            foreach ((string title, string url, string snippet) in results)
+            for (int index = 0; index < results.Count; index++)
             {
+                (string title, string url, string snippet) = results[index];
                 writer.WriteStartObject();
                 writer.WriteString("title", title);
                 writer.WriteString("url", url);
                 writer.WriteString("snippet", snippet);
+                if (distances is not null && index < distances.Count && distances[index] is int meters)
+                    writer.WriteNumber("distanceMeters", meters);
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
-            writer.WriteString("authority", "bing_rss_https");
+            writer.WriteString("authority", authority);
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private static string[] SearchTokens(string value)
+    // M53: the same receipt with the one page read and what it is («reference»: recipe or
+    // plot) and, for a recipe, the servings its page states.
+    private static ExternalCapabilityReceipt ReferenceReceipt(
+        string operation,
+        string query,
+        WikimediaReferenceSource.ReferenceKind kind,
+        WikimediaReferenceSource.ReferenceReading reading)
     {
-        string decomposed = value.Normalize(NormalizationForm.FormD);
-        var normalized = new StringBuilder(decomposed.Length);
-        bool separatorPending = false;
-        foreach (char character in decomposed)
+        JsonElement result = ExternalJson.Create(writer =>
         {
-            UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(character);
-            if (category == UnicodeCategory.NonSpacingMark)
-            {
-                continue;
-            }
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("query", query);
+            writer.WriteNumber("count", 1);
+            writer.WriteStartArray("results");
+            writer.WriteStartObject();
+            writer.WriteString("title", reading.Title);
+            writer.WriteString("url", reading.Url);
+            writer.WriteString("snippet", reading.Evidence);
+            writer.WriteEndObject();
+            writer.WriteEndArray();
+            writer.WriteString("reference", WikimediaReferenceSource.KindName(kind));
+            if (reading.Servings is int servings)
+                writer.WriteNumber("servings", servings);
+            writer.WriteString("authority", reading.Authority);
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
 
-            if (char.IsLetterOrDigit(character))
+    private static List<SearchCandidate> SearchCandidates(
+        IEnumerable<(string Title, string Url, string Snippet)> items,
+        string? excludedHost)
+    {
+        var candidates = new List<SearchCandidate>();
+        foreach ((string title, string url, string snippet) in items)
+        {
+            if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
+                && parsed.Scheme is "http" or "https"
+                && (excludedHost is null
+                    || !parsed.Host.EndsWith(excludedHost, StringComparison.OrdinalIgnoreCase))
+                && title.Length is > 0 and <= 4_096
+                && snippet.Length <= 16_384)
             {
-                if (separatorPending && normalized.Length > 0)
-                {
-                    normalized.Append(' ');
-                }
-                normalized.Append(char.ToLowerInvariant(character));
-                separatorPending = false;
-            }
-            else
-            {
-                separatorPending = true;
+                candidates.Add(new SearchCandidate(title, parsed, snippet, ObservedSearchTokens(title, parsed, snippet)));
             }
         }
+        return candidates;
+    }
 
-        return normalized.ToString()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+    private List<(string Title, string Url, string Snippet)> PertinentResults(
+        string[] queryTokens,
+        List<SearchCandidate> candidates,
+        int limit,
+        List<(string Title, Uri Url, string Snippet)> rejected)
+    {
+        var results = new List<(string Title, string Url, string Snippet)>();
+        if (candidates.Count == 0) return results;
+        string[] verifiableTerms = VerifiableSearchTerms(queryTokens, candidates);
+        if (!SearchPageSharesEnough(queryTokens, verifiableTerms))
+        {
+            verifiableTerms = [];
+        }
+        foreach (SearchCandidate candidate in candidates)
+        {
+            if (results.Count >= limit) break;
+            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed)
+                && !SearchPertinence.OfAnotherYear(queryTokens, candidate.Observed))
+            {
+                results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
+            }
+            else if (_searchDiagnosticPath is not null && rejected.Count < 20)
+            {
+                rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
+            }
+        }
+        return results;
+    }
+
+    // The lite endpoint answers only a form post (a GET returns its search form with
+    // no results). The engine's own links are discarded.
+    private async Task<SearchChannelReading> ReadGeneralSearchAsync(
+        string query,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, GeneralSearchEndpoint)
+        {
+            Content = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("q", query),
+            }),
+        };
+        using HttpResponseMessage response = await _http
+            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .ConfigureAwait(false);
+        string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
+            .ConfigureAwait(false);
+        List<SearchCandidate> candidates = SearchCandidates(
+            ParseDuckDuckGoLitePage(page), excludedHost: "duckduckgo.com");
+        return new SearchChannelReading(candidates, IsDuckDuckGoResultsPage(response, page));
+    }
+
+    internal static async Task<string> ReadBoundedTextAsync(
+        HttpResponseMessage response,
+        int maximumBytes,
+        CancellationToken cancellationToken)
+    {
+        byte[] body = await ReadBoundedBytesAsync(response, maximumBytes, cancellationToken).ConfigureAwait(false);
+        return Encoding.UTF8.GetString(body);
+    }
+
+    internal static async Task<byte[]> ReadBoundedBytesAsync(
+        HttpResponseMessage response,
+        int maximumBytes,
+        CancellationToken cancellationToken)
+    {
+        using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
+            .ConfigureAwait(false);
+        using var buffer = new MemoryStream();
+        byte[] chunk = ArrayPool<byte>.Shared.Rent(16 * 1024);
+        try
+        {
+            int read;
+            while ((read = await stream.ReadAsync(chunk, cancellationToken).ConfigureAwait(false)) > 0)
+            {
+                if (buffer.Length + read > maximumBytes) break;
+                buffer.Write(chunk, 0, read);
+            }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(chunk);
+        }
+        return buffer.ToArray();
+    }
+
+    private static readonly Regex HtmlTag = new(
+        "<[^>]+>",
+        RegexOptions.Singleline | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static string HtmlText(string fragment)
+    {
+        string text = System.Net.WebUtility.HtmlDecode(HtmlTag.Replace(fragment, " "));
+        return string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private static readonly Regex DuckDuckGoResultLink = new(
+        "<a\\b[^>]*href=[\"']([^\"']+)[\"'][^>]*class=[\"']result-link[\"'][^>]*>(.*?)</a>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static readonly Regex DuckDuckGoResultSnippet = new(
+        "<td\\b[^>]*class=[\"']result-snippet[\"'][^>]*>(.*?)</td>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    // The lite endpoint lists each result as an anchor of class «result-link» whose
+    // href is already the real target, followed by its snippet cell; a result without
+    // a snippet keeps an empty one instead of borrowing the next result's.
+    internal static IEnumerable<(string Title, string Url, string Snippet)> ParseDuckDuckGoLitePage(string page)
+    {
+        MatchCollection links = DuckDuckGoResultLink.Matches(page);
+        for (int index = 0; index < links.Count; index++)
+        {
+            int blockStart = links[index].Index + links[index].Length;
+            int blockEnd = index + 1 < links.Count ? links[index + 1].Index : page.Length;
+            Match snippet = DuckDuckGoResultSnippet.Match(page, blockStart, blockEnd - blockStart);
+            yield return (
+                HtmlText(links[index].Groups[2].Value),
+                System.Net.WebUtility.HtmlDecode(links[index].Groups[1].Value),
+                snippet.Success ? HtmlText(snippet.Groups[1].Value) : string.Empty);
+        }
+    }
+
+    // The lite endpoint marks its results table in the page itself; a block or an
+    // error page carries neither that mark nor a single result link.
+    private static bool IsDuckDuckGoResultsPage(HttpResponseMessage response, string page) =>
+        response.IsSuccessStatusCode
+        && (page.Contains("Web results are present", StringComparison.Ordinal)
+            || DuckDuckGoResultLink.IsMatch(page));
+
+    private void RecordSearchRejection(
+        string query,
+        string[] queryTokens,
+        int structurallyValidItems,
+        List<(string Title, Uri Url, string Snippet)> rejected)
+    {
+        if (_searchDiagnosticPath is null) return;
+        try
+        {
+            // These unverified search items stay in private diagnostics, never receipts.
+            JsonElement diagnostic = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", "baxy.web-search-rejection.v1");
+                writer.WriteString("timestampUtc", DateTimeOffset.UtcNow);
+                writer.WriteBoolean("verified", false);
+                writer.WriteString("query", query);
+                writer.WriteStartArray("queryTerms");
+                foreach (string term in queryTokens) writer.WriteStringValue(term);
+                writer.WriteEndArray();
+                writer.WriteNumber("structurallyValidItems", structurallyValidItems);
+                writer.WriteNumber("omittedItems", structurallyValidItems - rejected.Count);
+                writer.WriteStartArray("rejectedItems");
+                foreach ((string title, Uri url, string snippet) in rejected)
+                {
+                    HashSet<string> observed = ObservedSearchTokens(title, url, snippet);
+                    writer.WriteStartObject();
+                    writer.WriteString("title", title);
+                    writer.WriteString("url", url.AbsoluteUri[..Math.Min(url.AbsoluteUri.Length, 4096)]);
+                    writer.WriteString("snippet", snippet[..Math.Min(snippet.Length, 4096)]);
+                    writer.WriteBoolean("textTruncated", url.AbsoluteUri.Length > 4096 || snippet.Length > 4096);
+                    writer.WriteStartArray("missingTerms");
+                    foreach (string term in queryTokens)
+                        if (!MatchesSearchTerm(term, observed)) writer.WriteStringValue(term);
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            });
+            byte[] line = Encoding.UTF8.GetBytes(diagnostic.GetRawText() + "\n");
+            if (line.Length > 1024 * 1024) return;
+            using WindowsPrivateDirectoryLease directory = WindowsPrivateStorage.AcquireDirectory(
+                Path.GetDirectoryName(_searchDiagnosticPath)!, createMissing: true, protectLeaf: true);
+            WindowsPrivateFileLease file;
+            if (WindowsPrivateStorage.TryOpenFile(
+                    _searchDiagnosticPath, FileAccess.ReadWrite, FileShare.None,
+                    deleteAccess: false, out WindowsPrivateFileLease? existing))
+                file = existing;
+            else
+                file = WindowsPrivateStorage.CreateFile(_searchDiagnosticPath);
+            using (file)
+            {
+                if (file.Stream.Length + line.Length > 16 * 1024 * 1024) return;
+                file.Stream.Position = file.Stream.Length;
+                file.Stream.Write(line);
+                file.Stream.Flush(flushToDisk: true);
+            }
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException or ArgumentException
+            or NotSupportedException or System.Security.SecurityException)
+        {
+            // A missing diagnostic must not change the failed search into success.
+        }
+    }
+
+    internal static string[] SearchTokens(string value) =>
+        WikipediaSearchSource.FoldedWords(value)
             .Where(static token => token.Length >= 2 && !IsSearchStopWord(token))
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-    }
 
-    private static bool IsSearchResultRelevant(
-        string[] queryTokens,
-        string title,
-        Uri uri,
-        string snippet)
+    private readonly record struct SearchCandidate(
+        string Title,
+        Uri Url,
+        string Snippet,
+        HashSet<string> Observed);
+
+    private static HashSet<string> ObservedSearchTokens(string title, Uri uri, string snippet) =>
+        new(SearchTokens(string.Concat(
+            title, " ", uri.Host, " ", SafeUnescapedPath(uri), " ", snippet)), StringComparer.Ordinal);
+
+    // The person's words reach the engine as typed («porqeu», «suele», «mucho»); a
+    // term that no result on the page repeats, even inflected, cannot be verified
+    // against that page and does not count against any result. The terms that at
+    // least one result repeats are the ones a result is judged by.
+    private static string[] VerifiableSearchTerms(string[] queryTokens, List<SearchCandidate> candidates) =>
+        queryTokens
+            .Where(token => candidates.Any(candidate => MatchesSearchTerm(token, candidate.Observed)))
+            .ToArray();
+
+    // A result is pertinent when it repeats at least half (rounded up) of the
+    // verifiable terms; with no verifiable term at all, every result is rejected,
+    // because nothing on the page shares a content word with the request.
+    private static bool IsSearchResultRelevant(string[] verifiableTerms, HashSet<string> observed)
     {
-        string[] resultTokens = SearchTokens(string.Concat(
-            title,
-            " ",
-            uri.Host,
-            " ",
-            SafeUnescapedPath(uri),
-            " ",
-            snippet));
-        if (resultTokens.Length == 0)
+        if (verifiableTerms.Length == 0)
         {
             return false;
         }
 
-        var observed = new HashSet<string>(resultTokens, StringComparer.Ordinal);
-        int matches = queryTokens.Count(observed.Contains);
-        int requiredMatches = queryTokens.Length == 1
-            ? 1
-            : checked((queryTokens.Length + 1) / 2);
-        return matches >= requiredMatches;
+        int matched = verifiableTerms.Count(term => MatchesSearchTerm(term, observed));
+        return matched >= (verifiableTerms.Length + 1) / 2;
     }
+
+    // The verifiable terms are the request words that SOME candidate repeats, so a
+    // page of junk that shares one generic word («app») with an eight-word request
+    // makes that one word the whole yardstick and every junk item passes it. A
+    // request of three content words or more needs at least two of them found on
+    // the page before its results are judged at all; shorter requests keep the rule
+    // above, since «capital de francia» has only two words to share.
+    private static bool SearchPageSharesEnough(string[] queryTokens, string[] verifiableTerms) =>
+        queryTokens.Length < 3 || verifiableTerms.Length >= 2;
+
+    internal static bool MatchesSearchTerm(string token, HashSet<string> observed) =>
+        observed.Contains(token)
+        || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains))
+        || SharesInflectedStem(token, observed);
+
+    // «fallar» and «fallas» share the stem «fall»; «suele» and «suelen» share «suel».
+    // Only words of five letters or more take part, and the shared prefix must keep
+    // all but the last two letters of the query word, so «casa» never matches «caso».
+    private static bool SharesInflectedStem(string queryToken, HashSet<string> observed)
+    {
+        if (queryToken.Length < 5) return false;
+        string stem = queryToken[..(queryToken.Length - 2)];
+        if (stem.Length < 4) return false;
+        foreach (string candidate in observed)
+        {
+            if (candidate.Length >= 4 && candidate.StartsWith(stem, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // WEB1445 «qué clima hace hoy»: the engine's local forecast says «tiempo» or
+    // «weather» where the person said «clima»; the words name one concept.
+    private static readonly string[][] WeatherSynonyms =
+    [
+        ["clima", "tiempo", "weather", "meteo", "meteorologico", "meteorologica", "pronostico", "forecast"],
+        ["lluvia", "lluvias", "llueve", "llover", "llovera", "rain", "raining"],
+        ["manana", "tomorrow"],
+        ["temperatura", "temperature", "temperaturas", "temperatures"],
+        // M51 F-p09 «the movie directed by Kirill Mikhanovsky»: the article says «film».
+        ["movie", "movies", "film", "films", "pelicula", "peliculas", "filme"],
+    ];
 
     private static string SafeUnescapedPath(Uri uri)
     {
@@ -492,7 +1515,23 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         "a" or "an" or "and" or "the" or "to" or "for" or "from" or "in" or "of" or "on"
         or "search" or "find"
         or "de" or "del" or "el" or "en" or "la" or "las" or "los" or "para" or "por"
-        or "un" or "una" or "y" or "busca" or "buscar";
+        or "un" or "una" or "y" or "busca" or "buscar"
+        // WEB1267: «hoy»/«today» name the moment of the request, not a word the
+        // result must repeat («noticias de hoy» found nothing; «today's news»
+        // matched the TV show TODAY).
+        or "hoy" or "today" or "ahora" or "now" or "todays"
+        // H0060: a question asked in the person's words carries interrogatives and
+        // auxiliaries («por qué suele fallar», «why does it fail») that name the
+        // question, not the answer; the page is judged by its content words.
+        or "que" or "porque" or "como" or "cual" or "cuales" or "cuando" or "donde"
+        or "quien" or "quienes" or "es" or "son" or "esta" or "estan" or "hay" or "se"
+        or "me" or "mi" or "mis" or "tu" or "su" or "sus" or "lo" or "le" or "les"
+        or "al" or "con" or "sin" or "sobre" or "si" or "no" or "ya" or "muy" or "mas"
+        or "why" or "how" or "what" or "which" or "when" or "where" or "who" or "whom"
+        or "is" or "are" or "was" or "were" or "do" or "does" or "did" or "can" or "could"
+        or "should" or "would" or "will" or "it" or "its" or "my" or "your" or "this"
+        or "that" or "with" or "without" or "about" or "at" or "by" or "or" or "not"
+        or "so" or "very" or "more" or "please";
 
     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
         ExternalJson.Create(writer =>
@@ -518,11 +1557,38 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return uri;
     }
 
-    private static bool HostMatchesService(string host, string service)
+    internal const string UserBrowserTabsNotAutomatable = "user_browser_tabs_not_automatable";
+
+    // The last page was opened in the person's browser and no CDP session took
+    // over since: its tabs are not BAXY's to read or drive (no debug port on the
+    // person's profile), and acting on the product browser instead would act on
+    // a page the person is not looking at.
+    private bool UserBrowserHoldsThePage =>
+        _sessionContext?.UserBrowserHoldsThePage ?? _userBrowserInUse;
+
+    private void UseUserBrowser()
+    {
+        _userBrowserInUse = true;
+        _sessionContext?.UseUserBrowser();
+    }
+
+    private void UseProductBrowser()
+    {
+        _userBrowserInUse = false;
+        _sessionContext?.Activate(_browser);
+    }
+
+    internal const string HboMaxNeedsDefaultBrowser = "hbo_max_needs_default_browser";
+
+    internal static bool HostMatchesService(string host, string service)
     {
         string[] suffixes = service switch
         {
             "netflix" => ["netflix.com"],
+            "disney_plus" => ["disneyplus.com"],
+            // HBO Max (Chile, 2026-10-06) plays on play.hbomax.com and signs in on auth.hbomax.com; max.com was its
+            // name in 2024-2025 and still redirects.
+            "hbo_max" => ["hbomax.com", "max.com"],
             "prime_video" => ["primevideo.com", "amazon.com"],
             "youtube" => ["youtube.com", "youtu.be"],
             _ => [],
@@ -575,15 +1641,36 @@ internal sealed record CdpMediaPlaybackResult(
     string TargetId,
     string ErrorCode);
 
+/// <summary>
+/// A YouTube tab of this session read or driven through its &lt;video&gt; element
+/// (owner's test 2026-09-21, turn 148: «para la canción» right after a YouTube
+/// playback must stop what was just played, not fall to another player).
+/// </summary>
+internal sealed record CdpMediaControlResult(
+    bool Verified,
+    bool EffectObserved,
+    string Action,
+    string Title,
+    string Url,
+    string TargetId,
+    string PlaybackStatus,
+    string ErrorCode);
+
 internal sealed record CdpStreamingPlaybackResult(
     bool Verified,
     bool EffectObserved,
-    string RequestedTitle,
+    // En una reproducción verificada es el nombre de la ficha que el buscador del
+    // servicio eligió: lo que de verdad se puso, que no tiene por qué escribirse
+    // como se pidió. En los caminos que no llegan a elegir nada es el pedido.
+    string Title,
     string FinalUrl,
     string PageTitle,
     string TargetId,
     double ObservedProgressSeconds,
-    string ErrorCode);
+    string ErrorCode,
+    // La última lectura de la sonda, tal cual, para que un rechazo diga en qué
+    // condición se quedó en vez de obligar a una corrida por hipótesis.
+    string LastObserved = "");
 
 internal sealed class CdpBrowserSessionContext
 {
@@ -591,10 +1678,26 @@ internal sealed class CdpBrowserSessionContext
 
     internal CdpBrowserSession? Active => Volatile.Read(ref _active);
 
+    private volatile bool _userBrowserHoldsThePage;
+
+    /// <summary>
+    /// The last page went to the person's own browser (M122): no CDP session is
+    /// the active one, and the tab steps that need CDP say so instead of acting
+    /// on a product browser the person is not looking at.
+    /// </summary>
+    internal bool UserBrowserHoldsThePage => _userBrowserHoldsThePage && Active is null;
+
     internal void Activate(CdpBrowserSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        _userBrowserHoldsThePage = false;
         Volatile.Write(ref _active, session);
+    }
+
+    internal void UseUserBrowser()
+    {
+        Volatile.Write(ref _active, null);
+        _userBrowserHoldsThePage = true;
     }
 
     internal void Deactivate(CdpBrowserSession session)
@@ -612,6 +1715,10 @@ internal class CdpBrowserSession : IDisposable
     private Process? _ownedProcess;
     private Uri? _endpoint;
     private int _nextCommandId;
+    // Pasada r15b v3-57 (revisión): null while this session started the browser it drives; after reattaching to the
+    // browser a previous session left open for the person, the page targets this session created there. Only those
+    // are acted on: the person's own tabs in that window are never navigated, read or closed.
+    private HashSet<string>? _sessionTargets;
 
     internal CdpBrowserSession(string profile, string? browserExecutable = null)
     {
@@ -619,6 +1726,27 @@ internal class CdpBrowserSession : IDisposable
         _browserExecutable = browserExecutable is null
             ? null
             : Path.GetFullPath(browserExecutable);
+    }
+
+    internal virtual string? ObservedExecutablePath
+    {
+        get
+        {
+            try
+            {
+                if (_browserExecutable is null || _ownedProcess is null || _ownedProcess.HasExited)
+                    return null;
+                string? observed = _ownedProcess.MainModule?.FileName;
+                return observed is not null && string.Equals(
+                    Path.GetFullPath(observed), _browserExecutable, StringComparison.OrdinalIgnoreCase)
+                    ? observed : null;
+            }
+            catch (Exception exception) when (exception is InvalidOperationException
+                or System.ComponentModel.Win32Exception or NotSupportedException)
+            {
+                return null;
+            }
+        }
     }
 
     internal virtual async ValueTask<CdpNavigationResult> NavigateAsync(
@@ -689,10 +1817,89 @@ internal class CdpBrowserSession : IDisposable
         string action,
         CancellationToken cancellationToken)
     {
-        if (action is not ("back" or "close" or "fullscreen_video" or "reload"
+        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "new_tab" or "reload"
             or "scroll_down" or "scroll_up"))
             return new(false, false, action, string.Empty, string.Empty, "browser_control_action_invalid");
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        if (action == "close_all")
+        {
+            // H0444 «cerrá todas las pestañas»: every open page target in the
+            // product's own CDP browser is closed. The product never attaches to
+            // the owner's browser sessions, so only the tabs it opened are closed;
+            // in a browser it reattached to, only the tabs this session opened.
+            // The post-read verifies that no page target remains; when closing the
+            // last tab ends the browser, the loss of its endpoint is that absence.
+            IReadOnlyList<string> pageTargets = await CollectPageTargetIdsAsync(
+                endpoint, cancellationToken).ConfigureAwait(false);
+            int closed = 0;
+            foreach (string id in pageTargets)
+            {
+                try
+                {
+                    using HttpResponseMessage response = await _http.GetAsync(
+                        new Uri(endpoint, "json/close/" + Uri.EscapeDataString(id)), cancellationToken)
+                        .ConfigureAwait(false);
+                    if (response.IsSuccessStatusCode)
+                        closed++;
+                }
+                catch (Exception exception) when (
+                    IsEndpointLossAfterClose(exception, cancellationToken))
+                {
+                    if (OwnsEndpoint)
+                        _endpoint = null;
+                    return new(true, true, action, string.Empty,
+                        "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture) + ":endpoint_closed",
+                        string.Empty);
+                }
+            }
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                try
+                {
+                    if ((await CollectPageTargetIdsAsync(endpoint, cancellationToken)
+                            .ConfigureAwait(false)).Count == 0)
+                        return new(true, true, action, string.Empty,
+                            "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture), string.Empty);
+                }
+                catch (Exception exception) when (
+                    IsEndpointLossAfterClose(exception, cancellationToken))
+                {
+                    if (OwnsEndpoint)
+                        _endpoint = null;
+                    return new(true, true, action, string.Empty,
+                        "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture) + ":endpoint_closed",
+                        string.Empty);
+                }
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            }
+            return new(false, true, action, string.Empty, string.Empty, "cdp_close_all_not_verified");
+        }
+        if (action == "new_tab")
+        {
+            // BROWSER1493 «abrí una pestaña nueva»: a new blank page target in
+            // the product's own browser, verified by its presence in /json/list.
+            using var request = new HttpRequestMessage(
+                HttpMethod.Put, new Uri(endpoint, "json/new?about%3Ablank"));
+            using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return new(false, false, action, string.Empty, string.Empty, "cdp_new_tab_rejected");
+            using Stream createdStream = await response.Content.ReadAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
+            using JsonDocument created = await JsonDocument.ParseAsync(
+                createdStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (!created.RootElement.TryGetProperty("id", out JsonElement createdId)
+                || createdId.GetString() is not { Length: > 0 } newTargetId)
+                return new(false, true, action, string.Empty, string.Empty, "cdp_new_tab_not_verified");
+            _sessionTargets?.Add(newTargetId);
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                if (await TargetExistsAsync(endpoint, newTargetId, cancellationToken).ConfigureAwait(false))
+                    return new(true, true, action, newTargetId, "target_created", string.Empty);
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            }
+            return new(false, true, action, newTargetId, string.Empty, "cdp_new_tab_not_verified");
+        }
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: false, cancellationToken)
             .ConfigureAwait(false);
@@ -952,6 +2159,7 @@ internal class CdpBrowserSession : IDisposable
                 || !target.TryGetProperty("title", out JsonElement title)
                 || !target.TryGetProperty("url", out JsonElement url)
                 || id.ValueKind != JsonValueKind.String
+                || _sessionTargets is not null && !_sessionTargets.Contains(id.GetString()!)
                 || title.ValueKind != JsonValueKind.String
                 || url.ValueKind != JsonValueKind.String
                 || !Uri.TryCreate(url.GetString(), UriKind.Absolute, out Uri? parsed)
@@ -967,6 +2175,101 @@ internal class CdpBrowserSession : IDisposable
         }
         return new(true, tabs, webTargetCount, webTargetCount > tabs.Count, string.Empty);
     }
+
+    internal virtual bool HasEndpoint => _endpoint is not null;
+
+    /// <summary>
+    /// Drives (pause/stop/play/toggle) or, with a null action, reads the first
+    /// YouTube watch tab of this session that carries a &lt;video&gt;. Null when the
+    /// session never started or no such tab exists: the adapter then stands aside
+    /// and never launches a browser to look for one.
+    /// </summary>
+    internal virtual async ValueTask<CdpMediaControlResult?> ControlYouTubeAsync(
+        string? action,
+        CancellationToken cancellationToken)
+    {
+        if (_endpoint is not { } endpoint)
+            return null;
+        using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
+            .ConfigureAwait(false);
+        using JsonDocument targets = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+        var candidates = new List<(string TargetId, Uri WebSocket)>();
+        foreach (JsonElement target in targets.RootElement.EnumerateArray())
+        {
+            if (target.TryGetProperty("type", out JsonElement type) && type.GetString() == "page"
+                && target.TryGetProperty("url", out JsonElement url)
+                && url.GetString() is { } pageUrl
+                && (pageUrl.Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)
+                    || pageUrl.Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase))
+                && target.TryGetProperty("id", out JsonElement id)
+                && id.GetString() is { Length: > 0 } candidateId
+                && (_sessionTargets is null || _sessionTargets.Contains(candidateId))
+                && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socketUrl)
+                && Uri.TryCreate(socketUrl.GetString(), UriKind.Absolute, out Uri? webSocket))
+            {
+                candidates.Add((candidateId, webSocket));
+            }
+        }
+        const string probe = "(()=>{const v=document.querySelector('video');if(!v)return 'video_missing';"
+            + "return [location.href,document.title,v.paused?'paused':'playing',v.ended?'ended':'live'].join('\\u001f');})()";
+        foreach ((string targetId, Uri webSocket) in candidates)
+        {
+            using var socket = new ClientWebSocket();
+            await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+            string[] before = (await EvaluateStringAsync(socket, probe, cancellationToken).ConfigureAwait(false))
+                .Split('\u001f');
+            if (before.Length != 4)
+                continue;
+            string status = before[3] == "ended" ? "stopped" : before[2];
+            if (action is null)
+                return new(true, false, "status", before[1], before[0], targetId, status, string.Empty);
+            string wanted = action switch
+            {
+                "pause" or "stop" => "paused",
+                "play" => "playing",
+                "toggle" => before[2] == "playing" ? "paused" : "playing",
+                _ => string.Empty,
+            };
+            if (wanted.Length == 0)
+                return new(false, false, action, before[1], before[0], targetId, status,
+                    "youtube_tab_action_unsupported");
+            // Tanda 5 «pausar el audiolibro»: the tab's video had ended; the pause was sent, nothing changed, and the
+            // reply said the change «could not be observed». Pausing or stopping a video that is not playing
+            // changes nothing: the state is the fact, read before anything is sent.
+            if (wanted == "paused" && before[2] == "paused")
+                return new(false, false, action, before[1], before[0], targetId, status,
+                    WebBrowserAdapter.YouTubeVideoNotPlaying);
+            string command = wanted == "paused"
+                ? "(()=>{const v=document.querySelector('video');if(v)v.pause();return 'ok';})()"
+                : "(()=>{const v=document.querySelector('video');if(v)v.play().catch(()=>{});return 'ok';})()";
+            await EvaluateStringAsync(socket, command, cancellationToken, userGesture: true).ConfigureAwait(false);
+            string[] after = before;
+            for (int attempt = 0; attempt < 12; attempt++)
+            {
+                if (attempt > 0)
+                    await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+                after = (await EvaluateStringAsync(socket, probe, cancellationToken).ConfigureAwait(false))
+                    .Split('\u001f');
+                if (after.Length == 4 && after[2] == wanted)
+                    break;
+            }
+            bool verified = after.Length == 4 && after[2] == wanted;
+            string observed = after.Length == 4 ? (action == "stop" && verified ? "stopped" : after[2]) : "unknown";
+            return new(verified, verified && before[2] != after[2], action, before[1], before[0], targetId,
+                observed, verified ? string.Empty : "youtube_tab_playback_state_not_verified");
+        }
+        return null;
+    }
+
+    // M89: 60 polls of 250 ms = 15 s of a watch page that never got its video source.
+    internal const int YouTubeStallReloadAttempt = 60;
+
+    /// <summary>A watch page whose video has no data yet (readyState 0, with or without a source: ctx-dueno
+    /// «ready0 network2 no_source», v3r w10-t4 «ready0 playing network2 source») and no gate (sign-in,
+    /// consent, unavailable) in front: a stalled load, which one reload clears.</summary>
+    internal static bool YouTubeWatchPageStalled(bool watchPage, string ready, string gate) =>
+        watchPage && ready == "0" && gate == "none";
 
     internal virtual async ValueTask<CdpMediaPlaybackResult> PlayYouTubeAsync(
         string query,
@@ -995,7 +2298,14 @@ internal class CdpBrowserSession : IDisposable
         await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
 
         string playbackFailure = "youtube_playback_not_verified_video_missing";
-        for (int attempt = 0; attempt <= 120; attempt++)
+        bool reloaded = false;
+        // ctx-dueno-01..03 (2026-09-22, notebook): the first watch page of a fresh
+        // profile stayed «ready0 network2 no_source» for the whole 30 s and the
+        // same query verified in 6 s a minute later; the probe now waits 45 s.
+        // M89 (DEV-D v3r D-w10-t4, the run's first watch page): it stayed so for all
+        // 45 s again, and the next watch page of the same profile played in 6 s. A
+        // page stalled that way for 15 s is reloaded once, within the same 45 s.
+        for (int attempt = 0; attempt <= 180; attempt++)
         {
             if (attempt > 0)
             {
@@ -1037,6 +2347,13 @@ internal class CdpBrowserSession : IDisposable
                 playbackFailure = $"youtube_playback_not_verified_"
                     + $"{(watchPage ? "watch" : "other")}_ready{ready}_{playback}_"
                     + $"network{network}_{source}_{gate}";
+                if (!reloaded && attempt >= YouTubeStallReloadAttempt
+                    && YouTubeWatchPageStalled(watchPage, ready, gate))
+                {
+                    reloaded = true;
+                    _ = await CommandAsync(socket, "Page.reload", null, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
             if (fields.Length == 7
                 && (fields[0].Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)
@@ -1074,11 +2391,19 @@ internal class CdpBrowserSession : IDisposable
         using var socket = new ClientWebSocket();
         await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
         string titleLiteral = "\"" + JsonEncodedText.Encode(title).ToString() + "\"";
+        string searchLiteral = "\"" + JsonEncodedText.Encode(searchUri.AbsoluteUri).ToString() + "\"";
         double? baseline = null;
         string lastUrl = navigation.FinalUrl;
         string lastPageTitle = string.Empty;
+        string chosenId = string.Empty;
+        string lastObserved = string.Empty;
+        string chosenName = string.Empty;
         string failure = "netflix_title_or_play_control_not_found";
-        for (int attempt = 0; attempt <= 120; attempt++)
+        // Con la sesión iniciada el camino es más largo de lo que era: elegir perfil,
+        // volver a la búsqueda, abrir el título y esperar al reproductor son tres
+        // navegaciones. A 250 ms por vuelta, 120 daban treinta segundos y se agotaban
+        // antes de llegar; 240 dan un minuto y caben en el turno, que tiene dos.
+        for (int attempt = 0; attempt <= 240; attempt++)
         {
             if (attempt > 0)
             {
@@ -1088,10 +2413,39 @@ internal class CdpBrowserSession : IDisposable
             string observed = await EvaluateStringAsync(
                 socket,
                 "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
+                + "let chosenId='',chosenName='';"
                 + "const body=(document.body?.innerText||'').toLowerCase();"
                 + "const auth=location.pathname.includes('/login')||body.includes('sign in')||"
                 + "body.includes('iniciar sesión')||body.includes('inicia sesión');let action='none';"
-                + "if(!auth&&location.pathname.startsWith('/search')){const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
+                // Con la sesión iniciada, Netflix enseña primero «¿Quién está viendo?»:
+                // la búsqueda no existe hasta elegir perfil, y sin este paso el título
+                // no se encontraba nunca (medido: data-uia profile-gate-screen con cinco
+                // tiles). Una persona pulsa un perfil; esto pulsa el primero.
+                + "if(!auth&&document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
+                + "const tile=document.querySelector('[data-uia^=\"profile-selector+tile-\"]')"
+                + "||document.querySelector('[data-uia=\"profile-selector\"] a,[data-uia=\"profile-selector\"] li');"
+                + "if(tile){tile.click();action='profile_clicked';"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}}"
+                // Elegido el perfil, Netflix lleva a la portada: hay que volver a la
+                // búsqueda, que es donde estaba el título que se pidió.
+                + "if(!auth&&!location.pathname.startsWith('/search')&&!location.pathname.includes('/watch/')"
+                + "&&!document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
+                + "location.href=" + searchLiteral + ";action='search_again';"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
+                // La búsqueda de Netflix ya no da enlaces «/title/»: cada resultado es
+                // un «standard-card», un <a> cuyo href lleva «jbv=<id del vídeo>».
+                // Medido contra la página real: buscando sólo «/title/» lo único que
+                // aparecía eran las notificaciones del menú. Del card se saca el id y
+                // se va al reproductor, que es a donde lleva pulsarlo.
+                + "if(!auth&&location.pathname.startsWith('/search')){"
+                + "const cards=[...document.querySelectorAll('a[data-uia=\"standard-card\"],a[href*=\"jbv=\"]')];"
+                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase(),n:((a.getAttribute('aria-label')||a.innerText||'').trim())}));"
+                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
+                + "if(hit){chosenName=hit.n;const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
+                + "if(id){chosenId=id[1];location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
+                + "else{hit.a.click();action='result_clicked';}"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
+                + "const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
                 + "const link=links.find(a=>((a.closest('[data-uia],.title-card,.slider-item')?.innerText||a.innerText||'').toLowerCase()).includes(wanted));"
                 + "if(link){link.click();action='result_clicked';}}"
                 + "if(!auth&&!location.pathname.includes('/watch/')){const controls=[...document.querySelectorAll('[data-uia=\"play-button\"],button,a')];"
@@ -1101,47 +2455,323 @@ internal class CdpBrowserSession : IDisposable
                 + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
                 + "const matched=(document.title.toLowerCase()+' '+body).includes(wanted);"
                 + "return [location.href,document.title,auth?'auth':'ok',matched?'matched':'unmatched',"
-                + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action].join('\\u001f');})()",
+                + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,chosenId,chosenName].join('\\u001f');})()",
                 cancellationToken,
                 userGesture: true).ConfigureAwait(false);
+            lastObserved = observed;
             string[] fields = observed.Split('\u001f');
-            if (fields.Length != 8) continue;
+            if (fields.Length != 10) continue;
             lastUrl = fields[0]; lastPageTitle = fields[1];
             if (fields[2] == "auth")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     "netflix_authentication_required");
+            // La ficha elegida en la búsqueda se recuerda entre vueltas: el guion
+            // vuelve a empezar en cada evaluación y para entonces ya está en la
+            // página del reproductor, donde no quedan tarjetas que mirar.
+            if (fields[8].Length > 0) chosenId = fields[8];
+            if (fields[9].Length > 0) chosenName = fields[9];
             bool watch = lastUrl.Contains("netflix.com/watch/", StringComparison.OrdinalIgnoreCase);
             bool ready = int.TryParse(fields[4], NumberStyles.Integer,
                 CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
             bool progressing = double.TryParse(fields[6], NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double currentTime);
-            if (watch && fields[3] == "matched" && ready
+            // Lo que prueba que se abrió lo pedido es la ficha que se eligió, no que
+            // la página repita el nombre. Exigir lo segundo descartaba un título
+            // traducido —«Wednesday» se llama «Merlina» en este perfil— con el vídeo
+            // delante, y tiraba la corrección que el buscador de Netflix acababa de
+            // dar a un título mal escrito. Sin ficha elegida (navegación directa) se
+            // conserva la comprobación del texto.
+            // Medido: la ficha de «Stranger Things» es la 80057281 y el reproductor
+            // acaba en /watch/80077368, porque la primera es la serie y la segunda el
+            // episodio al que Netflix redirige. Exigir que la URL lleve el id elegido
+            // rechazaba una reproducción correcta. Basta con haber elegido la ficha y
+            // estar en un reproductor: la redirección es suya, no nuestra.
+            bool opened = chosenId.Length > 0 || fields[3] == "matched";
+            if (watch && opened && ready
                 && fields[5] == "playing" && progressing)
             {
                 if (baseline is not null && currentTime >= baseline.Value + 0.5)
-                    return new(true, true, title, lastUrl, lastPageTitle, targetId,
+                    return new(true, true,
+                        chosenName.Length > 0 ? chosenName : title,
+                        lastUrl, lastPageTitle, targetId,
                         currentTime - baseline.Value, string.Empty);
                 baseline ??= currentTime;
                 failure = "netflix_video_progress_not_observed";
             }
         }
-        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure);
+        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
+            lastObserved + "|remembered=" + chosenId + "/" + chosenName);
     }
 
+    // VIDEO1947 «pon Daredevil en Disney+»: medido en el perfil compartido con la
+    // sesión del dueño. El enlace frío /play/<id> se queda cargando para siempre
+    // (el puente de identidad de login.disney.com falla: «Scope is not present»);
+    // la ruta que reproduce es la de una persona: la búsqueda (/browse/search,
+    // #searchInput), la ficha (a[data-testid="set-item"] → /browse/entity-<id>) y
+    // su botón «Ver ahora» (a[data-testid="playback-action-button"]). Con el
+    // agente de usuario de Edge el reproductor elige PlayReady y el renderizador
+    // de Media Foundation de este PC falla (0x8004CD…); con uno de Chrome elige
+    // Widevine y el vídeo avanza. El primer <video> de la página es un elemento
+    // de fondo que nunca sale de readyState 0: se mira el que avanza.
+    private const string DisneyChromeUserAgent =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        + "Chrome/153.0.0.0 Safari/537.36";
+
+    internal virtual async ValueTask<CdpStreamingPlaybackResult> PlayDisneyAsync(
+        string title,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 512)
+            return new(false, false, title, string.Empty, string.Empty, string.Empty, 0,
+                "disney_title_invalid");
+        Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        (string targetId, Uri webSocket) = await ResolveTargetAsync(
+            endpoint, createIfMissing: true, cancellationToken).ConfigureAwait(false);
+        using var socket = new ClientWebSocket();
+        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        // El override vive con esta sesión CDP: dura lo que dura el socket, sólo
+        // para este destino; Netflix y las navegaciones nombradas no lo ven.
+        await CommandAsync(socket, "Emulation.setUserAgentOverride", writer =>
+        {
+            writer.WriteString("userAgent", DisneyChromeUserAgent);
+        }, cancellationToken).ConfigureAwait(false);
+        const string searchUrl = "https://www.disneyplus.com/es-419/browse/search";
+        JsonElement navigate = await CommandAsync(socket, "Page.navigate", writer =>
+        {
+            writer.WriteString("url", searchUrl);
+        }, cancellationToken).ConfigureAwait(false);
+        if (navigate.TryGetProperty("error", out _))
+            return new(false, false, title, searchUrl, string.Empty, targetId, 0,
+                "cdp_navigation_rejected");
+        string titleLiteral = "\"" + JsonEncodedText.Encode(title).ToString() + "\"";
+        double? baseline = null;
+        string lastUrl = searchUrl;
+        string lastPageTitle = string.Empty;
+        string chosenHref = string.Empty;
+        string chosenName = string.Empty;
+        string lastObserved = string.Empty;
+        // Tras una recarga de la búsqueda el cuadro vuelve vacío: se escribe de nuevo, pocas veces.
+        int typed = 0;
+        string failure = "disney_title_or_play_control_not_found";
+        for (int attempt = 0; attempt <= 240; attempt++)
+        {
+            if (attempt > 0)
+            {
+                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            }
+
+            string observed = await EvaluateStringAsync(
+                socket,
+                "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
+                + "let chosenHref='',chosenName='',action='none';"
+                + "const body=(document.body?.innerText||'').toLowerCase();"
+                + "const auth=location.pathname.includes('/login')||location.pathname.includes('/begin')||"
+                + "body.includes('inicia sesión')||body.includes('iniciar sesión')||body.includes('log in');"
+                + "const p=location.pathname;"
+                // El aria-label de la ficha trae el título y detrás la clasificación, el
+                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»)
+                // o la invitación a abrirla; el nombre es lo que hay antes de esos rótulos.
+                // Una ficha de serie o película lleva a /browse/entity-<id>; una de
+                // colección («Daredevil» como universo), a /browse/page-<id>, que no tiene
+                // botón de reproducir: entre iguales se prefiere la ficha de la obra.
+                + "const clean=s=>(s||'').split(/\\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:|Selecciona esta opci[oó]n|Select this option)/)[0].trim();"
+                + "const isEntity=a=>(a.getAttribute('href')||'').includes('/browse/entity-');"
+                // VIDEO1951: una página de Disney+ puede quedarse sin renderizar (título
+                // «Disney+» y ningún control durante el resto del minuto). Diez segundos
+                // sin el control que toca —el cuadro de búsqueda, las fichas o el botón—
+                // se recarga esa página una sola vez; la marca vive en la pestaña.
+                + "const stalled=()=>{const k='baxyReload:'+p;window.__baxyStall=(window.__baxyStall||0)+1;"
+                + "if(window.__baxyStall>40&&!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');window.__baxyStall=0;location.reload();return 'reload';}return 'none';};"
+                + "const pick=list=>list.find(x=>x.t===wanted)||list.find(x=>x.t.startsWith(wanted))||list.find(x=>x.t.includes(wanted));"
+                + "const choose=cards=>{const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
+                + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
+                + "if(hrefs!==window.__baxyLastHrefs){window.__baxyLastHrefs=hrefs;window.__baxyNoHit=0;}"
+                + "let hit=pick(named.filter(x=>isEntity(x.a)))||pick(named);"
+                + "if(!hit){window.__baxyNoHit=(window.__baxyNoHit||0)+1;if(window.__baxyNoHit>12){hit=named.find(x=>isEntity(x.a))||named[0];}}return hit;};"
+                // La búsqueda: el cuadro se enfoca aquí y el texto lo escribe CDP
+                // (Input.insertText), porque el valor puesto por JS no dispara la
+                // búsqueda de la página.
+                + "if(!auth&&p.includes('/browse/search')){const input=document.querySelector('#searchInput,input[type=\"search\"]');"
+                + "const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')];"
+                + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
+                // VIDEO1947: la página de búsqueda trae fichas por defecto antes de que se
+                // escriba nada, y con el texto recién escrito siguen ahí un instante. Las
+                // fichas de antes de escribir se recuerdan y sólo se elige cuando cambian;
+                // si ninguna coincide con el pedido, la primera se toma sólo cuando el
+                // conjunto lleva tres segundos sin cambiar, para no confundir las fichas
+                // por defecto con una corrección del buscador («The Devil» → «El diablo
+                // viste a la moda 2»).
+                + "if(!(input?.value||'').length){window.__baxyPreSearch=hrefs;window.__baxyNoHit=0;}"
+                + "const fresh=cards.length&&hrefs!==(window.__baxyPreSearch??'');"
+                + "if(fresh&&(input?.value||'').length){"
+                + "const hit=choose(cards);"
+                + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
+                + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
+                + "if(input){window.__baxyStall=0;input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}"
+                + "action=stalled();return [location.href,document.title,'ok',-1,'missing',0,action,'','','search'].join('\\u001f');}"
+                // La colección: si la búsqueda llevó a una página de universo, la obra
+                // se elige entre sus fichas con la misma lectura.
+                + "if(!auth&&p.includes('/browse/page-')){const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')].filter(isEntity);"
+                + "const hit=cards.length?choose(cards):null;"
+                + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}}"
+                + "else if(!cards.length){action=stalled();}"
+                + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'page'].join('\\u001f');}"
+                // La ficha: su botón de reproducir lleva al reproductor por la
+                // propia aplicación (SPA), que es la ruta que arranca.
+                + "if(!auth&&p.includes('/browse/entity-')){const play=document.querySelector('a[data-testid=\"playback-action-button\"],button[data-testid=\"playback-action-button\"]');"
+                + "if(play){play.click();action='play_clicked';}else{action=stalled();}"
+                + "return [location.href,document.title,'ok',-1,'missing',0,action,'','','entity'].join('\\u001f');}"
+                // El reproductor: el <video> que avanza es la prueba.
+                + "const vids=[...document.querySelectorAll('video')];"
+                + "const v=vids.find(x=>x.readyState>=2&&!x.paused)||vids.find(x=>x.readyState>=2)||vids[vids.length-1];"
+                + "if(v&&v.paused&&v.readyState>=2){v.play().catch(()=>{});}"
+                + "return [location.href,document.title,auth?'auth':'ok',v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,'','',p.includes('/play/')?'player':'other'].join('\\u001f');})()",
+                cancellationToken,
+                userGesture: true).ConfigureAwait(false);
+            lastObserved = observed;
+            string[] fields = observed.Split('\u001f');
+            if (fields.Length != 10) continue;
+            lastUrl = fields[0]; lastPageTitle = fields[1];
+            if (fields[2] == "auth")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    "disney_authentication_required");
+            if (fields[7].Length > 0) chosenHref = fields[7];
+            if (fields[8].Length > 0) chosenName = fields[8];
+            if (fields[6] == "input_focused" && typed < 3 && fields[9] == "empty")
+            {
+                await CommandAsync(socket, "Input.insertText", writer =>
+                {
+                    writer.WriteString("text", title);
+                }, cancellationToken).ConfigureAwait(false);
+                typed++;
+                continue;
+            }
+            bool player = fields[9] == "player";
+            bool ready = int.TryParse(fields[3], NumberStyles.Integer,
+                CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
+            bool progressing = double.TryParse(fields[5], NumberStyles.Float,
+                CultureInfo.InvariantCulture, out double currentTime);
+            if (player && chosenHref.Length > 0 && ready && fields[4] == "playing" && progressing)
+            {
+                // El reproductor titula la pestaña «<título> | Disney+»: es el nombre
+                // observado más limpio que hay; la ficha elegida queda de reserva.
+                string pageName = lastPageTitle.Contains(" | ", StringComparison.Ordinal)
+                    ? lastPageTitle[..lastPageTitle.IndexOf(" | ", StringComparison.Ordinal)].Trim()
+                    : string.Empty;
+                if (baseline is not null && currentTime >= baseline.Value + 0.5)
+                    return new(true, true,
+                        pageName.Length > 0 ? pageName : chosenName.Length > 0 ? chosenName : title,
+                        lastUrl, lastPageTitle, targetId,
+                        currentTime - baseline.Value, string.Empty);
+                baseline ??= currentTime;
+                failure = "disney_video_progress_not_observed";
+            }
+        }
+        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
+            lastObserved + "|remembered=" + chosenHref + "/" + chosenName);
+    }
+
+    // Pasada r15b v3-57: the browser is the person's window (the page they asked for), so BAXY closing leaves it open;
+    // only the connection is released. A later session on the same profile reattaches to it (TryReattachAsync).
     public virtual void Dispose()
     {
         _http.Dispose();
+        _ownedProcess?.Dispose();
+    }
+
+    internal const string OwnerRecordName = "baxy-browser-owner";
+
+    /// <summary>The launch of the CDP browser: outside BAXY's kill-on-close job, inheriting none of its handles.</summary>
+    internal static InvokerLaunch.LaunchPlan LaunchPlan(string browser, string profile)
+    {
+        static string Quoted(string argument) =>
+            argument.Contains(' ', StringComparison.Ordinal) ? "\"" + argument + "\"" : argument;
+        string[] arguments =
+        [
+            // The port is bound to loopback and the profile is BAXY's own. No --remote-allow-origins: BAXY's own
+            // client sends no Origin, so it still connects, while any web page (in this browser or in another one
+            // on the machine) that finds the port is refused, now that the browser outlives BAXY.
+            "--remote-debugging-port=0",
+            "--no-first-run",
+            "--no-default-browser-check",
+            // The window is the person's, but it is started while BAXY's local model holds the GPU: GPU
+            // acceleration adds a GPU process and its video memory to the same card (WEB1261: 3874 MiB with the
+            // local model, over the 3800 MiB budget). Pages and video still render in software; a person who
+            // keeps it open for hours of video pays CPU, not the model's VRAM. Owner's call to change.
+            "--disable-gpu",
+            "--user-data-dir=" + profile,
+            "about:blank",
+        ];
+        return new InvokerLaunch.LaunchPlan(
+            browser,
+            string.Join(' ', arguments.Select(Quoted)),
+            Path.GetDirectoryName(browser) ?? Environment.SystemDirectory);
+    }
+
+    /// <summary>The owner record «pid start-ticks» of the browser this profile's sessions started; null when unreadable.</summary>
+    internal static (int ProcessId, long StartTicks)? ParseOwnerRecord(string? record)
+    {
+        string[] parts = (record ?? string.Empty).Trim().Split(' ');
+        return parts.Length == 2
+            && int.TryParse(parts[0], NumberStyles.None, CultureInfo.InvariantCulture, out int processId)
+            && processId > 0
+            && long.TryParse(parts[1], NumberStyles.None, CultureInfo.InvariantCulture, out long startTicks)
+            ? (processId, startTicks)
+            : null;
+    }
+
+    internal static string OwnerRecord(int processId, long startTicks) =>
+        processId.ToString(CultureInfo.InvariantCulture) + " " + startTicks.ToString(CultureInfo.InvariantCulture);
+
+    // The browser a previous session of this profile started and left open for the person: the very process the
+    // owner record names (same id and start time, the same executable) answering on the port its profile published.
+    internal async ValueTask<Uri?> TryReattachAsync(
+        string activePort, string browser, CancellationToken cancellationToken)
+    {
+        string ownerPath = Path.Combine(_profile, OwnerRecordName);
+        if (!File.Exists(activePort) || !File.Exists(ownerPath))
+            return null;
+        Process? process = null;
         try
         {
-            if (_ownedProcess is { HasExited: false })
-            {
-                _ownedProcess.Kill(entireProcessTree: true);
-            }
+            if (ParseOwnerRecord(await File.ReadAllTextAsync(ownerPath, cancellationToken).ConfigureAwait(false))
+                    is not { } owner
+                || (await File.ReadAllLinesAsync(activePort, cancellationToken).ConfigureAwait(false))
+                    is not [string first, ..]
+                || !ushort.TryParse(first, out ushort port) || port == 0)
+                return null;
+            process = Process.GetProcessById(owner.ProcessId);
+            if (process.HasExited
+                || process.StartTime.ToUniversalTime().Ticks != owner.StartTicks
+                || process.MainModule?.FileName is not { } image
+                || !string.Equals(Path.GetFullPath(image), Path.GetFullPath(browser), StringComparison.OrdinalIgnoreCase))
+                return null;
+            Uri candidate = new($"http://127.0.0.1:{port}/");
+            using var readiness = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            readiness.CancelAfter(TimeSpan.FromMilliseconds(500));
+            using HttpResponseMessage response = await _http.GetAsync(
+                new Uri(candidate, "json/version"), readiness.Token).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            _ownedProcess = process;
+            process = null;
+            _sessionTargets = new HashSet<string>(StringComparer.Ordinal);
+            return candidate;
         }
-        catch (InvalidOperationException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.ComponentModel.Win32Exception or NotSupportedException or IOException
+            or UnauthorizedAccessException or HttpRequestException)
         {
+            return null;
         }
-        _ownedProcess?.Dispose();
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+        finally
+        {
+            process?.Dispose();
+        }
     }
 
     private async ValueTask<Uri> EnsureEndpointAsync(CancellationToken cancellationToken)
@@ -1151,7 +2781,8 @@ internal class CdpBrowserSession : IDisposable
             return _endpoint;
         }
         string? configured = Environment.GetEnvironmentVariable("BAXY_CDP_ENDPOINT");
-        if (Uri.TryCreate(configured, UriKind.Absolute, out Uri? explicitEndpoint)
+        if (_browserExecutable is null
+            && Uri.TryCreate(configured, UriKind.Absolute, out Uri? explicitEndpoint)
             && explicitEndpoint.Scheme == Uri.UriSchemeHttp
             && explicitEndpoint.IsLoopback)
         {
@@ -1165,22 +2796,32 @@ internal class CdpBrowserSession : IDisposable
             throw new IOException("Browser profile cannot be a link.");
         }
         string activePort = Path.Combine(_profile, "DevToolsActivePort");
+        string browser = _browserExecutable ?? ResolveEdge();
+        if (await TryReattachAsync(activePort, browser, cancellationToken).ConfigureAwait(false) is { } reattached)
+        {
+            _endpoint = reattached;
+            return reattached;
+        }
         if (File.Exists(activePort))
         {
             File.Delete(activePort);
         }
-        string browser = _browserExecutable ?? ResolveEdge();
-        var start = new ProcessStartInfo(browser)
+        int processId = InvokerLaunch.StartOutsideBaxy(LaunchPlan(browser, _profile));
+        try
         {
-            UseShellExecute = true,
-        };
-        start.ArgumentList.Add("--remote-debugging-port=0");
-        start.ArgumentList.Add("--remote-allow-origins=*");
-        start.ArgumentList.Add("--no-first-run");
-        start.ArgumentList.Add("--no-default-browser-check");
-        start.ArgumentList.Add("--user-data-dir=" + _profile);
-        start.ArgumentList.Add("about:blank");
-        _ownedProcess = Process.Start(start) ?? throw new IOException("CDP browser could not start.");
+            _ownedProcess = processId > 0
+                ? Process.GetProcessById(processId)
+                : throw new IOException("CDP browser could not start.");
+            await File.WriteAllTextAsync(
+                Path.Combine(_profile, OwnerRecordName),
+                OwnerRecord(processId, _ownedProcess.StartTime.ToUniversalTime().Ticks),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            throw new IOException("CDP browser could not start.", exception);
+        }
         for (int attempt = 0; attempt < 80; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1224,25 +2865,52 @@ internal class CdpBrowserSession : IDisposable
         throw new TimeoutException("Edge did not publish a CDP endpoint.");
     }
 
+    /// <summary>
+    /// The page target this session acts on: the first page of the list, restricted to <paramref name="sessionTargets"/>
+    /// when the session reattached to a browser left open for the person (their own tabs are never chosen). Null when
+    /// no such page exists.
+    /// </summary>
+    internal static (string TargetId, Uri WebSocket)? ChoosePageTarget(
+        JsonElement targets,
+        IReadOnlySet<string>? sessionTargets)
+    {
+        if (targets.ValueKind != JsonValueKind.Array)
+            return null;
+        foreach (JsonElement target in targets.EnumerateArray())
+        {
+            if (target.TryGetProperty("type", out JsonElement type)
+                && type.GetString() == "page"
+                && target.TryGetProperty("id", out JsonElement id)
+                && id.GetString() is { Length: > 0 } targetId
+                && (sessionTargets is null || sessionTargets.Contains(targetId))
+                && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socket)
+                && Uri.TryCreate(socket.GetString(), UriKind.Absolute, out Uri? webSocket))
+            {
+                return (targetId, webSocket);
+            }
+        }
+        return null;
+    }
+
+    /// <summary>The page target the next action of this session would use (opening one when none is its own).</summary>
+    internal async ValueTask<string> PageTargetIdAsync(bool createIfMissing, CancellationToken cancellationToken)
+    {
+        Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        return (await ResolveTargetAsync(endpoint, createIfMissing, cancellationToken).ConfigureAwait(false)).TargetId;
+    }
+
     private async ValueTask<(string TargetId, Uri WebSocket)> ResolveTargetAsync(
         Uri endpoint,
         bool createIfMissing,
         CancellationToken cancellationToken)
     {
-        using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
-            .ConfigureAwait(false);
-        using JsonDocument targets = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-        foreach (JsonElement target in targets.RootElement.EnumerateArray())
+        using (Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
+            .ConfigureAwait(false))
+        using (JsonDocument targets = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
+            .ConfigureAwait(false))
         {
-            if (target.TryGetProperty("type", out JsonElement type)
-                && type.GetString() == "page"
-                && target.TryGetProperty("id", out JsonElement id)
-                && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socket)
-                && Uri.TryCreate(socket.GetString(), UriKind.Absolute, out Uri? webSocket))
-            {
-                return (id.GetString()!, webSocket);
-            }
+            if (ChoosePageTarget(targets.RootElement, _sessionTargets) is { } chosen)
+                return chosen;
         }
         if (createIfMissing)
         {
@@ -1257,13 +2925,38 @@ internal class CdpBrowserSession : IDisposable
                 createdStream, cancellationToken: cancellationToken).ConfigureAwait(false);
             JsonElement root = created.RootElement;
             if (root.TryGetProperty("id", out JsonElement createdId)
+                && createdId.GetString() is { Length: > 0 } createdTarget
                 && root.TryGetProperty("webSocketDebuggerUrl", out JsonElement createdSocket)
                 && Uri.TryCreate(createdSocket.GetString(), UriKind.Absolute, out Uri? webSocket))
             {
-                return (createdId.GetString()!, webSocket);
+                _sessionTargets?.Add(createdTarget);
+                return (createdTarget, webSocket);
             }
         }
         throw new IOException("CDP session has no page target.");
+    }
+
+    private async ValueTask<IReadOnlyList<string>> CollectPageTargetIdsAsync(
+        Uri endpoint,
+        CancellationToken cancellationToken)
+    {
+        using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
+            .ConfigureAwait(false);
+        using JsonDocument targets = await JsonDocument.ParseAsync(
+            stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var ids = new List<string>();
+        foreach (JsonElement target in targets.RootElement.EnumerateArray())
+        {
+            if (target.TryGetProperty("type", out JsonElement type)
+                && type.GetString() == "page"
+                && target.TryGetProperty("id", out JsonElement id)
+                && id.GetString() is { Length: > 0 } value
+                && (_sessionTargets is null || _sessionTargets.Contains(value)))
+            {
+                ids.Add(value);
+            }
+        }
+        return ids;
     }
 
     private async ValueTask<bool> TargetExistsAsync(

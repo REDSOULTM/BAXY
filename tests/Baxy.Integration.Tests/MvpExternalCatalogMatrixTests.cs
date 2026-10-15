@@ -10,7 +10,35 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MvpExternalCatalogMatrixTests
 {
-    private const int ExpectedExternalHandlers = 85;
+    // 85 → 102: los 17 handlers externos añadidos en C03 (plan post-goal 2026-09-20, Fase 1 grupo B),
+    // cada uno sellado por su tanda; la cifra se re-pina junto a la lista nominal.
+    private static readonly string[] C03ExternalAdditions =
+    [
+        "bluetooth.radio.status",
+        "calculator.expression.evaluate",
+        "client.channel.locate",
+        "display.status",
+        "document.pdf.read",
+        "filesystem.known.list",
+        "game.entitlement.named",
+        "input.visible.controls",
+        "message.draft",
+        "message.send.test",
+        "notification.list",
+        "software.python.package.status",
+        "software.python.status",
+        "storage.removable.list",
+        "wifi.radio.set",
+        "wifi.radio.status",
+        "wifi.scan",
+    ];
+
+    // + las trece herramientas tipadas de la auditoría semántica REOPEN1957/1993 (audio.app.volume.set, Fase 8,
+    // se registra en Program.cs junto a audio.app.volume.adjust, fuera de esta lista)
+    // + 1: input.scroll, la primitiva de desplazamiento del motor de computer use
+    // (CONTRATO_VISTA_ACCION.md §2), verificada por el cambio de superficie
+    // (input.pointer.drag, el arrastre de computer use v3, se retiró en la estabilización L: arrastrar es un límite).
+    private const int ExpectedExternalHandlers = 85 + 17 + 13 + 1;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,
@@ -33,6 +61,10 @@ public sealed class MvpExternalCatalogMatrixTests
         Dictionary<string, IOperationHandler> rejectingByName = rejectingHandlers.ToDictionary(
             handler => handler.Definition.Name,
             StringComparer.Ordinal);
+
+        Assert.That(
+            handlers.Select(handler => handler.Definition.Name),
+            Is.SupersetOf(C03ExternalAdditions));
 
         var rows = new List<object>(handlers.Length);
         foreach (IOperationHandler handler in handlers.OrderBy(

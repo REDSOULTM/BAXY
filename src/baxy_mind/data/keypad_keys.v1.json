@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "source": "Regresiones r2 M4 / molestia r2 rama B punto 2 (2026-10-08): a keypad's buttons pressed by UI Automation's Invoke instead of keys sent with SendInput. Each character of an expression is the button named by one of these names (compared folded: lower case, no accents), in Spanish and English as the window writes them; «clear» is the button that empties the entry before the expression. Read by the App's providers (Baxy.Providers.Windows, embedded resource).",
+ "keys": {
+  "0": ["cero", "zero"],
+  "1": ["uno", "one"],
+  "2": ["dos", "two"],
+  "3": ["tres", "three"],
+  "4": ["cuatro", "four"],
+  "5": ["cinco", "five"],
+  "6": ["seis", "six"],
+  "7": ["siete", "seven"],
+  "8": ["ocho", "eight"],
+  "9": ["nueve", "nine"],
+  "+": ["más", "sumar", "plus", "add"],
+  "-": ["menos", "restar", "minus", "subtract"],
+  "*": ["multiplicar por", "por", "multiplicar", "multiply by", "times", "multiply"],
+  "/": ["dividir por", "dividido por", "dividir", "divide by", "divided by", "divide"],
+  ".": ["separador decimal", "coma decimal", "punto decimal", "decimal separator", "decimal point"],
+  "(": ["abrir paréntesis", "paréntesis de apertura", "paréntesis izquierdo", "left parenthesis", "open parenthesis"],
+  ")": ["cerrar paréntesis", "paréntesis de cierre", "paréntesis derecho", "right parenthesis", "close parenthesis"],
+  "=": ["es igual a", "igual a", "igual", "equals", "equal"]
+ },
+ "clear": ["borrar", "clear"]
+}

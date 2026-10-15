@@ -21,7 +21,14 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
-from .effect_intent import enumerated_note_dependency_order
+from .semantic import lexicon
+from .effect_intent import (
+    _fold,
+    enumerated_note_dependency_order,
+    has_named_window_target,
+    list_read_request,
+    process_report_file_request,
+)
 
 MAX_PLAN_STEPS = 16
 # Cuántas operaciones ve el decisor. El ranking es por operación: no hay ventana
@@ -56,7 +63,17 @@ _UNSAFE_FORMAT_CODEPOINTS = {
     0xFEFF,
 }
 _ENUM_EVIDENCE_ALIASES = {
-    "alarm": ("alarm", "alarma", "timer", "temporizador"),
+    # A wake-up request names the alarm by its purpose (TIME1189/000, /007, /008).
+    "alarm": (
+        "alarm", "alarma", "timer", "temporizador",
+        "despertame", "despiertame", "levantame", "wake me", "despertador",
+        # Uso real 2026-09-24 «i want to wake up at six am», «quiero despertarme a las seis».
+        "wake up", "despertarme", "levantarme",
+        # Uso real 2026-09-23 «pon alerta para las dos de la tarde».
+        "alerta", "alert",
+        # A countdown names the timer by counting («contá 10 minutos»).
+        "conta", "contame", "cuentame", "cuenta", "count",
+    ),
     "reminder": ("reminder", "recordatorio"),
     "whatsapp": ("whatsapp", "wsp"),
     "am": ("am", "a.m.", "a. m.", "de la manana", "in the morning"),
@@ -79,7 +96,13 @@ _ENUM_EVIDENCE_ALIASES = {
     "stop": ("stop", "deten", "detener", "para"),
     "docx": ("docx", "word", "documento"),
     "xlsx": ("xlsx", "excel", "spreadsheet", "hoja de calculo", "tabla"),
+    # H0516 «Abre Opera GX, …»: el valor del catálogo lleva guion bajo y la persona
+    # escribe «Opera GX»; sin el alias, «opera» —substring de «opera gx»— pasaba por
+    # fundamentado y «opera_gx» no, justo al revés de lo dicho.
+    "opera_gx": ("opera gx", "opera_gx", "operagx"),
     "netflix": ("netflix",),
+    "disney_plus": ("disney plus", "disney+", "disneyplus", "disney"),
+    "hbo_max": ("hbo max", "hbomax", "hbo"),
     "prime_video": ("prime video", "amazon prime", "prime"),
     "youtube": ("youtube",),
     "all_known": (
@@ -88,6 +111,10 @@ _ENUM_EVIDENCE_ALIASES = {
         "archivos",
         "carpetas conocidas",
     ),
+    # ARRANGE1783 «poné chrome a la izquierda»: the side of window.snap is the
+    # person's word in either language.
+    "left": ("left", "izquierda", "izquierdo"),
+    "right": ("right", "derecha", "derecho"),
     "desktop": ("desktop", "escritorio"),
     "documents": ("documents", "documentos"),
     "downloads": (
@@ -95,13 +122,30 @@ _ENUM_EVIDENCE_ALIASES = {
         "downloaded",
         "descargas",
         "descargue",
+        # M118 (DEV-F F-w39-t1 «…el apunte_termo_u2.pdf? lo bajé ayer…» → the decider's folder «Descargas»): «bajar» a
+        # file is downloading it.
+        "lo baje",
+        "la baje",
+        "los baje",
+        "las baje",
+        # M136 (DEV-G v4n G-w44-t4 «ahora ábreme lo último que me he bajado» → the decider's «Descargas» →
+        # «¿En qué carpeta conocida…?»): the compound past and the reflexive say the same download.
+        "he bajado",
+        "me baje",
+        "bajado de internet",
+        # M143 (DEV-H v4o H-w32-t1 «che, abrime lo último que bajé» → the decider's «Descargas» → «¿En qué carpeta
+        # conocida…?»): the relative clause says the same download («lo último que bajé», «lo que bajé ayer»).
+        "que baje",
     ),
-    "pictures": ("pictures", "photos", "imagenes", "fotos"),
+    # Tanda 3 «Muéstrame mi Gallery.»: Explorer's Gallery (Galería) is the pictures folder shown (lexicon.GALLERY_NOUNS,
+    # which semantic.surface rewrites the same way); a proposal naming it is grounded, not asked which folder.
+    "pictures": ("pictures", "photos", "imagenes", "fotos", "gallery", "galeria"),
     "brightness": ("brightness", "brillo"),
     "night_light": ("night light", "luz nocturna"),
     "lock": ("lock", "bloquea", "bloquear"),
-    "restart": ("restart", "reinicia", "reiniciar"),
-    "shutdown": ("shutdown", "apaga", "apagar"),
+    "restart": ("restart", "reboot", "reinicia", "reiniciar", "reiniciame"),
+    # H0714 variants: «shut down the computer», «turn off the pc», «power off».
+    "shutdown": ("shutdown", "shut down", "turn off", "power off", "switch off", "apaga", "apagar", "apagame"),
     "sleep": ("sleep", "suspende", "suspender"),
     "up": (
         "up",
@@ -156,8 +200,20 @@ _TRUE_CUES = frozenset(
         "enabled",
         "activa",
         "activar",
+        "activame",
+        "activalo",
         "enciende",
+        "enciendelo",
+        # NETWORK1293: voseo and clitic forms («encendé», «prendeme el
+        # bluetooth») asked for the state already said.
+        "encende",
+        "encendeme",
+        "encendelo",
+        "encender",
         "prende",
+        "prendeme",
+        "prendelo",
+        "prender",
         "mute",
         "mutea",
         "mudo",
@@ -166,9 +222,17 @@ _TRUE_CUES = frozenset(
         "silencio",
     }
 )
-_FALSE_CUES = frozenset(
-    {"false", "off", "disable", "disabled", "desactiva", "apaga", "unmute", "reactiva"}
+_FALSE_CUES = lexicon.AUDIO_RESTORE_WORDS | frozenset(
+    {"false", "off", "disable", "disabled", "desactiva", "desactivame", "desactivalo", "desactivar",
+     "apaga", "apagame", "apagalo", "apagar", "unmute", "reactiva"}
 )
+# Owner's test 2026-09-21 (turn 205): a microphone's boolean is «muted», so the
+# generic on/off cues read «activa mi micrófono» as state=true and muted an
+# already muted microphone. Activating, enabling or unmuting a microphone is
+# false; silencing, muting or turning it off is true.
+_MICROPHONE_TOKENS = lexicon.MICROPHONE_NOUNS
+_MICROPHONE_MUTED_CUES = lexicon.MICROPHONE_MUTE_WORDS | {"true"}
+_MICROPHONE_ACTIVE_CUES = lexicon.MICROPHONE_UNMUTE_WORDS | {"false"}
 _CONDITIONAL_IDENTITY_PREDECESSORS = {
     # Search returns the authenticated URL that a following navigation must
     # consume. A named page is not itself an exact URL and must never be
@@ -183,6 +247,9 @@ _CONDITIONAL_IDENTITY_PREDECESSORS = {
     # that verified ID is stronger than repeating a title or emitting an empty
     # selector that Core must reject.
     "note.read": ("note.create",),
+    # REOPEN1957 H0069: the picture a download writes is the file the viewer
+    # opens; its name is known only from the verified download.
+    "file.open": ("web.download",),
 }
 _OPAQUE_ID_EVIDENCE = {
     "browser.navigate": re.compile(r"https?://[^\s]+", re.IGNORECASE),
@@ -208,12 +275,36 @@ def conditional_predecessors(
     """Return optional identity producers unless the user supplied the ID."""
 
     predecessors = _CONDITIONAL_IDENTITY_PREDECESSORS.get(operation, ())
+    if (
+        operation == "filesystem.write.text"
+        and objective
+        and process_report_file_request(_fold(objective)) is not None
+    ):
+        # FILES1705: the file carries the process listing; the listing
+        # must be observed before the write can be grounded.
+        return ("system.process.list",)
     opaque_evidence = _OPAQUE_ID_EVIDENCE.get(operation)
-    if predecessors and objective and (
-        opaque_evidence is not None and opaque_evidence.search(objective)
+    if (
+        predecessors
+        and objective
+        and (opaque_evidence is not None and opaque_evidence.search(objective))
     ):
         return ()
     return predecessors
+
+
+def guarding_predecessors(operation: str, objective: str = "") -> tuple[str, ...]:
+    """The read that decides whether this step runs at all; its literal arguments stay the person's.
+
+    Tanda 4c «add flour to my shopping list if it's not already on it»: the entry goes on the list
+    only when the search of that list did not find it. The App ends the plan after that read when
+    it found the entry (``PlanObservationProjector.IsGuardedByAFoundEntry``)."""
+
+    if operation == "task.create" and objective:
+        read = list_read_request(objective)
+        if read is not None and read.absent_clause and read.entry:
+            return ("task.search",)
+    return ()
 
 
 class PlannerContractError(ValueError):
@@ -285,6 +376,7 @@ class PlannerCatalog:
 
     def __init__(self, tools: Iterable[dict[str, Any]], encoder: Encoder | None = None):
         parsed: list[PlannerTool] = []
+        memory: list[PlannerTool] = []
         for raw in tools:
             function = raw.get("function") if isinstance(raw, dict) else None
             if not isinstance(function, dict):
@@ -297,14 +389,17 @@ class PlannerCatalog:
             schema = function.get("parameters")
             if (
                 not name
-                or name.startswith("memory.")
                 or name == "app.status"
                 or risk == "forbidden_destructive"
                 or not isinstance(schema, dict)
             ):
                 continue
-            parsed.append(PlannerTool(name, description, risk, schema))
+            (memory if name.startswith("memory.") else parsed).append(PlannerTool(name, description, risk, schema))
         parsed.sort(key=lambda item: item.name)
+        # M114: the contextual decider reads the catalog its LoRA was trained and measured on, memory included (the
+        # app's prompt without the eleven memory lines was not the prompt of the isolated 98 %); memory is still never
+        # planned, shortlisted or grounded here: a memory choice goes to the App's own memory path.
+        self._decider_tools = tuple(sorted((*parsed, *memory), key=lambda item: item.name))
         if not parsed:
             raise PlannerContractError("el catálogo planificable está vacío")
         if len({tool.name for tool in parsed}) != len(parsed):
@@ -332,6 +427,12 @@ class PlannerCatalog:
     @property
     def tools(self) -> tuple[PlannerTool, ...]:
         return self._tools
+
+    @property
+    def decider_tools(self) -> tuple[PlannerTool, ...]:
+        """What the contextual decider reads: the planning catalog plus ``memory.*`` (M114), never planned here."""
+
+        return self._decider_tools
 
     @property
     def ranks_semantically(self) -> bool:
@@ -533,7 +634,9 @@ def validate_skeleton(
         return PlanProposal(kind, "", ())
     if kind == "clarify":
         if not question.strip() or steps:
-            raise PlannerContractError("clarify requiere una sola pregunta y cero pasos")
+            raise PlannerContractError(
+                "clarify requiere una sola pregunta y cero pasos"
+            )
         return PlanProposal(kind, question, ())
     if not steps:
         raise PlannerContractError("plan requiere pasos")
@@ -560,7 +663,9 @@ def validate_skeleton(
         if step_id in seen:
             raise PlannerContractError("los step IDs deben ser únicos")
         if not isinstance(operation, str) or operation not in allowed:
-            raise PlannerContractError(f"step {step_id} usa una operación fuera de shortlist")
+            raise PlannerContractError(
+                f"step {step_id} usa una operación fuera de shortlist"
+            )
         tool = catalog.get(operation)
         if tool is None:
             raise PlannerContractError(f"step {step_id} usa una operación desconocida")
@@ -568,7 +673,10 @@ def validate_skeleton(
         if (
             not isinstance(dependencies, list)
             or len(dependencies) > MAX_PLAN_STEPS - 1
-            or any(not isinstance(value, str) or value not in seen for value in dependencies)
+            or any(
+                not isinstance(value, str) or value not in seen
+                for value in dependencies
+            )
             or len(set(dependencies)) != len(dependencies)
         ):
             raise PlannerContractError(
@@ -625,9 +733,7 @@ def validate_skeleton(
                 for dependency in dependencies
                 if by_id[dependency].operation != "note.create"
             )
-            dependencies = tuple(
-                dict.fromkeys((*dependencies, requested_dependency))
-            )
+            dependencies = tuple(dict.fromkeys((*dependencies, requested_dependency)))
             mode = "after_dependencies"
         conditional = conditional_predecessors(step.operation, objective)
         if conditional and objective:
@@ -637,7 +743,8 @@ def validate_skeleton(
             ):
                 producer = next(
                     (
-                        candidate for candidate in reversed(parsed[:index])
+                        candidate
+                        for candidate in reversed(parsed[:index])
                         if candidate.operation in conditional
                     ),
                     None,
@@ -653,13 +760,15 @@ def validate_skeleton(
                 mode = "after_dependencies"
         required_predecessors = _required_predecessors(step.operation)
         if not required_predecessors:
-            normalized.append(ProposedStep(
-                step.step_id,
-                step.operation,
-                step.purpose,
-                dependencies,
-                mode,
-            ))
+            normalized.append(
+                ProposedStep(
+                    step.step_id,
+                    step.operation,
+                    step.purpose,
+                    dependencies,
+                    mode,
+                )
+            )
             continue
         if not any(
             by_id[dependency].operation in required_predecessors
@@ -692,7 +801,9 @@ def attach_arguments(
         arguments = arguments_by_step.get(step.step_id)
         if step.arguments_mode == "literal":
             tool = catalog.get(step.operation)
-            if tool is None or not validate_json_schema_instance(arguments, tool.schema):
+            if tool is None or not validate_json_schema_instance(
+                arguments, tool.schema
+            ):
                 raise PlannerContractError(
                     f"los argumentos de {step.step_id} no cumplen el schema"
                 )
@@ -712,24 +823,6 @@ def attach_arguments(
         )
     return PlanProposal("plan", "", tuple(steps))
 
-
-def plan_structure_signature(proposal: PlanProposal) -> tuple[Any, ...]:
-    """Compare reviewed plans without trusting cosmetic IDs or prose."""
-
-    if proposal.kind != "plan":
-        return (proposal.kind,)
-    positions = {step.step_id: index for index, step in enumerate(proposal.steps)}
-    return (
-        "plan",
-        *(
-            (
-                step.operation,
-                tuple(positions[dependency] for dependency in step.depends_on),
-                step.arguments_mode,
-            )
-            for step in proposal.steps
-        ),
-    )
 
 
 def validate_json_schema_instance(value: Any, schema: dict[str, Any]) -> bool:
@@ -761,7 +854,11 @@ def _validate_property(value: Any, contract: Any) -> bool:
     enum = contract.get("enum")
     if isinstance(enum, list) and value not in enum:
         return False
-    if isinstance(value, bool) and "const" in contract and value is not contract["const"]:
+    if (
+        isinstance(value, bool)
+        and "const" in contract
+        and value is not contract["const"]
+    ):
         return False
     if isinstance(value, int) and not isinstance(value, bool):
         if "minimum" in contract and value < contract["minimum"]:
@@ -773,7 +870,10 @@ def _validate_property(value: Any, contract: Any) -> bool:
             return False
         if "maxLength" in contract and len(value) > contract["maxLength"]:
             return False
-        if "x-maxUtf8Bytes" in contract and len(value.encode("utf-8")) > contract["x-maxUtf8Bytes"]:
+        if (
+            "x-maxUtf8Bytes" in contract
+            and len(value.encode("utf-8")) > contract["x-maxUtf8Bytes"]
+        ):
             return False
         if contract.get("x-nonWhitespace") is True and not value.strip():
             return False
@@ -794,6 +894,43 @@ def _validate_property(value: Any, contract: Any) -> bool:
     return True
 
 
+def enum_member_named(value: object, enum: list[Any]) -> Any | None:
+    """M118 (D58, DEV-F F-w19-t2 folder «Descargas»): the member of ``enum`` a value names, by the member itself or by
+    one of the words that ground it (``_ENUM_EVIDENCE_ALIASES``); None when it names none."""
+
+    key = identity_text(str(value))
+    if not key:
+        return None
+    for member in enum:
+        if identity_text(str(member)) == key:
+            return member
+    for member in enum:
+        if any(identity_text(alias) == key for alias in _ENUM_EVIDENCE_ALIASES.get(member, ())):
+            return member
+    return None
+
+
+def fixed_arguments(schema: object) -> dict[str, Any]:
+    """Estabilización M2 (identity live check 2026-10-11: «Olvidá mi color favorito» was asked «¿Qué confirmación,
+    alcance y versión necesitas…?»): the fields whose contract admits one value only (a ``const``, an integer whose
+    minimum is its maximum, such as a payload ``version``). They are the contract's, never the person's: they are never
+    asked, and they are filled when missing."""
+
+    properties = schema.get("properties") if isinstance(schema, dict) else None
+    fixed: dict[str, Any] = {}
+    for name, contract in (properties.items() if isinstance(properties, dict) else ()):
+        if not isinstance(contract, dict):
+            continue
+        if "const" in contract:
+            fixed[name] = contract["const"]
+        elif (
+            contract.get("type") == "integer" and isinstance(contract.get("minimum"), int)
+            and contract.get("minimum") == contract.get("maximum")
+        ):
+            fixed[name] = contract["minimum"]
+    return fixed
+
+
 def validate_argument_grounding(
     arguments: dict[str, Any],
     schema: dict[str, Any],
@@ -805,6 +942,14 @@ def validate_argument_grounding(
         return False
     properties = schema.get("properties")
     if not isinstance(properties, dict):
+        return False
+    if (
+        "byTitle" in properties
+        and has_named_window_target(identity_text(trusted_source))
+        and arguments.get("byTitle") is not True
+    ):
+        # Removing an optional selector must not silently turn a title into
+        # a process name. Unlike a default limit, it changes target identity.
         return False
     for name, value in arguments.items():
         property_schema = properties.get(name)
@@ -835,14 +980,22 @@ def normalize_grounded_arguments(
 
     if not isinstance(arguments, dict) or not isinstance(schema, dict):
         return None
-    required = {
-        value for value in schema.get("required", []) if isinstance(value, str)
-    }
+    required = {value for value in schema.get("required", []) if isinstance(value, str)}
     candidate = dict(arguments)
     if validate_argument_grounding(candidate, schema, trusted_source):
         return candidate
+    properties = schema.get("properties")
+    if not isinstance(properties, dict):
+        return None
     for name in tuple(candidate):
-        if name not in required:
+        property_schema = properties.get(name)
+        if name not in required and (
+            not isinstance(property_schema, dict)
+            or not _validate_property(candidate[name], property_schema)
+            or not _value_is_grounded(
+                candidate[name], property_schema, trusted_source, property_name=name
+            )
+        ):
             candidate.pop(name)
     return (
         candidate
@@ -886,7 +1039,10 @@ def _safe_text(
 
 
 def _contains_unsafe_text(value: str) -> bool:
-    return any(ord(character) in _UNSAFE_FORMAT_CODEPOINTS or char_is_control(character) for character in value)
+    return any(
+        ord(character) in _UNSAFE_FORMAT_CODEPOINTS or char_is_control(character)
+        for character in value
+    )
 
 
 def char_is_control(character: str) -> bool:
@@ -938,15 +1094,23 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
     return {
         "app.close": ("window.resolve", "window.active"),
         "bluetooth.device.pair": ("bluetooth.device.list",),
+        "filesystem.read.text": ("filesystem.search", "filesystem.list"),
         "game.install.commit": ("game.install.prepare",),
         "game.purchase.commit": ("game.purchase.prepare",),
         "message.send": ("message.recipient.resolve",),
+        # M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la nota…?»
+        # on every run since v3d): note.update takes the note's identity and revision, which only a read of it gives.
+        "note.update": ("note.read",),
         "notification.dismiss": ("notification.list.due",),
-        "ocr.read": ("capture.screenshot",),
+        "ocr.read": ("capture.screenshot", "capture.active.window"),
         "package.install.commit": ("package.install.prepare",),
         "peripheral.print": ("peripheral.list",),
         "peripheral.scan": ("peripheral.list",),
         "reminder.delete": ("reminder.resolve.exact",),
+        "task.delete": ("task.resolve.exact",),
+        # M76 (DEV-D v3l D-w17-t2): the task marked done or open again is resolved first, like the one trashed.
+        "task.complete": ("task.resolve.exact",),
+        "task.reopen": ("task.resolve.exact",),
         "vision.describe": ("capture.screenshot",),
         "window.focus": ("window.resolve", "window.active"),
         "window.maximize": ("window.resolve", "window.active"),
@@ -954,6 +1118,7 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
         "window.move": ("window.resolve", "window.active"),
         "window.resize": ("window.resolve", "window.active"),
         "window.restore": ("window.resolve", "window.active"),
+        "window.snap": ("window.resolve", "window.active"),
         "wifi.connect": ("wifi.profile.list",),
     }.get(operation, ())
 
@@ -966,7 +1131,8 @@ def required_predecessors(operation: str) -> tuple[str, ...]:
 
 def is_required_predecessor(operation: str, steps: Sequence[ProposedStep]) -> bool:
     return any(
-        operation in (
+        operation
+        in (
             *_required_predecessors(step.operation),
             *_CONDITIONAL_IDENTITY_PREDECESSORS.get(step.operation, ()),
         )
@@ -992,11 +1158,32 @@ def _value_is_grounded(
     if isinstance(value, bool):
         if "const" in schema:
             return value is schema["const"]
+        if property_name == "byTitle":
+            # A selector describes which identity the request supplies; it is
+            # not an on/off effect requiring "enable" or "disable" vocabulary.
+            return value is has_named_window_target(identity_text(source))
         tokens = _tokens(source)
+        if property_name == "state" and tokens & _MICROPHONE_TOKENS:
+            muted_signal = bool(tokens & _MICROPHONE_MUTED_CUES)
+            active_signal = bool(tokens & _MICROPHONE_ACTIVE_CUES)
+            return muted_signal != active_signal and value is muted_signal
         true_signal = bool(tokens & _TRUE_CUES)
         false_signal = bool(tokens & _FALSE_CUES)
         return true_signal != false_signal and value is true_signal
     if isinstance(value, (int, float)):
+        if (
+            isinstance(value, int) and "minimum" in schema and schema.get("minimum") == schema.get("maximum")
+            and value == schema["minimum"]
+        ):
+            # The only value the contract admits (``fixed_arguments``) is never the person's to say.
+            return True
+        if property_name == "seconds" and isinstance(value, int) and value:
+            # M115 (DEV-F v4e2 F-w43-t3 «adelantala un minuto…» → «¿Cuántos segundos…?»): seconds said as the
+            # minutes or hours they make are said.
+            from .semantic.temporal import said_durations
+
+            if any(minutes * 60 == abs(value) for _, minutes in said_durations(source)):
+                return True
         return _number_is_grounded(value, source)
     if isinstance(value, list):
         item_schema = schema.get("items")
@@ -1007,6 +1194,25 @@ def _value_is_grounded(
         return False
     if "const" in schema:
         return value == schema["const"]
+    if property_name == "recipient":
+        from .semantic.messaging import pronoun_recipient
+
+        if pronoun_recipient(value):
+            return False
+    if property_name == "due":
+        # M115 (DEV-F v4e2 F-s022): a task's day written as the store reads it is said when the person named that day.
+        from .semantic.temporal import iso_day_said
+
+        if iso_day_said(value, source):
+            return True
+    if property_name == "side" and value in {"left", "right"}:
+        # v3 r6 lectores (t2-r4 c18 «pon el Word y el Edge uno al lado del otro»): two windows put beside each other
+        # take both halves of the screen; which window takes which is the request's order (window_snap_side_for_step).
+        # One window alone «en pantalla dividida» says no half: its side stays unsaid.
+        from .semantic.windows import two_things_side_by_side
+
+        if two_things_side_by_side(source):
+            return True
     enum = schema.get("enum")
     if isinstance(enum, list):
         aliases = _ENUM_EVIDENCE_ALIASES.get(value, (value,))
@@ -1027,7 +1233,18 @@ def _value_is_grounded(
             value.casefold() in source.casefold()
         )
     if property_name.endswith("Id"):
-        return _OPAQUE_ID.fullmatch(value) is not None and value.casefold() in source.casefold()
+        return (
+            _OPAQUE_ID.fullmatch(value) is not None
+            and value.casefold() in source.casefold()
+        )
+    if (
+        property_name == "relativePath"
+        and value.lower().endswith(".txt")
+        and re.search(r"\b(?:texto|text|txt)\b", identity_text(source)) is not None
+    ):
+        # FILES1705 «un archivo de texto»: the extension is what the words
+        # «de texto» / «text file» mean; the name itself still grounds.
+        value = value[:-4]
     value_key = identity_text(value)
     source_key = identity_text(source)
     if not value_key:
@@ -1095,8 +1312,10 @@ def _dependency_operations(names: set[str]) -> tuple[str, ...]:
         required.add("window.resolve")
     if "app.close" in names:
         required.add("window.resolve")
-    if any(name in names for name in {"backup.create", "filesystem.read.text"}):
+    if "backup.create" in names:
         required.add("filesystem.list")
+    if "filesystem.read.text" in names and not {"filesystem.search", "filesystem.list"} & names:
+        required.add("filesystem.search")
     if any(name.endswith(".pair") for name in names):
         required.add("bluetooth.device.list")
     if "game.install.commit" in names:

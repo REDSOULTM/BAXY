@@ -1,0 +1,1338 @@
+{
+ "_nota": "Vistas reales del journal de la pasada r7 del goal v3 (2026-10-08, cu-universal-perfil). El journal guarda los primeros 20 controles de cada vista; controlCount es el total del árbol que vio la mente. Los nombres personales (cuenta, documentos recientes, carpetas) se cambiaron por genéricos, y las vistas del Explorador y de Word van sin sus líneas de OCR (nombres de archivos del dueño).",
+ "word_inicio": {
+  "caso": "t-long-2",
+  "journal": "2026-10-08T12:16:26.491479+00:00",
+  "vista": {
+   "window": {
+    "title": "Word",
+    "process": "WINWORD",
+    "requested": true,
+    "foreground": false,
+    "rect": {
+     "x": 8,
+     "y": 0,
+     "w": 944,
+     "h": 1012
+    },
+    "coveredBy": {
+     "title": "Teclado en pantalla",
+     "process": "osk"
+    },
+    "focused": {
+     "kind": "ListItem",
+     "name": "Documento en blanco",
+     "nameSource": "",
+     "i": 11
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "MenuItem",
+     "name": "Usuario de prueba",
+     "state": "collapsed",
+     "rect": {
+      "x": 588,
+      "y": 1,
+      "w": 63,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Ayuda",
+     "state": "",
+     "rect": {
+      "x": 711,
+      "y": 1,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Minimizar",
+     "state": "",
+     "rect": {
+      "x": 771,
+      "y": 1,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Maximizar",
+     "state": "",
+     "rect": {
+      "x": 831,
+      "y": 1,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Cerrar",
+     "state": "",
+     "rect": {
+      "x": 891,
+      "y": 1,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 5,
+     "kind": "ListItem",
+     "name": "Inicio",
+     "state": "selected",
+     "rect": {
+      "x": 9,
+      "y": 61,
+      "w": 89,
+      "h": 74
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 6,
+     "kind": "ListItem",
+     "name": "Nuevo",
+     "state": "",
+     "rect": {
+      "x": 9,
+      "y": 140,
+      "w": 89,
+      "h": 74
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 7,
+     "kind": "ListItem",
+     "name": "Abrir",
+     "state": "",
+     "rect": {
+      "x": 9,
+      "y": 219,
+      "w": 89,
+      "h": 74
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 8,
+     "kind": "ListItem",
+     "name": "Cuenta",
+     "state": "",
+     "rect": {
+      "x": 9,
+      "y": 838,
+      "w": 89,
+      "h": 74
+     },
+     "zone": "BL",
+     "color": "white"
+    },
+    {
+     "i": 9,
+     "kind": "ListItem",
+     "name": "Opciones",
+     "state": "",
+     "rect": {
+      "x": 9,
+      "y": 917,
+      "w": 89,
+      "h": 74
+     },
+     "zone": "BL",
+     "color": "white"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Ocultar o mostrar región",
+     "state": "on",
+     "rect": {
+      "x": 128,
+      "y": 129,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 11,
+     "kind": "ListItem",
+     "name": "Documento en blanco",
+     "state": "selected focused",
+     "rect": {
+      "x": 158,
+      "y": 177,
+      "w": 225,
+      "h": 190
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 12,
+     "kind": "ListItem",
+     "name": "Le damos la bienvenida a Word",
+     "state": "",
+     "rect": {
+      "x": 430,
+      "y": 177,
+      "w": 225,
+      "h": 190
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 13,
+     "kind": "ListItem",
+     "name": "Tutorial para insertar su primera tabla de contenido",
+     "state": "",
+     "rect": {
+      "x": 701,
+      "y": 177,
+      "w": 225,
+      "h": 190
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Recientes",
+     "state": "",
+     "rect": {
+      "x": 158,
+      "y": 422,
+      "w": 103,
+      "h": 38
+     },
+     "zone": "L",
+     "color": "blue"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Favoritos",
+     "state": "",
+     "rect": {
+      "x": 276,
+      "y": 422,
+      "w": 103,
+      "h": 38
+     },
+     "zone": "C",
+     "color": "white"
+    },
+    {
+     "i": 16,
+     "kind": "Button",
+     "name": "Compartidos conmigo",
+     "state": "",
+     "rect": {
+      "x": 394,
+      "y": 422,
+      "w": 203,
+      "h": 38
+     },
+     "zone": "C",
+     "color": "white"
+    },
+    {
+     "i": 17,
+     "kind": "Edit",
+     "name": "Buscar un archivo",
+     "state": "",
+     "value": "",
+     "rect": {
+      "x": 688,
+      "y": 432,
+      "w": 508,
+      "h": 20
+     },
+     "zone": "R",
+     "color": "white"
+    },
+    {
+     "i": 18,
+     "kind": "ListItem",
+     "name": "Documento reciente 1",
+     "state": "",
+     "rect": {
+      "x": 158,
+      "y": 506,
+      "w": 1039,
+      "h": 70
+     },
+     "zone": "R",
+     "color": "white"
+    },
+    {
+     "i": 19,
+     "kind": "ListItem",
+     "name": "Documento reciente 2",
+     "state": "",
+     "rect": {
+      "x": 158,
+      "y": 576,
+      "w": 1039,
+      "h": 70
+     },
+     "zone": "R",
+     "color": "white"
+    }
+   ],
+   "controlCount": 41
+  }
+ },
+ "explorador_descargas": {
+  "caso": "t-scroll-4",
+  "journal": "2026-10-08T12:20:08.9249084+00:00",
+  "vista": {
+   "window": {
+    "title": "Downloads - Explorador de archivos",
+    "process": "explorer",
+    "requested": true,
+    "foreground": false,
+    "rect": {
+     "x": 616,
+     "y": 0,
+     "w": 944,
+     "h": 1012
+    },
+    "coveredBy": {
+     "title": "Teclado en pantalla",
+     "process": "osk"
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "RadioButton",
+     "name": "Detalles",
+     "state": "selected readonly",
+     "value": "",
+     "rect": {
+      "x": 1492,
+      "y": 980,
+      "w": 31,
+      "h": 31
+     },
+     "zone": "BR",
+     "color": "gray"
+    },
+    {
+     "i": 1,
+     "kind": "RadioButton",
+     "name": "Iconos grandes",
+     "state": "readonly",
+     "value": "",
+     "rect": {
+      "x": 1523,
+      "y": 980,
+      "w": 31,
+      "h": 31
+     },
+     "zone": "BR",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Retroceder poco",
+     "state": "",
+     "rect": {
+      "x": 896,
+      "y": 170,
+      "w": 21,
+      "h": 17
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Retroceder mucho",
+     "state": "",
+     "rect": {
+      "x": 896,
+      "y": 187,
+      "w": 21,
+      "h": 39
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Avanzar mucho",
+     "state": "",
+     "rect": {
+      "x": 896,
+      "y": 889,
+      "w": 21,
+      "h": 74
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Avanzar poco",
+     "state": "",
+     "rect": {
+      "x": 896,
+      "y": 963,
+      "w": 21,
+      "h": 17
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "TreeItem",
+     "name": "Galería",
+     "state": "",
+     "value": "Galería",
+     "rect": {
+      "x": 683,
+      "y": 170,
+      "w": 51,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 7,
+     "kind": "TreeItem",
+     "name": "Escritorio",
+     "state": "",
+     "value": "Escritorio",
+     "rect": {
+      "x": 683,
+      "y": 250,
+      "w": 66,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 8,
+     "kind": "TreeItem",
+     "name": "Downloads",
+     "state": "",
+     "value": "Downloads",
+     "rect": {
+      "x": 683,
+      "y": 290,
+      "w": 79,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "TreeItem",
+     "name": "Documentos",
+     "state": "",
+     "value": "Documentos",
+     "rect": {
+      "x": 683,
+      "y": 330,
+      "w": 88,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "TreeItem",
+     "name": "Imágenes",
+     "state": "",
+     "value": "Imágenes",
+     "rect": {
+      "x": 683,
+      "y": 370,
+      "w": 68,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "TreeItem",
+     "name": "Música",
+     "state": "",
+     "value": "Música",
+     "rect": {
+      "x": 683,
+      "y": 410,
+      "w": 50,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 12,
+     "kind": "TreeItem",
+     "name": "Videos",
+     "state": "",
+     "value": "Videos",
+     "rect": {
+      "x": 683,
+      "y": 450,
+      "w": 49,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 13,
+     "kind": "TreeItem",
+     "name": "Carpeta 1",
+     "state": "",
+     "value": "Carpeta 1",
+     "rect": {
+      "x": 683,
+      "y": 490,
+      "w": 97,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 14,
+     "kind": "TreeItem",
+     "name": "Carpeta 2",
+     "state": "",
+     "value": "Carpeta 2",
+     "rect": {
+      "x": 683,
+      "y": 530,
+      "w": 71,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 15,
+     "kind": "TreeItem",
+     "name": "Carpeta 3",
+     "state": "",
+     "value": "Carpeta 3",
+     "rect": {
+      "x": 683,
+      "y": 570,
+      "w": 37,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 16,
+     "kind": "TreeItem",
+     "name": "Carpeta 4",
+     "state": "",
+     "value": "Carpeta 4",
+     "rect": {
+      "x": 683,
+      "y": 610,
+      "w": 121,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 17,
+     "kind": "TreeItem",
+     "name": "Capturas de pantalla",
+     "state": "",
+     "value": "Capturas de pantalla",
+     "rect": {
+      "x": 683,
+      "y": 650,
+      "w": 141,
+      "h": 40
+     },
+     "zone": "L",
+     "color": "black"
+    },
+    {
+     "i": 18,
+     "kind": "TreeItem",
+     "name": "Carpeta 5",
+     "state": "",
+     "value": "Carpeta 5",
+     "rect": {
+      "x": 683,
+      "y": 690,
+      "w": 150,
+      "h": 40
+     },
+     "zone": "BL",
+     "color": "black"
+    },
+    {
+     "i": 19,
+     "kind": "TreeItem",
+     "name": "baxy-prueba-v3",
+     "state": "",
+     "value": "baxy-prueba-v3",
+     "rect": {
+      "x": 683,
+      "y": 730,
+      "w": 109,
+      "h": 40
+     },
+     "zone": "BL",
+     "color": "black"
+    }
+   ],
+   "controlCount": 87
+  }
+ },
+ "edge_ayuda": {
+  "caso": "v3-58",
+  "journal": "2026-10-08T13:20:27.9972153+00:00",
+  "vista": {
+   "window": {
+    "title": "Ayuda y aprendizaje de Windows | Microsoft Support y 2 páginas más - Personal: Microsoft​ Edge",
+    "process": "msedge",
+    "requested": true,
+    "foreground": false,
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1020
+    },
+    "coveredBy": {
+     "title": "Teclado en pantalla",
+     "process": "osk"
+    },
+    "focused": {
+     "kind": "Document",
+     "name": "Ayuda y aprendizaje de Windows | Microsoft Support",
+     "nameSource": "",
+     "value": "https://support.microsoft.com/es-es/windows/",
+     "i": 15
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Button",
+     "name": "Minimizar",
+     "state": "",
+     "rect": {
+      "x": 1747,
+      "y": 0,
+      "w": 58,
+      "h": 43
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 1,
+     "kind": "Button",
+     "name": "Restaurar",
+     "state": "",
+     "rect": {
+      "x": 1805,
+      "y": 0,
+      "w": 58,
+      "h": 43
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Cerrar",
+     "state": "",
+     "rect": {
+      "x": 1862,
+      "y": 0,
+      "w": 58,
+      "h": 43
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 3,
+     "kind": "TabItem",
+     "name": "Ayuda y aprendizaje de Windows | Microsoft Support",
+     "state": "",
+     "rect": {
+      "x": 3,
+      "y": 0,
+      "w": 320,
+      "h": 44
+     },
+     "zone": "TL",
+     "color": "black",
+     "repeated": 2
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Cerrar pestaña",
+     "state": "",
+     "rect": {
+      "x": 283,
+      "y": 10,
+      "w": 22,
+      "h": 22
+     },
+     "zone": "TL",
+     "color": "black",
+     "repeated": 2
+    },
+    {
+     "i": 5,
+     "kind": "Button",
+     "name": "Nueva pestaña",
+     "state": "",
+     "rect": {
+      "x": 913,
+      "y": -2,
+      "w": 40,
+      "h": 44
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Atrás",
+     "state": "",
+     "rect": {
+      "x": 0,
+      "y": 47,
+      "w": 45,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "gray"
+    },
+    {
+     "i": 7,
+     "kind": "Button",
+     "name": "Actualizar",
+     "state": "",
+     "rect": {
+      "x": 50,
+      "y": 47,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TL",
+     "color": "gray",
+     "repeated": 1
+    },
+    {
+     "i": 8,
+     "kind": "Button",
+     "name": "Ver información del sitio",
+     "state": "collapsed",
+     "rect": {
+      "x": 105,
+      "y": 50,
+      "w": 30,
+      "h": 35
+     },
+     "zone": "TL",
+     "color": "black"
+    },
+    {
+     "i": 9,
+     "kind": "Edit",
+     "name": "Barra de direcciones y búsqueda",
+     "state": "collapsed",
+     "value": "https://support.microsoft.com/es-es/windows/",
+     "rect": {
+      "x": 137,
+      "y": 50,
+      "w": 1322,
+      "h": 35
+     },
+     "zone": "T",
+     "color": "black"
+    },
+    {
+     "i": 10,
+     "kind": "Button",
+     "name": "Agregar esta página a favoritos (Ctrl+D)",
+     "state": "collapsed",
+     "rect": {
+      "x": 1460,
+      "y": 50,
+      "w": 30,
+      "h": 35
+     },
+     "zone": "TR",
+     "color": "black"
+    },
+    {
+     "i": 11,
+     "kind": "Button",
+     "name": "Extensiones",
+     "state": "collapsed",
+     "rect": {
+      "x": 1508,
+      "y": 47,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "gray"
+    },
+    {
+     "i": 12,
+     "kind": "Button",
+     "name": "Favoritos",
+     "state": "",
+     "rect": {
+      "x": 1560,
+      "y": 47,
+      "w": 40,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "gray"
+    },
+    {
+     "i": 13,
+     "kind": "Button",
+     "name": "Inicia sesión, Perfil de Personal",
+     "state": "collapsed",
+     "rect": {
+      "x": 1605,
+      "y": 48,
+      "w": 138,
+      "h": 38
+     },
+     "zone": "TR",
+     "color": "gray"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Copilot (Ctrl+Mayús+)",
+     "state": "",
+     "rect": {
+      "x": 1870,
+      "y": 47,
+      "w": 45,
+      "h": 40
+     },
+     "zone": "TR",
+     "color": "gray"
+    },
+    {
+     "i": 15,
+     "kind": "Document",
+     "name": "Ayuda y aprendizaje de Windows | Microsoft Support",
+     "state": "readonly focused",
+     "value": "https://support.microsoft.com/es-es/windows/",
+     "rect": {
+      "x": 5,
+      "y": 92,
+      "w": 1910,
+      "h": 923
+     },
+     "zone": "C",
+     "color": "white"
+    },
+    {
+     "i": 16,
+     "kind": "Hyperlink",
+     "name": "Microsoft",
+     "state": "readonly",
+     "value": "https://www.microsoft.com/",
+     "rect": {
+      "x": 99,
+      "y": 93,
+      "w": 172,
+      "h": 68
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 17,
+     "kind": "Hyperlink",
+     "name": "Soporte técnico",
+     "state": "readonly",
+     "value": "https://support.microsoft.com/es-es",
+     "rect": {
+      "x": 293,
+      "y": 93,
+      "w": 177,
+      "h": 68
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 18,
+     "kind": "ListItem",
+     "name": "Microsoft 365",
+     "state": "",
+     "rect": {
+      "x": 472,
+      "y": 92,
+      "w": 122,
+      "h": 62
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 19,
+     "kind": "Hyperlink",
+     "name": "Microsoft 365",
+     "state": "readonly",
+     "value": "https://www.microsoft.com/microsoft-365?ocid=cmmttvzgpuy",
+     "rect": {
+      "x": 472,
+      "y": 93,
+      "w": 122,
+      "h": 61
+     },
+     "zone": "TL",
+     "color": "white"
+    }
+   ],
+   "controlCount": 68,
+   "text": {
+    "TL": [
+     "Ayuda y aprendizaje de Window X",
+     "Ayuda y aprendizaje de Window",
+     "Ayuda y aprendizaje de Windows X",
+     "x",
+     "C [3 https://supportmicrosoft.com/es-es/windows/",
+     "C [ÊJ https://support.microsoft.com/es-es/windows/",
+     "Microsoft I Sopo",
+     "Microsoft",
+     "Soporte técnico Microsoft 365 Office",
+     "técnico Microsoft 365",
+     "Office",
+     "Instalación y",
+     "actualizaciones"
+    ],
+    "T": [
+     "Productos v",
+     "Dispositivos v",
+     "Más v",
+     "Comprar Microsoft 365",
+     "Ayuda y formación de Windows",
+     "Controladores &",
+     "Red e Internet",
+     "dispositivos"
+    ],
+    "TR": [
+     "Iniciar sesión",
+     "Actualizar •",
+     "Actualizar",
+     "Todo Microsoft v",
+     "Buscar p",
+     "Archivos y",
+     "almacenamiento"
+    ],
+    "L": [
+     "Seguridad y privacidad"
+    ],
+    "C": [
+     "Solución de problemas y",
+     "Accesibilidad",
+     "reparacón",
+     "reparación",
+     "Consiga más con IA en Windows"
+    ],
+    "R": [
+     "a Hardware"
+    ],
+    "BL": [
+     "Más información sobre Copilot",
+     "en Windows"
+    ],
+    "B": [
+     "-o",
+     "Convertir ideas en arte con",
+     "Agregar filtros de vídeo con",
+     "Paint Cocreator",
+     "efectos de Studio",
+     "Hacer más cosas con Windows"
+    ],
+    "BR": [
+     "Activar subtítulos en directo"
+    ]
+   }
+  }
+ },
+ "word_documento": {
+  "caso": "t-long-2",
+  "journal": "2026-10-08T14:18:21.7639785+00:00",
+  "vista": {
+   "window": {
+    "title": "Documento1 - Word",
+    "process": "WINWORD",
+    "requested": true,
+    "foreground": false,
+    "rect": {
+     "x": 8,
+     "y": 0,
+     "w": 944,
+     "h": 1012
+    },
+    "coveredBy": {
+     "title": "Teclado en pantalla",
+     "process": "osk"
+    },
+    "focused": {
+     "kind": "Document",
+     "name": "Documento1",
+     "nameSource": "",
+     "i": 0
+    }
+   },
+   "controls": [
+    {
+     "i": 0,
+     "kind": "Document",
+     "name": "Documento1",
+     "state": "focused",
+     "rect": {
+      "x": 447,
+      "y": 223,
+      "w": 483,
+      "h": 761
+     },
+     "zone": "R",
+     "color": "white"
+    },
+    {
+     "i": 1,
+     "kind": "Edit",
+     "name": "Contenido de la página 1",
+     "state": "",
+     "rect": {
+      "x": 472,
+      "y": 362,
+      "w": 458,
+      "h": 622
+     },
+     "zone": "R",
+     "color": "white"
+    },
+    {
+     "i": 2,
+     "kind": "Button",
+     "name": "Línea arriba",
+     "state": "readonly",
+     "value": "",
+     "rect": {
+      "x": 930,
+      "y": 223,
+      "w": 21,
+      "h": 21
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 3,
+     "kind": "Button",
+     "name": "Av Pág",
+     "state": "readonly",
+     "value": "",
+     "rect": {
+      "x": 930,
+      "y": 645,
+      "w": 21,
+      "h": 318
+     },
+     "zone": "BR",
+     "color": "white"
+    },
+    {
+     "i": 4,
+     "kind": "Button",
+     "name": "Línea abajo",
+     "state": "readonly",
+     "value": "",
+     "rect": {
+      "x": 930,
+      "y": 963,
+      "w": 21,
+      "h": 21
+     },
+     "zone": "BR",
+     "color": "white"
+    },
+    {
+     "i": 5,
+     "kind": "MenuItem",
+     "name": "Opciones del panel de tareas",
+     "state": "collapsed",
+     "rect": {
+      "x": 364,
+      "y": 235,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 6,
+     "kind": "Button",
+     "name": "Cerrar panel",
+     "state": "",
+     "rect": {
+      "x": 404,
+      "y": 235,
+      "w": 30,
+      "h": 30
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 7,
+     "kind": "Edit",
+     "name": "Buscar en documento",
+     "state": "",
+     "value": "Buscar en documento",
+     "rect": {
+      "x": 25,
+      "y": 284,
+      "w": 361,
+      "h": 26
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 8,
+     "kind": "SplitButton",
+     "name": "Buscar",
+     "state": "collapsed",
+     "value": "",
+     "rect": {
+      "x": 386,
+      "y": 284,
+      "w": 39,
+      "h": 28
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 9,
+     "kind": "Button",
+     "name": "Buscar",
+     "state": "",
+     "rect": {
+      "x": 386,
+      "y": 284,
+      "w": 29,
+      "h": 28
+     },
+     "zone": "T",
+     "color": "white",
+     "repeated": 1
+    },
+    {
+     "i": 10,
+     "kind": "MenuItem",
+     "name": "Más opciones",
+     "state": "collapsed",
+     "rect": {
+      "x": 415,
+      "y": 284,
+      "w": 10,
+      "h": 28
+     },
+     "zone": "T",
+     "color": "white",
+     "repeated": 2
+    },
+    {
+     "i": 11,
+     "kind": "TabItem",
+     "name": "Títulos",
+     "state": "selected",
+     "rect": {
+      "x": 24,
+      "y": 332,
+      "w": 63,
+      "h": 38
+     },
+     "zone": "L",
+     "color": "white"
+    },
+    {
+     "i": 12,
+     "kind": "TabItem",
+     "name": "Páginas",
+     "state": "",
+     "rect": {
+      "x": 87,
+      "y": 332,
+      "w": 85,
+      "h": 38
+     },
+     "zone": "L",
+     "color": "white"
+    },
+    {
+     "i": 13,
+     "kind": "TabItem",
+     "name": "Resultados",
+     "state": "",
+     "rect": {
+      "x": 172,
+      "y": 332,
+      "w": 96,
+      "h": 38
+     },
+     "zone": "L",
+     "color": "white"
+    },
+    {
+     "i": 14,
+     "kind": "Button",
+     "name": "Autoguardado",
+     "state": "off",
+     "rect": {
+      "x": 62,
+      "y": 13,
+      "w": 163,
+      "h": 36
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 15,
+     "kind": "Button",
+     "name": "Guardar",
+     "state": "",
+     "rect": {
+      "x": 226,
+      "y": 13,
+      "w": 34,
+      "h": 35
+     },
+     "zone": "TL",
+     "color": "white"
+    },
+    {
+     "i": 16,
+     "kind": "MenuItem",
+     "name": "Personalizar barra de herramientas de acceso rápido",
+     "state": "collapsed",
+     "rect": {
+      "x": 344,
+      "y": 12,
+      "w": 34,
+      "h": 38
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 17,
+     "kind": "Button",
+     "name": "‪Documento1‬ - Word",
+     "state": "",
+     "rect": {
+      "x": 379,
+      "y": 1,
+      "w": 176,
+      "h": 60
+     },
+     "zone": "T",
+     "color": "white"
+    },
+    {
+     "i": 18,
+     "kind": "MenuItem",
+     "name": "Usuario de prueba",
+     "state": "collapsed",
+     "rect": {
+      "x": 708,
+      "y": 1,
+      "w": 63,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "white"
+    },
+    {
+     "i": 19,
+     "kind": "Button",
+     "name": "Minimizar",
+     "state": "",
+     "rect": {
+      "x": 771,
+      "y": 1,
+      "w": 60,
+      "h": 60
+     },
+     "zone": "TR",
+     "color": "white"
+    }
+   ],
+   "controlCount": 95
+  }
+ }
+}

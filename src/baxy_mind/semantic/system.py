@@ -1,0 +1,523 @@
+"""System: power, lock, battery, processes, hardware, weather, time and countdowns. Readers moved from effect_intent (Fase 3.5).
+"""
+
+from __future__ import annotations
+
+import functools
+import json
+import re
+from pathlib import Path
+from typing import Iterable
+from .grammar import _ASSISTANT_NAME, _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER, _COVERAGE_ACTION_HEAD
+from .intent import EffectIntent
+from .lexicon import ADDRESS_VOCATIVE
+from .temporal import is_window_phrase
+from .web import AIR_QUALITY_WORDS, _SKY_MEASURE_WORDS, _WEATHER_SUN_TIME, _WEATHER_WORDS, _names_weather, _weather_lookup_query, asks_own_place, weather_asks_sun_time
+
+
+_WEATHER_MEDIUM = (
+    r"\b(?:google|bing|internet|la\s+web|the\s+web|online|en\s+linea)\b"
+)
+_GENERIC_PLACE = (
+    r"^(?:(?:the|my|a|la|el|mi|una?)\s+)?(?:beach|playa|park|parque|lake|lago|mountains?|montana|office|oficina|pool|"
+    r"piscina|stadium|estadio|school|colegio|escuela|work|trabajo|home|casa|river|rio|field|campo|golf\s+course|"
+    r"cancha|centro|downtown|calle|street)$"
+)
+_PART_OF_TOWN = (
+    r"^(?:(?:la\s+ciudad|el\s+centro|centro|las\s+afueras|the\s+city|the\s+cent(?:er|re)|the\s+outskirts)\s+(?:de|del|of)\s+|"
+    r"(?:down\s*town|mid\s*town|up\s*town)\s+)"
+)
+
+
+# Uso real v3 ronda 19 (r17 t1-c05 «va a llover mañana en valpo?» → weather_place_not_found: the geocoder knows
+# Valpovo and Valpoi, not «valpo»): a place said by its colloquial short form is looked up by its official name. The
+# forms and the regional words are data (``data/place_words.v1.json``); only a whole place equal to a form is
+# rewritten, so a town whose name merely starts like one («Valpovo») is asked as said.
+@functools.lru_cache(maxsize=1)
+def _place_words() -> dict:
+    path = Path(__file__).resolve().parent.parent / "data" / "place_words.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def official_place_name(place: str | None) -> str | None:
+    """The official name of a place said by its colloquial form («valpo» → «Curicó»); any other place as said."""
+
+    if place is None:
+        return None
+    forms = {" ".join(_fold(form).split()): name for form, name in _place_words()["colloquialPlaces"].items()}
+    return forms.get(" ".join(_fold(place).split()), place)
+
+
+@functools.lru_cache(maxsize=1)
+def _dialect_patterns() -> tuple[tuple[str, re.Pattern[str]], ...]:
+    patterns = []
+    for country, words in sorted(_place_words()["dialectCountries"].items()):
+        alternation = "|".join(r"\s+".join(map(re.escape, _fold(word).split())) for word in words)
+        patterns.append((country, re.compile(rf"\b(?:{alternation})\b")))
+    return tuple(patterns)
+
+
+def dialect_country(text: str) -> str | None:
+    """The country (ISO code) a regional way of speaking marks in the message («¿cojo paraguas?» → ES), when the
+    words mark exactly one; None otherwise. A tie-break among namesake towns, never a place by itself."""
+
+    folded = _fold(text)
+    marked = [country for country, pattern in _dialect_patterns() if pattern.search(folded)]
+    return marked[0] if len(marked) == 1 else None
+
+
+def _weather_location(text: str) -> str | None:
+    """REOPEN1993 (grupo W): the place the person named for the weather («en
+    Buenos Aires», «in Madrid»), with their own spelling (a colloquial form by its
+    official name); None when no place is named (the read then uses this PC's own
+    location) or the words after the preposition are a medium («en google», «en
+    internet»)."""
+
+    return official_place_name(_weather_location_said(text))
+
+
+_SAID_REGION = re.compile(
+    r"^\s*,\s*(?P<region>[A-ZÁÉÍÓÚÑ][\w'’-]*(?:\s+(?:(?:de|del|de\s+la)\s+)?[A-ZÁÉÍÓÚÑ][\w'’-]*){0,3})\s*(?:[?.!;]|$)"
+)
+# Revisión r19 («¿Cómo está el clima en Curicó, Baxy?» → «Curicó, Baxy»): the name the person calls the
+# assistant by, or an address word, closing the sentence after a comma is a vocative, never a region.
+_VOCATIVE_AFTER_PLACE = rf"^(?:{_ASSISTANT_NAME}|{ADDRESS_VOCATIVE})$"
+
+
+def _weather_location_said(text: str) -> str | None:
+    query = _weather_lookup_query(text)
+    if query is None or asks_own_place(text):
+        return None
+    # Each preposition opens a candidate: «clima de la semana en Buenos Aires»
+    # names its time first and its place after. Uso real tanda 2 «tengo un
+    # festival de música dentro de dos días. ¿Me llevo el chubasquero?»: when the
+    # weather is asked only through the gear, an amount or a sun time, «de» and
+    # «para» belong to other things («un festival de música», «para mañana»);
+    # only «en», «in» and «at» name the place.
+    prepositions = r"en|in|de|para|for|at" if _names_weather(_fold(query)) else r"en|in|at"
+    for match in re.finditer(rf"\b(?:{prepositions})\s+(?=(?P<place>[^,;:.!?]+))", query, re.IGNORECASE):
+        candidate = match.group("place").strip(" \t\r\n.,;:")
+        if _names_a_time(_fold(candidate)) or _leads_with_a_time(candidate):
+            continue
+        if (
+            _has(_fold(match.group(0)), r"^para\b")
+            and not candidate[:1].isupper()
+            and _has(_fold(candidate), r"^\w+(?:ar|er|ir)(?:me|te|se|nos|lo|la|los|las)?\b")
+        ) or (_has(_fold(match.group(0)), r"^for\b") and _has(_fold(candidate), r"^(?:\w+ing|to\s+\w+)\b")):
+            # MASSIVE weather_query «es necesario llevar paraguas para salir»: «para» before a verb says what for.
+            # Fase 3.5b DEV «weather forecast for Denver»: English has no «-er» infinitive, and a capital is a name.
+            continue
+        place = _without_trailing_time(candidate)
+        # Uso real tanda 5 «wat level of air pollution hay en downtown Houston»: the weather service
+        # knows no «downtown Houston»; the part of the town is not its name.
+        place = re.sub(_PART_OF_TOWN, "", place, flags=re.IGNORECASE)
+        folded_place = _fold(place)
+        if (
+            # Tanda 5 «en tus aplicaciones del tiempo», tanda 4f «en una terraza en Sevilla»: a thing said with «tu»,
+            # «mi» or «una» is not the name of a town, and the next preposition may still name one. «a» is an
+            # article only before another place («at a cafe in Paris»); «A Coruña» is a town.
+            re.match(r"(?:mis?|tus?|sus?|nuestr[oa]s?|my|your|our|un|una|unos|unas|an|some)\s", folded_place)
+            or re.match(r"a\s+\w+(?:\s+\w+)?\s+(?:in|en|at)\s", folded_place)
+            or not folded_place
+            or _has(folded_place, _WEATHER_MEDIUM)
+            or _has(folded_place, _WEATHER_WORDS)
+            or _has(folded_place, AIR_QUALITY_WORDS)
+            # Uso real tanda 6 «i'm meeting a friend at sunrise tomorrow»: «at sunrise» is a time of the day.
+            or _has(folded_place, _WEATHER_SUN_TIME)
+            # Uso real tanda 6: «punto de rocío» and «índice de radiación UV» are one measure, not «de» a place.
+            or _has(" ".join([*_fold(query[:match.start()]).split()[-1:], _fold(match.group(0)), folded_place]),
+                    _SKY_MEASURE_WORDS)
+            # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
+            # «Sémana» (Mali), tanda 3 «para la semana del 5 al 12 de julio» the weather
+            # of «Júlio» (Mozambique): a time is not a place.
+            or _names_a_time(folded_place)
+            # «clima para el día de la madre» read the weather of «la madre»: «de» after «día» names the day.
+            or _fold(query[:match.start()]).split()[-1:] in (["dia"], ["dias"])
+            # MASSIVE «la temperatura será más alta de cuarenta grados mañana»: a measure is not a place.
+            or _has(folded_place, rf"^{SPOKEN_NUMBER}\s*(?:grados|degrees|°|milimetros|mm|centimetros|cm|pulgadas|inches)\b")
+            # MASSIVE «will it be nice at the beach on friday»: a kind of place is where the person goes, not a town.
+            or _has(folded_place, _GENERIC_PLACE)
+            # Tanda 7: «casa de mi hermana» is no town; a town may still be named after it («… en Lima»).
+            or _has(folded_place, rf"^(?:{_SOMEONES_PLACE})")
+            # M84 (DEV-D v3o D-s020): «mamá» in «la casa de mamá», «mom's» in «at mom's» are a person, not a town.
+            or _has(folded_place, rf"^(?:{_KIN}|{_KIN_EN}(?:['’]s)?)(?:\s+(?:house|place|home))?(?:\s|$)")
+            or len(place.encode("utf-8")) > 128
+        ):
+            continue
+        # Ronda 19 contracase «Valencia, Carabobo»: the region named after a comma goes with the town (the adapter
+        # reads «Lugar, Región» as the town of that name in that region), when it is a name and ends the clause.
+        region = _SAID_REGION.match(query[match.end("place"):]) if place == candidate else None
+        if (
+            region is not None
+            and not _names_a_time(_fold(region.group("region")))
+            and not _has(_fold(region.group("region")), _VOCATIVE_AFTER_PLACE)
+        ):
+            return f"{place}, {region.group('region')}"
+        return place
+    return _place_before_the_weather(text) or weather_destination_there(text)
+
+
+# M104 (reserve v3z en5871 «hows mysore climate today», «how is mysore weather today» read this PC's town): English
+# names the place before the weather noun, as an attributive («London weather», «Mysore climate today»). Only right
+# after a question head and only words that are no time, article, possessive or weather word.
+_PLACE_BEFORE_THE_WEATHER = re.compile(
+    r"^[¿?¡!\s]*(?:(?:how|what)(?:'?s|\s+is|\s+will\s+be)|tell\s+me|give\s+me|check)\s+(?:the\s+)?"
+    r"(?P<place>[^\W\d_][\w'’-]*(?:\s+[^\W\d_][\w'’-]*){0,2}?)(?:'s)?\s+(?:weather|climate|forecast)\b",
+    re.IGNORECASE,
+)
+_NOT_A_PLACE_WORD = frozenset({
+    "the", "a", "an", "my", "your", "our", "this", "that", "local", "current", "todays", "today's", "today", "tonights",
+    "tonight's", "tomorrows", "tomorrow's", "tomorrow", "tonight", "weekend", "weekly", "daily", "hourly", "outside",
+    "it", "is", "be", "like", "here", "there",
+})
+
+
+def _place_before_the_weather(text: str) -> str | None:
+    found = _PLACE_BEFORE_THE_WEATHER.match(str(text or "").strip())
+    if found is None:
+        return None
+    place = found.group("place").strip()
+    words = _fold(place).split()
+    if not words or any(word in _NOT_A_PLACE_WORD for word in words) or _names_a_time(_fold(place)) or _has(
+        _fold(place), _WEATHER_WORDS,
+    ):
+        return None
+    return place
+
+
+# M58 (v3d-final F-w15-t1 «este weekend me voy a San Antonio con unos friends, like, can you check el weather para el
+# sábado allá?» → the weather of this PC's town, Curicó): «allá / there» points at the place the person said they
+# are going to in the same message. Only a name (capitals) after a verb of going; the weather of «allá» with no such
+# place stays this read's own question.
+_THERE = r"\b(?:alla|alli|ahi|there|over\s+there)\b"
+# M76 (DEV-D v3l D-p25-t1 «I'm visiting Martinez soon and would like the check the weather there please» → the weather
+# of Curicó): a place visited is gone to as well, and a verb of visiting takes it with no preposition.
+# M89 (DEV-D v3r D-w04-t1 «mañana viajo temprano a Rosario … ¿cómo va a estar el clima allá?» → Curicó's weather):
+# when or how the person goes may sit between the verb and its «a / to» («viajo temprano a», «flying out tomorrow to»).
+_GOING_WHEN = (
+    r"(?:\s+(?:temprano|tarde|manana|mañana|hoy|pronto|luego|despues|después|ya|solo|sola|de\s+viaje|de\s+vacaciones|"
+    r"en\s+(?:auto|bus|tren|avion|avión|moto)|early|late|tomorrow|today|tonight|soon|out|back|alone|by\s+(?:car|bus|train|plane)))"
+    r"{0,3}"
+)
+_GOING_TO = re.compile(
+    r"\b(?:(?:me\s+voy|nos\s+vamos|voy|vamos|viajo|viajamos|ire|iremos|going|heading|headed|traveling|travelling|"
+    rf"flying|driving|trip){_GOING_WHEN}\s+(?:a|al|para|to|hacia)|visiting|visit|visitar[eé]?|visitaremos|visitando|visito|"
+    r"visitamos)\s+"
+    r"(?P<place>[A-ZÁÉÍÓÚÑ][\w'’-]*(?:\s+(?:(?:de|del|de\s+la|de\s+los|de\s+las)\s+)?[A-ZÁÉÍÓÚÑ][\w'’-]*)*)"
+)
+
+
+# M76 (DEV-D v3l D-s054 «Necesito la hora en que comenzará a oscurecerse.» restated «…oscurecerse aquí?»): «aquí», «here»,
+# «donde estoy» name this PC's own place; the weather read without a place reads it (its IP location).
+_THIS_PLACE = (
+    r"(?:(?:por\s+)?(?:aqui|aca)|(?:around\s+)?here|donde\s+estoy|where\s+i\s+am|(?:mi|my)\s+(?:ubicacion|location|"
+    r"zona|area|ciudad|city|pueblo|town)|(?:esta|this)\s+(?:ciudad|city|zona|area))"
+)
+
+
+def names_this_place(location: str) -> bool:
+    """The place said is where this PC is («aquí», «here», «mi ciudad»), not a place to look up by name."""
+
+    return re.fullmatch(_THIS_PLACE, _fold(str(location or "")).strip(" ,.;:!?¿¡")) is not None
+
+
+def weather_destination_there(text: str) -> str | None:
+    """The place «allá / there» points at: the one the message says the person is going to."""
+
+    if not _has(_fold(text), _THERE):
+        return None
+    places = {found.group("place") for found in _GOING_TO.finditer(str(text))}
+    return places.pop() if len(places) == 1 else None
+
+
+# Tanda 7 «¿Va a llover tomorrow at my sister's?» was answered for this PC's town as «en casa de tu hermana»: a
+# place said only through a person («casa de mi hermana», «lo de mi vieja», «where my dad lives», «at my mom's»)
+# is somewhere BAXY does not know. It is asked, never taken for here.
+# M84 (DEV-D v3o D-s020 «It's going to rain en la casa de mamá?» → «No tengo información sobre el clima en la casa de
+# tu mamá»): a relative is named without «mi» too («mamá», «la abuela», «mom»); where they live is the person's own
+# datum, asked for, never a limit and never looked up.
+_KIN = (
+    r"(?:(?:el|la|los|las)\s+)?(?:mama|mami|mamita|papa|papi|papito|viej[oa]|abuel[oa]s?|abu|tia|tio|tias|tios|"
+    r"madre|padre|padres|suegr[oa]s?|herman[oa]s?|prim[oa]s?|madrina|padrino|nona|nono)\b"
+)
+_KIN_EN = r"(?:mom|mum|mommy|mother|dad|daddy|father|grandma|granny|grandpa|grandparents|parents|auntie|aunt|uncle)"
+# M138 (DEV-G v4n G-s043 «oye, ¿va a llover donde anda mi compadre ahorita?» → the weather of this PC's town, where the
+# isolated decider asked where the compadre is): where someone «anda», «se encuentra» or «se queda» is said with the
+# other verbs of being somewhere.
+_IS_SOMEWHERE = (
+    r"(?:vive|viven|trabaja|trabajan|esta|estan|anda|andan|se\s+encuentra|se\s+encuentran|se\s+queda|se\s+quedan|"
+    r"reside|residen)"
+)
+_SOMEONES_PLACE = (
+    r"\b(?:(?:la\s+)?casa\s+de\s+(?:mi|mis|tu|tus|su|sus|nuestr[oa]s?)\s+\w+|lo\s+de\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
+    rf"(?:la\s+)?casa\s+de\s+{_KIN}|lo\s+de\s+{_KIN}|donde\s+{_IS_SOMEWHERE}\s+{_KIN}|"
+    rf"donde\s+{_IS_SOMEWHERE}\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
+    r"(?:at|to|in|near|by)\s+(?:my|your|his|her|our|their)\s+\w+['’]s\b|"
+    r"(?:my|your|his|her|our|their)\s+\w+['’]s\s+(?:house|place|home)|"
+    rf"(?:at|to|in|near|by)\s+{_KIN_EN}['’]s\b|{_KIN_EN}['’]s\s+(?:house|place|home)|"
+    rf"where\s+{_KIN_EN}\s+(?:lives|works|is|stays)|"
+    r"where\s+(?:my|your|his|her|our|their)\s+\w+\s+(?:lives|live|works|work|is|are|stays))"
+)
+
+
+def weather_place_known_only_through_someone(text: str) -> bool:
+    """The weather is asked for a place said only through a person, with no town named."""
+
+    return _has(_fold(text), _SOMEONES_PLACE) and _weather_location(text) is None
+
+
+def _without_trailing_time(place: str) -> str:
+    """«Buenos Aires para mañana» → «Buenos Aires»: a time or courtesy after the
+    place (with or without its own preposition) is not part of the name."""
+
+    words = place.split()
+    for index in range(1, len(words)):
+        tail = _fold(" ".join(words[index:]))
+        if _names_a_time(tail) or _names_a_time(re.sub(r"^(?:para|for|de|del|en|in|on|a|al)\s+", "", tail)) or _has(
+            # Tanda 4c «puesta de sol en Mendoza a qué hora»: the question asked after the place.
+            # Tanda 9: «el tiempo de Sevilla porfa» — the courtesy said short is not part of the town either.
+            tail, r"^(?:ahora|now|right\s+now|por\s+favor|porfa|porfis|please|pls|plz|"
+            r"(?:a\s+)?(?:que|what)\s+(?:hora|time)|cuando|when)\b"
+        ):
+            return " ".join(words[:index])
+    return place
+
+
+def _leads_with_a_time(candidate: str) -> bool:
+    """M89 (DEV-D v3r D-p20-t2 «What's the weather forecast for March 2nd in Palo Alto?» → the weather service was
+    asked for «March 2nd in Palo Alto» and knew no such place): a time said first («March 2nd», «mañana», «el
+    viernes») with the place after its own «in / en / at» is not the place; the next preposition names it."""
+
+    words = candidate.split()
+    for index in range(1, len(words) - 1):
+        if _fold(words[index]) in {"en", "in", "at"} and _names_a_time(_fold(" ".join(words[:index]))):
+            return True
+    return False
+
+
+def _names_a_time(folded: str) -> bool:
+    """«la semana del 5 al 12 de julio», «julio», «el 4 de julio», «next monday», «navidad»: the words say a time
+    (semantic.temporal reads dates, months, weekdays and spans; the list below adds holidays and counted spans)."""
+
+    return _has(folded, _WEATHER_TIME_WORDS) or is_window_phrase(folded) or is_window_phrase("en " + folded)
+
+
+# Uso real 2026-09-23 «pronóstico de diez días» asked the weather service for a
+# place called «diez días», and «el weather para San Valentín» for a place
+# called like the holiday: a span («los próximos 5 días», «the next 7 days») or
+# a named day of the year is a time, not a place. Portuguese month spellings
+# («julho») are months too; «janeiro» and «março» are left to Rio de Janeiro and
+# to the Spanish word «marco».
+_WEATHER_SPAN_COUNT = r"(?:\d{1,3}|" + "|".join(
+    sorted({*_SPANISH_SMALL_NUMBERS, *_ENGLISH_SMALL_NUMBERS}, key=len, reverse=True)
+) + r")"
+_WEATHER_TIME_WORDS = (
+    r"^(?:(?:el|la|los|las|este|esta|estos|estas|the|this|these|next|coming|"
+    r"proximo|proxima|proximos|proximas|siguiente|siguientes|dentro\s+de)\s+){0,2}"
+    # Tanda 8 «¿Cómo estará the weather en el fin the semana de Memorial Day?» read the weather of «El Final»
+    # (Chiapas): the weekend with the English article the ear put for «de», and a holiday named «X Day» (as
+    # «día de X» already is by «dia»), are times too.
+    rf"(?:{_WEATHER_SPAN_COUNT}\s+)?(?:semanas?|finde|fin\s+(?:de|the|d)\s+semana|long\s+weekend|"
+    r"weeks?|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|ahora|now|"
+    r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|"
+    r"friday|saturday|sunday|dia|dias|days?|mes|meses|months?|ano|anos|years?|"
+    r"navidad|nochebuena|nochevieja|ano\s+nuevo|san\s+valentin|halloween|pascua|semana\s+santa|"
+    r"feriado|festivo|fiestas\s+patrias|(?:[a-z]+(?:'s|s)?\s+){1,2}day|"
+    r"christmas|new\s+year|valentine|easter|thanksgiving|"
+    r"fevereiro|maio|junho|julho|setembro|outubro|novembro|dezembro)\b"
+)
+
+
+def _weather_read_intent(
+    text: str,
+    available_operations: Iterable[str],
+) -> EffectIntent | None:
+    """REOPEN1993 (grupo W): a live weather question is a typed weather read,
+    never a web search (twelve rows were credited with pages about the
+    weather or an honest failure instead of the weather itself)."""
+
+    if "weather.current" not in frozenset(available_operations):
+        return None
+    if _weather_lookup_query(text) is None:
+        return None
+    clauses = _request_clauses(_fold(text))
+    if len(clauses) != 1 and not _sun_time_asked_after_it(clauses):
+        return None
+    return EffectIntent(("weather.current",), (text.strip(),))
+
+
+# Uso real tanda 6 «he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?» searched the
+# whole sentence and ended in ⚠: the sun time is named in what the person tells, and the question after it only
+# asks when that is. Two clauses, the first no order, the second a bare question of the time. «¿qué hora es?» and
+# «what time is it» ask this PC's clock, not when the sun rises.
+_BARE_TIME_QUESTION = (
+    r"^[¿¡\s]*(?:a\s+que\s+hora(?:\s+(?:sera|es|seria))?|que\s+hora\s+(?:sera|seria)|"
+    r"(?:at\s+)?what\s+time(?:\s+(?:is\s+that|will\s+(?:that|it)\s+be|would\s+that\s+be))?|"
+    r"cuando\s+(?:sera|es)|when\s+(?:is\s+that|will\s+(?:that|it)\s+be))[\s?!.]*$"
+)
+
+
+def _sun_time_asked_after_it(clauses: tuple[str, ...]) -> bool:
+    return (
+        len(clauses) == 2
+        and weather_asks_sun_time(clauses[0])
+        and re.match(rf"^[¿¡\s]*(?:{_COVERAGE_ACTION_HEAD})\b", clauses[0]) is None
+        and _has(clauses[1], _BARE_TIME_QUESTION)
+    )
+
+
+def process_inventory_arguments(text: str) -> dict[str, object] | None:
+    """Keep rank, metric and spoken page size bound to the process request."""
+    text = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    if not _process_list_domain(text):
+        return None
+    sorts = {
+        sort for sort, pattern in (
+            ("cpu", r"\b(?:cpu|procesador|processor)\b"),
+            ("memory", r"\b(?:ram|memoria|memory|working set)\b"),
+            ("name", r"\b(?:por nombre|by name)\b"),
+        ) if _has(text, pattern)
+    }
+    if len(sorts) > 1:
+        return None
+    result: dict[str, object] = {"sort": next(iter(sorts))} if sorts else {}
+    number = r"(?:\d+|" + "|".join(
+        re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
+    ) + r")"
+    sizes = list(re.finditer(
+        rf"\b(?:top|primeros|first|hasta|up\s+to)\s+(?P<rank>{number})\b|"
+        rf"\b(?P<count>{number})\s+(?:(?:running|active|activos)\s+)?"
+        r"(?:procesos?|process(?:es)?)\b", text,
+    ))
+    values = set()
+    for match in sizes:
+        raw = match.group("rank") or match.group("count")
+        values.add(int(raw) if raw.isdecimal() else _PERCENTAGE_WORD_VALUES[raw])
+    # A number outside a rank frame may be a PID, threshold or another action.
+    remainder = text
+    for match in reversed(sizes):
+        remainder = remainder[:match.start()] + remainder[match.end():]
+    if len(values) > 1 or _has(remainder, r"\d"):
+        return None
+    if values:
+        value = next(iter(values))
+        if not 1 <= value <= 50:
+            return None
+        result["limit"] = value
+    elif _has(text, r"\b(?:que proceso|which process|what process)\b"):
+        result["limit"] = 1
+    return result
+
+
+# Uso real 2026-09-23 «prepárame una taza de café» → «¿Te refieres a que el café esté más suave o con menos
+# ruido?»: food and drink are made or brought in the physical world, where BAXY has no hands; the honest turn is
+# a plain limit, never a question about the PC. «pon en marcha una taza de café» (MASSIVE iot_coffee) starts it.
+_ERRAND = (
+    # M91 (reserva «muéstrame un video para hacer tortilla»): the dish as what a video, a recipe or a lesson is for
+    # («para hacer», «cómo preparar», «how to cook») is something to see or read, not an errand.
+    r"(?<!para\s)(?<!como\s)(?<!how\sto\s)"
+    r"\b(?:prepara|preparame|preparar|prepararme|haz|hazme|hace|haceme|hacer|hacerme|"
+    r"sirve|sirveme|servime|servirme|trae|traeme|traer|traerme|cocina|cociname|cocinar|"
+    r"cocinarme|calienta|calientame|calentarme|pon(?:er|me)?\s+en\s+marcha|"
+    r"make|brew|bring|cook|serve|fetch|pour|heat\s+up|start)\b"
+    r"(?:\s+(?:me|us))?\s+(?:(?:un|una|unos|unas|el|la|los|las|mi|a|an|some|the|my)\s+)?"
+    r"(?:(?:taza|tacita|vaso|copa|plato|jarra|cup|mug|glass|plate|bowl|pot)\s+(?:de|of)\s+)?"
+    r"(?:cafe|cafecito|coffee|espresso|capuchino|cappuccino|latte|te|tecito|tea|mate|chocolate|"
+    r"leche|milk|agua|water|jugo|zumo|juice|cerveza|beer|vino|wine|trago|drink|"
+    r"comida|food|desayuno|breakfast|almuerzo|lunch|cena|dinner|sandwich|sandwiches|"
+    r"sopa|soup|huevos?|eggs?|tostadas?|toast|pancakes|panqueques|snack|merienda)\b"
+)
+# MASSIVE iot_* (dev corpus 2026-09-23): the devices of the house are not this PC. An appliance is one by its
+# name; a light or its colour is one in a room of the house («las luces de la cocina», «colores oscuros en la
+# casa»). D59 §3 (owner, 2026-10-02, supersedes the old reading of «baja las luces» as the screen's brightness):
+# BAXY controls the notebook, not the house, so the lights themselves («baja las luces», «turn off the lights»)
+# are the house too; the screen's brightness is only when the screen, its brightness or the PC is named.
+_HOME_APPLIANCE = (
+    r"\b(?:cafetera|coffee\s+maker|aspiradora|robot\s+aspirador|roomba|vacuum(?:\s+cleaner)?|lavadora|"
+    r"washing\s+machine|washer|secadora|dryer|lavavajillas|lavaplatos|dishwasher|horno|oven|microondas|"
+    r"microwave|aire\s+acondicionado|air\s+condition(?:ing|er)|calefaccion|calefactor|heater|heating|"
+    r"termostato|thermostat|persianas?|blinds|enchufes?\s+inteligentes?|smart\s+plugs?|bombillas?|bulbs?)\b"
+)
+_HOME_LIGHT = r"\b(?:luz|luces|lampara|lamparas|colores|light|lights|lamp|lamps|colou?rs)\b"
+_HOME_ROOM = (
+    r"\b(?:(?:en|de|del)\s+(?:la\s+|el\s+|mi\s+)?(?:casa|cocina|sala|salon|living|cuarto|habitacion|dormitorio|"
+    r"bano|comedor|jardin|garaje|pasillo|patio)|"
+    r"(?:in|of)\s+(?:the\s+|my\s+)?(?:house|home|kitchen|bedroom|living\s+room|bathroom|hallway|garden|garage))\b"
+)
+# D59 §3: the lights as such, with no room: plural lights or lamps, or «la luz» / «the light» with its article
+# («pon luz natural» is a look, not a lamp).
+_THE_LIGHTS = (
+    r"\b(?:luces|lamparas?|lights|lamps?|(?:la|esa|esta|the|that|this)\s+(?:luz|light))\b"
+)
+# What makes a light not the house's: the screen, its brightness, the keyboard, the PC itself, a Windows feature
+# named with the word («luz nocturna», «night light», «modo claro», «light mode»), or lights to see or hear.
+_LIGHT_NOT_OF_THE_HOUSE = (
+    r"\b(?:pantallas?|screens?|monitor(?:es|s)?|display|brillo|brightness|teclado|keyboard|notebook|laptop|"
+    r"portatil|computador[a]?|computer|pc|ordenador|nocturna|night|azul|blue|"
+    r"(?:light|dark)\s+(?:mode|theme)|modo\s+(?:claro|oscuro)|tema\s+(?:claro|oscuro)|"
+    # A video, a song or a picture of lights is something to see or hear («pon un video de luces de navidad»).
+    r"videos?|youtube|canciones|cancion|songs?|musica|music|playlist|fotos?|photos?|imagen(?:es)?|images?|"
+    r"fondo|wallpaper|peliculas?|movies?)\b"
+)
+_HOME_CONTROL = (
+    r"\b(?:enciende|encender|enciendeme|prende|prender|prendeme|apaga|apagar|apagame|pon|poner|ponme|"
+    r"pon(?:er)?\s+en\s+marcha|arranca|arrancar|activa|activar|desactiva|desactivar|sube|subir|baja|bajar|"
+    r"ajusta|ajustar|cambia|cambiar|regula|regular|atenua|atenuar|abre|abrir|cierra|cerrar|"
+    r"turn\s+(?:on|off|up|down)|switch\s+(?:on|off)|start|stop|dim|brighten|set|open|close|run|"
+    # D59 §3 «turn the lights down», «switch the lamp off»: the particle said after the thing.
+    r"turn\s+(?:[a-z]+\s+){1,3}(?:on|off|up|down)|switch\s+(?:[a-z]+\s+){1,3}(?:on|off))\b"
+)
+
+
+# M94 (DEV-D D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft de las 16:00 h…» → «Puedes contactar al
+# soporte de Lyft»): a ride (a taxi, Uber, Lyft, a pickup) asked for, booked or called off is an errand outside this PC.
+_RIDE_ERRAND = (
+    r"\b(?:pide|pideme|pedir|pedirme|pidan|llama|llamame|llamar|reserva|reservame|reservar|cancela|cancelame|"
+    r"cancelar|cancele|anula|anular|anulame|suprime|suprimir|suprimeme|elimina|eliminar|book|order|call|get|cancel|"
+    r"schedule|reschedule)\b.{0,60}"
+    r"\b(?:taxi|taxis|uber|lyft|cabify|didi|remis|cab|cabs|ride|rides|recogida|pickup|pick-up)\b"
+)
+
+
+def physical_world_request(folded: str) -> bool:
+    """An errand with food or drink, a ride, or a device of the house to control (see above)."""
+
+    return _has(folded, _ERRAND) or _has(folded, _RIDE_ERRAND) or (
+        _has(folded, _HOME_CONTROL)
+        and (
+            _has(folded, _HOME_APPLIANCE)
+            or (_has(folded, _HOME_LIGHT) and _has(folded, _HOME_ROOM))
+            or (_has(folded, _THE_LIGHTS) and not _has(folded, _LIGHT_NOT_OF_THE_HOUSE))
+        )
+    )
+
+
+def reports_the_gpu_stopped(request_folded: str) -> bool:
+    """«la gpu dejó de funcionar», «my gpu stopped»: the person reports the GPU stopped (folded words)."""
+
+    return re.search(
+        r"\bgpu\b.{0,80}\b(?:dejo|stopped|ya no|no longer)\b|"
+        r"\b(?:dejo|stopped|ya no|no longer)\b.{0,80}\bgpu\b",
+        request_folded,
+    ) is not None
+
+
+def asks_only_the_process_count(user_text: str) -> bool:
+    """How many processes, not their list («cuántos procesos hay», «count them without listing»)."""
+
+    request = _fold(user_text)
+    count_request = re.search(
+        r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,
+    ) is not None
+    also_list = re.search(r"\b(?:lista(?:los)?|list|show|muestra(?:los|me)?)\b", request)
+    return bool(count_request and (not also_list or re.search(
+        r"\b(?:sin listarlos|without listing|do not list)\b", request,
+    )))
+
+
+def asks_lifetime_cpu(user_text: str) -> bool:
+    """The processor time a process accumulated since it started was asked («acumulado», «lifetime»)."""
+
+    return re.search(
+        r"\b(?:acumulad[oa]|cumulative|lifetime|total processor seconds)\b", _fold(user_text),
+    ) is not None

@@ -101,6 +101,35 @@
       ],
       "repair": "Declara un verificador CTC ONNX atestado; BAXY no descarga ni habilita pesos sin su compuerta combinada."
     },
+    "piper_runtime": {
+      "kind": "directory",
+      "required": false,
+      "environment": "BAXY_PIPER_RUNTIME_DIR",
+      "required_files": [
+        "piper.exe",
+        "piper_phonemize.dll",
+        "espeak-ng.dll",
+        "onnxruntime.dll",
+        "espeak-ng-data/phontab"
+      ],
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\piper-2023.11.14-2",
+        "D:\\BAXYRuntime\\assets\\piper-2023.11.14-2",
+        "${LOCALAPPDATA}\\BAXYRuntime\\assets\\piper-2023.11.14-2"
+      ],
+      "repair": "Declara el runtime Piper Windows atestado con su fonemizador y datos eSpeak."
+    },
+    "neural_tts_english_voice": {
+      "kind": "directory",
+      "required": false,
+      "environment": "BAXY_NEURAL_TTS_ENGLISH_DIR",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\voice\\baxy-en",
+        "D:\\BAXYRuntime\\assets\\voice\\baxy-en",
+        "${USERPROFILE}\\.gemma4\\models\\voice\\baxy-en"
+      ],
+      "repair": "Declara una voz Piper inglesa local con su configuración y procedencia."
+    },
     "neural_tts_voice": {
       "kind": "directory",
       "required": false,

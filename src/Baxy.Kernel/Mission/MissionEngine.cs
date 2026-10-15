@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using Baxy.Contracts;
 using Baxy.Kernel.Journal;
@@ -19,6 +20,14 @@ public sealed class MissionEngine : IDisposable
     private readonly IOperationResponseNarrator _narrator;
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
+    // SCREEN1403/1405 «leéme lo que dice la pantalla»: captures produced under
+    // a confirmed capture operation, keyed by captureId → consent expiry. The
+    // capture id is unguessable and exists only because the person confirmed
+    // that capture; reading it shortly afterwards is the consented purpose, not
+    // a second privacy decision. Plan steps carry their own mission ids, so the
+    // consent cannot be bound to a mission. The execution gate serializes access.
+    private static readonly TimeSpan ConsentedCaptureWindow = TimeSpan.FromMinutes(10);
+    private readonly Dictionary<string, DateTimeOffset> _consentedCaptures = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Última autocorrección de este motor: afirmación, verificación que la
@@ -85,6 +94,16 @@ public sealed class MissionEngine : IDisposable
                 return replayed;
             }
 
+            if (await _journal
+                    .IsRetiredAsync(request.InvocationId, cancellationToken)
+                    .ConfigureAwait(false))
+            {
+                // It completed long ago and its response left the journal's
+                // retention: refused like any reuse of a completed id, never run
+                // again (JOURNAL_ROTACION.md).
+                return Rejected(request, "idempotency_conflict");
+            }
+
             string? startedFingerprint = await _journal
                 .FindStartedFingerprintAsync(request.InvocationId, cancellationToken)
                 .ConfigureAwait(false);
@@ -102,10 +121,21 @@ public sealed class MissionEngine : IDisposable
                 || HasValidArguments(request, handler);
             PolicyDecision? policy = knownOperation && handler is not null && validArguments
                 ? RiskPolicy.Evaluate(
-                    handler.Definition.Risk,
+                    InvocationRisk(handler, request.Arguments),
                     _confirmationMode(),
-                    handler.Definition.Name)
+                    handler.Definition.Name,
+                    // Computer use (CONTRATO_VISTA_ACCION.md §2.1): the step's
+                    // exact arguments decide whether it reaches a person.
+                    request.Arguments)
                 : null;
+            if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
+            {
+                // SCREEN1403/1405 «leéme lo que dice la pantalla»: the person
+                // confirmed the capture; reading that same capture shortly after
+                // is the consented purpose, not a second privacy decision.
+                policy = PolicyDecision.Allow;
+            }
+
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
             {
@@ -178,6 +208,18 @@ public sealed class MissionEngine : IDisposable
                 request,
                 outcome,
                 _privateEnvelopeAuthenticator);
+            if (grantedBinding is not null
+                && request.Operation is "capture.screenshot" or "capture.active.window"
+                && outcome.Succeeded
+                && outcome.Verified
+                && outcome.Result is { ValueKind: JsonValueKind.Object } captureResult
+                && captureResult.TryGetProperty("captureId", out JsonElement consentedCapture)
+                && consentedCapture.ValueKind == JsonValueKind.String
+                && consentedCapture.GetString() is { Length: > 0 } consentedCaptureId)
+            {
+                _consentedCaptures[consentedCaptureId] = DateTimeOffset.UtcNow + ConsentedCaptureWindow;
+            }
+
             if (outcome.Retryable
                 && (outcome.Succeeded
                     || outcome.Verified
@@ -278,6 +320,29 @@ public sealed class MissionEngine : IDisposable
         return response;
     }
 
+    // v3 r6 lectores: the risk of the exact invocation when its handler can tell (IInvocationRiskAssessor), else the
+    // declared one. A forbidden operation stays forbidden, and a handler that fails to answer keeps the declared risk.
+    private static OperationRisk InvocationRisk(IOperationHandler handler, JsonElement arguments)
+    {
+        OperationRisk declared = handler.Definition.Risk;
+        if (declared == OperationRisk.Forbidden || handler is not IInvocationRiskAssessor assessor)
+        {
+            return declared;
+        }
+
+        try
+        {
+            return assessor.AssessInvocationRisk(arguments) is { } assessed && assessed != OperationRisk.Forbidden
+                ? assessed
+                : declared;
+        }
+        catch (Exception exception) when (exception is InvalidOperationException
+            or ArgumentException or JsonException or KeyNotFoundException)
+        {
+            return declared;
+        }
+    }
+
     private bool AuthenticatePrivateArguments(OperationRequest request)
     {
         if (_privateEnvelopeAuthenticator is null)
@@ -323,6 +388,26 @@ public sealed class MissionEngine : IDisposable
         {
             return false;
         }
+    }
+
+    private bool IsReadOfConsentedCapture(OperationRequest request)
+    {
+        if (request.Operation is not ("ocr.read" or "vision.describe")
+            || request.Arguments.ValueKind != JsonValueKind.Object
+            || !request.Arguments.TryGetProperty("captureId", out JsonElement captureId)
+            || captureId.ValueKind != JsonValueKind.String
+            || captureId.GetString() is not { Length: > 0 } id)
+        {
+            return false;
+        }
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        foreach (string expired in _consentedCaptures.Where(entry => entry.Value <= now).Select(entry => entry.Key).ToArray())
+        {
+            _consentedCaptures.Remove(expired);
+        }
+
+        return _consentedCaptures.TryGetValue(id, out DateTimeOffset expiry) && expiry > now;
     }
 
     private static JsonElement BuildConfirmationResult(

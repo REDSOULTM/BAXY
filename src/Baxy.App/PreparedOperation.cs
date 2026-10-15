@@ -364,6 +364,29 @@ internal sealed class RetryableOperationRegistry
         }
     }
 
+    /// <summary>
+    /// Retires the pending entries <paramref name="retired"/> names, in one save. The
+    /// start of an App session retires what a computer-use mission of an earlier
+    /// session left (cu-v3 estab, hallazgo 12: a Fotos mission and its click
+    /// «Imagen» stayed in the profile across cases); every other entry keeps its
+    /// identity across the restart.
+    /// </summary>
+    internal void RetireWhere(Func<PreparedOperation, bool> retired)
+    {
+        ArgumentNullException.ThrowIfNull(retired);
+        PreparedOperation[] gone = _operations.Values.Where(retired).ToArray();
+        if (gone.Length == 0)
+        {
+            return;
+        }
+
+        _store.Save(_operations.Values.Except(gone).ToArray());
+        foreach (PreparedOperation operation in gone)
+        {
+            _operations.Remove(operation.IdentityKey);
+        }
+    }
+
     public IReadOnlyList<PreparedOperation> SnapshotPendingOperations() =>
         _operations.Values.ToArray();
 

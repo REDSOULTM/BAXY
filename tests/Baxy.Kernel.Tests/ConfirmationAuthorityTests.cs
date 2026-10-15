@@ -36,7 +36,7 @@ public sealed class ConfirmationAuthorityTests
     {
         var clock = new ManualTimeProvider(InitialTime);
         using var journal = new InMemoryInvocationJournal();
-        var handler = new CountingHandler(OperationRisk.External);
+        var handler = new CountingHandler(OperationRisk.Irreversible); // D3 2026-09-20: a nameless External effect no longer asks
         var authority = new InMemoryConfirmationAuthority(clock);
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
                                new MissionEngineOptions { ConfirmationAuthority = authority });
@@ -91,7 +91,7 @@ public sealed class ConfirmationAuthorityTests
     public async Task Grant_is_bound_to_arguments_mission_invocation_and_operation()
     {
         using var journal = new InMemoryInvocationJournal();
-        var primary = new CountingHandler(OperationRisk.External);
+        var primary = new CountingHandler(OperationRisk.Irreversible); // D3 2026-09-20: a nameless External effect no longer asks
         var secondary = new CountingHandler(OperationRisk.External, "message.send");
         using var engine = new MissionEngine(new OperationRegistry([primary, secondary]), journal);
         OperationRequest request = CreateRequest("{\"destination\":\"equipo\"}");
@@ -188,7 +188,7 @@ public sealed class ConfirmationAuthorityTests
             Throws.TypeOf<ArgumentOutOfRangeException>());
 
         using var journal = new InMemoryInvocationJournal();
-        var handler = new CountingHandler(OperationRisk.External);
+        var handler = new CountingHandler(OperationRisk.Irreversible); // D3 2026-09-20: a nameless External effect no longer asks
         var authority = new InMemoryConfirmationAuthority(capacity: 2);
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
                                new MissionEngineOptions { ConfirmationAuthority = authority });
@@ -331,7 +331,7 @@ public sealed class ConfirmationAuthorityTests
     public async Task Completed_replay_precedes_confirmation_and_fingerprint_ignores_token()
     {
         using var journal = new InMemoryInvocationJournal();
-        var handler = new CountingHandler(OperationRisk.External);
+        var handler = new CountingHandler(OperationRisk.Irreversible); // D3 2026-09-20: a nameless External effect no longer asks
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         OperationRequest request = CreateRequest("{\"destination\":\"equipo\"}");
         string token = RequiredToken(await engine.ExecuteAsync(request, CancellationToken.None));
@@ -443,8 +443,10 @@ public sealed class ConfirmationAuthorityTests
     {
         public int ExecutionCount { get; private set; }
 
+        // D3 2026-09-20: a nameless External effect no longer asks; Irreversible
+        // keeps the grant mechanics under test.
         public OperationDefinition Definition { get; } =
-            new("note.create", OperationRisk.External, "Test external operation.");
+            new("note.create", OperationRisk.Irreversible, "Test external operation.");
 
         public ValueTask<OperationOutcome> ExecuteAsync(
             OperationInvocation invocation,

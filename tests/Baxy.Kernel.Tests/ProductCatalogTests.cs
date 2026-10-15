@@ -9,6 +9,320 @@ namespace Baxy.Kernel.Tests;
 [TestFixture]
 public sealed class ProductCatalogTests
 {
+    // C03 (2026-09-12 … 2026-09-20) creció el catálogo de 170 a 191 descriptores con estas 21
+    // operaciones, cada una sellada por su tanda; la cifra se re-pina aquí junto a la lista nominal
+    // (plan post-goal 2026-09-20, Fase 1 grupo B).
+    internal static readonly string[] C03CatalogAdditions =
+    [
+        "audio.app.volume.adjust",
+        "audio.app.volume.set",
+        "bluetooth.radio.status",
+        "calculator.expression.evaluate",
+        "client.channel.locate",
+        "display.status",
+        "document.pdf.read",
+        "filesystem.known.list",
+        "game.entitlement.named",
+        "input.visible.controls",
+        "message.draft",
+        "message.send.test",
+        "notification.list",
+        "software.python.package.status",
+        "software.python.status",
+        "storage.removable.list",
+        "wifi.radio.set",
+        "wifi.radio.status",
+        "wifi.scan",
+        "window.close.all",
+        "window.minimize.all",
+        "window.snap",
+    ];
+
+    // Auditoría semántica 2026-09-20 (REOPEN1993): herramientas tipadas que la
+    // encuesta pedía y el catálogo no tenía.
+    internal static readonly string[] Reopen1993CatalogAdditions =
+    [
+        "desktop.wallpaper.set",
+        "document.presentation.create",
+        "document.text.read",
+        "email.send",
+        "file.compress",
+        "filesystem.explorer.count",
+        "file.open",
+        "game.uninstall.named",
+        "package.uninstall",
+        "shell.command.run",
+        "weather.current",
+        "web.download",
+        "web.news.headlines",
+    ];
+
+
+    // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md):
+    // el desplazamiento verificado por superficie y la misión general del shell (el arrastre de v3 se retiró en la
+    // estabilización L: arrastrar es un límite declarado).
+    internal static readonly string[] ComputerUseAdditions =
+    [
+        "input.scroll",
+        "mission.computer.use",
+    ];
+
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2;
+
+    internal const int ExpectedTools = ExpectedDescriptors - 1;
+
+    [TestCase("{\"process\":\"*\"}", true)]
+    [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
+    [TestCase("{\"process\":\"*\",\"byTitle\":true}", true)]
+    [TestCase("{\"process\":\"editor.exe\",\"offset\":0}", true)]
+    // CLOSE1060 (b7d005955): the flat v3 schema types both selectors and requires
+    // neither; WindowResolveHandler enforces «exactly one» before any OS read.
+    [TestCase("{}", true)]
+    [TestCase("{\"process\":\"\"}", false)]
+    [TestCase("{\"process\":\" \"}", false)]
+    [TestCase("{\"process\":\"*\",\"offset\":-1}", false)]
+    [TestCase("{\"process\":\"*\",\"offset\":0.5}", false)]
+    [TestCase("{\"process\":\"*\",\"limit\":51}", false)]
+    [TestCase("{\"process\":\"*\",\"limit\":0}", false)]
+    [TestCase("{\"all\":true}", false)]
+    public void WindowInventoryRemainsAReadOnlyBoundedOperationWithAnExplicitSelector(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("window.resolve");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+            // v2 → v3: CLOSE1060 (b7d005955) añadió el selector applicationName a window.resolve.
+            Assert.That(descriptor.VerifierContractId, Is.EqualTo("window.resolve.identity.inventory.v3"));
+        });
+    }
+
+    // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture takes the known folder
+    // it is also saved to, optional (without it the capture stays private), and nothing outside the enum.
+    [TestCase("capture.screenshot", "{}", true)]
+    [TestCase("capture.screenshot", """{"folder":"desktop"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"pictures"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"documents"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"downloads"}""", true)]
+    [TestCase("capture.active.window", "{}", true)]
+    [TestCase("capture.active.window", """{"folder":"desktop"}""", true)]
+    [TestCase("capture.screenshot", """{"folder":"all_known"}""", false)]
+    [TestCase("capture.screenshot", """{"folder":"C:\\Users"}""", false)]
+    [TestCase("capture.screenshot", """{"folder":null}""", false)]
+    [TestCase("capture.screenshot", """{"path":"C:\\Users"}""", false)]
+    [TestCase("capture.active.window", """{"folder":"projects"}""", false)]
+    public void ACaptureTakesAnOptionalKnownFolderToBeSavedTo(string operation, string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
+            Assert.That(descriptor.ArgumentsSchema.Required, Is.Empty);
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+        });
+    }
+
+    // Ronda 23 (índices de vista y esquema, t-menu-2 r21): a look numbers up to its cap, the goal's reserved room and
+    // the body; the acts on a control of the look take all of it and nothing past it, and the look's own limit is the cap.
+    [TestCase("input.visible.click", "index", "\"label\":\"Tamaño\"")]
+    [TestCase("input.scroll", "index", "\"amount\":1,\"direction\":\"down\"")]
+    [TestCase("input.text.type", "index", "\"text\":\"hola\"")]
+    public void ActsOnAControlOfTheLookTakeEveryIndexTheLookNumbers(string operation, string argument, string rest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired(operation).ArgumentsSchema;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleViewNumbering.HighestIndex, Is.EqualTo(70));
+            foreach ((int index, bool expected) in new[] { (0, true), (59, true), (60, true), (VisibleViewNumbering.HighestIndex, true), (VisibleViewNumbering.HighestIndex + 1, false), (-1, false) })
+            {
+                using JsonDocument arguments = JsonDocument.Parse($"{{\"{argument}\":{index},{rest}}}");
+                Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, schema), Is.EqualTo(expected), $"{argument}={index}");
+            }
+
+            OperationArgumentsSchema look = ProductCatalog.GetRequired("input.visible.controls").ArgumentsSchema;
+            using JsonDocument atCap = JsonDocument.Parse($"{{\"limit\":{VisibleViewNumbering.Cap}}}");
+            using JsonDocument pastCap = JsonDocument.Parse($"{{\"limit\":{VisibleViewNumbering.Cap + 1}}}");
+            Assert.That(OperationArgumentValidator.IsValid(atCap.RootElement, look), Is.True);
+            Assert.That(OperationArgumentValidator.IsValid(pastCap.RootElement, look), Is.False);
+        });
+    }
+
+    // Ronda 23: the cause a refused act is handed back with names the arguments the schema refuses, and none for
+    // arguments it takes (counter-case).
+    [Test]
+    public void TheInvalidArgumentsAreNamedAndNoneForValidOnes()
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.visible.click").ArgumentsSchema;
+        using JsonDocument wrong = JsonDocument.Parse("{\"index\":71,\"manner\":\"triple\",\"labelz\":\"x\"}");
+        using JsonDocument right = JsonDocument.Parse("{\"index\":70,\"label\":\"Tamaño\",\"manner\":\"menu\"}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.InvalidArguments(wrong.RootElement, schema),
+                Is.EqualTo(new[] { "index", "manner", "labelz", "label" }));
+            Assert.That(OperationArgumentValidator.InvalidArguments(right.RootElement, schema), Is.Empty);
+            Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
+        });
+    }
+
+    // Computer use, chained missions (shared contract «steps»): up to ten ordered sub-goals (goal v3 point 2: long tasks;
+    // the mind's MAX_STEPS was 8 only because this limit was), each a closed object with its goal, application and
+    // success check; the whole mission up to thirty steps.
+    [TestCase("""{"goal":"abre Steam"}""", true)]
+    [TestCase("""{"goal":"abre Steam","budgetSteps":30}""", true)]
+    [TestCase("""{"goal":"abre Steam","budgetSteps":31}""", false)]
+    [TestCase("""{"goal":"abre Steam","steps":null}""", true)]
+    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":true}""", true)]
+    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":"si"}""", false)]
+    [TestCase("""{"goal":"a y b","application":null,"successCheck":null,"steps":[{"goal":"a","application":"Steam","successCheck":"text:a"},{"goal":"b","application":null,"successCheck":null}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":" "}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"application":"Steam"}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a","budgetSteps":3}]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a","application":7}]}""", false)]
+    [TestCase("""{"goal":"a","steps":["a"]}""", false)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"},{"goal":"11"}]}""", false)]
+    // Ronda 20b, revisión 2: a sub-goal of a form carries the check of the whole form (formCheck), a string or null.
+    [TestCase("""{"goal":"a","steps":[{"goal":"poner alto en 500","formCheck":"value:ancho=500&value:alto=500"}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"hacer clic en aceptar","formCheck":null}]}""", true)]
+    [TestCase("""{"goal":"a","steps":[{"goal":"a","formCheck":7}]}""", false)]
+    public void AComputerUseMissionMayChainOrderedSubgoals(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ASubgoalLongerThanItsContractIsRejected()
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
+        string goal = new('x', 513);
+        string application = new('y', 129);
+        using JsonDocument longGoal = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"{{goal}}"}]}""");
+        using JsonDocument longApplication = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"a","application":"{{application}}"}]}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(longGoal.RootElement, descriptor.ArgumentsSchema), Is.False);
+            Assert.That(OperationArgumentValidator.IsValid(longApplication.RootElement, descriptor.ArgumentsSchema), Is.False);
+        });
+    }
+
+    [Test]
+    public void TheSubgoalSchemaIsPublishedAsAClosedObjectInsideTheArray()
+    {
+        OperationDescriptor tool = ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("mission.computer.use"));
+        JsonElement steps = tool.ArgumentsSchema.GetProperty("properties").GetProperty("steps");
+        JsonElement items = steps.GetProperty("items");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps.GetProperty("maxItems").GetInt32(), Is.EqualTo(10));
+            Assert.That(steps.GetProperty("minItems").GetInt32(), Is.EqualTo(1));
+            Assert.That(items.GetProperty("type").GetString(), Is.EqualTo("object"));
+            Assert.That(items.GetProperty("additionalProperties").GetBoolean(), Is.False);
+            Assert.That(items.GetProperty("required").EnumerateArray().Select(name => name.GetString()), Is.EqualTo(new[] { "goal" }));
+            // Estabilización L: «limit» (the declared limit the sub-goal is) and «requires» (the device its place needs).
+            Assert.That(
+                items.GetProperty("properties").EnumerateObject().Select(property => property.Name),
+                Is.EqualTo(new[] { "application", "formCheck", "goal", "limit", "requires", "successCheck" }));
+        });
+    }
+
+    [Test]
+    public void ObjectItemsCannotNestArrays()
+    {
+        var nested = new OperationArgumentsSchema(
+            [new OperationArgumentProperty("tags", OperationJsonType.Array, itemTypes: OperationJsonType.String)],
+            []);
+        Assert.Throws<ArgumentException>(() => _ = new OperationArgumentProperty(
+            "steps", OperationJsonType.Array, itemSchema: nested));
+    }
+
+    // input.scroll may name the control of the last view to scroll (a list, a conversation) instead of the window.
+    [TestCase("""{"amount":3,"direction":"down"}""", true)]
+    [TestCase("""{"amount":3,"direction":"down","index":0}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":59}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":null}""", true)]
+    // Ronda 23 (t-menu-2): the look numbers past its cap (the goal's reserved room, the body); 60 is one of its
+    // controls now and the first index past the look is VisibleViewNumbering.HighestIndex + 1 (71).
+    [TestCase("""{"amount":3,"direction":"up","index":60}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":70}""", true)]
+    [TestCase("""{"amount":3,"direction":"up","index":71}""", false)]
+    [TestCase("""{"amount":3,"direction":"up","index":-1}""", false)]
+    [TestCase("""{"amount":3,"direction":"up","index":"2"}""", false)]
+    public void ScrollMayTargetOneControlOfTheView(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.scroll");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
+    // Goal v3 point 2: a scroll may name the element to bring into view (label), a text the field it sets (field) and
+    // whether it replaces its value (replace), a click what it writes over (consequence, only «overwrite»).
+    [TestCase("input.scroll", """{"amount":3,"direction":"down","label":"Omega","window":4660}""", true)]
+    [TestCase("input.scroll", """{"amount":3,"direction":"down","label":null}""", true)]
+    [TestCase("input.scroll", """{"amount":3,"direction":"down","label":5}""", false)]
+    [TestCase("input.text.type", """{"text":"800","field":"Ancho","replace":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"800","replace":"yes"}""", false)]
+    // Ronda 19 (r17 t2-c13): the country the person's speech marks goes with the place as a declared hint.
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"ES"}""", true)]
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":null}""", true)]
+    [TestCase("weather.current", """{"location":"Curicó"}""", true)]
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"España"}""", false)]
+    [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"FR"}""", false)]
+    // Review of combos-galerias (finding 1): the entry of a list chosen by pattern, as the mind sends it.
+    [TestCase("input.text.type", """{"text":"Wingdings","field":"Fuente","replace":true,"entry":true,"window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"Wingdings","entry":null}""", true)]
+    [TestCase("input.text.type", """{"text":"Wingdings","entry":"yes"}""", false)]
+    [TestCase("input.visible.click", """{"label":"Sí","consequence":"overwrite"}""", true)]
+    [TestCase("input.visible.click", """{"label":"Sí","consequence":"delete"}""", false)]
+    [TestCase("input.key.press", """{"key":"shift_f10"}""", true)]
+    [TestCase("input.key.press", """{"key":"ctrl_shift_s"}""", true)]
+    [TestCase("input.key.press", """{"key":"alt_f4"}""", false)]
+    [TestCase("input.key.press", """{"key":"enter","consequence":"overwrite"}""", true)]
+    [TestCase("input.key.press", """{"key":"enter","consequence":"delete"}""", false)]
+    // Ronda 21 (vista ordenada por objetivo): the goal's words go with the mission's look, bounded; a word that is not
+    // text, an empty word or more than the bound is refused.
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":["aplicacion","application"]}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":null}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":[" "]}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":[3]}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"wanted":"aplicacion"}""", false)]
+    [TestCase("input.visible.controls", """{"wanted":["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y"]}""", false)]
+    // Ronda 26: the mission's first look asks only who is in front when the application named has no window.
+    [TestCase("input.visible.controls", """{"limit":60,"application":"Calculadora","identityIfAbsent":true}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":null}""", true)]
+    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":"si"}""", false)]
+    public void TheTypesOfTaskOfV3AreArgumentsOfThePrimitives(string operation, string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
+    [TestCase("{\"applicationName\":\"Calculadora\"}", true)]
+    [TestCase("{\"applicationName\":\" \"}", false)]
+    public void WindowInventoryAcceptsTheApplicationNameSelectorOfV3(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("window.resolve");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+    }
+
     [Test]
     public void CatalogHasStableUniqueCompleteToolDescriptors()
     {
@@ -16,7 +330,13 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptors, Has.Length.EqualTo(170));
+            Assert.That(descriptors, Has.Length.EqualTo(ExpectedDescriptors));
+            Assert.That(
+                descriptors.Select(static descriptor => descriptor.Name),
+                Is.SupersetOf(C03CatalogAdditions));
+            Assert.That(
+                descriptors.Select(static descriptor => descriptor.Name),
+                Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)
@@ -39,7 +359,7 @@ public sealed class ProductCatalogTests
                 Is.EqualTo(descriptors
                     .Where(static descriptor => descriptor.Name != "app.status")
                     .Select(static descriptor => descriptor.Name)));
-            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(169));
+            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
             Assert.That(
                 ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
                 Does.Not.Contain("app.status"));
@@ -57,7 +377,7 @@ public sealed class ProductCatalogTests
                 new OperationDefinition(descriptor)))
             .ToArray();
 
-        Assert.That(tools, Has.Length.EqualTo(169));
+        Assert.That(tools, Has.Length.EqualTo(ExpectedTools));
         for (int index = 0; index < tools.Length; index++)
         {
             ProductOperationDescriptor product = ProductCatalog.ToolDescriptors[index];
@@ -203,8 +523,10 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Decisión del dueño 2026-09-13 (DECISIONES_DUENO_2026-09-13.md §6, NETWORK1201, 0fed0df6c): la IP
+    // propia se lee a pedido sin confirmación; el riesgo pasó de privacy_sensitive a read_only.
     [Test]
-    public void NetworkIpListIsPrivacySensitiveClosedAndDoubleReadVerified()
+    public void NetworkIpListIsReadOnlyClosedAndDoubleReadVerified()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("network.ip.list");
         using JsonDocument empty = JsonDocument.Parse("{}");
@@ -212,7 +534,7 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("network.ip.list.windows.unicast.secondread.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -223,7 +545,7 @@ public sealed class ProductCatalogTests
     }
 
     [Test]
-    public void WifiStatusIsPrivacySensitiveClosedAndDoubleReadVerified()
+    public void WifiStatusIsReadOnlyClosedAndDoubleReadVerified()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("wifi.status");
         using JsonDocument empty = JsonDocument.Parse("{}");
@@ -231,7 +553,10 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(
+                RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), operation: descriptor.Name),
+                Is.EqualTo(PolicyDecision.Allow));
             Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("wifi.status.netsh.wlan.secondread.v1"));
@@ -386,9 +711,9 @@ public sealed class ProductCatalogTests
                 Throws.InvalidOperationException);
             Assert.That(exact.Definitions.All(static definition =>
                 definition.ProductDescriptor is not null), Is.True);
-            Assert.That(exact.Definitions, Has.Count.EqualTo(170));
-            Assert.That(exact.ToolDefinitions, Has.Count.EqualTo(169));
-            Assert.That(exact.ToolDescriptors, Has.Count.EqualTo(169));
+            Assert.That(exact.Definitions, Has.Count.EqualTo(ExpectedDescriptors));
+            Assert.That(exact.ToolDefinitions, Has.Count.EqualTo(ExpectedTools));
+            Assert.That(exact.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
             Assert.That(
                 exact.ToolDefinitions.Select(static definition => definition.Name),
                 Is.EqualTo(ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)));

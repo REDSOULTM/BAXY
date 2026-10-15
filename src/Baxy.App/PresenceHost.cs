@@ -24,6 +24,7 @@ internal sealed class PresenceHost : IDisposable
     private bool _exitRequested;
     private bool _disposed;
     private bool _listeningSampled;
+    private bool _sampling;
 
     internal PresenceHost(
         WindowsAutostartRegistration autostart,
@@ -61,7 +62,7 @@ internal sealed class PresenceHost : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         StartHidden = WindowsAutostartRegistration.IsStartHidden(arguments);
-        AutostartCommand = _autostart.EnsureRegistered();
+        AutostartCommand = _autostart.EnsureRegistered(arguments);
         if (_registerNativeTray)
         {
             _tray = new PresenceTrayIcon(
@@ -184,18 +185,56 @@ internal sealed class PresenceHost : IDisposable
         _store.WriteStatus(document);
     }
 
-    internal PresenceIdleSnapshot CaptureIdleSample()
+    /// <summary>
+    /// Reads the view's state on the caller's (window) thread, the processes
+    /// off it, and writes the sample back on the caller's thread. A tick that
+    /// arrives while a read is still running is skipped, never queued.
+    /// </summary>
+    internal async Task<PresenceIdleSnapshot?> CaptureIdleSampleAsync()
     {
-        MainWindowViewModel? viewModel = _viewModel;
-        PresenceIdleSnapshot snapshot = _sampler.Capture(
-            viewModel?.IsReady == true,
-            viewModel?.IsInputEnabled == true,
-            viewModel is { IsListening: true } or { IsWakeListening: true },
-            viewModel?.FirstWakeUtc,
-            ResolveTerminal(viewModel));
-        _store.AppendSample(snapshot);
-        Publish();
-        return snapshot;
+        if (_sampling)
+        {
+            return null;
+        }
+
+        _sampling = true;
+        try
+        {
+            MainWindowViewModel? viewModel = _viewModel;
+            PresenceIdleSnapshot snapshot = await _sampler.CaptureAsync(
+                viewModel?.IsReady == true,
+                viewModel?.IsInputEnabled == true,
+                viewModel is { IsListening: true } or { IsWakeListening: true },
+                viewModel?.FirstWakeUtc,
+                ResolveTerminal(viewModel));
+            if (_disposed)
+            {
+                return snapshot;
+            }
+
+            _store.AppendSample(snapshot);
+            Publish();
+            return snapshot;
+        }
+        finally
+        {
+            _sampling = false;
+        }
+    }
+
+    private async void CaptureIdleSampleInBackground()
+    {
+        try
+        {
+            _ = await CaptureIdleSampleAsync();
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            // An idle sample is diagnostic: a failed read never reaches the person.
+        }
     }
 
     public void Dispose()
@@ -235,7 +274,7 @@ internal sealed class PresenceHost : IDisposable
         {
             if (!_listeningSampled)
             {
-                _ = CaptureIdleSample();
+                CaptureIdleSampleInBackground();
                 _listeningSampled = true;
             }
 
@@ -264,7 +303,7 @@ internal sealed class PresenceHost : IDisposable
         }
     }
 
-    private void OnIdleTick(object? sender, EventArgs eventArgs) => CaptureIdleSample();
+    private void OnIdleTick(object? sender, EventArgs eventArgs) => CaptureIdleSampleInBackground();
 
     private static string ResolveTerminal(MainWindowViewModel? viewModel)
     {

@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "purpose": "Uso real v3 tanda 1 («quien gano el mundial del 2014» → «Brasil ganó…» over pages that only say Brasil hosted it; «dame el top 5» → names taken from a photo gallery and another page): what a search report must find in ONE sentence of a result before it says that someone did the thing asked (semantic.answer_evidence). Each relation: the folded words that ask it in a question (whole words) and the folded word beginnings that state it in a page (prefixes, either language), less the words that begin so and name something else (the championship, not who won it). Who lost states who won too («Real Madrid lost to Barcelona»: Barcelona won). Function words never make a name on their own; ordinal words mark a ranked position. Folded, without accents.",
+  "relations": {
+    "win": {
+      "asked": ["gano", "ganaron", "gana", "ganan", "ganador", "ganadora", "ganadores", "won", "wins", "win", "winner", "winners"],
+      "stated": ["gan", "campeon", "campeona", "vencio", "vencieron", "vencer", "derroto", "derrotaron", "derrotar", "corono", "coronaron", "coronarse", "consagro", "consagraron", "titulo", "won", "win", "champion", "beat", "defeat", "victor", "triumph", "triunf", "perdi", "cayo", "cayeron", "derrota", "lost", "lose", "loses", "losing"],
+      "not_stated": ["campeonato", "campeonatos", "championship", "championships", "ganancia", "ganancias", "perdida", "perdidas"]
+    },
+    "direct": {
+      "asked": ["dirigio", "dirigieron", "dirige", "dirigida", "dirigido", "director", "directora", "directed", "directs", "directors"],
+      "stated": ["dirig", "direct"]
+    },
+    "write": {
+      "asked": ["escribio", "escribieron", "escribe", "escrito", "escrita", "autor", "autora", "wrote", "written", "writes", "author"],
+      "stated": ["escrib", "escrit", "autor", "autora", "wrote", "writ", "author"]
+    },
+    "found": {
+      "asked": ["fundo", "fundaron", "fundador", "fundadora", "fundadores", "founded", "founder", "founders"],
+      "stated": ["fund", "cofund", "found", "cofound", "establec", "establish"]
+    },
+    "invent": {
+      "asked": ["invento", "inventaron", "inventor", "inventora", "invented", "inventor"],
+      "stated": ["invent", "patent"]
+    },
+    "discover": {
+      "asked": ["descubrio", "descubrieron", "descubridor", "descubridora", "discovered", "discoverer"],
+      "stated": ["descubr", "discover"]
+    },
+    "paint": {
+      "asked": ["pinto", "pintaron", "pintor", "pintora", "painted", "painter"],
+      "stated": ["pint", "paint"]
+    },
+    "compose": {
+      "asked": ["compuso", "compusieron", "compositor", "compositora", "composed", "composer"],
+      "stated": ["compus", "compos", "compuest"]
+    },
+    "star": {
+      "asked": ["protagonizo", "protagonizaron", "protagonista", "protagonistas", "starred", "starring"],
+      "stated": ["protagoniz", "protagonist", "interpret", "actu", "elenco", "reparto", "starr", "star", "cast", "played"]
+    }
+  },
+  "clause_joining_purpose": "Revisión 2 de la ronda 22: the words that join or frame a clause of a report and state no fact of a page (semantic.answer_evidence.page_facts_dropped), read with function_words.",
+  "clause_joining_words": ["pero", "aunque", "sino", "mientras", "como", "cuando", "donde", "porque", "pues", "entonces", "tambien", "ademas", "solo", "sobre", "entre", "desde", "hasta", "segun", "estan", "esta", "esto", "tiene", "tienen", "hay", "puede", "pueden", "parece", "but", "although", "though", "while", "whereas", "also", "only", "about", "with", "from", "into", "than", "then", "there", "their", "which", "where", "when", "have", "has", "were", "was", "been", "being", "according"],
+  "clause_narration_purpose": "Revisión 3 de la ronda 22: the words, folded and whole, with which a clause of a report narrates the search read and not the world (semantic.answer_evidence.clause_states_unsaid); a negation followed by one of them denies a finding, not a fact.",
+  "clause_narration_words": ["resultados", "resultado", "results", "result", "paginas", "pagina", "pages", "page", "fuentes", "fuente", "sources", "source", "fragmentos", "fragmento", "snippets", "snippet", "sitios", "sitio", "sites", "site", "articulos", "articulo", "articles", "article", "enlaces", "enlace", "links", "link", "busqueda", "busquedas", "search", "searches", "informacion", "information", "datos", "menciona", "mencionan", "mencionado", "mencionada", "mencionados", "mencionadas", "mentioned", "mentions", "mention", "aparece", "aparecen", "aparecio", "appears", "appear", "appeared", "indica", "indican", "indicate", "indicates", "dice", "dicen", "says", "encontre", "encontrado", "encontrada", "encontrar", "encuentra", "encuentran", "found", "find", "muestra", "muestran", "shows", "show"],
+  "results_narration_purpose": "Ronda 24 (r23 t1-c03#2 «no wey te pedi 5 nomas» → «Lo único que afirma los resultados es que Avengers: Endgame… es la más taquillera»): the results, pages or sources said as the subject that says, shows or states, folded and whole (semantic.answer_evidence.results_narrated); a report that says it shows the search (llm._SEARCH_MECHANICS, _SEARCH_ATTRIBUTION).",
+  "results_narration_subjects": ["resultados", "resultado", "paginas", "pagina", "fuentes", "fuente", "results", "result", "pages", "page", "sources", "source"],
+  "results_narration_determiners": ["los", "las", "el", "la", "estos", "estas", "esos", "esas", "mis", "the", "these", "those", "my"],
+  "results_narration_verbs": ["afirma", "afirman", "dice", "dicen", "muestra", "muestran", "indica", "indican", "senala", "senalan", "menciona", "mencionan", "sostiene", "sostienen", "confirma", "confirman", "sugiere", "sugieren", "says", "say", "shows", "show", "states", "state", "claims", "claim", "indicates", "indicate", "mentions", "mention", "suggests", "suggest", "confirm", "confirms"],
+  "first_claim_purpose": "Revisión 1 de la ronda 24 (r23 t1-c03 #1 «La más taquillera es Avengers: Endgame» from a loose sentence): the words, folded, with which a sentence of a report says which one is first (semantic.answer_evidence.first_claimed_unranked); such a sentence names the first row of the ranking the results number, and none when two rankings disagree.",
+  "first_claim_phrases": ["el mas", "la mas", "el primero", "la primera", "el primer lugar", "el primer puesto", "en primer lugar", "el numero uno", "la numero uno", "el numero 1", "la numero 1", "encabeza", "encabezan", "lidera", "the most", "the first", "number one", "the top one", "first place", "tops", "leads"],
+  "first_claim_superlative_purpose": "Revisión 2 de la ronda 24 («La película más taquillera de la historia es Avatar.», «Avatar es la película más taquillera.», «The highest-grossing film is Avatar.»): a sentence that says which one is first with a noun between its article and its superlative; the article is singular (a plural one opens a list: «Las películas más taquilleras son…»), up to two words of letters may stand between, none of them an ordinal (``ordinal_words``: «la segunda más taquillera» is not first) nor a count, and the sentence says it with a copula (semantic.answer_evidence.first_claimed_unranked).",
+  "first_claim_articles": ["el", "la", "the"],
+  "first_claim_superlatives": ["mas", "menos", "mayor", "menor", "mejor", "peor", "most", "least", "highest", "lowest", "best", "worst", "biggest", "largest", "greatest", "top"],
+  "first_claim_copulas": ["es", "fue", "era", "sigue siendo", "is", "was", "remains"],
+  "first_claim_counts": ["dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"],
+  "negation_purpose": "Revisión 3 de la ronda 22: the words, folded and whole, that deny what a clause says (semantic.answer_evidence.clause_states_unsaid).",
+  "negation_words": ["no", "ni", "nunca", "jamas", "ningun", "ninguna", "ninguno", "nadie", "nada", "tampoco", "sin", "not", "never", "none", "nobody", "nothing", "neither", "nor", "without", "cannot"],
+  "function_words": ["el", "la", "los", "las", "lo", "un", "una", "unos", "unas", "de", "del", "al", "en", "y", "e", "o", "u", "que", "se", "su", "sus", "es", "son", "fue", "fueron", "con", "por", "para", "segun", "este", "esta", "estos", "estas", "ese", "esa", "aqui", "hoy", "si", "no", "the", "a", "an", "of", "in", "on", "and", "or", "it", "its", "this", "that", "these", "those", "there", "here", "today", "yes"],
+  "span_connectors": ["de", "del", "la", "las", "los", "el", "of", "the"],
+  "ordinal_words": ["primero", "primera", "primer", "segundo", "segunda", "tercero", "tercera", "tercer", "cuarto", "cuarta", "quinto", "quinta", "puesto", "lugar", "posicion", "first", "second", "third", "fourth", "fifth", "place", "position", "ranked"],
+  "count_purpose": "Estabilización TZ-VETO (tandas z1 t2-c01 t4 «oye y cuantos discos de estudio tienen los bunkers?» → «Un disco de estudio: Vida de perros.» over one page about a song of that album): the answer to a question of how many is a count, and a count of one said in words («un disco», «one album») hid among the articles, so no check judged it. count_asked: the folded words that ask how many (whole words or phrases). count_one_words: the folded words that say one of a thing when the thing asked follows them within count_reach words. count_partitives: a word right after them that makes «una de las canciones», «one of the albums» one among others, not a count (semantic.answer_evidence.answer_unstated).",
+  "count_asked": ["cuantos", "cuantas", "how many"],
+  "count_one_words": ["un", "una", "uno", "1", "one", "a", "an", "unico", "unica", "single", "sole"],
+  "count_partitives": ["de", "of"],
+  "count_reach": 3,
+  "negation_prefixes": ["des", "dis", "in", "un"],
+  "request_words_source": "Revision 3 of ronda 23 (s01, «en la calculadora decime el resultado»): the words with which a question asks for its answer, never what it asks about. «decime» shares the root of «decimal» («Separador decimal», always on the calculator), so as a content word it made every citation that repeats no word of the question a miss. Folded (lower case, no accents), whole words; read by semantic.answer_evidence and by the App's twin (ComputerUseMission.QuestionContentWords, embedded resource).",
+  "request_words": ["decime", "dime", "decinos", "dinos", "digame", "diganme", "deci", "decir", "contame", "cuentame", "contanos", "cuentanos", "mostrame", "muestrame", "mostranos", "muestranos", "ensename", "ensenanos", "indicame", "indicanos", "avisame", "fijate", "fijese", "revisa", "revisame", "chequea", "chequeame", "quiero", "queria", "saber", "necesito", "podes", "puedes", "podrias", "porfa", "favor", "tell", "show", "please", "could", "would", "know", "check", "want", "need"],
+  "contrast_purpose": "Ronda 24 (r23 t4-c02 t3 «No hay película de Bestiario ni de Rayuela, pero sí existe una llamada Bestiario de 2002.»): the words, folded, that open a clause opposed to the one before it (semantic.answer_evidence.denied_and_affirmed).",
+  "contrast_words": ["pero", "sino", "aunque", "sin embargo", "en cambio", "but", "although", "though", "however", "yet"],
+  "denial_purpose": "Revisión 1 de ronda 24 (bloqueante 2: «No encontré cuándo sale la tercera…», «No, Taylor Swift no está casada; Taylor Swift está comprometida…» vetados): only a clause that denies a thing exists (existence_denials: the name after it, or before it when none follows: «Bestiario no existe como película») or that something has it (possession_denials: the name after it, never the owner: «Rayuela no tiene película») denies a name; a not-found clause denies nothing. A clause that tells the thing as another one (other_thing_words: «la Bestiario de 2002 es otra obra») affirms no contradiction.",
+  "existence_denials": ["no hay", "no existe", "no existen", "no ha habido", "there is no", "there are no", "there isn't", "there aren't", "there's no", "does not exist", "doesn't exist", "do not exist", "don't exist"],
+  "possession_denials": ["no tiene", "no tienen", "no cuenta con", "no cuentan con", "has no", "have no", "does not have", "doesn't have", "do not have", "don't have"],
+  "affirmation_purpose": "Revisión 2 de r24 (bloqueante 1: «No hay película de Rayuela. Rayuela es una novela…», «No hay tercera temporada de Arcane. Arcane terminó con su segunda…» vetados): the words, in lower case and with their accents, with which a later clause says that a thing exists or is had, symmetric to existence_denials and possession_denials (semantic.answer_evidence._affirms_existence). «sí» keeps its accent: «si hay» is a condition. Naming the name again affirms nothing.",
+  "existence_affirmations": ["sí existe", "sí existen", "sí hay", "sí tiene", "sí tienen", "sí cuenta con", "sí cuentan con", "there is indeed", "there are indeed", "does exist", "do exist", "does have", "do have"],
+  "called_purpose": "Revisión 4 de r24 (bloqueante 1: «Netflix no tiene la tercera temporada de Arcane, pero sí tiene las dos primeras temporadas de Arcane.», «No hay vuelos directos de Santiago a Tokio, pero sí hay vuelos de Santiago a Tokio con escala en Dallas.» vetados): a later clause that says a thing exists or is had (existence_affirmations) affirms the denied thing only when it says nothing the denial did not (it names no other variant: the first two seasons, flights with a stop, Saturday). A clause that says a thing exists with the same name (called_affirmations: «sí existe una llamada Bestiario de 2002») affirms it always: the name is all it shares.",
+  "called_affirmations": ["existe una llamada", "existe uno llamado", "existen unas llamadas", "existen unos llamados", "hay una llamada", "hay uno llamado", "hay unas llamadas", "hay unos llamados", "existe una que se llama", "existe uno que se llama", "hay una que se llama", "hay uno que se llama", "there is one called", "there is one named", "there's one called", "there's one named", "there are ones called", "there are some called"],
+  "other_thing_words": ["otra", "otro", "otras", "otros", "distinta", "distinto", "distintas", "distintos", "diferente", "diferentes", "another", "other", "different"]
+}

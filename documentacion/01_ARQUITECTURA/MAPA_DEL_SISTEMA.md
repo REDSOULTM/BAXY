@@ -179,7 +179,9 @@ cruzan una limpieza pendiente o fallida. La primera llamada síncrona a
 - El journal usa HMAC y una clave protegida por DPAPI; integridad ausente,
   truncada o revertida falla cerrado.
 - El outbox del App persiste antes de enviar y conserva identidad durante
-  reinicios. `retry-outbox.v1.json` es texto plano y detecta corrupción
+  reinicios, salvo las misiones de computer use y sus primitivas: actuaban
+  sobre la pantalla de su sesión y el arranque siguiente las retira.
+  `retry-outbox.v1.json` es texto plano y detecta corrupción
   accidental, pero no ofrece confidencialidad ni evidencia autenticada de
   manipulación. Los payloads privados `memory.*` sí viajan cifrados y
   autenticados.

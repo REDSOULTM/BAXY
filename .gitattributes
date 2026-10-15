@@ -4,7 +4,6 @@
 # system config, so without these declarations a clone checks the tree out in
 # CRLF and all three go red against seals that were always correct (R277/R278).
 * text=auto eol=lf
-
 # Pre-existing per-path declarations, kept as they were.
 /artifacts/corpus_cutoff/*.json text eol=lf
 /artifacts/technology_tournament/protocol.json text eol=lf
@@ -24,7 +23,6 @@
 /experiments/mind_llm_tournament/protocol.json text eol=lf
 /experiments/mind_llm_tournament/data/*.jsonl text eol=lf
 /src/Baxy.FieldUi/** text eol=lf
-
 # Published artifacts that were sealed while holding CRLF. Their on-disk sha256
 # is the value recorded in the tree, so they must survive a checkout byte for
 # byte instead of being renormalised. Do not convert these.
@@ -214,3 +212,268 @@
 /src/baxy_mind/data/semantic_family_arbiter.v1.weights.npz -text
 /tests/data/turn_evidence_public_holdout.v1.jsonl -text
 /tests/data/turn_evidence_public_manifest.v1.json -text
+scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs merge=lfs -text
+
+# C03 template restored to its published LF byte identity (531).
+/artifacts/comprobaciones/C03/astra-qwen-documented-profile/effective-template.jinja -text
+
+# C03 537-542: preserve the captured bytes addressed by each PINS.json.
+/artifacts/comprobaciones/C03/astra-catalog-semantics537/** -text
+/artifacts/comprobaciones/C03/astra-relevant-result538/** -text
+/artifacts/comprobaciones/C03/astra-mutation-target539/** -text
+/artifacts/comprobaciones/C03/astra-configuration-contract540/** -text
+/artifacts/comprobaciones/C03/astra-survey-readonly541/** -text
+/artifacts/comprobaciones/C03/astra-gpu-scope542/** -text
+/artifacts/comprobaciones/C03/astra-survey-resume543/** -text
+/artifacts/comprobaciones/C03/astra-coordinate-queries545/** -text
+/artifacts/comprobaciones/C03/astra-e5-assets544/** -text
+/artifacts/comprobaciones/C03/astra-coordinate-product546/** -text
+/artifacts/comprobaciones/C03/astra-e5-backend547/** -text
+/artifacts/comprobaciones/C03/astra-e5-retrieval549/** -text
+/artifacts/comprobaciones/C03/astra-e5-avx2550/** -text
+/artifacts/comprobaciones/C03/astra-e5-avx2551/** -text
+/artifacts/comprobaciones/C03/astra-native-quantities552/** -text
+/artifacts/comprobaciones/C03/astra-native-quantities553/** -text
+/artifacts/comprobaciones/C03/astra-gemma-current-writer554/** -text
+/artifacts/comprobaciones/C03/astra-context-answer555/** -text
+/artifacts/comprobaciones/C03/astra-context-product556/** -text
+/artifacts/comprobaciones/C03/astra-gemma-current-writer557/** -text
+/artifacts/comprobaciones/C03/astra-native-cpu-owner558/** -text
+/artifacts/comprobaciones/C03/astra-native-cpu-subject559/** -text
+/artifacts/comprobaciones/C03/astra-inherited-lora560/** -text
+/artifacts/comprobaciones/C03/astra-inherited-lora561/** -text
+/artifacts/comprobaciones/C03/astra-mutation-view562/** -text
+/artifacts/comprobaciones/C03/astra-mutation-cause563/** -text
+/artifacts/comprobaciones/C03/astra-bound-save-request564/** -text
+/artifacts/comprobaciones/C03/astra-progress-addressee565/** -text
+/artifacts/comprobaciones/C03/astra-scoped-configuration566/** -text
+/artifacts/comprobaciones/C03/astra-qwen9b-thinking567/** -text
+/artifacts/comprobaciones/C03/astra-survey-readonly568/** -text
+/artifacts/comprobaciones/C03/astra-internet-query569/** -text
+/artifacts/comprobaciones/C03/astra-network-product570/** -text
+/artifacts/comprobaciones/C03/astra-audio-observation571/** -text
+/artifacts/comprobaciones/C03/astra-audio-product572/** -text
+/artifacts/comprobaciones/C03/astra-cpu-topology573/** -text
+/artifacts/comprobaciones/C03/astra-cpu-physical574/** -text
+/artifacts/comprobaciones/C03/astra-cpu-product575/** -text
+/artifacts/comprobaciones/C03/astra-compound-mute576/** -text
+/artifacts/comprobaciones/C03/astra-compound-product577/** -text
+/artifacts/comprobaciones/C03/astra-cpu-dialogue-repair578/** -text
+/artifacts/comprobaciones/C03/astra-cpu-dialogue-sampling579/** -text
+/artifacts/comprobaciones/C03/astra-cpu-repair-generalization580/** -text
+/artifacts/comprobaciones/C03/astra-cpu-actor581/** -text
+/artifacts/comprobaciones/C03/astra-cpu-actor-product582/** -text
+/artifacts/comprobaciones/C03/astra-qwen9b-bounded583/** -text
+/artifacts/comprobaciones/C03/astra-tool-result-envelope585/** -text
+/artifacts/comprobaciones/C03/astra-usage-actor584/** -text
+/artifacts/comprobaciones/C03/astra-scoped-lora586/** -text
+/artifacts/comprobaciones/C03/astra-usage-product587/** -text
+/artifacts/comprobaciones/C03/astra-scoped-lora-seeds588/** -text
+/artifacts/comprobaciones/C03/astra-scoped-lora-product589/** -text
+/artifacts/comprobaciones/C03/astra-source-adapter-product591/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression592/** -text
+/artifacts/comprobaciones/C03/astra-cpu-adapter590/** -text
+/artifacts/comprobaciones/C03/astra-observe-identity593/** -text
+/artifacts/comprobaciones/C03/astra-guard-boundary594/** -text
+/artifacts/comprobaciones/C03/astra-guard-contract595/** -text
+/artifacts/comprobaciones/C03/astra-language-repair596/** -text
+/artifacts/comprobaciones/C03/astra-language-wire597/** -text
+/artifacts/comprobaciones/C03/astra-language-backend598/** -text
+/artifacts/comprobaciones/C03/astra-language-template599/** -text
+/artifacts/comprobaciones/C03/astra-history-request600/** -text
+/artifacts/comprobaciones/C03/astra-language-translation601/** -text
+/artifacts/comprobaciones/C03/astra-language-repair602/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression603/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression605/** -text
+/artifacts/comprobaciones/C03/astra-language-sentences604/** -text
+/artifacts/comprobaciones/C03/astra-effect-projection607/** -text
+/artifacts/comprobaciones/C03/astra-language-literals606/** -text
+/artifacts/comprobaciones/C03/astra-effect-controls608/** -text
+/artifacts/comprobaciones/C03/astra-effect-presentation609/** -text
+/artifacts/comprobaciones/C03/astra-effect-controls610/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression611/** -text
+/artifacts/comprobaciones/C03/astra-native-subject612/** -text
+/artifacts/comprobaciones/C03/astra-gemma-subject613/** -text
+/artifacts/comprobaciones/C03/astra-gemma-product614/** -text
+/artifacts/comprobaciones/C03/astra-social-kind615/** -text
+/artifacts/comprobaciones/C03/astra-social-thinking616/** -text
+/artifacts/comprobaciones/C03/astra-native-schema617/** -text
+/artifacts/comprobaciones/C03/astra-style618/** -text
+/artifacts/comprobaciones/C03/astra-gemma-product620/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression621/** -text
+/artifacts/comprobaciones/C03/astra-style-source619/** -text
+/artifacts/comprobaciones/C03/astra-ministral622/** -text
+/artifacts/comprobaciones/C03/astra-ministral-roles623/** -text
+/artifacts/comprobaciones/C03/astra-ministral-layers624/** -text
+/artifacts/comprobaciones/C03/astra-progress-language625/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression627/** -text
+/artifacts/comprobaciones/C03/astra-progress-source626/** -text
+/artifacts/comprobaciones/C03/astra-clarification-product629/** -text
+/artifacts/comprobaciones/C03/astra-clarification-source628/** -text
+/artifacts/comprobaciones/C03/astra-window-evidence632/** -text
+/artifacts/comprobaciones/C03/astra-continuity-product631/** -text
+/artifacts/comprobaciones/C03/astra-objective-continuity630/** -text
+/artifacts/comprobaciones/C03/astra-window-product634/** -text
+/artifacts/comprobaciones/C03/astra-window-source633/** -text
+/artifacts/comprobaciones/C03/astra-package-identity635/** -text
+/artifacts/comprobaciones/C03/astra-package-product637/** -text
+/artifacts/comprobaciones/C03/astra-package-source636/** -text
+/artifacts/comprobaciones/C03/astra-enumeration-product639/** -text
+/artifacts/comprobaciones/C03/astra-window-reference-product640/** -text
+/artifacts/comprobaciones/C03/astra-enumeration-source638/** -text
+/artifacts/comprobaciones/C03/astra-count-product642/** -text
+/artifacts/comprobaciones/C03/astra-count-source641/** -text
+/artifacts/comprobaciones/C03/astra-context-candidates643/** -text
+/artifacts/comprobaciones/C03/astra-native-context644/** -text
+/artifacts/comprobaciones/C03/astra-native-context645/** -text
+/artifacts/comprobaciones/C03/astra-package-scope648/** -text
+/artifacts/comprobaciones/C03/astra-context-product647/** -text
+/artifacts/comprobaciones/C03/astra-window-fact-contract649/** -text
+/artifacts/comprobaciones/C03/astra-context-source646/** -text
+/artifacts/comprobaciones/C03/astra-window-regression651/** -text
+/artifacts/comprobaciones/C03/astra-native-window-scope650/** -text
+/artifacts/comprobaciones/C03/astra-window-scope-product653/** -text
+/artifacts/comprobaciones/C03/astra-window-scope-source652/** -text
+/artifacts/comprobaciones/C03/astra-language-source654/** -text
+/artifacts/comprobaciones/C03/astra-language-product655/** -text
+/artifacts/comprobaciones/C03/astra-native-fact-judge656/** -text
+/artifacts/comprobaciones/C03/astra-nli-assets657/** -text
+/artifacts/comprobaciones/C03/astra-nli-fact-probe658/** -text
+/artifacts/comprobaciones/C03/astra-nli-native-parity659/** -text
+/artifacts/comprobaciones/C03/astra-window-facts-source660/** -text
+/artifacts/comprobaciones/C03/astra-window-facts-product661/** -text
+/artifacts/comprobaciones/C03/astra-native-schema-prose662/** -text
+/artifacts/comprobaciones/C03/astra-native-literal-contract663/** -text
+/artifacts/comprobaciones/C03/astra-literal-product665/** -text
+/artifacts/comprobaciones/C03/astra-conversation-regression666/** -text
+/artifacts/comprobaciones/C03/astra-literal-source664/** -text
+/artifacts/comprobaciones/C03/astra-native-window-projection668/** -text
+/artifacts/comprobaciones/C03/astra-projection-product669/** -text
+/artifacts/comprobaciones/C03/astra-native-compound-layers670/** -text
+/artifacts/comprobaciones/C03/astra-window-projection667/** -text
+/artifacts/comprobaciones/C03/astra-window-state-facts671/** -text
+/artifacts/comprobaciones/C03/astra-compositor-window-states672/** -text
+/artifacts/comprobaciones/C03/astra-native-focus-feedback673/** -text
+/artifacts/comprobaciones/C03/astra-focus-feedback-source674/** -text
+/artifacts/comprobaciones/C03/astra-compositor-focus-feedback675/** -text
+/artifacts/comprobaciones/C03/astra-compositor-focus-coverage677/** -text
+/artifacts/comprobaciones/C03/astra-focus-coverage-product678/** -text
+/artifacts/comprobaciones/C03/astra-focus-coverage-source676/** -text
+/artifacts/comprobaciones/C03/astra-survey-focus679/** -text
+/artifacts/comprobaciones/C03/astra-survey-focus681/** -text
+/artifacts/comprobaciones/C03/astra-native-mixed-focus682/** -text
+/artifacts/comprobaciones/C03/astra-focus-subject-source680/** -text
+/artifacts/comprobaciones/C03/astra-survey-focus684/** -text
+/artifacts/comprobaciones/C03/astra-native-paraphrase685/** -text
+/artifacts/comprobaciones/C03/astra-fresh-window-source683/** -text
+/artifacts/comprobaciones/C03/astra-survey-focus687/** -text
+/artifacts/comprobaciones/C03/astra-compositor-window-identity688/** -text
+/artifacts/comprobaciones/C03/astra-window-identity-source686/** -text
+/artifacts/comprobaciones/C03/astra-status-batch689/** -text
+/artifacts/comprobaciones/C03/astra-native-measurements690/** -text
+/artifacts/comprobaciones/C03/astra-native-measurement-units691/** -text
+/artifacts/comprobaciones/C03/COVERAGE_WORKBOARD692*.json -text
+/artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/** -text
+/artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/** -text
+/artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/** -text
+/artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/** -text
+/artifacts/comprobaciones/C03/K2_HORIZON_SELECTOR700/** -text
+/artifacts/comprobaciones/C03/astra-status-batch694/** -text
+/artifacts/comprobaciones/C03/astra-shared-status-source693/** -text
+/artifacts/comprobaciones/C03/STATUS_BATCH694_PLAN.json -text
+/artifacts/comprobaciones/C03/astra-machine-actor-source702/** -text
+/artifacts/comprobaciones/C03/astra-machine-actor701-baseline/** -text
+/artifacts/comprobaciones/C03/astra-machine-actor701-candidate/** -text
+/artifacts/comprobaciones/C03/astra-status-batch702/** -text
+/artifacts/comprobaciones/C03/STATUS_BATCH702_PLAN.json -text
+/artifacts/comprobaciones/C03/astra-status-batch704/** -text
+/artifacts/comprobaciones/C03/astra-continuity-source703/** -text
+/artifacts/comprobaciones/C03/STATUS_BATCH704_PLAN.json -text
+/artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/** -text
+/scratchpad/c03-k2-adapter731.py -text
+/scratchpad/c03-report-adapter731.py -text
+
+/artifacts/comprobaciones/C03/K2_HORIZON_CONTRACT732/** -text
+/artifacts/comprobaciones/C03/K2_HORIZON_GRAMMAR733/** -text
+/artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/** -text
+/scratchpad/c03_k2_native_adapter732.py -text
+/scratchpad/c03-k2-contract-probe732.py -text
+/scratchpad/c03-k2-grammar733.py -text
+/scratchpad/c03_k2_native_adapter734.py -text
+/scratchpad/c03-k2-schema734.py -text
+/artifacts/comprobaciones/C03/NATIVE_ROUTE735/** -text
+/artifacts/comprobaciones/C03/NATIVE_PRODUCT736/** -text
+/scratchpad/c03-native-product736.py -text
+/scratchpad/c03-native-product736-hook/** -text
+/scratchpad/c03-observe-product-resources736.py -text
+/scratchpad/c03-review-native-product736.py -text
+/scratchpad/c03-focus-attribution736.py -text
+/scratchpad/c03-domain-attribution736.py -text
+/scratchpad/c03-adjudicate-native-product736.py -text
+/scratchpad/c03-report-native-product736.py -text
+/artifacts/comprobaciones/C03/FACTS_PROMPT737/** -text
+/scratchpad/c03-facts-prompt737.py -text
+/scratchpad/c03-review-facts737.py -text
+/scratchpad/c03-adjudicate-facts737.py -text
+/scratchpad/c03-report-facts737.py -text
+/scratchpad/c03-checkpoint737.py -text
+/artifacts/comprobaciones/C03/WINDOW_FOCUS738/** -text
+/scratchpad/c03-replay-window-focus738.py -text
+/scratchpad/c03-checkpoint-window738.py -text
+/scratchpad/c03-record-window738.py -text
+/artifacts/comprobaciones/C03/NONBLOCKING_PIPE739/** -text
+/artifacts/comprobaciones/C03/PIPE_SOURCE740/** -text
+/artifacts/comprobaciones/C03/PACKAGING741/** -text
+/artifacts/comprobaciones/C03/FULL6_742/** -text
+/artifacts/comprobaciones/C03/DOMAIN_TRACE743/** -text
+/artifacts/comprobaciones/C03/PUBLICATION744/** -text
+/scratchpad/c03-nonblocking-pipe739.py -text
+/scratchpad/c03-full6-742.py -text
+/scratchpad/c03-domain-trace743.py -text
+/scratchpad/c03-publication744.py -text
+/artifacts/comprobaciones/C03/FULL7_745/** -text
+/scratchpad/c03-full7-745.py -text
+
+# C03 process795-799 sealed receipts and runners: preserve recorded raw bytes.
+/artifacts/comprobaciones/C03/PROCESS_BATCH795/ADJUDICATION.json -text
+/artifacts/comprobaciones/C03/PROCESS_BATCH795/REPORT.md -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/FULL_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/FULL_INITIAL_ABORT.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/INTEGRITY_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/PRIVATE_WORKING_SET_PROBE.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/PROGRAM.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/SOURCE_PINS.initial.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/SOURCE_PINS.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/fast.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/full-final.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/full.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/integrity-repair.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/owners-dotnet-before-app-limit.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/owners-python-first.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/owners-python.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/FAST_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/FULL_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/GOAL_OBJECTIVE.md -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/OWNERS_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/baseline-python.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/before799-build-server-shutdown.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/fast.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/full.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-broad.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-dotnet.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-lf.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-python.log -text
+/scratchpad/c03-process-batch797.py -text
+/scratchpad/c03-review-process797.py -text
+
+# C03 relay validation logs are hashed as captured, including CRLF.
+/artifacts/comprobaciones/C03/PROCESS_BUDGET802/*.log -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/*.log -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/FULL_RETRY1/*.log -text
+# New C03 receipts retain their original measured bytes on first publication.
+/artifacts/comprobaciones/C03/PROCESS_BATCH803_RESUME/REVIEW_CAPTURE.json -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/FAST_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/NEXT_CONFIRMATION.json -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/VALIDATION_EXIT.json -text
+# Filas E5 congeladas de las vistas de la pasada r3 (tests/test_cu_v3_semejanza.py).
+/tests/data/cu_semejanza_e5.npy -text

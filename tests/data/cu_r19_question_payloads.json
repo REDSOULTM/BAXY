@@ -1,0 +1,505 @@
+{
+ "v2-c5": {
+  "observed": {
+   "goal": "ir a personalizacion; luego ir a colores; y responder: decime si el modo es claro u oscuro",
+   "application": "Configuración",
+   "reached": true,
+   "stepCount": 3,
+   "steps": [
+    {
+     "step": 1,
+     "operation": "app.open",
+     "source": "procedure",
+     "subgoal": 0,
+     "appId": "Configuración",
+     "ok": true,
+     "alreadyRunning": true,
+     "changed": true
+    },
+    {
+     "step": 2,
+     "operation": "input.visible.click",
+     "source": "procedure",
+     "subgoal": 0,
+     "label": "Personalización",
+     "index": 11,
+     "ok": true,
+     "cascadeStage": "uia",
+     "surfaceChanged": false,
+     "absentOrDisabled": false,
+     "selected": true,
+     "toggled": false,
+     "name": "Personalización",
+     "kind": "ListItem",
+     "changed": true
+    },
+    {
+     "step": 3,
+     "operation": "input.visible.click",
+     "source": "procedure",
+     "subgoal": 1,
+     "label": "Colores",
+     "ok": true,
+     "cascadeStage": "uia_surface",
+     "surfaceChanged": true,
+     "absentOrDisabled": false,
+     "selected": false,
+     "toggled": false,
+     "name": "Colores",
+     "kind": "ListItem",
+     "changed": true
+    }
+   ],
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "requested": true,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "focused": {
+     "kind": "ComboBox",
+     "name": "Elige tu modo"
+    }
+   },
+   "joined": false,
+   "elapsedMs": 3558,
+   "modelMs": 0,
+   "authority": "shell_loop_over_uia_ocr_postread",
+   "subgoals": [
+    {
+     "goal": "ir a personalizacion",
+     "application": "Configuración",
+     "reached": true,
+     "stepCount": 2,
+     "satisfiedBy": "control:personalizacion:current"
+    },
+    {
+     "goal": "ir a colores",
+     "application": "Configuración",
+     "reached": true,
+     "stepCount": 1,
+     "satisfiedBy": "page:colores"
+    }
+   ],
+   "satisfiedBy": "page:colores",
+   "screen": {
+    "title": "Configuración",
+    "values": [
+     {
+      "name": "Personalización",
+      "state": "selected"
+     },
+     {
+      "name": "Oscuro",
+      "state": "selected"
+     },
+     {
+      "name": "Cuadro de búsqueda, Buscar una opción",
+      "value": "Bluetooth"
+     },
+     {
+      "name": "Manual",
+      "state": "selected"
+     }
+    ],
+    "lines": [
+     ">",
+     "Colores",
+     "Elige tu modo",
+     "Cambiar los colores que aparecen en Windows y en las aplicaciones",
+     "Efectos de transparencia",
+     "Las ventanas y las superficies se muestran translúcidas"
+    ]
+   }
+  },
+  "draft": "Llegué al modo Oscuro.",
+  "seen": {
+   "goal": "ir a personalizacion; luego ir a colores",
+   "reached": true,
+   "stepsDone": [
+    "trajo la aplicación al frente",
+    "clic en «Personalización»",
+    "clic en «Colores»"
+   ],
+   "windowTitle": "Configuración",
+   "joined": false,
+   "question": "decime si el modo es claro u oscuro",
+   "application": "Configuración",
+   "satisfiedBy": "page:colores",
+   "screen": {
+    "title": "Configuración",
+    "values": [
+     {
+      "name": "Personalización",
+      "state": "selected"
+     },
+     {
+      "name": "Oscuro",
+      "state": "selected"
+     },
+     {
+      "name": "Cuadro de búsqueda, Buscar una opción",
+      "value": "Bluetooth"
+     },
+     {
+      "name": "Manual",
+      "state": "selected"
+     }
+    ],
+    "lines": [
+     ">",
+     "Colores",
+     "Elige tu modo",
+     "Cambiar los colores que aparecen en Windows y en las aplicaciones",
+     "Efectos de transparencia",
+     "Las ventanas y las superficies se muestran translúcidas"
+    ]
+   },
+   "subgoals": [
+    {
+     "goal": "ir a personalizacion",
+     "application": "Configuración",
+     "reached": true
+    },
+    {
+     "goal": "ir a colores",
+     "application": "Configuración",
+     "reached": true
+    }
+   ]
+  }
+ },
+ "v2-v3": {
+  "observed": {
+   "goal": "ir a sistema; luego ir a sonido; y responder: decime el volumen",
+   "application": "Configuración",
+   "reached": true,
+   "stepCount": 3,
+   "steps": [
+    {
+     "step": 1,
+     "operation": "app.open",
+     "source": "procedure",
+     "subgoal": 0,
+     "appId": "Configuración",
+     "ok": true,
+     "alreadyRunning": true,
+     "changed": true
+    },
+    {
+     "step": 2,
+     "operation": "input.visible.click",
+     "source": "procedure",
+     "subgoal": 0,
+     "label": "Sistema",
+     "ok": true,
+     "cascadeStage": "ocr",
+     "surfaceChanged": true,
+     "absentOrDisabled": false,
+     "selected": true,
+     "name": "Sistema",
+     "changed": true
+    },
+    {
+     "step": 3,
+     "operation": "input.visible.click",
+     "source": "procedure",
+     "subgoal": 1,
+     "label": "Sonido",
+     "ok": true,
+     "cascadeStage": "uia",
+     "surfaceChanged": false,
+     "absentOrDisabled": true,
+     "selected": false,
+     "toggled": false,
+     "name": "Sonido",
+     "kind": "ListItem",
+     "changed": true
+    }
+   ],
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "requested": true,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "focused": {
+     "kind": "Button",
+     "name": "Mostrar más valores de configuración"
+    }
+   },
+   "joined": false,
+   "elapsedMs": 3923,
+   "modelMs": 0,
+   "authority": "shell_loop_over_uia_ocr_postread",
+   "subgoals": [
+    {
+     "goal": "ir a sistema",
+     "application": "Configuración",
+     "reached": true,
+     "stepCount": 2,
+     "satisfiedBy": "control:sistema:current"
+    },
+    {
+     "goal": "ir a sonido",
+     "application": "Configuración",
+     "reached": true,
+     "stepCount": 1,
+     "satisfiedBy": "page:sonido"
+    }
+   ],
+   "satisfiedBy": "page:sonido",
+   "screen": {
+    "title": "Configuración",
+    "values": [
+     {
+      "name": "Ajustar el volumen de salida",
+      "value": "60"
+     },
+     {
+      "name": "Sistema",
+      "state": "selected"
+     },
+     {
+      "name": "Cuadro de búsqueda, Buscar una opción",
+      "value": "Bluetooth"
+     },
+     {
+      "name": "Audífono de los auriculares con micrófono",
+      "state": "selected"
+     },
+     {
+      "name": "Varios micrófonos",
+      "state": "selected"
+     },
+     {
+      "name": "Configuración",
+      "value": "Configuración"
+     }
+    ],
+    "numbers": [
+     "4))"
+    ],
+    "lines": [
+     "> Sonido",
+     "Sonido",
+     "Salida",
+     "Elegir dónde reproducir el sonido",
+     "4))",
+     "Es posible que las aplicaciones tengan su propia configuración"
+    ]
+   }
+  },
+  "draft": "El volumen está en 60. Llegué a Configuración, Sistema y Sonido.",
+  "seen": {
+   "goal": "ir a sistema; luego ir a sonido",
+   "reached": true,
+   "stepsDone": [
+    "trajo la aplicación al frente",
+    "clic en «Sistema»",
+    "clic en «Sonido»"
+   ],
+   "windowTitle": "Configuración",
+   "joined": false,
+   "question": "decime el volumen",
+   "application": "Configuración",
+   "satisfiedBy": "page:sonido",
+   "screen": {
+    "title": "Configuración",
+    "values": [
+     {
+      "name": "Ajustar el volumen de salida",
+      "value": "60"
+     },
+     {
+      "name": "Sistema",
+      "state": "selected"
+     },
+     {
+      "name": "Cuadro de búsqueda, Buscar una opción",
+      "value": "Bluetooth"
+     },
+     {
+      "name": "Audífono de los auriculares con micrófono",
+      "state": "selected"
+     },
+     {
+      "name": "Varios micrófonos",
+      "state": "selected"
+     },
+     {
+      "name": "Configuración",
+      "value": "Configuración"
+     }
+    ],
+    "numbers": [
+     "4))"
+    ],
+    "lines": [
+     "> Sonido",
+     "Sonido",
+     "Salida",
+     "Elegir dónde reproducir el sonido",
+     "4))",
+     "Es posible que las aplicaciones tengan su propia configuración"
+    ]
+   },
+   "subgoals": [
+    {
+     "goal": "ir a sistema",
+     "application": "Configuración",
+     "reached": true
+    },
+    {
+     "goal": "ir a sonido",
+     "application": "Configuración",
+     "reached": true
+    }
+   ]
+  }
+ },
+ "v2-z10": {
+  "observed": {
+   "goal": "ir a hora e idioma; y responder: decime la zona horaria",
+   "application": "Configuración",
+   "reached": true,
+   "successCheck": "control:hora e idioma:current|title:hora e idioma|page:hora e idioma|control:hora y idioma:current|title:hora y idioma|page:hora y idioma|control:time:current|title:time|page:time|control:time and language:current|title:time and language|page:time and language",
+   "stepCount": 2,
+   "steps": [
+    {
+     "step": 1,
+     "operation": "app.open",
+     "source": "procedure",
+     "appId": "Configuración",
+     "ok": true,
+     "alreadyRunning": true,
+     "changed": true
+    },
+    {
+     "step": 2,
+     "operation": "input.visible.click",
+     "source": "procedure",
+     "label": "Hora e idioma",
+     "index": 14,
+     "ok": true,
+     "cascadeStage": "uia",
+     "surfaceChanged": false,
+     "absentOrDisabled": false,
+     "selected": true,
+     "toggled": false,
+     "name": "Hora e idioma",
+     "kind": "ListItem",
+     "changed": true
+    }
+   ],
+   "window": {
+    "title": "Configuración",
+    "process": "SystemSettings",
+    "requested": true,
+    "rect": {
+     "x": 58,
+     "y": 0,
+     "w": 1282,
+     "h": 1002
+    },
+    "focused": {
+     "kind": "ListItem",
+     "name": "Hora e idioma"
+    }
+   },
+   "joined": false,
+   "elapsedMs": 1665,
+   "modelMs": 0,
+   "authority": "shell_loop_over_uia_ocr_postread",
+   "procedure": "replayed",
+   "satisfiedBy": "control:hora e idioma:current",
+   "screen": {
+    "title": "Configuración",
+    "values": [
+     {
+      "name": "Hora e idioma",
+      "state": "selected"
+     },
+     {
+      "name": "Cuadro de búsqueda, Buscar una opción",
+      "value": "Bluetooth"
+     },
+     {
+      "name": "Configuración",
+      "value": "Configuración"
+     }
+    ],
+    "numbers": [
+     "14:19",
+     "‎miércoles, ‎7 ‎de ‎octubre ‎de ‎2026",
+     "(UTC-04:00) Santiago",
+     "14:19",
+     "miércoles, 7 de octubre de 2026"
+    ],
+    "lines": [
+     "14:19",
+     "miércoles, 7 de octubre de 2026",
+     "Fecha y hora",
+     "Zonas horarias, configuración automática del reloj, presentación del calendario",
+     "Idioma y región",
+     "Idioma de Windows, idiomas preferidos, formatos regionales"
+    ]
+   }
+  },
+  "draft": "Llegué a la zona horaria y es (UTC-04:00) Santiago.",
+  "seen": {
+   "goal": "ir a hora e idioma",
+   "reached": true,
+   "stepsDone": [
+    "trajo la aplicación al frente",
+    "clic en «Hora e idioma»"
+   ],
+   "windowTitle": "Configuración",
+   "joined": false,
+   "question": "decime la zona horaria",
+   "application": "Configuración",
+   "satisfiedBy": "control:hora e idioma:current",
+   "screen": {
+    "title": "Configuración",
+    "values": [
+     {
+      "name": "Hora e idioma",
+      "state": "selected"
+     },
+     {
+      "name": "Cuadro de búsqueda, Buscar una opción",
+      "value": "Bluetooth"
+     },
+     {
+      "name": "Configuración",
+      "value": "Configuración"
+     }
+    ],
+    "numbers": [
+     "14:19",
+     "‎miércoles, ‎7 ‎de ‎octubre ‎de ‎2026",
+     "(UTC-04:00) Santiago",
+     "14:19",
+     "miércoles, 7 de octubre de 2026"
+    ],
+    "lines": [
+     "14:19",
+     "miércoles, 7 de octubre de 2026",
+     "Fecha y hora",
+     "Zonas horarias, configuración automática del reloj, presentación del calendario",
+     "Idioma y región",
+     "Idioma de Windows, idiomas preferidos, formatos regionales"
+    ]
+   },
+   "procedure": "replayed"
+  }
+ }
+}

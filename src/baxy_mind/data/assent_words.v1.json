@@ -1,0 +1,15 @@
+{
+ "_doc": "Revisión M H5 (2026-10-11): el sí entero, una sola lista para la mente (semantic.dialogue: un sí a la pregunta pendiente) y el App (ConfirmationReplyParser: la confirmación que pide el núcleo). Antes eran dos listas distintas: «estoy seguro» era un sí para la mente y no para el núcleo. Palabras plegadas (sin tildes, minúsculas); un mensaje es un sí cuando sólo las dice (hasta cuatro, con comas o puntos) y no lleva signo de pregunta («¿seguro?» duda, H6). Ata ambos lados tests/test_estab_m_memoria.py y MemoryOperationProtectionTests.EveryAssentWordConfirmsAndAQuestionDoesNot.",
+ "words": [
+  "si", "sip", "sep", "dale", "ok", "okay", "okey", "claro", "confirmo", "confirmar", "confirm", "de una", "obvio",
+  "por favor", "porfa", "bueno", "va", "vale", "hacelo", "hazlo", "adelante", "yes", "yeah", "yep", "sure", "do it",
+  "go ahead", "please", "estoy seguro", "estoy segura", "seguro", "segura", "i'm sure", "im sure"
+ ],
+ "_declineDoc": "Estabilización M2 (identidad en vivo 2026-10-11: «No, cancelá» a «¿confirmar o cancelar?» no canceló y BAXY volvió a preguntar; «cancelar» sí). El no entero, la misma lista para la mente (semantic.dialogue._REFUSAL: un no que nunca completa lo pendiente) y el App (ConfirmationReplyParser: la cancelación de lo que pide el núcleo); antes el App sólo aceptaba una palabra sola. Un mensaje cancela cuando sólo dice estas palabras (hasta cuatro, con comas o puntos): «no, cancelá», «no, dejalo», «cancelalo», «nah», «no thanks». «no, mandalo igual» dice otra cosa y no cancela. Ata ambos lados tests/test_estab_m2_identidad.py y MemoryOperationProtectionTests.EveryDeclineWordCancelsAndAnOrderDoesNot.",
+ "declineWords": [
+  "no", "nop", "nope", "nah", "nel", "nada", "mejor no", "no gracias", "no hace falta", "ya no", "dejalo", "deja",
+  "dejala", "dejemoslo", "dejalo asi", "olvidalo", "olvidate", "olvida", "cancela", "cancelalo", "cancelar",
+  "cancela eso", "cancelar eso", "para", "basta", "ninguno", "ninguna", "tranqui", "no thanks", "never mind",
+  "forget it", "cancel", "cancel that", "cancel it", "don't", "do not", "stop", "leave it", "no need"
+ ]
+}

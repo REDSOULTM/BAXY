@@ -15,7 +15,9 @@ internal sealed record MindRuntimeConfiguration(
     string? SttDirectory,
     string? WakeManifest,
     int GpuLayers,
-    bool WakeOnStart);
+    bool WakeOnStart,
+    string? CpuProseAdapter = null,
+    string? DeciderAdapter = null);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
     string? Disabled,
@@ -29,7 +31,9 @@ internal sealed record MindRuntimeEnvironmentSnapshot(
     string? WakeCascadeManifest,
     string? WakeOnStart,
     string? Offline,
-    string? AssetDescriptor);
+    string? AssetDescriptor,
+    string? CpuProseAdapter = null,
+    string? DeciderAdapter = null);
 
 internal sealed record MindRuntimeDiscoveryResult(
     MindRuntimeEnvironmentSnapshot Environment,
@@ -179,6 +183,22 @@ internal static class MindRuntimeDiscovery
             SetIfMissing(MindSidecarClient.PythonPathEnvironmentVariable, runtime.PythonPath);
             SetIfMissing("BAXY_MIND_LLM_GGUF", runtime.Gguf);
             SetIfMissing("BAXY_MIND_LLAMA_SERVER", runtime.LlamaServer);
+            if (runtime.CpuProseAdapter is not null
+                && string.Equals(
+                    Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
+                    runtime.Gguf,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                SetIfMissing("BAXY_MIND_CPU_PROSE_ADAPTER", runtime.CpuProseAdapter);
+            }
+            if (runtime.DeciderAdapter is not null
+                && string.Equals(
+                    Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
+                    runtime.Gguf,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                SetIfMissing("BAXY_MIND_DECIDER_ADAPTER", runtime.DeciderAdapter);
+            }
             SetIfMissing(
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
@@ -231,7 +251,18 @@ internal static class MindRuntimeDiscovery
             : Path.Combine(localData, "BAXYRuntime", "mind-runtime-v1.json");
     }
 
-    internal static MindRuntimeConfiguration? LoadRegistered(string manifestPath)
+    internal static MindRuntimeConfiguration? LoadRegistered(string manifestPath) =>
+        LoadRegistered(manifestPath, hasher: null);
+
+    /// <summary>
+    /// Every declared asset is still compared with its registered SHA-256; a
+    /// file whose size and timestamps did not change since a verified start is
+    /// not read again (see <see cref="RuntimeFileHashCache"/>). Tests inject the
+    /// hasher to count the reads.
+    /// </summary>
+    internal static MindRuntimeConfiguration? LoadRegistered(
+        string manifestPath,
+        Func<string, string>? hasher)
     {
         if (string.IsNullOrWhiteSpace(manifestPath)
             || !Path.IsPathFullyQualified(manifestPath))
@@ -247,6 +278,25 @@ internal static class MindRuntimeDiscovery
                 return null;
             }
 
+            RuntimeFileHashCache hashes = RuntimeFileHashCache.ForRegistration(info.FullName, hasher ?? FileSha256);
+            MindRuntimeConfiguration? runtime = LoadRegistered(info, hashes);
+            hashes.Save();
+            return runtime;
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or ArgumentException
+            or NotSupportedException
+            or JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static MindRuntimeConfiguration? LoadRegistered(FileInfo info, RuntimeFileHashCache hashes)
+    {
+        try
+        {
             using FileStream stream = info.OpenRead();
             using JsonDocument document = JsonDocument.Parse(
                 stream,
@@ -258,7 +308,10 @@ internal static class MindRuntimeDiscovery
                 });
             JsonElement root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object
-                || !HasExactProperties(root, RegistrationProperties)
+                || !HasExactProperties(root, [
+                    .. RegistrationProperties,
+                    .. OptionalAdapterProperties.Where(name => root.TryGetProperty(name, out _)),
+                ])
                 || !string.Equals(
                     RequiredString(root, "schema"),
                     RegistrationSchema,
@@ -268,15 +321,18 @@ internal static class MindRuntimeDiscovery
             }
 
             string? python = ExistingFile(
+                hashes,
                 RequiredString(root, "python"),
                 "python.exe",
                 RequiredString(root, "python_sha256"));
             string? pythonPath = ExistingDirectory(RequiredString(root, "python_path"));
             string? gguf = ExistingFile(
+                hashes,
                 RequiredString(root, "gguf"),
                 expectedName: null,
                 RequiredString(root, "gguf_sha256"));
             string? server = ExistingFile(
+                hashes,
                 RequiredString(root, "llama_server"),
                 "llama-server.exe",
                 RequiredString(root, "llama_server_sha256"));
@@ -288,7 +344,7 @@ internal static class MindRuntimeDiscovery
                 || server is null
                 || stt is null
                 || !File.Exists(Path.Combine(pythonPath, "baxy_mind", "__main__.py"))
-                || !MatchesSttHash(stt, RequiredString(root, "stt_sha256")))
+                || !MatchesSttHash(hashes, stt, RequiredString(root, "stt_sha256")))
             {
                 return null;
             }
@@ -323,6 +379,7 @@ internal static class MindRuntimeDiscovery
                 }
 
                 wakeManifest = ExistingFile(
+                    hashes,
                     wakeManifestElement.GetString(),
                     expectedName: null,
                     wakeHashElement.GetString());
@@ -342,9 +399,16 @@ internal static class MindRuntimeDiscovery
             else if (ttsModelElement.ValueKind != JsonValueKind.String
                 || ttsHashElement.ValueKind != JsonValueKind.String
                 || ExistingFile(
+                    hashes,
                     ttsModelElement.GetString(),
                     expectedName: null,
                     ttsHashElement.GetString()) is null)
+            {
+                return null;
+            }
+
+            if (!TryReadBoundAdapter(hashes, root, "cpu_prose_adapter", "baxy-cpu-prose-adapter-v1", out string? cpuProseAdapter)
+                || !TryReadBoundAdapter(hashes, root, "decider_adapter", "baxy-decider-adapter-v1", out string? deciderAdapter))
             {
                 return null;
             }
@@ -358,7 +422,9 @@ internal static class MindRuntimeDiscovery
                 stt,
                 wakeManifest,
                 ngl,
-                wakeOnStart);
+                wakeOnStart,
+                cpuProseAdapter,
+                deciderAdapter);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -370,7 +436,44 @@ internal static class MindRuntimeDiscovery
         }
     }
 
+    private static readonly string[] OptionalAdapterProperties = ["cpu_prose_adapter", "decider_adapter"];
+
+    // A LoRA the manifest binds by hash to its own base GGUF; absent is valid, malformed rejects the manifest.
+    private static bool TryReadBoundAdapter(RuntimeFileHashCache hashes, JsonElement root, string property, string schema, out string? serialized)
+    {
+        serialized = null;
+        if (!root.TryGetProperty(property, out JsonElement adapter))
+        {
+            return true;
+        }
+        if (adapter.ValueKind != JsonValueKind.Object
+            || !HasExactProperties(adapter, ["schema", "gguf", "gguf_sha256", "base_gguf_sha256"])
+            || RequiredString(adapter, "schema") != schema
+            || RequiredString(adapter, "base_gguf_sha256") != RequiredString(root, "gguf_sha256"))
+        {
+            return false;
+        }
+        string? adapterFile = ExistingFile(
+            hashes,
+            RequiredString(adapter, "gguf"),
+            expectedName: null,
+            RequiredString(adapter, "gguf_sha256"));
+        if (adapterFile is null || !adapterFile.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+        serialized = JsonSerializer.Serialize(new
+        {
+            schema,
+            gguf = adapterFile,
+            gguf_sha256 = RequiredString(adapter, "gguf_sha256"),
+            base_gguf_sha256 = RequiredString(adapter, "base_gguf_sha256"),
+        });
+        return true;
+    }
+
     private static string? ExistingFile(
+        RuntimeFileHashCache hashes,
         string? value,
         string? expectedName,
         string? expectedSha256)
@@ -380,7 +483,7 @@ internal static class MindRuntimeDiscovery
             || !File.Exists(canonical)
             || !IsSha256(expectedSha256)
             || !string.Equals(
-                FileSha256(canonical),
+                hashes.Sha256(canonical),
                 expectedSha256,
                 StringComparison.Ordinal)
             || (expectedName is not null
@@ -422,7 +525,7 @@ internal static class MindRuntimeDiscovery
         return schema.GetString() is "baxy-wakeword-v1" or "baxy-wake-cascade-v1";
     }
 
-    private static bool MatchesSttHash(string directory, string? expectedSha256)
+    private static bool MatchesSttHash(RuntimeFileHashCache hashes, string directory, string? expectedSha256)
     {
         if (!IsSha256(expectedSha256))
         {
@@ -439,7 +542,7 @@ internal static class MindRuntimeDiscovery
             }
             fingerprint.Append(name)
                 .Append(':')
-                .Append(FileSha256(path))
+                .Append(hashes.Sha256(path))
                 .Append('\n');
         }
 
@@ -450,7 +553,12 @@ internal static class MindRuntimeDiscovery
             StringComparison.Ordinal);
     }
 
-    private static string FileSha256(string path)
+    /// <summary>
+    /// The App's own reading of a runtime file: the whole stream is hashed
+    /// here, never taken from a launcher or a manifest. The cache only spares
+    /// this read for a file whose identity did not change.
+    /// </summary>
+    internal static string FileSha256(string path)
     {
         using FileStream stream = File.OpenRead(path);
         return Convert.ToHexStringLower(SHA256.HashData(stream));
@@ -561,7 +669,9 @@ internal static class MindRuntimeDiscovery
             Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST"),
             Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
             Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
-            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"));
+            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),
+            Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER"),
+            Environment.GetEnvironmentVariable("BAXY_MIND_DECIDER_ADAPTER"));
 
     private static bool EnvironmentMatches(MindRuntimeEnvironmentSnapshot expected) =>
         string.Equals(
@@ -607,6 +717,14 @@ internal static class MindRuntimeDiscovery
         && string.Equals(
             Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
             expected.Offline,
+            StringComparison.Ordinal)
+        && string.Equals(
+            Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER"),
+            expected.CpuProseAdapter,
+            StringComparison.Ordinal)
+        && string.Equals(
+            Environment.GetEnvironmentVariable("BAXY_MIND_DECIDER_ADAPTER"),
+            expected.DeciderAdapter,
             StringComparison.Ordinal)
         && string.Equals(
             Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),

@@ -1,2 +1,0 @@
-C:\Users\usuario\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\pywinauto\__init__.py:80: UserWarning: Revert to STA COM threading mode
-  warnings.warn("Revert to STA COM threading mode", UserWarning)

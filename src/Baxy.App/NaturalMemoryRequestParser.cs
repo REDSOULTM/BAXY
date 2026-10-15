@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -40,6 +41,19 @@ internal enum MemoryParseOutcome
     NoRoute,
 }
 
+internal enum MemorySaveSubject
+{
+    Name,
+}
+
+/// <summary>Revisión M H2: what the one judge of a value to keep says of it.</summary>
+internal enum MemoryValueJudgement
+{
+    Keepable,
+    NotKeepable,
+    GrantsAuthority,
+}
+
 internal sealed class MemoryParseResult
 {
     private MemoryParseResult(
@@ -50,7 +64,8 @@ internal sealed class MemoryParseResult
         bool mustNotChangeAuthority = false,
         bool mustNotInvent = false,
         bool mustNotClaimStandaloneRoute = false,
-        bool maskPublicProjection = false)
+        bool maskPublicProjection = false,
+        MemorySaveSubject? missingSaveSubject = null)
     {
         if (outcome == MemoryParseOutcome.Route && operation is null)
         {
@@ -99,6 +114,7 @@ internal sealed class MemoryParseResult
         MustNotInvent = mustNotInvent;
         MustNotClaimStandaloneRoute = mustNotClaimStandaloneRoute;
         MaskPublicProjection = maskPublicProjection;
+        MissingSaveSubject = missingSaveSubject;
     }
 
     internal MemoryParseOutcome Outcome { get; }
@@ -117,11 +133,14 @@ internal sealed class MemoryParseResult
 
     internal bool MaskPublicProjection { get; }
 
+    internal MemorySaveSubject? MissingSaveSubject { get; }
+
     internal static MemoryParseResult Route(MemoryRoutedOperation operation) =>
         new(MemoryParseOutcome.Route, operation ?? throw new ArgumentNullException(nameof(operation)));
 
-    internal static MemoryParseResult ClarifySave() =>
-        new(MemoryParseOutcome.Clarify, null, mustNotPersist: true);
+    internal static MemoryParseResult ClarifySave(MemorySaveSubject? subject = null) =>
+        new(MemoryParseOutcome.Clarify, null, mustNotPersist: true,
+            missingSaveSubject: subject);
 
     internal static MemoryParseResult ClarifyForget() =>
         new(MemoryParseOutcome.Clarify, null, mustNotDelete: true);
@@ -181,6 +200,14 @@ internal sealed class MemoryParseResult
     private static bool IsValidOrdinaryRoute(MemoryRoutedOperation operation)
     {
         JsonObject arguments = operation.PrivateArguments;
+        if (string.Equals(operation.Name, "memory.correct", StringComparison.Ordinal))
+        {
+            // Revisión M H2: a correction never writes a secret as an ordinary value either.
+            return arguments["value"] is not JsonValue corrected
+                || !corrected.TryGetValue(out string? correctedValue)
+                || !string.IsNullOrWhiteSpace(correctedValue)
+                && !NaturalMemoryRequestParser.ContainsSensitiveMaterial(correctedValue);
+        }
         if (string.Equals(operation.Name, "memory.save", StringComparison.Ordinal))
         {
             if (arguments["sensitivity"] is not JsonValue sensitivityValue
@@ -288,6 +315,11 @@ internal static partial class NaturalMemoryRequestParser
                 : MemoryParseResult.NoRoute();
         }
 
+        if (TryParseDeclaredNameSave(command, out MemoryRoutedOperation? operation))
+        {
+            return MemoryParseResult.Route(operation!);
+        }
+
         if (ReminderPattern().IsMatch(foldedCommand)
             || NoiseOrCompositionPattern().IsMatch(foldedCommand))
         {
@@ -295,7 +327,16 @@ internal static partial class NaturalMemoryRequestParser
                 MixedMemoryCompositionPattern().IsMatch(foldedCommand));
         }
 
-        if (TryParseAuditedLiteral(foldedCommand, out MemoryRoutedOperation? operation))
+        // An explicit request may announce the value instead of supplying it.
+        // A preceding capability question is not the value or the authority:
+        // the final clause must itself request persistence of the named datum.
+        string finalClause = command[(command.LastIndexOf('?') + 1)..].TrimStart(' ', ',');
+        if (MissingNameSavePattern().IsMatch(finalClause))
+        {
+            return MemoryParseResult.ClarifySave(MemorySaveSubject.Name);
+        }
+
+        if (TryParseAuditedLiteral(foldedCommand, out operation))
         {
             return MemoryParseResult.Route(operation!);
         }
@@ -317,7 +358,16 @@ internal static partial class NaturalMemoryRequestParser
             return MemoryParseResult.AskToSave();
         }
 
-        if (AmbiguousSavePattern().IsMatch(foldedCommand))
+        // M111 (DEV-F v4d F-w10-t3 «save that in a note called home network» → «What content should be saved…?»):
+        // «that» saved in a note, a task or a list goes to that record, never to BAXY's memory; the mind reads it.
+        // r15b t-file-3 «Save this drawing as baxy-dibujo.png in Documents\baxy-prueba-v3»: a save of «this» saved as
+        // a file name with its extension, into a path, or said as what the window holds is the window's own Save As,
+        // never BAXY's memory; the mind reads it. A name with no extension («save this as my favorite color», «guarda
+        // esto en tu memoria como importante») or a dot or slash inside the datum («ana@gmail.com», «el 3/5») still
+        // asks what to keep (revisión destino del pedido).
+        if (AmbiguousSavePattern().IsMatch(foldedCommand)
+            && !RecordDestinationPattern().IsMatch(foldedCommand)
+            && !SaveOnTheWindowPattern().IsMatch(foldedCommand))
         {
             return MemoryParseResult.ClarifySave();
         }
@@ -414,6 +464,116 @@ internal static partial class NaturalMemoryRequestParser
     private static bool IsExplicitMemorySave(string command) =>
         ExplicitMemorySavePattern().IsMatch(command);
 
+    internal static bool WithdrawsPendingSave(string text) =>
+        PostposedNoStorePattern().IsMatch(text)
+        || ExplicitNoStorePattern().IsMatch(text)
+        || NegatedMemoryIntentPattern().IsMatch(text);
+
+    private static bool TryParseDeclaredNameSave(string command, out MemoryRoutedOperation? operation)
+    {
+        operation = null;
+        // A declaration supplies the value; a separate explicit clause supplies
+        // authority for that same datum. Neither clause alone permits a save.
+        foreach (Match boundary in NameClauseBoundaryPattern().Matches(command))
+        {
+            string first = command[..boundary.Index].Trim();
+            string second = command[(boundary.Index + boundary.Length)..].Trim();
+            string? declaration = MissingNameSavePattern().IsMatch(first)
+                ? second
+                : MissingNameSavePattern().IsMatch(second) ? first : null;
+            if (declaration is null)
+            {
+                continue;
+            }
+
+            Match name = DeclaredNameInputPattern().Match(declaration);
+            if (!name.Success || name.Groups["public"].Success
+                || NameClauseBoundaryPattern().IsMatch(name.Groups["value"].Value)
+                || !TrySafeCapturedValue(name.Groups["value"].Value, out string value))
+            {
+                continue;
+            }
+
+            operation = Save("name", value, "fact", "persistent", sensitivity: "personal");
+            return true;
+        }
+
+        return false;
+    }
+
+    internal static bool RefersToCurrentNameConversation(
+        string text, IEnumerable<string> recentUserMessages)
+    {
+        string command = StripRequestEnvelope(TrimSentencePunctuation(
+            CollapseWhitespacePattern().Replace(text.Normalize(NormalizationForm.FormC), " ").Trim()));
+        // This selects conversational scope, not a name value or permission.
+        // Keep the role-bounded human text for the mind to interpret, including
+        // corrections; assistant claims never establish personal context here.
+        return NameRecallPattern().Match(command).Groups["conversation"].Success
+            && recentUserMessages.Any(static message =>
+                DeclaredNameInputPattern().IsMatch(message.Trim()));
+    }
+
+    internal static bool TryBindSaveInput(
+        MemorySaveSubject subject,
+        MissionInputRoute input,
+        out MissionInputRoute? bound)
+    {
+        bound = null;
+        if (subject != MemorySaveSubject.Name
+            || input.Memory.Outcome != MemoryParseOutcome.AskToSave
+            || ContainsSensitiveMaterial(input.Text)
+            || WithdrawsPendingSave(input.Text))
+        {
+            return false;
+        }
+
+        Match match = DeclaredNameInputPattern().Match(input.Text.Trim());
+        if (!match.Success
+            || NameClauseBoundaryPattern().IsMatch(match.Groups["value"].Value)
+            || !TrySafeCapturedValue(match.Groups["value"].Value, out string name))
+        {
+            return false;
+        }
+
+        string publicObjective = match.Groups["public"].Value.Trim();
+        if (publicObjective.Length > 0)
+        {
+            MemoryParseResult rest = Classify(publicObjective);
+            if (rest.Outcome != MemoryParseOutcome.NoRoute
+                || rest.MustNotPersist || rest.MustNotClaimStandaloneRoute)
+            {
+                return false;
+            }
+        }
+
+        bound = new MissionInputRoute(
+            input.Text,
+            input.Source,
+            MemoryParseResult.Route(Save(
+                "name", name, "fact", "persistent", sensitivity: "personal")),
+            publicObjective);
+        return true;
+    }
+
+    /// <summary>
+    /// Revisión M H2 (one source): the filters this reader applies to every value it captures, applied to a value any
+    /// other reader (the mind's, the model) hands the private route, with the request it came in: no secret in either,
+    /// no grant of permissions for BAXY, no second order, no file path, no placeholder.
+    /// </summary>
+    internal static MemoryValueJudgement JudgeValueToKeep(string request, string value)
+    {
+        string folded = (request ?? string.Empty).ToLowerInvariant();
+        if (AuthorizationPattern().IsMatch(folded) || AuthorizationPattern().IsMatch(value.ToLowerInvariant()))
+        {
+            return MemoryValueJudgement.GrantsAuthority;
+        }
+
+        return ContainsSensitiveMaterial(request ?? string.Empty) || !TrySafeCapturedValue(value, out _)
+            ? MemoryValueJudgement.NotKeepable
+            : MemoryValueJudgement.Keepable;
+    }
+
     internal static bool ContainsSensitiveMaterial(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -482,6 +642,15 @@ internal static partial class NaturalMemoryRequestParser
             {
                 return false;
             }
+        }
+
+        // Document references already have a recognized syntax in this owner.
+        // Their dates/IDs must survive public projection and composition.
+        // Explicit secret labels and credential prefixes are checked before
+        // this generic token heuristic in ContainsSensitiveMaterial.
+        if (FilesystemOrDocumentPattern().IsMatch(Path.GetExtension(token)))
+        {
+            return false;
         }
 
         bool credentialPrefix = firstSeparator is >= 2 and <= 16
@@ -639,8 +808,6 @@ internal static partial class NaturalMemoryRequestParser
                     "persistent",
                     expectedValue: "azul",
                     kind: "preference"),
-            "desactiva la memoria local de baxy" => Configure(enabled: false),
-            "enable baxy's private local memory" => Configure(enabled: true),
             "exporta una copia privada de todo lo que baxy recuerda de mí" => Export(),
             "muéstrame la lista de recuerdos locales que guardaste" => List(),
             "what do you remember about my preferred editor" =>
@@ -697,10 +864,6 @@ internal static partial class NaturalMemoryRequestParser
                     "technical_and_brief",
                     "persistent",
                     kind: "preference"),
-            "activa la memoria" or "habilita la memoria" or "enable memory"
-                or "turn memory on" => Configure(enabled: true),
-            "desactiva la memoria" or "disable memory" or "turn memory off" =>
-                Configure(enabled: false),
             "tienes memoria" or "tienes memoria local" or "do you have memory" =>
                 Status(),
             "lista mi memoria" or "muestra toda mi memoria" or "show my memories"
@@ -718,6 +881,16 @@ internal static partial class NaturalMemoryRequestParser
     {
         operation = null;
 
+        Match configuration = MemoryConfigurationRequestPattern().Match(command);
+        if (configuration.Success)
+        {
+            // Qualifiers describe the same private store, not a new operation.
+            // Require the whole imperative: mentions, negations, other stores
+            // and additional effects cannot authorize a configuration change.
+            operation = Configure(enabled: configuration.Groups["enable"].Success);
+            return true;
+        }
+
         if ((MemoryStatusRequestPattern().IsMatch(command)
                 || LeadingMemoryStatusRequestPattern().IsMatch(command)
                 || IsCompositionalMemoryStatusRequest(command))
@@ -732,6 +905,16 @@ internal static partial class NaturalMemoryRequestParser
             && TrySafeCapturedValue(match.Groups["value"].Value, out string color))
         {
             operation = Save("favorite_color", color, "preference", "persistent");
+            return true;
+        }
+
+        // MEMORY1599 «que me gusta tomar» recalls favorite_drink, so «recuerda
+        // que me gusta tomar mate» must save that selector, not a generic fact.
+        match = FavoriteDrinkSavePattern().Match(command);
+        if (match.Success
+            && TrySafeCapturedValue(match.Groups["value"].Value, out string drink))
+        {
+            operation = Save("favorite_drink", drink, "preference", "persistent");
             return true;
         }
 
@@ -817,6 +1000,12 @@ internal static partial class NaturalMemoryRequestParser
         if (FavoriteColorRecallPattern().IsMatch(command))
         {
             operation = Recall("exact", "favorite_color");
+            return true;
+        }
+
+        if (FavoriteDrinkRecallPattern().IsMatch(command))
+        {
+            operation = Recall("exact", "favorite_drink");
             return true;
         }
 
@@ -1376,6 +1565,17 @@ internal static partial class NaturalMemoryRequestParser
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex TrailingSocialClosurePattern();
 
+    private const string EnglishConfigurationMemoryTarget =
+        "(?:(?:the|your|baxy['’]s)[ ]+)?(?:(?:private|local|personal)[ ]+){0,3}memory";
+
+    [GeneratedRegex(
+        "^(?:(?:(?<enable>activa|habilita)|(?<disable>desactiva|deshabilita))[ ]+"
+        + "(?:la|tu)[ ]+memoria(?:[ ]+(?:privada|local|personal)){0,3}(?:[ ]+de[ ]+baxy)?|"
+        + "(?:(?<enable>enable)|(?<disable>disable))[ ]+" + EnglishConfigurationMemoryTarget + "|"
+        + "turn[ ]+" + EnglishConfigurationMemoryTarget + "[ ]+(?:(?<enable>on)|(?<disable>off)))$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex MemoryConfigurationRequestPattern();
+
     [GeneratedRegex(
         "^(?:dime|muestra(?:me)?|consulta|revisa|comprueba|checkea|indica|confirma|"
         + "show|tell|check|review|give|state|confirm|report|i[ ]+need).{0,96}(?:"
@@ -1506,7 +1706,7 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex TemporaryNoStorePattern();
 
     [GeneratedRegex(
-        "(?:\\b(?:autorizaci[oó]n|authorization|authorisation)\\b|permiso(?:s)?[ ]+(?:total(?:es)?|completo(?:s)?)|total[ ]+(?:permission|access)|(?:pc|computer)[ ]+.{0,40}(?:disposici[oó]n|permission)|(?:tienes|tiene|tengo|te[ ]+doy|te[ ]+concedo|you[ ]+have|i[ ]+give[ ]+you|i[ ]+grant[ ]+you)[ ].{0,40}(?:permiso|permission|access)|(?:eres|you[ ]+are)[ ]+(?:un[ ]+|an?[ ]+)?(?:admin(?:istrador)?|administrator|superuser|root)[ ]+(?:total|full)|(?:te[ ]+autorizo|i[ ]+authorize[ ]+you)[ ].{0,32}(?:a[ ]+)?(?:modificar|cambiar|borrar|eliminar|ejecutar|hacer|modify|change|delete|remove|run|do)|(?:puedes|pod[eé]s)[ ].{0,20}hacer[ ]+(?:lo[ ]+que[ ]+quieras|cualquier[ ]+cosa)|you[ ]+(?:may|can)[ ].{0,20}do[ ]+(?:anything|whatever[ ]+you[ ]+want))",
+        "(?:\\b(?:autorizaci[oó]n|authorization|authorisation)\\b|permiso(?:s)?[ ]+(?:total(?:es)?|completo(?:s)?)|total[ ]+(?:permission|access)|(?:pc|computer)[ ]+.{0,40}(?:disposici[oó]n|permission)|(?:tienes|ten[eé]s|tiene|tengo|te[ ]+doy|te[ ]+concedo|you[ ]+have|i[ ]+give[ ]+you|i[ ]+grant[ ]+you)[ ].{0,40}(?:permiso|permission|access)|(?:eres|you[ ]+are)[ ]+(?:un[ ]+|an?[ ]+)?(?:admin(?:istrador)?|administrator|superuser|root)[ ]+(?:total|full)|(?:te[ ]+autorizo|i[ ]+authorize[ ]+you)[ ].{0,32}(?:a[ ]+)?(?:modificar|cambiar|borrar|eliminar|ejecutar|hacer|modify|change|delete|remove|run|do)|(?:puedes|pod[eé]s)[ ].{0,20}hacer[ ]+(?:lo[ ]+que[ ]+quieras|cualquier[ ]+cosa)|you[ ]+(?:may|can)[ ].{0,20}do[ ]+(?:anything|whatever[ ]+you[ ]+want))",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex AuthorizationPattern();
 
@@ -1515,8 +1715,22 @@ internal static partial class NaturalMemoryRequestParser
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex SecondaryInstructionPattern();
 
+    // Remembering a task to do is a reminder, not a datum for the private memory:
+    // «recuerda arreglar una reunión … mañana a las siete» (tanda-02) was saved as
+    // a fact. Any infinitive after the head («recuerda / recordá / acordate de /
+    // recuérdame <hacer algo>», «remember / remind me to <do>»), a due moment
+    // right after «recuérdame / remind me», or a «recuérdame que …» carrying a
+    // due moment leaves the turn to the mind's reminder reading. «recuerda que
+    // <dato>» stays a memory save.
+    // Tanda 6 «recuerda me a las ocho de la tarde que tengo que tomar mi medicamento»
+    // was saved as the datum «me a las ocho…»: the ear writes the clitic apart
+    // («recuerda me», «recordá me»), and it is still «recuérdame».
     [GeneratedRegex(
-        "^(?:recu[eé]rdame|recordame|remind[ ]+me)[ ]+(?:en[ ]+\\d+|a[ ]+las[ ]+\\d+|ma[nñ]ana[ ]+a[ ]+las|to(?:day|morrow)[ ]+at)[ ]|^(?:recuerda|recu[eé]rdame|recordame|remind[ ]+me)[ ]+(?:(?:sacar|llamar|comprar|hacer|take|call|buy|do)[ ]+)|^recu[eé]rdame[ ]+que[ ]+(?:pague|tome|saque|llame|compre)[ ]+",
+        "^(?:recu[eé]rda[ ]?me|record[aá][ ]?me|remind[ ]+me)[ ]+(?:en[ ]+\\d+|a[ ]+las?[ ]|ma[nñ]ana|hoy|esta[ ]+(?:tarde|noche)|to(?:day|morrow|night)|at[ ]+\\d|in[ ]+\\d)"
+        + "|^(?:recuerda|record[aá]|acordate|acu[eé]rdate|recu[eé]rda[ ]?me|record[aá][ ]?me)[ ]+(?:de[ ]+)?\\p{L}+(?:ar|er|ir|ír)(?:me|te|se|nos|lo|la|los|las|le|les){0,2}(?:[ ,.]|$)"
+        + "|^(?:remember|remind[ ]+me)[ ]+to[ ]+\\p{L}"
+        + "|^recu[eé]rda[ ]?me[ ]+que[ ]+(?:pague|tome|saque|llame|compre)[ ]+"
+        + "|^(?:recu[eé]rda[ ]?me|record[aá][ ]?me)[ ]+que[ ].*\\b(?:ma[nñ]ana|hoy|esta[ ]+(?:tarde|noche)|a[ ]+las?[ ]+\\S+|en[ ]+\\d+[ ]+(?:minutos?|horas?)|dentro[ ]+de|el[ ]+(?:lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo))\\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex ReminderPattern();
 
@@ -1555,6 +1769,26 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex AmbiguousSavePattern();
 
     [GeneratedRegex(
+        "\\b(?:en|in|as|como|to|into)[ ]+(?:(?:una|un|la|el|las|los|mis|mi|a|an|the|my)[ ]+)?(?:(?:nueva|new)[ ]+)?"
+        + "(?:nota|notas|note|notes|tarea|tareas|task|tasks|lista|list|pendientes|to-?do)\\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex RecordDestinationPattern();
+
+    // A save of «this» (the words ``AmbiguousSavePattern`` reads) whose rest is the window's Save As: saved as a file
+    // name with its extension («como x.txt», «as baxy-dibujo.png»; a datum's «ana@gmail.com» is none), into a path
+    // with a drive or a folder separator between letters («en Documentos\baxy-prueba-v3», «in C:\Users\Ana»; «el 3/5»
+    // is none), or said as what the window holds («this drawing»).
+    [GeneratedRegex(
+        "^(?:s[ií],[ ]+)?(?:guarda|save)[ ]+(?:esto|this|eso|that|it)[ ]+(?:"
+        + "(?:.*[ ])?(?:como|as|named|called|llamado|llamada)[ ]+[^ @]*[a-z0-9_-]\\.[a-z0-9]{2,5}(?:[ ,;:!?.].*)?"
+        + "|(?:.*[ ])?(?:en|in|to|into|a)[ ]+(?:[^ ]+[ ]+){0,2}"
+        + "(?:[a-z]:[\\\\/][^ ]*|[a-z][^ /\\\\@]*[\\\\/][^ ]*[a-z][^ ]*)(?:[ ].*)?"
+        + "|(?:drawing|document|file|image|picture|photo|page|sheet)\\b.*"
+        + ")$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex SaveOnTheWindowPattern();
+
+    [GeneratedRegex(
         "^(?:esto|this|eso|that|esa[ ]+(?:preferencia|preference)|lo[ ]+del[ ]+estilo|that[ ]+setting)$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex AnaphoricValuePattern();
@@ -1565,14 +1799,51 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex FilesystemOrDocumentPattern();
 
     [GeneratedRegex(
-        "^(?:(?:recuerda|acordate|guarda|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)[ ]+(?:es|is)[ ]+(?:el[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
+        "^(?:(?:recuerda|record[aá]|acordate|acuérdate|guarda|guard[aá]|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)[ ]+(?:es|is)[ ]+(?:el[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex FavoriteColorSavePattern();
 
     [GeneratedRegex(
-        "^(?:recuerda(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
+        "^(?:(?:recuerda|record[aá]|acordate|acuérdate|guarda|guard[aá]|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:me[ ]+gusta[ ]+(?:tomar|beber)|mi[ ]+bebida[ ]+favorita[ ]+es|i[ ]+like[ ]+to[ ]+drink|my[ ]+favorite[ ]+drink[ ]+is)[ ]+(?:el[ ]+|la[ ]+|the[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex FavoriteDrinkSavePattern();
+
+    [GeneratedRegex(
+        // «recordá que me llamo …» (voseo), «acordate que me llamo …» and «quiero que
+        // me recuerdes como …» ask to persist the name as plainly as «recuerda que
+        // me llamo …» (MEMORY1245: H0149 read as a reminder without a time).
+        "^(?:(?:recuerda|record[aá]|acordate|acuérdate)(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as|(?:quiero[ ]+que[ ]+)?me[ ]+recuerdes[ ]+como)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex NameSavePattern();
+
+    [GeneratedRegex(
+        "^(?:(?:recuerda|guarda)[ ]+mi[ ]+nombre|(?:remember|save)[ ]+my[ ]+name|"
+        + "(?:quiero|necesito)[ ]+que[ ]+(?:recuerdes|guardes)[ ]+mi[ ]+nombre|"
+        + "(?:quiero|voy[ ]+a)[ ]+(?:decirte|darte)[ ]+mi[ ]+nombre[ ]+y[ ]+"
+        + "(?:quiero|necesito)[ ]+que[ ]+lo[ ]+(?:recuerdes|guardes)|"
+        + "i[ ]+(?:want|need)[ ]+you[ ]+to[ ]+(?:remember|save)[ ]+my[ ]+name|"
+        + "i[ ]+(?:want[ ]+to|will)[ ]+(?:tell|give)[ ]+you[ ]+my[ ]+name[ ]+and[ ]+"
+        + "i[ ]+(?:want|need)[ ]+you[ ]+to[ ]+(?:remember|save)[ ]+it)"
+        + "(?:[ ]+(?:(?:para[ ]+)?cuando[ ]+te[ ]+(?:lo[ ]+)?pregunte|when[ ]+i[ ]+ask(?:[ ]+you)?(?:[ ]+again)?))?[.!]?$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex MissingNameSavePattern();
+
+    [GeneratedRegex(
+        "\\b(?:no[ ]+(?:quiero|necesito)|i[ ]+(?:don['’]?t|do[ ]+not)[ ]+want)[ ].{0,48}"
+        + "\\b(?:guardar|guardes|recordar|recuerdes|save|remember)\\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex NegatedMemoryIntentPattern();
+
+    [GeneratedRegex(
+        "^(?:(?:yo[ ]+)?me[ ]+llamo|mi[ ]+nombre[ ]+es|my[ ]+name[ ]+is)[ ]+"
+        + "(?<value>[\\p{L}][\\p{L} '’-]{0,79})(?:[.!]|[,;][ ]*(?<public>.+))?$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex DeclaredNameInputPattern();
+
+    [GeneratedRegex(
+        "[.,;!][ ]*|[ ]+(?:y|and)[ ]+",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex NameClauseBoundaryPattern();
 
     [GeneratedRegex(
         "^(?:recuerda(?<session>[ ]+durante[ ]+esta[ ]+sesi[oó]n)?[ ]+que[ ]+mi[ ]+proyecto[ ]+se[ ]+llama|remember(?<session>[ ]+for[ ]+this[ ]+session)?[ ]+that[ ]+my[ ]+project[ ]+is[ ]+called)[ ]+(?<value>[\\p{L}\\p{N}][\\p{L}\\p{N} ._-]{0,79})$",
@@ -1600,12 +1871,19 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex DarkModeSavePattern();
 
     [GeneratedRegex(
-        "^(?:c[oó]mo[ ]+me[ ]+llamo|what(?:[ ]+is|'s)[ ]+my[ ]+name|"
+        "^(?:(?<conversation>c[oó]mo[ ]+me[ ]+llamo|what(?:[ ]+is|'s)[ ]+my[ ]+name|"
+        + "quien[ ]+soy[ ]+yo|was[ ]+my[ ]+name[ ]+again)|"
+        + "(?:what|which)[ ]+name[ ]+(?:have[ ]+you[ ]+(?:saved|stored)|"
+        + "do[ ]+you[ ]+have[ ]+(?:saved|stored))"
+        + "(?:[ ]+in[ ]+(?:(?:your|the)[ ]+)?(?:private[ ]+)?(?:local[ ]+)?memory)?|"
+        + "what(?:[ ]+is|'s)[ ]+my[ ]+(?:saved|stored)[ ]+name|"
+        + "qu[eé][ ]+nombre[ ]+(?:tienes|has)[ ]+(?:guardado|almacenado)"
+        + "(?:[ ]+en[ ]+(?:(?:tu|la)[ ]+)?memoria(?:[ ]+(?:local|privada)){0,2})?|"
+        + "cu[aá]l[ ]+es[ ]+mi[ ]+nombre[ ]+(?:guardado|almacenado)|"
         + "comment[ ]+je[ ]+m['’]appelle|quel[ ]+est[ ]+mon[ ]+nom(?:,[ ]+s['’]il[ ]+vous[ ]+pla[iî]t)?|"
         + "wie[ ]+hei(?:ß|ss)e[ ]+ich|was[ ]+ist[ ]+mein[ ]+name[ ]+noch[ ]+mal|"
-        + "quien[ ]+soy[ ]+yo|come[ ]+mi[ ]+chiamo|como[ ]+me[ ]+chamo|"
-        + "qual[ ]+[eé][ ]+o[ ]+meu[ ]+nome|meu[ ]+nome[ ]+qual[ ]+era|"
-        + "was[ ]+my[ ]+name[ ]+again)$",
+        + "come[ ]+mi[ ]+chiamo|como[ ]+me[ ]+chamo|"
+        + "qual[ ]+[eé][ ]+o[ ]+meu[ ]+nome|meu[ ]+nome[ ]+qual[ ]+era)$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex NameRecallPattern();
 
@@ -1644,6 +1922,11 @@ internal static partial class NaturalMemoryRequestParser
         "^(?:qu[eé][ ]+color[ ]+me[ ]+gusta|what(?:[ ]+is|'s)[ ]+my[ ]+favorite[ ]+color)$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex FavoriteColorRecallPattern();
+
+    [GeneratedRegex(
+        "^(?:(?:decime|dime|sab[eé]s)[ ]+)?(?:qu[eé][ ]+(?:me[ ]+gusta|bebida[ ]+me[ ]+gusta)[ ]+(?:tomar|beber)|cu[aá]l[ ]+es[ ]+mi[ ]+bebida[ ]+favorita|what(?:[ ]+is|'s)[ ]+my[ ]+favorite[ ]+drink|what[ ]+do[ ]+i[ ]+like[ ]+to[ ]+drink)$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex FavoriteDrinkRecallPattern();
 
     [GeneratedRegex(
         "^(?:borra|olvida|delete|forget)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)$",

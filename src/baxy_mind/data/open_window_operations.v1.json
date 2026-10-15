@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "purpose": "Ronda 19 «app-cerrada-se-abre» (uso real r17 t2-c18 «pon el Word y el Edge uno al lado del otro», t3-c15 «poné el word a la izquierda y el chrome a la derecha» with an application closed): the operations that act on an application's open window to place it. When the window.resolve of an installed application (applicationName) finds no window and every step that hangs on it is one of these, the shell opens that application (app.open) and resolves it once more; an application that is not installed, or whose window still does not appear, ends the turn with that absence as its cause, without another plan. Minimizing, closing, focusing or any other act on a window is never a reason to open it («minimiza Word», «cierra Discord» with it closed open nothing). Read by src/Baxy.App/OpenWindowOperations.cs (embedded).",
+  "place_an_open_window": [
+    "window.move",
+    "window.resize",
+    "window.snap"
+  ],
+  "persons_frame_purpose": "Ronda 22 (r18 t4-c19 «ponme el navegador y el word uno al lado del otro»: the browser's resolve listed three titled frames, one a 365×206 picture-in-picture, and the plan ended in step_data_missing; revisión 1: the order of an application's read is by area, not z-order, and a minimized frame measures 160×28). To place, size, focus, minimize, maximize or restore an application's window, its titled frames no window owns are narrowed to the one the act is for (owner rule D71): a frame already in the state the act leaves (act_end_state) is not its target while the frames left are minimized (revisión 2: an act whose end state a frame on the desktop can hold, maximize or minimize, has no entry: «maximiza el explorador» with the foreground frame already maximized is for that frame, never for the one behind it, which would then cover the person's window); then the foreground frame; then topmost frames (WS_EX_TOPMOST) smaller than tool_sized_work_area_fraction of their monitor's work area are tools, not the window; then the frame the provider ranks first in the desktop's z-order (zOrder, windows above it) when every frame left carries it and none is minimized; else the largest when every other is below comparable_area_fraction of it (a minimized frame has no size). Two comparable frames with no recency stay ambiguous. Read by src/Baxy.App/OpenWindowOperations.cs (embedded).",
+  "persons_frame": {
+    "tool_sized_work_area_fraction": 0.15,
+    "comparable_area_fraction": 0.6,
+    "act_end_state": {
+      "window.restore": "normal"
+    }
+  }
+}

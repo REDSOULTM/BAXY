@@ -151,17 +151,29 @@ public static class MissionPlanValidator
         {
             "app.close" => ["window.resolve", "window.active"],
             "bluetooth.device.pair" => ["bluetooth.device.list"],
+            "filesystem.read.text" => ["filesystem.search", "filesystem.list"],
             "game.install.commit" => ["game.install.prepare"],
             "game.purchase.commit" => ["game.purchase.prepare"],
             "message.send" => ["message.recipient.resolve"],
+            // M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la
+            // nota…?»): a note is changed by its identity and revision, which only the verified read of it gives.
+            "note.update" => ["note.read"],
             "notification.dismiss" => ["notification.list.due"],
-            "ocr.read" => ["capture.screenshot"],
+            "ocr.read" => ["capture.screenshot", "capture.active.window"],
             "package.install.commit" => ["package.install.prepare"],
             "peripheral.print" or "peripheral.scan" => ["peripheral.list"],
             "reminder.delete" => ["reminder.resolve.exact"],
+            // The mind already binds task.delete to task.resolve.exact
+            // (planner._required_predecessors); without the same relation here
+            // the shell rejected that plan as incomplete (M44 F-p02-t3).
+            "task.delete" => ["task.resolve.exact"],
+            // M76 (DEV-D v3l D-w17-t2 «mark the first one done» → «Which task ID and expected version…?»): marking
+            // a task done or open again takes its identity and version from the same verified resolver.
+            "task.complete" or "task.reopen" => ["task.resolve.exact"],
             "vision.describe" => ["capture.screenshot"],
             "window.focus" or "window.maximize" or "window.minimize"
-                or "window.move" or "window.resize" or "window.restore" =>
+                or "window.move" or "window.resize" or "window.restore"
+                or "window.snap" =>
                 ["window.resolve", "window.active"],
             "wifi.connect" => ["wifi.profile.list"],
             _ => [],
@@ -185,6 +197,14 @@ public static class MissionPlanValidator
             "browser.navigate" or "browser.navigate.named" => ["web.search"],
             "note.read" => ["note.create"],
             "office.document.read" => ["office.document.create"],
+            // FILES1705 «crea un archivo de texto con los 5 procesos que más
+            // memoria usan»: the file's text is projected from the verified
+            // process listing, so the write may defer its arguments to it.
+            "filesystem.write.text" => ["system.process.list"],
+            // MEME2053 «Tienes algun meme?»: the picture the image search
+            // downloads is the file the viewer opens; its name exists only in
+            // the verified download, so the open defers its arguments to it.
+            "file.open" => ["web.download"],
             _ => [],
         };
     }
@@ -198,18 +218,21 @@ public static class MissionPlanValidator
         {
             "app.close" or "window.focus" or "window.maximize"
                 or "window.minimize" or "window.move" or "window.resize"
-                or "window.restore" => ["windowId"],
+                or "window.restore" or "window.snap" => ["windowId"],
             "bluetooth.device.pair" or "peripheral.print"
                 or "peripheral.scan" => ["deviceId"],
             "browser.navigate" or "browser.navigate.named" => ["url"],
+            "filesystem.read.text" => ["resourceId"],
             "game.install.commit" or "game.purchase.commit"
                 or "package.install.commit" => ["confirmationId"],
             "message.send" => ["recipientId"],
-            "note.read" => ["noteId"],
+            "note.read" or "note.update" => ["noteId"],
             "notification.dismiss" or "reminder.delete" => ["reminderId"],
+            "task.delete" or "task.complete" or "task.reopen" => ["taskId"],
             "ocr.read" or "vision.describe" => ["captureId"],
             "office.document.read" => ["documentId"],
             "wifi.connect" => ["profileId"],
+            "file.open" => ["folder", "name"],
             _ => [],
         };
 

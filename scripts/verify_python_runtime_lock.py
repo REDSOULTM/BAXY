@@ -140,15 +140,18 @@ def validate_lock_structure(
         wheel = wheels[0]
         if not isinstance(wheel, dict):
             raise RuntimeLockError("lock_wheel")
-        if set(wheel) != {"name", "url", "hashes"}:
+        if set(wheel) not in (
+            {"name", "url", "hashes"}, {"name", "path", "hashes"}
+        ):
             raise RuntimeLockError("lock_wheel_fields")
         wheel_name = wheel.get("name")
-        wheel_url = wheel.get("url")
+        wheel_source = wheel.get("url", wheel.get("path"))
         hashes = wheel.get("hashes")
         if (
             not isinstance(wheel_name, str)
             or not wheel_name.endswith(".whl")
-            or not isinstance(wheel_url, str)
+            or any(character in wheel_name for character in "/\\:")
+            or not isinstance(wheel_source, str)
             or not isinstance(hashes, dict)
             or set(hashes) != {"sha256"}
             or not isinstance(hashes["sha256"], str)
@@ -162,16 +165,22 @@ def validate_lock_structure(
         ):
             raise RuntimeLockError("lock_wheel_package_mismatch")
         _validate_wheel_tags(wheel_name)
-        parsed_url = urlparse(wheel_url)
-        if (
-            parsed_url.scheme != "https"
-            or parsed_url.netloc != "files.pythonhosted.org"
-            or parsed_url.params
-            or parsed_url.query
-            or parsed_url.fragment
-            or unquote(parsed_url.path.rsplit("/", 1)[-1]) != wheel_name
-        ):
-            raise RuntimeLockError("lock_wheel_source")
+        if "path" in wheel:
+            # Bundled, hash-pinned wheels remain portable with the lock. Only
+            # direct children of this repository's wheel directory are allowed.
+            if wheel_source != f"runtime_wheels/{wheel_name}":
+                raise RuntimeLockError("lock_wheel_source")
+        else:
+            parsed_url = urlparse(wheel_source)
+            if (
+                parsed_url.scheme != "https"
+                or parsed_url.netloc != "files.pythonhosted.org"
+                or parsed_url.params
+                or parsed_url.query
+                or parsed_url.fragment
+                or unquote(parsed_url.path.rsplit("/", 1)[-1]) != wheel_name
+            ):
+                raise RuntimeLockError("lock_wheel_source")
         locked[name] = version
 
     constraints = load_constraints(constraints_path)

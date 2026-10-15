@@ -134,4 +134,160 @@ public sealed class FieldProductHonestTerminalTests
         ready.SetValue(viewModel, true);
         return viewModel;
     }
+
+    // Live 2026-10-07: «en el Explorador de archivos andá a Documentos y creá una carpeta
+    // llamada baxy-prueba» → the question was vetoed, every recomposition failed and the
+    // person read «⚠ (internal_code;retry_exhausted)». The line is the floor's data
+    // sentence for what the turn was, in the person's language; never the code.
+    [TestCase("clarification", "en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba", false)]
+    [TestCase("clarification", "in File Explorer go to Documents and create a folder named baxy-test", true)]
+    [TestCase("status", "What time is it?", true)]
+    public void FailedCompositionLeavesTheFloorSentenceNotTheDiagnostic(string intent, string userText, bool english)
+    {
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", intent, null), userText, new JsonObject(), "t0");
+
+        string line = MainWindowViewModel.CompositionFailureFallback(pending, "internal_code;retry_exhausted");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(line, Is.EqualTo(OperationFloor.CompositionFailureSentence(intent, english)));
+            Assert.That(line, Is.Not.Empty);
+            Assert.That(line, Does.Not.Contain("internal_code").And.Not.Contain("retry_exhausted").And.Not.Contain("⚠"));
+        });
+    }
+
+    // Regresiones r2 M5 (live v2-s02): the decider was unavailable and the failure could not be worded either; the
+    // person saw nothing for 171 s. A request the decider could not read is published at once with the line any failed
+    // composition leaves (review r4: no new fixed sentence, owner's M75); any other failure keeps the composition (and
+    // its queue) as before.
+    [Test]
+    public void ARequestTheDeciderCouldNotReadIsToldAtOnceWithTheFailedCompositionsLine()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationFloor.DeciderCouldNotRead(TurnVisibleFacts.Failure("mind_unavailable")), Is.True);
+            Assert.That(OperationFloor.DeciderCouldNotRead(TurnVisibleFacts.Status("mind_unavailable")), Is.True,
+                "the cause decides, whatever the event");
+            Assert.That(OperationFloor.DeciderCouldNotRead(TurnVisibleFacts.Failure("ambiguous_request")), Is.False,
+                "another failure is still worded by the mind");
+            Assert.That(OperationFloor.DeciderCouldNotRead("not json"), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task ARequestTheDeciderCouldNotReadIsNotQueuedWithNoMindReady()
+    {
+        await using MainWindowViewModel viewModel = ReadyViewModel();
+        var failures = new List<string>();
+        viewModel.CompositionFailed += (_, failure) => failures.Add(failure);
+        int before = viewModel.Messages.Count;
+        bool bypass = UserMessagePolicy.BypassLlmCompositionForTests;
+        UserMessagePolicy.BypassLlmCompositionForTests = false;
+        try
+        {
+            // No mind client: the turn's failure has no mind ready to word it (the path that queued it before).
+            typeof(MainWindowViewModel).GetMethod("AddMessage", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(
+                viewModel,
+                ["BAXY", TurnVisibleFacts.Failure("mind_unavailable"), false, false,
+                    UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService), null, null]);
+        }
+        finally
+        {
+            UserMessagePolicy.BypassLlmCompositionForTests = bypass;
+        }
+
+        var pending = new PendingModelMessage(
+            new UserMessageDraft(TurnVisibleFacts.Failure("mind_unavailable"), "error", null), string.Empty, new JsonObject(), "t0");
+        Assert.Multiple(() =>
+        {
+            Assert.That(viewModel.Messages, Has.Count.EqualTo(before + 1), "one line at once, nothing waits for the mind");
+            Assert.That(viewModel.Messages[^1].Body,
+                Is.EqualTo(MainWindowViewModel.CompositionFailureFallback(pending, "composer_unavailable")));
+            Assert.That(failures, Is.EqualTo(new[] { "composer_unavailable" }));
+            Assert.That(viewModel.HasCompositionError, Is.True);
+        });
+    }
+
+    // Owner's M75 ruling: a turn that did nothing keeps its ⚠ marker; only a question still to ask and a result have
+    // a floor sentence.
+    [Test]
+    public void AFailedConversationKeepsTheMarker()
+    {
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", "conversation", null), "¿qué me recomendás para cenar?", new JsonObject(), "t0");
+
+        Assert.That(MainWindowViewModel.CompositionFailureFallback(pending, "internal_code;retry_exhausted"),
+            Is.EqualTo("⚠ (internal_code;retry_exhausted)"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CompositionFailureProjectsARecoverableStateWithoutInventingProse(
+        bool recoverWithNewTurn)
+    {
+        await using MainWindowViewModel viewModel = ReadyViewModel();
+        var sink = new CollectingFieldEventSink();
+        await using var telemetry = new FieldTelemetrySampler();
+        await using var channel = new FieldProductChannel(
+            viewModel, sink, telemetry, CancellationToken.None);
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", "status", null),
+            "What time is it?", new JsonObject(), "t0");
+
+        // Exercise the queue's exhaustion/publication callbacks at the actual
+        // view-model boundary. No server or invented failure activity is needed.
+        await InvokeCallbackAsync(viewModel, "PublishCompositionFailureAsync",
+            pending, "retry_exhausted");
+        Assert.Multiple(() =>
+        {
+            Assert.That(LastState(sink.Snapshot()), Is.EqualTo("error"));
+            Assert.That(LastState(channel.CreateSocketBootstrap()), Is.EqualTo("error"));
+            Assert.That(viewModel.IsInputEnabled, Is.True);
+            Assert.That(viewModel.HasCompositionError, Is.True);
+            Assert.That(sink.Snapshot().Any(item =>
+                (string?)item["type"] == "composition_failed"
+                && (string?)item["cause"] == "retry_exhausted"), Is.True);
+            // d8eb8836 (owner session 2026-09-21 16:08): a failed composition leaves
+            // exactly one BAXY line; nothing else is written and no prose is invented.
+            // Live 2026-10-07: that line is the operation floor's data sentence, never
+            // the raw diagnostic code (which stays in the composition_failed event).
+            List<JsonObject> activity = sink.Snapshot().Where(item =>
+                (string?)item["type"] == "activity").ToList();
+            Assert.That(activity, Has.Count.EqualTo(1));
+            Assert.That((string?)activity[0]["entry"]?["src"], Is.EqualTo("BAXY"));
+            Assert.That((string?)activity[0]["entry"]?["msg"],
+                Is.EqualTo(MainWindowViewModel.CompositionFailureFallback(pending, "retry_exhausted")));
+            Assert.That((string?)activity[0]["entry"]?["msg"], Does.Not.Contain("retry_exhausted"));
+            Assert.That((string?)activity[0]["entry"]?["msg"], Does.Not.Contain("⚠"));
+        });
+
+        if (recoverWithNewTurn)
+        {
+            viewModel.BeginTurnPresentation("What time is it?", DateTimeOffset.UtcNow);
+            Assert.That(LastState(sink.Snapshot()), Is.EqualTo("thinking"));
+        }
+        else
+        {
+            await InvokeCallbackAsync(viewModel, "PublishComposedMessageAsync",
+                "The clock shows 06:39.", null, pending);
+            Assert.That(LastState(sink.Snapshot()), Is.EqualTo("idle"));
+            Assert.That(ProductConductor.LastPublishedBaxyText(sink.Snapshot()),
+                Is.EqualTo("The clock shows 06:39."));
+        }
+
+        Assert.That(viewModel.HasCompositionError, Is.False);
+        Assert.That(LastState(channel.CreateSocketBootstrap()), Is.Not.EqualTo("error"));
+    }
+
+    private static string? LastState(IReadOnlyList<JsonObject> events) =>
+        (string?)events.Last(item => (string?)item["type"] == "state")["value"];
+
+    private static async Task InvokeCallbackAsync(
+        MainWindowViewModel viewModel, string methodName, params object?[] arguments)
+    {
+        MethodInfo callback = typeof(MainWindowViewModel).GetMethod(
+            methodName, BindingFlags.Instance | BindingFlags.NonPublic)!;
+        await (Task)callback.Invoke(viewModel, arguments)!;
+    }
 }

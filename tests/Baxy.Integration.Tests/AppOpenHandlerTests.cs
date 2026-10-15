@@ -41,6 +41,223 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // v3 point 0 (arreglo 4): only «foreground» true asks the provider for the front; absent or false, the application
+    // opens behind the person's window. A front Windows gave by itself and handed back is said in the result.
+    [TestCase("{\"appId\":\"windows.notepad\"}", false)]
+    [TestCase("{\"appId\":\"windows.notepad\",\"foreground\":false}", false)]
+    [TestCase("{\"appId\":\"windows.notepad\",\"foreground\":true}", true)]
+    public async Task TheForegroundIsAskedOnlyWhenTheArgumentsSaySo(string arguments, bool asked)
+    {
+        OperationInvocation invocation = Invocation(arguments);
+        var provider = new StubProvider(Success(invocation.InvocationId) with { WindowsActivation = !asked });
+        var handler = new AppOpenHandler(provider);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Verified, Is.True);
+            Assert.That(provider.LastRequest?.Foreground, Is.EqualTo(asked));
+            Assert.That(outcome.Result?.TryGetProperty("windowsActivation", out JsonElement activation) == true
+                && activation.GetBoolean(), Is.EqualTo(!asked), "said only when it happened");
+        });
+    }
+
+    // cu-v3-foco-segunda: the result says whether the hand-back of a Windows activation held; a refused one is an
+    // activation without «frontRestored», and nothing is said of a front nobody took.
+    [TestCase(true, true, true)]
+    [TestCase(true, false, false)]
+    [TestCase(false, true, false)]
+    public async Task TheResultSaysWhetherTheFrontWentBack(bool activation, bool restored, bool said)
+    {
+        OperationInvocation invocation = Invocation("{\"appId\":\"windows.notepad\"}");
+        var provider = new StubProvider(Success(invocation.InvocationId) with
+        {
+            WindowsActivation = activation,
+            FrontRestored = restored,
+        });
+
+        OperationOutcome outcome = await new AppOpenHandler(provider).ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Verified, Is.True);
+            Assert.That(outcome.Result?.TryGetProperty("frontRestored", out JsonElement back) == true && back.GetBoolean(),
+                Is.EqualTo(said));
+        });
+    }
+
+    // r20b palanca 4 (v3-40, v3-43): an opening asked in front while the person worked in another window says it was
+    // shown above without their keyboard («shownWithoutFocus»); one that took the front says nothing of it.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task TheResultSaysAWindowShownWithoutTakingTheKeyboard(bool shown)
+    {
+        OperationInvocation invocation = Invocation("{\"appId\":\"windows.notepad\",\"foreground\":true}");
+        var provider = new StubProvider(Success(invocation.InvocationId) with { ShownWithoutFocus = shown });
+
+        OperationOutcome outcome = await new AppOpenHandler(provider).ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Verified, Is.True);
+            Assert.That(outcome.Result?.TryGetProperty("shownWithoutFocus", out JsonElement said) == true && said.GetBoolean(),
+                Is.EqualTo(shown));
+        });
+    }
+
+    // v3 r5a M5 review: only an opening for a computer-use mission («forControl») asks the provider for the person's
+    // rights; an ordinary «abre X» keeps the shell's path (a console opened to administer the PC keeps its rights).
+    [TestCase("{\"appId\":\"windows.notepad\"}", false)]
+    [TestCase("{\"appId\":\"windows.notepad\",\"forControl\":false}", false)]
+    [TestCase("{\"appId\":\"windows.notepad\",\"forControl\":true}", true)]
+    public async Task TheOpeningIsForControlOnlyWhenTheArgumentsSaySo(string arguments, bool forControl)
+    {
+        OperationInvocation invocation = Invocation(arguments);
+        var provider = new StubProvider(Success(invocation.InvocationId));
+        var handler = new AppOpenHandler(provider);
+
+        _ = await handler.ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.That(provider.LastRequest?.ForControl, Is.EqualTo(forControl));
+    }
+
+    // cu-v3-documento-nuevo (uso real t4-c14): «newDocument» reaches the provider, the result says the document was
+    // made, and an opening that asked for one and reports none (the person's window as it was) is no success.
+    [TestCase("{\"appId\":\"windows.notepad\"}", false, false, true)]
+    [TestCase("{\"appId\":\"windows.notepad\",\"newDocument\":true}", true, true, true)]
+    [TestCase("{\"appId\":\"windows.notepad\",\"newDocument\":true}", true, false, false)]
+    public async Task ANewDocumentAskedForIsSuccessOnlyWhenTheProviderMadeIt(
+        string arguments, bool asked, bool made, bool succeeded)
+    {
+        OperationInvocation invocation = Invocation(arguments);
+        var provider = new StubProvider(Success(invocation.InvocationId, alreadyRunning: true) with { NewDocument = made });
+
+        OperationOutcome outcome = await new AppOpenHandler(provider).ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(provider.LastRequest?.NewDocument, Is.EqualTo(asked));
+            Assert.That(outcome.Succeeded, Is.EqualTo(succeeded));
+            Assert.That(outcome.Result?.TryGetProperty("newDocument", out JsonElement said) == true && said.GetBoolean(),
+                Is.EqualTo(succeeded && made));
+        });
+    }
+
+    // Estabilización, encargo C: a place of the application its data declare (app_places.v1.json) is opened by the
+    // address the kernel composes, once the application is open and verified; the result says so. A place, a value or
+    // an application the data do not declare opens nothing at all, and a hand-over Windows refused is no success.
+    [Test]
+    public async Task ADeclaredPlaceIsOpenedByItsAddressAfterTheApplication()
+    {
+        OperationInvocation invocation = Invocation("{\"appId\":\"Steam\",\"place\":\"results\",\"placeValue\":\"Cuphead\"}");
+        var provider = new StubProvider(SuccessOf("Steam", invocation.InvocationId));
+        var places = new StubPlaces(opens: true);
+
+        OperationOutcome outcome = await new AppOpenHandler(provider, places: places).ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(provider.CallCount, Is.EqualTo(1));
+            Assert.That(places.Opened, Is.EqualTo(new[] { "steam://openurl/https://store.steampowered.com/search/?term=Cuphead" }));
+            Assert.That(outcome.Result?.GetProperty("placeOpened").GetBoolean(), Is.True);
+        });
+    }
+
+    [TestCase("{\"appId\":\"Steam\",\"place\":\"home\"}")]
+    [TestCase("{\"appId\":\"windows.notepad\",\"place\":\"library\"}")]
+    [TestCase("{\"appId\":\"Steam\",\"place\":\"game\",\"placeValue\":\"cuphead\"}")]
+    [TestCase("{\"appId\":\"Steam\",\"placeValue\":\"Cuphead\"}")]
+    public async Task APlaceTheDataDoNotDeclareOpensNothing(string arguments)
+    {
+        OperationInvocation invocation = Invocation(arguments);
+        var provider = new StubProvider(SuccessOf("Steam", invocation.InvocationId));
+        var places = new StubPlaces(opens: true);
+
+        OperationOutcome outcome = await new AppOpenHandler(provider, places: places).ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(provider.CallCount, Is.Zero);
+            Assert.That(places.Opened, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task APlaceWindowsDidNotTakeIsNoSuccessAndAnOpeningWithoutPlaceOpensNone()
+    {
+        OperationInvocation placed = Invocation("{\"appId\":\"Steam\",\"place\":\"library\"}");
+        var refused = new StubPlaces(opens: false);
+        OperationOutcome failed = await new AppOpenHandler(new StubProvider(SuccessOf("Steam", placed.InvocationId)), places: refused)
+            .ExecuteAsync(placed, CancellationToken.None);
+
+        OperationInvocation bare = Invocation("{\"appId\":\"Steam\"}");
+        var unused = new StubPlaces(opens: true);
+        OperationOutcome opened = await new AppOpenHandler(new StubProvider(SuccessOf("Steam", bare.InvocationId)), places: unused)
+            .ExecuteAsync(bare, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failed.Succeeded, Is.False);
+            Assert.That(failed.ErrorCode, Is.EqualTo("launch_failed"));
+            Assert.That(failed.EffectMayHaveOccurred, Is.True);
+            Assert.That(opened.Succeeded, Is.True);
+            Assert.That(unused.Opened, Is.Empty);
+            Assert.That(opened.Result?.TryGetProperty("placeOpened", out _), Is.False);
+        });
+    }
+
+    private static ApplicationOpenResult SuccessOf(string appId, string invocationId)
+    {
+        ApplicationOpenResult notepad = Success(invocationId, alreadyRunning: true);
+        return notepad with { DisplayName = appId, Receipt = notepad.Receipt with { ApplicationId = appId } };
+    }
+
+    // Review H2: the handler's raised window goes back behind the person's unless the front was asked for, and the
+    // receipt says the front changed and whether it is back.
+    [TestCase("{\"appId\":\"Steam\",\"place\":\"library\"}", false)]
+    [TestCase("{\"appId\":\"Steam\",\"place\":\"library\",\"foreground\":true}", true)]
+    public async Task TheFrontTheAddressTookGoesBackAndTheReceiptSaysSo(string arguments, bool asked)
+    {
+        OperationInvocation invocation = Invocation(arguments);
+        var places = new StubPlaces(opens: true, front: !asked);
+
+        OperationOutcome outcome = await new AppOpenHandler(new StubProvider(SuccessOf("Steam", invocation.InvocationId)), places: places)
+            .ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(places.KeptFront, Is.EqualTo(new[] { asked }));
+            Assert.That(places.Window, Is.EqualTo(73));
+            Assert.That(outcome.Result?.TryGetProperty("frontChanged", out JsonElement changed) == true && changed.GetBoolean(), Is.EqualTo(!asked));
+            Assert.That(outcome.Result?.TryGetProperty("frontRestored", out JsonElement back) == true && back.GetBoolean(), Is.EqualTo(!asked));
+        });
+    }
+
+    private sealed class StubPlaces(bool opens, bool front = false) : IApplicationPlaceOpener
+    {
+        public List<string> Opened { get; } = [];
+
+        public List<bool> KeptFront { get; } = [];
+
+        public long Window { get; private set; }
+
+        public PlaceOpening Open(string address, bool keepFront, long applicationWindow)
+        {
+            KeptFront.Add(keepFront);
+            Window = applicationWindow;
+            if (opens)
+            {
+                Opened.Add(address);
+            }
+
+            return new PlaceOpening(opens, FrontChanged: opens && front && !keepFront, FrontRestored: opens && front && !keepFront);
+        }
+    }
+
     [TestCase(false)]
     [TestCase(true)]
     public async Task VerifiedResultIsTheOnlySuccess(bool alreadyRunning)
@@ -166,6 +383,7 @@ public sealed class AppOpenHandlerTests
     [TestCase("state_corrupt")]
     [TestCase("state_unavailable")]
     [TestCase("verification_failed")]
+    [TestCase("new_document_not_created")]
     public async Task ExpectedProviderFailureRemainsHonest(string errorCode)
     {
         var providerResult = new ApplicationOpenResult(

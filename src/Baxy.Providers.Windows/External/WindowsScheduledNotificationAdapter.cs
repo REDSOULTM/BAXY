@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -12,28 +13,56 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     private static readonly string[] DiagnosticIntegerProperties =
         ["taskCount", "firedReceiptCount", "issueCount"];
     private readonly string _alarmRoot;
-    private readonly IExternalProcessRunner _runner;
+    private readonly IScheduledNotificationBackend _backend;
     private readonly string _schedulerScript;
 
+    // M119: the Task Scheduler COM API answers in-process (~2 s of powershell.exe per turn less);
+    // the script stays as the fallback when the scheduler cannot be reached that way.
     internal WindowsScheduledNotificationAdapter(string dataRoot)
-        : this(dataRoot, new ExternalProcessRunner(), Path.Combine(
+        : this(dataRoot, new WindowsTaskSchedulerHost(), new ExternalProcessRunner(), Path.Combine(
             AppContext.BaseDirectory, "WindowsScheduledNotification.ps1"))
     {
     }
 
     internal WindowsScheduledNotificationAdapter(
         string dataRoot,
+        ITaskSchedulerHost scheduler,
         IExternalProcessRunner runner,
         string schedulerScript)
+        : this(dataRoot, runner, schedulerScript,
+            scheduler ?? throw new ArgumentNullException(nameof(scheduler)))
     {
-        _alarmRoot = Path.Combine(Path.GetFullPath(dataRoot), "scheduled-notifications");
-        _runner = runner ?? throw new ArgumentNullException(nameof(runner));
+    }
+
+    /// <summary>The script alone, as before M119.</summary>
+    internal WindowsScheduledNotificationAdapter(
+        string dataRoot,
+        IExternalProcessRunner runner,
+        string schedulerScript)
+        : this(dataRoot, runner, schedulerScript, scheduler: null)
+    {
+    }
+
+    private WindowsScheduledNotificationAdapter(
+        string dataRoot,
+        IExternalProcessRunner runner,
+        string schedulerScript,
+        ITaskSchedulerHost? scheduler)
+    {
+        string root = Path.GetFullPath(dataRoot);
+        _alarmRoot = Path.Combine(root, "scheduled-notifications");
         _schedulerScript = Path.GetFullPath(schedulerScript);
+        var script = new ScriptScheduledNotificationBackend(
+            runner ?? throw new ArgumentNullException(nameof(runner)), _schedulerScript);
+        _backend = scheduler is null
+            ? script
+            : new NativeScheduledNotificationBackend(
+                scheduler, script, Path.Combine(root, "notification-scheduler-fallback.jsonl"));
     }
 
     public bool CanHandle(string operation) => operation is
         "notification.cancel.at" or "notification.cancel.latest"
-        or "notification.diagnose" or "notification.schedule";
+        or "notification.diagnose" or "notification.list" or "notification.schedule";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -52,6 +81,20 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 or UnauthorizedAccessException or TimeoutException)
             {
                 return ExternalJson.Failure(operation, "notification_diagnostics_failed");
+            }
+        }
+        if (operation == "notification.list")
+        {
+            if (!File.Exists(_schedulerScript))
+                return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
+            try
+            {
+                return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException
+                or UnauthorizedAccessException or TimeoutException)
+            {
+                return ExternalJson.Failure(operation, "notification_list_failed");
             }
         }
         string kind;
@@ -117,14 +160,16 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         ExternalProcessResult resolved;
         try
         {
-            resolved = await _runner.RunAsync(
-                "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                    _schedulerScript, "-Mode", "resolve-at", "-Kind", kind,
-                    "-Hour", hour.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    "-Minute", minute.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    .. (period is null ? [] : new[] { "-Period", period })],
-                TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+            resolved = await _backend.RunAsync(
+                new ScheduledNotificationRequest("resolve-at", kind)
+                {
+                    Hour = hour,
+                    Minute = minute,
+                    // M80: only the notifications this data root set are candidates.
+                    AlarmRoot = _alarmRoot,
+                    Period = period,
+                },
+                cancellationToken).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is IOException or JsonException
             or UnauthorizedAccessException or TimeoutException or InvalidDataException)
@@ -144,12 +189,13 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         try
         {
             effectBoundary.Cross(cancellationToken);
-            ExternalProcessResult canceled = await _runner.RunAsync(
-                "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                    _schedulerScript, "-Mode", "cancel-exact", "-Kind", kind,
-                    "-TaskName", taskName!, "-DueUtc", nextRunUtc!],
-                TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+            ExternalProcessResult canceled = await _backend.RunAsync(
+                new ScheduledNotificationRequest("cancel-exact", kind)
+                {
+                    TaskName = taskName!,
+                    DueUtc = nextRunUtc!,
+                },
+                cancellationToken).ConfigureAwait(false);
             return Parse(operation, canceled, taskName, effectBoundary, writer =>
             {
                 writer.WriteString("kind", kind);
@@ -224,12 +270,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string operation,
         CancellationToken cancellationToken)
     {
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", "diagnose", "-Kind", "reminder",
-                "-AlarmRoot", _alarmRoot],
-            TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+        ExternalProcessResult process = await _backend.RunAsync(
+            new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
+            cancellationToken).ConfigureAwait(false);
         string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
             .LastOrDefault();
         if (process.ExitCode != 0 || line is null)
@@ -260,6 +303,102 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, false);
     }
 
+    private async ValueTask<ExternalCapabilityReceipt> ListAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        // AGENDA1435 «listá los timers»: the scheduled BAXY tasks (alarms and
+        // reminders) with the title kept in each ring script and the next run.
+        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
+        ExternalProcessResult process = await _backend.RunAsync(
+            new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
+            cancellationToken).ConfigureAwait(false);
+        string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .LastOrDefault();
+        if (process.ExitCode != 0 || line is null)
+            return ExternalJson.Failure(operation, "notification_list_process_failed");
+        using JsonDocument document = JsonDocument.Parse(line);
+        JsonElement source = document.RootElement;
+        if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
+            return ExternalJson.Failure(operation, "notification_list_postread_failed");
+        List<(string Kind, string? Title, string? NextRunUtc, string State)> items = [];
+        int staleTasks = 0;
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        if (source.TryGetProperty("tasks", out JsonElement tasks) && tasks.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement task in tasks.EnumerateArray())
+            {
+                string taskName = task.TryGetProperty("taskName", out JsonElement nameElement)
+                    && nameElement.ValueKind == JsonValueKind.String ? nameElement.GetString() ?? "" : "";
+                Match identity = Regex.Match(taskName, "^BAXY-(Alarm|Reminder)-[0-9a-f]{32}$",
+                    RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+                if (!identity.Success) continue;
+                // M80 (DEV-D v3m D-w16-t2): the scheduler is shared by every BAXY data root of this user; the
+                // notifications listed are the ones this data root set (its ring script is here).
+                if (!File.Exists(Path.Combine(_alarmRoot, taskName + ".ps1"))) continue;
+                string? nextRun = task.TryGetProperty("nextRunUtc", out JsonElement nextElement)
+                    && nextElement.ValueKind == JsonValueKind.String ? nextElement.GetString() : null;
+                string state = task.TryGetProperty("state", out JsonElement stateElement)
+                    && stateElement.ValueKind == JsonValueKind.String ? stateElement.GetString() ?? "" : "";
+                // A one-shot task that already fired keeps its registration without a
+                // next run: it is not scheduled any more and is not listed.
+                if (nextRun is null
+                    || !DateTimeOffset.TryParse(nextRun, System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset nextRunAt)
+                    || nextRunAt <= now)
+                {
+                    staleTasks++;
+                    continue;
+                }
+                items.Add((
+                    identity.Groups[1].Value == "Alarm" ? "alarm" : "reminder",
+                    ReadRingTitle(Path.Combine(_alarmRoot, taskName + ".ps1")),
+                    nextRun,
+                    state));
+            }
+        }
+        var shown = items.OrderBy(item => item.NextRunUtc ?? "~", StringComparer.Ordinal).Take(limit).ToArray();
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteNumber("count", items.Count);
+            writer.WriteStartArray("notifications");
+            foreach (var item in shown)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", item.Kind);
+                if (item.Title is not null) writer.WriteString("title", item.Title);
+                if (item.NextRunUtc is not null) writer.WriteString("nextRunUtc", item.NextRunUtc);
+                writer.WriteString("state", item.State);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteNumber("staleTaskCount", staleTasks);
+            writer.WriteNumber("resultLimit", limit);
+            writer.WriteBoolean("resultsMayBeTruncated", items.Count > shown.Length);
+            writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private static string? ReadRingTitle(string path)
+    {
+        if (!File.Exists(path)) return null;
+        Match encoded = Regex.Match(File.ReadAllText(path), @"FromBase64String\('([A-Za-z0-9+/=]+)'\)",
+            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+        if (!encoded.Success) return null;
+        try
+        {
+            return Encoding.UTF8.GetString(Convert.FromBase64String(encoded.Groups[1].Value));
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> ScheduleAsync(
         string operation,
         string kind,
@@ -281,6 +420,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             || Encoding.UTF8.GetByteCount(title) > 1_024)
             return ExternalJson.Failure(operation, "notification_schedule_invalid");
 
+        await PruneSpentNotificationsAsync(cancellationToken).ConfigureAwait(false);
         effectBoundary.Cross(cancellationToken);
         Directory.CreateDirectory(_alarmRoot);
         string id = Guid.NewGuid().ToString("N");
@@ -288,15 +428,15 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string ringScript = Path.Combine(_alarmRoot, taskName + ".ps1");
         string receipt = Path.Combine(_alarmRoot, taskName + ".fired");
         WriteRingScript(ringScript, receipt, title);
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", recurrence is null ? "schedule" : "schedule-recurring",
-                "-Kind", kind,
-                "-TaskName", taskName, "-DueUtc", due.ToString("O"),
-                "-RingScriptPath", ringScript,
-                .. (recurrence is null ? [] : new[] { "-Recurrence", recurrence })],
-            TimeSpan.FromSeconds(30),
+        ExternalProcessResult process = await _backend.RunAsync(
+            new ScheduledNotificationRequest(
+                recurrence is null ? "schedule" : "schedule-recurring", kind)
+            {
+                TaskName = taskName,
+                DueUtc = due.ToString("O"),
+                RingScriptPath = ringScript,
+                Recurrence = recurrence,
+            },
             cancellationToken).ConfigureAwait(false);
         return Parse(operation, process, taskName, effectBoundary, writer =>
         {
@@ -314,11 +454,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         CancellationToken cancellationToken)
     {
         effectBoundary.Cross(cancellationToken);
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", "cancel", "-Kind", kind],
-            TimeSpan.FromSeconds(30),
+        ExternalProcessResult process = await _backend.RunAsync(
+            // M80 (DEV-D v3m D-w18-t5): the latest is the last one this data root set that is still pending.
+            new ScheduledNotificationRequest("cancel", kind) { AlarmRoot = _alarmRoot },
             cancellationToken).ConfigureAwait(false);
         return Parse(operation, process, expectedTaskName: null, effectBoundary,
             writer => writer.WriteString("kind", kind));
@@ -372,6 +510,96 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effect);
+    }
+
+    /// <summary>
+    /// How long a ring script stays after its last ring. A recurring notification rewrites its receipt each time
+    /// it rings, so only a one-shot that rang long ago, or a recurring one that stopped ringing, gets this old.
+    /// </summary>
+    internal static readonly TimeSpan SpentRingScriptAge = TimeSpan.FromDays(30);
+
+    /// <summary>
+    /// Removes the ring script and receipt of every notification of this data root whose last ring is older than
+    /// <see cref="SpentRingScriptAge"/> and whose task the scheduler no longer holds (auditoría de estabilidad r19,
+    /// hallazgo 4: scripts and receipts piled up with no live task behind them). A task that is still registered
+    /// keeps its script whatever the age of its receipt: a daily one whose machine stayed off for a month still
+    /// rings when it comes back. A script that never rang has no receipt and stays: it may still be pending.
+    /// </summary>
+    internal static void PruneSpentRingScripts(
+        string alarmRoot, DateTimeOffset now, IReadOnlySet<string> liveTaskNames)
+    {
+        ArgumentNullException.ThrowIfNull(liveTaskNames);
+        foreach (string receipt in SpentReceipts(alarmRoot, now))
+        {
+            if (liveTaskNames.Contains(Path.GetFileNameWithoutExtension(receipt))) continue;
+            try
+            {
+                File.Delete(Path.ChangeExtension(receipt, ".ps1"));
+                File.Delete(receipt);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // A file in use stays for the next notification set.
+            }
+        }
+    }
+
+    private static string[] SpentReceipts(string alarmRoot, DateTimeOffset now)
+    {
+        try
+        {
+            return Directory.GetFiles(alarmRoot, "BAXY-*.fired")
+                .Where(receipt => now - File.GetLastWriteTimeUtc(receipt) > SpentRingScriptAge)
+                .ToArray();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return [];
+        }
+    }
+
+    // Only when a receipt is old enough does the scheduler get read, and only a read that answered with its
+    // task list lets anything go: without that proof every script stays.
+    private async ValueTask PruneSpentNotificationsAsync(CancellationToken cancellationToken)
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        if (SpentReceipts(_alarmRoot, now).Length == 0) return;
+        IReadOnlySet<string>? live;
+        try
+        {
+            ExternalProcessResult process = await _backend.RunAsync(
+                new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
+                cancellationToken).ConfigureAwait(false);
+            live = ReadTaskNames(process);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or UnauthorizedAccessException or TimeoutException or InvalidDataException)
+        {
+            return;
+        }
+        if (live is not null) PruneSpentRingScripts(_alarmRoot, now, live);
+    }
+
+    private static HashSet<string>? ReadTaskNames(ExternalProcessResult process)
+    {
+        string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .LastOrDefault();
+        if (process.ExitCode != 0 || line is null) return null;
+        using JsonDocument document = JsonDocument.Parse(line);
+        JsonElement source = document.RootElement;
+        if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+            || !source.TryGetProperty("tasks", out JsonElement tasks) || tasks.ValueKind != JsonValueKind.Array)
+            return null;
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (JsonElement task in tasks.EnumerateArray())
+        {
+            if (task.ValueKind != JsonValueKind.Object
+                || !task.TryGetProperty("taskName", out JsonElement name)
+                || name.ValueKind != JsonValueKind.String)
+                return null;
+            names.Add(name.GetString()!);
+        }
+        return names;
     }
 
     private static void WriteRingScript(string path, string receiptPath, string title)
