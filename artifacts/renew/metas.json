@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T14:00:00-03:00",
+  "actualizado": "2026-10-15T17:35:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -53,12 +53,12 @@
     "holdout": {
       "umbral": ">= 85 %",
       "estado": "pendiente",
-      "evidencia": null
+      "evidencia": "práctica: decision2 225/270 (83,3 %), e2e 19/30 (p7); sellados repartidos: notebook decisión+escenas+latido, PC e2e+falsedades+recursos"
     },
     "falsedades": {
       "umbral": "0 en el banco automático",
       "estado": "en_curso",
-      "evidencia": "práctica p3 (juez Qwen3.6-35B): 2 en 26 líneas (F013 ruta pedida, F015 presuposición); arreglos: regla 2 ampliada, rutas absolutas pedidas al notebook"
+      "evidencia": "práctica p4: 1 en 26 líneas (F013), arreglada con fullPath en los recibos y probada en el producto; sellado pendiente"
     },
     "instinto": {
       "umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20",
@@ -73,7 +73,7 @@
     "velocidad_texto_a_voz_p50": {
       "umbral": "<= 2,5 s",
       "estado": "en_curso",
-      "evidencia": "e2e práctica p3: primer sonido p50 2520 ms desde el texto de la persona (incluye turnos de varios pasos)"
+      "evidencia": "por orden (definición de la meta): p6 2316 ms, p7 2540 ms (18 de 36 órdenes bajo 2,5 s); Piper 138-279 ms tras voice.speak; investigado y descartado: MTP (el GGUF no lo trae), n-gramas, KV f16"
     },
     "recursos": {
       "umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)",
@@ -143,7 +143,7 @@
       "id": "computer_use",
       "estado": "en_curso",
       "quien": "PC",
-      "evidencia": "e2e práctica p3 cu 3/8; auditoría: clic sólo por etiqueta exacta o candidatos, worker sin frente implícito, app.open exacto con candidatos y windowId; vista con 'window N'"
+      "evidencia": "e2e práctica p7 (código congelado) cu 5/8; identidad de ventana por ejecutable/AUMID y árbol de procesos (Steam verificado en el producto)"
     },
     {
       "id": "herramientas_agente",
@@ -181,8 +181,9 @@
     },
     {
       "id": "auditoria_final",
-      "estado": "pendiente",
-      "quien": "PC"
+      "estado": "en_curso",
+      "quien": "PC",
+      "evidencia": "ronda final PC (5 agentes, sólo lectura) + auditoría independiente del notebook (investigacion/auditoria-final-nb.md, 38 violaciones) sobre bde62d76c; arreglos en dos rondas de subagentes fusionados (App, kernel, proveedores, externos, mente, jueces) salvo proveedores 2.ª ronda en curso; re-auditoría del diff pedida al notebook"
     },
     {
       "id": "exposicion_herramientas",
