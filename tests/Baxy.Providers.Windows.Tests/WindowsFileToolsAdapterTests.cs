@@ -326,6 +326,35 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Auditoría final: a download reads only public web addresses, as web.fetch does; this PC and the local network
+    // are never asked, neither as the address given nor as the image a public page announces.
+    [Test]
+    public async Task AnAddressOfThisPcOrTheLocalNetworkIsNeverAsked()
+    {
+        var asked = new List<string>();
+        var adapter = Adapter((url, _) =>
+        {
+            asked.Add(url);
+            return Task.FromResult(url.StartsWith("https://example.org/", StringComparison.Ordinal)
+                ? (Encoding.UTF8.GetBytes("<meta property=\"og:image\" content=\"http://192.168.1.10/cam.jpg\">"), "text/html")
+                : ([1, 2, 3], "image/jpeg"));
+        });
+
+        var receipts = new List<ExternalCapabilityReceipt>();
+        foreach (string url in new[] { "http://192.168.1.10/cam.jpg", "http://localhost:8080/x.png", "http://router.lan/x.png", "https://example.org/" })
+        {
+            receipts.Add(await adapter.InvokeAsync(
+                "web.download", JsonSerializer.SerializeToElement(new { url, folder = "desktop" }), CancellationToken.None));
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipts.Select(receipt => receipt.ErrorCode), Is.All.EqualTo("download_url_not_public"));
+            Assert.That(asked, Is.EqualTo(new[] { "https://example.org/" }));
+            Assert.That(Directory.EnumerateFiles(_root), Is.Empty);
+        });
+    }
+
     [TestCase("portada", "image/png", "portada.png")]
     [TestCase("", "image/jpeg", "descarga.jpg")]
     [TestCase("a:b*c.txt", "text/plain", "abc.txt")]

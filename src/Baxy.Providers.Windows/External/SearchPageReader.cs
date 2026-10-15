@@ -125,7 +125,7 @@ internal sealed class SearchPageReader : IDisposable
     internal static IPAddress? PublicEndpoint(IReadOnlyList<IPAddress> resolved) =>
         resolved.Count > 0 && resolved.All(IsPublicAddress) ? resolved[0] : null;
 
-    private static async ValueTask<Stream> ConnectToPublicAddressAsync(
+    internal static async ValueTask<Stream> ConnectToPublicAddressAsync(
         SocketsHttpConnectionContext context,
         CancellationToken cancellationToken)
     {
