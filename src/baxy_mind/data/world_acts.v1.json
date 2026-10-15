@@ -66,9 +66,6 @@
       ]
     }
   ],
-  "joins": ["call", "join"],
-  "formSendButton": "\\b(?:envia\\w*|send\\w*|submit\\w*|mand(?:a|ar|alo|ala|e|en)\\b|compart\\w*|share\\w*|publica\\w*|publish\\w*|post(?:ea\\w*|eo|s)?\\b|tweet\\w*|tuit\\w*|respond\\w*|reply|coment\\w*|comment\\w*)",
-  "formSendFamilies": ["send", "publish"],
   "examples": {
     "asks": [
       "Iniciar Transmisión", "Iniciar transmisión", "Start Streaming", "Go Live", "Transmitir", "Transmitir en vivo",

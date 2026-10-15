@@ -39,7 +39,6 @@
   "Discord": {
    "_about": "Encargo IMP2 (banco fix1 c6: «en Discord abrí el chat con Ron92…» empezó en la página de un canal de voz de un servidor, donde ni el chat ni el buscador de conversaciones están; el clic no encontró nada y Ctrl+F buscó en el canal). Los mensajes directos tienen dirección propia (medido en redpc el 2026-10-12 con el lanzamiento del shell: discord://-/channels/@me lleva a «Amigos - Discord» en 0,9 s, 2 de 2, desde un MD). «chats»: el lugar donde la aplicación lista sus chats; un sub-objetivo que va a un lugar que estos datos no declaran («ir a ron92») y que la vista no nombra empieza allí (cu_address), y desde allí sigue con computer use (el enlace del chat o el buscador de conversaciones).",
    "schemes": ["discord"],
-   "chats": "directs",
    "places": {
     "directs": {"address": "discord://-/channels/@me", "names": ["mensajes directos", "direct messages"]}
    }
@@ -47,14 +46,7 @@
   "WhatsApp": {
    "_about": "Encargo IMP4 (imp3 imp-wa-leer: el árbol UIA de un chat abierto de WhatsApp no trae el texto de los mensajes —61 controles: «Enviado», «Tú:», fechas— y la copia de pantalla de la ventana tapada leyó la de encima). «conversation»: dónde dibuja la conversación, en fracciones de su ventana (dibujada por sí misma), y cómo se ve lo propio. Medido en redpc el 2026-10-12 con el grupo Música abierto (1920×1044, 3 lecturas iguales): la lista de chats acaba en x≈0,23; la cabecera hasta y≈0,09 y el cuadro de mensaje desde y≈0,93; las burbujas propias empiezan a la derecha del centro (x≥0,79) y acaban en x≈0,93-0,96 con la hora y la marca de leído; las fechas («20/9/2026», «Hoy») van centradas (centro ≈0,61). Las ajenas empiezan junto al borde izquierdo de la conversación. Sin lugares con dirección.",
    "schemes": ["whatsapp"],
-   "places": {},
-   "conversation": {"left": 0.235, "top": 0.09, "right": 1.0, "bottom": 0.93, "centerBand": 0.06, "ownEdge": 0.88},
-   "chatSearch": {
-    "_about": "Encargo TZ-WA2 (banco zu1–zu3 del notebook, 7 de 9 casos imp-wa-* fallidos): ir a un chat (un lugar que estos datos no declaran) lo decide cu_chats.chat_search_step sin el modelo. Medido: el chat sin ver en la lista (zu1 leer, WhatsApp tapado por otra ventana: el OCR leyó la otra); la búsqueda que conservaba «abuela» de un caso anterior, cuyo eco se pulsó por OCR (zu2 y zu3); el modelo pulsó «Nuevo chat» (zu2, zu3) y la regla de pestañas eligió el filtro «No leídos», que quedó puesto y ocultó el chat a la búsqueda en los casos siguientes (zu2 enviar → zu3); la fila con la vista previa «Abuela 19:25 prueba BAXY imp» pulsada por su acción por defecto no abrió el chat (zu1 leer, zu2 abrir) y su celda de título «Abuela 19:25» pulsada en la superficie sí (zu2 abrir). «fields»: los nombres del cuadro de búsqueda de chats, plegados (vacío dice su invitación; con texto se llama como la aplicación, medido en zu1 leer y en redpc el 2026-10-14). «all»: la pestaña de filtro que muestra todos los chats, la única que se elige (y sólo si el chat no está a la vista). «entry»: la entrada propia de un chat en la lista o en los resultados, plegada, con {name} el chat: su nombre (con los emojis que lo siguen), con o sin la marca de no leídos o de estado delante y la hora o la fecha detrás (medido en zu1–zu3 y en redpc: la celda de título «Abuela 19:25», «1 mensaje no leído Enmanuel … 19:25»; el botón «Abuela» de las búsquedas recientes, zt1); nunca la fila con la vista previa del último mensaje ni un mensaje que nombra al chat.",
-    "fields": ["buscar un chat o iniciar uno nuevo", "search or start a new chat", "whatsapp"],
-    "all": ["todos", "all"],
-    "entry": "^(?:(?:ver estado|view status|\\d+ mensajes? no leidos?|\\d+ unread messages?) )?{name}(?: [^\\w\\s]+)*(?: (?:\\d{1,2}:\\d{2}(?: ?[ap]\\.? ?m\\.?)?|\\d{1,2}/\\d{1,2}/\\d{2,4}|ayer|hoy|yesterday|today|lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday))?$"
-   }
+   "places": {}
   },
   "Spotify": {
    "schemes": ["spotify"],

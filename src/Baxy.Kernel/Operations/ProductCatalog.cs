@@ -1267,7 +1267,7 @@ public static class ProductCatalog
                 ["channel", "recipient"]),
             OperationRisks.ReadOnly,
             "message.recipient.resolve.session.identity.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Resuelve un único destinatario autenticado en el cliente nombrado (WhatsApp o Discord) y emite un identificador revisable."),
         Descriptor(
             "message.send",
@@ -1444,7 +1444,7 @@ public static class ProductCatalog
             Schema([String("confirmationId", maximumLength: 96, nonWhitespace: true)], ["confirmationId"]),
             OperationRisks.Installation,
             "package.install.commit.winget.receipt.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una instalación preparada mediante winget y verifica su recibo."),
         Descriptor(
             "package.install.prepare",
@@ -1456,7 +1456,7 @@ public static class ProductCatalog
                 ["packageId"]),
             OperationRisks.ReadOnly,
             "package.install.prepare.winget.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Resuelve un paquete winget exacto, o el único paquete que lleva el nombre pedido, y prepara una confirmación sin instalar."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo G): «desinstalá Discord»
         // es una desinstalación real por el gestor de paquetes, verificada por su

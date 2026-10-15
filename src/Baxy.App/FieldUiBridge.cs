@@ -357,7 +357,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         or IOException
         or InvalidOperationException
         or ArgumentException
-        or Baxy.Kernel.Planning.MissionPlanValidationException
         or UnauthorizedAccessException;
 
     public async ValueTask DisposeAsync()
