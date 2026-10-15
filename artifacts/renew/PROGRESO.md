@@ -264,3 +264,20 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   F015 «el Bloc de notas sigue abierto» sin mirar, F019 «ya estoy en la biblioteca» sin que el resultado lo mostrara).
   Las tres afirman cómo está el PC sin una herramienta que lo mirara. La frase de la regla 2 para «¿ya lo hiciste?» se
   amplía a «cómo está algo del PC: sin una herramienta que lo mirara, no lo sabes; míralo antes» (el latido no la lee).
+- Falsedades práctica p6 (con la regla 2 ampliada): 3 en 26 (F001, F009, F019). F001 y F019 vienen de una sola causa:
+  el 4B pasaba a `input.visible.controls` el argumento `windows` de la misión retirada con dígitos del `windowId`
+  (`windows: [27042]`) y la mirada fallaba con `mission_window_closed`; después decía que no podía. `windows` sale del
+  esquema y de las descripciones (db9c8e5cc). Comprobado en el producto: «abre steam y ve a la biblioteca» abre, mira,
+  pulsa BIBLIOTECA verificado, y a «¿ya estás en la biblioteca?» responde por lo observado.
+- App del notebook (fusionada 87e912368): el latido retiene para el sí lo que sale a la red (web.search, web.fetch,
+  web.download, weather.current, network.ping, game.entitlement.named, system.time con lugar) y lo que manda entrada a
+  una ventana (input.*, clipboard, message.draft, client.channel.locate, browser.control, calculadora, window.*). El
+  banco de escenas lee esas listas de `NativeTurnLoop.cs` (no las copia) y las cuenta como propuesta, igual que la App;
+  la exclusión de escenas con op null ya estaba. Decision2 del notebook sobre ese código: 224/268 (contra 222/268 en la
+  misma máquina antes de la frase): la regla 2 ampliada no baja la decisión.
+- Fuera `scripts/cu_live` (arnés de la misión retirada; ofrecía `-AfterWelcome`, que ya no existe). Decisión:
+  `register_mind_runtime.ps1` y `mind_runtime_manifest.ps1` siguen escribiendo los campos de voz porque el manifiesto
+  es el formato que comparte BAXY Definitivo, que sí los lee; la App de Renew los admite sin leerlos (la voz de Renew va
+  por `BAXY_RENEW_*`). No se registra ni se toca `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json`.
+- Código muerto de la misión en el adaptador de vista (argumentos `windows`, `known`, `processId`, `starting`,
+  `candidates`, `identityIfAbsent` y sus salidas): lo quita el notebook en Providers sin cambiar lo que el modelo lee.
