@@ -115,9 +115,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
     }
 
-    public FilesystemMutationResult CreateDirectory(string relativePath) =>
-        CreateDirectory(relativePath, folder: null);
-
     public FilesystemMutationResult CreateDirectory(string relativePath, string? folder)
     {
         string root = RootFor(folder);

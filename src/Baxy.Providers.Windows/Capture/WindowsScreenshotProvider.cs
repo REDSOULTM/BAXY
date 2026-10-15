@@ -50,12 +50,6 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         return ValueTask.FromResult(CaptureCopies.Save(_directory, captureId, folder, KnownFolder, _time.GetUtcNow()));
     }
 
-    public ValueTask<CaptureResult> CaptureWindowAsync(nint window, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        return ValueTask.FromResult(CaptureAndStore(_platform.CaptureWindow(window)));
-    }
-
     /// <summary>
     /// A window looked at only inside this process (computer use: the visible-control view, a click's surface before
     /// and after): encoded and hashed in memory, never written. Storing it as a verified capture wrote, flushed to
