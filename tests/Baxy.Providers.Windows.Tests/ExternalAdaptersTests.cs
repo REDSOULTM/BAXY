@@ -806,6 +806,33 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task NetflixWithoutACardNamedAsTheTitleReturnsTheCardsAsCandidates()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubNetflixPlaybackSession(
+            temporary.Path,
+            new(false, true, "Wednesday", "https://www.netflix.com/search?q=Wednesday",
+                "Netflix", "page-10", 0, UserBrowserSurface.StreamingTitleNotFound, "",
+                ["Merlina", "Wednesday Addams: la serie"]));
+        using var http = new HttpClient(new StubHttpHandler(""));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "streaming.play.named",
+            Json("""{"service":"netflix","title":"Wednesday"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("streaming_title_not_found"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("candidates").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(receipt.Result?.GetProperty("candidates")[0].GetString(), Is.EqualTo("Merlina"));
+        });
+    }
+
+    [Test]
     public async Task ScheduledNotificationRequiresWindowsTaskIdentityPostread()
     {
         using TemporaryDirectory temporary = new();

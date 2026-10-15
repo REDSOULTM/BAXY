@@ -1282,6 +1282,32 @@ public sealed class UserBrowserTests
     }
 
     [Test]
+    public async Task AStreamingPageWithoutACardNamedAsTheTitlePressesNothingAndSaysTheNamesSeen()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "www.netflix.com/search?q=Coco",
+            PageStep = new UserBrowserPageStep(false, "title", string.Empty, ["Coco 2", "Cocomelon"]),
+        };
+        platform.WindowsAfterOpen = [new(11, "Netflix - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"netflix","title":"Coco"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingTitleNotFound));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("requested").GetString(), Is.EqualTo("Coco"));
+            Assert.That(receipt.Result?.GetProperty("candidates")[1].GetString(), Is.EqualTo("Cocomelon"));
+            Assert.That(harness.Edge.StreamingCalls, Is.Zero);
+        });
+    }
+
+    [Test]
     public async Task DisneyTypesTheTitleInItsOwnSearchField()
     {
         var platform = new FakePlatform(OperaGx)

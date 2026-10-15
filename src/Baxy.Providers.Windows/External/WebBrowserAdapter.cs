@@ -413,6 +413,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CdpStreamingPlaybackResult playback = service == "disney_plus"
             ? await _browser.PlayDisneyAsync(title, cancellationToken).ConfigureAwait(false)
             : await _browser.PlayNetflixAsync(title, cancellationToken).ConfigureAwait(false);
+        if (playback.Candidates is { } candidates)
+            return UserBrowserSurface.StreamingTitleCandidates(operation, service, title, candidates);
         if (!playback.Verified)
         {
             // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
@@ -1238,7 +1240,9 @@ internal sealed record CdpStreamingPlaybackResult(
     string ErrorCode,
     // La última lectura de la sonda, tal cual, para que un rechazo diga en qué
     // condición se quedó en vez de obligar a una corrida por hipótesis.
-    string LastObserved = "");
+    string LastObserved = "",
+    // Sin ficha que se llame como el pedido: los nombres que la búsqueda enseñó.
+    IReadOnlyList<string>? Candidates = null);
 
 internal sealed class CdpBrowserSessionContext
 {
@@ -1938,6 +1942,15 @@ internal class CdpBrowserSession : IDisposable
             playbackFailure);
     }
 
+    // Lo común a las búsquedas de Netflix y Disney+: fold pliega mayúsculas, tildes y
+    // espacios para comparar un nombre con el pedido; still(cards) cuenta las vueltas
+    // en que el conjunto de fichas no cambia y dice si ya lleva tres segundos quieto.
+    private const string StreamingCardScript =
+        "const fold=s=>(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ').trim().toLowerCase();"
+        + "const still=cards=>{const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
+        + "if(hrefs!==window.__baxyLastHrefs){window.__baxyLastHrefs=hrefs;window.__baxyNoHit=0;}"
+        + "window.__baxyNoHit=(window.__baxyNoHit||0)+1;return window.__baxyNoHit>12;};";
+
     internal virtual async ValueTask<CdpStreamingPlaybackResult> PlayNetflixAsync(
         string title,
         CancellationToken cancellationToken)
@@ -1980,48 +1993,45 @@ internal class CdpBrowserSession : IDisposable
 
             string observed = await EvaluateStringAsync(
                 socket,
-                "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
+                "(()=>{" + StreamingCardScript + "const wanted=fold(" + titleLiteral + ");"
                 + "let chosenId='',chosenName='';"
                 + "const body=(document.body?.innerText||'').toLowerCase();"
                 + "const auth=location.pathname.includes('/login')||body.includes('sign in')||"
                 + "body.includes('iniciar sesión')||body.includes('inicia sesión');let action='none';"
-                // Con la sesión iniciada, Netflix enseña primero «¿Quién está viendo?»:
-                // la búsqueda no existe hasta elegir perfil, y sin este paso el título
-                // no se encontraba nunca (medido: data-uia profile-gate-screen con cinco
-                // tiles). Una persona pulsa un perfil; esto pulsa el primero.
+                // Con la sesión iniciada, Netflix enseña primero «¿Quién está viendo?»
+                // (medido: data-uia profile-gate-screen con cinco tiles). El perfil lo
+                // elige la persona: aquí se para y se dice.
                 + "if(!auth&&document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
-                + "const tile=document.querySelector('[data-uia^=\"profile-selector+tile-\"]')"
-                + "||document.querySelector('[data-uia=\"profile-selector\"] a,[data-uia=\"profile-selector\"] li');"
-                + "if(tile){tile.click();action='profile_clicked';"
-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}}"
-                // Elegido el perfil, Netflix lleva a la portada: hay que volver a la
-                // búsqueda, que es donde estaba el título que se pidió.
-                + "if(!auth&&!location.pathname.startsWith('/search')&&!location.pathname.includes('/watch/')"
-                + "&&!document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,'profile',chosenId,chosenName].join('\\u001f');}"
+                // Fuera de la búsqueda y del reproductor (la portada tras elegir perfil)
+                // se vuelve a la búsqueda, que es donde estaba el título que se pidió.
+                + "if(!auth&&!location.pathname.startsWith('/search')&&!location.pathname.includes('/watch/')){"
                 + "location.href=" + searchLiteral + ";action='search_again';"
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
                 // La búsqueda de Netflix ya no da enlaces «/title/»: cada resultado es
                 // un «standard-card», un <a> cuyo href lleva «jbv=<id del vídeo>».
                 // Medido contra la página real: buscando sólo «/title/» lo único que
                 // aparecía eran las notificaciones del menú. Del card se saca el id y
-                // se va al reproductor, que es a donde lleva pulsarlo.
+                // se va al reproductor, que es a donde lleva pulsarlo. Sólo se toma la
+                // tarjeta que se llama como el título pedido; si el conjunto de tarjetas
+                // lleva tres segundos quieto sin ninguna así, sus nombres vuelven como
+                // candidatos (en el campo del nombre, separados por U+001E).
                 + "if(!auth&&location.pathname.startsWith('/search')){"
                 + "const cards=[...document.querySelectorAll('a[data-uia=\"standard-card\"],a[href*=\"jbv=\"]')];"
-                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase(),n:((a.getAttribute('aria-label')||a.innerText||'').trim())}));"
-                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
+                + "const named=cards.map(a=>({a,n:((a.getAttribute('aria-label')||a.innerText||'').trim())}));"
+                + "const hit=named.find(x=>fold(x.n)===wanted);"
                 + "if(hit){chosenName=hit.n;const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
                 + "if(id){chosenId=id[1];location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
                 + "else{hit.a.click();action='result_clicked';}"
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
-                + "const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
-                + "const link=links.find(a=>((a.closest('[data-uia],.title-card,.slider-item')?.innerText||a.innerText||'').toLowerCase()).includes(wanted));"
-                + "if(link){link.click();action='result_clicked';}}"
+                + "if(cards.length&&still(cards)){"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,'no_exact','',named.map(x=>x.n).filter(n=>n).join('\\u001e')].join('\\u001f');}}"
                 + "if(!auth&&!location.pathname.includes('/watch/')){const controls=[...document.querySelectorAll('[data-uia=\"play-button\"],button,a')];"
                 + "const play=controls.find(e=>{const s=((e.getAttribute('aria-label')||'')+' '+(e.innerText||'')).toLowerCase();"
                 + "return s==='play'||s.includes('reproducir')||s.startsWith('play ');});"
                 + "if(play){play.click();action='play_clicked';}}"
                 + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
-                + "const matched=(document.title.toLowerCase()+' '+body).includes(wanted);"
+                + "const matched=fold(document.title+' '+(document.body?.innerText||'')).includes(wanted);"
                 + "return [location.href,document.title,auth?'auth':'ok',matched?'matched':'unmatched',"
                 + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,chosenId,chosenName].join('\\u001f');})()",
                 cancellationToken,
@@ -2033,6 +2043,13 @@ internal class CdpBrowserSession : IDisposable
             if (fields[2] == "auth")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     "netflix_authentication_required");
+            if (fields[7] == "profile")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    UserBrowserSurface.StreamingProfileChoice);
+            if (fields[7] == "no_exact")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    UserBrowserSurface.StreamingTitleNotFound, observed,
+                    fields[9].Split('\u001e', StringSplitOptions.RemoveEmptyEntries));
             // La ficha elegida en la búsqueda se recuerda entre vueltas: el guion
             // vuelve a empezar en cada evaluación y para entonces ya está en la
             // página del reproductor, donde no quedan tarjetas que mirar.
@@ -2043,12 +2060,10 @@ internal class CdpBrowserSession : IDisposable
                 CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
             bool progressing = double.TryParse(fields[6], NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double currentTime);
-            // Lo que prueba que se abrió lo pedido es la ficha que se eligió, no que
-            // la página repita el nombre. Exigir lo segundo descartaba un título
-            // traducido —«Wednesday» se llama «Merlina» en este perfil— con el vídeo
-            // delante, y tiraba la corrección que el buscador de Netflix acababa de
-            // dar a un título mal escrito. Sin ficha elegida (navegación directa) se
-            // conserva la comprobación del texto.
+            // Lo que prueba que se abrió lo pedido es la ficha que se eligió —la que se
+            // llama como el pedido—, no que la página del reproductor repita el nombre.
+            // Sin ficha elegida (navegación directa) se conserva la comprobación del
+            // texto.
             // Medido: la ficha de «Stranger Things» es la 80057281 y el reproductor
             // acaba en /watch/80077368, porque la primera es la serie y la segunda el
             // episodio al que Netflix redirige. Exigir que la URL lleve el id elegido
@@ -2130,7 +2145,7 @@ internal class CdpBrowserSession : IDisposable
 
             string observed = await EvaluateStringAsync(
                 socket,
-                "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
+                "(()=>{" + StreamingCardScript + "const wanted=fold(" + titleLiteral + ");"
                 + "let chosenHref='',chosenName='',action='none';"
                 + "const body=(document.body?.innerText||'').toLowerCase();"
                 + "const auth=location.pathname.includes('/login')||location.pathname.includes('/begin')||"
@@ -2150,12 +2165,14 @@ internal class CdpBrowserSession : IDisposable
                 // se recarga esa página una sola vez; la marca vive en la pestaña.
                 + "const stalled=()=>{const k='baxyReload:'+p;window.__baxyStall=(window.__baxyStall||0)+1;"
                 + "if(window.__baxyStall>40&&!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');window.__baxyStall=0;location.reload();return 'reload';}return 'none';};"
-                + "const pick=list=>list.find(x=>x.t===wanted)||list.find(x=>x.t.startsWith(wanted))||list.find(x=>x.t.includes(wanted));"
-                + "const choose=cards=>{const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
-                + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
-                + "if(hrefs!==window.__baxyLastHrefs){window.__baxyLastHrefs=hrefs;window.__baxyNoHit=0;}"
-                + "let hit=pick(named.filter(x=>isEntity(x.a)))||pick(named);"
-                + "if(!hit){window.__baxyNoHit=(window.__baxyNoHit||0)+1;if(window.__baxyNoHit>12){hit=named.find(x=>isEntity(x.a))||named[0];}}return hit;};"
+                // Sólo se elige la ficha que se llama como el pedido. Sin ninguna así, cuando
+                // el conjunto lleva tres segundos quieto, la elección devuelve los nombres
+                // de las fichas (una lista) para decirlos como candidatos.
+                + "const pick=list=>list.find(x=>x.t===wanted);"
+                + "const choose=cards=>{const named=cards.map(a=>({a,t:fold(clean(a.getAttribute('aria-label')||a.innerText)),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
+                + "const hit=pick(named.filter(x=>isEntity(x.a)))||pick(named);"
+                + "if(hit)return hit;return still(cards)?named.map(x=>x.n).filter(n=>n):null;};"
+                + "const near=names=>[location.href,document.title,'ok',-1,'missing',0,'no_exact','',names.join('\\u001e'),'cards'].join('\\u001f');"
                 // La búsqueda: el cuadro se enfoca aquí y el texto lo escribe CDP
                 // (Input.insertText), porque el valor puesto por JS no dispara la
                 // búsqueda de la página.
@@ -2164,15 +2181,11 @@ internal class CdpBrowserSession : IDisposable
                 + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
                 // VIDEO1947: la página de búsqueda trae fichas por defecto antes de que se
                 // escriba nada, y con el texto recién escrito siguen ahí un instante. Las
-                // fichas de antes de escribir se recuerdan y sólo se elige cuando cambian;
-                // si ninguna coincide con el pedido, la primera se toma sólo cuando el
-                // conjunto lleva tres segundos sin cambiar, para no confundir las fichas
-                // por defecto con una corrección del buscador («The Devil» → «El diablo
-                // viste a la moda 2»).
+                // fichas de antes de escribir se recuerdan y sólo se elige cuando cambian.
                 + "if(!(input?.value||'').length){window.__baxyPreSearch=hrefs;window.__baxyNoHit=0;}"
                 + "const fresh=cards.length&&hrefs!==(window.__baxyPreSearch??'');"
                 + "if(fresh&&(input?.value||'').length){"
-                + "const hit=choose(cards);"
+                + "const hit=choose(cards);if(Array.isArray(hit))return near(hit);"
                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
                 + "if(input){window.__baxyStall=0;input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}"
@@ -2180,7 +2193,7 @@ internal class CdpBrowserSession : IDisposable
                 // La colección: si la búsqueda llevó a una página de universo, la obra
                 // se elige entre sus fichas con la misma lectura.
                 + "if(!auth&&p.includes('/browse/page-')){const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')].filter(isEntity);"
-                + "const hit=cards.length?choose(cards):null;"
+                + "const hit=cards.length?choose(cards):null;if(Array.isArray(hit))return near(hit);"
                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}}"
                 + "else if(!cards.length){action=stalled();}"
                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'page'].join('\\u001f');}"
@@ -2203,6 +2216,10 @@ internal class CdpBrowserSession : IDisposable
             if (fields[2] == "auth")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     "disney_authentication_required");
+            if (fields[6] == "no_exact")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    UserBrowserSurface.StreamingTitleNotFound, observed,
+                    fields[8].Split('\u001e', StringSplitOptions.RemoveEmptyEntries));
             if (fields[7].Length > 0) chosenHref = fields[7];
             if (fields[8].Length > 0) chosenName = fields[8];
             if (fields[6] == "input_focused" && typed < 3 && fields[9] == "empty")
