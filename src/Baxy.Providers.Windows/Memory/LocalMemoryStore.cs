@@ -1148,7 +1148,11 @@ public sealed class LocalMemoryStore : IMemoryStore
                 request.Selector,
                 StringComparison.Ordinal),
             MemoryForgetScope.Kind => record.Kind == request.Kind,
-            MemoryForgetScope.Topic => request.Topic is not null && MatchesQuery(record, request.Topic),
+            // Auditoría final G4: a topic deletes only the memories that are that selector or carry that tag, folded;
+            // never one that merely contains its words.
+            MemoryForgetScope.Topic => request.Topic is not null
+                && (string.Equals(record.Selector, request.Topic, StringComparison.Ordinal)
+                    || record.Tags.Contains(request.Topic, StringComparer.Ordinal)),
             MemoryForgetScope.Session => record.Retention == MemoryRetention.Session
                 && string.Equals(record.SessionId, request.SessionId, StringComparison.Ordinal),
             MemoryForgetScope.All => true,

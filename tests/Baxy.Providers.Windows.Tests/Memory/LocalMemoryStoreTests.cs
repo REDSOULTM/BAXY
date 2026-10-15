@@ -198,6 +198,29 @@ public sealed class LocalMemoryStoreTests
         });
     }
 
+    // Auditoría final G4: a topic forgets the memory that is that selector or carries that tag, never one whose
+    // selector, label or tags merely contain it («color» never takes «color favorito» nor the tag «colores»).
+    [Test]
+    public void TopicForgetDeletesOnlyTheExactSelectorOrTag()
+    {
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector);
+        _ = store.Save(Save("save-a", "color", "azul"));
+        _ = store.Save(Save("save-b", "color favorito", "verde"));
+        _ = store.Save(new MemorySaveRequest("save-c", "pintura", "pintura", "óleo", Tags: [" Color "]));
+        _ = store.Save(new MemorySaveRequest("save-d", "paleta", "paleta", "pastel", Tags: ["colores"]));
+
+        MemoryForgetResult forgotten = store.Forget(new("forget-topic", MemoryForgetScope.Topic, Topic: "COLOR"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(forgotten.DeletedCount, Is.EqualTo(2));
+            Assert.That(store.List(new()).Records.Select(record => record.Selector),
+                Is.EquivalentTo(new[] { "COLOR FAVORITO", "PALETA" }));
+        });
+    }
+
     [Test]
     public void BeginningANewSessionPurgesTheOldSessionAndPreservesPersistentRecords()
     {
