@@ -153,6 +153,9 @@ HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
 
 NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
+# A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
+# 2026-10-15: the model read «not run» for a call the core had executed).
+NO_RESULT = json.dumps({"status": "unknown", "reason": "no result came back for this call: it may have run or not"})
 
 # The operation the App reads as «the person answered the pending confirmation» (the kernel's challenge): the App sends
 # the exact invocation the kernel challenged again with its token, or drops it.
@@ -378,8 +381,10 @@ class Mind:
         beat, self._beat = self._beat, None
         if not beat or beat.get("silent"):
             return
+        if beat.get("awaiting"):
+            beat["conv"].append({"role": "tool", "tool_call_id": beat["awaiting"], "content": NO_RESULT})
         pending = [c["id"] for c in beat.get("queue") or []]
-        for call_id in [beat.get("awaiting"), beat.get("asked"), *pending]:
+        for call_id in [beat.get("asked"), *pending]:
             if call_id:
                 beat["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._close_open_calls()
@@ -390,8 +395,10 @@ class Mind:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
         turn = self._turn or {}
+        if turn.get("awaiting"):
+            self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
         pending = [c["id"] for c in turn.get("queue") or []]
-        for call_id in [turn.get("awaiting"), turn.get("asked"), *pending]:
+        for call_id in [turn.get("asked"), *pending]:
             if call_id:
                 self.conversation.append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._turn = None
@@ -426,9 +433,11 @@ class Mind:
                      "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
         if final:
-            # The App's step budget is spent: said where the model reads it, at the end of the last result.
-            conv[-1]["content"] += ("\n[Límite de pasos alcanzado: no llames más herramientas; responde "
-                                                 "ahora a la persona sólo con lo que muestran los resultados.]")
+            # The App closes the turn (its step budget spent, the engine down, or a confirmation waiting for the
+            # person): said where the model reads it, at the end of the last result, without a cause the mind does not
+            # know.
+            conv[-1]["content"] += ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo "
+                                    "con lo que muestran los resultados.]")
         if turn["queue"] and not final:
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
         for call in turn["queue"]:
