@@ -25,6 +25,9 @@ Decisiones del dueño, tomadas con casillas de opciones:
 | Pedido imposible | Decir que no lo hace |
 | Volumen sin cantidad | Que decida el modelo |
 | Voz | Primero «después»; el 2026-10-15 pidió conectar la wake word y la transcripción (hecho, ver abajo) |
+| Voz que habla | Piper como antes |
+| Computer use y herramientas genéricas | Lo que recomienden los papers, la documentación, los usuarios y la evidencia de BAXY |
+| Meta final | Metas medibles: holdout nuevo ≥ 85 %, cero falsedades en banco automático, ≤ 4 GB + 4 GB; si no llega, límite honesto y cierra |
 
 ## Qué es Renew hoy
 
@@ -95,7 +98,14 @@ midió todavía**; corre `py -3.12 -X utf8 bench.py r1 --desc en --temp 0.2`.
   Ese Python es compartido con BAXY Definitivo.
 - `pylock.runtime-win-x64.toml` todavía no la incluye.
 
-## Lo primero para el chat nuevo
+## Lo primero para el chat nuevo (encargo afinado con el dueño el 2026-10-15)
+
+**Meta:** BAXY como un agente nativo del PC, al estilo de Cursor, OpenCode o Claude Code: el modelo, un buen juego de
+herramientas y el bucle nativo, y el modelo decide todo. Debe quedar completo (escucha, habla, ve y maneja la
+pantalla), pero nativo. Cada paso se investiga antes de implementarlo (papers, documentación, usuarios), como pide la
+regla vital.
+
+**Orden:**
 
 1. **Falsedades vistas en uso real (2026-10-15, 01:52–01:55).** Siguen el orden de `conversation.v1.jsonl`, en
    `%LOCALAPPDATA%\BAXY\dev-mente-v2\conversation`:
@@ -105,17 +115,50 @@ midió todavía**; corre `py -3.12 -X utf8 bench.py r1 --desc en --temp 0.2`.
    - Con una confirmación pendiente, «cierra chrome» recibió «No puedo cerrar Chrome porque mi última orden pendiente
      era cerrar la ventana 18titans». Hay que revisar cómo se reemplaza un plan pendiente.
 2. **Medir la ronda 1** (`r1`) y comparar con `en02v2`.
-3. **Ciclo de re-auditoría con agentes**, hasta que no encuentren nada:
+3. **Voz que habla, con Piper como antes** (decisión del dueño):
+   - Es la voz es_MX que usaba BAXY Definitivo; su ruta está en `tts_model` del manifiesto.
+   - Se porta de Definitivo (`src/baxy_mind/voice_output.py`, `voice_aec.py` y lo que use `voice.py`) sólo lo
+     necesario: `voice.speak`, `voice.cancel`, la interrupción al hablar encima, y la cancelación de eco y la bajada de
+     volumen si la evidencia las pide.
+   - El hello vuelve a ofrecer `voice.speak`.
+   - El torneo TTS (BAXY-098) sigue aparte; aquí no se cambia la voz.
+4. **Computer use nativo.** La forma la decide la investigación junto con la evidencia que juntó BAXY Definitivo.
+   - **Investigación:** papers como OSWorld, Windows Agent Arena y UFO, la documentación oficial y la experiencia de
+     usuarios.
+   - **Evidencia de BAXY:**
+     - la memoria `c03-computer-use-engine`;
+     - el contrato `documentacion/computer-use/CONTRATO_VISTA_ACCION.md`, en la rama `fable/computer-use-engine`;
+     - las lecciones de sus sondas.
+   - **Lo que ya hay:** el catálogo de Renew ya tiene las primitivas `input.visible.controls`, `input.visible.click`,
+     `input.key.press` e `input.scroll`. Falta que el modelo las encadene solo en el bucle nativo; puede hacer falta
+     subir el límite de pasos.
+   - **Lo que no entra:** el motor viejo dictaba los pasos obvios con código (`deterministic_step`) porque el 4B agotaba
+     el tiempo. Eso es código que ayuda. Si el 4B no llega, queda como límite honesto.
+   - **Recursos:** todo dentro de 4 GB de VRAM. Sumar visión (capturas) sólo si la evidencia lo justifica y cabe.
+5. **Herramientas genéricas de agente** (terminal, archivos, leer la web, lista de tareas propia…). Entran las que la
+   investigación recomiende para un modelo local de 4B, y todas pasan por el riesgo y la confirmación del kernel.
+6. **Ciclo de re-auditoría con agentes:**
    - Código muerto: unas 7 200 líneas de la App, 27 JSON huérfanos, 508+8 pruebas de Python y 32 pruebas .NET de
      integración.
    - `bootstrap.ps1` todavía importa `baxy_mind.voice`; ahora existe, pero hay que revisar qué espera.
-4. **Optimizaciones pendientes:**
+7. **Optimizaciones pendientes:**
    - Hora local en avisos y recordatorios: el modelo no convierte a UTC (`dueUtc`), así que conviene que el catálogo
      acepte la hora local.
    - Sacar del prompt la lista de 522 apps.
    - Guardar y restaurar el hueco en disco.
    - Perfil de 4 GB: IQ4_XS con un solo hueco.
    - Redactar dentro del bucle.
+
+## Cuándo termina (metas medibles, fijadas por el dueño)
+
+- **Holdout nuevo y sellado, con ≥ 85 % de aciertos.**
+  - Se escribe antes de ajustar nada y no se mira mientras se ajusta; el viejo ya está gastado.
+  - Cubre también voz, computer use y las herramientas nuevas.
+- **Cero falsedades en un banco automático** de turnos con guion, que el chat corre solo.
+  - Cada turno se audita contra el journal: no puede decirse como hecho nada que no se haya ejecutado y verificado.
+- **≤ 4 GB de VRAM y ≤ 4 GB de RAM**, medidos con todo cargado: modelo, voz que escucha y que habla, y computer use.
+- **Si una meta no se alcanza por el límite del modelo:** se documenta como límite honesto, con su evidencia, y se
+  cierra. Nunca se parchea con código.
 
 ## Trampas de este entorno
 
