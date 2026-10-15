@@ -4060,18 +4060,16 @@ function Get-ComboEdit($combo){
   } catch {}
   return $null
 }
-# Ronda 22 (r18 t2-c04: «125» y la entrada «125% (recomendado)»): un numero pedido es la unica entrada cuyo nombre
-# lo tiene como numero entero, nunca parte de otro: «150» no es «1500», y «2» no es la parte entera de «2,5» ni «125»
-# la de «125,5 %» (la mente lee igual los numeros, _WHOLE_NUMBER). Dos entradas con ese numero, o ninguna: $null.
-function Select-NumberedEntry($items,[string]$text){
-  $number=([string]$text).Trim()
-  if($number -notmatch '^\d+(?:[.,]\d+)?$'){ return $null }
-  $wanted='(?<![\d.,])'+[regex]::Escape($number)+'(?!\d|[.,]\d)'
-  $numbered=@(@($items) | Where-Object { $null -ne $_ -and [string](Get-Name $_) -match $wanted })
-  if($numbered.Count -eq 1){ return $numbered[0] }
+# Auditoria C9: la entrada elegida es la que se llama como el texto pedido (igual plegado, Test-NameMatch); «125» no es
+# «125% (recomendado)». Devuelve la entrada elegida (entry, su nombre leido) y si la caja la tomo (delivered); $null si
+# no se eligio nada. Sin una entrada de ese nombre, sus nombres quedan en $script:ComboEntries para el modelo.
+$script:ComboEntries=@()
+function Find-EntryNamed($items,[string]$text){
+  foreach($item in @($items)){ if($null -ne $item -and (Test-NameMatch (Get-Name $item) @($text))){ return $item } }
   return $null
 }
 function Select-ComboEntry($combo,[string]$text){
+  $script:ComboEntries=@()
   $pattern=$null
   if(-not $combo.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){ return $null }
   $expand=[System.Windows.Automation.ExpandCollapsePattern]$pattern
@@ -4079,10 +4077,8 @@ function Select-ComboEntry($combo,[string]$text){
   $chosen=$null
   try {
     $items=@($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
-    foreach($item in $items){
-      if(Test-NameMatch (Get-Name $item) @($text)){ $chosen=$item; break }
-    }
-    if($null -eq $chosen){ $chosen=Select-NumberedEntry $items $text }
+    $chosen=Find-EntryNamed $items $text
+    if($null -eq $chosen){ $script:ComboEntries=@($items | ForEach-Object { Get-Name $_ } | Where-Object { $_.Length -gt 0 } | Select-Object -First 30) }
     if($null -ne $chosen){
       $select=$null
       if($chosen.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$select)){ try { ([System.Windows.Automation.ScrollItemPattern]$select).ScrollIntoView() } catch {} }
@@ -4090,18 +4086,18 @@ function Select-ComboEntry($combo,[string]$text){
     }
   } finally { try { $expand.Collapse() } catch {} }
   if($null -eq $chosen){ return $null }
-  if(-not [bool](Test-Selected $chosen)){ return $false }
+  $name=Get-Name $chosen
+  if(-not [bool](Test-Selected $chosen)){ return @{ entry=$name; delivered=$false } }
   # Revision de combos-galerias: una caja que publica su valor lo dice con la entrada elegida (una lista marcada que la
   # caja no tomo no es entrega).
   $value=$null
   if($combo.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$value)){
     $vp=[System.Windows.Automation.ValuePattern]$value
-    $name=Get-Name $chosen
     $after=Wait-ValueSet { [string]$vp.Current.Value } $name 300
-    if([string]::IsNullOrWhiteSpace([string]$after)){ return $true }
-    return [string]::Equals(([string]$after).Trim(),([string]$name).Trim(),[StringComparison]::OrdinalIgnoreCase)
+    if([string]::IsNullOrWhiteSpace([string]$after)){ return @{ entry=$name; delivered=$true } }
+    return @{ entry=$name; delivered=[string]::Equals(([string]$after).Trim(),([string]$name).Trim(),[StringComparison]::OrdinalIgnoreCase) }
   }
-  return $true
+  return @{ entry=$name; delivered=$true }
 }
 # Regresiones r2 M3 (live v8): Chromium publica el valor nuevo de un campo un poco despues de SetValue; releido a los
 # 95 ms todavia mostraba el anterior y el texto se dio por no verificado. Se relee cada 40 ms hasta $limitMs (300 como
@@ -4134,7 +4130,8 @@ function Do-Field($request){
     if($kind -ne 'ComboBox' -or -not $enabled -or $password -or [string]::IsNullOrWhiteSpace([string]$request.text)){ return $result }
     try { $result.className=[string]$element.Current.ClassName } catch {}
     $picked=Select-ComboEntry $element ([string]$request.text)
-    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked }
+    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry }
+    elseif($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
     return $result
   }
   $combo=$null
@@ -4168,7 +4165,8 @@ function Do-Field($request){
     # Un ComboBox de solo lista (sin texto que escribir): su entrada con ese nombre, elegida por patron.
     if($kind -eq 'ComboBox' -and $enabled -and -not $writable -and $null -eq $combo){
       $picked=Select-ComboEntry $element ([string]$text)
-      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked; return $result }
+      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; return $result }
+      if($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
     }
     return $result
   }
