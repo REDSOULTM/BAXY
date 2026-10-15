@@ -12,11 +12,11 @@ public sealed class OperationRegistryTests
     public void Registry_orders_canonical_names_and_resolves_exactly()
     {
         var zeta = new StubHandler("note.read");
-        var alpha = new StubHandler("app.status");
+        var alpha = new StubHandler("app.close");
         var registry = new OperationRegistry([zeta, alpha]);
 
         Assert.That(registry.Definitions.Select(static item => item.Name),
-            Is.EqualTo(new[] { "app.status", "note.read" }));
+            Is.EqualTo(new[] { "app.close", "note.read" }));
         Assert.That(registry.TryGet("note.read", out IOperationHandler? resolved), Is.True);
         Assert.That(resolved, Is.SameAs(zeta));
         Assert.That(registry.TryGet("NOTE.READ", out _), Is.False);

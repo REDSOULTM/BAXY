@@ -50,13 +50,6 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; también acepta windows.notepad y windows.calculator."),
         Descriptor(
-            "app.status",
-            EmptySchema(),
-            OperationRisks.ReadOnly,
-            "app.status.catalog.ready.v1",
-            ToolExposure.Internal,
-            "Checks that the local core is available and lists its operations."),
-        Descriptor(
             "audio.app.volume.adjust",
             Schema(
                 [
@@ -588,7 +581,7 @@ public static class ProductCatalog
             FilesystemResourceSchema(),
             OperationRisks.ReadOnly,
             "filesystem.hash.sandbox.revalidated.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Calcula SHA-256 después de revalidar la identidad opaca del archivo."),
         Descriptor(
             "filesystem.known.duplicates",
@@ -638,7 +631,7 @@ public static class ProductCatalog
             Schema([String("path", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["path"]),
             OperationRisks.RecoverableDelete,
             "filesystem.path.ensure.absent.windows.private.trash.postread.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Verifica la ausencia de una ruta absoluta; si existe, solo mueve archivos del perfil o TEMP a una papelera privada recuperable."),
         Descriptor(
             "filesystem.read.text",
@@ -698,14 +691,14 @@ public static class ProductCatalog
                 ["reviewLabel", "trashId"]),
             OperationRisks.RecoverableDelete,
             "filesystem.trash.commit.sandbox.absence.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una selección preparada y mueve el recurso a una papelera privada recuperable."),
         Descriptor(
             "filesystem.trash.prepare",
             FilesystemResourceSchema(),
             OperationRisks.ReadOnly,
             "filesystem.trash.prepare.sandbox.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Prepara una selección de papelera de un solo uso con etiqueta revisable."),
         Descriptor(
             "filesystem.trash.restore",
@@ -761,7 +754,7 @@ public static class ProductCatalog
             Schema([String("confirmationId", maximumLength: 96, nonWhitespace: true)], ["confirmationId"]),
             OperationRisks.Installation,
             "game.install.commit.steam.job.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una instalación preparada en una sesión Steam autenticada y verifica su job."),
         Descriptor(
             "game.install.named",
@@ -781,7 +774,7 @@ public static class ProductCatalog
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
             OperationRisks.ReadOnly,
             "game.install.prepare.steam.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos."),
         Descriptor(
             "game.install.status",
@@ -819,14 +812,14 @@ public static class ProductCatalog
                 ["confirmationId", "expectedPriceCents"]),
             OperationRisks.Monetary,
             "game.purchase.commit.steam.receipt.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una compra preparada con precio exacto; nunca se prueba contra dinero real."),
         Descriptor(
             "game.purchase.prepare",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
             OperationRisks.ReadOnly,
             "game.purchase.prepare.steam.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
@@ -1549,7 +1542,7 @@ public static class ProductCatalog
                 ["name"]),
             OperationRisks.ReadOnly,
             "routine.resolve.exact.local.identity.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs."),
         Descriptor(
             "routine.restore",
@@ -1854,7 +1847,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.ReadOnly,
             "task.resolve.exact.local.identity.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Resuelve un único título literal y emite autoridad CAS sin exponer detalles."),
         Descriptor(
             "task.restore",
@@ -2188,8 +2181,6 @@ public static class ProductCatalog
     private static readonly IReadOnlyList<ProductOperationDescriptor> ReadOnlyToolCatalog =
         Array.AsReadOnly(Catalog.Where(static descriptor =>
             descriptor.ToolExposure == ToolExposure.Public).ToArray());
-    private static readonly IReadOnlyList<string> ReadOnlyOperationNames =
-        Array.AsReadOnly(Catalog.Select(static descriptor => descriptor.Name).ToArray());
 
     static ProductCatalog()
     {
@@ -2204,11 +2195,10 @@ public static class ProductCatalog
         }
     }
 
-    public static IReadOnlyList<ProductOperationDescriptor> Descriptors => ReadOnlyCatalog;
+    // Every descriptor, internal ones too; only the catalog's tests list them whole.
+    internal static IReadOnlyList<ProductOperationDescriptor> Descriptors => ReadOnlyCatalog;
 
     public static IReadOnlyList<ProductOperationDescriptor> ToolDescriptors => ReadOnlyToolCatalog;
-
-    public static IReadOnlyList<string> OperationNames => ReadOnlyOperationNames;
 
     public static bool TryGet(
         string? name,

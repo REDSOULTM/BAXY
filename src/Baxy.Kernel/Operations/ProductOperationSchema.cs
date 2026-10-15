@@ -246,8 +246,6 @@ public sealed class OperationArgumentsSchema
 
     public IReadOnlyList<string> Required { get; }
 
-    public bool AdditionalProperties { get; }
-
     public string CanonicalJson { get; }
 
     private string BuildCanonicalJson()

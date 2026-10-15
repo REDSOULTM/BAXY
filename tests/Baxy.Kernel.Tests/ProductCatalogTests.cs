@@ -76,9 +76,10 @@ public sealed class ProductCatalogTests
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
     // (reminder.* sólo guardaba un registro que nadie hacía sonar). Y la misión de pantalla, que el bucle nativo
-    // ya no aloja (auditoría K3).
+    // ya no aloja (auditoría K3), y app.status, que nadie invocaba (auditoría D-K9).
     internal static readonly string[] RenewRetired =
     [
+        "app.status",
         "mission.computer.use",
         "notification.cancel.at",
         "notification.cancel.latest",
@@ -100,9 +101,25 @@ public sealed class ProductCatalogTests
         "filesystem.write.text",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 19;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 20;
 
-    internal const int ExpectedTools = ExpectedDescriptors - 1;
+    // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
+    // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).
+    internal static readonly string[] InternalSteps =
+    [
+        "filesystem.hash",
+        "filesystem.path.ensure.absent",
+        "filesystem.trash.commit",
+        "filesystem.trash.prepare",
+        "game.install.commit",
+        "game.install.prepare",
+        "game.purchase.commit",
+        "game.purchase.prepare",
+        "routine.resolve.exact",
+        "task.resolve.exact",
+    ];
+
+    internal const int ExpectedTools = ExpectedDescriptors - 10;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -315,21 +332,17 @@ public sealed class ProductCatalogTests
             Assert.That(descriptors.All(static descriptor =>
                 OperationRisks.IsKnown(descriptor.Risk)), Is.True);
             Assert.That(descriptors.All(static descriptor =>
-                descriptor.ArgumentsSchema.AdditionalProperties is false), Is.True);
-            Assert.That(descriptors.All(static descriptor =>
                 !string.IsNullOrWhiteSpace(descriptor.VerifierContractId)), Is.True);
             Assert.That(
                 ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors
-                    .Where(static descriptor => descriptor.Name != "app.status")
+                    .Where(static descriptor => !InternalSteps.Contains(descriptor.Name))
                     .Select(static descriptor => descriptor.Name)));
             Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
             Assert.That(
-                ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
-                Does.Not.Contain("app.status"));
-            Assert.That(
-                ProductCatalog.GetRequired("app.status").ToolExposure,
-                Is.EqualTo(ToolExposure.Internal));
+                descriptors.Where(static descriptor => descriptor.ToolExposure == ToolExposure.Internal)
+                    .Select(static descriptor => descriptor.Name),
+                Is.EquivalentTo(InternalSteps));
         });
     }
 
@@ -363,7 +376,7 @@ public sealed class ProductCatalogTests
         }
 
         Assert.That(
-            () => ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("app.status")),
+            () => ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("filesystem.hash")),
             Throws.ArgumentException);
     }
 
@@ -726,7 +739,7 @@ public sealed class ProductCatalogTests
                 Is.EqualTo(ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)));
             Assert.That(
                 exact.ToolDefinitions.Select(static definition => definition.Name),
-                Does.Not.Contain("app.status"));
+                Has.None.AnyOf(InternalSteps));
         });
     }
 

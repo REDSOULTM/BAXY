@@ -132,7 +132,6 @@ internal static class Program
         var identityProvider = new WindowsIdentityProvider();
         IOperationHandler[] handlers =
         [
-            new AppStatusHandler(),
             new AppInstalledHandler(installedApplicationProvider),
             new ApplicationWindowStatusHandler(installedApplicationProvider),
             new AppOpenHandler(routedApplicationOpenProvider),

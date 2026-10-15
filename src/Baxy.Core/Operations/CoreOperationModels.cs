@@ -121,11 +121,6 @@ internal sealed record NoteListResult(
     int Offset,
     int? NextOffset);
 
-internal sealed record AppStatusResult(
-    bool Ready,
-    string Protocol,
-    IReadOnlyList<string> Operations);
-
 internal sealed record SystemStatusArguments(string? Scope);
 
 internal sealed record ProcessListArguments(string? Sort, int? Limit);
