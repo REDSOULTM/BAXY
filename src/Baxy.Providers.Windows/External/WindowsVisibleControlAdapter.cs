@@ -2038,11 +2038,14 @@ internal sealed class WindowsVisibleControlAdapter
                 else if (WindowsUserInputPause.Shared.UnknownInputAgoMs is long unknownAgo)
                     writer.WriteNumber("personInputUnknownAgoMs", unknownAgo);
                 // Contract «Seguridad v2»: a developer's or BAXY's own window (an editor, an IDE, a terminal, a console,
-                // BAXY) that the request did not name, told by its process, never by its title. The mission acts on
-                // no such window, also when it names no application and works on the window in front.
+                // BAXY) that the request did not name, told by its process, never by its title. No act reaches such a
+                // window (protected_window, VisibleControlSurface.ActRefused); one this look named by its application
+                // may be acted on.
                 if (VisibleControlSurface.ProtectedFrom(processName, application,
                         () => VisibleControlSurface.ProcessDescription(unchecked((uint)ownerProcessId))))
                     writer.WriteBoolean("protected", true);
+                else
+                    VisibleControlSurface.NoteNamedProtected(windowRoot != 0 ? windowRoot : hwnd, processName);
                 // v3 point 1: the content of the application's window drawn by a process it started (WebView2, CEF):
                 // the application's process first, then the processes it started. The mission's keys and text are
                 // bound to this family and to no other process.

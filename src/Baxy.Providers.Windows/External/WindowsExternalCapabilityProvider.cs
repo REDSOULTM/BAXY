@@ -12,6 +12,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
 {
     private readonly IExternalOperationAdapter[] _adapters;
     private readonly IForegroundLease? _missionFront;
+    private readonly Func<string, JsonElement, bool>? _actRefused;
     private int _disposed;
 
     public WindowsExternalCapabilityProvider()
@@ -23,7 +24,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     }
 
     public WindowsExternalCapabilityProvider(string dataRoot)
-        : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared)
+        : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared, ActOnProtectedWindow)
     {
     }
 
@@ -100,10 +101,16 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
 
     /// <param name="missionFront">The lease that brings a mission's window to the front before its act
     /// (<see cref="IForegroundLease.TakeForMissionAsync"/>); null (the test seams that name none) brings nothing.</param>
-    internal WindowsExternalCapabilityProvider(IExternalOperationAdapter[] adapters, IForegroundLease? missionFront = null)
+    /// <param name="actRefused">Whether an act would reach a window it never may (<see cref="ActOnProtectedWindow"/>);
+    /// null (the test seams, whose adapters reach no window) refuses nothing.</param>
+    internal WindowsExternalCapabilityProvider(
+        IExternalOperationAdapter[] adapters,
+        IForegroundLease? missionFront = null,
+        Func<string, JsonElement, bool>? actRefused = null)
     {
         _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
         _missionFront = missionFront;
+        _actRefused = actRefused;
     }
 
     /// <summary>
@@ -117,6 +124,28 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         && window.TryGetInt64(out long hwnd) && hwnd > 0
             ? checked((nint)hwnd)
             : 0;
+
+    /// <summary>
+    /// CU4 (auditoría final 2): a click, a key, a text, a wheel turn or a clipboard keystroke would reach a developer's
+    /// or BAXY's own window that no look named (<see cref="VisibleControlSurface.ActRefused"/>).
+    /// </summary>
+    private static bool ActOnProtectedWindow(string operation, JsonElement arguments) =>
+        ActTarget(operation, arguments) is var target and not 0 && VisibleControlSurface.ActRefused(target);
+
+    /// <summary>
+    /// The window an input act reaches: the window it names, else the one in front (the pointer's click and wheel, the
+    /// window under the pointer); 0 for an operation that is no input act.
+    /// </summary>
+    private static nint ActTarget(string operation, JsonElement arguments) => operation switch
+    {
+        "input.visible.click" or "input.key.press" or "input.text.type" or "input.scroll" or "input.select.all"
+            or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout" =>
+            MissionWindow(arguments) is var window and not 0 ? window : VisibleControlSurface.FrontWindow(),
+        "input.pointer.control" when arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("action", out JsonElement action)
+            && action.GetString() is "click" or "scroll_down" => VisibleControlSurface.PointerWindow(),
+        _ => 0,
+    };
 
     public InstalledGameCatalogSnapshot GetInstalledGameCatalogSnapshot()
     {
@@ -200,6 +229,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        if (_actRefused?.Invoke(operation, arguments) == true)
+            return ExternalJson.FailureBeforeEffect(operation, "protected_window");
         // The owner's decision of 2026-10-10 («no molestar», simple form): an act of a mission is done with the mission's
         // window in front, brought after the person's pause; the lease gives the front back at the person's first input,
         // after a text and once the mission ended. Nothing is sent when the person does not pause, Windows does not give

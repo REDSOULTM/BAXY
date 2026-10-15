@@ -60,6 +60,27 @@ public sealed class MissionFrontTests
         });
     }
 
+    // CU4 (auditoría final 2): an act that would reach a developer's or BAXY's own window no look named is never sent,
+    // and no front is taken for it.
+    [Test]
+    public async Task AnActOnAProtectedWindowIsNeverSent()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":18016}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(lease.Taken, Is.Empty);
+        });
+    }
+
     // Contracases: a look (it reads its windows, «windows», and brings nothing up), an opening, and an act outside a
     // mission (no «window»: the window in front, the person's own order) never ask for the front.
     [TestCase("input.visible.controls", """{"windows":[18016]}""")]

@@ -546,6 +546,34 @@ internal static partial class VisibleControlSurface
             || (wanted != FoldTitle(process) && (description is null || wanted != FoldTitle(description())));
     }
 
+    // CU4 (auditoría final 2): the roots of the protected windows a look was asked for by their own application («la
+    // terminal», asked as Windows Terminal). An act reaches a protected window only when a look named it; BAXY's own,
+    // which no name makes unprotected, never.
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<nint, byte> NamedProtectedRoots = new();
+
+    /// <summary>A look at <paramref name="window"/> named its protected application: acts may reach it.</summary>
+    internal static void NoteNamedProtected(nint window, string? processName)
+    {
+        if (window != 0 && ProtectedFrom(processName, null))
+            NamedProtectedRoots[GetAncestor(window, 2)] = 0;
+    }
+
+    /// <summary>
+    /// An act on <paramref name="window"/> is refused: its root is a developer's or BAXY's own window (an editor, an IDE,
+    /// a terminal, a console, BAXY) that no look named.
+    /// </summary>
+    internal static bool ActRefused(nint window)
+    {
+        nint root = window == 0 ? 0 : GetAncestor(window, 2);
+        return root != 0 && ProtectedFrom(WindowProcess(root).ProcessName, null) && !NamedProtectedRoots.ContainsKey(root);
+    }
+
+    /// <summary>The window an act without a window of its own reaches: the one in front.</summary>
+    internal static nint FrontWindow() => GetForegroundWindow();
+
+    /// <summary>The window under the pointer, where a click or a wheel turn of the pointer lands.</summary>
+    internal static nint PointerWindow() => CursorNow() is { } cursor ? WindowFromPoint(new Point(cursor.X, cursor.Y)) : 0;
+
     /// <summary>The executable is the application: its name, folded, is the name asked («Spotify», «chrome»).</summary>
     internal static bool ProcessIsApplication(string? processName, string? application)
     {
