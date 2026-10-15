@@ -18,8 +18,11 @@ class LlmServer:
     # the next turn re-read it whole (7,5 s on 2026-10-15). The context is per slot.
     DECIDE, SHORT = 0, 1
 
-    def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768) -> None:
+    def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768,
+                 extra_args: list[str] | None = None, log_name: str = "llama-server.log") -> None:
         self.gguf = gguf
+        self.extra_args = list(extra_args or [])
+        self.log_name = log_name
         self.server = server
         self.gpu_layers = gpu_layers
         self.context = context
@@ -38,10 +41,10 @@ class LlmServer:
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
             "-ngl", self.gpu_layers, "-c", str(self.context * 2), "-np", "2", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
-        ]
+        ] + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
-        log = open(log_dir / "llama-server.log", "w", encoding="utf-8")
+        log = open(log_dir / self.log_name, "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
         self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
         threading.Thread(target=self._wait_health, daemon=True).start()
