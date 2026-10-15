@@ -67,7 +67,13 @@ public sealed class ProductCatalogTests
         "mission.computer.use",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2;
+    // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto.
+    internal static readonly string[] RenewAgentAdditions =
+    [
+        "web.fetch",
+    ];
+
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 1;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -336,7 +342,8 @@ public sealed class ProductCatalogTests
                 Is.SupersetOf(C03CatalogAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
-                Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions));
+                Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
+                    .And.SupersetOf(RenewAgentAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)

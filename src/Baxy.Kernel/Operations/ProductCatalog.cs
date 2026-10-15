@@ -1835,7 +1835,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "shell.command.run.powershell.captured.output.v1",
             ToolExposure.Public,
-            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; rechaza antes de correr los comandos que borran, matan procesos, formatean o cambian el sistema."),
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto."),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),
@@ -2176,6 +2176,21 @@ public static class ProductCatalog
             "web.download.http.file.size.postread.v1",
             ToolExposure.Public,
             "Descarga un archivo o una imagen de una dirección web (o, con una consulta y sin dirección, la primera imagen que lista el buscador) a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
+        // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
+        // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
+        // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.
+        Descriptor(
+            "web.fetch",
+            Schema(
+                [
+                    Integer("maximumCharacters", 500, 20_000),
+                    String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
+                ],
+                ["url"]),
+            OperationRisks.ReadOnly,
+            "web.fetch.public.http.text.v1",
+            ToolExposure.Public,
+            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto acotado."),
         Descriptor(
             "web.news.headlines",
             Schema(

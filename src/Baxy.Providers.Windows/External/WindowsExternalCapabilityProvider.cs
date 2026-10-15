@@ -403,6 +403,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "streaming.navigate" or "streaming.play.named" =>
                 "streaming_authenticated_session_required",
             "web.search" => "web_search_provider_not_configured",
+            "web.fetch" => "web_page_reader_not_configured",
             "calendar.event.create" or "calendar.event.list" => "calendar_account_adapter_required",
             "email.latest.read" or "email.latest.reply" or "email.send" => "outlook_authenticated_profile_required",
             "office.document.create" or "office.document.read" =>

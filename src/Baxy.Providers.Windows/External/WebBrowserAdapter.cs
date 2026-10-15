@@ -104,7 +104,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     public bool CanHandle(string operation) => operation is
         "browser.control" or "browser.navigate" or "browser.page.read" or "browser.tabs.list"
         or "media.play.youtube" or "media.control" or "media.status"
-        or "streaming.navigate" or "streaming.play.named" or "web.search";
+        or "streaming.navigate" or "streaming.play.named" or "web.search" or "web.fetch";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -140,6 +140,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 "web.search" => await SearchAsync(
                     operation, arguments, cancellationToken)
                     .ConfigureAwait(false),
+                "web.fetch" => await FetchAsync(operation, arguments, cancellationToken).ConfigureAwait(false),
                 _ => ExternalJson.Failure(operation, "external_operation_not_supported"),
             };
         }
@@ -252,6 +253,37 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("text", page.Text);
             writer.WriteBoolean("truncated", page.Truncated);
             writer.WriteString("authority", "cdp_dom_visible_text_snapshot");
+            writer.WriteEndObject();
+        }), effectObserved: false);
+    }
+
+    // web.fetch: one public page read as a stranger would (SearchPageReader: no cookie, no referrer, public addresses
+    // only, each redirect checked again), returned as readable text within the asked bound. What it observes is the
+    // address the text was finally read from: the text is that page's, nothing is said about any other.
+    private async ValueTask<ExternalCapabilityReceipt> FetchAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        int maximumCharacters = Math.Clamp(
+            ExternalJson.OptionalInt(arguments, "maximumCharacters", 8_000), 500, 20_000);
+        if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
+            || !SearchPageReader.IsPublicPageAddress(address))
+            return ExternalJson.Failure(operation, "web_fetch_address_not_public");
+        (Uri Final, string Html)? page = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        if (page is not { } read)
+            return ExternalJson.Failure(operation, "web_fetch_page_unreadable");
+        (string title, string text, bool truncated) = SearchPageExcerpt.Prose(read.Html, maximumCharacters);
+        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("requestedUrl", address.AbsoluteUri);
+            writer.WriteString("finalUrl", read.Final.AbsoluteUri);
+            writer.WriteString("title", title);
+            writer.WriteString("text", text);
+            writer.WriteBoolean("truncated", truncated);
+            writer.WriteString("authority", "public_http_get_html_text");
             writer.WriteEndObject();
         }), effectObserved: false);
     }

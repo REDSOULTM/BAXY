@@ -102,3 +102,118 @@ contaminaría el marco.
   modelo.
 - El IQ4_XS de unsloth (sha `658a9e7e…`, la misma familia que el Q4_K_M en uso) está en
   `D:\BAXYeval\models\Qwen3.5-4B-IQ4_XS.gguf` para medirlo.
+
+### RAM real de llama-server
+
+Medido con `psutil.memory_full_info`, 2026-10-15:
+
+| Contexto | USS (RAM física privada) | Working set | Commit |
+|---|---|---|---|
+| `-c 49152` | 495 MB | 3240 MB | 5084 MB |
+| `-c 81920` | 528 MB | 3273 MB | 5792 MB |
+
+- **De dónde salen los otros números:**
+  - Los ~2,7 GB que van del USS al working set son el GGUF mapeado en memoria: páginas de fichero compartidas que
+    Windows puede recuperar.
+  - El commit incluye el respaldo que WDDM reserva para la VRAM, así que no es RAM en uso.
+  - Los «5,7 GB privados» del traspaso son ese commit.
+- **Sin mapear el modelo:** con `--no-mmap`, llama-server no llega a arrancar en este equipo, así que se descarta.
+- **Cómo medir la meta de 4 GB de RAM:** la medida honesta es el USS de llama-server más el de la mente. Conviene
+  anotar también el working set, que incluye el GGUF mapeado.
+
+## Voz que habla, paso B: interrumpir hablando encima (medido, pausado)
+
+- **Qué se probó.** Piper en los parlantes Realtek del notebook (al 30 %) y el micrófono interno. AEC3 de
+  `pywebrtc-audio`, ya instalado en el runtime, con el propio audio de Piper como referencia: es el diseño de WebRTC
+  con la señal que se reproduce, sin captura loopback. Se probó BAXY solo (E1) y BAXY con otra voz encima que no está
+  en la referencia (E2, voz SAPI).
+  Script: `%TEMP%\claude\nb\bargein_probe.py`.
+- **Corrida 1.**
+  - El eco crudo tuvo una mediana de 0,051, y la salida final de AEC3 de 0,006 (unos 19 dB menos). Quedan picos:
+    p95 de 0,083 y máximo de 0,218.
+  - Con la otra voz encima, la salida final fue menor que el eco residual: el supresor no lineal de AEC3 se come
+    también la voz de la persona cuando hablan los dos.
+- **Corrida 2, con el mismo código.** El eco crudo bajó a 0,0013 de mediana, y la salida lineal quedó por encima de
+  la del micrófono, es decir, el filtro no convergió. Lo más probable es que el arreglo de micrófonos Realtek aplique
+  su propia cancelación de eco del driver, y que no siempre.
+- **Conclusión.** En este hardware no se puede fijar un umbral honesto con energía o con el VAD de WebRTC sobre AEC3.
+  Definitivo llegó a 0/8 interrupciones falsas con su cadena completa: captura WASAPI cruda con marcas de tiempo del
+  dispositivo, loopback y Silero VAD.
+- **Qué queda hoy.**
+  - BAXY no se escucha a sí mismo: mientras habla, no oye el micrófono.
+  - La App ya corta la voz cuando la persona escribe o manda un mensaje.
+  - Interrumpir por voz queda pendiente, por debajo de lo que el líder repartió: herramientas, brazos y perfil de
+    4 GB.
+  - Siguiente intento con evidencia: Silero VAD en ONNX (sin torch) sobre la salida lineal, más la correlación con la
+    referencia de Definitivo (`_looks_like_echo`).
+
+## Herramientas de agente
+
+Investigación y propuesta en `investigacion/herramientas-agente.md`.
+
+- **`web.fetch` (nuevo).** Lee una página pública como texto: su título, la dirección final y el texto acotado (500
+  a 20 000 caracteres).
+  - Reutiliza `SearchPageReader`: sólo direcciones públicas, sin cookies ni referrer, y revisa de nuevo cada
+    redirección. La prosa sale de las mismas expresiones de `SearchPageExcerpt`, sin la cabecera, los scripts, el
+    menú ni el pie.
+  - Es de solo lectura, como `web.search`: entra información y no sale nada de la persona, salvo la dirección.
+  - Toca Kernel (`ProductCatalog`), Core (`ExternalCapabilityHandlers`), Providers (`WebBrowserAdapter`,
+    `SearchPageReader`, `SearchPageExcerpt`) y las dos descripciones de la mente.
+- **`shell.command.run` (cambio de riesgo).**
+  - `RiskPolicy.ShellMayChange` confirma con el comando exacto todo lo que no sea demostrablemente de solo lectura.
+    Lo es una tubería de cmdlets de una lista corta de lectura (más `git status`, `log`, `diff` y `show`), sin
+    `> < & ; \` { } $ ( ) [ ] @`. Ante la duda, pregunta.
+  - Se quitó la lista negra del proveedor, que rechazaba algunos comandos y dejaba pasar escrituras (`Set-Content`,
+    `>`), borrados por .NET o con `cmd /c "del"` y envíos (`Invoke-WebRequest -Method Post`, `curl -d`,
+    `Send-MailMessage`).
+  - Es la postura de la identidad: se confirma lo que destruye y lo que sale al mundo, y no se niega lo peligroso,
+    porque para eso está el modo. Por eso no se preguntó al dueño.
+  - Pruebas: `RiskPolicyShellTests` (9 comandos de solo lectura corren directo; 24 de escritura, borrado, envío o
+    código piden confirmación; el bypass corre sin preguntar) y `WebFetchReadsAPublicPageAsText`.
+- **Diferido:** el plan propio (Qwen3.5-4B saca 17,6 en DeepPlanning y el bucle es de 6 pasos). `file.edit` y unir
+  `reminder.*` con `notification.*` en `schedule` esperan la decisión del líder.
+
+## Cómo se exponen las herramientas: cuatro brazos
+
+Banco de práctica 2 (`renew_v1/practica/decision2.json`, 270 casos), Q4_K_M, semilla 0, en el notebook.
+
+| Brazo | Qué ve el modelo | Aciertos | p50 | Calentamiento | Sólo A acierta / sólo el brazo (McNemar exacto) |
+|---|---|---|---|---|---|
+| A, el de hoy | 189 herramientas con «Use when / Do not use when / Examples» y la lista de 522 apps | **220 (81,5 %)** | 0,80 s | 16,8 s | — |
+| B, compacto | sólo la primera frase, sin apps | 210 (77,8 %) | 0,69 s | 8,3 s | 18 / 8 (p = 0,076) |
+| C, guía a demanda | B más `skill_read` (la guía completa de una herramienta, en el mismo turno) | 213 (78,9 %) | 0,67 s | 8,4 s | 14 / 7 (p = 0,19) |
+| D, sin apps | A sin la lista de apps de `app.open` | 214 (79,3 %) | 0,69 s | 8,4 s | 16 / 10 (p = 0,33) |
+
+- **Las guías se quedan.** El compacto pierde justo donde importan: preguntar (3/10 contra 5/10) y los errores de
+  dictado (4/10 contra 6/10).
+- **Las skills a demanda no le sirven a este modelo tal cual.** En 270 casos el 4B no llamó `skill_read` ni una vez.
+  El índice corto con la guía bajo pedido, que el dueño pidió medir contra «todas en el prompt», queda medido: un
+  modelo de 4B no consulta por su cuenta.
+- **La lista de apps se queda.**
+  - Confirmado en un segundo banco (`renew_bench/cases.json`, 90 casos): sin la lista, 79/90 contra 83/90, y dos de
+    los casos perdidos son `app.open` (R09, R12).
+  - Sumando los dos bancos, sólo A acierta 21 casos y sólo D acierta 11.
+  - **Corrección:** la lista son 2943 tokens de un prefijo de 34 257 (8,6 %, medido con `/apply-template` y
+    `/tokenize`), no «la mitad». Las diferencias de calentamiento y p50 entre brazos venían del orden de las corridas:
+    la primera carga el GGUF con el disco en frío. En el banco de 90, D calienta en 16,0 s contra 17,7 s, y su p50 es
+    0,835 s contra 0,852 s.
+- **La VRAM no depende del brazo** (4666 MiB en los cuatro): la fija el pool de KV (`-c`). Un prefijo más corto sólo
+  permite pedir un `-c` menor.
+- El código de los brazos se retiró de `mind.py`, porque el ganador es el código actual.
+
+## Perfil de 4 GB con el brazo ganador (banco de práctica 2, 270 casos)
+
+| Modelo | Huecos y contexto | Aciertos | p50 | p90 | VRAM | Working set / commit de llama-server |
+|---|---|---|---|---|---|---|
+| Q4_K_M | 2, `-kvu`, `-c 81920` (el de hoy) | 220 (81,5 %) | 0,80 s | 1,66 s | 4666 MiB | 3422 / 5887 MB |
+| Q4_K_M | **1, `-c 49152`** | **227 (84,1 %)** | 0,78 s | 1,61 s | **3912 MiB** | 3339 / 5100 MB |
+| IQ4_XS | 1, `-c 49152` | 227 (84,1 %) | 0,75 s | 1,44 s | 3658 MiB | 3130 / 4838 MB |
+
+- **Los dos caben en 4 GB sin perder aciertos.** El mismo Q4_K_M basta con un hueco: la mente nueva ya no usa el
+  hueco 1, porque no hay redacción ni extracción de argumentos aparte.
+- **Sobre los 7 casos de diferencia:** pasar de 220 a 227 es ruido de cambiar la disposición de la caché, no una
+  mejora real del hueco único (ver la tabla de McNemar de arriba).
+- **El IQ4_XS deja 254 MiB más de margen** con los mismos aciertos y algo más de velocidad. Es la reserva si el
+  arnés crece.
+- **El contexto alcanza:** el prefijo de ~34k tokens, más el historial (24 000 caracteres, ~7k tokens), más el
+  turno, entran en 49 152. La lista de apps se queda, porque quitarla cuesta aciertos.

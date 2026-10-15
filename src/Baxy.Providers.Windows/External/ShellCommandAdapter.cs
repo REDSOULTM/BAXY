@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -7,10 +6,12 @@ namespace Baxy.Providers.Windows.External;
 /// Auditoría semántica 2026-09-20 (REOPEN1993, comandos; D11): «ejecuta ls»,
 /// «ejecuta pytest», «corré git status» se corren de verdad en una consola
 /// PowerShell sin perfil, con un plazo y una salida acotados, y el recibo trae
-/// la salida tal cual para que el final la cite. Lo que borra, mata, formatea
-/// o toca la configuración del sistema no se corre por aquí: se nombra y para.
+/// la salida tal cual para que el final la cite. BAXY Renew (2026-10-15): lo que
+/// no sólo lee (escribe, borra, instala, envía, corre un programa) lo confirma
+/// antes el kernel con el comando exacto (RiskPolicy.ShellMayChange); aquí ya no
+/// hay una lista de comandos rechazados que dejaba pasar escrituras y envíos.
 /// </summary>
-internal sealed partial class ShellCommandAdapter : IExternalOperationAdapter
+internal sealed class ShellCommandAdapter : IExternalOperationAdapter
 {
     internal static readonly TimeSpan CommandTimeout = TimeSpan.FromSeconds(60);
     internal const int MaximumOutputCharacters = 8 * 1024;
@@ -103,8 +104,6 @@ internal sealed partial class ShellCommandAdapter : IExternalOperationAdapter
                 : null;
         if (command.Length == 0 || command.Contains('\n') || command.Contains('\r'))
             return ExternalJson.FailureBeforeEffect(operation, "shell_command_argument_invalid");
-        if (IsDestructive(command))
-            return ExternalJson.FailureBeforeEffect(operation, "shell_command_destructive");
 
         string? workingDirectory = cwd is null ? _defaultWorkingDirectory : ResolveWorkingDirectory(cwd);
         if (workingDirectory is null || !Directory.Exists(workingDirectory))
@@ -163,28 +162,6 @@ internal sealed partial class ShellCommandAdapter : IExternalOperationAdapter
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
     }
-
-    // Lo que borra, mata, formatea, apaga o cambia la configuración del sistema
-    // no se corre desde un pedido en lenguaje natural; las operaciones tipadas
-    // del catálogo (papelera, procesos, energía) ya lo hacen con su
-    // confirmación y su postlectura.
-    internal static bool IsDestructive(string command)
-    {
-        string folded = command.ToLowerInvariant();
-        return DestructiveRegex().IsMatch(folded);
-    }
-
-    [GeneratedRegex(
-        @"(?:^|[\s;|&(])(?:rm|del|erase|rmdir|rd|remove-item|ri|rmi|remove-itemproperty|rp|format|diskpart|" +
-        @"shutdown|restart-computer|stop-computer|logoff|stop-process|kill|taskkill|spps|reg|regedit|bcdedit|" +
-        @"mkfs|dd|cipher|takeown|icacls|cacls|net\s+user|net\s+localgroup|clear-recyclebin|set-executionpolicy|" +
-        @"invoke-expression|iex|start-process|saps|schtasks|sc|wmic|vssadmin|wevtutil|netsh\s+(?:advfirewall|interface)|" +
-        @"set-mppreference|add-mppreference|new-itemproperty|set-itemproperty|remove-partition|clear-disk|initialize-disk|" +
-        @"move-item|mv|move|ren|rename-item|rni|rename|robocopy\s+.*\s/(?:mir|purge)|del\s+/|rd\s+/|git\s+(?:push|reset\s+--hard|clean|checkout\s+--\s|branch\s+-d)|" +
-        @"npm\s+(?:publish|unpublish)|pip\s+uninstall|winget\s+uninstall|choco\s+uninstall|curl\s+[^|]*\|\s*(?:sh|bash|iex|powershell)|" +
-        @"invoke-webrequest[^|]*\|\s*iex)(?:$|[\s;|&)])",
-        RegexOptions.CultureInvariant)]
-    private static partial Regex DestructiveRegex();
 
     private static (string Text, bool Truncated) Bound(string text)
     {
