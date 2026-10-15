@@ -8,10 +8,11 @@ namespace Baxy.Providers.Windows.Applications;
 /// <see cref="Baxy.Kernel.Operations.ApplicationPlaces"/> from its data, never here) to Windows, which gives it to the
 /// handler the application registered for its protocol (the shell's own launch of a URL, as SteamLocalAdapter and the
 /// harness do; measured 2026-10-11 on redpc: through explorer.exe an address with a query, «…/search/?term=Cuphead», was
-/// dropped, and the shell's launch opened it). Whether the window arrived is read on the window by the mission's check,
-/// never assumed from this hand-over. Review H2: the protocol's handler raises the application's window by itself
+/// dropped, and the shell's launch opened it). Whether the place arrived is for a look at the window to say, never
+/// assumed from this hand-over. Review H2: the protocol's handler raises the application's window by itself
 /// (measured: Steam and Spotify took the front after every address); unless the front was asked for, it goes back to
-/// the window that had it, and the receipt says the front changed and whether it is back.
+/// the window that had it when the window that took it is the application's, and the receipt says the front changed
+/// and whether it is back. A front that went to any other window (the person's own move) is not undone.
 /// </summary>
 public interface IApplicationPlaceOpener
 {
@@ -47,12 +48,19 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
             return new PlaceOpening(true);
         }
 
+        int applicationProcess = applicationWindow == 0 ? 0 : ForegroundHandBack.ProcessOf(applicationWindow);
         var watch = Stopwatch.StartNew();
         while (watch.Elapsed < FrontWatch)
         {
             long now = ForegroundHandBack.Foreground();
             if (now != 0 && now != before)
             {
+                // Auditoría final 2 (CU16): only a front the application took is handed back.
+                if (applicationProcess == 0 || ForegroundHandBack.ProcessOf(now) != applicationProcess)
+                {
+                    return new PlaceOpening(true, FrontChanged: true);
+                }
+
                 // Under the front's gate, as every hand-back of an opening, so it never undoes a burst of the lease.
                 bool gated = ForegroundHandBack.FrontGate.Wait(FrontWatch);
                 try
