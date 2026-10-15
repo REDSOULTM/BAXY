@@ -197,3 +197,18 @@ tocan lo cambiado; en el notebook pasan).
 - **Para el dueño (no borrado sin su permiso):** los bancos dejaron en `C:\Users\usuario` ficheros que BAXY escribió en la
   raíz del perfil en vez de en `BAXY-bench`: `compras.txt`, `lista.txt`, `notas.txt`, `prueba.txt`,
   `prueba-fullpath.txt` (2026-10-15, 12:38–15:56).
+
+**Código congelado (bde62d76c, 15:50) y ronda final de auditoría (5 agentes de sólo lectura).** Todas las pruebas en
+verde antes: Kernel 537, Contracts 70, Setup 477, Providers 2159. e2e práctica p7 sobre el código congelado: 19/30
+(herr 8/10, cu 5/8, agente 4/8, voz 2/4); primer sonido por orden p50 2,54 s (18 de 36 órdenes bajo 2,5 s; p6 2,32 s).
+Falsedades práctica p4: 1 (F013, arreglada después con `fullPath`).
+Hallazgos de la ronda (violaciones): mente 3 (corte silencioso a 6000, listas de palabras sin lector en app_places y
+memory_subjects) — arreglados en 5d818485; App 4 (el latido no retenía clipboard.copy, «descarga terminada» por un
+fichero aparecido, ajustes de voz y métricas que nadie midió); kernel 3 (descripciones que prometen una confirmación que
+no ocurre, listas cortadas a 20 sin decirlo, copias «verificadas» sin comparar); proveedores 4 (identidad de ventana por
+palabras, plegado que quita la puntuación —«Notepad» abría Notepad++—, listas de palabras en VisibleControlSurface,
+ScreenStateLines); externos 7 (ranking por popularidad en Spotify API, Netflix/Disney por prefijo o primera tarjeta,
+streaming por «contiene», OCR que acepta la etiqueta dentro de una línea más larga, destinatario por contención y Enter
+sin leer en WhatsApp, lugar del clima por palabra compartida). Más zonas grises y código muerto (ruta Notepad heredada,
+cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emisor, `message.send` y
+`filesystem.trash.restore` inalcanzables). Cuatro subagentes los arreglan en worktrees.
