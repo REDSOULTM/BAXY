@@ -19,7 +19,7 @@ import threading
 from pathlib import Path
 from typing import Any, Callable
 
-from .speech import Speech
+from .voice_output import Speech
 
 for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(_var, "1")

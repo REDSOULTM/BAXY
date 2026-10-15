@@ -69,7 +69,7 @@ contaminaría el marco.
   Release.
 - No se tocó ningún `.cs` del arnés: el líder lo retira con el arnés nuevo.
 
-## Voz que habla, paso A: Piper (`speech.py`)
+## Voz que habla, paso A: Piper (`voice_output.py`)
 
 - **Piper residente:** un solo `piper.exe` con `--json-input`, una línea por frase con `output_file` (CLI
   documentada de Piper).
