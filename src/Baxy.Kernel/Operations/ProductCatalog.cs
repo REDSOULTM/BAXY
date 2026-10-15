@@ -1311,7 +1311,9 @@ public static class ProductCatalog
                 ["command"]),
             OperationRisks.LowReversible,
             "shell.command.run.powershell.captured.output.v1",
-            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto."),
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; un código distinto de cero es un fallo con su salida y su error; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto.",
+            // A command that only reads ran with no effect; one that may change something reports what ran.
+            requiresObservedEffect: false),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),
