@@ -671,7 +671,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", true);
-            writer.WriteBoolean("effectObserved", effect);
+            // CU12 (auditoría final 2): what Windows accepted (SendInput's count), delivered to the window in front;
+            // what the control did with it is not read here.
+            writer.WriteBoolean("delivered", effect);
             writer.WriteString("action", typing ? "text" : "key");
             if (key is null)
                 writer.WriteNull("key");

@@ -138,7 +138,6 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 writer.WriteString("name", hit.Text);
                 writer.WriteString("controlIdentity", "ocr." + hit.CenterX + "." + hit.CenterY);
                 writer.WriteBoolean("absentOrDisabled", false);
-                writer.WriteBoolean("selected", surfaceObserved);
                 writer.WriteBoolean("surfaceChanged", changed);
                 writer.WriteString("observedText", observedText.Length > 240 ? observedText[..240] : observedText);
                 writer.WriteString("method", method);
