@@ -9,12 +9,22 @@ namespace Baxy.Kernel.Tests;
 /// Ronda 29 (pasada r27 en vivo, v3-53: the model pressed OBS's «Iniciar Transmisión» for «vuelve a activarlo» and no
 /// one was asked). What a click sends out to the world is confirmed before the click, judged by the real name of the
 /// control: going live joins sending, publishing, sharing, joining and calling, and the words are one data file
-/// (src/baxy_mind/data/world_acts.v1.json) read by <see cref="RiskPolicy"/> and by the mind
-/// (tests/test_cu_v3_r29_lo_que_sale_al_mundo.py runs the same examples).
+/// (src/baxy_mind/data/world_acts.v1.json) read by <see cref="RiskPolicy"/>.
 /// </summary>
 [TestFixture]
 public sealed class RiskPolicyWorldActsTests
 {
+    // The labels the data file itself gives as asking and as free, read from the copy the kernel embeds.
+    private static (string[] Asks, string[] Free) DataExamples()
+    {
+        using Stream stream = typeof(RiskPolicy).Assembly.GetManifestResourceStream("Baxy.Kernel.WorldActs.json")!;
+        using JsonDocument document = JsonDocument.Parse(stream);
+        JsonElement examples = document.RootElement.GetProperty("examples");
+        return (
+            [.. examples.GetProperty("asks").EnumerateArray().Select(item => item.GetString()!)],
+            [.. examples.GetProperty("free").EnumerateArray().Select(item => item.GetString()!)]);
+    }
+
     private static PolicyDecision Click(string label, ConfirmationMode mode = ConfirmationMode.Normal)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
@@ -69,19 +79,18 @@ public sealed class RiskPolicyWorldActsTests
         {
             Assert.That(Click(label), Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
             Assert.That(Click(label, ConfirmationMode.Bypass), Is.EqualTo(PolicyDecision.Allow));
-            Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(label is "Unirse a la reunión" or "Llamar"));
         });
     }
 
-    // The data's own examples: the contract both readers (this policy and the mind's world_act) are held to.
+    // The data's own examples: the contract the policy is held to.
     [Test]
     public void The_examples_of_the_data_ask_and_stay_free_as_they_say()
     {
-        (IReadOnlyList<string> asks, IReadOnlyList<string> free) = WorldActs.Examples;
+        (string[] asks, string[] free) = DataExamples();
         Assert.Multiple(() =>
         {
-            Assert.That(asks, Has.Count.GreaterThanOrEqualTo(20));
-            Assert.That(free, Has.Count.GreaterThanOrEqualTo(20));
+            Assert.That(asks, Has.Length.GreaterThanOrEqualTo(20));
+            Assert.That(free, Has.Length.GreaterThanOrEqualTo(20));
             Assert.That(asks.Where(label => Click(label) != PolicyDecision.RequireConfirmation), Is.Empty);
             Assert.That(free.Where(label => Click(label) != PolicyDecision.Allow), Is.Empty);
         });
@@ -136,7 +145,7 @@ public sealed class RiskPolicyWorldActsTests
     [Test]
     public void The_pattern_handed_to_the_worker_reads_as_the_policy()
     {
-        (IReadOnlyList<string> asks, IReadOnlyList<string> free) = WorldActs.Examples;
+        (string[] asks, string[] free) = DataExamples();
         string[] more =
         [
             "Cotele!!!😎, Canal de voz, Choche", "general (canal de texto)", "Eliminar", "Eliminar pruebas", "No guardar",
@@ -200,59 +209,24 @@ public sealed class RiskPolicyWorldActsTests
 
     // Revisión de V (H7): a call named as a setting, a log, a function, a game's title or leaving it is no call; a voice
     // channel whatever its name still is (the exception belongs to the bare words «llamada», «llamar» and «call» only).
-    [TestCase("Ajustes de llamada", false, false)]
-    [TestCase("Registro de llamadas", false, false)]
-    [TestCase("Llamar a la función", false, false)]
-    [TestCase("Call Stack", false, false)]
-    [TestCase("Call of Duty®: Black Ops 6", false, false)]
-    [TestCase("Abandonar llamada", false, false)]
-    [TestCase("Leave Call", false, false)]
-    [TestCase("Call of Duty (canal de voz)", true, true)]
-    [TestCase("Ajustes de llamada (canal de voz)", true, true)]
-    [TestCase("Iniciar llamada", true, true)]
-    [TestCase("Llamar", true, true)]
-    [TestCase("Llamada de voz", true, true)]
-    public void A_call_that_is_none_does_not_ask(string label, bool asks, bool joins)
+    [TestCase("Ajustes de llamada", false)]
+    [TestCase("Registro de llamadas", false)]
+    [TestCase("Llamar a la función", false)]
+    [TestCase("Call Stack", false)]
+    [TestCase("Call of Duty®: Black Ops 6", false)]
+    [TestCase("Abandonar llamada", false)]
+    [TestCase("Leave Call", false)]
+    [TestCase("Call of Duty (canal de voz)", true)]
+    [TestCase("Ajustes de llamada (canal de voz)", true)]
+    [TestCase("Iniciar llamada", true)]
+    [TestCase("Llamar", true)]
+    [TestCase("Llamada de voz", true)]
+    public void A_call_that_is_none_does_not_ask(string label, bool asks)
     {
         Assert.Multiple(() =>
         {
             Assert.That(Click(label), Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
-            Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
             Assert.That(RiskPolicy.LabelAsks(label), Is.EqualTo(asks), "the worker's pattern reads it alike");
-        });
-    }
-
-    [TestCase("Join the meeting of the whole team", true)]
-    [TestCase("Unirse a la reunión", true)]
-    [TestCase("Iniciar Transmisión", false)]
-    [TestCase("Compartir pantalla", false)]
-    public void Going_live_or_sharing_goes_out_but_joins_nobody(string label, bool joins) =>
-        Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
-
-    // Encargo VZ (imp3d imp-dc-voz): the act an invocation takes, so a mission asks once per act. The search result and
-    // the server list name one voice channel; sending, another channel and Enter on a message box are other acts.
-    private static WorldAct? Act(string operation, object arguments)
-    {
-        using JsonDocument document = JsonDocument.Parse(JsonSerializer.Serialize(arguments));
-        return RiskPolicy.WorldActOf(operation, document.RootElement);
-    }
-
-    [Test]
-    public void The_voice_channel_named_by_the_search_and_by_the_server_list_is_one_act()
-    {
-        WorldAct? search = Act("input.visible.click", new { label = "Cotele!!!😎, Canal de voz, Choche" });
-        WorldAct? list = Act("input.visible.click", new { label = "Cotele!!!😎 (canal de voz), RED, duración de la llamada: 0 m" });
-        WorldAct? highlighted = Act("input.key.press", new { key = "enter", onto = "Cotele!!!😎, Canal de voz, Choche" });
-        Assert.Multiple(() =>
-        {
-            Assert.That(search, Is.EqualTo(new WorldAct("call", "Cotele!!!😎", true, "call:cotele!!!😎")));
-            Assert.That(list?.Key, Is.EqualTo(search?.Key));
-            Assert.That(highlighted?.Key, Is.EqualTo(search?.Key));
-            Assert.That(Act("input.visible.click", new { label = "General (canal de voz), RED" })?.Key, Is.Not.EqualTo(search?.Key));
-            Assert.That(Act("input.visible.click", new { label = "Enviar (Ctrl+Enter)" }), Is.EqualTo(new WorldAct("send", "Enviar", false, "send:enviar")));
-            Assert.That(Act("input.key.press", new { key = "enter", target = "message_composer" }), Is.EqualTo(new WorldAct("send", string.Empty, false, "send:")));
-            Assert.That(Act("input.visible.click", new { label = "Iniciar Grabación" }), Is.Null);
-            Assert.That(Act("input.visible.click", new { label = "Eliminar" }), Is.Null, "what cannot be undone is no act that goes out");
         });
     }
 }

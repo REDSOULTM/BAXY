@@ -326,17 +326,6 @@ public sealed class OperationRegistryTests
         });
     }
 
-    [TestCase("Cotele (canal de voz)", true)]
-    [TestCase("Join meeting", true)]
-    [TestCase("Unirse", true)]
-    [TestCase("Enviar", false)]
-    [TestCase("Publicar", false)]
-    [TestCase("", false)]
-    public void Only_a_label_that_joins_a_call_or_meeting_joins(string label, bool joins)
-    {
-        Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
-    }
-
     // Closing every tab of the person's browser loses their session: that exact
     // argument asks in normal mode; any other action on the browser does not.
     [TestCase("close_all", PolicyDecision.RequireConfirmation)]
