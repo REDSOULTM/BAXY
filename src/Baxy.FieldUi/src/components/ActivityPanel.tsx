@@ -135,12 +135,9 @@ export function ActivityPanel({
   );
 }
 
-// maps a source tag to its CSS color class; unknown tags fall back to `you`
-// (var(--tag-you)) exactly like the handoff, instead of an unstyled class.
-const SOURCE_CLASS: Record<SourceTag, string> = {
-  TOOL: 'tool', YOU: 'you', GEMMA: 'gemma', MEMORY: 'memory', TRIGGER: 'trigger',
-  BOOT: 'boot', THOUGHT: 'thought', SYSTEM: 'system', CONTEXT: 'context',
-};
+// maps a source tag to its CSS color class: the person and BAXY in var(--tag-you), the view's own lines in
+// var(--tag-sys).
+const SOURCE_CLASS: Record<SourceTag, string> = { YOU: 'you', BAXY: 'you', SYSTEM: 'system' };
 
 // The person's answer to a call that waits for their «sí»: the shell sends that exact call, or drops it.
 function answerConfirmation(approve: boolean) {
@@ -152,7 +149,7 @@ function answerConfirmation(approve: boolean) {
 }
 
 function ActivityRow({ entry, asking }: { entry: ActivityEntry; asking: boolean }) {
-  const cls = SOURCE_CLASS[entry.src] ?? 'you';
+  const cls = SOURCE_CLASS[entry.src];
   return (
     <div className="act fade-in">
       <div className="meta">

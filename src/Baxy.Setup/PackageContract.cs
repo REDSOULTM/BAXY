@@ -46,15 +46,16 @@ internal static class PackageContract
         "tools/yt-dlp",
     ];
 
-    internal static readonly string[] PayloadPaths =
+    // The reviewed payload but the Field UI's built assets, whose names carry the build's content hashes: those come
+    // from src/Baxy.FieldUi/dist/assets when this project is built (Baxy.Setup.csproj, FieldUiAssets), so the contract
+    // names the assets of the build it ships and never a stale one.
+    private static readonly string[] ReviewedPayloadPaths =
     [
         "Baxy.exe",
         "D3DCompiler_47_cor3.dll",
         "DesktopKeyPress.ps1",
         "DesktopSelectAll.ps1",
         "DesktopUiaWorker.ps1",
-        "FieldUi/assets/index-CjozYCnU.css",
-        "FieldUi/assets/index-D3QuhrLm.js",
         "FieldUi/index.html",
         "FieldUiHost/field-native-bridge.js",
         "KnownFileOpen.ps1",
@@ -85,84 +86,16 @@ internal static class PackageContract
         "wpfgfx_cor3.dll",
     ];
 
-    internal static readonly string[] ChecksumPaths =
-    [
-        "Baxy.exe",
-        "D3DCompiler_47_cor3.dll",
-        "DesktopKeyPress.ps1",
-        "DesktopSelectAll.ps1",
-        "DesktopUiaWorker.ps1",
-        "FieldUi/assets/index-CjozYCnU.css",
-        "FieldUi/assets/index-D3QuhrLm.js",
-        "FieldUi/index.html",
-        "FieldUiHost/field-native-bridge.js",
-        "KnownFileOpen.ps1",
-        "KnownFolderOpen.ps1",
-        "Microsoft.Web.WebView2.Core.xml",
-        "Microsoft.Web.WebView2.WinForms.xml",
-        "Microsoft.Web.WebView2.Wpf.xml",
-        "PenImc_cor3.dll",
-        "PresentationNative_cor3.dll",
-        "SpotifyDesktopAutomation.ps1",
-        "SpotifyMediaControl.ps1",
-        "WebView2Loader.dll",
-        "WindowsScheduledNotification.ps1",
-        "build-manifest.json",
-        "core/DesktopKeyPress.ps1",
-        "core/DesktopSelectAll.ps1",
-        "core/DesktopUiaWorker.ps1",
-        "core/KnownFileOpen.ps1",
-        "core/KnownFolderOpen.ps1",
-        "core/SpotifyDesktopAutomation.ps1",
-        "core/SpotifyMediaControl.ps1",
-        "core/WindowsScheduledNotification.ps1",
-        "core/baxy-core.exe",
-        "runtimes/win-x64/native/WebView2Loader.dll",
-        "tools/mpv/mpv.exe",
-        "tools/mpv/vulkan-1.dll",
-        "tools/yt-dlp/yt-dlp.exe",
-        "vcruntime140_cor3.dll",
-        "wpfgfx_cor3.dll",
-    ];
+    // Each list in ordinal order, the order the build writes the manifest, the checksums and the ZIP in.
+    internal static readonly string[] PayloadPaths = Ordinal([.. ReviewedPayloadPaths, .. FieldUiAssets.Paths]);
 
-    internal static readonly string[] ZipPaths =
-    [
-        "Baxy.exe",
-        "D3DCompiler_47_cor3.dll",
-        "DesktopKeyPress.ps1",
-        "DesktopSelectAll.ps1",
-        "DesktopUiaWorker.ps1",
-        "FieldUi/assets/index-CjozYCnU.css",
-        "FieldUi/assets/index-D3QuhrLm.js",
-        "FieldUi/index.html",
-        "FieldUiHost/field-native-bridge.js",
-        "KnownFileOpen.ps1",
-        "KnownFolderOpen.ps1",
-        "Microsoft.Web.WebView2.Core.xml",
-        "Microsoft.Web.WebView2.WinForms.xml",
-        "Microsoft.Web.WebView2.Wpf.xml",
-        "PenImc_cor3.dll",
-        "PresentationNative_cor3.dll",
-        "SHA256SUMS",
-        "SpotifyDesktopAutomation.ps1",
-        "SpotifyMediaControl.ps1",
-        "WebView2Loader.dll",
-        "WindowsScheduledNotification.ps1",
-        "build-manifest.json",
-        "core/DesktopKeyPress.ps1",
-        "core/DesktopSelectAll.ps1",
-        "core/DesktopUiaWorker.ps1",
-        "core/KnownFileOpen.ps1",
-        "core/KnownFolderOpen.ps1",
-        "core/SpotifyDesktopAutomation.ps1",
-        "core/SpotifyMediaControl.ps1",
-        "core/WindowsScheduledNotification.ps1",
-        "core/baxy-core.exe",
-        "runtimes/win-x64/native/WebView2Loader.dll",
-        "tools/mpv/mpv.exe",
-        "tools/mpv/vulkan-1.dll",
-        "tools/yt-dlp/yt-dlp.exe",
-        "vcruntime140_cor3.dll",
-        "wpfgfx_cor3.dll",
-    ];
+    internal static readonly string[] ChecksumPaths = Ordinal([.. PayloadPaths, "build-manifest.json"]);
+
+    internal static readonly string[] ZipPaths = Ordinal([.. ChecksumPaths, "SHA256SUMS"]);
+
+    private static string[] Ordinal(string[] paths)
+    {
+        Array.Sort(paths, StringComparer.Ordinal);
+        return paths;
+    }
 }

@@ -13,12 +13,13 @@ interface Props {
   /** true while /voice/start is loading the voice models on the backend.
    *  keeps the mic icon lit + pulsing so it doesn't flicker red→black. */
   micLoading: boolean;
+  /** the voice's last trouble the host observed (its code), null when there is none. */
+  voiceError: string | null;
   /** left click: cycle listening↔off (mute toggle). */
   onMicLeftClick: () => void;
   /** right click: toggle push-to-talk vs the previous on-mode. */
   onMicRightClick: () => void;
-  /** boot lifecycle of the agent. while !ready, the chat input is disabled
-   *  and the placeholder shows a hint of what's happening. */
+  /** the shell's gate. while !ready, the chat input is disabled; a failure is shown by its code. */
   agent: AgentStatus;
 }
 
@@ -43,23 +44,18 @@ const MIC_ARIA: Record<MicMode, string> = {
 const DEBUG_STATES: ConvState[] = ['standby', 'idle', 'listening', 'thinking', 'speaking'];
 
 export function FieldCenter({
-  convState, onDebugState, micMode, micLoading, onMicLeftClick, onMicRightClick, agent,
+  convState, onDebugState, micMode, micLoading, voiceError, onMicLeftClick, onMicRightClick, agent,
 }: Props) {
   const [draft, setDraft] = useState('');
 
-  // chat is gated on agent readiness: !built → still loading tools/memory,
-  // built but !healthy → llama-server isn't responding. armed only matters
-  // once the agent is ready to accept the prompt.
+  // chat is gated on the shell's readiness: !built → the engine is starting (or failed: its code is shown).
+  // armed only matters once a turn is accepted.
   const ready = agent.ready;
   const armed = ready && draft.trim().length > 0;
 
-  const placeholder = (ready || (agent.built && agent.healthy)
-      ? 'ask, instruct, or paste'
-      : !agent.built
-      ? 'starting agent · loading tools…'
-      : !agent.healthy
-      ? 'llama-server offline · waiting for connection…'
-      : 'starting up…');
+  const placeholder = agent.built
+    ? 'ask, instruct, or paste'
+    : agent.failure ?? 'starting agent · loading tools…';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +76,7 @@ export function FieldCenter({
 
       <div className="chat">
         <div className="turn-error" role="alert" aria-atomic="true">
-          {convState === 'error' ? 'Response error' : null}
+          {agent.failure ?? null}
         </div>
         <form className={`line${ready ? '' : ' booting'}`} onSubmit={handleSubmit}>
           <span className="chev">›</span>
@@ -99,7 +95,7 @@ export function FieldCenter({
             <button
               type="button"
               className={`ibtn mic-btn mic-${micMode}${micMode !== 'off' ? ' active' : ''}${micLoading ? ' mic-loading' : ''}`}
-              data-tip={micLoading ? 'voice · cargando modelos…' : MIC_TIP[micMode]}
+              data-tip={micLoading ? 'voice · cargando modelos…' : voiceError ? `voice · ${voiceError}` : MIC_TIP[micMode]}
               onClick={onMicLeftClick}
               onContextMenu={(e) => { e.preventDefault(); onMicRightClick(); }}
               aria-label={MIC_ARIA[micMode]}

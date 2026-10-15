@@ -190,8 +190,8 @@ internal sealed class MemoryPanel
     }
 
     // Estabilización M2 (identity live check 2026-10-11 §5: the panel showed FAVORITE_COLOR, BIRTHDAY): the datum's name
-    // in the person's words (data: memory_subjects.v1.json labels, one file with the mind); a fact kept whole is a
-    // «dato»; any other selector is said with its own words.
+    // in the person's words (data: the labels of src/baxy_mind/data/memory_subjects.v1.json, embedded here; only this
+    // panel reads them); a fact kept whole is a «dato»; any other selector is said with its own words.
     private static readonly Lazy<JsonObject> Subjects = new(() =>
     {
         using Stream stream = typeof(MemoryPanel).Assembly.GetManifestResourceStream("Baxy.App.MemorySubjects.json")
@@ -274,7 +274,10 @@ internal sealed class MemoryPanel
         try
         {
             response = await client.SendOperationAsync(prepared, OperationTimeout, cancellationToken);
-            if (PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System, out PendingOperationConfirmation? asked)
+            // The panel's two-step button is the person's «sí» to a forget only: any other challenge stays unanswered
+            // and comes back as its code.
+            if (operation == "memory.forget"
+                && PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System, out PendingOperationConfirmation? asked)
                 && asked is not null)
             {
                 response = await client.SendOperationAsync(

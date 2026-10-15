@@ -2,16 +2,8 @@
 
 export type ConvState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
 
-export type SourceTag =
-  | 'TOOL'
-  | 'YOU'
-  | 'GEMMA'
-  | 'MEMORY'
-  | 'TRIGGER'
-  | 'BOOT'
-  | 'THOUGHT'
-  | 'SYSTEM'
-  | 'CONTEXT';
+/** who wrote the line: the person, BAXY (what the model wrote), or the view itself. */
+export type SourceTag = 'YOU' | 'BAXY' | 'SYSTEM';
 
 export interface ActivityEntry {
   id: string;
@@ -60,12 +52,12 @@ export type ServerEvent =
   | { type: 'session'; id: string; label: string }
   | { type: 'model'; info: ModelInfo }
   | {
-      /** agent boot lifecycle. lets the UI disable the chat input until the
-       *  agent is built AND llama-server responds to /health. */
+      /** the shell's gate: the chat input is disabled until a turn is accepted. */
       type: 'agent';
       built: boolean;
-      healthy: boolean;
       ready: boolean;
+      /** the observed failure's code (the engine's or the last turn's), null when there is none */
+      failure?: string | null;
       /** a risky call waits for the person's Sí or No */
       pendingConfirmation?: boolean;
     }

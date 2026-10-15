@@ -64,8 +64,9 @@ internal sealed class MemoryOperationProtector
         JsonObject privateArguments = privateOperation.PrivateArguments;
         EnsureNoReservedPayloadProperties(privateArguments);
 
+        // The operation is the one the model chose: arguments that do not fit it are refused, never re-routed.
         JsonElement payload = JsonSerializer.SerializeToElement(privateArguments);
-        string operation = ResolveWireOperationName(privateOperation.Name, payload);
+        string operation = privateOperation.Name;
         ValidateWireRiskBinding(operation, payload);
         string missionId = Guid.NewGuid().ToString("D");
         string invocationId = Guid.NewGuid().ToString("D");
@@ -175,19 +176,6 @@ internal sealed class MemoryOperationProtector
             : configured;
         return WindowsPrivateStorage.PreparePrivateDataRoot(dataRoot);
     }
-
-    private static string ResolveWireOperationName(
-        string operationName,
-        JsonElement arguments) =>
-        operationName switch
-        {
-            "memory.save" when RequiredString(arguments, "sensitivity")
-                is "sensitive" or "secret" => "memory.sensitive.save",
-            "memory.save" => "memory.save",
-            "memory.forget" when RequiredString(arguments, "scope") == "session"
-                => "memory.session.clear",
-            _ => operationName,
-        };
 
     private static void ValidateWireRiskBinding(string operation, JsonElement payload)
     {

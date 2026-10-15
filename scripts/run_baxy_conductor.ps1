@@ -54,20 +54,19 @@ if (-not (Test-Path $coreTarget) -or
 
 $runtimeManifest = Join-Path $env:LOCALAPPDATA 'BAXYRuntime\mind-runtime-v1.json'
 Remove-Item Env:BAXY_MIND_DISABLED -ErrorAction SilentlyContinue
-$env:BAXY_ASSET_DESCRIPTOR = Join-Path $repo 'assets.manifest.json'
 $env:BAXY_VOICE_WAKE_ON_START = "0"
 if ($Cpu) {
     $env:BAXY_MIND_NGL = "0"
 }
-$env:BAXY_CONDUCTOR_COMMIT = (git -C $repo rev-parse HEAD)
+$commit = (git -C $repo rev-parse HEAD)
 Write-Host "Runtime registrado: $runtimeManifest"
-Write-Host "commit: $($env:BAXY_CONDUCTOR_COMMIT)"
+Write-Host "commit: $commit"
 
 $argumentList = [System.Collections.Generic.List[string]]::new()
 $argumentList.Add("--conductor")
 $argumentList.Add("--profile=$Profile")
 $argumentList.Add("--timeout-ms=$TimeoutMs")
-$argumentList.Add("--commit=$($env:BAXY_CONDUCTOR_COMMIT)")
+$argumentList.Add("--commit=$commit")
 if ($AfterWelcome) {
     $argumentList.Add("--after-welcome")
 }
