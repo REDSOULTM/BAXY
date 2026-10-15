@@ -230,10 +230,10 @@ class Mind:
         self.conversation: list[dict[str, Any]] = []
         self.constants: dict[str, dict[str, Any]] = {}
         language = os.environ.get("BAXY_RENEW_DESCRIPTIONS", "en")
-        self.english = (
-            json.loads(_ENGLISH_FILE.read_text(encoding="utf-8"))["tools"]
-            if language == "en" and _ENGLISH_FILE.is_file() else {}
-        )
+        english = (json.loads(_ENGLISH_FILE.read_text(encoding="utf-8"))
+                   if language == "en" and _ENGLISH_FILE.is_file() else {})
+        self.english: dict[str, str] = english.get("tools") or {}
+        self.arguments: dict[str, dict[str, str]] = english.get("arguments") or {}
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
 
     # ---- catalog -------------------------------------------------------------------------------------------
@@ -264,6 +264,11 @@ class Mind:
                 self.constants[name] = constants
             schema["type"] = "object"
             schema.setdefault("properties", {})
+            # What one argument means, where the model fills it (a folder named by the person went missing from the
+            # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
+            for argument, meaning in (self.arguments.get(name) or {}).items():
+                if isinstance(schema["properties"].get(argument), dict):
+                    schema["properties"][argument]["description"] = meaning
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)

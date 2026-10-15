@@ -1,6 +1,6 @@
 {
  "schema": "baxy-tool-descriptions-en-v1",
- "source": "decider_catalog.es.v1.json + ProductCatalog.cs, written 2026-10-15; 2026-10-15 reglas de uso añadidas tras el banco de práctica (sin copiar sus frases)",
+ "source": "decider_catalog.es.v1.json + ProductCatalog.cs, written 2026-10-15; 2026-10-15 reglas de uso añadidas tras el banco de práctica (sin copiar sus frases); «arguments»: meanings of single arguments, put on their schema (2026-10-15, own path set 3/8 → 6/8)",
  "tools": {
   "app.close": "Close one window of an application that is already open, gracefully; never force-kills the process. Use when: the person asks to close an app or its window. Do not use when: closing every window (use window.close.all), force-killing a hung program (use system.process.terminate.named), closing a web page (use browser.control). Examples: «cierra el spotify», «ciérrame la calculadora», «close chrome».",
   "app.installed": "Check whether a normal application is installed on this PC, without opening it. Use when: the request is a question about an app being installed. Do not use when: the person wants it opened (use app.open), the target is a game (use game.installed.named), or asks if it is open right now (use window.application.status). Examples: «¿tengo instalado el zoom?», «¿está instalado discord?», «is obs installed?».",
@@ -52,7 +52,7 @@
   "file.read": "Read the text of a file by its name (or the relativePath file.find gave) from a known folder: a text or code file (txt, md, json, code) or a PDF (its own text, no OCR), without opening it on screen. A long file comes in pages: when hasMore is true, call again with offset set to nextOffset. Use when: qué dice, resume or lee a named file. Do not use when: showing it on screen (use file.open), a file in BAXY's private work folder (use filesystem.read.text), the open web page (use browser.page.read), a Word or Excel document BAXY created (use office.document.read). Examples: «resume el pdf contrato.pdf», «¿de qué trata el roadmap.md?», «léeme notas.txt del escritorio». A file inside a subfolder: the subfolder goes in subdirectory, or give fileName as the full path the person said when it lies inside the folder.",
   "file.write": "Write text to a file in Desktop, Documents, Downloads, the user's home folder or BAXY's work folder: create it, replace an existing one (pass expectedSha256, the fileSha256 file.read gave; its previous version goes to the Recycle Bin), or with append true add the text as a new line at the end, keeping what is there. relativePath is the path inside the folder, subfolders included («proyectos/notas.txt»); the full path the person said («C:\\Users\\ana\\proyectos\\notas.txt», with folder home) is accepted as it is when it lies inside the folder. Use when: crea un archivo de texto, escribe X en un archivo, agrega una línea al final de un archivo. Do not use when: changing only part of a file (use file.edit), a note (use note.create), Word or Excel (use office.document.create), a PowerPoint (use document.presentation.create). Examples: «crea hola.txt en el escritorio que diga hola», «agrega 'comprar pan' al final de lista.txt», «save this en notas.txt».",
   "filesystem.copy": "Copy an already identified file to another path inside BAXY's private work folder, verifying its hash. Use when: copying a sandbox file BAXY listed earlier. Do not use when: a backup (use backup.create), files in Desktop, Documents or Downloads (sandbox only). Examples: «copia ese archivo a la carpeta respaldo», «duplica notas.txt en tu carpeta de trabajo», «copy it to otra carpeta».",
-  "filesystem.create.directory": "Create a new folder in Desktop, Documents, Downloads or BAXY's private work folder. Use when: crea una carpeta. Do not use when: opening an existing folder (use filesystem.folder.open), creating a file (use file.write). Examples: «crea una carpeta proyectos en el escritorio», «haz una carpeta nueva llamada fotos en documentos», «make a folder tareas en descargas».",
+  "filesystem.create.directory": "Create a new folder in Desktop, Documents, Downloads, the user's home folder or BAXY's private work folder; relativePath may include subfolders («proyectos/src»), or be the full path the person said when it lies inside the folder. Use when: crea una carpeta. Do not use when: opening an existing folder (use filesystem.folder.open), creating a file (use file.write). Examples: «crea una carpeta proyectos en el escritorio», «haz una carpeta nueva llamada fotos en documentos», «make a folder tareas en descargas».",
   "filesystem.explorer.count": "Count how many files with an extension are in the folder shown by the front File Explorer window, or on the Desktop if none is in front. Use when: cuántos archivos .X hay. Do not use when: listing or searching files (use file.find). Examples: «¿cuántos archivos .py hay en esta carpeta?», «cuenta los pdf del escritorio», «how many jpg hay aquí?».",
   "filesystem.file.open.latest": "Open the most recently modified file of a known folder, without the person naming it. Use when: lo último que descargué or el archivo más reciente. Do not use when: the file is named (use file.open), opening the folder itself (use filesystem.folder.open). Examples: «abre el último archivo de descargas», «abre lo último que bajé», «open the newest file en documentos».",
   "filesystem.folder.open": "Open a known Windows folder (Desktop, Documents, Downloads, Pictures, the user's home folder), or a folder inside it (subdirectory), in File Explorer. Use when: abre la carpeta de descargas or documentos. Do not use when: saying its contents aloud (use file.find), opening a file (use file.open), creating a folder (use filesystem.create.directory). Examples: «abre descargas», «ábreme la carpeta documentos», «open my pictures folder».",
@@ -176,5 +176,28 @@
   "window.resolve": "List the open windows of an application or process, each with its windowId, title, state and whether it is in front. Use when: you need the windowId of an open app's window to focus, maximize, minimize, restore, snap, move or resize it. Do not use when: only whether the app is open (use window.application.status), the window in front (use window.active). Examples: «maximiza el chrome» (resolve chrome, then window.maximize), «pon el bloc de notas a la izquierda», «minimiza spotify».",
   "window.restore": "Return an already identified minimized or maximized window to its normal size. Use when: restaura or devuelve la ventana a su tamaño. Do not use when: only bringing it to front (use window.focus), maximizing (use window.maximize). Examples: «restaura la ventana del chrome», «vuelve el spotify a tamaño normal», «restore word». Its windowId comes from window.resolve, window.active or app.open (never windowHandle); each window action returns a fresh windowId for the next one.",
   "window.snap": "Place an already identified window on the left or right half of the screen. Use when: pon X a la izquierda or a la derecha. Do not use when: exact coordinates (use window.move), maximizing (use window.maximize). Examples: «pon el chrome a la izquierda», «manda el word a la mitad derecha», «snap spotify right». Its windowId comes from window.resolve, window.active or app.open (never windowHandle); each window action returns a fresh windowId for the next one."
+ },
+ "arguments": {
+  "file.write": {
+   "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works."
+  },
+  "filesystem.create.directory": {
+   "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works."
+  },
+  "file.read": {
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+  },
+  "file.find": {
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+  },
+  "file.edit": {
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+  },
+  "filesystem.known.trash.named": {
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+  },
+  "filesystem.folder.open": {
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
+  }
  }
 }

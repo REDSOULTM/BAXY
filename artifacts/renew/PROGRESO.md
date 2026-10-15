@@ -168,3 +168,11 @@ tocan lo cambiado; en el notebook pasan).
   mientras suena la anterior. Medido en el producto: 138–279 ms. Arreglado además: Piper a veces aún tenía abierto el WAV
   al contestar, el borrado fallaba y la frase se perdía; ahora cada frase tiene su fichero y el que no se pudo borrar se
   borra en la siguiente.
+- e2e práctica p5 17/30 (primer sonido p50 2595 ms), p6 17/30 (2753 ms; con web.search sin interpretación y rutas
+  absolutas del notebook). Lo sistemático: el 4B no pone la subcarpeta que la persona nombró (E006, E017, E020, E024,
+  E027) y a veces afirma la ruta pedida (E017, E024).
+- **Significado por argumento** (`arguments` en tool_descriptions; la mente lo pone en la propiedad del esquema):
+  juego propio de rutas 3/8 → 6/8 (con dos casos de control, 7/10). Una ruta completa dictada para `file.write` sigue
+  perdiendo la subcarpeta (Q1, Q3): límite medido. `filesystem.create.directory` acepta ahora `home` (el proveedor ya lo
+  hacía; el catálogo no). decision2 d5: 221/270 (d4 225; P263 atribuible, corregido diciendo que la carpeta conocida va
+  en `folder`; el resto ruido y el web.search nuevo).
