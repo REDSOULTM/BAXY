@@ -115,3 +115,9 @@ tocan lo cambiado; en el notebook pasan).
   el borrador es lo esperado). Instalar programas queda pendiente de una sola herramienta `package.install` con riesgo
   de instalación (pedida al notebook); `window.resolve` se queda (las `window.*` la necesitan). RAM de llama-server en el
   PC: USS 3436 MiB en esta corrida (2011 en s2, ~0,5 GB en el notebook): se mide aparte con `measure_resources.py`.
+- Mensajería (subagente, fusionado 75f56824): nombres por palabra entera plegada (sin subcadena ni tolerancia), Discord
+  no pulsa una fila que no nombra al destinatario, recibo con lo leído y si coincidió exacto o tolerante, no borra el
+  borrador de la persona (`composer_has_person_draft`), devuelve el tamaño de WhatsApp, fuera `channel: any` y el fichero
+  que recordaba canales, destinos de prueba en un fichero privado del perfil
+  (`%LOCALAPPDATA%\BAXY\development\messaging\test-destinations.v1.json`, creado en el PC; fuera del repo). Mensajería
+  101/101, Kernel 606/606. No restaurado: la vista lateral y la búsqueda de WhatsApp.
