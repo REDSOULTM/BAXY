@@ -164,47 +164,51 @@ public sealed class ComputerUsePerceptionTests
         });
     }
 
+    // Auditoría final V3: an application named that no window is (exactly) is never read in another window's place,
+    // the person's in front: nothing is looked at, and the visible windows go back for the model to name one.
     [Test]
-    public async Task TheBrowserWithoutANameIsTheFrontWindowOfThePersonsBrowser()
+    public async Task ANamedApplicationThatNoWindowIsReadsNothingInItsPlace()
     {
-        // A handle no window has: nothing on the desktop is read or moved.
-        const long front = 0x7FFF_0F1E;
-        var worker = new ScriptedUiaWorker(
-            "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Inicio\",\"controls\":[" +
-            "{\"i\":0,\"kind\":\"TabItem\",\"name\":\"Never Gonna Give You Up - YouTube\",\"id\":\"4.2\"," +
-            "\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
-        var browser = new FixedBrowserWindow(front);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, browserWindow: browser);
+        var worker = new ScriptedUiaWorker("{\"ok\":true,\"controls\":[]}");
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)0));
 
         ExternalCapabilityReceipt view = await adapter.InvokeAsync(
-            "input.visible.controls", Json("""{"application":"el navegador","processId":4242}"""),
-            CancellationToken.None);
+            "input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(view.Verified, Is.True);
-            Assert.That(browser.Calls, Is.EqualTo(1));
-            Assert.That(worker.Commands[0], Does.Contain("\"hwnd\":" + front),
-                "the person's browser window wins over a process the mission had adopted");
-            Assert.That(view.Result?.GetProperty("window").GetProperty("hwnd").GetInt64(), Is.EqualTo(front));
-            Assert.That(view.Result?.GetProperty("window").GetProperty("requested").GetBoolean(), Is.True);
-            Assert.That(view.Result?.GetProperty("controls")[0].GetProperty("kind").GetString(), Is.EqualTo("TabItem"));
+            Assert.That(view.Verified, Is.False);
+            Assert.That(view.EffectObserved, Is.False);
+            Assert.That(view.ErrorCode, Is.EqualTo("application_window_not_found"));
+            Assert.That(worker.Commands, Is.Empty, "no window is read in the named one's place");
+            Assert.That(view.Result?.GetProperty("candidates").ValueKind, Is.EqualTo(JsonValueKind.Array));
         });
     }
 
-    [TestCase("navegador", true)]
-    [TestCase("el navegador", true)]
-    [TestCase("Mi Navegador", true)]
-    [TestCase("browser", true)]
-    [TestCase("my browser", true)]
-    [TestCase("web browser", true)]
-    [TestCase("navegador web", true)]
-    [TestCase("Opera GX", false)]
-    [TestCase("navegador de archivos", false)]
-    [TestCase("", false)]
-    [TestCase(null, false)]
-    public void TheBrowserCategoryIsTheWordNotAProduct(string? application, bool expected) =>
-        Assert.That(IUserBrowserWindowLocator.NamesTheCategory(application), Is.EqualTo(expected));
+    [Test]
+    public void TheCandidatesAreTheVisibleWindowsByTitleAndProcess()
+    {
+        VisibleControlSurface.DestinationWindow[] desktop =
+        [
+            new(0x10, 11, "chrome", "Nueva pestaña - Google Chrome", null, Cloaked: false),
+            new(0x20, 12, "ApplicationFrameHost", "Configuración", null, Cloaked: true),
+            new(0x30, 13, "notepad++", "notas.txt - Notepad++", null, Cloaked: false),
+        ];
+
+        ExternalCapabilityReceipt receipt = WindowsVisibleControlAdapter.NamedWindowNotFound("input.visible.controls", desktop);
+
+        JsonElement candidates = receipt.Result!.Value.GetProperty("candidates");
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("application_window_not_found"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(candidates.GetArrayLength(), Is.EqualTo(2), "a cloaked window is not seen");
+            Assert.That(candidates[0].GetProperty("title").GetString(), Is.EqualTo("Nueva pestaña - Google Chrome"));
+            Assert.That(candidates[0].GetProperty("process").GetString(), Is.EqualTo("chrome"));
+            Assert.That(candidates[1].GetProperty("process").GetString(), Is.EqualTo("notepad++"));
+        });
+    }
 
     // Auditoría P3: only the name itself, folded (case, accents, spaces); no alias, no containment, no typo.
     [TestCase("aceptar", "Aceptar", true)]
@@ -351,17 +355,6 @@ public sealed class ComputerUsePerceptionTests
                 return ValueTask.FromResult<JsonDocument?>(null);
             string answer = _answers.Count == 1 ? _answers.Peek() : _answers.Dequeue();
             return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(answer));
-        }
-    }
-
-    private sealed class FixedBrowserWindow(long handle) : IUserBrowserWindowLocator
-    {
-        internal int Calls { get; private set; }
-
-        public nint FrontWindow()
-        {
-            Calls++;
-            return (nint)handle;
         }
     }
 

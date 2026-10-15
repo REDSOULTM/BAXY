@@ -5,9 +5,10 @@ namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
 /// Which window a computer-use mission takes for its application while the application's process is unknown
-/// (safety review 2026-10-07): the executable first, else the application named in the title's last segment as
-/// whole words; never an editor, a terminal, a console or BAXY that the request did not name. Pure rules; the last
-/// test only reads the list of windows, nothing on the desktop is touched.
+/// (safety review 2026-10-07): the executable first, else its description, else the title or its last segment; each
+/// compared exactly with the name asked, folded (auditoría final V3: no word of it, no alias); never an editor, a
+/// terminal, a console or BAXY that the request did not name. Pure rules; the last test only reads the list of
+/// windows, nothing on the desktop is touched.
 /// </summary>
 [TestFixture]
 public sealed class ComputerUseWindowIdentityTests
@@ -22,49 +23,46 @@ public sealed class ComputerUseWindowIdentityTests
     [TestCase("Inicio - Personal - Microsoft​ Edge", "Microsoft Edge", true)]
     [TestCase("Calculadora", "Calculadora", true)]
     [TestCase("notas.txt - Bloc de notas", "Bloc de notas", true)]
-    // r15b v3-47: a window that shares one word of the name («sistema») is another application's.
+    [TestCase("Información del sistema", "información  del SISTEMA", true)]
+    [TestCase("Documento1 - Word", "Word", true)]
+    // Auditoría final V3: a part, a word or another language of the name never names the application.
     [TestCase("Sistema y seguridad", "Información del sistema", false)]
-    [TestCase("Información del sistema", "Información del sistema", true)]
-    [TestCase("Sistema y seguridad", "Seguridad de Windows", false)]
-    [TestCase("Documento1 - Word", "Microsoft Word", true)]
-    // Revisión destino del pedido: titles that name the application in part, in another language or with a state.
-    [TestCase("Reproductor de Windows Media", "Windows Media Player Legacy", true)]
-    [TestCase("Riot Client", "Cliente de Riot", true)]
-    [TestCase("Zoom Meeting", "Zoom Workplace", true)]
-    [TestCase("Documento1 - Word (No responde)", "Microsoft Word", true)]
-    [TestCase("Sin título - Bloc de notas (Not Responding)", "Bloc de notas", true)]
-    [TestCase("Seguridad de Windows", "Windows Media Player Legacy", false)]
-    [TestCase("Reproductor de Windows Media", "Seguridad de Windows", false)]
+    [TestCase("Documento1 - Word", "Microsoft Word", false)]
+    [TestCase("Reproductor de Windows Media", "Windows Media Player Legacy", false)]
+    [TestCase("Riot Client", "Cliente de Riot", false)]
+    [TestCase("Zoom Meeting", "Zoom Workplace", false)]
+    [TestCase("Sin título - Notepad++", "Notepad", false)]
     [TestCase("Notas rápidas", "Bloc de notas", false)]
-    public void TheTitleNamesTheApplicationOnlyInItsLastSegmentAsWholeWords(string title, string application, bool names)
+    public void TheTitleOrItsLastSegmentIsTheApplicationsNameExactly(string title, string application, bool names)
     {
         Assert.That(VisibleControlSurface.TitleNamesApplication(title, application), Is.EqualTo(names));
     }
 
     [TestCase("Spotify", "Spotify", true)]
-    [TestCase("chrome", "Google Chrome", true)]
-    [TestCase("EpicGamesLauncher", "Epic Games Launcher", true)]
+    [TestCase("chrome", "Chrome", true)]
+    [TestCase("Code.exe", "code", true)]
+    [TestCase("chrome", "Google Chrome", false)]
+    [TestCase("EpicGamesLauncher", "Epic Games Launcher", false)]
     [TestCase("steamwebhelper", "Steam", false)]
+    [TestCase("notepad++", "notepad", false)]
     [TestCase("Code", "Steam", false)]
-    public void TheExecutableIsTheApplicationByItsNameOrADistinctiveWord(string process, string application, bool matches)
+    public void TheExecutableIsTheApplicationOnlyByItsExactName(string process, string application, bool matches)
     {
         Assert.That(VisibleControlSurface.ProcessIsApplication(process, application), Is.EqualTo(matches));
     }
 
     // Goal v3, analysis r3a M5 (v3-49): a file manager whose title is the folder it shows is found by its executable's
-    // own description, the whole name or the name followed by more words; a description that only shares a word with
-    // the name never names it («panel de miniaturas» is no control panel), nor a generic word alone.
+    // own description, when it is the name asked; one that only starts with it or shares a word never is.
     [TestCase("7-Zip File Manager", "7-Zip File Manager", true)]
-    [TestCase("7-Zip File Manager", "7-zip", true)]
     [TestCase("Mapa de caracteres", "mapa de caracteres", true)]
     [TestCase("Bloc de notas", "Bloc de notas", true)]
+    [TestCase("7-Zip File Manager", "7-zip", false)]
     [TestCase("Panel de control", "panel de miniaturas", false)]
-    [TestCase("7-Zip File Manager", "7", false)]
-    [TestCase("7-Zip File Manager", "zip", false)]
     [TestCase("Microsoft Edge", "Microsoft", false)]
+    [TestCase("Microsoft Edge WebView2", "Microsoft Edge", false)]
     [TestCase("Steamworks Helper", "Steam", false)]
     [TestCase("", "Steam", false)]
-    public void TheExecutablesDescriptionNamesTheApplicationWholeOrFollowedByMoreWords(
+    public void TheExecutablesDescriptionIsTheApplicationsNameExactly(
         string description, string application, bool names)
     {
         Assert.That(VisibleControlSurface.DescriptionNamesApplication(description, application), Is.EqualTo(names));
@@ -353,23 +351,30 @@ public sealed class ComputerUseWindowIdentityTests
         });
     }
 
-    [TestCase("Code", "Steam", true)]
-    [TestCase("Code.exe", "Steam", true)]
-    [TestCase("devenv", "Steam", true)]
-    [TestCase("WindowsTerminal", "Steam", true)]
-    [TestCase("powershell", "Steam", true)]
-    [TestCase("cmd", "Steam", true)]
-    [TestCase("Baxy", "Steam", true)]
-    [TestCase("baxy-core", "Steam", true)]
-    [TestCase("Code", "Visual Studio Code", false)]
-    [TestCase("WindowsTerminal", "Terminal", false)]
-    [TestCase("steamwebhelper", "Steam", false)]
+    [TestCase("Code", "Steam", null, true)]
+    [TestCase("Code.exe", "Steam", null, true)]
+    [TestCase("devenv", "Steam", null, true)]
+    [TestCase("WindowsTerminal", "Steam", null, true)]
+    [TestCase("powershell", "Steam", null, true)]
+    [TestCase("cmd", "Steam", null, true)]
+    [TestCase("Baxy", "Steam", null, true)]
+    [TestCase("baxy-core", "Steam", null, true)]
+    [TestCase("Code", null, null, true)]
+    // Auditoría final V3: named as Windows names it (its process or its executable's description), never by an alias.
+    [TestCase("Code", "code", null, false)]
+    [TestCase("Code", "Visual Studio Code", "Visual Studio Code", false)]
+    [TestCase("Code", "vs code", "Visual Studio Code", true)]
+    [TestCase("WindowsTerminal", "Terminal", "Windows Terminal", true)]
+    [TestCase("WindowsTerminal", "windows terminal", "Windows Terminal", false)]
+    [TestCase("steamwebhelper", "Steam", null, false)]
     // Estabilización U (revisión H2): BAXY's own window stays protected even when the request names BAXY.
-    [TestCase("Baxy", "BAXY", true)]
-    [TestCase("baxy-core", "baxy", true)]
-    public void AnEditorATerminalOrBaxyIsTheApplicationOnlyWhenNamed(string process, string application, bool protectedFrom)
+    [TestCase("Baxy", "BAXY", "BAXY", true)]
+    [TestCase("baxy-core", "baxy-core", null, true)]
+    public void AnEditorATerminalOrBaxyIsTheApplicationOnlyWhenNamed(
+        string process, string? application, string? description, bool protectedFrom)
     {
-        Assert.That(VisibleControlSurface.ProtectedFrom(process, application), Is.EqualTo(protectedFrom));
+        Func<string>? described = description is null ? null : () => description;
+        Assert.That(VisibleControlSurface.ProtectedFrom(process, application, described), Is.EqualTo(protectedFrom));
     }
 
     // Estabilización D2 (banco h1, s11 and u1: Discord and Spotify already running and minimized, rect -32000; the view

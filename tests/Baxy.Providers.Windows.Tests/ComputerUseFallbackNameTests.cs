@@ -227,7 +227,7 @@ public sealed class ComputerUseFallbackNameTests
             "{\"i\":1,\"kind\":\"Button\",\"name\":\"Inicio\",\"nameSource\":\"\",\"id\":\"4.2\",\"state\":\"\"," +
             "\"value\":null,\"rect\":null,\"repeated\":0}],\"controlCount\":2," +
             "\"focused\":{\"kind\":\"Edit\",\"name\":\"main Input\",\"nameSource\":\"automationId\",\"value\":null}}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, browserWindow: new FixedFront(front));
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front));
 
         ExternalCapabilityReceipt view = await adapter.InvokeAsync(
             "input.visible.controls", JsonDocument.Parse("""{"application":"el navegador"}""").RootElement.Clone(),
@@ -287,10 +287,5 @@ public sealed class ComputerUseFallbackNameTests
         Assert.That(process.WaitForExit(60_000), Is.True, "the worker functions answer");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return JsonDocument.Parse(output).RootElement.Clone();
-    }
-
-    private sealed class FixedFront(long handle) : IUserBrowserWindowLocator
-    {
-        public nint FrontWindow() => (nint)handle;
     }
 }
