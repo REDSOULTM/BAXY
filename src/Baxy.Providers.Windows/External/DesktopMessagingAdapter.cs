@@ -571,6 +571,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyShift = 0x10;
     private const ushort VirtualKeyAlt = 0x12;
     private const ushort VirtualKeyDown = 0x28;
+    private const ushort VirtualKeyRight = 0x27;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
 
@@ -610,6 +611,33 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     /// in that chat would send it. Said so, never as a bare «stopped halfway».
     /// </summary>
     internal const string DraftLeftAfterInterruption = "message_draft_left_after_interruption";
+
+    /// <summary>
+    /// C5: the conversation's composer already held text (the person's draft), seen before anything was deleted or
+    /// typed: it is left as it was and the flow stops, nothing written.
+    /// </summary>
+    internal const string ComposerHasPersonDraft = "composer_has_person_draft";
+
+    // C5: Ctrl+A selects whatever the focused field holds. When that field is the conversation's composer and it holds
+    // text, the composer's picture (composer, taken just before) changes under the selection; a placeholder is not
+    // selectable and a blinking caret is not a change. Text found is left as it was, the selection collapsed to its
+    // end, and true is returned. Nothing is deleted here.
+    private static async ValueTask<bool> ComposerHoldsTextAsync(
+        nint handle,
+        string channel,
+        byte[] composer,
+        CancellationToken cancellationToken)
+    {
+        SendChord(VirtualKeyControl, VirtualKeyA);
+        await Task.Delay(150, cancellationToken).ConfigureAwait(false);
+        if (!ContentChanged(composer, CaptureRegion(handle, CaptureArea.Composer, channel)))
+        {
+            return false;
+        }
+
+        SendKey(VirtualKeyRight);
+        return true;
+    }
 
     /// <summary>
     /// The stop of a flow that was typing near a conversation's composer: when the composer changed since
@@ -793,8 +821,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
             try
             {
-                SendChord(VirtualKeyControl, VirtualKeyA);
-                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+                // C5: the search's old query is cleared only when the selection did not land on text in the
+                // conversation's composer (the search not focused, the person's draft there).
+                if (await ComposerHoldsTextAsync(handle, channel, composerBefore, cancellationToken).ConfigureAwait(false))
+                {
+                    return new(false, false, handle, processId, ComposerHasPersonDraft);
+                }
+
                 SendKey(VirtualKeyBack);
                 SendText(recipient);
                 await Task.Delay(350, cancellationToken).ConfigureAwait(false);
@@ -803,6 +836,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                         SHA256.HashData(composerBefore),
                         SHA256.HashData(composerAfter)))
                 {
+                    // The composer held no text before (C5), so this clears only the name typed into it.
                     SendChord(VirtualKeyControl, VirtualKeyA);
                     SendKey(VirtualKeyBack);
                     return new(false, true, handle, processId, "search_focus_not_verified");
@@ -861,10 +895,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             }
 
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after ctrl+k");
-            SendChord(VirtualKeyControl, VirtualKeyA);
-            await Task.Delay(120, cancellationToken).ConfigureAwait(false);
-            SendKey(VirtualKeyBack);
-            await Task.Delay(120, cancellationToken).ConfigureAwait(false);
+            // C5: the switcher opens with an empty input, so nothing is deleted before the name; a selection that
+            // shows text in the conversation's composer means the keys go there, onto the person's draft.
+            if (await ComposerHoldsTextAsync(
+                    handle, channel, CaptureRegion(handle, CaptureArea.Composer, channel), cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return new(false, false, handle, processId, ComposerHasPersonDraft);
+            }
+
             SendText(recipient);
             (bool named, string? row) = await AwaitNamedResultAsync(
                 Read, name => NamesRecipient(name, recipient), InteractionPoll, cancellationToken).ConfigureAwait(false);
@@ -969,10 +1008,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         await Task.Delay(200, cancellationToken).ConfigureAwait(false);
-        SendChord(VirtualKeyControl, VirtualKeyA);
-        SendKey(VirtualKeyBack);
-        await Task.Delay(150, cancellationToken).ConfigureAwait(false);
+        // C5: the composer is read before anything is typed; the person's draft there is never cleared.
         byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
+        if (await ComposerHoldsTextAsync(recipient.WindowHandle, recipient.Channel, before, cancellationToken)
+                .ConfigureAwait(false))
+        {
+            return new(false, false, string.Empty, ComposerHasPersonDraft);
+        }
+
         byte[] beforeSend;
         try
         {
@@ -982,6 +1025,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 recipient, text, before, cancellationToken).ConfigureAwait(false);
             if (!draftObservation.Verified)
             {
+                // The composer was empty before (C5): only the text typed here is cleared.
                 SendChord(VirtualKeyControl, VirtualKeyA);
                 SendKey(VirtualKeyBack);
                 return new(false, false, string.Empty, "message_draft_not_verified");
@@ -1095,10 +1139,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         await Task.Delay(200, cancellationToken).ConfigureAwait(false);
-        SendChord(VirtualKeyControl, VirtualKeyA);
-        SendKey(VirtualKeyBack);
-        await Task.Delay(150, cancellationToken).ConfigureAwait(false);
+        // C5: the composer is read before anything is typed; the person's draft there is never cleared.
         byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
+        if (await ComposerHoldsTextAsync(recipient.WindowHandle, recipient.Channel, before, cancellationToken)
+                .ConfigureAwait(false))
+        {
+            return new(false, false, string.Empty, ComposerHasPersonDraft);
+        }
+
         MessageVisualObservation draftObservation;
         try
         {
@@ -1108,6 +1156,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 recipient, text, before, cancellationToken).ConfigureAwait(false);
             if (!draftObservation.Verified)
             {
+                // The composer was empty before (C5): only the text typed here is cleared.
                 SendChord(VirtualKeyControl, VirtualKeyA);
                 SendKey(VirtualKeyBack);
                 return new(false, true, string.Empty, "message_draft_not_verified");

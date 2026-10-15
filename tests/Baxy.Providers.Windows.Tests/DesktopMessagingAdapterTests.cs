@@ -94,6 +94,41 @@ public sealed class DesktopMessagingAdapterTests
     public void ADeliveryReadSaysHowItMatched(string observed, string expected, string? match) =>
         Assert.That(WindowsDesktopMessagingAutomation.TextMatch(observed, expected), Is.EqualTo(match));
 
+    // C5: the send and the draft read the composer before typing and never clear it first; the read (a select-all
+    // whose picture shows text) deletes nothing and stops on the person's draft.
+    [TestCase("SendInBurstAsync(")]
+    [TestCase("DraftInBurstAsync(")]
+    public void TheComposerIsReadBeforeTypingAndNeverClearedFirst(string flow)
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<DesktopMessageObservation> " + flow, StringComparison.Ordinal);
+        int typed = source.IndexOf("SendText(text);", Math.Max(start, 0), StringComparison.Ordinal);
+        int read = source.IndexOf("private static async ValueTask<bool> ComposerHoldsTextAsync(", StringComparison.Ordinal);
+        int readEnd = source.IndexOf("\n    }\n", Math.Max(read, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(read, Is.GreaterThan(0));
+            Assert.That(source[start..typed], Does.Contain("ComposerHoldsTextAsync("));
+            Assert.That(source[start..typed], Does.Contain("return new(false, false, string.Empty, ComposerHasPersonDraft);"));
+            Assert.That(source[start..typed], Does.Not.Contain("VirtualKeyBack"));
+            Assert.That(source[read..readEnd], Does.Not.Contain("VirtualKeyBack"));
+        });
+    }
+
+    private static string AdapterSource()
+    {
+        DirectoryInfo? root = new(AppContext.BaseDirectory);
+        while (root is not null && !File.Exists(Path.Combine(root.FullName, "Baxy.slnx")))
+        {
+            root = root.Parent;
+        }
+
+        Assert.That(root, Is.Not.Null, "Baxy.slnx was not found.");
+        return File.ReadAllText(Path.Combine(
+            root!.FullName, "src", "Baxy.Providers.Windows", "External", "DesktopMessagingAdapter.cs"));
+    }
+
     // G1 (2026-10-11): the typed draft is read only once the composer band's
     // content changed; a blinking caret (one or two columns) is not a change, so
     // it never starts an OCR pass that holds the CPU the client needs to draw.
