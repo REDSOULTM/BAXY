@@ -252,8 +252,9 @@ class Mind:
         for cap in capabilities:
             name = str(cap.get("name") or "")
             spanish = _SPANISH.get(name) or str(cap.get("description") or "")
-            if spanish.startswith("Paso interno") or name == "mission.computer.use":
-                continue  # internal steps are the kernel's; screen missions are not served by this mind
+            # Internal steps without a description of their own are the kernel's; screen missions are not this mind's.
+            if (spanish.startswith("Paso interno") and name not in self.english) or name == "mission.computer.use":
+                continue
             description = self.english.get(name) or spanish
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
