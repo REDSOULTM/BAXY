@@ -63,6 +63,59 @@ public sealed class OperationOutcomeNarrationTests
         Assert.That(keys, Is.EquivalentTo(new[] { "id", "noteId", "deviceId", "sha256", "hash", "recordId" }));
     }
 
+    // Auditoría final V2: a list cut to what the observation shows says how many it shows, and the observation says
+    // something was left out, where the model reads it (window.resolve with limit 50 showed 20 under count 50).
+    [Test]
+    public void AListCutToWhatIsShownSaysHowManyItShowsAndThatMoreWasLeftOut()
+    {
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            windows = Enumerable.Range(0, 50).Select(static index => new { title = "w" + index }).ToArray(),
+            count = 50,
+            nextOffset = 50,
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("window.resolve", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("windows").GetArrayLength(), Is.EqualTo(20));
+            Assert.That(observed.GetProperty("windowsShown").GetInt32(), Is.EqualTo(20));
+            Assert.That(observed.TryGetProperty("windowsCount", out _), Is.False, "the provider's count stays the total");
+            Assert.That(observed.GetProperty("count").GetInt32(), Is.EqualTo(50));
+            Assert.That(observed.GetProperty("truncated").GetBoolean(), Is.True);
+        });
+    }
+
+    [Test]
+    public void AListWithoutACountKeepsItsLengthAndADeepValueLeftOutIsSaid()
+    {
+        JsonElement listed = JsonSerializer.SerializeToElement(new
+        {
+            tasks = Enumerable.Range(0, 30).Select(static index => new { title = "t" + index }).ToArray(),
+        });
+        JsonElement deep = JsonSerializer.SerializeToElement(new { a = new { b = new { c = new { d = new { e = 1 } } } } });
+        JsonElement whole = JsonSerializer.SerializeToElement(new { tasks = new[] { new { title = "t" } } });
+
+        using JsonDocument cut = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("task.list", OperationOutcome.Success(listed)));
+        using JsonDocument cutDeep = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("task.list", OperationOutcome.Success(deep)));
+        using JsonDocument kept = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("task.list", OperationOutcome.Success(whole)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(cut.RootElement.GetProperty("observed").GetProperty("tasksShown").GetInt32(), Is.EqualTo(20));
+            Assert.That(cut.RootElement.GetProperty("observed").GetProperty("tasksCount").GetInt32(), Is.EqualTo(30));
+            Assert.That(cutDeep.RootElement.GetProperty("observed").GetProperty("truncated").GetBoolean(), Is.True);
+            Assert.That(kept.RootElement.GetProperty("observed").TryGetProperty("truncated", out _), Is.False);
+            Assert.That(kept.RootElement.GetProperty("observed").TryGetProperty("tasksShown", out _), Is.False);
+        });
+    }
+
     [Test]
     public void OperationOutcomeDoesNotExposeNaturalLanguageMessage()
     {
