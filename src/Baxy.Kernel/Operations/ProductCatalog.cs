@@ -248,7 +248,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc", "title"]),
             OperationRisks.ExternalCommunication,
             "calendar.event.create.account.postread.v1",
-            "Crea un evento en una cuenta de calendario autenticada y verifica su identidad remota."),
+            "Crea un evento en el calendario predeterminado del Outlook clásico de la persona, que lo sincroniza con su cuenta: sale de la máquina, así que pide su confirmación antes; verifica la identidad del evento creado."),
         Descriptor(
             "calendar.event.list",
             Schema(
@@ -724,8 +724,10 @@ public static class ProductCatalog
                     // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): los atajos
                     // que una persona usa en cualquier aplicación —seleccionar todo,
                     // copiar, buscar, paleta de comandos, pestaña nueva, cerrar
-                    // pestaña, deshacer, recargar—. Ninguno cierra una ventana ni un
-                    // proceso: cerrar una pestaña deja el navegador abierto (D16).
+                    // pestaña, deshacer, recargar—. Ctrl+W cierra la pestaña, pero en el
+                    // Explorador, en muchas aplicaciones y en la última pestaña de un
+                    // navegador cierra la ventana: RiskPolicy lo confirma (auditoría
+                    // final 2, fila 9).
                     // Goal v3 punto 2: guardar, guardar como, abrir, reemplazar,
                     // cortar, la barra de menús (F10) y el menú contextual del
                     // control enfocado (Shift+F10); ninguno cierra nada.
@@ -751,7 +753,7 @@ public static class ProductCatalog
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
-            "Presiona una tecla o una combinación segura (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; con target message_composer la pulsación de Enter se trata como un envío."),
+            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío."),
         Descriptor(
             "input.keyboard.layout",
             Schema([String("language", values: ["spanish"])], ["language"]),
