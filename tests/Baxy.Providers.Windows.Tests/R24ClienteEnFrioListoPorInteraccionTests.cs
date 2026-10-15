@@ -391,9 +391,6 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         }
     }
 
-    private static string TemporaryStore() =>
-        Path.Combine(Path.GetTempPath(), "baxy-r24-" + Guid.NewGuid().ToString("N"), "recipient-channels.v1.json");
-
     // t1-c09#1 («Ron92»), t2-c07#1 («Ron92»), t3-c07 t1 («ron92»); a recipient that does not exist ends the same way.
     [TestCase("Ron92")]
     [TestCase("ron92")]
@@ -401,7 +398,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     public async Task TheColdClientCasesAnswerNotOpenedWithoutEffectAndNothingIsTyped(string recipient)
     {
         var automation = new ColdClient(WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: true));
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.recipient.resolve",
             JsonDocument.Parse($$"""{"channel":"discord","recipient":"{{recipient}}"}""").RootElement.Clone(),
@@ -422,7 +419,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     public async Task AVerifiedChatStillResolves()
     {
         var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null));
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.recipient.resolve",
             JsonDocument.Parse("""{"channel":"discord","recipient":"Ron92"}""").RootElement.Clone(),

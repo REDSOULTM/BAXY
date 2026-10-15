@@ -46,14 +46,11 @@ public sealed class M120ClienteCerradoTests
         }
     }
 
-    private static string TemporaryStore() =>
-        Path.Combine(Path.GetTempPath(), "baxy-m120-" + Guid.NewGuid().ToString("N"), "recipient-channels.v1.json");
-
     private static async Task<(ExternalCapabilityReceipt Receipt, List<string> Steps)> DraftAsync(
         DesktopClientReadiness readiness, string channel = "whatsapp")
     {
         var automation = new ClientAutomation(readiness);
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.draft",
             Json($$"""{"channel":"{{channel}}","recipient":"Tere","text":"llego en diez"}"""),
@@ -122,7 +119,7 @@ public sealed class M120ClienteCerradoTests
     public async Task TheTestChannelsClientIsOpenedBeforeTheReviewedSend()
     {
         var automation = new ClientAutomation(new(true, true, null));
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.send.test",
             Json("""{"channel":"whatsapp","requestedRecipient":"Tere","text":"hola"}"""),

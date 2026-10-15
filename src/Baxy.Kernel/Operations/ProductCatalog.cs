@@ -1294,17 +1294,15 @@ public static class ProductCatalog
             "message.recipient.resolve",
             Schema(
                 [
-                    // Auditoría semántica 2026-09-20 (REOPEN1993 grupo E, D24): con «any» el
-                    // destinatario se busca en los clientes (el canal recordado, WhatsApp y
-                    // Discord); único → resuelto y recordado; en ninguno o en varios, se dice.
-                    String("channel", values: ["any", "discord", "whatsapp"]),
+                    // Auditoría C11: sin «any»; el proveedor no elige el cliente por su cuenta.
+                    String("channel", values: ["discord", "whatsapp"]),
                     String("recipient", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["channel", "recipient"]),
             OperationRisks.ReadOnly,
             "message.recipient.resolve.session.identity.v1",
             ToolExposure.Public,
-            "Resuelve un único destinatario autenticado (en el cliente nombrado o, con «any», en el que lo tenga: el recordado, WhatsApp o Discord) y emite un identificador revisable."),
+            "Resuelve un único destinatario autenticado en el cliente nombrado (WhatsApp o Discord) y emite un identificador revisable."),
         Descriptor(
             "message.send",
             Schema(

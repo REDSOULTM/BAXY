@@ -18,96 +18,13 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     private readonly SemaphoreSlim _interaction = new(1, 1);
 
     internal DesktopMessagingAdapter(IClientInteractionProbe probe)
-        : this(new WindowsDesktopMessagingAutomation(probe), null)
+        : this(new WindowsDesktopMessagingAutomation(probe))
     {
     }
 
     internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation)
-        : this(automation, null)
-    {
-    }
-
-    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation, string? recipientChannelsPath)
     {
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
-        _recipientChannelsPath = recipientChannelsPath ?? DefaultRecipientChannelsPath();
-    }
-
-    // REOPEN1993 grupo E (H0024 «escribile a Lucas»; nota del dueño: aprender en
-    // qué cliente está cada persona): the channel a recipient was found in, by
-    // name, in the product's private data; read first on the next «any» resolve.
-    private readonly string _recipientChannelsPath;
-
-    private static string DefaultRecipientChannelsPath()
-    {
-        string root = Environment.GetEnvironmentVariable("BAXY_DATA_DIR") is { Length: > 0 } configured
-            ? configured
-            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "development");
-        return Path.Combine(root, "messaging", "recipient-channels.v1.json");
-    }
-
-    private string? ReadRecipientChannel(string recipient)
-    {
-        try
-        {
-            if (!File.Exists(_recipientChannelsPath))
-            {
-                return null;
-            }
-
-            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(_recipientChannelsPath));
-            return document.RootElement.ValueKind == JsonValueKind.Object
-                && document.RootElement.TryGetProperty(WindowsDesktopMessagingAutomation.Fold(recipient), out JsonElement value)
-                && value.ValueKind == JsonValueKind.String
-                ? value.GetString()
-                : null;
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
-        {
-            return null;
-        }
-    }
-
-    private void WriteRecipientChannel(string recipient, string channel)
-    {
-        var channels = new SortedDictionary<string, string>(StringComparer.Ordinal);
-        try
-        {
-            if (File.Exists(_recipientChannelsPath))
-            {
-                using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(_recipientChannelsPath));
-                if (document.RootElement.ValueKind == JsonValueKind.Object)
-                {
-                    foreach (JsonProperty property in document.RootElement.EnumerateObject())
-                    {
-                        if (property.Value.ValueKind == JsonValueKind.String)
-                        {
-                            channels[property.Name] = property.Value.GetString() ?? string.Empty;
-                        }
-                    }
-                }
-            }
-
-            channels[WindowsDesktopMessagingAutomation.Fold(recipient)] = channel;
-            Directory.CreateDirectory(Path.GetDirectoryName(_recipientChannelsPath)!);
-            using var stream = new MemoryStream();
-            using (var writer = new Utf8JsonWriter(stream))
-            {
-                writer.WriteStartObject();
-                foreach ((string key, string value) in channels)
-                {
-                    writer.WriteString(key, value);
-                }
-
-                writer.WriteEndObject();
-            }
-
-            File.WriteAllBytes(_recipientChannelsPath, stream.ToArray());
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
-        {
-            // Remembering is a convenience; the resolved recipient stands on its own.
-        }
     }
 
     public bool CanHandle(string operation) =>
@@ -203,93 +120,31 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     {
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
-        DesktopRecipientObservation observation;
-        bool remembered = false;
-        if (string.Equals(channel, "any", StringComparison.Ordinal))
+        // D59 §1, ronda 19 (t1-c09, t2-c07, t3-c07 «mandale a Ron92 por discord …» with
+        // Discord closed): the named client is opened before its recipient is looked
+        // for, as the draft and the reviewed send already do; resolving against a
+        // closed client only answered «<client>_client_not_running».
+        DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
+            channel,
+            cancellationToken).ConfigureAwait(false);
+        if (!client.Ready)
         {
-            // REOPEN1993 grupo E: no client named. The remembered client first;
-            // otherwise both, and only a single hit is the person meant.
-            string? known = ReadRecipientChannel(recipient);
-            if (known is "whatsapp" or "discord")
-            {
-                DesktopRecipientObservation knownObservation = await _automation.ResolveAsync(known, recipient, cancellationToken).ConfigureAwait(false);
-                if (PersonStop(knownObservation) is ExternalCapabilityReceipt busyOnKnown)
-                {
-                    return busyOnKnown;
-                }
-
-                if (knownObservation.Verified)
-                {
-                    channel = known;
-                    observation = knownObservation;
-                    remembered = true;
-                    goto Resolved;
-                }
-            }
-
-            var hits = new List<(string Channel, DesktopRecipientObservation Observation)>();
-            foreach (string candidate in new[] { "whatsapp", "discord" })
-            {
-                DesktopRecipientObservation probe = await _automation.ResolveAsync(candidate, recipient, cancellationToken).ConfigureAwait(false);
-                if (PersonStop(probe) is ExternalCapabilityReceipt busyOnProbe)
-                {
-                    return busyOnProbe;
-                }
-
-                if (probe.Verified)
-                {
-                    hits.Add((candidate, probe));
-                }
-            }
-
-            if (hits.Count == 0)
-            {
-                return Failure("message.recipient.resolve", "recipient_not_found_in_clients", false);
-            }
-
-            if (hits.Count > 1)
-            {
-                return Failure("message.recipient.resolve", "recipient_channel_ambiguous", false);
-            }
-
-            (channel, observation) = hits[0];
-        }
-        else
-        {
-            // D59 §1, ronda 19 (t1-c09, t2-c07, t3-c07 «mandale a Ron92 por discord …» with
-            // Discord closed): a named client is opened before its recipient is looked
-            // for, as the draft and the reviewed send already do; resolving against a
-            // closed client only answered «<client>_client_not_running». A client named
-            // by nobody («any») is never opened: only the open ones are probed above.
-            DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
-                channel,
-                cancellationToken).ConfigureAwait(false);
-            if (!client.Ready)
-            {
-                return Failure(
-                    "message.recipient.resolve",
-                    client.ErrorCode ?? $"{channel}_client_not_running",
-                    client.Opened);
-            }
-
-            observation = await _automation.ResolveAsync(
-                channel,
-                recipient,
-                cancellationToken).ConfigureAwait(false);
+            return Failure(
+                "message.recipient.resolve",
+                client.ErrorCode ?? $"{channel}_client_not_running",
+                client.Opened);
         }
 
-    Resolved:
+        DesktopRecipientObservation observation = await _automation.ResolveAsync(
+            channel,
+            recipient,
+            cancellationToken).ConfigureAwait(false);
         if (!observation.Verified)
         {
             return Failure(
                 "message.recipient.resolve",
                 observation.ErrorCode ?? "recipient_identity_not_verified",
                 observation.EffectObserved);
-        }
-
-        if (!remembered)
-        {
-            WriteRecipientChannel(recipient, channel);
         }
 
         string recipientId = "recipient_" + Guid.NewGuid().ToString("N");
@@ -583,22 +438,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string error,
         bool effectObserved = false) =>
         new(operation, effectObserved, false, null, error);
-
-    // The codes that say the person was using the PC (no pause, or their input during the burst, and what that
-    // interruption left in a composer): with no client named, a lookup that stopped on one of them ends the search
-    // there with that cause. Probing the next client would wait, take the front and type over the person again, and
-    // the final «not found in either client» would hide why it stopped.
-    private static readonly HashSet<string> PersonStops = new(StringComparer.Ordinal)
-    {
-        "input_user_not_paused",
-        LeasedInput.Interrupted,
-        WindowsDesktopMessagingAutomation.DraftLeftAfterInterruption,
-    };
-
-    private static ExternalCapabilityReceipt? PersonStop(DesktopRecipientObservation observation) =>
-        observation.ErrorCode is string code && PersonStops.Contains(code)
-            ? Failure("message.recipient.resolve", code, observation.EffectObserved)
-            : null;
 
     private static JsonElement JsonObject(params (string Name, object Value)[] values)
     {
