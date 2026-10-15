@@ -37,13 +37,12 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     // --------------------------------------------------------------- 1. ready is interaction, not a title
 
     [Test]
-    public void TheLoadingScreenTitleAloneIsNotReadiness()
+    public void ReadinessIsContentShown()
     {
         Assert.Multiple(() =>
         {
-            // The title test still passes the loading screen (it is not the updater) ...
-            Assert.That(WindowsDesktopMessagingAutomation.ClientWindowReady("Discord"), Is.True);
-            // ... so readiness also asks for content: a loading screen shows none, nothing read is not ready.
+            // Readiness is content (C14: no title test, no fixed settle): a loading screen shows none, and nothing
+            // read is not ready.
             Assert.That(WindowsDesktopMessagingAutomation.ClientInteractionReady(Loading), Is.False);
             Assert.That(WindowsDesktopMessagingAutomation.ClientInteractionReady(ClientInteraction.Unanswered), Is.False);
             Assert.That(WindowsDesktopMessagingAutomation.ClientInteractionReady(Shown()), Is.True);
@@ -67,9 +66,10 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         Assert.That(wait, Is.EqualTo(WindowsDesktopMessagingAutomation.ContentWait.NotShown));
     }
 
-    // Contracaso: a window nobody can read keeps the timed path of before (the caller's settle), never «not ready».
+    // Contracaso: a window nobody can read is said as such (Unanswered), not as a window without content; the caller
+    // does not say it ready either way (C14).
     [Test]
-    public async Task AWindowThatCannotBeReadKeepsTheTimedPath()
+    public async Task AWindowThatCannotBeReadIsSaidUnanswered()
     {
         WindowsDesktopMessagingAutomation.ContentWait wait = await WindowsDesktopMessagingAutomation.AwaitClientContentAsync(
             Script(ClientInteraction.Unanswered), TimeSpan.FromMilliseconds(60), TimeSpan.FromMilliseconds(5),
@@ -386,13 +386,13 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
 
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
-            Steps.Add("send:" + recipient.DisplayName);
+            Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
-    }
 
-    private static string TemporaryStore() =>
-        Path.Combine(Path.GetTempPath(), "baxy-r24-" + Guid.NewGuid().ToString("N"), "recipient-channels.v1.json");
+        public ValueTask<DesktopMessageObservation> DraftAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("no draft in these tests");
+    }
 
     // t1-c09#1 («Ron92»), t2-c07#1 («Ron92»), t3-c07 t1 («ron92»); a recipient that does not exist ends the same way.
     [TestCase("Ron92")]
@@ -401,7 +401,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     public async Task TheColdClientCasesAnswerNotOpenedWithoutEffectAndNothingIsTyped(string recipient)
     {
         var automation = new ColdClient(WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: true));
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.recipient.resolve",
             JsonDocument.Parse($$"""{"channel":"discord","recipient":"{{recipient}}"}""").RootElement.Clone(),
@@ -421,8 +421,8 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     [Test]
     public async Task AVerifiedChatStillResolves()
     {
-        var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null));
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null, "Ron92"));
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.recipient.resolve",
             JsonDocument.Parse("""{"channel":"discord","recipient":"Ron92"}""").RootElement.Clone(),

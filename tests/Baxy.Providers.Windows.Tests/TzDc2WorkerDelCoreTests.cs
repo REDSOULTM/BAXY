@@ -74,7 +74,7 @@ public sealed class TzDc2WorkerDelCoreTests
         var clock = Stopwatch.StartNew();
         WindowsDesktopMessagingAutomation.InputWait input = await WindowsDesktopMessagingAutomation.AwaitOpenedInputAsync(
             read, before, WindowsDesktopMessagingAutomation.SearchInputBudget, Poll, CancellationToken.None);
-        bool named = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
+        (bool named, _) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
             read, name => name.Contains("Ron92", StringComparison.Ordinal), Poll, CancellationToken.None);
 
         Assert.Multiple(() =>

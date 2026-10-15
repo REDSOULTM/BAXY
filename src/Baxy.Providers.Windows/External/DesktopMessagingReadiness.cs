@@ -119,6 +119,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation
     /// </summary>
     internal const string RecipientNotOpened = "recipient_not_opened";
 
+    /// <summary>C3: the chat search showed no result naming the recipient; nothing was opened or written.</summary>
+    internal const string RecipientNotFound = "recipient_not_found";
+
     // After a cold open, the window has to expose content a person interacts with within this clock.
     internal static readonly TimeSpan ClientContentBudget = TimeSpan.FromSeconds(15);
 
@@ -213,7 +216,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation
 
     /// <summary>
     /// Polls the window until it shows interactive content, within <paramref name="budget"/>. When no read ever
-    /// answered, the caller cannot tell and keeps its timed path.
+    /// answered it says so (Unanswered); either way the window is not said ready (C14).
     /// </summary>
     internal static async ValueTask<ContentWait> AwaitClientContentAsync(
         Func<CancellationToken, ValueTask<ClientInteraction>> read,
@@ -296,15 +299,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation
     /// 1.2 s, while that row was still the one from before the filter: another chat opened and the send never ran.
     /// The search's active result (UI Automation puts the focus on it, <see cref="SearchRowKinds"/>) is read until it
     /// names the recipient, and the wait ends then. A row that never names it is waited for the whole budget; with no
-    /// row to read (nothing answered, or the focus on the input) the old fixed wait is kept. Whether it was named.
+    /// row to read (nothing answered, or the focus on the input) the old fixed wait is kept. Whether it was named, and
+    /// the row: the one that named the recipient, or the last one read (null when none was).
     /// </summary>
-    internal static async ValueTask<bool> AwaitNamedResultAsync(
+    internal static async ValueTask<(bool Named, string? Row)> AwaitNamedResultAsync(
         Func<CancellationToken, ValueTask<ClientInteraction>> read,
         Func<string, bool> namesRecipient,
         TimeSpan poll,
         CancellationToken cancellationToken)
     {
-        bool rowSeen = false;
+        string? row = null;
         var clock = Stopwatch.StartNew();
         while (true)
         {
@@ -313,15 +317,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation
             {
                 if (namesRecipient(focus.Name))
                 {
-                    return true;
+                    return (true, focus.Name);
                 }
 
-                rowSeen = true;
+                row = focus.Name;
             }
 
-            if (clock.Elapsed >= (rowSeen ? SearchResultBudget : UnreadResultWait))
+            if (clock.Elapsed >= (row is not null ? SearchResultBudget : UnreadResultWait))
             {
-                return false;
+                return (false, row);
             }
 
             await Task.Delay(poll, cancellationToken).ConfigureAwait(false);
@@ -373,4 +377,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation
         composerUntouched
             ? new(false, false, handle, processId, RecipientNotOpened)
             : new(false, true, handle, processId, "recipient_identity_not_verified");
+
+    /// <summary>
+    /// C3: no result of the chat search named the recipient, so nothing was clicked or opened: «recipient_not_found»
+    /// with the row the search showed (null when none was read). Text that may have reached a composer keeps its
+    /// possible effect and code.
+    /// </summary>
+    internal static DesktopRecipientObservation NotNamedInSearch(DesktopRecipientObservation unverified, string? row) =>
+        unverified with
+        {
+            ErrorCode = unverified.EffectObserved ? unverified.ErrorCode : RecipientNotFound,
+            Shown = row,
+        };
 }

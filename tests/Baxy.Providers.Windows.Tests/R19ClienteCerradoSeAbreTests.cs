@@ -8,16 +8,13 @@ namespace Baxy.Providers.Windows.Tests;
 /// Ronda 19 «app-cerrada-se-abre» (uso real r17: t1-c09 «mandale a Ron92 por discord que hoy no llego a
 /// jugar…», t2-c07 «… que llego en 10 min…», t3-c07 «mandale a ron92 por discord que ya voy saliendo…»,
 /// Discord closed): message.recipient.resolve with a named client opens it first (D59 §1, as the draft and
-/// the reviewed send do) instead of answering «discord_client_not_running». A client nobody named is never
-/// opened. Fake automation only: nothing here clicks.
+/// the reviewed send do) instead of answering «discord_client_not_running». Fake automation only: nothing here
+/// clicks.
 /// </summary>
 [TestFixture]
 public sealed class R19ClienteCerradoSeAbreTests
 {
     private static JsonElement Json(string text) => JsonDocument.Parse(text).RootElement.Clone();
-
-    private static string TemporaryStore() =>
-        Path.Combine(Path.GetTempPath(), "baxy-r19-" + Guid.NewGuid().ToString("N"), "recipient-channels.v1.json");
 
     // A client is running only after EnsureClientOpenAsync opened it (or when it starts open).
     private sealed class ClosedClients(DesktopClientReadiness opening, params string[] openAtStart)
@@ -47,21 +44,24 @@ public sealed class R19ClienteCerradoSeAbreTests
         {
             Steps.Add($"resolve:{channel}:{recipient}");
             return ValueTask.FromResult(_running.Contains(channel)
-                ? new DesktopRecipientObservation(true, true, (nint)42, 7, null)
+                ? new DesktopRecipientObservation(true, true, (nint)42, 7, null, recipient)
                 : new DesktopRecipientObservation(false, false, 0, 0, channel + "_client_not_running"));
         }
 
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
-            Steps.Add("send:" + recipient.DisplayName);
+            Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
+
+        public ValueTask<DesktopMessageObservation> DraftAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("no draft in these tests");
     }
 
     private static async Task<(ExternalCapabilityReceipt Receipt, List<string> Steps)> ResolveAsync(
         ClosedClients automation, string channel, string recipient)
     {
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.recipient.resolve",
             Json($$"""{"channel":"{{channel}}","recipient":"{{recipient}}"}"""),
@@ -127,21 +127,6 @@ public sealed class R19ClienteCerradoSeAbreTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("discord_client_not_running"));
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(steps, Is.EqualTo(new[] { "ensure:discord" }));
-        });
-    }
-
-    // Contracaso: no client named and none open: still «not found», and neither client is opened.
-    [Test]
-    public async Task NoClientNamedAndNoneOpenIsNotFoundWithoutOpeningEither()
-    {
-        var automation = new ClosedClients(new DesktopClientReadiness(true, true, null));
-        (ExternalCapabilityReceipt receipt, List<string> steps) = await ResolveAsync(automation, "any", "Ron92");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("recipient_not_found_in_clients"));
-            Assert.That(steps.Where(static step => step.StartsWith("ensure:", StringComparison.Ordinal)), Is.Empty);
         });
     }
 }

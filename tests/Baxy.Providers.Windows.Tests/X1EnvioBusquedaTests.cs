@@ -30,9 +30,7 @@ public sealed class X1EnvioBusquedaTests
 
     private static ClientInteraction Focused(ClientFocus focus) => new(true, false, focus);
 
-    private static bool NamesRon92(string name) =>
-        WindowsDesktopMessagingAutomation.Fold(name).Contains(
-            WindowsDesktopMessagingAutomation.Fold("Ron92"), StringComparison.Ordinal);
+    private static bool NamesRon92(string name) => WindowsDesktopMessagingAutomation.NamesRecipient(name, "Ron92");
 
     // n1: the active result is still the row from before the filter; it names the recipient later, and only then
     // does the wait end (the old fixed 1.2 s clicked the other chat).
@@ -40,12 +38,13 @@ public sealed class X1EnvioBusquedaTests
     public async Task ARecipientRowDrawnLateIsWaitedFor()
     {
         var clock = Stopwatch.StartNew();
-        bool named = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
+        (bool named, string? row) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
             Script(Focused(RecentRow), Focused(RecentRow), Focused(RecentRow), Focused(RecipientRow)),
             NamesRon92, Poll, CancellationToken.None);
         Assert.Multiple(() =>
         {
             Assert.That(named, Is.True);
+            Assert.That(row, Is.EqualTo(RecipientRow.Name));
             Assert.That(clock.Elapsed, Is.LessThan(WindowsDesktopMessagingAutomation.SearchResultBudget));
         });
     }
@@ -55,7 +54,7 @@ public sealed class X1EnvioBusquedaTests
     public async Task ARecipientRowSeenAtOnceEndsBeforeTheOldFixedWait()
     {
         var clock = Stopwatch.StartNew();
-        bool named = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
+        (bool named, _) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
             Script(Focused(RecipientRow)), NamesRon92, Poll, CancellationToken.None);
         Assert.Multiple(() =>
         {
@@ -64,34 +63,36 @@ public sealed class X1EnvioBusquedaTests
         });
     }
 
-    // A row that never names the recipient is waited for the whole budget, never past it.
+    // A row that never names the recipient is waited for the whole budget, never past it, and is said (C3).
     [Test]
     public async Task ARowThatNeverNamesTheRecipientEndsAtTheBudget()
     {
         var clock = Stopwatch.StartNew();
-        bool named = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
+        (bool named, string? row) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
             Script(Focused(RecentRow)), NamesRon92, Poll, CancellationToken.None);
         Assert.Multiple(() =>
         {
             Assert.That(named, Is.False);
+            Assert.That(row, Is.EqualTo(RecentRow.Name));
             Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(WindowsDesktopMessagingAutomation.SearchResultBudget - Slack));
             Assert.That(clock.Elapsed, Is.LessThan(WindowsDesktopMessagingAutomation.SearchResultBudget + TimeSpan.FromSeconds(1)));
         });
     }
 
     // Contracaso: with no result row to read (nothing answers, or the focus stays on the input) the old fixed wait is
-    // kept whole and no longer: the path that sent on redpc is not slowed.
+    // kept whole and no longer, and no row is said (C3: nothing is clicked after it).
     [Test]
     public async Task WithNoRowToReadTheOldFixedWaitIsKept()
     {
         foreach (ClientInteraction read in new[] { ClientInteraction.Unanswered, Focused(SearchInput) })
         {
             var clock = Stopwatch.StartNew();
-            bool named = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
+            (bool named, string? row) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
                 Script(read), NamesRon92, Poll, CancellationToken.None);
             Assert.Multiple(() =>
             {
                 Assert.That(named, Is.False);
+                Assert.That(row, Is.Null);
                 Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(WindowsDesktopMessagingAutomation.UnreadResultWait - Slack));
                 Assert.That(clock.Elapsed, Is.LessThan(WindowsDesktopMessagingAutomation.SearchResultBudget));
             });
@@ -100,8 +101,9 @@ public sealed class X1EnvioBusquedaTests
         Assert.That(WindowsDesktopMessagingAutomation.UnreadResultWait, Is.EqualTo(TimeSpan.FromMilliseconds(1200)));
     }
 
-    // The adapter waits for the named row instead of the fixed 1.2 s, matches rows as it matches the title, and the
-    // resolve never presses Enter in the client's search (the send is message.send's alone: nothing is sent twice).
+    // The adapter waits for the named row instead of the fixed 1.2 s, matches rows as it matches the title, clicks the
+    // row only once it named the recipient (C3), and the resolve never presses Enter in the client's search (the send
+    // is message.send's alone: nothing is sent twice).
     [Test]
     public void TheSearchWaitsForTheNamedRowAndNeverSends()
     {
@@ -114,13 +116,14 @@ public sealed class X1EnvioBusquedaTests
         Assert.That(root, Is.Not.Null, "Baxy.slnx was not found.");
         string source = File.ReadAllText(Path.Combine(
             root!.FullName, "src", "Baxy.Providers.Windows", "External", "DesktopMessagingAdapter.cs"));
-        int typed = source.IndexOf("bool named = await AwaitNamedResultAsync(", StringComparison.Ordinal);
+        int typed = source.IndexOf("(bool named, string? row) = await AwaitNamedResultAsync(", StringComparison.Ordinal);
         int clicked = source.IndexOf("ClickAtRelative(handle, 0.5, DiscordSwitcherFirstRowHeightFraction);", StringComparison.Ordinal);
         Assert.Multiple(() =>
         {
             Assert.That(typed, Is.GreaterThan(0));
             Assert.That(clicked, Is.GreaterThan(typed));
-            Assert.That(source, Does.Contain("Read, name => TitleNamesMatch(name, channel, recipient), InteractionPoll"));
+            Assert.That(source, Does.Contain("Read, name => NamesRecipient(name, recipient), InteractionPoll"));
+            Assert.That(source[typed..clicked], Does.Contain("if (named)"));
             Assert.That(source, Does.Not.Contain("await Task.Delay(1200, cancellationToken)"));
             Assert.That(source[typed..clicked], Does.Not.Contain("VirtualKeyReturn"));
         });

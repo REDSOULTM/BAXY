@@ -1294,17 +1294,15 @@ public static class ProductCatalog
             "message.recipient.resolve",
             Schema(
                 [
-                    // Auditoría semántica 2026-09-20 (REOPEN1993 grupo E, D24): con «any» el
-                    // destinatario se busca en los clientes (el canal recordado, WhatsApp y
-                    // Discord); único → resuelto y recordado; en ninguno o en varios, se dice.
-                    String("channel", values: ["any", "discord", "whatsapp"]),
+                    // Auditoría C11: sin «any»; el proveedor no elige el cliente por su cuenta.
+                    String("channel", values: ["discord", "whatsapp"]),
                     String("recipient", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["channel", "recipient"]),
             OperationRisks.ReadOnly,
             "message.recipient.resolve.session.identity.v1",
             ToolExposure.Public,
-            "Resuelve un único destinatario autenticado (en el cliente nombrado o, con «any», en el que lo tenga: el recordado, WhatsApp o Discord) y emite un identificador revisable."),
+            "Resuelve un único destinatario autenticado en el cliente nombrado (WhatsApp o Discord) y emite un identificador revisable."),
         Descriptor(
             "message.send",
             Schema(
@@ -1329,7 +1327,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "message.send.test.forced.destination.ocr.postread.v1",
             ToolExposure.Public,
-            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al canal seguro del dueño (WhatsApp grupo Música, Discord mensaje directo Ron92, correo a la casilla de pruebas del dueño), nunca al destinatario nombrado; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
+            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al destino de prueba del dueño para ese canal (un chat de WhatsApp, un mensaje directo de Discord o su casilla de correo de pruebas, guardados en sus datos privados), nunca al destinatario nombrado; sin ese destino configurado no envía nada; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
         // Motor general de computer use (plan post-goal Fase 4, D21;
         // documentacion/computer-use/CONTRATO_VISTA_ACCION.md §4). El shell mira la
         // ventana en primer plano (vista compacta), la mente elige UN paso del
