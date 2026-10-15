@@ -19,6 +19,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly Func<bool> _canBeat;
     private readonly Func<IReadOnlyList<ConversationMessage>> _recent;
     private readonly Func<Task<IReadOnlyList<string>>> _remembered;
+    private readonly Func<Task<JsonArray>> _reminders;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly List<string> _events = [];
     private readonly object _gate = new();
@@ -37,8 +38,10 @@ internal sealed class Heartbeat : IAsyncDisposable
         Func<JsonObject, bool, Task> beat,
         Func<bool> canBeat,
         Func<IReadOnlyList<ConversationMessage>> recent,
-        Func<Task<IReadOnlyList<string>>> remembered)
+        Func<Task<IReadOnlyList<string>>> remembered,
+        Func<Task<JsonArray>> reminders)
     {
+        _reminders = reminders;
         _beat = beat;
         _canBeat = canBeat;
         _recent = recent;
@@ -112,6 +115,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             JsonObject moment = HeartbeatMoment.Observe(events, _recent());
             moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
                 .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
+            moment["reminders"] = await _reminders().ConfigureAwait(false);
             try
             {
                 await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty))

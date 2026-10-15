@@ -518,6 +518,56 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
+    /// <summary>
+    /// BAXY's alarms and reminders still to ring, for the heartbeat's moment: the schedule's own list (a read).
+    /// </summary>
+    internal async Task<System.Text.Json.Nodes.JsonArray> PendingRemindersAsync(CancellationToken cancellationToken)
+    {
+        var reminders = new System.Text.Json.Nodes.JsonArray();
+        if (_coreClient is not { IsReady: true } core || _retryableOperations is not { } registry)
+        {
+            return reminders;
+        }
+
+        try
+        {
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation(
+                "schedule.alarms", new System.Text.Json.Nodes.JsonObject { ["action"] = "list", ["limit"] = 10 }));
+            OperationResponse response;
+            try
+            {
+                response = await core.SendOperationAsync(prepared, TimeSpan.FromSeconds(10), cancellationToken);
+            }
+            finally
+            {
+                registry.MarkResolved(prepared);
+            }
+
+            if (response.Result is not { ValueKind: JsonValueKind.Object } result
+                || !result.TryGetProperty("notifications", out JsonElement items)
+                || items.ValueKind != JsonValueKind.Array)
+            {
+                return reminders;
+            }
+
+            foreach (JsonElement item in items.EnumerateArray())
+            {
+                reminders.Add(new System.Text.Json.Nodes.JsonObject
+                {
+                    ["text"] = item.TryGetProperty("title", out JsonElement title) ? title.GetString() : null,
+                    ["due"] = item.TryGetProperty("nextRunLocal", out JsonElement due) ? due.GetString() : null,
+                });
+            }
+        }
+        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+            or TimeoutException or InvalidOperationException or ArgumentException)
+        {
+            // The moment goes without them.
+        }
+
+        return reminders;
+    }
+
     private static async Task InitializeMemorySessionAsync(
         CoreProcessClient client,
         MemoryOperationProtector protector,

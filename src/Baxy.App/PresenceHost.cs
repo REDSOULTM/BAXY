@@ -94,7 +94,8 @@ internal sealed class PresenceHost : IDisposable
                     () => beating.RunBeatAsync(moment, speak, CancellationToken.None)).Task.Unwrap(),
                 () => window.Dispatcher.Invoke(() => beating.CanBeat),
                 () => window.Dispatcher.Invoke(() => (IReadOnlyList<ConversationMessage>)[.. beating.Messages]),
-                () => window.Dispatcher.InvokeAsync(() => beating.RememberedAsync(CancellationToken.None)).Task.Unwrap());
+                () => window.Dispatcher.InvokeAsync(() => beating.RememberedAsync(CancellationToken.None)).Task.Unwrap(),
+                () => window.Dispatcher.InvokeAsync(() => beating.PendingRemindersAsync(CancellationToken.None)).Task.Unwrap());
             _heartbeat.Start();
         }
 
