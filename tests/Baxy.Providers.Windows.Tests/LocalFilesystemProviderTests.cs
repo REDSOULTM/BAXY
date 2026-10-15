@@ -65,23 +65,88 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // file.write (BAXY Renew agent tools): replacing takes the exact current hash and sends the previous version to
+    // the Recycle Bin first (a stand-in bin here; WindowsRecycleBinLiveCheck uses the real one).
     [Test]
-    public void ExistingWriteRequiresExactHashAndReachedStateIsSafe()
+    public void ExistingWriteRequiresExactHashRecyclesThePreviousVersionAndReachedStateIsSafe()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"), bin);
         FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
         FilesystemMutationResult replay = provider.WriteText("dato.txt", "uno", null);
 
         Assert.Multiple(() =>
         {
+            Assert.That(first.PreviousVersionRecycled, Is.False);
             Assert.That(replay.ReachedState, Is.True);
+            Assert.That(replay.PreviousVersionRecycled, Is.False);
+            Assert.That(provider.Hash(replay.ResourceId).Sha256, Is.EqualTo(first.Sha256));
             Assert.That(
                 () => provider.WriteText("dato.txt", "dos", new string('0', 64)),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("version_conflict"));
-            Assert.That(provider.WriteText("dato.txt", "dos", first.Sha256).Sha256,
-                Is.Not.EqualTo(first.Sha256));
+            Assert.That(
+                () => provider.WriteText("dato.txt", "dos", null),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("version_conflict"));
+            Assert.That(bin.Recycled, Is.Empty);
+            FilesystemMutationResult replaced = provider.WriteText("dato.txt", "dos", first.Sha256);
+            Assert.That(replaced.Sha256, Is.Not.EqualTo(first.Sha256));
+            Assert.That(replaced.PreviousVersionRecycled, Is.True);
+            Assert.That(bin.Recycled.Select(File.ReadAllText), Is.EqualTo(new[] { "uno" }));
+            Assert.That(File.ReadAllText(Path.Combine(temporary.Path, "sandbox", "dato.txt")), Is.EqualTo("dos"));
+        });
+    }
+
+    [Test]
+    public void AReplaceTheBinCannotTakeChangesNothing()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"), accepts: false);
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                () => provider.WriteText("dato.txt", "dos", first.Sha256),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("previous_version_not_recycled"));
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "dato.txt")), Is.EqualTo("uno"));
+            Assert.That(Directory.GetFiles(sandbox), Is.EqualTo(new[] { Path.Combine(sandbox, "dato.txt") }));
+        });
+    }
+
+    // file.write append (it absorbed filesystem.sandbox.append.named): what is there stays, the text goes at the end
+    // in the file's own encoding, no hash is needed (a given one must match), and a missing file is created.
+    [Test]
+    public void AppendKeepsWhatIsThereInTheFilesEncodingAndCreatesAMissingFile()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        File.WriteAllText(Path.Combine(sandbox, "lista.txt"), "pan\n", new UnicodeEncoding(false, true));
+
+        FilesystemMutationResult appended = provider.WriteText("lista.txt", "leche\n", null, append: true);
+        FilesystemMutationResult created = provider.WriteText("logs/nuevo.txt", "uno\n", null, append: true);
+        FilesystemMutationResult again = provider.WriteText("logs/nuevo.txt", "dos\n", created.Sha256, append: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "lista.txt"), Encoding.Unicode), Is.EqualTo("pan\nleche\n"));
+            Assert.That(File.ReadAllBytes(Path.Combine(sandbox, "lista.txt"))[..2], Is.EqualTo(new byte[] { 0xFF, 0xFE }));
+            Assert.That(appended.PreviousVersionRecycled, Is.False);
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "logs", "nuevo.txt")), Is.EqualTo("uno\ndos\n"));
+            Assert.That(again.ReachedState, Is.False);
+            Assert.That(
+                () => provider.WriteText("logs/nuevo.txt", "tres\n", created.Sha256, append: true),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("version_conflict"));
+            Assert.That(provider.WriteText("logs/nuevo.txt", "", null, append: true).ReachedState, Is.True);
+            Assert.That(bin.Recycled, Is.Empty);
         });
     }
 

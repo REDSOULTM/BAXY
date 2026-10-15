@@ -13,6 +13,7 @@ internal static class FilesystemHandlers
         new FilesystemHandler("backup.list", provider),
         new FilesystemHandler("backup.restore", provider),
         new FilesystemHandler("backup.verify", provider),
+        new FilesystemHandler("file.write", provider),
         new FilesystemHandler("filesystem.copy", provider),
         new FilesystemHandler("filesystem.create.directory", provider),
         new FilesystemHandler("filesystem.hash", provider),
@@ -23,7 +24,6 @@ internal static class FilesystemHandlers
         new FilesystemHandler("filesystem.trash.commit", provider),
         new FilesystemHandler("filesystem.trash.prepare", provider),
         new FilesystemHandler("filesystem.trash.restore", provider),
-        new FilesystemHandler("filesystem.write.text", provider),
     ];
 }
 
@@ -70,11 +70,12 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                         RequiredString(arguments, "relativePath"),
                         OptionalString(arguments, "folder")),
                     OptionalString(arguments, "folder")),
-                "filesystem.write.text" => VerifiedMutation(_provider.WriteText(
+                "file.write" => VerifiedMutation(_provider.WriteText(
                     RequiredString(arguments, "relativePath"),
                     arguments.GetProperty("text").GetString()!,
                     OptionalString(arguments, "expectedSha256"),
-                    OptionalString(arguments, "folder")),
+                    OptionalString(arguments, "folder"),
+                    OptionalBoolean(arguments, "append")),
                     OptionalString(arguments, "folder")),
                 "filesystem.copy" => VerifiedMutation(TransferResult(arguments, move: false)),
                 "filesystem.move" => VerifiedMutation(TransferResult(arguments, move: true)),
@@ -140,6 +141,9 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
 
     private static int? OptionalInt(JsonElement arguments, string name) =>
         arguments.TryGetProperty(name, out JsonElement value) ? value.GetInt32() : null;
+
+    private static bool OptionalBoolean(JsonElement arguments, string name) =>
+        arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.True;
 }
 
 internal static class FilesystemResultJson
@@ -172,6 +176,8 @@ internal static class FilesystemResultJson
         writer.WriteNumber("size", result.Size);
         if (result.Sha256 is null) writer.WriteNull("sha256"); else writer.WriteString("sha256", result.Sha256);
         writer.WriteBoolean("reachedState", result.ReachedState);
+        // BAXY Renew (file.write): whether the version it replaced went to the Recycle Bin, as observed.
+        if (result.PreviousVersionRecycled is bool recycled) writer.WriteBoolean("previousVersionRecycled", recycled);
         if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
     });
 

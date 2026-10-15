@@ -39,7 +39,7 @@ public sealed class KnownTextAndExplorerCountTests
     }
 
     [Test]
-    public async Task ATextFileInASubfolderIsReadWithItsBomHonouredAndTruncated()
+    public async Task ATextFileInASubfolderIsReadWithItsBomHonouredByNameOrRelativePath()
     {
         using TemporaryDirectory temporary = new();
         string desktop = Path.Combine(temporary.Path, "desktop");
@@ -52,34 +52,136 @@ public sealed class KnownTextAndExplorerCountTests
         var adapter = new WindowsKnownFileAdapter(temporary.Path, roots);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "document.text.read",
+            "file.read",
             Json("""{"folder":"desktop","subdirectory":"ETC\\Programacion\\Probando Gemma 4\\gemma4_agent","fileName":"ROADMAP.md","maximumCharacters":200}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt whole = await adapter.InvokeAsync(
-            "document.text.read",
+            "file.read",
             Json("""{"folder":"desktop","fileName":"roadmap.md"}"""),
             CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await adapter.InvokeAsync(
+            "file.read",
+            Json("""{"folder":"desktop","fileName":"ETC/Programacion/Probando Gemma 4/gemma4_agent/ROADMAP.md"}"""),
+            CancellationToken.None);
         ExternalCapabilityReceipt binary = await adapter.InvokeAsync(
-            "document.text.read",
+            "file.read",
             Json("""{"folder":"desktop","fileName":"binario.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
-            "document.text.read",
+            "file.read",
             Json("""{"folder":"desktop","fileName":"nada.md"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt escaping = await adapter.InvokeAsync(
+            "file.read",
+            Json("""{"folder":"desktop","fileName":"..\\secreto.txt"}"""),
             CancellationToken.None);
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
         Assert.Multiple(() =>
         {
             Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.Result?.GetProperty("kind").GetString(), Is.EqualTo("text"));
             Assert.That(receipt.Result?.GetProperty("text").GetString(), Is.EqualTo(content));
             Assert.That(receipt.Result?.GetProperty("lines").GetInt32(), Is.EqualTo(5));
-            Assert.That(receipt.Result?.GetProperty("truncated").GetBoolean(), Is.False);
+            Assert.That(receipt.Result?.GetProperty("characters").GetInt32(), Is.EqualTo(content.Length));
+            Assert.That(receipt.Result?.GetProperty("hasMore").GetBoolean(), Is.False);
+            Assert.That(receipt.Result?.TryGetProperty("nextOffset", out _), Is.False);
             Assert.That(receipt.Result?.GetProperty("reviewLabel").GetString(), Is.EqualTo("ROADMAP.md"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("gemma4_agent"));
             Assert.That(whole.Verified, Is.True, whole.ErrorCode);
+            Assert.That(byPath.Verified, Is.True, byPath.ErrorCode);
+            Assert.That(byPath.Result?.GetProperty("text").GetString(), Is.EqualTo(content));
             Assert.That(binary.ErrorCode, Is.EqualTo("known_file_not_text"));
             Assert.That(missing.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(escaping.ErrorCode, Is.EqualTo("known_file_name_invalid"));
+        });
+    }
+
+    // BAXY Renew agent tools (2026-10-15): a long file is read in pages; each says the total, where it started and
+    // where the next one starts, and the pages put together are the file.
+    [Test]
+    public async Task ALongTextFileIsReadInPagesThatTogetherAreTheWholeFile()
+    {
+        using TemporaryDirectory temporary = new();
+        string documents = Path.Combine(temporary.Path, "documents");
+        Directory.CreateDirectory(documents);
+        string content = string.Concat(Enumerable.Range(0, 120).Select(index => $"línea {index:D3} del informe\n"));
+        await File.WriteAllTextAsync(Path.Combine(documents, "informe.txt"), content, new UTF8Encoding(false));
+        var adapter = new WindowsKnownFileAdapter(
+            temporary.Path, new Dictionary<string, string[]> { ["documents"] = [documents] });
+
+        var pages = new List<JsonElement>();
+        int offset = 0;
+        for (int round = 0; round < 10; round++)
+        {
+            ExternalCapabilityReceipt page = await adapter.InvokeAsync(
+                "file.read",
+                Json($$"""{"folder":"documents","fileName":"informe.txt","offset":{{offset}},"maximumCharacters":1000}"""),
+                CancellationToken.None);
+            Assert.That(page.Verified, Is.True, page.ErrorCode);
+            pages.Add(page.Result!.Value);
+            if (!page.Result.Value.GetProperty("hasMore").GetBoolean()) break;
+            offset = page.Result.Value.GetProperty("nextOffset").GetInt32();
+        }
+        ExternalCapabilityReceipt past = await adapter.InvokeAsync(
+            "file.read",
+            Json("""{"folder":"documents","fileName":"informe.txt","offset":999999}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pages, Has.Count.EqualTo((content.Length + 999) / 1000));
+            Assert.That(string.Concat(pages.Select(page => page.GetProperty("text").GetString())), Is.EqualTo(content));
+            Assert.That(pages.Select(page => page.GetProperty("characters").GetInt32()), Has.All.EqualTo(content.Length));
+            Assert.That(pages[1].GetProperty("offset").GetInt32(), Is.EqualTo(1000));
+            Assert.That(pages[0].GetProperty("returnedCharacters").GetInt32(), Is.EqualTo(1000));
+            Assert.That(past.Verified, Is.True, past.ErrorCode);
+            Assert.That(past.Result?.GetProperty("text").GetString(), Is.Empty);
+            Assert.That(past.Result?.GetProperty("hasMore").GetBoolean(), Is.False);
+        });
+    }
+
+    // A UTF-16 file (what Windows PowerShell 5's «>» writes) is text: its NUL bytes are the encoding, not binary. Two
+    // files with the same name are refused with both places, so the next call can name one by its relative path.
+    [Test]
+    public async Task AUtf16FileIsTextAndTwoFilesWithOneNameAreRefusedWithTheirPlaces()
+    {
+        using TemporaryDirectory temporary = new();
+        string desktop = Path.Combine(temporary.Path, "desktop");
+        string documents = Path.Combine(temporary.Path, "documents");
+        Directory.CreateDirectory(Path.Combine(desktop, "viejo"));
+        Directory.CreateDirectory(documents);
+        await File.WriteAllTextAsync(Path.Combine(desktop, "procesos.txt"), "Name  Id\nbaxy  42\n", new UnicodeEncoding(false, true));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "viejo", "notas.txt"), "viejas");
+        await File.WriteAllTextAsync(Path.Combine(documents, "notas.txt"), "nuevas");
+        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        {
+            ["desktop"] = [desktop],
+            ["documents"] = [documents],
+        });
+
+        ExternalCapabilityReceipt utf16 = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"desktop","fileName":"procesos.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt twice = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt stem = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"documents","fileName":"notas"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt named = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"desktop","fileName":"viejo\\notas.txt"}"""), CancellationToken.None);
+
+        Assert.That(utf16.Verified, Is.True, utf16.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(utf16.Result?.GetProperty("text").GetString(), Is.EqualTo("Name  Id\nbaxy  42\n"));
+            Assert.That(twice.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(twice.Result?.GetProperty("candidates").EnumerateArray()
+                    .Select(candidate => candidate.GetProperty("folder").GetString() + ":"
+                        + candidate.GetProperty("relativePath").GetString()),
+                Is.EquivalentTo(new[] { "desktop:" + Path.Combine("viejo", "notas.txt"), "documents:notas.txt" }));
+            Assert.That(stem.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(stem.Result?.GetProperty("candidates")[0].GetProperty("name").GetString(),
+                Is.EqualTo("notas.txt"));
+            Assert.That(named.Result?.GetProperty("text").GetString(), Is.EqualTo("viejas"));
         });
     }
 

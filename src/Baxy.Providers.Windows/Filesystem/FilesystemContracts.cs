@@ -24,7 +24,8 @@ public sealed record FilesystemMutationResult(
     string Kind,
     long Size,
     string? Sha256,
-    bool ReachedState);
+    bool ReachedState,
+    bool? PreviousVersionRecycled = null);
 
 public sealed record FilesystemTrashPreparation(
     string TrashId,
@@ -54,10 +55,6 @@ public interface IFilesystemProvider
     FilesystemTextResult ReadText(string resourceId, int maximumBytes);
     FilesystemEntry Hash(string resourceId);
     FilesystemMutationResult CreateDirectory(string relativePath);
-    FilesystemMutationResult WriteText(
-        string relativePath,
-        string text,
-        string? expectedSha256);
 
     /// <summary>
     /// Same contract rooted at a known folder ("desktop", "documents",
@@ -67,12 +64,16 @@ public interface IFilesystemProvider
     FilesystemMutationResult CreateDirectory(string relativePath, string? folder) =>
         folder is null ? CreateDirectory(relativePath) : throw new FilesystemProviderException("known_folder_unsupported");
 
+    /// <summary>
+    /// Writes a text file in the sandbox or in a known folder: replacing an existing one takes its current SHA-256 and
+    /// sends its previous version to the Recycle Bin first; appending keeps what is there.
+    /// </summary>
     FilesystemMutationResult WriteText(
         string relativePath,
         string text,
         string? expectedSha256,
-        string? folder) =>
-        folder is null ? WriteText(relativePath, text, expectedSha256) : throw new FilesystemProviderException("known_folder_unsupported");
+        string? folder = null,
+        bool append = false);
     FilesystemMutationResult Transfer(
         string resourceId,
         string destinationRelativePath,

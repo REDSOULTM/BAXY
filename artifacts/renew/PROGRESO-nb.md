@@ -170,8 +170,27 @@ Investigación y propuesta en `investigacion/herramientas-agente.md`.
     porque para eso está el modo. Por eso no se preguntó al dueño.
   - Pruebas: `RiskPolicyShellTests` (9 comandos de solo lectura corren directo; 24 de escritura, borrado, envío o
     código piden confirmación; el bypass corre sin preguntar) y `WebFetchReadsAPublicPageAsText`.
-- **Diferido:** el plan propio (Qwen3.5-4B saca 17,6 en DeepPlanning y el bucle es de 6 pasos). `file.edit` y unir
-  `reminder.*` con `notification.*` en `schedule` esperan la decisión del líder.
+- **Herramientas de archivo (rama `nb-file-tools`): seis operaciones pasan a cuatro.**
+  - `file.find` sustituye a `filesystem.known.list` y `.search`: sin `query` ni `content` lista el primer nivel; con
+    `query` busca por nombre (parte del nombre o patrón `*`/`?`; se retiró la lista de palabras `word`/`spreadsheet`
+    que interpretaba la consulta); con `content` busca dentro de los archivos de texto (2 000 archivos, 1 MiB por
+    archivo, sin binarios ni puntos de reanálisis) y da la primera línea. Cada archivo trae su `relativePath`.
+  - `file.read` sustituye a `document.text.read` y `document.pdf.read`: nombre o ruta relativa, `offset` y
+    `maximumCharacters` (4 000 por defecto para los dos tipos, porque la mente corta la observación a 6 000);
+    dice `kind`, `characters`, `hasMore` y `nextOffset` antes del texto. Un UTF-16 con BOM ya es texto (antes el
+    sondeo de bytes de control lo daba por binario). Sin coincidencia o con dos, el fallo trae los candidatos.
+  - `file.write` sustituye a `filesystem.write.text` y absorbe `filesystem.sandbox.append.named` (`append`): al
+    reemplazar, la versión anterior va antes a la Papelera de reciclaje (`WindowsRecycleBin`, SHFileOperation con
+    deshacer; guarda una copia hasta ver crecer la papelera de esa unidad y la repone si no creció) y el resultado
+    dice `previousVersionRecycled`. Se arregló `Issue(path)` con la raíz del sandbox en la rama «mismo contenido»
+    (con el Escritorio en D: fallaba con `path_not_found`).
+  - `file.edit` (nueva): reemplazo exacto, una vez o todas con `replaceAll`; con 0 o varias sin pedirlo no cambia
+    nada y dice cuántas. Conserva codificación y BOM, rechaza un ANSI que no es UTF-8 válido, recicla la versión
+    anterior y relee (sha256, apariciones).
+  - Se quedan `filesystem.list`, `.search` y `.read.text`: dan los `resourceId` del sandbox que usan copy, move,
+    trash y hash, y `file.find`/`file.read` no cubren el sandbox.
+- **Diferido:** el plan propio (Qwen3.5-4B saca 17,6 en DeepPlanning y el bucle es de 6 pasos). Unir `reminder.*` con
+  `notification.*` en `schedule` lo lleva otra sesión.
 
 ## Cómo se exponen las herramientas: cuatro brazos
 

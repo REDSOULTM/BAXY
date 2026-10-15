@@ -381,19 +381,6 @@ public static class ProductCatalog
             "display.status.windows.display.devices.read.v1",
             ToolExposure.Public,
             "Lee los monitores conectados (cantidad, resolución y frecuencia de refresco) mediante la API de pantalla de Windows; sin efecto."),
-        Descriptor(
-            "document.pdf.read",
-            Schema(
-                [
-                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
-                    Integer("maximumCharacters", 200, 200_000),
-                ],
-                ["fileName", "folder"]),
-            OperationRisks.ReadOnly,
-            "document.pdf.read.windows.known.pypdf.text.v1",
-            ToolExposure.Public,
-            "Localiza un PDF nombrado de forma única en las carpetas conocidas de Windows y extrae el texto que ya contiene (sin OCR) para resumirlo o citarlo; sin efecto."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0188 «Haz un powerpoint hablando
         // de amor de 6 diapositivas», D11): la presentación se escribe como paquete
         // Open XML, una diapositiva por entrada («Título\nviñeta\nviñeta»), en una
@@ -417,23 +404,6 @@ public static class ProductCatalog
             "document.presentation.create.openxml.slidecount.postread.v1",
             ToolExposure.Public,
             "Crea una presentación .pptx con el título dado y una diapositiva por entrada (primera línea título, las demás viñetas) en una carpeta conocida y verifica cuántas diapositivas tiene el paquete escrito."),
-        // Auditoría semántica 2026-09-20 (REOPEN1957 H0299, ruta pegada de un
-        // ROADMAP.md, D24): un archivo de texto de una carpeta conocida se lee para
-        // decir de qué trata; fuera de esas carpetas no es accesible y se dice.
-        Descriptor(
-            "document.text.read",
-            Schema(
-                [
-                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
-                    Integer("maximumCharacters", 200, 200_000),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
-                ],
-                ["fileName", "folder"]),
-            OperationRisks.ReadOnly,
-            "document.text.read.windows.known.utf8.text.v1",
-            ToolExposure.Public,
-            "Localiza un archivo de texto (txt, md, código, json…) nombrado de forma única en una carpeta conocida de Windows (o en la subcarpeta indicada) y devuelve su comienzo para presentar su tema o citarlo; sin efecto."),
         Descriptor(
             "email.latest.read",
             EmptySchema(),
@@ -480,6 +450,43 @@ public static class ProductCatalog
             "file.compress.zip.archive.postread.v1",
             ToolExposure.Public,
             "Comprime un archivo o una carpeta de una carpeta conocida en un zip con el mismo nombre al lado y verifica que el zip existe y tiene entradas."),
+        // BAXY Renew, herramientas de agente (2026-10-15): editar, buscar, leer y escribir archivos como las
+        // herramientas edit/find/read/write de los agentes (OpenCode, OpenClaw, Claude Code). file.find sustituye a
+        // filesystem.known.list y .search; file.read a document.text.read y document.pdf.read; file.write a
+        // filesystem.write.text y filesystem.sandbox.append.named. Lo que reemplazan file.write y file.edit va antes
+        // a la Papelera de reciclaje: el cambio queda recuperable y no pide confirmación (decisión 8 del dueño).
+        Descriptor(
+            "file.edit",
+            Schema(
+                [
+                    String("fileName", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    String("newText", maximumUtf8Bytes: 65_536),
+                    String("oldText", maximumUtf8Bytes: 65_536),
+                    Boolean("replaceAll"),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["fileName", "folder", "newText", "oldText"]),
+            OperationRisks.LowReversible,
+            "file.edit.windows.known.exact.replace.recycle.postread.v1",
+            ToolExposure.Public,
+            "Reemplaza un texto exacto en un archivo de texto nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo."),
+        Descriptor(
+            "file.find",
+            Schema(
+                [
+                    String("content", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    Integer("limit", 1, 100),
+                    String("order", values: ["name", "recent"]),
+                    String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["folder"]),
+            OperationRisks.ReadOnly,
+            "file.find.windows.known.name.content.bounded.v1",
+            ToolExposure.Public,
+            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto."),
         Descriptor(
             "file.open",
             Schema(
@@ -498,6 +505,39 @@ public static class ProductCatalog
             "file.open.shell.window.process.postread.v1",
             ToolExposure.Public,
             "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece."),
+        Descriptor(
+            "file.read",
+            Schema(
+                [
+                    String("fileName", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    Integer("maximumCharacters", 200, 200_000),
+                    Integer("offset", 0, 100_000_000),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["fileName", "folder"]),
+            OperationRisks.ReadOnly,
+            "file.read.windows.known.text.pdf.paged.v1",
+            ToolExposure.Public,
+            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR); dice qué tipo leyó, el largo total y si queda más; sin efecto."),
+        Descriptor(
+            "file.write",
+            Schema(
+                [
+                    Boolean("append"),
+                    String("expectedSha256", types: NullableString, maximumLength: 64),
+                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
+                    // folder may be the root instead of the sandbox; an existing file
+                    // there is never overwritten without its current hash.
+                    String("folder", values: ["desktop", "documents", "downloads"]),
+                    String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                    String("text", maximumUtf8Bytes: 1_048_576),
+                ],
+                ["relativePath", "text"]),
+            OperationRisks.LowReversible,
+            "file.write.sandbox.known.cas.recycle.hash.v1",
+            ToolExposure.Public,
+            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -563,33 +603,6 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos."),
         Descriptor(
-            "filesystem.known.list",
-            Schema(
-                [
-                    String("folder", values: ["desktop", "documents", "downloads"]),
-                    Integer("limit", 1, 100),
-                    String("order", values: ["name", "recent"]),
-                ],
-                ["folder"]),
-            OperationRisks.ReadOnly,
-            "filesystem.known.list.windows.toplevel.identities.v1",
-            ToolExposure.Public,
-            "Lista las entradas de primer nivel (archivos y carpetas) de una carpeta conocida de Windows sin revelar rutas."),
-        Descriptor(
-            "filesystem.known.search",
-            Schema(
-                [
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
-                    Integer("limit", 1, 100),
-                    String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
-                ],
-                ["folder", "query"]),
-            OperationRisks.ReadOnly,
-            "filesystem.known.search.windows.identities.v1",
-            ToolExposure.Public,
-            "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas."),
-        Descriptor(
             "filesystem.known.trash.named",
             Schema(
                 [
@@ -639,18 +652,6 @@ public static class ProductCatalog
             "filesystem.read.text.sandbox.hash.v1",
             ToolExposure.Public,
             "Lee UTF-8 acotado desde una identidad revalidada y devuelve su hash."),
-        Descriptor(
-            "filesystem.sandbox.append.named",
-            Schema(
-                [
-                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("text", maximumUtf8Bytes: 65_536),
-                ],
-                ["fileName", "text"]),
-            OperationRisks.LowReversible,
-            "filesystem.sandbox.append.named.hash.postread.v1",
-            ToolExposure.Public,
-            "Añade texto a un archivo de nombre único del sandbox y verifica bytes y hashes."),
         Descriptor(
             "filesystem.sandbox.diff.named",
             Schema(
@@ -713,23 +714,6 @@ public static class ProductCatalog
             "filesystem.trash.restore.sandbox.postread.v1",
             ToolExposure.Public,
             "Restaura un recurso de la papelera privada si su destino original sigue libre."),
-        Descriptor(
-            "filesystem.write.text",
-            Schema(
-                [
-                    String("expectedSha256", types: NullableString, maximumLength: 64),
-                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
-                    // folder may be the root instead of the sandbox; an existing file
-                    // there is never overwritten without its current hash.
-                    String("folder", values: ["desktop", "documents", "downloads"]),
-                    String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                    String("text", maximumUtf8Bytes: 1_048_576),
-                ],
-                ["relativePath", "text"]),
-            OperationRisks.LowReversible,
-            "filesystem.write.text.sandbox.cas.hash.v1",
-            ToolExposure.Public,
-            "Escribe UTF-8 atómicamente; reemplazar exige el SHA-256 exacto observado antes."),
         Descriptor(
             "game.catalog.list",
             Schema(
