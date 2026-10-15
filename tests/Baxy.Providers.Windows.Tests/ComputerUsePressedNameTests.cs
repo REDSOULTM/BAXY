@@ -269,7 +269,7 @@ public sealed class ComputerUsePressedNameTests
             if($errors.Count -gt 0){ throw 'worker does not parse' }
             $wanted=@('Get-AskFolded','Test-AsksMore','Test-Asks','Get-AskAliases','Note-AskingName','Get-AskingName',
                       'Test-PressesItself','Format-Name','Get-Cut','Get-Name','Get-Prop','Get-ReadableId','Get-FallbackName',
-                      'Get-ShownName','Test-NameMatch','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
+                      'Get-ShownName','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
                       'Test-SystemMenu','Test-SystemMenuChain','Get-LookupScope','Test-OffscreenUsable','Get-Rect')
             $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $wanted -contains $node.Name },$true))
             if($found.Count -ne $wanted.Count){ throw 'worker functions missing' }

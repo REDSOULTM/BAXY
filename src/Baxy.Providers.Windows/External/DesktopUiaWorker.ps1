@@ -13,7 +13,7 @@
 #   {"cmd":"view","hwnd":123,"limit":60}
 #   {"cmd":"signature","hwnd":123,"limit":60,"budgetMs":1200}   (tipo y nombre de los primeros controles y si hay texto
 #      seleccionado, acotado en tiempo; no toca la ultima vista: Do-Signature)
-#   {"cmd":"click","hwnd":123,"aliases":["Biblioteca","Library"],"controlId":"42.1837.4"}
+#   {"cmd":"click","hwnd":123,"aliases":["Biblioteca"],"controlId":"42.1837.4"}
 #      (con «manner»: open | menu | double, ese control de la vista abierto por su flecha, su menu contextual o un doble
 #      clic, solo por su identidad: Invoke-MannerControl)
 #   {"cmd":"at","hwnd":123,"x":640,"y":380,"aliases":["Biblioteca"]}   (el control con patron del punto que la etiqueta nombra, sin raton;
@@ -1129,8 +1129,11 @@ function Send-Line($object){
   [Console]::Out.WriteLine($line)
   [Console]::Out.Flush()
 }
-function Get-Root([long]$hwnd){
-  if($hwnd -le 0){ $handle=[BaxyUiaWorkerNative]::GetForegroundWindow() } else { $handle=[IntPtr]$hwnd }
+# Auditoria C8: la ventana que nombra la peticion. Sin una (hwnd 0), solo una lectura (-Front: view, signature, find,
+# interaction, unnamed) lee la del frente; un comando que actua (click, at, field, focus, scroll, reveal) no tiene
+# raiz y responde active_window_not_found: el adaptador ya resolvio la ventana objetivo antes de pedirlo.
+function Get-Root([long]$hwnd,[switch]$Front){
+  if($hwnd -gt 0){ $handle=[IntPtr]$hwnd } elseif($Front){ $handle=[BaxyUiaWorkerNative]::GetForegroundWindow() } else { return $null }
   if($handle -eq [IntPtr]::Zero){ return $null }
   return @{ hwnd=$handle; root=$AE::FromHandle($handle) }
 }
@@ -1295,13 +1298,23 @@ function Get-Rect($el){
 function Get-Id($el){
   try { return (($el.GetRuntimeId() | ForEach-Object { [string]$_ }) -join '.') } catch { return '' }
 }
+# Auditoria P3: la etiqueta nombra un control solo si es su nombre, plegado como el Fold del adaptador (sin tildes, en
+# minusculas, los espacios juntos; Get-LabelFolded). Ni alias, ni contener, ni erratas.
 function Test-NameMatch([string]$name,[string[]]$aliases){
+  $seen=Get-LabelFolded $name
+  if($seen.Length -eq 0){ return $false }
   foreach($alias in $aliases){
-    if([string]::Equals($alias,$name,[StringComparison]::OrdinalIgnoreCase)){ return $true }
+    if((Get-LabelFolded $alias) -ceq $seen){ return $true }
     # Un nombre largo se muestra recortado (Format-Name): la etiqueta que lo da entero (Get-AskingName) es el mismo.
-    if($alias.Length -gt 80 -and [string]::Equals((Format-Name $alias),$name,[StringComparison]::OrdinalIgnoreCase)){ return $true }
+    if($alias.Length -gt 80 -and (Get-LabelFolded (Format-Name $alias)) -ceq $seen){ return $true }
   }
   return $false
+}
+function Get-LabelFolded([string]$text){
+  if([string]::IsNullOrWhiteSpace($text)){ return '' }
+  # Un par sustituto suelto (un emoji cortado) no se normaliza: se compara tal cual.
+  $plain=$text; try { $plain=$text.Normalize([Text.NormalizationForm]::FormD) -replace '\p{Mn}','' } catch {}
+  return ([regex]::Replace($plain.ToLowerInvariant(),'\s+',' ')).Trim()
 }
 # Plegado: sin acentos, en minusculas, solo letras y digitos separados por un espacio.
 function Get-Folded([string]$text){
@@ -1309,10 +1322,10 @@ function Get-Folded([string]$text){
   $plain=$text.Normalize([Text.NormalizationForm]::FormD) -replace '\p{Mn}',''
   return (($plain.ToLowerInvariant() -replace '[^\p{L}\p{N}]+',' ').Trim())
 }
-# El nombre lleva la etiqueta como palabras enteras: «Sitio» nombra la pestana
-# «Un titulo largo - Sitio». Solo cuenta cuando ningun nombre es igual a la etiqueta.
-# A long title names its item by a part of it («... - YouTube»): only items that carry a title (a tab, a list or tree
-# row, a link), never a pane or a document whose name is the whole page (measured on a CEF window).
+# El nombre lleva la etiqueta como palabras enteras: «Sitio» esta en la pestana «Un titulo largo - Sitio». Auditoria
+# C10: ya no se pulsa por eso; cuando ningun nombre es igual a la etiqueta, esos nombres vuelven como candidatos para
+# que el modelo nombre uno tal cual. Solo items que llevan un titulo (una pestana, una fila de lista o arbol, un
+# enlace), nunca un panel o un documento cuyo nombre es la pagina entera (medido en una ventana CEF).
 $script:TitledKinds=@('ControlType.TabItem','ControlType.ListItem','ControlType.TreeItem','ControlType.Hyperlink')
 function Test-ItemHolds($el,[string[]]$aliases){
   # Del arbol con cache (una llamada por nodo menos); fuera de ella, su valor actual.
@@ -2558,7 +2571,7 @@ function Select-BodySurface($surfaces,$primary){
 }
 function Do-View($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
   $root=$target.root
   if($null -eq $root){ return @{ ok=$false; error='visible_controls_root_unavailable' } }
@@ -2717,7 +2730,7 @@ function Do-Signature($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
   $budget=[int]$request.budgetMs; if($budget -lt 100){$budget=100}; if($budget -gt 4000){$budget=4000}
   if([long]$request.hwnd -le 0){ return @{ ok=$false; error='active_window_not_found' } }
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='visible_controls_root_unavailable' } }
   $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
   $queue=New-Object System.Collections.Generic.Queue[object]
@@ -3087,10 +3100,11 @@ function Get-LookupScope($root,$offscreenBox){
 function Test-NamedLookupCut([string]$controlId,[bool]$partial){
   return ($partial -and [string]::IsNullOrWhiteSpace($controlId))
 }
+# Los nombres que solo llevan la etiqueta, vistos por la ultima busqueda por nombre de un clic (auditoria C10).
+$script:NamedCandidates=@()
 function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
   $script:NamedLineage=@()
   $matches=@()
-  $holding=@()
   $all=@(Get-LookupScope $root $offscreenBox)
   $script:TreeSize=$all.Count
   $askAliases=$(if($null -ne $script:AskSearch){ Get-AskAliases $aliases } else { $null })
@@ -3102,7 +3116,7 @@ function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
       $name=(Get-ShownName $item).name
       $exact=Test-NameMatch $name $aliases
       if($exact){ if(-not (Test-SystemMenu $item)){ $matches+=@($item) } }
-      elseif(Test-ItemHolds $item $aliases){ if(-not (Test-SystemMenu $item)){ $holding+=@($item) } }
+      elseif((Test-ItemHolds $item $aliases) -and $script:NamedCandidates -notcontains $name -and -not (Test-SystemMenu $item)){ $script:NamedCandidates+=@($name) }
       if(-not $exact -and $null -ne $askAliases -and $script:AskingName.Length -eq 0){
         $raw=[string]$item.Cached.Name
         foreach($alias in $askAliases){ if($compare.IndexOf($raw,$alias,$options) -ge 0){ Note-AskingName $raw $alias; break } }
@@ -3123,8 +3137,7 @@ function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
     $pressable=Select-PressableOne @($matches | ForEach-Object { Get-ClickFacts $_ })
     if($pressable -ge 0){ return @($matches[$pressable]) }
   }
-  if($matches.Count -gt 0){ return $matches }
-  return $holding
+  return $matches
 }
 # La posicion del unico que tiene un patron de pulsar, o -1 (ninguno, o mas de uno). Revision de la ronda 20b (hallazgo
 # 4): un campo que toma texto (Edit o Document con valor escribible, la via 'target' de Select-ClickMethods) y un
@@ -3493,6 +3506,7 @@ function Do-ClickJudged($request){
   $matches=@()
   $script:NamedLineage=@()
   $script:LineageToggles=@()
+  $script:NamedCandidates=@()
   if($controlId.StartsWith('hmenu.')){
     if($manner.Length -gt 0){ return (Click-Result $false $false 'visible_click_argument_invalid' '' $controlId $false $false $false 'MenuItem') }
     return (Press-MenuCommand $target $aliases $controlId)
@@ -3501,7 +3515,7 @@ function Do-ClickJudged($request){
     $byId=Find-ById $root $controlId
     if($null -eq $byId -and $script:LookupPartial){ return (Click-Result $false $false 'visible_lookup_timeout' '' $controlId $false $false $false '') }
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
-    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId).name $aliases) -and -not (Test-ItemHolds $byId $aliases)){
+    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId).name $aliases)){
       return (Click-Result $false $false 'visible_control_label_mismatch' (Get-ShownName $byId).name $controlId $false $false $false '')
     }
     $matches=@($byId)
@@ -3550,6 +3564,8 @@ function Do-ClickJudged($request){
     }
     $missing=Click-Result $false $false 'visible_button_not_found' (Get-Name $root) '' $false $false $false ''
     if($controlId.Length -eq 0){ $missing.treeSize=$script:TreeSize }
+    # Auditoria C10: los items cuyo titulo lleva la etiqueta, sin pulsar ninguno (Find-Named).
+    if($script:NamedCandidates.Count -gt 0){ $missing.candidates=@($script:NamedCandidates | Select-Object -First 10) }
     return $missing
   }
   if($matches.Count -ne 1){ return (Click-Result $false $false 'visible_button_ambiguous' '' '' $false $false $false '') }
@@ -3609,7 +3625,9 @@ function Do-ClickJudged($request){
   }
   return $pressed
 }
-# El nombre de un control o el texto de dentro lleva la etiqueta: igual, o como palabras enteras.
+# El nombre de un control o el texto de dentro lleva la etiqueta: igual, o como palabras enteras. Auditoria P3: aqui no
+# se elige un control por su nombre; el punto es donde el OCR o la vision leyeron la etiqueta exacta, y esto solo
+# comprueba que lo que hay en ese punto la lleva (una fila de chat «Juan Perez 12:30 Hola» donde se leyo «Juan Perez»).
 function Test-NamesLabel($names,[string[]]$aliases){
   foreach($name in @($names)){
     $text=[string]$name
@@ -3829,22 +3847,21 @@ function Do-Scroll($request){
 # nombre, se realiza (VirtualizedItemPattern) y se trae; si tampoco, el contenedor desplazable mas grande baja por su
 # ScrollPattern, una pagina a la vez, releyendo hasta verlo o llegar al final. La prueba es el elemento visible
 # (no IsOffscreen) releido despues; «already» = ya se veia y no se movio nada.
-# Los que se llaman asi; si ninguno, las filas cuyo nombre lleva la etiqueta como palabras enteras (t-scroll-1, medido:
-# la fila de una lista de programas se llama «<nombre>, <version>, <editor>, <fecha>», nunca «<nombre>», y la busqueda
-# pagina a pagina recorria la lista entera hasta agotar el plazo).
+# Los que se llaman asi. Auditoria C10: las filas cuyo nombre solo lleva la etiqueta como palabras enteras (t-scroll-1,
+# medido: la fila de una lista de programas se llama «<nombre>, <version>, <editor>, <fecha>») no se traen a la vista:
+# sus nombres quedan en $script:NamedCandidates, para que el modelo nombre una tal cual.
 function Find-AnyNamed($root,[string[]]$aliases,$until=$null){
-  $hits=@(); $holding=@()
+  $hits=@()
   foreach($item in (Get-Descendants $root)){
     # Each name read crosses to the window's process: a long walk stops at the deadline with what it found.
     if($null -ne $until -and [DateTime]::UtcNow -gt $until){ break }
     try {
       $name=(Get-ShownName $item).name
       if(Test-NameMatch $name $aliases){ $hits+=@($item) }
-      elseif($hits.Count -eq 0 -and (Test-ItemHolds $item $aliases)){ $holding+=@($item) }
+      elseif((Test-ItemHolds $item $aliases) -and $script:NamedCandidates -notcontains $name){ $script:NamedCandidates+=@($name) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
-  if($hits.Count -gt 0){ return $hits }
-  return $holding
+  return $hits
 }
 function Test-Shown($el){
   try { return (-not $el.Current.IsOffscreen) } catch { return $false }
@@ -3852,7 +3869,9 @@ function Test-Shown($el){
 function Reveal-Result([bool]$ok,[string]$error,[string]$method,$el){
   $name=''
   if($null -ne $el){ $name=(Get-ShownName $el).name }
-  return @{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and (Test-Shown $el)) }
+  $result=@{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and (Test-Shown $el)) }
+  if(-not $ok -and $script:NamedCandidates.Count -gt 0){ $result.candidates=@($script:NamedCandidates | Select-Object -First 10) }
+  return $result
 }
 # Los que el arbol ya tiene: el que se ve («already»), si no el que su ScrollItemPattern trae («scrollintoview»).
 # $touched.Value queda en verdadero si se llamo a ScrollIntoView (pudo moverse algo aunque no se vea).
@@ -3915,20 +3934,14 @@ function Do-Reveal($request){
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
   $root=$target.root
   $touched=$false
+  $script:NamedCandidates=@()
   $hits=@(Find-AnyNamed $root $aliases $deadline)
-  # Una fila que solo lleva la etiqueta entre otras palabras («<nombre> Widget») no se adelanta a la fila que se llama
-  # exactamente asi y que la lista aun no cargo: esa la busca primero el ItemContainerPattern.
-  $exact=($hits.Count -gt 0 -and (Test-NameMatch (Get-ShownName $hits[0]).name $aliases))
-  if($exact){
+  if($hits.Count -gt 0){
     $listed=Reveal-Listed $hits ([ref]$touched)
     if($null -ne $listed){ return $listed }
   }
   $contained=Find-InContainers $root $aliases $deadline ([ref]$touched)
   if($null -ne $contained){ return $contained }
-  if(-not $exact -and $hits.Count -gt 0){
-    $listed=Reveal-Listed $hits ([ref]$touched)
-    if($null -ne $listed){ return $listed }
-  }
   # Lo que pudo haberse movido ya (un ScrollIntoView, un Realize) es un efecto: el metodo no queda vacio.
   $tried=$(if($touched){ 'scrollintoview' } else { '' })
   if([DateTime]::UtcNow -gt $deadline){ return (Reveal-Result $false 'reveal_not_found' $tried $null) }
@@ -3984,8 +3997,9 @@ function Do-Script($request){
 }
 function Do-Find($request){
   $aliases=@($request.aliases | ForEach-Object { [string]$_ })
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found'; count=0 } }
+  $script:NamedCandidates=@()
   $matches=@(Find-Named $target.root $aliases)
   $names=@($matches | ForEach-Object { (Get-ShownName $_).name })
   return @{ ok=$true; error=''; count=$matches.Count; names=$names }
@@ -3994,7 +4008,7 @@ function Do-Find($request){
 # que una persona interactua (un campo editable o una lista), no cuando tiene titulo; y un atajo abrio su buscador cuando
 # un campo editable de esa ventana tiene el foco. Solo lectura: aqui nada se pulsa, se enfoca ni se escribe.
 function Do-Interaction($request){
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
   $root=$target.root
   $owner=0; try { $owner=[int]$root.Current.ProcessId } catch { return @{ ok=$false; error='active_window_not_found' } }
@@ -4049,18 +4063,16 @@ function Get-ComboEdit($combo){
   } catch {}
   return $null
 }
-# Ronda 22 (r18 t2-c04: «125» y la entrada «125% (recomendado)»): un numero pedido es la unica entrada cuyo nombre
-# lo tiene como numero entero, nunca parte de otro: «150» no es «1500», y «2» no es la parte entera de «2,5» ni «125»
-# la de «125,5 %» (la mente lee igual los numeros, _WHOLE_NUMBER). Dos entradas con ese numero, o ninguna: $null.
-function Select-NumberedEntry($items,[string]$text){
-  $number=([string]$text).Trim()
-  if($number -notmatch '^\d+(?:[.,]\d+)?$'){ return $null }
-  $wanted='(?<![\d.,])'+[regex]::Escape($number)+'(?!\d|[.,]\d)'
-  $numbered=@(@($items) | Where-Object { $null -ne $_ -and [string](Get-Name $_) -match $wanted })
-  if($numbered.Count -eq 1){ return $numbered[0] }
+# Auditoria C9: la entrada elegida es la que se llama como el texto pedido (igual plegado, Test-NameMatch); «125» no es
+# «125% (recomendado)». Devuelve la entrada elegida (entry, su nombre leido) y si la caja la tomo (delivered); $null si
+# no se eligio nada. Sin una entrada de ese nombre, sus nombres quedan en $script:ComboEntries para el modelo.
+$script:ComboEntries=@()
+function Find-EntryNamed($items,[string]$text){
+  foreach($item in @($items)){ if($null -ne $item -and (Test-NameMatch (Get-Name $item) @($text))){ return $item } }
   return $null
 }
 function Select-ComboEntry($combo,[string]$text){
+  $script:ComboEntries=@()
   $pattern=$null
   if(-not $combo.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){ return $null }
   $expand=[System.Windows.Automation.ExpandCollapsePattern]$pattern
@@ -4068,10 +4080,8 @@ function Select-ComboEntry($combo,[string]$text){
   $chosen=$null
   try {
     $items=@($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
-    foreach($item in $items){
-      if(Test-NameMatch (Get-Name $item) @($text)){ $chosen=$item; break }
-    }
-    if($null -eq $chosen){ $chosen=Select-NumberedEntry $items $text }
+    $chosen=Find-EntryNamed $items $text
+    if($null -eq $chosen){ $script:ComboEntries=@($items | ForEach-Object { Get-Name $_ } | Where-Object { $_.Length -gt 0 } | Select-Object -First 30) }
     if($null -ne $chosen){
       $select=$null
       if($chosen.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$select)){ try { ([System.Windows.Automation.ScrollItemPattern]$select).ScrollIntoView() } catch {} }
@@ -4079,18 +4089,18 @@ function Select-ComboEntry($combo,[string]$text){
     }
   } finally { try { $expand.Collapse() } catch {} }
   if($null -eq $chosen){ return $null }
-  if(-not [bool](Test-Selected $chosen)){ return $false }
+  $name=Get-Name $chosen
+  if(-not [bool](Test-Selected $chosen)){ return @{ entry=$name; delivered=$false } }
   # Revision de combos-galerias: una caja que publica su valor lo dice con la entrada elegida (una lista marcada que la
   # caja no tomo no es entrega).
   $value=$null
   if($combo.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$value)){
     $vp=[System.Windows.Automation.ValuePattern]$value
-    $name=Get-Name $chosen
     $after=Wait-ValueSet { [string]$vp.Current.Value } $name 300
-    if([string]::IsNullOrWhiteSpace([string]$after)){ return $true }
-    return [string]::Equals(([string]$after).Trim(),([string]$name).Trim(),[StringComparison]::OrdinalIgnoreCase)
+    if([string]::IsNullOrWhiteSpace([string]$after)){ return @{ entry=$name; delivered=$true } }
+    return @{ entry=$name; delivered=[string]::Equals(([string]$after).Trim(),([string]$name).Trim(),[StringComparison]::OrdinalIgnoreCase) }
   }
-  return $true
+  return @{ entry=$name; delivered=$true }
 }
 # Regresiones r2 M3 (live v8): Chromium publica el valor nuevo de un campo un poco despues de SetValue; releido a los
 # 95 ms todavia mostraba el anterior y el texto se dio por no verificado. Se relee cada 40 ms hasta $limitMs (300 como
@@ -4123,7 +4133,8 @@ function Do-Field($request){
     if($kind -ne 'ComboBox' -or -not $enabled -or $password -or [string]::IsNullOrWhiteSpace([string]$request.text)){ return $result }
     try { $result.className=[string]$element.Current.ClassName } catch {}
     $picked=Select-ComboEntry $element ([string]$request.text)
-    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked }
+    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry }
+    elseif($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
     return $result
   }
   $combo=$null
@@ -4157,7 +4168,8 @@ function Do-Field($request){
     # Un ComboBox de solo lista (sin texto que escribir): su entrada con ese nombre, elegida por patron.
     if($kind -eq 'ComboBox' -and $enabled -and -not $writable -and $null -eq $combo){
       $picked=Select-ComboEntry $element ([string]$text)
-      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked; return $result }
+      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; return $result }
+      if($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
     }
     return $result
   }
@@ -4213,7 +4225,7 @@ function Test-HoverCandidate([string]$kind,[string]$name,$rect){
 }
 function Do-Unnamed($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt 24){$limit=24}
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
   $all=Get-Descendants $target.root
   $out=New-Object System.Collections.ArrayList

@@ -79,7 +79,18 @@ public sealed record WindowCloseResult(
     bool ClosePrompted = false,
     // Encargo H1 (tandas fin1/fin2 t2-c03 t2: «He cerrado la ventana de Configuración de Valorant»): the title the
     // closed window had, as Windows wrote it, read right before the close; the receipt names what it closed.
-    string? Title = null);
+    string? Title = null,
+    // Auditoría D7: what was observed of the window (WindowCloseOutcomes), never «closed» for what BAXY did not close.
+    string Outcome = WindowCloseOutcomes.Closed);
+
+// Auditoría D7: closed (it went away after BAXY's close), alreadyGone (it was gone before BAXY's close reached it) or
+// hidden (it still exists, invisible: an application that hides in the notification area instead of closing).
+public static class WindowCloseOutcomes
+{
+    public const string Closed = "closed";
+    public const string AlreadyGone = "alreadyGone";
+    public const string Hidden = "hidden";
+}
 
 // MINALL1687 «minimizá todas las ventanas»: the desktop windows found before,
 // how many were minimized and verified iconic, how many stayed visible.
@@ -103,7 +114,11 @@ public sealed record WindowCloseAllResult(
     int Kept,
     IReadOnlyList<string> KeptProcesses,
     IReadOnlyList<string> RemainingProcesses,
-    string? ErrorCode);
+    string? ErrorCode,
+    // Auditoría D7: windows that went invisible instead of closing, and windows gone before the close reached them;
+    // neither is counted in Closed.
+    int Hidden = 0,
+    int AlreadyGone = 0);
 
 public interface IWindowControlProvider
 {

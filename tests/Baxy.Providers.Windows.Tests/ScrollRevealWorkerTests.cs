@@ -11,7 +11,8 @@ namespace Baxy.Providers.Windows.Tests;
 /// instaladas. Measured in the journal: the reveal by name answered nothing within the adapter's 15 s
 /// (<c>scroll_receipt_invalid</c>, 15.6 s): the list's row is named «Bloc de notas, 11.2…, Microsoft Corporation, …»,
 /// never «Bloc de notas», so the exact match found nothing and the page-by-page search walked the whole window after
-/// every page. The worker's own functions, taken from its text, run here on stand-in elements.
+/// every page. Auditoría C10: such a row is never revealed for the label; its name comes back as a candidate, for the
+/// model to name it as it is. The worker's own functions, taken from its text, run here on stand-in elements.
 /// </summary>
 [TestFixture]
 public sealed class ScrollRevealWorkerTests
@@ -35,14 +36,14 @@ public sealed class ScrollRevealWorkerTests
         """;
 
     [Test]
-    public void ARowNamedWithItsDetailsIsFoundByTheNameItStartsWith()
+    public void ARowNamedWithItsDetailsIsACandidateNeverAHit()
     {
         string output = Run("""
             function Get-Descendants($root){ return @((Row 'BAXY, 1.0.9, BAXY, 27-07-2026'), (Row 'Bloc de notas, 11.2507.26.0, Microsoft Corporation, 20-07-2026')) }
             $hits=@(Find-AnyNamed $null @('bloc de notas'))
-            "$($hits.Count)|$($hits[0].Name)"
+            "$($hits.Count)|$($script:NamedCandidates -join ';')"
             """);
-        Assert.That(output, Is.EqualTo("1|Bloc de notas, 11.2507.26.0, Microsoft Corporation, 20-07-2026"));
+        Assert.That(output, Is.EqualTo("0|Bloc de notas, 11.2507.26.0, Microsoft Corporation, 20-07-2026"));
     }
 
     [Test]
@@ -125,15 +126,15 @@ public sealed class ScrollRevealWorkerTests
     }
 
     [Test]
-    public void CounterCaseWithoutTheExactRowTheShownRowThatHoldsTheLabelStillCounts()
+    public void WithoutTheExactRowTheShownRowThatHoldsTheLabelIsOnlyACandidate()
     {
         string output = Run(RevealPrelude + """
             function Get-Descendants($root){ return @((Row 'Bloc de notas, 11.2, Microsoft' 'ControlType.ListItem' $true)) }
             function Find-InContainers($root,[string[]]$aliases,$until,[ref]$touched){ return $null }
             $answer=Do-Reveal @{ aliases=@('bloc de notas'); hwnd=1; direction='down'; amount=1 }
-            "$($answer.method)|$($answer.ok)"
+            "$($answer.method)|$($answer.ok)|$($answer.error)|$(@($answer.candidates) -join ';')"
             """);
-        Assert.That(output, Is.EqualTo("already|True"));
+        Assert.That(output, Is.EqualTo("|False|reveal_not_found|Bloc de notas, 11.2, Microsoft"));
     }
 
     [Test]

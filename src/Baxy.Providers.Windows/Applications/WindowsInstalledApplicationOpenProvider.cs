@@ -64,8 +64,15 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         _catalogReadBudget = catalogReadBudget;
     }
 
-    public async ValueTask<ApplicationOpenResult> OpenAsync(
+    public ValueTask<ApplicationOpenResult> OpenAsync(
         ApplicationOpenRequest request,
+        CancellationToken cancellationToken) => OpenAsync(request, launchAnew: false, cancellationToken);
+
+    // launchAnew (auditoría D6): a new instance is launched and only a window that was not there before counts; no
+    // window the application already had is reused.
+    private async ValueTask<ApplicationOpenResult> OpenAsync(
+        ApplicationOpenRequest request,
+        bool launchAnew,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -100,7 +107,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        InstalledApplicationResolution resolution = Resolve(request.ApplicationId, catalog);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(request.ApplicationId, catalog);
         if (resolution.Entry is null)
         {
             return Failure(
@@ -108,7 +115,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 request.ApplicationId,
                 resolution.Ambiguous
                     ? ApplicationOpenErrorCodes.ApplicationAmbiguous
-                    : ApplicationOpenErrorCodes.ApplicationNotFound);
+                    : ApplicationOpenErrorCodes.ApplicationNotFound,
+                candidates: resolution.Candidates);
         }
 
         InstalledApplicationEntry entry = resolution.Entry;
@@ -131,9 +139,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         // never reuses the raised one: it reuses a copy that is not raised (review, finding 4: the raised one in front
         // no longer hides the copy BAXY opened before, so copies do not pile up), or starts a new one. The raised copy
         // stays: BAXY cannot close it (refused by Windows, measured).
-        InstalledApplicationObservation? existing = request.FilePath is not null ? null
-            : request.ForControl ? Choose(before.Where(item => !_platform.RaisedButReopensUnraised(item.ProcessId)).ToList())
-            : Choose(before);
+        InstalledApplicationObservation? existing = request.FilePath is not null || launchAnew ? null
+            : Choose(Reusable(request, before));
 
         // r20b palanca 4 (v3-40, v3-43): an opening asked in front while the person works in another window (their
         // input reaches it less than their pause ago, and it is not BAXY's) shows the application above it without
@@ -218,10 +225,19 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         for (int attempt = 0; attempt <= VerificationAttempts && verification.Elapsed < VerificationBudget; attempt++)
         {
             InstalledApplicationObservation? candidate;
+            bool running = reused;
             try
             {
                 IReadOnlyList<InstalledApplicationObservation> current = _platform.Inventory(entry);
+                // Auditoría D5: only a window that was not there before is the launch's. A window of the application
+                // that was already there (Windows showed the instance that runs) is said as it is: already running,
+                // never launched. A new instance asked for (launchAnew) has only a new window.
                 candidate = Choose(current, before);
+                if (candidate is null && !launchAnew && Choose(Reusable(request, current)) is { } kept)
+                {
+                    candidate = kept;
+                    running = true;
+                }
             }
             catch (Exception exception) when (exception is ApplicationInventoryException
                 or InvalidOperationException
@@ -285,7 +301,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     // v3 point 1: the looks while the application starts hand back a front it takes later.
                     _platform.NoteOpening(handBackTo, focused.ProcessId);
                 }
-                return Success(request, entry, focused, reused, activated, restored, shownWithoutFocus: shown);
+                return Success(request, entry, focused, running, activated, restored, shownWithoutFocus: shown);
             }
 
             if (attempt < VerificationAttempts)
@@ -325,7 +341,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        InstalledApplicationResolution resolution = Resolve(applicationName, catalog);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(applicationName, catalog);
         if (resolution.Ambiguous)
         {
             return new(applicationName, null, false, false,
@@ -510,15 +526,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             IReadOnlyList<InstalledApplicationEntry> catalog =
                 await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
-            // This effect prerequisite accepts only a complete installed name.
-            // Do not inherit open's fuzzy ranking or application aliases.
+            // This effect prerequisite accepts only a complete installed name (the resolver's only rule).
             InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
                 applicationName, catalog);
             if (resolution.Ambiguous)
                 return ([], ApplicationOpenErrorCodes.ApplicationAmbiguous, null);
-            if (resolution.Entry is not { } entry
-                || !string.Equals(InstalledApplicationResolver.Normalize(entry.Name),
-                    InstalledApplicationResolver.Normalize(applicationName), StringComparison.Ordinal))
+            if (resolution.Entry is not { } entry)
                 return ([], ApplicationOpenErrorCodes.ApplicationNotFound, null);
             if (!entry.AppUserModelId.Contains('!')
                 && WindowsInstalledApplicationPlatform.StrongExecutablePath(entry) is null)
@@ -554,7 +567,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        InstalledApplicationResolution resolution = Resolve(applicationName, catalog);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(applicationName, catalog);
         if (resolution.Ambiguous)
         {
             return new(applicationName, null, false, false, 0, false,
@@ -785,70 +798,79 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
     /// <summary>
     /// cu-v3-documento-nuevo (uso real t4-c14: «pegame lo que copie en un bloc de notas nuevo» reused the open Notepad and
-    /// pasted into the person's «*lista pan»; t4-c06 «crea un blank workbook» with Excel open made nothing). The
-    /// application is opened as any opening (behind, unless the front was asked for: v3 point 0), and its own New
-    /// command (Ctrl+N, the command document applications share) is given to its window inside a burst of the foreground
-    /// lease: after the person's pause with no modifier down, only while that window holds the front, and the front goes
-    /// back to them right after (review of cu-v3-documento-nuevo, finding 4). The new document is seen, never assumed: a
-    /// window of the application that was not there before the command, or the same window showing another document (its
-    /// title changed: a new tab) when its title held still before the command and changed beyond a saved mark (finding 5:
-    /// a page that ends loading, a song that changes, a «*» that goes). A dialog the command raised («¿Guardar
-    /// cambios?») is closed as cancelled, never left over the person's work (finding 6). Otherwise the opening ends
-    /// <see cref="ApplicationOpenErrorCodes.NewDocumentNotCreated"/>, so nothing after it writes into the person's
-    /// document.
+    /// pasted into the person's «*lista pan»; t4-c06 «crea un blank workbook» with Excel open made nothing). Auditoría
+    /// D6: a new instance of the application is launched (behind, unless the front was asked for: v3 point 0) and only a
+    /// window that was not there before counts; no key ever goes to a window the application already had, which may be
+    /// the person's. An application that only shows the instance that runs opens no new window, and the opening ends
+    /// <see cref="ApplicationOpenErrorCodes.NewDocumentNotCreated"/>. The launched window's own New command (Ctrl+N, the
+    /// command document applications share) is given to it inside a burst of the foreground lease: after the person's
+    /// pause with no modifier down, only while that window holds the front, and the front goes back to them right after
+    /// (review of cu-v3-documento-nuevo, finding 4). The new document is seen, never assumed: a window of the application
+    /// that was not there before the command, or the same window showing another document (its title changed: a new
+    /// tab) when its title held still before the command and changed beyond a saved mark (finding 5: a page that ends
+    /// loading, a song that changes, a «*» that goes). A dialog the command raised («¿Guardar cambios?») is never
+    /// answered nor closed: it stays for the person, and the opening ends
+    /// <see cref="ApplicationOpenErrorCodes.NewDocumentNotCreated"/>, so nothing after it writes anywhere.
     /// </summary>
     private async ValueTask<ApplicationOpenResult> OpenNewDocumentAsync(
         ApplicationOpenRequest request,
         CancellationToken cancellationToken)
     {
-        ApplicationOpenResult opened = await OpenAsync(
-            request with { NewDocument = false },
-            cancellationToken).ConfigureAwait(false);
-        if (!opened.Succeeded || !opened.Verified
-            || opened.WindowHandle is not long window || opened.ProcessId is not int process)
+        // The windows the application already had (the person's): never the launch's, never sent a key.
+        InstalledApplicationEntry? entry;
+        HashSet<long> theirs;
+        try
         {
-            return opened;
+            entry = InstalledApplicationResolver.Resolve(
+                request.ApplicationId, await ReadCatalogAsync(cancellationToken).ConfigureAwait(false)).Entry;
+            theirs = entry is null ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
+        }
+        catch (Exception exception) when (exception is ApplicationInventoryException
+            or InvalidDataException
+            or InvalidOperationException
+            or JsonException
+            or System.ComponentModel.Win32Exception)
+        {
+            return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
 
+        ApplicationOpenResult opened = await OpenAsync(
+            request with { NewDocument = false },
+            launchAnew: true,
+            cancellationToken).ConfigureAwait(false);
         ApplicationOpenResult NotCreated() => Failure(
             request,
             opened.DisplayName,
             ApplicationOpenErrorCodes.NewDocumentNotCreated,
-            launchIssued: !opened.AlreadyRunning,
-            reusedExisting: opened.AlreadyRunning);
-        InstalledApplicationEntry? entry;
+            launchIssued: true);
+        if (!opened.Succeeded || !opened.Verified
+            || opened.WindowHandle is not long window || opened.ProcessId is not int process || entry is null)
+        {
+            // An application that only shows the instance that runs opened no new window: no new document was made.
+            return opened.ErrorCode == ApplicationOpenErrorCodes.VerificationFailed ? NotCreated() : opened;
+        }
+
         IReadOnlyList<InstalledApplicationObservation> before;
         string titleBefore;
         bool titleTells;
         HashSet<string> bareTitles;
         try
         {
-            entry = Resolve(request.ApplicationId, await ReadCatalogAsync(cancellationToken).ConfigureAwait(false)).Entry;
-            if (entry is null)
+            // Ronda 20 P4 (v3-01: a presentation program verified on its «Abriendo - …» start window; its main
+            // window, still on the start screen, was born while the command waited and was taken for the new
+            // document). The start is let settle first: the command goes to the window the start left, once no new
+            // one has come for two looks. A title the start showed on another window (a splash), or the application's
+            // bare name, is never a document; the settled main window's own title may be one (revisión 2 de P4).
+            bareTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(opened.DisplayName) };
+            (long? settled, IReadOnlyList<string> startTitles) = await SettleStartAsync(entry, window, theirs, cancellationToken)
+                .ConfigureAwait(false);
+            if (settled is not long main)
             {
                 return NotCreated();
             }
 
-            // Ronda 20 P4 (v3-01: a presentation program verified on its «Abriendo - …» start window; its main
-            // window, still on the start screen, was born while the command waited and was taken for the new
-            // document). A cold start
-            // is let settle first: the command goes to the window the start left, once no new one has come for two
-            // looks. A title the start showed on another window (a splash), or the application's bare name, is never
-            // a document; the settled main window's own title may be one (revisión 2 de P4).
-            bareTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(opened.DisplayName) };
-            if (!opened.AlreadyRunning)
-            {
-                (long? settled, IReadOnlyList<string> startTitles) = await SettleStartAsync(entry, window, cancellationToken)
-                    .ConfigureAwait(false);
-                if (settled is not long main)
-                {
-                    return NotCreated();
-                }
-
-                window = main;
-                bareTitles.UnionWith(startTitles.Select(Bare));
-            }
-
+            window = main;
+            bareTitles.UnionWith(startTitles.Select(Bare));
             bareTitles.Remove(string.Empty);
             // Finding 5: a title that changes by itself (a page loading, a player's song) tells no new tab; it is read
             // twice before the command and only a title that held still may tell one.
@@ -927,26 +949,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 {
                     if (request.Foreground)
                         _platform.RequestForeground(made.WindowHandle);
-                    return Success(request, entry, made, opened.AlreadyRunning, newDocument: true);
+                    return Success(request, entry, made, reused: false, newDocument: true);
                 }
 
                 (bool activated, bool restored) = await HandBackFrontAsync(person, made, cancellationToken).ConfigureAwait(false);
                 bool shown = await OpeningFront.ShowWithoutActivationAsync(
                     _platform, made.WindowHandle, person, other => IsOpened(made, other), cancellationToken)
                     .ConfigureAwait(false);
-                return Success(request, entry, made, opened.AlreadyRunning, activated, restored, newDocument: true,
+                return Success(request, entry, made, reused: false, activated, restored, newDocument: true,
                     shownWithoutFocus: shown);
             }
 
             if (dialogs.Count > 0)
             {
-                // Finding 6: the dialog is closed as cancelled (its own Cancel), so nothing of the person's is lost by a
-                // reflex click on «No guardar»; the document asked for was not made.
-                foreach (long dialog in dialogs)
-                {
-                    _platform.DismissDialog(dialog);
-                }
-
+                // Auditoría D6: a dialog the command raised is never answered nor closed; the document was not made.
                 return NotCreated();
             }
         }
@@ -968,15 +984,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // goes to one: looks StartSettleDelay apart until two in a row bring no new window, within StartSettleBudget. The
     // window is the last one born that is still shown (the main window after a splash), else the one the opening
     // verified, else any shown; with the titles the start showed on its other windows (never the settled main
-    // window's own title, which a new window of the command may repeat).
+    // window's own title, which a new window of the command may repeat). A window the application had before the
+    // launch («theirs», auditoría D6) is never one of the start's.
     private async ValueTask<(long? Window, IReadOnlyList<string> Titles)> SettleStartAsync(
         InstalledApplicationEntry entry,
         long started,
+        HashSet<long> theirs,
         CancellationToken cancellationToken)
     {
         List<long> Shown() => _platform.Inventory(entry)
             .Where(item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath)
-                && !_platform.IsOwnedWindow(item.WindowHandle))
+                && !theirs.Contains(item.WindowHandle) && !_platform.IsOwnedWindow(item.WindowHandle))
             .Select(static item => item.WindowHandle)
             .ToList();
 
@@ -1038,15 +1056,6 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         return now.Length > 0 && !string.Equals(Document(before), Document(now), StringComparison.Ordinal);
     }
 
-    private static InstalledApplicationResolution Resolve(
-        string applicationId,
-        IReadOnlyList<InstalledApplicationEntry> catalog) => applicationId switch
-        {
-            ApplicationIds.Notepad => InstalledApplicationResolver.ResolveAppId("Microsoft.WindowsNotepad", catalog),
-            ApplicationIds.Calculator => InstalledApplicationResolver.ResolveAppId("Microsoft.WindowsCalculator", catalog),
-            _ => InstalledApplicationResolver.Resolve(applicationId, catalog),
-        };
-
     // Whether «window» is the opened application's: its window, or a window of its process or of the same program.
     private bool IsOpened(InstalledApplicationObservation opened, long window) =>
         window == opened.WindowHandle || _platform.SameApplication(opened.ProcessId, _platform.WindowProcessId(window));
@@ -1084,35 +1093,28 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
     private static InstalledApplicationObservation? Choose(
         IReadOnlyList<InstalledApplicationObservation> observations,
-        IReadOnlyList<InstalledApplicationObservation>? baseline = null)
-    {
-        IEnumerable<InstalledApplicationObservation> candidates = observations
-            .Where(static item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath));
-        if (baseline is not null)
-        {
-            // File Explorer (APPS1231/005) opens its window inside the already
-            // running shell process: the launched thing is a window, so a window
-            // absent from the baseline identifies the launch even when its
-            // process was already observed.
-            InstalledApplicationObservation? created = candidates
-                .Where(item => !baseline.Any(previous =>
-                    previous.ProcessId == item.ProcessId
-                    && previous.ProcessCreationTimeUtcTicks == item.ProcessCreationTimeUtcTicks
-                    && previous.WindowHandle == item.WindowHandle))
-                .OrderByDescending(static item => item.Foreground)
-                .ThenByDescending(static item => item.ProcessCreationTimeUtcTicks)
-                .FirstOrDefault();
-            if (created is not null)
-            {
-                return created;
-            }
-        }
-
-        return candidates
+        IReadOnlyList<InstalledApplicationObservation>? baseline = null) =>
+        observations
+            .Where(static item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath))
+            // File Explorer (APPS1231/005) opens its window inside the already running shell process: the launched
+            // thing is a window, so a window absent from the baseline identifies the launch even when its process was
+            // already observed. Auditoría D5: with a baseline, a window that was in it is never the launch's.
+            .Where(item => baseline is null || !baseline.Any(previous =>
+                previous.ProcessId == item.ProcessId
+                && previous.ProcessCreationTimeUtcTicks == item.ProcessCreationTimeUtcTicks
+                && previous.WindowHandle == item.WindowHandle))
             .OrderByDescending(static item => item.Foreground)
             .ThenByDescending(static item => item.ProcessCreationTimeUtcTicks)
             .FirstOrDefault();
-    }
+
+    // cu-v3-elevacion: an opening for BAXY's control never reuses a raised window whose program opens again with the
+    // person's rights.
+    private IReadOnlyList<InstalledApplicationObservation> Reusable(
+        ApplicationOpenRequest request,
+        IReadOnlyList<InstalledApplicationObservation> observations) =>
+        request.ForControl
+            ? [.. observations.Where(item => !_platform.RaisedButReopensUnraised(item.ProcessId))]
+            : observations;
 
     private static ApplicationOpenResult Success(
         ApplicationOpenRequest request,
@@ -1158,7 +1160,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         string displayName,
         string errorCode,
         bool launchIssued = false,
-        bool reusedExisting = false)
+        bool reusedExisting = false,
+        IReadOnlyList<string>? candidates = null)
     {
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,
@@ -1180,7 +1183,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             ProcessId: null,
             WindowHandle: null,
             errorCode,
-            receipt);
+            receipt,
+            Candidates: candidates);
     }
 }
 
@@ -1234,11 +1238,6 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     ValueTask<bool> IssueNewDocumentAsync(long windowHandle, CancellationToken cancellationToken) =>
         ValueTask.FromResult(false);
 
-    // A dialog of the application closed as cancelled (WM_CLOSE: its Cancel), never answered.
-    void DismissDialog(long windowHandle)
-    {
-    }
-
     // The window's title as Windows has it (empty when it has none or is gone).
     string WindowTitle(long windowHandle) => string.Empty;
 
@@ -1280,28 +1279,20 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
 }
 
+// Candidates: with no entry of that name, the installed names closest to it (auditoría D1), for the model to name one
+// exactly; nothing is opened for them.
 internal sealed record InstalledApplicationResolution(
     InstalledApplicationEntry? Entry,
-    bool Ambiguous);
+    bool Ambiguous,
+    IReadOnlyList<string>? Candidates = null);
 
 internal static class InstalledApplicationResolver
 {
-    internal static InstalledApplicationResolution ResolveAppId(
-        string appIdFragment,
-        IReadOnlyList<InstalledApplicationEntry> catalog)
-    {
-        InstalledApplicationEntry[] matches = catalog
-            .Where(item => IsUsable(item)
-                && item.AppUserModelId.Contains(appIdFragment, StringComparison.OrdinalIgnoreCase))
-            .ToArray();
-        return matches.Length switch
-        {
-            1 => new InstalledApplicationResolution(matches[0], false),
-            > 1 => new InstalledApplicationResolution(null, true),
-            _ => new InstalledApplicationResolution(null, false),
-        };
-    }
+    // How many of the closest installed names a name that matches none gets back.
+    private const int CandidateCount = 5;
 
+    // Auditoría D1: the application is the catalog entry of exactly that name, folded (case, accents, punctuation);
+    // «Motion» is never Notion. Without one, nothing is resolved and the closest names are only said.
     internal static InstalledApplicationResolution Resolve(
         string query,
         IReadOnlyList<InstalledApplicationEntry> catalog)
@@ -1332,23 +1323,16 @@ internal static class InstalledApplicationResolver
                 : new InstalledApplicationResolution(null, true);
         }
 
-        (InstalledApplicationEntry Entry, int Score)[] ranked = entries
-            .Select(item => (Entry: item, Score: Score(normalizedQuery, Normalize(item.Name))))
-            .Where(static item => item.Score >= 82)
-            .OrderByDescending(static item => item.Score)
-            .ThenBy(static item => item.Entry.Name, StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-        if (ranked.Length == 0)
-        {
-            return new InstalledApplicationResolution(null, false);
-        }
-
-        if (ranked.Length > 1 && ranked[0].Score - ranked[1].Score < 8)
-        {
-            return new InstalledApplicationResolution(null, true);
-        }
-
-        return new InstalledApplicationResolution(ranked[0].Entry, false);
+        // Closest first: the names that hold every word asked, then by edit distance.
+        string[] words = normalizedQuery.Split(' ');
+        string[] closest = [.. entries
+            .Select(item => item.Name.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(name => words.All(Normalize(name).Split(' ').Contains) ? 0 : 1)
+            .ThenBy(name => Levenshtein(normalizedQuery, Normalize(name)))
+            .ThenBy(static name => name, StringComparer.OrdinalIgnoreCase)
+            .Take(CandidateCount)];
+        return new InstalledApplicationResolution(null, false, closest);
     }
 
     internal static string Normalize(string value)
@@ -1387,27 +1371,7 @@ internal static class InstalledApplicationResolver
         && !entry.AppUserModelId.Contains('\uFFFD', StringComparison.Ordinal)
         && !entry.AppUserModelId.Any(char.IsControl);
 
-    private static int Score(string query, string candidate)
-    {
-        string[] queryTokens = query.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        string[] candidateTokens = candidate.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (queryTokens.All(token => candidateTokens.Contains(token, StringComparer.Ordinal)))
-        {
-            return 90 - Math.Min(6, candidateTokens.Length - queryTokens.Length);
-        }
-
-        int distance = Levenshtein(query, candidate);
-        int maximum = Math.Max(query.Length, candidate.Length);
-        if (maximum == 0)
-        {
-            return 0;
-        }
-
-        int similarity = 100 - (distance * 100 / maximum);
-        int permittedDistance = query.Length <= 8 ? 1 : 2;
-        return distance <= permittedDistance ? Math.Max(82, similarity) : similarity;
-    }
-
+    // Only orders the names a failed resolution says; it never chooses an application.
     private static int Levenshtein(string left, string right)
     {
         int[] previous = Enumerable.Range(0, right.Length + 1).ToArray();
@@ -2216,9 +2180,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
     }
 
-    // WM_CLOSE (0x0010): a dialog's own Cancel.
-    public void DismissDialog(long windowHandle) => _ = PostMessage(checked((nint)windowHandle), 0x0010, 0, 0);
-
     public bool IsOwnedWindow(long windowHandle) => GetWindow(checked((nint)windowHandle), 4) != 0;
 
     public unsafe string WindowTitle(long windowHandle)
@@ -2336,10 +2297,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     // GW_OWNER (4): the window that owns this one, 0 for none.
     [LibraryImport("user32.dll")]
     private static partial nint GetWindow(nint window, uint command);
-
-    [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool PostMessage(nint window, uint message, nint wParam, nint lParam);
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
     private static unsafe partial int GetWindowText(nint window, char* text, int capacity);

@@ -387,7 +387,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void TheClassicMenuBarIsReadAsEntriesAndPressedByItsCommand()
     {
-        string answer = Run(Worker(), ["ConvertTo-MenuViewEntries", "Find-MenuCommand", "Test-NameMatch"], """
+        string answer = Run(Worker(), ["ConvertTo-MenuViewEntries", "Find-MenuCommand", "Test-NameMatch", "Get-LabelFolded"], """
             function New-Entry([string]$path,[int]$id,[string]$shortcut='',[bool]$checked=$false,[bool]$disabled=$false,[bool]$fills=$false){
               return [pscustomobject]@{ Path=$path; Id=$id; Shortcut=$shortcut; Checked=$checked; Disabled=$disabled; FillsOnOpen=$fills }
             }

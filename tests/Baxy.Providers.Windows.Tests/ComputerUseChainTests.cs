@@ -328,7 +328,7 @@ public sealed class ComputerUseChainTests
                 Assert.That(clicked.Verified, Is.True, clicked.ErrorCode);
                 Assert.That(worker.Commands.Last(command => command.Contains("\"cmd\":\"click\"", StringComparison.Ordinal)),
                     Does.Contain("\"controlId\":\"42.7\""), "pressed by the identity the label names exactly");
-                Assert.That(named.Invoke(adapter, [window, "dinámica"]), Is.EqualTo("43.1"), "the only one whose name holds it");
+                Assert.That(named.Invoke(adapter, [window, "dinámica"]), Is.Null, "auditoría P3: a name that only holds it");
                 Assert.That(named.Invoke(adapter, [window, "forma"]), Is.Null, "a label that names several");
                 Assert.That(named.Invoke(adapter, [window, "Pegar"]), Is.Null, "a label that names none");
                 Assert.That(named.Invoke(adapter, [(nint)1, "Tabla"]), Is.Null, "a view of another window");
@@ -339,7 +339,7 @@ public sealed class ComputerUseChainTests
     // Revision 1 of the branch: a label alone after an opener never presses by identity a control the mind's own rule would
     // not choose. Measured scenario: «Pantalla» was the opener, and «activar el modo oscuro» comes as the label «Modo
     // oscuro» because the only control that holds it is a descriptive Custom whose long sentence is another setting (the
-    // automatic schedule). Contracases: the exact name and a short actionable name that holds the label still resolve.
+    // automatic schedule). Contracase: the exact name still resolves; auditoría P3: a name that only holds it does not.
     [Test]
     public void ALabelAloneAfterAnOpenerNeverPressesADescriptiveSentenceThatMentionsIt()
     {
@@ -371,7 +371,7 @@ public sealed class ComputerUseChainTests
                     "a descriptive sentence that mentions the label is never pressed by identity: " + string.Join(" | ", worker.Commands));
                 Assert.That(named.Invoke(adapter, [window, "Modo oscuro"]), Is.Null, "left to the cascade (its exact name, its line)");
                 Assert.That(named.Invoke(adapter, [window, "brillo nocturno"]), Is.EqualTo("52.1"), "contracase: the exact name");
-                Assert.That(named.Invoke(adapter, [window, "contraste"]), Is.EqualTo("53.1"), "contracase: a short actionable name");
+                Assert.That(named.Invoke(adapter, [window, "contraste"]), Is.Null, "auditoría P3: a short name that holds it");
             });
         });
     }
@@ -379,9 +379,8 @@ public sealed class ComputerUseChainTests
     // Revision 3 of the branch: the label alone after an opener resolves by the mind's find_control as it is, so a case the
     // mind found ambiguous (and therefore sent as a label alone, past none of its guards) is never pressed by identity.
     // Scenario: after «Pantalla», a short switch «Modo oscuro automático» and a long button that also holds «Modo oscuro»;
-    // the mind finds both and chooses none, and the switch is another setting the request never names. Contracases:
-    // without the long button the switch is the only one (as in the mind, which then weighs it with its guards), and an
-    // exact name still wins over the sentences that hold it.
+    // the mind finds both and chooses none, and the switch is another setting the request never names. Auditoría P3:
+    // without the long button the switch still only holds it, so it is not chosen either; the exact name is.
     [Test]
     public void ALabelAloneAfterAnOpenerNeverResolvesWhatTheMindFoundAmbiguous()
     {
@@ -425,7 +424,7 @@ public sealed class ComputerUseChainTests
                         || command.Contains("\"controlId\":\"54.1\"", StringComparison.Ordinal)), Is.False,
                     "an ambiguous label is never pressed by identity: " + string.Join(" | ", worker.Commands));
                 Assert.That(ambiguous, Is.Null, "two actionables hold it: left to the cascade");
-                Assert.That(alone, Is.EqualTo("51.1"), "contracase: the only one that holds it, as the mind finds it");
+                Assert.That(alone, Is.Null, "auditoría P3: the only one that holds it is still not its name");
                 Assert.That(exact, Is.EqualTo("55.1"), "contracase: the exact name");
             });
         });

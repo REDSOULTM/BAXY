@@ -716,13 +716,13 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             // the control drawn there is the one whose tooltip was read. Another one there forgets it and is hovered.
             if (!TooltipImage.SamePrint(entry.Print, image?.Print(relative)))
             {
-                if (WindowsVisibleControlAdapter.LabelNames(label, entry.Label))
+                if (WindowsVisibleControlAdapter.SameLabel(label, entry.Label))
                     _cache.Forget(signature, entry.Place);
                 continue;
             }
 
             known.Add(entry.Place);
-            if (WindowsVisibleControlAdapter.LabelNames(label, entry.Label))
+            if (WindowsVisibleControlAdapter.SameLabel(label, entry.Label))
             {
                 return new Learned(window, signature, entry.Place, relative.Offset(capture.Left, capture.Top), entry.Label,
                     entry.Source, true, capture, Tip: TooltipLabelCache.FromPlace(entry.Tip));
@@ -759,7 +759,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             var learned = new Learned(
                 window, signature, place, candidate.Screen, name, outcome.Source, false, capture, candidate.ControlId, tip);
             read?.Add(learned);
-            if (read is null && WindowsVisibleControlAdapter.LabelNames(label, name))
+            if (read is null && WindowsVisibleControlAdapter.SameLabel(label, name))
                 return learned;
         }
 

@@ -139,15 +139,18 @@ public sealed class SearchBurstTests
             Assert.That(lease.Clock.NowMs, Is.GreaterThanOrEqualTo(SearchBurst.CapMs));
             JsonElement last = receipt.Result!.Value.GetProperty("acts").EnumerateArray().Last();
             Assert.That(last.GetProperty("error").GetString(), Is.EqualTo(SearchBurst.ResultNotFound));
+            Assert.That(receipt.Result!.Value.GetProperty("seen").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "General" }), "auditoría B1: the names it saw");
             Assert.That(lease.Events, Is.EqualTo(new[] { "acquire " + (long)Window, "restore" }));
         });
     }
 
-    // A voice channel is a press that reaches people: the burst does not press it unless the invocation names it
-    // (RiskPolicy confirmed that exact invocation), and says which result needs it.
+    // Auditoría B1: a result that only holds the search («Cotele (canal de voz)» for «Cotele») is never pressed for it;
+    // the burst says it saw it, and the model names it with «choose», which RiskPolicy confirmed (a voice channel
+    // reaches people).
     [TestCase(null, false)]
     [TestCase("Cotele (canal de voz)", true)]
-    public void AResultThatReachesAPersonIsPressedOnlyWhenTheInvocationNamesIt(string? choose, bool pressed)
+    public void AResultThatOnlyHoldsTheSearchIsPressedOnlyWhenTheInvocationNamesIt(string? choose, bool pressed)
     {
         var lease = new Lease();
         var acts = new Acts(lease)
@@ -160,11 +163,11 @@ public sealed class SearchBurstTests
         Assert.Multiple(() =>
         {
             Assert.That(acts.Calls.Any(call => call.StartsWith("choose", StringComparison.Ordinal)), Is.EqualTo(pressed));
-            Assert.That(receipt.ErrorCode, Is.EqualTo(pressed ? null : SearchBurst.ResultNeedsConfirmation));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(pressed ? null : SearchBurst.ResultNotFound));
             if (!pressed)
             {
-                JsonElement last = receipt.Result!.Value.GetProperty("acts").EnumerateArray().Last();
-                Assert.That(last.GetProperty("label").GetString(), Is.EqualTo("Cotele (canal de voz)"));
+                Assert.That(receipt.Result!.Value.GetProperty("seen").EnumerateArray().Select(name => name.GetString()),
+                    Does.Contain("Cotele (canal de voz)"));
             }
         });
     }
@@ -217,30 +220,33 @@ public sealed class SearchBurstTests
     [TestCase("CheckBox", "Cotele", "", false)]
     [TestCase("ListItem", "Cotele", "checked", false)]
     [TestCase("ListItem", "General", "", false)]
-    // Ronda 25 (libro §4.3): a tab or a text that only mentions the name is no result; an entry of a list that holds it is.
+    [TestCase("Button", "Cotele", "", true)]
+    [TestCase("ListItem", "COTELÉ", "", true)]
+    // Auditoría B1: only the name itself, folded; never one that holds it nor one a typo away.
     [TestCase("TabItem", "Cotele - Resultados de la búsqueda", "", false)]
     [TestCase("Text", "Cotele es el canal de los memes", "", false)]
-    [TestCase("Button", "Cotele", "", true)]
-    [TestCase("ListItem", "Cotele!!!, Canal de voz", "", true)]
+    [TestCase("ListItem", "Cotele!!!, Canal de voz", "", false)]
+    [TestCase("Button", "Comprimir Cotele", "", false)]
     [TestCase("ListItem", "Cotelería", "", false)]
-    public void TheResultIsNeverAFieldNorASwitch(string kind, string name, string state, bool chosen) =>
+    [TestCase("ListItem", "Cotle", "", false)]
+    public void TheResultIsTheExactNameAndNeverAFieldNorASwitch(string kind, string name, string state, bool chosen) =>
         Assert.That(
             SearchBurst.ResultNaming([Control("1.1", kind, name, state)], "Cotele", null, "5.1") is not null,
             Is.EqualTo(chosen));
 
-    // Ronda 25 (banco r23 u1: «Comprimir Tu biblioteca» pressed as the result of «tu biblioteca»): a button already on
-    // the window (its name in the look before the text) that only mentions the name is no result; one the search
-    // brought is. Twin of test_u1_a_button_already_there_that_mentions_the_place_is_no_result.
-    [TestCase(true, false)]
-    [TestCase(false, true)]
-    public void AButtonThatOnlyMentionsTheNameIsAResultOnlyWhenTheSearchBroughtIt(bool shownBefore, bool chosen) =>
-        Assert.That(
-            SearchBurst.ResultNaming([Control("1.1", "Button", "Comprimir Cotele")], "Cotele", null, "5.1", null,
-                shownBefore ? new[] { "comprimir cotele" } : Array.Empty<string>()) is not null,
-            Is.EqualTo(chosen));
+    // Auditoría B1: with «choose», exactly that name, whatever the search typed.
+    [Test]
+    public void TheChosenResultIsTheOneOfThatExactName() =>
+        Assert.Multiple(() =>
+        {
+            WindowsVisibleControlAdapter.ViewControl[] listed =
+                [Control("1.1", "ListItem", "Cotele"), Control("1.2", "ListItem", "Cotele (canal de voz)")];
+            Assert.That(SearchBurst.ResultNaming(listed, "Cotele", "cotele (canal de voz)", "5.1")?.Id, Is.EqualTo("1.2"));
+            Assert.That(SearchBurst.ResultNaming(listed, "Cotele", "Cotele canal", "5.1"), Is.Null);
+        });
 
-    // Ronda 25 (banco r23 c7 and s13), twin of test_c7_the_text_a_search_box_draws_with_its_value_is_no_result: the
-    // Text a search box draws with its value, or the search itself, is no result; the channel's entry is.
+    // Ronda 25 (banco r23 c7 and s13): the Text a search box draws with its value, or the search itself, is no result;
+    // the channel's entry of that name is.
     [Test]
     public void TheEchoOfTheSearchOrOfAFieldsValueIsNoResult()
     {
@@ -249,23 +255,10 @@ public sealed class SearchBurstTests
         Assert.Multiple(() =>
         {
             Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "cotele")], "Cotele", null, "5.1"), Is.Null);
-            Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "Q cotele")], "Cotele", null, "5.1"), Is.Null);
-            Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "cotele"), Control("3.1", "ListItem", "Cotele!!!, Canal de voz")],
-                "Cotele", null, "5.1")?.Name, Is.EqualTo("Cotele!!!, Canal de voz"));
+            Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "cotele"), Control("3.1", "ListItem", "Cotele")],
+                "Cotele", null, "5.1")?.Id, Is.EqualTo("3.1"));
         });
     }
-
-    // Ronda 25, twin of test_counter_case_the_persons_typo_is_mended_by_the_one_entry_named_so: the person's typo
-    // («lo mal dicho lo arregla BAXY») still reaches the one entry it names, never one of two.
-    [Test]
-    public void ThePersonsTypoIsMendedByTheOneEntryNamedSo() =>
-        Assert.Multiple(() =>
-        {
-            Assert.That(SearchBurst.ResultNaming([Control("1.1", "ListItem", "Cotele")], "cotle", null, "5.1")?.Name, Is.EqualTo("Cotele"));
-            Assert.That(SearchBurst.ResultNaming([Control("1.1", "ListItem", "Cotele"), Control("1.2", "ListItem", "Cotle2")], "cotle", null, "5.1"),
-                Is.Null);
-            Assert.That(SearchBurst.ResultNaming([Control("1.1", "Button", "Cotele")], "cotle", null, "5.1"), Is.Null);
-        });
 
     // ---------------------------------------------------------------- reopen (pasada r15b, v3-09)
     private static readonly WindowsVisibleControlAdapter.ViewControl Tab = Control("10.1", "TabItem", "Dibujar");

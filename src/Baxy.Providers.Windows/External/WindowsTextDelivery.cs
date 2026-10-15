@@ -86,8 +86,10 @@ internal readonly record struct WindowIdentity(nint Window, int ProcessId, long 
 }
 
 /// <summary>What a delivery aimed at a field did: the method that took it, whether its re-read proves it was
-/// delivered, whether anything may have reached the field, and the failure when it did not.</summary>
-internal readonly record struct FieldDelivery(string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass);
+/// delivered, whether anything may have reached the field, the failure when it did not, and the entry of a list a «select»
+/// chose, as it was read (auditoría C9).</summary>
+internal readonly record struct FieldDelivery(
+    string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null);
 
 /// <summary>
 /// Text and keys delivered to the field of the mission's window by window messages (CONTRATO_VISTA_ACCION.md §2):

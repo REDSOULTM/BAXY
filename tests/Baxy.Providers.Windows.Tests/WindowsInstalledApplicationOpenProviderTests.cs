@@ -173,24 +173,32 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         }
     }
 
-    [Test]
-    public void ReservedNotepadIdentityResolvesByWindowsAppIdNotUiLanguage()
-    {
-        InstalledApplicationResolution resolution = InstalledApplicationResolver.ResolveAppId(
-            "Microsoft.WindowsNotepad",
-            Catalog);
-
-        Assert.That(resolution.Entry?.AppUserModelId, Does.StartWith("Microsoft.WindowsNotepad"));
-    }
-
-    [TestCase("chrome", "Google Chrome")]
+    // Auditoría D1, D2: only the installed name itself, folded; no part of it, no typo, no reserved id («Motion» was
+    // Notion, «windows.notepad» was the Notepad package). Nothing resolves, and the closest installed names are said.
+    [TestCase("Motion", "Notion")]
     [TestCase("steeam", "Steam")]
-    public void SafeUniqueAliasesAndMinorTyposResolve(string query, string expected)
+    [TestCase("chrome", null)]
+    [TestCase("windows.notepad", null)]
+    public void ANameThatIsNoInstalledNameResolvesNothingAndSaysTheClosest(string query, string? closest)
     {
-        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(query, Catalog);
+        InstalledApplicationEntry[] catalog = [.. Catalog, new("Notion", "Notion.Desktop")];
 
-        Assert.That(resolution.Entry?.Name, Is.EqualTo(expected));
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(query, catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.False);
+            Assert.That(resolution.Candidates, Has.Count.EqualTo(5));
+            if (closest is not null)
+                Assert.That(resolution.Candidates![0], Is.EqualTo(closest));
+        });
     }
+
+    [TestCase("google chrome", "Google Chrome")]
+    [TestCase("BLOC DE NOTAS", "Bloc de notas")]
+    public void TheInstalledNameResolvesFolded(string query, string expected) =>
+        Assert.That(InstalledApplicationResolver.Resolve(query, Catalog).Entry?.Name, Is.EqualTo(expected));
 
     [Test]
     public void SimilarStartEntriesRequireAnExactName()
@@ -202,7 +210,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         Assert.Multiple(() =>
         {
             Assert.That(resolution.Entry, Is.Null);
-            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Does.Contain("Visual Studio").And.Contain("Visual Studio Code"));
         });
     }
 
@@ -258,7 +266,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     [Test]
-    public async Task AmbiguousWindowStatusDoesNotGuessOrLaunch()
+    public async Task APartOfInstalledNamesIsNoApplicationAndNothingIsGuessedOrLaunched()
     {
         var platform = new FakePlatform(Catalog);
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
@@ -266,10 +274,12 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         ApplicationWindowStatusResult result = await provider.GetWindowStatusAsync(
             "Visual", CancellationToken.None);
 
+        // Auditoría D1: «Visual» is the name of no installed application (only part of two).
         Assert.Multiple(() =>
         {
-            Assert.That(result.Verified, Is.False);
-            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.ApplicationAmbiguous));
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Installed, Is.False);
+            Assert.That(result.DisplayName, Is.Null);
             Assert.That(platform.ActivateCalls, Is.Zero);
             Assert.That(platform.FocusCalls, Is.Zero);
         });
@@ -295,6 +305,50 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(opened.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.InventoryFailed));
             Assert.That(platform.ActivateCalls, Is.Zero);
             Assert.That(platform.FocusCalls, Is.Zero);
+        });
+    }
+
+    // Auditoría D5: the launch showed a window the application already had (it ran hidden; Windows showed it): no new
+    // window, so nothing was launched, and the result says already running, never «launched».
+    [Test]
+    public async Task AWindowThatWasThereBeforeTheLaunchIsAlreadyRunningNeverLaunched()
+    {
+        InstalledApplicationObservation hidden = Observation(foreground: false) with { Visible = false };
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [hidden],
+            ObservationAfterActivation = hidden with { Visible = true },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(73));
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1));
+            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(result.Receipt.ReusedExisting, Is.True);
+            Assert.That(result.Receipt.LaunchIssued, Is.False);
+        });
+    }
+
+    // Auditoría D1: a name that is no installed application opens nothing and says the closest installed names.
+    [Test]
+    public async Task AnOpeningOfANameNotInstalledOpensNothingAndSaysTheClosest()
+    {
+        var platform = new FakePlatform([.. Catalog, new("Notion", "Notion.Desktop")]);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Motion"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.ApplicationNotFound));
+            Assert.That(result.Candidates?[0], Is.EqualTo("Notion"));
+            Assert.That(platform.ActivateCalls, Is.Zero);
         });
     }
 
@@ -485,6 +539,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var platform = new FakePlatform(Catalog)
         {
             Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
             PersonFront = 0x500,
             WorkingFront = working ? 0x500 : 0,
             WindowAfterNewDocument = Observation(foreground: false) with { WindowHandle = 75 },
@@ -499,9 +554,10 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.Verified, Is.True);
             Assert.That(result.NewDocument, Is.True);
             Assert.That(result.WindowHandle, Is.EqualTo(75));
-            Assert.That(platform.FocusCalls, Is.EqualTo(working ? 0 : 2), "the reused window, then the new document");
+            Assert.That(platform.FocusCalls, Is.EqualTo(working ? 0 : 2), "the launched window, then the new document");
             Assert.That(result.ShownWithoutFocus, Is.EqualTo(working));
-            Assert.That(platform.RaisedWithoutActivation, Is.EqualTo(working ? [73L, 75L] : Array.Empty<long>()));
+            Assert.That(platform.RaisedWithoutActivation, Is.EqualTo(working ? [78L, 75L] : Array.Empty<long>()));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 78L }), "never the person's window");
         });
     }
 
@@ -542,6 +598,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var platform = new FakePlatform(Catalog)
         {
             Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
             PersonFront = 0x500,
             WorkingFront = 0x500,
             WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 75 },
@@ -1080,9 +1137,42 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     // cu-v3-documento-nuevo, twin of uso real t4-c14 «pegame lo que copie en un bloc de notas nuevo» with the person's
-    // «*lista pan» open: the opening makes a new document (a new tab of the same window) and never hands back theirs.
+    // «*lista pan» open. Auditoría D6: a new instance is launched and the document is made in its window (a new tab);
+    // the person's window gets no key and is never handed back.
     [Test]
-    public async Task NewDocumentInAnOpenApplicationIsMadeInItsWindowNotReusedAsItWas()
+    public async Task NewDocumentInAnOpenApplicationIsMadeInANewInstanceNeverInTheirs()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            TitleAfterNewDocument = "Sin título 2 - Bloc de notas",
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        platform.Titles[78] = "Sin título - Bloc de notas";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(result.AlreadyRunning, Is.False);
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1), "a new instance");
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 78L }));
+            // Review of cu-v3-documento-nuevo (finding 4): the opening leaves the front where it is (v3 point 0); only
+            // the command's own burst of the lease takes it, and gives it back.
+            Assert.That(platform.FocusCalls, Is.Zero, "the opening takes no front of its own");
+        });
+    }
+
+    // Auditoría D6: an application that only shows the instance that runs (no new window) makes no new document, and
+    // the person's window gets no key.
+    [Test]
+    public async Task AnApplicationThatOnlyShowsItsRunningInstanceMakesNoNewDocument()
     {
         var platform = new FakePlatform(Catalog)
         {
@@ -1097,13 +1187,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.Verified, Is.True);
-            Assert.That(result.NewDocument, Is.True);
-            Assert.That(result.WindowHandle, Is.EqualTo(73));
-            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
-            // Review of cu-v3-documento-nuevo (finding 4): the opening leaves the front where it is (v3 point 0); only
-            // the command's own burst of the lease takes it, and gives it back.
-            Assert.That(platform.FocusCalls, Is.Zero, "the opening takes no front of its own");
+            Assert.That(result.Verified, Is.False);
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.NewDocumentIssued, Is.Empty);
+            Assert.That(platform.FocusCalls, Is.Zero);
         });
     }
 
@@ -1114,6 +1202,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var platform = new FakePlatform(Catalog)
         {
             Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
             FrontFollowsRequest = true,
             WindowAfterNewDocument = Observation(foreground: false) with { WindowHandle = 75 },
         };
@@ -1138,7 +1227,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     {
         var platform = new FakePlatform(Catalog)
         {
-            Observations = [Observation(foreground: false)],
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
             TitleDrifts = drifts,
             TitleAfterNewDocument = titleAfter,
         };
@@ -1155,13 +1245,14 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     // A multi-window application (the fake catalog's entry stands for one such as Excel in t4-c06 «bro abre excel y
-    // crea un blank workbook»): the New command shows a new window, which is the result.
+    // crea un blank workbook»): the New command of the launched instance shows a new window, which is the result.
     [Test]
     public async Task NewDocumentShownAsANewWindowIsTheOpenedWindow()
     {
         var platform = new FakePlatform(Catalog)
         {
             Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
             FrontFollowsRequest = true,
             WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 75 },
         };
@@ -1174,19 +1265,21 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.Verified, Is.True);
             Assert.That(result.NewDocument, Is.True);
             Assert.That(result.WindowHandle, Is.EqualTo(75));
-            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(result.AlreadyRunning, Is.False);
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 78L }));
         });
     }
 
     // Nothing new seen (no window, the title as it was), or only a dialog of the application («¿Guardar cambios?»):
-    // an honest limit, so the plan stops before a paste reaches the person's document.
+    // an honest limit, so the plan stops before a paste reaches anything.
     [TestCase(false)]
     [TestCase(true)]
     public async Task NewDocumentNotSeenIsAnHonestLimit(bool onlyADialog)
     {
         var platform = new FakePlatform(Catalog)
         {
-            Observations = [Observation(foreground: false)],
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
             FrontFollowsRequest = true,
             WindowAfterNewDocument = onlyADialog ? Observation(foreground: true) with { WindowHandle = 76 } : null,
             Owned = [76],
@@ -1202,9 +1295,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.NewDocument, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
             Assert.That(result.Succeeded, Is.True, "the application was opened: an effect may have occurred");
+            // Auditoría D6: a dialog the command raised is never answered nor closed (the platform has no way to).
             Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
-            // Finding 6: the dialog the command raised is closed as cancelled, never left over the person's work.
-            Assert.That(platform.Dismissed, Is.EqualTo(onlyADialog ? new[] { 76L } : Array.Empty<long>()));
         });
     }
 
@@ -1215,7 +1307,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     {
         var platform = new FakePlatform(Catalog)
         {
-            Observations = [Observation(foreground: false)],
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
             PersonFront = 99,
             LeaseGrants = false,
             TitleAfterNewDocument = "Sin título - Bloc de notas",
@@ -1359,6 +1452,10 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         return platform;
     }
 
+    // The window of a new instance (another process of the application), beside the person's window 73.
+    private static InstalledApplicationObservation Launched() =>
+        Observation(foreground: false) with { WindowHandle = 78, ProcessId = 4343 };
+
     private static ApplicationOpenRequest NewDocument(string name) =>
         new(name, Guid.NewGuid().ToString("D"), NewDocument: true);
 
@@ -1465,10 +1562,6 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public bool TitleDrifts { get; init; }
 
         private int _titleReads;
-
-        public List<long> Dismissed { get; } = [];
-
-        public void DismissDialog(long windowHandle) => Dismissed.Add(windowHandle);
 
         public ValueTask<bool> IssueNewDocumentAsync(long windowHandle, CancellationToken cancellationToken)
         {
@@ -1582,8 +1675,16 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
                 Observations = [ObservationAfterActivation];
             }
 
+            if (LaunchedWindow is not null)
+            {
+                Observations = [.. Observations, LaunchedWindow];
+            }
+
             return true;
         }
+
+        // Auditoría D6: the window a launch shows beside the ones the application already had.
+        public InstalledApplicationObservation? LaunchedWindow { get; init; }
 
         public void RequestForeground(long windowHandle)
         {
