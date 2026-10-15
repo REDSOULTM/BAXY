@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -53,9 +52,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                     Encoding.UTF8,
                     "application/json"),
             };
-            string? apiKey = Environment.GetEnvironmentVariable("BAXY_VISION_API_KEY");
-            if (!string.IsNullOrWhiteSpace(apiKey))
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            LocalVisionEndpoint.Authorize(request);
             using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)

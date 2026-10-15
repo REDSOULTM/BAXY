@@ -25,6 +25,17 @@ internal static class LocalVisionEndpoint
         return true;
     }
 
+    /// <summary>
+    /// The key a local server started with one (llama-server --api-key) asks for, from BAXY_VISION_API_KEY; the request
+    /// only ever goes to the loopback endpoint TryResolve accepted.
+    /// </summary>
+    internal static void Authorize(HttpRequestMessage request)
+    {
+        string? apiKey = Environment.GetEnvironmentVariable("BAXY_VISION_API_KEY");
+        if (!string.IsNullOrWhiteSpace(apiKey))
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+    }
+
     internal static bool IsLoopback(Uri uri) =>
         uri.IsLoopback || (IPAddress.TryParse(uri.DnsSafeHost, out IPAddress? address) && IPAddress.IsLoopback(address));
 }
