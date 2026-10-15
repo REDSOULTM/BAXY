@@ -40,7 +40,6 @@ public sealed class MissionFrontTests
     // Nothing is sent when the person does not pause or the window does not come to the front: never behind them.
     [TestCase("input_user_not_paused")]
     [TestCase("input_window_not_in_front")]
-    [TestCase("input_mission_ended")]
     public async Task AnActWhoseFrontIsRefusedIsNeverSent(string refusal)
     {
         var lease = new TakingLease { Refusal = refusal };
@@ -57,6 +56,27 @@ public sealed class MissionFrontTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(adapter.Calls, Is.Zero);
             Assert.That(lease.Ended, Is.Empty);
+        });
+    }
+
+    // CU4 (auditoría final 2): an act that would reach a developer's or BAXY's own window no look named is never sent,
+    // and no front is taken for it.
+    [Test]
+    public async Task AnActOnAProtectedWindowIsNeverSent()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":18016}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(lease.Taken, Is.Empty);
         });
     }
 

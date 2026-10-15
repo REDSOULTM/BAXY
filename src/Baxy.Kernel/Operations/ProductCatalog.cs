@@ -236,7 +236,7 @@ public static class ProductCatalog
             Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
             OperationRisks.LowReversible,
             "calculator.expression.evaluate.windows.calculator.uia.display.v1",
-            "Escribe una expresión aritmética simple en la Calculadora de Windows abierta (en primer plano, verificada) y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora."),
+            "Pulsa una expresión aritmética simple (números y + - * /) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora."),
         Descriptor(
             "calendar.event.create",
             Schema(
@@ -450,7 +450,7 @@ public static class ProductCatalog
                 ["folder", "name"]),
             OperationRisks.LowReversible,
             "file.open.shell.window.process.postread.v1",
-            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece."),
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto."),
         Descriptor(
             "file.read",
             Schema(
@@ -587,13 +587,13 @@ public static class ProductCatalog
             "filesystem.sandbox.diff.named",
             Schema(
                 [
-                    String("leftQuery", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("rightQuery", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("leftFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("rightFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
-                ["leftQuery", "rightQuery"]),
+                ["leftFileName", "rightFileName"]),
             OperationRisks.ReadOnly,
             "filesystem.sandbox.diff.named.hash.snapshot.v1",
-            "Compara dos archivos de texto resueltos de forma única y devuelve hashes y líneas diferentes."),
+            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes."),
         Descriptor(
             "filesystem.sandbox.move.named",
             Schema(
@@ -1309,7 +1309,9 @@ public static class ProductCatalog
                 ["command"]),
             OperationRisks.LowReversible,
             "shell.command.run.powershell.captured.output.v1",
-            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto."),
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; un código distinto de cero es un fallo con su salida y su error; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto.",
+            // A command that only reads ran with no effect; one that may change something reports what ran.
+            requiresObservedEffect: false),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),
@@ -1430,14 +1432,14 @@ public static class ProductCatalog
                         values:
                         [
                             "accessible_mode", "airplane_mode", "brightness", "confirmation_bypass",
-                            "do_not_disturb", "night_light",
+                            "do_not_disturb",
                         ]),
                     Integer("value", 0, 100),
                 ],
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
-            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar, luz nocturna o modo avión sobre todas las radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
+            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar o modo avión sobre todas las radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
         Descriptor(
             "system.settings.status",
             Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),

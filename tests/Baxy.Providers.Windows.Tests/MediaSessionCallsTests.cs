@@ -115,7 +115,7 @@ public sealed class MediaSessionCallsTests
                 .Select(source => (source, "song", true)).ToArray(),
             (_, _) => ValueTask.CompletedTask,
             (_, _) => ValueTask.CompletedTask);
-        using var media = new WindowsMediaSessionAdapter(new HttpClient(), () => null, sessions: access);
+        var media = new WindowsMediaSessionAdapter(sessions: access);
         var browser = new Player(plays
             ? ExternalJson.Success("media.play.youtube", Json($$"""{"sourceAppUserModelId":"{{Opera}}"}"""))
             : ExternalJson.FailureAfterEffect("media.play.youtube", "youtube_playback_unconfirmed"));

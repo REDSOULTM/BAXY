@@ -151,7 +151,16 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
             writer.WriteString("authority", "shell_process_exit_and_captured_output");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved: true);
+        // Auditoría final 2: what ran is an effect only when the command may change something (the kernel's own reading
+        // of it, RiskPolicy.ShellMayChange); a command that only reads changed nothing. A non-zero exit is a failure,
+        // with its output and error text.
+        bool mayChange = Baxy.Kernel.Policy.RiskPolicy.ShellMayChange(operation, arguments);
+        return process.ExitCode == 0
+            ? ExternalJson.Success(operation, result, effectObserved: mayChange)
+            : new ExternalCapabilityReceipt(operation, false, false, result, "shell_command_exit_nonzero")
+            {
+                EffectMayHaveOccurred = mayChange,
+            };
     }
 
     private static (string Text, bool Truncated) Bound(string text)

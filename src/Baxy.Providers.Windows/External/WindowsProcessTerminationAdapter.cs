@@ -5,11 +5,20 @@ namespace Baxy.Providers.Windows.External;
 
 internal sealed record WindowsProcessIdentity(int ProcessId, long StartTimeUtcTicks);
 
+// What ending one observed process came to: this kill ended it, it had already exited on its own, or it is still
+// there (or its id now belongs to another process).
+internal enum WindowsProcessTermination
+{
+    Terminated,
+    AlreadyExited,
+    NotTerminated,
+}
+
 internal interface IWindowsProcessTerminationPlatform
 {
     IReadOnlyList<WindowsProcessIdentity> Snapshot(string processName);
 
-    bool Terminate(string processName, WindowsProcessIdentity identity);
+    WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity);
 }
 
 internal sealed class WindowsProcessTerminationPlatform : IWindowsProcessTerminationPlatform
@@ -31,7 +40,9 @@ internal sealed class WindowsProcessTerminationPlatform : IWindowsProcessTermina
         }
     }
 
-    public bool Terminate(string processName, WindowsProcessIdentity identity)
+    // Only the named process is ended: the confirmation names one executable, so the processes it started (an
+    // explorer's windows, a launcher's games) are not part of the request.
+    public WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity)
     {
         try
         {
@@ -39,15 +50,17 @@ internal sealed class WindowsProcessTerminationPlatform : IWindowsProcessTermina
             if (!string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase)
                 || process.StartTime.ToUniversalTime().Ticks != identity.StartTimeUtcTicks)
             {
-                return false;
+                return WindowsProcessTermination.NotTerminated;
             }
 
-            process.Kill(entireProcessTree: true);
-            return process.WaitForExit(5000) && process.HasExited;
+            process.Kill(entireProcessTree: false);
+            return process.WaitForExit(5000) && process.HasExited
+                ? WindowsProcessTermination.Terminated
+                : WindowsProcessTermination.NotTerminated;
         }
         catch (ArgumentException)
         {
-            return true;
+            return WindowsProcessTermination.AlreadyExited;
         }
     }
 }
@@ -78,12 +91,25 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
             cancellationToken.ThrowIfCancellationRequested();
             string processName = NormalizeName(ExternalJson.RequiredString(arguments, "name"));
             IReadOnlyList<WindowsProcessIdentity> before = _platform.Snapshot(processName);
-            int terminated = 0;
+            if (before.Count == 0)
+            {
+                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(operation, "process_not_running"));
+            }
+
+            int terminated = 0, alreadyExited = 0;
             foreach (WindowsProcessIdentity identity in before)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 effectMayHaveOccurred = true;
-                if (_platform.Terminate(processName, identity)) terminated++;
+                switch (_platform.Terminate(processName, identity))
+                {
+                    case WindowsProcessTermination.Terminated:
+                        terminated++;
+                        break;
+                    case WindowsProcessTermination.AlreadyExited:
+                        alreadyExited++;
+                        break;
+                }
             }
 
             IReadOnlyList<WindowsProcessIdentity> after = _platform.Snapshot(processName);
@@ -106,6 +132,7 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
                 writer.WriteString("processName", processName);
                 writer.WriteNumber("beforeCount", before.Count);
                 writer.WriteNumber("terminatedCount", terminated);
+                writer.WriteNumber("alreadyExitedCount", alreadyExited);
                 writer.WriteNumber("afterCount", after.Count);
                 writer.WriteBoolean("originalIdentitiesAbsent", true);
                 writer.WriteNumber("replacementCount", replacements.Length);
@@ -130,8 +157,10 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
                 writer.WriteString("authority", "windows_process_original_identity_absence_postread");
                 writer.WriteEndObject();
             });
-            return ValueTask.FromResult(ExternalJson.Success(
-                operation, result, effectObserved: before.Count > 0));
+            // Processes that had all exited on their own before the kill leave the state asked for, reached by nothing
+            // this call did.
+            return ValueTask.FromResult(ExternalJson.Switched(
+                operation, result, effectObserved: terminated > 0));
         }
         catch (InvalidDataException)
         {

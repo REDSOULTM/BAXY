@@ -44,10 +44,11 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             $entry=[string]$appointment.EntryID
             $verified=$session.GetItemFromID($entry)
             $ok=([string]$verified.Subject -ceq [string]$input.title) -and (([DateTime]$verified.Start).ToUniversalTime() -eq $start) -and (([DateTime]$verified.End).ToUniversalTime() -eq $end)
-            [pscustomobject]@{ok=$ok;effectObserved=$true;entryId=$entry;title=[string]$verified.Subject;startUtc=([DateTime]$verified.Start).ToUniversalTime().ToString('O');endUtc=([DateTime]$verified.End).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
+            if(-not $ok){[pscustomobject]@{ok=$false;effectObserved=$true;error='outlook_calendar_postread_mismatch'}|ConvertTo-Json -Compress;exit 2}
+            [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entry;title=[string]$verified.Subject;startUtc=([DateTime]$verified.Start).ToUniversalTime().ToString('O');endUtc=([DateTime]$verified.End).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
           }
         } catch {
-          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_com_failed'}|ConvertTo-Json -Compress
+          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_calendar_com_failed'}|ConvertTo-Json -Compress
           exit 2
         }
         """;
@@ -100,7 +101,8 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           if($null -eq $sent){throw 'outlook_sent_postread_missing'}
           [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
         } catch {
-          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_mail_failed'}|ConvertTo-Json -Compress
+          $code=[string]$_.Exception.Message;if(@('outlook_inbox_empty','outlook_latest_identity_mismatch','outlook_sent_postread_missing') -notcontains $code){$code='outlook_mail_com_failed'}
+          [pscustomobject]@{ok=$false;effectObserved=$effect;error=$code}|ConvertTo-Json -Compress
           exit 2
         }
         """;
@@ -205,15 +207,18 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         bool effect = response.RootElement.TryGetProperty("effectObserved", out JsonElement observed)
             && observed.ValueKind == JsonValueKind.True;
         if (!IsOk(response.RootElement))
-            return effectBoundary.Failure(operation, "outlook_mail_operation_failed", effect);
+            return effectBoundary.Failure(operation, ErrorCode(response.RootElement, "outlook_mail_operation_failed"), effect);
         JsonElement result = EmailResult(response.RootElement, reply, text);
         return ExternalJson.Success(operation, result, effect);
     }
 
     // Fase 7 (D4): a mail to a free address from the owner's classic Outlook profile,
     // verified by the copy in Sent Items (recipient, text, time). The address is
-    // checked before anything runs; the subject defaults to the text's opening.
-    private const string SendMailScript = """
+    // checked before anything runs; the subject defaults to the text's opening. The
+    // copy is the one sent only when one of its recipients' addresses is the address,
+    // case aside; the receipt carries the copy's recipients and subject as read.
+    // message.send.test (its fixed test destination) sends through the same script.
+    internal const string SendMailScript = """
         $ErrorActionPreference='Stop'
         $input=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))|ConvertFrom-Json
         $effect=$false
@@ -234,14 +239,16 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
               if($seen++ -ge 50){break}
               try {
                 $sentOn=([DateTime]$candidate.SentOn).ToUniversalTime()
-                if($sentOn -ge $baseline.AddMinutes(-2) -and ([string]$candidate.To).ToLowerInvariant().Contains($to.ToLowerInvariant()) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;break}
+                $addresses=@(foreach($recipient in $candidate.Recipients){[string]$recipient.Address})
+                if($sentOn -ge $baseline.AddMinutes(-2) -and ($addresses | Where-Object {$_ -ieq $to}) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;$sentTo=$addresses;break}
               }catch{}
             }
           }
           if($null -eq $sent){throw 'outlook_sent_postread_missing'}
-          [pscustomobject]@{ok=$true;effectObserved=$true;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O');sentTo=[string]$sent.To;subject=[string]$sent.Subject}|ConvertTo-Json -Compress
+          [pscustomobject]@{ok=$true;effectObserved=$true;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O');sentTo=@($sentTo);subject=[string]$sent.Subject}|ConvertTo-Json -Compress
         } catch {
-          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_mail_failed'}|ConvertTo-Json -Compress
+          $code=[string]$_.Exception.Message;if($code -cne 'outlook_sent_postread_missing'){$code='outlook_mail_send_failed'}
+          [pscustomobject]@{ok=$false;effectObserved=$effect;error=$code}|ConvertTo-Json -Compress
           exit 2
         }
         """;
@@ -292,8 +299,17 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("to", to);
-            writer.WriteString("subject", subject);
+            writer.WriteStartArray("sentTo");
+            if (root.TryGetProperty("sentTo", out JsonElement sentTo) && sentTo.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement address in sentTo.EnumerateArray())
+                {
+                    writer.WriteStringValue(address.GetString());
+                }
+            }
+            writer.WriteEndArray();
+            writer.WriteString("subject", root.TryGetProperty("subject", out JsonElement sentSubject)
+                && sentSubject.ValueKind == JsonValueKind.String ? sentSubject.GetString() : string.Empty);
             writer.WriteString("text", text);
             writer.WriteBoolean("sent", true);
             writer.WriteString("sentMessageId", Opaque("email", root.GetProperty("sentEntryId").GetString() ?? string.Empty));
@@ -343,7 +359,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         if (!IsOk(response.RootElement))
         {
             return effectBoundary.Failure(
-                operation, "outlook_calendar_operation_failed", effect);
+                operation, ErrorCode(response.RootElement, "outlook_calendar_operation_failed"), effect);
         }
         JsonElement result = create
             ? CalendarCreated(response.RootElement)
@@ -466,6 +482,13 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
 
     private static bool IsOk(JsonElement root) => root.TryGetProperty("ok", out JsonElement ok)
         && ok.ValueKind == JsonValueKind.True;
+
+    // The cause the Outlook script named (its own codes only), or the operation's general failure.
+    private static string ErrorCode(JsonElement root, string fallback) =>
+        root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
+            && error.GetString() is { Length: > 0 } code
+            ? code
+            : fallback;
 
     private static DateTimeOffset RequireUtc(JsonElement arguments, string name)
     {

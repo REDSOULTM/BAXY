@@ -2101,10 +2101,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 
     public bool Activate(InstalledApplicationEntry entry, bool forControl)
     {
-        // v3 r5a M5: a program Windows would raise to administrator unasked starts with the person's own rights
-        // (forControl). cu-v3-elevacion: every opening carries it unless the person asked for administrator rights
-        // (MindArgumentNormalization); measured live on r9 (v3-23, v3-65), a console opened through the shell came up
-        // as administrator and the next turn could neither read nor press it. A start that fails (the job refuses the
+        // v3 r5a M5: a program Windows would raise to administrator unasked starts with the person's own rights when
+        // app.open says forControl. cu-v3-elevacion: measured live on r9 (v3-23, v3-65), a console opened through the
+        // shell came up as administrator and the next turn could neither read nor press it. A start that fails (the job refuses the
         // breakaway) falls back to the shell's path: an elevated window is an honest limit.
         if (forControl
             && InvokerLaunch.Plan(entry, File.Exists, InvokerLaunch.AssociatedCommand, InvokerLaunch.ReadManifest)

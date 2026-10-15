@@ -159,11 +159,13 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string asked = ExternalJson.RequiredString(arguments, "folder");
+        string folder = ExternalJson.RequiredString(arguments, "folder");
         string name = ExternalJson.RequiredString(arguments, "name").Trim();
-        (string? path, string folder, string? error) = LocateOpenTarget(asked, name, cancellationToken: cancellationToken);
-        if (path is null)
-            return ExternalJson.FailureBeforeEffect(operation, error ?? "file_not_found");
+        OpenTarget target = LocateOpenTarget(folder, name, cancellationToken: cancellationToken);
+        if (target.Path is not { } path)
+            return target.Error == "file_not_found"
+                ? new ExternalCapabilityReceipt(operation, false, false, NotFoundResult(folder, name, target), target.Error)
+                : ExternalJson.FailureBeforeEffect(operation, target.Error ?? "file_not_found");
         if (!SafeOpenExtensions.Contains(Path.GetExtension(path).ToLowerInvariant()))
             return ExternalJson.FailureBeforeEffect(operation, "file_extension_not_openable");
         if (arguments.TryGetProperty("application", out JsonElement named) && named.ValueKind == JsonValueKind.String
@@ -172,7 +174,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             // molestia-ayudantes: «foreground» when the person asked to see it (the App's rule by who asked, as app.open's:
             // a turn's file.open), never when a mission opens it to work in it (it stays behind the person's window).
             bool shown = arguments.TryGetProperty("foreground", out JsonElement front) && front.ValueKind == JsonValueKind.True;
-            return await OpenWithAsync(operation, asked, folder, path, application, shown, cancellationToken)
+            return await OpenWithAsync(operation, folder, path, application, shown, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -207,7 +209,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                     writer.WriteNumber("version", 1);
                     writer.WriteString("folder", folder);
                     writer.WriteString("name", fileName);
-                    WriteOpenedPlace(writer, asked, folder, path);
+                    WriteOpenedPlace(writer, folder, path);
                     writer.WriteString("windowTitle", opened.title);
                     if (processId is not null) writer.WriteNumber("processId", processId.Value);
                     writer.WriteString("authority", "shell_open_window_title_postread");
@@ -225,7 +227,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 writer.WriteNumber("version", 1);
                 writer.WriteString("folder", folder);
                 writer.WriteString("name", fileName);
-                WriteOpenedPlace(writer, asked, folder, path);
+                WriteOpenedPlace(writer, folder, path);
                 writer.WriteNumber("processId", processId.Value);
                 writer.WriteString("authority", "shell_open_process_postread");
                 writer.WriteEndObject();
@@ -243,7 +245,6 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     // es la ventana de esa aplicación, o una nueva, cuyo título nombra el archivo.
     private async ValueTask<ExternalCapabilityReceipt> OpenWithAsync(
         string operation,
-        string asked,
         string folder,
         string path,
         string application,
@@ -303,7 +304,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                     writer.WriteNumber("version", 1);
                     writer.WriteString("folder", folder);
                     writer.WriteString("name", fileName);
-                    WriteOpenedPlace(writer, asked, folder, path);
+                    WriteOpenedPlace(writer, folder, path);
                     writer.WriteString("application", opened.DisplayName);
                     writer.WriteString("windowTitle", window.Title);
                     writer.WriteNumber("processId", processId > 0 ? processId : opened.ProcessId ?? 0);
@@ -368,17 +369,25 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
 
     // v3 ronda 3 (lugar M6; v3-15, v3-18, t-file-4): el nombre puede traer
     // subcarpetas relativas a la carpeta conocida («baxy-prueba-v3\paisaje.jpg»),
-    // nunca «..» ni una ruta absoluta. Si el archivo no está donde se dijo, se
-    // busca por su nombre exacto en las carpetas conocidas: uno solo se abre y
-    // el recibo dice dónde estaba; dos o más no se adivinan. Un nombre con
-    // subcarpetas dice dónde está: si no está ahí, no se busca otro. Una
-    // búsqueda cortada por tiempo o cancelación no prueba que el hallado sea el
-    // único: no se abre nada (file_search_incomplete).
+    // nunca «..» ni una ruta absoluta. Sólo se abre el archivo que está donde se
+    // dijo (auditoría final 2: abrir otro de otra carpeta era elegir por el
+    // modelo). Si no está, falla con file_not_found y el recibo dice dónde se vio
+    // un archivo con ese nombre exacto en las carpetas conocidas (a lo sumo
+    // cinco, y si la búsqueda terminó), para que el modelo lo abra desde ahí. Un
+    // nombre con subcarpetas dice dónde está: no se busca en otro sitio.
     private static readonly string[] OpenSearchFolders = ["desktop", "documents", "downloads", "pictures"];
     private const int OpenSearchDepth = 4;
+    private const int OpenSearchCandidates = 5;
     private static readonly TimeSpan OpenSearchBudget = TimeSpan.FromSeconds(3);
 
-    internal (string? Path, string Folder, string? Error) LocateOpenTarget(
+    // Where the file asked for is (Path), or why it is not opened (Error) and where a file of that exact name was seen.
+    internal sealed record OpenTarget(
+        string? Path,
+        string? Error,
+        IReadOnlyList<(string Folder, string RelativePath)> SeenElsewhere,
+        bool SearchComplete);
+
+    internal OpenTarget LocateOpenTarget(
         string folder,
         string name,
         TimeSpan? budget = null,
@@ -386,17 +395,17 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     {
         string? root = ResolveKnownFolder(folder);
         if (root is null)
-            return (null, folder, "known_folder_missing");
+            return new(null, "known_folder_missing", [], true);
         string? path = SafeRelative(root, name);
         if (path is null)
-            return (null, folder, "file_name_invalid");
+            return new(null, "file_name_invalid", [], true);
         if (File.Exists(path))
-            return (path, folder, null);
+            return new(path, null, [], true);
         if (name.IndexOfAny(['\\', '/']) >= 0)
-            return (null, folder, "file_not_found");
+            return new(null, "file_not_found", [], true);
         string leaf = System.IO.Path.GetFileName(path);
         TimeSpan limit = budget ?? OpenSearchBudget;
-        var found = new List<(string Path, string Folder)>();
+        var found = new List<(string Folder, string RelativePath)>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var clock = Stopwatch.StartNew();
         bool incomplete = false;
@@ -438,9 +447,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 };
                 foreach (string candidate in entries)
                 {
-                    if (!found.Any(item => string.Equals(item.Path, candidate, StringComparison.OrdinalIgnoreCase)))
-                        found.Add((candidate, known));
-                    if (found.Count > 1 || OutOfTime())
+                    found.Add((known, System.IO.Path.GetRelativePath(knownRoot, candidate)));
+                    if (found.Count >= OpenSearchCandidates || OutOfTime())
                         break;
                 }
             }
@@ -449,27 +457,38 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 continue;
             }
 
-            if (found.Count > 1)
+            if (found.Count >= OpenSearchCandidates)
                 break;
         }
 
-        if (found.Count > 1)
-            return (null, folder, "file_ambiguous");
-        if (incomplete)
-            return (null, folder, "file_search_incomplete");
-        return found.Count == 1 ? (found[0].Path, found[0].Folder, null) : (null, folder, "file_not_found");
+        return new(null, "file_not_found", found, !incomplete && found.Count < OpenSearchCandidates);
     }
 
-    private void WriteOpenedPlace(Utf8JsonWriter writer, string asked, string folder, string path)
+    private static JsonElement NotFoundResult(string folder, string name, OpenTarget target) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("version", 1);
+        writer.WriteString("folder", folder);
+        writer.WriteString("name", name);
+        writer.WriteStartArray("seenElsewhere");
+        foreach ((string seenFolder, string relativePath) in target.SeenElsewhere)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("folder", seenFolder);
+            writer.WriteString("name", relativePath);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+        writer.WriteBoolean("searchComplete", target.SearchComplete);
+        writer.WriteEndObject();
+    });
+
+    private void WriteOpenedPlace(Utf8JsonWriter writer, string folder, string path)
     {
         string? root = ResolveKnownFolder(folder);
-        string relative = root is null ? System.IO.Path.GetFileName(path) : System.IO.Path.GetRelativePath(root, path);
-        writer.WriteString("relativePath", relative);
-        if (!string.Equals(asked, folder, StringComparison.Ordinal)
-            || !string.Equals(relative, System.IO.Path.GetFileName(path), StringComparison.Ordinal))
-        {
-            writer.WriteString("askedFolder", asked);
-        }
+        writer.WriteString(
+            "relativePath",
+            root is null ? System.IO.Path.GetFileName(path) : System.IO.Path.GetRelativePath(root, path));
     }
 
     internal static string? SafeRelative(string root, string name)

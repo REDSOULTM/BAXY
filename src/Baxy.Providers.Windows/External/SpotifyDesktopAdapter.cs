@@ -9,8 +9,6 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
 {
     private readonly IExternalProcessRunner _runner;
     private readonly string _scriptPath;
-    private readonly string _controlScriptPath;
-    private readonly Func<string, bool> _processExists;
     private readonly Func<nint> _clientWindow;
     private readonly TimeProvider _time;
 
@@ -42,16 +40,14 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
 
     internal SpotifyDesktopAdapter()
         : this(new ExternalProcessRunner(), Path.Combine(
-            AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"), Path.Combine(
-            AppContext.BaseDirectory, "SpotifyMediaControl.ps1"),
-            static name => Process.GetProcessesByName(name).Length > 0,
+            AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"),
             clientWindow: ClientMainWindow)
     {
         InputLease = ForegroundLease.Shared;
     }
 
     /// <summary>
-    /// v3 point 0, fix 3: both scripts bring the client up and drive it with real keys and clicks, so each call runs in
+    /// v3 point 0, fix 3: the script brings the client up and drives it with real keys and clicks, so each call runs in
     /// one helper burst of this lease (after the person's pause; the front and the cursor given back after). Null runs
     /// them directly (the test seams, whose runners are fakes).
     /// </summary>
@@ -60,17 +56,11 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
     internal SpotifyDesktopAdapter(
         IExternalProcessRunner runner,
         string? scriptPath = null,
-        string? controlScriptPath = null,
-        Func<string, bool>? processExists = null,
         TimeProvider? time = null,
         Func<nint>? clientWindow = null)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _scriptPath = scriptPath ?? "SpotifyDesktopAutomation.ps1";
-        _controlScriptPath = controlScriptPath ?? "SpotifyMediaControl.ps1";
-        // Test doubles drive the script with fixture output; only the product
-        // constructor looks for the real client.
-        _processExists = processExists ?? (static _ => true);
         _clientWindow = clientWindow ?? (static () => 0);
         _time = time ?? TimeProvider.System;
     }
@@ -91,15 +81,11 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
     }
 
     public bool CanHandle(string operation) => operation is
-        "media.play.exact" or "media.play.query" or "media.control";
+        "media.play.exact" or "media.play.query";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation, JsonElement arguments, CancellationToken cancellationToken)
     {
-        if (operation == "media.control")
-        {
-            return await ControlAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
-        }
         string provider;
         string title;
         bool exactSelection = operation == "media.play.exact";
@@ -300,120 +286,4 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         "spotify_exact_result_not_found"
         or "spotify_exact_play_control_not_found"
         or "spotify_uia_failed";
-
-    private async ValueTask<ExternalCapabilityReceipt> ControlAsync(
-        string operation,
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        string action;
-        try
-        {
-            action = ExternalJson.RequiredString(arguments, "action");
-        }
-        catch (InvalidDataException)
-        {
-            return ExternalJson.FailureBeforeEffect(
-                operation, "media_control_action_invalid");
-        }
-        bool spotifyNamed = false;
-        if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
-            && sourceApp.ValueKind == JsonValueKind.String)
-        {
-            // BAXY Renew audit 2026-10-15 (S6): the app the model named is compared whole with the provider's own name
-            // (the catalog's «provider» value for Spotify), never searched for inside the argument.
-            if (!string.Equals(sourceApp.GetString(), "spotify", StringComparison.OrdinalIgnoreCase))
-            {
-                return ExternalJson.Failure(operation, "media_source_app_not_spotify");
-            }
-            spotifyNamed = true;
-        }
-        if (action is not ("play" or "pause" or "next" or "previous" or "stop" or "toggle"))
-        {
-            return ExternalJson.Failure(operation, "media_control_action_invalid");
-        }
-        if (!File.Exists(_controlScriptPath))
-        {
-            return ExternalJson.Failure(operation, "spotify_uia_control_script_missing");
-        }
-        // 2026-09-22 (owner's turn 148): with no Spotify process the script died at
-        // its first stage after the boundary was crossed, and the failure travelled
-        // as an ambiguous effect that held the whole conversation. Nothing can have
-        // happened in a client that is not running.
-        // Tanda 6 «pasar al siguiente episodio» with nothing playing was told «el
-        // cliente de Spotify no estaba abierto»: this automation is the last player
-        // of the chain, reached only when no media session, local player or YouTube
-        // tab answered. With Spotify not named and not running, what was found is
-        // that nothing is playing; Spotify's absence is the answer only when the
-        // person asked for Spotify.
-        if (!_processExists(ClientProcess))
-        {
-            return ExternalJson.FailureBeforeEffect(
-                operation, spotifyNamed ? "spotify_client_not_running" : "media_session_not_found");
-        }
-        IInputBurst? burst = await LeasedInput.HelperBurstAsync(InputLease, cancellationToken).ConfigureAwait(false);
-        if (burst?.Refusal is string refusal)
-        {
-            _ = burst.Restore();
-            return ExternalJson.FailureBeforeEffect(operation, refusal);
-        }
-
-        using var restore = new BurstRestore(burst);
-        var effectBoundary = new ExternalEffectBoundary();
-        try
-        {
-            effectBoundary.Cross(cancellationToken);
-            (ExternalProcessResult? watched, bool interrupted) = await LeasedInput.WatchHelperAsync(
-                burst,
-                run => _runner.RunAsync(
-                    "powershell.exe",
-                    ["-NoProfile", "-NonInteractive", "-STA", "-File", _controlScriptPath, action],
-                    TimeSpan.FromSeconds(20),
-                    run),
-                cancellationToken).ConfigureAwait(false);
-            if (interrupted || watched is not { } process)
-                return effectBoundary.Failure(operation, LeasedInput.Interrupted, true);
-            string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
-                .LastOrDefault();
-            if (line is null)
-            {
-                return effectBoundary.Failure(operation, "spotify_uia_control_process_failed");
-            }
-            using JsonDocument response = JsonDocument.Parse(line);
-            bool effect = response.RootElement.TryGetProperty(
-                "effectObserved", out JsonElement observed)
-                && observed.ValueKind == JsonValueKind.True;
-            if (!response.RootElement.TryGetProperty("ok", out JsonElement ok)
-                || ok.ValueKind != JsonValueKind.True)
-            {
-                string error = response.RootElement.TryGetProperty(
-                    "error", out JsonElement errorValue)
-                    ? errorValue.GetString() ?? "spotify_uia_control_not_verified"
-                    : "spotify_uia_control_not_verified";
-                return effectBoundary.Failure(operation, error, effect);
-            }
-            string playbackStatus = response.RootElement.TryGetProperty(
-                "playbackStatus", out JsonElement status)
-                ? status.GetString() ?? "unknown"
-                : "unknown";
-            JsonElement result = ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                writer.WriteString("provider", "spotify"); writer.WriteString("action", action);
-                writer.WriteString("playbackStatus", playbackStatus);
-                writer.WriteNumber("processId", response.RootElement.GetProperty("processId").GetInt32());
-                writer.WriteString("authority", "spotify_windows_uia_postread"); writer.WriteEndObject();
-            });
-            return ExternalJson.Success(operation, result, effect);
-        }
-        catch (OperationCanceledException) when (
-            cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
-        {
-            return effectBoundary.Failure(operation, "spotify_uia_control_adapter_failed");
-        }
-        catch (Exception exception) when (exception is IOException or JsonException or TimeoutException)
-        {
-            return effectBoundary.Failure(operation, "spotify_uia_control_adapter_failed");
-        }
-    }
 }

@@ -14,16 +14,15 @@ internal readonly record struct PublicPlace(
     string Country,
     double Latitude,
     double Longitude,
-    string Source,
-    string? CountryCode = null);
+    string Source);
 
 /// <summary>
 /// Uso real tanda 4c (2026-09-24): el clima ya sabía dónde está este PC y la
 /// búsqueda «cerca de mí» no. Este lector es el único que lo averigua: pregunta
-/// a dos servicios públicos por la dirección pública de este PC (el segundo
-/// contesta cuando el primero no) con la petición vacía; ninguno recibe nada de
-/// la persona, y lo que sale de aquí hacia otros servicios es sólo la ciudad o
-/// las coordenadas que el propio servicio dedujo de esa dirección.
+/// a un servicio público (ipwho.is, por https) por la dirección pública de este
+/// PC con la petición vacía; no recibe nada de la persona, y lo que sale de aquí
+/// hacia otros servicios es sólo la ciudad o las coordenadas que el propio
+/// servicio dedujo de esa dirección.
 /// </summary>
 internal sealed class PublicPlaceLocator
 {
@@ -77,10 +76,7 @@ internal sealed class PublicPlaceLocator
                     ReadString(root, "country") ?? string.Empty,
                     latitude.Value,
                     longitude.Value,
-                    "public_ip_address",
-                    // M54: the country the service deduced, so a search near this PC stays in its country
-                    // (v3b-final F-p01-t2: «Curico» alone geocoded to Curico, Indiana).
-                    ReadString(root, "country_code"));
+                    "public_ip_address");
             }
             catch (JsonException)
             {

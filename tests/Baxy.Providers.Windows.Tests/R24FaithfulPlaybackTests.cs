@@ -107,21 +107,6 @@ public sealed class R24FaithfulPlaybackTests
         });
     }
 
-    // S6: the app named for media.control is compared whole with «spotify», never looked for inside the argument.
-    [TestCase("spotify", "spotify_client_not_running")]
-    [TestCase("Spotify", "spotify_client_not_running")]
-    [TestCase("spotify web player", "media_source_app_not_spotify")]
-    [TestCase("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify", "media_source_app_not_spotify")]
-    public async Task TheSourceAppIsComparedWholeWithSpotify(string sourceApp, string error)
-    {
-        var adapter = new SpotifyDesktopAdapter(new Runner("{\"ok\":true}"), processExists: static _ => false);
-        string arguments = JsonSerializer.Serialize(new Dictionary<string, string> { ["action"] = "next", ["sourceApp"] = sourceApp });
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("media.control", Json(arguments), CancellationToken.None);
-
-        Assert.That(receipt.ErrorCode, Is.EqualTo(error));
-    }
-
     private static readonly SearchAddress[] Engines = LoadEngines();
 
     private static SearchAddress[] LoadEngines()

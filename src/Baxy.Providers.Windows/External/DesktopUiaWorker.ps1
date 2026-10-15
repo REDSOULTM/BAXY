@@ -291,7 +291,7 @@ public static class BaxyUiaWorkerNative {
     }
     return best;
   }
-  // Whether any host shows a render surface at all (the planner's fact «render»).
+  // Whether any host shows a render surface at all (the look's «render»).
   public static bool HostsRender(IntPtr[] hosts, uint process) {
     if(hosts==null) return false;
     foreach(IntPtr host in hosts){
@@ -1362,11 +1362,6 @@ function Test-Asks([string]$text,$asks){
   if([string]::IsNullOrWhiteSpace($text)){ return $false }
   return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
 }
-function Test-AsksMore([string]$name,[string[]]$aliases,$asks){
-  if($null -eq $asks -or ([string]$asks.pattern).Length -eq 0 -or -not (Test-Asks $name $asks)){ return $false }
-  foreach($alias in $aliases){ if(Test-Asks $alias $asks){ return $false } }
-  return $true
-}
 # Revision de V (H2, H3): lo que recibe la pulsacion. Su nombre crudo (Format-Name lo recorta a 80: un canal de voz de
 # nombre largo perdia 'Canal de voz' en el recorte) y su nombre mostrado; y, si no se pulsa por si mismo (sin Invoke,
 # SelectionItem, Toggle ni ExpandCollapse: el Text de dentro de un enlace, cuya pulsacion legacy, render o de puntero cae
@@ -2405,8 +2400,8 @@ function ConvertTo-MenuViewEntries($menuEntries){
     if($null -eq $menu -or ([string]$menu.Path).Length -eq 0){ continue }
     $parts=@()
     if([bool]$menu.FillsOnOpen){ $parts+='fills-on-open' }
-    # Revision 2 (B2): marcable es un hecho neutro (la entrada conmuta un ajuste), no su estado: la mente no la pulsa
-    # buscando un lugar.
+    # Revision 2 (B2): marcable es un hecho neutro (la entrada conmuta un ajuste), no su estado: la vista dice que no
+    # lleva a un lugar.
     elseif([bool]$menu.Checkable -or [bool]$menu.Checked){ $parts+='checkable' }
     $id=$(if([bool]$menu.FillsOnOpen -or [int]$menu.Id -le 0){ '' } else { 'hmenu.'+[int]$menu.Id })
     $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; nameSource='menu'; id=$id; state=($parts -join ' '); value=$null; itemType=''; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
@@ -2444,10 +2439,9 @@ function Find-MenuCommand($menuEntries,[string[]]$aliases,[string]$controlId){
 # no son filas (encabezados, pestanas, barras, menus, botones, campos). (3) Las filas (ListItem, TreeItem). (4) Lo demas
 # que se ve. Lo elegido sale en el orden de siempre (accionables y luego lo demas, cada grupo en orden del arbol); sin
 # corte la vista es la misma que antes. (5) Revision 1: hasta $script:WantedRoom controles que quedaron fuera y cuyo
-# nombre lleva una palabra del objetivo del paso («wanted»: las que la mente usa para ordenar la vista) van DESPUES de
-# todo lo anterior, marcados «reserved». Asi la base del corte no depende de las palabras: la mirada de antes del primer
-# acto de un subobjetivo (sin palabras) y la de despues (con ellas) se comparan sobre lo mismo, y la mision no cuenta lo
-# reservado como algo que el acto trajo (ComputerUseSuccessCheck.ComparedControls).
+# nombre lleva, como palabras enteras, una de las palabras que el modelo dio a la mirada («wanted», plegadas) van
+# DESPUES de todo lo anterior, marcados «reserved». Asi la base del corte no depende de las palabras: dos miradas, con
+# y sin ellas, comparten lo mismo antes de lo reservado.
 # Ronda 23 (indices de vista y esquema, t-menu-2): el tope de una mirada, el cupo reservado y el cuerpo numeran la
 # vista de 0 a $script:ViewCap+$script:WantedRoom (VisibleViewNumbering en el kernel: el catalogo acepta ese rango y
 # un test lee estas constantes de aqui).
@@ -2457,7 +2451,8 @@ $script:WantedRoom=10
 function Test-WantedName([string]$name,[string[]]$wanted){
   $folded=Get-Folded $name
   if($folded.Length -eq 0){ return $false }
-  foreach($word in @($wanted)){ $needle=Get-Folded ([string]$word); if($needle.Length -gt 0 -and $folded.Contains($needle)){ return $true } }
+  $words=' '+$folded+' '
+  foreach($word in @($wanted)){ $needle=Get-Folded ([string]$word); if($needle.Length -gt 0 -and $words.Contains(' '+$needle+' ')){ return $true } }
   return $false
 }
 # Los campos de texto que son la celda de una fila de su mismo nombre (el centro dentro de la fila, o sin rectangulo).
@@ -2651,8 +2646,8 @@ function Do-View($request){
       try { $shortcut=[string]$item.Cached.AcceleratorKey; if([string]::IsNullOrWhiteSpace($shortcut)){ $shortcut=[string]$item.Cached.AccessKey } } catch { $shortcut='' }
       if($null -eq $shortcut){ $shortcut='' } else { $shortcut=($shortcut -replace '\s+',' ').Trim() }
       if($shortcut.Length -gt 24){ $shortcut='' }
-      # Ronda 20b, palanca 8 (v3-62): la cadena del menu del sistema bajo la TitleBar va marcada; la mision no la
-      # cuenta como contenido y la mente la oculta salvo que el objetivo pida mover, restaurar o cerrar la ventana.
+      # Ronda 20b, palanca 8 (v3-62): la cadena del menu del sistema bajo la TitleBar va marcada (systemMenu): la vista
+      # dice que mueve, restaura o cierra la ventana, no que es su contenido.
       $systemMenu=$false
       if(($kind -eq 'MenuItem' -or $kind -eq 'MenuBar') -and $titleBars.Count -gt 0){
         # Sin rectangulo (un menu del sistema leido asi) o dibujado dentro de una TitleBar: su cadena decide.

@@ -105,38 +105,39 @@ public sealed class WindowsFileToolsAdapterTests
         string sub = Directory.CreateDirectory(Path.Combine(documents, "baxy-prueba-v3")).FullName;
         File.WriteAllText(Path.Combine(sub, "paisaje.jpg"), "x");
 
-        (string? path, string folder, string? error) = TwoFolders(documents, pictures)
+        WindowsFileToolsAdapter.OpenTarget target = TwoFolders(documents, pictures)
             .LocateOpenTarget("documents", "baxy-prueba-v3\\paisaje.jpg");
 
         Assert.Multiple(() =>
         {
-            Assert.That(error, Is.Null);
-            Assert.That(folder, Is.EqualTo("documents"));
-            Assert.That(path, Is.EqualTo(Path.Combine(sub, "paisaje.jpg")));
+            Assert.That(target.Error, Is.Null);
+            Assert.That(target.Path, Is.EqualTo(Path.Combine(sub, "paisaje.jpg")));
         });
     }
 
+    // Auditoría final 2: a file of that name in another folder is not opened in its place; where it was seen is said.
     [Test]
-    public void AFileNotInTheFolderSaidIsFoundWhenOnlyOneKnownFolderHasIt()
+    public void AFileNotInTheFolderSaidIsNotOpenedAndWhereItWasSeenIsSaid()
     {
         string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
         string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
         string sub = Directory.CreateDirectory(Path.Combine(documents, "baxy-prueba-v3")).FullName;
         File.WriteAllText(Path.Combine(sub, "paisaje.jpg"), "x");
 
-        (string? path, string folder, string? error) = TwoFolders(documents, pictures)
+        WindowsFileToolsAdapter.OpenTarget target = TwoFolders(documents, pictures)
             .LocateOpenTarget("pictures", "paisaje.jpg");
 
         Assert.Multiple(() =>
         {
-            Assert.That(error, Is.Null);
-            Assert.That(folder, Is.EqualTo("documents"));
-            Assert.That(path, Is.EqualTo(Path.Combine(sub, "paisaje.jpg")));
+            Assert.That(target.Path, Is.Null);
+            Assert.That(target.Error, Is.EqualTo("file_not_found"));
+            Assert.That(target.SeenElsewhere, Is.EqualTo(new[] { ("documents", Path.Combine("baxy-prueba-v3", "paisaje.jpg")) }));
+            Assert.That(target.SearchComplete, Is.True);
         });
     }
 
     [Test]
-    public void TwoFilesWithTheNameAreNotGuessedAndNoneIsAnHonestAbsence()
+    public void TwoFilesWithTheNameAreBothSaidAndNoneIsAnHonestAbsence()
     {
         string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
         string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
@@ -146,8 +147,10 @@ public sealed class WindowsFileToolsAdapterTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(adapter.LocateOpenTarget("documents", "foto.png"), Is.EqualTo(((string?)null, "documents", (string?)"file_ambiguous")));
-            Assert.That(adapter.LocateOpenTarget("documents", "nada.png"), Is.EqualTo(((string?)null, "documents", (string?)"file_not_found")));
+            Assert.That(adapter.LocateOpenTarget("documents", "foto.png").SeenElsewhere, Has.Count.EqualTo(2));
+            Assert.That(adapter.LocateOpenTarget("documents", "foto.png").Path, Is.Null);
+            Assert.That(adapter.LocateOpenTarget("documents", "nada.png").SeenElsewhere, Is.Empty);
+            Assert.That(adapter.LocateOpenTarget("documents", "nada.png").Error, Is.EqualTo("file_not_found"));
         });
     }
 
@@ -161,15 +164,13 @@ public sealed class WindowsFileToolsAdapterTests
         File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(pictures, "otra")).FullName, "informe.docx"), "x");
 
         Assert.That(
-            TwoFolders(documents, pictures).LocateOpenTarget("documents", "proyectoA\\informe.docx"),
-            Is.EqualTo(((string?)null, "documents", (string?)"file_not_found")));
+            TwoFolders(documents, pictures).LocateOpenTarget("documents", "proyectoA\\informe.docx").SeenElsewhere,
+            Is.Empty);
     }
 
-    // Revisión de la rama ruta: una búsqueda cortada (tiempo o cancelación) no
-    // prueba que el archivo hallado primero sea el único; el duplicado de una
-    // carpeta posterior nunca se vio, así que no se abre ninguno.
+    // Una búsqueda cortada (tiempo o cancelación) lo dice: lo visto no es todo.
     [Test]
-    public void ASearchCutShortOpensNothingEvenWithOneMatchSeen()
+    public void ASearchCutShortSaysItWasNotComplete()
     {
         string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
         string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
@@ -182,14 +183,12 @@ public sealed class WindowsFileToolsAdapterTests
         Assert.Multiple(() =>
         {
             Assert.That(
-                adapter.LocateOpenTarget("pictures", "foto.png", budget: TimeSpan.Zero),
-                Is.EqualTo(((string?)null, "pictures", (string?)"file_search_incomplete")));
+                adapter.LocateOpenTarget("pictures", "foto.png", budget: TimeSpan.Zero).SearchComplete, Is.False);
             Assert.That(
-                adapter.LocateOpenTarget("pictures", "foto.png", cancellationToken: cancelled.Token),
-                Is.EqualTo(((string?)null, "pictures", (string?)"file_search_incomplete")));
-            // With time to look, both are seen and none is guessed.
-            Assert.That(
-                adapter.LocateOpenTarget("pictures", "foto.png").Error, Is.EqualTo("file_ambiguous"));
+                adapter.LocateOpenTarget("pictures", "foto.png", cancellationToken: cancelled.Token).SearchComplete,
+                Is.False);
+            // With time to look, both are seen and none is opened.
+            Assert.That(adapter.LocateOpenTarget("pictures", "foto.png").SeenElsewhere, Has.Count.EqualTo(2));
         });
     }
 

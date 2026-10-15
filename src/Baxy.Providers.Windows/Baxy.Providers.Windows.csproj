@@ -15,9 +15,6 @@
     <None Include="External\SpotifyDesktopAutomation.ps1"
           CopyToOutputDirectory="PreserveNewest"
           TargetPath="SpotifyDesktopAutomation.ps1" />
-    <None Include="External\SpotifyMediaControl.ps1"
-          CopyToOutputDirectory="PreserveNewest"
-          TargetPath="SpotifyMediaControl.ps1" />
     <None Include="External\KnownFolderOpen.ps1"
           CopyToOutputDirectory="PreserveNewest"
           TargetPath="KnownFolderOpen.ps1" />
@@ -33,9 +30,6 @@
     <None Include="External\DesktopUiaWorker.ps1"
             CopyToOutputDirectory="PreserveNewest"
             TargetPath="DesktopUiaWorker.ps1" />
-    <None Include="External\WindowsScheduledNotification.ps1"
-            CopyToOutputDirectory="PreserveNewest"
-            TargetPath="WindowsScheduledNotification.ps1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\baxy_mind\data\keypad_keys.v1.json" LogicalName="Baxy.Providers.Windows.KeypadKeys.json" />

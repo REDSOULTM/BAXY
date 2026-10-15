@@ -76,7 +76,7 @@ public sealed class ComputerUseSpeedLiveCheck
             CancellationToken.None);
         long clicked = watch.ElapsedMilliseconds;
         watch.Restart();
-        ExternalCapabilityReceipt key = await new WindowsDesktopInteractionAdapter().InvokeAsync(
+        ExternalCapabilityReceipt key = await new WindowsDesktopInteractionAdapter(fields: null).InvokeAsync(
             "input.key.press", System.Text.Json.JsonDocument.Parse("""{"key":"tab"}""").RootElement,
             CancellationToken.None);
         long pressed = watch.ElapsedMilliseconds;

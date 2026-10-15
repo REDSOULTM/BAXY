@@ -54,11 +54,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return Path.Combine(dataRoot, leaf + "-browser-profile");
     }
 
-    internal WebBrowserAdapter(string dataRoot)
-        : this(dataRoot, sessionContext: null)
-    {
-    }
-
     internal WebBrowserAdapter(string dataRoot, CdpBrowserSessionContext? sessionContext)
     {
         _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
@@ -274,9 +269,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
-        (Uri Final, string Html)? page = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
-        if (page is not { } read)
-            return ExternalJson.Failure(operation, "web_fetch_page_unreadable");
+        SearchPageReader.PageRead read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        if (read.Html is null || read.Final is null)
+            return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole) = PageText.Prose(read.Html);
         int start = Math.Min(offset, whole.Length);
         string text = whole.Substring(start, Math.Min(maximumCharacters, whole.Length - start));
@@ -289,6 +284,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("finalUrl", read.Final.AbsoluteUri);
             writer.WriteString("title", title);
             writer.WriteNumber("totalCharacters", whole.Length);
+            // The body is read up to 1.5 MB: past it the page goes on, unread, and its text here ends there.
+            writer.WriteBoolean("bodyTruncated", read.Truncated);
             writer.WriteNumber("offset", start);
             writer.WriteBoolean("hasMore", hasMore);
             if (hasMore)
@@ -1028,11 +1025,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int maximumBytes,
         CancellationToken cancellationToken)
     {
-        byte[] body = await ReadBoundedBytesAsync(response, maximumBytes, cancellationToken).ConfigureAwait(false);
+        (byte[] body, _) = await ReadBoundedBytesAsync(response, maximumBytes, cancellationToken).ConfigureAwait(false);
         return Encoding.UTF8.GetString(body);
     }
 
-    internal static async Task<byte[]> ReadBoundedBytesAsync(
+    // The body up to maximumBytes, and whether more was left unread.
+    internal static async Task<(byte[] Body, bool Truncated)> ReadBoundedBytesAsync(
         HttpResponseMessage response,
         int maximumBytes,
         CancellationToken cancellationToken)
@@ -1041,12 +1039,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             .ConfigureAwait(false);
         using var buffer = new MemoryStream();
         byte[] chunk = ArrayPool<byte>.Shared.Rent(16 * 1024);
+        bool truncated = false;
         try
         {
             int read;
             while ((read = await stream.ReadAsync(chunk, cancellationToken).ConfigureAwait(false)) > 0)
             {
-                if (buffer.Length + read > maximumBytes) break;
+                if (buffer.Length + read > maximumBytes)
+                {
+                    truncated = true;
+                    break;
+                }
                 buffer.Write(chunk, 0, read);
             }
         }
@@ -1054,7 +1057,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             ArrayPool<byte>.Shared.Return(chunk);
         }
-        return buffer.ToArray();
+        return (buffer.ToArray(), truncated);
     }
 
     private static readonly Regex HtmlTag = new(
@@ -1337,10 +1340,8 @@ internal class CdpBrowserSession : IDisposable
             socket,
             "String(performance.timeOrigin || performance.timing.navigationStart)",
             cancellationToken).ConfigureAwait(false);
-        int navigateId = Interlocked.Increment(ref _nextCommandId);
-        await SendAsync(socket, navigateId, "Page.navigate", target.AbsoluteUri, cancellationToken)
-            .ConfigureAwait(false);
-        JsonElement navigate = await ReceiveCommandAsync(socket, navigateId, cancellationToken)
+        JsonElement navigate = await CommandAsync(
+            socket, "Page.navigate", writer => writer.WriteString("url", target.AbsoluteUri), cancellationToken)
             .ConfigureAwait(false);
         if (navigate.TryGetProperty("error", out _))
         {
@@ -2607,36 +2608,6 @@ internal class CdpBrowserSession : IDisposable
             writer.WriteBoolean("returnByValue", true);
         }, cancellationToken).ConfigureAwait(false);
         return response.GetProperty("result").GetProperty("result").GetProperty("value").GetDouble();
-    }
-
-    private static async ValueTask SendAsync(
-        ClientWebSocket socket,
-        int id,
-        string method,
-        string? value,
-        CancellationToken cancellationToken)
-    {
-        var buffer = new ArrayBufferWriter<byte>();
-        using (var writer = new Utf8JsonWriter(buffer))
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("id", id);
-            writer.WriteString("method", method);
-            writer.WriteStartObject("params");
-            if (method == "Page.navigate")
-            {
-                writer.WriteString("url", value);
-            }
-            else
-            {
-                writer.WriteString("expression", "location.href");
-                writer.WriteBoolean("returnByValue", true);
-            }
-            writer.WriteEndObject();
-            writer.WriteEndObject();
-        }
-        await socket.SendAsync(buffer.WrittenMemory, WebSocketMessageType.Text, true, cancellationToken)
-            .ConfigureAwait(false);
     }
 
     private static async ValueTask<JsonElement> ReceiveCommandAsync(

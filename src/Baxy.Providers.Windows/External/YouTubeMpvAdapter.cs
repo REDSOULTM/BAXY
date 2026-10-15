@@ -441,8 +441,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             };
             effectBoundary.Cross(cancellationToken);
             bool? after = await SetPauseAsync(wanted, cancellationToken).ConfigureAwait(false);
+            // A player already in the state asked for (paused on «pausa») is done with no effect of this call.
             return after == wanted
-                ? ExternalJson.Success(operation, LocalResult(wanted ? "paused" : "playing"), effectObserved: true)
+                ? ExternalJson.Switched(operation, LocalResult(wanted ? "paused" : "playing"), effectObserved: current.Value != wanted)
                 : ExternalJson.Failure(operation, "local_player_pause_not_verified", effectObserved: true);
         }
         catch (Exception exception) when (exception is IOException or JsonException

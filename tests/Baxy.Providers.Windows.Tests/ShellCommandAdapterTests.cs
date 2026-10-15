@@ -54,10 +54,29 @@ public sealed class ShellCommandAdapterTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("shell_command_exit_nonzero"));
             Assert.That(receipt.Result!.Value.GetProperty("exitCode").GetInt32(), Is.EqualTo(1));
             Assert.That(receipt.Result!.Value.GetProperty("succeeded").GetBoolean(), Is.False);
             Assert.That(receipt.Result!.Value.GetProperty("stderr").GetString(), Does.Contain("no se reconoce"));
+        });
+    }
+
+    [Test]
+    public async Task ACommandThatOnlyReadsRanWithoutAnEffect()
+    {
+        var runner = new RecordingRunner(0, "a.txt\r\n", string.Empty);
+        var adapter = new ShellCommandAdapter(runner, Path.GetTempPath());
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "shell.command.run",
+            JsonSerializer.SerializeToElement(new { command = "Get-ChildItem" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
         });
     }
 

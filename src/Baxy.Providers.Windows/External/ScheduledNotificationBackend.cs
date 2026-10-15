@@ -1,10 +1,8 @@
-using System.Globalization;
-
 namespace Baxy.Providers.Windows.External;
 
 /// <summary>
-/// One call of WindowsScheduledNotification.ps1, by its parameters. The native backend answers
-/// it in-process with the same JSON line the script prints; the script backend runs the script.
+/// One call to the Task Scheduler for BAXY's notifications: what to do (Mode) and on what. The native backend answers
+/// it with one JSON line.
 /// </summary>
 internal sealed record ScheduledNotificationRequest(string Mode, string Kind)
 {
@@ -17,47 +15,10 @@ internal sealed record ScheduledNotificationRequest(string Mode, string Kind)
     public int Minute { get; init; }
 }
 
+// The scheduler as the adapter asks it (the native backend; tests give scripted answers).
 internal interface IScheduledNotificationBackend
 {
     ValueTask<ExternalProcessResult> RunAsync(
         ScheduledNotificationRequest request,
         CancellationToken cancellationToken);
-}
-
-internal sealed class ScriptScheduledNotificationBackend(
-    IExternalProcessRunner runner,
-    string schedulerScript) : IScheduledNotificationBackend
-{
-    private readonly IExternalProcessRunner _runner =
-        runner ?? throw new ArgumentNullException(nameof(runner));
-
-    public ValueTask<ExternalProcessResult> RunAsync(
-        ScheduledNotificationRequest request,
-        CancellationToken cancellationToken)
-    {
-        List<string> arguments =
-        [
-            "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-            schedulerScript, "-Mode", request.Mode, "-Kind", request.Kind,
-        ];
-        Add(arguments, "-TaskName", request.TaskName);
-        Add(arguments, "-DueUtc", request.DueUtc);
-        Add(arguments, "-RingScriptPath", request.RingScriptPath);
-        if (request.Mode == "resolve-at")
-        {
-            Add(arguments, "-Hour", request.Hour.ToString(CultureInfo.InvariantCulture));
-            Add(arguments, "-Minute", request.Minute.ToString(CultureInfo.InvariantCulture));
-        }
-        Add(arguments, "-AlarmRoot", request.AlarmRoot);
-        Add(arguments, "-Recurrence", request.Recurrence);
-        return _runner.RunAsync(
-            "powershell.exe", arguments, TimeSpan.FromSeconds(30), cancellationToken);
-    }
-
-    private static void Add(List<string> arguments, string name, string? value)
-    {
-        if (value is null) return;
-        arguments.Add(name);
-        arguments.Add(value);
-    }
 }

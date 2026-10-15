@@ -57,7 +57,7 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         string sourceName = SafeFileName(ExternalJson.RequiredString(arguments, "sourceFileName"));
         string relativeDestination = ExternalJson.RequiredString(arguments, "destinationRelativePath")
             .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-        string source = ResolveUnique(sourceName, exact: true);
+        string source = ResolveUnique(sourceName);
         string destination = ConfinedDestination(relativeDestination);
         if (File.Exists(destination) || Directory.Exists(destination))
             return ExternalJson.Failure(operation, "sandbox_move_destination_exists");
@@ -81,10 +81,8 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
 
     private ExternalCapabilityReceipt Diff(string operation, JsonElement arguments)
     {
-        string leftQuery = ExternalJson.RequiredString(arguments, "leftQuery");
-        string rightQuery = ExternalJson.RequiredString(arguments, "rightQuery");
-        string left = ResolveUnique(leftQuery, exact: false);
-        string right = ResolveRelatedUnique(rightQuery, left);
+        string left = ResolveUnique(SafeFileName(ExternalJson.RequiredString(arguments, "leftFileName")));
+        string right = ResolveUnique(SafeFileName(ExternalJson.RequiredString(arguments, "rightFileName")));
         string[] leftLines = ReadLines(left);
         string[] rightLines = ReadLines(right);
         int maximum = Math.Max(leftLines.Length, rightLines.Length);
@@ -107,33 +105,13 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         }), effectObserved: false);
     }
 
-    private string ResolveRelatedUnique(string query, string left)
+    // A file is the one named only when its whole name, case aside, is the name given; two such files anywhere in
+    // the work folder are ambiguous and nothing is chosen.
+    private string ResolveUnique(string fileName)
     {
         if (!Directory.Exists(_root)) throw new InvalidDataException("sandbox_named_root_not_found");
-        string leftStem = Path.GetFileNameWithoutExtension(left);
-        string leftExtension = Path.GetExtension(left);
         string[] matches = Enumerate()
-            .Where(path => !string.Equals(path, left, StringComparison.OrdinalIgnoreCase)
-                && Path.GetFileName(path).Contains(query, StringComparison.OrdinalIgnoreCase))
-            .ToArray();
-        string[] related = matches.Where(path =>
-                string.Equals(Path.GetExtension(path), leftExtension, StringComparison.OrdinalIgnoreCase)
-                && Path.GetFileNameWithoutExtension(path).Contains(
-                    leftStem, StringComparison.OrdinalIgnoreCase))
-            .Take(2).ToArray();
-        if (related.Length == 1) return related[0];
-        if (related.Length > 1 || matches.Length > 1)
-            throw new InvalidDataException("sandbox_named_file_ambiguous");
-        if (matches.Length == 0) throw new InvalidDataException("sandbox_named_file_not_found");
-        return matches[0];
-    }
-
-    private string ResolveUnique(string query, bool exact)
-    {
-        if (!Directory.Exists(_root)) throw new InvalidDataException("sandbox_named_root_not_found");
-        string[] matches = Enumerate().Where(path => exact
-                ? string.Equals(Path.GetFileName(path), query, StringComparison.OrdinalIgnoreCase)
-                : Path.GetFileName(path).Contains(query, StringComparison.OrdinalIgnoreCase))
+            .Where(path => string.Equals(Path.GetFileName(path), fileName, StringComparison.OrdinalIgnoreCase))
             .Take(2).ToArray();
         if (matches.Length == 0) throw new InvalidDataException("sandbox_named_file_not_found");
         if (matches.Length > 1) throw new InvalidDataException("sandbox_named_file_ambiguous");
@@ -149,7 +127,13 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             AttributesToSkip = FileAttributes.ReparsePoint,
             MaxRecursionDepth = 20,
         };
-        return Directory.EnumerateFiles(_root, "*", options);
+        // The work folder's own private folders (the filesystem provider's .trash and .backups) hold no file of the
+        // person's.
+        string trash = Path.Combine(_root, ".trash") + Path.DirectorySeparatorChar;
+        string backups = Path.Combine(_root, ".backups") + Path.DirectorySeparatorChar;
+        return Directory.EnumerateFiles(_root, "*", options).Where(path =>
+            !path.StartsWith(trash, StringComparison.OrdinalIgnoreCase)
+            && !path.StartsWith(backups, StringComparison.OrdinalIgnoreCase));
     }
 
     private string ConfinedDestination(string relative)

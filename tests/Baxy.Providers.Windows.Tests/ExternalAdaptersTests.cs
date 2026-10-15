@@ -67,7 +67,7 @@ public sealed class ExternalAdaptersTests
     {
         var identity = new WindowsProcessIdentity(4242, 638900000000000000);
         var platform = new StubProcessTerminationPlatform(
-            [[identity], []], terminateResult: true);
+            [[identity], []], terminateResult: WindowsProcessTermination.Terminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -95,7 +95,7 @@ public sealed class ExternalAdaptersTests
     {
         var identity = new WindowsProcessIdentity(5151, 638900000000000001);
         var platform = new StubProcessTerminationPlatform(
-            [[identity], [identity]], terminateResult: false);
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.NotTerminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -112,12 +112,54 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task ExactNamedProcessTerminationFailsBeforeEffectWhenNothingRuns()
+    {
+        var platform = new StubProcessTerminationPlatform([[]], terminateResult: WindowsProcessTermination.Terminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named",
+            Json("""{"name":"steam"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_not_running"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Terminated, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ExactNamedProcessTerminationDoesNotCountAProcessThatHadAlreadyExited()
+    {
+        var identity = new WindowsProcessIdentity(5252, 638900000000000002);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], []], terminateResult: WindowsProcessTermination.AlreadyExited);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named",
+            Json("""{"name":"steam"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.Result?.GetProperty("terminatedCount").GetInt32(), Is.Zero);
+            Assert.That(receipt.Result?.GetProperty("alreadyExitedCount").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public async Task ExactNamedProcessTerminationAllowsAWindowsRestartWithANewIdentity()
     {
         var original = new WindowsProcessIdentity(5151, 638900000000000001);
         var replacement = new WindowsProcessIdentity(6262, 638900000000000099);
         var platform = new StubProcessTerminationPlatform(
-            [[original], [replacement]], terminateResult: true);
+            [[original], [replacement]], terminateResult: WindowsProcessTermination.Terminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -186,7 +228,7 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task ExactNamedProcessTerminationRejectsPathsBeforeTakingAnEffect()
     {
-        var platform = new StubProcessTerminationPlatform([], terminateResult: true);
+        var platform = new StubProcessTerminationPlatform([], terminateResult: WindowsProcessTermination.Terminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -215,9 +257,11 @@ public sealed class ExternalAdaptersTests
         using var process = Process.Start(new ProcessStartInfo
         {
             FileName = probePath,
-            Arguments = "/d /c ping -t 127.0.0.1",
+            // A single process: the console waits on its own input, so ending it leaves no child behind.
+            Arguments = "/d /q /k",
             CreateNoWindow = true,
             UseShellExecute = false,
+            RedirectStandardInput = true,
         })!;
         try
         {
@@ -258,7 +302,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("smtc_session_adapter_required"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("external_operation_not_supported"));
         });
     }
 
@@ -276,7 +320,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("smtc_session_adapter_required"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("external_operation_not_supported"));
         });
     }
 
@@ -380,22 +424,16 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
-    public async Task SlowWinRtBluetoothInventoryYieldsToTheBoundedFallback()
+    public async Task SlowWinRtBluetoothInventorySaysItsTimeoutWithinItsBound()
     {
         using TemporaryDirectory temporary = new();
-        var first = new WindowsDeviceControlAdapter(
+        var devices = new WindowsDeviceControlAdapter(
             temporary.Path,
             temporary.Path,
             new StubProcessRunner(""),
             new SlowBluetoothInventory(TimeSpan.FromSeconds(1)),
             TimeSpan.FromMilliseconds(50));
-        var second = new StubExternalAdapter(new ExternalCapabilityReceipt(
-            "bluetooth.device.list",
-            false,
-            true,
-            Json("""{"version":1,"count":0,"devices":[],"authority":"bounded_fallback"}"""),
-            null));
-        using var provider = new WindowsExternalCapabilityProvider([first, second]);
+        using var provider = new WindowsExternalCapabilityProvider([devices]);
         var stopwatch = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
@@ -406,10 +444,8 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(stopwatch.Elapsed, Is.LessThan(TimeSpan.FromMilliseconds(500)));
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
-                Is.EqualTo("bounded_fallback"));
-            Assert.That(second.Calls, Is.EqualTo(1));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("bluetooth_winrt_inventory_timeout"));
         });
     }
 
@@ -836,11 +872,8 @@ public sealed class ExternalAdaptersTests
     public async Task ScheduledNotificationRequiresWindowsTaskIdentityPostread()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new NotificationSchedulerRunner();
-        var adapter = new WindowsScheduledNotificationAdapter(
-            temporary.Path, runner, scheduler);
+        var backend = ScriptedNotificationBackend.Registering();
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
         string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -853,11 +886,11 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("taskName").GetString(),
-                Is.EqualTo(runner.TaskName));
+                Is.EqualTo(backend.Requests[^1].TaskName));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("windows_task_scheduler_postread"));
             Assert.That(File.Exists(Path.Combine(
-                temporary.Path, "scheduled-notifications", runner.TaskName + ".ps1")), Is.True);
+                temporary.Path, "scheduled-notifications", backend.Requests[^1].TaskName + ".ps1")), Is.True);
         });
     }
 
@@ -865,10 +898,8 @@ public sealed class ExternalAdaptersTests
     public async Task RecurringNotificationPassesARealHourlyTaskTriggerRequest()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new NotificationSchedulerRunner();
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var backend = ScriptedNotificationBackend.Registering();
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
         string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -880,8 +911,8 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("recurrence").GetString(), Is.EqualTo("hourly"));
-            Assert.That(runner.Arguments, Does.Contain("schedule-recurring"));
-            Assert.That(runner.Arguments, Does.Contain("hourly"));
+            Assert.That(backend.Requests[^1].Mode, Is.EqualTo("schedule-recurring"));
+            Assert.That(backend.Requests[^1].Recurrence, Is.EqualTo("hourly"));
         });
     }
 
@@ -889,15 +920,13 @@ public sealed class ExternalAdaptersTests
     public async Task NotificationDiagnosticsReturnsObservedServiceTasksAndReceipts()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string output = "{\"ok\":true,\"schedulerRunning\":true," +
             "\"toastEnabled\":true,\"healthy\":true,\"taskCount\":1," +
             "\"firedReceiptCount\":1,\"issueCount\":0,\"tasks\":[{" +
             "\"taskName\":\"BAXY-Reminder-private\",\"state\":\"Ready\"," +
             "\"lastTaskResult\":0,\"resultAcceptable\":true}]}";
         var adapter = new WindowsScheduledNotificationAdapter(
-            temporary.Path, new StubProcessRunner(output), scheduler);
+            temporary.Path, ScriptedNotificationBackend.Lines(output));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms", Json("""{"action":"diagnose"}"""), CancellationToken.None);
@@ -919,15 +948,13 @@ public sealed class ExternalAdaptersTests
     public async Task ExactClockNotificationCancellationBindsPreReadIdentityAndVerifiesAbsence()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string taskName = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
-        var runner = new SequencedProcessRunner([
+        var backend = ScriptedNotificationBackend.Lines([
             $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"{{taskName}}","nextRunUtc":"{{due}}"}""",
             $$"""{"ok":true,"effectObserved":true,"effectBoundaryCrossed":true,"canceled":true,"taskName":"{{taskName}}","nextRunUtc":"{{due}}","authority":"windows_task_scheduler_exact_identity_absence_postread"}""",
         ]);
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms",
@@ -941,7 +968,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.Result?.GetProperty("taskName").GetString(), Is.EqualTo(taskName));
             Assert.That(receipt.Result?.GetProperty("expectedNextRunUtc").GetString(), Is.EqualTo(due));
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(backend.Requests, Has.Count.EqualTo(2));
         });
     }
 
@@ -949,12 +976,10 @@ public sealed class ExternalAdaptersTests
     public async Task ExactClockNotificationCancellationRefusesAmbiguousMatchesBeforeEffect()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new SequencedProcessRunner([
+        var backend = ScriptedNotificationBackend.Lines([
             "{\"ok\":false,\"effectObserved\":false,\"effectBoundaryCrossed\":false,\"matchCount\":2}",
         ]);
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms",
@@ -967,7 +992,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("notification_clock_ambiguous"));
-            Assert.That(runner.Calls, Is.EqualTo(1));
+            Assert.That(backend.Requests, Has.Count.EqualTo(1));
         });
     }
 
@@ -975,15 +1000,13 @@ public sealed class ExternalAdaptersTests
     public async Task ExactClockNotificationCancellationRefusesChangedIdentityBeforeEffect()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string taskName = "BAXY-Alarm-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
         string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
-        var runner = new SequencedProcessRunner([
+        var backend = ScriptedNotificationBackend.Lines([
             $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"{{taskName}}","nextRunUtc":"{{due}}"}""",
             "{\"ok\":false,\"effectObserved\":false,\"effectBoundaryCrossed\":false,\"error\":\"task_changed_before_effect\"}",
         ]);
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms",
@@ -996,7 +1019,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("notification_scheduler_precondition_changed"));
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(backend.Requests, Has.Count.EqualTo(2));
         });
     }
 
@@ -1008,24 +1031,18 @@ public sealed class ExternalAdaptersTests
         // M80 (DEV-D v3m D-w16-t2, D-w18-t5): the scheduler is shared by every BAXY data root of the user; six runs
         // left six alarms at 06:45 and «cancel the latest» picked another run's reminder.
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new CapturingProcessRunner("{\"ok\":false,\"matchCount\":0}");
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var backend = ScriptedNotificationBackend.Lines("{\"ok\":false,\"matchCount\":0}");
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
 
-        int root = Array.IndexOf(runner.Arguments, "-AlarmRoot");
-        Assert.That(root, Is.GreaterThan(0));
-        Assert.That(runner.Arguments[root + 1], Is.EqualTo(Path.Combine(temporary.Path, "scheduled-notifications")));
+        Assert.That(backend.Requests[^1].AlarmRoot, Is.EqualTo(Path.Combine(temporary.Path, "scheduled-notifications")));
     }
 
     [Test]
     public async Task NotificationListShowsOnlyTheNotificationsThisDataRootSet()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string own = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         const string other = "BAXY-Alarm-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
         string alarms = Path.Combine(temporary.Path, "scheduled-notifications");
@@ -1034,7 +1051,7 @@ public sealed class ExternalAdaptersTests
         string next = DateTimeOffset.UtcNow.AddHours(3).ToString("O");
         string output = $$"""{"ok":true,"tasks":[{"taskName":"{{own}}","state":"Ready","nextRunUtc":"{{next}}"},{"taskName":"{{other}}","state":"Ready","nextRunUtc":"{{next}}"}]}""";
         var adapter = new WindowsScheduledNotificationAdapter(
-            temporary.Path, new StubProcessRunner(output), scheduler);
+            temporary.Path, ScriptedNotificationBackend.Lines(output));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms", Json("""{"action":"list"}"""), CancellationToken.None);
@@ -1718,7 +1735,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt diff = await adapter.InvokeAsync(
             "filesystem.sandbox.diff.named",
-            Json("""{"leftQuery":"README.md","rightQuery":"backup"}"""),
+            Json("""{"leftFileName":"README.md","rightFileName":"README.backup.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt moved = await adapter.InvokeAsync(
             "filesystem.sandbox.move.named",
@@ -1737,6 +1754,28 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task NamedSandboxDiffResolvesOnlyTheExactFileName()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "filesystem-sandbox");
+        Directory.CreateDirectory(sandbox);
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "README.md"), "uno\n");
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "README.backup.md"), "dos\n");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path);
+
+        ExternalCapabilityReceipt diff = await adapter.InvokeAsync(
+            "filesystem.sandbox.diff.named",
+            Json("""{"leftFileName":"README.md","rightFileName":"backup"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(diff.Verified, Is.False);
+            Assert.That(diff.ErrorCode, Is.EqualTo("sandbox_named_file_not_found"));
+        });
+    }
+
+    [Test]
     public async Task DesktopFolderOpenRequiresScriptPostreadBeforeSuccess()
     {
         using TemporaryDirectory temporary = new();
@@ -1749,7 +1788,9 @@ public sealed class ExternalAdaptersTests
                 "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
                 "\"folder\":\"downloads\",\"authority\":\"windows_shell_location_postread\"}"),
             folderScript,
-            selectScript);
+            Path.Combine(temporary.Path, "KnownFileOpen.ps1"),
+            selectScript,
+            Path.Combine(temporary.Path, "DesktopKeyPress.ps1"));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.folder.open",
@@ -1783,7 +1824,8 @@ public sealed class ExternalAdaptersTests
                 "\"authority\":\"known_folder_latest_safe_file_process_postread\"}"),
             folderScript,
             fileScript,
-            selectScript);
+            selectScript,
+            Path.Combine(temporary.Path, "DesktopKeyPress.ps1"));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.file.open.latest",
@@ -3236,7 +3278,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(router.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
             Assert.That(intranet.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
-            Assert.That(redirected.ErrorCode, Is.EqualTo("web_fetch_page_unreadable"));
+            Assert.That(redirected.ErrorCode, Is.EqualTo("web_fetch_redirect_not_public"));
             Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "recetas.example.es" }));
         });
     }
@@ -3360,7 +3402,7 @@ public sealed class ExternalAdaptersTests
         // Fase 7 (D4): a mail to any address from the classic Outlook profile; the
         // subject defaults to the text's opening; the address is checked first.
         const string output = "{\"ok\":true,\"effectObserved\":true,\"sentEntryId\":\"private-sent-entry\"," +
-            "\"sentUtc\":\"2026-09-21T02:10:00Z\",\"sentTo\":\"persona@example.com\",\"subject\":\"llego tarde\"}";
+            "\"sentUtc\":\"2026-09-21T02:10:00Z\",\"sentTo\":[\"persona@example.com\"],\"subject\":\"llego tarde (copia)\"}";
         using TemporaryDirectory temporary = new();
         var runner = new StubProcessRunner(output);
         var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
@@ -3378,8 +3420,9 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
             Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(receipt.Result?.GetProperty("to").GetString(), Is.EqualTo("persona@example.com"));
-            Assert.That(receipt.Result?.GetProperty("subject").GetString(), Is.EqualTo("llego tarde"));
+            // What the copy in Sent Items shows, not what was asked.
+            Assert.That(receipt.Result?.GetProperty("sentTo")[0].GetString(), Is.EqualTo("persona@example.com"));
+            Assert.That(receipt.Result?.GetProperty("subject").GetString(), Is.EqualTo("llego tarde (copia)"));
             Assert.That(receipt.Result?.GetProperty("sent").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.GetProperty("sentMessageId").GetString(), Does.StartWith("email_"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("private-sent-entry"));
@@ -3589,167 +3632,6 @@ public sealed class ExternalAdaptersTests
             Assert.That(result.GetRawText(), Does.Not.Contain("Wrong Printer"));
             Assert.That(result.GetRawText(), Does.Not.Contain("PRIVATE_MOUSE"));
             Assert.That(runner.LastArguments[^1], Is.EqualTo("Mouse"));
-        });
-    }
-
-    [Test]
-    public async Task SpotifyApiSearchDispatchAndPostreadBindTheExactTrack()
-    {
-        var handler = new SpotifyHttpHandler();
-        var delays = new RecordingDelay();
-        using var http = new HttpClient(handler);
-        using var adapter = new WindowsMediaSessionAdapter(
-            http,
-            () => "token",
-            delay: delays.DelayAsync);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.exact",
-            Json("""{"provider":"spotify","title":"Billie Jean"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(receipt.Result?.GetProperty("trackId").GetString(), Is.EqualTo("track-1"));
-            Assert.That(handler.PlayCalls, Is.EqualTo(1));
-            Assert.That(handler.CurrentlyPlayingCalls, Is.EqualTo(1));
-            Assert.That(delays.Calls, Is.Zero);
-        });
-    }
-
-    [Test]
-    public async Task SpotifyApiQuerySelectsAResultAndBindsNowPlaying()
-    {
-        var handler = new SpotifyHttpHandler();
-        var delays = new RecordingDelay();
-        using var http = new HttpClient(handler);
-        using var adapter = new WindowsMediaSessionAdapter(
-            http,
-            () => "token",
-            delay: delays.DelayAsync);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.query",
-            Json("""{"provider":"spotify","query":"Michael Jackson"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(receipt.Result?.GetProperty("query").GetString(),
-                Is.EqualTo("Michael Jackson"));
-            Assert.That(receipt.Result?.GetProperty("title").GetString(),
-                Is.EqualTo("Billie Jean"));
-            Assert.That(handler.PlayCalls, Is.EqualTo(1));
-            Assert.That(handler.CurrentlyPlayingCalls, Is.EqualTo(1));
-            Assert.That(delays.Calls, Is.Zero);
-        });
-    }
-
-    [Test]
-    public async Task SpotifyApiExactTitleSharedByTwoTracksPlaysNothingAndReturnsBoth()
-    {
-        var handler = new SpotifyHttpHandler
-        {
-            SearchBody = """{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Yellow","popularity":10,"artists":[{"name":"Coldplay"}]},{"id":"track-2","uri":"spotify:track:track-2","name":"yellow","popularity":90,"artists":[{"name":"Other"}]}]}}""",
-        };
-        using var http = new HttpClient(handler);
-        using var adapter = new WindowsMediaSessionAdapter(http, () => "token");
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.exact",
-            Json("""{"provider":"spotify","title":"Yellow"}"""),
-            CancellationToken.None);
-
-        JsonElement candidates = receipt.Result!.Value.GetProperty("candidates");
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_exact_track_ambiguous"));
-            Assert.That(handler.PlayCalls, Is.Zero);
-            Assert.That(candidates.GetArrayLength(), Is.EqualTo(2));
-            Assert.That(candidates[0].GetProperty("artist").GetString(), Is.EqualTo("Coldplay"));
-            Assert.That(candidates[1].GetProperty("trackId").GetString(), Is.EqualTo("track-2"));
-        });
-    }
-
-    [Test]
-    public async Task SpotifyApiQueryPlaysSpotifysFirstResultNotTheMostPopular()
-    {
-        var handler = new SpotifyHttpHandler
-        {
-            SearchBody = """{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Billie Jean","popularity":1,"artists":[{"name":"Michael Jackson"}]},{"id":"track-2","uri":"spotify:track:track-2","name":"Thriller","popularity":99,"artists":[{"name":"Michael Jackson"}]}]}}""",
-        };
-        using var http = new HttpClient(handler);
-        using var adapter = new WindowsMediaSessionAdapter(http, () => "token");
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.query",
-            Json("""{"provider":"spotify","query":"Michael Jackson"}"""),
-            CancellationToken.None);
-
-        Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Billie Jean"));
-    }
-
-    [Test]
-    public async Task SpotifyApiPostreadFailureRetainsTenSecondRetryHorizon()
-    {
-        var handler = new SpotifyHttpHandler
-        {
-            NowPlayingMatches = false,
-        };
-        var delays = new RecordingDelay();
-        using var http = new HttpClient(handler);
-        using var adapter = new WindowsMediaSessionAdapter(
-            http,
-            () => "token",
-            delay: delays.DelayAsync);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.exact",
-            Json("""{"provider":"spotify","title":"Billie Jean"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_now_playing_not_verified"));
-            Assert.That(handler.PlayCalls, Is.EqualTo(1));
-            Assert.That(handler.CurrentlyPlayingCalls, Is.EqualTo(21));
-            AssertRetryHorizon(delays, expectedIntervals: 20, intervalMilliseconds: 500);
-        });
-    }
-
-    [Test]
-    public async Task SpotifyApiImmediateProbeFailureFallsBackToOriginalSchedule()
-    {
-        var handler = new SpotifyHttpHandler
-        {
-            FirstCurrentlyPlayingThrows = true,
-        };
-        var delays = new RecordingDelay();
-        using var http = new HttpClient(handler);
-        using var adapter = new WindowsMediaSessionAdapter(
-            http,
-            () => "token",
-            delay: delays.DelayAsync);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.exact",
-            Json("""{"provider":"spotify","title":"Billie Jean"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(handler.CurrentlyPlayingCalls, Is.EqualTo(2));
-            AssertRetryHorizon(delays, expectedIntervals: 1, intervalMilliseconds: 500);
         });
     }
 
@@ -3976,32 +3858,6 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // 2026-09-22 (owner's turn 148): with no Spotify process the automation died
-    // after crossing the boundary and the failure travelled as an ambiguous effect.
-    // Tanda 6 «pasar al siguiente episodio» with nothing playing was told Spotify was
-    // not open: the last player of the chain found nothing playing, and Spotify's
-    // absence is the cause only when the person named Spotify.
-    [TestCase("""{"action":"stop"}""", "media_session_not_found")]
-    [TestCase("""{"action":"next","sourceApp":null}""", "media_session_not_found")]
-    [TestCase("""{"action":"next","sourceApp":"spotify"}""", "spotify_client_not_running")]
-    public async Task SpotifyDesktopControlStandsAsideWithoutAClientProcess(string arguments, string error)
-    {
-        var runner = new StubProcessRunner("{\"ok\":true}");
-        var adapter = new SpotifyDesktopAdapter(runner, processExists: static _ => false);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.control", Json(arguments), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
-            Assert.That(runner.LastArguments, Is.Empty);
-        });
-    }
-
     [Test]
     public async Task YouTubeTabControlPausesTheVideoOfTheSessionTab()
     {
@@ -4193,28 +4049,6 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_tab_not_found"));
             Assert.That(browser.Calls, Is.Zero);
-        });
-    }
-
-    [Test]
-    public async Task SpotifyDesktopControlRequiresUiaPostreadBeforeSuccess()
-    {
-        var adapter = new SpotifyDesktopAdapter(new StubProcessRunner(
-            "{\"ok\":true,\"effectObserved\":true,\"action\":\"pause\"," +
-            "\"playbackStatus\":\"paused\",\"processId\":42}"));
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.control",
-            Json("""{"action":"pause"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(),
-                Is.EqualTo("paused"));
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
-                Is.EqualTo("spotify_windows_uia_postread"));
         });
     }
 
@@ -4421,33 +4255,6 @@ public sealed class ExternalAdaptersTests
         {
             await Task.Delay(delay, cancellationToken);
             return [];
-        }
-    }
-
-    private sealed class NotificationSchedulerRunner : IExternalProcessRunner
-    {
-        internal string TaskName { get; private set; } = string.Empty;
-        internal IReadOnlyList<string> Arguments { get; private set; } = [];
-
-        public ValueTask<ExternalProcessResult> RunAsync(
-            string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            Arguments = arguments.ToArray();
-            int taskIndex = arguments.ToList().IndexOf("-TaskName");
-            TaskName = taskIndex >= 0 ? arguments[taskIndex + 1] : string.Empty;
-            string output = JsonSerializer.Serialize(new
-            {
-                version = 1,
-                ok = true,
-                effectObserved = true,
-                taskName = TaskName,
-                state = "Ready",
-                nextRunUtc = DateTimeOffset.UtcNow.AddHours(1).ToString("O"),
-                authority = "windows_task_scheduler_postread",
-            });
-            return ValueTask.FromResult(new ExternalProcessResult(0, output, string.Empty));
         }
     }
 
@@ -4705,7 +4512,7 @@ public sealed class ExternalAdaptersTests
 
     private sealed class StubProcessTerminationPlatform(
         IReadOnlyList<IReadOnlyList<WindowsProcessIdentity>> snapshots,
-        bool terminateResult) : IWindowsProcessTerminationPlatform
+        WindowsProcessTermination terminateResult) : IWindowsProcessTerminationPlatform
     {
         private int _snapshotIndex;
         internal List<WindowsProcessIdentity> Terminated { get; } = [];
@@ -4719,7 +4526,7 @@ public sealed class ExternalAdaptersTests
             return snapshot;
         }
 
-        public bool Terminate(string processName, WindowsProcessIdentity identity)
+        public WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity)
         {
             Terminated.Add(identity);
             return terminateResult;
@@ -4760,52 +4567,6 @@ public sealed class ExternalAdaptersTests
         }
     }
 
-    private sealed class SpotifyHttpHandler : HttpMessageHandler
-    {
-        internal int PlayCalls { get; private set; }
-
-        internal int CurrentlyPlayingCalls { get; private set; }
-
-        internal bool NowPlayingMatches { get; init; } = true;
-
-        internal bool FirstCurrentlyPlayingThrows { get; init; }
-
-        internal string SearchBody { get; init; } =
-            """{"tracks":{"items":[{"id":"track-1","uri":"spotify:track:track-1","name":"Billie Jean","popularity":99,"artists":[{"name":"Michael Jackson"}]}]}}""";
-
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            string path = request.RequestUri!.AbsolutePath;
-            if (request.Method == HttpMethod.Put)
-            {
-                PlayCalls++;
-                return Response("{}");
-            }
-            if (path.EndsWith("/search", StringComparison.Ordinal))
-            {
-                return Response(SearchBody);
-            }
-            if (path.EndsWith("/devices", StringComparison.Ordinal))
-            {
-                return Response("""{"devices":[{"id":"device-1","is_active":true,"is_restricted":false}]}""");
-            }
-            CurrentlyPlayingCalls++;
-            if (FirstCurrentlyPlayingThrows && CurrentlyPlayingCalls == 1)
-            {
-                throw new HttpRequestException("Transient simulated postread failure.");
-            }
-            return Response(NowPlayingMatches
-                ? """{"is_playing":true,"item":{"id":"track-1"}}"""
-                : """{"is_playing":false,"item":{"id":"other-track"}}""");
-        }
-
-        private static Task<HttpResponseMessage> Response(string body) => Task.FromResult(
-            new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(body, Encoding.UTF8, "application/json"),
-            });
-    }
 
     private sealed class VisionHttpHandler : HttpMessageHandler
     {

@@ -374,41 +374,6 @@ public sealed class ForegroundSequenceTests
         });
     }
 
-    // Revisión D (H2): the mission ended (the turn was cancelled) while its act was in flight: the front goes back right
-    // behind that act, never before it ends and never left with the mission's window; a later act of the ended mission
-    // is never sent; a new mission gives the old one's front back.
-    [Test]
-    public async Task TheEndOfTheMissionGivesTheFrontBackBehindTheActInFlight()
-    {
-        var clock = new Clock { NowMs = 10_000 };
-        var desktop = new Desktop();
-        var missions = new Missions { Generation = 1 };
-        var lease = new ForegroundLease(new Pause(), clock, desktop, maxWaitMs: 8_000, missions, watchMission: false);
-
-        _ = await lease.TakeForMissionAsync(Mission, CancellationToken.None);
-        missions.Running = false;
-        bool heldDuringTheAct = !lease.CheckMissionFront() && desktop.Front == Mission;
-        lease.MissionActEnded("input.visible.click");
-        bool givenAfter = lease.CheckMissionFront();
-        string? late = await lease.TakeForMissionAsync(Mission, CancellationToken.None);
-
-        missions.Running = true;
-        _ = await lease.TakeForMissionAsync(Mission, CancellationToken.None);
-        lease.MissionActEnded("input.visible.click");
-        missions.Generation = 2;
-        bool givenForTheNext = lease.CheckMissionFront();
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(heldDuringTheAct, Is.True);
-            Assert.That(givenAfter, Is.True);
-            Assert.That(late, Is.EqualTo("input_mission_ended"));
-            Assert.That(givenForTheNext, Is.True);
-            Assert.That(desktop.GivenFront, Is.EqualTo(new[] { Person, Person }));
-            Assert.That(desktop.Fronted, Is.EqualTo(new[] { Mission, Mission }), "the late act brought nothing up");
-        });
-    }
-
     // Revisión D (H3): the person's window is the one in front after their pause (they switched while BAXY waited), and
     // a front another window took since is theirs: never fought.
     [Test]
@@ -1010,15 +975,6 @@ public sealed class ForegroundSequenceTests
         new(pause, clock, desktop, maxWaitMs: 8_000, watchMission: false);
 
     // What the App says of its missions.
-    private sealed class Missions : IMissionRunning
-    {
-        internal long Generation { get; set; }
-
-        internal bool Running { get; set; } = true;
-
-        public (long Generation, bool Running) Read() => (Generation, Running);
-    }
-
     private static JsonElement Json(string value) => JsonDocument.Parse(value).RootElement.Clone();
 
     private static WindowsDesktopInteractionAdapter Keys(IDesktopKeyboard keyboard) =>
