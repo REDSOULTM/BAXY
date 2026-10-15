@@ -11,19 +11,12 @@ namespace Baxy.Kernel.Tests;
 public sealed class OperationOutcomeNarrationTests
 {
     [Test]
-    public async Task MissionEngineProjectsHandlerResultThroughInjectedNarrator()
+    public async Task MissionEngineMessageIsTheVisibleFactsOfTheHandlerOutcome()
     {
-        const string canary = "HANDLER-RESULT-MUST-NOT-BECOME-NARRATION";
-        JsonElement result = JsonDocument.Parse($"{{\"canary\":\"{canary}\"}}")
-            .RootElement
-            .Clone();
+        JsonElement result = JsonDocument.Parse("{\"title\":\"Compras\"}").RootElement.Clone();
         var handler = new ResultHandler(result);
-        var narrator = new FixedNarrator("Narración separada y determinista.");
         using var journal = new InMemoryInvocationJournal();
-        using var engine = new MissionEngine(
-            new OperationRegistry([handler]),
-            journal,
-                               new MissionEngineOptions { Narrator = narrator });
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         var request = new OperationRequest(
             ProtocolTypes.OperationRequest,
             Guid.NewGuid().ToString("D"),
@@ -32,17 +25,12 @@ public sealed class OperationOutcomeNarrationTests
             handler.Definition.Name,
             JsonDocument.Parse("{}").RootElement.Clone());
 
-        OperationResponse response = await engine.ExecuteAsync(
-            request,
-            CancellationToken.None);
+        OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(response.Message, Is.EqualTo("Narración separada y determinista."));
-            Assert.That(response.Message, Does.Not.Contain(canary));
-            Assert.That(response.Result?.GetProperty("canary").GetString(), Is.EqualTo(canary));
-            Assert.That(narrator.ObservedOperation, Is.EqualTo(handler.Definition.Name));
-            Assert.That(narrator.ObservedOutcome, Is.SameAs(handler.Outcome));
+            Assert.That(response.Message, Is.EqualTo(OperationVisibleFacts.FromOutcome(handler.Definition.Name, handler.Outcome)));
+            Assert.That(response.Result?.GetProperty("title").GetString(), Is.EqualTo("Compras"));
         });
     }
 
@@ -99,26 +87,6 @@ public sealed class OperationOutcomeNarrationTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             return ValueTask.FromResult(Outcome);
-        }
-    }
-
-    private sealed class FixedNarrator(string message) : IOperationResponseNarrator
-    {
-        public string? ObservedOperation { get; private set; }
-
-        public OperationOutcome? ObservedOutcome { get; private set; }
-
-        public string Narrate(string operation, OperationOutcome outcome)
-        {
-            ObservedOperation = operation;
-            ObservedOutcome = outcome;
-            return message;
-        }
-
-        public string NarrateStatus(string operation, string status, string? errorCode)
-        {
-            ObservedOperation = operation;
-            return message;
         }
     }
 }

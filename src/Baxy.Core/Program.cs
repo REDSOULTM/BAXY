@@ -221,7 +221,6 @@ internal static class Program
                 PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(
                     memoryCodec,
                     memoryExportWriter),
-                Narrator = ProductOperationNarrator.Instance,
                 ConfirmationMode = () => ConfirmationModeStore.Read(dataRoot),
             });
 

@@ -17,12 +17,6 @@ public sealed class MissionEngineOptions
     public IPrivateOperationEnvelopeAuthenticator? PrivateEnvelopeAuthenticator { get; init; }
 
     /// <summary>
-    /// Redacta el texto de los estados terminales. Por defecto, el narrador
-    /// mínimo del kernel.
-    /// </summary>
-    public IOperationResponseNarrator? Narrator { get; init; }
-
-    /// <summary>
     /// Reloj con el que caducan los retos de confirmación. Por defecto, el del
     /// sistema.
     /// </summary>

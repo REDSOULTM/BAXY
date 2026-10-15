@@ -17,7 +17,6 @@ public sealed class MissionEngine : IDisposable
     private readonly IInvocationJournal _journal;
     private readonly InMemoryConfirmationAuthority _confirmationAuthority;
     private readonly IPrivateOperationEnvelopeAuthenticator? _privateEnvelopeAuthenticator;
-    private readonly IOperationResponseNarrator _narrator;
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
 
@@ -36,7 +35,6 @@ public sealed class MissionEngine : IDisposable
         _confirmationAuthority = options?.ConfirmationAuthority
             ?? new InMemoryConfirmationAuthority(options?.TimeProvider);
         _privateEnvelopeAuthenticator = options?.PrivateEnvelopeAuthenticator;
-        _narrator = options?.Narrator ?? DefaultOperationResponseNarrator.Instance;
         _confirmationMode = options?.ConfirmationMode
             ?? (() => ConfirmationMode.Normal);
     }
@@ -74,8 +72,7 @@ public sealed class MissionEngine : IDisposable
                 return PrivateOperationBoundary.NormalizeReplay(
                     request,
                     completed.Response,
-                    _privateEnvelopeAuthenticator,
-                    _narrator);
+                    _privateEnvelopeAuthenticator);
             }
 
             if (await _journal
@@ -225,7 +222,7 @@ public sealed class MissionEngine : IDisposable
         }
     }
 
-    private OperationResponse ToResponse(
+    private static OperationResponse ToResponse(
         OperationRequest request,
         OperationOutcome outcome)
     {
@@ -238,7 +235,7 @@ public sealed class MissionEngine : IDisposable
         string? errorCode = completed
             ? null
             : outcome.ErrorCode ?? (outcome.Succeeded ? "verification_failed" : "operation_failed");
-        string message = _narrator.Narrate(request.Operation, outcome);
+        string message = OperationVisibleFacts.FromOutcome(request.Operation, outcome);
         return new OperationResponse(
             ProtocolTypes.OperationResponse,
             request.RequestId,
@@ -363,7 +360,7 @@ public sealed class MissionEngine : IDisposable
         return document.RootElement.Clone();
     }
 
-    private OperationResponse Pending(
+    private static OperationResponse Pending(
         OperationRequest request,
         string errorCode,
         JsonElement? result) =>
@@ -373,7 +370,7 @@ public sealed class MissionEngine : IDisposable
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Pending,
-            _narrator.NarrateStatus(
+            OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Pending,
                 errorCode),
@@ -382,7 +379,7 @@ public sealed class MissionEngine : IDisposable
             result,
             errorCode);
 
-    private OperationResponse Rejected(
+    private static OperationResponse Rejected(
         OperationRequest request,
         string errorCode) =>
         new(
@@ -391,7 +388,7 @@ public sealed class MissionEngine : IDisposable
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Rejected,
-            _narrator.NarrateStatus(
+            OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Rejected,
                 errorCode),
@@ -400,14 +397,14 @@ public sealed class MissionEngine : IDisposable
             null,
             errorCode);
 
-    private OperationResponse InvalidArguments(OperationRequest request) =>
+    private static OperationResponse InvalidArguments(OperationRequest request) =>
         new(
             ProtocolTypes.OperationResponse,
             request.RequestId,
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Failed,
-            _narrator.NarrateStatus(
+            OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Failed,
                 "invalid_arguments"),

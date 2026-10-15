@@ -95,12 +95,10 @@ internal static class PrivateOperationBoundary
     internal static OperationResponse NormalizeReplay(
         OperationRequest request,
         OperationResponse response,
-        IPrivateOperationEnvelopeAuthenticator? authenticator,
-        IOperationResponseNarrator narrator)
+        IPrivateOperationEnvelopeAuthenticator? authenticator)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(response);
-        ArgumentNullException.ThrowIfNull(narrator);
         if (!IsPrivateOperation(request.Operation))
         {
             return response with
@@ -129,7 +127,7 @@ internal static class PrivateOperationBoundary
                 request.MissionId,
                 request.InvocationId,
                 OperationStatuses.Completed,
-                narrator.Narrate(
+                OperationVisibleFacts.FromOutcome(
                     request.Operation,
                     OperationOutcome.PrivateSuccess(result)),
                 true,
@@ -153,7 +151,7 @@ internal static class PrivateOperationBoundary
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Failed,
-            narrator.Narrate(
+            OperationVisibleFacts.FromOutcome(
                 request.Operation,
                 OperationOutcome.Failure(
                     errorCode,
