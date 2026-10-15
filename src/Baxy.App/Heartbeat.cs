@@ -96,8 +96,9 @@ internal sealed class Heartbeat : IAsyncDisposable
             {
                 return;
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception)
             {
+                // An inner deadline's cancellation included: only the heartbeat's own end stops it.
                 ShellTraceSink.Record(ShellTraceScopes.Turn, "beat", "beat.failed", exception.GetType().Name);
             }
         }
@@ -134,10 +135,25 @@ internal sealed class Heartbeat : IAsyncDisposable
         }
 
         _lastBeat = DateTimeOffset.UtcNow;
-        JsonObject moment = HeartbeatMoment.Observe(events, _recent(), _connectivity);
-        moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
-            .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
-        moment["reminders"] = await _reminders().ConfigureAwait(false);
+        JsonObject moment;
+        try
+        {
+            moment = HeartbeatMoment.Observe(events, _recent(), _connectivity);
+            moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
+                .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
+            moment["reminders"] = await _reminders().ConfigureAwait(false);
+        }
+        catch when (changed)
+        {
+            // The moment could not be made: what changed waits for the next look instead of being lost.
+            lock (_gate)
+            {
+                _events.InsertRange(0, events);
+            }
+
+            throw;
+        }
+
         await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty))
             .ConfigureAwait(false);
     }

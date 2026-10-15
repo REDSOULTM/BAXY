@@ -71,14 +71,16 @@ internal static class ScreenViewProjection
 
             if ((bool?)window["protected"] == true)
             {
-                text.Append(", ventana protegida (no se actúa en ella sin que la persona la nombre)");
+                text.Append(", ventana protegida (no se actúa en ella salvo que una mirada la nombre por su aplicación)");
             }
 
             if ((bool?)window["elevated"] == true)
             {
+                // The reader marks it when the window's process runs with more rights than BAXY or that could not be
+                // read (VisibleControlSurface.RunsAboveUs).
                 text.Append((bool?)window["reopensUnraised"] == true
-                    ? ", corre como administrador (se puede reabrir sin permisos de administrador)"
-                    : ", corre como administrador");
+                    ? ", corre como administrador o no se pudo comprobar (se puede reabrir sin permisos de administrador)"
+                    : ", corre como administrador o no se pudo comprobar");
             }
 
             text.Append('\n');
@@ -122,7 +124,7 @@ internal static class ScreenViewProjection
 
         if ((bool?)view["frameOnly"] == true)
         {
-            text.Append("(sólo se leyó el marco de la ventana: su contenido no se pudo leer)\n");
+            text.Append("(sólo se leyó el marco de la ventana: sus controles no se pudieron leer)\n");
         }
 
         if ((string?)view["uiaFailed"] is { Length: > 0 } walkFailed)
