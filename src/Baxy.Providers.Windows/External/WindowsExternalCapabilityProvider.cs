@@ -97,7 +97,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new CaptureVisionAdapter(Path.Combine(root, "captures")),
             new NamedBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
-            new GoogleNewsHeadlinesAdapter(),
             new MicrosoftAccountAdapter(root),
         ];
     }

@@ -578,9 +578,7 @@ public sealed class ComputerUseSpeedTests
     {
         using var host = new UiaWorkerHost(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "missing.ps1"));
 
-        await host.PrewarmAsync(CancellationToken.None);
-
-        Assert.That(host.ScriptExists, Is.False);
+        Assert.DoesNotThrowAsync(async () => await host.PrewarmAsync(CancellationToken.None));
     }
 
     [Test]

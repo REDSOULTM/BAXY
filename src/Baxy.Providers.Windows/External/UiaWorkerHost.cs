@@ -74,8 +74,6 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
         return Encoding.UTF8.GetString(buffer.ToArray());
     }
 
-    internal bool ScriptExists => File.Exists(_script);
-
     public async ValueTask<JsonDocument?> SendAsync(
         string commandJson,
         TimeSpan timeout,

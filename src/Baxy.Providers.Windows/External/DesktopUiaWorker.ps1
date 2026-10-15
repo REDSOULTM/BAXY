@@ -3625,14 +3625,13 @@ function Do-ClickJudged($request){
   }
   return $pressed
 }
-# El nombre de un control o el texto de dentro lleva la etiqueta: igual, o como palabras enteras. Auditoria P3: aqui no
-# se elige un control por su nombre; el punto es donde el OCR o la vision leyeron la etiqueta exacta, y esto solo
-# comprueba que lo que hay en ese punto la lleva (una fila de chat «Juan Perez 12:30 Hola» donde se leyo «Juan Perez»).
+# El nombre de un control o el de un texto de dentro es la etiqueta (Test-NameMatch, plegado exacto). Auditoria final:
+# un nombre que solo la contiene entre otras palabras («Ir a la biblioteca») no es el control que se leyo en el punto.
 function Test-NamesLabel($names,[string[]]$aliases){
   foreach($name in @($names)){
     $text=[string]$name
     if([string]::IsNullOrWhiteSpace($text)){ continue }
-    if((Test-NameMatch $text $aliases) -or (Test-NameHolds $text $aliases)){ return $true }
+    if(Test-NameMatch $text $aliases){ return $true }
   }
   return $false
 }

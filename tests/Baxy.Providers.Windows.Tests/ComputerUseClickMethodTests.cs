@@ -307,7 +307,7 @@ public sealed class ComputerUseClickMethodTests
         Assert.That(answer.Split(','), Is.EqualTo(new[]
         {
             "1",   // the control whose text inside is the label; not the unnamed-by-label inner one, not one too large
-            "0 1", // the label as whole words of a longer name counts too, innermost first (the label was read there)
+            "1",   // auditoría final: a longer name that only holds the label as words is not it; the exact one is
             "",    // auditoría P3: a translation of the label is not it
             "",    // counter-case: nothing there names the label, so nothing is pressed without the mouse
             "",    // a control with no area is no holder of the point

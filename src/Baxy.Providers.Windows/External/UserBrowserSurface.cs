@@ -18,6 +18,7 @@ internal sealed partial class UserBrowserSurface : IUserBrowserWindowLocator
     internal const string PlaybackUnconfirmed = "user_browser_playback_unconfirmed";
     internal const string StreamingPlaybackUnconfirmed = "user_browser_streaming_playback_unconfirmed";
     internal const string StreamingProfileChoice = "user_browser_streaming_profile_choice";
+    internal const string StreamingTitleNotFound = "streaming_title_not_found";
     internal const string AddressAuthority = "user_browser_uia_address_postread";
     internal const string TitleAuthority = "user_browser_window_title_address";
     // Ronda 23 (t4-c10, t3-c06): a search engine's results page arrived as a window whose title changed after the link
@@ -204,6 +205,9 @@ internal sealed partial class UserBrowserSurface : IUserBrowserWindowLocator
         // "Who's watching?" is the person's choice: the page stays open on it and nothing is picked for them.
         if (step.Step == "profile")
             return ExternalJson.FailureAfterEffect(operation, StreamingProfileChoice);
+        // No card was named as the title: nothing was pressed, and the names the page showed go back as candidates.
+        if (step.Step == "title")
+            return StreamingTitleCandidates(operation, service, title, step.Seen ?? []);
         // No play control pressed: whatever plays now (a detail page's own trailer) is not the title asked for.
         if (!step.PlayInvoked)
             return ExternalJson.FailureAfterEffect(operation, StreamingPlaybackUnconfirmed);
@@ -230,6 +234,26 @@ internal sealed partial class UserBrowserSurface : IUserBrowserWindowLocator
     }
 
     private sealed record StreamingSearch(Uri Address, bool TypeTitle, string SignInCode);
+
+    internal static ExternalCapabilityReceipt StreamingTitleCandidates(
+        string operation, string service, string title, IReadOnlyList<string> seen) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("service", service);
+            writer.WriteString("requested", title);
+            writer.WriteStartArray("candidates");
+            foreach (string name in seen)
+            {
+                writer.WriteStringValue(name);
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }), StreamingTitleNotFound)
+        {
+            EffectMayHaveOccurred = true,
+        };
 
     /// <summary>
     /// Where each service searches in the person's session. Netflix and HBO Max take the title in the address

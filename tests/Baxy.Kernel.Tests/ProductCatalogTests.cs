@@ -37,7 +37,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Auditoría semántica 2026-09-20 (REOPEN1993): herramientas tipadas que la
-    // encuesta pedía y el catálogo no tenía (document.text.read se retiró en BAXY Renew).
+    // encuesta pedía y el catálogo no tenía (document.text.read y web.news.headlines se retiraron en BAXY Renew).
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
         "desktop.wallpaper.set",
@@ -51,7 +51,6 @@ public sealed class ProductCatalogTests
         "shell.command.run",
         "weather.current",
         "web.download",
-        "web.news.headlines",
     ];
 
 
@@ -81,8 +80,9 @@ public sealed class ProductCatalogTests
     // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9). Y la
     // pareja preparar/confirmar de winget, que package.install sustituye. Y el paso interno que mandaba una ruta a una
     // papelera privada sin vuelta, que nada invocaba. Auditoría final (2026-10-15): los nueve pasos internos que nada
-    // enviaba (hash, papelera privada, preparar/confirmar de Steam y su compra, resolver destinatario o tarea), y
-    // message.send y filesystem.trash.restore, que sólo servían a dos de ellos.
+    // enviaba (hash, papelera privada, preparar/confirmar de Steam y su compra, resolver destinatario o tarea),
+    // message.send y filesystem.trash.restore, que sólo servían a dos de ellos, y los titulares del día, que leían el
+    // mismo canal que web.search con source=news.
     internal static readonly string[] RenewRetired =
     [
         "app.status",
@@ -115,6 +115,7 @@ public sealed class ProductCatalogTests
         "package.install.commit",
         "package.install.prepare",
         "filesystem.path.ensure.absent",
+        "web.news.headlines",
         "filesystem.hash",
         "filesystem.trash.commit",
         "filesystem.trash.prepare",
@@ -129,7 +130,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Every operation of the catalog is offered to the model as a tool.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 11;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

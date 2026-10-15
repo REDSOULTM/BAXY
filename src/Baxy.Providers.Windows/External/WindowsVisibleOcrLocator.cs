@@ -375,7 +375,9 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             foreach (OcrLine line in pass.Lines)
             {
                 // A label of several words («Página principal») is a run of consecutive words of one line; its box
-                // spans them. A one-word label is one word, as before.
+                // spans them. The run is the label only when it is the whole line or a visual gap sets it apart from
+                // the line's other words on both sides (a row of labels read as one line, «BIBLIOTECA   COMUNIDAD»);
+                // words of a sentence that happen to spell it are not.
                 IReadOnlyList<OcrWord> lineWords = line.Words;
                 for (int start = 0; start + span <= lineWords.Count; start++)
                 {
@@ -383,6 +385,11 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                         continue;
                     OcrWord word = lineWords[start];
                     global::Windows.Foundation.Rect box = SpanBox(lineWords, start, span);
+                    if (!SetApart(
+                            box,
+                            start > 0 ? lineWords[start - 1].BoundingRect : null,
+                            start + span < lineWords.Count ? lineWords[start + span].BoundingRect : null))
+                        continue;
                     var hit = new WordHit(
                         word.Text,
                         (int)(box.X + box.Width / 2),
@@ -446,7 +453,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             }
             return heights[smallest] <= next * 0.95 ? hits[smallest] : null;
         }
-        // Auditoría P3: a line that only holds the label among other words is not its control; nothing is pressed.
+        // No whole line and no run set apart reads the label: nothing is pressed.
         return null;
     }
 
@@ -495,6 +502,18 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         {
             return null;
         }
+    }
+
+    // A run of words is set apart in its OCR line when the word before it and the word after it, if any, stand more
+    // than a body and a half away (the measure ContinuesToTheRight uses for «pegada»).
+    internal static bool SetApart(
+        global::Windows.Foundation.Rect box,
+        global::Windows.Foundation.Rect? before,
+        global::Windows.Foundation.Rect? after)
+    {
+        double gap = box.Height * 1.5;
+        return (before is not { } left || box.X - (left.X + left.Width) > gap)
+            && (after is not { } right || right.X - (box.X + box.Width) > gap);
     }
 
     // Otra palabra en la misma fila, pegada a la derecha: menos de un cuerpo y

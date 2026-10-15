@@ -123,13 +123,12 @@ public sealed class CuV3HonestidadR15b2EdgeTests
         try
         {
             var session = new CdpBrowserSession(profile, BrowserStandIn.Executable);
-            Assert.That(
-                await session.TryReattachAsync(
-                    Path.Combine(profile, "DevToolsActivePort"), BrowserStandIn.Executable, CancellationToken.None),
-                Is.EqualTo(new Uri($"http://127.0.0.1:{server.Port}/")));
+            Uri? endpoint = await session.TryReattachAsync(
+                Path.Combine(profile, "DevToolsActivePort"), BrowserStandIn.Executable, CancellationToken.None);
+            Assert.That(endpoint, Is.EqualTo(new Uri($"http://127.0.0.1:{server.Port}/")));
 
-            string first = await session.PageTargetIdAsync(createIfMissing: true, CancellationToken.None);
-            string again = await session.PageTargetIdAsync(createIfMissing: true, CancellationToken.None);
+            string first = (await session.ResolveTargetAsync(endpoint!, createIfMissing: true, CancellationToken.None)).TargetId;
+            string again = (await session.ResolveTargetAsync(endpoint!, createIfMissing: true, CancellationToken.None)).TargetId;
             session.Dispose();
 
             Assert.Multiple(() =>

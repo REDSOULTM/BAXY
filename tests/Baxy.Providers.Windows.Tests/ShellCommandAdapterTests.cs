@@ -35,8 +35,7 @@ public sealed class ShellCommandAdapterTests
             Assert.That(result.GetProperty("exitCode").GetInt32(), Is.EqualTo(0));
             Assert.That(result.GetProperty("succeeded").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("lineCount").GetInt32(), Is.EqualTo(2));
-            Assert.That(result.GetProperty("lines")[0].GetString(), Is.EqualTo("On branch main"));
-            Assert.That(result.GetProperty("lines")[1].GetString(), Is.EqualTo("nothing to commit, working tree clean"));
+            Assert.That(result.TryGetProperty("lines", out _), Is.False, "the output goes once, as stdout");
             Assert.That(result.GetProperty("truncated").GetBoolean(), Is.False);
             Assert.That(result.GetProperty("cwd").GetString(), Is.EqualTo(cwd));
         });

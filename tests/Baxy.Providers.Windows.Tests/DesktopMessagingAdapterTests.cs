@@ -21,17 +21,56 @@ public sealed class DesktopMessagingAdapterTests
             WindowsDesktopMessagingAutomation.ContainsPhrase(source, expected),
             Is.EqualTo(result));
 
-    // C1: a shown name (title, search row, header line) names the recipient only with its whole words, folded.
+    // Auditoría final: a shown name (a header line, a chat-list row) names the recipient only when it is the recipient,
+    // folded; more words around it make another name.
     [TestCase("Ron92", "ron", false)]
     [TestCase("Juana", "ana", false)]
-    [TestCase("Discord | @Ron92", "ron92", true)]
-    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("@Ron92", "ron92", true)]
+    [TestCase("Ron92 Fan", "Ron92", false)]
     [TestCase("Ana María", "ana maria", true)]
     [TestCase("María Ana", "ana maria", false)]
     [TestCase("Mario", "Maria", false)]
     [TestCase("Ron92", "!!!", false)]
-    public void ARecipientIsNamedOnlyByItsWholeWords(string shown, string recipient, bool named) =>
+    public void ARecipientIsNamedOnlyByItsWholeName(string shown, string recipient, bool named) =>
         Assert.That(WindowsDesktopMessagingAutomation.NamesRecipient(shown, recipient), Is.EqualTo(named));
+
+    // Discord's title: with the client's own part taken away, the one part left is the recipient.
+    [TestCase("Discord | @Ron92", "ron92", true)]
+    [TestCase("Ron92 - Discord", "Ron92", true)]
+    [TestCase("Discord | @Ron92 Fan", "Ron92", false)]
+    [TestCase("#general | BAXY - Discord", "BAXY", false)]
+    [TestCase("Discord", "Discord", false)]
+    public void ADiscordTitleNamesTheRecipientOnlyAsItsConversation(string title, string recipient, bool named) =>
+        Assert.That(WindowsDesktopMessagingAutomation.TitleNamesRecipient(title, recipient), Is.EqualTo(named));
+
+    // A quick-switcher row writes the account after the name; it is opened on the name's whole words (C1).
+    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("Ronaldo", "Ron", false)]
+    public void ASwitcherRowHoldsTheRecipientsWholeWords(string row, string recipient, bool named) =>
+        Assert.That(WindowsDesktopMessagingAutomation.RowNamesRecipient(row, recipient), Is.EqualTo(named));
+
+    // Auditoría final: the WhatsApp chat list is read before anything is opened; only a row that is the recipient,
+    // apart from the time at its right end, is a hit. A preview that begins with the name is not.
+    [Test]
+    public void TheChatListRowThatIsTheRecipientIsTheOnlyHit()
+    {
+        static WindowsVisibleOcrLocator.LayoutLine Line(params (string Text, double X)[] words) => new(
+            string.Join(' ', words.Select(word => word.Text)), words[0].X, 200, 300, 16,
+            [.. words.Select(word => new WindowsVisibleOcrLocator.LayoutWord(word.Text, word.X, 200, word.Text.Length * 8, 16))]);
+        WindowsVisibleOcrLocator.LayoutLine[] rows =
+        [
+            Line(("Juan", 140), ("Pérez", 180), ("12:30", 340)),
+            Line(("Juan", 140), ("Pérez:", 180), ("hola", 232)),
+            Line(("Juan", 140), ("Pérez", 180), ("Soto", 224), ("ayer", 340)),
+        ];
+        IReadOnlyList<(double X, double Y)> hits = WindowsDesktopMessagingAutomation.RowsNamingRecipient(rows, "juan perez");
+        Assert.Multiple(() =>
+        {
+            Assert.That(hits, Has.Count.EqualTo(1));
+            Assert.That(hits[0].X, Is.EqualTo(180).Within(1));
+            Assert.That(hits[0].Y, Is.EqualTo(208).Within(1));
+        });
+    }
 
     // C2: the header line that names the recipient is what is said, with no letter of tolerance.
     [Test]

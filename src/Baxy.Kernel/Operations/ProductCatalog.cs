@@ -1581,9 +1581,8 @@ public static class ProductCatalog
             Schema(
                 [
                     // Ronda 19 (r17 t2-c13 «… en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): el país que
-                    // marca el habla de la persona (código ISO de dos letras), una pista para desempatar entre
-                    // lugares homónimos de tamaño comparable; nunca elige un lugar mucho menor ni pasa sobre la
-                    // región dicha.
+                    // marca el habla de la persona (código ISO de dos letras): entre lugares homónimos de tamaño
+                    // comparable se queda con el de ese país; sin uno así, los homónimos vuelven como candidatos.
                     String("dialectCountry", types: NullableString, values: ["AR", "CL", "CO", "ES", "MX", "VE"]),
                     String("location", types: NullableString, maximumUtf8Bytes: 128),
                 ],
@@ -1625,17 +1624,6 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "web.fetch.public.http.text.v1",
             "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset)."),
-        Descriptor(
-            "web.news.headlines",
-            Schema(
-                [
-                    Integer("limit", 1, 10, types: NullableInteger),
-                    String("topic", types: NullableString, maximumUtf8Bytes: 128),
-                ],
-                []),
-            OperationRisks.ReadOnly,
-            "web.news.headlines.googlenews.rss.read.v1",
-            "Lee los titulares del día, o los de un tema nombrado, desde un canal público de noticias y devuelve cada titular tal cual con su medio, su hora y su enlace."),
         // BAXY Renew (2026-10-15): el modelo elige la fuente (source) y llena sus argumentos tipados; el proveedor
         // pregunta sólo a esa fuente y devuelve lo que ella devolvió. Lo que significa cada argumento lo dice la
         // descripción de la herramienta (tool_descriptions.en.v1.json).

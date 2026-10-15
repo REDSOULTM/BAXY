@@ -21,6 +21,7 @@ namespace Baxy.Providers.Windows.External;
 internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapter, IDisposable
 {
     private const int MaximumDownloadBytes = 50 * 1024 * 1024;
+    private const int MaximumDownloadRedirects = 3;
     private static readonly string[] SafeOpenExtensions =
     [
         ".txt", ".md", ".log", ".pdf", ".rtf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
@@ -47,7 +48,15 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         _knownFolder = knownFolder ?? throw new ArgumentNullException(nameof(knownFolder));
         _fetch = fetch;
         _openWith = openWith;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(40) };
+        // Auditoría final: a download reads only public web addresses, as web.fetch does (SearchPageReader): no cookie,
+        // every redirect checked before it is followed, and a connection only to the public addresses a name resolves to.
+        _http = new HttpClient(new SocketsHttpHandler
+        {
+            UseCookies = false,
+            AllowAutoRedirect = false,
+            ConnectCallback = SearchPageReader.ConnectToPublicAddressAsync,
+        })
+        { Timeout = TimeSpan.FromSeconds(40) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 BAXY/1.0 file-download");
     }
 
@@ -615,6 +624,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 url = "https://" + url;
             if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || uri.Scheme is not ("http" or "https"))
                 return ExternalJson.FailureBeforeEffect(operation, "download_url_invalid");
+            if (!SearchPageReader.IsPublicPageAddress(uri))
+                return ExternalJson.FailureBeforeEffect(operation, "download_url_not_public");
 
             (body, contentType) = await FetchAsync(uri, cancellationToken).ConfigureAwait(false);
             // H0077 «descarga la imagen de portada de wikipedia.org»: the address of a page downloads the image the
@@ -630,6 +641,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                     return ExternalJson.FailureBeforeEffect(operation, "download_page_without_image");
                 if (!Uri.TryCreate(uri, cover.Groups[1].Value, out Uri? image))
                     return ExternalJson.FailureBeforeEffect(operation, "download_page_without_image");
+                if (!SearchPageReader.IsPublicPageAddress(image))
+                    return ExternalJson.FailureBeforeEffect(operation, "download_url_not_public");
                 pageUrl = uri;
                 uri = image;
                 (body, contentType) = await FetchAsync(uri, cancellationToken).ConfigureAwait(false);
@@ -691,8 +704,22 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     {
         if (_fetch is not null)
             return await _fetch(uri.AbsoluteUri, cancellationToken).ConfigureAwait(false);
-        using HttpResponseMessage response = await _http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+        HttpResponseMessage response = await _http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
+        for (int hop = 0; (int)response.StatusCode is >= 300 and < 400; hop++)
+        {
+            Uri? next = response.Headers.Location is { } location
+                ? location.IsAbsoluteUri ? location : new Uri(uri, location)
+                : null;
+            response.Dispose();
+            if (next is null || hop == MaximumDownloadRedirects || !SearchPageReader.IsPublicPageAddress(next))
+                throw new HttpRequestException("The download redirects to no public address.");
+            uri = next;
+            response = await _http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        using HttpResponseMessage answered = response;
         response.EnsureSuccessStatusCode();
         if (response.Content.Headers.ContentLength is > MaximumDownloadBytes)
             throw new InvalidDataException("download too large");
