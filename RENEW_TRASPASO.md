@@ -29,6 +29,30 @@ Decisiones del dueño, tomadas con casillas de opciones:
 | Computer use y herramientas genéricas | Lo que recomienden los papers, la documentación, los usuarios y la evidencia de BAXY |
 | Meta final | Metas medibles: holdout nuevo ≥ 85 %, cero falsedades en banco automático, ≤ 4 GB + 4 GB; si no llega, límite honesto y cierra |
 
+### El BAXY que se construye (segunda ronda de decisiones, 2026-10-15)
+
+**Referencia:** OpenClaw, pero en 4 GB de VRAM. Es un asistente personal que vive en el PC: el modelo, herramientas y
+el bucle, con memoria, skills y latido. El código queda limpio, sin ningún truco para el modelo, y a la vez optimizado
+al máximo para Qwen3.5-4B.
+
+| Tema | Decisión del dueño |
+|---|---|
+| Herramientas | Skills a demanda (un índice corto en el prompt y la skill completa cuando hace falta), o lo que recomiende la evidencia. Se mide contra «todas en el prompt» con Qwen3.5-4B |
+| Memoria | El almacén cifrado actual de BAXY; el modelo lo lee y escribe con herramientas |
+| Proactivo | Latido como OpenClaw: actúa por instinto, conociendo al usuario y lo que puede necesitar en el momento |
+| Riesgo por instinto | Por instinto hace lo de bajo riesgo. Lo de alto riesgo (borrar, enviar mensajes, apagar, pagar) siempre lo propone y espera el «sí» |
+| Qué observa el latido | Hora, apps y ventanas abiertas; la memoria y el historial con BAXY; el contenido de la pantalla; el estado del PC |
+| Frecuencia del latido | Cada 5 min y ante cambios (se abre una app, termina una descarga). Se pausa si el dueño juega o la GPU está ocupada |
+| Avisos | Según lo que haga el dueño: habla en voz alta si está libre; si juega, está en llamada o viendo algo, sólo una notificación en pantalla |
+| Canales | Ventana más voz en el PC; sin Telegram, WhatsApp ni Discord |
+| Confirmaciones | Botones Sí/No en la ventana. Por voz, el modelo interpreta la respuesta con una herramienta. La lista de palabras (regex) de `ConfirmationReplyParser` se va |
+| Código | Se reescribe sólo el arnés, la capa App↔mente. Se conservan el kernel, los proveedores, el journal y la seguridad |
+| Pruebas | Se borran las heredadas. Quedan pocas pruebas, del contrato (arnés nuevo, kernel, proveedores), más el banco y el holdout |
+| Tono | Breve y cercano, en el idioma en que le hablen (español o inglés), sin relleno |
+| Destino | Queda como rama aparte; no se fusiona a main |
+| Modo de trabajo | `/goal` autónomo: lanza agentes, investiga, mide y hace commits en `baxy-renew`. Pregunta con opciones sólo ante una decisión del dueño |
+| Ritmo | **Lo más rápido posible, sin perder calidad**: hay que entregarlo pronto. Agentes en paralelo y nada de esperas inútiles |
+
 ## Qué es Renew hoy
 
 - **Mente (`src/baxy_mind/`):** quedan `__main__.py`, `llm_server.py`, `mind.py`, `protocol.py`, `voice.py` y `data/`.
@@ -157,6 +181,14 @@ regla vital.
 - **Cero falsedades en un banco automático** de turnos con guion, que el chat corre solo.
   - Cada turno se audita contra el journal: no puede decirse como hecho nada que no se haya ejecutado y verificado.
 - **≤ 4 GB de VRAM y ≤ 4 GB de RAM**, medidos con todo cargado: modelo, voz que escucha y que habla, y computer use.
+- **Instinto: banco de escenas, con ≥ 80 % de aciertos.**
+  - Cada escena trae hora, apps abiertas, pantalla, historial y estado del PC. Un acierto es actuar cuando conviene y
+    callarse cuando no.
+  - Cero acciones de riesgo hechas solas.
+  - Como máximo una acción molesta cada 20 escenas.
+- **Velocidad (p50):**
+  - La decisión, en ≤ 1 s.
+  - Desde que el dueño se calla hasta que BAXY empieza a hablar, ≤ 2,5 s.
 - **Si una meta no se alcanza por el límite del modelo:** se documenta como límite honesto, con su evidencia, y se
   cierra. Nunca se parchea con código.
 
