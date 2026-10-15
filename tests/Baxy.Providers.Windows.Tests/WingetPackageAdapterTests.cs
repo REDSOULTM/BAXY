@@ -96,7 +96,7 @@ public sealed class WingetPackageAdapterTests
             : args[0] == "list" ? (1, Nothing)
             : (1, string.Empty));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); launchedOnce = true; return 999_999; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); launchedOnce = true; return new(999_999, () => null); });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.install",
@@ -129,7 +129,7 @@ public sealed class WingetPackageAdapterTests
             : args[0] == "list" ? (0, "Nombre  Id  Versión  Origen\n----\nSpotify Spotify.Spotify 1.3.0.277 winget")
             : (1, string.Empty));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return 1; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return new(1, () => null); });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.install",
@@ -151,7 +151,7 @@ public sealed class WingetPackageAdapterTests
     {
         var runner = new ScriptedRunner(args => args[0] == "search" ? (0, SearchPhotoshop) : (1, Nothing));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return 1; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return new(1, () => null); });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.install",
@@ -182,7 +182,7 @@ public sealed class WingetPackageAdapterTests
             : args[0] == "list" ? (removed ? (1, Nothing) : (0, ListDiscord))
             : (1, string.Empty));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); removed = true; return 999_999; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); removed = true; return new(999_999, () => null); });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.uninstall",
@@ -208,7 +208,7 @@ public sealed class WingetPackageAdapterTests
     {
         var runner = new ScriptedRunner(_ => (1, Nothing));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return 1; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return new(1, () => null); });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.uninstall",
@@ -220,6 +220,47 @@ public sealed class WingetPackageAdapterTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("winget_package_not_installed"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(launched, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task UninstallingANameNoInstalledPackageCarriesReturnsTheInstalledRowsAsCandidates()
+    {
+        var runner = new ScriptedRunner(args => args[0] == "list" ? (0, ListDiscord) : (1, Nothing));
+        List<IReadOnlyList<string>> launched = [];
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return new(1, () => null); });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.uninstall",
+            JsonSerializer.SerializeToElement(new { packageId = "discord canary" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("winget_package_not_resolved"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(launched, Is.Empty);
+            Assert.That(receipt.Result!.Value.GetProperty("candidates")[0].GetProperty("packageId").GetString(),
+                Is.EqualTo("XPDC2RH70K22MN"));
+        });
+    }
+
+    [Test]
+    public async Task AnUninstallThatEndedWithoutRemovingSaysWhatWingetSaid()
+    {
+        var runner = new ScriptedRunner(args => args[0] == "list" ? (0, ListDiscord) : (1, Nothing));
+        var adapter = new WingetPackageAdapter(runner, _ => new(999_999, () => (1603, "Fallo de desinstalación")));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.uninstall",
+            JsonSerializer.SerializeToElement(new { packageId = "discord" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("winget_uninstall_not_verified"));
+            Assert.That(receipt.Result!.Value.GetProperty("wingetExitCode").GetInt32(), Is.EqualTo(1603));
+            Assert.That(receipt.Result!.Value.GetProperty("wingetLastLine").GetString(), Is.EqualTo("Fallo de desinstalación"));
         });
     }
 

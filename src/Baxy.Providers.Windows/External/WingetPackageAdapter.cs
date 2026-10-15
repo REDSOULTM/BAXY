@@ -18,15 +18,15 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 {
     private static readonly TimeSpan QueryTimeout = TimeSpan.FromSeconds(45);
     // winget instala en minutos; el core contesta en segundos. La instalación
-    // se lanza, se le da este plazo por si termina enseguida (paquetes chicos)
-    // y, si sigue, el recibo dice que empezó y con qué proceso.
+    // se lanza y se le da este plazo por si termina enseguida (paquetes chicos);
+    // si sigue, falla con winget_install_still_running: empezada no es instalada.
     private static readonly TimeSpan QuickCompletionWait = TimeSpan.FromSeconds(12);
     // WINGET2083: how long the installed list may lag the installer's exit.
     private static readonly TimeSpan InstalledListSettleWait = TimeSpan.FromSeconds(20);
     private static readonly TimeSpan InstalledListPollInterval = TimeSpan.FromSeconds(2);
 
     private readonly IExternalProcessRunner _runner;
-    private readonly Func<IReadOnlyList<string>, int?> _launch;
+    private readonly Func<IReadOnlyList<string>, WingetLaunch?> _launch;
 
     internal WingetPackageAdapter()
         : this(new ExternalProcessRunner(), null)
@@ -35,7 +35,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 
     internal WingetPackageAdapter(
         IExternalProcessRunner runner,
-        Func<IReadOnlyList<string>, int?>? launch)
+        Func<IReadOnlyList<string>, WingetLaunch?>? launch)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _launch = launch ?? LaunchDetached;
@@ -122,7 +122,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 
         if (await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false))
         {
-            return ExternalJson.Success(operation, Receipt(requested, package, resolvedBy, processId: null),
+            return ExternalJson.Switched(operation, Receipt(requested, package, resolvedBy, processId: null),
                 effectObserved: false);
         }
 
@@ -135,24 +135,25 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         ];
         if (version is not null)
             install.AddRange(["--version", version]);
-        int? processId = _launch(install);
-        if (processId is null)
+        WingetLaunch? launched = _launch(install);
+        if (launched is null)
             return effectBoundary.Failure(operation, "winget_install_not_started");
+        int processId = launched.ProcessId;
 
-        bool exited = await WaitForExitAsync(processId.Value, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
+        bool exited = await WaitForExitAsync(processId, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
         // WINGET2083 «instala 7-Zip»: the installer exits before the package
         // appears in winget's installed list, and a single read right after it
         // said «not installed» about a package that was in fact installed.
         // The list is read again for a few seconds before answering.
         bool installed = exited && await IsInstalledSoonAsync(package.Id, cancellationToken).ConfigureAwait(false);
         if (exited && !installed)
-            return effectBoundary.Failure(operation, "winget_install_not_verified", effectObserved: true);
+            return WithOutcome(effectBoundary.Failure(operation, "winget_install_not_verified", effectObserved: true), launched);
         // An installer still running is a started install, not a verified one (BAXY Renew audit 2026-10-15: it was a
         // success with installing:true).
         if (!installed)
             return effectBoundary.Failure(operation, "winget_install_still_running", effectObserved: true);
 
-        return ExternalJson.Success(operation, Receipt(requested, package, resolvedBy, processId.Value),
+        return ExternalJson.Success(operation, Receipt(requested, package, resolvedBy, processId),
             effectObserved: true);
     }
 
@@ -228,25 +229,29 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         string requested = ExternalJson.RequiredString(arguments, "packageId").Trim();
         List<PackageRow> installed = await ListAsync(requested, cancellationToken).ConfigureAwait(false);
         List<PackageRow> named = installed.Where(row => MatchesName(row, requested)).ToList();
+        // Installed packages the list gave for the name, none of them named so, go back as candidates, as for install.
         if (named.Count == 0)
-            return ExternalJson.FailureBeforeEffect(operation, "winget_package_not_installed");
+            return installed.Count > 0
+                ? Candidates(operation, "winget_package_not_resolved", requested, installed)
+                : ExternalJson.FailureBeforeEffect(operation, "winget_package_not_installed");
         if (named.Count > 1)
-            return ExternalJson.FailureBeforeEffect(operation, "winget_package_ambiguous");
+            return Candidates(operation, "winget_package_ambiguous", requested, named);
         PackageRow package = named[0];
 
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);
-        int? processId = _launch([
+        WingetLaunch? launched = _launch([
             "uninstall", "--id", package.Id, "--exact", "--silent",
             "--accept-source-agreements", "--disable-interactivity",
         ]);
-        if (processId is null)
+        if (launched is null)
             return effectBoundary.Failure(operation, "winget_uninstall_not_started");
+        int processId = launched.ProcessId;
 
-        bool exited = await WaitForExitAsync(processId.Value, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
+        bool exited = await WaitForExitAsync(processId, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
         bool stillInstalled = await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false);
         if (exited && stillInstalled)
-            return effectBoundary.Failure(operation, "winget_uninstall_not_verified", effectObserved: true);
+            return WithOutcome(effectBoundary.Failure(operation, "winget_uninstall_not_verified", effectObserved: true), launched);
         if (stillInstalled)
             return effectBoundary.Failure(operation, "winget_uninstall_still_running", effectObserved: true);
 
@@ -259,7 +264,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             writer.WriteString("name", package.Name);
             writer.WriteString("previousVersion", package.Version);
             writer.WriteBoolean("removed", true);
-            writer.WriteNumber("processId", processId.Value);
+            writer.WriteNumber("processId", processId);
             writer.WriteString("authority", "winget_list_exact_absence_postread");
             writer.WriteEndObject();
         });
@@ -421,7 +426,26 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         @"(?<=\s)(?<id>[A-Za-z0-9][A-Za-z0-9.+_-]*\.[A-Za-z0-9.+_-]+|[0-9A-Z]{12,14}|ARP\\[^\s]+|MSIX\\[^\s]+)(?=\s|$)",
         RegexOptions.CultureInvariant);
 
-    private static int? LaunchDetached(IReadOnlyList<string> arguments)
+    // A winget run BAXY started: its process and, once it ended, its exit code and the last line it wrote.
+    internal sealed record WingetLaunch(int ProcessId, Func<(int ExitCode, string LastLine)?> Outcome);
+
+    // A run that ended without the change it was for says what winget said: its exit code and its last line.
+    private static ExternalCapabilityReceipt WithOutcome(ExternalCapabilityReceipt failure, WingetLaunch launched) =>
+        launched.Outcome() is not { } outcome
+            ? failure
+            : failure with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteNumber("wingetExitCode", outcome.ExitCode);
+                    writer.WriteString("wingetLastLine", outcome.LastLine);
+                    writer.WriteEndObject();
+                }),
+            };
+
+    private static WingetLaunch? LaunchDetached(IReadOnlyList<string> arguments)
     {
         var start = new ProcessStartInfo("winget.exe")
         {
@@ -435,10 +459,18 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         Process? process = Process.Start(start);
         if (process is null)
             return null;
-        // Las salidas se drenan para que winget no se bloquee en un tubo lleno.
-        _ = process.StandardOutput.ReadToEndAsync();
-        _ = process.StandardError.ReadToEndAsync();
-        return process.Id;
+        // Las salidas se drenan para que winget no se bloquee en un tubo lleno, y su última línea se guarda.
+        Task<string> output = process.StandardOutput.ReadToEndAsync();
+        Task<string> error = process.StandardError.ReadToEndAsync();
+        return new WingetLaunch(process.Id, () =>
+        {
+            if (!process.HasExited || !Task.WaitAll([output, error], TimeSpan.FromSeconds(2)))
+                return null;
+            string last = (error.Result + "\n" + output.Result)
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .LastOrDefault(line => line.Any(char.IsLetterOrDigit)) ?? string.Empty;
+            return (process.ExitCode, last.Length <= 240 ? last : last[..240]);
+        });
     }
 
     private static async Task<bool> WaitForExitAsync(int processId, TimeSpan budget, CancellationToken cancellationToken)
