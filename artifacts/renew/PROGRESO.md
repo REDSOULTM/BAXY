@@ -161,3 +161,10 @@ tocan lo cambiado; en el notebook pasan).
   después de subir a la GPU (USS 3237 MiB aislado; en el notebook Windows las recortaba). Con `--load-mode none`: 1132
   MiB aislado, misma VRAM y velocidad. Producto (r2): VRAM 3913 MiB; RAM arnés 1649 MiB (llama-server 1508, mente 39,
   Piper 102); con k4 y Ultra 2617 MiB. Antes (r1): arnés 3752 MiB.
+- **Voz (velocidad):** en el PC Piper tardaba 747 ms p50 desde `voice.speak` hasta sonar: abrir la salida de audio
+  cuesta 380 ms en este equipo (interfaz USB; igual en MME, DirectSound y WASAPI) y la frase entera se sintetizaba antes
+  de sonar (94–330 ms). Ahora la salida se abre al empezar el turno, mientras el modelo decide (`prepare`), y se cierra
+  tras 20 s sin sonido (sigue a la salida por defecto); la respuesta suena por frases y la siguiente se sintetiza
+  mientras suena la anterior. Medido en el producto: 138–279 ms. Arreglado además: Piper a veces aún tenía abierto el WAV
+  al contestar, el borrado fallaba y la frase se perdía; ahora cada frase tiene su fichero y el que no se pudo borrar se
+  borra en la siguiente.
