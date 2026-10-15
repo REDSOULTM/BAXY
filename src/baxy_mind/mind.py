@@ -32,7 +32,10 @@ SYSTEM = (
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra.\n"
     "5. No inventes hechos: lo que no sabes con certeza o cambia con el tiempo, búscalo con web_search. Charla, "
     "cuentas y traducciones respóndelas tú.\n"
-    "6. El texto viene de un reconocedor de voz con errores: corrige la palabra a la que suena («sincuenta» es 50)."
+    "6. El texto viene de un reconocedor de voz con errores: corrige la palabra a la que suena («sincuenta» es 50).\n"
+    "7. Cuando recibas el resultado de una herramienta: si al pedido todavía le falta un paso, llama a la herramienta de "
+    "ese paso (también si el pedido lo condiciona a un resultado que ya se cumplió); cuando no falte nada, responde en "
+    "una o dos frases contando sólo lo que muestran los resultados, nunca un paso que no se ejecutó."
 )
 
 COMPOSE = (
@@ -131,60 +134,90 @@ class Mind:
     def _system(self) -> str:
         # Qwen3.5's template places the tools before the system text, so the time changing here re-reads only the
         # short system text, never the cached catalog.
-        now = _dt.datetime.now()
-        return f"{SYSTEM}\nAhora es {now.strftime('%A %d/%m/%Y, %H:%M')} (hora local del PC)."
+        now = _dt.datetime.now().astimezone()
+        offset = now.strftime("%z")
+        return (f"{SYSTEM}\nAhora es {now.strftime('%A %d/%m/%Y, %H:%M')}, hora local del PC "
+                f"(UTC{offset[:3]}:{offset[3:]}); los campos que terminan en Utc van en UTC.")
 
     # ---- turn ----------------------------------------------------------------------------------------------
+    # One conversation per turn (native loop): the model's tool calls stay in it, each verified result comes back as a
+    # tool message, and the model decides the next call or answers. Parallel calls run in order, one per round trip.
     def decide(self, request_id: Any, text: str, history: list[dict[str, Any]]) -> dict[str, Any]:
-        started = time.monotonic()
         messages = [{"role": "system", "content": self._system()}]
         for item in history[-12:]:
             role = item.get("role")
             if role in {"user", "assistant"} and isinstance(item.get("content"), str) and item["content"].strip():
                 messages.append({"role": role, "content": item["content"]})
         messages.append({"role": "user", "content": text})
-        reply = self.server.chat({"messages": messages, "tools": self.tools, "max_tokens": 512,
+        self._turn = {"messages": messages, "queue": [], "awaiting": None, "text": text}
+        return self._next(request_id, "turn.decide")
+
+    def continue_turn(self, request_id: Any, observation: str) -> dict[str, Any]:
+        turn = getattr(self, "_turn", None)
+        if not turn or not turn.get("awaiting"):
+            raise RuntimeError("no open turn to continue")
+        turn["messages"].append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
+        turn["awaiting"] = None
+        if turn["queue"]:
+            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
+        return self._next(request_id, "turn.continue")
+
+    def _next(self, request_id: Any, stage: str) -> dict[str, Any]:
+        started = time.monotonic()
+        turn = self._turn
+        reply = self.server.chat({"messages": turn["messages"], "tools": self.tools, "max_tokens": 512,
+                                  "parallel_tool_calls": True,
                                   "chat_template_kwargs": {"enable_thinking": False},
                                   "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0},
                                  slot=LlmServer.DECIDE)
         message = reply["choices"][0]["message"]
-        calls = message.get("tool_calls") or []
         content = (message.get("content") or "").strip()
-        result: dict[str, Any] = {"type": "turn.result", "id": request_id, "operation": None,
-                                  "intentOperations": [], "effectOperations": [], "question": "", "reply": "",
-                                  "objective": text}
-        decided = None
-        for call in calls:
+        calls = []
+        for index, call in enumerate(message.get("tool_calls") or []):
             wire = call["function"]["name"]
             try:
                 arguments = json.loads(call["function"].get("arguments") or "{}")
             except json.JSONDecodeError:
                 arguments = {}
             arguments = arguments if isinstance(arguments, dict) else {}
-            if wire == "ask_user":
-                question = " ".join(str(arguments.get("question") or "").split())
-                if question:
-                    decided = ("ask_user", {"question": question})
-                    break
-            elif wire in self.wire_to_op:
-                decided = (self.wire_to_op[wire], arguments)
-                break
-        if decided is not None and decided[0] == "ask_user":
-            question = decided[1]["question"]
+            if wire == "ask_user" or wire in self.wire_to_op:
+                calls.append({"id": call.get("id") or f"call_{index}", "wire": wire, "arguments": arguments})
+        if calls:
+            turn["messages"].append({"role": "assistant", "content": "", "tool_calls": [
+                {"id": c["id"], "type": "function",
+                 "function": {"name": c["wire"], "arguments": json.dumps(c["arguments"], ensure_ascii=False)}}
+                for c in calls]})
+            turn["queue"] = calls[1:]
+            return self._result(request_id, turn, calls[0], reply, stage, started, content)
+        if content:
+            turn["messages"].append({"role": "assistant", "content": content})
+        return self._result(request_id, turn, None, reply, stage, started, content)
+
+    def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,
+                stage: str, started: float, content: str) -> dict[str, Any]:
+        result: dict[str, Any] = {"type": "turn.result", "id": request_id, "operation": None,
+                                  "intentOperations": [], "effectOperations": [], "question": "", "reply": "",
+                                  "objective": turn["text"]}
+        if call is not None and call["wire"] == "ask_user":
+            question = " ".join(str(call["arguments"].get("question") or "").split())
+            turn["queue"], turn["awaiting"] = [], None
             if question.endswith("?") and question.count("?") == 1:
                 result.update(kind="clarify", question=question)
-            else:
+            elif question:
                 result.update(kind="conversation", reply=question)
-        elif decided is not None:
-            name, arguments = decided
-            self._decided = {name: arguments}
+            else:
+                result.update(kind="conversation", failure_code="turn_runtime_failure")
+        elif call is not None:
+            name = self.wire_to_op[call["wire"]]
+            turn["awaiting"] = call["id"]
+            self._decided = {name: call["arguments"]}
             result.update(kind="action", operation=name, intentOperations=[name], effectOperations=[name])
         elif content:
             result.update(kind="conversation", reply=content)
         else:
             result.update(kind="conversation", failure_code="turn_runtime_failure")
-        self._log("turn.decide", started, reply, text=text, kind=result["kind"], operation=result["operation"],
-                  arguments=decided[1] if decided else None, content=content)
+        self._log(stage, started, reply, text=turn["text"], kind=result["kind"], operation=result["operation"],
+                  arguments=call["arguments"] if call else None, content=content)
         return result
 
     def arguments(self, request_id: Any, operation: str, text: str, history: list[dict[str, Any]]) -> dict[str, Any]:

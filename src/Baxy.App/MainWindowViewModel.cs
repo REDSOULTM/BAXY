@@ -120,7 +120,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 Core = () => _coreClient,
                 Mind = () => _mindClient,
-                Publish = PublishBaxy,
+                Publish = PublishPlanResult,
                 SetStatus = text => StatusDescription = text,
                 TryMarkResolved = TryMarkResolved,
                 TurnElapsed = TurnElapsed,
@@ -155,6 +155,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private void PublishBaxy(string body, UserMessageEvent? messageEvent) =>
         AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent);
+
+    // BAXY Renew native loop: while the model drives a turn, a step's verified result goes back to the model instead of
+    // being published; a confirmation the kernel asks for is always the person's, so it is published as before.
+    private bool _loopCapturing;
+    private (string Body, UserMessageEvent? Event)? _loopObservation;
+
+    private void PublishPlanResult(string body, UserMessageEvent? messageEvent)
+    {
+        if (_loopCapturing && messageEvent != UserMessageEvent.Confirmation)
+        {
+            _loopObservation = (body, messageEvent);
+            return;
+        }
+
+        PublishBaxy(body, messageEvent);
+    }
 
     private void PublishBaxyForObjective(string body, UserMessageEvent? messageEvent, string? objective) =>
         AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent, composeUserText: objective);
@@ -2607,13 +2623,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (turn.Kind == "action" && turn.Operation is { Length: > 0 } routedOperation)
         {
-            return await TryExecuteMindOperationAsync(
-                mind,
-                route,
-                routedOperation,
-                registry,
-                cancellationToken,
-                responseLanguage: turn.ResponseLanguage);
+            return mind.IsTurnContinueAvailable
+                ? await RunNativeToolLoopAsync(mind, route, turn, registry, cancellationToken)
+                : await TryExecuteMindOperationAsync(
+                    mind,
+                    route,
+                    routedOperation,
+                    registry,
+                    cancellationToken,
+                    responseLanguage: turn.ResponseLanguage);
         }
 
         AddMessage(
@@ -2623,6 +2641,77 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
         return true;
     }
+
+    // BAXY Renew native loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop): the model calls a tool,
+    // the kernel authorizes it and the provider executes and verifies it, the verified result goes back into the turn's
+    // conversation, and the model decides the next call or answers. Its final text is the answer; nothing is composed
+    // apart. Six model calls at most per turn; past that, the last verified result is told as it is.
+    internal const int NativeLoopModelCalls = 6;
+
+    private async Task<bool> RunNativeToolLoopAsync(
+        MindSidecarClient mind,
+        MissionInputRoute route,
+        MindTurnDecision turn,
+        RetryableOperationRegistry registry,
+        CancellationToken cancellationToken)
+    {
+        MindTurnDecision current = turn;
+        for (int modelCalls = 1; ; modelCalls++)
+        {
+            _loopObservation = null;
+            _loopCapturing = true;
+            try
+            {
+                await TryExecuteMindOperationAsync(
+                    mind,
+                    route,
+                    current.Operation!,
+                    registry,
+                    cancellationToken,
+                    responseLanguage: current.ResponseLanguage);
+            }
+            finally
+            {
+                _loopCapturing = false;
+            }
+
+            if (_loopObservation is not { } observation)
+            {
+                // The step ended the turn itself: a question, a confirmation, or a private memory route.
+                return true;
+            }
+
+            MindTurnDecision? next = modelCalls < NativeLoopModelCalls
+                ? await mind.ContinueTurnAsync(observation.Body, NativeLoopContinueTimeout, cancellationToken)
+                : null;
+            if (next is { Kind: "action", Operation.Length: > 0 })
+            {
+                current = next;
+                continue;
+            }
+
+            if (next is { Kind: "conversation", Reply.Length: > 0 })
+            {
+                AddMessage(
+                    "BAXY",
+                    next.Reply,
+                    isUser: false,
+                    formulatedByMind: true,
+                    route: PublicResponseRoute.Conversation);
+                return true;
+            }
+
+            if (next is { Kind: "clarify", Question.Length: > 0 })
+            {
+                return AddMindClarification(route.Text, next.Question, next.ResponseLanguage);
+            }
+
+            PublishBaxy(observation.Body, observation.Event);
+            return true;
+        }
+    }
+
+    private static readonly TimeSpan NativeLoopContinueTimeout = TimeSpan.FromSeconds(15);
 
     /// <summary>
     /// An operation whose schema carries an identity only a verified producer

@@ -30,7 +30,7 @@ def main() -> int:
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL, "mindVersion": "renew-0.1",
         "models": {"llm": server.name},
-        "requests": ["catalog.configure", "turn.decide", "arguments", "message.compose", "shutdown"],
+        "requests": ["catalog.configure", "turn.decide", "turn.continue", "arguments", "message.compose", "shutdown"],
     })
     try:
         while True:
@@ -52,6 +52,8 @@ def main() -> int:
                 elif kind == "turn.decide":
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
                                                        list(message.get("history") or [])))
+                elif kind == "turn.continue":
+                    protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or "")))
                 elif kind == "arguments":
                     protocol.write_message(mind.arguments(request_id, str(message.get("operation") or ""),
                                                           str(message.get("text") or ""),
@@ -68,7 +70,7 @@ def main() -> int:
                 else:
                     protocol.write_message(protocol.error_reply(request_id, "unknown_request", kind))
             except Exception as error:  # noqa: BLE001 - one failed request never ends the sidecar
-                surface = {"turn.decide": "turn", "arguments": "arguments"}.get(kind, "request")
+                surface = {"turn.decide": "turn", "turn.continue": "turn", "arguments": "arguments"}.get(kind, "request")
                 sys.stderr.write(f"baxy_mind_renew_failure:{kind}:{error!r}\n")
                 sys.stderr.flush()
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",

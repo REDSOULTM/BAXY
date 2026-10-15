@@ -307,6 +307,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private volatile bool _ready;
     private volatile bool _plannerAvailable;
     private volatile bool _turnDecisionAvailable;
+    private volatile bool _turnContinueAvailable;
     private bool _disposed;
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
@@ -319,6 +320,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     public bool IsPlannerAvailable => IsReady && _plannerAvailable;
 
     public bool IsTurnDecisionAvailable => IsReady && _turnDecisionAvailable;
+
+    /// <summary>BAXY Renew: the mind keeps the turn's conversation and takes each verified result back.</summary>
+    public bool IsTurnContinueAvailable => IsReady && _turnContinueAvailable;
 
     internal static bool IsCpuFallbackProfile =>
         string.Equals(
@@ -580,6 +584,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 && requests?.Any(static request => (string?)request == "plan") == true;
             _turnDecisionAvailable = hasLlm
                 && requests?.Any(static request => (string?)request == "turn.decide") == true;
+            _turnContinueAvailable = hasLlm
+                && requests?.Any(static request => (string?)request == "turn.continue") == true;
             MindStartupCatalog inputs = await catalog
                 .WaitAsync(startupCancellation.Token)
                 .ConfigureAwait(false);
@@ -734,6 +740,32 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             decideRequest,
             timeout,
             cancellationToken).ConfigureAwait(false);
+        return ParseTurnResult(reply);
+    }
+
+    /// <summary>
+    /// BAXY Renew native loop: one verified result goes back into the turn's own conversation, and the model answers
+    /// with its next step (another tool call, a question, or the final text), in the same shape as turn.decide.
+    /// </summary>
+    public async Task<MindTurnDecision?> ContinueTurnAsync(
+        string observation,
+        TimeSpan timeout,
+        CancellationToken cancellationToken)
+    {
+        if (!IsTurnContinueAvailable)
+        {
+            return null;
+        }
+
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "turn.continue", ["observation"] = observation },
+            timeout,
+            cancellationToken).ConfigureAwait(false);
+        return ParseTurnResult(reply);
+    }
+
+    private static MindTurnDecision? ParseTurnResult(JsonObject? reply)
+    {
         if (reply is null || (string?)reply["type"] != "turn.result")
         {
             return null;
