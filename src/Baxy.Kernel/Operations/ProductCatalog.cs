@@ -1830,9 +1830,8 @@ public static class ProductCatalog
             Schema(
                 [
                     // Ronda 19 (r17 t2-c13 «… en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): el país que
-                    // marca el habla de la persona (código ISO de dos letras), una pista para desempatar entre
-                    // lugares homónimos de tamaño comparable; nunca elige un lugar mucho menor ni pasa sobre la
-                    // región dicha.
+                    // marca el habla de la persona (código ISO de dos letras): entre lugares homónimos de tamaño
+                    // comparable se queda con el de ese país; sin uno así, los homónimos vuelven como candidatos.
                     String("dialectCountry", types: NullableString, values: ["AR", "CL", "CO", "ES", "MX", "VE"]),
                     String("location", types: NullableString, maximumUtf8Bytes: 128),
                 ],
