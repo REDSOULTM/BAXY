@@ -44,7 +44,7 @@ def main() -> int:
             request_id, kind = message.get("id"), str(message.get("type"))
             try:
                 if kind == "catalog.configure":
-                    count = mind.configure(list(message.get("capabilities") or []))
+                    count = mind.configure(message)
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
                     threading.Thread(target=mind.warm, daemon=True).start()
                 elif kind == "turn.decide":

@@ -140,107 +140,24 @@ internal static class ModelMessageComposer
         ArgumentNullException.ThrowIfNull(facts);
         ArgumentNullException.ThrowIfNull(compose);
 
-        // These words came from the person, not from the product internals.
-        // Use them only for vocabulary; the current request still owns intent.
-        string? priorUserText = facts["priorRequests"] is JsonArray prior
-            ? string.Join(" ", prior.Select(static item => (string?)item))
-            : null;
-
+        // BAXY Renew: one composition, published as the model wrote it. No response checks, no second call: the
+        // model phrases the facts the kernel and the provider verified. Only a missing answer (transport) fails here.
         MindComposedMessage? composed = await compose(
             userText,
             draft.Intent,
             facts,
             SelectTimeout(draft, facts, cpuFallback),
             cancellationToken).ConfigureAwait(false);
-        string? accepted = AcceptPublishedConversation(
-            composed?.Text,
-            draft,
-            userText,
-            priorUserText);
-        if (accepted is not null)
-        {
-            return new ModelMessageCompositionOutcome(
-                accepted,
-                Failure: null,
-                UsedRecovery: false);
-        }
-
-        string originalFailure = RejectionReason(
-            composed?.Text,
-            draft,
-            userText,
-            priorUserText);
-        // Latency 2026-09-23 (tanda-01, uso-real-03): with the served greedy
-        // writer no recovery call ever published; it repeated the refused
-        // composition and doubled a 0.4–9 s wait. A reproducible writer's answer
-        // is final; only a writer that samples, or a mind that did not answer,
-        // gets the second call.
-        if (!allowRecovery || composed is { Reproducible: true })
-        {
-            return new ModelMessageCompositionOutcome(
+        string? text = composed?.Text?.Trim();
+        return text is { Length: > 0 }
+            ? new ModelMessageCompositionOutcome(text, Failure: null, UsedRecovery: false)
+            : new ModelMessageCompositionOutcome(
                 null,
-                originalFailure,
+                "model_unanswered",
                 UsedRecovery: false,
                 Unanswered: composed is null,
                 RejectedText: composed?.Text);
-        }
-
-        // Retry the same verified facts. A lost-facts failure draft used to
-        // turn a Core-verified clock into «No pude: no pude encontrarlo.»
-        MindComposedMessage? recovered = await compose(
-            userText,
-            draft.Intent,
-            facts,
-            SelectTimeout(draft, facts, cpuFallback),
-            cancellationToken).ConfigureAwait(false);
-        string? acceptedRecovery = AcceptPublishedConversation(
-            recovered?.Text,
-            draft,
-            userText,
-            priorUserText);
-        if (acceptedRecovery is not null)
-        {
-            return new ModelMessageCompositionOutcome(
-                acceptedRecovery,
-                originalFailure,
-                UsedRecovery: true);
-        }
-
-        string recoveryFailure = RejectionReason(
-            recovered?.Text,
-            draft,
-            userText,
-            priorUserText);
-        return new ModelMessageCompositionOutcome(
-            null,
-            $"{originalFailure};recovery:{recoveryFailure}",
-            UsedRecovery: true,
-            Unanswered: recovered is null,
-            RejectedText: recovered?.Text ?? composed?.Text);
     }
-
-    // cien-36 027 «open that»: the clarification was refused by
-    // IsSafeConversationReply, whose reason the composer never asked, so the
-    // turn recorded the bare «model_response_rejected» and no check could be
-    // told from another. Both reason functions are consulted, in the order
-    // they run.
-    private static string RejectionReason(
-        string? modelText,
-        UserMessageDraft draft,
-        string userText,
-        string? priorUserText) =>
-        UserMessagePolicy.ModelResponseRejectionReason(
-            modelText, draft, userText, priorUserText)
-        ?? (modelText is null
-            ? null
-            : UserMessagePolicy.ConversationReplyRejectionReason(
-                userText,
-                modelText,
-                priorUserText: priorUserText,
-                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
-                missingFields: UserMessagePolicy.DeclaredMissingFields(draft),
-                verifiedSuccess: UserMessagePolicy.ReportsVerifiedEffect(draft)))
-        ?? "model_response_rejected";
 
     private static string? AcceptPublishedConversation(
         string? modelText,

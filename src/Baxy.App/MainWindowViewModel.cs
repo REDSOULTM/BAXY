@@ -72,10 +72,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // When the current turn left the queue: the clock of its TurnBudget.
     private long _turnStartedTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
     private DateTimeOffset? _lastMilestoneAttemptUtc;
-    private Task? _milestoneCompositionTask;
     // Uso real t2-r4 c01-2: five model-composed «Estoy trabajando…» in one 24 s turn, each competing for the GPU with
     // the turn's own composer. The model words the first milestone of a turn; the later ones are formulated.
-    private bool _milestoneComposedThisTurn;
 
     /// <summary>
     /// Por qué se descartó la respuesta que la mente había redactado en el
@@ -345,7 +343,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         StatusText = "Trabajando";
         StatusDescription = "understanding";
         ClearProgressLabel();
-        _milestoneComposedThisTurn = false;
         _lastBaxyVisibleUtc = startedUtc;
     }
 
@@ -387,32 +384,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // not acceptable; r13a: «acting» pulsed through waits of 10-40 s with no
         // text): its waits still get the formulated label, never composed, which
         // says it goes on and claims no result.
-        if (UserMessagePolicy.BypassLlmCompositionForTests || _milestoneComposedThisTurn || IsComputerUseMissionRunning)
-        {
-            _lastMilestoneAttemptUtc = nowUtc;
-            ApplyInProgressSignal(
-                FirstSignal.FormulateProgress(
-                    userText,
-                    FirstSignal.KindMilestone,
-                    step,
-                    total,
-                    // Estabilidad cu-v3 2026-10-08: the notice speaks the language this turn was decided in.
-                    LastMindResponseLanguage),
-                nowUtc);
-            return true;
-        }
-
-        if (_mindClient is not { IsReady: true } mind
-            || mind.HasActiveRequest
-            || _milestoneCompositionTask is { IsCompleted: false })
-        {
-            return false;
-        }
-
+        // BAXY Renew: the progress notice is always the formulated label. A notice composed by the model competed with
+        // the turn for the mind and the GPU, and fired after the final answer (the second composition of «Hablame de
+        // messi», 2026-10-15).
         _lastMilestoneAttemptUtc = nowUtc;
-        _milestoneComposedThisTurn = true;
-        _milestoneCompositionTask = ComposeMilestoneAsync(
-            mind, userText, _currentTurnTraceId, StatusDescription, step, total);
+        ApplyInProgressSignal(
+            FirstSignal.FormulateProgress(
+                userText,
+                FirstSignal.KindMilestone,
+                step,
+                total,
+                LastMindResponseLanguage),
+            nowUtc);
         return true;
     }
 
@@ -440,40 +423,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         ApplyInProgressSignal(text);
         return true;
-    }
-
-    private async Task ComposeMilestoneAsync(
-        MindSidecarClient mind, string userText, string turnId, string statusDescription, int step, int total)
-    {
-        UserMessageDraft draft = CreateMilestoneDraft(statusDescription, step, total);
-        JsonObject facts = ModelMessageComposer.CreateFacts(draft, turnId);
-        try
-        {
-            ModelMessageCompositionOutcome outcome = await ModelMessageComposer.ComposeAsync(
-                    draft,
-                    userText,
-                    facts,
-                    mind.ComposeUserMessageAsync,
-                    MindSidecarClient.IsCpuFallbackProfile,
-                    allowRecovery: false,
-                    _mindLifetimeCancellation.Token).ConfigureAwait(false);
-            if (outcome.Text is not { Length: > 0 } text)
-            {
-                return;
-            }
-
-            await InvokeOnUiAsync(() =>
-            {
-                TryApplyMilestone(text, turnId, statusDescription);
-            }).ConfigureAwait(false);
-        }
-        catch (Exception exception) when (ModelMessageComposer.IsTransientFailure(exception))
-        {
-            // Progress is optional; it cannot replace or fail the final reply.
-        }
-        catch (OperationCanceledException) when (_mindLifetimeCancellation.IsCancellationRequested)
-        {
-        }
     }
 
     internal void ClearProgressLabel()
@@ -1068,23 +1017,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         CancellationToken cancellationToken)
     {
         string text = route.Text;
-        if (VoiceListenCommand.TryParse(text, out bool listenEnabled))
-        {
-            AddMessage("Tú", text, isUser: true);
-            bool changed = await SetWakeVoiceAsync(listenEnabled, cancellationToken);
-            AddMessage(
-                "BAXY",
-                VoiceListenVisibleFacts(listenEnabled, changed),
-                isUser: false,
-                messageEvent: changed
-                    ? UserMessageEvent.Status
-                    : UserMessageEvent.Error(
-                        listenEnabled
-                            ? UserMessageDiagnosticCodes.LocalService
-                            : UserMessageDiagnosticCodes.ActionNotCompleted));
-            return;
-        }
-
         MemoryParseResult memory = route.Memory;
         string publicUserText = memory.MaskPublicProjection
             || NaturalMemoryRequestParser.ContainsSensitiveMaterial(text)
@@ -1180,15 +1112,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 // self-contained request supersedes this stale clarification,
                 // while a fragment still resumes it.
                 _pendingMindClarificationObjective = null;
-                if (ConfirmationReplyParser.Parse(text) == ConfirmationReplyKind.Cancel)
-                {
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Status("clarification_cancelled"),
-                        isUser: false);
-                    return;
-                }
-
                 if (!await TryExecuteWithMindAsync(
                         route,
                         registry,
@@ -1249,82 +1172,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     return;
             }
 
-            switch (memory.Outcome)
-            {
-                case MemoryParseOutcome.Route when memory.Operation is not null:
-                    if (memory.Operation.Name == "memory.recall"
-                        && NaturalMemoryRequestParser.RefersToCurrentNameConversation(
-                            route.Text,
-                            BuildMindHistory().Where(static message => message.Role == "user")
-                                .Select(static message => message.Content)))
-                    {
-                        break;
-                    }
-                    await _memoryTurns.ExecuteRouteAsync(
-                        memory.Operation,
-                        registry,
-                        durableBeforeSend: true,
-                        cancellationToken,
-                        route.PublicObjective,
-                        route.Source,
-                        route.Text);
-                    return;
-                case MemoryParseOutcome.ConfirmSensitiveSave when memory.Operation is not null:
-                    await _memoryTurns.ExecuteRouteAsync(
-                        memory.Operation,
-                        registry,
-                        durableBeforeSend: false,
-                        cancellationToken,
-                        route.PublicObjective,
-                        route.Source,
-                        route.Text);
-                    return;
-                case MemoryParseOutcome.ConfirmSensitiveSave:
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Failure("sensitive_data_unparsed"),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Error(
-                            UserMessageDiagnosticCodes.MissingData));
-                    return;
-                case MemoryParseOutcome.Clarify:
-                    _memoryTurns.AwaitSaveInput(memory);
-                    AddMessage(
-                        "BAXY",
-                        PrivateOperationNarration.CreateMemoryClarification(memory),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Clarification);
-                    return;
-                case MemoryParseOutcome.AskToSave:
-                    // Stating personal context does not request persistence,
-                    // and may also contain a conversational request. Let the
-                    // existing turn policy handle the whole input. Memory
-                    // selections still require an explicit parser route:
-                    // execution and plan validation reject implicit writes.
-                    break;
-                case MemoryParseOutcome.SessionContextOnly:
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Status("session_context_only"),
-                        isUser: false);
-                    return;
-                case MemoryParseOutcome.RejectAuthorizationPersistence:
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Status("no_permission_escalation"),
-                        isUser: false);
-                    return;
-                case MemoryParseOutcome.NoRoute when memory.MustNotClaimStandaloneRoute:
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Status("not_a_memory_request"),
-                        isUser: false);
-                    return;
-                case MemoryParseOutcome.NoRoute:
-                    break;
-                default:
-                    throw new InvalidDataException("El resultado del parser de memoria no es válido.");
-            }
+            // BAXY Renew: memory requests are the model's tool choice like any other; no parser routes them.
 
             // The semantic turn policy is covered by its own real-model gate.
             // Shell integration tests may inject a typed contract oracle so
@@ -2668,22 +2516,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string? pendingClarificationObjective = null,
         MindTurnDecision? preclassifiedTurn = null)
     {
-        // A bare numbered reply is meaningful only while a verified
-        // disambiguation is pending. Pending choices are handled before this
-        // method, so a number reaching this point must never wait for or enter
-        // the neural path.
-        // AUDIO1787 «subí el volumen de spotify» → «¿cuánto?» → «20»: while a
-        // mind clarification is pending, a bare number is the answer it asked
-        // for (an amount, a level), not a contextless selection.
-        bool isContextlessSelection =
-            pendingClarificationObjective is null
-            && NoteChoiceReplyParser.Parse(route.Text).Kind
-            == NoteChoiceReplyKind.Select;
-        if (isContextlessSelection)
-        {
-            return false;
-        }
-
         MindSidecarClient? mind = await WaitForMindReadyAsync(personTurn: true, cancellationToken);
         if (mind is null)
         {
@@ -2728,59 +2560,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
         }
 
-        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
-        {
-            // The shell parser read this PC's own clock (another place's time is
-            // not its reading): the clock takes no place, nothing is extracted.
-            return await TryExecuteMindOperationAsync(
-                mind,
-                route,
-                "system.time",
-                registry,
-                cancellationToken,
-                knownArguments: new JsonObject());
-        }
-
-        if (UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
-        {
-            return await TryExecuteMindOperationAsync(
-                mind,
-                route,
-                "network.status",
-                registry,
-                cancellationToken);
-        }
-
-        if (UserMessagePolicy.IsSelfDescriptionQuestion(route.Text))
-        {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Event("conversation"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Conversation);
-            return true;
-        }
-
-        if (UserMessagePolicy.IsContinueConstraintRequest(route.Text))
-        {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Event("conversation"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Conversation);
-            return true;
-        }
-
-        if (UserMessagePolicy.IsGreetingRequest(route.Text))
-        {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Welcome(),
-                isUser: false,
-                messageEvent: UserMessageEvent.Welcome);
-            return true;
-        }
-
         // A pending objective does not erase facts supplied in conversation.
         // The pendingClarification flag below owns the independent reading;
         // dialogue remains reference data, not permission to resume an effect.
@@ -2793,169 +2572,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         if (turn is null)
         {
             LastMindReplyRejection = "decision_unavailable";
-            return UserMessagePolicy.ShouldComposeAsConversationNotError(route.Text)
-                && AddMindConversationFallback();
-        }
-
-        if (turn.RecoveryFailureCode is { } failureCode)
-        {
-            _pendingMindClarificationObjective = null;
-            // A recovered turn that carries the mind's validated clarification
-            // question is a question, not a failure. Publishing the failure
-            // discarded that question and told the person BAXY had not
-            // understood («No pude entender bien…») after two vetoed
-            // conversational drafts (CONVERSATION1150/002, /007;
-            // KNOWLEDGE1149/004). The recovery carries no operations and no
-            // preserved objective, so it grants no execution authority.
-            if (turn.Kind == "clarify"
-                && turn.Question is { Length: > 0 }
-                && turn.EffectOperations.Count == 0
-                && turn.IntentOperations.Count == 0)
-            {
-                return AddMindClarification(
-                    route.Text,
-                    turn.Question,
-                    turn.ResponseLanguage,
-                    preserveObjective: false,
-                    turn.MissingFields);
-            }
-
-            // Symmetrically, a recovered turn that carries the mind's validated
-            // conversational reply is an answer, not a failure. cien-37 030 «send
-            // flowers to Deimos»: the recovery composed «Sending flowers to Deimos
-            // is outside what I do on this PC» and publishing the failure replaced
-            // it with «I couldn't understand the request…», which is false: it was
-            // understood and simply cannot be done. The reply answers to the same
-            // contract as any other conversational reply, and the recovery carries
-            // no operations, so it grants no execution authority either.
-            if (turn.Kind == "conversation"
-                && turn.Reply is { Length: > 0 }
-                && turn.EffectOperations.Count == 0
-                && turn.IntentOperations.Count == 0)
-            {
-                LastMindReplyRejection =
-                    UserMessagePolicy.ConversationReplyRejectionReason(
-                        route.Text,
-                        turn.Reply,
-                        turn.ResponseLanguage,
-                        string.Join(" ", PreviousUserRequests()),
-                        unsupportedByMind: string.Equals(
-                            turn.ConversationKind, "unsupported", StringComparison.Ordinal));
-                LastMindRejectedReply = LastMindReplyRejection is null ? null : turn.Reply;
-                if (LastMindReplyRejection is null)
-                {
-                    AddMessage(
-                        "BAXY",
-                        turn.Reply,
-                        isUser: false,
-                        formulatedByMind: true,
-                        route: PublicResponseRoute.Conversation);
-                    return true;
-                }
-            }
-
-            // Tanda 4 2026-09-24 «empezar a leer el libro»: the mind had decided
-            // a limit and only its wording failed, so the floor is that limit,
-            // composed as out_of_catalog; publishing the turn failure told the
-            // person «No pude entender bien la solicitud…», which is false.
-            if (string.Equals(turn.ConversationKind, "unsupported", StringComparison.Ordinal)
-                && turn.EffectOperations.Count == 0
-                && turn.IntentOperations.Count == 0)
-            {
-                return AddMindConversationFallback("unsupported");
-            }
-
-            // cien-41 027 «open that»: la recuperación se quedó sin pregunta
-            // —el presupuesto de 2,5 s no siempre alcanza bajo carga— y el turno
-            // moría, aunque el pedido sí era una acción sin objeto. La App tiene
-            // su propia aclaración de protocolo, que no se presenta como texto
-            // del modelo, y preguntar qué quiere es más veraz que no contestar.
-            if (UserMessagePolicy.ConversationFallbackIntent(route.Text)
-                == "clarification"
-                && turn.EffectOperations.Count == 0
-                && turn.IntentOperations.Count == 0)
-            {
-                _pendingMindClarificationObjective = route.Text.Length > 0
-                    ? route.Text
-                    : null;
-                AddMessage(
-                    "BAXY",
-                    // Review r2 finding 2: this question is the App's own reading of an action with no object; asking
-                    // is its whole point, so it never carries understoodAs (whose floor asks nothing).
-                    TurnVisibleFacts.Clarification("ambiguous_request"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
-                return true;
-            }
-
-            JsonObject failureFacts = UnderstoodAs(turn) ?? new JsonObject();
-            failureFacts["operationAttempted"] = false;
-            failureFacts["retryable"] = true;
             AddMessage(
                 "BAXY",
-                TurnVisibleFacts.Failure(failureCode, failureFacts),
+                TurnVisibleFacts.Failure("decision_unavailable"),
                 isUser: false,
-                messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+                messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
             return true;
         }
 
-        if (turn.Objective is { } rearmedObjective
-            && !string.Equals(rearmedObjective, route.Text, StringComparison.Ordinal))
+        // BAXY Renew: the model's own turn is published as it is. What it says is its answer, what it asks is its
+        // question, what it proposes goes to the kernel, which authorizes it, and to the provider, which verifies it.
+        // No reader or veto stands between the model and the person.
+        if (turn.Kind == "conversation" && turn.Reply is { Length: > 0 })
         {
-            route = new MissionInputRoute(
-                rearmedObjective,
-                route.Source,
-                NaturalMemoryRequestParser.Classify(rearmedObjective));
+            _pendingMindClarificationObjective = null;
+            AddMessage(
+                "BAXY",
+                turn.Reply,
+                isUser: false,
+                formulatedByMind: true,
+                route: PublicResponseRoute.Conversation);
+            return true;
         }
 
-        if (turn.Kind is "conversation" or "clarify"
-            && NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
-        {
-            return await TryExecuteMindOperationAsync(
-                mind,
-                route,
-                "system.time",
-                registry,
-                cancellationToken,
-                knownArguments: new JsonObject());
-        }
-
-        if (UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
-        {
-            return await TryExecuteMindOperationAsync(
-                mind,
-                route,
-                "network.status",
-                registry,
-                cancellationToken);
-        }
-
-
-        if (turn.Kind == "conversation")
-        {
-            LastMindReplyRejection =
-                UserMessagePolicy.ConversationReplyRejectionReason(
-                    route.Text,
-                    turn.Reply,
-                    turn.ResponseLanguage,
-                    string.Join(" ", PreviousUserRequests()),
-                    unsupportedByMind: string.Equals(turn.ConversationKind, "unsupported", StringComparison.Ordinal));
-            LastMindRejectedReply = LastMindReplyRejection is null ? null : turn.Reply;
-            if (LastMindReplyRejection is null)
-            {
-                AddMessage(
-                    "BAXY",
-                    turn.Reply,
-                    isUser: false,
-                    formulatedByMind: true,
-                    route: PublicResponseRoute.Conversation);
-                return true;
-            }
-
-            return AddMindConversationFallback(turn.ConversationKind);
-        }
-
-        if (turn.Kind == "clarify")
+        if (turn.Kind == "clarify" && turn.Question is { Length: > 0 })
         {
             return AddMindClarification(
                 route.Text,
@@ -2965,13 +2605,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 turn.MissingFields);
         }
 
-        if (turn.Kind == "action"
-            && turn.Operation is { Length: > 0 } routedOperation
-            && !ConsumesVerifiedDependency(routedOperation))
+        if (turn.Kind == "action" && turn.Operation is { Length: > 0 } routedOperation)
         {
-            // The mind owns semantic grounding, including contextual requests.
-            // The shell's positive fast-path recognizer is not an exhaustive
-            // veto: discarding a grounded reading here loses its observed facts.
             return await TryExecuteMindOperationAsync(
                 mind,
                 route,
@@ -2981,71 +2616,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 responseLanguage: turn.ResponseLanguage);
         }
 
-        if ((turn.Kind == "plan"
-                || (turn.Kind == "action"
-                    && turn.Operation is { Length: > 0 } dependentOperation
-                    && ConsumesVerifiedDependency(dependentOperation)))
-            && mind.IsPlannerAvailable)
-        {
-            StatusDescription = "Preparando los pasos";
-            MindPlanResult? plan = await mind.PlanAsync(
-                route.Text,
-                decisionHistory,
-                TimeSpan.FromSeconds(60),
-                cancellationToken,
-                expectedOperations: turn.EffectOperations);
-            if (plan is null || plan.Kind == "failed")
-            {
-                // Ronda 20 P5 (v3-27): a failed plan carries its cause (MindSidecarClient.PlanFailureCause): an
-                // internal fault is never said as a limit of this PC.
-                AddMessage(
-                    "BAXY",
-                    plan is { Kind: "failed", Question: { Length: > 0 } facts }
-                        ? facts
-                        : TurnVisibleFacts.Failure("plan_incomplete"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(
-                        UserMessageDiagnosticCodes.ActionNotCompleted));
-                return true;
-            }
-
-            if (plan.Kind == "clarify")
-            {
-                return AddMindClarification(route.Text, plan.Question, turn.ResponseLanguage);
-            }
-
-            if (plan.Kind == "plan")
-            {
-                try
-                {
-                    _ = MindPlanBoundary.ValidateAndConvert(route.Text, plan);
-                }
-                catch (Baxy.Kernel.Planning.MissionPlanValidationException)
-                {
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Failure("plan_unverified"),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Error(
-                            UserMessageDiagnosticCodes.ActionNotCompleted));
-                    return true;
-                }
-                var execution = new PendingMindPlanExecution(route.Text, plan.Steps)
-                {
-                    PresentStateCondition = plan.PresentStateCondition,
-                };
-                _mindPlans.Begin(execution);
-                await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
-                return true;
-            }
-
-            if (plan.Kind == "conversation")
-            {
-                return AddMindConversationFallback();
-            }
-        }
-
-        return AddMindConversationFallback();
+        AddMessage(
+            "BAXY",
+            TurnVisibleFacts.Failure(turn.RecoveryFailureCode ?? "plan_incomplete"),
+            isUser: false,
+            messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        return true;
     }
 
     /// <summary>
@@ -3074,11 +2650,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // person's explicit request (semantic/memory.py); what the App's own reader found implicit (a personal fact said
         // without asking to keep it, a «no lo guardes») is still refused, and the rest runs on the private route below.
         bool memory = operationName.StartsWith("memory.", StringComparison.Ordinal);
-        if (memory && !MindMemoryAllowed(operationName, route.Memory))
-        {
-            return AddMemoryNeedsExplicitRequest();
-        }
-
         if (!ProductCatalog.TryGet(
                 operationName,
                 out ProductOperationDescriptor? descriptor)
@@ -3267,27 +2838,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // pending state. Rewording a rejected question must not turn it into
         // conversation or discard the objective required by the next fragment.
         _pendingMindClarificationObjective = preserveObjective ? request : null;
-        LastMindReplyRejection = UserMessagePolicy.ConversationReplyRejectionReason(
-            request, question, responseLanguage, clarification: true, missingFields: missingFields);
-        LastMindRejectedReply = LastMindReplyRejection is null ? null : question;
-        if (LastMindReplyRejection is null)
-        {
-            AddMessage(
-                "BAXY", question, isUser: false, formulatedByMind: true,
-                route: PublicResponseRoute.Clarification);
-        }
-        else
-        {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn, _currentTurnTraceId,
-                "clarification.rejected", LastMindReplyRejection);
-            JsonObject? requiredInput = missingFields is { Count: > 0 }
-                ? new JsonObject { ["missingValue"] = string.Join(", ", missingFields) }
-                : null;
-            AddMessage(
-                "BAXY", TurnVisibleFacts.Clarification("ambiguous_request", requiredInput),
-                isUser: false, messageEvent: UserMessageEvent.Clarification);
-        }
+        LastMindReplyRejection = null;
+        LastMindRejectedReply = null;
+        AddMessage(
+            "BAXY", question, isUser: false, formulatedByMind: true,
+            route: PublicResponseRoute.Clarification);
         return true;
     }
 
@@ -3325,65 +2880,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return true;
     }
 
-    // Estabilidad cu-v3 2026-10-08 (v2-v3-61, «¿Qué quieres que haga con "en seguridad de windows decime cuándo…"?»):
-    // a recovered turn the mind understood as talk, whose wording failed, carries that kind to the composer, whose
-    // floor then says the short cause instead of asking the person's own words back (llm._not_understood_floor).
-    // Review r2 finding 3: read from the mind's own understoodAs, which travels whatever kinds the attempts decided.
-    private static JsonObject? UnderstoodAs(MindTurnDecision turn) =>
-        turn.UnderstoodAs is { Length: > 0 } kind ? new JsonObject { ["understoodAs"] = kind } : null;
-
     private bool AddMindConversationFallback(string? conversationKind = null)
     {
-        // turn.decide already produces the conversational answer. A second
-        // open-ended generation used to duplicate the request and could add
-        // another timeout after the 22 s turn boundary. Degrade through the
-        // bounded LLM message composer instead of restarting semantic work.
-        // Failure("model_invalid") used to publish «No pude: unusable answer»
-        // for greetings and catalog holes — a polarity flip, not a Core miss.
-        string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
-            ?? string.Empty;
-        string intent = conversationKind == "unsupported"
-            ? "out_of_catalog"
-            : UserMessagePolicy.ConversationFallbackIntent(userText);
-        switch (intent)
-        {
-            case "clarification":
-                // La pregunta es sobre este pedido: sin guardarlo, el fragmento
-                // siguiente («mañana a las 9») se quedaba sin tema.
-                _pendingMindClarificationObjective = userText.Length > 0
-                    ? userText
-                    : null;
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Clarification("ambiguous_request"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
-                return true;
-            case "out_of_catalog":
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Failure("out_of_catalog"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(
-                        UserMessageDiagnosticCodes.ActionNotCompleted));
-                return true;
-            case "welcome":
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Welcome(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Welcome);
-                return true;
-            default:
-                // Un pedido que no se reconoce se contesta, no se saluda: la
-                // degradación conserva la conversación con el texto del turno.
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Event("conversation"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Conversation);
-                return true;
-        }
+        // BAXY Renew: no regex picks an intent here; the turn says plainly that it could not be completed.
+        AddMessage(
+            "BAXY",
+            TurnVisibleFacts.Failure(conversationKind == "unsupported" ? "out_of_catalog" : "decision_unavailable"),
+            isUser: false,
+            messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        return true;
     }
 
     private List<(string Role, string Content)> BuildMindHistory()
