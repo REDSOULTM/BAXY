@@ -1,12 +1,13 @@
 using System.IO;
-using System.Net.NetworkInformation;
 using System.Text.Json.Nodes;
+using Baxy.Providers.Windows.Network;
 
 namespace Baxy.App;
 
 /// <summary>
 /// BAXY's heartbeat (owner, 2026-10-15; OpenClaw's heartbeat): every five minutes and when something changes (an
-/// application opens, a download finishes, the network drops or comes back, the battery runs low, the person leaves),
+/// application opens, a file appears in Downloads, Windows' internet check changes, the battery runs low, the person
+/// leaves),
 /// the moment goes to the model, which decides by instinct. The five-minute look pauses while the person plays or the
 /// GPU is busy; a change still wakes it. <c>BAXY_RENEW_HEARTBEAT=0</c> turns it off.
 /// </summary>
@@ -24,8 +25,9 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly List<string> _events = [];
     private readonly object _gate = new();
     private readonly FileSystemWatcher? _downloads;
+    private readonly WindowsNetworkStatusProvider _network = new();
     private HashSet<string> _windows = [];
-    private bool? _network;
+    private string? _connectivity;
     private int? _battery;
     private bool _away;
     private DateTimeOffset _lastBeat = DateTimeOffset.UtcNow;
@@ -50,8 +52,8 @@ internal sealed class Heartbeat : IAsyncDisposable
         if (Directory.Exists(downloads))
         {
             _downloads = new FileSystemWatcher(downloads) { IncludeSubdirectories = false, EnableRaisingEvents = false };
-            _downloads.Created += (_, e) => DownloadSeen(e.Name);
-            _downloads.Renamed += (_, e) => DownloadSeen(e.Name);
+            _downloads.Created += (_, e) => FileAppeared(e.Name);
+            _downloads.Renamed += (_, e) => FileAppeared(e.Name);
         }
     }
 
@@ -83,7 +85,7 @@ internal sealed class Heartbeat : IAsyncDisposable
                 return;
             }
 
-            NoteChanges();
+            await NoteChangesAsync(cancellationToken).ConfigureAwait(false);
             bool changed;
             lock (_gate)
             {
@@ -112,7 +114,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             }
 
             _lastBeat = DateTimeOffset.UtcNow;
-            JsonObject moment = HeartbeatMoment.Observe(events, _recent());
+            JsonObject moment = HeartbeatMoment.Observe(events, _recent(), _connectivity);
             moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
                 .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
             moment["reminders"] = await _reminders().ConfigureAwait(false);
@@ -128,8 +130,8 @@ internal sealed class Heartbeat : IAsyncDisposable
         }
     }
 
-    // What changed since the last look, as the lines the model reads («app opened: …», «network down» …).
-    private void NoteChanges()
+    // What changed since the last look, as the lines the model reads («app opened: …», «internet connectivity: …» …).
+    private async Task NoteChangesAsync(CancellationToken cancellationToken)
     {
         HashSet<string> windows = CurrentApplications();
         foreach (string opened in windows.Except(_windows))
@@ -138,14 +140,19 @@ internal sealed class Heartbeat : IAsyncDisposable
         }
 
         _windows = windows;
-        bool network = NetworkInterface.GetIsNetworkAvailable();
-        if (_network is { } before && before != network)
+        // Windows' own internet check, the signal network.status reads; a reading that changed between its two looks
+        // is left for the next one.
+        if ((await _network.ReadVerifiedAsync(cancellationToken).ConfigureAwait(false))?.Connectivity is { } connectivity)
         {
-            Note(network ? "network back" : "network down");
+            if (_connectivity is { } before && before != connectivity)
+            {
+                Note($"internet connectivity: {connectivity} (was {before})");
+            }
+
+            _connectivity = connectivity;
         }
 
-        _network = network;
-        JsonObject pc = HeartbeatMoment.Machine(gpuBusy: false);
+        JsonObject pc = HeartbeatMoment.Machine(gpuBusy: false, connectivity: null);
         if ((int?)pc["battery_pct"] is { } battery && (bool?)pc["plugged"] != true)
         {
             foreach (int threshold in new[] { 20, 10 })
@@ -168,7 +175,7 @@ internal sealed class Heartbeat : IAsyncDisposable
         _away = away;
     }
 
-    private void DownloadSeen(string? name)
+    private void FileAppeared(string? name)
     {
         if (string.IsNullOrWhiteSpace(name)
             || name.EndsWith(".crdownload", StringComparison.OrdinalIgnoreCase)
@@ -179,7 +186,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             return;
         }
 
-        Note($"download finished: {name} en Descargas");
+        Note($"file appeared in Descargas: {name}");
     }
 
     private void Note(string line)
