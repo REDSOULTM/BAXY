@@ -119,6 +119,7 @@
   "ocr.read": "Leer el texto que aparece en una captura de pantalla ya hecha.",
   "office.document.create": "Crear un documento de Office nuevo con un título y un formato.",
   "office.document.read": "Leer el contenido de un documento de Office ya identificado.",
+  "package.install": "Instalar un programa en el PC con winget por su id o su nombre y comprobar que quedó instalado.",
   "package.uninstall": "Desinstalar un programa del PC por su nombre y comprobar que ya no está.",
   "peripheral.list": "Ver qué periféricos hay conectados, como mouse o teclado, opcionalmente de un tipo.",
   "peripheral.print": "Imprimir un documento ya identificado en una impresora.",

@@ -1445,25 +1445,20 @@ public static class ProductCatalog
             "office.document.read.adapter.snapshot.v1",
             ToolExposure.Public,
             "Lee una proyección estructurada de un documento identificado mediante el adapter oficial."),
+        // BAXY Renew 2026-10-15: one call that resolves, installs and verifies, after the person's yes (installation
+        // risk); it replaces the prepare/commit pair, which the 4B took for uninstalling.
         Descriptor(
-            "package.install.commit",
-            Schema([String("confirmationId", maximumLength: 96, nonWhitespace: true)], ["confirmationId"]),
-            OperationRisks.Installation,
-            "package.install.commit.winget.receipt.v1",
-            ToolExposure.Internal,
-            "Confirma una instalación preparada mediante winget y verifica su recibo."),
-        Descriptor(
-            "package.install.prepare",
+            "package.install",
             Schema(
                 [
                     String("packageId", maximumUtf8Bytes: 256, nonWhitespace: true),
                     String("version", types: NullableString, maximumLength: 64),
                 ],
                 ["packageId"]),
-            OperationRisks.ReadOnly,
-            "package.install.prepare.winget.selection.v1",
-            ToolExposure.Internal,
-            "Resuelve un paquete winget exacto, o el único paquete que lleva el nombre pedido, y prepara una confirmación sin instalar."),
+            OperationRisks.Installation,
+            "package.install.winget.list.postread.v1",
+            ToolExposure.Public,
+            "Instala mediante winget el paquete que se nombra (por su id exacto o su nombre único) y verifica su presencia en la lista de paquetes instalados; si el nombre no es de un solo paquete, falla sin instalar y devuelve los candidatos."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo G): «desinstalá Discord»
         // es una desinstalación real por el gestor de paquetes, verificada por su
         // ausencia después; pierde lo instalado, así que confirma en modo normal.

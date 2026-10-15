@@ -70,7 +70,7 @@ public sealed class OperationRegistryTests
     [TestCase("memory.enable", PolicyDecision.Allow)]
     [TestCase("game.install.named", PolicyDecision.RequireConfirmation)]
     [TestCase("game.install.commit", PolicyDecision.RequireConfirmation)]
-    [TestCase("package.install.commit", PolicyDecision.RequireConfirmation)]
+    [TestCase("package.install", PolicyDecision.RequireConfirmation)]
     [TestCase("game.uninstall.named", PolicyDecision.RequireConfirmation)]
     [TestCase("game.launch", PolicyDecision.Allow)]
     [TestCase("game.install.prepare", PolicyDecision.Allow)]

@@ -358,13 +358,13 @@ public sealed class ExternalAdaptersTests
         var runner = new ThrowingProcessRunner(
             new System.ComponentModel.Win32Exception(2, "winget.exe was not found"));
         // REOPEN1993 grupo G: the package operations moved to WingetPackageAdapter.
-        var adapter = new WingetPackageAdapter(runner, Path.Combine(Path.GetTempPath(), "baxy-winget-tests"), _ => null);
+        var adapter = new WingetPackageAdapter(runner, _ => null);
 
         ExternalCapabilityReceipt? receipt = null;
         Assert.DoesNotThrowAsync(async () =>
         {
             receipt = await adapter.InvokeAsync(
-                "package.install.prepare",
+                "package.install",
                 Json("""{"packageId":"Microsoft.PowerToys"}"""),
                 CancellationToken.None);
         });

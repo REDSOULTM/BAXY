@@ -63,7 +63,8 @@ public sealed class ProductCatalogTests
     ];
 
     // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto; editar, buscar, leer y
-    // escribir archivos con cuatro operaciones; y una sola para lo que suena después (alarmas y recordatorios).
+    // escribir archivos con cuatro operaciones; una sola para lo que suena después (alarmas y recordatorios); y una
+    // sola para instalar un programa, que resuelve, instala y verifica tras el sí.
     internal static readonly string[] RenewAgentAdditions =
     [
         "file.edit",
@@ -72,11 +73,13 @@ public sealed class ProductCatalogTests
         "file.write",
         "web.fetch",
         "schedule.alarms",
+        "package.install",
     ];
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
     // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
-    // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9).
+    // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9). Y la
+    // pareja preparar/confirmar de winget, que package.install sustituye.
     internal static readonly string[] RenewRetired =
     [
         "app.status",
@@ -106,9 +109,11 @@ public sealed class ProductCatalogTests
         "routine.resolve.exact",
         "routine.restore",
         "routine.set.enabled",
+        "package.install.commit",
+        "package.install.prepare",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 27;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 29;
 
     // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
     // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).
@@ -123,12 +128,10 @@ public sealed class ProductCatalogTests
         "game.purchase.commit",
         "game.purchase.prepare",
         "message.recipient.resolve",
-        "package.install.commit",
-        "package.install.prepare",
         "task.resolve.exact",
     ];
 
-    internal const int ExpectedTools = ExpectedDescriptors - 12;
+    internal const int ExpectedTools = ExpectedDescriptors - 10;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

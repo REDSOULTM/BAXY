@@ -55,6 +55,9 @@ public sealed class WingetPackageAdapterTests
             Assert.That(rows[0].Id, Is.EqualTo("Hex.MirrorForPhotoshopServer"));
             Assert.That(rows[0].Version, Is.EqualTo("2025.12.66"));
             Assert.That(rows[0].Source, Is.EqualTo("winget"));
+            Assert.That(rows[1].Name, Is.EqualTo("蓝湖"));
+            Assert.That(rows[1].Id, Is.EqualTo("JinweiZhiguang.Lanhu.Photoshop"));
+            Assert.That(rows[1].Version, Is.EqualTo("2.417.0"));
             Assert.That(rows[2].Name, Is.EqualTo("Adobe Photoshop"));
             Assert.That(rows[2].Id, Is.EqualTo("XPFD4T9N395QN6"));
             Assert.That(rows[2].Source, Is.EqualTo("msstore"));
@@ -80,67 +83,78 @@ public sealed class WingetPackageAdapterTests
         });
     }
 
+    // package.install is one call (BAXY Renew 2026-10-15): the kernel asked first; the adapter resolves the exact
+    // package, installs it by its id and verifies it in the installed list.
     [Test]
-    public async Task ANameWithOneExactMatchIsPreparedWithItsIdAndRecorded()
+    public async Task ANameWithOneExactMatchIsInstalledByItsIdAndVerifiedInTheList()
     {
-        string root = NewRoot();
+        bool launchedOnce = false;
         var runner = new ScriptedRunner(args =>
             args[0] == "search" ? (0, SearchSpotify)
+            : args[0] == "list" && launchedOnce ? (0, ListDiscord.Replace(
+                "Discord XPDC2RH70K22MN 1.0.9258", "Spotify Spotify.Spotify 1.3.1.234", StringComparison.Ordinal))
             : args[0] == "list" ? (1, Nothing)
             : (1, string.Empty));
-        var adapter = new WingetPackageAdapter(runner, root, _ => null);
+        List<IReadOnlyList<string>> launched = [];
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); launchedOnce = true; return 999_999; });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "package.install.prepare",
+            "package.install",
             JsonSerializer.SerializeToElement(new { packageId = "spotify" }),
             CancellationToken.None);
 
-        Assert.That(receipt.Verified, Is.True);
-        JsonElement result = receipt.Result!.Value;
-        string confirmationId = result.GetProperty("confirmationId").GetString()!;
         Assert.Multiple(() =>
         {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(launched, Has.Count.EqualTo(1));
+            Assert.That(launched[0], Is.EqualTo(new[]
+            {
+                "install", "--id", "Spotify.Spotify", "--exact", "--silent",
+                "--accept-package-agreements", "--accept-source-agreements", "--disable-interactivity",
+            }));
+            JsonElement result = receipt.Result!.Value;
             Assert.That(result.GetProperty("packageId").GetString(), Is.EqualTo("Spotify.Spotify"));
-            Assert.That(result.GetProperty("resolvedVersion").GetString(), Is.EqualTo("1.3.1.234.g59d6bf59"));
-            Assert.That(result.GetProperty("source").GetString(), Is.EqualTo("winget_search_unique_name"));
-            Assert.That(result.GetProperty("installed").GetBoolean(), Is.False);
-            Assert.That(confirmationId, Does.StartWith("winget_"));
-            Assert.That(File.Exists(Path.Combine(root, confirmationId + ".json")), Is.True);
-            Assert.That(runner.Calls.Select(call => call[0]), Is.EqualTo(new[] { "search", "list" }));
+            Assert.That(result.GetProperty("resolvedBy").GetString(), Is.EqualTo("winget_search_unique_name"));
+            Assert.That(result.GetProperty("installed").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("alreadyInstalled").GetBoolean(), Is.False);
         });
     }
 
     [Test]
-    public async Task AnExactIdIsPreparedByShowWithoutSearching()
+    public async Task AnExactIdAlreadyInstalledIsSaidWithoutInstallingAgain()
     {
         var runner = new ScriptedRunner(args =>
             args[0] == "show" ? (0, ShowSpotify)
             : args[0] == "list" ? (0, "Nombre  Id  Versión  Origen\n----\nSpotify Spotify.Spotify 1.3.0.277 winget")
             : (1, string.Empty));
-        var adapter = new WingetPackageAdapter(runner, NewRoot(), _ => null);
+        List<IReadOnlyList<string>> launched = [];
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return 1; });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "package.install.prepare",
+            "package.install",
             JsonSerializer.SerializeToElement(new { packageId = "Spotify.Spotify" }),
             CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result!.Value.GetProperty("installed").GetBoolean(), Is.True);
-            Assert.That(receipt.Result!.Value.TryGetProperty("confirmationId", out _), Is.False);
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.Result!.Value.GetProperty("alreadyInstalled").GetBoolean(), Is.True);
+            Assert.That(launched, Is.Empty);
             Assert.That(runner.Calls[0][0], Is.EqualTo("show"));
         });
     }
 
     [Test]
-    public async Task ANameWingetDoesNotOfferExactlyIsNotResolved()
+    public async Task ANameWingetDoesNotOfferExactlyFailsBeforeAnyEffectWithWhatWingetGave()
     {
         var runner = new ScriptedRunner(args => args[0] == "search" ? (0, SearchPhotoshop) : (1, Nothing));
-        var adapter = new WingetPackageAdapter(runner, NewRoot(), _ => null);
+        List<IReadOnlyList<string>> launched = [];
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return 1; });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "package.install.prepare",
+            "package.install",
             JsonSerializer.SerializeToElement(new { packageId = "Photoshop" }),
             CancellationToken.None);
 
@@ -149,63 +163,13 @@ public sealed class WingetPackageAdapterTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("winget_package_not_resolved"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
-        });
-    }
-
-    [Test]
-    public async Task TheCommitInstallsThePreparedIdAndVerifiesItInTheList()
-    {
-        string root = NewRoot();
-        var runner = new ScriptedRunner(args =>
-            args[0] == "search" ? (0, SearchSpotify)
-            : args[0] == "list" && args.Contains("--exact") ? (1, Nothing)
-            : (1, string.Empty));
-        List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, root, args => { launched.Add(args); return 999_999; });
-        ExternalCapabilityReceipt prepared = await adapter.InvokeAsync(
-            "package.install.prepare",
-            JsonSerializer.SerializeToElement(new { packageId = "spotify" }),
-            CancellationToken.None);
-        string confirmationId = prepared.Result!.Value.GetProperty("confirmationId").GetString()!;
-        runner.Script = args => args[0] == "list" ? (0, ListDiscord.Replace("Discord XPDC2RH70K22MN 1.0.9258", "Spotify Spotify.Spotify 1.3.1.234", StringComparison.Ordinal)) : (1, string.Empty);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "package.install.commit",
-            JsonSerializer.SerializeToElement(new { confirmationId }),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(launched, Has.Count.EqualTo(1));
-            Assert.That(launched[0], Is.EqualTo(new[]
-            {
-                "install", "--id", "Spotify.Spotify", "--exact", "--silent",
-                "--accept-package-agreements", "--accept-source-agreements", "--disable-interactivity",
-            }));
-            Assert.That(receipt.Result!.Value.GetProperty("installed").GetBoolean(), Is.True);
-            Assert.That(File.Exists(Path.Combine(root, confirmationId + ".json")), Is.False);
-        });
-    }
-
-    [Test]
-    public async Task ACommitWithoutItsPreparationTouchesNothing()
-    {
-        var runner = new ScriptedRunner(_ => (1, string.Empty));
-        List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, NewRoot(), args => { launched.Add(args); return 1; });
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "package.install.commit",
-            JsonSerializer.SerializeToElement(new { confirmationId = "winget_000000000000000000000000" }),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("winget_confirmation_not_prepared"));
-            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(launched, Is.Empty);
+            Assert.That(receipt.Result!.Value.GetProperty("candidates").EnumerateArray()
+                    .Select(candidate => candidate.GetProperty("packageId").GetString()),
+                Is.EqualTo(new[]
+                {
+                    "Hex.MirrorForPhotoshopServer", "JinweiZhiguang.Lanhu.Photoshop", "XPFD4T9N395QN6", "9WZDNCRFJ27N",
+                }));
         });
     }
 
@@ -218,7 +182,7 @@ public sealed class WingetPackageAdapterTests
             : args[0] == "list" ? (removed ? (1, Nothing) : (0, ListDiscord))
             : (1, string.Empty));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, NewRoot(), args => { launched.Add(args); removed = true; return 999_999; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); removed = true; return 999_999; });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.uninstall",
@@ -244,7 +208,7 @@ public sealed class WingetPackageAdapterTests
     {
         var runner = new ScriptedRunner(_ => (1, Nothing));
         List<IReadOnlyList<string>> launched = [];
-        var adapter = new WingetPackageAdapter(runner, NewRoot(), args => { launched.Add(args); return 1; });
+        var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return 1; });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "package.uninstall",
@@ -263,21 +227,14 @@ public sealed class WingetPackageAdapterTests
     public async Task MissingWingetIsAStableFailure()
     {
         var runner = new ScriptedRunner(_ => throw new System.ComponentModel.Win32Exception(2, "winget.exe was not found"));
-        var adapter = new WingetPackageAdapter(runner, NewRoot(), _ => null);
+        var adapter = new WingetPackageAdapter(runner, _ => null);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "package.install.prepare",
+            "package.install",
             JsonSerializer.SerializeToElement(new { packageId = "Microsoft.PowerToys" }),
             CancellationToken.None);
 
         Assert.That(receipt.ErrorCode, Is.EqualTo("winget_adapter_unavailable"));
-    }
-
-    private static string NewRoot()
-    {
-        string root = Path.Combine(Path.GetTempPath(), "baxy-winget-tests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(root);
-        return root;
     }
 
     private sealed class ScriptedRunner(Func<IReadOnlyList<string>, (int ExitCode, string Output)> script)
