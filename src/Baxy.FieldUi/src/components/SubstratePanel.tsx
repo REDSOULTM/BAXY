@@ -42,8 +42,11 @@ interface ModelState {
 
 const INITIAL_MODEL: ModelState = { status: 'loading' };
 const INITIAL_METRICS: MetricSnapshot = {
-  cpu: 0, mem: 0, gpu: null, dsk: 0, uptime: '00:00:00',
+  cpu: null, mem: null, gpu: null, dsk: null, uptime: null,
 };
+
+// A percentage as the row shows it, or «—» when the PC did not give it.
+const shown = (value: number | null) => (value === null ? '—' : value.toFixed(0));
 
 // The interface's mode (identity: central in the engine, a mode in the
 // interface): normal or accessible, which changes only the presentation —
@@ -105,21 +108,21 @@ export function SubstratePanel({
   const info: ModelInfo | undefined = wsModel ?? model.info;
   const loaded = info && (wsModel !== null || model.status === 'ready') ? info : null;
 
-  // global "system %" — weighted average like the prototype; unknown without the gpu reading.
-  const systemPct = metrics.gpu === null
+  // global "system %" — weighted average like the prototype; unknown without every reading.
+  const systemPct = metrics.cpu === null || metrics.mem === null || metrics.gpu === null
     ? null
     : Math.round(metrics.cpu * 0.35 + metrics.mem * 0.25 + metrics.gpu * 0.40);
 
-  // mem headline: gb used when the backend reports it, else the % figure.
+  // mem headline: gb used when the backend reports it, else the % figure; «—» when neither was read.
   const memUsedGb = metrics.mem_used_gb && metrics.mem_used_gb > 0 ? metrics.mem_used_gb : 0;
-  const memText = memUsedGb > 0 ? memUsedGb.toFixed(1) : metrics.mem.toFixed(0);
-  const memUnit = memUsedGb > 0 ? 'gb' : '%';
+  const memText = memUsedGb > 0 ? memUsedGb.toFixed(1) : shown(metrics.mem);
+  const memUnit = memUsedGb > 0 ? 'gb' : metrics.mem === null ? '' : '%';
 
   const norm = {
-    cpu: Math.min(1, metrics.cpu / 100),
-    mem: Math.min(1, metrics.mem / 100),
+    cpu: Math.min(1, (metrics.cpu ?? 0) / 100),
+    mem: Math.min(1, (metrics.mem ?? 0) / 100),
     gpu: Math.min(1, (metrics.gpu ?? 0) / 100),
-    dsk: Math.min(1, metrics.dsk / 100),
+    dsk: Math.min(1, (metrics.dsk ?? 0) / 100),
   };
 
   return (
@@ -158,10 +161,10 @@ export function SubstratePanel({
       <div className="min-block">
         <div className="sec-head"><span>system</span><span className="ref">{systemPct === null ? '—' : `${systemPct}%`}</span></div>
         <div className="m-list">
-          <MetricLine label="cpu" unit="%" norm={norm.cpu} text={metrics.cpu.toFixed(0)} />
+          <MetricLine label="cpu" unit={metrics.cpu === null ? '' : '%'} norm={norm.cpu} text={shown(metrics.cpu)} />
           <MetricLine label="mem" unit={memUnit} norm={norm.mem} text={memText} />
-          <MetricLine label="gpu" unit={metrics.gpu === null ? '' : '%'} norm={norm.gpu} text={metrics.gpu === null ? '—' : metrics.gpu.toFixed(0)} />
-          <MetricLine label="dsk" unit="%" norm={norm.dsk} text={metrics.dsk.toFixed(0)} />
+          <MetricLine label="gpu" unit={metrics.gpu === null ? '' : '%'} norm={norm.gpu} text={shown(metrics.gpu)} />
+          <MetricLine label="dsk" unit={metrics.dsk === null ? '' : '%'} norm={norm.dsk} text={shown(metrics.dsk)} />
         </div>
       </div>
 
@@ -271,7 +274,7 @@ export function SubstratePanel({
 
       {/* ---- left footer ---- */}
       <div className="left-footer">
-        <KvRow k="uptime" v={metrics.uptime ?? '00:00:00'} />
+        <KvRow k="uptime" v={metrics.uptime ?? '—'} />
         {loaded && <KvRow k="ctx" v={fmtK(loaded.context_size)} />}
       </div>
     </>

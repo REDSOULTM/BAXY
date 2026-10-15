@@ -57,7 +57,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isDisposed;
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
-    private DateTimeOffset? _firstWakeUtc;
 
     public MainWindowViewModel()
     {
@@ -191,7 +190,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public bool IsInputEnabled => IsReady && !IsBusy;
 
 
-    public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
 
     public bool IsMindReady => _mindClient is { IsReady: true };
 
@@ -501,7 +499,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             Collect(facts, remembered);
             return remembered;
         }
-        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+        catch (Exception exception) when (exception is IOException or InvalidDataException or MemoryRequestRefusedException or JsonException
             or ProtectedPayloadException or TimeoutException or InvalidOperationException)
         {
             return [];
@@ -574,7 +572,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 });
             }
         }
-        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+        catch (Exception exception) when (exception is IOException or InvalidDataException or MemoryRequestRefusedException or JsonException
             or TimeoutException or InvalidOperationException or ArgumentException)
         {
             // The moment goes without them.
@@ -741,12 +739,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     case "wake_detected":
                         VoiceFailure = null;
                         StatusDescription = "Te escucho…";
-                        if (_firstWakeUtc is null)
-                        {
-                            _firstWakeUtc = DateTimeOffset.UtcNow;
-                            OnPropertyChanged(nameof(FirstWakeUtc));
-                        }
-
                         break;
                     case "partial":
                         VoiceFailure = null;

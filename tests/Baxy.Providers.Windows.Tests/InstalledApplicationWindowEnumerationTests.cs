@@ -22,8 +22,10 @@ public sealed class InstalledApplicationWindowEnumerationTests
             nint second = Create(300, 200, visible: true);
             nint hidden = Create(120, 80, visible: false);
             using Process current = Process.GetCurrentProcess();
+            // A window is the application's by the executable its entry launches (auditoría final V1), here the test
+            // process's own.
             var entry = new InstalledApplicationEntry(
-                "C03 enumeration fixture", current.ProcessName + ".exe");
+                "C03 enumeration fixture", current.ProcessName + ".exe", current.MainModule!.FileName);
 
             IReadOnlyList<InstalledApplicationObservation> observations =
                 new WindowsInstalledApplicationPlatform().Inventory(entry);

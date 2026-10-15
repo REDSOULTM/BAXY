@@ -13,8 +13,10 @@ public sealed class WindowTitleResolutionTests
     [Test]
     public void GlobalAndPagedNativeReadsPreserveLiteralTitleAndProcessSelectors()
     {
+        // Three windows share one title (a title is the whole title, folded: auditoría final V3/G3), and one is
+        // titled «*», which byTitle reads literally.
         string prefix = "BaxyInventory-" + Guid.NewGuid().ToString("N");
-        string[] titles = [prefix + " Uno", prefix + " Dos", prefix + " Tres", "*"];
+        string[] titles = [prefix, prefix, prefix, "*"];
         var handles = new List<nint>();
         try
         {
@@ -54,13 +56,14 @@ public sealed class WindowTitleResolutionTests
                 Assert.That(first.Page!.ObservedCount, Is.EqualTo(3));
                 Assert.That(first.Page.NextOffset, Is.EqualTo(2));
                 Assert.That(last.Page!.NextOffset, Is.Null);
-                Assert.That(first.Windows.Concat(last.Windows).Select(window => window.Title),
-                    Is.EquivalentTo(titles.Take(3)));
+                Assert.That(first.Windows.Concat(last.Windows).Select(window => window.WindowId).Distinct().Count(),
+                    Is.EqualTo(3));
+                Assert.That(first.Windows.Concat(last.Windows).Select(window => window.Title), Has.All.EqualTo(prefix));
                 Assert.That(literal.Windows.Select(window => window.Title), Has.All.EqualTo("*"));
                 Assert.That(literal.Windows.Any(window => window.ProcessId == Environment.ProcessId), Is.True);
                 Assert.That(extension.Windows, Is.Empty);
                 Assert.That(extension.Succeeded, Is.False, "*.exe must not acquire global scope after normalization.");
-                Assert.That(globalTitles, Is.SupersetOf(titles));
+                Assert.That(globalTitles, Is.SupersetOf(titles.Distinct()));
             });
         }
         finally
@@ -88,7 +91,11 @@ public sealed class WindowTitleResolutionTests
             var provider = new WindowsWindowControlProvider();
             WindowResolveResult exact = provider.ResolveAsync(titles[0], 20, CancellationToken.None, byTitle: true)
                 .AsTask().GetAwaiter().GetResult();
-            WindowResolveResult related = provider.ResolveAsync(prefix, 20, CancellationToken.None, byTitle: true)
+            // Part of a title is not the title (auditoría final V3/G3); the same title in another case is.
+            WindowResolveResult part = provider.ResolveAsync(prefix, 20, CancellationToken.None, byTitle: true)
+                .AsTask().GetAwaiter().GetResult();
+            WindowResolveResult folded = provider.ResolveAsync(titles[1].ToUpperInvariant(), 20, CancellationToken.None,
+                    byTitle: true)
                 .AsTask().GetAwaiter().GetResult();
             WindowResolveResult missing = provider.ResolveAsync(prefix + " Missing", 20, CancellationToken.None, byTitle: true)
                 .AsTask().GetAwaiter().GetResult();
@@ -102,9 +109,10 @@ public sealed class WindowTitleResolutionTests
                 Assert.That(exact.Verified, Is.True);
                 Assert.That(exact.Windows.Select(window => window.Title), Is.EqualTo(new[] { titles[0] }));
                 Assert.That(exact.Windows.Single().ProcessId, Is.EqualTo(Environment.ProcessId));
-                Assert.That(related.Verified, Is.True);
-                Assert.That(related.Windows.Select(window => window.Title), Is.EquivalentTo(titles.Take(2)));
-                Assert.That(related.Windows.Select(window => window.WindowId).Distinct().Count(), Is.EqualTo(2));
+                Assert.That(part.Succeeded, Is.False);
+                Assert.That(part.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowNotFound));
+                Assert.That(folded.Verified, Is.True);
+                Assert.That(folded.Windows.Select(window => window.Title), Is.EqualTo(new[] { titles[1] }));
                 Assert.That(missing.Succeeded, Is.False);
                 Assert.That(missing.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowNotFound));
                 Assert.That(wrongProcess.Succeeded, Is.False, "A title must not impersonate an explicitly requested process.");

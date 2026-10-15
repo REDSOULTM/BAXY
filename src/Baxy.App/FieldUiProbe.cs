@@ -77,20 +77,18 @@ internal static class FieldUiProbe
     /// <summary>
     /// Lo que decide si un turno terminó: el input existe y está habilitado, el
     /// borrador quedó vacío (el compositor lo vacía cuando <c>/turn</c> vuelve),
-    /// no hay etapa en curso, cuántas filas hay y cuál va en cabeza. La lista se
+    /// cuántas filas hay y cuál va en cabeza. La lista se
     /// pinta con la más nueva primero y se recorta a un tope: al llegar a él el
     /// recuento ya no cambia y sólo la cabeza dice que llegó una fila.
     /// </summary>
     private const string SurfaceScript = """
         (function () {
           const input = document.querySelector('input[aria-label="message input"]');
-          const progress = document.querySelector('.turn-progress');
           const rows = document.querySelectorAll('.activity-scroll .act');
           return JSON.stringify({
             input: !!input,
             enabled: !!input && !input.disabled,
             draft: input ? input.value.length : 0,
-            progress: progress ? (progress.textContent || '').trim().length : 0,
             rows: rows.length,
             head: rows.length > 0 ? (rows[0].textContent || '') : ''
           });
@@ -716,15 +714,14 @@ internal readonly record struct ProbeSurface(
     bool InputPresent,
     bool InputEnabled,
     int DraftLength,
-    int ProgressLength,
     int Rows,
     string? Head = null)
 {
     /// <summary>
-    /// Sin turno en curso: input habilitado, borrador vacío (el compositor lo
-    /// vacía cuando <c>/turn</c> responde) y ninguna etapa a la vista.
+    /// Sin turno en curso: input habilitado y borrador vacío (el compositor lo
+    /// vacía cuando <c>/turn</c> responde).
     /// </summary>
-    internal bool Idle => InputPresent && InputEnabled && DraftLength == 0 && ProgressLength == 0;
+    internal bool Idle => InputPresent && InputEnabled && DraftLength == 0;
 
     /// <summary>Lee el resultado de <c>ExecuteScriptAsync</c> (una cadena JSON con un objeto dentro).</summary>
     internal static ProbeSurface Parse(string? scriptResult)
@@ -743,7 +740,6 @@ internal readonly record struct ProbeSurface(
                 Flag(surface["input"]),
                 Flag(surface["enabled"]),
                 Number(surface["draft"]),
-                Number(surface["progress"]),
                 Number(surface["rows"]),
                 surface["head"] is JsonValue head && head.TryGetValue(out string? text) ? text : null);
         }

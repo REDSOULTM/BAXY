@@ -741,7 +741,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             : 49152;
     }
 
-    // A reading the PC did not give (no GPU counter) travels as null; the view shows «—».
+    // A reading the PC did not give (no GPU counter, no CPU sample, no memory, disk or boot figures) travels as null;
+    // the view shows «—».
     private static JsonObject MetricsJson(FieldMetricSnapshot metrics) => new()
     {
         ["cpu"] = metrics.Cpu,

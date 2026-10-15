@@ -29,9 +29,10 @@ internal sealed record NativeTurnStep(
 /// </para>
 /// <para>
 /// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call with one of the catalog's
-/// risks in <see cref="ProposedRisks"/>, or one that sends keys, clicks or commands to a window
-/// (<see cref="SendsInputToAWindow"/>), is held as a proposal and never reaches the kernel until the person says «sí» to
-/// that exact invocation; any other call runs. A heartbeat never starts while a confirmation waits for the person.
+/// risks in <see cref="ProposedRisks"/>, one that sends keys, clicks or commands to a window
+/// (<see cref="SendsInputToAWindow"/>), or one that sends something out of the PC (<see cref="ReachesTheNetwork"/>), is
+/// held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
+/// runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -234,6 +235,11 @@ internal sealed class NativeTurnLoop
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
                 "memory_value_needs_sensitive_channel"));
         }
+        catch (MemoryRequestRefusedException refused)
+        {
+            // The protector's own reason, by its code; the call's values stay out of the observation.
+            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code));
+        }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
@@ -243,7 +249,8 @@ internal sealed class NativeTurnLoop
                 "arguments_invalid", WithArguments(new JsonObject(), "argumentsGiven", operation, arguments)));
         }
 
-        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation)))
+        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation)
+                || ReachesTheNetwork(operation, arguments)))
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
@@ -263,12 +270,29 @@ internal sealed class NativeTurnLoop
     }
 
     // Every operation whose provider sends keys, clicks or window commands (SendInput, UI Automation's Invoke or
-    // SetValue, posted commands) to a window that may be the person's. The catalog has no typed fact for it yet, so the
-    // list is by name: an operation that starts sending input joins it.
+    // SetValue, posted messages, ShowWindow/SetWindowPos) to a window that may be the person's. The catalog has no typed
+    // fact for it yet, so the list is by name: an operation that starts sending input joins it (audit 2026-10-15, App
+    // H1: input.keyboard.layout posts WM_INPUTLANGCHANGEREQUEST to the focused window, and window.* move, size, show or
+    // focus the person's windows).
     private static bool SendsInputToAWindow(string operation) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
-            or "input.select.all" or "input.scroll" or "clipboard.copy" or "clipboard.paste" or "message.draft"
-            or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate";
+            or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
+            or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
+            or "window.focus" or "window.maximize" or "window.minimize" or "window.minimize.all" or "window.move"
+            or "window.resize" or "window.restore" or "window.snap";
+
+    // Every operation whose provider sends what the model wrote out of the PC (a query, an address, a host, a place, a
+    // title) and whose risk the kernel does not already challenge: in a heartbeat its words come from the moment, which
+    // carries the person's memory, window titles and recent lines, and nothing of theirs leaves unasked (owner,
+    // 2026-10-15; audit App H3). By name, read from the providers that use HTTP or ping: web.search's sources, web.fetch
+    // and web.download, Open-Meteo for the weather and for a place's clock, the Steam store for whether a game is owned,
+    // and ICMP to the host named. The ones with an external_communication or installation risk are held by
+    // ProposedRisks already.
+    private static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
+        operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
+            or "game.entitlement.named"
+        || (operation == "system.time" && arguments["place"] is JsonValue place
+            && place.TryGetValue(out string? named) && !string.IsNullOrWhiteSpace(named));
 
     // What the model reads with a call that waits for the person: who answers and how the answer comes back.
     private const string AskThePerson =
@@ -450,7 +474,8 @@ internal sealed class NativeTurnLoop
                     ? projection.Message
                     : Observation(prepared.OperationName, "completed", false, "result_unreadable");
         }
-        catch (Exception exception) when (exception is System.IO.InvalidDataException or ProtectedPayloadException)
+        catch (Exception exception) when (exception is System.IO.InvalidDataException or MemoryRequestRefusedException
+            or ProtectedPayloadException)
         {
             return Observation(prepared.OperationName, "completed", false, "result_unreadable");
         }

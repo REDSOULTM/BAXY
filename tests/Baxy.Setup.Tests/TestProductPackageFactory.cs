@@ -54,6 +54,7 @@ internal static class TestProductPackageFactory
                 NativeLibraries = "adjacent_no_self_extraction",
                 Core = "native_aot_self_contained",
                 Symbols = "excluded_from_user_payload",
+                Mind = "not_included",
             },
             FileCount = records.Length,
             TotalBytes = records.Sum(static record => record.Bytes),
