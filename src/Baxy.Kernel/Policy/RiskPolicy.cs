@@ -18,11 +18,11 @@ namespace Baxy.Kernel.Policy;
 /// lleva el riesgo de su primitiva evaluado con los argumentos exactos delante.
 /// Un clic cuya etiqueta nombra un canal de voz o una llamada (alguien te oye),
 /// o un botón de enviar, publicar, responder, comentar, compartir, unirse o emitir
-/// en directo (ronda 29, v3-53: «Iniciar Transmisión»), y un Enter declarado sobre
-/// un compositor de mensajes, salen al mundo o llegan a una persona; un clic que
+/// en directo (ronda 29, v3-53: «Iniciar Transmisión»), y cualquier Enter o Espacio
+/// (el kernel no ve qué tiene el foco), salen al mundo o llegan a una persona; un clic que
 /// compra, paga, elimina o desinstala no se deshace. Ambos piden confirmación en
 /// modo normal, ligada a esa misma invocación. Las palabras de lo que sale al mundo
-/// son dato (<see cref="WorldActs"/>), el mismo que lee la mente. Igual una invocación cuyo argumento cierra de una vez todo lo
+/// son dato (<see cref="WorldActs"/>). Igual una invocación cuyo argumento cierra de una vez todo lo
 /// que la persona tiene abierto en una superficie (todas las pestañas de su
 /// navegador): pierde su sesión, aunque la operación con otro argumento no.
 /// Revisión de seguridad 2026-10-07: el verbo de enviar, reenviar, invitar o
@@ -46,14 +46,8 @@ public static partial class RiskPolicy
     public static PolicyDecision Evaluate(
         OperationRisk risk,
         ConfirmationMode mode = ConfirmationMode.Normal,
-        string? operation = null) =>
-        Evaluate(risk, mode, operation, arguments: null);
-
-    public static PolicyDecision Evaluate(
-        OperationRisk risk,
-        ConfirmationMode mode,
-        string? operation,
-        JsonElement? arguments)
+        string? operation = null,
+        JsonElement? arguments = null)
     {
         if (risk == OperationRisk.Forbidden)
         {
@@ -162,8 +156,8 @@ public static partial class RiskPolicy
     /// computer or reaches another person: joining a voice channel or a call,
     /// pressing «enviar/send», «publicar/post», «responder/reply»,
     /// «comentar/comment», «compartir/share», «unirse/join» or going live
-    /// («iniciar transmisión», «go live»), or Enter over a message composer
-    /// that holds text. Bilingual, general, and never naming an application.
+    /// («iniciar transmisión», «go live»), or pressing Enter or Space, which may
+    /// send what is written. Bilingual, general, and never naming an application.
     /// </summary>
     public static bool ReachesAPerson(string? operation, JsonElement arguments)
     {
@@ -178,11 +172,11 @@ public static partial class RiskPolicy
                 // The result a search burst chooses (choose) is pressed too: read as its label is.
                 return ClickLabels(arguments).Any(LabelReachesAPerson);
             case "input.key.press":
-                // Enter, and space on a focused send or reply control, hand what was written to someone when the
-                // step declares it lands on a message composer (the mind labels it from the focused control).
-                // Revisión de V (H1): or presses a control that reaches someone (a voice channel highlighted in a search).
-                return KeyOf(arguments) is "enter" or "space"
-                    && (TargetOf(arguments) is "message_composer" || LabelReachesAPerson(OntoOf(arguments)));
+                // Enter, and Space on a focused send or reply control, hand what was written to someone, or press a
+                // control that reaches someone (a voice channel highlighted in a search). The kernel does not see what
+                // holds the focus, and a label the step gave it would be the model's own word about its own act:
+                // fail-closed, both always ask (auditoría K8).
+                return KeyOf(arguments) is "enter" or "space";
             default:
                 return false;
         }
@@ -202,17 +196,10 @@ public static partial class RiskPolicy
 
         // The Delete key outside a text field deletes what is selected (a file to the bin, a message, an item of a
         // list). Fail-closed: it asks unless the step declares the keyboard is on a text field, where it only
-        // erases characters.
-        // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
-        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The mission marks it from the view it
-        // was decided on.
-        bool overwrites = arguments.TryGetProperty("consequence", out JsonElement consequence)
-            && consequence.ValueKind == JsonValueKind.String
-            && string.Equals(consequence.GetString(), "overwrite", StringComparison.Ordinal);
+        // erases characters. (Enter and Space already ask: ReachesAPerson.)
         if (string.Equals(operation, "input.key.press", StringComparison.Ordinal))
         {
-            return overwrites || (KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field")
-                || (KeyOf(arguments) is "enter" or "space" && LabelCannotBeUndone(OntoOf(arguments)));
+            return KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field";
         }
 
         if (!string.Equals(operation, "input.visible.click", StringComparison.Ordinal))
@@ -220,7 +207,11 @@ public static partial class RiskPolicy
             return false;
         }
 
-        if (overwrites)
+        // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
+        // reemplazarlo?») loses that file.
+        if (arguments.TryGetProperty("consequence", out JsonElement consequence)
+            && consequence.ValueKind == JsonValueKind.String
+            && string.Equals(consequence.GetString(), "overwrite", StringComparison.Ordinal))
         {
             return true;
         }
@@ -264,11 +255,6 @@ public static partial class RiskPolicy
             ? key.GetString()
             : null;
 
-    private static string? OntoOf(JsonElement arguments) =>
-        arguments.TryGetProperty("onto", out JsonElement onto) && onto.ValueKind == JsonValueKind.String
-            ? onto.GetString()
-            : null;
-
     private static string? TargetOf(JsonElement arguments) =>
         arguments.TryGetProperty("target", out JsonElement target) && target.ValueKind == JsonValueKind.String
             ? target.GetString()
@@ -298,36 +284,6 @@ public static partial class RiskPolicy
     // one that goes live. A noun that only shares the stem («Enviados», «Comentarios (12)», «Shared with me») does not.
     internal static bool LabelReachesAPerson(string? label) =>
         !string.IsNullOrWhiteSpace(label) && WorldActs.Reaches(Fold(label));
-
-    /// <summary>
-    /// Encargo VZ (imp3d imp-dc-voz: the person confirmed «Cotele!!!😎, Canal de voz, Choche» and the same mission asked
-    /// again for «Cotele!!!😎 (canal de voz), RED, …»): the act this exact invocation takes out to the world, as its
-    /// family in the data and the name it acts on (the label's own name, before its first comma or parenthesis), or
-    /// null when it reaches no one. Enter over a message composer sends what it holds: family «send», no name.
-    /// </summary>
-    public static WorldAct? WorldActOf(string? operation, JsonElement arguments)
-    {
-        if (!ReachesAPerson(operation, arguments))
-        {
-            return null;
-        }
-
-        string? label = operation == "input.key.press" ? OntoOf(arguments) : ClickLabels(arguments).FirstOrDefault(LabelReachesAPerson);
-        if (string.IsNullOrWhiteSpace(label) || !LabelReachesAPerson(label))
-        {
-            return new WorldAct("send", string.Empty, Joins: false, Key: "send:");
-        }
-
-        string folded = Fold(label);
-        string name = label.Split([',', '('], 2)[0].Trim();
-        name = name.Length > 0 ? name : label.Trim();
-        string family = WorldActs.FamilyOf(folded)!;
-        return new WorldAct(family, name, WorldActs.Joins(folded), family + ":" + Fold(name));
-    }
-
-    /// <summary>A click whose label joins a voice channel, a call or a meeting: others hear or see the person from then on.</summary>
-    public static bool LabelJoins(string? label) =>
-        !string.IsNullOrWhiteSpace(label) && WorldActs.Joins(Fold(label));
 
     /// <summary>
     /// Whether pressing a control of this name would need the person's word (it leaves the computer, reaches a person
@@ -405,10 +361,3 @@ public static partial class RiskPolicy
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }
-
-/// <summary>
-/// An act that goes out to the world (<see cref="RiskPolicy.WorldActOf"/>): its family in the data, the name it acts on,
-/// whether it joins a call, a voice channel or a meeting, and its key (the family and the folded name): two invocations
-/// with one key take one act, whatever control of the screen takes it.
-/// </summary>
-public sealed record WorldAct(string Family, string Name, bool Joins, string Key);

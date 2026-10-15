@@ -927,7 +927,7 @@ public sealed class FileInvocationJournalTests
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Completed,
-            PrivateOperationBoundary.PublicSuccessMessage,
+            OperationVisibleFacts.FromOutcome("memory.export", OperationOutcome.Success()),
             true,
             false,
             protectedResult,

@@ -227,8 +227,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
 
 internal sealed class ExternalCapabilityHandler(
     string operation,
-    IExternalCapabilityProvider provider,
-    LaunchProvenance? provenance = null) : IOperationHandler
+    IExternalCapabilityProvider provider) : IOperationHandler
 {
     // v3 r22 uso real: the operations that only point at or move through what a window shows (a click on a control,
     // a scroll, the list of visible controls) put nothing into it. Every other operation that is not read-only may
@@ -236,7 +235,7 @@ internal sealed class ExternalCapabilityHandler(
     // written (LaunchProvenance, fail-closed): their windows ask again before closing.
     // v3 r22 revisión: a pointing operation may still carry text it types into what it opens (a click's «search» is
     // typed into the box the click opened, SearchBurst.TypeAsync); with any such argument present and not empty it
-    // writes as well. Each typed argument is checked against the real catalog (AppCloseLaunchProvenanceTests).
+    // writes as well.
     private static readonly Dictionary<string, string[]> PointingOperations = new(StringComparer.Ordinal)
     {
         ["input.visible.click"] = ["search"],
@@ -244,11 +243,8 @@ internal sealed class ExternalCapabilityHandler(
         ["input.visible.controls"] = [],
     };
 
-    internal static IReadOnlyDictionary<string, string[]> PointingOperationsTypedArguments => PointingOperations;
-
     private readonly IExternalCapabilityProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
-    private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition(operation);
 
     internal static bool MayWriteIntoAWindow(OperationDefinition definition, JsonElement arguments)
@@ -292,7 +288,7 @@ internal sealed class ExternalCapabilityHandler(
     {
         if (MayWriteIntoAWindow(Definition, invocation.Arguments))
         {
-            _provenance.NoteWritten();
+            LaunchProvenance.Shared.NoteWritten();
         }
 
         ExternalCapabilityReceipt receipt;

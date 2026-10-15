@@ -44,7 +44,6 @@ namespace Baxy.Core.Operations;
 [JsonSerializable(typeof(TaskSummaryResult[]))]
 [JsonSerializable(typeof(TaskSelectionResult))]
 [JsonSerializable(typeof(TaskListResult))]
-[JsonSerializable(typeof(AppStatusResult))]
 [JsonSerializable(typeof(SystemStatusArguments))]
 [JsonSerializable(typeof(ProcessListArguments))]
 [JsonSerializable(typeof(ProcessListItemResult))]

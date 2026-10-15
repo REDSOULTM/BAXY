@@ -6,8 +6,7 @@ namespace Baxy.Kernel.Tests;
 
 /// <summary>
 /// Estabilización, encargo C: the places of an application with an address of their own are one data file
-/// (src/baxy_mind/data/app_places.v1.json), read here and by the mind (tests/test_estab_c_lugares_por_direccion.py runs
-/// the same examples). The kernel takes a place only by a name the data declare (app.open's schema) and composes its
+/// (src/baxy_mind/data/app_places.v1.json), read here and held to the file's own examples. The kernel takes a place only by a name the data declare (app.open's schema) and composes its
 /// address only from the application's own entry; nothing else is ever opened.
 /// </summary>
 [TestFixture]

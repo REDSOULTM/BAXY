@@ -32,6 +32,8 @@ internal static class Program
 
     public static async Task<int> Main()
     {
+        // Reading the field sets it by now: the class has no static constructor, so its static fields may be initialized
+        // as late as their first read, and the hello's catalog wait counts from the start of Main (auditoría D-K13).
         _ = StartedAt;
         Console.InputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
         Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
@@ -132,7 +134,6 @@ internal static class Program
         var identityProvider = new WindowsIdentityProvider();
         IOperationHandler[] handlers =
         [
-            new AppStatusHandler(),
             new AppInstalledHandler(installedApplicationProvider),
             new ApplicationWindowStatusHandler(installedApplicationProvider),
             new AppOpenHandler(routedApplicationOpenProvider),
@@ -149,7 +150,6 @@ internal static class Program
             new ScreenshotCaptureHandler(screenshotProvider),
             .. FilesystemHandlers.Create(filesystemProvider),
             .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot),
-            new ComputerUseMissionHandler(),
             .. MemoryHandlers.Create(
                 memoryStore,
                 memoryCodec,
@@ -222,7 +222,6 @@ internal static class Program
                 PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(
                     memoryCodec,
                     memoryExportWriter),
-                Narrator = ProductOperationNarrator.Instance,
                 ConfirmationMode = () => ConfirmationModeStore.Read(dataRoot),
             });
 
@@ -462,26 +461,15 @@ internal static class Program
             cancellationToken).ConfigureAwait(false);
     }
 
-    internal static ValueTask WriteMessageAsync(
-        Stream output,
-        ReadOnlyMemory<byte> message,
-        CancellationToken cancellationToken) =>
-        WriteMessageAsync(
-            output,
-            message,
-            ArrayPool<byte>.Shared,
-            cancellationToken);
-
     internal static async ValueTask WriteMessageAsync(
         Stream output,
         ReadOnlyMemory<byte> message,
-        ArrayPool<byte> pool,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(output);
-        ArgumentNullException.ThrowIfNull(pool);
         cancellationToken.ThrowIfCancellationRequested();
 
+        ArrayPool<byte> pool = ArrayPool<byte>.Shared;
         int wireLength = checked(message.Length + 1);
         byte[] wire = pool.Rent(wireLength);
         try

@@ -7,12 +7,6 @@ namespace Baxy.Kernel.Mission;
 
 internal static class PrivateOperationBoundary
 {
-    internal static readonly string PublicSuccessMessage =
-        OperationVisibleFacts.FromOutcome("memory.export", OperationOutcome.Success());
-    internal static readonly string PublicFailureMessage =
-        OperationVisibleFacts.FromOutcome(
-            "memory.export",
-            OperationOutcome.Failure("memory_operation_failed"));
     private const int MaximumCiphertextBytes = (256 * 1024) + 64;
     private const int MaximumCiphertextCharacters = ((MaximumCiphertextBytes + 2) / 3) * 4;
     private static readonly HashSet<string> AllowedFailureCodes = new(StringComparer.Ordinal)
@@ -95,12 +89,10 @@ internal static class PrivateOperationBoundary
     internal static OperationResponse NormalizeReplay(
         OperationRequest request,
         OperationResponse response,
-        IPrivateOperationEnvelopeAuthenticator? authenticator,
-        IOperationResponseNarrator narrator)
+        IPrivateOperationEnvelopeAuthenticator? authenticator)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(response);
-        ArgumentNullException.ThrowIfNull(narrator);
         if (!IsPrivateOperation(request.Operation))
         {
             return response with
@@ -129,7 +121,7 @@ internal static class PrivateOperationBoundary
                 request.MissionId,
                 request.InvocationId,
                 OperationStatuses.Completed,
-                narrator.Narrate(
+                OperationVisibleFacts.FromOutcome(
                     request.Operation,
                     OperationOutcome.PrivateSuccess(result)),
                 true,
@@ -153,7 +145,7 @@ internal static class PrivateOperationBoundary
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Failed,
-            narrator.Narrate(
+            OperationVisibleFacts.FromOutcome(
                 request.Operation,
                 OperationOutcome.Failure(
                     errorCode,
