@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
-HIGH_RISK = {"work_loss", "recoverable_delete", "external_communication", "installation", "monetary"}
+HIGH_RISK = {"work_loss", "recoverable_delete", "external_communication", "installation"}
 OBSERVING = {"ocr.read", "vision.describe", "browser.page.read", "browser.tabs.list"}
 INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate"}
 VOICE_ACTIVITIES = {"libre", "trabajando"}

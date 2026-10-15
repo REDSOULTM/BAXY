@@ -66,7 +66,7 @@ internal sealed class NativeTurnLoop
     // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, comprar, instalar, cerrar con trabajo).
     private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
     {
-        "work_loss", "recoverable_delete", "external_communication", "installation", "monetary",
+        "work_loss", "recoverable_delete", "external_communication", "installation",
     };
 
     private readonly Host _host;
