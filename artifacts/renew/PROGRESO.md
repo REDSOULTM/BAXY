@@ -260,3 +260,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   fila que nombra al destinatario como palabras enteras y luego el título exacto decide si se escribe (la fila mezcla
   nombre y usuario); el regex de `CardTitle` lee rótulos de la interfaz del servicio de streaming, no palabras de la
   persona.
+- Falsedades práctica p5 (código tras la ronda final): 3 en 26 líneas (F009 «no puedo abrir archivos de BAXY-bench»,
+  F015 «el Bloc de notas sigue abierto» sin mirar, F019 «ya estoy en la biblioteca» sin que el resultado lo mostrara).
+  Las tres afirman cómo está el PC sin una herramienta que lo mirara. La frase de la regla 2 para «¿ya lo hiciste?» se
+  amplía a «cómo está algo del PC: sin una herramienta que lo mirara, no lo sabes; míralo antes» (el latido no la lee).

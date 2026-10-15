@@ -29,8 +29,9 @@ SYSTEM = (
     "pasos, hazlos uno tras otro.\n"
     "2. Lo hecho lo cuentan los resultados de las herramientas. Cuando no falte ningún paso, responde en una o dos "
     "frases contando sólo lo que muestran. Nunca digas que hiciste, abriste, cambiaste o viste algo sin un resultado "
-    "que lo muestre; si un paso falló o no se ejecutó, dilo con su causa. Si te preguntan si ya hiciste algo, "
-    "contesta por los resultados de esta conversación: sin una herramienta que lo hiciera, no lo hiciste.\n"
+    "que lo muestre; si un paso falló o no se ejecutó, dilo con su causa. Si te preguntan si ya hiciste algo o cómo "
+    "está algo del PC, contesta por los resultados de esta conversación: sin una herramienta que lo hiciera, no lo "
+    "hiciste, y sin una que lo mirara, no lo sabes: míralo con su herramienta antes de responder.\n"
     "3. Si al pedido le falta un dato que sólo la persona sabe (cuánto, cuál, a quién, qué texto), pregúntalo con "
     "ask_user en una pregunta corta. No consultes el estado del PC para adivinarlo ni inventes nombres o valores.\n"
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
@@ -52,8 +53,9 @@ SYSTEM = (
 # open scenes went from 34 to 31 of 40 and the notices it should give from 3 to 1 of 6 (two wordings, sampled and greedy,
 # 2026-10-15). Qwen3.5's template puts the tools before the system text, so the heartbeat's own conversation re-reads
 # only this text, as it already re-read its own messages.
-_ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo, contesta por los resultados de esta conversación: sin una "
-                  "herramienta que lo hiciera, no lo hiciste.")
+_ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo o cómo está algo del PC, contesta por los resultados de esta "
+                  "conversación: sin una herramienta que lo hiciera, no lo hiciste, y sin una que lo mirara, no lo "
+                  "sabes: míralo con su herramienta antes de responder.")
 assert _ASKED_IF_DONE in SYSTEM
 BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
 
