@@ -17,7 +17,8 @@ namespace Baxy.App;
 /// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT | --command-dir DIR)
 /// [--timeout-ms N]</c>. A turns file has one JSON object per line: <c>{"text":"…"}</c> or <c>{"confirm":true}</c>
 /// (a bare line is text). With a command directory the benches drive one running product case after case: they drop
-/// <c>00001.json</c>, <c>00002.json</c>… there (a turn as above, <c>{"session":"new"}</c> or <c>{"exit":true}</c>) and
+/// <c>00001.json</c>, <c>00002.json</c>… there (a turn as above, <c>{"beat":{…moment…}}</c>, <c>{"session":"new"}</c> or
+/// <c>{"exit":true}</c>) and
 /// read the events this writes; each command ends with its <c>command.done</c>.
 /// </para>
 /// </summary>
@@ -161,6 +162,26 @@ internal static class ProductConductorHost
                 if (turn["exit"] is not null)
                 {
                     break;
+                }
+
+                if (turn["beat"] is JsonObject beatMoment)
+                {
+                    // A heartbeat with a given moment (the scenes' context), spoken per the person's activity.
+                    turnStartedMs = clock.ElapsedMilliseconds;
+                    speechStartedMs = null;
+                    Emit(new JsonObject { ["type"] = "beat.start", ["moment"] = beatMoment.DeepClone() });
+                    await viewModel.RunBeatAsync(
+                            (JsonObject)beatMoment.DeepClone(),
+                            HeartbeatMoment.Speaks((string?)beatMoment["owner_activity"] ?? string.Empty),
+                            lifetime.Token)
+                        .ConfigureAwait(true);
+                    Emit(new JsonObject
+                    {
+                        ["type"] = "beat.end",
+                        ["pendingConfirmation"] = viewModel.HasPendingConfirmation,
+                    });
+                    Emit(new JsonObject { ["type"] = "command.done", ["beat"] = true });
+                    continue;
                 }
 
                 if ((string?)turn["session"] == "new")

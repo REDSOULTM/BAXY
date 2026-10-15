@@ -63,6 +63,9 @@ internal interface ITrayIconShell
     bool Add(nint hwnd, uint callbackMessage, nint icon, string tip);
 
     bool Delete(nint hwnd);
+
+    /// <summary>A notification on screen from the tray icon (the heartbeat's words when they are not spoken).</summary>
+    bool Notify(nint hwnd, string text);
 }
 
 internal interface IPresenceProcessReader

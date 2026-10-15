@@ -53,7 +53,8 @@ BEAT_DECIDE = ("Responde en JSON: analisis = en una frase, qué está pasando y 
 BEAT_ACT = ("Interviene ahora según tu análisis. Lo de bajo riesgo, hazlo con su herramienta. Lo de alto riesgo "
             "(borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, cerrar o forzar el cierre de una app) no "
             "lo preguntes en texto: llama a su herramienta y el sistema le pedirá el sí a la persona antes de hacerlo. "
-            "Si ninguna herramienta hace falta, dile en una frase lo que necesita saber. Nunca escribas en sus ventanas.")
+            "Si ninguna herramienta hace falta, dile en una frase lo que necesita saber. Nunca escribas en sus ventanas. "
+            "Háblale de tú.")
 BEAT_RULES = (
     "Es un latido: nadie te habló. Revisa lo de arriba buscando estos motivos para intervenir:\n"
     "1. Algo que la persona te pidió antes y que ahora se cumple (avisarle, recordarle, enviar algo).\n"

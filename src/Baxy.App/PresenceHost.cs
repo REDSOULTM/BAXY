@@ -19,6 +19,7 @@ internal sealed class PresenceHost : IDisposable
     private readonly bool _registerNativeTray;
     private DispatcherTimer? _idleTimer;
     private PresenceTrayIcon? _tray;
+    private Heartbeat? _heartbeat;
     private MainWindow? _window;
     private MainWindowViewModel? _viewModel;
     private bool _exitRequested;
@@ -88,6 +89,18 @@ internal sealed class PresenceHost : IDisposable
 
         _viewModel = viewModel;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        _viewModel.NotificationRequested += text => _tray?.Notify(text);
+        if (Heartbeat.Enabled && _heartbeat is null)
+        {
+            MainWindowViewModel beating = viewModel;
+            _heartbeat = new Heartbeat(
+                (moment, speak) => window.Dispatcher.InvokeAsync(
+                    () => beating.RunBeatAsync(moment, speak, CancellationToken.None)).Task.Unwrap(),
+                () => window.Dispatcher.Invoke(() => beating.CanBeat),
+                () => window.Dispatcher.Invoke(() => (IReadOnlyList<ConversationMessage>)[.. beating.Messages]));
+            _heartbeat.Start();
+        }
+
         Publish();
         SyncIdleTimer();
     }
@@ -256,6 +269,8 @@ internal sealed class PresenceHost : IDisposable
             _viewModel = null;
         }
 
+        _ = _heartbeat?.DisposeAsync().AsTask();
+        _heartbeat = null;
         _tray?.Dispose();
         _tray = null;
         _window = null;
