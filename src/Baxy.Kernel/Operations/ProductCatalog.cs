@@ -198,13 +198,13 @@ public static class ProductCatalog
                 ["back", "close", "close_all", "fullscreen_video", "new_tab", "reload", "scroll_down", "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
-            "Controla la pagina CDP actual y verifica historial, desplazamiento o cierre mediante postlectura."),
+            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas sus pestañas) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP."),
         Descriptor(
             "browser.navigate",
             Schema([String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.cdp.url.postread.v1",
-            "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final."),
+            "Abre una URL exacta en el navegador predeterminado de la persona, con su perfil y sus sesiones, y verifica la llegada leyendo su barra de direcciones o el título de su ventana; sólo si no hay navegador predeterminado o no se puede lanzar, la abre en el navegador propio del producto por CDP y verifica la URL final."),
         Descriptor(
             "browser.navigate.named",
             Schema(
@@ -221,7 +221,7 @@ public static class ProductCatalog
             Schema([Integer("maximumCharacters", 256, 32_768)], []),
             OperationRisks.PrivacySensitive,
             "browser.page.read.cdp.dom.snapshot.v1",
-            "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+            "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP.",
             // WEB1541: a read observes no effect; the receipt says so truthfully.
             requiresObservedEffect: false),
         Descriptor(
@@ -229,7 +229,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
-            "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona, con título y URL, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
             requiresObservedEffect: false),
         Descriptor(
             "calculator.expression.evaluate",
@@ -248,7 +248,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc", "title"]),
             OperationRisks.ExternalCommunication,
             "calendar.event.create.account.postread.v1",
-            "Crea un evento en una cuenta de calendario autenticada y verifica su identidad remota."),
+            "Crea un evento en el calendario predeterminado del Outlook clásico de la persona, que lo sincroniza con su cuenta: sale de la máquina, así que pide su confirmación antes; verifica la identidad del evento creado."),
         Descriptor(
             "calendar.event.list",
             Schema(
@@ -724,8 +724,10 @@ public static class ProductCatalog
                     // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): los atajos
                     // que una persona usa en cualquier aplicación —seleccionar todo,
                     // copiar, buscar, paleta de comandos, pestaña nueva, cerrar
-                    // pestaña, deshacer, recargar—. Ninguno cierra una ventana ni un
-                    // proceso: cerrar una pestaña deja el navegador abierto (D16).
+                    // pestaña, deshacer, recargar—. Ctrl+W cierra la pestaña, pero en el
+                    // Explorador, en muchas aplicaciones y en la última pestaña de un
+                    // navegador cierra la ventana: RiskPolicy lo confirma (auditoría
+                    // final 2, fila 9).
                     // Goal v3 punto 2: guardar, guardar como, abrir, reemplazar,
                     // cortar, la barra de menús (F10) y el menú contextual del
                     // control enfocado (Shift+F10); ninguno cierra nada.
@@ -744,14 +746,13 @@ public static class ProductCatalog
                 // salvo que el paso declare que el teclado está en un campo de
                 // texto (text_field): fuera de uno borra lo seleccionado.
                 String("target", types: NullableString, values: ["message_composer", "text_field"]),
-                // La ventana de la misión (el hwnd de su última vista): la tecla
-                // va sólo a ella; si no está delante y no se la puede traer, nada
-                // se envía.
+                // La ventana mirada (el número que dio la vista): la tecla va sólo
+                // a ella; si no está delante y no se la puede traer, nada se envía.
                 Integer("window", 1, uint.MaxValue, types: NullableInteger),
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
-            "Presiona una tecla o una combinación segura (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; con target message_composer la pulsación de Enter se trata como un envío."),
+            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío."),
         Descriptor(
             "input.keyboard.layout",
             Schema([String("language", values: ["spanish"])], ["language"]),
@@ -789,10 +790,10 @@ public static class ProductCatalog
                     // se desplaza ese control y no el centro de la ventana.
                     Integer("index", 0, VisibleViewNumbering.HighestIndex, types: NullableInteger),
                     // Goal v3 punto 2 (revelar): el elemento con este nombre que la
-                    // ventana de la misión tiene fuera de vista se trae a la vista por
+                    // ventana mirada tiene fuera de vista se trae a la vista por
                     // UI Automation, sin rueda ni puntero; la prueba es verlo.
                     String("label", types: NullableString, maximumUtf8Bytes: 256),
-                    // La ventana de la misión (el hwnd de la vista sobre la que se
+                    // La ventana mirada (el número que dio la vista sobre la que se
                     // decidió): la vista ya no la trae al frente, así que la rueda
                     // la trae ella; si Windows no se la da, no se mueve nada.
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),
@@ -816,10 +817,6 @@ public static class ProductCatalog
                     // patrón; si la lista no tiene una entrada así, no cambia nada y
                     // nunca se escribe como texto libre.
                     Boolean("entry", types: NullableBoolean),
-                    // Goal v3 punto 2 (formularios): el rótulo del campo que recibe el
-                    // valor («Ancho», «Nombre de archivo»); sin su índice en la vista
-                    // (index) no se escribe nada.
-                    String("field", types: NullableString, maximumUtf8Bytes: 256),
                     // El campo de la última vista que recibe el texto (goal v3,
                     // punto 0): se le entrega sin teclado ni primer plano
                     // (SetValue o mensajes a su ventana) cuando lo acepta.
@@ -829,15 +826,17 @@ public static class ProductCatalog
                     // releído; sin el campo mismo, por teclado no se envía nada.
                     Boolean("replace", types: NullableBoolean),
                     String("text", maximumUtf8Bytes: 8_192, nonWhitespace: true),
-                    // La ventana de la misión: el texto va dirigido sólo a ella
-                    // (hwnd, proceso y hora de creación); por teclado, sólo
-                    // mientras ella está delante, y si deja de estarlo, se para.
+                    // La ventana mirada: el texto va dirigido sólo a ella (hwnd,
+                    // proceso y hora de creación); por teclado, sólo mientras ella
+                    // está delante, y si deja de estarlo, se para. Con o sin ella, un
+                    // texto no lleva caracteres de control: un salto de línea es una
+                    // tecla (input.key.press).
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),
                 ],
                 ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
-            "Escribe texto Unicode literal en el control enfocado y verifica que Windows aceptó cada evento SendInput."),
+            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput."),
         Descriptor(
             "input.visible.click",
             // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): el clic por la
@@ -862,14 +861,13 @@ public static class ProductCatalog
                     // ExpandCollapse (la flecha de un botón dividido, un desplegable),
                     // nunca su Invoke; menu: su menú contextual (ShowContextMenu o
                     // WM_CONTEXTMENU); double: doble clic por mensaje. Sin él, el clic
-                    // de siempre. Los mismos guards de etiqueta y confirmación. (collapse y
-                    // dismiss, que sólo mandaba la misión retirada, salieron: auditoría K9.)
+                    // de siempre. Los mismos guards de etiqueta y confirmación.
                     String("manner", types: NullableString, values: ["double", "menu", "open"]),
                     // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el destino que se
                     // escribe en lo que el clic abre y cuyo resultado se elige por su
                     // nombre, en una sola ráfaga dentro de una pausa de la persona.
                     String("search", types: NullableString, maximumUtf8Bytes: 256),
-                    // La ventana de la misión (el hwnd de la vista sobre la que se
+                    // La ventana mirada (el número que dio la vista sobre la que se
                     // decidió): el clic la trae al frente y actúa sólo en ella; si
                     // Windows no se la da, no se pulsa nada.
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),

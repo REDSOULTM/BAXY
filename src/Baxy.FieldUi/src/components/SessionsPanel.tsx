@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Panel } from './Panel';
 import { Icon } from './Icon';
 import { toastError } from '../hooks/useToast';
+import { startNewSession } from '../hooks/newSession';
 
 interface SessionRow {
   id: string;
@@ -87,11 +88,7 @@ export function SessionsPanel({ onClose }: Props) {
     if (pending) return;
     setPending(true);
     try {
-      const r = await fetch('/sessions/new', { method: 'POST' });
-      if (!r.ok) throw new Error(`status ${r.status}`);
-      onClose();
-    } catch (e) {
-      toastError(`new session failed · ${String(e).replace(/^Error: /, '')}`);
+      if (await startNewSession()) onClose();
     } finally { setPending(false); }
   };
 

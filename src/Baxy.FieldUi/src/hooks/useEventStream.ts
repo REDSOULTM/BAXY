@@ -16,8 +16,10 @@ export interface SessionInfo {
 
 export interface AgentStatus {
   built: boolean;
-  healthy: boolean;
   ready: boolean;
+  /** the observed failure's code (retry_without_close, core_disconnected, mind_unavailable, decision_unavailable,
+   *  turn_failed), null when there is none */
+  failure?: string | null;
   /** a risky call waits for the person's Sí or No (the buttons under BAXY's question) */
   pendingConfirmation?: boolean;
 }
@@ -29,8 +31,8 @@ export interface EventStreamState {
   model: ModelInfo | null;
   surfaces: SurfacesCount | null;
   session: SessionInfo | null;
-  /** boot lifecycle of the agent + llama-server. while !ready, the chat
-   *  input is disabled so users don't queue prompts into the void. */
+  /** the shell's gate. while !ready, the chat input is disabled so nothing
+   *  is queued into the void. */
   agent: AgentStatus;
 }
 
@@ -42,20 +44,16 @@ const INITIAL: EventStreamState = {
   model: null,
   surfaces: null,
   session: null,
-  agent: { built: false, healthy: false, ready: false },
+  agent: { built: false, ready: false },
 };
 
-/** subscribe to the FastAPI WS at `/events`. mirrors the server's BUS events
- *  into a single reducer-shaped state object. reconnects with backoff if the
- *  socket drops, so the UI survives a server restart. */
+/** subscribe to the shell's event socket at `/events` (the native bridge's WebSocket). mirrors its events into a
+ *  single reducer-shaped state object. reconnects with backoff if the socket drops. */
 export function useEventStream(): EventStreamState {
   const [state, setState] = useState<EventStreamState>(INITIAL);
 
-  // Belt-and-suspenders poll of /agent/status. The WS emits `agent` events
-  // only when the runner publishes one — if llama-server dies out from under
-  // us (crash, OOM, manual kill), the runner never knows and the WS goes
-  // quiet while the input stays unlocked. The 4s poll catches that case so
-  // the gate closes within seconds of the backend going unhealthy.
+  // Belt-and-suspenders poll of /agent/status: the same state the `agent`
+  // event carries, read every 4s in case an event was missed.
   useEffect(() => {
     let cancelled = false;
     const sync = async () => {
@@ -67,13 +65,15 @@ export function useEventStream(): EventStreamState {
         setState((prev) => {
           const next: AgentStatus = {
             built: !!data.built,
-            healthy: !!data.healthy,
             ready: !!data.ready,
+            failure: data.failure ?? null,
+            pendingConfirmation: !!data.pendingConfirmation,
           };
           if (
             next.built === prev.agent.built
-            && next.healthy === prev.agent.healthy
             && next.ready === prev.agent.ready
+            && next.failure === (prev.agent.failure ?? null)
+            && next.pendingConfirmation === !!prev.agent.pendingConfirmation
           ) return prev;
           return { ...prev, agent: next };
         });
@@ -192,7 +192,7 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
       return {
         ...prev,
         agent: {
-          built: ev.built, healthy: ev.healthy, ready: ev.ready, pendingConfirmation: !!ev.pendingConfirmation,
+          built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation,
         },
       };
     case 'log_clear':

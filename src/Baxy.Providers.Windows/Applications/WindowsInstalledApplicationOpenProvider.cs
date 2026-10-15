@@ -408,7 +408,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             string key;
             try
             {
-                key = ApplicationCatalogContract.NormalizeName(name);
+                key = CatalogNames.Normalize(name);
             }
             catch (ArgumentException)
             {

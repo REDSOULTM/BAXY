@@ -77,10 +77,10 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
     try {
       const r = await fetch(path, init);
       const data = (await r.json().catch(() => ({}))) as { error?: string; unconfirmed?: boolean };
-      if (!r.ok) toastError(`no pude ${verb} · ${data.error ?? `estado ${r.status}`}`);
-      else if (data.unconfirmed) toastError(`no pude confirmar si se pudo ${verb} · muestro lo guardado`);
+      if (!r.ok) toastError(`${verb} · falló · ${data.error ?? `estado ${r.status}`}`);
+      else if (data.unconfirmed) toastError(`${verb} · sin confirmar · se muestra lo guardado`);
     } catch (e) {
-      toastError(`no pude ${verb} · ${String(e).replace(/^Error: /, '')}`);
+      toastError(`${verb} · falló · ${String(e).replace(/^Error: /, '')}`);
     } finally {
       setArmed(null);
       setPending(false);
@@ -124,12 +124,12 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
   };
 
   return (
-    <Panel title="memoria · lo que recuerdo" onClose={onClose} width={620}>
+    <Panel title="memoria" onClose={onClose} width={620}>
       <div className="session-list">
         {loading && <div className="muted" style={{ padding: 14 }}>cargando la memoria…</div>}
         {!loading && items.length === 0 && (
           <div className="muted" style={{ padding: 14 }}>
-            {err ? `error · ${err}` : 'no recuerdo nada todavía · pídeme en el chat que recuerde algo'}
+            {err ? `error · ${err}` : 'memoria vacía · se guarda desde el chat'}
           </div>
         )}
         {items.map((it) => {

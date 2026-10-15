@@ -58,7 +58,8 @@ public sealed class OperationRegistryTests
     [TestCase("streaming.play.named", PolicyDecision.Allow)]
     [TestCase("browser.navigate.named", PolicyDecision.Allow)]
     [TestCase("input.visible.click", PolicyDecision.Allow)]
-    [TestCase("calendar.event.create", PolicyDecision.Allow)]
+    // Auditoría final 2, fila 8: an event in the owner's Outlook calendar is synchronized to their account.
+    [TestCase("calendar.event.create", PolicyDecision.RequireConfirmation)]
     [TestCase("capture.screenshot", PolicyDecision.Allow)]
     [TestCase("clipboard.read.text", PolicyDecision.Allow)]
     [TestCase("input.text.type", PolicyDecision.Allow)]
@@ -321,6 +322,30 @@ public sealed class OperationRegistryTests
                 RiskPolicy.Evaluate(
                     ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.key.press", document.RootElement),
                 Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+        });
+    }
+
+    // Auditoría final 2, fila 9: Ctrl+W can close the window (the File Explorer, the last tab of a browser), so it asks
+    // like app.close; the other shortcuts do not.
+    [TestCase("""{"key":"ctrl_w"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("""{"key":"ctrl_w","window":4660}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("""{"key":"ctrl_t"}""", PolicyDecision.Allow)]
+    [TestCase("""{"key":"ctrl_s"}""", PolicyDecision.Allow)]
+    public void Ctrl_w_asks_because_it_may_close_a_window(string arguments, PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.key.press", document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, "input.key.press", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
         });
     }
 

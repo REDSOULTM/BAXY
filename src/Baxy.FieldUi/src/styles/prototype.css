@@ -19,11 +19,7 @@
 
   --tag-tool: #9B8DD9;
   --tag-mem:  #C9A66B;
-  --tag-boot: #6FA8B0;
   --tag-you:  #D8DCE6;
-  --tag-ai:   #7B95D9;
-  --tag-trig: #B83A4A;
-  --tag-thot: #7B95D9;
   --tag-sys:  #6FA8B0;
 
   --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
@@ -545,15 +541,8 @@ body {
   letter-spacing: 0.06em;
   text-transform: lowercase;
 }
-.src.tool    { color: var(--tag-tool); }
 .src.you     { color: var(--tag-you); }
-.src.gemma   { color: var(--tag-ai); }
-.src.memory  { color: var(--tag-mem); }
-.src.trigger { color: var(--tag-trig); }
-.src.boot    { color: var(--tag-boot); }
-.src.thought { color: var(--tag-thot); }
 .src.system  { color: var(--tag-sys); }
-.src.context { color: var(--tag-tool); }
 
 /* ------- surfaces grid ------- */
 .surfaces-wrap { display: flex; flex-direction: column; gap: 8px; }
@@ -1247,9 +1236,6 @@ body {
   --carmine-hi:   #E55366;
   --carmine-pale: #F5C6CC;
 
-  /* activity-log context tag is not in the prototype list — alias to system */
-  --tag-ctx: #6FA8B0;
-
   /* core-state palettes: halo, mid, inner, hot per state. used as inputs to
      SVG gradients in NeuralGraph and to FieldCenter's centred state dot. */
   --core-standby-halo:  #3F4860;
@@ -1386,7 +1372,7 @@ button, input, textarea { font: inherit; color: inherit; }
    CARTER-FIELD REDESIGN (2026) — appended verbatim from the new
    prototype styles.css. Later rules WIN by cascade, so this adopts the
    new look. ui_field-only additions (toast, vision banner, mic-load,
-   core-state palettes, tag-ctx) live ABOVE and are NOT redefined here,
+   core-state palettes) live ABOVE and are NOT redefined here,
    so they survive. Components are migrated to the new class names
    (.app-frame/.m-bar/.power-row/.act-toolbar/.min-block) section by
    section. TODO(reskin): dedupe the superseded older rules once verified.
@@ -1412,11 +1398,7 @@ button, input, textarea { font: inherit; color: inherit; }
 
   --tag-tool: #9B8DD9;
   --tag-mem:  #C9A66B;
-  --tag-boot: #6FA8B0;
   --tag-you:  #D8DCE6;
-  --tag-ai:   #7B95D9;
-  --tag-trig: var(--carmine);
-  --tag-thot: #7B95D9;
   --tag-sys:  #6FA8B0;
 
   --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;

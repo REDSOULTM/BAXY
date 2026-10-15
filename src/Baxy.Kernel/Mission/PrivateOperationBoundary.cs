@@ -27,6 +27,11 @@ internal static class PrivateOperationBoundary
         "verification_failed",
     };
 
+    // The purposes Baxy.Security.Windows seals the memory envelopes for (ProtectedPayloadPurposes there); the kernel does
+    // not reference that Windows assembly, so it names them here once.
+    private const string ArgumentsPurpose = "memory.arguments.v1";
+    private const string ResultPurpose = "memory.result.v1";
+
     internal static bool IsPrivateOperation(string operation) =>
         operation.StartsWith("memory.", StringComparison.Ordinal);
 
@@ -34,7 +39,7 @@ internal static class PrivateOperationBoundary
         HasProtectedEnvelope(
             request.Arguments,
             CreatePurpose(
-                "memory.arguments.v1",
+                ArgumentsPurpose,
                 request.Operation,
                 request.MissionId,
                 request.InvocationId));
@@ -58,7 +63,7 @@ internal static class PrivateOperationBoundary
             && HasProtectedEnvelope(
                 result,
                 CreatePurpose(
-                    "memory.result.v1",
+                    ResultPurpose,
                     request.Operation,
                     request.MissionId,
                     request.InvocationId))
@@ -109,7 +114,7 @@ internal static class PrivateOperationBoundary
             && HasProtectedEnvelope(
                 result,
                 CreatePurpose(
-                    "memory.result.v1",
+                    ResultPurpose,
                     request.Operation,
                     request.MissionId,
                     request.InvocationId))

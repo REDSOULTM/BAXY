@@ -5,6 +5,11 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace Baxy.Security.Windows;
 
+/// <summary>
+/// The purposes protected payloads are sealed for: the bound memory envelopes (BoundProtectedJsonCodec) and the
+/// memory store's own files (LocalMemoryStore). The kernel checks the two envelope purposes by the same literal
+/// (PrivateOperationBoundary): it does not reference this Windows assembly.
+/// </summary>
 public static class ProtectedPayloadPurposes
 {
     public const string MemoryArgumentsV1 = "memory.arguments.v1";

@@ -7,10 +7,6 @@ public interface IProtectedPayload
     byte[] Seal(ReadOnlySpan<byte> plaintext, string purpose);
 
     byte[] Open(ReadOnlySpan<byte> envelope, string purpose);
-
-    byte[] SealUtf8(string plaintext, string purpose);
-
-    string OpenUtf8(ReadOnlySpan<byte> envelope, string purpose);
 }
 
 public enum ProtectedPayloadErrorCode

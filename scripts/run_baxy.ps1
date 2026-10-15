@@ -83,10 +83,8 @@ if ($SinMente) {
         "BAXY_MIND_PYTHONPATH",
         "BAXY_MIND_LLM_GGUF",
         "BAXY_MIND_LLAMA_SERVER",
-        "BAXY_MIND_STT_DIR",
         "BAXY_MIND_NGL",
-        "BAXY_VOICE_WAKE_ON_START",
-        "BAXY_ASSET_DESCRIPTOR"
+        "BAXY_VOICE_WAKE_ON_START"
     ) | ForEach-Object {
         Remove-Item "Env:$_" -ErrorAction SilentlyContinue
     }
@@ -94,7 +92,6 @@ if ($SinMente) {
 } else {
     $runtimeManifest = Join-Path $env:LOCALAPPDATA 'BAXYRuntime\mind-runtime-v1.json'
     Remove-Item Env:BAXY_MIND_DISABLED -ErrorAction SilentlyContinue
-    $env:BAXY_ASSET_DESCRIPTOR = Join-Path $repo 'assets.manifest.json'
     if ($Cpu) {
         $env:BAXY_MIND_NGL = "0"
     }
@@ -116,16 +113,10 @@ if (-not [string]::IsNullOrWhiteSpace($UiProbe)) {
     if (-not (Test-Path $evidence)) { New-Item -ItemType Directory -Path $evidence -Force | Out-Null }
     Remove-Item $UiCapture -ErrorAction SilentlyContinue
 
-    # Misma instrumentación que scripts/cu_live/cu_live.sh, en la carpeta de la
-    # captura; sin palabra de activación para que el micrófono no meta turnos.
+    # La traza de la app en la carpeta de la captura; sin palabra de
+    # activación para que el micrófono no meta turnos.
     $env:BAXY_VOICE_WAKE_ON_START = "0"
     $env:BAXY_APP_TRACE = Join-Path $evidence 'trace.jsonl'
-    $env:BAXY_MIND_MODEL_CALL_AUDIT_PATH = Join-Path $evidence 'model_calls.jsonl'
-    $env:BAXY_MIND_LLM_INVALID_JSON_DIR = Join-Path $evidence 'invalid_json'
-    $env:BAXY_MIND_RAW_REPLY_AUDIT_PATH = Join-Path $evidence 'raw_replies.jsonl'
-    $env:BAXY_MIND_TURN_AUDIT_PATH = Join-Path $evidence 'turn_audit.jsonl'
-    $env:BAXY_MIND_MESSAGE_COMPOSE_AUDIT_PATH = Join-Path $evidence 'compose_audit.jsonl'
-    $env:BAXY_MIND_MESSAGE_COMPOSE_AUDIT_CONTENT = "1"
     if ([string]::IsNullOrWhiteSpace($env:BAXY_MIND_PYTHONPATH)) {
         # La mente de este checkout, no la que tenga registrada el runtime.
         $env:BAXY_MIND_PYTHONPATH = Join-Path $repo 'src'

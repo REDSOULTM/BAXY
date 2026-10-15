@@ -75,12 +75,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         string route = path.Split('?', 2)[0];
         if (method == "GET" && route == "/agent/status")
         {
-            return Json(new JsonObject
-            {
-                ["built"] = _viewModel.IsReady,
-                ["healthy"] = _viewModel.IsReady && !_viewModel.HasStartupError,
-                ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
-            });
+            return Json(AgentStatus());
         }
 
         if (method == "GET" && route == "/model")
@@ -183,12 +178,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (method == "POST" && route == "/activity")
         {
+            // The view's own lines (its shortcuts help) are SYSTEM lines; BAXY's and the person's come from the turn.
             JsonObject? payload = ParseBody(body);
-            string source = NormalizeActivitySource((string?)payload?["src"]);
             string text = ((string?)payload?["msg"] ?? string.Empty).Trim();
             if (text.Length > 0)
             {
-                PostActivity(source, text);
+                PostSystemActivity(text);
             }
 
             return Json(new JsonObject { ["ok"] = true });
@@ -340,13 +335,20 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         return events;
     }
 
-    internal JsonObject AgentEvent() => new()
+    internal JsonObject AgentEvent()
     {
-        ["type"] = "agent",
+        JsonObject agent = AgentStatus();
+        agent["type"] = "agent";
+        return agent;
+    }
+
+    // The interface's gate and what it shows: whether a turn is accepted now, the failure's code (the engine's or the
+    // last turn's), and whether a risky call waits for the person (Sí and No under BAXY's question).
+    private JsonObject AgentStatus() => new()
+    {
         ["built"] = _viewModel.IsReady,
-        ["healthy"] = _viewModel.IsReady && !_viewModel.HasStartupError,
         ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
-        // A risky call waits for the person: the interface shows Sí and No under BAXY's question.
+        ["failure"] = _viewModel.Failure,
         ["pendingConfirmation"] = _viewModel.HasPendingConfirmation,
     };
 
@@ -379,13 +381,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["entry"] = entry,
         };
     }
-
-    internal static string NormalizeActivitySource(string? source) => source switch
-    {
-        "TOOL" or "YOU" or "BAXY" or "GEMMA" or "MEMORY" or "TRIGGER" or "BOOT"
-            or "THOUGHT" or "SYSTEM" or "CONTEXT" => source,
-        _ => "SYSTEM",
-    };
 
     internal static FieldModelIdentity ResolveModelIdentity(string? modelPath)
     {
@@ -529,7 +524,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     {
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
             or nameof(MainWindowViewModel.IsBusy)
-            or nameof(MainWindowViewModel.HasStartupError)
+            or nameof(MainWindowViewModel.Failure)
             or nameof(MainWindowViewModel.IsMindPreparing)
             or nameof(MainWindowViewModel.HasPendingConfirmation))
         {
@@ -544,6 +539,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.IsListening)
             or nameof(MainWindowViewModel.IsVoiceSpeaking)
+            or nameof(MainWindowViewModel.Failure)
             or nameof(MainWindowViewModel.StatusDescription))
         {
             Publish(new JsonObject
@@ -566,10 +562,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return "listening";
         }
 
-        return _viewModel.IsBusy ? "thinking" : "idle";
+        return _viewModel.IsBusy ? "thinking"
+            : _viewModel.Failure is not null ? "error"
+            : "idle";
     }
 
-    private void PostActivity(string source, string text)
+    private void PostSystemActivity(string text)
     {
         Publish(new JsonObject
         {
@@ -577,7 +575,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["entry"] = new JsonObject
             {
                 ["id"] = $"native-{Interlocked.Increment(ref _activitySequence)}",
-                ["src"] = source,
+                ["src"] = "SYSTEM",
                 ["msg"] = text,
                 ["ts"] = DateTimeOffset.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture),
             },
@@ -623,7 +621,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["running"] = _viewModel.IsListening || _viewModel.IsWakeListening,
         ["mode"] = _viewModel.IsListening ? "direct" : _viewModel.IsWakeListening ? "wake" : "off",
         ["speaking"] = _viewModel.IsVoiceSpeaking,
-        ["last_error"] = _viewModel.IsMicAvailable ? null : "voice_unavailable",
+        ["last_error"] = _viewModel.VoiceFailure ?? (_viewModel.IsMicAvailable ? null : "voice_unavailable"),
     };
 
     // The voice models are the launcher's (BAXY_RENEW_STT_DIR, _TTS_MODEL, _WAKE_DIR): each is named by its path and

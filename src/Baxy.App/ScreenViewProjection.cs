@@ -21,7 +21,7 @@ internal static class ScreenViewProjection
         ("abajo", ["BL", "B", "BR"]),
     ];
 
-    /// <param name="message">The kernel's visible facts of the look (operation, verified, succeeded).</param>
+    /// <param name="message">The kernel's visible facts of the look (operation, status, verified, succeeded, error).</param>
     /// <param name="result">The look's receipt: the whole view the reader returned.</param>
     internal static bool TryCreate(string message, JsonElement result, out string projected)
     {
@@ -49,7 +49,13 @@ internal static class ScreenViewProjection
             // Its number is what the acting tools take as window, so they act in it and not in the person's window.
             text.Append("Ventana «").Append((string?)window["title"]).Append("» (").Append((string?)window["process"])
                 .Append(", window ").Append((long?)window["hwnd"]).Append(')');
-            text.Append((bool?)window["foreground"] == false ? ", no está al frente" : ", al frente");
+            // Said only as observed: a reader that did not report the front says nothing about it.
+            text.Append((bool?)window["foreground"] switch
+            {
+                true => ", al frente",
+                false => ", no está al frente",
+                null => string.Empty,
+            });
             if (window["coveredBy"] is JsonObject cover)
             {
                 text.Append(", tapada por «").Append((string?)cover["title"]).Append('»');
@@ -117,14 +123,19 @@ internal static class ScreenViewProjection
             text.Append("Error: ").Append(error).Append('\n');
         }
 
-        projected = new JsonObject
+        // The kernel's facts of the look travel whole (status, error, cause, effectUncertain included); only what it
+        // observed is re-presented, as the view.
+        var projection = new JsonObject();
+        foreach ((string key, JsonNode? fact) in facts)
         {
-            ["kind"] = facts["kind"]?.DeepClone(),
-            ["operation"] = facts["operation"]?.DeepClone(),
-            ["verified"] = facts["verified"]?.DeepClone(),
-            ["succeeded"] = facts["succeeded"]?.DeepClone(),
-            ["view"] = text.ToString().TrimEnd(),
-        }.ToJsonString(new JsonSerializerOptions
+            if (key != "observed")
+            {
+                projection[key] = fact?.DeepClone();
+            }
+        }
+
+        projection["view"] = text.ToString().TrimEnd();
+        projected = projection.ToJsonString(new JsonSerializerOptions
         {
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         });

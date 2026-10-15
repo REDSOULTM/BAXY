@@ -50,7 +50,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
     private bool _isBusy;
-    private bool _hasStartupError;
+    private string? _startupFailure;
+    private string? _lastTurnFailure;
+    private string? _voiceFailure;
     private bool _isInitializing;
     private bool _isDisposed;
     private bool _turnExecutionActive;
@@ -111,7 +113,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal MemoryOperationProtector? MemoryProtector => _memoryProtector;
 
     /// <summary>Why the last turn ended without an answer from the model (mind_unavailable, decision_unavailable).</summary>
-    internal string? LastTurnFailure { get; private set; }
+    internal string? LastTurnFailure
+    {
+        get => _lastTurnFailure;
+        private set
+        {
+            if (SetField(ref _lastTurnFailure, value))
+            {
+                OnPropertyChanged(nameof(Failure));
+            }
+        }
+    }
+
+    /// <summary>What the interface shows as the failure: the engine's (retry_without_close, core_disconnected), else the last turn's.</summary>
+    internal string? Failure => _startupFailure ?? _lastTurnFailure;
+
+    /// <summary>
+    /// The voice's last trouble, until it hears again: voice_dropped_busy (a transcript that arrived while a turn ran
+    /// started nothing) or voice_error (the mind's listener failed on a block).
+    /// </summary>
+    internal string? VoiceFailure
+    {
+        get => _voiceFailure;
+        private set => SetField(ref _voiceFailure, value);
+    }
 
     /// <summary>A risky call waits for the person's Sí or No (the interface shows the two buttons).</summary>
     public bool HasPendingConfirmation => _loop.HasPendingConfirmation;
@@ -147,10 +172,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    public bool HasStartupError
+    public bool HasStartupError => _startupFailure is not null;
+
+    // The engine could not start or went away: its code is the shell's status and the interface's failure.
+    private void SetStartupFailure(string? code)
     {
-        get => _hasStartupError;
-        private set => SetField(ref _hasStartupError, value);
+        if (SetField(ref _startupFailure, code, nameof(HasStartupError)))
+        {
+            OnPropertyChanged(nameof(Failure));
+        }
+
+        if (code is not null)
+        {
+            StatusDescription = code;
+        }
     }
 
     public bool IsInputEnabled => IsReady && !IsBusy;
@@ -202,7 +237,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         _isInitializing = true;
-        HasStartupError = false;
+        SetStartupFailure(null);
         IsReady = false;
         StatusDescription = "Comprobando BAXY";
         _loop.Reset();
@@ -659,10 +694,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task DispatchTranscriptAsync(string transcript)
     {
-        if (_isDisposed || !IsInputEnabled)
+        if (_isDisposed)
         {
             return;
         }
+
+        if (!IsInputEnabled)
+        {
+            // Heard while a turn runs (or before BAXY is ready): it starts nothing, and that is a state, not silence.
+            VoiceFailure = "voice_dropped_busy";
+            return;
+        }
+
+        VoiceFailure = null;
 
         try
         {
@@ -695,6 +739,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         IsListening = mode == "direct";
                         break;
                     case "wake_detected":
+                        VoiceFailure = null;
                         StatusDescription = "Te escucho…";
                         if (_firstWakeUtc is null)
                         {
@@ -704,7 +749,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                         break;
                     case "partial":
+                        VoiceFailure = null;
                         StatusDescription = "Transcribiendo…";
+                        break;
+                    case "error":
+                        VoiceFailure = "voice_error";
                         break;
                 }
             },
@@ -976,8 +1025,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         IsReady = false;
-        HasStartupError = true;
-        StatusDescription = "retry_without_close";
+        SetStartupFailure("retry_without_close");
     }
 
     private void OnCoreDisconnected(CoreProcessClient client)
@@ -1000,8 +1048,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 owner.IsReady = false;
                 owner._loop.Reset();
-                owner.HasStartupError = true;
-                owner.StatusDescription = "core_disconnected";
+                owner.SetStartupFailure("core_disconnected");
                 owner.RecoverCoreWhenIdle();
             },
             (this, client));

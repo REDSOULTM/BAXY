@@ -9,8 +9,9 @@ namespace Baxy.Kernel.Policy;
 /// artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-20.md): «lo que debe
 /// pedir permisos sólo deben ser cosas destructivas o irreparables». Reproducir,
 /// navegar, copiar, capturar, pulsar, escribir, radios y ajustes van directos en
-/// modo normal; lo que llega a otra persona (mensajes y correo) y lo que destruye
-/// o pierde trabajo (work_loss) sigue preguntando, e
+/// modo normal; lo que llega a otra persona (mensajes y correo), lo que crea en la
+/// cuenta del dueño (un evento de su calendario de Outlook) y lo que destruye
+/// o pierde trabajo (work_loss, también Ctrl+W, que puede cerrar una ventana) sigue preguntando, e
 /// instalar también (decisión 8 del dueño, 2026-10-10). Las etiquetas de riesgo
 /// del catálogo no cambian: los sellos históricos las citan.
 ///
@@ -33,10 +34,13 @@ namespace Baxy.Kernel.Policy;
 /// </summary>
 public static partial class RiskPolicy
 {
-    // External communication that reaches another person: the only external
-    // operations that keep asking in normal mode.
+    // External communication that reaches another person or sends the owner's content to an account outside the
+    // machine: the only external operations that keep asking in normal mode. An event created in the owner's Outlook
+    // calendar is synchronized to their account (auditoría final 2, fila 8: nothing of the owner leaves without
+    // their yes).
     private static readonly HashSet<string> ExternalRequiringConfirmation = new(StringComparer.Ordinal)
     {
+        "calendar.event.create",
         "message.send.test",
         "email.latest.reply",
         "email.send",
@@ -64,6 +68,7 @@ public static partial class RiskPolicy
             && (ReachesAPerson(operation, invocation)
                 || CannotBeUndone(operation, invocation)
                 || LosesTheSession(operation, invocation)
+                || MayCloseAWindow(operation, invocation)
                 || ShellMayChange(operation, invocation)))
         {
             return PolicyDecision.RequireConfirmation;
@@ -270,6 +275,16 @@ public static partial class RiskPolicy
         && arguments.TryGetProperty(closing.Name, out JsonElement value)
         && value.ValueKind == JsonValueKind.String
         && string.Equals(value.GetString(), closing.Value, StringComparison.Ordinal);
+
+    /// <summary>
+    /// Auditoría final 2 (fila 9): Ctrl+W closes a tab, but in the File Explorer, in many applications and on the last
+    /// tab of a Chromium browser it closes the window, and with it what the person had there unsaved. It asks, like
+    /// app.close (work_loss).
+    /// </summary>
+    private static bool MayCloseAWindow(string? operation, JsonElement arguments) =>
+        string.Equals(operation, "input.key.press", StringComparison.Ordinal)
+        && arguments.ValueKind == JsonValueKind.Object
+        && KeyOf(arguments) is "ctrl_w";
 
     // Operation → the argument value that closes all at once.
     private static readonly Dictionary<string, (string Name, string Value)> SessionClosingArguments =
