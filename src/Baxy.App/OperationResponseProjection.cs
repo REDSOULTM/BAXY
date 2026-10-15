@@ -13,12 +13,6 @@ internal sealed record OperationResponseProjection(string Message)
     {
         ArgumentNullException.ThrowIfNull(response);
         ArgumentException.ThrowIfNullOrWhiteSpace(operationName);
-        if (response.HonestyCorrection is { } honesty
-            && !string.IsNullOrWhiteSpace(honesty.Correction))
-        {
-            return new OperationResponseProjection(TruncateMessage(honesty.Correction.Trim()));
-        }
-
         if (!string.IsNullOrWhiteSpace(response.Message))
         {
             // The look's whole view is the receipt's result; the kernel's visible facts keep only its first rows.

@@ -10,7 +10,7 @@ namespace Baxy.Kernel.Policy;
 /// pedir permisos sólo deben ser cosas destructivas o irreparables». Reproducir,
 /// navegar, copiar, capturar, pulsar, escribir, radios y ajustes van directos en
 /// modo normal; lo que llega a otra persona (mensajes y correo) y lo que destruye
-/// o interrumpe (work_loss, session_disruption, monetary) sigue preguntando, e
+/// o pierde trabajo (work_loss) sigue preguntando, e
 /// instalar también (decisión 8 del dueño, 2026-10-10). Las etiquetas de riesgo
 /// del catálogo no cambian: los sellos históricos las citan.
 ///
@@ -37,7 +37,6 @@ public static partial class RiskPolicy
     // operations that keep asking in normal mode.
     private static readonly HashSet<string> ExternalRequiringConfirmation = new(StringComparer.Ordinal)
     {
-        "message.send",
         "message.send.test",
         "email.latest.reply",
         "email.send",
@@ -49,11 +48,6 @@ public static partial class RiskPolicy
         string? operation = null,
         JsonElement? arguments = null)
     {
-        if (risk == OperationRisk.Forbidden)
-        {
-            return PolicyDecision.Deny;
-        }
-
         if (mode == ConfirmationMode.Bypass)
         {
             return PolicyDecision.Allow;
@@ -86,7 +80,7 @@ public static partial class RiskPolicy
                 ? PolicyDecision.RequireConfirmation
                 : PolicyDecision.Allow,
             OperationRisk.Irreversible => PolicyDecision.RequireConfirmation,
-            _ => PolicyDecision.Deny,
+            _ => throw new ArgumentOutOfRangeException(nameof(risk)),
         };
     }
 
@@ -169,7 +163,7 @@ public static partial class RiskPolicy
                 return ClickLabels(arguments).Any(LabelReachesAPerson);
             case "input.key.press":
                 // Enter, and space on a focused send or reply control, hand what was written to someone when the
-                // step declares it lands on a message composer (the mind labels it from the focused control).
+                // step declares it lands on a message composer (the model declares it from the focused control).
                 // Revisión de V (H1): or presses a control that reaches someone (a voice channel highlighted in a search).
                 return KeyOf(arguments) is "enter" or "space"
                     && (TargetOf(arguments) is "message_composer" || LabelReachesAPerson(OntoOf(arguments)));
@@ -194,7 +188,7 @@ public static partial class RiskPolicy
         // list). Fail-closed: it asks unless the step declares the keyboard is on a text field, where it only
         // erases characters.
         // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
-        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The mission marks it from the view it
+        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The model declares it from the view it
         // was decided on.
         bool overwrites = arguments.TryGetProperty("consequence", out JsonElement consequence)
             && consequence.ValueKind == JsonValueKind.String

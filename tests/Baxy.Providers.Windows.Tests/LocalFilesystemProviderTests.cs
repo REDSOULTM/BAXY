@@ -151,24 +151,6 @@ public sealed class LocalFilesystemProviderTests
     }
 
     [Test]
-    public void TrashRequiresPreparedExactLabelAndCanRestore()
-    {
-        using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
-        string id = provider.WriteText("borrar.txt", "contenido", null).ResourceId;
-        FilesystemTrashPreparation prepared = provider.PrepareTrash(id);
-        FilesystemTrashReceipt receipt = provider.CommitTrash(prepared.TrashId, prepared.ReviewLabel);
-        FilesystemMutationResult restored = provider.Restore(receipt.RestoreId);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Trashed, Is.True);
-            Assert.That(restored.Name, Is.EqualTo("borrar.txt"));
-            Assert.That(File.Exists(Path.Combine(temporary.Path, "borrar.txt")), Is.True);
-        });
-    }
-
-    [Test]
     public void BackupCreateVerifyAndRestorePreserveExactHash()
     {
         using TemporaryDirectory temporary = new();
@@ -183,6 +165,40 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(verified, Is.EqualTo(created));
             Assert.That(restored.Sha256, Is.EqualTo(created.Sha256));
             Assert.That(File.ReadAllText(Path.Combine(temporary.Path, "restaurado.txt")), Is.EqualTo("respaldo"));
+        });
+    }
+
+    // Auditoría final V3: «verified» compares the backup's bytes with the SHA-256 recorded when it was made; a backup
+    // changed since, or one without that record, is not verified and is never restored.
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ABackupChangedSinceItWasMadeOrWithoutItsRecordedHashIsNotVerifiedNorRestored(bool changed)
+    {
+        using TemporaryDirectory temporary = new();
+        var provider = new LocalFilesystemProvider(temporary.Path);
+        FilesystemMutationResult source = provider.WriteText("origen.txt", "respaldo", null);
+        BackupReceipt created = provider.CreateBackup(source.ResourceId, source.Sha256!);
+        string backups = Path.Combine(temporary.Path, ".backups");
+        if (changed)
+        {
+            File.WriteAllText(Path.Combine(backups, created.BackupId + ".bin"), "otra cosa");
+        }
+        else
+        {
+            File.Delete(Path.Combine(backups, created.BackupId + ".sha256"));
+        }
+
+        BackupReceipt verified = provider.VerifyBackup(created.BackupId);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(created.Verified, Is.True);
+            Assert.That(verified.Verified, Is.False);
+            Assert.That(provider.ListBackups(1).Backups.Single().Verified, Is.False);
+            Assert.That(() => provider.RestoreBackup(created.BackupId, "restaurado.txt"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("backup_not_verified"));
+            Assert.That(File.Exists(Path.Combine(temporary.Path, "restaurado.txt")), Is.False);
         });
     }
 

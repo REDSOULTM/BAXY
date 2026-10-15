@@ -45,7 +45,7 @@ public sealed class ForegroundLeaseLiveCheck
             Assert.That(ZeroMove(0x12345678), Is.EqualTo(1u));
             await Task.Delay(250);
             long afterForeign = pause.LastForeignInputMs;
-            TestContext.Out.WriteLine($"foreign before {foreignBefore}, after own {afterOwn}, after foreign {afterForeign}, missed {pause.Missed}");
+            TestContext.Out.WriteLine($"foreign before {foreignBefore}, after own {afterOwn}, after foreign {afterForeign}");
             Assert.That(afterOwn, Is.EqualTo(foreignBefore), "BAXY's marked move is not the person's");
             Assert.That(afterForeign, Is.GreaterThan(foreignBefore), "an unmarked move is the person's");
 
@@ -115,7 +115,6 @@ public sealed class ForegroundLeaseLiveCheck
             Assert.That(pause.Source, Is.EqualTo("raw_input"));
             await Task.Delay(300);
             long foreignBefore = pause.LastForeignInputMs;
-            long missedBefore = pause.Missed;
 
             var keyboard = new WindowsDesktopKeyboard();
             IInputBurst burst = await keyboard.FrontAsync(missionWindow, CancellationToken.None);
@@ -127,7 +126,7 @@ public sealed class ForegroundLeaseLiveCheck
             bool actedAfter = burst.UserActed;
             long foreignAfter = pause.LastForeignInputMs;
             TestContext.Out.WriteLine(
-                $"accepted {accepted}, foreign {foreignBefore}->{foreignAfter}, missed {missedBefore}->{pause.Missed}");
+                $"accepted {accepted}, foreign {foreignBefore}->{foreignAfter}");
             Assert.Multiple(() =>
             {
                 Assert.That(accepted, Is.EqualTo((uint)text.Length * 2));
@@ -192,8 +191,7 @@ public sealed class ForegroundLeaseLiveCheck
             WindowsUserInputPause pause = WindowsUserInputPause.Shared;
             TestContext.Out.WriteLine(
                 $"own window only: {inOwnWindow}, crossed: {crossed}; now {Environment.TickCount64}, over mission "
-                + $"{pause.LastPointerOverMs(missionWindow)}, over person {pause.LastPointerOverMs(personWindow)}, "
-                + $"missed {pause.Missed}");
+                + $"{pause.LastPointerOverMs(missionWindow)}, over person {pause.LastPointerOverMs(personWindow)}");
             Assert.Multiple(() =>
             {
                 Assert.That(VisibleControlSurface.ForegroundIs(personWindow), Is.True, "their window still in front");

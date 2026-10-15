@@ -545,24 +545,11 @@ internal sealed class NoOpenedApplicationFocus : IOpenedApplicationFocus
         bool bringToFront = false) => ValueTask.FromResult(default(VisibleControlSurface.OpenedSurface));
 }
 
-// The person's browser when a mission names «the browser» without naming one (a tab spoken of in passing): the front
-// window of their default browser, the window browser.control and browser.tabs.list act on; 0 when it is not running.
+// The front window of the person's default browser, the window browser.control and browser.tabs.list act on; 0 when it
+// is not running.
 internal interface IUserBrowserWindowLocator
 {
     nint FrontWindow();
-
-    // «navegador», «el navegador», «mi navegador», «browser», «my browser», «web browser»: the category, not a product.
-    internal static bool NamesTheCategory(string? application)
-    {
-        string[] words = VisibleControlSurface.FoldTitle(application).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        int start = words.Length > 1 && words[0] is "el" or "mi" or "tu" or "su" or "the" or "my" or "your" ? 1 : 0;
-        return string.Join(' ', words[start..]) is "navegador" or "navegador web" or "browser" or "web browser";
-    }
-}
-
-internal sealed class NoUserBrowserWindow : IUserBrowserWindowLocator
-{
-    public nint FrontWindow() => 0;
 }
 
 // How long a click looks for its label. M132 (owner script t42 «En … ve a crash bandicoot», 28 s for «no hay ningún
@@ -679,7 +666,8 @@ internal sealed class WindowsVisibleControlAdapter
     private readonly IVisibleControlLocator? _tooltip;
     private readonly IOpenedApplicationFocus _focus;
     private readonly VisibleClickTiming _timing;
-    private readonly IUserBrowserWindowLocator _browserWindow;
+    // The window a look asked for: the mission's process's, else the named application's (exactly); 0 when neither shows.
+    private readonly Func<int, string?, CancellationToken, ValueTask<nint>> _requestedWindow;
     private readonly Func<nint, CancellationToken, ValueTask<string?>>? _surfaceHash;
     private readonly IPointerFallback _pointer;
     // The image of a window a click compares before and after (selfDrawn: taken the way the earlier one was).
@@ -765,8 +753,7 @@ internal sealed class WindowsVisibleControlAdapter
             new WindowsVisibleVisionLocator(),
             new OpenedApplicationFocus(),
             VisibleClickTiming.Default,
-            new UserBrowserSurface(new WindowsUserBrowserPlatform()),
-            WindowSurfaceHashAsync,
+            surfaceHash: WindowSurfaceHashAsync,
             tooltip: new WindowsVisibleTooltipLocator(worker))
     {
         RootWindows = VisibleControlSurface.RootWindowsNow;
@@ -779,7 +766,7 @@ internal sealed class WindowsVisibleControlAdapter
         IVisibleControlLocator? vision,
         IOpenedApplicationFocus? focus = null,
         VisibleClickTiming? timing = null,
-        IUserBrowserWindowLocator? browserWindow = null,
+        Func<int, string?, CancellationToken, ValueTask<nint>>? requestedWindow = null,
         Func<nint, CancellationToken, ValueTask<string?>>? surfaceHash = null,
         IPointerFallback? pointer = null,
         Func<nint, bool?, CancellationToken, ValueTask<VisibleControlSurface.CapturedWindow?>>? capture = null,
@@ -799,7 +786,7 @@ internal sealed class WindowsVisibleControlAdapter
         _vision = vision;
         _focus = focus ?? new NoOpenedApplicationFocus();
         _timing = timing ?? VisibleClickTiming.Default;
-        _browserWindow = browserWindow ?? new NoUserBrowserWindow();
+        _requestedWindow = requestedWindow ?? RequestedWindowAsync;
     }
 
     public bool CanHandle(string operation) =>
@@ -1619,6 +1606,46 @@ internal sealed class WindowsVisibleControlAdapter
             new JsonObject { ["ok"] = true, ["controls"] = new JsonArray(), ["uiaFailed"] = reason }.ToJsonString());
     }
 
+    // The window of the mission's process, else the window of the application it names (exactly:
+    // VisibleControlSurface.ResolveTitledWindowAsync); 0 when neither shows one.
+    private static async ValueTask<nint> RequestedWindowAsync(
+        int processId, string? application, CancellationToken cancellationToken)
+    {
+        nint hwnd = processId > 0
+            ? await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken).ConfigureAwait(false)
+            : 0;
+        return hwnd == 0 && application is not null
+            ? await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken).ConfigureAwait(false)
+            : hwnd;
+    }
+
+    /// <summary>How many of the desktop's windows go back with a name no window is.</summary>
+    internal const int NamedWindowCandidateLimit = 20;
+
+    /// <summary>
+    /// Auditoría final V3: the named application is no window on the desktop. Nothing was read nor done; the visible
+    /// windows (title and process, top of the Z order first, cloaked ones left out) go back for the model to name one
+    /// exactly.
+    /// </summary>
+    internal static ExternalCapabilityReceipt NamedWindowNotFound(
+        string operation, IReadOnlyList<VisibleControlSurface.DestinationWindow> desktop) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteStartArray("candidates");
+            foreach (VisibleControlSurface.DestinationWindow window in desktop.Where(static window => !window.Cloaked)
+                .Take(NamedWindowCandidateLimit))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("title", window.Title);
+                writer.WriteString("process", window.Process);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }), "application_window_not_found");
+
     /// <summary>The worker's «view» request; the goal's words go only when there are some (a look outside a mission is
     /// the one it always was).</summary>
     internal static string ViewCommand(nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false)
@@ -1707,36 +1734,22 @@ internal sealed class WindowsVisibleControlAdapter
                     return new ViewResult(ExternalJson.Failure(operation, "mission_window_closed"), []);
             }
 
-            // «The browser» without a name is the person's own: the front
-            // window of their default browser, whichever of its windows the
-            // process holds and whatever is in front (read where it is).
-            bool theBrowser = !tied && IUserBrowserWindowLocator.NamesTheCategory(application);
-            if (theBrowser)
-                hwnd = _browserWindow.FrontWindow();
-
             // The application the mission works on (the one it just opened, or
             // the one named when its process is unknown) is the surface even
             // when another window holds the foreground.
-            if (hwnd == 0 && !tied && processId > 0)
-            {
-                hwnd = await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            // The category is no title: a window whose title says «navegador»
-            // is not the person's browser.
-            if (hwnd == 0 && !tied && application is not null && !theBrowser)
-            {
-                hwnd = await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken)
-                    .ConfigureAwait(false);
-            }
+            if (hwnd == 0 && !tied)
+                hwnd = await _requestedWindow(processId, application, cancellationToken).ConfigureAwait(false);
 
             // Whether the window is the mission's application (its process, its
-            // title, the person's browser) and not just what holds the front.
+            // name) and not just what holds the front.
             requested = hwnd != 0;
             // The application just opened, where it is (behind the person's window, as it was opened).
             if (hwnd == 0 && openedWindow != 0 && VisibleControlSurface.IsAlive(openedWindow))
                 hwnd = openedWindow;
+            // Auditoría final V3: an application named that no window is, exactly, is never read in another window's
+            // place (the person's in front): the visible windows go back as candidates and nothing is looked at.
+            if (hwnd == 0 && !tied && application is not null)
+                return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop().Windows), []);
             // Ronda 26 (banco c24b: 54 first looks of 1.2 s read the person's window before an opening already decided):
             // the application has no window and the look asked only who is in front then: no tree, capture or text.
             frontOnly = identityIfAbsent && hwnd == 0;
@@ -1908,7 +1921,7 @@ internal sealed class WindowsVisibleControlAdapter
                         }
 
                         textAuthority = "windows_media_ocr_lines";
-                        foreach (WindowsVisibleOcrLocator.LayoutLine line in ScreenStateLines.Grouped(read))
+                        foreach (WindowsVisibleOcrLocator.LayoutLine line in read)
                         {
                             string zone = Zone(
                                 line.X + line.Width / 2, line.Y + line.Height / 2,
@@ -2027,7 +2040,8 @@ internal sealed class WindowsVisibleControlAdapter
                 // Contract «Seguridad v2»: a developer's or BAXY's own window (an editor, an IDE, a terminal, a console,
                 // BAXY) that the request did not name, told by its process, never by its title. The mission acts on
                 // no such window, also when it names no application and works on the window in front.
-                if (VisibleControlSurface.ProtectedFrom(processName, application))
+                if (VisibleControlSurface.ProtectedFrom(processName, application,
+                        () => VisibleControlSurface.ProcessDescription(unchecked((uint)ownerProcessId))))
                     writer.WriteBoolean("protected", true);
                 // v3 point 1: the content of the application's window drawn by a process it started (WebView2, CEF):
                 // the application's process first, then the processes it started. The mission's keys and text are

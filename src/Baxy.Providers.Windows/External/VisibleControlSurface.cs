@@ -139,17 +139,17 @@ internal static partial class VisibleControlSurface
 
     /// <summary>
     /// The application's window when its process is unknown (app.open did not
-    /// verify, or the application was already there): the topmost visible
-    /// window whose executable is the application, else the topmost one whose
-    /// executable's own description names it (<see cref="DescriptionNamesApplication"/>: a file manager whose title is
-    /// the folder it shows, goal v3 analysis r3a M5) and that no other application started
-    /// (<see cref="LaunchedByAnotherApplication"/>: a runtime carried inside an application describes the runtime),
-    /// the one its title also names first (<see cref="ChooseNamedWindow"/>), else the topmost one whose
-    /// title names it in its last segment (<see cref="TitleNamesApplication"/>), or the topmost window of the same
-    /// packaged application above it (<see cref="PackagedApplication"/>: the image a photo viewer opened, titled by
-    /// the file, over the viewer's gallery titled by the application's name).
-    /// Never a developer's or BAXY's own window the request did not name
-    /// (<see cref="ProtectedFrom"/>). Read where it is; 0 when none is.
+    /// verify, or the application was already there). Auditoría final V3: the name is compared exactly, folded (case,
+    /// accents, whitespace), with what Windows says of each window; never a word of it, an alias or a part. The topmost
+    /// visible window whose executable's name is the name asked, else the topmost one whose executable's own
+    /// description is that name (<see cref="DescriptionNamesApplication"/>: a file manager whose title is the folder it
+    /// shows, goal v3 analysis r3a M5) and that no other application started (<see cref="LaunchedByAnotherApplication"/>:
+    /// a runtime carried inside an application describes the runtime), the one its title also names first
+    /// (<see cref="ChooseNamedWindow"/>), else the topmost one whose title, or its last « - » segment, is the name
+    /// (<see cref="TitleNamesApplication"/>), or the topmost window of the same packaged application above it
+    /// (<see cref="PackagedApplication"/>: the image a photo viewer opened, titled by the file, over the viewer's
+    /// gallery titled by the application's name). Never a developer's or BAXY's own window the request did not name
+    /// (<see cref="ProtectedFrom"/>). Read where it is; 0 when none is (the caller acts on nothing).
     /// cu-v3-elevacion (r9 v3-65): a window that runs as administrator whose program opens again with the person's
     /// rights gives way to a readable copy of that same program (<see cref="PreferReadableCopy"/>): BAXY opens a
     /// console again with the person's rights next to a raised copy it cannot close, and the copy it opened is the one
@@ -234,6 +234,7 @@ internal static partial class VisibleControlSurface
         nint byTitle = 0;
         uint self = unchecked((uint)Environment.ProcessId);
         var names = new Dictionary<uint, string>();
+        var descriptions = new Dictionary<uint, string>();
         var described = new Dictionary<uint, bool>();
         var packages = new Dictionary<uint, string>();
         var topmostOfPackage = new Dictionary<string, nint>(StringComparer.OrdinalIgnoreCase);
@@ -257,7 +258,18 @@ internal static partial class VisibleControlSurface
                 names[owner] = processName;
             }
 
-            if (ProtectedFrom(processName, application))
+            string DescriptionOfOwner()
+            {
+                if (!descriptions.TryGetValue(owner, out string? description))
+                {
+                    description = ProcessDescription(owner);
+                    descriptions[owner] = description;
+                }
+
+                return description;
+            }
+
+            if (ProtectedFrom(processName, application, DescriptionOfOwner))
                 return true;
             if (ProcessIsApplication(processName, application))
             {
@@ -301,7 +313,7 @@ internal static partial class VisibleControlSurface
 
             if (!described.TryGetValue(owner, out bool descriptionNames))
             {
-                descriptionNames = DescriptionNamesApplication(ProcessDescription(owner), application)
+                descriptionNames = DescriptionNamesApplication(DescriptionOfOwner(), application)
                     && !LaunchedByAnotherApplication(
                         owner,
                         parents ??= ParentByProcess(),
@@ -502,74 +514,55 @@ internal static partial class VisibleControlSurface
         return root;
     }
 
-    // The windows where the person's own work and BAXY live: an editor, an IDE, a terminal, a console, BAXY itself.
-    // Safety review 2026-10-07: a file «<App>LocalAdapter.cs» open in Visual Studio Code was the first window titled
-    // «<App>», and a mission would have typed and pressed keys in the editor where the developer's agent lives. Such
-    // a window is the application only when the request names that very application (the names on the right); BAXY's
-    // own never is.
-    private static readonly Dictionary<string, string[]> ProtectedProcesses = new(StringComparer.OrdinalIgnoreCase)
+    // The windows where the person's own work and BAXY live: an editor, an IDE, a terminal, a console, BAXY itself, told
+    // by their exact process names (identity, not interpretation). Safety review 2026-10-07: a file «<App>LocalAdapter.cs»
+    // open in Visual Studio Code was the first window titled «<App>», and a mission would have typed and pressed keys in
+    // the editor where the developer's agent lives. Such a window is the application only when the request names it as
+    // Windows does (auditoría final V3: its process name or its executable's description, folded; no list of aliases).
+    private static readonly HashSet<string> ProtectedProcesses = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["Code"] = ["code", "vs code", "vscode", "visual studio code"],
-        ["Code - Insiders"] = ["code insiders", "visual studio code insiders"],
-        ["devenv"] = ["visual studio", "devenv"],
-        ["WindowsTerminal"] = ["terminal", "windows terminal"],
-        ["OpenConsole"] = ["terminal", "windows terminal"],
-        ["powershell"] = ["powershell", "windows powershell"],
-        ["pwsh"] = ["powershell", "pwsh"],
-        ["cmd"] = ["cmd", "simbolo del sistema", "command prompt"],
-        ["conhost"] = ["cmd", "simbolo del sistema", "command prompt", "consola"],
-        // Estabilización U (revisión H2): BAXY's own window is never acted on, named or not: its view holds its
-        // own settings (the bypass switch and its question), which only the person changes.
-        ["Baxy"] = [],
-        ["baxy-core"] = [],
+        "Code", "Code - Insiders", "devenv", "WindowsTerminal", "OpenConsole", "powershell", "pwsh", "cmd", "conhost",
     };
 
-    // Words of an application's name that name no application by themselves.
-    private static readonly HashSet<string> GenericApplicationWords = new(StringComparer.Ordinal)
-    {
-        "the", "los", "las", "navegador", "browser", "google", "microsoft", "mozilla", "app", "aplicacion",
-    };
+    // Estabilización U (revisión H2): BAXY's own window is never acted on, named or not: its view holds its own settings
+    // (the bypass switch and its question), which only the person changes.
+    private static readonly HashSet<string> OwnProcesses = new(StringComparer.OrdinalIgnoreCase) { "Baxy", "baxy-core" };
 
-    /// <summary>A developer's or BAXY's own process that the request did not name.</summary>
-    internal static bool ProtectedFrom(string? processName, string? application)
+    /// <summary>
+    /// A developer's or BAXY's own process that the request did not name: <paramref name="application"/> is neither
+    /// its process name nor its executable's <paramref name="description"/>, folded. BAXY's own is always protected.
+    /// </summary>
+    internal static bool ProtectedFrom(string? processName, string? application, Func<string>? description = null)
     {
         string process = (processName ?? string.Empty).Trim();
         if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
             process = process[..^4];
-        return ProtectedProcesses.TryGetValue(process, out string[]? names)
-            && !names.Contains(FoldTitle(application), StringComparer.Ordinal);
+        if (OwnProcesses.Contains(process))
+            return true;
+        if (!ProtectedProcesses.Contains(process))
+            return false;
+        string wanted = FoldTitle(application);
+        return wanted.Length == 0
+            || (wanted != FoldTitle(process) && (description is null || wanted != FoldTitle(description())));
     }
 
-    /// <summary>
-    /// The executable is the application: its name is the application's name without spaces
-    /// («EpicGamesLauncher»), or one of its distinctive words (the browser's short name for its full name).
-    /// </summary>
+    /// <summary>The executable is the application: its name, folded, is the name asked («Spotify», «chrome»).</summary>
     internal static bool ProcessIsApplication(string? processName, string? application)
     {
         string process = FoldTitle(processName);
         if (process.EndsWith(".exe", StringComparison.Ordinal))
             process = process[..^4];
-        string wanted = FoldTitle(application);
-        if (process.Length == 0 || wanted.Length == 0)
-            return false;
-        return process == wanted.Replace(" ", string.Empty, StringComparison.Ordinal)
-            || ApplicationWords(wanted).Contains(process, StringComparer.Ordinal);
+        return process.Length > 0 && process == FoldTitle(application);
     }
 
     /// <summary>
-    /// The executable's own description (its FileDescription, «<Name> File Manager») names the application: the whole
-    /// name, or the name followed by more words («<Name>» names «<Name> File Manager»), when the name has a word of its
-    /// own (not only «Microsoft» or «app»). A description that only shares a word with the name («Panel» of «panel de
-    /// miniaturas») never does.
+    /// The executable's own description (its FileDescription, «7-Zip File Manager») is the name asked, folded. A
+    /// description that only starts with it or shares a word with it never is.
     /// </summary>
     internal static bool DescriptionNamesApplication(string? description, string? application)
     {
         string named = FoldTitle(description);
-        string wanted = FoldTitle(application);
-        if (named.Length == 0 || wanted.Length == 0 || ApplicationWords(wanted).Length == 0)
-            return false;
-        return named == wanted
-            || (named.StartsWith(wanted, StringComparison.Ordinal) && !char.IsLetterOrDigit(named[wanted.Length]));
+        return named.Length > 0 && named == FoldTitle(application);
     }
 
     /// <summary>The FileDescription of a process's executable; empty when it cannot be read (an elevated process).</summary>
@@ -604,81 +597,15 @@ internal static partial class VisibleControlSurface
     private static partial bool QueryFullProcessImageNameW(nint process, uint flags, [Out] char[] path, ref int length);
 
     /// <summary>
-    /// The title names the application where windows put their own name: as whole words in its last « - »
-    /// segment («Ron92 - <chat app>», «Nueva pestaña - <browser>»), or the whole title when it has no separator
-    /// («Calculadora»). «<App>LocalAdapter.cs - BAXY - Visual Studio Code» names Visual Studio Code.
+    /// The title is the application's name, folded: the whole title («Calculadora») or its last « - » segment, where
+    /// windows put their own name («Ron92 - Discord», «Nueva pestaña - Google Chrome»). «<App>LocalAdapter.cs - BAXY -
+    /// Visual Studio Code» names Visual Studio Code, never «<App>».
     /// </summary>
     internal static bool TitleNamesApplication(string? title, string? application)
     {
         string wanted = FoldTitle(application);
-        if (wanted.Length == 0)
-            return false;
-        // «Documento1 - Word (No responde)»: a state the system adds in parentheses after the name is no word of it.
-        string segment = TrailingState().Replace(TitleSeparator().Split(FoldTitle(title))[^1], string.Empty).Trim();
-        if (segment.Length == 0)
-            return false;
-        if (NamesAsWords(segment, wanted))
-            return true;
-        string[] words = ApplicationWords(wanted);
-        if (!words.Any(word => NamesAsWords(segment, word)))
-            return false;
-        // r15b v3-47: a word the segment shares with the name names the application when the segment says nothing
-        // else («Word» for «Microsoft Word»), when two words of the name are said together («Reproductor de Windows
-        // Media» for «Windows Media Player Legacy»), or when the name writes that word as a proper name («Riot Client»
-        // for «Cliente de Riot», «Zoom Meeting» for «Zoom Workplace»). «Sistema y seguridad» only shares the common
-        // noun «sistema» with «Información del sistema» and is another window (revisión destino del pedido).
-        string[] own = ApplicationWords(new string([.. segment.Select(character => char.IsLetterOrDigit(character) ? character : ' ')]));
-        if (own.Length > 0 && own.All(word => words.Contains(word, StringComparer.Ordinal)))
-            return true;
-        if (Enumerable.Range(0, Math.Max(0, words.Length - 1)).Any(at => NamesAsWords(segment, $"{words[at]} {words[at + 1]}")))
-            return true;
-        return ProperNameWords(application!).Any(word => NamesAsWords(segment, word));
-    }
-
-    /// <summary>
-    /// The words a name writes as proper names: a capitalized word after the first («Cliente de Riot», «Microsoft
-    /// Word»), and the first too when no word of the name is written in lower case («Zoom Workplace»). «Información del
-    /// sistema» has none; the system's own name («Seguridad de Windows») is carried by many and names none.
-    /// </summary>
-    private static string[] ProperNameWords(string application)
-    {
-        string[] written = application.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        bool titleCase = written.All(word => !char.IsLetter(word[0]) || char.IsUpper(word[0]));
-        string[] own = ApplicationWords(FoldTitle(application));
-        return [.. written
-            .Select((word, at) => (word, at))
-            .Where(item => char.IsUpper(item.word[0]) && (item.at > 0 || titleCase))
-            .Select(item => FoldTitle(item.word))
-            .Where(word => own.Contains(word, StringComparer.Ordinal) && !PlatformWords.Contains(word))];
-    }
-
-    // The system's own name, which the names of many of its applications carry.
-    private static readonly HashSet<string> PlatformWords = new(StringComparer.Ordinal) { "windows" };
-
-    [System.Text.RegularExpressions.GeneratedRegex(@"\s*\([^()]*\)\s*$", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
-    private static partial System.Text.RegularExpressions.Regex TrailingState();
-
-    // Words that join a name and name nothing by themselves («Información del sistema», «Bloc de notas»).
-    private static readonly HashSet<string> FunctionWords = new(StringComparer.Ordinal)
-    {
-        "del", "and", "for", "con", "por", "para", "una", "uno", "las", "los", "the",
-    };
-
-    private static string[] ApplicationWords(string folded) =>
-        [.. folded.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Where(word => word.Length >= 3 && !GenericApplicationWords.Contains(word) && !FunctionWords.Contains(word))];
-
-    private static bool NamesAsWords(string text, string words)
-    {
-        for (int at = text.IndexOf(words, StringComparison.Ordinal); at >= 0;
-             at = text.IndexOf(words, at + 1, StringComparison.Ordinal))
-        {
-            int end = at + words.Length;
-            if ((at == 0 || !char.IsLetterOrDigit(text[at - 1])) && (end == text.Length || !char.IsLetterOrDigit(text[end])))
-                return true;
-        }
-
-        return false;
+        string folded = FoldTitle(title);
+        return wanted.Length > 0 && (folded == wanted || TitleSeparator().Split(folded)[^1] == wanted);
     }
 
     [System.Text.RegularExpressions.GeneratedRegex(@"\s+[-\u2013\u2014|]\s+", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
@@ -1344,25 +1271,35 @@ internal static partial class VisibleControlSurface
         }
     }
 
-    private static unsafe Dictionary<uint, List<uint>> ChildrenByParent()
+    private static Dictionary<uint, List<uint>> ChildrenByParent()
     {
         var children = new Dictionary<uint, List<uint>>();
+        foreach ((uint process, uint parent) in ParentByProcess())
+        {
+            if (!children.TryGetValue(parent, out List<uint>? list))
+                children[parent] = list = [];
+            list.Add(process);
+        }
+
+        return children;
+    }
+
+    /// <summary>Each running process with the process that started it (one Toolhelp snapshot).</summary>
+    internal static unsafe Dictionary<uint, uint> ParentByProcess()
+    {
+        var parents = new Dictionary<uint, uint>();
         nint snapshot = CreateToolhelp32Snapshot(0x00000002, 0);
         if (snapshot == -1 || snapshot == 0)
-            return children;
+            return parents;
         try
         {
             var entry = new ProcessEntry32 { Size = (uint)sizeof(ProcessEntry32) };
             if (!Process32FirstW(snapshot, ref entry))
-                return children;
+                return parents;
             do
             {
                 if (entry.ProcessId != 0 && entry.ParentProcessId != entry.ProcessId)
-                {
-                    if (!children.TryGetValue(entry.ParentProcessId, out List<uint>? list))
-                        children[entry.ParentProcessId] = list = [];
-                    list.Add(entry.ProcessId);
-                }
+                    parents[entry.ProcessId] = entry.ParentProcessId;
                 entry.Size = (uint)sizeof(ProcessEntry32);
             }
             while (Process32NextW(snapshot, ref entry));
@@ -1372,7 +1309,7 @@ internal static partial class VisibleControlSurface
             _ = CloseHandle(snapshot);
         }
 
-        return children;
+        return parents;
     }
 
     private static nint LargestUsableWindow(HashSet<uint> family)

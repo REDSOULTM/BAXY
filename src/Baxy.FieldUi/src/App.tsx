@@ -27,8 +27,6 @@ type SurfaceId = 'sessions' | 'memory' | 'tools';
 export type MicMode = 'listening' | 'ptt' | 'off';
 
 const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
-// 2026-05-26: un solo perfil operante (vram4) + standby; el hotkey alterna entre esos dos.
-const PROFILE_CYCLE = ['vram4', 'standby'];
 // The interface's two presentations. The profile's file on the host is the only
 // source (GET/PUT /accessibility); the chat switches the same file.
 export type AccessMode = 'normal' | 'accessible';
@@ -81,17 +79,7 @@ export default function App() {
     const id = window.setInterval(sync, 4000);
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
-  // Start from the last-used chip, defaulting to vram4 (a safe modest profile)
-  // — NOT the old 'bal' alias, which matches no vramN chip and left nothing
-  // highlighted. The real source of truth is the backend; we sync it on mount
-  // below so the highlighted chip always reflects what's actually loaded.
-  const [profile, setProfile] = useState<string>(() => {
-    return localStorage.getItem('field.profile') ?? 'vram4';
-  });
-  // True until we've reconciled `profile` with GET /profile. Prevents the
-  // push-effect below from PUTting (and restarting llama-server) on first
-  // mount before we even know the real active profile.
-  const profileSynced = useRef(false);
+
   // Modo de la interfaz (normal | accessible) and the confirmation policy
   // (normal | bypass): both live in the profile on the host and are read from
   // it on mount and every few seconds, so a change made by chat shows here too.
@@ -129,70 +117,6 @@ export default function App() {
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
   const liveSurfaces = stream.surfaces ?? polledSurfaces;
-
-  // vision_threshold warning: el banner aparece cuando llega el evento
-  // del WS; visionDismissedAt guarda el image_count que el usuario ya
-  // cerro para que un mismo aviso no reaparezca cada render — solo si
-  // el counter cruza un nuevo umbral en el futuro reaparece.
-  const [visionDismissedAt, setVisionDismissedAt] = useState<number | null>(null);
-  const effectiveVisionThreshold = (stream.visionThreshold
-    && (visionDismissedAt === null
-      || stream.visionThreshold.imageCount > visionDismissedAt))
-    ? stream.visionThreshold
-    : null;
-  const onRecycleServer = useCallback(async () => {
-    try {
-      const r = await fetch('/agent/recycle_server', { method: 'POST' });
-      if (!r.ok) throw new Error(`status ${r.status}`);
-      // recycle reseteo el counter en el backend; ocultamos el banner local.
-      setVisionDismissedAt(stream.visionThreshold?.imageCount ?? null);
-    } catch (e) {
-      toastError(`recycle failed · ${String(e).replace(/^Error: /, '')}`);
-    }
-  }, [stream.visionThreshold]);
-  const onDismissVisionWarning = useCallback(() => {
-    setVisionDismissedAt(stream.visionThreshold?.imageCount ?? null);
-  }, [stream.visionThreshold]);
-
-  // On mount: read the REAL active profile from the backend and reflect it in
-  // the chip. This is the source of truth (the launcher booted some profile),
-  // so the highlighted chip matches what's actually loaded — without this the
-  // chip showed a stale localStorage value (or the old 'bal' alias) and
-  // nothing was highlighted. We mark profileSynced AFTER setting it so the
-  // push-effect below doesn't immediately PUT it back (which would restart
-  // llama-server for no reason).
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const r = await fetch('/profile');
-        if (!cancelled && r.ok) {
-          const data = await r.json();
-          if (data?.active) setProfile(String(data.active));
-        }
-      } catch { /* keep the localStorage default; sync flag still set below */ }
-      finally { profileSynced.current = true; }
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
-  // Push profile changes to the backend so set_active_profile +
-  // apply_profile_to_env + the llama-server restart happen. We SKIP the very
-  // first run (before the mount-sync above resolves) so we don't fire a PUT —
-  // and a model reload — for a profile the backend already has. After that,
-  // every user click PUTs once. Surface a toast on rejection (chip stays
-  // selected for transparency).
-  useEffect(() => {
-    if (!profileSynced.current) return;  // don't PUT until reconciled
-    localStorage.setItem('field.profile', profile);
-    fetch('/profile', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: profile }),
-    })
-      .then((r) => { if (!r.ok) toastError(`profile change rejected · ${r.status}`); })
-      .catch(() => toastError('profile change failed · backend unreachable'));
-  }, [profile]);
 
   // Read both settings from the profile now and every 4s (the chat may change
   // the accessible mode, and bypass stays on until it is switched off).
@@ -281,8 +205,8 @@ export default function App() {
 
   // global keyboard shortcuts. mirror the legacy QShortcut bindings so users
   // of the PyQt6 GUI find the same muscle memory here. shortcuts that hit
-  // network endpoints (clear/new/redetect) are fired via plain fetch — no
-  // race with React state.
+  // network endpoints (clear/new) are fired via plain fetch — no race with
+  // React state.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // ignore shortcuts when typing in an input/textarea, except Escape
@@ -335,18 +259,11 @@ export default function App() {
       } else if (k === 'e' && !e.shiftKey) {
         e.preventDefault();
         setOpenPanel('tools');
-      } else if (k === 'g' && e.shiftKey) {
-        e.preventDefault();
-        // cycle high -> low VRAM using the canonical names accepted by
-        // profiles.py and shown by the chips.
-        const idx = PROFILE_CYCLE.indexOf(profile);
-        const next = PROFILE_CYCLE[(idx + 1) % PROFILE_CYCLE.length] ?? 'vram4';
-        setProfile(next);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [profile]);
+  }, []);
 
   const closePanel = useCallback(() => setOpenPanel(null), []);
 
@@ -581,33 +498,11 @@ export default function App() {
       <TitleBar bypass={confirmation === 'bypass'} />
       <div className="app-frame">
       <div className="shell">
-        {effectiveVisionThreshold && (
-          <div className="vision-banner" role="alert" aria-live="polite">
-            <span className="vision-banner-msg">
-              vision leak ·{' '}
-              <b>{effectiveVisionThreshold.imageCount}/{effectiveVisionThreshold.threshold}</b>{' '}
-              imagenes procesadas · recyclar llama-server recomendado{' '}
-              <span className="vision-banner-issue">({effectiveVisionThreshold.issue})</span>
-            </span>
-            <button type="button" className="vision-banner-btn" onClick={onRecycleServer}>
-              recycle now
-            </button>
-            <button
-              type="button"
-              className="vision-banner-dismiss"
-              onClick={onDismissVisionWarning}
-              aria-label="dismiss warning"
-            >
-              ×
-            </button>
-          </div>
-        )}
         <div className="cols">
           <div className="col left">
             <SubstratePanel
               convState={effectiveState}
               wsModel={stream.model}
-              ctx={stream.ctx}
               accessMode={accessMode}
               onAccessMode={setAccessMode}
               confirmation={confirmation}
@@ -629,7 +524,6 @@ export default function App() {
               onMicLeftClick={onMicLeftClick}
               onMicRightClick={onMicRightClick}
               agent={stream.agent}
-              bootStage={stream.bootStage}
             />
           </div>
           <div className="col right">
@@ -649,13 +543,7 @@ export default function App() {
           </div>
         </div>
 
-        {openPanel === 'settings' && (
-          <SettingsPanel
-            onClose={closePanel}
-            profile={profile}
-            onProfile={setProfile}
-          />
-        )}
+        {openPanel === 'settings' && <SettingsPanel onClose={closePanel} />}
         {openPanel === 'sessions' && <SessionsPanel onClose={closePanel} />}
         {openPanel === 'memory' && <MemoryPanel onClose={closePanel} revision={liveSurfaces?.memory_revision ?? 0} />}
         {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}

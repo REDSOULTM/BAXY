@@ -61,24 +61,6 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
-    [Test]
-    public async Task InstallPrepareDoesNotClaimEntitlementForUnknownAppId()
-    {
-        var adapter = new SteamLocalAdapter(() => Catalog);
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "game.install.prepare",
-            Json("""{"appId":"999"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_entitlement_not_verified"));
-        });
-    }
-
-    [TestCase("game.install.prepare")]
     [TestCase("game.install.status")]
     public async Task SchemaAcceptedInvalidAppIdFailsClosedWithoutEscapingTheAdapter(
         string operation)
@@ -104,26 +86,6 @@ public sealed class SteamLocalAdapterTests
     }
 
     [Test]
-    public async Task InstalledAppPrepareIsReadOnlyAndReportsAlreadyInstalled()
-    {
-        var adapter = new SteamLocalAdapter(() => Catalog);
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "game.install.prepare",
-            Json("""{"appId":"620"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(
-                receipt.Result?.GetProperty("state").GetString(),
-                Is.EqualTo("already_installed"));
-            Assert.That(receipt.Result?.GetProperty("requiresInstall").GetBoolean(), Is.False);
-        });
-    }
-
-    [Test]
     public async Task NamedInstallResolvesExactObservedTitleAndReportsInstalledState()
     {
         var adapter = new SteamLocalAdapter(() => Catalog);
@@ -140,23 +102,6 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.Result?.GetProperty("appId").GetString(), Is.EqualTo("620"));
             Assert.That(receipt.Result?.GetProperty("state").GetString(),
                 Is.EqualTo("already_installed"));
-        });
-    }
-
-    [Test]
-    public async Task MonetaryCommitIsNeverDispatchedByLocalCatalogAdapter()
-    {
-        var adapter = new SteamLocalAdapter(() => Catalog);
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "game.purchase.commit",
-            Json("""{"confirmationId":"x","expectedPriceCents":999}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_purchase_live_gate_forbidden"));
         });
     }
 
@@ -197,40 +142,6 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo("downloading"));
             Assert.That(receipt.Result?.GetProperty("progressPercent").GetDouble(), Is.EqualTo(25d));
-        });
-    }
-
-    [Test]
-    public async Task InstallCommitRequiresPreparationAndVerifiesManifestTransition()
-    {
-        SteamLocalGame? observed = null;
-        var delays = new RecordingDelay();
-        var automation = new FakeSteamAutomation(
-            uri => Assert.That(uri, Is.EqualTo("steam://install/777")),
-            onConfirm: () => observed = new SteamLocalGame("777", "Owned Game", new string('c', 64),
-                StateFlags: 1, BytesDownloaded: 10, BytesToDownload: 100));
-        var adapter = new SteamLocalAdapter(
-            () => observed is null ? [] : [observed],
-            () => new HashSet<string>(["777"], StringComparer.Ordinal),
-            automation,
-            delays.DelayAsync);
-
-        ExternalCapabilityReceipt prepared = await adapter.InvokeAsync(
-            "game.install.prepare", Json("""{"appId":"777"}"""), CancellationToken.None);
-        string confirmationId = prepared.Result!.Value.GetProperty("confirmationId").GetString()!;
-        ExternalCapabilityReceipt committed = await adapter.InvokeAsync(
-            "game.install.commit",
-            Json($$"""{"confirmationId":"{{confirmationId}}"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(committed.Verified, Is.True);
-            Assert.That(committed.EffectObserved, Is.True);
-            Assert.That(committed.Result?.GetProperty("state").GetString(), Is.EqualTo("downloading"));
-            Assert.That(automation.DispatchCount, Is.EqualTo(1));
-            Assert.That(automation.Confirmed, Is.EqualTo(new[] { "Instalar", "Install" }));
-            Assert.That(delays.Calls, Is.Zero);
         });
     }
 

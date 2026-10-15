@@ -66,7 +66,7 @@ internal sealed class NativeTurnLoop
     // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, comprar, instalar, cerrar con trabajo).
     private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
     {
-        "work_loss", "recoverable_delete", "external_communication", "installation", "monetary",
+        "work_loss", "recoverable_delete", "external_communication", "installation",
     };
 
     private readonly Host _host;
@@ -219,6 +219,12 @@ internal sealed class NativeTurnLoop
                 : (_host.Registry() ?? throw new InvalidOperationException("outbox_unavailable"))
                     .GetOrAdd(new RoutedOperation(operation, arguments));
         }
+        catch (MemoryValueNeedsSensitiveChannelException)
+        {
+            // The result says why: memory.save keeps a value that looks like a secret only as sensitive.
+            return Record(operation, arguments, started, Observation(operation, "rejected", false,
+                "memory_value_needs_sensitive_channel"));
+        }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
@@ -250,7 +256,7 @@ internal sealed class NativeTurnLoop
 
     private static bool WritesInThePersonsWindow(string operation) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
-            or "input.select.all" or "input.scroll" or "clipboard.paste" or "message.draft";
+            or "input.select.all" or "input.scroll" or "clipboard.copy" or "clipboard.paste" or "message.draft";
 
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {

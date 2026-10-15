@@ -64,14 +64,7 @@ internal sealed record MindVoiceStatus(
     bool Available,
     bool InputAvailable,
     bool SttAvailable,
-    bool VadAvailable,
-    bool TtsAvailable,
-    bool AecAvailable,
-    bool DuckingAvailable,
-    string Mode,
-    bool Listening,
-    bool Speaking,
-    bool Pending = false);
+    bool Pending);
 
 /// <summary>
 /// Reads the voice state again while the sidecar still reports it as
@@ -480,13 +473,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             (bool?)status["available"] ?? false,
             (bool?)status["input"] ?? false,
             (bool?)status["stt"] ?? false,
-            (bool?)status["vad"] ?? false,
-            (bool?)status["tts"] ?? false,
-            (bool?)status["aec"] ?? false,
-            (bool?)status["ducking"] ?? false,
-            (string?)status["mode"] ?? "off",
-            (bool?)status["listening"] ?? false,
-            (bool?)status["speaking"] ?? false,
             (bool?)status["pending"] ?? false);
     }
 

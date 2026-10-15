@@ -42,21 +42,6 @@ public sealed class LocalTaskStore : ILocalTaskStore
     public LocalTaskRecord Read(Guid id, bool includeDeleted = false) =>
         ToTask(ReadDocument(id, includeDeleted));
 
-    public LocalTaskRecord ResolveExact(string title, bool includeDeleted)
-    {
-        string normalized = NormalizeText(title, nameof(title), MaximumTitleUtf8Bytes, false, false);
-        LocalTaskRecord[] matches = _documents.List(includeDeleted ? NoteListScope.All : NoteListScope.Active)
-            .Where(note => string.Equals(note.Title, normalized, StringComparison.OrdinalIgnoreCase))
-            .Select(ToTask)
-            .ToArray();
-        return matches.Length switch
-        {
-            1 => matches[0],
-            0 => throw new LocalTaskNotFoundException("No task has that exact title."),
-            _ => throw new LocalTaskAmbiguousException("More than one task has that exact title."),
-        };
-    }
-
     public IReadOnlyList<LocalTaskRecord> List(
         TaskListStatus status,
         bool includeDeleted,

@@ -389,7 +389,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(view, NotFoundByUia);
         var focus = new FixedOpening(4242);
         var adapter = new WindowsVisibleControlAdapter(
-            worker, new Locator("ocr"), null, focus, OpeningTiming, browserWindow: new FrontBrowser(front),
+            worker, new Locator("ocr"), null, focus, OpeningTiming, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front),
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
         ExternalCapabilityReceipt looked = await adapter.InvokeAsync(
             "input.visible.controls", Json("""{"application":"el navegador","processId":4242}"""), CancellationToken.None);
@@ -401,11 +401,6 @@ public sealed class ComputerUseOpeningClickLatencyTests
 
         TestContext.Out.WriteLine($"click «{label}» after the look: {clock.ElapsedMilliseconds} ms");
         Assert.That(focus.FrontCalls, skipsTheWait ? Is.Zero : Is.GreaterThan(0));
-    }
-
-    private sealed class FrontBrowser(long handle) : IUserBrowserWindowLocator
-    {
-        public nint FrontWindow() => (nint)handle;
     }
 
     private static ValueTask<VisibleControlSurface.CapturedWindow?> NoCapture(

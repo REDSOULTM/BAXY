@@ -8,7 +8,7 @@ internal sealed record SearchAddress(string Host, bool HostSuffix, IReadOnlyList
 
 /// <summary>
 /// Ronda 23 (t4-c10, t3-c06: a search results page whose arrival was missed): the search engines whose results page the browser surface recognizes, read from data
-/// (src/baxy_mind/data/search_addresses.v1.json, embedded; the same table baxy_mind.semantic.search_address reads), so
+/// (src/baxy_mind/data/search_addresses.v1.json, embedded), so
 /// the provider names no engine.
 /// </summary>
 internal static class SearchAddresses

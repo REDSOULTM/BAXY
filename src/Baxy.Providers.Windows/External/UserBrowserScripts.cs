@@ -86,12 +86,13 @@ internal static class UserBrowserScripts
     /// $args[0] = window handle, $args[1] = title (base64 UTF-8), $args[2] =
     /// seconds, $args[3] = "1" to type the title into the page's own search
     /// field first. On a streaming page the person's session shows, presses the
-    /// item named as the title and then its play control. It only presses
-    /// elements named as the title or as a play word and returns the step
-    /// reached and the chosen title as the service writes it, nothing else of
-    /// the page; playback is verified by the caller through SMTC, never by this
-    /// script's word. A "Who's watching?" profile gate stops it (step
-    /// "profile"): the person picks their own profile. Names measured in Opera
+    /// item named exactly as the title (case, accents and spacing aside) and
+    /// then its play control. It only presses elements named as the title or as
+    /// a play word and returns the step reached and the chosen title as the
+    /// service writes it; when no item is named as the title it presses nothing
+    /// and returns the names it saw (seen). Playback is verified by the caller
+    /// through SMTC, never by this script's word. A "Who's watching?" profile
+    /// gate stops it (step "profile"): the person picks their own profile. Names measured in Opera
     /// GX on 2026-10-06 (documentacion/NAVEGADOR_USUARIO.md): Disney+ cards
     /// "Coco Clasificación: 0+…" and "VER AHORA"/"CONTINUAR"; HBO Max cards
     /// wrapped in bidi isolates and "Ver The Last of Us, Temporada 1…" or
@@ -101,8 +102,8 @@ internal static class UserBrowserScripts
         $ErrorActionPreference = 'Stop'
         # The runner reads UTF-8: page text, tab and video titles keep their accents.
         [Console]::OutputEncoding = [Text.Encoding]::UTF8
-        function Emit([bool]$ok, [string]$step, [string]$chosen) {
-          [pscustomobject]@{ version = 1; ok = $ok; step = $step; chosen = $chosen } | ConvertTo-Json -Compress
+        function Emit([bool]$ok, [string]$step, [string]$chosen, [string[]]$seen = @()) {
+          [pscustomobject]@{ version = 1; ok = $ok; step = $step; chosen = $chosen; seen = @($seen) } | ConvertTo-Json -Compress
         }
         # Format characters (HBO Max wraps titles in bidi isolates) are dropped and spaces collapsed, so a name and its
         # folded form keep the same length.
@@ -132,21 +133,13 @@ internal static class UserBrowserScripts
           if ($match.Success) { return (Plain $match.Groups[1].Value) }
           return ''
         }
-        # 0 the name is the title; 1 it begins with it and goes on after a space, a comma or a full stop (Disney+ cards add
-        # "Clasificacion..."); 2 it begins with it and goes on as another title ("Daredevil: Born Again", "Cocoon"); 3 it
-        # only contains it; 9 nothing.
-        function Rank([string]$name, [string]$want) {
-          $isolated = Fold (Isolated $name)
-          $folded = Fold $name
-          if (-not $folded) { return 9 }
-          if ($isolated -eq $want -or $folded -eq $want) { return 0 }
-          if ($folded.StartsWith($want)) {
-            $next = $folded[$want.Length]
-            if ($next -eq ' ' -or $next -eq '.' -or $next -eq ',') { return 1 }
-            return 2
-          }
-          if ($folded.Contains($want)) { return 3 }
-          return 9
+        # The title a card names: its first bidi-isolated run (HBO Max), or its name before the labels Disney+ appends to it
+        # ("Coco Clasificacion: 0+. Estreno: 2017..."); otherwise the whole name.
+        function CardTitle([string]$name) {
+          $isolated = Isolated $name
+          if ($isolated) { return $isolated }
+          $labels = '\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\s*:|Selecciona esta opci[oó]n|Select this option)'
+          return (Plain ([regex]::Split((Plain $name), $labels, 'IgnoreCase')[0]))
         }
         # The children of a node in the control view. Opera GX, once a Speed Dial tab was opened, keeps a dead first child
         # under LiveBackgroundView: GetFirstChild throws there (and FindAll from the window finds nothing), while the live
@@ -237,6 +230,7 @@ internal static class UserBrowserScripts
           $step = 'page'
           $chosen = ''
           $chosenFolded = ''
+          $seen = @()
           $document = $null
           $typed = -not $TypeSearch
           while ((Get-Date) -lt $deadline) {
@@ -273,30 +267,26 @@ internal static class UserBrowserScripts
             $items = $document.FindAll($descendants, $pickCondition)
             if ($chosen -eq '') {
               $step = 'title'
-              $best = $null
-              $rank = 9
+              # Only a card named as the title is pressed; the others are what the page showed, said back as they read.
+              $exact = $null
+              $exactTitle = ''
+              $titles = New-Object System.Collections.Generic.List[string]
               foreach ($item in $items) {
-                $current = Rank ([string]$item.Current.Name) $want
-                if ($current -lt $rank) {
-                  $rank = $current
-                  $best = $item
-                  if ($current -eq 0) { break }
-                }
+                $cardTitle = CardTitle ([string]$item.Current.Name)
+                if (-not $cardTitle) { continue }
+                if ((Fold $cardTitle) -eq $want) { $exact = $item; $exactTitle = $cardTitle; break }
+                if ($cardTitle.Length -le 120 -and -not $titles.Contains($cardTitle)) { $titles.Add($cardTitle) }
               }
-              $bestName = ''
-              if ($best -ne $null) { $bestName = [string]$best.Current.Name }
-              if ($best -ne $null -and (Press $best)) {
-                # The title as the service writes it: its isolated run, or the name cut to the length of what was asked
-                # when the name begins with it; otherwise the name itself, short.
-                $chosen = Isolated $bestName
-                $plain = Plain $bestName
-                if (-not $chosen -and $rank -le 2 -and $plain.Length -ge $want.Length) { $chosen = $plain.Substring(0, $want.Length) }
-                if (-not $chosen) { $chosen = $plain }
-                if ($chosen.Length -gt 120) { $chosen = $chosen.Substring(0, 120) }
+              if ($exact -ne $null -and (Press $exact)) {
+                $chosen = $exactTitle
                 $chosenFolded = Fold $chosen
+                $seen = @()
                 Start-Sleep -Milliseconds 2500
                 continue
               }
+              $near = @($titles | Where-Object { (Fold $_).Contains($want) })
+              $seen = if ($near.Count -gt 0) { $near } else { @($titles) }
+              $seen = @($seen | Select-Object -First 10)
               Start-Sleep -Milliseconds 700
               continue
             }
@@ -320,7 +310,7 @@ internal static class UserBrowserScripts
             }
             Start-Sleep -Milliseconds 700
           }
-          Emit $false $step $chosen
+          Emit $false $step $chosen $seen
         } catch {
           Emit $false ('uia_failed: ' + $_.Exception.GetType().Name) ''
         }

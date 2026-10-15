@@ -64,8 +64,8 @@ class Voice:
 
     def status(self) -> dict[str, Any]:
         stt = self._recognizer is not None
-        return {"available": stt and self._input, "input": self._input, "stt": stt, "vad": False,
-                "tts": self.speech.ready, "aec": False, "ducking": False, "mode": self._mode,
+        return {"available": stt and self._input, "input": self._input, "stt": stt,
+                "tts": self.speech.ready, "mode": self._mode,
                 "listening": self._mode != "off", "speaking": self.speech.speaking,
                 "pending": not self._loaded.is_set()}
 

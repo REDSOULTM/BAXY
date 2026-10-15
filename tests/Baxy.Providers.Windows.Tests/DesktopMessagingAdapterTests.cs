@@ -21,17 +21,56 @@ public sealed class DesktopMessagingAdapterTests
             WindowsDesktopMessagingAutomation.ContainsPhrase(source, expected),
             Is.EqualTo(result));
 
-    // C1: a shown name (title, search row, header line) names the recipient only with its whole words, folded.
+    // Auditoría final: a shown name (a header line, a chat-list row) names the recipient only when it is the recipient,
+    // folded; more words around it make another name.
     [TestCase("Ron92", "ron", false)]
     [TestCase("Juana", "ana", false)]
-    [TestCase("Discord | @Ron92", "ron92", true)]
-    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("@Ron92", "ron92", true)]
+    [TestCase("Ron92 Fan", "Ron92", false)]
     [TestCase("Ana María", "ana maria", true)]
     [TestCase("María Ana", "ana maria", false)]
     [TestCase("Mario", "Maria", false)]
     [TestCase("Ron92", "!!!", false)]
-    public void ARecipientIsNamedOnlyByItsWholeWords(string shown, string recipient, bool named) =>
+    public void ARecipientIsNamedOnlyByItsWholeName(string shown, string recipient, bool named) =>
         Assert.That(WindowsDesktopMessagingAutomation.NamesRecipient(shown, recipient), Is.EqualTo(named));
+
+    // Discord's title: with the client's own part taken away, the one part left is the recipient.
+    [TestCase("Discord | @Ron92", "ron92", true)]
+    [TestCase("Ron92 - Discord", "Ron92", true)]
+    [TestCase("Discord | @Ron92 Fan", "Ron92", false)]
+    [TestCase("#general | BAXY - Discord", "BAXY", false)]
+    [TestCase("Discord", "Discord", false)]
+    public void ADiscordTitleNamesTheRecipientOnlyAsItsConversation(string title, string recipient, bool named) =>
+        Assert.That(WindowsDesktopMessagingAutomation.TitleNamesRecipient(title, recipient), Is.EqualTo(named));
+
+    // A quick-switcher row writes the account after the name; it is opened on the name's whole words (C1).
+    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("Ronaldo", "Ron", false)]
+    public void ASwitcherRowHoldsTheRecipientsWholeWords(string row, string recipient, bool named) =>
+        Assert.That(WindowsDesktopMessagingAutomation.RowNamesRecipient(row, recipient), Is.EqualTo(named));
+
+    // Auditoría final: the WhatsApp chat list is read before anything is opened; only a row that is the recipient,
+    // apart from the time at its right end, is a hit. A preview that begins with the name is not.
+    [Test]
+    public void TheChatListRowThatIsTheRecipientIsTheOnlyHit()
+    {
+        static WindowsVisibleOcrLocator.LayoutLine Line(params (string Text, double X)[] words) => new(
+            string.Join(' ', words.Select(word => word.Text)), words[0].X, 200, 300, 16,
+            [.. words.Select(word => new WindowsVisibleOcrLocator.LayoutWord(word.Text, word.X, 200, word.Text.Length * 8, 16))]);
+        WindowsVisibleOcrLocator.LayoutLine[] rows =
+        [
+            Line(("Juan", 140), ("Pérez", 180), ("12:30", 340)),
+            Line(("Juan", 140), ("Pérez:", 180), ("hola", 232)),
+            Line(("Juan", 140), ("Pérez", 180), ("Soto", 224), ("ayer", 340)),
+        ];
+        IReadOnlyList<(double X, double Y)> hits = WindowsDesktopMessagingAutomation.RowsNamingRecipient(rows, "juan perez");
+        Assert.Multiple(() =>
+        {
+            Assert.That(hits, Has.Count.EqualTo(1));
+            Assert.That(hits[0].X, Is.EqualTo(180).Within(1));
+            Assert.That(hits[0].Y, Is.EqualTo(208).Within(1));
+        });
+    }
 
     // C2: the header line that names the recipient is what is said, with no letter of tolerance.
     [Test]
@@ -74,8 +113,8 @@ public sealed class DesktopMessagingAdapterTests
         using var adapter = new DesktopMessagingAdapter(automation);
 
         ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            Json("""{"channel":"discord","recipient":"Ron"}"""),
+            "message.draft",
+            Json("""{"channel":"discord","recipient":"Ron","text":"hola"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -227,63 +266,39 @@ public sealed class DesktopMessagingAdapterTests
     }
 
     [Test]
-    public async Task ResolveThenSendUsesObservedOpaqueIdentityAndVerifiedReceipt()
+    public async Task ATestSendCarriesWhatTheClientShowedAndHowTheDeliveryMatched()
     {
         var automation = new StubAutomation(
             new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Discord | @CbaYeah"),
             new DesktopMessageObservation(true, true, "evidence_hash", null, "Holatest 15:32", "tolerant"));
-        using var adapter = new DesktopMessagingAdapter(automation);
-
-        ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            Json("""{"channel":"discord","recipient":"CbaYeah"}"""),
-            CancellationToken.None);
-        string recipientId = resolved.Result!.Value.GetProperty("recipientId").GetString()!;
-        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
-            "message.send",
-            Json($$"""{"recipientId":"{{recipientId}}","text":"Hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+        string destinations = TestDestinations("""{"discord":"CbaYeah"}""");
+        try
         {
-            Assert.That(resolved.Verified, Is.True);
-            Assert.That(recipientId, Does.StartWith("recipient_"));
-            // C2: what the client showed is said, next to what was asked for.
-            Assert.That(resolved.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
-            Assert.That(resolved.Result?.GetProperty("recipient").GetString(), Is.EqualTo("CbaYeah"));
-            Assert.That(sent.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
-            Assert.That(sent.Verified, Is.True);
-            Assert.That(sent.EffectObserved, Is.True);
-            Assert.That(sent.Result?.GetProperty("delivery").GetString(),
-                Is.EqualTo("visible_postcondition"));
-            // C4: the text read and how it matched travel with the receipt.
-            Assert.That(sent.Result?.GetProperty("deliveryRead").GetString(), Is.EqualTo("Holatest 15:32"));
-            Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("tolerant"));
-            Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
-            Assert.That(automation.SentText, Is.EqualTo("Hola"));
-        });
-    }
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
 
-    [Test]
-    public async Task ExpiredIdentityFailsBeforeAnyPhysicalSend()
-    {
-        var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
-            new DesktopMessageObservation(true, true, "hash", null));
-        using var adapter = new DesktopMessagingAdapter(automation);
+            ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"discord","requestedRecipient":"Lucas","text":"Hola"}"""),
+                CancellationToken.None);
 
-        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
-            "message.send",
-            Json("""{"recipientId":"recipient_unknown","text":"Hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+            Assert.Multiple(() =>
+            {
+                // C2: what the client showed is said, next to what was asked for.
+                Assert.That(sent.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
+                Assert.That(sent.Result?.GetProperty("requestedRecipient").GetString(), Is.EqualTo("Lucas"));
+                Assert.That(sent.Verified, Is.True);
+                Assert.That(sent.EffectObserved, Is.True);
+                // C4: the text read and how it matched travel with the receipt.
+                Assert.That(sent.Result?.GetProperty("deliveryRead").GetString(), Is.EqualTo("Holatest 15:32"));
+                Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("tolerant"));
+                Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
+                Assert.That(automation.SentText, Is.EqualTo("Hola"));
+            });
+        }
+        finally
         {
-            Assert.That(sent.Verified, Is.False);
-            Assert.That(sent.EffectObserved, Is.False);
-            Assert.That(sent.ErrorCode, Is.EqualTo("recipient_identity_expired"));
-            Assert.That(automation.SentRecipient, Is.Null);
-        });
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
     }
 
     [Test]
@@ -296,24 +311,37 @@ public sealed class DesktopMessagingAdapterTests
                 true,
                 "ambiguous_hash",
                 "message_delivery_not_verified"));
-        using var adapter = new DesktopMessagingAdapter(automation);
-        ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            Json("""{"channel":"whatsapp","recipient":"Letras"}"""),
-            CancellationToken.None);
-        string recipientId = resolved.Result!.Value.GetProperty("recipientId").GetString()!;
-
-        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
-            "message.send",
-            Json($$"""{"recipientId":"{{recipientId}}","text":"Hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
         {
-            Assert.That(sent.Verified, Is.False);
-            Assert.That(sent.EffectObserved, Is.True);
-            Assert.That(sent.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
-        });
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}"""),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(sent.Verified, Is.False);
+                Assert.That(sent.EffectObserved, Is.True);
+                Assert.That(sent.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // C6: the owner's test destinations, a private file the adapter is pointed at.
+    private static string TestDestinations(string json)
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-messaging-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string path = Path.Combine(directory, "test-destinations.v1.json");
+        File.WriteAllText(path, json);
+        return path;
     }
 
     private static JsonElement Json(string value) =>

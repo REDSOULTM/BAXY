@@ -274,7 +274,7 @@ internal sealed class MemoryPanel
         try
         {
             response = await client.SendOperationAsync(prepared, OperationTimeout, cancellationToken);
-            if (PendingMemoryConfirmation.TryCreate(response, prepared, TimeProvider.System, out PendingMemoryConfirmation? asked)
+            if (PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System, out PendingOperationConfirmation? asked)
                 && asked is not null)
             {
                 response = await client.SendOperationAsync(

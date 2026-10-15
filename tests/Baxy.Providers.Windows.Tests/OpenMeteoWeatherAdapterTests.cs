@@ -381,22 +381,19 @@ public sealed class OpenMeteoWeatherAdapterTests
     }
 
     // Ronda 19 (r17 t2-c13 «¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): two
-    // towns of comparable size share the name; the country the person's speech marks chooses, the receipt says
-    // namesakes exist (the reply names the country), a region said still wins, and a much smaller namesake in the
-    // marked country is never chosen over the large town.
+    // towns of comparable size share the name; the country the person's speech marks keeps one, the receipt says
+    // namesakes exist (the reply names the country), a region said keeps its own, and a much smaller namesake in the
+    // marked country is no namesake of the large town. Auditoría final: with nothing that keeps one, nothing is read
+    // and the namesakes go back as candidates.
     private const string ValenciaEs =
         """{"results":[{"id":3625549,"name":"Valencia","latitude":10.16202,"longitude":-68.00765,"feature_code":"PPLA","admin1_id":3647073,"population":1385083,"country_code":"VE","country":"Venezuela","admin1":"Carabobo"},{"id":2509954,"name":"Valencia","latitude":39.46975,"longitude":-0.37739,"feature_code":"PPLA2","admin1_id":2593113,"population":814208,"country_code":"ES","country":"España","admin1":"Comunidad Valenciana"},{"id":1698120,"name":"Valencia","latitude":9.28,"longitude":123.24,"feature_code":"PPL","admin1_id":7521309,"population":31477,"country_code":"PH","country":"Filipinas","admin1":"Negros Oriental"}]}""";
 
     private const string LimaEs =
         """{"results":[{"id":3936456,"name":"Lima","latitude":-12.04318,"longitude":-77.02824,"feature_code":"PPLC","admin1_id":3936452,"population":7737002,"country_code":"PE","country":"Perú","admin1":"Lima"},{"id":3118999,"name":"Lima","latitude":42.6,"longitude":-8.1,"feature_code":"PPL","admin1_id":3336902,"population":120,"country_code":"ES","country":"España","admin1":"Galicia"}]}""";
 
-    [TestCase("Valencia", null, "Venezuela", true)]
     [TestCase("Valencia", "ES", "España", true)]
-    [TestCase("Valencia", "MX", "Venezuela", true)]
     [TestCase("Valencia, Carabobo", "ES", "Venezuela", false)]
-    // Revisión r19: a comma part that places nothing (a vocative the mind could not tell from a region) leaves the
-    // name, and the speech still chooses.
-    [TestCase("Valencia, Juan", "ES", "España", true)]
+    [TestCase("Valencia, ES", null, "España", false)]
     public async Task NamesakesOfComparableSizeAreToldAndTheSpeechOfThePersonChooses(
         string asked, string? dialect, string country, bool namesakesTold)
     {
@@ -415,6 +412,32 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(result.GetProperty("country").GetString(), Is.EqualTo(country));
             Assert.That(result.TryGetProperty("namesakesElsewhere", out JsonElement told) && told.GetBoolean(),
                 Is.EqualTo(namesakesTold));
+        });
+    }
+
+    [TestCase("Valencia", null, "weather_place_ambiguous", 2)]
+    [TestCase("Valencia", "MX", "weather_place_ambiguous", 2)]
+    // A comma part that places nothing (a vocative the mind could not tell from a region) places no Valencia.
+    [TestCase("Valencia, Juan", "ES", "weather_place_not_found", 3)]
+    public async Task NamesakesNothingKeepsOneOfAreCandidatesAndNothingIsRead(
+        string asked, string? dialect, string code, int candidates)
+    {
+        var urls = new List<string>();
+        var adapter = new OpenMeteoWeatherAdapter(Service(ValenciaEs, ValenciaEs, asked: urls));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current",
+            JsonSerializer.SerializeToElement(new { location = asked, dialectCountry = dialect }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.Result!.Value.GetProperty("candidates").GetArrayLength(), Is.EqualTo(candidates));
+            Assert.That(receipt.Result!.Value.GetProperty("candidates")[0].GetProperty("country").GetString(),
+                Is.EqualTo("Venezuela"), "the largest first");
+            Assert.That(urls, Has.None.StartsWith("https://api.open-meteo.com/"), "no forecast is read");
         });
     }
 

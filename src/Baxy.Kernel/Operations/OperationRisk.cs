@@ -7,5 +7,4 @@ public enum OperationRisk
     Sensitive,
     External,
     Irreversible,
-    Forbidden,
 }

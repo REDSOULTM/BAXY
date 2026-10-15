@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -25,7 +24,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private readonly ISteamClientAutomation _automation;
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly Func<IReadOnlyList<SteamProcessObservation>>? _processSnapshot;
-    private readonly ConcurrentDictionary<string, SteamInstallPreparation> _preparations = new();
     private readonly Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? _storeTitles;
 
     // Encargo imp-steam: a title turns into its catalog number by the installed games' manifests and, for one not
@@ -112,10 +110,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 "game.catalog.list" => List(operation, arguments),
                 "game.entitlement.named" => await EntitlementNamedAsync(operation, arguments, cancellationToken)
                     .ConfigureAwait(false),
-                "game.install.prepare" => Prepare(operation, arguments),
-                "game.install.commit" => await CommitAsync(
-                    operation, arguments, effectBoundary, cancellationToken)
-                    .ConfigureAwait(false),
                 "game.install.named" => await InstallNamedAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
@@ -131,8 +125,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 "game.launch" => await LaunchAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
-                "game.purchase.prepare" => ExternalJson.Failure(operation, "steam_price_authority_required"),
-                "game.purchase.commit" => ExternalJson.Failure(operation, "steam_purchase_live_gate_forbidden"),
                 _ => ExternalJson.Failure(operation, "external_operation_not_supported"),
             };
         }
@@ -226,63 +218,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
-    }
-
-    private ExternalCapabilityReceipt Prepare(string operation, JsonElement arguments)
-    {
-        string appId = RequireAppId(arguments);
-        SteamLocalGame? game = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
-        if (game is not null && game.Installed)
-        {
-            JsonElement installed = ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                writer.WriteString("confirmationId", ConfirmationId(appId, game.ManifestSha256));
-                writer.WriteString("appId", appId); writer.WriteString("name", game.Name);
-                writer.WriteString("state", "already_installed"); writer.WriteBoolean("requiresInstall", false);
-                writer.WriteString("authority", "steam_local_appmanifest"); writer.WriteEndObject();
-            });
-            return ExternalJson.Success(operation, installed, effectObserved: false);
-        }
-        if (!_owned().Contains(appId))
-        {
-            return ExternalJson.Failure(operation, "steam_entitlement_not_verified");
-        }
-        string authority = game?.ManifestSha256 ?? OwnedAuthority(appId);
-        string confirmationId = ConfirmationId(appId, authority);
-        _preparations[confirmationId] = new(appId, authority, DateTimeOffset.UtcNow.AddMinutes(5));
-        JsonElement prepared = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("confirmationId", confirmationId); writer.WriteString("appId", appId);
-            writer.WriteString("name", game?.Name ?? "Steam App " + appId);
-            writer.WriteString("state", game is null ? "ready_to_install" : InstallState(game));
-            writer.WriteBoolean("requiresInstall", true);
-            writer.WriteString("authority", "steam_authenticated_library_cache"); writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, prepared, effectObserved: false);
-    }
-
-    private async ValueTask<ExternalCapabilityReceipt> CommitAsync(
-        string operation,
-        JsonElement arguments,
-        ExternalEffectBoundary effectBoundary,
-        CancellationToken cancellationToken)
-    {
-        string confirmationId = ExternalJson.RequiredString(arguments, "confirmationId");
-        if (!_preparations.TryRemove(confirmationId, out SteamInstallPreparation? prepared)
-            || prepared.ExpiresAtUtc <= DateTimeOffset.UtcNow)
-        {
-            return ExternalJson.Failure(operation, "steam_install_confirmation_expired");
-        }
-        if (!_owned().Contains(prepared.AppId)
-            || !string.Equals(ConfirmationId(prepared.AppId, prepared.Authority), confirmationId, StringComparison.Ordinal))
-        {
-            return ExternalJson.Failure(operation, "steam_install_authority_changed");
-        }
-        return await DispatchInstallAsync(
-            operation, prepared.AppId, effectBoundary, cancellationToken)
-            .ConfigureAwait(false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> InstallNamedAsync(
@@ -902,12 +837,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return "queued";
     }
 
-    private static string ConfirmationId(string appId, string authority) => "steam_install_"
-        + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(appId + "\n" + authority)))[..24];
     private static string JobId(string appId) => "steam_job_"
         + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(appId)))[..24];
-    private static string OwnedAuthority(string appId) => Convert.ToHexStringLower(
-        SHA256.HashData(Encoding.UTF8.GetBytes("steam-library-cache\n" + appId)));
 
     private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
     {
@@ -987,8 +918,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     [GeneratedRegex("^\\s*\\\"([^\\\"]+)\\\"\\s+\\\"([^\\\"]*)\\\"", RegexOptions.Multiline)]
     private static partial Regex ManifestFieldRegex();
 }
-
-internal sealed record SteamInstallPreparation(string AppId, string Authority, DateTimeOffset ExpiresAtUtc);
 
 internal sealed record SteamLocalGame(
     string AppId,

@@ -5,8 +5,6 @@ namespace Baxy.App;
 
 /// <summary>
 /// Registers a queryable Win32 window class and a Shell_NotifyIcon entry.
-/// Tests inject <see cref="ITrayIconShell"/> so they can assert NIM_ADD
-/// without depending on the notification area layout of this session.
 /// </summary>
 internal sealed class PresenceTrayIcon : IDisposable
 {
@@ -18,7 +16,6 @@ internal sealed class PresenceTrayIcon : IDisposable
     internal const uint CommandListen = 2;
     internal const uint CommandExit = 3;
 
-    private readonly ITrayIconShell _shell;
     private readonly WndProc _wndProc;
     private nint _classAtom;
     private nint _hwnd;
@@ -31,13 +28,11 @@ internal sealed class PresenceTrayIcon : IDisposable
     internal PresenceTrayIcon(
         Action showWindow,
         Action toggleListen,
-        Action exit,
-        ITrayIconShell? shell = null)
+        Action exit)
     {
         ShowWindow = showWindow ?? throw new ArgumentNullException(nameof(showWindow));
         ToggleListen = toggleListen ?? throw new ArgumentNullException(nameof(toggleListen));
         Exit = exit ?? throw new ArgumentNullException(nameof(exit));
-        _shell = shell ?? new ShellNotifyIcon();
         _wndProc = OnWindowMessage;
     }
 
@@ -46,8 +41,6 @@ internal sealed class PresenceTrayIcon : IDisposable
     internal Action ToggleListen { get; }
 
     internal Action Exit { get; }
-
-    internal nint Handle => _hwnd;
 
     internal bool IsRegistered => _hwnd != 0 && _added;
 
@@ -97,7 +90,7 @@ internal sealed class PresenceTrayIcon : IDisposable
         }
 
         _icon = ExtractOwnedIcon();
-        _added = _shell.Add(_hwnd, CallbackMessage, _icon, "BAXY");
+        _added = ShellNotifyIcon.Add(_hwnd, CallbackMessage, _icon, "BAXY");
         if (!_added)
         {
             throw new InvalidOperationException("BAXY could not register in the notification area.");
@@ -106,7 +99,7 @@ internal sealed class PresenceTrayIcon : IDisposable
 
     internal void SetListening(bool listening) => _listening = listening;
 
-    internal bool Notify(string text) => IsRegistered && _shell.Notify(_hwnd, text);
+    internal bool Notify(string text) => IsRegistered && ShellNotifyIcon.Notify(_hwnd, text);
 
     public void Dispose()
     {
@@ -120,7 +113,7 @@ internal sealed class PresenceTrayIcon : IDisposable
         {
             if (_added)
             {
-                _ = _shell.Delete(_hwnd);
+                _ = ShellNotifyIcon.Delete(_hwnd);
                 _added = false;
             }
 
@@ -257,9 +250,9 @@ internal sealed class PresenceTrayIcon : IDisposable
 
     private delegate nint WndProc(nint hwnd, uint message, nint wParam, nint lParam);
 
-    private sealed class ShellNotifyIcon : ITrayIconShell
+    private static class ShellNotifyIcon
     {
-        public bool Add(nint hwnd, uint callbackMessage, nint icon, string tip)
+        public static bool Add(nint hwnd, uint callbackMessage, nint icon, string tip)
         {
             NotifyIconData data = CreateData(hwnd, callbackMessage, icon, tip);
             if (!NativeMethods.Shell_NotifyIcon(0, ref data))
@@ -272,7 +265,8 @@ internal sealed class PresenceTrayIcon : IDisposable
             return true;
         }
 
-        public bool Notify(nint hwnd, string text)
+        // A notification on screen from the tray icon (the heartbeat's words when they are not spoken).
+        public static bool Notify(nint hwnd, string text)
         {
             var data = new NotifyIconData
             {
@@ -288,7 +282,7 @@ internal sealed class PresenceTrayIcon : IDisposable
             return NativeMethods.Shell_NotifyIcon(1, ref data);
         }
 
-        public bool Delete(nint hwnd)
+        public static bool Delete(nint hwnd)
         {
             var data = new NotifyIconData
             {

@@ -12,8 +12,11 @@ internal sealed record UserMediaSession(
     string Artist,
     string PlaybackStatus);
 
-/// <summary>What the page step did inside the person's browser: the last step reached and the name it acted on.</summary>
-internal sealed record UserBrowserPageStep(bool PlayInvoked, string Step, string Chosen);
+/// <summary>
+/// What the page step did inside the person's browser: the last step reached, the name it acted on and, when no item
+/// was named as the title, the names the page showed (<paramref name="Seen"/>).
+/// </summary>
+internal sealed record UserBrowserPageStep(bool PlayInvoked, string Step, string Chosen, IReadOnlyList<string>? Seen = null);
 
 /// <summary>
 /// A tab of the person's browser. <paramref name="X"/> and <paramref name="Y"/> are its centre as a fraction of the
@@ -224,7 +227,12 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             && stepValue.ValueKind == JsonValueKind.String ? stepValue.GetString() ?? string.Empty : string.Empty;
         string chosen = value.TryGetProperty("chosen", out JsonElement chosenValue)
             && chosenValue.ValueKind == JsonValueKind.String ? chosenValue.GetString() ?? string.Empty : string.Empty;
-        return new UserBrowserPageStep(played, step, chosen);
+        string[] seen = value.TryGetProperty("seen", out JsonElement seenValue) && seenValue.ValueKind == JsonValueKind.Array
+            ? [.. seenValue.EnumerateArray()
+                .Where(name => name.ValueKind == JsonValueKind.String)
+                .Select(name => name.GetString()!)]
+            : [];
+        return new UserBrowserPageStep(played, step, chosen, seen);
     }
 
     public async ValueTask<UserBrowserFrame?> ReadFrameAsync(nint window, CancellationToken cancellationToken)

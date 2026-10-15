@@ -142,9 +142,8 @@ internal static partial class InvokerLaunch
     }
 
     // Review of M5: BAXY's core runs inside the App's kill-on-close job, and a program it starts directly would die with
-    // BAXY (or with a restart of the core) and inherit the core's inheritable handles, among them its stdio pipes. Like
-    // WindowsApplicationLauncher, the program leaves the job and inherits nothing; its environment is the core's plus
-    // the compatibility layer.
+    // BAXY (or with a restart of the core) and inherit the core's inheritable handles, among them its stdio pipes. The
+    // program leaves the job and inherits nothing; its environment is the core's plus the compatibility layer.
     internal const uint CreateBreakawayFromJob = 0x01000000;
     internal const uint CreateUnicodeEnvironment = 0x00000400;
 

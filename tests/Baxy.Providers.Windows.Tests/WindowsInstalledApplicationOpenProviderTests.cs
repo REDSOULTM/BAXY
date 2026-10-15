@@ -22,34 +22,45 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         new("Visual Studio Code", "VisualStudioCode"),
     ];
 
-    [TestCase("steam", "steam", true)]
-    [TestCase("steam noticias", "steam", true)]
-    [TestCase("list visible steam windows with sizes baxy goal 07", "steam", false)]
-    [TestCase("spotify", "steam", false)]
-    [TestCase("notepad", "notepad", true)]
-    public void WindowTitleDoesNotTreatAnIncidentalMentionAsTheApp(
-        string title, string application, bool expected)
+    // Auditoría final V1: a classic application's windows are told by the executable its shortcut launches (File
+    // Explorer by its own image); a packaged one by its package. Without either, no window can be said to be it.
+    [Test]
+    public void AWindowIdentityComesOnlyFromThePackageOrTheShortcutExecutable()
     {
-        Assert.That(
-            WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
-                title,
-                application),
-            Is.EqualTo(expected));
+        var platform = new WindowsInstalledApplicationPlatform();
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.IdentifiesWindows(new("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App")), Is.True);
+            Assert.That(platform.IdentifiesWindows(
+                new("Steam", "Valve.Steam", @"C:\Program Files (x86)\Steam\steam.exe")), Is.True);
+            Assert.That(platform.IdentifiesWindows(new("Explorador de archivos", "Microsoft.Windows.Explorer")), Is.True);
+            Assert.That(WindowsInstalledApplicationPlatform.ExpectedExecutable(
+                    new("Explorador de archivos", "Microsoft.Windows.Explorer")),
+                Is.EqualTo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe")));
+            // A catalog id that is no full path and no shortcut target: nothing tells its windows.
+            Assert.That(platform.IdentifiesWindows(Catalog.Single(item => item.Name == "Steam")), Is.False);
+            Assert.That(platform.IdentifiesWindows(new("Google Chrome", "Chrome")), Is.False);
+        });
     }
 
-    [TestCase("Bloc de notas", "Notepad", "Sin título", "Vendor.Editor_0123456789abc!Editor", true)]
-    [TestCase("Text Editor", "editorhost", "Untitled", "Vendor.Editor_0123456789abc!Editor", true)]
-    [TestCase("Éditeur 24", "unrelatedname", "Documento privado", "Vendor.Editor_0123456789abc!Editor", true)]
-    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", "Other.Editor_0123456789abc!Editor", false)]
-    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", "Vendor.Editor_0123456789abc!Other", false)]
-    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", null, false)]
-    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", "Vendor.Editor_0123456789abc!EditorExtra", false)]
-    public void PackagedWindowIdentityUsesTheExactOsApplicationId(
-        string name, string process, string title, string? observedId, bool expected)
+    [Test]
+    public async Task AnApplicationWithoutAWindowIdentityIsNeitherLaunchedNorCounted()
     {
-        var entry = new InstalledApplicationEntry(name, "Vendor.Editor_0123456789abc!Editor");
-        Assert.That(WindowsInstalledApplicationPlatform.WindowProcessIdentifiesApplication(
-            entry, process, title, observedId), Is.EqualTo(expected));
+        var platform = new FakePlatform(Catalog) { WindowIdentity = false };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult opened = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        ApplicationWindowStatusResult status = await provider.GetWindowStatusAsync("Steam", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.Succeeded, Is.False);
+            Assert.That(opened.Verified, Is.False);
+            Assert.That(opened.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.WindowIdentityUnavailable));
+            Assert.That(status.Verified, Is.False);
+            Assert.That(status.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.WindowIdentityUnavailable));
+            Assert.That(platform.ActivateCalls, Is.Zero);
+        });
     }
 
     [TestCase(@"C:\Users\p\AppData\Local\Chat\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", true)]
@@ -64,17 +75,6 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     {
         Assert.That(WindowsInstalledApplicationPlatform.ExecutableIsLaunchedImage(actual, expected),
             Is.EqualTo(accepted));
-    }
-
-    [TestCase("Steam", "steamwebhelper", "Community", true)]
-    [TestCase("Google Chrome", "chrome", "Document", true)]
-    [TestCase("Steam", "notepad", "my steam notes", false)]
-    public void ClassicWindowIdentityKeepsTheExistingCatalogReader(
-        string name, string process, string title, bool expected)
-    {
-        InstalledApplicationEntry entry = Catalog.Single(item => item.Name == name);
-        Assert.That(WindowsInstalledApplicationPlatform.WindowProcessIdentifiesApplication(
-            entry, process, title, null), Is.EqualTo(expected));
     }
 
     [Test]
@@ -197,8 +197,21 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
     [TestCase("google chrome", "Google Chrome")]
     [TestCase("BLOC DE NOTAS", "Bloc de notas")]
+    [TestCase("  google   CHROME ", "Google Chrome")]
     public void TheInstalledNameResolvesFolded(string query, string expected) =>
         Assert.That(InstalledApplicationResolver.Resolve(query, Catalog).Entry?.Name, Is.EqualTo(expected));
+
+    // Auditoría final V2 (e2e: «bloc de notas» opened Notepad++): only case, accents and whitespace fold; punctuation is
+    // part of the name, so «Notepad» is not Notepad++ and «Notepad++» is not Notepad.
+    [TestCase("Notepad", "Notepad")]
+    [TestCase("notepad++", "Notepad++")]
+    [TestCase("Notepad+", null)]
+    public void PunctuationIsPartOfTheName(string query, string? expected)
+    {
+        InstalledApplicationEntry[] catalog =
+            [new("Notepad", "Vendor.Notepad_abc!App"), new("Notepad++", @"C:\Program Files\Notepad++\notepad++.exe")];
+        Assert.That(InstalledApplicationResolver.Resolve(query, catalog).Entry?.Name, Is.EqualTo(expected));
+    }
 
     [Test]
     public void SimilarStartEntriesRequireAnExactName()
@@ -232,6 +245,22 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.DisplayName, Is.EqualTo(expectedDisplayName));
             Assert.That(platform.ActivateCalls, Is.Zero);
             Assert.That(platform.FocusCalls, Is.Zero);
+        });
+    }
+
+    // Auditoría final: a name installed under no entry gets the closest installed names back, as app.open says them.
+    [Test]
+    public async Task ANameNotInstalledGetsTheClosestInstalledNames()
+    {
+        var provider = new WindowsInstalledApplicationOpenProvider(new FakePlatform(Catalog));
+
+        ApplicationInstalledResult result = await provider.IsInstalledAsync("Visual", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Installed, Is.False);
+            Assert.That(result.Candidates, Does.Contain("Visual Studio").And.Contain("Visual Studio Code"));
         });
     }
 
@@ -1477,6 +1506,10 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         private long? _requestedForegroundHandle;
 
         public IReadOnlyList<InstalledApplicationObservation> Observations { get; set; } = [];
+
+        public bool WindowIdentity { get; init; } = true;
+
+        public bool IdentifiesWindows(InstalledApplicationEntry entry) => WindowIdentity;
 
         public InstalledApplicationObservation? ObservationAfterActivation { get; init; }
 

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -72,15 +71,16 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             var namesakes = new Namesakes(dialectCountry);
             // Ronda 22: where the time of a weather read goes (the place, the forecast) travels in elapsedMs.
             var clock = Stopwatch.StartNew();
-            PublicPlace? place = location is null
-                ? await _locator.LocateAsync(cancellationToken).ConfigureAwait(false)
+            PlaceChoice choice = location is null
+                ? new(await _locator.LocateAsync(cancellationToken).ConfigureAwait(false), [], false)
                 : await ResolvePlaceAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
+            PublicPlace? place = choice.Place;
             long placeMs = clock.ElapsedMilliseconds;
             if (place is null)
             {
-                return ExternalJson.FailureBeforeEffect(
-                    operation,
-                    location is null ? "weather_location_unavailable" : "weather_place_not_found");
+                return location is null
+                    ? ExternalJson.FailureBeforeEffect(operation, "weather_location_unavailable")
+                    : PlaceCandidates(operation, location, choice);
             }
 
             string coordinates = "?latitude=" + place.Value.Latitude.ToString("F4", CultureInfo.InvariantCulture)
@@ -205,23 +205,19 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
         }
     }
 
-    // Uso real tanda 4c «Digame el weather lunes 13 en North Carolina» leyó el
-    // clima de «Calvary, Georgia»: el geocodificador lista primero un pueblo que
-    // lleva ese nombre como alias, y no indexa los estados ni las regiones por su
-    // nombre. De su lista (en español y en inglés, porque la persona nombra el
-    // lugar en cualquiera de los dos) se elige: el primer lugar que se llama
-    // así; la región de ese nombre cuando la lista la nombra como región de sus
-    // lugares y lo que se llama así es un pueblo menor (no una capital, o una
-    // cien veces menos poblada que la región); y, sin nada de eso, el primer
-    // lugar poblado o región que comparte una palabra con lo pedido. Un alias
-    // ajeno o un parque que lleva el nombre no bastan.
-    private static readonly string[] RegionFields = ["admin1", "admin2", "country"];
+    // The place read is the one whose name is the name asked (case, accents and punctuation folded), in Spanish or in
+    // English, because the person names it in either. Uso real tanda 4c «Digame el weather lunes 13 en North Carolina»
+    // read «Calvary, Georgia», a hamlet that carries the state's name as an alias: an alias, a park that carries the
+    // name or a place that only shares a word with it is not the place. The geocoder indexes no region by its name,
+    // so a region is found as the region (admin1) its places name exactly so, and read by its own identifier.
+    // «Lugar, Región» keeps the places of that name whose region, province or country is the one said.
+    private static readonly string[] RegionFields = ["admin1", "admin2", "country", "country_code"];
 
     // Ronda 19 (r17 t2-c13 «¿qué tiempo va a hacer mañana en Valencia? ¿cojo paraguas?» → Valencia, Venezuela, the
-    // most populous, with no country said): towns of the asked name whose size is comparable (a quarter of the
-    // largest or more) in other countries are namesakes. The country the person's speech marks (dialectCountry)
-    // chooses among them; it never picks a much smaller namesake nor passes over a region said. The receipt says
-    // when namesakes exist, so the reply names the country read.
+    // most populous, with no country said): places of the asked name whose size is comparable (a quarter of the
+    // largest or more) are namesakes, and among several nothing is chosen: they go back as candidates, largest first.
+    // The country the person's speech marks (dialectCountry) keeps the namesakes of that country; a much smaller
+    // place of the name is no namesake of a large one. The receipt says when namesakes exist elsewhere.
     private sealed class Namesakes(string? dialectCountry)
     {
         internal string? DialectCountry { get; } = dialectCountry;
@@ -231,54 +227,55 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
     private const double ComparableNamesake = 0.25;
 
-    private static JsonElement? ChooseAmongNamesakes(List<JsonElement> sameName, JsonElement? largest, Namesakes namesakes)
-    {
-        if (largest is not { } top || ReadDouble(top, "population") is not double topPopulation || topPopulation <= 0)
-            return largest;
-        List<JsonElement> comparable = sameName
-            .Where(item => ReadString(item, "feature_code") is { } code && code.StartsWith("PPL", StringComparison.Ordinal)
-                && (ReadDouble(item, "population") ?? 0) >= ComparableNamesake * topPopulation)
-            .ToList();
-        string? topCountry = ReadString(top, "country_code");
-        namesakes.Elsewhere = comparable.Any(item => ReadString(item, "country_code") is { } code
-            && !string.Equals(code, topCountry, StringComparison.OrdinalIgnoreCase));
-        if (namesakes.DialectCountry is not { Length: > 0 } marked)
-            return largest;
-        JsonElement? spoken = comparable
-            .Where(item => string.Equals(ReadString(item, "country_code"), marked, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(item => ReadDouble(item, "population") ?? 0)
-            .Select(item => (JsonElement?)item)
-            .FirstOrDefault();
-        return spoken ?? largest;
-    }
+    // The place read, or none and what the service showed instead: the namesakes of comparable size (Ambiguous), or
+    // the results of the search when nothing was named so.
+    private sealed record PlaceChoice(PublicPlace? Place, IReadOnlyList<JsonElement> Candidates, bool Ambiguous);
 
-    private async Task<PublicPlace?> ResolvePlaceAsync(
+    private static ExternalCapabilityReceipt PlaceCandidates(string operation, string location, PlaceChoice choice) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("requested", location);
+            writer.WriteStartArray("candidates");
+            foreach (JsonElement item in choice.Candidates.Take(8))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("name", ReadString(item, "name") ?? string.Empty);
+                if (ReadString(item, "admin1") is { Length: > 0 } region)
+                    writer.WriteString("region", region);
+                writer.WriteString("country", ReadString(item, "country") ?? string.Empty);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }), choice.Ambiguous ? "weather_place_ambiguous" : "weather_place_not_found");
+
+    private async Task<PlaceChoice> ResolvePlaceAsync(
         string location, Namesakes namesakes, CancellationToken cancellationToken)
     {
         var key = (location.ToUpperInvariant(), namesakes.DialectCountry?.ToUpperInvariant());
         if (_resolvedPlaces.TryGetValue(key, out var known))
         {
             namesakes.Elsewhere = known.Elsewhere;
-            return known.Place;
+            return new(known.Place, [], false);
         }
 
-        PublicPlace? place = await GeocodeAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
-        if (place is { } found)
+        PlaceChoice choice = await GeocodeAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
+        if (choice.Place is { } found)
             _resolvedPlaces[key] = (found, namesakes.Elsewhere);
-        return place;
+        return choice;
     }
 
-    private async Task<PublicPlace?> GeocodeAsync(string location, Namesakes namesakes, CancellationToken cancellationToken)
+    private async Task<PlaceChoice> GeocodeAsync(string location, Namesakes namesakes, CancellationToken cancellationToken)
     {
-        // M58 (v3d-final F-p07-t1/t2 «the weather in Foster City» → Foster City, Michigan, the
-        // first of the list and with no population, instead of Foster City, California): «Lugar,
-        // Región» (the region said, or the one the conversation fixed) picks the place of that
-        // name in that region or country; without a region, the most populous place of that name.
+        // M58 (v3d-final F-p07-t1/t2 «the weather in Foster City»): «Lugar, Región» sends only the name to the
+        // geocoder and keeps, of the places of that name, those in the region said.
         string[] parts = location.Split(',', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         string? within = parts.Length == 2 ? parts[1] : null;
         if (within is not null)
             location = parts[0];
-        string asked = RegionKey(location);
+        string asked = Fold(location);
         Task<string> spanishRead = FetchAsync(GeocodingUrl(location, "es"), cancellationToken);
         Task<string> englishRead = FetchAsync(GeocodingUrl(location, "en"), cancellationToken);
         using JsonDocument spanish = JsonDocument.Parse(await spanishRead.ConfigureAwait(false));
@@ -301,71 +298,56 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             return [ReadString(item, field), other is { } englishItem ? ReadString(englishItem, field) : null];
         }
 
-        List<JsonElement> sameName = candidates
-            .Where(item => Spellings(item, "name").Any(name => name is not null && Fold(name) == Fold(location)))
-            .ToList();
-        if (within is not null)
-        {
-            string saidRegion = RegionKey(within);
-            JsonElement? placed = sameName
-                .Where(item => RegionFields
-                    .SelectMany(field => Spellings(item, field))
-                    .Any(name => name is not null && RegionKey(name) == saidRegion))
-                .Select(item => (JsonElement?)item)
-                .FirstOrDefault();
-            if (placed is { } inRegion)
-                return PlaceOf(inRegion, location);
-        }
-        // A populated place outranks a park or a centre of the same name; among the places, the most
-        // populous (the service lists some without a population, which counts as none).
-        JsonElement? namedPlace = sameName
-            .Select((item, order) => (item, order))
-            .OrderByDescending(entry => ReadString(entry.item, "feature_code") is { } code
-                && code.StartsWith("PPL", StringComparison.Ordinal))
-            .ThenByDescending(entry => ReadDouble(entry.item, "population") ?? 0)
-            .ThenBy(entry => entry.order)
-            .Select(entry => (JsonElement?)entry.item)
-            .FirstOrDefault();
-        namedPlace = ChooseAmongNamesakes(sameName, namedPlace, namesakes);
+        bool Named(JsonElement item, string field, string folded) =>
+            Spellings(item, field).Any(name => name is not null && Fold(name) == folded);
+
+        // A result the service gives without an identifier is told from another by where it is.
+        List<JsonElement> exact = [.. candidates
+            .Where(item => Named(item, "name", asked))
+            .DistinctBy(item => ReadLong(item, "id")?.ToString(CultureInfo.InvariantCulture)
+                ?? ReadDouble(item, "latitude") + "/" + ReadDouble(item, "longitude"))];
         long? regionId = candidates
-            .Where(item => Spellings(item, "admin1").Any(region => region is not null && RegionKey(region) == asked))
+            .Where(item => Named(item, "admin1", asked))
             .Select(item => ReadLong(item, "admin1_id"))
             .OfType<long>()
             .GroupBy(id => id)
             .OrderByDescending(group => group.Count())
             .Select(group => (long?)group.Key)
             .FirstOrDefault();
-
-        string? namedCode = namedPlace is { } placeItem ? ReadString(placeItem, "feature_code") : null;
         if (regionId is long region
-            && (namedPlace is null || (namedCode is not null && namedCode.StartsWith("PPL", StringComparison.Ordinal)))
+            && !exact.Any(item => ReadLong(item, "id") == region)
             && await ReadGeocodedAsync(region, cancellationToken).ConfigureAwait(false) is { } regionItem)
         {
-            double regionPopulation = ReadDouble(regionItem, "population") ?? 0;
-            double namedPopulation = namedPlace is { } minor ? ReadDouble(minor, "population") ?? 0 : 0;
-            bool regionIsMeant = namedPlace is null
-                || namedCode is not ("PPLC" or "PPLA" or "PPLA2")
-                || regionPopulation >= 100 * Math.Max(namedPopulation, 1);
-            if (regionIsMeant && PlaceOf(regionItem, location) is { } regionPlace)
-                return regionPlace;
+            exact.Add(regionItem);
         }
 
-        if (namedPlace is { } exact)
-            return PlaceOf(exact, location);
-        string[] askedWords = Fold(location).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        foreach (JsonElement item in Results(spanish))
+        if (within is not null)
         {
-            if (ReadString(item, "name") is { } name
-                && ReadString(item, "feature_code") is { } code
-                && (code.StartsWith("PPL", StringComparison.Ordinal) || code.StartsWith("ADM", StringComparison.Ordinal)
-                    || code.StartsWith("PCL", StringComparison.Ordinal))
-                && Fold(name).Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(askedWords).Any())
+            string saidRegion = Fold(within);
+            exact = [.. exact.Where(item => RegionFields.Any(field => Named(item, field, saidRegion)))];
+        }
+
+        if (exact.Count == 0)
+            return new(null, [.. candidates.Take(8).Select(item => item.Clone())], false);
+        double top = exact.Max(item => ReadDouble(item, "population") ?? 0);
+        List<JsonElement> comparable = [.. exact
+            .Where(item => top <= 0 || (ReadDouble(item, "population") ?? 0) >= ComparableNamesake * top)
+            .OrderByDescending(item => ReadDouble(item, "population") ?? 0)];
+        if (comparable.Count > 1 && namesakes.DialectCountry is { Length: > 0 } marked)
+        {
+            List<JsonElement> spoken = [.. comparable.Where(item =>
+                string.Equals(ReadString(item, "country_code"), marked, StringComparison.OrdinalIgnoreCase))];
+            if (spoken.Count == 1)
             {
-                return PlaceOf(item, location);
+                namesakes.Elsewhere = true;
+                comparable = spoken;
             }
         }
 
-        return null;
+        if (comparable.Count > 1)
+            return new(null, [.. comparable.Select(item => item.Clone())], true);
+        PublicPlace? place = PlaceOf(comparable[0], location);
+        return place is null ? new(null, [comparable[0].Clone()], false) : new(place, [], false);
     }
 
     // La región se lee por su identificador; si el servicio no la da, cuenta lo
@@ -414,17 +396,6 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             longitude.Value,
             "named_place_geocoded");
     }
-
-    // «North Carolina», «Carolina del Norte», «Estado de Jalisco» y «Comunidad
-    // Autónoma de Cataluña» se comparan por su nombre propio, sin tildes ni la
-    // palabra que dice qué clase de región es.
-    private static readonly Regex RegionKind = new(
-        @"^(?:comunidad autonoma|comunidad foral|comunidad|estado libre y soberano|estado|provincia|region|"
-        + @"departamento|state|province|region|department|prefectura|prefecture|canton|oblast)\s+(?:de\s+la\s+|del\s+|de\s+|of\s+)?"
-        + @"|\s+(?:department|province|state|region|prefecture|oblast)$",
-        RegexOptions.CultureInvariant);
-
-    private static string RegionKey(string name) => RegionKind.Replace(Fold(name), string.Empty).Trim();
 
     private static string Fold(string text)
     {

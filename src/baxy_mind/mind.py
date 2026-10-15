@@ -1,4 +1,5 @@
-"""The turn: one native tool call decides and writes the arguments; one call speaks the verified result.
+"""The turn: native tool calls decide and write the arguments, and after each verified result the model either calls
+again or answers in words (one conversation per session, calls and results included).
 
 Nothing here authorizes or verifies: the kernel authorizes the proposed operation and the provider verifies its
 effect. What the model cannot do becomes an honest limit (a question, «no pude», «eso no lo hago»), never a veto.
@@ -17,7 +18,6 @@ from typing import Any
 from .llm_server import LlmServer
 
 _DATA = Path(__file__).with_name("data")
-_SPANISH = json.loads((_DATA / "decider_catalog.es.v1.json").read_text(encoding="utf-8"))["operations"]
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
 SYSTEM = (
@@ -47,6 +47,15 @@ SYSTEM = (
     "10. Los identificadores (windowId, ids de notas, tareas o redes) salen del resultado de la herramienta que los "
     "lista; nunca los inventes ni uses un número de otro campo."
 )
+
+# The heartbeat reads the same rules without the answer to «¿ya lo hiciste?», which only a person asks: with it, the
+# open scenes went from 34 to 31 of 40 and the notices it should give from 3 to 1 of 6 (two wordings, sampled and greedy,
+# 2026-10-15). Qwen3.5's template puts the tools before the system text, so the heartbeat's own conversation re-reads
+# only this text, as it already re-read its own messages.
+_ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo, contesta por los resultados de esta conversación: sin una "
+                  "herramienta que lo hiciera, no lo hiciste.")
+assert _ASKED_IF_DONE in SYSTEM
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
 
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
@@ -229,9 +238,7 @@ class Mind:
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
         self.constants: dict[str, dict[str, Any]] = {}
-        language = os.environ.get("BAXY_RENEW_DESCRIPTIONS", "en")
-        english = (json.loads(_ENGLISH_FILE.read_text(encoding="utf-8"))
-                   if language == "en" and _ENGLISH_FILE.is_file() else {})
+        english = json.loads(_ENGLISH_FILE.read_text(encoding="utf-8")) if _ENGLISH_FILE.is_file() else {}
         self.english: dict[str, str] = english.get("tools") or {}
         self.arguments: dict[str, dict[str, str]] = english.get("arguments") or {}
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
@@ -251,8 +258,7 @@ class Mind:
         tools, wire_to_op, op_to_tool = [ASK_USER, CONFIRM], {}, {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
-            spanish = _SPANISH.get(name) or str(cap.get("description") or "")
-            description = self.english.get(name) or spanish
+            description = self.english.get(name) or str(cap.get("description") or "")
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
@@ -284,9 +290,9 @@ class Mind:
                               "tools": self.tools, "max_tokens": 1,
                           "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.DECIDE, timeout=600)
 
-    def _system(self) -> str:
+    def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
-        return SYSTEM
+        return BEAT_SYSTEM if beat else SYSTEM
 
     @staticmethod
     def _clock() -> str:
@@ -333,10 +339,11 @@ class Mind:
         conversation only if it intervened."""
         started = time.monotonic()
         conv = [{"role": "user", "content": beat_message(context)}]
-        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()}, *conv],
+        # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.
+        reply = self.server.chat({"messages": [{"role": "system", "content": self._system(beat=True)}, *conv],
                                   "tools": self.tools, "tool_choice": "none", "max_tokens": 200,
                                   "chat_template_kwargs": {"enable_thinking": False},
-                                  "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
+                                  "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
                                   "seed": 0,
                                   "response_format": {"type": "json_schema",
                                                       "json_schema": {"name": "latido", "schema": BEAT_DECISION}}},
@@ -410,7 +417,7 @@ class Mind:
         done = turn.setdefault("done", [])
         done.append(f"{turn.get('calling', '?')} → {_outcome(observation)}")
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": observation[:6000] + "\n[En este turno: " + "; ".join(done) + "]"})
+                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
         if final:
             # The App's step budget is spent: said where the model reads it, at the end of the last result.
@@ -433,7 +440,8 @@ class Mind:
         self.conversation.append({"role": "assistant", "content": "", "tool_calls": [
             {"id": call_id, "type": "function",
              "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
-        self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label}
+        self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label,
+                      "calling": CONFIRM_OPERATION}
         self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
                   arguments={"approve": approve})
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
@@ -442,7 +450,7 @@ class Mind:
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.monotonic()
         conv = turn["conv"]
-        messages = [{"role": "system", "content": self._system()}, *conv]
+        messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
@@ -485,11 +493,10 @@ class Mind:
                                   "arguments": None, "question": "", "reply": ""}
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
-            turn["queue"], turn["awaiting"], turn["asked"] = [], None, call["id"]
+            turn["queue"], turn["awaiting"] = [], None
             if question:
+                turn["asked"] = call["id"]
                 result.update(kind="clarify", question=question)
-            else:
-                result.update(failure="empty_question")
         elif call is not None:
             name = CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"] else self.wire_to_op[call["wire"]]
             turn["awaiting"] = call["id"]
@@ -498,10 +505,10 @@ class Mind:
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)
-        else:
-            result.update(failure="empty_reply")
         self._log(stage, started, reply, text=turn["text"], kind=result["kind"], operation=result["operation"],
-                  arguments=call["arguments"] if call else None, content=content)
+                  # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop).
+                  arguments=(call["arguments"] if call and not str(result["operation"] or "").startswith("memory.")
+                             else None), content=content)
         return result
 
     # ---- trace ---------------------------------------------------------------------------------------------

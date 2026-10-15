@@ -431,22 +431,16 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed);
     }
 
-    // CLOSEALL1733 «cerrame todo» (owner 2026-09-16: everything except Visual
-    // Studio Code): every desktop window is asked to close the way a person
-    // would (WM_CLOSE, then the system-menu close) except the editor hosting
-    // the person's work, the terminal and this product; a window that stays —
-    // an application asking whether to save, a client that refuses — is
-    // counted as remaining and never forced, so no document is lost.
+    // CLOSEALL1733 «cerrame todo»: every desktop window is asked to close the way
+    // a person would (WM_CLOSE, then the system-menu close) except this product's
+    // own; a window that stays — an application asking whether to save, a client
+    // that refuses — is counted as remaining and never forced, so no document is
+    // lost. Auditoría final G1: no application is spared by its name in code.
     // The product's own windows: the App runs as «Baxy» (Baxy.exe), and «Baxy.App» in development hosts.
     // Also what tells an opening that the request was written in BAXY's own window (ForegroundHandBack.PersonWorkingIn).
     internal static readonly HashSet<string> OwnProcessNames = new(StringComparer.OrdinalIgnoreCase)
     {
         "Baxy", "Baxy.App", "baxy-core",
-    };
-
-    private static readonly HashSet<string> KeptProcessNames = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "Code", "Code - Insiders", "WindowsTerminal", "baxy-core", "Baxy.App", "Baxy",
     };
 
     public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
@@ -463,30 +457,28 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             return new WindowCloseAllResult(false, false, 0, 0, 0, 0, [], [], WindowControlErrorCodes.InventoryFailed);
         }
 
-        List<WindowSnapshot> kept = desktop.Where(static window => KeptProcessNames.Contains(window.Identity.ProcessName)).ToList();
-        List<WindowSnapshot> targets = desktop.Where(static window => !KeptProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<WindowSnapshot> kept = desktop.Where(static window => OwnProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<WindowSnapshot> targets = desktop.Where(static window => !OwnProcessNames.Contains(window.Identity.ProcessName)).ToList();
         List<string> keptNames = kept.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
         if (targets.Count == 0)
         {
             return new WindowCloseAllResult(true, true, desktop.Count, 0, 0, kept.Count, keptNames, [], null);
         }
 
-        // Auditoría D7: the windows gone before BAXY's close reached them are not BAXY's to count as closed.
-        var goneBefore = new HashSet<nint>();
+        // Auditoría D7 and final G2: only a window BAXY's close reached (Windows took the request) is BAXY's to count
+        // as closed; one that ended without being asked (gone before, a request Windows refused) is already gone.
+        var asked = new HashSet<nint>();
         foreach (WindowSnapshot target in targets)
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                _ = _platform.RequestClose(target.Identity);
-            }
-            catch (WindowIdentityChangedException)
-            {
-                _ = goneBefore.Add(target.Identity.Handle);
+                if (_platform.RequestClose(target.Identity))
+                    _ = asked.Add(target.Identity.Handle);
             }
             catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
             {
-                // Not asked: it is counted by what is seen of it afterwards.
+                // Not asked (gone or changed before the request, or refused): never counted as closed by BAXY.
             }
         }
 
@@ -499,7 +491,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 try
                 {
                     _ = _platform.Observe(target.Identity);
-                    _ = _platform.RequestSystemClose(target.Identity);
+                    if (_platform.RequestSystemClose(target.Identity))
+                        _ = asked.Add(target.Identity.Handle);
                 }
                 catch (Exception exception) when (exception is Win32Exception
                     or InvalidOperationException or WindowIdentityChangedException)
@@ -513,7 +506,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         List<string> remainingNames = remaining.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
         List<WindowSnapshot> ended = targets.Except(remaining).ToList();
         int hidden = ended.Count(window => _verifier.Fate(window.Identity) == WindowFate.Hidden);
-        int alreadyGone = ended.Count(window => goneBefore.Contains(window.Identity.Handle)
+        int alreadyGone = ended.Count(window => !asked.Contains(window.Identity.Handle)
             && _verifier.Fate(window.Identity) != WindowFate.Hidden);
         return new WindowCloseAllResult(
             true, true, desktop.Count, ended.Count - hidden - alreadyGone, remaining.Count, kept.Count, keptNames, remainingNames,
@@ -1331,7 +1324,8 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         var result = new List<WindowSnapshot>(limit);
         int observedCount = 0;
         bool complete = true;
-        string selector = InstalledApplicationResolver.Normalize(processName);
+        // Auditoría final V3/G3: a title is the one asked only when it is that title, folded (case, accents, whitespace).
+        string? title = byTitle ? InstalledApplicationResolver.Normalize(processName) : null;
         EnumWindowsProc callback = (handle, _) =>
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1347,11 +1341,8 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             try
             {
                 using Process process = Process.GetProcessById(checked((int)owner));
-                string title = ReadWindowTitle(handle);
-                bool matches = allWindows || (byTitle
-                    ? string.Equals(title.Trim(), processName, StringComparison.OrdinalIgnoreCase)
-                        || selector.Length > 0 && WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
-                            InstalledApplicationResolver.Normalize(title), selector)
+                bool matches = allWindows || (title is not null
+                    ? title.Length > 0 && InstalledApplicationResolver.Normalize(ReadWindowTitle(handle)) == title
                     : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
                 if (!matches)
                     return true;

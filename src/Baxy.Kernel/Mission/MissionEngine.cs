@@ -160,15 +160,6 @@ public sealed class MissionEngine : IDisposable
                     cancellationToken).ConfigureAwait(false);
             }
 
-            if (policy == PolicyDecision.Deny)
-            {
-                return await CompleteAsync(
-                    request,
-                    fingerprint,
-                    Rejected(request, "operation_forbidden"),
-                    cancellationToken).ConfigureAwait(false);
-            }
-
             var invocation = new OperationInvocation(
                 request.RequestId,
                 request.MissionId,
@@ -270,20 +261,18 @@ public sealed class MissionEngine : IDisposable
     }
 
     // v3 r6 lectores: the risk of the exact invocation when its handler can tell (IInvocationRiskAssessor), else the
-    // declared one. A forbidden operation stays forbidden, and a handler that fails to answer keeps the declared risk.
+    // declared one. A handler that fails to answer keeps the declared risk.
     private static OperationRisk InvocationRisk(IOperationHandler handler, JsonElement arguments)
     {
         OperationRisk declared = handler.Definition.Risk;
-        if (declared == OperationRisk.Forbidden || handler is not IInvocationRiskAssessor assessor)
+        if (handler is not IInvocationRiskAssessor assessor)
         {
             return declared;
         }
 
         try
         {
-            return assessor.AssessInvocationRisk(arguments) is { } assessed && assessed != OperationRisk.Forbidden
-                ? assessed
-                : declared;
+            return assessor.AssessInvocationRisk(arguments) ?? declared;
         }
         catch (Exception exception) when (exception is InvalidOperationException
             or ArgumentException or JsonException or KeyNotFoundException)
@@ -314,6 +303,7 @@ public sealed class MissionEngine : IDisposable
         ProductOperationDescriptor? descriptor = handler.Definition.ProductDescriptor;
         if (descriptor is null)
         {
+            // Only Kernel.Tests' definitions have no catalog entry (OperationDefinition's internal seam).
             return true;
         }
 

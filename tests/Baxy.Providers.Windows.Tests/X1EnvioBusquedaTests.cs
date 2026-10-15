@@ -30,7 +30,7 @@ public sealed class X1EnvioBusquedaTests
 
     private static ClientInteraction Focused(ClientFocus focus) => new(true, false, focus);
 
-    private static bool NamesRon92(string name) => WindowsDesktopMessagingAutomation.NamesRecipient(name, "Ron92");
+    private static bool NamesRon92(string name) => WindowsDesktopMessagingAutomation.RowNamesRecipient(name, "Ron92");
 
     // n1: the active result is still the row from before the filter; it names the recipient later, and only then
     // does the wait end (the old fixed 1.2 s clicked the other chat).
@@ -103,7 +103,7 @@ public sealed class X1EnvioBusquedaTests
 
     // The adapter waits for the named row instead of the fixed 1.2 s, matches rows as it matches the title, clicks the
     // row only once it named the recipient (C3), and the resolve never presses Enter in the client's search (the send
-    // is message.send's alone: nothing is sent twice).
+    // is SendAsync's alone: nothing is sent twice).
     [Test]
     public void TheSearchWaitsForTheNamedRowAndNeverSends()
     {
@@ -122,7 +122,7 @@ public sealed class X1EnvioBusquedaTests
         {
             Assert.That(typed, Is.GreaterThan(0));
             Assert.That(clicked, Is.GreaterThan(typed));
-            Assert.That(source, Does.Contain("Read, name => NamesRecipient(name, recipient), InteractionPoll"));
+            Assert.That(source, Does.Contain("Read, name => RowNamesRecipient(name, recipient), InteractionPoll"));
             Assert.That(source[typed..clicked], Does.Contain("if (named)"));
             Assert.That(source, Does.Not.Contain("await Task.Delay(1200, cancellationToken)"));
             Assert.That(source[typed..clicked], Does.Not.Contain("VirtualKeyReturn"));

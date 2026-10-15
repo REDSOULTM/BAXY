@@ -97,7 +97,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new CaptureVisionAdapter(Path.Combine(root, "captures")),
             new NamedBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
-            new GoogleNewsHeadlinesAdapter(),
             new MicrosoftAccountAdapter(root),
         ];
     }
@@ -404,17 +403,12 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "email.latest.read" or "email.latest.reply" or "email.send" => "outlook_authenticated_profile_required",
             "office.document.create" or "office.document.read" =>
                 "office_authenticated_adapter_required",
-            "message.recipient.resolve" or "message.send" =>
-                ProcessExists("WhatsApp") || ProcessExists("Discord")
-                    ? "messaging_session_adapter_required" : "messaging_client_not_running",
             "schedule.alarms" => "windows_task_scheduler_required",
             "game.installed.named" => "steam_epic_game_manifest_inventory_required",
             "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set"
                 or "bluetooth.radio.status" =>
                 "bluetooth_hardware_gate_required",
-            "game.install.prepare" or "game.install.commit" or "game.install.named" or "game.install.status"
-                or "game.install.cancel"
-                or "game.purchase.prepare" or "game.purchase.commit"
+            "game.install.named" or "game.install.status" or "game.install.cancel"
                 or "game.catalog.list" or "game.launch" =>
                 ProcessExists("steam") ? "steam_session_adapter_required" : "steam_client_not_running",
             "vision.describe" => string.IsNullOrWhiteSpace(

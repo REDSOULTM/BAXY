@@ -1,6 +1,6 @@
 {
  "schema": "baxy.search-addresses.v1",
- "source": "Revisión de honestidad r10a, hallazgo 7: la tabla de buscadores estaba en código (llm._search_of_address: Google, Bing y YouTube), y con otro buscador no había relectura de la búsqueda abierta tras una corrección. Cada buscador: el nombre con que se dice (site), su host (host exacto o, con hostSuffix, cualquier subdominio), la ruta de su página de resultados (paths) y el parámetro que lleva lo buscado (param). Lo lee baxy_mind.semantic.search_address.",
+ "source": "Revisión de honestidad r10a, hallazgo 7: la tabla de buscadores estaba en código (Google, Bing y YouTube), y con otro buscador no había relectura de la búsqueda abierta tras una corrección. Cada buscador: el nombre con que se dice (site), su host (host exacto o, con hostSuffix, cualquier subdominio), la ruta de su página de resultados (paths) y el parámetro que lleva lo buscado (param). Lo lee baxy_mind.semantic.search_address.",
  "engines": [
   {"site": "YouTube", "host": "youtube.com", "hostSuffix": true, "paths": ["/results"], "param": "search_query"},
   {"site": "Bing", "host": "bing.com", "hostSuffix": true, "paths": ["/search"], "param": "q"},

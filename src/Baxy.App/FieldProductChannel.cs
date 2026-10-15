@@ -28,15 +28,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly IFieldEventSink _sink;
     private readonly FieldTelemetrySampler _telemetry;
     private readonly CancellationToken _lifetimeCancellation;
-    private readonly SynchronizationContext _uiContext;
-    private readonly Timer _progressPulse;
     private readonly string _sessionId = Guid.NewGuid().ToString("N")[..12];
     private string _sessionLabel = "current";
     private long _activitySequence;
     private long _turnSequence;
-    private FieldProgressNotice? _publishedProgress;
-    private bool _progressPublished;
-    private DateTimeOffset? _progressPublishedUtc;
     private bool _disposed;
     // Estabilización M: the memory panel runs the chat's own catalog operations; its count is read from the store
     // when the view asks for the surfaces and the store may have changed since (first read, a chat change).
@@ -59,16 +54,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _sink = sink ?? throw new ArgumentNullException(nameof(sink));
         _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
         _lifetimeCancellation = lifetimeCancellation;
-        _uiContext = SynchronizationContext.Current ?? new SynchronizationContext();
         _viewModel.MessageAdded += OnMessageAdded;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _viewModel.MemoryChanged += OnMemoryChanged;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
-        _progressPulse = new Timer(
-            _ => PostToUi(OnProgressPulse),
-            null,
-            Timeout.Infinite,
-            Timeout.Infinite);
     }
 
     internal async Task<FieldHttpResponse> HandleHttpAsync(
@@ -105,15 +94,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 .SampleAsync(_lifetimeCancellation)
                 .ConfigureAwait(true);
             return Json(MetricsJson(metrics));
-        }
-
-        if (method == "GET" && route == "/hardware"
-            || method == "POST" && route == "/hardware/redetect")
-        {
-            FieldHardwareSnapshot hardware = await _telemetry
-                .HardwareAsync(_lifetimeCancellation)
-                .ConfigureAwait(true);
-            return Json(HardwareJson(hardware));
         }
 
         if (method == "GET" && route == "/surfaces")
@@ -278,8 +258,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             return Json(new JsonObject
             {
-                ["mode"] = "trusted_v2",
-                ["direct_execution"] = false,
                 // The tools the model is offered (the count the surface shows), as the mind receives them.
                 ["items"] = new JsonArray([.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
                 {
@@ -292,25 +270,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     };
                 })]),
             });
-        }
-
-        if (route == "/tools/execute")
-        {
-            return Error("direct_tool_execution_disabled", 403);
-        }
-
-        if (method == "GET" && route == "/profile")
-        {
-            return Json(new JsonObject { ["active"] = "vram4" });
-        }
-
-        if (method == "PUT" && route == "/profile")
-        {
-            JsonObject? payload = ParseBody(body);
-            string profile = (string?)payload?["name"] ?? string.Empty;
-            return profile == "vram4"
-                ? Json(new JsonObject { ["ok"] = true, ["active"] = profile })
-                : Error("profile_not_available", 409);
         }
 
         // Estabilización U: the accessible mode is the profile's file (PresentationModeStore), the same one the chat's
@@ -336,31 +295,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Json(applied);
         }
 
-        if (method == "GET" && route == "/agent/modes")
-        {
-            return Json(new JsonObject
-            {
-                ["items"] = new JsonArray(new JsonObject
-                {
-                    ["name"] = "auto",
-                    ["description"] = "Planner local con selección segura de herramientas",
-                }),
-            });
-        }
-
-        if (method == "GET" && route == "/agent/personas")
-        {
-            return Json(new JsonObject
-            {
-                ["items"] = new JsonArray(new JsonObject
-                {
-                    ["name"] = "default",
-                    ["description"] = "BAXY local",
-                    ["tone"] = "direct",
-                }),
-            });
-        }
-
         if (method == "GET" && route == "/voice/inventory")
         {
             return Json(VoiceInventory());
@@ -371,13 +305,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Json(CurrentSettings());
         }
 
-        // The historical panel's «apply» changes nothing on the host (its diagnostics are read-only), and never the
-        // confirmation mode, which has its own route and gesture (revisión U, H1).
-        if (method == "PUT" && route == "/settings")
-        {
-            return Json(new JsonObject { ["ok"] = true });
-        }
-
         if (method == "GET" && route == "/confirmation")
         {
             return Json(ConfirmationPolicy(MemoryOperationProtector.ResolveDataRoot()));
@@ -386,30 +313,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (method == "PUT" && route == "/confirmation")
         {
             return PutConfirmationMode(body);
-        }
-
-        if (method == "GET" && route == "/agent/system_prompt")
-        {
-            return Json(new JsonObject
-            {
-                ["prompt"] = "La mente local de BAXY administra su prompt y sus skills en el sidecar baxy_mind.",
-            });
-        }
-
-        if (method == "POST" && route == "/agent/restart")
-        {
-            await _viewModel.InitializeAsync(_lifetimeCancellation).ConfigureAwait(true);
-            return Json(new JsonObject { ["ok"] = _viewModel.IsReady });
-        }
-
-        if (method == "POST" && route == "/agent/recycle_server")
-        {
-            return Error("recycle_not_required", 409);
-        }
-
-        if (method == "POST" && route == "/upload")
-        {
-            return Error("attachments_not_supported", 501);
         }
 
         return Error("not_found", 404);
@@ -426,15 +329,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             },
             AgentEvent(),
             new() { ["type"] = "model", ["info"] = ModelInfo() },
-            new()
-            {
-                ["type"] = "ctx",
-                ["used"] = 0,
-                ["budget"] = ContextSize(),
-            },
             SurfacesEvent(),
             SessionEvent(),
-            FieldBridgeContract.CreateProgressPayload(CurrentProgress()),
         };
         foreach (ConversationMessage entry in _viewModel.Messages)
         {
@@ -443,14 +339,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         return events;
     }
-
-    internal FieldProgressNotice? CurrentProgress() =>
-        FieldBridgeContract.ResolveProgress(
-            _viewModel.IsReady && !_viewModel.IsMindPreparing,
-            _viewModel.IsBusy,
-            _viewModel.HasStartupError,
-            _viewModel.StatusDescription,
-            null);
 
     internal JsonObject AgentEvent() => new()
     {
@@ -563,9 +451,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ShellTraceStages.SubmitReceived);
         JsonObject? payload = ParseBody(body);
         string text = (string?)payload?["text"] ?? string.Empty;
-        // Attachments in the FieldCenter body are not a product contract:
-        // /upload already answers attachments_not_supported. They are ignored
-        // here so the conductor and the UI share the same admission.
         await _viewModel.WaitForCoreRecoveryAsync().ConfigureAwait(true);
         if (!FieldBridgeContract.TryAcceptTurn(
                 _viewModel.IsInputEnabled,
@@ -667,74 +552,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 ["value"] = CurrentConversationState(),
             });
         }
-
-        if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
-            or nameof(MainWindowViewModel.IsBusy)
-            or nameof(MainWindowViewModel.HasStartupError)
-            or nameof(MainWindowViewModel.IsMindPreparing)
-            or nameof(MainWindowViewModel.StatusDescription))
-        {
-            PublishProgress();
-            SyncProgressPulse();
-        }
-    }
-
-    private void OnProgressPulse()
-    {
-        PublishProgress(forcePulse: true);
-    }
-
-    private void SyncProgressPulse()
-    {
-        bool busy = _viewModel.IsBusy || !_viewModel.IsReady;
-        if (busy)
-        {
-            _ = _progressPulse.Change(
-                FieldBridgeContract.ProgressPulse,
-                FieldBridgeContract.ProgressPulse);
-        }
-        else
-        {
-            _ = _progressPulse.Change(Timeout.Infinite, Timeout.Infinite);
-        }
-    }
-
-    private void PublishProgress(bool forcePulse = false)
-    {
-        FieldProgressNotice? notice = CurrentProgress();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        bool sameStage = _progressPublished
-            && string.Equals(
-                notice?.Stage,
-                _publishedProgress?.Stage,
-                StringComparison.Ordinal)
-            && string.Equals(
-                notice?.Label,
-                _publishedProgress?.Label,
-                StringComparison.Ordinal);
-        if (sameStage
-            && !(forcePulse && FieldBridgeContract.ShouldPulseProgress(_progressPublishedUtc, now)))
-        {
-            return;
-        }
-
-        if (!Publish(FieldBridgeContract.CreateProgressPayload(notice, now)))
-        {
-            return;
-        }
-
-        _publishedProgress = notice;
-        _progressPublishedUtc = now;
-        _progressPublished = true;
-        if (notice is not null)
-        {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                "t" + Interlocked.Read(ref _turnSequence)
-                    .ToString(CultureInfo.InvariantCulture),
-                ShellTraceStages.VisibleIndication,
-                notice.Stage);
-        }
     }
 
     private string CurrentConversationState()
@@ -744,8 +561,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return "speaking";
         }
 
-        if (_viewModel.IsListening
-            || _viewModel.StatusDescription == "Te escucho")
+        if (_viewModel.IsListening)
         {
             return "listening";
         }
@@ -817,49 +633,39 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         string stt = Environment.GetEnvironmentVariable("BAXY_RENEW_STT_DIR") ?? string.Empty;
         string tts = Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_MODEL") ?? string.Empty;
         string wake = Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR") ?? string.Empty;
-        string sttName = Path.GetFileName(stt.TrimEnd('\\', '/'));
         return new JsonObject
         {
-            ["stt_default"] = sttName,
-            ["stt"] = new JsonArray(new JsonObject
+            ["stt"] = new JsonObject
             {
-                ["name"] = sttName,
-                ["size_label"] = "local",
+                ["name"] = Path.GetFileName(stt.TrimEnd('\\', '/')),
                 ["downloaded"] = stt.Length > 0 && File.Exists(Path.Combine(stt, "tokens.txt")),
-            }),
-            ["tts"] = new JsonArray(new JsonObject
+            },
+            ["tts"] = new JsonObject
             {
                 ["name"] = Path.GetFileNameWithoutExtension(tts),
                 ["downloaded"] = tts.Length > 0 && File.Exists(tts) && File.Exists(tts + ".json"),
-            }),
+            },
             ["wake"] = new JsonObject
             {
                 ["name"] = Path.GetFileName(wake.TrimEnd('\\', '/')),
                 ["downloaded"] = wake.Length > 0 && File.Exists(Path.Combine(wake, "config.json")),
             },
-            ["languages"] = new JsonArray("es", "en"),
         };
     }
 
+    // What the settings panel shows: the model the mind was given (BAXY_MIND_LLM_GGUF), its context and the voice's
+    // live state; the voice models come from /voice/inventory.
     private JsonObject CurrentSettings()
     {
         string? modelPath = Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF");
         FieldModelIdentity identity = ResolveModelIdentity(modelPath);
         return new JsonObject
         {
-            ["llamaUrl"] = "local sidecar",
             ["modelAlias"] = identity.Alias,
             ["ggufPath"] = identity.FileName,
             ["ctxSize"] = ContextSize(),
-            ["sttProvider"] = "sherpa-onnx (local)",
-            ["sttModel"] = "parakeet-tdt-0.6b-v3-int8",
-            ["ttsProvider"] = "sherpa-onnx piper (local)",
-            ["ttsVoice"] = "es_MX-claude-high",
-            ["wakeWord"] = "Baxy",
             ["wakeWordEnabled"] = _viewModel.IsWakeListening,
             ["voiceEnabled"] = _viewModel.IsMicAvailable,
-            ["visionAlways"] = false,
-            ["telemetry"] = false,
         };
     }
 
@@ -937,36 +743,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             : 49152;
     }
 
-    private static JsonObject MetricsJson(FieldMetricSnapshot metrics)
+    // A reading the PC did not give (no GPU counter) travels as null; the view shows «—».
+    private static JsonObject MetricsJson(FieldMetricSnapshot metrics) => new()
     {
-        var placeholders = new JsonObject();
-        foreach ((string key, bool value) in metrics.Placeholder)
-        {
-            placeholders[key] = value;
-        }
-
-        return new JsonObject
-        {
-            ["cpu"] = metrics.Cpu,
-            ["mem"] = metrics.Mem,
-            ["mem_used_gb"] = metrics.MemUsedGb,
-            ["gpu"] = metrics.Gpu,
-            ["net"] = metrics.Net,
-            ["dsk"] = metrics.Dsk,
-            ["tmp"] = metrics.Tmp,
-            ["uptime"] = metrics.Uptime,
-            ["placeholder"] = placeholders,
-        };
-    }
-
-    private static JsonObject HardwareJson(FieldHardwareSnapshot hardware) => new()
-    {
-        ["cpu"] = hardware.Cpu,
-        ["cpu_cores"] = hardware.CpuCores,
-        ["mem"] = hardware.Mem,
-        ["mem_total_gb"] = hardware.MemTotalGb,
-        ["gpu"] = hardware.Gpu,
-        ["gpu_vram_gb"] = hardware.GpuVramGb,
+        ["cpu"] = metrics.Cpu,
+        ["mem"] = metrics.Mem,
+        ["mem_used_gb"] = metrics.MemUsedGb,
+        ["gpu"] = metrics.Gpu,
+        ["dsk"] = metrics.Dsk,
+        ["uptime"] = metrics.Uptime,
     };
 
     private static JsonObject? ParseBody(string? body)
@@ -994,35 +779,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private bool Publish(JsonObject eventData) => _sink.Publish(eventData);
 
-    private void PostToUi(Action action)
+    public ValueTask DisposeAsync()
     {
         if (_disposed)
         {
-            return;
-        }
-
-        _uiContext.Post(
-            _ =>
-            {
-                if (!_disposed)
-                {
-                    action();
-                }
-            },
-            null);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_disposed)
-        {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         _disposed = true;
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.MemoryChanged -= OnMemoryChanged;
-        await _progressPulse.DisposeAsync();
+        return ValueTask.CompletedTask;
     }
 }

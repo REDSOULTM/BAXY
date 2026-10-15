@@ -184,3 +184,31 @@ tocan lo cambiado; en el notebook pasan).
 - Velocidad, investigado y descartado: MTP (el GGUF de Qwen3.5-4B no trae capas MTP), especulación por n-gramas
   (ngram-simple 0,83 s, ngram-mod 0,82 s contra 0,81 s sin ella), KV f16 (78,5 → 79,4 tok/s, a 16k peor). El modelo
   genera a 78 tok/s en bruto (64 con el prefijo de herramientas): la decisión cuesta ~0,7 s por llamada.
+- **Latido (escenas de práctica, 40):** tras los cambios del día bajó a 30/40. Medido: la frase de la regla 2 sobre «¿ya
+  lo hiciste?» lo vuelve más callado (sin ella 32 muestreado / 34 voraz; con ella 30 / 31; otra redacción 30). El latido
+  usa ahora el texto de sistema sin esa frase (sólo la pregunta una persona; en Qwen3.5 las herramientas van antes del
+  sistema, así que no rompe la caché compartida) y decide si interviene de forma voraz. Resultado p13: 32/40 (80 %),
+  molestas 0, riesgo solo 0. Ruido entre corridas iguales: ±2 escenas incluso voraz (la caché de prefijo cambia el
+  camino numérico: 25 de 40 decisiones con texto distinto).
+- Falsedades práctica p4: **1** en 26 líneas (F015 arreglada). F013: el recibo de `file.write` decía nombre y carpeta
+  conocida pero no dónde quedó, y el modelo repetía la ruta pedida. Ahora los recibos de escritura y creación del
+  sistema de archivos dicen `fullPath`; probado en el producto: «se creó en C:\Users\usuario\prueba-fullpath.txt» (la
+  verdad, aunque no sea el sitio pedido).
+- **Para el dueño (no borrado sin su permiso):** los bancos dejaron en `C:\Users\usuario` ficheros que BAXY escribió en la
+  raíz del perfil en vez de en `BAXY-bench`: `compras.txt`, `lista.txt`, `notas.txt`, `prueba.txt`,
+  `prueba-fullpath.txt` (2026-10-15, 12:38–15:56).
+
+**Código congelado (bde62d76c, 15:50) y ronda final de auditoría (5 agentes de sólo lectura).** Todas las pruebas en
+verde antes: Kernel 537, Contracts 70, Setup 477, Providers 2159. e2e práctica p7 sobre el código congelado: 19/30
+(herr 8/10, cu 5/8, agente 4/8, voz 2/4); primer sonido por orden p50 2,54 s (18 de 36 órdenes bajo 2,5 s; p6 2,32 s).
+Falsedades práctica p4: 1 (F013, arreglada después con `fullPath`).
+Hallazgos de la ronda (violaciones): mente 3 (corte silencioso a 6000, listas de palabras sin lector en app_places y
+memory_subjects) — arreglados en 5d818485; App 4 (el latido no retenía clipboard.copy, «descarga terminada» por un
+fichero aparecido, ajustes de voz y métricas que nadie midió); kernel 3 (descripciones que prometen una confirmación que
+no ocurre, listas cortadas a 20 sin decirlo, copias «verificadas» sin comparar); proveedores 4 (identidad de ventana por
+palabras, plegado que quita la puntuación —«Notepad» abría Notepad++—, listas de palabras en VisibleControlSurface,
+ScreenStateLines); externos 7 (ranking por popularidad en Spotify API, Netflix/Disney por prefijo o primera tarjeta,
+streaming por «contiene», OCR que acepta la etiqueta dentro de una línea más larga, destinatario por contención y Enter
+sin leer en WhatsApp, lugar del clima por palabra compartida). Más zonas grises y código muerto (ruta Notepad heredada,
+cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emisor, `message.send` y
+`filesystem.trash.restore` inalcanzables). Cuatro subagentes los arreglan en worktrees.

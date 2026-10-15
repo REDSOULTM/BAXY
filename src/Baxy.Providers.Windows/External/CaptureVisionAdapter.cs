@@ -429,11 +429,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             Content = new ByteArrayContent(body.WrittenSpan.ToArray()),
         };
         request.Content.Headers.ContentType = new("application/json");
-        string? apiKey = Environment.GetEnvironmentVariable("BAXY_VISION_API_KEY");
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            request.Headers.Authorization = new("Bearer", apiKey);
-        }
+        LocalVisionEndpoint.Authorize(request);
         effectBoundary.Cross(cancellationToken);
         using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
             .ConfigureAwait(false);

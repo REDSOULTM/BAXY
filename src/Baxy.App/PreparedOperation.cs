@@ -1,10 +1,8 @@
 using System.Buffers;
-using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
-using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
@@ -155,78 +153,24 @@ internal sealed class PreparedOperation
     }
 }
 
+/// <summary>
+/// The calls of this App session still unresolved: the same call made again while one is unresolved gets the same
+/// invocation, so the kernel's journal replays it instead of running it twice. It lives in memory only; a new start
+/// begins empty, since a call of an earlier session is never resumed or retried by itself.
+/// </summary>
 internal sealed class RetryableOperationRegistry
 {
     private readonly Dictionary<string, PreparedOperation> _operations = new(StringComparer.Ordinal);
-    private readonly DurableRetryStore _store;
-    private readonly MemoryOperationProtector? _memoryProtector;
-
-    internal RetryableOperationRegistry(
-        DurableRetryStore store,
-        MemoryOperationProtector? memoryProtector = null)
-    {
-        ArgumentNullException.ThrowIfNull(store);
-        _store = store;
-        _memoryProtector = memoryProtector;
-        foreach (PreparedOperation operation in store.Load())
-        {
-            AuthenticateLoadedMemoryOperation(operation);
-            if (!_operations.TryAdd(operation.IdentityKey, operation))
-            {
-                throw new InvalidDataException("La cola durable contiene operaciones duplicadas.");
-            }
-        }
-    }
-
-    public static RetryableOperationRegistry CreateDefault(
-        MemoryOperationProtector? memoryProtector = null) =>
-        new(
-            new DurableRetryStore(DurableRetryStore.ResolveDefaultPath()),
-            memoryProtector);
 
     public PreparedOperation GetOrAdd(RoutedOperation routed)
     {
         ArgumentNullException.ThrowIfNull(routed);
         PreparedOperation candidate = PreparedOperation.Create(routed.Name, routed.Arguments);
-        return GetOrAddPrepared(candidate);
-    }
-
-    private void AuthenticateLoadedMemoryOperation(PreparedOperation operation)
-    {
-        if (!MemoryOperationProtector.IsMemoryOperation(operation.OperationName))
-        {
-            return;
-        }
-
-        if (_memoryProtector is null)
-        {
-            throw new InvalidDataException(
-                "La cola durable contiene memoria sin una autoridad privada disponible.");
-        }
-
-        try
-        {
-            _ = _memoryProtector.InspectForRecovery(operation);
-        }
-        catch (Exception exception) when (exception is ProtectedPayloadException
-            or InvalidDataException
-            or StaleMemorySessionException)
-        {
-            throw new InvalidDataException(
-                "La cola durable contiene una operacion privada no autenticada.",
-                exception);
-        }
-    }
-
-    private PreparedOperation GetOrAddPrepared(PreparedOperation candidate)
-    {
         if (_operations.TryGetValue(candidate.IdentityKey, out PreparedOperation? existing))
         {
             return existing;
         }
 
-        var next = _operations.Values.Append(candidate).ToArray();
-        _store.Save(next);
         _operations.Add(candidate.IdentityKey, candidate);
         return candidate;
     }
@@ -236,33 +180,6 @@ internal sealed class RetryableOperationRegistry
         ArgumentNullException.ThrowIfNull(operation);
         if (_operations.TryGetValue(operation.IdentityKey, out PreparedOperation? current)
             && ReferenceEquals(current, operation))
-        {
-            PreparedOperation[] remaining = _operations.Values
-                .Where(candidate => !ReferenceEquals(candidate, operation))
-                .ToArray();
-            _store.Save(remaining);
-            _operations.Remove(operation.IdentityKey);
-        }
-    }
-
-    /// <summary>
-    /// Retires the pending entries <paramref name="retired"/> names, in one save. The
-    /// start of an App session retires what a computer-use mission of an earlier
-    /// session left (cu-v3 estab, hallazgo 12: a Fotos mission and its click
-    /// «Imagen» stayed in the profile across cases); every other entry keeps its
-    /// identity across the restart.
-    /// </summary>
-    internal void RetireWhere(Func<PreparedOperation, bool> retired)
-    {
-        ArgumentNullException.ThrowIfNull(retired);
-        PreparedOperation[] gone = _operations.Values.Where(retired).ToArray();
-        if (gone.Length == 0)
-        {
-            return;
-        }
-
-        _store.Save(_operations.Values.Except(gone).ToArray());
-        foreach (PreparedOperation operation in gone)
         {
             _operations.Remove(operation.IdentityKey);
         }

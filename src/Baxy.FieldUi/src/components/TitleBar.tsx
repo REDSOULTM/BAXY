@@ -90,7 +90,7 @@ export function TitleBar({ bypass }: { bypass: boolean }) {
           buttons, so clicking a control never starts a window drag. */}
       <div className="titlebar-drag pywebview-drag-region">
         <span className="titlebar-title">
-          gemma <span className="accent">4</span> <span className="dim">· field</span>
+          <span className="accent">BAXY</span><span className="dim"> · desktop</span>
         </span>
         {/* Bypass is seen on at every moment while it is on (identity: a conscious
             setting that stays on until it is switched off). */}

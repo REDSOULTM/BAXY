@@ -53,7 +53,6 @@ internal static class ShellTraceStages
     // de render pasó por dos vueltas de frame, no que el píxel llegó a la
     // pantalla. Etiquetarlo como «primer paint físico» exigiría una
     // observación externa correlacionada que aquí no existe.
-    internal const string VisibleIndication = "visible.indication";
     internal const string VisibleText = "visible.text";
     internal const string ResponseFinal = "response.final";
     internal const string TurnCancelled = "turn.cancelled";

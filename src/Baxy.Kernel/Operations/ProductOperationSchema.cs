@@ -20,12 +20,6 @@ public enum OperationJsonType
 }
 #pragma warning restore CA1720
 
-public enum ToolExposure
-{
-    Public,
-    Internal,
-}
-
 public sealed class OperationArgumentProperty
 {
     public OperationArgumentProperty(
@@ -400,7 +394,6 @@ public sealed class ProductOperationDescriptor
         OperationArgumentsSchema argumentsSchema,
         string risk,
         string verifierContractId,
-        ToolExposure toolExposure,
         string description,
         bool? requiresObservedEffect = null)
     {
@@ -420,11 +413,6 @@ public sealed class ProductOperationDescriptor
             throw new ArgumentException("The verifier contract identifier is not canonical.", nameof(verifierContractId));
         }
 
-        if (!Enum.IsDefined(toolExposure))
-        {
-            throw new ArgumentOutOfRangeException(nameof(toolExposure));
-        }
-
         if (string.IsNullOrWhiteSpace(description))
         {
             throw new ArgumentException("The operation description is required.", nameof(description));
@@ -434,7 +422,6 @@ public sealed class ProductOperationDescriptor
         ArgumentsSchema = argumentsSchema;
         Risk = risk;
         VerifierContractId = verifierContractId;
-        ToolExposure = toolExposure;
         Description = description;
         RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
     }
@@ -446,8 +433,6 @@ public sealed class ProductOperationDescriptor
     public string Risk { get; }
 
     public string VerifierContractId { get; }
-
-    public ToolExposure ToolExposure { get; }
 
     public string Description { get; }
 

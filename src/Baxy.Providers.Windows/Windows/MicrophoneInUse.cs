@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using System.Security;
-using Baxy.Providers.Windows.Applications;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
@@ -165,5 +164,20 @@ internal static class MicrophoneInUse
         {
             Marshal.FreeHGlobal(buffer);
         }
+    }
+
+    private static class NativeMethods
+    {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern SafeProcessHandle OpenProcess(
+            uint desiredAccess,
+            [MarshalAs(UnmanagedType.Bool)] bool inheritHandle,
+            uint processId);
+
+        [DllImport("kernel32.dll")]
+        internal static extern int GetPackageFamilyName(
+            SafeProcessHandle processHandle,
+            ref uint packageFamilyNameLength,
+            nint packageFamilyName);
     }
 }

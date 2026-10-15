@@ -415,9 +415,6 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                         Fold(name.GetString() ?? string.Empty), Fold(requested), StringComparison.Ordinal))
                     && item.TryGetProperty("id", out JsonElement id)
                     && id.ValueKind == JsonValueKind.String)
-                .OrderByDescending(item => item.TryGetProperty("popularity", out JsonElement popularity)
-                    && popularity.TryGetInt32(out int score) ? score : 0)
-                .Take(20)
                 .Select(item => item.Clone())
                 .ToArray();
             if (matches.Length == 0)
@@ -425,16 +422,17 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                 return ExternalJson.Failure(operation,
                     exactSelection ? "spotify_exact_track_not_found" : "spotify_query_track_not_found");
             }
+            // The query result is the first of Spotify's own order; an exact title shared by several tracks is not
+            // chosen here: they go back as candidates and nothing plays.
+            if (exactSelection && matches.Length > 1)
+            {
+                return SpotifyTrackCandidates(operation, requested, matches);
+            }
             JsonElement selected = matches[0];
             string trackId = selected.GetProperty("id").GetString()!;
             string uri = selected.GetProperty("uri").GetString()!;
             string selectedTitle = selected.GetProperty("name").GetString()!;
-            string artist = selected.TryGetProperty("artists", out JsonElement artists)
-                && artists.ValueKind == JsonValueKind.Array
-                && artists.GetArrayLength() > 0
-                && artists[0].TryGetProperty("name", out JsonElement artistName)
-                    ? artistName.GetString() ?? string.Empty
-                    : string.Empty;
+            string artist = FirstArtist(selected);
 
             using JsonDocument devices = await SpotifyJsonAsync(
                 HttpMethod.Get,
@@ -943,6 +941,36 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
     {
         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
     }
+
+    private static string FirstArtist(JsonElement track) =>
+        track.TryGetProperty("artists", out JsonElement artists)
+        && artists.ValueKind == JsonValueKind.Array
+        && artists.GetArrayLength() > 0
+        && artists[0].TryGetProperty("name", out JsonElement artistName)
+            ? artistName.GetString() ?? string.Empty
+            : string.Empty;
+
+    private static ExternalCapabilityReceipt SpotifyTrackCandidates(
+        string operation,
+        string requested,
+        IReadOnlyList<JsonElement> tracks) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("requested", requested);
+            writer.WriteStartArray("candidates");
+            foreach (JsonElement track in tracks)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("title", track.GetProperty("name").GetString());
+                writer.WriteString("artist", FirstArtist(track));
+                writer.WriteString("trackId", track.GetProperty("id").GetString());
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }), "spotify_exact_track_ambiguous");
 
     private static string Fold(string value)
     {

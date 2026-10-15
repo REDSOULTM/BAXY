@@ -1,6 +1,6 @@
 {
   "schema": "baxy.world-acts.v1",
-  "source": "Ronda 29 (pasada r27, v3-53: «Iniciar Transmisión» pulsado en OBS sin que nadie lo pidiera; v3-08 y v3-09: la lista de «Compartir» abierta a ciegas). Una sola fuente de las palabras con que un control dice que su clic sale al mundo o llega a otra persona: enviar, publicar, compartir, unirse, llamar, emitir en directo. La leen Baxy.Kernel (RiskPolicy: pregunta antes del clic) y la mente (semantic/account_acts.world_act: una regla nunca lo pulsa ni lo sugiere si el objetivo no lo nombra). Palabras plegadas: minúsculas, sin acentos. Grabar en el disco, reproducir o abrir una cámara virtual no salen del equipo: no están aquí.",
+  "source": "Las palabras con que el nombre de un control dice que su clic sale al mundo o llega a otra persona (enviar, publicar, compartir, unirse, llamar, transmitir): con ellas el kernel (RiskPolicy, sobre la etiqueta exacta de la invocación) pide el sí de la persona antes de pulsarlo. Ronda 29 (pasada r27: «Iniciar Transmisión» pulsado en OBS sin que nadie lo pidiera). Lo lee Baxy.Kernel (WorldActs); los ejemplos, sus pruebas.",
   "shortcutHint": "\\s*[(\\[](?:ctrl|control|ctl|alt|shift|mayus|mayusculas|supr|del|enter|intro|cmd|win)\\b[^)\\]]*[)\\]]$",
   "where": {
     "anywhere": "the words as whole words wherever they stand in the label",

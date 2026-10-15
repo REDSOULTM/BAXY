@@ -9,16 +9,12 @@ resultados y eventos (transcripciones de voz).
 from __future__ import annotations
 
 import json
-import os
 import sys
 import threading
-import time
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 MAX_LINE_BYTES = 1024 * 1024
-_READ_CHUNK_BYTES = 64 * 1024
-_PIPE_RETRY_SECONDS = 0.01
 PROTOCOL = "baxy.mind.v1"
 # The voice thread writes transcripts and events beside the request loop's replies: one line at a time.
 _WRITE_LOCK = threading.Lock()
@@ -49,66 +45,6 @@ def _decode_message(line: bytes) -> dict[str, Any]:
     if not isinstance(message, dict) or not isinstance(message.get("type"), str):
         raise ProtocolViolation("missing_type", "el mensaje no declara type")
     return message
-
-
-class _BoundedFileDescriptorLineReader:
-    """Read bounded lines without acquiring CPython's buffered-stream lock."""
-
-    def __init__(
-        self,
-        descriptor: int,
-        *,
-        read: Callable[[int, int], bytes] = os.read,
-        chunk_bytes: int = _READ_CHUNK_BYTES,
-    ) -> None:
-        if descriptor < 0:
-            raise ValueError("descriptor must be non-negative")
-        if chunk_bytes <= 0:
-            raise ValueError("chunk_bytes must be positive")
-        self._descriptor = descriptor
-        self._read = read
-        self._chunk_bytes = chunk_bytes
-        self._buffer = bytearray()
-        self._eof = False
-
-    def readline(self, limit: int = -1) -> bytes:
-        if limit <= 0:
-            raise ValueError("a positive line limit is required")
-
-        while True:
-            newline = self._buffer.find(b"\n")
-            if 0 <= newline < limit:
-                line_end = newline + 1
-                line = bytes(self._buffer[:line_end])
-                del self._buffer[:line_end]
-                return line
-            if len(self._buffer) >= limit:
-                line = bytes(self._buffer[:limit])
-                del self._buffer[:limit]
-                return line
-            if self._eof:
-                if not self._buffer:
-                    return b""
-                line = bytes(self._buffer)
-                self._buffer.clear()
-                return line
-
-            maximum_read = min(self._chunk_bytes, limit - len(self._buffer))
-            try:
-                chunk = self._read(self._descriptor, maximum_read)
-            except InterruptedError:
-                continue
-            except BlockingIOError:
-                # An empty nonblocking pipe is not EOF. Yield between reads
-                # so idle input consumes no busy loop or native blocking read.
-                time.sleep(_PIPE_RETRY_SECONDS)
-                continue
-            if chunk:
-                if len(chunk) > maximum_read:
-                    raise ValueError("read returned more bytes than requested")
-                self._buffer.extend(chunk)
-            else:
-                self._eof = True
 
 
 def read_message(stream=None) -> dict[str, Any] | None:

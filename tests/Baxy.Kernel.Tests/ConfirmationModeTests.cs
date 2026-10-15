@@ -107,28 +107,6 @@ public sealed class ConfirmationModeTests
     }
 
     [Test]
-    public async Task BypassStillDeniesForbiddenAndDoesNotRunUnsolicitedEffects()
-    {
-        var forbidden = new CountingHandler("note.create", OperationRisk.Forbidden);
-        using var journal = new InMemoryInvocationJournal();
-        using var engine = new MissionEngine(
-            new OperationRegistry([forbidden]),
-            journal,
-            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Bypass });
-
-        OperationResponse response = await engine.ExecuteAsync(
-            Request("note.create", "{}"),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Rejected));
-            Assert.That(response.ErrorCode, Is.EqualTo("operation_forbidden"));
-            Assert.That(forbidden.ExecutionCount, Is.Zero);
-        });
-    }
-
-    [Test]
     public void StoreRoundTripsBypassUntilTurnedOff()
     {
         string root = Path.Combine(Path.GetTempPath(), "baxy-confirmation-mode-" + Guid.NewGuid().ToString("N"));

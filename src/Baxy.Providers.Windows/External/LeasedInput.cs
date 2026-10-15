@@ -69,21 +69,6 @@ internal static class LeasedInput
     }
 
     /// <summary>
-    /// As <see cref="RunAsync{T}"/> for a helper that locates and brings up its own window (a script): the lease waits
-    /// for the pause and gives back whatever front and cursor the helper took.
-    /// </summary>
-    internal static async ValueTask<T> RunHelperAsync<T>(
-        IForegroundLease lease,
-        Func<CancellationToken, ValueTask<T>> act,
-        Func<string, bool, T> stopped,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(lease);
-        IInputBurst burst = await lease.AcquireForHelperAsync(cancellationToken).ConfigureAwait(false);
-        return await InBurstAsync(burst, act, stopped, cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// The helper burst of a script host (a PowerShell helper that finds and brings up its own window and sends real
     /// keys or clicks there), or null when the host runs without a lease (the test seams, whose runners are fakes). A
     /// refused burst (<see cref="IInputBurst.Refusal"/>) means nothing may run; the burst is restored either way.

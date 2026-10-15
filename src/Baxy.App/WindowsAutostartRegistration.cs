@@ -86,9 +86,9 @@ internal sealed class WindowsAutostartRegistration
 
     /// <summary>
     /// Registers this executable when it may own the sign-in start; otherwise
-    /// writes nothing, removes only a dead or worktree entry and returns null.
+    /// writes nothing and removes only a dead or worktree entry.
     /// </summary>
-    internal string? EnsureRegistered(IReadOnlyList<string> arguments)
+    internal void EnsureRegistered(IReadOnlyList<string> arguments)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         string executable = _executablePath();
@@ -100,7 +100,7 @@ internal sealed class WindowsAutostartRegistration
                 _runKey.Delete(PresenceLimits.AutostartValueName);
             }
 
-            return null;
+            return;
         }
 
         string command = BuildCommand(executable);
@@ -109,8 +109,6 @@ internal sealed class WindowsAutostartRegistration
         {
             _runKey.Write(PresenceLimits.AutostartValueName, command);
         }
-
-        return command;
     }
 
     internal bool MayRegister(string executable, IReadOnlyList<string> arguments)
@@ -222,19 +220,6 @@ internal sealed class WindowsAutostartRegistration
 
     private static string NormalizeDirectory(string path) =>
         Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
-
-    internal string? ReadRegisteredCommand() =>
-        _runKey.Read(PresenceLimits.AutostartValueName);
-
-    internal bool IsRegistered()
-    {
-        string? command = ReadRegisteredCommand();
-        return !string.IsNullOrWhiteSpace(command)
-            && string.Equals(
-                command,
-                BuildCommand(_executablePath()),
-                StringComparison.OrdinalIgnoreCase);
-    }
 
     internal static string ResolveCurrentExecutable()
     {

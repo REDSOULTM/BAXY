@@ -615,18 +615,6 @@ internal static partial class VisibleControlSurface
         return [.. family];
     }
 
-    private static Dictionary<uint, uint> ParentByProcess()
-    {
-        var parents = new Dictionary<uint, uint>();
-        foreach ((uint parent, List<uint> children) in ChildrenByParent())
-        {
-            foreach (uint child in children)
-                parents[child] = parent;
-        }
-
-        return parents;
-    }
-
     private static DateTime? StartTime(uint processId)
     {
         try

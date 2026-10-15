@@ -73,7 +73,7 @@ internal static class ScreenViewProjection
 
         if (controls.Count == 0)
         {
-            text.Append("(ninguno: la ventana no expone sus controles; actúa por el texto en pantalla)\n");
+            text.Append("(ninguno)\n");
         }
 
         int count = (int?)view["controlCount"] ?? controls.Count;
