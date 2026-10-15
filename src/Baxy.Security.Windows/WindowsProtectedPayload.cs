@@ -116,47 +116,6 @@ public sealed class WindowsProtectedPayload : IProtectedPayload
         }
     }
 
-    public byte[] SealUtf8(string plaintext, string purpose)
-    {
-        ArgumentNullException.ThrowIfNull(plaintext);
-
-        byte[] plaintextBytes;
-        try
-        {
-            plaintextBytes = StrictUtf8.GetBytes(plaintext);
-        }
-        catch (EncoderFallbackException)
-        {
-            throw new ProtectedPayloadException(ProtectedPayloadErrorCode.InvalidPlaintext);
-        }
-
-        try
-        {
-            return Seal(plaintextBytes, purpose);
-        }
-        finally
-        {
-            CryptographicOperations.ZeroMemory(plaintextBytes);
-        }
-    }
-
-    public string OpenUtf8(ReadOnlySpan<byte> envelope, string purpose)
-    {
-        byte[] plaintext = Open(envelope, purpose);
-        try
-        {
-            return StrictUtf8.GetString(plaintext);
-        }
-        catch (DecoderFallbackException)
-        {
-            throw new ProtectedPayloadException(ProtectedPayloadErrorCode.InvalidEnvelope);
-        }
-        finally
-        {
-            CryptographicOperations.ZeroMemory(plaintext);
-        }
-    }
-
     private static byte[] GetPurposeBytes(string purpose)
     {
         if (string.IsNullOrWhiteSpace(purpose)

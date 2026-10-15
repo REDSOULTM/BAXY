@@ -113,7 +113,7 @@ public static class ContractValidator
             string normalizedName;
             try
             {
-                normalizedName = ApplicationCatalogContract.NormalizeName(name);
+                normalizedName = CatalogNames.Normalize(name);
             }
             catch (ArgumentException)
             {
@@ -200,7 +200,7 @@ public static class ContractValidator
             string normalizedName;
             try
             {
-                normalizedName = GameCatalogContract.NormalizeName(entry.Name);
+                normalizedName = CatalogNames.Normalize(entry.Name);
             }
             catch (ArgumentException)
             {

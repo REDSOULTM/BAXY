@@ -30,9 +30,9 @@ public sealed class LocalMemoryStore : IMemoryStore
     private const int MaximumIntentEnvelopeBytes = 6 * 1024 * 1024;
     private const int MaximumWatermarkEnvelopeBytes = 16 * 1024;
     private const int PrivacyEmergencyHeadroomBytes = 16 * 1024;
-    private const string SnapshotPurpose = "memory.store.v1";
-    private const string IntentPurpose = "memory.intent.v1";
-    private const string WatermarkPurpose = "memory.watermark.v1";
+    private const string SnapshotPurpose = ProtectedPayloadPurposes.MemoryStoreV1;
+    private const string IntentPurpose = ProtectedPayloadPurposes.MemoryIntentV1;
+    private const string WatermarkPurpose = ProtectedPayloadPurposes.MemoryWatermarkV1;
     private const string CurrentFileName = "current.bin";
     private const string RecoveryFileName = "recovery.bin";
     private const string WatermarkFileName = "watermark.bin";

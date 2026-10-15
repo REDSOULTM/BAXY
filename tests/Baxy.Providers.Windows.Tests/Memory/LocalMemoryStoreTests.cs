@@ -917,12 +917,6 @@ public sealed class LocalMemoryStoreTests
             aes.Decrypt(nonce, ciphertext, tag, plaintext, Encoding.UTF8.GetBytes(purpose));
             return plaintext;
         }
-
-        public byte[] SealUtf8(string plaintext, string purpose) =>
-            Seal(Encoding.UTF8.GetBytes(plaintext), purpose);
-
-        public string OpenUtf8(ReadOnlySpan<byte> envelope, string purpose) =>
-            Encoding.UTF8.GetString(Open(envelope, purpose));
     }
 
     private sealed class MutableTimeProvider : TimeProvider

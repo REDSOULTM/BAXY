@@ -14,8 +14,8 @@ public sealed class BoundProtectedJsonCodec
 {
     private const int CurrentVersion = 1;
     private const int MaximumOperationNameLength = 96;
-    private const string ArgumentsDomain = "memory.arguments.v1";
-    private const string ResultDomain = "memory.result.v1";
+    private const string ArgumentsDomain = ProtectedPayloadPurposes.MemoryArgumentsV1;
+    private const string ResultDomain = ProtectedPayloadPurposes.MemoryResultV1;
     private readonly ProtectedJsonEnvelopeCodec _codec;
 
     public BoundProtectedJsonCodec(IProtectedPayload protector)
