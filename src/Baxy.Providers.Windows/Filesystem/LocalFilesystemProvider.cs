@@ -432,10 +432,15 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private string ResolveIn(string root, string relative, bool allowMissingLeaf)
     {
         relative ??= string.Empty;
-        if (Path.IsPathRooted(relative) || relative.Contains('\0')) throw Error("invalid_path");
+        // A full path inside the folder is the same place as its relative path: the model copies the path the person
+        // said (BAXY Renew 2026-10-15, e2e p3 F013); one outside the folder is refused before any effect.
+        if ((Path.IsPathRooted(relative) && !Path.IsPathFullyQualified(relative)) || relative.Contains('\0'))
+            throw Error("invalid_path");
         string full = Path.GetFullPath(Path.Combine(root, relative.Replace('/', Path.DirectorySeparatorChar)));
         if (!full.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(full, root, StringComparison.OrdinalIgnoreCase)) throw Error("path_outside_sandbox");
+            && !string.Equals(full, root, StringComparison.OrdinalIgnoreCase))
+            throw Error(string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)
+                ? "path_outside_sandbox" : "path_outside_folder");
         if (string.Equals(root, _root, StringComparison.OrdinalIgnoreCase) && IsReserved(full)) throw Error("path_reserved");
         EnsureSafePathIn(root, full, allowMissingLeaf);
         return full;

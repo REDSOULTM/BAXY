@@ -27,10 +27,18 @@ try {
         'downloads' {(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path}
     }
     $path=[IO.Path]::GetFullPath($path)
+    if($Subdirectory -match '^([A-Za-z]:[\\/]|[\\/]{2})'){
+        # A full path inside the folder is the same place as its relative path; one outside it is refused.
+        $full=[IO.Path]::GetFullPath($Subdirectory)
+        if(-not $full.StartsWith($path.TrimEnd('\')+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'known_path_outside_folder'}
+        $Subdirectory=$full.Substring($path.TrimEnd('\').Length+1)
+    }
     if($Subdirectory){
-        $parts=@($Subdirectory -split '[\/]')
+        $parts=@($Subdirectory -split '[\\/]')
         if([IO.Path]::IsPathRooted($Subdirectory) -or ($parts | Where-Object {$_ -in @('','.','..')})){throw 'known_subdirectory_invalid'}
-        $path=[IO.Path]::GetFullPath((Join-Path $path $Subdirectory))
+        $inside=[IO.Path]::GetFullPath((Join-Path $path $Subdirectory))
+        if(-not $inside.StartsWith($path.TrimEnd('\')+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'known_subdirectory_invalid'}
+        $path=$inside
     }
     if(-not (Test-Path -LiteralPath $path -PathType Container)){throw 'known_folder_missing'}
     Start-Process explorer.exe -ArgumentList @($path)
@@ -53,6 +61,8 @@ try {
     [pscustomobject]@{version=1;ok=$verified;effectObserved=$effect;folder=$Folder;subdirectory=$Subdirectory;verifiedPathName=[IO.Path]::GetFileName($path);authority='windows_shell_location_postread';error=$(if($verified){$null}else{'known_folder_window_not_verified'})}|ConvertTo-Json -Compress
     if(-not $verified){exit 2}
 } catch {
-    [pscustomobject]@{version=1;ok=$false;effectObserved=$effect;error='known_folder_open_failed'}|ConvertTo-Json -Compress
+    # The script's own refusals keep their code, so the model learns why (a subfolder that is not there, a path outside).
+    $code=if($_.Exception.Message -match '^known_[a-z_]+$'){$_.Exception.Message}else{'known_folder_open_failed'}
+    [pscustomobject]@{version=1;ok=$false;effectObserved=$effect;error=$code}|ConvertTo-Json -Compress
     exit 2
 }

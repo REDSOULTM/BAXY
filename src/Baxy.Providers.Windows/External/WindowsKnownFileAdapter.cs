@@ -775,10 +775,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         return count;
     }
 
-    // file.read and file.edit name one file: by its name, found once anywhere under the folder, or by its path
-    // relative to the known folder (as file.find gives it, without a subdirectory). Two or more are refused with
-    // their places; none, with the files whose name without its extension is the one asked, so the next call can name
-    // the right one.
+    // file.read and file.edit name one file: by its name, found once anywhere under the folder, by its path
+    // relative to the known folder (as file.find gives it, without a subdirectory), or by its full path inside the
+    // folder. Two or more are refused with their places; none, with the files whose name without its extension is the
+    // one asked, so the next call can name the right one.
     private ExternalCapabilityReceipt? Locate(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
@@ -787,6 +787,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     {
         located = default;
         string name = requested.Trim().Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        if (Path.IsPathFullyQualified(name))
+        {
+            (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, name))];
+            if (holding.Length == 0) return ExternalJson.Failure(operation, "known_path_outside_folder");
+            roots = [holding[0]];
+            name = Path.GetRelativePath(holding[0].Root, Path.GetFullPath(name));
+        }
         string[] parts = name.Split(Path.DirectorySeparatorChar);
         if (name.Length == 0 || Path.IsPathRooted(name) || name.Contains('*') || name.Contains('?')
             || parts.Any(part => part is "" or "." or ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
@@ -1099,6 +1106,13 @@ if __name__ == "__main__":
         IReadOnlyList<(string Label, string Root)> roots,
         string subdirectory)
     {
+        if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
+        {
+            (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, subdirectory))];
+            if (holding.Length == 0) throw new InvalidDataException("known_path_outside_folder");
+            roots = [holding[0]];
+            subdirectory = Path.GetRelativePath(holding[0].Root, Path.GetFullPath(subdirectory));
+        }
         if (string.IsNullOrWhiteSpace(subdirectory)
             || Path.IsPathRooted(subdirectory)
             || subdirectory.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
@@ -1117,6 +1131,15 @@ if __name__ == "__main__":
                 throw new InvalidDataException("known_subdirectory_reparse_point");
             return (item.Label, candidate);
         }).ToArray();
+    }
+
+    // A full path strictly inside a folder (the folder itself is not a path inside it). The model copies the path the
+    // person said; a full path inside the named folder is the same place as its relative path (BAXY Renew 2026-10-15,
+    // e2e p3 F013), and one outside it is refused before any effect.
+    private static bool IsInside(string root, string path)
+    {
+        string folder = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return Path.GetFullPath(path).StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string Identity(string label, string path)
