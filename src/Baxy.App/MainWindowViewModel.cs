@@ -57,7 +57,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isDisposed;
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
-    private DateTimeOffset? _firstWakeUtc;
 
     public MainWindowViewModel()
     {
@@ -191,7 +190,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public bool IsInputEnabled => IsReady && !IsBusy;
 
 
-    public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
 
     public bool IsMindReady => _mindClient is { IsReady: true };
 
@@ -741,12 +739,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     case "wake_detected":
                         VoiceFailure = null;
                         StatusDescription = "Te escucho…";
-                        if (_firstWakeUtc is null)
-                        {
-                            _firstWakeUtc = DateTimeOffset.UtcNow;
-                            OnPropertyChanged(nameof(FirstWakeUtc));
-                        }
-
                         break;
                     case "partial":
                         VoiceFailure = null;

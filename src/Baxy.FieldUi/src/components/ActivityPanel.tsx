@@ -136,7 +136,7 @@ export function ActivityPanel({
 }
 
 // maps a source tag to its CSS color class: the person and BAXY in var(--tag-you), the view's own lines in
-// var(--tag-sys).
+// var(--carmine) (the new look's .src.system wins over the first one's var(--tag-sys)).
 const SOURCE_CLASS: Record<SourceTag, string> = { YOU: 'you', BAXY: 'you', SYSTEM: 'system' };
 
 // The person's answer to a call that waits for their «sí»: the shell sends that exact call, or drops it.

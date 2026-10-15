@@ -17,9 +17,7 @@ param(
     [string]$TurnsFile,
     [string]$Text,
     [string]$CommandDir,
-    [int]$TimeoutMs = 120000,
-    # Sólo medida: el primer turno espera a que la bienvenida esté compuesta y publicada (--after-welcome).
-    [switch]$AfterWelcome
+    [int]$TimeoutMs = 120000
 )
 
 $ErrorActionPreference = "Stop"
@@ -66,10 +64,6 @@ $argumentList = [System.Collections.Generic.List[string]]::new()
 $argumentList.Add("--conductor")
 $argumentList.Add("--profile=$Profile")
 $argumentList.Add("--timeout-ms=$TimeoutMs")
-$argumentList.Add("--commit=$commit")
-if ($AfterWelcome) {
-    $argumentList.Add("--after-welcome")
-}
 if (-not [string]::IsNullOrWhiteSpace($Capture)) {
     if (-not (Test-Path $Capture)) {
         New-Item -ItemType Directory -Path $Capture -Force | Out-Null
