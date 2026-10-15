@@ -503,7 +503,7 @@ public static class ProductCatalog
             "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas, la carpeta del usuario) y verifica su identidad; una ruta absoluta dentro de esa carpeta vale como su ruta relativa."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0701 «Dime cuantos archivos .py
         // hay en el directorio actual», D24): el directorio actual es la carpeta del
-        // Explorador en primer plano; sin Explorador delante, el escritorio.
+        // Explorador en primer plano; sin Explorador delante falla (no_explorer_in_front).
         Descriptor(
             "filesystem.explorer.count",
             Schema(
@@ -708,8 +708,9 @@ public static class ProductCatalog
             "input.key.press",
             Schema([
                 // Goal v3 punto 2: Enter o Espacio sobre el «Sí» enfocado de un aviso de
-                // sobrescritura pisa el archivo igual que el clic; la misión lo marca
-                // desde la vista y RiskPolicy lo confirma.
+                // sobrescritura pisa el archivo igual que el clic; el modelo lo declara desde
+                // la vista (su significado va en el argumento, tool_descriptions.en) y
+                // RiskPolicy lo confirma.
                 String("consequence", types: NullableString, values: ["overwrite"]),
                 String("key", values:
                 [
@@ -734,14 +735,14 @@ public static class ProductCatalog
                     "shift", "shift_f10", "space", "tab", "win",
                 ]),
                 // Revisión de V (H1): lo que Enter o Espacio pulsan según la vista del paso (el control
-                // enfocado o, desde un campo, el resultado elegido de su lista) cuando pide la palabra de la
-                // persona: lo marca la misión y RiskPolicy lo juzga como la etiqueta de un clic.
+                // enfocado o, desde un campo, el resultado elegido de su lista): lo declara el modelo y
+                // RiskPolicy lo juzga como la etiqueta de un clic.
                 String("onto", types: NullableString, maximumUtf8Bytes: 256),
-                // El bucle de computer use declara cuándo Enter cae sobre un
-                // compositor de mensajes con texto: esa pulsación llega a una
-                // persona y el Kernel la confirma en modo normal (§2.1). Suprimir
-                // pregunta salvo que el paso declare que el teclado está en un
-                // campo de texto (text_field): fuera de uno borra lo seleccionado.
+                // El modelo declara cuándo Enter cae sobre un compositor de
+                // mensajes con texto: esa pulsación llega a una persona y el
+                // Kernel la confirma en modo normal (§2.1). Suprimir pregunta
+                // salvo que el paso declare que el teclado está en un campo de
+                // texto (text_field): fuera de uno borra lo seleccionado.
                 String("target", types: NullableString, values: ["message_composer", "text_field"]),
                 // La ventana de la misión (el hwnd de su última vista): la tecla
                 // va sólo a ella; si no está delante y no se la puede traer, nada
@@ -816,8 +817,8 @@ public static class ProductCatalog
                     // nunca se escribe como texto libre.
                     Boolean("entry", types: NullableBoolean),
                     // Goal v3 punto 2 (formularios): el rótulo del campo que recibe el
-                    // valor («Ancho», «Nombre de archivo»); la misión lo resuelve a su
-                    // índice en la vista y, si no lo encuentra, no se escribe nada.
+                    // valor («Ancho», «Nombre de archivo»); sin su índice en la vista
+                    // (index) no se escribe nada.
                     String("field", types: NullableString, maximumUtf8Bytes: 256),
                     // El campo de la última vista que recibe el texto (goal v3,
                     // punto 0): se le entrega sin teclado ni primer plano

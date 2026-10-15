@@ -200,6 +200,18 @@
   },
   "media.control": {
    "sourceApp": "Only to control a player other than what is playing now: the sourceAppUserModelId media.status gave for it, exactly as it gave it, or spotify for the Spotify app. Leave it out to control what is playing."
+  },
+  "input.key.press": {
+   "target": "Where the keyboard is: message_composer when the focused field holds a message to someone, so Enter or Space sends it (BAXY then asks the person first); text_field when it is any other text field, so Delete only erases characters (without it, Delete deletes what is selected and BAXY asks first). Leave it out otherwise.",
+   "onto": "The exact label, as your last look showed it, of the control Enter or Space presses (the focused button, or the result chosen in a list). A control that sends, joins a call, buys or deletes makes BAXY ask the person first. Leave it out when the key presses no control.",
+   "consequence": "overwrite when the key confirms replacing a file that already exists (Enter on the focused «Sí» of «¿Desea reemplazarlo?»): BAXY asks the person first. Leave it out otherwise."
+  },
+  "input.visible.click": {
+   "consequence": "overwrite when the click confirms replacing a file that already exists (the «Sí» of «¿Desea reemplazarlo?»): BAXY asks the person first. Leave it out otherwise.",
+   "search": "Text to type into the search box the click opens, in the same step; then the result named exactly as that text (or as choose) is pressed. If none is, nothing is pressed and the names seen are returned.",
+   "choose": "With search: the exact name of the result to press among those the search shows. Judged like a label: one that sends, joins a call, buys or deletes makes BAXY ask the person first.",
+   "manner": "How to press it: double (double click), menu (open its context menu), open (only open its drop-down or split arrow). Leave it out for a normal click.",
+   "controlId": "The id your last look gave for that control, when its label repeats on the screen; label must still name the same control."
   }
  }
 }

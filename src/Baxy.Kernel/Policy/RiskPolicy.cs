@@ -163,7 +163,7 @@ public static partial class RiskPolicy
                 return ClickLabels(arguments).Any(LabelReachesAPerson);
             case "input.key.press":
                 // Enter, and space on a focused send or reply control, hand what was written to someone when the
-                // step declares it lands on a message composer (the mind labels it from the focused control).
+                // step declares it lands on a message composer (the model declares it from the focused control).
                 // Revisión de V (H1): or presses a control that reaches someone (a voice channel highlighted in a search).
                 return KeyOf(arguments) is "enter" or "space"
                     && (TargetOf(arguments) is "message_composer" || LabelReachesAPerson(OntoOf(arguments)));
@@ -188,7 +188,7 @@ public static partial class RiskPolicy
         // list). Fail-closed: it asks unless the step declares the keyboard is on a text field, where it only
         // erases characters.
         // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
-        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The mission marks it from the view it
+        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The model declares it from the view it
         // was decided on.
         bool overwrites = arguments.TryGetProperty("consequence", out JsonElement consequence)
             && consequence.ValueKind == JsonValueKind.String
