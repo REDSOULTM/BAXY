@@ -1,0 +1,41 @@
+{
+  "actualizado": "2026-10-15T03:50:00-03:00",
+  "bancos": {
+    "ubicacion": "F:\\BAXYeval\\renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
+    "practica_abierta": [
+      "F:\\BAXYeval\\renew_bench\\cases.json (90, ya usado para ajustar)",
+      "F:\\BAXYeval\\renew_v1\\escenas\\practice.json",
+      "F:\\BAXYeval\\renew_v1\\e2e\\practice.json",
+      "F:\\BAXYeval\\renew_v1\\falsedades\\practice.json"
+    ],
+    "sellados": {}
+  },
+  "metas": {
+    "holdout": {"umbral": ">= 85 %", "estado": "pendiente", "evidencia": null},
+    "falsedades": {"umbral": "0 en el banco automático", "estado": "pendiente", "evidencia": null},
+    "instinto": {"umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20", "estado": "pendiente", "evidencia": null},
+    "velocidad_decision_p50": {"umbral": "<= 1 s", "estado": "pendiente", "evidencia": null},
+    "velocidad_texto_a_voz_p50": {"umbral": "<= 2,5 s", "estado": "pendiente", "evidencia": null},
+    "recursos": {"umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)", "estado": "pendiente", "evidencia": null},
+    "ronda_final_auditoria": {"umbral": "nada que viole <reglas>", "estado": "pendiente", "evidencia": null}
+  },
+  "tareas": [
+    {"id": "marco.estado", "estado": "cumplida", "quien": "PC"},
+    {"id": "marco.holdout_decision", "estado": "en_curso", "quien": "PC (subagente)"},
+    {"id": "marco.escenas", "estado": "en_curso", "quien": "PC (subagente)"},
+    {"id": "marco.e2e_y_falsedades", "estado": "en_curso", "quien": "PC (subagente)"},
+    {"id": "marco.renew_check", "estado": "pendiente", "quien": "PC"},
+    {"id": "falsedades.diagnostico", "estado": "pendiente", "quien": "NB"},
+    {"id": "ronda1.medir", "estado": "pendiente", "quien": "NB"},
+    {"id": "voz.piper", "estado": "pendiente", "quien": "NB"},
+    {"id": "arnes.nuevo", "estado": "pendiente", "quien": "PC"},
+    {"id": "computer_use", "estado": "pendiente", "quien": "PC"},
+    {"id": "herramientas_agente", "estado": "pendiente", "quien": "NB"},
+    {"id": "latido", "estado": "pendiente", "quien": "PC"},
+    {"id": "limpieza_codigo_muerto", "estado": "pendiente", "quien": "NB"},
+    {"id": "perfil_4gb", "estado": "pendiente", "quien": "NB"},
+    {"id": "optimizaciones", "estado": "pendiente", "quien": "PC"},
+    {"id": "medicion_final", "estado": "pendiente", "quien": "PC"},
+    {"id": "auditoria_final", "estado": "pendiente", "quien": "PC"}
+  ]
+}
