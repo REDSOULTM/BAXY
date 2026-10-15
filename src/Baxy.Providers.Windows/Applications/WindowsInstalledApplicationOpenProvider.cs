@@ -1678,7 +1678,13 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         Dictionary<uint, nint>? hostedFrames = null;
-        Dictionary<uint, uint>? parents = null;
+        // The processes running the launched image's name, and who started whom: a helper they started may draw the
+        // application's windows (steamwebhelper.exe under steam.exe); its ancestor's image is verified below.
+        HashSet<uint> launchers = packaged ? [] : [.. processes
+            .Where(process => string.Equals(process.ProcessName, Path.GetFileNameWithoutExtension(expectedExecutable),
+                StringComparison.OrdinalIgnoreCase))
+            .Select(static process => unchecked((uint)process.Id))];
+        Dictionary<uint, uint> parents = launchers.Count > 0 ? External.VisibleControlSurface.ParentByProcess() : [];
         try
         {
             foreach (Process process in processes)
@@ -1687,10 +1693,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 try
                 {
                     process.Refresh();
-                    if (!packaged && !string.Equals(
-                            process.ProcessName,
-                            Path.GetFileNameWithoutExtension(expectedExecutable),
-                            StringComparison.OrdinalIgnoreCase))
+                    if (!packaged && !launchers.Contains(unchecked((uint)process.Id))
+                        && !HasAncestorAmong(unchecked((uint)process.Id), launchers, parents))
                     {
                         // A process of another executable cannot be this
                         // classic application; reading its main module (elevated
@@ -1753,8 +1757,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     }
                     if (!packaged
                         && !ExecutableIsLaunchedImage(Path.GetFullPath(executablePath), expectedExecutable!)
-                        && !DescendsFromLaunchedImage(
-                            process, expectedExecutable!, parents ??= External.VisibleControlSurface.ParentByProcess()))
+                        && !DescendsFromLaunchedImage(process, expectedExecutable!, parents))
                         continue;
 
                     long creationTime = process.StartTime.ToUniversalTime().Ticks;
@@ -1946,6 +1949,19 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     /// within three generations, from a process running the launched image, each parent older than its child so a reused
     /// process id never passes for a parent.
     /// </summary>
+    private static bool HasAncestorAmong(uint process, HashSet<uint> ancestors, Dictionary<uint, uint> parents)
+    {
+        for (int generation = 0; generation < 3 && parents.TryGetValue(process, out uint parent) && parent != 0;
+             generation++)
+        {
+            if (ancestors.Contains(parent))
+                return true;
+            process = parent;
+        }
+
+        return false;
+    }
+
     internal static bool DescendsFromLaunchedImage(
         Process process, string expectedPath, IReadOnlyDictionary<uint, uint> parents)
     {
