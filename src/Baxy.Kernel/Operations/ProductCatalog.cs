@@ -373,7 +373,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "desktop.wallpaper.set.spi.registry.postread.v1",
             ToolExposure.Public,
-            "Cambia el fondo de escritorio a un color liso nombrado o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
+            "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
         Descriptor(
             "display.status",
             EmptySchema(),

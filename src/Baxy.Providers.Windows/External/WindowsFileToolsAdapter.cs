@@ -27,36 +27,6 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         ".csv", ".tsv", ".json", ".xml", ".yaml", ".yml", ".png", ".jpg", ".jpeg", ".gif", ".bmp",
         ".webp", ".svg", ".mp3", ".wav", ".m4a", ".flac", ".mp4", ".mkv", ".mov", ".webm", ".zip", ".7z",
     ];
-    private static readonly Dictionary<string, (byte R, byte G, byte B)> NamedColors = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["azul"] = (0, 78, 152),
-        ["blue"] = (0, 78, 152),
-        ["rojo"] = (170, 20, 20),
-        ["red"] = (170, 20, 20),
-        ["verde"] = (20, 120, 50),
-        ["green"] = (20, 120, 50),
-        ["negro"] = (0, 0, 0),
-        ["black"] = (0, 0, 0),
-        ["blanco"] = (255, 255, 255),
-        ["white"] = (255, 255, 255),
-        ["gris"] = (110, 110, 110),
-        ["gray"] = (110, 110, 110),
-        ["grey"] = (110, 110, 110),
-        ["amarillo"] = (230, 200, 40),
-        ["yellow"] = (230, 200, 40),
-        ["naranja"] = (230, 120, 30),
-        ["orange"] = (230, 120, 30),
-        ["violeta"] = (110, 50, 160),
-        ["morado"] = (110, 50, 160),
-        ["purple"] = (110, 50, 160),
-        ["rosa"] = (230, 120, 170),
-        ["pink"] = (230, 120, 170),
-        ["celeste"] = (120, 190, 240),
-        ["lightblue"] = (120, 190, 240),
-        ["marron"] = (110, 70, 40),
-        ["brown"] = (110, 70, 40),
-    };
-
     private readonly Func<string, string?> _knownFolder;
     private readonly HttpClient _http;
     private readonly Func<string, CancellationToken, Task<(byte[] Body, string ContentType)>>? _fetch;
@@ -600,14 +570,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         return ExternalJson.Success(operation, pictureResult, effectObserved: true);
     }
 
+    // The colour as the model writes it, «#RRGGBB»; a name («azul») is the model's to turn into one (BAXY Renew audit
+    // 2026-10-15: a dictionary of colour names here decided which blue the person meant).
     internal static (byte R, byte G, byte B)? ParseColor(string color)
     {
-        string folded = new string(color.Normalize(NormalizationForm.FormD)
-            .Where(character => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
-            .ToArray()).Trim().ToLowerInvariant();
-        if (NamedColors.TryGetValue(folded, out (byte R, byte G, byte B) named))
-            return named;
-        Match hex = Regex.Match(folded, "^#?([0-9a-f]{6})$");
+        Match hex = Regex.Match(color.Trim(), "^#?([0-9a-fA-F]{6})$");
         if (hex.Success)
         {
             int value = int.Parse(hex.Groups[1].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
@@ -639,6 +606,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             return ExternalJson.FailureBeforeEffect(operation, "known_folder_missing");
 
         Uri? uri = null;
+        Uri? pageUrl = null;
         byte[] body;
         string contentType;
         try
@@ -672,8 +640,9 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             }
 
             (body, contentType) = await FetchAsync(uri, cancellationToken).ConfigureAwait(false);
-            // H0077 «descarga la imagen de portada de wikipedia.org»: a page is
-            // not an image; its cover is the image the page itself announces.
+            // H0077 «descarga la imagen de portada de wikipedia.org»: the address of a page downloads the image the
+            // page itself announces as its cover (og:image), as the tool's description says, and the receipt names
+            // both addresses (BAXY Renew audit 2026-10-15: it did so without saying it).
             if (contentType.StartsWith("text/html", StringComparison.OrdinalIgnoreCase))
             {
                 string html = Encoding.UTF8.GetString(body);
@@ -684,6 +653,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                     return ExternalJson.FailureBeforeEffect(operation, "download_page_without_image");
                 if (!Uri.TryCreate(uri, cover.Groups[1].Value, out Uri? image))
                     return ExternalJson.FailureBeforeEffect(operation, "download_page_without_image");
+                pageUrl = uri;
                 uri = image;
                 (body, contentType) = await FetchAsync(uri, cancellationToken).ConfigureAwait(false);
             }
@@ -725,6 +695,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("sourceUrl", uri.AbsoluteUri);
+            if (pageUrl is not null)
+            {
+                writer.WriteString("pageUrl", pageUrl.AbsoluteUri);
+                writer.WriteBoolean("imageAnnouncedByPage", true);
+            }
             if (query.Length > 0)
                 writer.WriteString("query", query);
             writer.WriteString("folder", folder);
