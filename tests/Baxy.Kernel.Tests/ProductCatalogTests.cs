@@ -11,7 +11,8 @@ public sealed class ProductCatalogTests
 {
     // C03 (2026-09-12 … 2026-09-20) creció el catálogo de 170 a 191 descriptores con estas 21
     // operaciones, cada una sellada por su tanda; la cifra se re-pina aquí junto a la lista nominal
-    // (plan post-goal 2026-09-20, Fase 1 grupo B).
+    // (plan post-goal 2026-09-20, Fase 1 grupo B). document.pdf.read y filesystem.known.list se
+    // retiraron en BAXY Renew (RenewRetired).
     internal static readonly string[] C03CatalogAdditions =
     [
         "audio.app.volume.adjust",
@@ -20,8 +21,6 @@ public sealed class ProductCatalogTests
         "calculator.expression.evaluate",
         "client.channel.locate",
         "display.status",
-        "document.pdf.read",
-        "filesystem.known.list",
         "game.entitlement.named",
         "input.visible.controls",
         "message.draft",
@@ -38,12 +37,11 @@ public sealed class ProductCatalogTests
     ];
 
     // Auditoría semántica 2026-09-20 (REOPEN1993): herramientas tipadas que la
-    // encuesta pedía y el catálogo no tenía.
+    // encuesta pedía y el catálogo no tenía (document.text.read se retiró en BAXY Renew).
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
         "desktop.wallpaper.set",
         "document.presentation.create",
-        "document.text.read",
         "email.send",
         "file.compress",
         "filesystem.explorer.count",
@@ -66,16 +64,20 @@ public sealed class ProductCatalogTests
         "mission.computer.use",
     ];
 
-    // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto, y una sola operación para
-    // lo que suena después (alarmas y recordatorios).
+    // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto; editar, buscar, leer y
+    // escribir archivos con cuatro operaciones; y una sola para lo que suena después (alarmas y recordatorios).
     internal static readonly string[] RenewAgentAdditions =
     [
+        "file.edit",
+        "file.find",
+        "file.read",
+        "file.write",
         "web.fetch",
         "schedule.alarms",
     ];
 
-    // Lo que esas operaciones sustituyen, retirado en el mismo cambio (reminder.* sólo guardaba un registro que nadie
-    // hacía sonar).
+    // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
+    // (reminder.* sólo guardaba un registro que nadie hacía sonar).
     internal static readonly string[] RenewRetired =
     [
         "notification.cancel.at",
@@ -90,9 +92,15 @@ public sealed class ProductCatalogTests
         "reminder.list",
         "reminder.resolve.exact",
         "reminder.restore",
+        "document.pdf.read",
+        "document.text.read",
+        "filesystem.known.list",
+        "filesystem.known.search",
+        "filesystem.sandbox.append.named",
+        "filesystem.write.text",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 2 - 12;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 18;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -448,6 +456,46 @@ public sealed class ProductCatalogTests
             Assert.That(page.ArgumentsSchema.CanonicalJson,
                 Does.Contain("\"maximumCharacters\""));
             Assert.That(tabs.ArgumentsSchema.CanonicalJson, Does.Contain("\"limit\""));
+        });
+    }
+
+    // BAXY Renew agent tools (2026-10-15): the four file operations take their typed arguments and nothing else.
+    // Reading and finding change nothing; writing and editing are reversible (what they replace goes to the Recycle
+    // Bin first), so Normal runs every one of them without asking.
+    [TestCase("file.find", """{"folder":"desktop"}""", true)]
+    [TestCase("file.find", """{"folder":"all_known","query":"*.pdf","order":"recent","limit":5}""", true)]
+    [TestCase("file.find", """{"folder":"documents","content":"reunión","subdirectory":"trabajo"}""", true)]
+    [TestCase("file.find", """{"folder":"pictures"}""", false)]
+    [TestCase("file.find", """{"query":"informe"}""", false)]
+    [TestCase("file.read", """{"fileName":"informe.pdf","folder":"all_known","offset":4000,"maximumCharacters":4000}""", true)]
+    [TestCase("file.read", """{"fileName":"notas/ideas.md","folder":"desktop"}""", true)]
+    [TestCase("file.read", """{"fileName":"notas.txt","folder":"desktop","offset":-1}""", false)]
+    [TestCase("file.read", """{"fileName":"notas.txt","folder":"desktop","maximumCharacters":100}""", false)]
+    [TestCase("file.write", """{"relativePath":"hola.txt","text":"hola","folder":"desktop"}""", true)]
+    [TestCase("file.write", """{"relativePath":"lista.txt","text":"pan","append":true}""", true)]
+    [TestCase("file.write", """{"relativePath":"hola.txt","text":"hola","folder":"all_known"}""", false)]
+    [TestCase("file.edit", """{"fileName":"notas.txt","folder":"desktop","oldText":"lunes","newText":"martes"}""", true)]
+    [TestCase("file.edit", """{"fileName":"notas.txt","folder":"desktop","oldText":"2024","newText":"","replaceAll":true}""", true)]
+    [TestCase("file.edit", """{"fileName":"notas.txt","folder":"desktop","oldText":"lunes"}""", false)]
+    public void TheFileOperationsTakeTypedArgumentsAndNeverAskInNormalMode(string operation, string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
+            Assert.That(descriptor.Risk, Is.EqualTo(operation is "file.find" or "file.read"
+                ? OperationRisks.ReadOnly : OperationRisks.LowReversible));
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema),
+                Is.EqualTo(expected));
+            if (expected)
+            {
+                Assert.That(
+                    RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal,
+                        descriptor.Name, arguments.RootElement),
+                    Is.EqualTo(PolicyDecision.Allow));
+            }
         });
     }
 

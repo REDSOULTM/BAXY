@@ -79,8 +79,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         _webView.WebMessageReceived += OnWebMessageReceived;
     }
 
-    internal FieldProductChannel ProductChannel => _channel;
-
     bool IFieldEventSink.Publish(JsonObject eventData) => PostEvent(eventData);
 
     private async void OnWebMessageReceived(
@@ -251,15 +249,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
             // The pointer may have been released before the native drag began.
         }
     }
-
-
-    internal FieldProgressNotice? CurrentProgress() => _channel.CurrentProgress();
-
-    internal static string NormalizeActivitySource(string? source) =>
-        FieldProductChannel.NormalizeActivitySource(source);
-
-    internal static FieldModelIdentity ResolveModelIdentity(string? modelPath) =>
-        FieldProductChannel.ResolveModelIdentity(modelPath);
 
     private static JsonObject HttpValue(FieldHttpResponse response)
     {

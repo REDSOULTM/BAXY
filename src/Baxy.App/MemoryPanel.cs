@@ -131,73 +131,6 @@ internal sealed class MemoryPanel
         return (await ListAsync(client, protector, 1, cancellationToken)).Listed is not null;
     }
 
-    /// <summary>
-    /// Estabilización M3: the keys the store holds now (every entry's selector); null when the memory is off or cannot be
-    /// read, so the request goes on as asked.
-    /// </summary>
-    internal async Task<IReadOnlyList<string>?> KeysAsync(CancellationToken cancellationToken)
-    {
-        if (_client() is not { IsReady: true } client || _protector() is not { } protector)
-        {
-            return null;
-        }
-
-        (JsonObject? listed, _) = await ListAsync(client, protector, PageSize, cancellationToken);
-        return listed is not null && listed["enabled"] is JsonValue enabled && enabled.GetValue<bool>()
-            && listed["items"] is JsonArray items
-                ? items.Select(static item => (string?)item?["key"] ?? string.Empty).Where(static key => key.Length > 0)
-                    .ToArray()
-                : null;
-    }
-
-    /// <summary>
-    /// Estabilización M3 (live 2026-10-12: «Olvidá mi color favorito de prueba» was asked «¿Qué alcance deseas
-    /// eliminar…?»): the kept keys a datum named in the person's words stands for. The key itself, or one whose words (its
-    /// selector's or its name's, <see cref="Label(string, bool)"/>) are exactly the asked ones, is the only one; else every
-    /// key that carries all the asked words («mi color de prueba» → «color favorito de prueba»), never one that carries
-    /// fewer («color favorito» is not «color favorito de prueba»). Empty when none does.
-    /// </summary>
-    internal static IReadOnlyList<string> Candidates(string asked, IReadOnlyList<string> stored)
-    {
-        ArgumentNullException.ThrowIfNull(asked);
-        ArgumentNullException.ThrowIfNull(stored);
-        HashSet<string>[] askedNames = Names(asked);
-        if (askedNames[0].Count == 0)
-        {
-            return [];
-        }
-
-        string[] exact = stored
-            .Where(key => string.Equals(key, asked, StringComparison.OrdinalIgnoreCase)
-                || Names(key).Any(name => askedNames.Any(name.SetEquals)))
-            .ToArray();
-        return exact.Length > 0
-            ? exact[..1]
-            : stored.Where(key => Names(key).Any(name => askedNames.Any(name.IsSupersetOf))).ToArray();
-    }
-
-    private static HashSet<string>[] Names(string key) =>
-        [Words(key), Words(Label(key, english: false)), Words(Label(key, english: true))];
-
-    private static HashSet<string> Words(string text) =>
-        new(
-            Fold(text).Split(['_', ' ', '-', '\''], StringSplitOptions.RemoveEmptyEntries),
-            StringComparer.Ordinal);
-
-    private static string Fold(string text)
-    {
-        var builder = new System.Text.StringBuilder(text.Length);
-        foreach (char character in text.Normalize(System.Text.NormalizationForm.FormD).ToLowerInvariant())
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
-            {
-                builder.Append(character);
-            }
-        }
-
-        return builder.ToString();
-    }
-
     private async Task<(JsonObject? Listed, string? Error)> ListAsync(
         CoreProcessClient client,
         MemoryOperationProtector protector,
@@ -267,19 +200,16 @@ internal sealed class MemoryPanel
             ?? throw new InvalidDataException("The memory subjects are not an object.");
     });
 
-    internal static string Label(string selector) => Label(selector, english: false);
-
-    internal static string Label(string selector, bool english)
+    internal static string Label(string selector)
     {
         string folded = selector.Trim().ToLowerInvariant();
-        string language = english ? "en" : "es";
-        if (Subjects.Value["labels"]?[folded]?[language] is JsonValue known)
+        if (Subjects.Value["labels"]?[folded]?["es"] is JsonValue known)
         {
             return known.GetValue<string>();
         }
 
         return folded.StartsWith("historical_fact_", StringComparison.Ordinal)
-            ? (string)Subjects.Value["factLabel"]![language]!
+            ? (string)Subjects.Value["factLabel"]!["es"]!
             : folded.Replace('_', ' ');
     }
 

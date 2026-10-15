@@ -33,7 +33,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
     private volatile MindStartupState _mindStartupState;
-    private MindStartupFailure? _mindStartupFailure;
     private int _mindStartupFailureCount;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
@@ -49,7 +48,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
     private bool _isMicAvailable;
-    private string _draft = string.Empty;
     private string _statusText = "Iniciando";
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
@@ -126,17 +124,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>A risky call waits for the person's Sí or No (the interface shows the two buttons).</summary>
     public bool HasPendingConfirmation => _loop.HasPendingConfirmation;
 
-    public string Draft
-    {
-        get => _draft;
-        set
-        {
-            if (SetField(ref _draft, value))
-            {
-                OnPropertyChanged(nameof(CanSend));
-            }
-        }
-    }
 
     public string StatusText
     {
@@ -158,7 +145,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (SetField(ref _isReady, value))
             {
                 OnPropertyChanged(nameof(IsInputEnabled));
-                OnPropertyChanged(nameof(CanSend));
             }
         }
     }
@@ -171,7 +157,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (SetField(ref _isBusy, value))
             {
                 OnPropertyChanged(nameof(IsInputEnabled));
-                OnPropertyChanged(nameof(CanSend));
             }
         }
     }
@@ -184,7 +169,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public bool IsInputEnabled => IsReady && !IsBusy;
 
-    public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
 
     public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
 
@@ -319,25 +303,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    public async Task SubmitAsync(CancellationToken cancellationToken)
-    {
-        if (!CanSend || _coreClient is null)
-        {
-            return;
-        }
-
-        string draft = Draft;
-        Draft = string.Empty;
-        try
-        {
-            await SubmitAsync(new MissionInput(draft, MissionInputSource.Text), cancellationToken);
-        }
-        catch (MissionInputRejectedException)
-        {
-            // The draft is given back untouched; the composer shows its own limit.
-            Draft = draft;
-        }
-    }
 
     /// <summary>The person's words (typed, transcribed or sent by the conductor) open a turn.</summary>
     internal async Task SubmitAsync(MissionInput input, CancellationToken cancellationToken)
@@ -845,7 +810,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             Volatile.Write(ref _personVoiceChoice, 0);
             _mindClient = mind;
             _mindStartupState = MindStartupState.Ready;
-            _mindStartupFailure = null;
             _mindStartupFailureCount = 0;
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
             OnPropertyChanged(nameof(IsMindReady));
@@ -892,7 +856,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// </summary>
     private void RecordMindStartupFailure(MindStartupFailure? failure)
     {
-        _mindStartupFailure = failure;
         _mindStartupFailureCount++;
         _mindStartupState = MindStartupState.Failed;
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
@@ -902,10 +865,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal static TimeSpan MindRetryDelay(int failures) =>
         TimeSpan.FromSeconds(Math.Min(60, 10 * Math.Pow(2, Math.Clamp(failures, 1, 16) - 1)));
-
-    /// <summary>The cause of a model that is not up, for the interface's state; null when it is up or unknown.</summary>
-    internal string? MindUnavailableCause() =>
-        _mindStartupState == MindStartupState.Starting ? "iniciando" : _mindStartupFailure?.Cause;
 
     private async Task RetryMindAfterAsync(TimeSpan delay)
     {

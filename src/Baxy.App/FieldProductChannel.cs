@@ -19,93 +19,6 @@ internal interface IFieldEventSink
     bool Publish(JsonObject eventData);
 }
 
-internal sealed class CollectingFieldEventSink : IFieldEventSink
-{
-    private readonly List<JsonObject> _events = [];
-    private readonly object _gate = new();
-
-    internal IReadOnlyList<JsonObject> Snapshot()
-    {
-        lock (_gate)
-        {
-            return [.. _events];
-        }
-    }
-
-    public bool Publish(JsonObject eventData)
-    {
-        ArgumentNullException.ThrowIfNull(eventData);
-        lock (_gate)
-        {
-            _events.Add((JsonObject)eventData.DeepClone());
-        }
-
-        return true;
-    }
-}
-
-/// <summary>
-/// Declared publication-boundary injection for honest-terminal tests.
-/// Production leaves <see cref="Mode"/> at <see cref="FieldPublicationInjectionMode.None"/>.
-/// This is not an agent-mode policy bypass: admission, composition and
-/// verification still run; only the public projection is altered.
-/// </summary>
-internal enum FieldPublicationInjectionMode
-{
-    None,
-    Filter,
-    SuppressFinal,
-    Silence,
-}
-
-internal static class FieldPublicationInjection
-{
-    internal static FieldPublicationInjectionMode Mode { get; set; }
-
-    internal static void Reset() => Mode = FieldPublicationInjectionMode.None;
-}
-
-/// <summary>
-/// Declared composition-boundary injection for R07. Production leaves
-/// <see cref="Mode"/> at <see cref="FieldCompositionInjectionMode.None"/>.
-/// The request still enters through the common channel; only compose is altered.
-/// </summary>
-internal enum FieldCompositionInjectionMode
-{
-    None,
-    Reject,
-    Timeout,
-    Exhaust,
-}
-
-internal static class FieldCompositionInjection
-{
-    internal const string EnvironmentVariable = "BAXY_COMPOSITION_INJECTION";
-
-    internal static FieldCompositionInjectionMode Mode { get; set; }
-
-    internal static void Reset()
-    {
-        Mode = FieldCompositionInjectionMode.None;
-    }
-
-    internal static FieldCompositionInjectionMode Resolve()
-    {
-        if (Mode != FieldCompositionInjectionMode.None)
-        {
-            return Mode;
-        }
-
-        return Environment.GetEnvironmentVariable(EnvironmentVariable) switch
-        {
-            "reject" => FieldCompositionInjectionMode.Reject,
-            "timeout" => FieldCompositionInjectionMode.Timeout,
-            "exhaust" => FieldCompositionInjectionMode.Exhaust,
-            _ => FieldCompositionInjectionMode.None,
-        };
-    }
-}
-
 internal sealed class FieldProductChannel : IAsyncDisposable
 {
     internal const int MaximumRequestBodyCharacters = 65_536;
@@ -115,7 +28,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly IFieldEventSink _sink;
     private readonly FieldTelemetrySampler _telemetry;
     private readonly CancellationToken _lifetimeCancellation;
-    private readonly CancellationTokenSource _channelLifetime = new();
     private readonly SynchronizationContext _uiContext;
     private readonly Timer _progressPulse;
     private readonly string _sessionId = Guid.NewGuid().ToString("N")[..12];
@@ -126,12 +38,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private bool _progressPublished;
     private DateTimeOffset? _progressPublishedUtc;
     private bool _disposed;
-    private int _admissionSequence;
-    // M53 (D35): the «fuente» pages this channel published under a message. The view asks
-    // to open one by its address; only an address published here opens, in the person's
-    // own browser, never inside the view.
-    private const int MaximumPublishedSources = 256;
-    private readonly HashSet<string> _publishedSources = new(StringComparer.Ordinal);
     // Estabilización M: the memory panel runs the chat's own catalog operations; its count is read from the store
     // when the view asks for the surfaces and the store may have changed since (first read, a chat change).
     private readonly MemoryPanel _memory;
@@ -139,8 +45,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     // Encargo I2 (identidad redpc: the open panel listed 3 while the counter said 4 after a save by chat): every chat
     // change of the store is numbered and travels in the counter's own event, so the open list is read again with it.
     private int _memoryRevision;
-
-    internal Func<string, bool> SourceOpener { get; set; } = OpenInDefaultBrowser;
 
     // The host's presentation of the accessible mode (FieldUiBridge: the view's zoom), applied as the view reads it.
     internal Action<bool>? ApplyPresentation { get; set; }
@@ -166,14 +70,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             Timeout.Infinite,
             Timeout.Infinite);
     }
-
-    internal MainWindowViewModel ViewModel => _viewModel;
-
-    internal string SessionId => _sessionId;
-
-    internal string SessionLabel => _sessionLabel;
-
-    internal int AdmissionCount => Volatile.Read(ref _admissionSequence);
 
     internal async Task<FieldHttpResponse> HandleHttpAsync(
         string method,
@@ -316,18 +212,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             }
 
             return Json(new JsonObject { ["ok"] = true });
-        }
-
-        if (method == "POST" && route == "/source/open")
-        {
-            string url = (string?)ParseBody(body)?["url"] ?? string.Empty;
-            if (!_publishedSources.Contains(url) || !ConsultedSource.IsWikimediaPage(url))
-            {
-                return Error("source_not_published", 404);
-            }
-
-            bool opened = SourceOpener(url);
-            return Json(new JsonObject { ["ok"] = opened }, opened ? 200 : 503);
         }
 
         if (method == "POST" && route == "/log/clear")
@@ -602,17 +486,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             entry["route"] = message.Route;
         }
 
-        if (!message.IsUser && ConsultedSource.IsWikimediaPage(message.SourceUrl))
-        {
-            if (_publishedSources.Count >= MaximumPublishedSources)
-            {
-                _publishedSources.Clear();
-            }
-
-            _publishedSources.Add(message.SourceUrl!);
-            entry["source"] = message.SourceUrl;
-        }
-
         return new JsonObject
         {
             ["type"] = "activity",
@@ -735,24 +608,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Error("invalid_text", 400);
         }
 
-        // Publication-boundary stall after admission+dispatch. Composition and
-        // verification still ran; the public projection stays silent.
-        if (FieldPublicationInjection.Mode == FieldPublicationInjectionMode.Silence)
-        {
-            try
-            {
-                using var linked = CancellationTokenSource.CreateLinkedTokenSource(
-                    _lifetimeCancellation,
-                    _channelLifetime.Token);
-                await Task.Delay(Timeout.InfiniteTimeSpan, linked.Token)
-                    .ConfigureAwait(true);
-            }
-            catch (OperationCanceledException)
-            {
-                return Error("cancelled", 409);
-            }
-        }
-
         ShellTraceSink.Record(
             ShellTraceScopes.Bridge,
             turnId,
@@ -762,7 +617,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void PublishAdmission(string turnId, bool accepted, int status, string? error)
     {
-        Interlocked.Increment(ref _admissionSequence);
         Publish(new JsonObject
         {
             ["type"] = "admission",
@@ -775,33 +629,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void OnMessageAdded(ConversationMessage message)
     {
-        if (FieldPublicationInjection.Mode == FieldPublicationInjectionMode.Silence)
-        {
-            return;
-        }
-
         if (!message.IsUser)
         {
-            if (FieldPublicationInjection.Mode == FieldPublicationInjectionMode.Filter)
-            {
-                Publish(new JsonObject
-                {
-                    ["type"] = "publication_discard",
-                    ["reason"] = "filtered",
-                });
-                return;
-            }
-
-            if (FieldPublicationInjection.Mode == FieldPublicationInjectionMode.SuppressFinal)
-            {
-                Publish(new JsonObject
-                {
-                    ["type"] = "publication_error",
-                    ["reason"] = "final_not_delivered",
-                });
-                return;
-            }
-
             ShellTraceSink.Record(
                 ShellTraceScopes.Turn,
                 "t" + Interlocked.Read(ref _turnSequence)
@@ -873,11 +702,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void PublishProgress(bool forcePulse = false)
     {
-        if (FieldPublicationInjection.Mode == FieldPublicationInjectionMode.Silence)
-        {
-            return;
-        }
-
         FieldProgressNotice? notice = CurrentProgress();
         DateTimeOffset now = DateTimeOffset.UtcNow;
         bool sameStage = _progressPublished
@@ -1098,12 +922,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private static int ContextSize()
     {
-        string? raw = Environment.GetEnvironmentVariable("BAXY_MIND_CTX");
-        return int.TryParse(raw, NumberStyles.None, CultureInfo.InvariantCulture, out int value)
-            && value is >= 1024 and <= 131072
+        // The same variable and default the mind passes to llama-server (src/baxy_mind/__main__.py).
+        string? raw = Environment.GetEnvironmentVariable("BAXY_RENEW_CTX");
+        return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value)
+            && value > 0
             ? value
-            // The mind's own default per slot (llm.MAX_CONTEXT_TOKENS, Fase 3.5b decider prompt).
-            : 12288;
+            : 49152;
     }
 
     private static JsonObject MetricsJson(FieldMetricSnapshot metrics)
@@ -1137,21 +961,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["gpu"] = hardware.Gpu,
         ["gpu_vram_gb"] = hardware.GpuVramGb,
     };
-
-    private static bool OpenInDefaultBrowser(string url)
-    {
-        try
-        {
-            using System.Diagnostics.Process? process = System.Diagnostics.Process.Start(
-                new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
-            return true;
-        }
-        catch (Exception exception) when (exception is System.ComponentModel.Win32Exception
-            or InvalidOperationException or PlatformNotSupportedException)
-        {
-            return false;
-        }
-    }
 
     private static JsonObject? ParseBody(string? body)
     {
@@ -1207,8 +1016,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.MemoryChanged -= OnMemoryChanged;
-        await _channelLifetime.CancelAsync();
-        _channelLifetime.Dispose();
         await _progressPulse.DisposeAsync();
     }
 }
