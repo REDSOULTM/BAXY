@@ -472,7 +472,13 @@ try {
                 # and no effect ($effect is still false), never the requested title as the one seen.
                 [pscustomobject]@{ok=$true;effectObserved=$effect;alreadyPlaying=$true;error=$null;title=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle;observedNowPlaying=$beforeNowPlaying;processId=$process.Id}|ConvertTo-Json -Compress;exit 0
             }
-            $searchPageReady=$null -ne $playCandidate -or $null -ne $candidate
+            # BAXY Renew audit 2026-10-15 (S1; read on the notebook's client): the results page is the one whose
+            # content group the client names «Spotify – Buscar» («Spotify – Search» in English; Home is «Spotify -
+            # Reproductor web: …»). Until it shows, play controls are not results: a cold client draws Home and library
+            # rows after the page before was read (fin2: «reproducir descubrimiento semanal»). At the horizon the last
+            # observation is taken as it is.
+            $resultsShown=$Mode -ne 'query' -or @($all|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')}).Count -gt 0
+            $searchPageReady=$resultsShown -and ($null -ne $playCandidate -or $null -ne $candidate)
             $searchObservationError=$null
         } catch {
             $searchPageReady=$false
