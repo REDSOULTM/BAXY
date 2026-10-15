@@ -80,7 +80,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsFileToolsAdapter(),
             new PresentationDocumentAdapter(),
             new ExplorerFolderAdapter(),
-            new WindowsInventoryAdapter(),
             desktopInteraction,
             visibleControls,
             new WindowsScrollAdapter(visibleControls),

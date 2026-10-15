@@ -424,22 +424,16 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
-    public async Task SlowWinRtBluetoothInventoryYieldsToTheBoundedFallback()
+    public async Task SlowWinRtBluetoothInventorySaysItsTimeoutWithinItsBound()
     {
         using TemporaryDirectory temporary = new();
-        var first = new WindowsDeviceControlAdapter(
+        var devices = new WindowsDeviceControlAdapter(
             temporary.Path,
             temporary.Path,
             new StubProcessRunner(""),
             new SlowBluetoothInventory(TimeSpan.FromSeconds(1)),
             TimeSpan.FromMilliseconds(50));
-        var second = new StubExternalAdapter(new ExternalCapabilityReceipt(
-            "bluetooth.device.list",
-            false,
-            true,
-            Json("""{"version":1,"count":0,"devices":[],"authority":"bounded_fallback"}"""),
-            null));
-        using var provider = new WindowsExternalCapabilityProvider([first, second]);
+        using var provider = new WindowsExternalCapabilityProvider([devices]);
         var stopwatch = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
@@ -450,10 +444,8 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(stopwatch.Elapsed, Is.LessThan(TimeSpan.FromMilliseconds(500)));
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
-                Is.EqualTo("bounded_fallback"));
-            Assert.That(second.Calls, Is.EqualTo(1));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("bluetooth_winrt_inventory_timeout"));
         });
     }
 
