@@ -50,6 +50,50 @@ nada más.
   `c03-computer-use-engine`. Úsalas para no redescubrir lo ya aprendido.
 </donde_estas>
 
+<dos_maquinas>
+Dos sesiones de Claude Code trabajan a la vez, una en cada máquina y cada una con su propia cuenta. Tu papel depende
+de dónde corres (`hostname`):
+
+| | PC: `REDPC`, el **líder** | Notebook: `REDNOTE`, el **apoyo** |
+|---|---|---|
+| Hardware | RTX 4060 Ti 16 GB, i9-12900HX, 32 GB de RAM | RTX 3060 Laptop 6 GB, Ryzen 7 5800H, 16 GB de RAM |
+| Worktree | `C:\Users\usuario\Desktop\ETC\Programacion\BAXY-Renew` | la misma ruta |
+| Rama | `baxy-renew` (la de integración) | `renew-nb` |
+| Reparto inicial | El marco y los bancos, el arnés nuevo, computer use, el latido, la integración y la medición final. Caben dos llama-server a la vez | Las falsedades y la ronda 1, la voz que habla (Piper), las herramientas de agente, el banco de escenas, la limpieza de código muerto y medir el perfil de 4 GB en su GPU de 6 GB |
+
+El líder puede reasignar piezas por el buzón; el apoyo propone, y el líder decide. Las dos máquinas están dedicadas y
+cada una corre su propio BAXY y sus bancos en su GPU.
+
+- **Conexión:** por Tailscale y SSH con clave, ya configurado en los dos sentidos. Desde el PC se entra con
+  `ssh rednote` (100.64.0.11) y desde el notebook con `ssh redpc` (100.64.0.12). Las dos máquinas usan el usuario
+  `usuario`, el shell remoto es cmd.exe, y para algo largo conviene copiar un `.ps1` con `scp` y ejecutarlo.
+- **Código:**
+  - Las dos máquinas comparten un repositorio puente en el PC, `C:/Users/usuario/BAXY-coord/renew.git`, que en los dos
+    worktrees es el remoto `hub`.
+  - **El apoyo:**
+    1. Hace commits en `renew-nb` y los sube con `git push hub renew-nb`.
+    2. Antes de abrir cada pieza trae lo integrado con `git fetch hub` y `git merge hub/baxy-renew`.
+    3. No sube a GitHub, porque desde su sesión no tiene credenciales.
+  - **El líder:**
+    1. Trae el trabajo con `git fetch hub`.
+    2. Revisa y mide cada pieza del apoyo antes de fusionar `hub/renew-nb` en `baxy-renew`.
+    3. Sube `baxy-renew` a `hub` y a `origin` (GitHub, que es público).
+  - Ninguno toca los archivos de Git LFS.
+- **Buzón:** `scripts/buzon.sh escribir "texto"` y `scripts/buzon.sh leer [N]`. El archivo vive en el PC
+  (`C:/Users/usuario/BAXY-coord/buzon.md`) y el notebook llega a él por `ssh redpc`.
+  - **Léelo** al empezar cada pieza y después de cada commit.
+  - **Escribe una línea corta:**
+    - al tomar una pieza (`tomo: …`);
+    - al terminarla (`listo: …, commit …, medido …`);
+    - al necesitar algo del otro (`pido: …`);
+    - al fusionar (`fusionado: …`).
+  - Las decisiones del dueño no se resuelven en el buzón: van al dueño, con opciones y la notificación push.
+- **Estado:** el líder mantiene `artifacts/renew/metas.json` y `PROGRESO.md`. El apoyo escribe sus notas en
+  `artifacts/renew/PROGRESO-nb.md`, para que las fusiones no choquen.
+- **Si el otro calla:** si su sesión se paró (por ejemplo, por límite de uso), sigue con lo tuyo. Si una pieza tomada
+  lleva más de 2 horas sin señal en el buzón ni commits, el líder puede tomarla y lo anota en el buzón.
+</dos_maquinas>
+
 <alcance>
 Se mide y optimiza **el arnés**: el modelo, el prompt del sistema, las descripciones o skills, el protocolo, el bucle,
 la inferencia y las herramientas de BAXY (voz que habla, computer use, latido y herramientas de agente incluidas).
