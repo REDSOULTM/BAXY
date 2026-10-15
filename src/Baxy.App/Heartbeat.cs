@@ -85,49 +85,61 @@ internal sealed class Heartbeat : IAsyncDisposable
                 return;
             }
 
-            await NoteChangesAsync(cancellationToken).ConfigureAwait(false);
-            bool changed;
-            lock (_gate)
-            {
-                changed = _events.Count > 0;
-            }
-
-            bool due = DateTimeOffset.UtcNow - _lastBeat >= Tick;
-            if ((!changed && !due) || !_canBeat())
-            {
-                continue;
-            }
-
-            string activity = HeartbeatMoment.Activity(out _, out bool gpuBusy);
-            if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy))
-            {
-                // The five-minute look pauses while the person plays or the GPU is busy; a change still wakes it.
-                _lastBeat = DateTimeOffset.UtcNow;
-                continue;
-            }
-
-            string[] events;
-            lock (_gate)
-            {
-                events = changed ? [.. _events] : ["tick: 5 min"];
-                _events.Clear();
-            }
-
-            _lastBeat = DateTimeOffset.UtcNow;
-            JsonObject moment = HeartbeatMoment.Observe(events, _recent(), _connectivity);
-            moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
-                .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
-            moment["reminders"] = await _reminders().ConfigureAwait(false);
+            // One look that fails (a network or window read, the memory or the reminders, the beat itself) is traced
+            // and the next one comes as usual: it ended the heartbeat for the rest of the session (audit 2026-10-15,
+            // App 4).
             try
             {
-                await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty))
-                    .ConfigureAwait(false);
+                await LookAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                return;
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 ShellTraceSink.Record(ShellTraceScopes.Turn, "beat", "beat.failed", exception.GetType().Name);
             }
         }
+    }
+
+    private async Task LookAsync(CancellationToken cancellationToken)
+    {
+        await NoteChangesAsync(cancellationToken).ConfigureAwait(false);
+        bool changed;
+        lock (_gate)
+        {
+            changed = _events.Count > 0;
+        }
+
+        bool due = DateTimeOffset.UtcNow - _lastBeat >= Tick;
+        if ((!changed && !due) || !_canBeat())
+        {
+            return;
+        }
+
+        string activity = HeartbeatMoment.Activity(out _, out bool gpuBusy);
+        if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy))
+        {
+            // The five-minute look pauses while the person plays or the GPU is busy; a change still wakes it.
+            _lastBeat = DateTimeOffset.UtcNow;
+            return;
+        }
+
+        string[] events;
+        lock (_gate)
+        {
+            events = changed ? [.. _events] : ["tick: 5 min"];
+            _events.Clear();
+        }
+
+        _lastBeat = DateTimeOffset.UtcNow;
+        JsonObject moment = HeartbeatMoment.Observe(events, _recent(), _connectivity);
+        moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
+            .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
+        moment["reminders"] = await _reminders().ConfigureAwait(false);
+        await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty))
+            .ConfigureAwait(false);
     }
 
     // What changed since the last look, as the lines the model reads («app opened: …», «internet connectivity: …» …).
