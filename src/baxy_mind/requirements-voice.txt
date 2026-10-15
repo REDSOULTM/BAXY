@@ -1,0 +1,5 @@
+# Entradas directas de la voz de BAXY Renew (src/baxy_mind/voice.py); no es un lock instalable autónomo.
+# Wake word k4 (WakewordBaxy) y Parakeet Ultra (TranscripcionBaxy), los dos en CPU.
+sherpa-onnx==1.13.4+baxy.2
+sounddevice==0.5.5
+kaldi-native-fbank==1.22.3

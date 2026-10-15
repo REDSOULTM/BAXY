@@ -8,9 +8,9 @@ from pathlib import Path
 from . import protocol
 from .llm_server import LlmServer
 from .mind import Mind
+from .voice import Voice
 
-UNSUPPORTED = {"plan", "plan.ground", "computer.use.step", "narrate", "message.send",
-               "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel"}
+UNSUPPORTED = {"plan", "plan.ground", "computer.use.step", "narrate", "message.send", "voice.speak"}
 
 
 def main() -> int:
@@ -26,10 +26,12 @@ def main() -> int:
     trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
     trace.parent.mkdir(parents=True, exist_ok=True)
     mind = Mind(server, trace)
+    voice = Voice(protocol.write_message)  # loads beside the model; turns never wait for it
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL, "mindVersion": "renew-0.1",
         "models": {"llm": server.name},
-        "requests": ["catalog.configure", "turn.decide", "turn.continue", "arguments", "message.compose", "shutdown"],
+        "requests": ["catalog.configure", "turn.decide", "turn.continue", "arguments", "message.compose",
+                     "voice.start", "voice.stop", "voice.status", "voice.cancel", "shutdown"],
     })
     try:
         while True:
@@ -70,6 +72,21 @@ def main() -> int:
                 elif kind == "message.compose":
                     protocol.write_message(mind.compose(request_id, str(message.get("userText") or ""),
                                                         str(message.get("intent") or ""), message.get("facts")))
+                elif kind == "voice.start":
+                    mode = str(message.get("mode") or "direct")
+                    if voice.start(mode):
+                        protocol.write_message({"type": "voice.started", "id": request_id, "mode": mode})
+                    else:
+                        protocol.write_message(protocol.error_reply(request_id, "voice_unavailable",
+                                                                    voice.failure or "voice_unavailable"))
+                elif kind == "voice.stop":
+                    voice.stop()
+                    protocol.write_message({"type": "voice.stopped", "id": request_id})
+                elif kind == "voice.status":
+                    protocol.write_message({"type": "voice.status.result", "id": request_id, "status": voice.status()})
+                elif kind == "voice.cancel":
+                    # Nothing is spoken yet (no text to speech in Renew), so there is nothing to cancel.
+                    protocol.write_message({"type": "voice.cancelled", "id": request_id})
                 elif kind == "shutdown":
                     protocol.write_message({"type": "shutdown.ack", "id": request_id})
                     break
@@ -85,6 +102,7 @@ def main() -> int:
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",
                                                             f"{surface}_runtime_failure"))
     finally:
+        voice.stop()
         server.close()
     return 0
 

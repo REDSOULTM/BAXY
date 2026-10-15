@@ -325,7 +325,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>BAXY Renew: the mind keeps the turn's conversation and takes each verified result back.</summary>
     public bool IsTurnContinueAvailable => IsReady && _turnContinueAvailable;
 
-    /// <summary>Whether the mind serves voice (BAXY Renew does not yet): no voice request is sent otherwise.</summary>
+    /// <summary>Whether the mind speaks (offers voice.speak; BAXY Renew listens but does not speak yet): no speech request
+    /// is sent otherwise.</summary>
     public bool IsVoiceAvailable => IsReady && _voiceAvailable;
 
     internal static bool IsCpuFallbackProfile =>

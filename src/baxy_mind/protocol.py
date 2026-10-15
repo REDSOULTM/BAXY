@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from typing import Any, Callable
@@ -19,6 +20,8 @@ MAX_LINE_BYTES = 1024 * 1024
 _READ_CHUNK_BYTES = 64 * 1024
 _PIPE_RETRY_SECONDS = 0.01
 PROTOCOL = "baxy.mind.v1"
+# The voice thread writes transcripts and events beside the request loop's replies: one line at a time.
+_WRITE_LOCK = threading.Lock()
 
 
 @dataclass
@@ -127,8 +130,9 @@ def write_message(message: dict[str, Any], stream=None) -> None:
     )
     if len(payload) > MAX_LINE_BYTES:
         raise ProtocolViolation("reply_too_large", f"{len(payload)} bytes")
-    stream.write(payload + b"\n")
-    stream.flush()
+    with _WRITE_LOCK:
+        stream.write(payload + b"\n")
+        stream.flush()
 
 
 def hello(models: dict[str, str]) -> dict[str, Any]:
