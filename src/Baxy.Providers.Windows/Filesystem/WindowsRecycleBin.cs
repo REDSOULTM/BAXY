@@ -9,16 +9,16 @@ namespace Baxy.Providers.Windows.Filesystem;
 internal interface IRecycleBin
 {
     /// <summary>
-    /// Sends one file to the Recycle Bin. True only when the file left its place and the bin of its drive gained an
-    /// item; otherwise the file is where it was, with the same bytes, and false is returned.
+    /// Sends one file or folder to the Recycle Bin. True only when it left its place and the bin of its drive gained an
+    /// item; otherwise it is where it was, with the same bytes, and false is returned.
     /// </summary>
     bool Recycle(string path);
 }
 
 /// <summary>
 /// The Windows Recycle Bin through the shell (SHFileOperation with undo, no interface). A drive without a bin, or a
-/// file too large for it, would be deleted for good instead: a copy is kept beside the file until the bin of the
-/// drive is seen to have grown, and put back when it did not.
+/// file too large for it, would be deleted for good instead: a copy is kept beside the file (or the folder) until the
+/// bin of the drive is seen to have grown, and put back when it did not.
 /// </summary>
 internal sealed partial class WindowsRecycleBin : IRecycleBin
 {
@@ -36,24 +36,45 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         string full = Path.GetFullPath(path);
         string? drive = Path.GetPathRoot(full);
         string? directory = Path.GetDirectoryName(full);
-        if (string.IsNullOrEmpty(drive) || directory is null || !File.Exists(full)) return false;
+        bool folder = Directory.Exists(full);
+        if (string.IsNullOrEmpty(drive) || directory is null || (!folder && !File.Exists(full))) return false;
         string keep = Path.Combine(directory, ".baxy-previous-" + Guid.NewGuid().ToString("N") + ".tmp");
-        File.Copy(full, keep);
+        if (folder) CopyFolder(full, keep); else File.Copy(full, keep);
         try
         {
             File.SetAttributes(keep, File.GetAttributes(keep) | FileAttributes.Hidden);
             long before = Items(drive);
             if (before < 0) return false;
             int status = SendToBin(full);
-            bool gone = !File.Exists(full);
+            bool gone = folder ? !Directory.Exists(full) : !File.Exists(full);
             if (status == 0 && gone && Items(drive) > before) return true;
-            if (gone) File.Move(keep, full);
+            if (gone)
+            {
+                if (folder) Directory.Move(keep, full); else File.Move(keep, full);
+            }
             return false;
         }
         finally
         {
-            if (File.Exists(keep)) File.Delete(keep);
+            if (Directory.Exists(keep)) Directory.Delete(keep, recursive: true);
+            else if (File.Exists(keep)) File.Delete(keep);
         }
+    }
+
+    // The folder's own tree (links are not followed), for putting it back when the bin did not take it.
+    private static void CopyFolder(string source, string destination)
+    {
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = false,
+            AttributesToSkip = FileAttributes.ReparsePoint,
+        };
+        Directory.CreateDirectory(destination);
+        foreach (string folder in Directory.EnumerateDirectories(source, "*", options))
+            Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, folder)));
+        foreach (string file in Directory.EnumerateFiles(source, "*", options))
+            File.Copy(file, Path.Combine(destination, Path.GetRelativePath(source, file)));
     }
 
     private static int SendToBin(string path)

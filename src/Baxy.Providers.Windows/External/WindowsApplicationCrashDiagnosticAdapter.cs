@@ -16,21 +16,29 @@ internal sealed class WindowsApplicationCrashDiagnosticAdapter : IExternalOperat
               Sort-Object RecordId -Descending |
               Select-Object -First ([Math]::Min(200,$limit*4)) |
               ForEach-Object {
+                # Each event's own schema says where the application is (BAXY Renew audit 2026-10-15: the first
+                # non-empty property was taken, a bucket id for 1001 and the whole message for 1026): Application
+                # Error 1000 and Application Hang 1002 put it first, with the faulting module fourth (1000); Windows
+                # Error Reporting 1001 puts its event name third and the application (P1) sixth; the .NET Runtime 1026
+                # message starts «Application: <name>». Any other shape gives no name.
+                $values=@($_.Properties|ForEach-Object {[string]$_.Value})
                 $application=''
-                foreach($property in @($_.Properties)){
-                  $candidate=[string]$property.Value
-                  if(-not [string]::IsNullOrWhiteSpace($candidate)){
-                    try {$leaf=[IO.Path]::GetFileName($candidate);if($leaf){$candidate=$leaf}}catch{}
-                    $application=$candidate.Substring(0,[Math]::Min(128,$candidate.Length))
-                    break
-                  }
+                $module=''
+                $reported=''
+                switch("$($_.ProviderName)/$($_.Id)"){
+                  'Application Error/1000' {if($values.Count -gt 0){$application=$values[0]};if($values.Count -gt 3){$module=$values[3]}}
+                  'Application Hang/1002' {if($values.Count -gt 0){$application=$values[0]}}
+                  'Windows Error Reporting/1001' {if($values.Count -gt 5){$reported=$values[2];$application=$values[5]}}
+                  '.NET Runtime/1026' {if($values.Count -gt 0 -and $values[0] -match '^Application: ([^\r\n]+)'){$application=$Matches[1].Trim()}}
                 }
                 [pscustomobject]@{
                   recordId=[long]$_.RecordId
                   eventId=[int]$_.Id
                   provider=[string]$_.ProviderName
                   timeUtc=$_.TimeCreated.ToUniversalTime().ToString('o')
-                  applicationName=$application
+                  applicationName=$application.Substring(0,[Math]::Min(128,$application.Length))
+                  faultingModule=$module.Substring(0,[Math]::Min(128,$module.Length))
+                  reportedEvent=$reported.Substring(0,[Math]::Min(64,$reported.Length))
                 }
               }
           )

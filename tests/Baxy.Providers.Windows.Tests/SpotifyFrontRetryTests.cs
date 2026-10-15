@@ -22,7 +22,7 @@ public sealed class SpotifyFrontRetryTests
         "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_uia_failed\",\"stage\":\"started\",\"detail\":\"spotify_foreground_not_verified\"}";
 
     private const string Played =
-        "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Los Bunkers - Llueve sobre la ciudad\",\"selectedControl\":\"Reproducir Los Bunkers\",\"matchesQuery\":true,\"presses\":1,\"processId\":42}";
+        "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Los Bunkers - Llueve sobre la ciudad\",\"selectedControl\":\"Reproducir Los Bunkers\",\"presses\":1,\"processId\":42}";
 
     private static JsonElement Json(string value) => JsonDocument.Parse(value).RootElement.Clone();
 

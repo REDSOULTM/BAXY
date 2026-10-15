@@ -49,7 +49,7 @@ public sealed class KnownTextAndExplorerCountTests
         await File.WriteAllTextAsync(Path.Combine(project, "ROADMAP.md"), content, new UTF8Encoding(true));
         await File.WriteAllBytesAsync(Path.Combine(desktop, "binario.md"), [0, 1, 2, 3, 0, 0, 0, 5, 6, 0]);
         var roots = new Dictionary<string, string[]> { ["desktop"] = [desktop] };
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, roots);
+        var adapter = new WindowsKnownFileAdapter(roots);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "file.read",
@@ -82,7 +82,9 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.Result?.GetProperty("kind").GetString(), Is.EqualTo("text"));
             Assert.That(receipt.Result?.GetProperty("text").GetString(), Is.EqualTo(content));
-            Assert.That(receipt.Result?.GetProperty("lines").GetInt32(), Is.EqualTo(5));
+            // Four lines: the break that ends the last one does not start a fifth (e2e p6 E018: 138 for 137).
+            Assert.That(receipt.Result?.GetProperty("totalLines").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("lines").GetInt32(), Is.EqualTo(4));
             Assert.That(receipt.Result?.GetProperty("characters").GetInt32(), Is.EqualTo(content.Length));
             Assert.That(receipt.Result?.GetProperty("hasMore").GetBoolean(), Is.False);
             Assert.That(receipt.Result?.TryGetProperty("nextOffset", out _), Is.False);
@@ -107,8 +109,7 @@ public sealed class KnownTextAndExplorerCountTests
         Directory.CreateDirectory(documents);
         string content = string.Concat(Enumerable.Range(0, 120).Select(index => $"línea {index:D3} del informe\n"));
         await File.WriteAllTextAsync(Path.Combine(documents, "informe.txt"), content, new UTF8Encoding(false));
-        var adapter = new WindowsKnownFileAdapter(
-            temporary.Path, new Dictionary<string, string[]> { ["documents"] = [documents] });
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["documents"] = [documents] });
 
         var pages = new List<JsonElement>();
         int offset = 0;
@@ -154,7 +155,7 @@ public sealed class KnownTextAndExplorerCountTests
         await File.WriteAllTextAsync(Path.Combine(desktop, "procesos.txt"), "Name  Id\nbaxy  42\n", new UnicodeEncoding(false, true));
         await File.WriteAllTextAsync(Path.Combine(desktop, "viejo", "notas.txt"), "viejas");
         await File.WriteAllTextAsync(Path.Combine(documents, "notas.txt"), "nuevas");
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
         {
             ["desktop"] = [desktop],
             ["documents"] = [documents],
@@ -186,7 +187,7 @@ public sealed class KnownTextAndExplorerCountTests
     }
 
     [Test]
-    public async Task TheForegroundExplorerFolderIsCountedByExtensionOrTheDesktopWhenNoneIsInFront()
+    public async Task TheForegroundExplorerFolderOrTheNamedOneIsCountedAndWithNeitherItFails()
     {
         using TemporaryDirectory temporary = new();
         string project = Path.Combine(temporary.Path, "proyecto");
@@ -197,15 +198,18 @@ public sealed class KnownTextAndExplorerCountTests
             await File.WriteAllTextAsync(Path.Combine(project, name), "x");
         await File.WriteAllTextAsync(Path.Combine(desktop, "solo.py"), "x");
         string url = "file:///" + project.Replace('\\', '/');
+        Func<string, string?> known = folder => folder == "desktop" ? desktop : null;
         var inFront = new ExplorerFolderAdapter(
             new ScriptedRunner("{\"foreground\":123,\"path\":\"" + project.Replace("\\", "\\\\") + "\"}"),
-            () => desktop);
-        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\"}"), () => desktop);
+            known);
+        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\"}"), known);
 
         ExternalCapabilityReceipt counted = await inFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":".py"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt fallback = await noneInFront.InvokeAsync(
+        ExternalCapabilityReceipt none = await noneInFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":"py"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt named = await noneInFront.InvokeAsync(
+            "filesystem.explorer.count", Json("""{"extension":"py","folder":"desktop"}"""), CancellationToken.None);
 
         Assert.That(counted.Verified, Is.True, counted.ErrorCode);
         Assert.Multiple(() =>
@@ -216,10 +220,11 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(counted.Result?.GetProperty("folderName").GetString(), Is.EqualTo("proyecto"));
             Assert.That(counted.Result?.GetProperty("source").GetString(), Is.EqualTo("explorer_foreground"));
             Assert.That(counted.Result?.GetRawText(), Does.Not.Contain(temporary.Path.Replace("\\", "\\\\")));
-            Assert.That(fallback.Verified, Is.True, fallback.ErrorCode);
-            Assert.That(fallback.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
-            Assert.That(fallback.Result?.GetProperty("source").GetString(), Is.EqualTo("desktop"));
-            Assert.That(fallback.Result?.GetProperty("folderName").GetString(), Is.EqualTo("Escritorio"));
+            Assert.That(none.ErrorCode, Is.EqualTo("no_explorer_in_front"));
+            Assert.That(named.Verified, Is.True, named.ErrorCode);
+            Assert.That(named.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(named.Result?.GetProperty("source").GetString(), Is.EqualTo("known_folder"));
+            Assert.That(named.Result?.GetProperty("folderName").GetString(), Is.EqualTo("Escritorio"));
         });
     }
 }

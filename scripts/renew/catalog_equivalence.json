@@ -17,6 +17,8 @@
  "filesystem.known.search": {"op": "file.find", "fixed": {}, "args": {"folder": "folder", "limit": null, "query": "query", "subdirectory": "subdirectory"}},
  "filesystem.write.text": {"op": "file.write", "fixed": {}, "args": {"expectedSha256": null, "folder": "folder", "relativePath": "relativePath", "text": "text"}},
  "filesystem.sandbox.append.named": {"op": "file.write", "fixed": {"append": true}, "args": {"fileName": "relativePath", "text": "text"}},
+ "package.install.prepare": {"op": "package.install", "args": {"packageId": "packageId", "version": "version"}},
+ "package.install.commit": {"op": "package.install", "args": {"confirmationId": null}},
  "routine.delete": {"op": null},
  "routine.list": {"op": null},
  "routine.phrase.create": {"op": null},

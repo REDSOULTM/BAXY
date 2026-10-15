@@ -315,10 +315,11 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     && sourceAppValue.ValueKind == JsonValueKind.String
                     && !string.IsNullOrWhiteSpace(sourceAppValue.GetString()))
                 {
+                    // The session the model named by the id media.status gave, compared whole (BAXY Renew audit
+                    // 2026-10-15: a part of it anywhere in the id).
                     string requestedSource = sourceAppValue.GetString()!;
-                    session = sessions.FirstOrDefault(candidate =>
-                        candidate.SourceAppUserModelId.Contains(
-                            requestedSource, StringComparison.OrdinalIgnoreCase));
+                    session = sessions.FirstOrDefault(candidate => string.Equals(
+                        candidate.SourceAppUserModelId, requestedSource, StringComparison.OrdinalIgnoreCase));
                 }
                 // Owner's test 2026-09-21 (turn 148, «para la canción» right after a
                 // YouTube playback): Edge kept a session whose status was Closed, so

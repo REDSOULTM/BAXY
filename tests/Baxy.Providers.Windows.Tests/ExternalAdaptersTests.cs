@@ -358,13 +358,13 @@ public sealed class ExternalAdaptersTests
         var runner = new ThrowingProcessRunner(
             new System.ComponentModel.Win32Exception(2, "winget.exe was not found"));
         // REOPEN1993 grupo G: the package operations moved to WingetPackageAdapter.
-        var adapter = new WingetPackageAdapter(runner, Path.Combine(Path.GetTempPath(), "baxy-winget-tests"), _ => null);
+        var adapter = new WingetPackageAdapter(runner, _ => null);
 
         ExternalCapabilityReceipt? receipt = null;
         Assert.DoesNotThrowAsync(async () =>
         {
             receipt = await adapter.InvokeAsync(
-                "package.install.prepare",
+                "package.install",
                 Json("""{"packageId":"Microsoft.PowerToys"}"""),
                 CancellationToken.None);
         });
@@ -1146,7 +1146,7 @@ public sealed class ExternalAdaptersTests
         await File.WriteAllTextAsync(Path.Combine(downloads, "two.bin"), "same");
         await File.WriteAllTextAsync(Path.Combine(downloads, "other.bin"), "else");
         var roots = new Dictionary<string, string[]> { ["downloads"] = [downloads] };
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, roots);
+        var adapter = new WindowsKnownFileAdapter(roots);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.known.duplicates", Json("""{"folder":"downloads","limit":10}"""),
@@ -1160,36 +1160,6 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("groups")[0].GetProperty("files")
                 .GetArrayLength(), Is.EqualTo(2));
             Assert.That(File.ReadAllText(Path.Combine(downloads, "one.bin")), Is.EqualTo("same"));
-        });
-    }
-
-    [Test]
-    public async Task AbsoluteFileDeleteIsIdempotentAndUsesPrivateTrashInsideTemp()
-    {
-        using TemporaryDirectory temporary = new();
-        string source = Path.Combine(temporary.Path, "delete-me.txt");
-        await File.WriteAllTextAsync(source, "recoverable");
-        var adapter = new WindowsKnownFileAdapter(
-            temporary.Path, new Dictionary<string, string[]>());
-
-        ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
-            "filesystem.path.ensure.absent",
-            Json("""{"path":"C:/no/existe/zzz_fake.txt"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt removed = await adapter.InvokeAsync(
-            "filesystem.path.ensure.absent",
-            Json(JsonSerializer.Serialize(new { path = source })), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(missing.Verified, Is.True);
-            Assert.That(missing.EffectObserved, Is.False);
-            Assert.That(missing.EffectMayHaveOccurred, Is.False);
-            Assert.That(missing.Result?.GetProperty("alreadyAbsent").GetBoolean(), Is.True);
-            Assert.That(removed.Verified, Is.True);
-            Assert.That(removed.EffectObserved, Is.True);
-            Assert.That(File.Exists(source), Is.False);
-            Assert.That(Directory.GetFiles(Path.Combine(temporary.Path, "known-file-trash")),
-                Has.Length.EqualTo(1));
         });
     }
 
@@ -3461,51 +3431,6 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
-    public async Task GraphCalendarListUsesBearerAndProjectsOpaqueIdentity()
-    {
-        const string body = """
-            {"value":[{"id":"remote-id","subject":"Reunión","start":{"dateTime":"2026-07-17T10:00:00","timeZone":"UTC"},"end":{"dateTime":"2026-07-17T11:00:00","timeZone":"UTC"}}]}
-            """;
-        using var http = new HttpClient(new StubHttpHandler(body));
-        using var adapter = new MicrosoftGraphCalendarAdapter(http, () => "token");
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "calendar.event.list",
-            Json("""{"startUtc":"2026-07-17T00:00:00Z","endUtc":"2026-07-18T00:00:00Z"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("events")[0].GetProperty("eventId").GetString(),
-                Does.StartWith("event_"));
-            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("remote-id"));
-        });
-    }
-
-    [Test]
-    public async Task GraphCreateWithUnreadableAcceptedResponsePreservesAmbiguousEffect()
-    {
-        var handler = new RecordingInvalidJsonHttpHandler();
-        using var http = new HttpClient(handler);
-        using var adapter = new MicrosoftGraphCalendarAdapter(http, () => "token");
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "calendar.event.create",
-            Json(
-                """{"title":"Reunión","startUtc":"2026-07-29T10:00:00Z","endUtc":"2026-07-29T11:00:00Z"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(handler.PostCalls, Is.EqualTo(1));
-            Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("microsoft_graph_calendar_failed"));
-        });
-    }
-
-    [Test]
     public async Task MissingLocalYouTubeDependenciesFailBeforeTheEffectBoundary()
     {
         using var adapter = new YouTubeMpvAdapter(
@@ -4135,6 +4060,51 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // media.control's sourceApp names a player by the id media.status gave it, compared whole (BAXY Renew audit
+    // 2026-10-15): the tab and the local player stand aside before any effect for any other, so «pausa Spotify» never
+    // pauses them, and a word of the id is not the id.
+    [TestCase("spotify", "media_source_app_not_youtube_tab")]
+    [TestCase("youtube", "media_source_app_not_youtube_tab")]
+    [TestCase("BAXY YouTube (Edge)", "youtube_tab_not_found")]
+    public async Task TheYouTubeTabIsNamedOnlyByItsOwnId(string sourceApp, string error)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: false);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control",
+            Json(JsonSerializer.Serialize(new Dictionary<string, string> { ["action"] = "pause", ["sourceApp"] = sourceApp })),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(browser.Calls, Is.Zero);
+        });
+    }
+
+    [TestCase("spotify", "media_source_app_not_local_player")]
+    [TestCase("mpv", "media_source_app_not_local_player")]
+    [TestCase("BAXY YouTube (mpv)", "local_player_inactive")]
+    public async Task TheLocalPlayerIsNamedOnlyByItsOwnId(string sourceApp, string error)
+    {
+        using var adapter = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control",
+            Json(JsonSerializer.Serialize(new Dictionary<string, string> { ["action"] = "pause", ["sourceApp"] = sourceApp })),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     [Test]
     public async Task YouTubeTabControlNeverLaunchesABrowserToLookForATab()
     {
@@ -4319,27 +4289,6 @@ public sealed class ExternalAdaptersTests
             {
                 Content = new StringContent(locator ? located : page, Encoding.UTF8,
                     locator ? "application/json" : "text/html"),
-            });
-        }
-    }
-
-    private sealed class RecordingInvalidJsonHttpHandler : HttpMessageHandler
-    {
-        internal int PostCalls { get; private set; }
-
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (request.Method == HttpMethod.Post)
-            {
-                PostCalls++;
-            }
-
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Created)
-            {
-                Content = new StringContent("{invalid", Encoding.UTF8, "application/json"),
             });
         }
     }

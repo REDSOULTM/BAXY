@@ -77,7 +77,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsDeviceControlAdapter(
                 root,
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY")),
-            new WingetPackageAdapter(root),
+            new WingetPackageAdapter(),
             new ShellCommandAdapter(),
             new WindowsFileToolsAdapter(),
             new PresentationDocumentAdapter(),
@@ -86,7 +86,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             desktopInteraction,
             visibleControls,
             new WindowsScrollAdapter(visibleControls),
-            new WindowsKnownFileAdapter(root),
+            new WindowsKnownFileAdapter(),
             new WindowsSandboxNamedFileAdapter(root),
             new WindowsKnownBackupAdapter(root),
             new WindowsScheduledNotificationAdapter(root),
@@ -98,7 +98,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new NamedBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
             new GoogleNewsHeadlinesAdapter(),
-            new MicrosoftGraphCalendarAdapter(),
             new MicrosoftAccountAdapter(root),
         ];
     }
@@ -379,7 +378,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "file.edit" or "file.find" or "file.read" or "filesystem.known.duplicates"
                 or "filesystem.known.trash.named" =>
                 "windows_known_folder_authority_required",
-            "filesystem.path.ensure.absent" => "windows_absolute_path_absence_authority_required",
             "filesystem.explorer.count" => "windows_shell_explorer_folder_authority_required",
             "filesystem.sandbox.diff.named" or "filesystem.sandbox.move.named" =>
                 "sandbox_named_file_authority_required",
@@ -431,7 +429,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "storage.removable.list" => "windows_driveinfo_read_required",
             "client.channel.locate" => "client_quick_switcher_uia_required",
             "ocr.read" => "windows_ocr_language_pack_gate_required",
-            "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
+            "package.install" => "winget_adapter_gate_required",
             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
                 "windows_setting_hardware_gate_required",
             "system.power" => "power_transition_physical_gate_required",

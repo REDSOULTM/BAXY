@@ -8,28 +8,25 @@ namespace Baxy.Providers.Windows.External;
 
 internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 {
-    private readonly string _trashRoot;
     private readonly IReadOnlyDictionary<string, string[]> _configuredRoots;
     private readonly IRecycleBin _recycleBin;
 
-    internal WindowsKnownFileAdapter(string dataRoot)
-        : this(dataRoot, DefaultRoots())
+    internal WindowsKnownFileAdapter()
+        : this(DefaultRoots())
     {
     }
 
     internal WindowsKnownFileAdapter(
-        string dataRoot,
         IReadOnlyDictionary<string, string[]> configuredRoots,
         IRecycleBin? recycleBin = null)
     {
-        _trashRoot = Path.Combine(Path.GetFullPath(dataRoot), "known-file-trash");
         _configuredRoots = configuredRoots;
         _recycleBin = recycleBin ?? WindowsRecycleBin.Instance;
     }
 
     public bool CanHandle(string operation) => operation is
         "file.edit" or "file.find" or "file.read"
-        or "filesystem.known.duplicates" or "filesystem.known.trash.named" or "filesystem.path.ensure.absent";
+        or "filesystem.known.duplicates" or "filesystem.known.trash.named";
 
     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -40,8 +37,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
-            if (operation == "filesystem.path.ensure.absent")
-                return ValueTask.FromResult(EnsureAbsent(operation, arguments, effectBoundary));
             string folder = ExternalJson.RequiredString(arguments, "folder");
             (string Label, string Root)[] roots = Roots(folder);
             bool inSubdirectory = arguments.TryGetProperty("subdirectory", out JsonElement subdirectoryElement);
@@ -79,61 +74,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ValueTask.FromResult(effectBoundary.Failure(
                 operation, "known_folder_filesystem_unavailable"));
         }
-    }
-
-    private ExternalCapabilityReceipt EnsureAbsent(
-        string operation,
-        JsonElement arguments,
-        ExternalEffectBoundary effectBoundary)
-    {
-        string requested = ExternalJson.RequiredString(arguments, "path").Trim()
-            .Replace('/', Path.DirectorySeparatorChar);
-        requested = Environment.ExpandEnvironmentVariables(requested);
-        if (!Path.IsPathFullyQualified(requested))
-            return ExternalJson.Failure(operation, "absolute_file_path_required");
-        string path = Path.GetFullPath(requested);
-        if (!File.Exists(path) && !Directory.Exists(path))
-        {
-            return ExternalJson.Success(operation, ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                writer.WriteString("reviewLabel", Path.GetFileName(path));
-                writer.WriteBoolean("alreadyAbsent", true);
-                writer.WriteString("authority", "windows_absolute_path_absence_postread");
-                writer.WriteEndObject();
-            }), effectObserved: false);
-        }
-        if (Directory.Exists(path))
-            return ExternalJson.Failure(operation, "absolute_path_is_directory");
-        string profile = Path.GetFullPath(Environment.GetFolderPath(
-            Environment.SpecialFolder.UserProfile)).TrimEnd(Path.DirectorySeparatorChar);
-        string temporary = Path.GetFullPath(Path.GetTempPath())
-            .TrimEnd(Path.DirectorySeparatorChar);
-        bool allowed = path.StartsWith(profile + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase)
-            || path.StartsWith(temporary + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase);
-        if (!allowed) return ExternalJson.Failure(operation, "absolute_file_outside_recoverable_roots");
-        if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
-            return ExternalJson.Failure(operation, "absolute_file_reparse_point_rejected");
-        effectBoundary.Cross();
-        Directory.CreateDirectory(_trashRoot);
-        string restoreId = "restore_" + Guid.NewGuid().ToString("N");
-        string destination = Path.Combine(_trashRoot, restoreId + "_" + Path.GetFileName(path));
-        string hash = Hash(path);
-        File.Move(path, destination);
-        if (File.Exists(path) || !File.Exists(destination)
-            || !string.Equals(Hash(destination), hash, StringComparison.Ordinal))
-            return ExternalJson.Failure(operation, "absolute_file_trash_postread_failed", true);
-        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("reviewLabel", Path.GetFileName(path));
-            writer.WriteString("restoreId", restoreId); writer.WriteString("sha256", hash);
-            writer.WriteBoolean("alreadyAbsent", false);
-            writer.WriteString("authority", "windows_absolute_file_private_trash_postread");
-            writer.WriteEndObject();
-        }), effectObserved: true);
     }
 
     private static ExternalCapabilityReceipt Duplicates(
@@ -212,7 +152,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string? content = OptionalText(arguments, "content");
         string order = arguments.TryGetProperty("order", out JsonElement orderElement)
             && orderElement.ValueKind == JsonValueKind.String
-            && orderElement.GetString() == "recent" ? "recent" : "name";
+            && orderElement.GetString() is "recent" or "size" ? orderElement.GetString()! : "name";
         if (!roots.Any(root => Directory.Exists(root.Root)))
             return ExternalJson.Failure(
                 operation, inSubdirectory ? "known_subdirectory_not_found" : "known_folder_unavailable");
@@ -220,7 +160,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 100);
         List<(string Label, string Root)> searched = [];
-        IEnumerable<KnownEntry> named = Enumerate(roots, searched);
+        var walk = new WalkBudget(DateTime.UtcNow + WalkTimeLimit);
+        IEnumerable<KnownEntry> named = Enumerate(roots, searched, walk);
         if (query is not null) named = named.Where(item => NameMatches(Path.GetFileName(item.Path), query));
         List<(KnownEntry File, int Line, string LineText)> hits = [];
         int scanned = 0, skippedTooLarge = 0, skippedNotText = 0, skippedUnreadable = 0;
@@ -255,10 +196,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         var files = hits
             .Select(hit => (hit.File, hit.Line, hit.LineText, Info: new FileInfo(hit.File.Path)))
             .ToArray();
-        var shown = (order == "recent"
-                ? files.OrderByDescending(item => item.Info.LastWriteTimeUtc)
-                : files.OrderBy(item => item.File.Label, StringComparer.Ordinal)
-                    .ThenBy(item => RelativeToFolder(item.File), StringComparer.OrdinalIgnoreCase))
+        var shown = (order switch
+                {
+                    "recent" => files.OrderByDescending(item => item.Info.LastWriteTimeUtc),
+                    "size" => files.OrderByDescending(item => item.Info.Length),
+                    _ => files.OrderBy(item => item.File.Label, StringComparer.Ordinal)
+                        .ThenBy(item => RelativeToFolder(item.File), StringComparer.OrdinalIgnoreCase),
+                })
             .Take(limit)
             .ToArray();
         JsonElement result = ExternalJson.Create(writer =>
@@ -294,6 +238,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteStringValue(label);
             writer.WriteEndArray();
             writer.WriteNumber("maxRecursionDepth", 12);
+            writer.WriteNumber("timeLimitSeconds", WalkTimeLimit.TotalSeconds);
+            writer.WriteBoolean("timeLimitReached", walk.Reached);
             writer.WriteBoolean("ignoreInaccessible", true);
             writer.WriteBoolean("skipReparsePoints", true);
             if (content is not null)
@@ -308,7 +254,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }
             writer.WriteNumber("resultLimit", limit);
             writer.WriteBoolean("resultsMayBeTruncated",
-                content is null ? hits.Count > limit : hits.Count >= limit || scanLimitReached);
+                walk.Reached || (content is null ? hits.Count > limit : hits.Count >= limit || scanLimitReached));
             writer.WriteBoolean("exhaustive", false);
             writer.WriteEndObject();
             writer.WriteString("authority", content is null
@@ -348,12 +294,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                     isFolder ? Directory.GetLastWriteTimeUtc(path) : File.GetLastWriteTimeUtc(path)));
             }
         }
-        // Newest first when asked; otherwise folders first, then names.
-        var shown = (order == "recent"
-                ? entries.OrderByDescending(item => item.ModifiedUtc)
-                    .ThenBy(item => Path.GetFileName(item.Entry.Path), StringComparer.OrdinalIgnoreCase)
-                : entries.OrderBy(item => item.IsFolder ? 0 : 1)
-                    .ThenBy(item => Path.GetFileName(item.Entry.Path), StringComparer.OrdinalIgnoreCase))
+        // Newest first, or largest file first (folders after the files), when asked; otherwise folders first, then
+        // names.
+        var shown = (order switch
+                {
+                    "recent" => entries.OrderByDescending(item => item.ModifiedUtc)
+                        .ThenBy(item => Path.GetFileName(item.Entry.Path), StringComparer.OrdinalIgnoreCase),
+                    "size" => entries.OrderBy(item => item.IsFolder ? 1 : 0)
+                        .ThenByDescending(item => item.Size)
+                        .ThenBy(item => Path.GetFileName(item.Entry.Path), StringComparer.OrdinalIgnoreCase),
+                    _ => entries.OrderBy(item => item.IsFolder ? 0 : 1)
+                        .ThenBy(item => Path.GetFileName(item.Entry.Path), StringComparer.OrdinalIgnoreCase),
+                })
             .Take(limit)
             .ToArray();
         int folderCount = entries.Count(item => item.IsFolder);
@@ -464,39 +416,25 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (matches.Length > 1) return ExternalJson.Failure(operation, "known_file_ambiguous");
         (string label, _, string source) = matches[0];
         bool isFolder = Directory.Exists(source);
-        effectBoundary.Cross();
-        Directory.CreateDirectory(_trashRoot);
-        string restoreId = "restore_" + Guid.NewGuid().ToString("N");
-        string destination = Path.Combine(_trashRoot, restoreId + "_" + fileName);
-        if (isFolder) MoveDirectory(source, destination); else File.Move(source, destination);
-        bool gone = isFolder ? !Directory.Exists(source) : !File.Exists(source);
-        bool arrived = isFolder ? Directory.Exists(destination) : File.Exists(destination);
-        if (!gone || !arrived)
-            return ExternalJson.Failure(operation, "known_file_trash_postread_failed", true);
         int entries = isFolder
-            ? Directory.EnumerateFileSystemEntries(destination, "*", SearchOption.AllDirectories).Count()
+            ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
             : 0;
+        // To the Windows Recycle Bin, where the person restores it (BAXY Renew audit 2026-10-15: it went to a private
+        // trash that nothing restored from; filesystem.trash.restore only knows the sandbox's). When the bin cannot
+        // take it, it stays where it was.
+        effectBoundary.Cross();
+        if (!_recycleBin.Recycle(source))
+            return ExternalJson.Failure(operation, "known_file_not_recycled");
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
-            writer.WriteString("restoreId", restoreId); writer.WriteBoolean("sourceAbsent", true);
+            writer.WriteBoolean("sourceAbsent", true);
+            writer.WriteBoolean("inRecycleBin", true);
             writer.WriteBoolean("isFolder", isFolder);
             if (isFolder)
-            {
                 writer.WriteNumber("entries", entries);
-                writer.WriteString("sha256", Convert.ToHexStringLower(SHA256.HashData(
-                    Encoding.UTF8.GetBytes(string.Join("\n", Directory
-                        .EnumerateFileSystemEntries(destination, "*", SearchOption.AllDirectories)
-                        .Select(path => Path.GetRelativePath(destination, path))
-                        .OrderBy(static path => path, StringComparer.Ordinal))))));
-            }
-            else
-            {
-                writer.WriteString("sha256", Convert.ToHexStringLower(
-                    SHA256.HashData(File.ReadAllBytes(destination))));
-            }
-            writer.WriteString("authority", "windows_known_file_private_trash_postread");
+            writer.WriteString("authority", "windows_recycle_bin_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
@@ -539,14 +477,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         byte[] bytes = File.ReadAllBytes(file.Path);
         if (TextFileEncoding.LooksBinary(bytes)) return ExternalJson.Failure(operation, "known_file_not_text");
         string full = TextFileEncoding.Decode(bytes);
-        int lineCount = full.Length == 0 ? 0 : full.Split('\n').Length;
         return ExternalJson.Success(operation, ReadResult(
-            file, "text", full.Length, offset, Page(full, offset, maximumCharacters),
-            writer =>
-            {
-                writer.WriteNumber("bytes", bytes.Length);
-                writer.WriteNumber("lines", lineCount);
-            },
+            file, "text", full.Length, LineCount(full), offset, Page(full, offset, maximumCharacters),
+            writer => writer.WriteNumber("bytes", bytes.Length),
             Convert.ToHexStringLower(SHA256.HashData(bytes)), "windows_known_text_file_read"), effectObserved: false);
     }
 
@@ -624,10 +557,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             && textElement.ValueKind == JsonValueKind.String
             ? textElement.GetString() ?? "" : "";
         int characters = IntOf(root, "characters");
+        int totalLines = IntOf(root, "lines");
         int pages = IntOf(root, "pages");
         int textPages = IntOf(root, "textPages");
         return ExternalJson.Success(operation, ReadResult(
-            file, "pdf", characters, offset, text,
+            file, "pdf", characters, totalLines, offset, text,
             writer =>
             {
                 writer.WriteNumber("pages", pages);
@@ -637,11 +571,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             Hash(info.FullName), "windows_known_pdf_pypdf_text_extraction"), effectObserved: false);
     }
 
-    // What a read says before the text itself, so a cut observation still shows how much there is and where to go on.
+    // What a read says before the text itself, so a cut observation still shows how much there is and where to go on:
+    // the lines of the whole text and of the page returned, counted here (the 4B miscounted them, e2e p6 E018).
     private static JsonElement ReadResult(
         KnownEntry file,
         string kind,
         int characters,
+        int totalLines,
         int offset,
         string text,
         Action<Utf8JsonWriter> kindFacts,
@@ -654,7 +590,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
         writer.WriteString("folder", file.Label);
         writer.WriteNumber("characters", characters);
+        writer.WriteNumber("totalLines", totalLines);
         writer.WriteNumber("offset", offset);
+        writer.WriteNumber("lines", LineCount(text));
         writer.WriteNumber("returnedCharacters", text.Length);
         writer.WriteBoolean("hasMore", hasMore);
         if (hasMore) writer.WriteNumber("nextOffset", offset + text.Length);
@@ -664,6 +602,19 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         writer.WriteString("authority", authority);
         writer.WriteEndObject();
     });
+
+    // The lines of a text: each break (\r\n, \n or \r) ends one, and a last line without a break counts too; a final
+    // break does not start another (it did, and a 137-line file was said to have 138).
+    internal static int LineCount(string text)
+    {
+        int lines = 0;
+        for (int index = 0; index < text.Length; index++)
+        {
+            if (text[index] == '\n' || (text[index] == '\r' && (index + 1 == text.Length || text[index + 1] != '\n')))
+                lines++;
+        }
+        return text.Length > 0 && text[^1] is not ('\n' or '\r') ? lines + 1 : lines;
+    }
 
     private static string Page(string full, int offset, int maximumCharacters)
     {
@@ -918,6 +869,7 @@ def main() -> int:
             "pages": pages,
             "textPages": len(chunks),
             "characters": len(full),
+            "lines": len(full.splitlines()),
             "encrypted": encrypted,
             "text": full[offset:offset + maximum],
         }, ensure_ascii=False))
@@ -1013,36 +965,6 @@ if __name__ == "__main__":
         return null;
     }
 
-    // FILES1603: Directory.Move refuses another volume (the redirected Desktop
-    // lives on D:, the private trash under the profile on C:); copy the tree
-    // and remove the source only once every entry arrived.
-    private static void MoveDirectory(string source, string destination)
-    {
-        if (string.Equals(Path.GetPathRoot(source), Path.GetPathRoot(destination),
-                StringComparison.OrdinalIgnoreCase))
-        {
-            Directory.Move(source, destination);
-            return;
-        }
-        var options = new EnumerationOptions
-        {
-            RecurseSubdirectories = true,
-            IgnoreInaccessible = false,
-            AttributesToSkip = FileAttributes.ReparsePoint,
-            MaxRecursionDepth = 12,
-        };
-        Directory.CreateDirectory(destination);
-        foreach (string directory in Directory.EnumerateDirectories(source, "*", options))
-            Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, directory)));
-        foreach (string file in Directory.EnumerateFiles(source, "*", options))
-            File.Copy(file, Path.Combine(destination, Path.GetRelativePath(source, file)), overwrite: false);
-        int expected = Directory.EnumerateFileSystemEntries(source, "*", options).Count();
-        int arrived = Directory.EnumerateFileSystemEntries(destination, "*", options).Count();
-        if (arrived < expected)
-            throw new IOException("The folder did not arrive whole in the private trash.");
-        Directory.Delete(source, recursive: true);
-    }
-
     // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps
     // files: they are not walked (BAXY Renew 2026-10-15).
     private static EnumerationOptions WalkOptions(string label) => new()
@@ -1066,9 +988,21 @@ if __name__ == "__main__":
         }
     }
 
+    // A search by name or content walks for at most this long and answers with what it found, saying so: under home
+    // the walk passed the core's 30 s and the App restarted it, losing the turn (BAXY Renew e2e p3, 2026-10-15).
+    private static readonly TimeSpan WalkTimeLimit = TimeSpan.FromSeconds(8);
+
+    private sealed class WalkBudget(DateTime deadline)
+    {
+        internal DateTime Deadline { get; } = deadline;
+
+        internal bool Reached { get; set; }
+    }
+
     private static IEnumerable<KnownEntry> Enumerate(
         IReadOnlyList<(string Label, string Root)> roots,
-        List<(string Label, string Root)>? enumerationRoots = null)
+        List<(string Label, string Root)>? enumerationRoots = null,
+        WalkBudget? budget = null)
     {
         foreach ((string label, string root) in roots)
         {
@@ -1077,7 +1011,14 @@ if __name__ == "__main__":
             // IgnoreInaccessible may skip descendants without reporting them.
             enumerationRoots?.Add((label, root));
             foreach (string file in Directory.EnumerateFiles(root, "*", WalkOptions(label)))
+            {
+                if (budget is not null && DateTime.UtcNow >= budget.Deadline)
+                {
+                    budget.Reached = true;
+                    yield break;
+                }
                 yield return new KnownEntry(label, root, file);
+            }
         }
     }
 

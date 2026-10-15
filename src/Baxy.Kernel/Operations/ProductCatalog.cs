@@ -471,7 +471,7 @@ public static class ProductCatalog
                     String("content", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
                     Integer("limit", 1, 100),
-                    String("order", values: ["name", "recent"]),
+                    String("order", values: ["name", "recent", "size"]),
                     String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
@@ -557,11 +557,16 @@ public static class ProductCatalog
         // Explorador en primer plano; sin Explorador delante, el escritorio.
         Descriptor(
             "filesystem.explorer.count",
-            Schema([String("extension", maximumUtf8Bytes: 16, nonWhitespace: true)], ["extension"]),
+            Schema(
+                [
+                    String("extension", maximumUtf8Bytes: 16, nonWhitespace: true),
+                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
+                ],
+                ["extension"]),
             OperationRisks.ReadOnly,
             "filesystem.explorer.count.foreground.folder.toplevel.v1",
             ToolExposure.Public,
-            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta que muestra la ventana del Explorador en primer plano (o en el escritorio si no hay un Explorador delante) y nombra esa carpeta sin revelar su ruta."),
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
@@ -612,7 +617,7 @@ public static class ProductCatalog
             OperationRisks.RecoverableDelete,
             "filesystem.known.trash.named.windows.absence.v1",
             ToolExposure.Public,
-            "Resuelve un archivo nombrado de forma única y lo mueve a una papelera privada después de confirmar."),
+            "Resuelve un archivo nombrado de forma única y lo envía a la Papelera de reciclaje de Windows después de confirmar."),
         Descriptor(
             "filesystem.list",
             Schema(
@@ -632,13 +637,6 @@ public static class ProductCatalog
             "filesystem.move.sandbox.hash.absence.v1",
             ToolExposure.Public,
             "Mueve un archivo identificado y verifica hash de destino y ausencia de origen."),
-        Descriptor(
-            "filesystem.path.ensure.absent",
-            Schema([String("path", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["path"]),
-            OperationRisks.RecoverableDelete,
-            "filesystem.path.ensure.absent.windows.private.trash.postread.v1",
-            ToolExposure.Internal,
-            "Verifica la ausencia de una ruta absoluta; si existe, solo mueve archivos del perfil o TEMP a una papelera privada recuperable."),
         Descriptor(
             "filesystem.read.text",
             Schema(
@@ -1102,7 +1100,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
             ToolExposure.Public,
-            "Busca y reproduce el primer resultado musical pertinente en Spotify y verifica now-playing."),
+            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda y verifica now-playing."),
         Descriptor(
             "media.play.youtube",
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
@@ -1445,25 +1443,20 @@ public static class ProductCatalog
             "office.document.read.adapter.snapshot.v1",
             ToolExposure.Public,
             "Lee una proyección estructurada de un documento identificado mediante el adapter oficial."),
+        // BAXY Renew 2026-10-15: one call that resolves, installs and verifies, after the person's yes (installation
+        // risk); it replaces the prepare/commit pair, which the 4B took for uninstalling.
         Descriptor(
-            "package.install.commit",
-            Schema([String("confirmationId", maximumLength: 96, nonWhitespace: true)], ["confirmationId"]),
-            OperationRisks.Installation,
-            "package.install.commit.winget.receipt.v1",
-            ToolExposure.Internal,
-            "Confirma una instalación preparada mediante winget y verifica su recibo."),
-        Descriptor(
-            "package.install.prepare",
+            "package.install",
             Schema(
                 [
                     String("packageId", maximumUtf8Bytes: 256, nonWhitespace: true),
                     String("version", types: NullableString, maximumLength: 64),
                 ],
                 ["packageId"]),
-            OperationRisks.ReadOnly,
-            "package.install.prepare.winget.selection.v1",
-            ToolExposure.Internal,
-            "Resuelve un paquete winget exacto, o el único paquete que lleva el nombre pedido, y prepara una confirmación sin instalar."),
+            OperationRisks.Installation,
+            "package.install.winget.list.postread.v1",
+            ToolExposure.Public,
+            "Instala mediante winget el paquete que se nombra (por su id exacto o su nombre único) y verifica su presencia en la lista de paquetes instalados; si el nombre no es de un solo paquete, falla sin instalar y devuelve los candidatos."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo G): «desinstalá Discord»
         // es una desinstalación real por el gestor de paquetes, verificada por su
         // ausencia después; pierde lo instalado, así que confirma en modo normal.
@@ -1861,16 +1854,13 @@ public static class ProductCatalog
                 [
                     String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
                     String("name", types: NullableString, maximumUtf8Bytes: 200),
-                    // REOPEN1957 H0069 «Tienes algun meme?» (D11): with a query and no
-                    // address, the first image the search engine lists is downloaded.
-                    String("query", types: NullableString, maximumUtf8Bytes: 200),
-                    String("url", types: NullableString, maximumUtf8Bytes: 2_048),
+                    String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
-                []),
+                ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
             ToolExposure.Public,
-            "Descarga un archivo o una imagen de una dirección web (o, con una consulta y sin dirección, la primera imagen que lista el buscador) a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
+            "Descarga un archivo o una imagen de una dirección web a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.

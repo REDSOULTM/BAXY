@@ -376,6 +376,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
 
     // MUSIC1593 «pará la música»: stop ends the player; pause/play/toggle set
     // its pause property and read it back; next/previous have no meaning here.
+    // How media.status names this player, and so how media.control's sourceApp names it.
+    private const string SourceAppUserModelId = "BAXY YouTube (mpv)";
+
     private async ValueTask<ExternalCapabilityReceipt> ControlAsync(
         string operation,
         JsonElement arguments,
@@ -390,6 +393,13 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.FailureBeforeEffect(operation, "media_control_action_invalid");
         }
+        // A player the model named (the sourceAppUserModelId media.status gave) is this one only by its own id: it
+        // paused itself for «pausa Spotify» while it played, as it went first (BAXY Renew audit 2026-10-15).
+        if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
+            && sourceApp.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(sourceApp.GetString())
+            && !string.Equals(sourceApp.GetString(), SourceAppUserModelId, StringComparison.OrdinalIgnoreCase))
+            return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_local_player");
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
@@ -450,7 +460,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
     {
         json.WriteStartObject(); json.WriteNumber("version", 1);
         json.WriteString("provider", "youtube");
-        json.WriteString("sourceAppUserModelId", "BAXY YouTube (mpv)");
+        json.WriteString("sourceAppUserModelId", SourceAppUserModelId);
         json.WriteString("title", _activeTitle ?? _activeQuery ?? "");
         json.WriteBoolean("titleObserved", _activeTitle is not null);
         if (_activeQuery is not null) json.WriteString("query", _activeQuery);

@@ -28,7 +28,7 @@ public sealed class KnownFileToolsTests
             if (!accepts) return false;
             Directory.CreateDirectory(folder);
             string destination = Path.Combine(folder, Guid.NewGuid().ToString("N") + "_" + Path.GetFileName(path));
-            File.Move(path, destination);
+            if (Directory.Exists(path)) Directory.Move(path, destination); else File.Move(path, destination);
             Recycled.Add(destination);
             return true;
         }
@@ -57,7 +57,7 @@ public sealed class KnownFileToolsTests
         Directory.CreateDirectory(desktop);
         Directory.CreateDirectory(documents);
         var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), binAccepts);
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
         {
             ["desktop"] = [desktop],
             ["documents"] = [documents],
@@ -121,7 +121,7 @@ public sealed class KnownFileToolsTests
         Directory.CreateDirectory(desktop);
         await File.WriteAllTextAsync(Path.Combine(home, "BAXY-bench", "lista.txt"), "pan\n");
         await File.WriteAllTextAsync(Path.Combine(desktop, "lista vieja.txt"), "leche\n");
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
         {
             ["desktop"] = [desktop],
             ["home"] = [home],
@@ -158,7 +158,7 @@ public sealed class KnownFileToolsTests
         Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
         await File.WriteAllTextAsync(Path.Combine(home, "BAXY-bench", "lista.txt"), "pan\n");
         await File.WriteAllTextAsync(Path.Combine(temporary.Path, "fuera.txt"), "secreto\n");
-        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
         {
             ["home"] = [home],
         }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
@@ -187,6 +187,81 @@ public sealed class KnownFileToolsTests
             Assert.That(outside.ErrorCode, Is.EqualTo("known_path_outside_folder"));
             Assert.That(outside.Result?.ToString() ?? string.Empty, Does.Not.Contain("secreto"));
             Assert.That(outsideFolder.ErrorCode, Is.EqualTo("known_path_outside_folder"));
+        });
+    }
+
+    // A named file or folder goes to the Recycle Bin, where the person restores it; when the bin cannot take it, it
+    // stays where it was.
+    [Test]
+    public async Task TrashSendsTheNamedFileOrFolderToTheRecycleBin()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, FolderRecycleBin bin) = Folders(temporary);
+        await File.WriteAllTextAsync(Path.Combine(desktop, "viejo.txt"), "x");
+        Directory.CreateDirectory(Path.Combine(desktop, "CarterTest", "sub"));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "CarterTest", "sub", "a.txt"), "x");
+        using TemporaryDirectory other = new();
+        (WindowsKnownFileAdapter refusing, string refusingDesktop, _, _) = Folders(other, binAccepts: false);
+        await File.WriteAllTextAsync(Path.Combine(refusingDesktop, "queda.txt"), "x");
+
+        ExternalCapabilityReceipt file = await adapter.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt folder = await adapter.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"CarterTest"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt refused = await refusing.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"queda.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(file.Verified, Is.True, file.ErrorCode);
+            Assert.That(file.Result?.GetProperty("inRecycleBin").GetBoolean(), Is.True);
+            Assert.That(File.Exists(Path.Combine(desktop, "viejo.txt")), Is.False);
+            Assert.That(folder.Verified, Is.True, folder.ErrorCode);
+            Assert.That(folder.Result?.GetProperty("entries").GetInt32(), Is.EqualTo(2));
+            Assert.That(Directory.Exists(Path.Combine(desktop, "CarterTest")), Is.False);
+            Assert.That(bin.Recycled, Has.Count.EqualTo(2));
+            Assert.That(refused.ErrorCode, Is.EqualTo("known_file_not_recycled"));
+            Assert.That(File.Exists(Path.Combine(refusingDesktop, "queda.txt")), Is.True);
+        });
+    }
+
+    [TestCase("", 0)]
+    [TestCase("uno", 1)]
+    [TestCase("uno\n", 1)]
+    [TestCase("uno\ndos", 2)]
+    [TestCase("uno\r\ndos\r\n", 2)]
+    [TestCase("uno\rdos", 2)]
+    [TestCase("uno\n\n", 2)]
+    [TestCase("\n", 1)]
+    public void LinesAreCountedAsAnEditorShowsThem(string text, int lines) =>
+        Assert.That(WindowsKnownFileAdapter.LineCount(text), Is.EqualTo(lines));
+
+    // «¿cuál es el archivo más grande?» (e2e p6 E020): the largest first, listing or searching.
+    [Test]
+    public async Task OrderBySizePutsTheLargestFirst()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        Directory.CreateDirectory(Path.Combine(desktop, "fotos"));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "chico.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "mediano.txt"), new string('x', 50));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "fotos", "grande.txt"), new string('x', 500));
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"desktop","order":"size"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt searched = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"desktop","query":"*.txt","order":"size"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.Result?.GetProperty("entries").EnumerateArray()
+                    .Select(entry => entry.GetProperty("name").GetString()),
+                Is.EqualTo(new[] { "mediano.txt", "chico.txt", "fotos" }));
+            Assert.That(searched.Result?.GetProperty("files").EnumerateArray()
+                    .Select(file => file.GetProperty("name").GetString() + ":" + file.GetProperty("size").GetInt64()),
+                Is.EqualTo(new[] { "grande.txt:500", "mediano.txt:50", "chico.txt:1" }));
+            Assert.That(searched.Result?.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(),
+                Is.False);
         });
     }
 
