@@ -95,8 +95,8 @@ internal sealed class AppOpenHandler(
                 providerResult.WindowHandle.GetValueOrDefault());
         }
 
-        // The application is open and verified; its place's address goes to the handler it registered. Whether its
-        // window arrived is the mission's check on the window.
+        // The application is open and verified; its place's address goes to the handler it registered. Only the
+        // handing over is reported (placeRequested): whether the place arrived is for a look at the window to say.
         PlaceOpening? place = placeAddress is null ? null
             : _places.Open(placeAddress, arguments.Foreground == true, providerResult.WindowHandle.GetValueOrDefault());
         if (place is { Opened: false })
@@ -114,7 +114,7 @@ internal sealed class AppOpenHandler(
             (providerResult.WindowsActivation && providerResult.FrontRestored) || place?.FrontRestored == true,
             providerResult.NewDocument,
             providerResult.ShownWithoutFocus,
-            PlaceOpened: place is not null,
+            PlaceRequested: place is not null,
             FrontChanged: place?.FrontChanged == true);
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,

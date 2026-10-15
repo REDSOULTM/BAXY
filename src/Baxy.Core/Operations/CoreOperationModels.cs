@@ -47,9 +47,9 @@ internal sealed record OpenApplicationResult(
     // ShownWithoutFocus (r20b palanca 4): asked in front while the person worked in another window, it was raised above
     // that window without taking their keyboard.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool ShownWithoutFocus = false,
-    // PlaceOpened (estabilización, encargo C): the place's address was handed to Windows; the arrival is the mission's
-    // check to read on the window, never this receipt's.
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceOpened = false,
+    // PlaceRequested (estabilización, encargo C; auditoría K10): the place's address was handed to Windows. Nothing here
+    // reads whether it arrived; a look at the window does.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceRequested = false,
     // FrontChanged (review H2): the place's handler raised the application above the person's window; FrontRestored
     // then says whether the front went back to them.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false);
