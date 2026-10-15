@@ -27,10 +27,11 @@ internal readonly record struct PublicPlace(
 /// </summary>
 internal sealed class PublicPlaceLocator
 {
+    // Over https only (BAXY Renew audit 2026-10-15: the fallback ip-api.com answered in plain http, so where the PC
+    // is travelled unencrypted).
     private static readonly string[] LocationByIpAuthorities =
     [
         "https://ipwho.is/",
-        "http://ip-api.com/json/?fields=status,country,countryCode,regionName,city,lat,lon",
     ];
 
     private readonly Func<string, CancellationToken, Task<string>> _fetch;
@@ -63,26 +64,23 @@ internal sealed class PublicPlaceLocator
                 JsonElement root = document.RootElement;
                 if (root.ValueKind != JsonValueKind.Object)
                     continue;
-                bool ok = (root.TryGetProperty("success", out JsonElement success) && success.ValueKind == JsonValueKind.True)
-                    || (root.TryGetProperty("status", out JsonElement status) && status.ValueKind == JsonValueKind.String
-                        && status.GetString() == "success");
-                if (!ok)
+                if (!root.TryGetProperty("success", out JsonElement success) || success.ValueKind != JsonValueKind.True)
                     continue;
-                double? latitude = ReadDouble(root, "latitude") ?? ReadDouble(root, "lat");
-                double? longitude = ReadDouble(root, "longitude") ?? ReadDouble(root, "lon");
+                double? latitude = ReadDouble(root, "latitude");
+                double? longitude = ReadDouble(root, "longitude");
                 string? city = ReadString(root, "city");
                 if (latitude is null || longitude is null || string.IsNullOrWhiteSpace(city))
                     continue;
                 return new PublicPlace(
                     city,
-                    ReadString(root, "region") ?? ReadString(root, "regionName"),
+                    ReadString(root, "region"),
                     ReadString(root, "country") ?? string.Empty,
                     latitude.Value,
                     longitude.Value,
                     "public_ip_address",
                     // M54: the country the service deduced, so a search near this PC stays in its country
                     // (v3b-final F-p01-t2: «Curico» alone geocoded to Curico, Indiana).
-                    ReadString(root, "country_code") ?? ReadString(root, "countryCode"));
+                    ReadString(root, "country_code"));
             }
             catch (JsonException)
             {
