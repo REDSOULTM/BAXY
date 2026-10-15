@@ -1078,8 +1078,10 @@ if __name__ == "__main__":
 
     private (string Label, string Root)[] Roots(string folder)
     {
+        // «all_known» is the three known folders; the profile root (home) holds them and AppData, so it is only read
+        // when it is named.
         if (folder == "all_known")
-            return _configuredRoots.SelectMany(pair => pair.Value.Select(root =>
+            return _configuredRoots.Where(pair => pair.Key != "home").SelectMany(pair => pair.Value.Select(root =>
                 (pair.Key, Path.GetFullPath(root)))).ToArray();
         if (!_configuredRoots.TryGetValue(folder, out string[]? roots))
             throw new InvalidDataException("known_folder_invalid");
@@ -1092,6 +1094,7 @@ if __name__ == "__main__":
         ["documents"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)],
         ["downloads"] = [Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")],
+        ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)],
     };
 
     private static (string Label, string Root)[] SubdirectoryRoots(

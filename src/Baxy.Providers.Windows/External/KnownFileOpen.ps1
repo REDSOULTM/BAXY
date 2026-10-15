@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('desktop','documents','downloads','pictures')]
+    [ValidateSet('desktop','documents','downloads','home','pictures')]
     [string]$Folder
 )
 $ErrorActionPreference='Stop'
@@ -15,6 +15,7 @@ try {
         'desktop' {[Environment]::GetFolderPath('Desktop')}
         'documents' {[Environment]::GetFolderPath('MyDocuments')}
         'pictures' {[Environment]::GetFolderPath('MyPictures')}
+        'home' {[Environment]::GetFolderPath('UserProfile')}
         'downloads' {(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path}
     }
     $path=[IO.Path]::GetFullPath($path)

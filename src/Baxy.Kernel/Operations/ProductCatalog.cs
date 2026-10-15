@@ -460,7 +460,7 @@ public static class ProductCatalog
             Schema(
                 [
                     String("fileName", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
                     String("newText", maximumUtf8Bytes: 65_536),
                     String("oldText", maximumUtf8Bytes: 65_536),
                     Boolean("replaceAll"),
@@ -476,7 +476,7 @@ public static class ProductCatalog
             Schema(
                 [
                     String("content", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
                     Integer("limit", 1, 100),
                     String("order", values: ["name", "recent"]),
                     String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
@@ -494,7 +494,7 @@ public static class ProductCatalog
                     // cu-v3-abrir-archivo: the installed application to open it with (as app.open's appId); without it,
                     // the default one.
                     String("application", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
                     // molestia-ayudantes: the person asked to see it (set by the App, as app.open's), so the opened
                     // application keeps the front; a mission's file.open goes without it and stays behind.
                     Boolean("foreground"),
@@ -510,7 +510,7 @@ public static class ProductCatalog
             Schema(
                 [
                     String("fileName", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
                     Integer("maximumCharacters", 200, 200_000),
                     Integer("offset", 0, 100_000_000),
                     String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
@@ -529,7 +529,7 @@ public static class ProductCatalog
                     // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
                     // folder may be the root instead of the sandbox; an existing file
                     // there is never overwritten without its current hash.
-                    String("folder", values: ["desktop", "documents", "downloads"]),
+                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
                     String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
                     String("text", maximumUtf8Bytes: 1_048_576),
                 ],
@@ -578,7 +578,7 @@ public static class ProductCatalog
             "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y verifica el proceso observado."),
         Descriptor(
             "filesystem.folder.open",
-            Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
+            Schema([String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"])], ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.folder.open.windows.shell.postread.v1",
             ToolExposure.Public,

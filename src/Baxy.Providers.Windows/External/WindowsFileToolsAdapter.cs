@@ -807,6 +807,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "pictures" => Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
         "downloads" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        "home" => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         _ => null,
     };
 

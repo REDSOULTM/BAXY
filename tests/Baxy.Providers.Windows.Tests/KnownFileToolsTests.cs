@@ -109,6 +109,45 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // The profile root (home) is read when it is named; «all_known» stays the known folders, so a file of the profile
+    // is not found twice and AppData is never walked by a search of everything.
+    [Test]
+    public async Task HomeIsReadWhenNamedAndAllKnownLeavesItOut()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string desktop = Path.Combine(home, "Desktop");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        Directory.CreateDirectory(desktop);
+        await File.WriteAllTextAsync(Path.Combine(home, "BAXY-bench", "lista.txt"), "pan\n");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "lista vieja.txt"), "leche\n");
+        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        {
+            ["desktop"] = [desktop],
+            ["home"] = [home],
+        }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
+
+        ExternalCapabilityReceipt inHome = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"home","query":"lista"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt everywhere = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"all_known","query":"lista"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"BAXY-bench/lista.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inHome.Verified, Is.True, inHome.ErrorCode);
+            Assert.That(inHome.Result?.GetProperty("files").EnumerateArray()
+                .Select(file => file.GetProperty("relativePath").GetString()),
+                Does.Contain(Path.Combine("BAXY-bench", "lista.txt")));
+            Assert.That(everywhere.Result?.GetProperty("files").EnumerateArray()
+                .Select(file => file.GetProperty("relativePath").GetString()),
+                Is.EqualTo(new[] { "lista vieja.txt" }));
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.ToString(), Does.Contain("pan"));
+        });
+    }
+
     [Test]
     public async Task FindByContentGivesTheFirstMatchingLineAndSkipsWhatIsNotText()
     {
