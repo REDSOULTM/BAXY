@@ -12,6 +12,7 @@ import { useClock } from './hooks/useClock';
 import { useEventStream } from './hooks/useEventStream';
 import type { SurfacesCount } from './hooks/useEventStream';
 import { toastError } from './hooks/useToast';
+import { startNewSession } from './hooks/newSession';
 import type { ConvState } from './types';
 // the prototype's styles.css is loaded literal — this is the single source of
 // truth for all cosmetic rules. additions live at the bottom of that file.
@@ -56,13 +57,16 @@ export default function App() {
   // auto-start has had its chance (and while a start is in flight), we must NOT
   // flip the UI to 'off' just because the backend loop hasn't finished booting.
   const voiceBootSettled = useRef(false);
+  // the voice's last trouble the host observed (voice_unavailable, voice_error, voice_dropped_busy), shown on the mic.
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     const sync = async () => {
       try {
         const r = await fetch('/voice/status');
         if (cancelled || !r.ok) return;
-        const data = (await r.json()) as { running?: boolean };
+        const data = (await r.json()) as { running?: boolean; last_error?: string | null };
+        setVoiceError(data.last_error ?? null);
         if (typeof data.running !== 'boolean') return;
         setMicMode((prev) => {
           if (data.running && prev === 'off') return 'listening';
@@ -246,7 +250,7 @@ export default function App() {
         fetch('/log/clear', { method: 'POST' }).catch(() => { /* ignore */ });
       } else if (k === 'n' && !e.shiftKey) {
         e.preventDefault();
-        fetch('/sessions/new', { method: 'POST' }).catch(() => { /* ignore */ });
+        void startNewSession();
       } else if (k === ',') {
         e.preventDefault();
         setOpenPanel('settings');
@@ -279,22 +283,15 @@ export default function App() {
     }
   }, []);
 
-  // top-bar "+ new" → POST /sessions/new clears the agent + history and the
-  // backend pushes its own SYSTEM activity entry, so we don't need to add one
-  // here. postActivity stays as a fallback if the endpoint isn't reachable.
-  const onNewSession = useCallback(async () => {
-    try {
-      const r = await fetch('/sessions/new', { method: 'POST' });
-      if (!r.ok) throw new Error(`status ${r.status}`);
-    } catch {
-      postActivity('SYSTEM', 'new session · backend unreachable; UI-only reset');
-    }
-  }, [postActivity]);
+  // top-bar "+ new" → POST /sessions/new; the host clears the log itself (log_clear) and a refusal shows its code.
+  const onNewSession = useCallback(() => { void startNewSession(); }, []);
 
+  // the shortcuts this view handles (the keydown handler above), as a SYSTEM line.
   const onHelp = useCallback(() => {
     postActivity(
       'SYSTEM',
-      'shortcuts: enter sends · / focus · ⌘k history · shift+enter newline · esc closes modal',
+      'shortcuts: enter sends · / focus · ctrl+l clears the log · ctrl+n new session · ctrl+, settings'
+        + ' · ctrl+shift+s sessions · ctrl+m memory · ctrl+e tools · f11 fullscreen · esc closes panel',
     );
   }, [postActivity]);
 
@@ -521,6 +518,7 @@ export default function App() {
               onDebugState={debugOn ? setDebugState : null}
               micMode={micMode}
               micLoading={micLoading}
+              voiceError={voiceError}
               onMicLeftClick={onMicLeftClick}
               onMicRightClick={onMicRightClick}
               agent={stream.agent}
