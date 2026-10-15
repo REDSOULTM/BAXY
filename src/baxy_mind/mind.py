@@ -37,8 +37,72 @@ SYSTEM = (
     "ese paso (también si el pedido lo condiciona a un resultado que ya se cumplió); cuando no falte nada, responde en "
     "una o dos frases contando sólo lo que muestran los resultados, nunca un paso que no se ejecutó.\n"
     "8. Si una herramienta responde status needs_confirmation, pregunta en una frase si lo haces, nombrando "
-    "exactamente qué. Cuando la persona conteste, llama a confirm_pending con su respuesta."
+    "exactamente qué. Cuando la persona conteste, llama a confirm_pending con su respuesta.\n"
+    "9. Para hacer algo dentro de una app abierta (ir a una sección, pulsar, escribir, leer lo que muestra): mírala con "
+    "input_visible_controls, actúa con input_visible_click (por la etiqueta que viste), input_text_type o "
+    "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo."
 )
+
+# The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
+# reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
+# scenes, the analysis first found 34 of 40), then, only when it decided to intervene, it acts with its tools.
+BEAT_DECISION = {"type": "object", "properties": {"analisis": {"type": "string"}, "intervenir": {"type": "boolean"}},
+                 "required": ["analisis", "intervenir"]}
+BEAT_DECIDE = ("Responde en JSON: analisis = en una frase, qué está pasando y si hay uno de esos motivos (cuál); "
+               "intervenir = true si hay un motivo, false si no.")
+BEAT_ACT = ("Interviene ahora según tu análisis. Lo de bajo riesgo, hazlo con su herramienta. Lo de alto riesgo "
+            "(borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, cerrar o forzar el cierre de una app) no "
+            "lo preguntes en texto: llama a su herramienta y el sistema le pedirá el sí a la persona antes de hacerlo. "
+            "Si ninguna herramienta hace falta, dile en una frase lo que necesita saber. Nunca escribas en sus ventanas. "
+            "Háblale de tú.")
+BEAT_RULES = (
+    "Es un latido: nadie te habló. Revisa lo de arriba buscando estos motivos para intervenir:\n"
+    "1. Algo que la persona te pidió antes y que ahora se cumple (avisarle, recordarle, enviar algo).\n"
+    "2. Una preferencia suya que recuerdas y que aplica a lo que está pasando ahora.\n"
+    "3. Un recordatorio o evento que vence ahora o muy pronto.\n"
+    "4. Algo que la bloquea o le hará perder trabajo: disco lleno, batería crítica, una app colgada, la red caída.\n"
+    "Si hay un motivo: lo de bajo riesgo hazlo tú con su herramienta y avísalo en una frase; lo de alto riesgo "
+    "(borrar, vaciar la papelera, enviar mensajes, apagar o reiniciar, cerrar o forzar el cierre de una app, comprar, "
+    "instalar) proponlo llamando a su herramienta, que se le preguntará antes; si ninguna herramienta ayuda, díselo en "
+    "una frase. Si juega, está en llamada o viendo algo, interviene sólo por un motivo 1, 2 o urgente. Nunca escribas "
+    "ni hagas clic en sus ventanas, no comentes datos privados de la pantalla y no repitas un aviso ya dado."
+)
+
+
+def beat_message(context: dict[str, Any]) -> str:
+    """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
+    remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
+    lines = []
+    fg = context.get("foreground") or {}
+    lines.append(f"Momento: {context.get('weekday', '')} {context.get('now', '')} · la persona está: "
+                 f"{context.get('owner_activity', 'desconocido')}")
+    if fg:
+        lines.append(f"Al frente: {fg.get('title', '')} ({fg.get('process', '')})"
+                     + (" en pantalla completa" if fg.get("fullscreen") else ""))
+    windows = [f"{w.get('title', '')} ({w.get('process', '')})" for w in context.get("windows") or []]
+    if windows:
+        lines.append("Ventanas abiertas: " + "; ".join(windows))
+    if context.get("screen_text"):
+        lines.append("Texto en pantalla: " + str(context["screen_text"]))
+    pc = context.get("pc") or {}
+    if pc:
+        lines.append("PC: " + ", ".join(f"{k}={v}" for k, v in pc.items() if v is not None))
+    for title, key in (("Cambios desde el último latido", "events"), ("Lo que recuerdas de la persona", "memory")):
+        values = [str(v) for v in context.get(key) or []]
+        if values:
+            lines.append(f"{title}: " + "; ".join(values))
+    history = context.get("history") or []
+    if history:
+        lines.append("Conversación reciente: " + " / ".join(
+            f"{'persona' if h.get('role') == 'user' else 'tú'} (hace {h.get('ago_min', '?')} min): {h.get('content', '')}"
+            for h in history))
+    reminders = context.get("reminders") or []
+    if reminders:
+        lines.append("Recordatorios: " + "; ".join(f"{r.get('text', '')} ({r.get('due', '')})" for r in reminders))
+    return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
+
+
+CLOCK_MARK = "[Reloj:"
 
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
 # model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
@@ -130,6 +194,7 @@ class Mind:
         self.op_to_tool: dict[str, dict[str, Any]] = {}
         self._decided: dict[str, dict[str, Any]] = {}
         self._turn: dict[str, Any] | None = None
+        self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
         self.constants: dict[str, dict[str, Any]] = {}
         language = os.environ.get("BAXY_RENEW_DESCRIPTIONS", "en")
@@ -189,11 +254,13 @@ class Mind:
         return SYSTEM
 
     @staticmethod
-    def _with_clock(text: str) -> str:
-        # The time travels at the end of the person's message: the only part of the prompt that is new anyway.
+    def _clock() -> str:
+        # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
+        # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
+        # «[Thursday 15/10/2026 04:21 hora local…]» (2026-10-15).
         now = _dt.datetime.now().astimezone()
         offset = now.strftime("%z")
-        return (f"{text}\n\n[{now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
+        return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
                 "los campos que terminan en Utc van en UTC]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
@@ -204,7 +271,7 @@ class Mind:
     # Parallel calls run in order, one per round trip.
     def new_session(self, history: list[dict[str, Any]] | None = None) -> None:
         """Start a fresh conversation, optionally from earlier plain exchanges (a bench case's context)."""
-        self._turn = None
+        self._turn = self._beat = None
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
@@ -215,14 +282,61 @@ class Mind:
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
             # the steps already run stay in the conversation and are never run again. A new request instead of an
             # answer reaches the model the same way, and the model reads it as what it is.
-            self.conversation.append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
+            turn["conv"].append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
             turn["text"] = text
-            return self._next(request_id, "turn.decide")
+            return self._next(request_id, "turn.decide", turn)
         self._close_open_calls()
-        self.conversation.append({"role": "user", "content": self._with_clock(text)})
+        self.conversation.append({"role": "user", "content": self._clock()})
+        self.conversation.append({"role": "user", "content": text})
         self._trim()
-        self._turn = {"queue": [], "awaiting": None, "text": text}
-        return self._next(request_id, "turn.decide")
+        self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
+        return self._next(request_id, "turn.decide", self._turn)
+
+    def beat(self, request_id: Any, context: dict[str, Any]) -> dict[str, Any]:
+        """The heartbeat: nobody spoke; the model looks at the moment in a conversation of its own (OpenClaw's isolated
+        heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
+        something. Same system prompt and tools, so the cached prefix is the person's; what it did joins the person's
+        conversation only if it intervened."""
+        started = time.monotonic()
+        self._decided = {}
+        conv = [{"role": "user", "content": beat_message(context)}]
+        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()}, *conv],
+                                  "tools": self.tools, "tool_choice": "none", "max_tokens": 200,
+                                  "chat_template_kwargs": {"enable_thinking": False},
+                                  "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
+                                  "seed": 0,
+                                  "response_format": {"type": "json_schema",
+                                                      "json_schema": {"name": "latido", "schema": BEAT_DECISION}}},
+                                 slot=LlmServer.DECIDE)
+        content = (reply["choices"][0]["message"].get("content") or "").strip()
+        try:
+            decision = json.loads(content)
+        except json.JSONDecodeError:
+            decision = {}
+        intervene = bool(decision.get("intervenir")) if isinstance(decision, dict) else False
+        self._log("turn.beat.decide", started, reply, text="[latido]", content=content, intervene=intervene)
+        self._beat = {"conv": conv, "queue": [], "awaiting": None, "text": "[latido]", "beat": True,
+                      "silent": not intervene}
+        if not intervene:
+            return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
+                    "question": "", "reply": ""}
+        conv.append({"role": "assistant", "content": content})
+        conv.append({"role": "user", "content": BEAT_ACT})
+        return self._next(request_id, "turn.beat", self._beat)
+
+    def end_beat(self) -> None:
+        """The App ended the heartbeat's turn: a beat that was not silent is part of the conversation from now on (the
+        person may answer what BAXY said or proposed); a silent one leaves no trace."""
+        beat, self._beat = self._beat, None
+        if not beat or beat.get("silent"):
+            return
+        pending = [c["id"] for c in beat.get("queue") or []]
+        for call_id in [beat.get("awaiting"), beat.get("asked"), *pending]:
+            if call_id:
+                beat["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
+        self._close_open_calls()
+        self.conversation.extend(beat["conv"])
+        self._trim()
 
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
@@ -235,28 +349,38 @@ class Mind:
         self._turn = None
 
     def _trim(self) -> None:
-        """Keep the last turns that fit the budget; a turn starts at a person's message, so no call loses its result."""
-        starts = [i for i, m in enumerate(self.conversation) if m["role"] == "user"]
+        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result."""
+        starts = self._turn_starts()
         while len(starts) > 1 and (len(starts) > HISTORY_TURNS
                                    or sum(len(json.dumps(m, ensure_ascii=False)) for m in self.conversation)
                                    > HISTORY_CHARS):
             self.conversation = self.conversation[starts[1]:]
-            starts = [i for i, m in enumerate(self.conversation) if m["role"] == "user"]
+            starts = self._turn_starts()
 
-    def continue_turn(self, request_id: Any, observation: str, final: bool = False) -> dict[str, Any]:
+    def _turn_starts(self) -> list[int]:
+        return [i for i, m in enumerate(self.conversation)
+                if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
+
+    def continue_turn(self, request_id: Any, observation: str, final: bool = False,
+                      beat: bool = False) -> dict[str, Any]:
         """The verified result of the call the App ran goes back as that call's tool message. ``final``: the App's step
-        budget is spent, so the model answers now in text from what the results show."""
-        turn = self._turn
+        budget is spent, so the model answers now in text from what the results show. ``beat``: the heartbeat's turn."""
+        turn = self._beat if beat else self._turn
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
-        self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
+        conv = turn["conv"]
+        conv.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
         turn["awaiting"] = None
+        if final:
+            # The App's step budget is spent: said where the model reads it, at the end of the last result.
+            conv[-1]["content"] += ("\n[Límite de pasos alcanzado: no llames más herramientas; responde "
+                                                 "ahora a la persona sólo con lo que muestran los resultados.]")
         if turn["queue"] and not final:
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
         for call in turn["queue"]:
-            self.conversation.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN})
+            conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN})
         turn["queue"] = []
-        return self._next(request_id, "turn.continue", final=final)
+        return self._next(request_id, "turn.continue", turn, final=final)
 
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
@@ -269,17 +393,16 @@ class Mind:
         self.conversation.append({"role": "assistant", "content": "", "tool_calls": [
             {"id": call_id, "type": "function",
              "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
-        self._turn = {"queue": [], "awaiting": call_id, "text": label}
+        self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label}
         self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
                   arguments={"approve": approve})
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
                 "arguments": {"approve": approve}, "reply": "", "question": ""}
 
-    def _next(self, request_id: Any, stage: str, final: bool = False) -> dict[str, Any]:
+    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.monotonic()
-        turn = self._turn
-        assert turn is not None
-        messages = [{"role": "system", "content": self._system()}, *self.conversation]
+        conv = turn["conv"]
+        messages = [{"role": "system", "content": self._system()}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
@@ -287,7 +410,10 @@ class Mind:
                 # change measured, not by sampling noise (±3 of 90 without it).
                 "seed": 0}
         if final:
-            body["tool_choice"] = "none"
+            # Without tools the model can only answer in words: with tool_choice none Qwen3.5 still wrote a call as
+            # XML text, which reached the person (llama.cpp #20837; 2026-10-15 E017). The prefix is read again only
+            # for this last answer of an exhausted turn.
+            del body["tools"], body["parallel_tool_calls"]
         reply = self.server.chat(body, slot=LlmServer.DECIDE)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
@@ -300,17 +426,17 @@ class Mind:
                 arguments = {}
             arguments = arguments if isinstance(arguments, dict) else {}
             if wire in {"ask_user", CONFIRM["function"]["name"]} or wire in self.wire_to_op:
-                calls.append({"id": call.get("id") or f"call_{len(self.conversation)}_{index}", "wire": wire,
+                calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire,
                               "arguments": arguments})
         if calls:
-            self.conversation.append({"role": "assistant", "content": content, "tool_calls": [
+            conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
                  "function": {"name": c["wire"], "arguments": json.dumps(c["arguments"], ensure_ascii=False)}}
                 for c in calls]})
             turn["queue"] = calls[1:]
             return self._result(request_id, turn, calls[0], reply, stage, started, content)
         if content:
-            self.conversation.append({"role": "assistant", "content": content})
+            conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)
 
     def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,

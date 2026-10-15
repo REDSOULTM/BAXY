@@ -14,9 +14,12 @@ namespace Baxy.App;
 /// JSON lines: each line BAXY published, each call the model made with its status and verification, when the voice
 /// started to speak, and how each turn ended.
 /// <para>
-/// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT)
+/// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT | --command-dir DIR)
 /// [--timeout-ms N]</c>. A turns file has one JSON object per line: <c>{"text":"…"}</c> or <c>{"confirm":true}</c>
-/// (a bare line is text).
+/// (a bare line is text). With a command directory the benches drive one running product case after case: they drop
+/// <c>00001.json</c>, <c>00002.json</c>… there (a turn as above, <c>{"beat":{…moment…}}</c>, <c>{"session":"new"}</c> or
+/// <c>{"exit":true}</c>) and
+/// read the events this writes; each command ends with its <c>command.done</c>.
 /// </para>
 /// </summary>
 internal static class ProductConductorHost
@@ -76,14 +79,23 @@ internal static class ProductConductorHost
         await using var viewModel = new MainWindowViewModel();
         long turnStartedMs = 0;
         long? speechStartedMs = null;
-        viewModel.MessageAdded += message => Emit(new JsonObject
+        string lastSaid = string.Empty;
+        viewModel.MessageAdded += message =>
         {
+            if (!message.IsUser)
+            {
+                lastSaid = message.Body;
+            }
+
+            Emit(new JsonObject
+            {
             ["type"] = "message",
             ["speaker"] = message.IsUser ? "person" : "baxy",
             ["route"] = message.Route,
             ["body"] = message.Body,
             ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
-        });
+            });
+        };
         viewModel.StepCompleted += step => Emit(new JsonObject
         {
             ["type"] = "step",
@@ -94,15 +106,29 @@ internal static class ProductConductorHost
             ["error"] = step.ErrorCode,
             ["elapsed_ms"] = step.ElapsedMs,
             ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
+            // What the model read back: the benches audit every claim against it and the journal.
+            ["observation"] = step.Observation,
         });
         viewModel.PropertyChanged += (_, change) =>
         {
-            if (change.PropertyName == nameof(MainWindowViewModel.IsVoiceSpeaking) && viewModel.IsVoiceSpeaking
-                && speechStartedMs is null)
+            if (change.PropertyName != nameof(MainWindowViewModel.IsVoiceSpeaking))
             {
-                speechStartedMs = clock.ElapsedMilliseconds - turnStartedMs;
-                Emit(new JsonObject { ["type"] = "speech.start", ["since_turn_ms"] = speechStartedMs });
+                return;
             }
+
+            long since = clock.ElapsedMilliseconds - turnStartedMs;
+            if (viewModel.IsVoiceSpeaking)
+            {
+                speechStartedMs ??= since;
+            }
+
+            // Each utterance's start and end, with the line it says (the last one BAXY published).
+            Emit(new JsonObject
+            {
+                ["type"] = viewModel.IsVoiceSpeaking ? "speech.start" : "speech.end",
+                ["text"] = lastSaid,
+                ["since_turn_ms"] = since,
+            });
         };
 
         try
@@ -131,8 +157,40 @@ internal static class ProductConductorHost
             }
 
             int index = 0;
-            foreach (JsonObject turn in ReadTurns(parsed))
+            await foreach (JsonObject turn in ReadTurnsAsync(parsed, lifetime.Token))
             {
+                if (turn["exit"] is not null)
+                {
+                    break;
+                }
+
+                if (turn["beat"] is JsonObject beatMoment)
+                {
+                    // A heartbeat with a given moment (the scenes' context), spoken per the person's activity.
+                    turnStartedMs = clock.ElapsedMilliseconds;
+                    speechStartedMs = null;
+                    Emit(new JsonObject { ["type"] = "beat.start", ["moment"] = beatMoment.DeepClone() });
+                    await viewModel.RunBeatAsync(
+                            (JsonObject)beatMoment.DeepClone(),
+                            HeartbeatMoment.Speaks((string?)beatMoment["owner_activity"] ?? string.Empty),
+                            lifetime.Token)
+                        .ConfigureAwait(true);
+                    Emit(new JsonObject
+                    {
+                        ["type"] = "beat.end",
+                        ["pendingConfirmation"] = viewModel.HasPendingConfirmation,
+                    });
+                    Emit(new JsonObject { ["type"] = "command.done", ["beat"] = true });
+                    continue;
+                }
+
+                if ((string?)turn["session"] == "new")
+                {
+                    bool started = viewModel.StartNewUiSession();
+                    Emit(new JsonObject { ["type"] = "command.done", ["session"] = "new", ["ok"] = started });
+                    continue;
+                }
+
                 turnStartedMs = clock.ElapsedMilliseconds;
                 speechStartedMs = null;
                 Emit(new JsonObject { ["type"] = "turn.start", ["index"] = index, ["input"] = turn.DeepClone() });
@@ -159,7 +217,7 @@ internal static class ProductConductorHost
 
                 long endedMs = clock.ElapsedMilliseconds - turnStartedMs;
                 var speechDeadline = Stopwatch.StartNew();
-                while (viewModel.IsMindReady && speechStartedMs is null && speechDeadline.Elapsed < SpeechWait
+                while (viewModel.CanSpeak && speechStartedMs is null && speechDeadline.Elapsed < SpeechWait
                     && !lifetime.IsCancellationRequested)
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(25), lifetime.Token).ConfigureAwait(true);
@@ -175,6 +233,7 @@ internal static class ProductConductorHost
                     ["failure"] = viewModel.LastTurnFailure,
                     ["pendingConfirmation"] = viewModel.HasPendingConfirmation,
                 });
+                Emit(new JsonObject { ["type"] = "command.done", ["index"] = index });
                 index++;
             }
 
@@ -192,12 +251,47 @@ internal static class ProductConductorHost
         }
     }
 
-    private static IEnumerable<JsonObject> ReadTurns(ConductorArguments parsed)
+    private static async IAsyncEnumerable<JsonObject> ReadTurnsAsync(
+        ConductorArguments parsed,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (parsed.Text is { } text)
         {
             yield return new JsonObject { ["text"] = text };
             yield break;
+        }
+
+        if (parsed.CommandDirectory is { } commands)
+        {
+            Directory.CreateDirectory(commands);
+            for (int sequence = 1; ; sequence++)
+            {
+                string path = Path.Combine(commands, sequence.ToString("D5", System.Globalization.CultureInfo.InvariantCulture) + ".json");
+                JsonObject? command = null;
+                while (command is null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (File.Exists(path))
+                    {
+                        try
+                        {
+                            command = JsonNode.Parse(await File.ReadAllTextAsync(path, cancellationToken)
+                                .ConfigureAwait(true)) as JsonObject;
+                        }
+                        catch (Exception exception) when (exception is IOException or JsonException)
+                        {
+                            command = null; // still being written
+                        }
+                    }
+
+                    if (command is null)
+                    {
+                        await Task.Delay(TimeSpan.FromMilliseconds(25), cancellationToken).ConfigureAwait(true);
+                    }
+                }
+
+                yield return command;
+            }
         }
 
         if (parsed.TurnsFile is null)
@@ -246,6 +340,7 @@ internal static class ProductConductorHost
         string? CaptureDirectory,
         string? TurnsFile,
         string? Text,
+        string? CommandDirectory,
         TimeSpan TurnTimeout)
     {
         internal static ConductorArguments Parse(IReadOnlyList<string> arguments)
@@ -255,6 +350,7 @@ internal static class ProductConductorHost
             string? capture = null;
             string? turns = null;
             string? text = null;
+            string? commands = null;
             int timeoutMs = 180_000;
             for (int index = 0; index < arguments.Count; index++)
             {
@@ -274,6 +370,10 @@ internal static class ProductConductorHost
                 {
                     text = value;
                 }
+                else if (TryTake(arguments, ref index, "--command-dir", out value))
+                {
+                    commands = value;
+                }
                 else if (TryTake(arguments, ref index, "--timeout-ms", out value)
                     && int.TryParse(value, out int parsedTimeout))
                 {
@@ -286,6 +386,7 @@ internal static class ProductConductorHost
                 string.IsNullOrWhiteSpace(capture) ? null : Path.GetFullPath(capture),
                 string.IsNullOrWhiteSpace(turns) ? null : Path.GetFullPath(turns),
                 text,
+                string.IsNullOrWhiteSpace(commands) ? null : Path.GetFullPath(commands),
                 TimeSpan.FromMilliseconds(timeoutMs));
         }
 

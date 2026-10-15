@@ -21,7 +21,7 @@ def main() -> int:
         return 2
     extra = os.environ.get("BAXY_RENEW_SERVER_ARGS", "").split()
     server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
-                       context=int(os.environ.get("BAXY_RENEW_CTX", "40960")), extra_args=extra)
+                       context=int(os.environ.get("BAXY_RENEW_CTX", "49152")), extra_args=extra)
     server.start()
     trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
     trace.parent.mkdir(parents=True, exist_ok=True)
@@ -37,7 +37,8 @@ def main() -> int:
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL, "mindVersion": "renew-0.1",
         "models": {"llm": server.name},
-        "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "session.new",
+        "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
+                     "session.new",
                      "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel", "shutdown"],
     })
     try:
@@ -70,7 +71,12 @@ def main() -> int:
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or "")))
                 elif kind == "turn.continue":
                     protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or ""),
-                                                              bool(message.get("final"))))
+                                                              bool(message.get("final")), bool(message.get("beat"))))
+                elif kind == "turn.beat":
+                    protocol.write_message(mind.beat(request_id, dict(message.get("context") or {})))
+                elif kind == "turn.beat.end":
+                    mind.end_beat()
+                    protocol.write_message({"type": "turn.beat.ended", "id": request_id})
                 elif kind == "turn.confirm":
                     protocol.write_message(mind.confirm(request_id, bool(message.get("approve")),
                                                         str(message.get("label") or "")))
@@ -101,7 +107,8 @@ def main() -> int:
                 else:
                     protocol.write_message(protocol.error_reply(request_id, "unknown_request", kind))
             except Exception as error:  # noqa: BLE001 - one failed request never ends the sidecar
-                surface = {"turn.decide": "turn", "turn.continue": "turn", "turn.confirm": "turn"}.get(kind, "request")
+                surface = {"turn.decide": "turn", "turn.continue": "turn", "turn.confirm": "turn",
+                           "turn.beat": "turn"}.get(kind, "request")
                 sys.stderr.write(f"baxy_mind_renew_failure:{kind}:{error!r}\n")
                 sys.stderr.flush()
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",

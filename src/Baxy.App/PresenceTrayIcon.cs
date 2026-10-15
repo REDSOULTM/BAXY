@@ -114,6 +114,8 @@ internal sealed class PresenceTrayIcon : IDisposable
 
     internal void SetListening(bool listening) => _listening = listening;
 
+    internal bool Notify(string text) => IsRegistered && _shell.Notify(_hwnd, text);
+
     internal bool Post(uint message) =>
         _hwnd != 0 && NativeMethods.PostMessage(_hwnd, message, nint.Zero, nint.Zero);
 
@@ -279,6 +281,22 @@ internal sealed class PresenceTrayIcon : IDisposable
             data.UVersion = 4;
             _ = NativeMethods.Shell_NotifyIcon(4, ref data);
             return true;
+        }
+
+        public bool Notify(nint hwnd, string text)
+        {
+            var data = new NotifyIconData
+            {
+                CbSize = (uint)Marshal.SizeOf<NotifyIconData>(),
+                HWnd = hwnd,
+                UId = 1,
+                UFlags = 0x00000010,
+                SzInfo = text.Length > 255 ? text[..255] : text,
+                SzInfoTitle = "BAXY",
+                DwInfoFlags = 0x00000001,
+                SzTip = string.Empty,
+            };
+            return NativeMethods.Shell_NotifyIcon(1, ref data);
         }
 
         public bool Delete(nint hwnd)

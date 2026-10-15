@@ -36,3 +36,23 @@ Goal: `PROMPT_GOAL_RENEW.md`. Estado estructurado: `metas.json`. Notas del noteb
 
 **Práctica.** `r2-conv-seed` (cases.json): 80/90, p50 0,69 s, VRAM 4,7 GB (sobre el límite). Banco de práctica 2:
 `F:\BAXYeval\renew_v1\practica\decision2.json` (270 casos, 131 operaciones).
+
+**Computer use (primera vuelta).** Vista compacta desde el recibo completo (el kernel recortaba a 20 controles),
+regla 9 del prompt y descripciones de mirar/clic. Steam → biblioteca en 3 pasos; calculadora y bloc de notas salen en
+la práctica e2e. Proveedor: `app.open` de la Calculadora precargada no verificaba (arreglado, prueba nueva).
+
+**Práctica e2e p1 (30 casos, producto real, antes de los arreglos de la tarde): 12/30.** herramientas 5/10, computer
+use 3/8, agente 2/8, voz 2/4; voz a los p50 3,1 s (incluye turnos de muchos pasos). Causas: faltan herramientas de
+agente con rutas generales (notebook); el runner cortaba la voz al mandar el turno siguiente (arreglado); el reloj se
+copiaba al portapapeles (arreglado); `browser.page.read` leía el navegador del dueño (arreglado); el cierre por
+presupuesto publicaba XML (arreglado: sin herramientas); E026 «para» → `system.power` bloqueó la pantalla (prompt
+pendiente); E015 el oráculo exige ver ≥ 4 juegos instalados y la biblioteca abrió en «TODOS (1426)»: caso dudoso.
+
+**Latido.** Mente en dos pasos (JSON: análisis y si interviene; luego herramientas). Escenas de práctica: un token de
+silencio se elegía en 40/40 (57,5 %, todo silencio); con análisis primero 29/40 = 72,5 %, molestas 1/20. App: disparo
+cada 5 min y por cambios, momento con señales genéricas, canal por actividad, propuestas retenidas, botones Sí/No.
+Probado en el producto (P002 propuesta y «No», P001 silencio). Sin memoria ni recordatorios en el momento todavía: el
+modelo los puede leer con sus herramientas.
+
+**Pruebas de Providers:** 5 de `VisibleClick…` fallan en este escritorio (dependen de la ventana real al frente; no
+tocan lo cambiado; en el notebook pasan).

@@ -22,6 +22,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly Func<MindSidecarClient> _mindClientFactory;
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
     private readonly NativeTurnLoop _loop;
+    // One turn at a time, the person's or the heartbeat's: a person's words that arrive during a heartbeat wait for it.
+    private readonly SemaphoreSlim _turnGate = new(1, 1);
+    private bool _beatActive;
+    private bool _beatSpeaks;
     private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private RetryableOperationRegistry? _retryableOperations;
     private MemoryOperationProtector? _memoryProtector;
@@ -75,7 +79,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 Mind = () => _mindClient,
                 Registry = () => _retryableOperations,
                 MemoryProtector = () => _memoryProtector,
-                Publish = (text, route) => AddMessageCore("BAXY", text, isUser: false, route),
+                Publish = (text, route) =>
+                {
+                    // A heartbeat speaks only when the person is free; otherwise its words are a notification.
+                    bool quiet = _beatActive && !_beatSpeaks;
+                    AddMessageCore("BAXY", text, isUser: false, route, speak: !quiet);
+                    if (_beatActive && quiet)
+                    {
+                        NotificationRequested?.Invoke(text);
+                    }
+                },
                 Fail = failure =>
                 {
                     LastTurnFailure = failure;
@@ -96,6 +109,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The chat changed what the memory holds (the interface reads its count again).</summary>
     internal event Action? MemoryChanged;
+
+    /// <summary>A heartbeat's words for a person who is playing, in a call, watching or away: shown, not spoken.</summary>
+    internal event Action<string>? NotificationRequested;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
 
@@ -173,6 +189,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
 
     public bool IsMindReady => _mindClient is { IsReady: true };
+
+    /// <summary>BAXY's answers are said aloud (the mind offers its voice).</summary>
+    internal bool CanSpeak => _mindClient is { IsVoiceAvailable: true };
 
     /// <summary>The shell opened while the mind it started is still reading its model.</summary>
     public bool IsMindPreparing => _startupMindPending;
@@ -347,7 +366,49 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             cancellationToken);
     }
 
+    /// <summary>Whether a heartbeat may run now: everything is up and nothing holds the turn or waits for the person.</summary>
+    internal bool CanBeat => IsReady && IsMindReady && !IsBusy && !_beatActive && !_loop.HasPendingConfirmation;
+
+    /// <summary>One heartbeat with the moment observed; <paramref name="speak"/>: its words may be said aloud.</summary>
+    internal async Task RunBeatAsync(System.Text.Json.Nodes.JsonObject moment, bool speak, CancellationToken cancellationToken)
+    {
+        if (!_turnGate.Wait(0, cancellationToken))
+        {
+            return;
+        }
+
+        string turnTraceId = "b" + Interlocked.Increment(ref _turnTraceSequence).ToString(CultureInfo.InvariantCulture);
+        ShellTraceSink.TurnId = turnTraceId;
+        ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, "beat.start", speak ? "voz" : "notificacion");
+        _beatActive = true;
+        _beatSpeaks = speak;
+        try
+        {
+            await _loop.RunBeatAsync(moment, cancellationToken);
+        }
+        finally
+        {
+            _beatActive = false;
+            _turnGate.Release();
+            OnPropertyChanged(nameof(HasPendingConfirmation));
+            ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, "beat.end");
+        }
+    }
+
     private async Task RunTurnAsync(string visibleUserText, Func<Task> turn, CancellationToken cancellationToken)
+    {
+        await _turnGate.WaitAsync(cancellationToken);
+        try
+        {
+            await RunGatedTurnAsync(visibleUserText, turn, cancellationToken);
+        }
+        finally
+        {
+            _turnGate.Release();
+        }
+    }
+
+    private async Task RunGatedTurnAsync(string visibleUserText, Func<Task> turn, CancellationToken cancellationToken)
     {
         string turnTraceId = "t" + Interlocked.Increment(ref _turnTraceSequence).ToString(CultureInfo.InvariantCulture);
         ShellTraceSink.TurnId = turnTraceId;
@@ -946,7 +1007,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     // ---- publishing ----------------------------------------------------------------------------------------
 
-    private void AddMessageCore(string speaker, string body, bool isUser, string? route = null)
+    private void AddMessageCore(string speaker, string body, bool isUser, string? route = null, bool speak = true)
     {
         var message = new ConversationMessage(speaker, body, isUser, DateTimeOffset.Now, route);
         Messages.Add(message);
@@ -954,7 +1015,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // The private log of the conversation (owner, 2026-09-20): text, route and time of each turn, local only.
         _conversationLog?.Append(message);
         MindSidecarClient? mind = _mindClient;
-        if (mind is { IsVoiceAvailable: true })
+        if (mind is { IsVoiceAvailable: true } && (isUser || speak))
         {
             // What BAXY answers is said aloud; the person speaking (or typing) over it stops the voice.
             _ = isUser

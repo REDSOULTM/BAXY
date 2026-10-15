@@ -235,10 +235,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 12_000), 256, 32_768);
-        if (_userBrowser?.Resolve() is { } userBrowser)
+        // The page read is the one BAXY last opened: a page it opened in a browser of its own (a named browser that is
+        // not the person's default) is read there, not in the person's browser in front of it (2026-10-15 E016: Chrome
+        // showed example.com and the read returned the person's Opera tab).
+        CdpBrowserSession? active = _sessionContext?.Active;
+        if (active is null && _userBrowser?.Resolve() is { } userBrowser)
             return await _userBrowser.ReadPageAsync(operation, userBrowser, maximumCharacters, cancellationToken)
                 .ConfigureAwait(false);
-        CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
+        CdpBrowserSession browser = active ?? _browser;
         CdpPageReadResult page = await browser.ReadPageAsync(maximumCharacters, cancellationToken)
             .ConfigureAwait(false);
         if (!page.Verified)

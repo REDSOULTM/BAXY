@@ -30,6 +30,26 @@ public sealed class WindowsCalculatorOpenProviderTests
         });
     }
 
+    // 2026-10-15: Windows keeps a prelaunched CalculatorApp suspended and shows that same process when it is opened; the
+    // window it shows is the proof, not a new process.
+    [Test]
+    public async Task APrelaunchedProcessThatBecomesVisibleIsTheVerifiedOpening()
+    {
+        var platform = new FakePlatform { Prelaunched = true };
+        var provider = new WindowsCalculatorOpenProvider(platform);
+        var request = new ApplicationOpenRequest(
+            ApplicationIds.Calculator, Guid.NewGuid().ToString("D"), Foreground: true);
+
+        ApplicationOpenResult result = await provider.OpenAsync(request, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ProcessId, Is.EqualTo(52));
+            Assert.That(platform.LaunchCount, Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task ForegroundVerificationWaitsOnlyWhenTheImmediatePostreadHasNotConverged()
     {
@@ -200,6 +220,7 @@ public sealed class WindowsCalculatorOpenProviderTests
         private bool _launched;
         private bool _focused;
         public bool FocusRequiresDelay { get; init; }
+        public bool Prelaunched { get; init; }
         public int LaunchCount { get; private set; }
         public int FocusCount { get; private set; }
         public int InventoryCount { get; private set; }
@@ -209,7 +230,7 @@ public sealed class WindowsCalculatorOpenProviderTests
             InventoryCount++;
             return _launched
                 ? [new CalculatorSnapshot(52, 638_880_000_000_000_000, 91, true, _focused)]
-                : [];
+                : Prelaunched ? [new CalculatorSnapshot(52, 638_880_000_000_000_000, 0, false, false)] : [];
         }
         public bool Launch() { LaunchCount++; _launched = true; _focused = WindowsActivates; return true; }
         public void RequestForeground(long windowHandle)

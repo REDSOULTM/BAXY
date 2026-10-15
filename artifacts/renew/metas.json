@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T03:50:00-03:00",
+  "actualizado": "2026-10-15T05:30:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -92,8 +92,9 @@
     },
     {
       "id": "marco.renew_check",
-      "estado": "pendiente",
-      "quien": "PC"
+      "estado": "en_curso",
+      "quien": "PC",
+      "evidencia": "bench_decision, bench_e2e, bench_escenas escritos; falta falsedades y unificar en renew_check.ps1"
     },
     {
       "id": "falsedades.diagnostico",
@@ -114,13 +115,15 @@
     },
     {
       "id": "arnes.nuevo",
-      "estado": "pendiente",
-      "quien": "PC"
+      "estado": "cumplida",
+      "quien": "PC",
+      "evidencia": "commits 06c7eb81..4399b2c8; humo real runs/smoke1; conductor por comandos"
     },
     {
       "id": "computer_use",
-      "estado": "pendiente",
-      "quien": "PC"
+      "estado": "en_curso",
+      "quien": "PC",
+      "evidencia": "vista compacta; Steam biblioteca 3 pasos; e2e práctica cu 3/8 (p1)"
     },
     {
       "id": "herramientas_agente",
@@ -129,8 +132,9 @@
     },
     {
       "id": "latido",
-      "estado": "pendiente",
-      "quien": "PC"
+      "estado": "en_curso",
+      "quien": "PC",
+      "evidencia": "escenas práctica 29/40 (p5); producto: propuesta y silencio verificados (runs/beat1)"
     },
     {
       "id": "limpieza_codigo_muerto",

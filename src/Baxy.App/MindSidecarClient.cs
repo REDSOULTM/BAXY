@@ -50,8 +50,8 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
 /// <summary>
 /// The model's move in the native loop. <see cref="Kind"/>: <c>action</c> (one tool call: <see cref="Operation"/> with
 /// its <see cref="Arguments"/>, which the kernel authorizes and the provider executes and verifies), <c>reply</c> (its
-/// answer to the person), <c>question</c> (one question it asks the person). The App runs what the model chose and
-/// publishes what it wrote; it never rewrites either.
+/// answer to the person), <c>question</c> (one question it asks the person), <c>silence</c> (a heartbeat that found
+/// nothing needing attention). The App runs what the model chose and publishes what it wrote; it never rewrites either.
 /// </summary>
 internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text)
 {
@@ -354,10 +354,31 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// The verified result of the model's last call goes back to it; it answers with its next move. With
     /// <paramref name="final"/> the step budget is spent and the model answers in words from what the results show.
     /// </summary>
-    public Task<MindStep?> ContinueAsync(string observation, bool final, CancellationToken cancellationToken) =>
+    public Task<MindStep?> ContinueAsync(
+        string observation,
+        bool final,
+        bool beat,
+        CancellationToken cancellationToken) =>
         TurnRequestAsync(
-            new JsonObject { ["type"] = "turn.continue", ["observation"] = observation, ["final"] = final },
+            new JsonObject
+            {
+                ["type"] = "turn.continue", ["observation"] = observation, ["final"] = final, ["beat"] = beat,
+            },
             cancellationToken);
+
+    /// <summary>The heartbeat: the moment as the App observed it; the model decides whether to intervene.</summary>
+    public Task<MindStep?> BeatAsync(JsonObject context, CancellationToken cancellationToken) =>
+        TurnRequestAsync(new JsonObject { ["type"] = "turn.beat", ["context"] = context }, cancellationToken);
+
+    /// <summary>The heartbeat's turn ended: what it did joins the conversation unless it was silence.</summary>
+    public async Task<bool> EndBeatAsync(CancellationToken cancellationToken)
+    {
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "turn.beat.end" },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && (string?)reply["type"] == "turn.beat.ended";
+    }
 
     /// <summary>The person pressed Sí or No: their answer enters the conversation as the confirmation call.</summary>
     public Task<MindStep?> ConfirmAsync(bool approve, string label, CancellationToken cancellationToken) =>
@@ -405,6 +426,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 return new MindStep("question", null, null, question.Trim());
             case "conversation" when (string?)reply["reply"] is { Length: > 0 } text:
                 return new MindStep("reply", null, null, text.Trim());
+            case "silence":
+                return new MindStep("silence", null, null, string.Empty);
             default:
                 return null;
         }

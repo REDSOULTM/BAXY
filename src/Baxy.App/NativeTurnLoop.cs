@@ -13,7 +13,8 @@ internal sealed record NativeTurnStep(
     string Status,
     bool Verified,
     string? ErrorCode,
-    long ElapsedMs);
+    long ElapsedMs,
+    string Observation);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -25,6 +26,11 @@ internal sealed record NativeTurnStep(
 /// A risky call the kernel challenges waits for the person: the model asks, and the answer comes back as the
 /// <c>confirm_pending</c> call (by voice or text the model reads the answer; the Sí and No buttons are that call
 /// directly). The kernel's token is bound to the exact invocation it challenged; anything else the person asks drops it.
+/// </para>
+/// <para>
+/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: what it does on its own is only the
+/// low-risk; a high-risk call (by the catalog's risk) or one that would type or click in the person's windows is held
+/// as a proposal and never reaches the kernel until the person says «sí» to that exact invocation.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -55,18 +61,29 @@ internal sealed class NativeTurnLoop
         internal Action? MemoryChanged { get; init; }
     }
 
+    private static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
+
+    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, comprar, instalar, cerrar con trabajo).
+    private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
+    {
+        "work_loss", "recoverable_delete", "external_communication", "installation", "monetary",
+    };
+
     private readonly Host _host;
     private PendingOperationConfirmation? _pending;
+    private PreparedOperation? _proposal;
+    private DateTimeOffset _proposalExpiresUtc;
+    private bool _beat;
 
     internal NativeTurnLoop(Host host)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
     }
 
-    /// <summary>A risky call waits for the person's Sí or No.</summary>
-    internal bool HasPendingConfirmation => _pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow;
-
-    internal string? PendingOperation => HasPendingConfirmation ? _pending!.Prepared.OperationName : null;
+    /// <summary>A risky call waits for the person's Sí or No (the kernel's challenge or a heartbeat's proposal).</summary>
+    internal bool HasPendingConfirmation =>
+        (_pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow)
+        || (_proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow);
 
     /// <summary>The person's words open a turn.</summary>
     internal async Task RunAsync(string text, CancellationToken cancellationToken)
@@ -99,6 +116,31 @@ internal sealed class NativeTurnLoop
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// The heartbeat: the moment goes to the model, which says whether to intervene and, if so, acts, proposes or says
+    /// something; what it wrote is published on the channel the person's activity allows.
+    /// </summary>
+    internal async Task RunBeatAsync(JsonObject context, CancellationToken cancellationToken)
+    {
+        MindSidecarClient? mind = _host.Mind();
+        if (mind is not { IsTurnAvailable: true })
+        {
+            return;
+        }
+
+        _beat = true;
+        try
+        {
+            await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken).ConfigureAwait(false),
+                cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _beat = false;
+            _ = await mind.EndBeatAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
     /// <summary>A new session: nothing pending survives it.</summary>
     internal void Reset()
     {
@@ -114,19 +156,24 @@ internal sealed class NativeTurnLoop
                 case null:
                     _host.Fail("decision_unavailable");
                     return;
+                case { Kind: "silence" }:
+                    return;
                 case { Kind: "reply" }:
                     _host.Publish(step.Text, HasPendingConfirmation
                         ? PublicResponseRoute.Confirmation
                         : PublicResponseRoute.Conversation);
                     return;
                 case { Kind: "question" }:
-                    _host.Publish(step.Text, PublicResponseRoute.Clarification);
+                    // A question about a call that waits for the person's «sí» is that confirmation (Sí/No buttons).
+                    _host.Publish(step.Text, HasPendingConfirmation
+                        ? PublicResponseRoute.Confirmation
+                        : PublicResponseRoute.Clarification);
                     return;
             }
 
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken)
                 .ConfigureAwait(false);
-            step = await mind.ContinueAsync(observation, final: calls >= MaximumModelCalls, cancellationToken)
+            step = await mind.ContinueAsync(observation, final: calls >= MaximumModelCalls, _beat, cancellationToken)
                 .ConfigureAwait(false);
         }
     }
@@ -147,7 +194,7 @@ internal sealed class NativeTurnLoop
             return Record(operation, arguments, started, Observation(operation, "failed", false, "engine_unavailable"));
         }
 
-        if (!ProductCatalog.TryGet(operation, out _))
+        if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) || descriptor is null)
         {
             return Record(operation, arguments, started, Observation(operation, "rejected", false, "unknown_operation"));
         }
@@ -170,14 +217,37 @@ internal sealed class NativeTurnLoop
                 "arguments_invalid", new JsonObject { ["argumentsGiven"] = arguments.DeepClone() }));
         }
 
+        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || WritesInThePersonsWindow(operation)))
+        {
+            // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
+            _proposal = prepared;
+            _proposalExpiresUtc = DateTimeOffset.UtcNow + ProposalLifetime;
+            return Record(operation, arguments, started, new JsonObject
+            {
+                ["kind"] = "operation",
+                ["operation"] = operation,
+                ["status"] = "needs_confirmation",
+                ["arguments"] = arguments.DeepClone(),
+            }.ToJsonString());
+        }
+
         return await SendAsync(core, prepared, arguments, confirmationToken: null, started, cancellationToken)
             .ConfigureAwait(false);
     }
 
+    private static bool WritesInThePersonsWindow(string operation) =>
+        operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
+            or "input.select.all" or "input.scroll" or "clipboard.paste" or "message.draft";
+
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
-        PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
         bool approve = arguments["approve"] is JsonValue value && value.TryGetValue(out bool approved) && approved;
+        if (_proposal is { } proposal && _proposalExpiresUtc > DateTimeOffset.UtcNow)
+        {
+            return await AnswerProposalAsync(proposal, approve, started, cancellationToken).ConfigureAwait(false);
+        }
+
+        PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
         if (pending is null)
         {
             DropPending();
@@ -204,6 +274,43 @@ internal sealed class NativeTurnLoop
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, started, cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
+    // asks for its confirmation too, the person's «sí» to this invocation is that confirmation (same token binding).
+    private async Task<string> AnswerProposalAsync(
+        PreparedOperation proposal,
+        bool approve,
+        long started,
+        CancellationToken cancellationToken)
+    {
+        JsonObject arguments = PrivateArguments(proposal);
+        _proposal = null;
+        if (!approve)
+        {
+            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            return Record(proposal.OperationName, arguments, started,
+                Observation(proposal.OperationName, "cancelled", false, "declined_by_person"));
+        }
+
+        CoreProcessClient? core = _host.Core();
+        if (core is not { IsReady: true })
+        {
+            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            return Record(proposal.OperationName, arguments, started,
+                Observation(proposal.OperationName, "failed", false, "engine_unavailable"));
+        }
+
+        string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, started,
+            cancellationToken).ConfigureAwait(false);
+        if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
+        {
+            _pending = null;
+            observation = await SendAsync(core, proposal, arguments, challenge.Token, started, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        return observation;
     }
 
     private async Task<string> SendAsync(
@@ -309,6 +416,12 @@ internal sealed class NativeTurnLoop
 
     private void DropPending()
     {
+        if (_proposal is { } proposal)
+        {
+            _proposal = null;
+            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+        }
+
         if (_pending is { } pending)
         {
             _pending = null;
@@ -333,7 +446,8 @@ internal sealed class NativeTurnLoop
             response?.Status ?? StatusOf(observation),
             response?.Verified ?? false,
             response?.ErrorCode,
-            elapsed);
+            elapsed,
+            observation);
         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.step",
             $"{operation}.{step.Status}.{(step.Verified ? "verified" : "unverified")}.ms.{elapsed}");
         _host.StepCompleted?.Invoke(step);

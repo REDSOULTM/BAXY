@@ -13,10 +13,10 @@ from typing import Any
 
 
 class LlmServer:
-    # Two pinned slots: slot 0 always holds the decision prefix (system + whole catalog, ~23k tokens), slot 1 the
-    # short prompts (composition, forced arguments). One shared slot evicted the catalog after every composition and
-    # the next turn re-read it whole (7,5 s on 2026-10-15). The context is per slot.
-    DECIDE, SHORT = 0, 1
+    # One slot: every request (the person's turns and the heartbeat, which keeps the same system prompt and tools)
+    # starts from the same cached prefix. A second slot only served the composition and the forced arguments, which
+    # the native loop no longer makes; it cost 950 MiB of VRAM (measured on the notebook, 2026-10-15).
+    DECIDE = 0
 
     def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768,
                  extra_args: list[str] | None = None, log_name: str = "llama-server.log") -> None:
@@ -39,9 +39,7 @@ class LlmServer:
     def start(self) -> None:
         command = [
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
-            # One KV pool shared by both slots (-kvu): the decision prefix (~39k tokens) gets the room it needs
-            # without doubling the cache; the composition slot only uses a few hundred tokens.
-            "-ngl", self.gpu_layers, "-c", str(self.context * 2), "-np", "2", "-kvu", "-fa", "on",
+            "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
         ] + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"

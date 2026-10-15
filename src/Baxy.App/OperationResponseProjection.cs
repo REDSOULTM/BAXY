@@ -21,6 +21,14 @@ internal sealed record OperationResponseProjection(string Message)
 
         if (!string.IsNullOrWhiteSpace(response.Message))
         {
+            // The look's whole view is the receipt's result; the kernel's visible facts keep only its first rows.
+            if (operationName == "input.visible.controls"
+                && response.Result is { ValueKind: JsonValueKind.Object } look
+                && ScreenViewProjection.TryCreate(response.Message, look, out string view))
+            {
+                return new OperationResponseProjection(view);
+            }
+
             if (operationName == "ocr.read")
             {
                 string message = response.Message.Trim();
