@@ -92,6 +92,17 @@ class Conductor:
             self.process.wait(120)
         except subprocess.TimeoutExpired:
             self.process.kill()
+        # The launcher is a cmd wrapper: the product it started (this bench's own, found by its command folder) and the
+        # core and mind under it must not outlive the bench.
+        import psutil
+        for process in psutil.process_iter(["name", "cmdline"]):
+            if (process.info["name"] or "").lower() == "baxy.exe" and str(self.commands) in " ".join(
+                    process.info["cmdline"] or []):
+                for child in process.children(recursive=True) + [process]:
+                    try:
+                        child.kill()
+                    except psutil.Error:
+                        pass
 
 
 def run_turn(conductor: Conductor, command: dict, timeout: float) -> list[dict]:

@@ -50,15 +50,22 @@ SYSTEM = (
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
 # scenes, the analysis first found 34 of 40), then, only when it decided to intervene, it acts with its tools.
-BEAT_DECISION = {"type": "object", "properties": {"analisis": {"type": "string"}, "intervenir": {"type": "boolean"}},
-                 "required": ["analisis", "intervenir"]}
-BEAT_DECIDE = ("Responde en JSON: analisis = en una frase, qué está pasando y si hay uno de esos motivos (cuál); "
-               "intervenir = true si hay un motivo, false si no.")
-BEAT_ACT = ("Interviene ahora según tu análisis. Lo de bajo riesgo, hazlo con su herramienta. Lo de alto riesgo "
-            "(borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, cerrar o forzar el cierre de una app) no "
-            "lo preguntes en texto: llama a su herramienta y el sistema le pedirá el sí a la persona antes de hacerlo. "
-            "Si ninguna herramienta hace falta, dile en una frase lo que necesita saber. Nunca escribas en sus ventanas. "
-            "Háblale de tú.")
+_MOTIVES = ("pedido", "preferencia", "vence", "bloqueo")
+BEAT_DECISION = {"type": "object",
+                 "properties": {**{m: {"type": "string"} for m in _MOTIVES}, "analisis": {"type": "string"},
+                                "intervenir": {"type": "boolean"}},
+                 "required": [*_MOTIVES, "analisis", "intervenir"]}
+BEAT_DECIDE = ("Responde en JSON, revisando cada motivo con lo que ves arriba: pedido = qué te pidió antes y se "
+               "cumple ahora, o «ninguno»; preferencia = qué preferencia suya aplica ahora, o «ninguna»; vence = qué "
+               "vence ahora o muy pronto, o «nada»; bloqueo = qué la bloquea o le hará perder trabajo, o «nada»; "
+               "analisis = en una frase, qué está pasando; intervenir = true si algún motivo es real, false si no.")
+BEAT_ACT = ("Interviene ahora según tu análisis; lo que recuerdas de la persona ya está arriba, no lo busques. Si "
+            "basta con avisarle algo (lo que pidió saber, un recordatorio que "
+            "vence, una alerta), díselo en una frase sin usar herramientas. Si hay que hacer algo de bajo riesgo, hazlo "
+            "con su herramienta. Lo de alto riesgo (borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, "
+            "cerrar o forzar el cierre de una app) no lo preguntes en texto: llama a su herramienta y el sistema le "
+            "pedirá el sí a la persona antes de hacerlo. Nunca escribas en sus ventanas ni digas que hiciste algo que "
+            "no hiciste. Háblale de tú.")
 BEAT_RULES = (
     "Es un latido: nadie te habló. Revisa lo de arriba buscando estos motivos para intervenir:\n"
     "1. Algo que la persona te pidió antes y que ahora se cumple (avisarle, recordarle, enviar algo).\n"
@@ -345,7 +352,9 @@ class Mind:
         if not intervene:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
-        conv.append({"role": "assistant", "content": content})
+        # The analysis stays as the model's own words, not as JSON: with its JSON before it, the model answered the
+        # second move in JSON again (practice scene P023).
+        conv.append({"role": "assistant", "content": str(decision.get("analisis") or "")})
         conv.append({"role": "user", "content": BEAT_ACT})
         return self._next(request_id, "turn.beat", self._beat)
 
