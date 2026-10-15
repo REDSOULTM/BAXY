@@ -156,7 +156,7 @@ public sealed class MissionEngine : IDisposable
                 return await CompleteAsync(
                     request,
                     fingerprint,
-                    InvalidArguments(request),
+                    InvalidArguments(request, handler),
                     cancellationToken).ConfigureAwait(false);
             }
 
@@ -387,7 +387,9 @@ public sealed class MissionEngine : IDisposable
             null,
             errorCode);
 
-    private static OperationResponse InvalidArguments(OperationRequest request) =>
+    // Which arguments and what each takes, from the catalog's schema; a private operation's arguments travel sealed,
+    // so they are named by nothing here.
+    private static OperationResponse InvalidArguments(OperationRequest request, IOperationHandler handler) =>
         new(
             ProtocolTypes.OperationResponse,
             request.RequestId,
@@ -397,7 +399,11 @@ public sealed class MissionEngine : IDisposable
             OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Failed,
-                "invalid_arguments"),
+                "invalid_arguments",
+                handler.Definition.ProductDescriptor is { } descriptor
+                    && !PrivateOperationBoundary.IsPrivateOperation(request.Operation)
+                    ? OperationArgumentValidator.Problems(request.Arguments, descriptor.ArgumentsSchema)
+                    : null),
             false,
             false,
             null,

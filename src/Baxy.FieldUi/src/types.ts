@@ -18,11 +18,7 @@ export interface ModelInfo {
   family: string;
   params: string;
   runtime: 'local' | 'remote' | 'mock';
-  quant: string;
-  size_bytes: number;
-  name_full: string;
   context_size: number;
-  mmproj: boolean;
 }
 
 /** Each reading is null when the PC did not give it; the view shows «—», never a 0 as if measured. */

@@ -20,7 +20,7 @@ interface HostSettings {
   ggufPath?: string;
   ctxSize?: number;
   wakeWordEnabled?: boolean;
-  voiceEnabled?: boolean;
+  micAvailable?: boolean;
 }
 
 interface VoiceModel { name?: string; downloaded?: boolean; }
@@ -99,7 +99,8 @@ function VoiceTab() {
         <Row k="stt" v={modelText(inventory.data.stt)} />
         <Row k="tts" v={modelText(inventory.data.tts)} />
         <Row k="wake" v={modelText(inventory.data.wake)} />
-        <Row k="microphone" v={onOff(settings.data.voiceEnabled)} />
+        <Row k="microphone" v={settings.data.micAvailable === undefined ? '—'
+          : settings.data.micAvailable ? 'available' : 'not available'} />
         <Row k="wake listening" v={onOff(settings.data.wakeWordEnabled)} />
       </div>
     </STSection>

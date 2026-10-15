@@ -171,7 +171,7 @@ public sealed class ComputerUsePerceptionTests
     {
         var worker = new ScriptedUiaWorker("{\"ok\":true,\"controls\":[]}");
         var adapter = new WindowsVisibleControlAdapter(
-            worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)0));
+            worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult((nint)0));
 
         ExternalCapabilityReceipt view = await adapter.InvokeAsync(
             "input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None);

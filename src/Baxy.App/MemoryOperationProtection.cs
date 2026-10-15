@@ -181,7 +181,7 @@ internal sealed class MemoryOperationProtector
     {
         if (payload.ValueKind != JsonValueKind.Object)
         {
-            throw new MemoryRequestRefusedException("memory_arguments_shape", "La peticion privada no tiene la forma esperada.");
+            throw new MemoryRequestRefusedException("memory_arguments_shape", "The arguments are not an object.");
         }
 
         switch (operation)
@@ -189,14 +189,16 @@ internal sealed class MemoryOperationProtector
             case "memory.enable":
                 if (!RequiredBoolean(payload, "enabled"))
                 {
-                    throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
+                    throw new MemoryRequestRefusedException("memory_enable_needs_enabled_true",
+                        "memory_enable turns memory on (enabled true); to turn it off use memory_disable.");
                 }
 
                 break;
             case "memory.disable":
                 if (RequiredBoolean(payload, "enabled"))
                 {
-                    throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
+                    throw new MemoryRequestRefusedException("memory_disable_needs_enabled_false",
+                        "memory_disable turns memory off (enabled false); to turn it on use memory_enable.");
                 }
 
                 break;
@@ -204,7 +206,9 @@ internal sealed class MemoryOperationProtector
                 {
                     if (RequiredString(payload, "sensitivity") is not ("normal" or "personal"))
                     {
-                        throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
+                        throw new MemoryRequestRefusedException("memory_sensitive_value_needs_sensitive_save",
+                            "memory_save keeps normal or personal values; a sensitive or secret one is saved with "
+                            + "memory_sensitive_save.");
                     }
 
                     if (payload.TryGetProperty("value", out JsonElement value)
@@ -219,7 +223,9 @@ internal sealed class MemoryOperationProtector
             case "memory.sensitive.save":
                 if (RequiredString(payload, "sensitivity") is not ("sensitive" or "secret"))
                 {
-                    throw new MemoryRequestRefusedException("memory_risk_mismatch", "La operacion no coincide con su riesgo.");
+                    throw new MemoryRequestRefusedException("memory_plain_value_needs_save",
+                        "memory_sensitive_save keeps sensitive or secret values; a normal or personal one is saved with "
+                        + "memory_save.");
                 }
 
                 break;
@@ -227,7 +233,9 @@ internal sealed class MemoryOperationProtector
                 if (RequiredString(payload, "scope") == "session"
                     || !RequiredBoolean(payload, "confirmationRequired"))
                 {
-                    throw new MemoryRequestRefusedException("memory_forget_needs_confirmation", "La eliminacion requiere confirmacion.");
+                    throw new MemoryRequestRefusedException("memory_forget_scope_invalid",
+                        "memory_forget forgets saved memories by scope all, exact, kind or topic; what this session "
+                        + "remembers is cleared with memory_session_clear.");
                 }
 
                 break;
@@ -238,7 +246,9 @@ internal sealed class MemoryOperationProtector
                     || !payload.TryGetProperty("selector", out JsonElement selector)
                     || selector.ValueKind != JsonValueKind.Null)
                 {
-                    throw new MemoryRequestRefusedException("memory_session_scope", "La limpieza de sesion excede su alcance.");
+                    throw new MemoryRequestRefusedException("memory_session_clear_scope_invalid",
+                        "memory_session_clear clears only this session (scope session, no selector) and never what is "
+                        + "saved; saved memories are forgotten with memory_forget.");
                 }
 
                 break;
@@ -254,7 +264,7 @@ internal sealed class MemoryOperationProtector
             return value.GetString()!;
         }
 
-        throw new MemoryRequestRefusedException("memory_arguments_shape", "La peticion privada no tiene la forma esperada.");
+        throw new MemoryRequestRefusedException("memory_argument_missing", $"The argument {name} is missing or empty.");
     }
 
     private static bool RequiredBoolean(JsonElement arguments, string name)
@@ -265,7 +275,7 @@ internal sealed class MemoryOperationProtector
             return value.GetBoolean();
         }
 
-        throw new MemoryRequestRefusedException("memory_arguments_shape", "La peticion privada no tiene la forma esperada.");
+        throw new MemoryRequestRefusedException("memory_argument_missing", $"The argument {name} is missing or empty.");
     }
 
     private static void EnsureNoReservedPayloadProperties(JsonObject arguments)
@@ -276,7 +286,8 @@ internal sealed class MemoryOperationProtector
             || arguments.ContainsKey("sessionId")
             || arguments.ContainsKey("payload"))
         {
-            throw new MemoryRequestRefusedException("memory_arguments_reserved", "La peticion privada contiene estado reservado.");
+            throw new MemoryRequestRefusedException("memory_arguments_reserved",
+                "Arguments may not carry operation, missionId, invocationId, sessionId or payload.");
         }
     }
 

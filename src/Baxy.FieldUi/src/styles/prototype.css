@@ -321,8 +321,6 @@ body {
   box-shadow: inset 0 -1px 0 0 rgba(184, 58, 74, 0.4);
 }
 
-/* ------- ctx budget panel ------- */
-
 /* ------- key/val list ------- */
 .kv { display: flex; flex-direction: column; gap: 5px; }
 .kv-row { display: flex; justify-content: space-between; align-items: baseline; }
@@ -503,8 +501,6 @@ body {
   to   { opacity: 1; transform: none; }
 }
 
-/* topbar buttons get a persistent subtle frame to stay visible */
-
 /* labeled icon button (icon + text) */
 .ibtn.labeled {
   width: auto;
@@ -528,8 +524,6 @@ body {
   font-weight: 500;
   letter-spacing: 0.02em;
 }
-
-/* ------- top bar action group ------- */
 
 /* ------- panel shroud + window ------- */
 .panel-shroud {
@@ -902,8 +896,6 @@ button, input, textarea { font: inherit; color: inherit; }
   to   { opacity: 1; transform: translateX(0); }
 }
 .toast-error  { border-color: var(--carmine); color: var(--carmine); }
-.toast-info   { color: var(--t-bone); }
-.toast-success { color: var(--p-blue-hi); border-color: var(--p-blue-hi); }
 .toast-msg { flex: 1; word-break: break-word; }
 .toast-x {
   background: none;
@@ -1355,8 +1347,6 @@ html[data-maximized="true"] .window-root {
   box-shadow: inset 0 -1px 0 0 rgba(184, 58, 74, 0.4);
 }
 
-/* ------- ctx budget panel ------- */
-
 /* ------- key/val list ------- */
 .kv { display: flex; flex-direction: column; gap: 5px; }
 .kv-row { display: flex; justify-content: space-between; align-items: baseline; }
@@ -1705,8 +1695,6 @@ html[data-maximized="true"] .window-root {
   to   { opacity: 1; transform: none; }
 }
 
-/* topbar buttons get a persistent subtle frame to stay visible */
-
 /* labeled icon button (icon + text) */
 .ibtn.labeled {
   width: auto;
@@ -1730,8 +1718,6 @@ html[data-maximized="true"] .window-root {
   font-weight: 500;
   letter-spacing: 0.02em;
 }
-
-/* ------- top bar action group ------- */
 
 /* ------- panel shroud + window ------- */
 .panel-shroud {

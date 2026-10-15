@@ -480,6 +480,9 @@ public sealed class ProductOperationDescriptor
     }
 }
 
+/// <summary>An argument a call got wrong and what is wrong with it (<see cref="OperationArgumentValidator.Problems"/>).</summary>
+public sealed record ArgumentProblem(string Name, string Problem);
+
 public static class OperationArgumentValidator
 {
     public static bool IsValid(JsonElement arguments, OperationArgumentsSchema schema)
@@ -510,17 +513,20 @@ public static class OperationArgumentValidator
     }
 
     /// <summary>
-    /// Ronda 23 (índices de vista y esquema): the arguments that make <see cref="IsValid"/> false, by name and in
-    /// the order seen: one not declared, one whose value the schema refuses, one repeated, then each required one
-    /// missing. Empty for arguments the schema takes (and for a non-object, which names none).
+    /// The arguments that make <see cref="IsValid"/> false, each with what is wrong in words the model can act on
+    /// (audit 2026-10-15: «invalid_arguments» alone did not say which argument nor what it takes): one not declared,
+    /// one given twice, one whose value the schema refuses (with what it expects), then each required one missing. In
+    /// the order seen; never the value given, so a private argument stays private. Empty for arguments the schema
+    /// takes, and one problem for a non-object.
     /// </summary>
-    public static IReadOnlyList<string> InvalidArguments(JsonElement arguments, OperationArgumentsSchema schema)
+    public static IReadOnlyList<ArgumentProblem> Problems(JsonElement arguments, OperationArgumentsSchema schema)
     {
         ArgumentNullException.ThrowIfNull(schema);
-        var invalid = new List<string>();
+        var problems = new List<ArgumentProblem>();
         if (arguments.ValueKind != JsonValueKind.Object)
         {
-            return invalid;
+            problems.Add(new ArgumentProblem("arguments", "expected an object"));
+            return problems;
         }
 
         var seen = new HashSet<string>(StringComparer.Ordinal);
@@ -528,15 +534,77 @@ public static class OperationArgumentValidator
         {
             OperationArgumentProperty? contract = schema.Properties.FirstOrDefault(property =>
                 string.Equals(property.Name, supplied.Name, StringComparison.Ordinal));
-            if ((!seen.Add(supplied.Name) || contract is null || !IsValidValue(supplied.Value, contract))
-                && !invalid.Contains(supplied.Name, StringComparer.Ordinal))
+            string? problem = !seen.Add(supplied.Name) ? "given twice"
+                : contract is null ? "not an argument of this tool"
+                : !IsValidValue(supplied.Value, contract) ? "expected " + Expected(contract)
+                : null;
+            if (problem is not null && problems.All(known => known.Name != supplied.Name))
             {
-                invalid.Add(supplied.Name);
+                problems.Add(new ArgumentProblem(supplied.Name, problem));
             }
         }
 
-        invalid.AddRange(schema.Required.Where(name => !seen.Contains(name)));
-        return invalid;
+        problems.AddRange(schema.Required.Where(name => !seen.Contains(name))
+            .Select(static name => new ArgumentProblem(name, "required and missing")));
+        return problems;
+    }
+
+    // What a declared argument takes, as its schema says it.
+    private static string Expected(OperationArgumentProperty contract)
+    {
+        if (contract.AllowedValues.Count > 0)
+        {
+            return "one of: " + string.Join(", ", contract.AllowedValues)
+                + (contract.Types.HasFlag(OperationJsonType.Null) ? " (or null)" : string.Empty);
+        }
+
+        if (contract.ConstantBoolean is bool constant)
+        {
+            return constant ? "true" : "false";
+        }
+
+        var parts = new List<string>();
+        foreach ((OperationJsonType type, string word) in new[]
+                 {
+                     (OperationJsonType.String, "text"), (OperationJsonType.Integer, "an integer"),
+                     (OperationJsonType.Boolean, "true or false"), (OperationJsonType.Array, "a list"),
+                     (OperationJsonType.Number, "a number"), (OperationJsonType.Null, "null"),
+                 })
+        {
+            if (contract.Types.HasFlag(type))
+            {
+                parts.Add(word);
+            }
+        }
+
+        string expected = string.Join(" or ", parts);
+        if (contract.Minimum.HasValue || contract.Maximum.HasValue)
+        {
+            expected += $" from {contract.Minimum?.ToString(CultureInfo.InvariantCulture) ?? "any"}"
+                + $" to {contract.Maximum?.ToString(CultureInfo.InvariantCulture) ?? "any"}";
+        }
+
+        if (contract.NonWhitespace)
+        {
+            expected += ", not empty";
+        }
+
+        if (contract.MaximumUtf8Bytes is int bytes)
+        {
+            expected += $", at most {bytes.ToString(CultureInfo.InvariantCulture)} bytes";
+        }
+        else if (contract.MaximumLength is int length)
+        {
+            expected += $", at most {length.ToString(CultureInfo.InvariantCulture)} characters";
+        }
+
+        if (contract.MinimumItems.HasValue || contract.MaximumItems.HasValue)
+        {
+            expected += $", {contract.MinimumItems?.ToString(CultureInfo.InvariantCulture) ?? "0"}"
+                + $" to {contract.MaximumItems?.ToString(CultureInfo.InvariantCulture) ?? "any"} items";
+        }
+
+        return expected;
     }
 
     private static bool IsValidValue(JsonElement value, OperationArgumentProperty contract)

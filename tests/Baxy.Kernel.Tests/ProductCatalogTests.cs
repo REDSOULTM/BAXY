@@ -213,10 +213,10 @@ public sealed class ProductCatalogTests
         });
     }
 
-    // Ronda 23: the cause a refused act is handed back with names the arguments the schema refuses, and none for
-    // arguments it takes (counter-case).
+    // The cause a refused call is handed back with names each argument the schema refuses and what it takes, and none
+    // for arguments it takes (counter-case).
     [Test]
-    public void TheInvalidArgumentsAreNamedAndNoneForValidOnes()
+    public void TheInvalidArgumentsAreNamedWithWhatTheyTakeAndNoneForValidOnes()
     {
         OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.visible.click").ArgumentsSchema;
         using JsonDocument wrong = JsonDocument.Parse("{\"index\":71,\"manner\":\"triple\",\"labelz\":\"x\"}");
@@ -224,9 +224,14 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(OperationArgumentValidator.InvalidArguments(wrong.RootElement, schema),
+            IReadOnlyList<ArgumentProblem> problems = OperationArgumentValidator.Problems(wrong.RootElement, schema);
+            Assert.That(problems.Select(static problem => problem.Name),
                 Is.EqualTo(new[] { "index", "manner", "labelz", "label" }));
-            Assert.That(OperationArgumentValidator.InvalidArguments(right.RootElement, schema), Is.Empty);
+            Assert.That(problems[0].Problem, Does.StartWith("expected an integer").And.Contain(" from "));
+            Assert.That(problems[1].Problem, Does.StartWith("expected one of: "));
+            Assert.That(problems[2].Problem, Is.EqualTo("not an argument of this tool"));
+            Assert.That(problems[3].Problem, Is.EqualTo("required and missing"));
+            Assert.That(OperationArgumentValidator.Problems(right.RootElement, schema), Is.Empty);
             Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
         });
     }

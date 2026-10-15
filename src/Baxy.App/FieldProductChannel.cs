@@ -178,7 +178,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (method == "POST" && route == "/activity")
         {
-            // The view's own lines (its shortcuts help) are SYSTEM lines; BAXY's and the person's come from the turn.
+            // The view's own lines (its shortcuts help) are SYSTEM lines; BAXY's and the person's come from the turn,
+            // so the line carries only its text.
             JsonObject? payload = ParseBody(body);
             string text = ((string?)payload?["msg"] ?? string.Empty).Trim();
             if (text.Length > 0)
@@ -416,24 +417,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         }
 
-        Match quantizationMatch = Regex.Match(
-            alias,
-            @"(?<value>Q\d(?:_[A-Za-z0-9]+)+)(?=$|[-.])",
-            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        long size = !string.IsNullOrWhiteSpace(modelPath) && File.Exists(modelPath)
-            ? new FileInfo(modelPath).Length
-            : 0;
         return new FieldModelIdentity(
             alias,
             fileName,
             family,
             parameterMatch.Success
                 ? parameterMatch.Groups["value"].Value.ToLowerInvariant()
-                : "unknown",
-            quantizationMatch.Success
-                ? quantizationMatch.Groups["value"].Value.ToUpperInvariant()
-                : "local",
-            size);
+                : "unknown");
     }
 
     private async Task<FieldHttpResponse> HandleTurnAsync(string? body)
@@ -663,7 +653,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["ggufPath"] = identity.FileName,
             ["ctxSize"] = ContextSize(),
             ["wakeWordEnabled"] = _viewModel.IsWakeListening,
-            ["voiceEnabled"] = _viewModel.IsMicAvailable,
+            // Whether a microphone was found and the voice can listen, not a switch.
+            ["micAvailable"] = _viewModel.IsMicAvailable,
         };
     }
 
@@ -723,11 +714,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["family"] = identity.Family,
             ["params"] = identity.Parameters,
             ["runtime"] = "local",
-            ["quant"] = identity.Quantization,
-            ["size_bytes"] = identity.SizeBytes,
-            ["name_full"] = identity.FileName,
             ["context_size"] = ContextSize(),
-            ["mmproj"] = false,
         };
     }
 

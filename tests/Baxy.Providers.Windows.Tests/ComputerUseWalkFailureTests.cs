@@ -134,7 +134,7 @@ public sealed class ComputerUseWalkFailureTests
 
     private static ExternalCapabilityReceipt Look(string answer, nint window) =>
         new WindowsVisibleControlAdapter(
-                new ComputerUsePerceptionTests.ScriptedUiaWorker(answer), null, null, requestedWindow: (_, _, _) => ValueTask.FromResult(window), elevated: _ => false,
+                new ComputerUsePerceptionTests.ScriptedUiaWorker(answer), null, null, requestedWindow: (_, _) => ValueTask.FromResult(window), elevated: _ => false,
                 capture: (_, _, _) => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(null))
             .InvokeAsync("input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None)
             .AsTask().GetAwaiter().GetResult();

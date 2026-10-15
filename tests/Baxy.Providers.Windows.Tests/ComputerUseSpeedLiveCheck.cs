@@ -66,7 +66,7 @@ public sealed class ComputerUseSpeedLiveCheck
         watch.Restart();
         ExternalCapabilityReceipt view = await controls.InvokeAsync(
             "input.visible.controls",
-            System.Text.Json.JsonDocument.Parse($$"""{"processId":{{opened.ProcessId}},"includeText":false}""").RootElement,
+            System.Text.Json.JsonDocument.Parse("""{"includeText":false}""").RootElement,
             CancellationToken.None);
         long viewed = watch.ElapsedMilliseconds;
         watch.Restart();

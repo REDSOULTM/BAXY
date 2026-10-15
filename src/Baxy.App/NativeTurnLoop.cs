@@ -231,22 +231,43 @@ internal sealed class NativeTurnLoop
         }
         catch (MemoryValueNeedsSensitiveChannelException)
         {
-            // The result says why: memory.save keeps a value that looks like a secret only as sensitive.
+            // The result says why and what to call: memory.save keeps a value that looks like a secret only as sensitive.
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
-                "memory_value_needs_sensitive_channel"));
+                "memory_value_needs_sensitive_channel",
+                new JsonObject { ["detail"] = "This value looks like a secret: save it with memory_sensitive_save." }));
         }
         catch (MemoryRequestRefusedException refused)
         {
-            // The protector's own reason, by its code; the call's values stay out of the observation.
-            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code));
+            // The protector's own reason, by its code and its words; the call's values stay out of the observation.
+            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code,
+                new JsonObject { ["detail"] = refused.Message }));
+        }
+        catch (InvalidOperationException unavailable)
+            when (unavailable.Message is "outbox_unavailable" or "memory_protection_unavailable")
+        {
+            // BAXY's own part that was not ready, never the model's arguments (audit 2026-10-15: it read as
+            // arguments_invalid and the model blamed its call).
+            return Record(operation, arguments, started, Observation(operation, "failed", false, unavailable.Message));
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
-            // Arguments that do not fit the operation are a result the model reads, with what it gave, so it can call
-            // again with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
+            // Arguments that do not fit the operation are a result the model reads, with what it gave and, by the
+            // catalog's schema, which arguments and what each takes (the kernel's code and shape), so it can call again
+            // with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
+            var facts = new JsonObject();
+            using (System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString()))
+            {
+                IReadOnlyList<ArgumentProblem> problems =
+                    OperationArgumentValidator.Problems(given.RootElement, descriptor.ArgumentsSchema);
+                if (problems.Count > 0)
+                {
+                    facts["argumentProblems"] = OperationVisibleFacts.ArgumentProblemsJson(problems);
+                }
+            }
+
             return Record(operation, arguments, started, Observation(operation, "rejected", false,
-                "arguments_invalid", WithArguments(new JsonObject(), "argumentsGiven", operation, arguments)));
+                "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
         if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation)
@@ -273,12 +294,12 @@ internal sealed class NativeTurnLoop
     // SetValue, posted messages, ShowWindow/SetWindowPos) to a window that may be the person's. The catalog has no typed
     // fact for it yet, so the list is by name: an operation that starts sending input joins it (audit 2026-10-15, App
     // H1: input.keyboard.layout posts WM_INPUTLANGCHANGEREQUEST to the focused window, and window.* move, size, show or
-    // focus the person's windows).
+    // focus the person's windows; media.control drives the person's YouTube tab as browser.control does).
     private static bool SendsInputToAWindow(string operation) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
             or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
-            or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
-            or "window.focus" or "window.maximize" or "window.minimize" or "window.minimize.all" or "window.move"
+            or "message.draft" or "client.channel.locate" or "browser.control" or "media.control"
+            or "calculator.expression.evaluate" or "window.focus" or "window.maximize" or "window.minimize" or "window.minimize.all" or "window.move"
             or "window.resize" or "window.restore" or "window.snap";
 
     // Every operation whose provider sends what the model wrote out of the PC (a query, an address, a host, a place, a
@@ -286,13 +307,17 @@ internal sealed class NativeTurnLoop
     // carries the person's memory, window titles and recent lines, and nothing of theirs leaves unasked (owner,
     // 2026-10-15; audit App H3). By name, read from the providers that use HTTP or ping: web.search's sources, web.fetch
     // and web.download, Open-Meteo for the weather and for a place's clock, the Steam store for whether a game is owned,
-    // and ICMP to the host named. The ones with an external_communication or installation risk are held by
-    // ProposedRisks already.
+    // ICMP to the host named, the export of the memory (its receipt says it may be redirected or synced: OneDrive), and
+    // app.open with a place value (app_places builds spotify:search:{value} and Steam's store search from it). The ones
+    // with an external_communication or installation risk are held by ProposedRisks already.
     private static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
         operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
-            or "game.entitlement.named"
-        || (operation == "system.time" && arguments["place"] is JsonValue place
-            && place.TryGetValue(out string? named) && !string.IsNullOrWhiteSpace(named));
+            or "game.entitlement.named" or "memory.export"
+        || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place))
+        || (operation == "app.open" && arguments["placeValue"] is JsonValue value && Named(value));
+
+    private static bool Named(JsonValue value) =>
+        value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);
 
     // What the model reads with a call that waits for the person: who answers and how the answer comes back.
     private const string AskThePerson =
@@ -333,9 +358,13 @@ internal sealed class NativeTurnLoop
         PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
         if (pending is null)
         {
+            // A call that waited and ran out of time is not «nothing was asked» (audit 2026-10-15, App 3): the model
+            // says the question expired and can ask again.
+            string? expired = _pending?.Prepared.OperationName ?? _proposal?.OperationName;
             DropPending();
-            return Record(MindStep.ConfirmationAnswer, arguments, started,
-                Observation(MindStep.ConfirmationAnswer, "failed", false, "nothing_pending"));
+            return Record(MindStep.ConfirmationAnswer, arguments, started, expired is null
+                ? Observation(MindStep.ConfirmationAnswer, "failed", false, "nothing_pending")
+                : Observation(expired, "failed", false, "confirmation_expired"));
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);

@@ -290,7 +290,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
         var adapter = new WindowsVisibleControlAdapter(
             worker, new Locator("ocr"), null, focus, OpeningTiming,
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
-        adapter.NoteOpenedLooked(LookOf(4242), 4242, ["Biblioteca"]);
+        adapter.NoteOpenedLooked(LookOf(4242), ["Biblioteca"]);
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -318,7 +318,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
             worker, new Locator("ocr"), null, focus, OpeningTiming,
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
         if (lookOfAnother)
-            adapter.NoteOpenedLooked(LookOf(777), 0, ["Biblioteca"]);
+            adapter.NoteOpenedLooked(LookOf(777), ["Biblioteca"]);
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -342,7 +342,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
         var adapter = new WindowsVisibleControlAdapter(
             worker, new Locator("ocr"), null, focus, OpeningTiming,
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
-        adapter.NoteOpenedLooked(LookOf(4242), 4242, ["Biblioteca"]);
+        adapter.NoteOpenedLooked(LookOf(4242), ["Biblioteca"]);
 
         _ = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Biblioteca"}"""), CancellationToken.None);
@@ -362,7 +362,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
         var adapter = new WindowsVisibleControlAdapter(
             worker, new Locator("ocr"), null, focus, OpeningTiming,
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
-        adapter.NoteOpenedLooked(LookOf(4242), 4242, [shown]);
+        adapter.NoteOpenedLooked(LookOf(4242), [shown]);
         var clock = Stopwatch.StartNew();
 
         _ = await adapter.InvokeAsync(
@@ -376,31 +376,36 @@ public sealed class ComputerUseOpeningClickLatencyTests
     }
 
     // Finding 6: the note is taken by the look itself (input.visible.controls with the fields it really writes: the
-    // window's handle, «requested», its controls' names), not called by the test.
+    // window's handle and process, its controls' names), not called by the test. The window is a real one, read only
+    // (the shell's desktop window, whose process stands for the opened application's); the worker is scripted.
     [TestCase("Biblioteca", true)]
     [TestCase("Tienda", false)]
     public async Task TheLookItselfNotesTheOpenedWindowAndWhatItShowed(string label, bool skipsTheWait)
     {
-        const long front = 0x7FFF_0F1E;
+        nint front = VisibleControlSurface.ShellWindow();
+        Assume.That(front, Is.Not.EqualTo((nint)0), "the desktop has a shell window");
+        int process = VisibleControlSurface.ViewProcess(front).ProcessId;
         string view = "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Iniciador\",\"controls\":[" +
             "{\"i\":0,\"kind\":\"Hyperlink\",\"name\":\"Biblioteca\",\"id\":\"4.2\",\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}," +
             "{\"i\":1,\"kind\":\"Hyperlink\",\"name\":\"Inicio\",\"id\":\"4.3\",\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}]," +
             "\"controlCount\":2,\"focused\":null}";
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(view, NotFoundByUia);
-        var focus = new FixedOpening(4242);
+        var focus = new FixedOpening(process);
         var adapter = new WindowsVisibleControlAdapter(
-            worker, new Locator("ocr"), null, focus, OpeningTiming, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front),
+            worker, new Locator("ocr"), null, focus, OpeningTiming, requestedWindow: (_, _) => ValueTask.FromResult(front),
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
         ExternalCapabilityReceipt looked = await adapter.InvokeAsync(
-            "input.visible.controls", Json("""{"application":"el navegador","processId":4242}"""), CancellationToken.None);
-        Assume.That(looked.Result?.GetProperty("window").GetProperty("requested").GetBoolean(), Is.True);
+            "input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None);
+        Assume.That(looked.Result?.GetProperty("window").GetProperty("processId").GetInt32(), Is.EqualTo(process));
+        // The look itself located the opened application (to read it, never fronting it); only the click's calls count.
+        int lookCalls = focus.FrontCalls;
         var clock = Stopwatch.StartNew();
 
         _ = await adapter.InvokeAsync(
             "input.visible.click", Json("{\"label\":\"" + label + "\",\"window\":" + front + "}"), CancellationToken.None);
 
         TestContext.Out.WriteLine($"click «{label}» after the look: {clock.ElapsedMilliseconds} ms");
-        Assert.That(focus.FrontCalls, skipsTheWait ? Is.Zero : Is.GreaterThan(0));
+        Assert.That(focus.FrontCalls - lookCalls, skipsTheWait ? Is.Zero : Is.GreaterThan(0));
     }
 
     private static ValueTask<VisibleControlSurface.CapturedWindow?> NoCapture(

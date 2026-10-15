@@ -271,12 +271,13 @@ export default function App() {
 
   const closePanel = useCallback(() => setOpenPanel(null), []);
 
-  const postActivity = useCallback(async (src: string, msg: string) => {
+  // A line of the view itself (the host shows it as SYSTEM).
+  const postActivity = useCallback(async (msg: string) => {
     try {
       await fetch('/activity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ src, msg }),
+        body: JSON.stringify({ msg }),
       });
     } catch {
       /* server down — silently drop; this is UI flavor, not state */
@@ -289,7 +290,6 @@ export default function App() {
   // the shortcuts this view handles (the keydown handler above), as a SYSTEM line.
   const onHelp = useCallback(() => {
     postActivity(
-      'SYSTEM',
       'shortcuts: enter sends · / focus · ctrl+l clears the log · ctrl+n new session · ctrl+, settings'
         + ' · ctrl+shift+s sessions · ctrl+m memory · ctrl+e tools · f11 fullscreen · esc closes panel',
     );
