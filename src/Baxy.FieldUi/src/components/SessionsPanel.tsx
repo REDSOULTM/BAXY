@@ -1,5 +1,4 @@
-/* SessionsPanel — full CRUD over ~/.gemma4/sessions matching the legacy GUI.
-   load (single click) / new / rename / delete with confirm. */
+/* SessionsPanel — the host's current session: load / new / rename. */
 
 import { useCallback, useEffect, useState } from 'react';
 import { Panel } from './Panel';
@@ -116,19 +115,6 @@ export function SessionsPanel({ onClose }: Props) {
     } finally { setPending(false); }
   };
 
-  const deleteSession = async (id: string, label: string) => {
-    if (!window.confirm(`delete session "${label}"?`)) return;
-    setPending(true);
-    try {
-      const r = await fetch(`/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' });
-      if (!r.ok) throw new Error(`status ${r.status}`);
-      if (selected === id) setSelected(null);
-      await refresh();
-    } catch (e) {
-      toastError(`delete failed · ${String(e).replace(/^Error: /, '')}`);
-    } finally { setPending(false); }
-  };
-
   return (
     <Panel title="sessions" onClose={onClose}>
       <div className="session-search">
@@ -194,16 +180,6 @@ export function SessionsPanel({ onClose }: Props) {
           }}
           disabled={rows.length === 0 || pending}
         >rename</button>
-        <button
-          type="button"
-          className="panel-btn ghost"
-          onClick={() => {
-            const row = rows.find((r) => r.id === selected) ?? rows[0];
-            if (row) deleteSession(row.id, row.label);
-          }}
-          disabled={rows.length === 0 || pending}
-          style={{ color: 'var(--carmine)' }}
-        >delete</button>
         <span className="muted" style={{ marginLeft: 'auto' }}>
           {list.length} sessions · all local
         </span>

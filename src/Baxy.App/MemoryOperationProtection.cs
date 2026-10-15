@@ -1,9 +1,6 @@
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using Baxy.Contracts;
 using Baxy.Security.Windows;
 
@@ -67,10 +64,9 @@ internal sealed class MemoryOperationProtector
         JsonObject privateArguments = privateOperation.PrivateArguments;
         EnsureNoReservedPayloadProperties(privateArguments);
 
-        string operation = ResolveWireOperationName(
-            privateOperation.Name,
-            privateArguments);
-        ValidateWireRiskBinding(operation, privateArguments);
+        JsonElement payload = JsonSerializer.SerializeToElement(privateArguments);
+        string operation = ResolveWireOperationName(privateOperation.Name, payload);
+        ValidateWireRiskBinding(operation, payload);
         string missionId = Guid.NewGuid().ToString("D");
         string invocationId = Guid.NewGuid().ToString("D");
         JsonElement envelope = _codec.SealArguments(
@@ -100,7 +96,7 @@ internal sealed class MemoryOperationProtector
         {
             if (!string.Equals(opened.SessionId, SessionId, StringComparison.Ordinal))
             {
-                throw new StaleMemorySessionException();
+                throw new InvalidDataException("La operacion privada pertenece a una sesion anterior.");
             }
 
             ValidateWireRiskBinding(prepared.OperationName, opened.Payload);
@@ -111,22 +107,6 @@ internal sealed class MemoryOperationProtector
             opened.Dispose();
             throw;
         }
-    }
-
-    internal MemoryOperationInspection InspectForRecovery(PreparedOperation prepared)
-    {
-        ArgumentNullException.ThrowIfNull(prepared);
-        EnsureMemoryOperation(prepared.OperationName);
-        using OpenedBoundProtectedJson opened = _codec.OpenArguments(
-            prepared.Arguments,
-            prepared.OperationName,
-            prepared.MissionId,
-            prepared.InvocationId);
-        ValidateWireRiskBinding(prepared.OperationName, opened.Payload);
-        bool current = string.Equals(opened.SessionId, SessionId, StringComparison.Ordinal);
-        return new MemoryOperationInspection(
-            current,
-            ShouldCancelAfterSessionChange(prepared.OperationName, opened.Payload));
     }
 
     internal OpenedBoundProtectedJson OpenResult(
@@ -198,7 +178,7 @@ internal sealed class MemoryOperationProtector
 
     private static string ResolveWireOperationName(
         string operationName,
-        JsonObject arguments) =>
+        JsonElement arguments) =>
         operationName switch
         {
             "memory.save" when RequiredString(arguments, "sensitivity")
@@ -234,13 +214,16 @@ internal sealed class MemoryOperationProtector
                 break;
             case "memory.save":
                 {
-                    string sensitivity = RequiredString(payload, "sensitivity");
-                    if (sensitivity is not ("normal" or "personal")
-                        || payload.TryGetProperty("value", out JsonElement value)
+                    if (RequiredString(payload, "sensitivity") is not ("normal" or "personal"))
+                    {
+                        throw new InvalidDataException("La operacion no coincide con su riesgo.");
+                    }
+
+                    if (payload.TryGetProperty("value", out JsonElement value)
                         && value.ValueKind == JsonValueKind.String
                         && SensitiveText.Contains(value.GetString()!))
                     {
-                        throw new InvalidDataException("La memoria requiere el canal sensible.");
+                        throw new MemoryValueNeedsSensitiveChannelException();
                     }
 
                     break;
@@ -272,110 +255,6 @@ internal sealed class MemoryOperationProtector
 
                 break;
         }
-    }
-
-    private static void ValidateWireRiskBinding(string operation, JsonObject payload)
-    {
-        switch (operation)
-        {
-            case "memory.enable":
-                if (!RequiredBoolean(payload, "enabled"))
-                {
-                    throw new InvalidDataException("La operacion no coincide con su riesgo.");
-                }
-
-                break;
-            case "memory.disable":
-                if (RequiredBoolean(payload, "enabled"))
-                {
-                    throw new InvalidDataException("La operacion no coincide con su riesgo.");
-                }
-
-                break;
-            case "memory.save":
-                {
-                    string sensitivity = RequiredString(payload, "sensitivity");
-                    if (sensitivity is not ("normal" or "personal")
-                        || payload["value"] is JsonValue value
-                        && value.TryGetValue(out string? clearValue)
-                        && SensitiveText.Contains(clearValue!))
-                    {
-                        throw new InvalidDataException("La memoria requiere el canal sensible.");
-                    }
-
-                    break;
-                }
-            case "memory.sensitive.save":
-                if (RequiredString(payload, "sensitivity") is not ("sensitive" or "secret"))
-                {
-                    throw new InvalidDataException("La operacion no coincide con su riesgo.");
-                }
-
-                break;
-            case "memory.forget":
-                if (RequiredString(payload, "scope") == "session"
-                    || !RequiredBoolean(payload, "confirmationRequired"))
-                {
-                    throw new InvalidDataException("La eliminacion requiere confirmacion.");
-                }
-
-                break;
-            case "memory.session.clear":
-                if (RequiredString(payload, "scope") != "session"
-                    || RequiredBoolean(payload, "confirmationRequired")
-                    || !RequiredBoolean(payload, "mustNotDeletePersistent")
-                    || payload["selector"] is not null)
-                {
-                    throw new InvalidDataException("La limpieza de sesion excede su alcance.");
-                }
-
-                break;
-        }
-    }
-
-    private static bool ShouldCancelAfterSessionChange(
-        string operation,
-        JsonElement payload)
-    {
-        if (operation is "memory.recall"
-            or "memory.list"
-            or "memory.status"
-            or "memory.correct"
-            or "memory.session.clear")
-        {
-            return true;
-        }
-
-        if (operation is "memory.save" or "memory.sensitive.save")
-        {
-            return !payload.TryGetProperty("retention", out JsonElement retention)
-                || retention.ValueKind != JsonValueKind.String
-                || !string.Equals(retention.GetString(), "persistent", StringComparison.Ordinal);
-        }
-
-        return false;
-    }
-
-    private static string RequiredString(JsonObject arguments, string name)
-    {
-        if (arguments[name] is JsonValue value
-            && value.TryGetValue(out string? result)
-            && !string.IsNullOrWhiteSpace(result))
-        {
-            return result;
-        }
-
-        throw new InvalidDataException("La peticion privada no tiene la forma esperada.");
-    }
-
-    private static bool RequiredBoolean(JsonObject arguments, string name)
-    {
-        if (arguments[name] is JsonValue value && value.TryGetValue(out bool result))
-        {
-            return result;
-        }
-
-        throw new InvalidDataException("La peticion privada no tiene la forma esperada.");
     }
 
     private static string RequiredString(JsonElement arguments, string name)
@@ -440,68 +319,14 @@ internal sealed class ProtectedMemoryOperation
         $"{nameof(ProtectedMemoryOperation)} {{ Operation = {Prepared.OperationName}, Arguments = [PROTECTED] }}";
 }
 
-internal sealed record MemoryOperationInspection(
-    bool OriginatesInCurrentSession,
-    bool CancelAfterSessionChange);
-
-internal sealed class StaleMemorySessionException : Exception
+/// <summary>
+/// memory.save was given a value that looks like a secret (<see cref="SensitiveText"/>): it is kept only through the
+/// sensitive channel, so the call is refused with that reason instead of «arguments invalid».
+/// </summary>
+internal sealed class MemoryValueNeedsSensitiveChannelException : Exception
 {
-    internal StaleMemorySessionException()
-        : base("La operacion privada pertenece a una sesion anterior.")
+    internal MemoryValueNeedsSensitiveChannelException()
+        : base("La memoria requiere el canal sensible.")
     {
     }
-}
-
-internal sealed class PendingMemoryConfirmation
-{
-    private PendingMemoryConfirmation(
-        PreparedOperation prepared,
-        string token,
-        DateTimeOffset expiresAtUtc,
-        bool reconciliationRequired)
-    {
-        Prepared = prepared;
-        Token = token;
-        ExpiresAtUtc = expiresAtUtc;
-        ReconciliationRequired = reconciliationRequired;
-    }
-
-    internal PreparedOperation Prepared { get; }
-
-    internal string Token { get; }
-
-    internal DateTimeOffset ExpiresAtUtc { get; }
-
-    internal bool ReconciliationRequired { get; }
-
-    internal static bool TryCreate(
-        OperationResponse response,
-        PreparedOperation prepared,
-        TimeProvider timeProvider,
-        out PendingMemoryConfirmation? confirmation)
-    {
-        ArgumentNullException.ThrowIfNull(response);
-        ArgumentNullException.ThrowIfNull(prepared);
-        ArgumentNullException.ThrowIfNull(timeProvider);
-        confirmation = null;
-        if (!MemoryOperationProtector.IsMemoryOperation(prepared.OperationName)
-            || !ConfirmationChallengeParser.TryParse(
-                response,
-                prepared,
-                timeProvider,
-                out ValidatedConfirmationChallenge challenge))
-        {
-            return false;
-        }
-
-        confirmation = new PendingMemoryConfirmation(
-            prepared,
-            challenge.Token,
-            challenge.ExpiresAtUtc,
-            challenge.ReconciliationRequired);
-        return true;
-    }
-
-    public override string ToString() =>
-        $"{nameof(PendingMemoryConfirmation)} {{ Operation = {Prepared.OperationName}, Token = [REDACTED], ExpiresAtUtc = {ExpiresAtUtc:O}, ReconciliationRequired = {ReconciliationRequired} }}";
 }

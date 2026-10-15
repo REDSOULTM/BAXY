@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ConvState, ModelInfo, MetricSnapshot } from '../types';
-import type { CtxBudget, SurfacesCount } from '../hooks/useEventStream';
+import type { SurfacesCount } from '../hooks/useEventStream';
 import { LogoMark } from './LogoMark';
 import { Icon, type IconName } from './Icon';
 import type { AccessMode, ConfirmationPolicy } from '../App';
@@ -16,7 +16,6 @@ const SURFACES_LEFT: { id: SurfaceId; label: string; unit: string }[] = [
 interface Props {
   convState: ConvState;
   wsModel: ModelInfo | null;
-  ctx: CtxBudget | null;
   accessMode: AccessMode;
   onAccessMode: (m: AccessMode) => void;
   /** the profile's confirmation policy; bypass is switched on only after the
@@ -43,7 +42,7 @@ interface ModelState {
 
 const INITIAL_MODEL: ModelState = { status: 'loading' };
 const INITIAL_METRICS: MetricSnapshot = {
-  cpu: 0, mem: 0, gpu: 0, net: 0, dsk: 0, tmp: 0, uptime: '00:00:00',
+  cpu: 0, mem: 0, gpu: null, dsk: 0, uptime: '00:00:00',
 };
 
 // The interface's mode (identity: central in the engine, a mode in the
@@ -60,7 +59,7 @@ function fmtK(n: number): string {
 }
 
 export function SubstratePanel({
-  convState, wsModel, ctx, accessMode, onAccessMode, confirmation, onConfirmation,
+  convState, wsModel, accessMode, onAccessMode, confirmation, onConfirmation,
   online, voiceOn, onToggleVoice, surfaces, activeSurface, onSurface,
 }: Props) {
   const [model, setModel] = useState<ModelState>(INITIAL_MODEL);
@@ -106,8 +105,10 @@ export function SubstratePanel({
   const info: ModelInfo | undefined = wsModel ?? model.info;
   const loaded = info && (wsModel !== null || model.status === 'ready') ? info : null;
 
-  // global "system %" — weighted average like the prototype.
-  const systemPct = Math.round(metrics.cpu * 0.35 + metrics.mem * 0.25 + metrics.gpu * 0.40);
+  // global "system %" — weighted average like the prototype; unknown without the gpu reading.
+  const systemPct = metrics.gpu === null
+    ? null
+    : Math.round(metrics.cpu * 0.35 + metrics.mem * 0.25 + metrics.gpu * 0.40);
 
   // mem headline: gb used when the backend reports it, else the % figure.
   const memUsedGb = metrics.mem_used_gb && metrics.mem_used_gb > 0 ? metrics.mem_used_gb : 0;
@@ -117,16 +118,9 @@ export function SubstratePanel({
   const norm = {
     cpu: Math.min(1, metrics.cpu / 100),
     mem: Math.min(1, metrics.mem / 100),
-    gpu: Math.min(1, metrics.gpu / 100),
-    net: Math.min(1, metrics.net / 100),
+    gpu: Math.min(1, (metrics.gpu ?? 0) / 100),
     dsk: Math.min(1, metrics.dsk / 100),
-    tmp: Math.min(1, metrics.tmp / 90),
   };
-  const tmpHot = metrics.tmp > 76;
-
-  const ctxUsed = ctx?.used ?? 0;
-  const ctxTotal = ctx?.budget ?? loaded?.context_size ?? 16384;
-  const ctxPct = Math.min(100, Math.round((ctxUsed / Math.max(1, ctxTotal)) * 100));
 
   return (
     <>
@@ -162,14 +156,12 @@ export function SubstratePanel({
 
       {/* ---- system metrics (compact m-* lines, bar uses --bar-color) ---- */}
       <div className="min-block">
-        <div className="sec-head"><span>system</span><span className="ref">{systemPct}%</span></div>
+        <div className="sec-head"><span>system</span><span className="ref">{systemPct === null ? '—' : `${systemPct}%`}</span></div>
         <div className="m-list">
           <MetricLine label="cpu" unit="%" norm={norm.cpu} text={metrics.cpu.toFixed(0)} />
           <MetricLine label="mem" unit={memUnit} norm={norm.mem} text={memText} />
-          <MetricLine label="gpu" unit="%" norm={norm.gpu} text={metrics.gpu.toFixed(0)} />
-          <MetricLine label="net" unit="mb/s" norm={norm.net} text={metrics.net.toFixed(1)} />
+          <MetricLine label="gpu" unit={metrics.gpu === null ? '' : '%'} norm={norm.gpu} text={metrics.gpu === null ? '—' : metrics.gpu.toFixed(0)} />
           <MetricLine label="dsk" unit="%" norm={norm.dsk} text={metrics.dsk.toFixed(0)} />
-          <MetricLine label="tmp" unit="°c" norm={norm.tmp} text={metrics.tmp.toFixed(0)} hot={tmpHot} />
         </div>
       </div>
 
@@ -249,13 +241,6 @@ export function SubstratePanel({
         )}
       </div>
 
-      {/* ---- ctx budget ---- */}
-      <div className="min-block">
-        <div className="m-list">
-          <MetricLine label="ctx" unit={`/ ${fmtK(ctxTotal)}`} norm={ctxPct / 100} text={fmtK(ctxUsed)} />
-        </div>
-      </div>
-
       {/* ---- surfaces (tools — the left one) ---- */}
       <div className="surfaces-wrap">
         <div className="surfaces">
@@ -287,6 +272,7 @@ export function SubstratePanel({
       {/* ---- left footer ---- */}
       <div className="left-footer">
         <KvRow k="uptime" v={metrics.uptime ?? '00:00:00'} />
+        {loaded && <KvRow k="ctx" v={fmtK(loaded.context_size)} />}
       </div>
     </>
   );
@@ -299,20 +285,19 @@ interface MetricLineProps {
   text: string;
   unit: string;
   norm: number;
-  hot?: boolean;
 }
 
-function MetricLine({ label, text, unit, norm, hot }: MetricLineProps) {
+function MetricLine({ label, text, unit, norm }: MetricLineProps) {
   const pct = Math.round(Math.min(1, Math.max(0, norm)) * 100);
   return (
     <div className="m-line">
       <div className="m-head">
         <span className="m-label">{label}</span>
-        <span className={`m-val${hot ? ' hot' : ''}`}>
+        <span className="m-val">
           {text}<span className="m-unit">{unit}</span>
         </span>
       </div>
-      <div className={`m-bar${hot ? ' hot' : ''}`} aria-hidden="true">
+      <div className="m-bar" aria-hidden="true">
         <span style={{ width: `${pct}%` }} />
       </div>
     </div>

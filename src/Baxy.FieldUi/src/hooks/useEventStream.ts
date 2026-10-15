@@ -1,18 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { ServerEvent, ActivityEntry, ConvState, ModelInfo } from '../types';
-import { pushToast } from './useToast';
-
-export interface FieldReadout {
-  entropy: number;
-  temperature: number;
-  tokens_per_s: number;
-  draw_w: number;
-}
-
-export interface CtxBudget {
-  used: number;
-  budget: number;
-}
 
 export interface SurfacesCount {
   sessions: number;
@@ -35,42 +22,16 @@ export interface AgentStatus {
   pendingConfirmation?: boolean;
 }
 
-/** Latest boot_stage event from the backend. Drives the placeholder text and
- *  the inline retry button on the chat input. Null until the first stage is
- *  emitted (very brief — the runner emits one within the first thread tick). */
-export interface BootStage {
-  stage: string;
-  label: string | null;
-  progress: number | null;
-  error: string | null;
-}
-
-/** Estado del mitigador del mmproj leak (issue #21690). null = no se cruzo
- *  el umbral; cuando se cruza, la UI muestra un banner amber con el conteo
- *  + boton para llamar a POST /agent/recycle_server. */
-export interface VisionThreshold {
-  imageCount: number;
-  threshold: number;
-  issue: string;
-}
-
 export interface EventStreamState {
   connected: boolean;
   convState: ConvState;
   entries: ActivityEntry[];
-  tokens: number;
   model: ModelInfo | null;
-  field: FieldReadout | null;
-  ctx: CtxBudget | null;
   surfaces: SurfacesCount | null;
   session: SessionInfo | null;
   /** boot lifecycle of the agent + llama-server. while !ready, the chat
    *  input is disabled so users don't queue prompts into the void. */
   agent: AgentStatus;
-  /** what's currently loading. */
-  bootStage: BootStage | null;
-  /** mmproj leak warning (#21690); null mientras no se cruzo el umbral. */
-  visionThreshold: VisionThreshold | null;
 }
 
 const MAX_ENTRIES = 80;
@@ -78,15 +39,10 @@ const INITIAL: EventStreamState = {
   connected: false,
   convState: 'idle',
   entries: [],
-  tokens: 0,
   model: null,
-  field: null,
-  ctx: null,
   surfaces: null,
   session: null,
   agent: { built: false, healthy: false, ready: false },
-  bootStage: null,
-  visionThreshold: null,
 };
 
 /** subscribe to the FastAPI WS at `/events`. mirrors the server's BUS events
@@ -172,22 +128,13 @@ export function useEventStream(): EventStreamState {
 
       ws.onmessage = (ev) => {
         if (cancelled) return;
-        let parsed: ServerEvent | { type: 'heartbeat' } | { kind: string; [k: string]: unknown };
+        let parsed: ServerEvent;
         try {
           parsed = JSON.parse(ev.data);
         } catch {
           return;
         }
-        // Normalizacion: el BUS publica eventos con `kind` (prewarm.py,
-        // multimodal.py) o con `type` (boot_progress.py, agent_runner.py).
-        // Aceptamos ambos y el reducer matchea sobre el discriminante
-        // resuelto.
-        const rec = parsed as Record<string, unknown>;
-        if (rec.type === 'heartbeat') return;
-        if (!rec.type && typeof rec.kind === 'string') {
-          rec.type = rec.kind;
-        }
-        setState((prev) => reduce(prev, rec as ServerEvent));
+        setState((prev) => reduce(prev, parsed));
       };
 
       ws.onerror = () => {
@@ -227,22 +174,8 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
       const entries = [ev.entry, ...prev.entries].slice(0, MAX_ENTRIES);
       return { ...prev, entries };
     }
-    case 'tokens':
-      return { ...prev, tokens: prev.tokens + ev.delta };
     case 'model':
       return { ...prev, model: ev.info };
-    case 'field':
-      return {
-        ...prev,
-        field: {
-          entropy: ev.entropy,
-          temperature: ev.temperature,
-          tokens_per_s: ev.tokens_per_s,
-          draw_w: ev.draw_w,
-        },
-      };
-    case 'ctx':
-      return { ...prev, ctx: { used: ev.used, budget: ev.budget } };
     case 'surfaces':
       return {
         ...prev,
@@ -262,66 +195,8 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
           built: ev.built, healthy: ev.healthy, ready: ev.ready, pendingConfirmation: !!ev.pendingConfirmation,
         },
       };
-    case 'boot_stage': {
-      // A stage that reports phase:"completed" (e.g. the profile swap) is a
-      // ONE-SHOT that finished — clear the status region instead of leaving
-      // the stage name ("profile_swap") visible forever.
-      if (ev.phase === 'completed' || ev.stage === 'ready') {
-        return { ...prev, bootStage: null };
-      }
-      // El shape extendido (prewarm.py) trae elapsed_s/ok/system_prompt_chars
-      // en lugar de label/progress. Construimos un label legible asi la UI
-      // (FieldCenter status + log) muestra info util sin caso especial.
-      let label = ev.label ?? null;
-      let progress = ev.progress ?? null;
-      const error = ev.error ?? null;
-      if (!label) {
-        if (ev.stage === 'prewarm_start') {
-          const chars = typeof ev.system_prompt_chars === 'number'
-            ? ` (${ev.system_prompt_chars} chars)` : '';
-          label = `prewarm · warming KV cache${chars}`;
-        } else if (ev.stage === 'prewarm_done') {
-          const dt = typeof ev.elapsed_s === 'number' ? ` in ${ev.elapsed_s.toFixed(1)}s` : '';
-          if (ev.ok) {
-            label = `prewarm · KV cache primed${dt}`;
-            progress = 1;
-          } else if (error) {
-            label = `prewarm · failed${dt}`;
-          } else {
-            label = `prewarm · empty result${dt}`;
-          }
-        } else {
-          label = null;
-        }
-      }
-      return {
-        ...prev,
-        bootStage: { stage: ev.stage, label, progress, error },
-      };
-    }
-    case 'vision_threshold_reached':
-      return {
-        ...prev,
-        visionThreshold: {
-          imageCount: ev.image_count,
-          threshold: ev.threshold,
-          issue: ev.issue,
-        },
-      };
-    case 'voice_no_speech':
-      // Capture dropped (silence / Whisper hallucination). Give the user who
-      // tried to speak a brief cue instead of a silent drop to idle. Stable id
-      // dedups rapid repeats. convState returns to idle via the state event the
-      // pipeline emits right after, so we only surface the toast here.
-      pushToast({ id: 'voice-no-speech', kind: 'info', msg: 'No te entendí — probá de nuevo', ttlMs: 2500 });
-      return prev;
     case 'log_clear':
-      // wipe activity entries; tokens stay (they reflect lifetime usage).
       return { ...prev, entries: [] };
-    case 'metric':
-      // metrics are also published over WS in future passes; for now the
-      // SubstratePanel still polls /metrics, so we ignore this branch.
-      return prev;
     default:
       return prev;
   }

@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using Microsoft.Win32;
@@ -44,7 +43,8 @@ internal static class HeartbeatMoment
         return fullscreen ? (gpuBusy ? Playing : Watching) : Free;
     }
 
-    internal static JsonObject Observe(IEnumerable<string> events, IReadOnlyList<ConversationMessage> recent)
+    internal static JsonObject Observe(
+        IEnumerable<string> events, IReadOnlyList<ConversationMessage> recent, string? connectivity)
     {
         DateTimeOffset now = DateTimeOffset.Now;
         string activity = Activity(out bool fullscreen, out bool gpuBusy);
@@ -71,7 +71,7 @@ internal static class HeartbeatMoment
         }
 
         context["windows"] = windows;
-        context["pc"] = Machine(gpuBusy);
+        context["pc"] = Machine(gpuBusy, connectivity);
         context["events"] = new JsonArray(events.Select(static e => (JsonNode?)JsonValue.Create(e)).ToArray());
         var history = new JsonArray();
         foreach (ConversationMessage message in recent.TakeLast(6))
@@ -88,7 +88,8 @@ internal static class HeartbeatMoment
         return context;
     }
 
-    internal static JsonObject Machine(bool gpuBusy)
+    /// <param name="connectivity">Windows' internet check (internet, constrained, local, none); left out when unread.</param>
+    internal static JsonObject Machine(bool gpuBusy, string? connectivity)
     {
         var pc = new JsonObject { ["gpu_busy"] = gpuBusy };
         var memory = new MemoryStatus { Length = (uint)Marshal.SizeOf<MemoryStatus>() };
@@ -113,7 +114,11 @@ internal static class HeartbeatMoment
             // The disk's free space is left out when it cannot be read.
         }
 
-        pc["network"] = NetworkInterface.GetIsNetworkAvailable() ? "ok" : "down";
+        if (connectivity is not null)
+        {
+            pc["internet"] = connectivity;
+        }
+
         pc["idle_min"] = (int)IdleTime().TotalMinutes;
         return pc;
     }

@@ -2,24 +2,14 @@ using Baxy.Providers.Windows.SystemStatus;
 
 namespace Baxy.App;
 
+/// <summary>What the PC reported; <see cref="Gpu"/> is null when no adapter gives a usage counter.</summary>
 internal sealed record FieldMetricSnapshot(
     double Cpu,
     double Mem,
     double MemUsedGb,
-    double Gpu,
-    double Net,
+    double? Gpu,
     double Dsk,
-    double Tmp,
-    string Uptime,
-    IReadOnlyDictionary<string, bool> Placeholder);
-
-internal sealed record FieldHardwareSnapshot(
-    string Cpu,
-    int CpuCores,
-    string Mem,
-    double MemTotalGb,
-    string Gpu,
-    double GpuVramGb);
+    string Uptime);
 
 internal sealed class FieldTelemetrySampler : IAsyncDisposable
 {
@@ -29,7 +19,6 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
     private readonly SemaphoreSlim _sampleLock = new(1, 1);
     private DateTimeOffset _cachedAt;
     private FieldMetricSnapshot? _cachedMetrics;
-    private FieldHardwareSnapshot? _cachedHardware;
     private bool _disposed;
 
     internal async Task<FieldMetricSnapshot> SampleAsync(CancellationToken cancellationToken)
@@ -61,7 +50,6 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
             SystemStatusSnapshot system = await systemTask.ConfigureAwait(false);
             GpuStatusSnapshot gpu = await gpuTask.ConfigureAwait(false);
             _cachedMetrics = CreateMetrics(system, gpu);
-            _cachedHardware = CreateHardware(system, gpu);
             _cachedAt = DateTimeOffset.UtcNow;
             return _cachedMetrics;
         }
@@ -69,14 +57,6 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
         {
             _sampleLock.Release();
         }
-    }
-
-    internal async Task<FieldHardwareSnapshot> HardwareAsync(
-        CancellationToken cancellationToken)
-    {
-        _ = await SampleAsync(cancellationToken).ConfigureAwait(false);
-        return _cachedHardware
-            ?? new FieldHardwareSnapshot("unknown", 0, "unknown", 0, "unknown", 0);
     }
 
     private static FieldMetricSnapshot CreateMetrics(
@@ -98,61 +78,21 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
             diskPercent = 100d * (disk.TotalBytes - disk.AvailableBytes) / disk.TotalBytes;
         }
 
-        double gpuPercent = gpu.Adapters
+        double? gpuPercent = gpu.Adapters
             .Where(static adapter => adapter.UsagePercent.HasValue)
-            .Select(static adapter => adapter.UsagePercent!.Value)
-            .DefaultIfEmpty(0)
+            .Select(static adapter => (double?)adapter.UsagePercent!.Value)
             .Max();
 
         long uptimeSeconds = Math.Max(0, system.UptimeSeconds ?? 0);
         TimeSpan uptime = TimeSpan.FromSeconds(uptimeSeconds);
         string uptimeText = $"{(long)uptime.TotalHours:00}:{uptime.Minutes:00}:{uptime.Seconds:00}";
-        var placeholder = new Dictionary<string, bool>(StringComparer.Ordinal)
-        {
-            ["net"] = true,
-            ["tmp"] = true,
-        };
-        if (gpu.Adapters.All(static adapter => !adapter.UsagePercent.HasValue))
-        {
-            placeholder["gpu"] = true;
-        }
-
         return new FieldMetricSnapshot(
             Clamp(system.Cpu?.UsagePercent ?? 0),
             Clamp(memoryPercent),
             Math.Max(0, memoryUsedGb),
-            Clamp(gpuPercent),
-            0,
+            gpuPercent is { } measured ? Clamp(measured) : null,
             Clamp(diskPercent),
-            0,
-            uptimeText,
-            placeholder);
-    }
-
-    private static FieldHardwareSnapshot CreateHardware(
-        SystemStatusSnapshot system,
-        GpuStatusSnapshot gpu)
-    {
-        int cores = system.Cpu?.LogicalProcessorCount ?? 0;
-        string cpu = string.IsNullOrWhiteSpace(system.Cpu?.Model)
-            ? cores > 0 ? $"unknown · {cores}c" : "unknown"
-            : $"{system.Cpu.Model} · {cores}c";
-        double memoryGb = (system.Memory?.TotalBytes ?? 0) / 1_073_741_824d;
-        string memory = memoryGb > 0 ? $"{memoryGb:0.#} gb" : "unknown";
-
-        GpuAdapterStatus? primaryGpu = gpu.Adapters
-            .OrderByDescending(static adapter =>
-                adapter.DedicatedVideoMemoryBytes + adapter.DedicatedSystemMemoryBytes)
-            .FirstOrDefault();
-        ulong vramBytes = primaryGpu is null
-            ? 0
-            : primaryGpu.DedicatedVideoMemoryBytes + primaryGpu.DedicatedSystemMemoryBytes;
-        double vramGb = vramBytes / 1_073_741_824d;
-        string gpuText = primaryGpu is null
-            ? "unknown"
-            : vramGb > 0 ? $"{primaryGpu.Name} · {vramGb:0.#} gb" : primaryGpu.Name;
-
-        return new FieldHardwareSnapshot(cpu, cores, memory, memoryGb, gpuText, vramGb);
+            uptimeText);
     }
 
     private static double Clamp(double value) =>

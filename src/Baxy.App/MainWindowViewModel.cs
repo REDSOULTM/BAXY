@@ -19,7 +19,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 {
     private readonly SynchronizationContext _uiContext;
     private readonly string _memorySessionId;
-    private readonly Func<MindSidecarClient> _mindClientFactory;
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
     private readonly NativeTurnLoop _loop;
     // One turn at a time, the person's or the heartbeat's: a person's words that arrive during a heartbeat wait for it.
@@ -48,7 +47,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
     private bool _isMicAvailable;
-    private string _statusText = "Iniciando";
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
     private bool _isBusy;
@@ -60,15 +58,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private DateTimeOffset? _firstWakeUtc;
 
     public MainWindowViewModel()
-        : this(mindClientFactory: null)
-    {
-    }
-
-    internal MainWindowViewModel(Func<MindSidecarClient>? mindClientFactory)
     {
         _uiContext = SynchronizationContext.Current ?? new SynchronizationContext();
         _memorySessionId = Guid.NewGuid().ToString("D");
-        _mindClientFactory = mindClientFactory ?? (static () => new MindSidecarClient());
         Messages = new ObservableCollection<ConversationMessage>();
         _loop = new NativeTurnLoop(
             new NativeTurnLoop.Host
@@ -124,12 +116,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>A risky call waits for the person's Sí or No (the interface shows the two buttons).</summary>
     public bool HasPendingConfirmation => _loop.HasPendingConfirmation;
 
-
-    public string StatusText
-    {
-        get => _statusText;
-        private set => SetField(ref _statusText, value);
-    }
 
     public string StatusDescription
     {
@@ -218,7 +204,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _isInitializing = true;
         HasStartupError = false;
         IsReady = false;
-        StatusText = "Iniciando";
         StatusDescription = "Comprobando BAXY";
         _loop.Reset();
 
@@ -240,13 +225,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         try
         {
             _memoryProtector ??= MemoryOperationProtector.CreateDefault(_memorySessionId);
-            RetryableOperationRegistry registry = _retryableOperations
-                ??= RetryableOperationRegistry.CreateDefault(_memoryProtector);
-            if (!recovering)
+            if (!recovering || _retryableOperations is null)
             {
                 // A call of an earlier session is never resumed or retried by itself: the person's consent and the
                 // screen it was decided on belong to that session.
-                registry.RetireWhere(static _ => true);
+                _retryableOperations = new RetryableOperationRegistry();
             }
 
             if (_mindClient is not { IsReady: true })
@@ -278,7 +261,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             IsReady = true;
-            StatusText = _startupMindPending ? "Iniciando" : "Lista";
             StatusDescription = _startupMindPending ? "Preparando BAXY" : IdleStatus();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -382,7 +364,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _turnExecutionActive = true;
         LastTurnFailure = null;
         IsBusy = true;
-        StatusText = "Trabajando";
         StatusDescription = "understanding";
         try
         {
@@ -413,7 +394,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (IsReady)
             {
-                StatusText = "Lista";
                 StatusDescription = LastTurnFailure ?? IdleStatus();
             }
         }
@@ -847,7 +827,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _mindClient = null;
             }
 
-            mind = _mindClientFactory();
+            mind = new MindSidecarClient();
             if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(120), linked.Token))
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
@@ -894,7 +874,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             OnPropertyChanged(nameof(IsMindPreparing));
             if (IsReady && !IsBusy)
             {
-                StatusText = "Lista";
                 StatusDescription = IdleStatus();
             }
         }
@@ -998,7 +977,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         IsReady = false;
         HasStartupError = true;
-        StatusText = "No disponible";
         StatusDescription = "retry_without_close";
     }
 
@@ -1023,7 +1001,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 owner.IsReady = false;
                 owner._loop.Reset();
                 owner.HasStartupError = true;
-                owner.StatusText = "Desconectada";
                 owner.StatusDescription = "core_disconnected";
                 owner.RecoverCoreWhenIdle();
             },

@@ -410,13 +410,13 @@ body {
 .left-footer .kv-row .v { font-size: 10px; }
 
 /* ------- center column ------- */
-.chat .turn-progress, .chat .turn-error {
+.chat .turn-error {
   color: var(--t-bone);
   font-size: 13px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-.chat .turn-progress:not(:empty), .chat .turn-error:not(:empty) { padding: 0 2px 8px; }
+.chat .turn-error:not(:empty) { padding: 0 2px 8px; }
 .chat .turn-error { color: #E55366; }
 
 .center-wrap {
@@ -500,38 +500,6 @@ body {
   border-left: 1px solid var(--hair);
   margin-left: 4px;
 }
-
-.attachments {
-  padding-top: 8px;
-  font-size: 10px;
-  color: var(--t-muted);
-  min-height: 22px;
-}
-.att-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.att-pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  height: 22px; padding: 0 6px 0 8px;
-  background: var(--bg-elev);
-  border: 1px solid var(--hair);
-  border-radius: 2px;
-  font-size: 10px;
-  color: var(--t-bone);
-}
-.att-pill .att-name {
-  font-family: var(--mono);
-  letter-spacing: 0.01em;
-  max-width: 180px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.att-pill .att-size { color: var(--t-muted); font-family: var(--mono); }
-.att-pill .att-x {
-  border: none; background: transparent;
-  padding: 0; cursor: pointer;
-  color: var(--t-muted);
-  display: inline-flex; align-items: center;
-  margin-left: 2px;
-}
-.att-pill .att-x:hover { color: var(--carmine); }
 
 /* ------- activity log (vertical entries) ------- */
 .activity-scroll {
@@ -1353,48 +1321,6 @@ button, input, textarea { font: inherit; color: inherit; }
   font-style: italic;
 }
 
-/* boot-stage error + retry — a thin banner above the field that mounts ONLY on
-   a real agent boot failure (showRetry). At rest it renders nothing, so the
-   center column matches the handoff prototype; it appears only to surface a
-   retry the design's mock never needed. */
-.boot-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 2px 6px;
-  min-width: 0;
-}
-.boot-banner .boot-err {
-  color: var(--carmine);
-  font-family: var(--mono);
-  font-size: 11px;
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.boot-banner .boot-retry {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid var(--carmine);
-  background: rgba(184, 58, 74, 0.08);
-  color: var(--carmine);
-  padding: 2px 8px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: lowercase;
-  cursor: pointer;
-  border-radius: 2px;
-  flex: 0 0 auto;
-}
-.boot-banner .boot-retry:hover {
-  background: var(--carmine);
-  color: var(--bg-base);
-}
-
 /* toasts — bottom-right stack. zero deps. */
 .toast-host {
   position: fixed;
@@ -1455,65 +1381,6 @@ button, input, textarea { font: inherit; color: inherit; }
   border-radius: 2px;
   vertical-align: middle;
 }
-
-/* ---- vision_threshold banner (mmproj leak warning #21690) ---------- */
-/* Aparece sobre la TopBar cuando el contador de imagenes cruza el umbral.
-   Tono amber para destacar sin alarmar; click en "recycle now" llama a
-   POST /agent/recycle_server. Se renderiza al inicio del .shell asi no
-   tenemos que cambiar el flex-direction de .bar.top (que es flex-row). */
-.vision-banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 14px;
-  background: #2a1f06;
-  border-bottom: 1px solid #5a3f1d;
-  color: #ffcf6a;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-}
-.vision-banner-msg {
-  flex: 1;
-  text-transform: lowercase;
-}
-.vision-banner-msg b {
-  color: #ffe49a;
-  font-weight: 600;
-}
-.vision-banner-issue {
-  color: #b88a4b;
-  font-size: 10px;
-}
-.vision-banner-btn {
-  background: transparent;
-  border: 1px solid #b88a4b;
-  color: #ffcf6a;
-  padding: 3px 10px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: lowercase;
-  cursor: pointer;
-  border-radius: 2px;
-}
-.vision-banner-btn:hover {
-  background: rgba(255, 207, 106, 0.12);
-  color: #ffe49a;
-}
-.vision-banner-dismiss {
-  background: transparent;
-  border: none;
-  color: #b88a4b;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 2px 6px;
-}
-.vision-banner-dismiss:hover {
-  color: #ffe49a;
-}
-
 
 /* ============================================================
    CARTER-FIELD REDESIGN (2026) — appended verbatim from the new
@@ -2049,19 +1916,6 @@ html[data-maximized="true"] .window-root {
   gap: 6px;
   overflow: hidden;
 }
-.chat-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  padding-top: 8px;
-}
-.chat-bottom .attachments { padding-top: 0; min-height: 0; }
-.chat-bottom .hint {
-  font-size: 10px; color: var(--t-muted);
-  white-space: nowrap; flex-shrink: 0;
-}
-.chat-bottom .hint .kbd { color: var(--carmine); font-family: var(--mono); }
 .state-line {
   display: flex; align-items: center; justify-content: space-between;
   font-size: 11px;
@@ -2142,38 +1996,6 @@ html[data-maximized="true"] .window-root {
   border-left: 1px solid var(--hair);
   margin-left: 4px;
 }
-
-.attachments {
-  padding-top: 8px;
-  font-size: 10px;
-  color: var(--t-muted);
-  min-height: 22px;
-}
-.att-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.att-pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  height: 22px; padding: 0 6px 0 8px;
-  background: var(--bg-elev);
-  border: 1px solid var(--hair);
-  border-radius: 2px;
-  font-size: 10px;
-  color: var(--t-bone);
-}
-.att-pill .att-name {
-  font-family: var(--mono);
-  letter-spacing: 0.01em;
-  max-width: 180px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.att-pill .att-size { color: var(--t-muted); font-family: var(--mono); }
-.att-pill .att-x {
-  border: none; background: transparent;
-  padding: 0; cursor: pointer;
-  color: var(--t-muted);
-  display: inline-flex; align-items: center;
-  margin-left: 2px;
-}
-.att-pill .att-x:hover { color: var(--carmine); }
 
 /* ------- activity log (vertical entries) ------- */
 .activity-scroll {
