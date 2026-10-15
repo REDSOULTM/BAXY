@@ -35,12 +35,14 @@ public sealed class WindowsCalculatorOpenProvider : IApplicationOpenProvider
         if (!reused)
         {
             if (!_platform.Launch()) return Failure(request, ApplicationOpenErrorCodes.LaunchFailed, false);
+            // No Calculator was visible before, so the one visible now is the one this opening showed. Windows keeps a
+            // prelaunched CalculatorApp process suspended and shows that same process: requiring a new process left
+            // every cold opening unverified after the window was on screen, and each retry opened another one
+            // (2026-10-15, four windows from one request).
             for (int attempt = 0; attempt < 30 && selected is null; attempt++)
             {
                 if (attempt > 0) await _platform.DelayAsync(Delay, cancellationToken).ConfigureAwait(false);
-                selected = _platform.Inventory().FirstOrDefault(candidate => candidate.Visible
-                    && !before.Any(old => old.ProcessId == candidate.ProcessId
-                        && old.CreationTimeUtcTicks == candidate.CreationTimeUtcTicks));
+                selected = _platform.Inventory().FirstOrDefault(static candidate => candidate.Visible);
             }
         }
         if (selected is null) return Failure(request, ApplicationOpenErrorCodes.VerificationFailed, !reused);

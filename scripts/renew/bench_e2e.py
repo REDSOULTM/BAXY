@@ -105,6 +105,14 @@ def run_turn(conductor: Conductor, command: dict, timeout: float) -> list[dict]:
     return events
 
 
+def wait_silence(conductor: Conductor, timeout: float) -> None:
+    """Until the last utterance that started has ended (or nothing is sounding)."""
+    conductor.events.poll()
+    last_start = max((i for i, e in enumerate(conductor.events.all) if e["type"] == "speech.start"), default=None)
+    if last_start is not None and not any(e["type"] == "speech.end" for e in conductor.events.all[last_start:]):
+        conductor.events.wait(lambda e: e["type"] == "speech.end", timeout)
+
+
 def norm(text: str) -> str:
     return " ".join((text or "").split())
 
@@ -126,7 +134,10 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
 
     run_turn(conductor, {"session": "new"}, 30)
     replies, speech, turn_events, turn_from = [], [], [], []
-    for number, turn in enumerate(case.get("turns") or [], start=1):
+    turns = case.get("turns") or []
+    for number, turn in enumerate(turns, start=1):
+        if number > 1 and turn.get("barge_in_after_ms") is None:
+            wait_silence(conductor, 30)
         turn_from.append(len(conductor.events.all))
         if turn.get("barge_in_after_ms") is not None:
             # Sent N ms after the previous answer started to sound; the previous turn must have sounded.
@@ -154,9 +165,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
         turn_events.append(events)
 
     # Let the last answer finish sounding before the voice rule and the oracles read the world.
-    last_start = max((i for i, e in enumerate(conductor.events.all) if e["type"] == "speech.start"), default=None)
-    if last_start is not None and not any(e["type"] == "speech.end" for e in conductor.events.all[last_start:]):
-        conductor.events.wait(lambda e: e["type"] == "speech.end", 30)
+    wait_silence(conductor, 30)
     conductor.events.poll()
 
     # Utterances: each speech.start of a turn (until the next turn began) with its end; cancelled when the person

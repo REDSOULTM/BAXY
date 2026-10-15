@@ -36,7 +36,7 @@ def main() -> None:
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     parser.add_argument("--gguf", default=os.environ.get("BAXY_MIND_LLM_GGUF", r"F:\BAXYeval\models\Qwen3.5-4B-Q4_K_M.gguf"))
     parser.add_argument("--server", default=os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe"))
-    parser.add_argument("--ctx", default="40960")
+    parser.add_argument("--ctx", default="49152")
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / "src"))
     from baxy_mind.llm_server import LlmServer  # noqa: E402

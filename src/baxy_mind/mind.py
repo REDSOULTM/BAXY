@@ -101,6 +101,8 @@ def beat_message(context: dict[str, Any]) -> str:
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
+CLOCK_MARK = "[Reloj:"
+
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
 # model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
 HISTORY_TURNS = 8
@@ -251,11 +253,13 @@ class Mind:
         return SYSTEM
 
     @staticmethod
-    def _with_clock(text: str) -> str:
-        # The time travels at the end of the person's message: the only part of the prompt that is new anyway.
+    def _clock() -> str:
+        # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
+        # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
+        # «[Thursday 15/10/2026 04:21 hora local…]» (2026-10-15).
         now = _dt.datetime.now().astimezone()
         offset = now.strftime("%z")
-        return (f"{text}\n\n[{now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
+        return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
                 "los campos que terminan en Utc van en UTC]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
@@ -281,7 +285,8 @@ class Mind:
             turn["text"] = text
             return self._next(request_id, "turn.decide", turn)
         self._close_open_calls()
-        self.conversation.append({"role": "user", "content": self._with_clock(text)})
+        self.conversation.append({"role": "user", "content": self._clock()})
+        self.conversation.append({"role": "user", "content": text})
         self._trim()
         self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
         return self._next(request_id, "turn.decide", self._turn)
@@ -343,13 +348,17 @@ class Mind:
         self._turn = None
 
     def _trim(self) -> None:
-        """Keep the last turns that fit the budget; a turn starts at a person's message, so no call loses its result."""
-        starts = [i for i, m in enumerate(self.conversation) if m["role"] == "user"]
+        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result."""
+        starts = self._turn_starts()
         while len(starts) > 1 and (len(starts) > HISTORY_TURNS
                                    or sum(len(json.dumps(m, ensure_ascii=False)) for m in self.conversation)
                                    > HISTORY_CHARS):
             self.conversation = self.conversation[starts[1]:]
-            starts = [i for i, m in enumerate(self.conversation) if m["role"] == "user"]
+            starts = self._turn_starts()
+
+    def _turn_starts(self) -> list[int]:
+        return [i for i, m in enumerate(self.conversation)
+                if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
 
     def continue_turn(self, request_id: Any, observation: str, final: bool = False,
                       beat: bool = False) -> dict[str, Any]:
@@ -400,7 +409,10 @@ class Mind:
                 # change measured, not by sampling noise (±3 of 90 without it).
                 "seed": 0}
         if final:
-            body["tool_choice"] = "none"
+            # Without tools the model can only answer in words: with tool_choice none Qwen3.5 still wrote a call as
+            # XML text, which reached the person (llama.cpp #20837; 2026-10-15 E017). The prefix is read again only
+            # for this last answer of an exhausted turn.
+            del body["tools"], body["parallel_tool_calls"]
         reply = self.server.chat(body, slot=LlmServer.DECIDE)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()

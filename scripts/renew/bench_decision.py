@@ -67,8 +67,11 @@ def resources(server_pid, gpu_before):
     """VRAM as the GPU's growth since before llama-server started (WDDM reports no per-process VRAM) and RAM (working
     set and private bytes) of llama-server and of this process acting as the mind."""
     def ram(pid):
-        info = psutil.Process(pid).memory_info()
-        return {"working_set_mib": round(info.rss / 2**20), "private_mib": round(getattr(info, "private", 0) / 2**20)}
+        # USS is the RAM the process alone holds: llama-server's working set counts the mapped GGUF, and its private
+        # bytes count the VRAM WDDM commits (measured on the notebook, 2026-10-15).
+        info = psutil.Process(pid).memory_full_info()
+        return {"uss_mib": round(info.uss / 2**20), "working_set_mib": round(info.rss / 2**20),
+                "private_mib": round(getattr(info, "private", 0) / 2**20)}
 
     after = gpu_used_mib()
     return {"llama_server": {"vram_mib": after - gpu_before if after is not None and gpu_before is not None else None,
@@ -86,7 +89,7 @@ def main():
     parser.add_argument("--server", default=os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe"))
     parser.add_argument("--server-args", default="")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
-    parser.add_argument("--ctx", default="40960")
+    parser.add_argument("--ctx", default="49152")
     args = parser.parse_args()
     os.environ["BAXY_RENEW_DESCRIPTIONS"] = args.desc
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
