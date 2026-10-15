@@ -1254,8 +1254,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // rows go back as they were shown, so the model sees what Discord offered.
         string channelName = string.Empty, channelKind = string.Empty, server = string.Empty;
         string? exact = items.FirstOrDefault(item => string.Equals(
-            DesktopMessagingAdapter.Fold(item.Split(", ", StringSplitOptions.TrimEntries)[0]),
-            DesktopMessagingAdapter.Fold(name),
+            WindowsDesktopMessagingAutomation.Fold(item.Split(", ", StringSplitOptions.TrimEntries)[0]),
+            WindowsDesktopMessagingAutomation.Fold(name),
             StringComparison.Ordinal));
         if (exact is not null)
         {
