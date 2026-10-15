@@ -82,7 +82,9 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.Result?.GetProperty("kind").GetString(), Is.EqualTo("text"));
             Assert.That(receipt.Result?.GetProperty("text").GetString(), Is.EqualTo(content));
-            Assert.That(receipt.Result?.GetProperty("lines").GetInt32(), Is.EqualTo(5));
+            // Four lines: the break that ends the last one does not start a fifth (e2e p6 E018: 138 for 137).
+            Assert.That(receipt.Result?.GetProperty("totalLines").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("lines").GetInt32(), Is.EqualTo(4));
             Assert.That(receipt.Result?.GetProperty("characters").GetInt32(), Is.EqualTo(content.Length));
             Assert.That(receipt.Result?.GetProperty("hasMore").GetBoolean(), Is.False);
             Assert.That(receipt.Result?.TryGetProperty("nextOffset", out _), Is.False);

@@ -225,6 +225,46 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    [TestCase("", 0)]
+    [TestCase("uno", 1)]
+    [TestCase("uno\n", 1)]
+    [TestCase("uno\ndos", 2)]
+    [TestCase("uno\r\ndos\r\n", 2)]
+    [TestCase("uno\rdos", 2)]
+    [TestCase("uno\n\n", 2)]
+    [TestCase("\n", 1)]
+    public void LinesAreCountedAsAnEditorShowsThem(string text, int lines) =>
+        Assert.That(WindowsKnownFileAdapter.LineCount(text), Is.EqualTo(lines));
+
+    // «¿cuál es el archivo más grande?» (e2e p6 E020): the largest first, listing or searching.
+    [Test]
+    public async Task OrderBySizePutsTheLargestFirst()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        Directory.CreateDirectory(Path.Combine(desktop, "fotos"));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "chico.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "mediano.txt"), new string('x', 50));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "fotos", "grande.txt"), new string('x', 500));
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"desktop","order":"size"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt searched = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"desktop","query":"*.txt","order":"size"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.Result?.GetProperty("entries").EnumerateArray()
+                    .Select(entry => entry.GetProperty("name").GetString()),
+                Is.EqualTo(new[] { "mediano.txt", "chico.txt", "fotos" }));
+            Assert.That(searched.Result?.GetProperty("files").EnumerateArray()
+                    .Select(file => file.GetProperty("name").GetString() + ":" + file.GetProperty("size").GetInt64()),
+                Is.EqualTo(new[] { "grande.txt:500", "mediano.txt:50", "chico.txt:1" }));
+            Assert.That(searched.Result?.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(),
+                Is.False);
+        });
+    }
+
     [Test]
     public async Task FindByContentGivesTheFirstMatchingLineAndSkipsWhatIsNotText()
     {
