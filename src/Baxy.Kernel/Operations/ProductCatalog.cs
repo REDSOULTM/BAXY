@@ -544,14 +544,14 @@ public static class ProductCatalog
                 [
                     // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
                     // folder may be the root instead of the sandbox.
-                    String("folder", values: ["desktop", "documents", "downloads"]),
+                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
                     String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
                 ],
                 ["relativePath"]),
             OperationRisks.LowReversible,
             "filesystem.create.directory.sandbox.postread.v1",
             ToolExposure.Public,
-            "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas) y verifica su identidad sin aceptar rutas absolutas."),
+            "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas, la carpeta del usuario) y verifica su identidad; una ruta absoluta dentro de esa carpeta vale como su ruta relativa."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0701 «Dime cuantos archivos .py
         // hay en el directorio actual», D24): el directorio actual es la carpeta del
         // Explorador en primer plano; sin Explorador delante, el escritorio.

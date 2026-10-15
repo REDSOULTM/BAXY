@@ -77,8 +77,8 @@
     },
     "recursos": {
       "umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)",
-      "estado": "en_curso",
-      "evidencia": "d4 en PC: VRAM 3921 MiB; USS llama-server 3435 MiB + mente 22 MiB (en el notebook USS 659 MiB: por investigar en el PC)"
+      "estado": "cumplida (medida provisional; se repite en la medición final)",
+      "evidencia": "PC RTX 4060 Ti, producto real todo cargado (runs/r2-recursos.json, measure_resources.py): VRAM 3913 MiB (crecimiento de la GPU); RAM USS arnés 1649 MiB (llama-server 1508, mente 39, Piper 102); total con k4 y Ultra 2617 MiB. Antes de --load-mode none: arnés 3752 MiB (r1). 4 GB = 4096 MiB."
     },
     "ronda_final_auditoria": {
       "umbral": "nada que viole <reglas>",

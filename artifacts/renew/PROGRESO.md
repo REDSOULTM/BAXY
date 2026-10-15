@@ -157,3 +157,30 @@ tocan lo cambiado; en el notebook pasan).
   juego propio de 10 frases (no copiadas de los bancos): descripciones actuales 6/10; descripciones «TO a level» frente
   a «BY an amount» 4/10; una sola herramienta `audio.volume {level|change}` 6/10 (cambia los errores: «baja al 15» →
   change −85). Nada mejora: **límite medido**, el catálogo se queda como está.
+- **Recursos (PC, producto real, todo cargado):** llama-server mapeaba el GGUF y sus páginas seguían en el working set
+  después de subir a la GPU (USS 3237 MiB aislado; en el notebook Windows las recortaba). Con `--load-mode none`: 1132
+  MiB aislado, misma VRAM y velocidad. Producto (r2): VRAM 3913 MiB; RAM arnés 1649 MiB (llama-server 1508, mente 39,
+  Piper 102); con k4 y Ultra 2617 MiB. Antes (r1): arnés 3752 MiB.
+- **Voz (velocidad):** en el PC Piper tardaba 747 ms p50 desde `voice.speak` hasta sonar: abrir la salida de audio
+  cuesta 380 ms en este equipo (interfaz USB; igual en MME, DirectSound y WASAPI) y la frase entera se sintetizaba antes
+  de sonar (94–330 ms). Ahora la salida se abre al empezar el turno, mientras el modelo decide (`prepare`), y se cierra
+  tras 20 s sin sonido (sigue a la salida por defecto); la respuesta suena por frases y la siguiente se sintetiza
+  mientras suena la anterior. Medido en el producto: 138–279 ms. Arreglado además: Piper a veces aún tenía abierto el WAV
+  al contestar, el borrado fallaba y la frase se perdía; ahora cada frase tiene su fichero y el que no se pudo borrar se
+  borra en la siguiente.
+- e2e práctica p5 17/30 (primer sonido p50 2595 ms), p6 17/30 (2753 ms; con web.search sin interpretación y rutas
+  absolutas del notebook). Lo sistemático: el 4B no pone la subcarpeta que la persona nombró (E006, E017, E020, E024,
+  E027) y a veces afirma la ruta pedida (E017, E024).
+- **Significado por argumento** (`arguments` en tool_descriptions; la mente lo pone en la propiedad del esquema):
+  juego propio de rutas 3/8 → 6/8 (con dos casos de control, 7/10). Una ruta completa dictada para `file.write` sigue
+  perdiendo la subcarpeta (Q1, Q3): límite medido. `filesystem.create.directory` acepta ahora `home` (el proveedor ya lo
+  hacía; el catálogo no). decision2 d5: 221/270 (d4 225; P263 atribuible, corregido diciendo que la carpeta conocida va
+  en `folder`; el resto ruido y el web.search nuevo).
+- **Velocidad, medición:** la meta es por orden («desde que el texto de una orden llega a la mente hasta que Piper
+  empieza a sonar»); el banco e2e contaba cada frase de un turno desde el inicio del turno (una segunda frase contaba
+  como primer sonido tardío). Ahora cuenta el primer sonido de cada turno. p6 con esa definición: **2316 ms p50** (36
+  órdenes). `speech.start` del conductor sale del estado de la voz de la mente (empieza a reproducir; el sonido llega
+  +0,09 s de latencia del dispositivo).
+- Velocidad, investigado y descartado: MTP (el GGUF de Qwen3.5-4B no trae capas MTP), especulación por n-gramas
+  (ngram-simple 0,83 s, ngram-mod 0,82 s contra 0,81 s sin ella), KV f16 (78,5 → 79,4 tok/s, a 16k peor). El modelo
+  genera a 78 tok/s en bruto (64 con el prefijo de herramientas): la decisión cuesta ~0,7 s por llamada.

@@ -41,6 +41,9 @@ class LlmServer:
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
             "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
+            # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
+            # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
+            "--load-mode", "none",
         ] + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)

@@ -68,6 +68,7 @@ def main() -> int:
                         continue
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
                 elif kind == "turn.decide":
+                    voice.speech.prepare()  # the output opens while the model decides
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or "")))
                 elif kind == "turn.continue":
                     protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or ""),
