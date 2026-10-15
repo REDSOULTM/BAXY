@@ -30,8 +30,10 @@ internal sealed record MindRuntimeDiscoveryResult(
 /// Loads a deliberately registered local mind runtime. The registration is
 /// fail-closed, and an explicit environment configuration always wins. Only what
 /// the App publishes (interpreter, mind path, model, server, GPU layers) is
-/// verified; the voice entries (stt, wake, tts) and the adapters belong to the
-/// launcher (scripts/run_renew.cmd) and are accepted by shape only.
+/// required and verified. The voice entries (stt, wake, tts) and the adapters
+/// that a registration may still carry are allowed and not read: the mind's voice
+/// comes from the BAXY_RENEW_* variables its launcher sets (scripts/run_renew.cmd),
+/// not from this file. Any other property refuses the registration.
 /// </summary>
 internal static class MindRuntimeDiscovery
 {
@@ -48,14 +50,7 @@ internal static class MindRuntimeDiscovery
         "gguf_sha256",
         "llama_server",
         "llama_server_sha256",
-        "stt_dir",
-        "stt_sha256",
-        "wake_manifest",
-        "wake_manifest_sha256",
-        "tts_model",
-        "tts_sha256",
         "ngl",
-        "wake_on_start",
     ];
 
     private static readonly object ApplyLock = new();
@@ -202,7 +197,7 @@ internal static class MindRuntimeDiscovery
             if (root.ValueKind != JsonValueKind.Object
                 || !HasExactProperties(root, [
                     .. RegistrationProperties,
-                    .. OptionalAdapterProperties.Where(name => root.TryGetProperty(name, out _)),
+                    .. UnreadProperties.Where(name => root.TryGetProperty(name, out _)),
                 ])
                 || !string.Equals(
                     RequiredString(root, "schema"),
@@ -263,7 +258,13 @@ internal static class MindRuntimeDiscovery
         }
     }
 
-    private static readonly string[] OptionalAdapterProperties = ["cpu_prose_adapter", "decider_adapter"];
+    // Allowed in a registration and never read here (audit 2026-10-15, App H23: they were required although nothing
+    // in the App reads them, so a registration without voice was refused).
+    private static readonly string[] UnreadProperties =
+    [
+        "stt_dir", "stt_sha256", "wake_manifest", "wake_manifest_sha256", "tts_model", "tts_sha256", "wake_on_start",
+        "cpu_prose_adapter", "decider_adapter",
+    ];
 
     private static string? ExistingFile(
         RuntimeFileHashCache hashes,
