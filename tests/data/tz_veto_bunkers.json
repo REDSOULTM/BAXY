@@ -1,9 +1,0 @@
-{
- "source": "cu-v3/tandas_z1_notebook/t2/compose_audit.jsonl filas 13 y 15 (t2-c01 t4, main 8d90cc2d0); tandas_z2_notebook/t2/compose_audit.jsonl fila 11",
- "said": "oye y cuantos discos de estudio tienen los bunkers?",
- "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"cuantos discos de estudio tienen los bunkers\",\"count\":1,\"results\":[{\"title\":\"Ven aquí (canción de Los Bunkers)\",\"url\":\"https://es.wikipedia.org/wiki/Ven_aqu%C3%AD_(canci%C3%B3n_de_Los_Bunkers)\",\"snippet\":\"«Ven aquí» es una canción de la banda chilena Los Bunkers compuesta por los hermanos Durán. Es la primera del disco Vida de perros y primer sencillo del álbum. Es una de las canciones más populares de la banda.\"}],\"authority\":\"wikipedia_es_api\"}}",
- "first_draft": "Los Bunkers tienen al menos un disco de estudio, Vida de perros, del que sale la canción «Ven aquí».",
- "first_reason": "search_report_unsourced_claim",
- "retry_draft": "Un disco de estudio: Vida de perros.",
- "z2_final": "No encontré cuántos discos de estudio tienen Los Bunkers."
-}
