@@ -1240,25 +1240,6 @@ internal sealed class WindowsVisibleControlAdapter
 
     // ---------------------------------------------------------------- view
 
-    // How long a tied look waits for a window of the mission's process when its own closed: 8 × 250 ms.
-    private const int MissionWindowWaits = 8;
-    private static readonly TimeSpan MissionWindowWaitInterval = TimeSpan.FromMilliseconds(250);
-
-    // Window handles a look names (a mission's windows, the windows it knows are not its): positive numbers only.
-    private static List<nint> Handles(JsonElement arguments, string name)
-    {
-        var handles = new List<nint>();
-        if (!arguments.TryGetProperty(name, out JsonElement list) || list.ValueKind != JsonValueKind.Array)
-            return handles;
-        foreach (JsonElement item in list.EnumerateArray())
-        {
-            if (item.ValueKind == JsonValueKind.Number && item.TryGetInt64(out long handle) && handle > 0)
-                handles.Add((nint)handle);
-        }
-
-        return handles;
-    }
-
     private async ValueTask<ExternalCapabilityReceipt> ListAsync(
         string operation,
         JsonElement arguments,
@@ -1273,15 +1254,10 @@ internal sealed class WindowsVisibleControlAdapter
         bool identityIfAbsent = false;
         bool tail = false;
         bool lines = false;
-        // Goal v3 ventana-misión: the windows the mission is tied to (the latest first) and the ones it knows are not its.
-        List<nint> missionWindows = [];
-        HashSet<nint> knownWindows = [];
         IReadOnlyList<string> wanted = [];
         if (arguments.ValueKind == JsonValueKind.Object)
         {
             wanted = WantedWords(arguments);
-            missionWindows = Handles(arguments, "windows");
-            knownWindows = [.. Handles(arguments, "known")];
             if (arguments.TryGetProperty("application", out JsonElement named)
                 && named.ValueKind == JsonValueKind.String
                 && !string.IsNullOrWhiteSpace(named.GetString()))
@@ -1319,10 +1295,10 @@ internal sealed class WindowsVisibleControlAdapter
                 waitForLabel = waited.GetString()!.Trim();
             }
 
-            // Ronda 21, destino por contenido: a mission with no application and no window of its own asks for the
-            // windows on the desktop, each with a cheap signature of its tree, to find the one its request's referent
-            // is in. Nothing is brought to the front nor captured.
-            if (AsksForCandidates(arguments, missionWindows.Count, processId, application))
+            // Ronda 21, destino por contenido: a mission with no application asks for the windows on the desktop, each
+            // with a cheap signature of its tree, to find the one its request's referent is in. Nothing is brought to
+            // the front nor captured.
+            if (AsksForCandidates(arguments, processId, application))
             {
                 return await DestinationCandidatesAsync(limit, cancellationToken).ConfigureAwait(false);
             }
@@ -1349,7 +1325,7 @@ internal sealed class WindowsVisibleControlAdapter
         {
             ViewResult view = await BuildViewAsync(
                     limit, includeText, processId, application, openedWindow, cancellationToken, frontReturned,
-                    missionWindows, knownWindows, wanted, identityIfAbsent, tail, lines)
+                    wanted, identityIfAbsent, tail, lines)
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
@@ -1437,13 +1413,13 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>
     /// Ronda 21, destino por contenido: whether a look asks for the desktop's windows instead of one window. Only a look
-    /// of a mission with no window of its own, no process and no application does: one that has any of them reads it as
-    /// always, and the request for candidates is ignored.
+    /// of a mission with no process and no application does: one that has either of them reads it as always, and the
+    /// request for candidates is ignored.
     /// </summary>
-    internal static bool AsksForCandidates(JsonElement arguments, int missionWindows, int processId, string? application) =>
+    internal static bool AsksForCandidates(JsonElement arguments, int processId, string? application) =>
         arguments.ValueKind == JsonValueKind.Object
         && arguments.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.True
-        && missionWindows == 0 && processId == 0 && application is null;
+        && processId == 0 && application is null;
 
     /// <summary>
     /// Ronda 21, destino por contenido: the desktop's windows (top of the Z order first, cloaked ones left out), each
@@ -1666,15 +1642,13 @@ internal sealed class WindowsVisibleControlAdapter
         nint openedWindow,
         CancellationToken cancellationToken,
         bool frontReturned = false,
-        IReadOnlyList<nint>? missionWindows = null,
-        IReadOnlySet<nint>? knownWindows = null,
         IReadOnlyList<string>? wanted = null,
         bool identityIfAbsent = false,
         bool tail = false,
         bool lines = false) =>
         await BuildViewOfAsync(
             limit, includeText, processId, application, openedWindow, frontReturned,
-            missionWindows ?? [], knownWindows ?? new HashSet<nint>(), wanted ?? [], identityIfAbsent, tail, lines,
+            wanted ?? [], identityIfAbsent, tail, lines,
             cancellationToken)
             .ConfigureAwait(false);
 
@@ -1685,8 +1659,6 @@ internal sealed class WindowsVisibleControlAdapter
         string? application,
         nint openedWindow,
         bool frontReturned,
-        IReadOnlyList<nint> missionWindows,
-        IReadOnlySet<nint> knownWindows,
         IReadOnlyList<string> wanted,
         bool identityIfAbsent,
         bool tail,
@@ -1700,38 +1672,15 @@ internal sealed class WindowsVisibleControlAdapter
         bool requested = false;
         // Encargo EX: the window was read through the modal dialog that disabled it (ModalSurface).
         bool modal = false;
-        bool born = false;
         bool frontOnly = false;
-        // The top-level window the look is of, before its modal dialog is taken: what a mission ties itself to.
+        // The top-level window the look is of, before its modal dialog is taken (said as «root»).
         nint windowRoot = 0;
         try
         {
-            // Goal v3 ventana-misión: a mission tied to its windows reads one of them, or a window of its process that
-            // came during the mission (said «born», for the mission to keep or refuse); never another window of the
-            // process it already knew (another document of the same application), never the window in front instead.
-            bool tied = missionWindows.Count > 0;
-            if (tied)
-            {
-                // Review of ventana-misión (finding 11): the mission's window closed and the next of its process (a
-                // sign-in giving way to the main window) may not be there yet: waited for, bounded, before failing.
-                for (int wait = 0; ; wait++)
-                {
-                    windowRoot = VisibleControlSurface.MissionWindow(missionWindows, knownWindows, processId, out born);
-                    hwnd = windowRoot == 0 ? 0 : VisibleControlSurface.FamilySurface(windowRoot);
-                    if (hwnd != 0 || processId <= 0 || wait >= MissionWindowWaits)
-                        break;
-                    await Task.Delay(MissionWindowWaitInterval, cancellationToken).ConfigureAwait(false);
-                }
-
-                if (hwnd == 0)
-                    return new ViewResult(ExternalJson.Failure(operation, "mission_window_closed"), []);
-            }
-
             // The application the mission works on (the one it just opened, or
             // the one named when its process is unknown) is the surface even
             // when another window holds the foreground.
-            if (hwnd == 0 && !tied)
-                hwnd = await _requestedWindow(processId, application, cancellationToken).ConfigureAwait(false);
+            hwnd = await _requestedWindow(processId, application, cancellationToken).ConfigureAwait(false);
 
             // Whether the window is the mission's application (its process, its
             // name) and not just what holds the front.
@@ -1741,7 +1690,7 @@ internal sealed class WindowsVisibleControlAdapter
                 hwnd = openedWindow;
             // Auditoría final V3: an application named that no window is, exactly, is never read in another window's
             // place (the person's in front): the visible windows go back as candidates and nothing is looked at.
-            if (hwnd == 0 && !tied && application is not null)
+            if (hwnd == 0 && application is not null)
                 return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop().Windows), []);
             // Ronda 26 (banco c24b: 54 first looks of 1.2 s read the person's window before an opening already decided):
             // the application has no window and the look asked only who is in front then: no tree, capture or text.
@@ -1805,8 +1754,8 @@ internal sealed class WindowsVisibleControlAdapter
         // caption buttons, the non-client input, a busy indicator) over the content window a process it started draws
         // under it (measured: a WinUI frame activated by a click lay above its WebView2 editor, and the view kept the
         // caption parts while the person saw the editor) is read through that content window, linked to it as the
-        // family surface over it is: the mission stays tied to the application's window. What was found, or why nothing
-        // was, is said.
+        // family surface over it is: the look's root stays the application's window. What was found, or why nothing was,
+        // is said.
         VisibleControlSurface.ContentChoice? surfaceChoice = null;
         if (!frontOnly && hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
             && answer.RootElement.TryGetProperty("ok", out JsonElement frameOk) && frameOk.ValueKind == JsonValueKind.True
@@ -1989,10 +1938,9 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteNumber("processId", ownerProcessId);
                 writer.WriteNumber("hwnd", hwnd);
                 writer.WriteBoolean("requested", requested);
-                // Goal v3 ventana-misión: the top-level window the mission ties itself to (the window behind its modal
-                // dialog, the application's window behind its family surface), the window owning that one, whether it
-                // came during the mission, the other windows of its process when a mission takes its window, and how
-                // long ago the person's last input went to it (the window they work in).
+                // Goal v3 ventana-misión: the top-level window the look is of (the window behind its modal dialog, the
+                // application's window behind its family surface), the window owning that one, the other windows of its
+                // process, and how long ago the person's last input went to it (the window they work in).
                 if (windowRoot != 0)
                     writer.WriteNumber("root", windowRoot);
                 // Encargo EX (tanda n6 t4-c06: Excel held «Guardar este archivo» from an earlier turn): the view is of
@@ -2001,21 +1949,15 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteBoolean("modal", true);
                 if (VisibleControlSurface.RootOwner(windowRoot) is var owner and not 0)
                     writer.WriteNumber("owner", owner);
-                if (born)
-                    writer.WriteBoolean("born", true);
                 // Review of ventana-misión (finding 1): how long ago the person's input last reached a window of its
-                // process or of the shell (they may have opened, restored or started it themselves). Said of a born
-                // window and of a look that names no window: after the mission's window closed, the window it is tied
-                // to again is judged as one born (review of ronda 19b).
-                if ((born || missionWindows.Count == 0)
-                    && WindowsUserInputPause.Shared.PersonInputToProcessesAgoMs(
+                // process or of the shell (they may have opened, restored or started it themselves).
+                if (WindowsUserInputPause.Shared.PersonInputToProcessesAgoMs(
                         VisibleControlSurface.ProcessOf(windowRoot), VisibleControlSurface.ShellProcessId) is long nearAgo)
                     writer.WriteNumber("personNearAgoMs", nearAgo);
 
-                // Every look a mission may tie itself to says the other windows of its process, whichever way it
-                // reached the window (resolved for it or of its family): a look without them counts as several
-                // (review of ventana-misión, finding 6).
-                if (missionWindows.Count == 0 && windowRoot != 0)
+                // The other windows of its process, whichever way the look reached the window (resolved for it or of
+                // its family) (review of ventana-misión, finding 6).
+                if (windowRoot != 0)
                 {
                     writer.WriteStartArray("others");
                     foreach (nint other in VisibleControlSurface.OtherWindowsOfProcess(windowRoot))

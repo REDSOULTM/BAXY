@@ -40,11 +40,10 @@ public sealed class ComputerUseDestinationCandidatesTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 0, 0, null), Is.True);
-            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 1, 0, null), Is.False, "the mission's windows");
-            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 0, 4242, null), Is.False, "the mission's process");
-            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 0, 0, "Paint"), Is.False, "an application");
-            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(Json("""{"limit":60}"""), 0, 0, null), Is.False);
+            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 0, null), Is.True);
+            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 4242, null), Is.False, "the mission's process");
+            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(asked, 0, "Paint"), Is.False, "an application");
+            Assert.That(WindowsVisibleControlAdapter.AsksForCandidates(Json("""{"limit":60}"""), 0, null), Is.False);
         });
     }
 
