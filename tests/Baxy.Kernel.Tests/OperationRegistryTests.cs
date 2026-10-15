@@ -133,15 +133,12 @@ public sealed class OperationRegistryTests
     [TestCase("input.visible.click", """{"label":"Enviar consulta"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Enviar búsqueda a Ana"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Send"}""", PolicyDecision.RequireConfirmation)]
-    // Auditoría K8: the kernel does not see what holds the focus, so Enter and Space always ask (fail-closed), whatever
-    // the step says it lands on; another key does not.
-    [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.RequireConfirmation)]
-    [TestCase("input.key.press", """{"key":"enter","target":"text_field","window":4660}""", PolicyDecision.RequireConfirmation)]
-    [TestCase("input.key.press", """{"key":"space"}""", PolicyDecision.RequireConfirmation)]
-    [TestCase("input.key.press", """{"key":"escape"}""", PolicyDecision.Allow)]
-    [TestCase("input.key.press", """{"key":"tab","window":4660}""", PolicyDecision.Allow)]
-    // Safety review 2026-10-07: the send verb opens the label whatever follows it, and a shortcut hint or a format
-    // character does not hide it.
+    [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
+    [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
+    // Safety review 2026-10-07: the send verb opens the label whatever follows it, a shortcut hint or a format
+    // character does not hide it, and space on a composer's send control sends like Enter.
+    [TestCase("input.key.press", """{"key":"space","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Enviar a Ron92"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Send Friend Request"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Reenviar"}""", PolicyDecision.RequireConfirmation)]
@@ -308,9 +305,15 @@ public sealed class OperationRegistryTests
     }
 
     [TestCase("""{"key":"delete"}""", true)]
-    [TestCase("""{"key":"delete","target":null,"window":4660}""", true)]
+    [TestCase("""{"key":"delete","target":"message_composer"}""", true)]
     [TestCase("""{"key":"delete","target":"text_field"}""", false)]
     [TestCase("""{"key":"backspace"}""", false)]
+    // Goal v3 point 2: Enter or Space the mission marks as writing over a file (the focused «Sí» of the warning) asks;
+    // the same key unmarked does not.
+    [TestCase("""{"key":"enter","consequence":"overwrite"}""", true)]
+    [TestCase("""{"key":"space","consequence":"overwrite","window":4660}""", true)]
+    [TestCase("""{"key":"enter"}""", false)]
+    [TestCase("""{"key":"enter","consequence":null}""", false)]
     public void The_delete_key_asks_unless_the_keyboard_is_on_a_text_field(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");

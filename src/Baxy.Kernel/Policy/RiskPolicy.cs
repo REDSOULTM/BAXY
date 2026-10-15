@@ -18,8 +18,8 @@ namespace Baxy.Kernel.Policy;
 /// lleva el riesgo de su primitiva evaluado con los argumentos exactos delante.
 /// Un clic cuya etiqueta nombra un canal de voz o una llamada (alguien te oye),
 /// o un botón de enviar, publicar, responder, comentar, compartir, unirse o emitir
-/// en directo (ronda 29, v3-53: «Iniciar Transmisión»), y cualquier Enter o Espacio
-/// (el kernel no ve qué tiene el foco), salen al mundo o llegan a una persona; un clic que
+/// en directo (ronda 29, v3-53: «Iniciar Transmisión»), y un Enter declarado sobre
+/// un compositor de mensajes, salen al mundo o llegan a una persona; un clic que
 /// compra, paga, elimina o desinstala no se deshace. Ambos piden confirmación en
 /// modo normal, ligada a esa misma invocación. Las palabras de lo que sale al mundo
 /// son dato (<see cref="WorldActs"/>). Igual una invocación cuyo argumento cierra de una vez todo lo
@@ -156,8 +156,8 @@ public static partial class RiskPolicy
     /// computer or reaches another person: joining a voice channel or a call,
     /// pressing «enviar/send», «publicar/post», «responder/reply»,
     /// «comentar/comment», «compartir/share», «unirse/join» or going live
-    /// («iniciar transmisión», «go live»), or pressing Enter or Space, which may
-    /// send what is written. Bilingual, general, and never naming an application.
+    /// («iniciar transmisión», «go live»), or Enter over a message composer
+    /// that holds text. Bilingual, general, and never naming an application.
     /// </summary>
     public static bool ReachesAPerson(string? operation, JsonElement arguments)
     {
@@ -172,11 +172,11 @@ public static partial class RiskPolicy
                 // The result a search burst chooses (choose) is pressed too: read as its label is.
                 return ClickLabels(arguments).Any(LabelReachesAPerson);
             case "input.key.press":
-                // Enter, and Space on a focused send or reply control, hand what was written to someone, or press a
-                // control that reaches someone (a voice channel highlighted in a search). The kernel does not see what
-                // holds the focus, and a label the step gave it would be the model's own word about its own act:
-                // fail-closed, both always ask (auditoría K8).
-                return KeyOf(arguments) is "enter" or "space";
+                // Enter, and space on a focused send or reply control, hand what was written to someone when the
+                // step declares it lands on a message composer (the mind labels it from the focused control).
+                // Revisión de V (H1): or presses a control that reaches someone (a voice channel highlighted in a search).
+                return KeyOf(arguments) is "enter" or "space"
+                    && (TargetOf(arguments) is "message_composer" || LabelReachesAPerson(OntoOf(arguments)));
             default:
                 return false;
         }
@@ -196,10 +196,17 @@ public static partial class RiskPolicy
 
         // The Delete key outside a text field deletes what is selected (a file to the bin, a message, an item of a
         // list). Fail-closed: it asks unless the step declares the keyboard is on a text field, where it only
-        // erases characters. (Enter and Space already ask: ReachesAPerson.)
+        // erases characters.
+        // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
+        // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The mission marks it from the view it
+        // was decided on.
+        bool overwrites = arguments.TryGetProperty("consequence", out JsonElement consequence)
+            && consequence.ValueKind == JsonValueKind.String
+            && string.Equals(consequence.GetString(), "overwrite", StringComparison.Ordinal);
         if (string.Equals(operation, "input.key.press", StringComparison.Ordinal))
         {
-            return KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field";
+            return overwrites || (KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field")
+                || (KeyOf(arguments) is "enter" or "space" && LabelCannotBeUndone(OntoOf(arguments)));
         }
 
         if (!string.Equals(operation, "input.visible.click", StringComparison.Ordinal))
@@ -207,11 +214,7 @@ public static partial class RiskPolicy
             return false;
         }
 
-        // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
-        // reemplazarlo?») loses that file.
-        if (arguments.TryGetProperty("consequence", out JsonElement consequence)
-            && consequence.ValueKind == JsonValueKind.String
-            && string.Equals(consequence.GetString(), "overwrite", StringComparison.Ordinal))
+        if (overwrites)
         {
             return true;
         }

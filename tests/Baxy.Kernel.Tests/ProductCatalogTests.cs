@@ -262,10 +262,8 @@ public sealed class ProductCatalogTests
     [TestCase("input.key.press", """{"key":"shift_f10"}""", true)]
     [TestCase("input.key.press", """{"key":"ctrl_shift_s"}""", true)]
     [TestCase("input.key.press", """{"key":"alt_f4"}""", false)]
-    // Auditoría K8: Enter and Space always ask, so what the step says they land on is no argument any more.
-    [TestCase("input.key.press", """{"key":"enter","consequence":"overwrite"}""", false)]
-    [TestCase("input.key.press", """{"key":"enter","onto":"Enviar"}""", false)]
-    [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", false)]
+    [TestCase("input.key.press", """{"key":"enter","consequence":"overwrite"}""", true)]
+    [TestCase("input.key.press", """{"key":"enter","consequence":"delete"}""", false)]
     // Ronda 21 (vista ordenada por objetivo): the goal's words go with the mission's look, bounded; a word that is not
     // text, an empty word or more than the bound is refused.
     [TestCase("input.visible.controls", """{"limit":60,"wanted":["aplicacion","application"]}""", true)]

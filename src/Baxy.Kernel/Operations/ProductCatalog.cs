@@ -840,6 +840,10 @@ public static class ProductCatalog
         Descriptor(
             "input.key.press",
             Schema([
+                // Goal v3 punto 2: Enter o Espacio sobre el «Sí» enfocado de un aviso de
+                // sobrescritura pisa el archivo igual que el clic; la misión lo marca
+                // desde la vista y RiskPolicy lo confirma.
+                String("consequence", types: NullableString, values: ["overwrite"]),
                 String("key", values:
                 [
                     "alt_tab", "arrow_down", "arrow_left", "arrow_right", "arrow_up",
@@ -862,10 +866,16 @@ public static class ProductCatalog
                     "ctrl_x", "ctrl_z", "delete", "end", "enter", "escape", "f10", "f5", "home", "page_down", "page_up",
                     "shift", "shift_f10", "space", "tab", "win",
                 ]),
-                // Enter y Espacio siempre piden confirmación en modo normal (RiskPolicy, auditoría K8): el
-                // kernel no ve qué control tiene el foco. Suprimir pregunta salvo que el paso declare que
-                // el teclado está en un campo de texto (text_field): fuera de uno borra lo seleccionado.
-                String("target", types: NullableString, values: ["text_field"]),
+                // Revisión de V (H1): lo que Enter o Espacio pulsan según la vista del paso (el control
+                // enfocado o, desde un campo, el resultado elegido de su lista) cuando pide la palabra de la
+                // persona: lo marca la misión y RiskPolicy lo juzga como la etiqueta de un clic.
+                String("onto", types: NullableString, maximumUtf8Bytes: 256),
+                // El bucle de computer use declara cuándo Enter cae sobre un
+                // compositor de mensajes con texto: esa pulsación llega a una
+                // persona y el Kernel la confirma en modo normal (§2.1). Suprimir
+                // pregunta salvo que el paso declare que el teclado está en un
+                // campo de texto (text_field): fuera de uno borra lo seleccionado.
+                String("target", types: NullableString, values: ["message_composer", "text_field"]),
                 // La ventana de la misión (el hwnd de su última vista): la tecla
                 // va sólo a ella; si no está delante y no se la puede traer, nada
                 // se envía.
@@ -874,7 +884,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
             ToolExposure.Public,
-            "Presiona una tecla o una combinación segura (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Enter y Espacio piden confirmación antes, porque pueden enviar lo escrito."),
+            "Presiona una tecla o una combinación segura (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; con target message_composer la pulsación de Enter se trata como un envío."),
         Descriptor(
             "input.keyboard.layout",
             Schema([String("language", values: ["spanish"])], ["language"]),
