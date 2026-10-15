@@ -60,70 +60,58 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 scheduler, script, Path.Combine(root, "notification-scheduler-fallback.jsonl"));
     }
 
-    public bool CanHandle(string operation) => operation is
-        "notification.cancel.at" or "notification.cancel.latest"
-        or "notification.diagnose" or "notification.list" or "notification.schedule";
+    public bool CanHandle(string operation) => operation is "schedule.alarms";
 
+    // BAXY Renew (2026-10-15): one operation for what BAXY rings later, alarms and reminders (OpenClaw's cron; Anthropic,
+    // «consolidate overlapping tools»): create, list, cancel and diagnose. The time is the person's: minutes from now
+    // or a local clock time, never UTC written by the model (e2e E004: it wrote dueUtc wrong and retried the failing
+    // call 15 times). The trigger is set in local time and the result says it in local time too.
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        if (operation == "notification.diagnose")
-        {
-            if (!File.Exists(_schedulerScript))
-                return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
-            try
-            {
-                return await DiagnoseAsync(operation, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception exception) when (exception is IOException or JsonException
-                or UnauthorizedAccessException or TimeoutException)
-            {
-                return ExternalJson.Failure(operation, "notification_diagnostics_failed");
-            }
-        }
-        if (operation == "notification.list")
-        {
-            if (!File.Exists(_schedulerScript))
-                return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
-            try
-            {
-                return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception exception) when (exception is IOException or JsonException
-                or UnauthorizedAccessException or TimeoutException)
-            {
-                return ExternalJson.Failure(operation, "notification_list_failed");
-            }
-        }
-        string kind;
-        try
-        {
-            kind = ExternalJson.RequiredString(arguments, "kind");
-        }
-        catch (InvalidDataException)
-        {
-            return ExternalJson.FailureBeforeEffect(operation, "notification_kind_invalid");
-        }
+        string action = OptionalString(arguments, "action") ?? string.Empty;
+        string kind = OptionalString(arguments, "kind") ?? "reminder";
+        if (action is not ("create" or "list" or "cancel" or "diagnose"))
+            return ExternalJson.FailureBeforeEffect(operation, "schedule_action_invalid");
         if (kind is not ("alarm" or "reminder"))
-            return ExternalJson.Failure(operation, "notification_kind_invalid");
+            return ExternalJson.FailureBeforeEffect(operation, "notification_kind_invalid");
         if (!File.Exists(_schedulerScript))
             return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
-        if (operation == "notification.cancel.at")
+        if (action is "diagnose" or "list")
         {
-            return await CancelAtAsync(
-                operation, kind, arguments, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return action == "diagnose"
+                    ? await DiagnoseAsync(operation, cancellationToken).ConfigureAwait(false)
+                    : await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException
+                or UnauthorizedAccessException or TimeoutException)
+            {
+                return ExternalJson.Failure(
+                    operation, action == "diagnose" ? "notification_diagnostics_failed" : "notification_list_failed");
+            }
         }
+
+        string? at = OptionalString(arguments, "at");
+        if (action == "cancel" && at is not null)
+        {
+            return TryLocalClock(at, out int hour, out int minute)
+                ? await CancelAtAsync(operation, kind, hour, minute, cancellationToken).ConfigureAwait(false)
+                : ExternalJson.FailureBeforeEffect(operation, "notification_clock_selector_invalid");
+        }
+
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
-            return operation == "notification.schedule"
-                ? await ScheduleAsync(
-                    operation, kind, arguments, effectBoundary, cancellationToken)
+            if (action == "cancel")
+                return await CancelAsync(operation, kind, effectBoundary, cancellationToken).ConfigureAwait(false);
+            return TryDue(arguments, at, DateTimeOffset.Now, out DateTimeOffset due)
+                ? await ScheduleAsync(operation, kind, arguments, due, effectBoundary, cancellationToken)
                     .ConfigureAwait(false)
-                : await CancelAsync(
-                    operation, kind, effectBoundary, cancellationToken).ConfigureAwait(false);
+                : ExternalJson.FailureBeforeEffect(operation, "schedule_time_invalid");
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -137,26 +125,73 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         }
     }
 
+    private static string? OptionalString(JsonElement arguments, string name) =>
+        arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty(name, out JsonElement value)
+        && value.ValueKind == JsonValueKind.String
+        && !string.IsNullOrWhiteSpace(value.GetString())
+            ? value.GetString()!.Trim()
+            : null;
+
+    /// <summary>
+    /// When a new alarm or reminder rings: inMinutes or inSeconds (a timer) from now, or «at» as a local clock time
+    /// («18:30», the next time that clock comes) or a local date and time («2026-10-16T08:00»).
+    /// </summary>
+    internal static bool TryDue(JsonElement arguments, string? at, DateTimeOffset now, out DateTimeOffset due)
+    {
+        due = default;
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("inMinutes", out JsonElement minutes)
+            && minutes.ValueKind == JsonValueKind.Number)
+        {
+            if (!minutes.TryGetInt32(out int count) || count is < 1 or > 525_600) return false;
+            due = now.AddMinutes(count);
+            return true;
+        }
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("inSeconds", out JsonElement seconds)
+            && seconds.ValueKind == JsonValueKind.Number)
+        {
+            if (!seconds.TryGetInt32(out int count) || count is < 10 or > 86_400) return false;
+            due = now.AddSeconds(count);
+            return true;
+        }
+        if (at is null) return false;
+        DateTime local;
+        if (TryLocalClock(at, out int hour, out int minute))
+        {
+            DateTime today = now.LocalDateTime.Date.AddHours(hour).AddMinutes(minute);
+            local = today > now.LocalDateTime.AddSeconds(5) ? today : today.AddDays(1);
+        }
+        else if (!DateTime.TryParseExact(
+                at, ["yyyy-MM-ddTHH:mm", "yyyy-MM-dd HH:mm", "yyyy-MM-ddTHH:mm:ss"],
+                System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None,
+                out local))
+        {
+            return false;
+        }
+        due = new DateTimeOffset(local, TimeZoneInfo.Local.GetUtcOffset(local));
+        return true;
+    }
+
+    // A 24-hour local clock time, «7:05» or «19:30».
+    private static bool TryLocalClock(string at, out int hour, out int minute)
+    {
+        bool parsed = DateTime.TryParseExact(
+            at, ["H:mm", "HH:mm"], System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out DateTime clock);
+        hour = parsed ? clock.Hour : -1;
+        minute = parsed ? clock.Minute : -1;
+        return parsed;
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> CancelAtAsync(
         string operation,
         string kind,
-        JsonElement arguments,
+        int hour,
+        int minute,
         CancellationToken cancellationToken)
     {
-        int hour = ExternalJson.OptionalInt(arguments, "hour", -1);
-        int minute = ExternalJson.OptionalInt(arguments, "minute", 0);
-        string? period = arguments.TryGetProperty("period", out JsonElement periodElement)
-            ? periodElement.GetString()
-            : null;
-        if (hour is < 0 or > 23
-            || minute is < 0 or > 59
-            || period is not null and not ("am" or "pm")
-            || period is not null && hour is not (>= 1 and <= 12))
-        {
-            return ExternalJson.FailureBeforeEffect(
-                operation, "notification_clock_selector_invalid");
-        }
-
         ExternalProcessResult resolved;
         try
         {
@@ -167,7 +202,6 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                     Minute = minute,
                     // M80: only the notifications this data root set are candidates.
                     AlarmRoot = _alarmRoot,
-                    Period = period,
                 },
                 cancellationToken).ConfigureAwait(false);
         }
@@ -201,7 +235,6 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 writer.WriteString("kind", kind);
                 writer.WriteNumber("hour", hour);
                 writer.WriteNumber("minute", minute);
-                if (period is not null) writer.WriteString("period", period);
                 writer.WriteString("expectedNextRunUtc", nextRunUtc);
             });
         }
@@ -369,7 +402,14 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 writer.WriteStartObject();
                 writer.WriteString("kind", item.Kind);
                 if (item.Title is not null) writer.WriteString("title", item.Title);
-                if (item.NextRunUtc is not null) writer.WriteString("nextRunUtc", item.NextRunUtc);
+                if (item.NextRunUtc is not null)
+                {
+                    writer.WriteString("nextRunUtc", item.NextRunUtc);
+                    if (DateTimeOffset.TryParse(item.NextRunUtc, System.Globalization.CultureInfo.InvariantCulture,
+                            System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset next))
+                        writer.WriteString("nextRunLocal", next.ToLocalTime().ToString(
+                            "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
+                }
                 writer.WriteString("state", item.State);
                 writer.WriteEndObject();
             }
@@ -403,19 +443,16 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string operation,
         string kind,
         JsonElement arguments,
+        DateTimeOffset due,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
         string title = ExternalJson.RequiredString(arguments, "title");
-        string dueText = ExternalJson.RequiredString(arguments, "dueUtc");
         string? recurrence = arguments.TryGetProperty("recurrence", out JsonElement recurrenceElement)
             ? recurrenceElement.GetString() : null;
         if (recurrence is not null and not ("daily" or "hourly"))
             return ExternalJson.Failure(operation, "notification_recurrence_invalid");
-        if (!DateTimeOffset.TryParse(
-            dueText, System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset due)
-            || due <= DateTimeOffset.UtcNow.AddSeconds(5)
+        if (due <= DateTimeOffset.UtcNow.AddSeconds(5)
             || due > DateTimeOffset.UtcNow.AddYears(1)
             || Encoding.UTF8.GetByteCount(title) > 1_024)
             return ExternalJson.Failure(operation, "notification_schedule_invalid");
@@ -443,6 +480,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteString("kind", kind);
             writer.WriteString("title", title);
             writer.WriteString("dueUtc", due.ToUniversalTime());
+            writer.WriteString("dueLocal", due.ToLocalTime().ToString(
+                "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
             if (recurrence is not null) writer.WriteString("recurrence", recurrence);
         });
     }

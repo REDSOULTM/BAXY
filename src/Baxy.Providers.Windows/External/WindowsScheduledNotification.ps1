@@ -12,9 +12,7 @@ param(
     [ValidateSet('daily', 'hourly')]
     [string]$Recurrence,
     [int]$Hour = -1,
-    [int]$Minute = 0,
-    [ValidateSet('am', 'pm')]
-    [string]$Period
+    [int]$Minute = 0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -73,13 +71,10 @@ if ($Mode -eq 'diagnose') {
 }
 
 if ($Mode -eq 'resolve-at') {
-    if ($Hour -lt 0 -or $Hour -gt 23 -or $Minute -lt 0 -or $Minute -gt 59 -or
-        ($Period -and ($Hour -lt 1 -or $Hour -gt 12))) {
+    # The clock is a 24-hour local time (schedule's «at»): it selects that exact hour and minute.
+    if ($Hour -lt 0 -or $Hour -gt 23 -or $Minute -lt 0 -or $Minute -gt 59) {
         throw 'invalid_clock_selector'
     }
-    $targetHour = $Hour
-    if ($Period -eq 'am') { $targetHour = $Hour % 12 }
-    elseif ($Period -eq 'pm') { $targetHour = ($Hour % 12) + 12 }
     $prefix = if ($Kind -eq 'alarm') { 'BAXY-Alarm-*' } else { 'BAXY-Reminder-*' }
     $now = [DateTimeOffset]::Now
     $matches = @()
@@ -89,14 +84,7 @@ if ($Mode -eq 'resolve-at') {
         if ($info.NextRunTime -le [datetime]::MinValue) { continue }
         $next = [DateTimeOffset]$info.NextRunTime
         if ($next -le $now) { continue }
-        $hourMatches = if ($Period) {
-            $next.Hour -eq $targetHour
-        } elseif ($Hour -le 12) {
-            ($next.Hour % 12) -eq ($Hour % 12)
-        } else {
-            $next.Hour -eq $Hour
-        }
-        if ($hourMatches -and $next.Minute -eq $Minute) {
+        if ($next.Hour -eq $Hour -and $next.Minute -eq $Minute) {
             $matches += [pscustomobject]@{
                 taskName = [string]$task.TaskName
                 nextRunUtc = $next.ToUniversalTime().ToString('O')

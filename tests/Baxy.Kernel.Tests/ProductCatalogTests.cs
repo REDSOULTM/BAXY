@@ -26,7 +26,6 @@ public sealed class ProductCatalogTests
         "input.visible.controls",
         "message.draft",
         "message.send.test",
-        "notification.list",
         "software.python.package.status",
         "software.python.status",
         "storage.removable.list",
@@ -67,13 +66,33 @@ public sealed class ProductCatalogTests
         "mission.computer.use",
     ];
 
-    // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto.
+    // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto, y una sola operación para
+    // lo que suena después (alarmas y recordatorios).
     internal static readonly string[] RenewAgentAdditions =
     [
         "web.fetch",
+        "schedule.alarms",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 1;
+    // Lo que esas operaciones sustituyen, retirado en el mismo cambio (reminder.* sólo guardaba un registro que nadie
+    // hacía sonar).
+    internal static readonly string[] RenewRetired =
+    [
+        "notification.cancel.at",
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "notification.dismiss",
+        "notification.list",
+        "notification.list.due",
+        "notification.schedule",
+        "reminder.create",
+        "reminder.delete",
+        "reminder.list",
+        "reminder.resolve.exact",
+        "reminder.restore",
+    ];
+
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 2 - 12;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -344,6 +363,8 @@ public sealed class ProductCatalogTests
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
                     .And.SupersetOf(RenewAgentAdditions));
+            Assert.That(descriptors.Select(static descriptor => descriptor.Name),
+                Has.None.AnyOf(RenewRetired));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)

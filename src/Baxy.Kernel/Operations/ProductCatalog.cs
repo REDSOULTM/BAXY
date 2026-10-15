@@ -1539,69 +1539,6 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Reemplaza titulo y contenido de una nota seleccionada por identidad y revision, y verifica su relectura."),
         Descriptor(
-            "notification.cancel.at",
-            Schema(
-                [
-                    Integer("hour", 0, 23),
-                    String("kind", values: ["alarm", "reminder"]),
-                    Integer("minute", 0, 59),
-                    String("period", values: ["am", "pm"]),
-                ],
-                ["hour", "kind"]),
-            OperationRisks.LowReversible,
-            "notification.cancel.windows.task.clock.identity.absent.v1",
-            ToolExposure.Public,
-            "Cancela una única alarma o recordatorio futuro de BAXY que coincida con la hora local solicitada, después de resolver y volver a verificar su identidad exacta."),
-        Descriptor(
-            "notification.cancel.latest",
-            Schema([String("kind", values: ["alarm", "reminder"])], ["kind"]),
-            OperationRisks.LowReversible,
-            "notification.cancel.windows.task.absent.v1",
-            ToolExposure.Public,
-            "Cancela la alarma o recordatorio de BAXY más reciente y verifica que su tarea ya no exista."),
-        Descriptor(
-            "notification.diagnose",
-            EmptySchema(),
-            OperationRisks.ReadOnly,
-            "notification.diagnose.windows.task.receipt.postread.v1",
-            ToolExposure.Public,
-            "Diagnostica el servicio, las tareas y los recibos de alarmas de BAXY sin modificar el sistema."),
-        Descriptor(
-            "notification.dismiss",
-            ReminderCasSchema(),
-            OperationRisks.LowReversible,
-            "notification.dismiss.reminder.postread.v1",
-            ToolExposure.Public,
-            "Descarta una notificación vencida seleccionada mediante identidad y versión exactas."),
-        Descriptor(
-            "notification.list",
-            Schema([Integer("limit", 1, 50)], []),
-            OperationRisks.ReadOnly,
-            "notification.list.windows.task.postread.v1",
-            ToolExposure.Public,
-            "Enumera las alarmas y recordatorios programados por BAXY (tipo, título y próxima ejecución) sin modificar el sistema."),
-        Descriptor(
-            "notification.list.due",
-            Schema([Integer("limit", 1, 50)], []),
-            OperationRisks.ReadOnly,
-            "notification.list.due.clock.postread.v1",
-            ToolExposure.Public,
-            "Enumera recordatorios vencidos no descartados para que la superficie de usuario los presente."),
-        Descriptor(
-            "notification.schedule",
-            Schema(
-                [
-                    String("dueUtc", maximumLength: 64, nonWhitespace: true),
-                    String("kind", values: ["alarm", "reminder"]),
-                    String("recurrence", values: ["daily", "hourly"]),
-                    String("title", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                ],
-                ["dueUtc", "kind", "title"]),
-            OperationRisks.LowReversible,
-            "notification.schedule.windows.task.postread.v1",
-            ToolExposure.Public,
-            "Programa una alarma o recordatorio audible, único o recurrente, y verifica la tarea futura en Windows."),
-        Descriptor(
             "ocr.read",
             Schema(
                 [
@@ -1690,61 +1627,6 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Captura desde un escáner resuelto y devuelve una identidad privada verificable."),
         Descriptor(
-            "reminder.create",
-            Schema(
-                [
-                    String("details", maximumUtf8Bytes: 65_536),
-                    String("dueUtc", maximumLength: 64, nonWhitespace: true),
-                    String("title", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                ],
-                ["dueUtc", "title"]),
-            OperationRisks.LowReversible,
-            "reminder.create.local.clock.postread.v1",
-            ToolExposure.Public,
-            "Crea un recordatorio local futuro durable sin confundirlo con una tarea."),
-        Descriptor(
-            "reminder.delete",
-            Schema(
-                [
-                    Integer("expectedVersion", 1),
-                    String("reminderId", maximumLength: 36, nonWhitespace: true),
-                    String("reviewLabel", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                ],
-                ["expectedVersion", "reminderId", "reviewLabel"]),
-            OperationRisks.RecoverableDelete,
-            "reminder.delete.local.postread.v1",
-            ToolExposure.Public,
-            "Envía un recordatorio exacto a papelera recuperable después de revisar su etiqueta."),
-        Descriptor(
-            "reminder.list",
-            Schema([Integer("limit", 1, 50)], []),
-            OperationRisks.ReadOnly,
-            "reminder.list.local.postread.v1",
-            ToolExposure.Public,
-            "Lista recordatorios programados locales de forma acotada."),
-        Descriptor(
-            "reminder.resolve.exact",
-            Schema(
-                [
-                    Boolean("includeDeleted"),
-                    // r19b: the reminder this conversation just made, by the id its verified reminder.create returned;
-                    // the title must still be that reminder's own, so two of the same title never make it ambiguous.
-                    String("reminderId", maximumLength: 36, nonWhitespace: true),
-                    String("title", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                ],
-                ["title"]),
-            OperationRisks.ReadOnly,
-            "reminder.resolve.exact.local.identity.v1",
-            ToolExposure.Public,
-            "Resuelve un recordatorio por título literal (o por su id verificado con ese título) y devuelve autoridad CAS."),
-        Descriptor(
-            "reminder.restore",
-            ReminderCasSchema(),
-            OperationRisks.LowReversible,
-            "reminder.restore.local.postread.v1",
-            ToolExposure.Public,
-            "Restaura un recordatorio eliminado mediante identidad y versión exactas."),
-        Descriptor(
             "routine.delete",
             Schema(
                 [
@@ -1824,6 +1706,28 @@ public static class ProductCatalog
         // Auditoría semántica 2026-09-20 (REOPEN1993, comandos; D11): «ejecuta ls»,
         // «ejecuta pytest» se corren de verdad en una consola sin perfil, con plazo y
         // salida acotados; lo destructivo no se corre por aquí (código propio).
+        // BAXY Renew (2026-10-15): una sola operación para lo que BAXY hace sonar después (alarmas y recordatorios), como
+        // cron de OpenClaw y la consolidación de herramientas que recomienda Anthropic. Sustituye a notification.* y a
+        // reminder.* (éstos sólo guardaban un registro que nadie hacía sonar). La hora es la de la persona: minutos
+        // desde ahora o una hora local; el modelo no escribe UTC (e2e E004: dueUtc mal escrito y 15 reintentos).
+        Descriptor(
+            "schedule.alarms",
+            Schema(
+                [
+                    String("action", values: ["cancel", "create", "diagnose", "list"]),
+                    String("at", maximumLength: 32, nonWhitespace: true),
+                    Integer("inMinutes", 1, 525_600),
+                    Integer("inSeconds", 10, 86_400),
+                    String("kind", values: ["alarm", "reminder"]),
+                    Integer("limit", 1, 50),
+                    String("recurrence", values: ["daily", "hourly"]),
+                    String("title", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                ],
+                ["action"]),
+            OperationRisks.LowReversible,
+            "schedule.windows.task.local.clock.postread.v1",
+            ToolExposure.Public,
+            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el último; y verifica la tarea en Windows."),
         Descriptor(
             "shell.command.run",
             Schema(
@@ -2609,13 +2513,6 @@ public static class ProductCatalog
             ],
             ["destinationRelativePath", "expectedSha256", "resourceId"]);
 
-    private static OperationArgumentsSchema ReminderCasSchema() =>
-        Schema(
-            [
-                Integer("expectedVersion", 1),
-                String("reminderId", maximumLength: 36, nonWhitespace: true),
-            ],
-            ["expectedVersion", "reminderId"]);
 
     private static OperationArgumentsSchema RoutineCasSchema() =>
         Schema(

@@ -13,6 +13,10 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class ExternalAdaptersTests
 {
+    // schedule takes the person's local time; seconds keep the trigger exact.
+    private static string LocalAt(DateTimeOffset due) =>
+        due.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+
     [TestCase("lock", "win32_lockworkstation_acceptance")]
     [TestCase("restart", "win32_initiatesystemshutdownex_restart_acceptance")]
     [TestCase("shutdown", "win32_initiatesystemshutdownex_shutdown_acceptance")]
@@ -833,8 +837,8 @@ public sealed class ExternalAdaptersTests
         string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due}}","kind":"alarm","title":"Prueba"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.Parse(due, CultureInfo.InvariantCulture))}}","kind":"alarm","title":"Prueba"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -861,8 +865,8 @@ public sealed class ExternalAdaptersTests
         string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due}}","kind":"reminder","recurrence":"hourly","title":"Drink water"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.Parse(due, CultureInfo.InvariantCulture))}}","kind":"reminder","recurrence":"hourly","title":"Drink water"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -889,7 +893,7 @@ public sealed class ExternalAdaptersTests
             temporary.Path, new StubProcessRunner(output), scheduler);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.diagnose", Json("{}"), CancellationToken.None);
+            "schedule.alarms", Json("""{"action":"diagnose"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -919,8 +923,8 @@ public sealed class ExternalAdaptersTests
         var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.cancel.at",
-            Json("""{"kind":"alarm","hour":5,"period":"pm"}"""),
+            "schedule.alarms",
+            Json("""{"action":"cancel","kind":"alarm","at":"17:00"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -946,8 +950,8 @@ public sealed class ExternalAdaptersTests
         var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.cancel.at",
-            Json("""{"kind":"alarm","hour":5,"period":"pm"}"""),
+            "schedule.alarms",
+            Json("""{"action":"cancel","kind":"alarm","at":"17:00"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -975,8 +979,8 @@ public sealed class ExternalAdaptersTests
         var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.cancel.at",
-            Json("""{"kind":"alarm","hour":5,"period":"pm"}"""),
+            "schedule.alarms",
+            Json("""{"action":"cancel","kind":"alarm","at":"17:00"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -989,8 +993,8 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    [TestCase("notification.cancel.latest", """{"kind":"reminder"}""")]
-    [TestCase("notification.cancel.at", """{"kind":"alarm","hour":6,"minute":45,"period":"am"}""")]
+    [TestCase("schedule.alarms", """{"action":"cancel","kind":"reminder"}""")]
+    [TestCase("schedule.alarms", """{"action":"cancel","kind":"alarm","at":"06:45"}""")]
     public async Task NotificationCancellationIsScopedToTheNotificationsThisDataRootSet(
         string operation, string arguments)
     {
@@ -1026,7 +1030,7 @@ public sealed class ExternalAdaptersTests
             temporary.Path, new StubProcessRunner(output), scheduler);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.list", Json("{}"), CancellationToken.None);
+            "schedule.alarms", Json("""{"action":"list"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {

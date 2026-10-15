@@ -18,6 +18,10 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class NativeScheduledNotificationTests
 {
+    // schedule takes the person's local time; seconds keep the trigger exact.
+    private static string LocalAt(DateTimeOffset due) =>
+        due.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+
     private const string Sid = "S-1-5-21-1-2-3-1001";
 
     [TestCase("alarm", null, "once-alarm.xml")]
@@ -35,8 +39,8 @@ public sealed class NativeScheduledNotificationTests
         string recurrenceJson = recurrence is null ? "" : $",\"recurrence\":\"{recurrence}\"";
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"{{kind}}","title":"Tomar agua"{{recurrenceJson}}}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"{{kind}}","title":"Tomar agua"{{recurrenceJson}}}"""),
             CancellationToken.None);
 
         FakeTask task = scheduler.Tasks.Values.Single();
@@ -66,8 +70,8 @@ public sealed class NativeScheduledNotificationTests
         DateTimeOffset due = DateTimeOffset.UtcNow.AddSeconds(90.75);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"reminder","title":"Temporizador de 90 segundos"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"reminder","title":"Temporizador de 90 segundos"}"""),
             CancellationToken.None);
 
         DateTimeOffset whole = new(due.Ticks - due.Ticks % TimeSpan.TicksPerSecond, due.Offset);
@@ -89,12 +93,12 @@ public sealed class NativeScheduledNotificationTests
         WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler, new RecordingRunner());
         DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(5);
         await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"reminder","title":"Llamar a mamá & papá"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"reminder","title":"Llamar a mamá & papá"}"""),
             CancellationToken.None);
 
         ExternalCapabilityReceipt listed = await adapter.InvokeAsync(
-            "notification.list", Json("{}"), CancellationToken.None);
+            "schedule.alarms", Json("""{"action":"list"}"""), CancellationToken.None);
 
         JsonElement item = listed.Result!.Value.GetProperty("notifications")[0];
         Assert.Multiple(() =>
@@ -114,14 +118,14 @@ public sealed class NativeScheduledNotificationTests
         WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler, new RecordingRunner());
         DateTimeOffset due = new DateTimeOffset(DateTime.Today.AddDays(1).AddHours(17)).ToUniversalTime();
         ExternalCapabilityReceipt scheduled = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"alarm","title":"Alarma"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"alarm","title":"Alarma"}"""),
             CancellationToken.None);
         string taskName = scheduled.Result!.Value.GetProperty("taskName").GetString()!;
 
         ExternalCapabilityReceipt canceled = await adapter.InvokeAsync(
-            "notification.cancel.at",
-            Json("""{"kind":"alarm","hour":5,"period":"pm"}"""),
+            "schedule.alarms",
+            Json("""{"action":"cancel","kind":"alarm","at":"17:00"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -149,8 +153,8 @@ public sealed class NativeScheduledNotificationTests
         DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(1);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"alarm","title":"Prueba"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"alarm","title":"Prueba"}"""),
             CancellationToken.None);
 
         string diagnostic = Path.Combine(temporary.Path, "notification-scheduler-fallback.jsonl");
@@ -178,8 +182,8 @@ public sealed class NativeScheduledNotificationTests
         DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(1);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"reminder","title":"Prueba"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"reminder","title":"Prueba"}"""),
             CancellationToken.None);
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
@@ -195,13 +199,13 @@ public sealed class NativeScheduledNotificationTests
         WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler, runner);
         DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(1);
         await adapter.InvokeAsync(
-            "notification.schedule",
-            Json($$"""{"dueUtc":"{{due:O}}","kind":"reminder","title":"Prueba"}"""),
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"reminder","title":"Prueba"}"""),
             CancellationToken.None);
         scheduler.DeleteFailure = new TaskSchedulerHostException("task_delete_failed:0x800706BA");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "notification.cancel.latest", Json("""{"kind":"reminder"}"""), CancellationToken.None);
+            "schedule.alarms", Json("""{"action":"cancel","kind":"reminder"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -214,7 +218,7 @@ public sealed class NativeScheduledNotificationTests
 
     // The script itself, with the scheduler cmdlets replaced by functions over the same state the
     // fake scheduler holds: both must print the same JSON (nothing real is read or removed).
-    [TestCase("resolve-at", "alarm", "-Hour 5 -Minute 0 -Period pm", "single")]
+    [TestCase("resolve-at", "alarm", "-Hour 17 -Minute 0", "single")]
     [TestCase("resolve-at", "alarm", "-Hour 6 -Minute 45", "ambiguous")]
     [TestCase("resolve-at", "reminder", "-Hour 9 -Minute 15", "none")]
     [TestCase("cancel-exact", "alarm", "", "exact")]
@@ -241,7 +245,8 @@ public sealed class NativeScheduledNotificationTests
         {
             new(ownAlarm, 3, tomorrow.AddHours(17), new DateTime(1999, 11, 30), 267011),
             new(ownAlarmEarly, 3, tomorrow.AddHours(6).AddMinutes(45), new DateTime(1999, 11, 30), 267011),
-            new(ownAlarmEarlyTwin, 3, tomorrow.AddHours(18).AddMinutes(45), new DateTime(1999, 11, 30), 267011),
+            // The same clock on another day: a 24-hour clock that names two of them is ambiguous.
+            new(ownAlarmEarlyTwin, 3, tomorrow.AddDays(1).AddHours(6).AddMinutes(45), new DateTime(1999, 11, 30), 267011),
             new(otherRunAlarm, 3, tomorrow.AddHours(17), new DateTime(1999, 11, 30), 267011),
             new(ownReminderFirst, 3, tomorrow.AddHours(9), new DateTime(1999, 11, 30), 267011),
             new(ownReminderLast, 3, tomorrow.AddHours(10), new DateTime(1999, 11, 30), 267011),
@@ -259,14 +264,13 @@ public sealed class NativeScheduledNotificationTests
         await File.WriteAllTextAsync(Path.Combine(alarmRoot, rangReminder + ".fired"), "fired");
         string arguments = $"-Mode {mode} -Kind {kind} {extra}";
         var request = new ScheduledNotificationRequest(mode, kind) { AlarmRoot = alarmRoot };
-        Match hour = Regex.Match(extra, @"-Hour (\d+) -Minute (\d+)(?: -Period (\w+))?");
+        Match hour = Regex.Match(extra, @"-Hour (\d+) -Minute (\d+)");
         if (hour.Success)
         {
             request = request with
             {
                 Hour = int.Parse(hour.Groups[1].Value, CultureInfo.InvariantCulture),
                 Minute = int.Parse(hour.Groups[2].Value, CultureInfo.InvariantCulture),
-                Period = hour.Groups[3].Success ? hour.Groups[3].Value : null,
             };
         }
         if (mode == "cancel-exact")
@@ -386,7 +390,7 @@ public sealed class NativeScheduledNotificationTests
             });
             var resolveClock = Stopwatch.StartNew();
             ExternalProcessResult resolved = Run(native,
-                new ScheduledNotificationRequest("resolve-at", "alarm") { Hour = 4, Minute = 17, Period = "am", AlarmRoot = alarmRoot });
+                new ScheduledNotificationRequest("resolve-at", "alarm") { Hour = 4, Minute = 17, AlarmRoot = alarmRoot });
             long resolveMs = resolveClock.ElapsedMilliseconds;
             using JsonDocument resolution = JsonDocument.Parse(resolved.Output);
             Assert.That(resolution.RootElement.GetProperty("taskName").GetString(), Is.EqualTo(clockName), resolved.Output);

@@ -144,8 +144,24 @@ Medido con `psutil.memory_full_info`, 2026-10-15:
   - La App ya corta la voz cuando la persona escribe o manda un mensaje.
   - Interrumpir por voz queda pendiente, por debajo de lo que el líder repartió: herramientas, brazos y perfil de
     4 GB.
-  - Siguiente intento con evidencia: Silero VAD en ONNX (sin torch) sobre la salida lineal, más la correlación con la
-    referencia de Definitivo (`_looks_like_echo`).
+- **Segundo intento, con Silero VAD en ONNX** (sin torch, el modelo que trae `silero_vad`). Regla de Definitivo:
+  tres bloques seguidos con probabilidad de voz ≥ 0,5.
+
+  | Señal | BAXY solo (interrupción falsa) | Persona encima (detectada) |
+  |---|---|---|
+  | Cruda | 4/4 | 3/3 |
+  | AEC lineal | 4/4 | 3/3 |
+  | AEC final | 2/4 | 2/3 |
+
+  La cruda y la lineal confunden siempre la voz de BAXY con la de una persona. La final no separa los casos: p90 de
+  0,81 sin persona contra 0,84 con ella.
+- **Límite medido.** Con la referencia aproximada (el PCM que reproduce Piper) y este micrófono, la interrupción por
+  voz no es fiable. Lo que llegó a 0/8 en Definitivo fue la cadena completa: WASAPI crudo, loopback y marcas de
+  tiempo del dispositivo para alinear la referencia.
+- **Diseño propuesto, sin implementar todavía.** Portar esa cadena (`voice_capture.py`, `LoopbackReference`,
+  `webrtc_aec.py`), o activar la interrupción sólo con salida de audífonos, según el factor de forma del dispositivo
+  de Windows, que no tiene camino de eco. Las dos máquinas usan audífonos HyperX por defecto. Falta medirlo con la
+  persona real y con los audífonos puestos.
 
 ## Herramientas de agente
 
@@ -217,3 +233,48 @@ Banco de práctica 2 (`renew_v1/practica/decision2.json`, 270 casos), Q4_K_M, se
   arnés crece.
 - **El contexto alcanza:** el prefijo de ~34k tokens, más el historial (24 000 caracteres, ~7k tokens), más el
   turno, entran en 49 152. La lista de apps se queda, porque quitarla cuesta aciertos.
+
+## `schedule.alarms`: una sola operación para alarmas y recordatorios
+
+- **Qué reemplaza.** Las 12 operaciones de antes: `notification.schedule`, `list`, `cancel.at`, `cancel.latest`,
+  `diagnose`, `dismiss` y `list.due`, más `reminder.create`, `delete`, `list`, `resolve.exact` y `restore`. Se
+  retiraron con sus descripciones, su manejador de Core (`ReminderHandlers.cs`), sus relaciones de plan y sus entradas
+  del suelo.
+- **Hallazgo de honestidad.** `reminder.*` sólo guardaba un JSON que nada leía, así que esos recordatorios nunca
+  sonaban: BAXY podía decir «te lo recuerdo» sin que nada fuera a avisar. Sólo `notification.schedule` sonaba de
+  verdad, por el Programador de tareas de Windows, y ése es el camino que queda.
+- **Argumentos.**
+  - `action` puede ser `create`, `list`, `cancel` o `diagnose`.
+  - `kind` (alarma o recordatorio) y `recurrence` (diaria u horaria) son opcionales.
+  - Al crear, la hora es la de la persona: `inMinutes`, `inSeconds` para temporizadores cortos, o `at` en hora local
+    (`HH:mm` en 24 horas, la próxima vez que llega esa hora, o `YYYY-MM-DDTHH:mm`).
+  - El modelo ya no escribe UTC. En la prueba de punta a punta E004 del líder, el modelo escribía mal `dueUtc` y
+    repetía la llamada fallida 15 veces.
+- **Qué devuelve.** El resultado trae `dueLocal`, para que BAXY diga la hora tal como la vive la persona.
+- **Cancelar.** Con `at` cancela la de esa hora exacta, en 24 horas; sin `at`, la última. Se retiró el camino am/pm
+  (`Period`) del backend nativo, del script y de la petición.
+- **Medido.**
+  - Kernel 591/591, Providers 2160/2160 (`ScheduleTimeTests`: minutos, segundos, una hora que ya pasó salta a mañana,
+    fecha y hora local, entradas inválidas), Contracts 70 y Setup 477.
+  - Prueba en vivo contra el Programador de tareas real del notebook: crear un recordatorio a 30 minutos, listarlo
+    y cancelarlo, y la tarea desaparece. Pasó en 321 ms.
+- **Cobertura.** Se perdió restaurar un recordatorio borrado y su campo de «detalles», que eran de un sistema que no
+  sonaba. Cancelar por título no existe: se lista y se cancela por hora.
+
+## Recursos del arnés con todo cargado (notebook, 2026-10-15, código del líder ya fusionado, un solo hueco)
+
+La mente por su protocolo: catálogo listo y caliente en 21,2 s, una decisión («sube el volumen a 40») y una frase
+hablada por Piper mientras se mide. Sin k4 ni Ultra, porque en el notebook no hay voz de entrada; el total con la voz
+se mide en el PC.
+
+| Proceso | USS (RAM física privada) | Working set | Commit |
+|---|---|---|---|
+| llama-server | 659 MB | 3404 MB (incluye el GGUF mapeado) | 5107 MB (incluye el respaldo WDDM de la VRAM) |
+| mente (Python) | 29 MB | 54 MB | 567 MB |
+| Piper | 94 MB | 104 MB | 95 MB |
+| **total** | **783 MB** | **3580 MB** | — |
+
+- **VRAM: 3902 MiB** (la GPU estaba en 0 antes de empezar), dentro de 4096.
+- **RAM: dentro de los 4 GB** con cualquiera de las dos medidas, el USS (783 MB) o el working set (3,5 GB).
+- **Al margen:** en esa corrida, «sube el volumen a 40» se decidió como `audio.volume.adjust` y no como
+  `audio.volume`. Es un error del modelo, no del arnés; los bancos lo cuentan.
