@@ -19,7 +19,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from bench_e2e import BANKS, Conductor, ps_file, run_ps, run_turn, wait_silence  # noqa: E402
+from bench_e2e import BANKS, Conductor, ps_file, run_ps, run_turn, session_locked, wait_silence  # noqa: E402
 
 JUDGE_GGUF = os.environ.get("BAXY_RENEW_JUDGE_GGUF", r"F:\BAXYeval\models\Qwen3.6-35B-A3B-MTP-UD-IQ3_XXS.gguf")
 LLAMA_SERVER = os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe")
@@ -56,6 +56,8 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
     env = dict(os.environ)
     transcripts = []
     for case in cases:
+        if session_locked():
+            raise SystemExit(f"sesion_bloqueada antes de {case['id']}")
         case_dir = run_dir / case["id"]
         case_dir.mkdir(exist_ok=True)
         setup = case_dir / "setup.ps1"

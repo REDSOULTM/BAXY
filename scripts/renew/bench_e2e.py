@@ -124,6 +124,13 @@ def wait_silence(conductor: Conductor, timeout: float) -> None:
         conductor.events.wait(lambda e: e["type"] == "speech.end", timeout)
 
 
+def session_locked() -> bool:
+    """Windows' lock screen is up (LogonUI runs): apps cannot be driven and every later case would be measured wrong.
+    BAXY itself locked the PC once (2026-10-15 04:34, «para» → system.power); the bench stops instead of going on."""
+    import psutil
+    return any((p.info["name"] or "").lower() == "logonui.exe" for p in psutil.process_iter(["name"]))
+
+
 def norm(text: str) -> str:
     return " ".join((text or "").split())
 
@@ -261,6 +268,9 @@ def main() -> None:
     env_base = dict(os.environ)
     rows = []
     for case in cases:
+        if session_locked():
+            print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
+            break
         case_dir = run_dir / case["id"]
         case_dir.mkdir(exist_ok=True)
         row = judge_case(case, conductor, case_dir, env_base)

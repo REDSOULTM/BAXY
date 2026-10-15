@@ -225,6 +225,7 @@ internal sealed class NativeTurnLoop
                 ["kind"] = "operation",
                 ["operation"] = operation,
                 ["status"] = "needs_confirmation",
+                ["next"] = "ask the person whether to do it and wait for their answer",
                 ["arguments"] = arguments.DeepClone(),
             }.ToJsonString());
         }
@@ -346,6 +347,7 @@ internal sealed class NativeTurnLoop
                 ["kind"] = "operation",
                 ["operation"] = operation,
                 ["status"] = "needs_confirmation",
+                ["next"] = "ask the person whether to do it and wait for their answer",
                 ["arguments"] = arguments.DeepClone(),
                 ["effectStarted"] = challenge.ReconciliationRequired,
             }.ToJsonString(), response);
