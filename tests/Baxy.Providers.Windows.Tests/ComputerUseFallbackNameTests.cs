@@ -227,7 +227,7 @@ public sealed class ComputerUseFallbackNameTests
             "{\"i\":1,\"kind\":\"Button\",\"name\":\"Inicio\",\"nameSource\":\"\",\"id\":\"4.2\",\"state\":\"\"," +
             "\"value\":null,\"rect\":null,\"repeated\":0}],\"controlCount\":2," +
             "\"focused\":{\"kind\":\"Edit\",\"name\":\"main Input\",\"nameSource\":\"automationId\",\"value\":null}}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _, _) => ValueTask.FromResult((nint)front));
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult((nint)front));
 
         ExternalCapabilityReceipt view = await adapter.InvokeAsync(
             "input.visible.controls", JsonDocument.Parse("""{"application":"el navegador"}""").RootElement.Clone(),

@@ -659,8 +659,8 @@ internal sealed class WindowsVisibleControlAdapter
     private readonly IVisibleControlLocator? _tooltip;
     private readonly IOpenedApplicationFocus _focus;
     private readonly VisibleClickTiming _timing;
-    // The window a look asked for: the mission's process's, else the named application's (exactly); 0 when neither shows.
-    private readonly Func<int, string?, CancellationToken, ValueTask<nint>> _requestedWindow;
+    // The window of the application a look names (exactly); 0 when none shows.
+    private readonly Func<string?, CancellationToken, ValueTask<nint>> _requestedWindow;
     private readonly Func<nint, CancellationToken, ValueTask<string?>>? _surfaceHash;
     private readonly IPointerFallback _pointer;
     // The image of a window a click compares before and after (selfDrawn: taken the way the earlier one was).
@@ -759,7 +759,7 @@ internal sealed class WindowsVisibleControlAdapter
         IVisibleControlLocator? vision,
         IOpenedApplicationFocus? focus = null,
         VisibleClickTiming? timing = null,
-        Func<int, string?, CancellationToken, ValueTask<nint>>? requestedWindow = null,
+        Func<string?, CancellationToken, ValueTask<nint>>? requestedWindow = null,
         Func<nint, CancellationToken, ValueTask<string?>>? surfaceHash = null,
         IPointerFallback? pointer = null,
         Func<nint, bool?, CancellationToken, ValueTask<VisibleControlSurface.CapturedWindow?>>? capture = null,
@@ -1248,9 +1248,7 @@ internal sealed class WindowsVisibleControlAdapter
         int limit = 60;
         bool includeText = false;
         string? waitForLabel = null;
-        int processId = 0;
         string? application = null;
-        bool starting = false;
         bool tail = false;
         bool lines = false;
         IReadOnlyList<string> wanted = [];
@@ -1264,13 +1262,6 @@ internal sealed class WindowsVisibleControlAdapter
                 application = named.GetString()!.Trim();
             }
 
-            if (arguments.TryGetProperty("processId", out JsonElement owner)
-                && owner.ValueKind == JsonValueKind.Number
-                && owner.TryGetInt32(out int requestedProcess) && requestedProcess > 0)
-            {
-                processId = requestedProcess;
-            }
-
             if (arguments.TryGetProperty("limit", out JsonElement requested)
                 && requested.ValueKind == JsonValueKind.Number
                 && requested.TryGetInt32(out int value))
@@ -1280,8 +1271,6 @@ internal sealed class WindowsVisibleControlAdapter
 
             includeText = arguments.TryGetProperty("includeText", out JsonElement wantsText)
                 && wantsText.ValueKind == JsonValueKind.True;
-            starting = arguments.TryGetProperty("starting", out JsonElement startingValue)
-                && startingValue.ValueKind == JsonValueKind.True;
             tail = arguments.TryGetProperty("tail", out JsonElement tailValue) && tailValue.ValueKind == JsonValueKind.True;
             lines = arguments.TryGetProperty("lines", out JsonElement linesValue) && linesValue.ValueKind == JsonValueKind.True;
             includeText |= lines;
@@ -1293,35 +1282,28 @@ internal sealed class WindowsVisibleControlAdapter
             }
         }
 
-        // M132: a look right after an opening reads the application opened, not what was in front before it. A look
-        // bound to the mission's process reads that process's window whatever is in front, so the opened application
-        // is not looked for first (about 275 ms on every view of a mission, measured). Neither is brought to the
-        // front (v3 point 0): the accessible tree and the window's own image are read behind the person's window.
+        // M132: a look right after an opening reads the application opened, not what was in front before it. It is not
+        // brought to the front (v3 point 0): the accessible tree and the window's own image are read behind the
+        // person's window.
         nint openedWindow = 0;
-        if (processId == 0 && _focus.PeekOpened() is { } opened)
+        if (_focus.PeekOpened() is { } opened)
         {
             openedWindow = (await _focus.FrontAsync(opened, judgeDrawn: false, cancellationToken)
                 .ConfigureAwait(false)).Window;
         }
 
-        // v3 point 1: a look while the application opened cold is starting hands back a front it took by itself
-        // (measured: a game launcher activated its window when it was created and again when it maximized, 4.5 s and
-        // 6.3 s after the opening, past the opening's own guard), and the view says so for the annoyance count.
-        bool frontReturned = starting && processId > 0
-            && Applications.ForegroundHandBack.ReturnIfTakenAtStart(processId, VisibleControlSurface.InApplicationFamily);
         DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
         while (true)
         {
             ViewResult view = await BuildViewAsync(
-                    limit, includeText, processId, application, openedWindow, cancellationToken, frontReturned,
-                    wanted, tail, lines)
+                    limit, includeText, application, openedWindow, wanted, tail, lines, cancellationToken)
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
             if (waitForLabel is null || view.Names.Any(name => SameLabel(waitForLabel, name))
                 || DateTime.UtcNow >= deadline)
             {
-                NoteOpenedLooked(view.Receipt, processId, view.Names);
+                NoteOpenedLooked(view.Receipt, view.Names);
                 return view.Receipt;
             }
 
@@ -1330,9 +1312,8 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     // lat-apertura-clic (r13a: Epic 27.3 s on a click by label, its view of 0 controls): the opening a look read the
-    // window of (its process, or one of the processes that draw it). The look's caller waited for that window already
-    // (the mission's bounded wait after app.open): the click decided on that look does not wait for the application to
-    // finish opening again.
+    // window of (its process, or one of the processes that draw it). The look read that window already: the click
+    // decided on that look does not wait for the application to finish opening again.
     private OpenedLook? _openedLooked;
 
     /// <summary>A look of the opened application's window: the opening, the window read and what it showed (its
@@ -1353,7 +1334,7 @@ internal sealed class WindowsVisibleControlAdapter
         }
     }
 
-    internal void NoteOpenedLooked(ExternalCapabilityReceipt receipt, int requestedProcess, IReadOnlyList<string> names)
+    internal void NoteOpenedLooked(ExternalCapabilityReceipt receipt, IReadOnlyList<string> names)
     {
         if (_focus.PeekOpened() is not { } opened
             || receipt.Result is not { ValueKind: JsonValueKind.Object } result
@@ -1361,9 +1342,7 @@ internal sealed class WindowsVisibleControlAdapter
             || window.ValueKind != JsonValueKind.Object
             || !window.TryGetProperty("hwnd", out JsonElement handle) || !handle.TryGetInt64(out long hwnd) || hwnd <= 0)
             return;
-        bool ofIt = (requestedProcess == opened.ProcessId
-                && window.TryGetProperty("requested", out JsonElement requested) && requested.ValueKind == JsonValueKind.True)
-            || (window.TryGetProperty("processId", out JsonElement owner) && owner.ValueKind == JsonValueKind.Number
+        bool ofIt = (window.TryGetProperty("processId", out JsonElement owner) && owner.ValueKind == JsonValueKind.Number
                 && owner.TryGetInt32(out int ownerId) && ownerId == opened.ProcessId)
             || (window.TryGetProperty("family", out JsonElement family) && family.ValueKind == JsonValueKind.Array
                 && family.EnumerateArray().Any(member => member.ValueKind == JsonValueKind.Number
@@ -1418,18 +1397,12 @@ internal sealed class WindowsVisibleControlAdapter
             new JsonObject { ["ok"] = true, ["controls"] = new JsonArray(), ["uiaFailed"] = reason }.ToJsonString());
     }
 
-    // The window of the mission's process, else the window of the application it names (exactly:
-    // VisibleControlSurface.ResolveTitledWindowAsync); 0 when neither shows one.
-    private static async ValueTask<nint> RequestedWindowAsync(
-        int processId, string? application, CancellationToken cancellationToken)
-    {
-        nint hwnd = processId > 0
-            ? await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken).ConfigureAwait(false)
-            : 0;
-        return hwnd == 0 && application is not null
-            ? await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken).ConfigureAwait(false)
-            : hwnd;
-    }
+    // The window of the application a look names (exactly: VisibleControlSurface.ResolveTitledWindowAsync); 0 when none
+    // shows one.
+    private static async ValueTask<nint> RequestedWindowAsync(string? application, CancellationToken cancellationToken) =>
+        application is null
+            ? 0
+            : await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken).ConfigureAwait(false);
 
     /// <summary>How many of the desktop's windows go back with a name no window is.</summary>
     internal const int NamedWindowCandidateLimit = 20;
@@ -1480,27 +1453,8 @@ internal sealed class WindowsVisibleControlAdapter
     private async ValueTask<ViewResult> BuildViewAsync(
         int limit,
         bool includeText,
-        int processId,
         string? application,
         nint openedWindow,
-        CancellationToken cancellationToken,
-        bool frontReturned = false,
-        IReadOnlyList<string>? wanted = null,
-        bool tail = false,
-        bool lines = false) =>
-        await BuildViewOfAsync(
-            limit, includeText, processId, application, openedWindow, frontReturned,
-            wanted ?? [], tail, lines,
-            cancellationToken)
-            .ConfigureAwait(false);
-
-    private async ValueTask<ViewResult> BuildViewOfAsync(
-        int limit,
-        bool includeText,
-        int processId,
-        string? application,
-        nint openedWindow,
-        bool frontReturned,
         IReadOnlyList<string> wanted,
         bool tail,
         bool lines,
@@ -1517,13 +1471,12 @@ internal sealed class WindowsVisibleControlAdapter
         nint windowRoot = 0;
         try
         {
-            // The application the mission works on (the one it just opened, or
-            // the one named when its process is unknown) is the surface even
-            // when another window holds the foreground.
-            hwnd = await _requestedWindow(processId, application, cancellationToken).ConfigureAwait(false);
+            // The application the look names is the surface even when another
+            // window holds the foreground.
+            hwnd = await _requestedWindow(application, cancellationToken).ConfigureAwait(false);
 
-            // Whether the window is the mission's application (its process, its
-            // name) and not just what holds the front.
+            // Whether the window is the application the look names and not just
+            // what holds the front.
             requested = hwnd != 0;
             // The application just opened, where it is (behind the person's window, as it was opened).
             if (hwnd == 0 && openedWindow != 0 && VisibleControlSurface.IsAlive(openedWindow))
@@ -1830,8 +1783,6 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteEndObject();
                 }
 
-                if (frontReturned)
-                    writer.WriteBoolean("frontReturned", true);
                 // Read in front or behind the person's window (v3 point 0): behind, «focused» cannot say where the
                 // keyboard will be once the window comes up.
                 writer.WriteBoolean("foreground", inFront);
