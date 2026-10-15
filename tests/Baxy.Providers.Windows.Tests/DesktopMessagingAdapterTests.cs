@@ -116,6 +116,26 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // C7: every flow that resizes the person's window to the normalized layout runs inside InNormalizedWindowAsync,
+    // which gives the window its size back in a finally.
+    [Test]
+    public void EveryResizedFlowGivesThePersonsWindowItsSizeBack()
+    {
+        string source = AdapterSource();
+        int wrapper = source.IndexOf("private static async ValueTask<T> InNormalizedWindowAsync<T>(", StringComparison.Ordinal);
+        int wrapperEnd = source.IndexOf("\n    }\n", Math.Max(wrapper, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(wrapper, Is.GreaterThan(0));
+            Assert.That(source[wrapper..wrapperEnd], Does.Contain("finally"));
+            Assert.That(source[wrapper..wrapperEnd], Does.Contain("ResizeWindow(handle, size);"));
+            Assert.That(source, Does.Contain("flow => ResolveInBurstAsync("));
+            Assert.That(source, Does.Contain("flow => SendInBurstAsync("));
+            Assert.That(source, Does.Contain("flow => DraftInBurstAsync("));
+            Assert.That(source.Split("NormalizeWindow(channel, handle)").Length - 1, Is.EqualTo(1));
+        });
+    }
+
     private static string AdapterSource()
     {
         DirectoryInfo? root = new(AppContext.BaseDirectory);

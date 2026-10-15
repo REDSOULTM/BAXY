@@ -793,7 +793,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return await LeasedInput.RunAsync(
             Lease,
             handle,
-            token => ResolveInBurstAsync(channel, recipient, handle, processId, Probe, token),
+            token => InNormalizedWindowAsync(
+                channel,
+                handle,
+                flow => ResolveInBurstAsync(channel, recipient, handle, processId, Probe, flow),
+                token),
             (code, sent) => new DesktopRecipientObservation(false, sent, handle, processId, LeaseStop(code)),
             cancellationToken).ConfigureAwait(false);
     }
@@ -806,7 +810,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         IClientInteractionProbe probe,
         CancellationToken cancellationToken)
     {
-        await NormalizeWindowAsync(channel, handle, cancellationToken).ConfigureAwait(false);
         // The header is read twice because the first frame after a resize or
         // focus change may still be transitional. (Escape must not be sent here:
         // in WhatsApp it closes the open conversation.)
@@ -994,7 +997,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return await LeasedInput.RunAsync(
             Lease,
             recipient.WindowHandle,
-            token => SendInBurstAsync(recipient, text, token),
+            token => InNormalizedWindowAsync(
+                recipient.Channel,
+                recipient.WindowHandle,
+                flow => SendInBurstAsync(recipient, text, flow),
+                token),
             (code, sent) => new DesktopMessageObservation(false, sent, string.Empty, LeaseStop(code)),
             cancellationToken).ConfigureAwait(false);
     }
@@ -1004,9 +1011,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string text,
         CancellationToken cancellationToken)
     {
-        await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
-            .ConfigureAwait(false);
-
         bool targetVerified = await ShownRecipientAsync(
             recipient.WindowHandle,
             recipient.Channel,
@@ -1125,7 +1129,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return await LeasedInput.RunAsync(
             Lease,
             recipient.WindowHandle,
-            token => DraftInBurstAsync(recipient, text, token),
+            token => InNormalizedWindowAsync(
+                recipient.Channel,
+                recipient.WindowHandle,
+                flow => DraftInBurstAsync(recipient, text, flow),
+                token),
             (code, sent) => new DesktopMessageObservation(false, sent, string.Empty, LeaseStop(code)),
             cancellationToken).ConfigureAwait(false);
     }
@@ -1135,9 +1143,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string text,
         CancellationToken cancellationToken)
     {
-        await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
-            .ConfigureAwait(false);
-
         bool targetVerified = await ShownRecipientAsync(
             recipient.WindowHandle,
             recipient.Channel,
@@ -1850,7 +1855,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // once the owner moved the window), which makes the layout deterministic:
     // the chat list ends at about 395 px and the header title starts at about
     // 465 px, so the crop starts between them and excludes the search box and
-    // the list item that both show the searched name.
+    // the list item that both show the searched name. The person's size comes
+    // back when the flow ends (C7, InNormalizedWindowAsync).
     private const int WhatsAppWindowLogicalWidth = 1280;
     private const int WhatsAppWindowLogicalHeight = 800;
     // 400 rather than the 430 midpoint: right after a send the list narrowed by
@@ -1887,38 +1893,83 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // input, past the attach and emoji buttons in both apps.
     private const int ComposerInputOffsetAt96Dpi = 200;
 
-    private static async ValueTask NormalizeWindowAsync(
+    // C7: a flow that needs the normalized layout runs inside it, and the person's window gets its own size back
+    // afterwards, however the flow ends (its position, z-order and maximized state are never changed).
+    private static async ValueTask<T> InNormalizedWindowAsync<T>(
         string channel,
         nint handle,
+        Func<CancellationToken, ValueTask<T>> flow,
         CancellationToken cancellationToken)
+    {
+        WindowSize? person = NormalizeWindow(channel, handle);
+        try
+        {
+            if (person is not null)
+            {
+                await Task.Delay(400, cancellationToken).ConfigureAwait(false);
+            }
+
+            return await flow(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            if (person is { } size)
+            {
+                ResizeWindow(handle, size);
+            }
+        }
+    }
+
+    private readonly record struct WindowSize(int Width, int Height);
+
+    // The window's size before it was normalized (physical pixels), or null when it already had the normalized size
+    // or is not WhatsApp's.
+    private static WindowSize? NormalizeWindow(string channel, nint handle)
     {
         if (!string.Equals(channel, "whatsapp", StringComparison.Ordinal))
         {
-            return;
+            return null;
         }
 
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
         {
             double scale = GetDpiForWindow(handle) / 96.0;
-            int width = (int)(WhatsAppWindowLogicalWidth * scale);
-            int height = (int)(WhatsAppWindowLogicalHeight * scale);
-            if (GetWindowRect(handle, out Rect rectangle)
-                && rectangle.Right - rectangle.Left == width
-                && rectangle.Bottom - rectangle.Top == height)
+            var normalized = new WindowSize(
+                (int)(WhatsAppWindowLogicalWidth * scale),
+                (int)(WhatsAppWindowLogicalHeight * scale));
+            if (!GetWindowRect(handle, out Rect rectangle))
             {
-                return;
+                return null;
             }
 
-            // SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE: only the size changes.
-            _ = SetWindowPos(handle, 0, 0, 0, width, height, 0x0002 | 0x0004 | 0x0010);
+            var person = new WindowSize(rectangle.Right - rectangle.Left, rectangle.Bottom - rectangle.Top);
+            if (person == normalized)
+            {
+                return null;
+            }
+
+            ResizeWindow(handle, normalized);
+            return person;
         }
         finally
         {
             _ = SetThreadDpiAwarenessContext(previousDpi);
         }
+    }
 
-        await Task.Delay(400, cancellationToken).ConfigureAwait(false);
+    private static void ResizeWindow(nint handle, WindowSize size)
+    {
+        nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
+        try
+        {
+            // SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE: only the size changes.
+            _ = SetWindowPos(handle, 0, 0, 0, size.Width, size.Height, 0x0002 | 0x0004 | 0x0010);
+        }
+        finally
+        {
+            _ = SetThreadDpiAwarenessContext(previousDpi);
+        }
     }
 
     // The typed draft is read from the composer band alone: Tesseract does not
