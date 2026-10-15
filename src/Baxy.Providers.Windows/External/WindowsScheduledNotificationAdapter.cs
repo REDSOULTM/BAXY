@@ -11,53 +11,21 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     private static readonly string[] DiagnosticBooleanProperties =
         ["schedulerRunning", "toastEnabled", "healthy"];
     private static readonly string[] DiagnosticIntegerProperties =
-        ["taskCount", "firedReceiptCount", "issueCount"];
+        ["taskCount", "firedReceiptCount", "firedNotShownCount", "issueCount"];
+    private static readonly string[] DiagnosticArrayProperties = ["tasks", "firedReceipts"];
     private readonly string _alarmRoot;
     private readonly IScheduledNotificationBackend _backend;
-    private readonly string _schedulerScript;
 
-    // M119: the Task Scheduler COM API answers in-process (~2 s of powershell.exe per turn less);
-    // the script stays as the fallback when the scheduler cannot be reached that way.
+    // M119: the Task Scheduler COM API answers in-process.
     internal WindowsScheduledNotificationAdapter(string dataRoot)
-        : this(dataRoot, new WindowsTaskSchedulerHost(), new ExternalProcessRunner(), Path.Combine(
-            AppContext.BaseDirectory, "WindowsScheduledNotification.ps1"))
+        : this(dataRoot, new NativeScheduledNotificationBackend(new WindowsTaskSchedulerHost()))
     {
     }
 
-    internal WindowsScheduledNotificationAdapter(
-        string dataRoot,
-        ITaskSchedulerHost scheduler,
-        IExternalProcessRunner runner,
-        string schedulerScript)
-        : this(dataRoot, runner, schedulerScript,
-            scheduler ?? throw new ArgumentNullException(nameof(scheduler)))
+    internal WindowsScheduledNotificationAdapter(string dataRoot, IScheduledNotificationBackend backend)
     {
-    }
-
-    /// <summary>The script alone, as before M119.</summary>
-    internal WindowsScheduledNotificationAdapter(
-        string dataRoot,
-        IExternalProcessRunner runner,
-        string schedulerScript)
-        : this(dataRoot, runner, schedulerScript, scheduler: null)
-    {
-    }
-
-    private WindowsScheduledNotificationAdapter(
-        string dataRoot,
-        IExternalProcessRunner runner,
-        string schedulerScript,
-        ITaskSchedulerHost? scheduler)
-    {
-        string root = Path.GetFullPath(dataRoot);
-        _alarmRoot = Path.Combine(root, "scheduled-notifications");
-        _schedulerScript = Path.GetFullPath(schedulerScript);
-        var script = new ScriptScheduledNotificationBackend(
-            runner ?? throw new ArgumentNullException(nameof(runner)), _schedulerScript);
-        _backend = scheduler is null
-            ? script
-            : new NativeScheduledNotificationBackend(
-                scheduler, script, Path.Combine(root, "notification-scheduler-fallback.jsonl"));
+        _alarmRoot = Path.Combine(Path.GetFullPath(dataRoot), "scheduled-notifications");
+        _backend = backend ?? throw new ArgumentNullException(nameof(backend));
     }
 
     public bool CanHandle(string operation) => operation is "schedule.alarms";
@@ -77,8 +45,6 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             return ExternalJson.FailureBeforeEffect(operation, "schedule_action_invalid");
         if (kind is not ("alarm" or "reminder"))
             return ExternalJson.FailureBeforeEffect(operation, "notification_kind_invalid");
-        if (!File.Exists(_schedulerScript))
-            return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
         if (action is "diagnose" or "list")
         {
             try
@@ -325,11 +291,11 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 if (source.TryGetProperty(name, out JsonElement value)
                     && value.ValueKind == JsonValueKind.Number)
                     writer.WriteNumber(name, value.GetInt32());
-            if (source.TryGetProperty("tasks", out JsonElement tasks)
-                && tasks.ValueKind == JsonValueKind.Array)
-            {
-                writer.WritePropertyName("tasks"); tasks.WriteTo(writer);
-            }
+            foreach (string name in DiagnosticArrayProperties)
+                if (source.TryGetProperty(name, out JsonElement items) && items.ValueKind == JsonValueKind.Array)
+                {
+                    writer.WritePropertyName(name); items.WriteTo(writer);
+                }
             writer.WriteString("authority", "windows_task_scheduler_notification_diagnostics_postread");
             writer.WriteEndObject();
         });
@@ -523,7 +489,11 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 || crossedValue.ValueKind != JsonValueKind.False;
             if (!crossed)
                 return ExternalJson.FailureBeforeEffect(
-                    operation, "notification_scheduler_precondition_changed");
+                    operation,
+                    source.TryGetProperty("error", out JsonElement cause) && cause.ValueKind == JsonValueKind.String
+                        && cause.GetString() == "task_scheduler_unavailable"
+                        ? "notification_scheduler_unavailable"
+                        : "notification_scheduler_precondition_changed");
             return effectBoundary.Failure(
                 operation, "notification_scheduler_postread_failed", effect);
         }

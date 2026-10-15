@@ -880,11 +880,8 @@ public sealed class ExternalAdaptersTests
     public async Task ScheduledNotificationRequiresWindowsTaskIdentityPostread()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new NotificationSchedulerRunner();
-        var adapter = new WindowsScheduledNotificationAdapter(
-            temporary.Path, runner, scheduler);
+        var backend = ScriptedNotificationBackend.Registering();
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
         string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -897,11 +894,11 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("taskName").GetString(),
-                Is.EqualTo(runner.TaskName));
+                Is.EqualTo(backend.Requests[^1].TaskName));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("windows_task_scheduler_postread"));
             Assert.That(File.Exists(Path.Combine(
-                temporary.Path, "scheduled-notifications", runner.TaskName + ".ps1")), Is.True);
+                temporary.Path, "scheduled-notifications", backend.Requests[^1].TaskName + ".ps1")), Is.True);
         });
     }
 
@@ -909,10 +906,8 @@ public sealed class ExternalAdaptersTests
     public async Task RecurringNotificationPassesARealHourlyTaskTriggerRequest()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new NotificationSchedulerRunner();
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var backend = ScriptedNotificationBackend.Registering();
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
         string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -924,8 +919,8 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("recurrence").GetString(), Is.EqualTo("hourly"));
-            Assert.That(runner.Arguments, Does.Contain("schedule-recurring"));
-            Assert.That(runner.Arguments, Does.Contain("hourly"));
+            Assert.That(backend.Requests[^1].Mode, Is.EqualTo("schedule-recurring"));
+            Assert.That(backend.Requests[^1].Recurrence, Is.EqualTo("hourly"));
         });
     }
 
@@ -933,15 +928,13 @@ public sealed class ExternalAdaptersTests
     public async Task NotificationDiagnosticsReturnsObservedServiceTasksAndReceipts()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string output = "{\"ok\":true,\"schedulerRunning\":true," +
             "\"toastEnabled\":true,\"healthy\":true,\"taskCount\":1," +
             "\"firedReceiptCount\":1,\"issueCount\":0,\"tasks\":[{" +
             "\"taskName\":\"BAXY-Reminder-private\",\"state\":\"Ready\"," +
             "\"lastTaskResult\":0,\"resultAcceptable\":true}]}";
         var adapter = new WindowsScheduledNotificationAdapter(
-            temporary.Path, new StubProcessRunner(output), scheduler);
+            temporary.Path, ScriptedNotificationBackend.Lines(output));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms", Json("""{"action":"diagnose"}"""), CancellationToken.None);
@@ -963,15 +956,13 @@ public sealed class ExternalAdaptersTests
     public async Task ExactClockNotificationCancellationBindsPreReadIdentityAndVerifiesAbsence()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string taskName = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
-        var runner = new SequencedProcessRunner([
+        var backend = ScriptedNotificationBackend.Lines([
             $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"{{taskName}}","nextRunUtc":"{{due}}"}""",
             $$"""{"ok":true,"effectObserved":true,"effectBoundaryCrossed":true,"canceled":true,"taskName":"{{taskName}}","nextRunUtc":"{{due}}","authority":"windows_task_scheduler_exact_identity_absence_postread"}""",
         ]);
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms",
@@ -985,7 +976,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.Result?.GetProperty("taskName").GetString(), Is.EqualTo(taskName));
             Assert.That(receipt.Result?.GetProperty("expectedNextRunUtc").GetString(), Is.EqualTo(due));
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(backend.Requests, Has.Count.EqualTo(2));
         });
     }
 
@@ -993,12 +984,10 @@ public sealed class ExternalAdaptersTests
     public async Task ExactClockNotificationCancellationRefusesAmbiguousMatchesBeforeEffect()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new SequencedProcessRunner([
+        var backend = ScriptedNotificationBackend.Lines([
             "{\"ok\":false,\"effectObserved\":false,\"effectBoundaryCrossed\":false,\"matchCount\":2}",
         ]);
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms",
@@ -1011,7 +1000,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("notification_clock_ambiguous"));
-            Assert.That(runner.Calls, Is.EqualTo(1));
+            Assert.That(backend.Requests, Has.Count.EqualTo(1));
         });
     }
 
@@ -1019,15 +1008,13 @@ public sealed class ExternalAdaptersTests
     public async Task ExactClockNotificationCancellationRefusesChangedIdentityBeforeEffect()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string taskName = "BAXY-Alarm-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
         string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
-        var runner = new SequencedProcessRunner([
+        var backend = ScriptedNotificationBackend.Lines([
             $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"{{taskName}}","nextRunUtc":"{{due}}"}""",
             "{\"ok\":false,\"effectObserved\":false,\"effectBoundaryCrossed\":false,\"error\":\"task_changed_before_effect\"}",
         ]);
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms",
@@ -1040,7 +1027,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("notification_scheduler_precondition_changed"));
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(backend.Requests, Has.Count.EqualTo(2));
         });
     }
 
@@ -1052,24 +1039,18 @@ public sealed class ExternalAdaptersTests
         // M80 (DEV-D v3m D-w16-t2, D-w18-t5): the scheduler is shared by every BAXY data root of the user; six runs
         // left six alarms at 06:45 and «cancel the latest» picked another run's reminder.
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
-        var runner = new CapturingProcessRunner("{\"ok\":false,\"matchCount\":0}");
-        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+        var backend = ScriptedNotificationBackend.Lines("{\"ok\":false,\"matchCount\":0}");
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
 
         await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
 
-        int root = Array.IndexOf(runner.Arguments, "-AlarmRoot");
-        Assert.That(root, Is.GreaterThan(0));
-        Assert.That(runner.Arguments[root + 1], Is.EqualTo(Path.Combine(temporary.Path, "scheduled-notifications")));
+        Assert.That(backend.Requests[^1].AlarmRoot, Is.EqualTo(Path.Combine(temporary.Path, "scheduled-notifications")));
     }
 
     [Test]
     public async Task NotificationListShowsOnlyTheNotificationsThisDataRootSet()
     {
         using TemporaryDirectory temporary = new();
-        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
-        await File.WriteAllTextAsync(scheduler, "# fixture");
         const string own = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         const string other = "BAXY-Alarm-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
         string alarms = Path.Combine(temporary.Path, "scheduled-notifications");
@@ -1078,7 +1059,7 @@ public sealed class ExternalAdaptersTests
         string next = DateTimeOffset.UtcNow.AddHours(3).ToString("O");
         string output = $$"""{"ok":true,"tasks":[{"taskName":"{{own}}","state":"Ready","nextRunUtc":"{{next}}"},{"taskName":"{{other}}","state":"Ready","nextRunUtc":"{{next}}"}]}""";
         var adapter = new WindowsScheduledNotificationAdapter(
-            temporary.Path, new StubProcessRunner(output), scheduler);
+            temporary.Path, ScriptedNotificationBackend.Lines(output));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "schedule.alarms", Json("""{"action":"list"}"""), CancellationToken.None);
@@ -4279,33 +4260,6 @@ public sealed class ExternalAdaptersTests
         {
             await Task.Delay(delay, cancellationToken);
             return [];
-        }
-    }
-
-    private sealed class NotificationSchedulerRunner : IExternalProcessRunner
-    {
-        internal string TaskName { get; private set; } = string.Empty;
-        internal IReadOnlyList<string> Arguments { get; private set; } = [];
-
-        public ValueTask<ExternalProcessResult> RunAsync(
-            string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            Arguments = arguments.ToArray();
-            int taskIndex = arguments.ToList().IndexOf("-TaskName");
-            TaskName = taskIndex >= 0 ? arguments[taskIndex + 1] : string.Empty;
-            string output = JsonSerializer.Serialize(new
-            {
-                version = 1,
-                ok = true,
-                effectObserved = true,
-                taskName = TaskName,
-                state = "Ready",
-                nextRunUtc = DateTimeOffset.UtcNow.AddHours(1).ToString("O"),
-                authority = "windows_task_scheduler_postread",
-            });
-            return ValueTask.FromResult(new ExternalProcessResult(0, output, string.Empty));
         }
     }
 

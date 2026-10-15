@@ -88,16 +88,14 @@ public sealed class ScheduledNotificationPruneTests
         string dataRoot = NewRoot();
         try
         {
-            string scheduler = Path.Combine(dataRoot, "WindowsScheduledNotification.ps1");
-            await File.WriteAllTextAsync(scheduler, "# fixture");
             string alarms = Path.Combine(dataRoot, "scheduled-notifications");
             Directory.CreateDirectory(alarms);
             DateTimeOffset now = DateTimeOffset.UtcNow;
             string daily = "BAXY-Reminder-" + new string('e', 32);
             string liveStem = Write(alarms, daily, now.AddDays(-45));
             string goneStem = Write(alarms, "BAXY-Alarm-" + new string('f', 32), now.AddDays(-45));
-            var runner = new SchedulerRunner([daily]);
-            var adapter = new WindowsScheduledNotificationAdapter(dataRoot, runner, scheduler);
+            var scheduler = Scheduler([daily]);
+            var adapter = new WindowsScheduledNotificationAdapter(dataRoot, scheduler);
 
             ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
                 "schedule.alarms",
@@ -107,7 +105,7 @@ public sealed class ScheduledNotificationPruneTests
             Assert.Multiple(() =>
             {
                 Assert.That(receipt.Verified, Is.True);
-                Assert.That(runner.Modes, Is.EqualTo(new[] { "diagnose", "schedule" }));
+                Assert.That(scheduler.Requests.Select(request => request.Mode), Is.EqualTo(new[] { "diagnose", "schedule" }));
                 Assert.That(File.Exists(liveStem + ".ps1"), Is.True);
                 Assert.That(File.Exists(liveStem + ".fired"), Is.True);
                 Assert.That(File.Exists(goneStem + ".ps1"), Is.False);
@@ -127,14 +125,11 @@ public sealed class ScheduledNotificationPruneTests
         string dataRoot = NewRoot();
         try
         {
-            string scheduler = Path.Combine(dataRoot, "WindowsScheduledNotification.ps1");
-            await File.WriteAllTextAsync(scheduler, "# fixture");
             string alarms = Path.Combine(dataRoot, "scheduled-notifications");
             Directory.CreateDirectory(alarms);
             DateTimeOffset now = DateTimeOffset.UtcNow;
             string stem = Write(alarms, "BAXY-Reminder-" + new string('g', 32), now.AddDays(-45));
-            var runner = new SchedulerRunner(liveTasks: null);
-            var adapter = new WindowsScheduledNotificationAdapter(dataRoot, runner, scheduler);
+            var adapter = new WindowsScheduledNotificationAdapter(dataRoot, Scheduler(liveTasks: null));
 
             ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
                 "schedule.alarms",
@@ -173,46 +168,19 @@ public sealed class ScheduledNotificationPruneTests
         return document.RootElement.Clone();
     }
 
-    // The script backend's process: diagnose answers the given task list (or fails when there is none),
-    // schedule answers the task it was asked to register.
-    private sealed class SchedulerRunner(IReadOnlyList<string>? liveTasks) : IExternalProcessRunner
-    {
-        internal List<string> Modes { get; } = [];
-
-        public ValueTask<ExternalProcessResult> RunAsync(
-            string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            List<string> list = arguments.ToList();
-            string mode = list[list.IndexOf("-Mode") + 1];
-            Modes.Add(mode);
-            if (mode == "diagnose")
-            {
-                return ValueTask.FromResult(liveTasks is null
-                    ? new ExternalProcessResult(1, string.Empty, "scheduler unavailable")
-                    : new ExternalProcessResult(0, JsonSerializer.Serialize(new
-                    {
-                        version = 1,
-                        ok = true,
-                        tasks = liveTasks.Select(name => new { taskName = name, state = "Ready" }).ToArray(),
-                    }), string.Empty));
-            }
-
-            int taskIndex = list.IndexOf("-TaskName");
-            string taskName = taskIndex >= 0 ? list[taskIndex + 1] : string.Empty;
-            return ValueTask.FromResult(new ExternalProcessResult(0, JsonSerializer.Serialize(new
-            {
-                version = 1,
-                ok = true,
-                effectObserved = true,
-                taskName,
-                state = "Ready",
-                nextRunUtc = DateTimeOffset.UtcNow.AddHours(1).ToString("O"),
-                authority = "windows_task_scheduler_postread",
-            }), string.Empty));
-        }
-    }
+    // The scheduler: diagnose answers the given task list (or fails when there is none), schedule answers the task it
+    // was asked to register.
+    private static ScriptedNotificationBackend Scheduler(IReadOnlyList<string>? liveTasks) =>
+        new(request => request.Mode != "diagnose"
+            ? ScriptedNotificationBackend.Registered(request)
+            : liveTasks is null
+                ? new ExternalProcessResult(1, string.Empty, "scheduler unavailable")
+                : new ExternalProcessResult(0, JsonSerializer.Serialize(new
+                {
+                    version = 1,
+                    ok = true,
+                    tasks = liveTasks.Select(name => new { taskName = name, state = "Ready" }).ToArray(),
+                }), string.Empty));
 
     private static string Write(string root, string taskName, DateTimeOffset rang)
     {

@@ -9,18 +9,15 @@ using System.Xml;
 namespace Baxy.Providers.Windows.External;
 
 /// <summary>
-/// M119: WindowsScheduledNotification.ps1 answered in-process through the Task Scheduler COM API.
-/// Every mode prints the JSON line the script prints and «exits 1» where the script throws, so the
-/// adapter reads both alike. When the scheduler itself fails before anything changed, the call goes
-/// to the script (and a diagnostic line is written); once a task was registered or a deletion was
-/// attempted, a failure is reported as the script's would be and never retried.
+/// M119: BAXY's alarms and reminders, answered in-process through the Task Scheduler COM API. Each mode answers one
+/// JSON line (exit 0), or exit 1 with the cause when it throws. When the scheduler fails before anything changed the
+/// line says so (task_scheduler_unavailable, nothing crossed); once a task was registered or a deletion was attempted,
+/// a failure is an exit 1 and never retried.
 /// </summary>
-internal sealed class NativeScheduledNotificationBackend(
-    ITaskSchedulerHost host,
-    IScheduledNotificationBackend fallback,
-    string fallbackDiagnosticsPath) : IScheduledNotificationBackend
+internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host) : IScheduledNotificationBackend
 {
     private const int AcceptableNeverRan = 267011;
+    private const int ShownFiredReceipts = 10;
     private static readonly string[] StateNames = ["Unknown", "Disabled", "Queued", "Ready", "Running"];
 
     public async ValueTask<ExternalProcessResult> RunAsync(
@@ -28,13 +25,10 @@ internal sealed class NativeScheduledNotificationBackend(
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        Outcome outcome = await Task.Run(() => Execute(request), cancellationToken).ConfigureAwait(false);
-        if (outcome.Result is not null) return outcome.Result;
-        WriteFallbackDiagnostic(request.Mode, outcome.FallbackReason!);
-        return await fallback.RunAsync(request, cancellationToken).ConfigureAwait(false);
+        return await Task.Run(() => Execute(request), cancellationToken).ConfigureAwait(false);
     }
 
-    private Outcome Execute(ScheduledNotificationRequest request)
+    private ExternalProcessResult Execute(ScheduledNotificationRequest request)
     {
         var effect = new EffectState();
         try
@@ -46,33 +40,54 @@ internal sealed class NativeScheduledNotificationBackend(
                 "schedule" or "schedule-recurring" => Schedule(request, effect),
                 "cancel-exact" => CancelExact(request, effect),
                 "cancel" => CancelLatest(request, effect),
-                _ => throw new ScriptFailure("invalid_mode"),
+                _ => throw new ScheduleFailure("invalid_mode"),
             };
-            return new Outcome(new ExternalProcessResult(0, line + Environment.NewLine, string.Empty), null);
+            return new ExternalProcessResult(0, line + Environment.NewLine, string.Empty);
         }
         catch (TaskSchedulerHostException exception) when (!effect.Committed)
         {
-            return new Outcome(null, Describe(exception));
+            string line = Json(writer =>
+            {
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("ok", false);
+                writer.WriteBoolean("effectObserved", false);
+                writer.WriteBoolean("effectBoundaryCrossed", false);
+                writer.WriteString("error", "task_scheduler_unavailable");
+                writer.WriteString("detail", Describe(exception));
+            });
+            return new ExternalProcessResult(0, line + Environment.NewLine, string.Empty);
         }
         catch (Exception exception)
         {
-            // The script runs with $ErrorActionPreference = 'Stop': whatever throws ends it with exit 1.
-            return new Outcome(new ExternalProcessResult(1, string.Empty, Describe(exception)), null);
+            return new ExternalProcessResult(1, string.Empty, Describe(exception));
         }
     }
 
+    // Why a notification did not ring: whether the scheduler answers, whether Windows shows notifications, each
+    // task's last result, and what each ring's own receipt (.fired) wrote: when it rang, whether its notification was
+    // read back from Windows' history and which sound played.
     private string Diagnose(ScheduledNotificationRequest request)
     {
         int? toastSetting = host.ToastsEnabledSetting();
-        using ITaskSchedulerSession session = host.Open();
-        // A connected Task Scheduler is a running Schedule service; when it is not, Open fails
-        // and the script answers (Get-Service reads the stopped state).
-        const bool schedulerRunning = true;
-        IReadOnlyList<ScheduledTaskSnapshot> observed = session.Read("BAXY-");
-        int issueCount = observed.Count(task => !Acceptable(task.LastTaskResult));
         bool toastEnabled = toastSetting is null || toastSetting.Value != 0;
-        int receipts = FiredReceiptCount(request.AlarmRoot);
-        if (!toastEnabled) issueCount++;
+        List<FiredReceipt> fired = FiredReceipts(request.AlarmRoot);
+        int firedNotShown = fired.Count(receipt => receipt.NotificationShown != true);
+        IReadOnlyList<ScheduledTaskSnapshot> observed;
+        bool schedulerRunning;
+        try
+        {
+            using ITaskSchedulerSession session = host.Open();
+            observed = session.Read("BAXY-");
+            schedulerRunning = true;
+        }
+        catch (TaskSchedulerHostException)
+        {
+            // A Task Scheduler that does not answer is not running BAXY's notifications, whatever its service says.
+            observed = [];
+            schedulerRunning = false;
+        }
+        int issueCount = observed.Count(task => !Acceptable(task.LastTaskResult)) + firedNotShown
+            + (toastEnabled ? 0 : 1) + (schedulerRunning ? 0 : 1);
         return Json(writer =>
         {
             writer.WriteNumber("version", 1);
@@ -81,8 +96,23 @@ internal sealed class NativeScheduledNotificationBackend(
             writer.WriteBoolean("toastEnabled", toastEnabled);
             writer.WriteBoolean("healthy", issueCount == 0);
             writer.WriteNumber("taskCount", observed.Count);
-            writer.WriteNumber("firedReceiptCount", receipts);
+            writer.WriteNumber("firedReceiptCount", fired.Count);
+            writer.WriteNumber("firedNotShownCount", firedNotShown);
             writer.WriteNumber("issueCount", issueCount);
+            writer.WriteStartArray("firedReceipts");
+            foreach (FiredReceipt receipt in fired.Take(ShownFiredReceipts))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("taskName", receipt.TaskName);
+                if (receipt.RangUtc is not null) writer.WriteString("rangUtc", receipt.RangUtc);
+                else writer.WriteNull("rangUtc");
+                if (receipt.NotificationShown is bool shown) writer.WriteBoolean("notificationShown", shown);
+                else writer.WriteNull("notificationShown");
+                if (receipt.Sound is not null) writer.WriteString("sound", receipt.Sound);
+                else writer.WriteNull("sound");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
             writer.WriteStartArray("tasks");
             foreach (ScheduledTaskSnapshot task in observed)
             {
@@ -106,7 +136,7 @@ internal sealed class NativeScheduledNotificationBackend(
         int minute = request.Minute;
         // The clock is a 24-hour local time (schedule's «at»): it selects that exact hour and minute.
         if (hour is < 0 or > 23 || minute is < 0 or > 59)
-            throw new ScriptFailure("invalid_clock_selector");
+            throw new ScheduleFailure("invalid_clock_selector");
         string prefix = Is(request.Kind, "alarm") ? "BAXY-Alarm-" : "BAXY-Reminder-";
         DateTimeOffset now = DateTimeOffset.Now;
         List<(string TaskName, string NextRunUtc)> matches = [];
@@ -114,7 +144,7 @@ internal sealed class NativeScheduledNotificationBackend(
         foreach (string name in session.TaskNames().Where(name => Like(name, prefix)))
         {
             if (!IsOwn(request.AlarmRoot, name)) continue;
-            ScheduledTaskSnapshot info = session.Find(name) ?? throw new ScriptFailure("task_vanished");
+            ScheduledTaskSnapshot info = session.Find(name) ?? throw new ScheduleFailure("task_vanished");
             if (info.NextRunLocal is not DateTime nextLocal) continue;
             DateTimeOffset next = new(nextLocal);
             if (next <= now) continue;
@@ -141,14 +171,14 @@ internal sealed class NativeScheduledNotificationBackend(
     {
         string taskName = request.TaskName ?? string.Empty;
         if (!Regex.IsMatch(taskName, "^BAXY-(Alarm|Reminder)-[0-9a-f]{32}$", ScriptRegex, RegexTimeout))
-            throw new ScriptFailure("invalid_task_name");
+            throw new ScheduleFailure("invalid_task_name");
         if (!File.Exists(request.RingScriptPath))
-            throw new ScriptFailure("ring_script_missing");
+            throw new ScheduleFailure("ring_script_missing");
         DateTimeOffset due = DateTimeOffset.Parse(
             request.DueUtc ?? string.Empty, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
         DateTime dueLocal = due.LocalDateTime;
         if (due <= DateTimeOffset.UtcNow.AddSeconds(5))
-            throw new ScriptFailure("due_time_not_future");
+            throw new ScheduleFailure("due_time_not_future");
         bool recurring = request.Mode == "schedule-recurring";
         string? trigger = recurring && Is(request.Recurrence, "daily") ? "daily"
             : recurring && Is(request.Recurrence, "hourly") ? "hourly"
@@ -156,13 +186,13 @@ internal sealed class NativeScheduledNotificationBackend(
         string xml = ScheduledNotificationTaskXml.Build(
             request.Kind, request.RingScriptPath!, due, trigger, host.CurrentUserSid());
         using ITaskSchedulerSession session = host.Open();
-        // Register-ScheduledTask -Force: create or update this name. A Register that fails changed
-        // nothing, so the script may still be asked; after it succeeds the effect is committed.
+        // Create or update this name. A Register that fails changed nothing; after it succeeds the effect is
+        // committed.
         session.Register(taskName, xml);
         effect.Committed = true;
-        ScheduledTaskSnapshot task = session.Find(taskName) ?? throw new ScriptFailure("task_missing_after_register");
+        ScheduledTaskSnapshot task = session.Find(taskName) ?? throw new ScheduleFailure("task_missing_after_register");
         if (task.NextRunLocal is not DateTime nextLocal)
-            throw new ScriptFailure("next_run_missing");
+            throw new ScheduleFailure("next_run_missing");
         double deltaSeconds = Math.Abs((nextLocal - dueLocal).TotalSeconds);
         return Json(writer =>
         {
@@ -185,7 +215,7 @@ internal sealed class NativeScheduledNotificationBackend(
             : "^BAXY-Reminder-[0-9a-f]{32}$";
         string taskName = request.TaskName ?? string.Empty;
         if (!Regex.IsMatch(taskName, expected, ScriptRegex, RegexTimeout))
-            throw new ScriptFailure("invalid_task_name");
+            throw new ScheduleFailure("invalid_task_name");
         DateTimeOffset expectedDue = DateTimeOffset.Parse(
             request.DueUtc ?? string.Empty, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
         using ITaskSchedulerSession session = host.Open();
@@ -202,7 +232,7 @@ internal sealed class NativeScheduledNotificationBackend(
             });
         }
         if (candidate.NextRunLocal is not DateTime nextLocal)
-            throw new ScriptFailure("next_run_missing");
+            throw new ScheduleFailure("next_run_missing");
         DateTimeOffset observedDue = new DateTimeOffset(nextLocal).ToUniversalTime();
         if (Math.Abs((observedDue - expectedDue.ToUniversalTime()).TotalSeconds) > 2)
         {
@@ -242,7 +272,7 @@ internal sealed class NativeScheduledNotificationBackend(
             .Where(name => Like(name, prefix) && IsOwn(request.AlarmRoot, name))
             .Where(name =>
             {
-                ScheduledTaskSnapshot pending = session.Find(name) ?? throw new ScriptFailure("task_vanished");
+                ScheduledTaskSnapshot pending = session.Find(name) ?? throw new ScheduleFailure("task_vanished");
                 return pending.NextRunLocal is DateTime next && new DateTimeOffset(next) > now;
             })
             .OrderByDescending(name => string.IsNullOrEmpty(request.AlarmRoot)
@@ -274,32 +304,9 @@ internal sealed class NativeScheduledNotificationBackend(
         });
     }
 
-    private void WriteFallbackDiagnostic(string mode, string reason)
-    {
-        try
-        {
-            string line = Json(writer =>
-            {
-                writer.WriteString("schema", "baxy.notification-scheduler-fallback.v1");
-                writer.WriteString("utc", DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture));
-                writer.WriteString("mode", mode);
-                writer.WriteString("reason", reason);
-            });
-            string? directory = Path.GetDirectoryName(fallbackDiagnosticsPath);
-            if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-            File.AppendAllText(fallbackDiagnosticsPath, line + Environment.NewLine, new UTF8Encoding(false));
-        }
-        catch (Exception exception) when (exception is IOException
-            or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-        {
-            // A diagnostic that cannot be written does not change the result.
-        }
-    }
-
     private const RegexOptions ScriptRegex = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
     private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
 
-    // PowerShell -like, -eq and -match compare case-insensitively.
     private static bool Like(string name, string prefix) =>
         name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
 
@@ -309,17 +316,47 @@ internal sealed class NativeScheduledNotificationBackend(
     private static bool IsOwn(string? alarmRoot, string name) =>
         string.IsNullOrEmpty(alarmRoot) || File.Exists(Path.Combine(alarmRoot, name + ".ps1"));
 
-    // Get-ChildItem -Filter '*.fired' -File -ErrorAction SilentlyContinue: an unreadable folder counts none.
-    private static int FiredReceiptCount(string? alarmRoot)
+    // What a ring wrote in its receipt (WindowsScheduledNotificationAdapter.WriteRingScript): null where the receipt
+    // could not be read or does not say it.
+    private sealed record FiredReceipt(string TaskName, string? RangUtc, bool? NotificationShown, string? Sound);
+
+    // The rings of this data root, the latest first; an unreadable folder has none.
+    private static List<FiredReceipt> FiredReceipts(string? alarmRoot)
     {
-        if (string.IsNullOrEmpty(alarmRoot) || !Directory.Exists(alarmRoot)) return 0;
+        if (string.IsNullOrEmpty(alarmRoot) || !Directory.Exists(alarmRoot)) return [];
         try
         {
-            return Directory.EnumerateFiles(alarmRoot, "*.fired").Count();
+            return Directory.EnumerateFiles(alarmRoot, "*.fired")
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .Select(ReadFiredReceipt)
+                .ToList();
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            return 0;
+            return [];
+        }
+    }
+
+    private static FiredReceipt ReadFiredReceipt(string path)
+    {
+        string taskName = Path.GetFileNameWithoutExtension(path);
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllText(path));
+            JsonElement root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object) return new FiredReceipt(taskName, null, null, null);
+            return new FiredReceipt(
+                taskName,
+                root.TryGetProperty("rangUtc", out JsonElement rang) && rang.ValueKind == JsonValueKind.String
+                    ? rang.GetString() : null,
+                root.TryGetProperty("notificationShown", out JsonElement shown)
+                    && shown.ValueKind is JsonValueKind.True or JsonValueKind.False ? shown.GetBoolean() : null,
+                root.TryGetProperty("sound", out JsonElement sound) && sound.ValueKind == JsonValueKind.String
+                    ? sound.GetString() : null);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return new FiredReceipt(taskName, null, null, null);
         }
     }
 
@@ -357,21 +394,19 @@ internal sealed class NativeScheduledNotificationBackend(
         return Encoding.UTF8.GetString(buffer.WrittenSpan);
     }
 
-    private sealed record Outcome(ExternalProcessResult? Result, string? FallbackReason);
-
     private sealed class EffectState
     {
         internal bool Committed { get; set; }
     }
 
-    private sealed class ScriptFailure(string message) : Exception(message);
+    private sealed class ScheduleFailure(string message) : Exception(message);
 }
 
 /// <summary>
-/// The task Register-ScheduledTask stores for WindowsScheduledNotification.ps1 (New-ScheduledTaskAction,
-/// New-ScheduledTaskTrigger -Once/-Daily/-RepetitionInterval, New-ScheduledTaskSettingsSet
-/// -StartWhenAvailable -ExecutionTimeLimit 10 min, the user's interactive token), element by element
-/// as Task Scheduler exports it.
+/// The task of one notification, element by element as Task Scheduler exports it: the ring script run by
+/// powershell.exe at the due time (once, daily or hourly), at most 10 minutes, started late when the PC was off, with
+/// the user's interactive token. It runs on battery and wakes a sleeping PC, so an alarm verified as set rings on a
+/// laptop unplugged or asleep (a PC shut down or hibernated does not wake).
 /// </summary>
 internal static class ScheduledNotificationTaskXml
 {
@@ -381,7 +416,7 @@ internal static class ScheduledNotificationTaskXml
     internal static string Build(
         string kind, string ringScriptPath, DateTimeOffset due, string? trigger, string userSid)
     {
-        // New-ScheduledTaskTrigger -At keeps the local wall time to the second, with its offset.
+        // The trigger keeps the local wall time to the second, with its offset.
         DateTimeOffset local = due.ToLocalTime();
         string startBoundary = local.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture)
             + local.ToString("zzz", CultureInfo.InvariantCulture);
@@ -407,11 +442,12 @@ internal static class ScheduledNotificationTaskXml
             writer.WriteEndElement();
             writer.WriteEndElement();
             writer.WriteStartElement("Settings", Namespace);
-            writer.WriteElementString("DisallowStartIfOnBatteries", Namespace, "true");
-            writer.WriteElementString("StopIfGoingOnBatteries", Namespace, "true");
+            writer.WriteElementString("DisallowStartIfOnBatteries", Namespace, "false");
+            writer.WriteElementString("StopIfGoingOnBatteries", Namespace, "false");
             writer.WriteElementString("ExecutionTimeLimit", Namespace, "PT10M");
             writer.WriteElementString("MultipleInstancesPolicy", Namespace, "IgnoreNew");
             writer.WriteElementString("StartWhenAvailable", Namespace, "true");
+            writer.WriteElementString("WakeToRun", Namespace, "true");
             writer.WriteStartElement("IdleSettings", Namespace);
             writer.WriteElementString("Duration", Namespace, "PT10M");
             writer.WriteElementString("WaitTimeout", Namespace, "PT1H");
