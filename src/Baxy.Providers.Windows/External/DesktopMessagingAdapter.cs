@@ -16,39 +16,54 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     private readonly IDesktopMessagingAutomation _automation;
     private readonly ConcurrentDictionary<string, ResolvedRecipient> _recipients = new();
     private readonly SemaphoreSlim _interaction = new(1, 1);
+    private readonly string _testDestinationsPath;
 
     internal DesktopMessagingAdapter(IClientInteractionProbe probe)
         : this(new WindowsDesktopMessagingAutomation(probe))
     {
     }
 
-    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation)
+    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation, string? testDestinationsPath = null)
     {
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
+        _testDestinationsPath = testDestinationsPath ?? DefaultTestDestinationsPath();
     }
 
     public bool CanHandle(string operation) =>
         operation is "message.recipient.resolve" or "message.send" or "message.draft"
             or "message.send.test";
 
-    // MSG §6 (owner decision 2026-09-17): real sends are allowed ONLY to the
-    // owner's own two test channels. message.send.test forces the destination to
-    // these by construction; the requested recipient is recorded for a truthful
-    // reply but is NEVER used as the send target, so no real third party can be
-    // messaged.
-    private static readonly Dictionary<string, string> ForcedTestDestination =
-        new(StringComparer.Ordinal)
+    // MSG §6 (owner decisions 2026-09-17 and 2026-09-18 §3): real sends are allowed ONLY to the owner's own test
+    // destinations. message.send.test forces the destination to these by construction; the requested recipient is
+    // recorded for a truthful reply but is NEVER used as the send target, so no real third party can be messaged.
+    // C6: the destinations are the owner's private data, never source: <data>/messaging/test-destinations.v1.json,
+    // {"whatsapp": "<chat>", "discord": "<direct message>", "email": "<mailbox>"}, read on each send. Without the file
+    // or the channel in it there is no test destination and nothing is sent.
+    private static string DefaultTestDestinationsPath()
+    {
+        string root = Environment.GetEnvironmentVariable("BAXY_DATA_DIR") is { Length: > 0 } configured
+            ? configured
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "development");
+        return Path.Combine(root, "messaging", "test-destinations.v1.json");
+    }
+
+    private string? ReadTestDestination(string channel)
+    {
+        try
         {
-            ["whatsapp"] = "Música",
-            // D22 (owner, 2026-09-20): the Discord test destination is the direct
-            // message «Ron92» (user .wolfsoultm.4191), no longer «Valeria».
-            ["discord"] = "Ron92",
-            // Owner decision 2026-09-18 (DECISIONES_DUENO_2026-09-18 §3): the mail
-            // test destination is the owner's own test mailbox; the send goes out
-            // through the owner's classic Outlook profile and is verified by the
-            // copy in Sent Items.
-            ["email"] = "autor@example.com",
-        };
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(_testDestinationsPath));
+            return document.RootElement.ValueKind == JsonValueKind.Object
+                && document.RootElement.TryGetProperty(channel, out JsonElement value)
+                && value.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(value.GetString())
+                    ? value.GetString()
+                    : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return null;
+        }
+    }
 
     private static readonly ExternalProcessRunner MailRunner = new();
 
@@ -276,15 +291,15 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         CancellationToken cancellationToken)
     {
         // MSG §6: a real, verified send whose destination is ALWAYS one of the
-        // owner's two test channels. The requested recipient is recorded only so
-        // the reply can say the truth («I sent it to your test group Música, not
-        // to Lucas»); it is never used as the target, so no third party is sent to.
+        // owner's test destinations. The requested recipient is recorded only so
+        // the reply can say the truth («I sent it to your test chat, not to
+        // Lucas»); it is never used as the target, so no third party is sent to.
         string channel = RequiredString(arguments, "channel");
         string requestedRecipient = RequiredString(arguments, "requestedRecipient");
         string text = RequiredString(arguments, "text");
-        if (!ForcedTestDestination.TryGetValue(channel, out string? forced))
+        if (ReadTestDestination(channel) is not { } forced)
         {
-            return Failure("message.send.test", "channel_not_a_test_channel");
+            return Failure("message.send.test", "test_destination_not_configured");
         }
 
         if (string.Equals(channel, "email", StringComparison.Ordinal))
@@ -1276,7 +1291,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     }
 
     // C1: a shown name (a window title, a search row, a header line) names the recipient when it holds the recipient's
-    // whole words in order, case and accents folded: «ron» is not «Ron92», «ana» is not «Juana».
+    // whole words in order, case and accents folded: «ron» is not «Ronaldo», «ana» is not «Juana».
     internal static bool NamesRecipient(string shown, string recipient) =>
         Fold(recipient).Length > 0 && ContainsPhrase(shown, recipient);
 
