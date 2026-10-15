@@ -5,8 +5,9 @@ namespace Baxy.Providers.Windows.External;
 /// <summary>
 /// REOPEN1957 H0701 «Dime cuantos archivos .py hay en el directorio actual»
 /// (D24): «el directorio actual» is the folder of the Explorer window in the
-/// foreground; with no Explorer in front it is the Desktop. The count is of
-/// first-level files by extension; only the folder's own name is reported,
+/// foreground, or the known folder the model names. With neither, it fails:
+/// it took the Desktop in silence (BAXY Renew audit 2026-10-15). The count is
+/// of first-level files by extension; only the folder's own name is reported,
 /// never its path.
 /// </summary>
 internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
@@ -29,17 +30,17 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         """;
 
     private readonly IExternalProcessRunner _runner;
-    private readonly Func<string> _desktop;
+    private readonly Func<string, string?> _knownFolder;
 
     internal ExplorerFolderAdapter()
-        : this(new ExternalProcessRunner(), static () => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory))
+        : this(new ExternalProcessRunner(), WindowsFileToolsAdapter.KnownFolderPath)
     {
     }
 
-    internal ExplorerFolderAdapter(IExternalProcessRunner runner, Func<string> desktop)
+    internal ExplorerFolderAdapter(IExternalProcessRunner runner, Func<string, string?> knownFolder)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
-        _desktop = desktop ?? throw new ArgumentNullException(nameof(desktop));
+        _knownFolder = knownFolder ?? throw new ArgumentNullException(nameof(knownFolder));
     }
 
     public bool CanHandle(string operation) => operation == "filesystem.explorer.count";
@@ -56,6 +57,16 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             extension = "." + extension;
         if (extension.Length < 2 || extension.Length > 16 || extension.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             return ExternalJson.FailureBeforeEffect(operation, "extension_invalid");
+
+        string? named = arguments.TryGetProperty("folder", out JsonElement folderElement)
+            && folderElement.ValueKind == JsonValueKind.String ? folderElement.GetString() : null;
+        if (named is not null)
+        {
+            string? known = _knownFolder(named);
+            return known is null
+                ? ExternalJson.FailureBeforeEffect(operation, "known_folder_invalid")
+                : Count(operation, known, "known_folder", extension);
+        }
 
         string? explorerPath = null;
         try
@@ -81,8 +92,13 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             explorerPath = null;
         }
 
-        string source = explorerPath is not null ? "explorer_foreground" : "desktop";
-        string folder = explorerPath ?? _desktop();
+        return explorerPath is null
+            ? ExternalJson.FailureBeforeEffect(operation, "no_explorer_in_front")
+            : Count(operation, explorerPath, "explorer_foreground", extension);
+    }
+
+    private static ExternalCapabilityReceipt Count(string operation, string folder, string source, string extension)
+    {
         if (!Directory.Exists(folder))
             return ExternalJson.FailureBeforeEffect(operation, "explorer_folder_unavailable");
         int count;

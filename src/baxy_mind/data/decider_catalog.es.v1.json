@@ -54,7 +54,7 @@
   "file.write": "Escribir texto en un archivo nuevo, reemplazar uno existente (su versión anterior va a la Papelera) o añadir al final.",
   "filesystem.copy": "Copiar un archivo ya identificado dentro de la carpeta de trabajo privada de BAXY.",
   "filesystem.create.directory": "Crear una carpeta nueva en Escritorio, Documentos, Descargas o la carpeta de trabajo de BAXY.",
-  "filesystem.explorer.count": "Contar cuántos archivos de un tipo hay en la carpeta abierta en el Explorador, o en el Escritorio.",
+  "filesystem.explorer.count": "Contar cuántos archivos de un tipo hay en una carpeta conocida que se nombra o en la carpeta abierta en el Explorador.",
   "filesystem.file.open.latest": "Abrir el archivo más reciente (el último modificado) de una carpeta conocida, sin dar su nombre.",
   "filesystem.folder.open": "Abrir en el Explorador de archivos una carpeta conocida de Windows, como Descargas o Documentos.",
   "filesystem.known.duplicates": "Buscar archivos repetidos en Descargas, sin borrar ni cambiar nada.",

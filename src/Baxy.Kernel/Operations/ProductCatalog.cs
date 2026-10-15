@@ -557,11 +557,16 @@ public static class ProductCatalog
         // Explorador en primer plano; sin Explorador delante, el escritorio.
         Descriptor(
             "filesystem.explorer.count",
-            Schema([String("extension", maximumUtf8Bytes: 16, nonWhitespace: true)], ["extension"]),
+            Schema(
+                [
+                    String("extension", maximumUtf8Bytes: 16, nonWhitespace: true),
+                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
+                ],
+                ["extension"]),
             OperationRisks.ReadOnly,
             "filesystem.explorer.count.foreground.folder.toplevel.v1",
             ToolExposure.Public,
-            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta que muestra la ventana del Explorador en primer plano (o en el escritorio si no hay un Explorador delante) y nombra esa carpeta sin revelar su ruta."),
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),

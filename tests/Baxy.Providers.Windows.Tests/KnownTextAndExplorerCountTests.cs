@@ -186,7 +186,7 @@ public sealed class KnownTextAndExplorerCountTests
     }
 
     [Test]
-    public async Task TheForegroundExplorerFolderIsCountedByExtensionOrTheDesktopWhenNoneIsInFront()
+    public async Task TheForegroundExplorerFolderOrTheNamedOneIsCountedAndWithNeitherItFails()
     {
         using TemporaryDirectory temporary = new();
         string project = Path.Combine(temporary.Path, "proyecto");
@@ -197,15 +197,18 @@ public sealed class KnownTextAndExplorerCountTests
             await File.WriteAllTextAsync(Path.Combine(project, name), "x");
         await File.WriteAllTextAsync(Path.Combine(desktop, "solo.py"), "x");
         string url = "file:///" + project.Replace('\\', '/');
+        Func<string, string?> known = folder => folder == "desktop" ? desktop : null;
         var inFront = new ExplorerFolderAdapter(
             new ScriptedRunner("{\"foreground\":123,\"path\":\"" + project.Replace("\\", "\\\\") + "\"}"),
-            () => desktop);
-        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\"}"), () => desktop);
+            known);
+        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\"}"), known);
 
         ExternalCapabilityReceipt counted = await inFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":".py"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt fallback = await noneInFront.InvokeAsync(
+        ExternalCapabilityReceipt none = await noneInFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":"py"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt named = await noneInFront.InvokeAsync(
+            "filesystem.explorer.count", Json("""{"extension":"py","folder":"desktop"}"""), CancellationToken.None);
 
         Assert.That(counted.Verified, Is.True, counted.ErrorCode);
         Assert.Multiple(() =>
@@ -216,10 +219,11 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(counted.Result?.GetProperty("folderName").GetString(), Is.EqualTo("proyecto"));
             Assert.That(counted.Result?.GetProperty("source").GetString(), Is.EqualTo("explorer_foreground"));
             Assert.That(counted.Result?.GetRawText(), Does.Not.Contain(temporary.Path.Replace("\\", "\\\\")));
-            Assert.That(fallback.Verified, Is.True, fallback.ErrorCode);
-            Assert.That(fallback.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
-            Assert.That(fallback.Result?.GetProperty("source").GetString(), Is.EqualTo("desktop"));
-            Assert.That(fallback.Result?.GetProperty("folderName").GetString(), Is.EqualTo("Escritorio"));
+            Assert.That(none.ErrorCode, Is.EqualTo("no_explorer_in_front"));
+            Assert.That(named.Verified, Is.True, named.ErrorCode);
+            Assert.That(named.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(named.Result?.GetProperty("source").GetString(), Is.EqualTo("known_folder"));
+            Assert.That(named.Result?.GetProperty("folderName").GetString(), Is.EqualTo("Escritorio"));
         });
     }
 }
