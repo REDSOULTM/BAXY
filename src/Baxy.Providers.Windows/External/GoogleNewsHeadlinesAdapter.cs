@@ -111,8 +111,8 @@ internal sealed class GoogleNewsHeadlinesAdapter : IExternalOperationAdapter, ID
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    // M51: web.search asks this same feed's search for what changes by the day (news,
-    // prices, schedules), in the edition of the query's language.
+    // web.search with source=news asks this same feed's search, in the edition of the
+    // language the model chose (es or en).
     internal static Uri SearchUri(string topic, string language) =>
         new(FeedAuthority + "/search?q=" + Uri.EscapeDataString(topic) + "&"
             + (language == "en" ? EnglishEdition : Edition));

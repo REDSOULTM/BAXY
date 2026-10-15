@@ -15,7 +15,6 @@
     <ProjectReference Include="..\..\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Fixtures\Wikimedia\*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Fixtures\Espn\*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Fixtures\ScheduledNotification\*.xml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Fixtures\TextMarks\*.png" CopyToOutputDirectory="PreserveNewest" />
