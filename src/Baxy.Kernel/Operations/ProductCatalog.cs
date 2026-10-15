@@ -1107,7 +1107,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
             ToolExposure.Public,
-            "Busca y reproduce el primer resultado musical pertinente en Spotify y verifica now-playing."),
+            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda y verifica now-playing."),
         Descriptor(
             "media.play.youtube",
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
