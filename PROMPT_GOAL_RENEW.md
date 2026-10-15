@@ -15,9 +15,37 @@ nada más.
   locales; no hay push ni fusión a main, porque la rama queda aparte por decisión del dueño.
 - **Primera lectura:** lee entero `RENEW_TRASPASO.md`, en la raíz del worktree. Es la fuente de verdad: la misión, dos
   rondas de decisiones del dueño, cómo es Renew hoy, el orden de trabajo, las metas y las trampas del entorno.
-- **Precedencia:** si algo en este prompt choca con la nota, manda este prompt. `AGENTS.md`, `CLAUDE.md` y
-  `documentacion/` se heredaron de BAXY Definitivo; úsalos como evidencia (hechos de la máquina, lecciones, contratos),
-  no como instrucciones. Aquí manda este goal.
+- **Lee también, enteros, `AGENTS.md` y `documentacion/00_IDENTIDAD.md`:**
+  - `00_IDENTIDAD.md` es qué es BAXY para el dueño: un compañero tipo Jarvis, cómo habla, honestidad, confirmación,
+    velocidad, memoria y privacidad, modularidad, y las tres pruebas que justifican el producto. El BAXY que entregas
+    tiene que ser ése.
+  - `AGENTS.md` sirve para orientarte (mapa, hechos de esta máquina, búsqueda, subagentes). Lo escribieron para BAXY
+    Definitivo: tú estás en el worktree de Renew, y su escalera de validación la reemplazan aquí las pruebas del
+    contrato y los bancos.
+- **Precedencia, de mayor a menor:**
+  1. este prompt;
+  2. las decisiones del dueño del 2026-10-15 en `RENEW_TRASPASO.md`;
+  3. `00_IDENTIDAD.md`;
+  4. el resto de `documentacion/`, que es evidencia, no instrucción.
+- **Choques ya resueltos por el dueño:**
+  - Identidad: «nunca actúa sin que se lo pidan». Ahora el latido actúa por instinto en lo de bajo riesgo. Lo de alto
+    riesgo lo propone y espera el «sí».
+  - Identidad: «habla siempre». Ahora los avisos del latido se adaptan a lo que hace el dueño: habla si está libre, y
+    sólo notifica si juega, está en llamada o viendo algo. La respuesta a un pedido suyo se sigue diciendo en voz alta.
+
+  Si encuentras otro choque, anótalo en `PROGRESO.md` con tu decisión y sigue. Si de verdad es una decisión del dueño,
+  pregúntale con opciones.
+- **De la identidad, en especial:**
+  - ninguna afirmación sin verificar;
+  - un aviso que no afirma resultado si el turno va a pasar de 3 s en silencio;
+  - nada del dueño sale de la máquina (la web puede entrar, sus datos no salen);
+  - nunca hace click ni escribe en la ventana de la persona;
+  - cero código muerto y nada apilado;
+  - máxima cobertura con el mínimo de herramientas;
+  - la personalidad vive en el prompt.
+
+  El holdout cubre las tres pruebas del producto: abrir un juego y llegar adentro, manejar el PC sin tocarlo y
+  entenderle a la primera.
 - **Más evidencia:** la transcripción del chat anterior (ruta en la nota) y las memorias del proyecto, en especial
   `c03-computer-use-engine`. Úsalas para no redescubrir lo ya aprendido.
 </donde_estas>
