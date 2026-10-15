@@ -157,3 +157,7 @@ tocan lo cambiado; en el notebook pasan).
   juego propio de 10 frases (no copiadas de los bancos): descripciones actuales 6/10; descripciones «TO a level» frente
   a «BY an amount» 4/10; una sola herramienta `audio.volume {level|change}` 6/10 (cambia los errores: «baja al 15» →
   change −85). Nada mejora: **límite medido**, el catálogo se queda como está.
+- **Recursos (PC, producto real, todo cargado):** llama-server mapeaba el GGUF y sus páginas seguían en el working set
+  después de subir a la GPU (USS 3237 MiB aislado; en el notebook Windows las recortaba). Con `--load-mode none`: 1132
+  MiB aislado, misma VRAM y velocidad. Producto (r2): VRAM 3913 MiB; RAM arnés 1649 MiB (llama-server 1508, mente 39,
+  Piper 102); con k4 y Ultra 2617 MiB. Antes (r1): arnés 3752 MiB.
