@@ -11,7 +11,7 @@ namespace Baxy.Providers.Windows.Tests;
 /// an application, WindowsFileToolsAdapter): prueba.png opens in Fotos and notas.txt in Bloc de notas, both packaged,
 /// the window that shows each names its file, and the window in front before is in front after. The counter-case: a
 /// .txt never goes to an interpreter of the Start catalog. Never runs in a suite: Explicit and
-/// BAXY_CU_ARCHIVO_EMPAQUETADO_LIVE=1, only with the desktop turn (scripts/cu_live/turno.sh); the windows it opens close
+/// BAXY_CU_ARCHIVO_EMPAQUETADO_LIVE=1, only while no one uses the desktop; the windows it opens close
 /// by their exact process id. The files are those of D:\Perfil\Documentos\baxy-prueba-v3 (the live batch's).
 /// Measured 2026-10-08: all pass one by one; run together, Bloc de notas after Fotos kept the front (Windows refused the
 /// hand-back of a second opening in one process) until the right was won by a bid (ForegroundRight,

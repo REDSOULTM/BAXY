@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
@@ -591,20 +590,6 @@ public sealed partial class UserInputPauseTests
     [Test]
     public void TheMarkIsBaxyInAscii() =>
         Assert.That(BaxyInputMark.Value, Is.EqualTo(BinaryPrimitives.ReadUInt32BigEndian("BAXY"u8)));
-
-    // Round 1 integration: the live harness's annoyance meter (scripts/cu_live/molestia/w32.py) tells BAXY's input by
-    // the same mark in another process and language; this keeps the two in step instead of trusting a copy.
-    [Test]
-    public void TheAnnoyanceMeterReadsTheProductsMark()
-    {
-        string w32 = File.ReadAllText(Path.Combine(RepositoryRoot(), "scripts", "cu_live", "molestia", "w32.py"));
-        Match mark = Regex.Match(w32, @"^BAXY_MARK\s*=\s*0x(?<hex>[0-9A-Fa-f_]+)", RegexOptions.Multiline);
-
-        Assert.That(mark.Success, Is.True, "w32.py declares BAXY_MARK");
-        Assert.That(
-            uint.Parse(mark.Groups["hex"].Value.Replace("_", string.Empty, StringComparison.Ordinal), NumberStyles.HexNumber, CultureInfo.InvariantCulture),
-            Is.EqualTo(BaxyInputMark.Value));
-    }
 
     // A file that declares or calls one of the three Win32 injectors (prose that only names them has no parenthesis).
     [GeneratedRegex(@"\b(SendInput|mouse_event|keybd_event)\s*\(")]

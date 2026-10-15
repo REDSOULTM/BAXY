@@ -11,8 +11,7 @@ namespace Baxy.Providers.Windows.Tests;
 /// without activation (never in front) are read with their common controls as themselves, through the worker's
 /// client-side providers: the character table's combo boxes, buttons and list items, the system information's tree
 /// items; and a file manager whose title is the folder it shows is found by its executable's description. Never runs
-/// in a suite: Explicit and BAXY_CU_ARBOL_LIVE_CHECK=1. Run it only with the desktop turn (scripts/cu_live/turno.sh
-/// tomar: its agent lock first, then no live.lock); it closes what it opened by its exact process id.
+/// in a suite: Explicit and BAXY_CU_ARBOL_LIVE_CHECK=1. Run it only while no one uses the desktop; it closes what it opened by its exact process id.
 /// </summary>
 [TestFixture]
 [Explicit("Opens windows on the person's desktop.")]

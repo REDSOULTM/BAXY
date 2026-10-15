@@ -11,8 +11,8 @@ namespace Baxy.Providers.Windows.Tests;
 /// Goal v3 point 2, measured on the desktop: the worker's mouse-free primitives on a WinForms form of its own that
 /// never takes the front: an unnamed field labelled by the text at its left (the view names it «Ancho»), its value
 /// replaced (1366 → 800, not 1366800), a list-only combo box's entry chosen by pattern, and an item of a 300-row list
-/// brought into view («reveal»). Never runs in a suite: Explicit and BAXY_CU_TIPOS_LIVE_CHECK=1. Run it only with the
-/// desktop turn (scripts/cu_live/turno.sh tomar: its agent lock first, then no live.lock); it closes its form by its
+/// brought into view («reveal»). Never runs in a suite: Explicit and BAXY_CU_TIPOS_LIVE_CHECK=1. Run it only while
+/// no one uses the desktop; it closes its form by its
 /// exact process.
 /// </summary>
 [TestFixture]

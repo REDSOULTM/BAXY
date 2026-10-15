@@ -806,7 +806,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         """ + KeypadFunctions + """
         $root=[System.Windows.Automation.AutomationElement]::RootElement
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
-        $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($f.Current.Name -match '^(Calculadora|Calculator)$'){$calc=$f;break}}
+        $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){foreach($c in $f.FindAll([System.Windows.Automation.TreeScope]::Children,[System.Windows.Automation.Condition]::TrueCondition)){$p=Get-Process -Id $c.Current.ProcessId -ErrorAction SilentlyContinue;if($p -and [string]$p.Path -like '*\WindowsApps\Microsoft.WindowsCalculator_*'){$calc=$f;break}};if($calc){break}}
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $keys=($expr -replace '[^0-9+\-*/.]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}

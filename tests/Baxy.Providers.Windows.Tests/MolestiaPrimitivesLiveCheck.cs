@@ -8,9 +8,8 @@ namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
 /// The primitives of the round-1 pending list on the real desktop, opt-in only (Explicit and BAXY_MOLESTIA_LIVE=1),
-/// meant to run while the harness's annoyance meter (scripts/cu_live/molestia/medidor.py) types in its own window:
-/// with BAXY_MOLESTIA_PERSON_FOREGROUND=1 the window in front when the test starts (the meter's simulated user) is
-/// the person's; otherwise the test opens one. Every other window is the test's own (WinForms forms closed by their
+/// with BAXY_MOLESTIA_PERSON_FOREGROUND=1 the window in front when the test starts is the person's; otherwise the test
+/// opens one. Every other window is the test's own (WinForms forms closed by their
 /// exact process id), and every key BAXY sends goes to them:
 /// <list type="number">
 /// <item>a click right after an opening, on the opened window behind the person's, pressed by its accessible tree:

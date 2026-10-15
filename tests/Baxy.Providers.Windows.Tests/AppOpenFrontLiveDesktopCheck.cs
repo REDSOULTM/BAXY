@@ -13,7 +13,7 @@ namespace Baxy.Providers.Windows.Tests;
 /// hand-backs refused (SetForegroundWindow false with the input attached, error 0) and Bloc de notas taking the front
 /// back 30 ms after its own from another of its processes; after it (ForegroundRight): the three held, the first with
 /// no bid, Paint with one, Calculadora with one bid and a second try. Never
-/// runs in a suite: Explicit and BAXY_CU_FRENTE_LIVE=1, only with the desktop turn (scripts/cu_live/turno.sh); the
+/// runs in a suite: Explicit and BAXY_CU_FRENTE_LIVE=1, only while no one uses the desktop; the
 /// windows it opens close by their exact process id.
 /// </summary>
 [TestFixture]

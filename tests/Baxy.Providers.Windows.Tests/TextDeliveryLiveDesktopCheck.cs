@@ -11,8 +11,7 @@ namespace Baxy.Providers.Windows.Tests;
 /// Goal v3, point 0, fix 1, measured on the desktop: which windows take a text or a key delivered without the
 /// keyboard and without the front (a WinForms form of its own never activated, Windows 11 Notepad and the Settings
 /// search box behind a window of its own). Never runs in a suite: it is Explicit and also needs
-/// BAXY_CU_TEXT_LIVE_CHECK=1. Run it only with the live turn (scripts/cu_live/turno.sh tomar: its agent lock first,
-/// then no live.lock); it opens its own windows, never touches one it did not open (Notepad and Settings are skipped
+/// BAXY_CU_TEXT_LIVE_CHECK=1. Run it only while no one uses the desktop; it opens its own windows, never touches one it did not open (Notepad and Settings are skipped
 /// when already running) and closes each by its exact process id. It prints one table row per delivery.
 /// </summary>
 [TestFixture]
