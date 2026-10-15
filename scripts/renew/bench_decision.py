@@ -23,7 +23,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 # The catalog changed after the banks were written (operations merged or replaced, 2026-10-15): an expectation that
 # names a retired operation is met by the operation that replaced it, with its fixed arguments and its arguments
-# renamed; an argument with no counterpart is not checked. Public, versioned, and applied without opening the banks.
+# renamed; an argument with no counterpart is not checked. An operation retired with nothing in its place (op null) is
+# met by saying so. Public, versioned, and applied without opening the banks.
 EQUIVALENCE_FILE = Path(__file__).with_name("catalog_equivalence.json")
 EQUIVALENCE = json.loads(EQUIVALENCE_FILE.read_text(encoding="utf-8")) if EQUIVALENCE_FILE.is_file() else {}
 
@@ -65,11 +66,15 @@ def judge(expect, result, arguments):
     kind = result.get("kind")
     if expect["kind"] == "call":
         op, args, fixed = current(expect["op"], expect.get("args"))
+        if op is None:  # retired with no replacement: BAXY says it does not do that
+            return kind == "conversation" and bool(str(result.get("reply", "")).strip())
         return (kind == "action" and result.get("operation") == op
                 and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
         for candidate in expect["ops"]:
             op, _, fixed = current(candidate)
+            if op is None and kind == "conversation":
+                return True
             if kind == "action" and result.get("operation") == op and all(
                     arg_ok(v, (arguments or {}).get(k)) for k, v in fixed.items()):
                 return True

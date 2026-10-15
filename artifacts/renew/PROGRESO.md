@@ -136,3 +136,11 @@ tocan lo cambiado; en el notebook pasan).
   `%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1`: `file.read` de un PDF lo usa y faltaba en el PC.
 - `app.open` devuelve `windowId` de la ventana que verificó; probado: abrir, minimizar y maximizar el Bloc de notas
   encadenando el id que devuelve cada acción.
+- Fusionado el notebook (7779bcd2): colores sólo hex, web.download declara la portada, winget «sigue corriendo» no es
+  éxito, Spotify verifica el play/pausa, fuera las 7 `routine.*` (nada las ejecutaba) y WindowsInventoryAdapter sólo
+  como respaldo PnP. En la App, en la misma fusión: fuera `/triggers` y el panel de disparadores (servían las rutinas);
+  el panel de herramientas lista las que ve el modelo (antes contaba 180 y mostraba una lista vacía). Los jueces
+  aceptan «eso no lo hago» para una operación retirada sin reemplazo (`"op": null` en catalog_equivalence).
+- Falsedades práctica p3 (sesión desbloqueada, juez con «hechos de Windows»): **2** en 26 líneas (p1: 4). F013 (ruta
+  pedida dicha como hecha, el archivo fue a la raíz del perfil) y F015 (aceptó «¿ya cerraste…?»): regla 2 ampliada;
+  F013 espera que file.* acepte rutas absolutas (pedido al notebook).
