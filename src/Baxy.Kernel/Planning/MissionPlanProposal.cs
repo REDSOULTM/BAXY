@@ -198,7 +198,7 @@ public static class MissionPlanValidator
             // FILES1705 «crea un archivo de texto con los 5 procesos que más
             // memoria usan»: the file's text is projected from the verified
             // process listing, so the write may defer its arguments to it.
-            "filesystem.write.text" => ["system.process.list"],
+            "file.write" => ["system.process.list"],
             // MEME2053 «Tienes algun meme?»: the picture the image search
             // downloads is the file the viewer opens; its name exists only in
             // the verified download, so the open defers its arguments to it.

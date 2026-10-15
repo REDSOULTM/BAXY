@@ -376,15 +376,13 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 "cdp_browser_session_required",
             "filesystem.folder.open" => "windows_shell_folder_adapter_required",
             "filesystem.file.open.latest" => "windows_shell_file_adapter_required",
-            "filesystem.known.duplicates" or "filesystem.known.list" or "filesystem.known.search"
+            "file.edit" or "file.find" or "file.read" or "filesystem.known.duplicates"
                 or "filesystem.known.trash.named" =>
                 "windows_known_folder_authority_required",
             "filesystem.path.ensure.absent" => "windows_absolute_path_absence_authority_required",
-            "document.pdf.read" => "windows_known_pdf_text_authority_required",
-            "document.text.read" => "windows_known_text_file_authority_required",
             "filesystem.explorer.count" => "windows_shell_explorer_folder_authority_required",
-            "filesystem.sandbox.append.named" or "filesystem.sandbox.diff.named"
-                or "filesystem.sandbox.move.named" => "sandbox_named_file_authority_required",
+            "filesystem.sandbox.diff.named" or "filesystem.sandbox.move.named" =>
+                "sandbox_named_file_authority_required",
             "backup.known.create" or "backup.known.list" or "backup.known.restore.latest"
                 or "backup.known.verify.latest" =>
                 "windows_known_backup_authority_required",

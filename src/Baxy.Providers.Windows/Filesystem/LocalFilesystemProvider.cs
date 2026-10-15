@@ -13,6 +13,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 {
     private const int MaximumHandles = 512;
     private const int MaximumTextBytes = 1_048_576;
+    private const long MaximumAppendTargetBytes = 10L * 1024 * 1024;
     private static readonly TimeSpan HandleLifetime = TimeSpan.FromMinutes(5);
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
     private static readonly ConcurrentDictionary<string, object> RootLocks =
@@ -24,10 +25,17 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private readonly Dictionary<string, Handle> _handles = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TrashHandle> _trashHandles = new(StringComparer.Ordinal);
     private readonly TimeProvider _time;
+    private readonly IRecycleBin _recycleBin;
 
     public LocalFilesystemProvider(string rootDirectory, TimeProvider? timeProvider = null)
+        : this(rootDirectory, WindowsRecycleBin.Instance, timeProvider)
+    {
+    }
+
+    internal LocalFilesystemProvider(string rootDirectory, IRecycleBin recycleBin, TimeProvider? timeProvider = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(rootDirectory);
+        _recycleBin = recycleBin ?? throw new ArgumentNullException(nameof(recycleBin));
         _root = Path.GetFullPath(rootDirectory);
         _trash = Path.Combine(_root, ".trash");
         _backups = Path.Combine(_root, ".backups");
@@ -124,43 +132,51 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
     }
 
-    public FilesystemMutationResult WriteText(
-        string relativePath,
-        string text,
-        string? expectedSha256) =>
-        WriteText(relativePath, text, expectedSha256, folder: null);
-
+    /// <summary>
+    /// Writes UTF-8 text atomically (a temporary file beside it, then a move). Replacing an existing file takes its
+    /// exact current SHA-256, and its previous version goes to the Recycle Bin first, so the change stays recoverable
+    /// by the person; appending keeps every byte already there (the text goes in the file's own encoding) and takes
+    /// the hash only when it is given. The same content already there is the state reached, with nothing written.
+    /// </summary>
     public FilesystemMutationResult WriteText(
         string relativePath,
         string text,
         string? expectedSha256,
-        string? folder)
+        string? folder = null,
+        bool append = false)
     {
         string root = RootFor(folder);
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
-        byte[] bytes = StrictUtf8.GetBytes(normalizedText);
-        string desiredHash = Hex(SHA256.HashData(bytes));
         lock (_gate)
         {
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true);
+            if (Directory.Exists(path)) throw Error("destination_is_directory");
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             bool exists = File.Exists(path);
-            if (exists)
+            byte[] previous = [];
+            if (exists && append)
             {
-                string current = HashFile(path);
-                if (string.Equals(current, desiredHash, StringComparison.Ordinal))
-                    return Mutation(Issue(path), path, reachedState: true);
-                if (!IsHash(expectedSha256) || !string.Equals(current, expectedSha256, StringComparison.Ordinal))
-                    throw Error("version_conflict");
+                if (new FileInfo(path).Length > MaximumAppendTargetBytes) throw Error("file_too_large");
+                previous = File.ReadAllBytes(path);
             }
-            else if (expectedSha256 is not null)
-            {
-                throw Error("version_conflict");
-            }
+            byte[] bytes = append
+                ? [.. previous, .. TextFileEncoding.EncodeAppended(previous, normalizedText)]
+                : StrictUtf8.GetBytes(normalizedText);
+            string desiredHash = Hex(SHA256.HashData(bytes));
+            string? current = !exists ? null : append ? Hex(SHA256.HashData(previous)) : HashFile(path);
+            if (current is not null && string.Equals(current, desiredHash, StringComparison.Ordinal))
+                return Mutation(Issue(path, root), path, reachedState: true, previousVersionRecycled: false);
+            bool conflict = current is null
+                ? expectedSha256 is not null
+                : append
+                    ? expectedSha256 is not null && !string.Equals(current, expectedSha256, StringComparison.Ordinal)
+                    : !IsHash(expectedSha256) || !string.Equals(current, expectedSha256, StringComparison.Ordinal);
+            if (conflict) throw Error("version_conflict");
 
             string temporary = Path.Combine(
                 Path.GetDirectoryName(path)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
+            bool recycled = false;
             try
             {
                 using (var stream = new FileStream(
@@ -170,8 +186,23 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                     stream.Write(bytes);
                     stream.Flush(flushToDisk: true);
                 }
-                if (exists) File.Move(temporary, path, overwrite: true);
-                else File.Move(temporary, path);
+                if (exists && append)
+                {
+                    if (!string.Equals(HashFile(path), current, StringComparison.Ordinal)) throw Error("version_conflict");
+                    File.Move(temporary, path, overwrite: true);
+                }
+                else if (exists)
+                {
+                    // The previous version is the person's: it goes to the Recycle Bin before the new one takes its
+                    // place, and when the bin cannot take it nothing is replaced.
+                    if (!_recycleBin.Recycle(path)) throw Error("previous_version_not_recycled");
+                    recycled = true;
+                    File.Move(temporary, path);
+                }
+                else
+                {
+                    File.Move(temporary, path);
+                }
             }
             finally
             {
@@ -179,7 +210,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw Error("verification_failed");
-            return Mutation(Issue(path, root), path, reachedState: false);
+            return Mutation(Issue(path, root), path, reachedState: false, previousVersionRecycled: recycled);
         }
     }
 
@@ -357,11 +388,12 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             includeHash && !directory ? HashFile(path) : null);
     }
 
-    private static FilesystemMutationResult Mutation(string id, string path, bool reachedState)
+    private static FilesystemMutationResult Mutation(
+        string id, string path, bool reachedState, bool? previousVersionRecycled = null)
     {
         FilesystemEntry entry = Entry(id, path, includeHash: File.Exists(path));
         return new FilesystemMutationResult(
-            entry.ResourceId, entry.Name, entry.Kind, entry.Size, entry.Sha256, reachedState);
+            entry.ResourceId, entry.Name, entry.Kind, entry.Size, entry.Sha256, reachedState, previousVersionRecycled);
     }
 
     private string Issue(string path) => Issue(path, _root);

@@ -12,8 +12,7 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         _root = Path.Combine(Path.GetFullPath(dataRoot), "filesystem-sandbox");
 
     public bool CanHandle(string operation) => operation is
-        "filesystem.sandbox.append.named" or "filesystem.sandbox.diff.named"
-        or "filesystem.sandbox.move.named";
+        "filesystem.sandbox.diff.named" or "filesystem.sandbox.move.named";
 
     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -26,8 +25,6 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         {
             return ValueTask.FromResult(operation switch
             {
-                "filesystem.sandbox.append.named" => Append(
-                    operation, arguments, effectBoundary),
                 "filesystem.sandbox.diff.named" => Diff(operation, arguments),
                 "filesystem.sandbox.move.named" => Move(
                     operation, arguments, effectBoundary),
@@ -50,39 +47,6 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             return ValueTask.FromResult(effectBoundary.Failure(
                 operation, "sandbox_named_filesystem_unavailable"));
         }
-    }
-
-    private ExternalCapabilityReceipt Append(
-        string operation,
-        JsonElement arguments,
-        ExternalEffectBoundary effectBoundary)
-    {
-        string fileName = SafeFileName(ExternalJson.RequiredString(arguments, "fileName"));
-        string text = arguments.GetProperty("text").GetString() ?? string.Empty;
-        string path = ResolveUnique(fileName, exact: true);
-        var info = new FileInfo(path);
-        if (info.Length > 10 * 1024 * 1024)
-            return ExternalJson.Failure(operation, "sandbox_named_file_too_large");
-        long beforeLength = info.Length;
-        string beforeHash = Hash(path);
-        effectBoundary.Cross();
-        File.AppendAllText(path, text, new UTF8Encoding(false));
-        byte[] expected = Encoding.UTF8.GetBytes(text);
-        using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        if (stream.Length != beforeLength + expected.Length)
-            return ExternalJson.Failure(operation, "sandbox_append_length_postread_failed", true);
-        stream.Position = beforeLength;
-        byte[] observed = new byte[expected.Length];
-        stream.ReadExactly(observed);
-        if (!observed.SequenceEqual(expected))
-            return ExternalJson.Failure(operation, "sandbox_append_content_postread_failed", true);
-        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("fileName", fileName); writer.WriteString("previousSha256", beforeHash);
-            writer.WriteString("sha256", Hash(path)); writer.WriteNumber("appendedBytes", expected.Length);
-            writer.WriteString("authority", "sandbox_named_append_hash_postread"); writer.WriteEndObject();
-        }), effectObserved: true);
     }
 
     private ExternalCapabilityReceipt Move(

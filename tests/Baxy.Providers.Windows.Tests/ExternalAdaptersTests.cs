@@ -1729,20 +1729,16 @@ public sealed class ExternalAdaptersTests
     };
 
     [Test]
-    public async Task NamedSandboxFilesAppendDiffAndMoveWithHashPostreads()
+    public async Task NamedSandboxFilesDiffAndMoveWithHashPostreads()
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "filesystem-sandbox");
         Directory.CreateDirectory(sandbox);
-        await File.WriteAllTextAsync(Path.Combine(sandbox, "notas.txt"), "uno");
         await File.WriteAllTextAsync(Path.Combine(sandbox, "README.md"), "uno\ndos\n");
         await File.WriteAllTextAsync(Path.Combine(sandbox, "README.backup.md"), "uno\ntres\n");
         await File.WriteAllTextAsync(Path.Combine(sandbox, "backup.txt"), "payload");
         var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path);
 
-        ExternalCapabilityReceipt appended = await adapter.InvokeAsync(
-            "filesystem.sandbox.append.named",
-            Json("""{"fileName":"notas.txt","text":"\n"}"""), CancellationToken.None);
         ExternalCapabilityReceipt diff = await adapter.InvokeAsync(
             "filesystem.sandbox.diff.named",
             Json("""{"leftQuery":"README.md","rightQuery":"backup"}"""),
@@ -1754,8 +1750,6 @@ public sealed class ExternalAdaptersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(appended.Verified, Is.True);
-            Assert.That(appended.Result?.GetProperty("appendedBytes").GetInt32(), Is.EqualTo(1));
             Assert.That(diff.Verified, Is.True);
             Assert.That(diff.EffectMayHaveOccurred, Is.False);
             Assert.That(diff.Result?.GetProperty("changedLines")[0].GetInt32(), Is.EqualTo(2));
