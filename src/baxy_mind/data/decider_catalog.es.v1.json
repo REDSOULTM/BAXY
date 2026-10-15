@@ -154,7 +154,7 @@
   "web.download": "Descargar un archivo o una imagen de internet a una carpeta, por su dirección o buscando la imagen.",
   "web.fetch": "Leer una página web pública como texto y devolver su título, su dirección final y su contenido.",
   "web.news.headlines": "Leer los titulares de noticias del día, en general o sobre un tema.",
-  "web.search": "Buscar en internet información o sitios cercanos y devolver los resultados.",
+  "web.search": "Buscar en una fuente pública (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) y devolver lo que esa fuente devolvió.",
   "wifi.connect": "Conectarse a una red Wi-Fi guardada que ya está identificada.",
   "wifi.connect.named": "Conectarse a una red Wi-Fi guardada por su nombre o por el lugar (casa, trabajo, oficina).",
   "wifi.disconnect": "Desconectarse de la red Wi-Fi actual.",

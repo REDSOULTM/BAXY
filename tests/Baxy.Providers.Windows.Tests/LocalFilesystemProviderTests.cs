@@ -223,6 +223,28 @@ public sealed class LocalFilesystemProviderTests
             Throws.TypeOf<FilesystemProviderException>());
     }
 
+    // A full path inside the folder is the same place as its relative path; one outside it is refused before writing.
+    [Test]
+    public void AFullPathInsideTheFolderIsWrittenThereAndOneOutsideIsRefused()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+
+        provider.WriteText(Path.Combine(sandbox, "viaje", "plan.txt"), "uno", null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "viaje", "plan.txt")), Is.EqualTo("uno"));
+            Assert.That(
+                () => provider.WriteText(Path.Combine(temporary.Path, "fuera.txt"), "dos", null),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_outside_sandbox"));
+            Assert.That(File.Exists(Path.Combine(temporary.Path, "fuera.txt")), Is.False);
+        });
+    }
+
     private sealed class TemporaryDirectory : IDisposable
     {
         public TemporaryDirectory()

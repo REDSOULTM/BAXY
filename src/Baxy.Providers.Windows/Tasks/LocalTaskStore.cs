@@ -249,16 +249,18 @@ public sealed class LocalTaskStore : ILocalTaskStore
         return normalized;
     }
 
+    // «due» is the person's time: a date-time without an offset is local, as the model is told (only fields ending in
+    // Utc are UTC); it was taken as UTC and moved by the PC's offset (BAXY Renew audit 2026-10-15).
     private static DateTimeOffset? ParseDue(string? due)
     {
         if (due is null) return null;
         if (!DateTimeOffset.TryParse(
                 due,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeUniversal,
+                DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal,
                 out DateTimeOffset parsed))
         {
-            throw new LocalTaskValidationException("due must be an ISO date-time with offset.");
+            throw new LocalTaskValidationException("due must be an ISO date-time.");
         }
 
         return parsed.ToUniversalTime();

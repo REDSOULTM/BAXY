@@ -1,19 +1,11 @@
-using System.Buffers;
-using System.Globalization;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
-// D32 (dueño, 2026-09-28): la búsqueda funciona sola, sin cuenta ni clave de nadie.
-// Desde el 26-09 los buscadores tratan como robot a esta red (desafíos, resultados
-// basura), y raspar su HTML no sirve para un producto que se distribuye. Lo que un
-// saber enciclopédico contesta («quién escribió Drácula», «capital de Australia»)
-// lo contesta la API abierta de Wikipedia: una petición por idioma, en serie, con el
-// User-Agent que pide la política de Wikimedia (nombre/versión y la URL del proyecto;
-// nunca nada de la persona). Sale sólo la consulta, reducida a sus palabras de
-// contenido.
+// D32 (dueño, 2026-09-28): la búsqueda funciona sola, sin cuenta ni clave de nadie. web.search con
+// source=encyclopedia pregunta a la API abierta de Wikipedia, en el idioma que eligió el modelo (language), con el
+// User-Agent que pide la política de Wikimedia (nombre/versión y la URL del proyecto; nunca nada de la persona). Sale
+// sólo la consulta tal como la escribió el modelo; vuelve cada artículo con el inicio que la API devuelve.
 internal sealed class WikipediaSearchSource(HttpClient http)
 {
     private const string ProjectUrl = "https://github.com/REDSOULTM/baxy-assistant";
@@ -28,127 +20,6 @@ internal sealed class WikipediaSearchSource(HttpClient http)
 
     internal static string Authority(string language) => "wikipedia_" + language + "_api";
 
-    // Una enciclopedia no sabe lo que cambia cada día ni lo que hay cerca de la
-    // persona: una consulta que nombra el momento, un precio, un horario, una noticia
-    // o un marcador va directa al buscador general. Palabras plegadas (sin tildes).
-    // Quedan fuera las que también nombran saberes («partido político», «Semana
-    // Santa», «quién ganó el Mundial de 2010», «código abierto»).
-    internal static bool IsEncyclopedic(string query)
-    {
-        string[] words = FoldedWords(query);
-        return !words.Any(TimeBoundWords.Contains) && !words.Any(OpinionWords.Contains) && !AsksWorth(words)
-            && !AsksWhatItIsWorth(words) && !AsksWhatIsShowing(query);
-    }
-
-    // M98 (DEV-D v3x D-p28-t2 «Look for movies in Union City.» after a cinema of that town → the article on the 1980
-    // film «Union City»): films, cinemas or a billboard in a named place ask what is showing there, a listing the
-    // general engine answers (cinema pages, showtimes) and neither an encyclopedia nor a headline does. Films set,
-    // shot or made in a place («films set in Italy», «películas rodadas en Almería») are a subject, not a listing.
-    private static readonly Regex ShowingIn = new(
-        @"\b(?i:movies|films|pel[ií]culas|pelis|cines?|cinemas?|(?:movie\s+)?theat(?:er|re)s?|showtimes|cartelera)\b"
-        + @"(?:\s+(?!(?i:set|shot|filmed|made|produced|rodad\w*|filmad\w*|ambientad\w*|hech[ao]s?|sobre|about)\b)[\w'’-]+){0,3}?"
-        + @"\s+(?i:in|en|at|near|cerca\s+de)\s+\p{Lu}",
-        RegexOptions.CultureInvariant, TimeSpan.FromSeconds(2));
-
-    internal static bool AsksWhatIsShowing(string query)
-    {
-        try
-        {
-            return ShowingIn.IsMatch(query);
-        }
-        catch (RegexMatchTimeoutException)
-        {
-            return false;
-        }
-    }
-
-    // M65 (conv-v3g held-out t14 «qué dijo la crítica sobre Oppenheimer» → «The Act of Killing», t15 «¿la serie
-    // The Last of Us vale la pena?» → «The Last Ship»): lo que opina la gente o la crítica de una obra no lo guarda
-    // una enciclopedia; va a las noticias y al buscador general, y si ninguno responde, la respuesta dice que no pudo
-    // buscar en vez de contestar con otro artículo.
-    private static readonly HashSet<string> OpinionWords = new(StringComparer.Ordinal)
-    {
-        "opinion", "opiniones", "opina", "opinan", "opinaron", "critica", "criticas", "criticos",
-        "resena", "resenas", "valoracion", "valoraciones", "calificacion", "calificaciones",
-        "review", "reviews", "reviewed", "rating", "ratings", "worth", "recomiendan", "recomendable",
-    };
-
-    // «vale la pena», «piensa/dice la gente», «what people think/say».
-    private static bool AsksWorth(string[] words)
-    {
-        for (int i = 0; i + 1 < words.Length; i++)
-        {
-            if (words[i] == "vale" && words[i + 1] == "la" && i + 2 < words.Length && words[i + 2] == "pena") return true;
-            if (words[i] is "piensa" or "piensan" or "dice" or "dicen" && words[i + 1] == "la"
-                && i + 2 < words.Length && words[i + 2] == "gente") return true;
-            if (words[i] == "people" && words[i + 1] is "think" or "say") return true;
-        }
-        return false;
-    }
-
-    // M81 (DEV-D v3m D-s012 «lo que vale la acción de Movistar» → el artículo del canal «Acción por Movistar Plus+»):
-    // «cuánto vale», «lo que vale» preguntan un precio de hoy, como «cuánto cuesta»; «vale la pena» es opinión.
-    private static bool AsksWhatItIsWorth(string[] words)
-    {
-        for (int i = 0; i + 1 < words.Length; i++)
-        {
-            if (words[i] is "cuanto" or "cuantos" or "lo" && words[i + 1] is "vale" or "valen"
-                && !(i + 3 < words.Length && words[i + 2] == "la" && words[i + 3] == "pena"))
-                return true;
-        }
-        return false;
-    }
-
-    private static readonly HashSet<string> TimeBoundWords = new(StringComparer.Ordinal)
-    {
-        "hoy", "ahora", "actual", "actualmente", "anoche", "ayer", "manana",
-        "noticia", "noticias", "precio", "precios", "cuesta", "cuestan", "cotizacion",
-        "horario", "horarios", "abre", "cierra", "marcador", "cerca", "comprar",
-        "oferta", "ofertas", "clima", "pronostico", "cartelera", "estreno", "estrenos",
-        "today", "now", "current", "currently", "tonight", "yesterday", "tomorrow",
-        "latest", "news", "price", "prices", "cost", "costs", "schedule", "hours",
-        "opens", "closes", "score", "scores", "near", "nearby", "buy", "deal", "deals",
-        "weather", "forecast", "showtimes",
-        // M51 F-s037 «números ganadores del loto», F-s076 «train schedules»: el último
-        // sorteo y los horarios cambian; Wikipedia contestó con Baloto y con 1830.
-        "schedules", "loto", "loteria", "sorteo", "sorteos", "lottery", "lotto",
-        // F-w01-t4 «¿cuánto sale el pisco…?»: «sale» es «cuesta» en Chile y Argentina.
-        "sale",
-        // M81 (D-s012): la cotización de una acción cambia cada día.
-        "cotiza", "cotizan", "stock", "stocks", "shares",
-    };
-
-    // El idioma de la consulta elige la Wikipedia que se pregunta primero; la otra
-    // queda de respaldo. Empate: el idioma de la persona, y si no es ni español ni
-    // inglés, español (el del producto).
-    internal static string[] Languages(string query, CultureInfo culture)
-    {
-        string[] words = FoldedWords(query);
-        int english = words.Count(EnglishMarkers.Contains);
-        int spanish = words.Count(SpanishMarkers.Contains)
-            + (query.AsSpan().IndexOfAny(SpanishLetters) >= 0 ? 1 : 0);
-        bool englishFirst = english != spanish
-            ? english > spanish
-            : culture.TwoLetterISOLanguageName == "en";
-        return englishFirst ? ["en", "es"] : ["es", "en"];
-    }
-
-    private static readonly SearchValues<char> SpanishLetters = SearchValues.Create("áéíóúñÁÉÍÓÚÑ¿¡");
-
-    private static readonly HashSet<string> EnglishMarkers = new(StringComparer.Ordinal)
-    {
-        "the", "of", "who", "what", "which", "when", "where", "why", "how", "is", "are",
-        "was", "were", "did", "does", "do", "and", "in", "on", "an", "by", "wrote",
-        "with", "first", "invented",
-    };
-
-    private static readonly HashSet<string> SpanishMarkers = new(StringComparer.Ordinal)
-    {
-        "el", "la", "los", "las", "de", "del", "que", "quien", "cual", "cuando", "donde",
-        "como", "por", "para", "es", "son", "fue", "un", "una", "y", "en", "al", "primer",
-        "primera", "escribio", "invento",
-    };
-
     internal static Uri SearchUri(string language, string terms, int limit)
     {
         int count = Math.Clamp(limit, 1, 10);
@@ -162,13 +33,12 @@ internal sealed class WikipediaSearchSource(HttpClient http)
 
     // Null cuando Wikipedia no contestó (red, estado HTTP, cuerpo que no es su JSON):
     // no se buscó, que no es lo mismo que no encontrar.
-    internal async Task<List<(string Title, string Url, string Snippet)>?> SearchAsync(
+    internal async Task<List<(string Title, string Url, string Extract)>?> SearchAsync(
         string language,
         string terms,
         int limit,
         CancellationToken cancellationToken)
     {
-        if (terms.Length == 0) return null;
         using var request = new HttpRequestMessage(HttpMethod.Get, SearchUri(language, terms, limit));
         request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
         try
@@ -195,69 +65,11 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         }
     }
 
-    // Uso real v3 tanda 1 («quien gano el mundial del 2014»): las tres primeras oraciones del artículo nombraban a
-    // Brasil como sede y no decían quién ganó; el artículo entero lo dice más abajo. Su texto plano se pide a la misma
-    // API abierta, con el mismo User-Agent; sale sólo el título del artículo que la búsqueda ya devolvió.
-    internal static Uri ArticleUri(string language, string title) =>
-        new("https://" + language + ".wikipedia.org/w/api.php"
-            + "?action=query&format=json&formatversion=2&prop=extracts&explaintext=1&redirects=1"
-            + "&titles=" + Uri.EscapeDataString(title));
-
-    // Null cuando Wikipedia no contestó o el artículo no trae texto.
-    internal async Task<string?> ReadArticleAsync(string language, string title, CancellationToken cancellationToken)
-    {
-        if (title.Length == 0) return null;
-        using var request = new HttpRequestMessage(HttpMethod.Get, ArticleUri(language, title));
-        request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
-        try
-        {
-            using HttpResponseMessage response = await _http
-                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                .ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode) return null;
-            string body = await WebBrowserAdapter.ReadBoundedTextAsync(response, 1_000_000, cancellationToken)
-                .ConfigureAwait(false);
-            return ParseArticleResponse(body);
-        }
-        catch (HttpRequestException)
-        {
-            return null;
-        }
-        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return null;
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
-
-    // El texto plano del primer artículo de la respuesta, con sus párrafos en líneas; null sin texto.
-    internal static string? ParseArticleResponse(string body)
-    {
-        using JsonDocument document = JsonDocument.Parse(body);
-        JsonElement root = document.RootElement;
-        if (root.ValueKind != JsonValueKind.Object
-            || !root.TryGetProperty("query", out JsonElement query)
-            || !query.TryGetProperty("pages", out JsonElement pages)
-            || pages.ValueKind != JsonValueKind.Array)
-        {
-            return null;
-        }
-        foreach (JsonElement page in pages.EnumerateArray())
-        {
-            if (page.ValueKind != JsonValueKind.Object) continue;
-            string extract = StringOf(page, "extract").Replace("\u200B", string.Empty, StringComparison.Ordinal);
-            if (extract.Trim().Length > 0) return extract;
-        }
-        return null;
-    }
-
     // Cada página trae su puesto en la búsqueda («index»), su dirección y el inicio
-    // del artículo en texto plano. Las desambiguaciones no contestan nada y se
-    // descartan; una dirección que no es de esa Wikipedia, también.
-    internal static List<(string Title, string Url, string Snippet)> ParseSearchResponse(
+    // del artículo en texto plano. Una página que la propia API marca como
+    // desambiguación no es un artículo y se descarta; una dirección que no es de esa
+    // Wikipedia, también.
+    internal static List<(string Title, string Url, string Extract)> ParseSearchResponse(
         string body,
         string language)
     {
@@ -265,7 +77,7 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         JsonElement root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object) throw new JsonException("Not a MediaWiki answer.");
         if (root.TryGetProperty("error", out _)) throw new JsonException("MediaWiki answered an error.");
-        var ranked = new List<(int Index, string Title, string Url, string Snippet)>();
+        var ranked = new List<(int Index, string Title, string Url, string Extract)>();
         if (!root.TryGetProperty("query", out JsonElement query)
             || !query.TryGetProperty("pages", out JsonElement pages)
             || pages.ValueKind != JsonValueKind.Array)
@@ -297,7 +109,7 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         }
         return ranked
             .OrderBy(static item => item.Index)
-            .Select(static item => (item.Title, item.Url, item.Snippet))
+            .Select(static item => (item.Title, item.Url, item.Extract))
             .ToList();
     }
 
@@ -312,31 +124,5 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         string text = extract.Replace("​", string.Empty, StringComparison.Ordinal);
         string joined = string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         return joined.Length <= 1_000 ? joined : joined[..1_000];
-    }
-
-    // Minúsculas sin tildes, partidas en todo lo que no es letra ni dígito.
-    internal static string[] FoldedWords(string value)
-    {
-        string decomposed = value.Normalize(NormalizationForm.FormD);
-        var normalized = new StringBuilder(decomposed.Length);
-        bool separatorPending = false;
-        foreach (char character in decomposed)
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark)
-            {
-                continue;
-            }
-            if (char.IsLetterOrDigit(character))
-            {
-                if (separatorPending && normalized.Length > 0) normalized.Append(' ');
-                normalized.Append(char.ToLowerInvariant(character));
-                separatorPending = false;
-            }
-            else
-            {
-                separatorPending = true;
-            }
-        }
-        return normalized.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
     }
 }

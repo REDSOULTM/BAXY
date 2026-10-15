@@ -571,11 +571,16 @@ public static class ProductCatalog
             "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y verifica el proceso observado."),
         Descriptor(
             "filesystem.folder.open",
-            Schema([String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"])], ["folder"]),
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.folder.open.windows.shell.postread.v1",
             ToolExposure.Public,
-            "Abre una carpeta conocida de Windows y verifica la ventana de Explorer observada."),
+            "Abre una carpeta conocida de Windows, o una subcarpeta suya, y verifica la ventana de Explorer observada."),
         Descriptor(
             "filesystem.hash",
             FilesystemResourceSchema(),
@@ -600,7 +605,8 @@ public static class ProductCatalog
             Schema(
                 [
                     String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["fileName", "folder"]),
             OperationRisks.RecoverableDelete,
@@ -1873,13 +1879,14 @@ public static class ProductCatalog
             Schema(
                 [
                     Integer("maximumCharacters", 500, 20_000),
+                    Integer("offset", 0, 10_000_000),
                     String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
                 ["url"]),
             OperationRisks.ReadOnly,
             "web.fetch.public.http.text.v1",
             ToolExposure.Public,
-            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto acotado."),
+            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset)."),
         Descriptor(
             "web.news.headlines",
             Schema(
@@ -1892,31 +1899,41 @@ public static class ProductCatalog
             "web.news.headlines.googlenews.rss.read.v1",
             ToolExposure.Public,
             "Lee los titulares del día, o los de un tema nombrado, desde un canal público de noticias y devuelve cada titular tal cual con su medio, su hora y su enlace."),
+        // BAXY Renew (2026-10-15): el modelo elige la fuente (source) y llena sus argumentos tipados; el proveedor
+        // pregunta sólo a esa fuente y devuelve lo que ella devolvió. Lo que significa cada argumento lo dice la
+        // descripción de la herramienta (tool_descriptions.en.v1.json).
         Descriptor(
             "web.search",
             Schema(
                 [
-                    // Uso real v3 tanda 1 «quien gano el mundial del 2014» → «Brasil ganó…»: la mente
-                    // da los comienzos de palabra con que una página dice lo preguntado (quién ganó,
-                    // dirigió…); si ningún fragmento los trae, se lee la primera fuente pertinente.
-                    String("answerWords", types: NullableString, maximumUtf8Bytes: 512),
-                    // Y las palabras enteras que empiezan así pero nombran otra cosa («campeonato»,
-                    // «championship»): el fragmento que sólo las trae no dice quién ganó.
-                    String("answerWordsNot", types: NullableString, maximumUtf8Bytes: 256),
-                    Integer("limit", 1, 20),
-                    // Uso real 2026-10-07 «un top 3 peliculas de suspenso del 2026»: la mente
-                    // dice que se pide un listado (limit = cuántos); el proveedor no lee palabras.
-                    Boolean("listing", types: NullableBoolean),
-                    // Uso real tanda 4c: «cerca de mí», «en mi ciudad» se buscan con
-                    // la ciudad de este PC (sólo su nombre) añadida a la consulta.
+                    // currency: la cantidad a convertir (1 si no se da).
+                    new OperationArgumentProperty("amount", OperationJsonType.Null | OperationJsonType.Number),
+                    // currency: códigos ISO 4217.
+                    String("from", types: NullableString, maximumLength: 3),
+                    // places: la clase de sitio, en inglés («pharmacy», «parking»).
+                    String("kind", types: NullableString, maximumUtf8Bytes: 128),
+                    // encyclopedia y news: la Wikipedia o la edición de noticias.
+                    String("language", types: NullableString, values: ["en", "es"]),
+                    Integer("limit", 1, 10, types: NullableInteger),
+                    // La ciudad y el país de este PC se añaden a la consulta (o son el lugar, en places).
                     Boolean("nearby", types: NullableBoolean),
+                    // places: el lugar donde se buscan los sitios.
+                    String("place", types: NullableString, maximumUtf8Bytes: 256),
                     String("query", maximumUtf8Bytes: 2_000, nonWhitespace: true),
+                    String(
+                        "source",
+                        types: NullableString,
+                        values: ["currency", "encyclopedia", "news", "places", "sports", "web"]),
+                    // sports: el equipo, y si se pide el próximo partido o el último.
+                    String("team", types: NullableString, maximumUtf8Bytes: 128),
+                    String("to", types: NullableString, maximumLength: 3),
+                    String("wants", types: NullableString, values: ["last", "next"]),
                 ],
                 ["query"]),
             OperationRisks.ReadOnly,
             "web.search.provider.results.v1",
             ToolExposure.Public,
-            "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados; con nearby, busca cerca de la ciudad donde está este PC."),
+            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; con nearby, añade la ciudad y el país de este PC a la consulta."),
         Descriptor(
             "wifi.connect",
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
-// M98: reads the page of a search result for SearchPageExcerpt, as a stranger would. The request carries a generic
+// M98: reads a public page for web.fetch, as a stranger would. The request carries a generic
 // User-Agent and nothing else: no cookie is kept or sent, no referrer, nothing of the person. Only a public web address
 // is read: http or https, a public host name, never this PC, the local network or a link-local, carrier-grade NAT
 // (Tailscale) or multicast address. Each redirect is checked again before it is followed, and the production client
@@ -46,11 +46,8 @@ internal sealed class SearchPageReader : IDisposable
         if (_ownsClient) _http.Dispose();
     }
 
-    // The page's HTML, or null when it is not a public address, not HTML, not a success or redirects too often.
-    internal async Task<string?> ReadHtmlAsync(Uri page, CancellationToken cancellationToken) =>
-        (await ReadPageAsync(page, cancellationToken).ConfigureAwait(false))?.Html;
-
-    // The same, with the address the page was finally read from (after its checked redirects).
+    // The page's HTML with the address it was finally read from (after its checked redirects), or null when it is not
+    // a public address, not HTML, not a success or redirects too often.
     internal async Task<(Uri Final, string Html)?> ReadPageAsync(Uri page, CancellationToken cancellationToken)
     {
         Uri current = page;

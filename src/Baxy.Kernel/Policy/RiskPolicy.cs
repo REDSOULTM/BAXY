@@ -121,11 +121,9 @@ public static partial class RiskPolicy
                 return true;
             }
 
-            string head = words[0].ToLowerInvariant();
-            bool reads = head == "git"
-                ? words.Length >= 2 && ReadingGit.Contains(words[1].ToLowerInvariant())
-                : ReadingCommands.Contains(head);
-            if (!reads)
+            // git is not among them: «git log --output=f» writes a file and «git diff» runs the external diff or textconv
+            // program a repository configures (BAXY Renew audit 2026-10-15).
+            if (!ReadingCommands.Contains(words[0].ToLowerInvariant()))
             {
                 return true;
             }
@@ -148,8 +146,6 @@ public static partial class RiskPolicy
         "convertto-csv", "convertfrom-csv", "resolve-path", "rvpa", "split-path", "join-path", "test-path",
         "write-output", "echo", "write", "hostname", "whoami", "systeminfo", "tasklist",
     };
-
-    private static readonly HashSet<string> ReadingGit = new(StringComparer.Ordinal) { "status", "log", "diff", "show" };
 
     /// <summary>
     /// Whether this exact invocation of a computer-use primitive leaves the

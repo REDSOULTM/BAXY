@@ -1,13 +1,12 @@
 using System.Globalization;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
-// M51 (D32): «aparcamiento en Plaza del Polvorista», «gas stations in Buford»,
-// «taquerías cerca» los contesta OpenStreetMap por su servicio Nominatim, abierto y sin
-// clave. Dos peticiones como mucho: el lugar nombrado (o la ciudad de este PC, sólo su
-// nombre) para saber su recuadro, y la clase de sitio buscada dentro de él.
+/// M51 (D32): web.search con source=places lo contesta OpenStreetMap por su servicio Nominatim, abierto y sin clave.
+// La clase de sitio (kind, en inglés: «pharmacy», «parking») y el lugar (place) los escribe el modelo. Dos peticiones
+// como mucho: el lugar, para saber su recuadro (el primero que Nominatim ordena, por su importancia), y la clase de
+// sitio buscada dentro de él.
 // Política de uso de Nominatim (operations.osmfoundation.org/policies/nominatim):
 // «an absolute maximum of 1 request per second», «Provide a valid HTTP Referer or
 // User-Agent identifying the application», «Results must be cached on your side», sin
@@ -27,236 +26,36 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
 
     internal readonly record struct PlaceAsk(string Kind, string Place);
 
-    // La clase de sitio, como la entiende Nominatim (sus «special phrases» en inglés,
-    // o el nombre cuando OpenStreetMap no tiene clase propia: «taqueria»).
-    private static readonly Dictionary<string, string> Kinds = new(StringComparer.Ordinal)
-    {
-        ["aparcamiento"] = "parking",
-        ["aparcamientos"] = "parking",
-        ["estacionamiento"] = "parking",
-        ["estacionamientos"] = "parking",
-        ["parqueadero"] = "parking",
-        ["parqueaderos"] = "parking",
-        ["parking"] = "parking",
-        ["gasolinera"] = "fuel",
-        ["gasolineras"] = "fuel",
-        ["bencinera"] = "fuel",
-        ["bencineras"] = "fuel",
-        ["fuel"] = "fuel",
-        ["farmacia"] = "pharmacy",
-        ["farmacias"] = "pharmacy",
-        ["pharmacy"] = "pharmacy",
-        ["pharmacies"] = "pharmacy",
-        ["drugstore"] = "pharmacy",
-        ["drugstores"] = "pharmacy",
-        ["hospital"] = "hospital",
-        ["hospitales"] = "hospital",
-        ["hospitals"] = "hospital",
-        ["clinica"] = "clinic",
-        ["clinicas"] = "clinic",
-        ["clinic"] = "clinic",
-        ["clinics"] = "clinic",
-        ["cajero"] = "atm",
-        ["cajeros"] = "atm",
-        ["atm"] = "atm",
-        ["atms"] = "atm",
-        ["hotel"] = "hotel",
-        ["hoteles"] = "hotel",
-        ["hotels"] = "hotel",
-        ["hostal"] = "hostel",
-        ["hostales"] = "hostel",
-        ["hostel"] = "hostel",
-        ["hostels"] = "hostel",
-        ["supermercado"] = "supermarket",
-        ["supermercados"] = "supermarket",
-        ["supermarket"] = "supermarket",
-        ["supermarkets"] = "supermarket",
-        ["restaurante"] = "restaurant",
-        ["restaurantes"] = "restaurant",
-        ["restaurant"] = "restaurant",
-        ["restaurants"] = "restaurant",
-        ["taqueria"] = "taqueria",
-        ["taquerias"] = "taqueria",
-        ["cafeteria"] = "cafe",
-        ["cafeterias"] = "cafe",
-        ["cafe"] = "cafe",
-        ["cafes"] = "cafe",
-        ["panaderia"] = "bakery",
-        ["panaderias"] = "bakery",
-        ["bakery"] = "bakery",
-        ["bakeries"] = "bakery",
-        ["comisaria"] = "police",
-        ["comisarias"] = "police",
-        ["veterinaria"] = "veterinary",
-        ["veterinarias"] = "veterinary",
-        ["veterinario"] = "veterinary",
-        ["museo"] = "museum",
-        ["museos"] = "museum",
-        ["museum"] = "museum",
-        ["museums"] = "museum",
-        ["biblioteca"] = "library",
-        ["bibliotecas"] = "library",
-        ["library"] = "library",
-        ["libraries"] = "library",
-        ["cine"] = "cinema",
-        ["cines"] = "cinema",
-        ["cinema"] = "cinema",
-        ["cinemas"] = "cinema",
-        ["dentista"] = "dentist",
-        ["dentistas"] = "dentist",
-        ["dentist"] = "dentist",
-        ["dentists"] = "dentist",
-    };
+    // Each site as Nominatim gives it: its name (or, without one, its OSM type), its whole address, its page on
+    // OpenStreetMap and its distance in metres from the centre of the place (null when Nominatim gave no coordinates).
+    internal readonly record struct Place(string Name, string Address, string Url, int? DistanceMeters);
 
-    private static readonly (string First, string Second, string Kind)[] PairedKinds =
-    [
-        ("gas", "station", "fuel"), ("gas", "stations", "fuel"),
-        ("petrol", "station", "fuel"), ("petrol", "stations", "fuel"),
-        ("car", "park", "parking"), ("car", "parks", "parking"),
-    ];
+    // «Resolved»: the address of the place Nominatim found for the place asked; null when it found none (and then no
+    // site is asked).
+    internal readonly record struct PlaceReading(string? Resolved, List<Place> Places);
 
-    // «… en Plaza del Polvorista», «… in Buford», «… cerca de La Puntilla». Con «en» o
-    // «in» el lugar tiene que ser un nombre (mayúscula), para no tomar «en el centro».
-    private static readonly Regex PlacePhrase = new(
-        @"\b(?<link>cerca\s+del?|near|around|alrededor\s+del?|en|in|at)\s+(?<place>[^?!.;]+)",
-        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
-        TimeSpan.FromSeconds(1));
-
-    private static readonly HashSet<string> SelfPlaces = new(StringComparer.Ordinal)
-    {
-        "mi", "me", "aqui", "aca", "here", "you", "my", "casa", "home", "ti",
-    };
-
-    private static readonly HashSet<string> TrailingTime = new(StringComparer.Ordinal)
-    {
-        "hoy", "today", "ahora", "now", "tonight",
-    };
-
-    // Null cuando la consulta no pide una clase de sitio en un lugar.
-    internal static PlaceAsk? Parse(string query, string? near)
-    {
-        string? kind = KindOf(WikipediaSearchSource.FoldedWords(query));
-        if (kind is null) return null;
-        string? place = near ?? PlaceOf(query);
-        return string.IsNullOrWhiteSpace(place) ? null : new PlaceAsk(kind, place);
-    }
-
-    private static string? KindOf(string[] words)
-    {
-        for (int index = 0; index < words.Length; index++)
-        {
-            string next = index + 1 < words.Length ? words[index + 1] : string.Empty;
-            foreach ((string first, string second, string paired) in PairedKinds)
-            {
-                if (words[index] == first && next == second) return paired;
-            }
-            if (Kinds.TryGetValue(words[index], out string? kind)) return kind;
-        }
-        return null;
-    }
-
-    private static string? PlaceOf(string query)
-    {
-        foreach (Match found in PlacePhrase.Matches(query))
-        {
-            string link = found.Groups["link"].Value.ToLowerInvariant();
-            string place = found.Groups["place"].Value.Trim(' ', ',', ':');
-            string[] words = place.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray();
-            while (words.Length > 0 && TrailingTime.Contains(WikipediaSearchSource.FoldedWords(words[^1]).FirstOrDefault() ?? string.Empty))
-            {
-                words = words[..^1];
-            }
-            // «la», «el», «the» delante del nombre no lo hacen minúscula.
-            int start = words.Length > 1 && WikipediaSearchSource.FoldedWords(words[0]).FirstOrDefault()
-                is "la" or "el" or "los" or "las" or "the" ? 1 : 0;
-            if (words.Length <= start) continue;
-            string first = words[start];
-            if (SelfPlaces.Contains(WikipediaSearchSource.FoldedWords(first).FirstOrDefault() ?? string.Empty)) continue;
-            bool named = words.Skip(start).Any(static word => char.IsUpper(word[0]));
-            if (link is "en" or "in" or "at" && !named) continue;
-            if (KindOf(WikipediaSearchSource.FoldedWords(first)) is not null) continue;
-            // M56 (v3c-final F-p06-t2): Nominatim finds nothing for «la Plaza de las Salesas, Madrid»
-            // and, without the city, only the Plaza de las Salesas of Cartagena. A lower-case
-            // article is the sentence's, not the name's («La Puntilla» keeps its own).
-            if (start == 1 && char.IsLower(words[0][0])) words = words[1..];
-            // «calle Génova en Madrid» → «calle Génova, Madrid».
-            return Regex.Replace(string.Join(' ', words), @"\s+(?:en|in)\s+", ", ",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
-        }
-        return null;
-    }
-
-    // Null cuando Nominatim no contestó; vacío cuando contestó sin nada.
-    // M54 (v3b-final F-p01-t2): «Curico», la ciudad de este PC en Chile, se geocodificó
-    // en Curico, Indiana, y se contestó con sus aparcamientos. «country» es el país
-    // preferido (código ISO de dos letras): entre candidatos con el mismo nombre gana el
-    // de ese país; con «requireCountry» (la ciudad de este PC, cuyo país dedujo el mismo
-    // servicio) un candidato de otro país no vale. Nada de esto sale del PC: se compara
-    // con el país de la dirección que Nominatim devuelve.
-    internal async Task<List<(string Title, string Url, string Snippet)>?> SearchAsync(
-        PlaceAsk ask,
-        int limit,
-        string language,
-        CancellationToken cancellationToken,
-        string? country = null,
-        bool requireCountry = false)
-    {
-        PlaceReading? reading = await SearchNearAsync(ask, limit, language, cancellationToken, country, requireCountry)
-            .ConfigureAwait(false);
-        return reading?.Places.Select(static place => (place.Title, place.Url, place.Snippet)).ToList();
-    }
-
-    // M62 (v3e2-final F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista»): the car parks
-    // were told by their whole addresses, with nothing saying how near they are. Each site
-    // carries its distance to the named place, those farther than the place's own size (at
-    // least 1.5 km) are left out, and «AllFar» says that sites of the kind were found only
-    // farther than that.
-    internal readonly record struct Place(string Title, string Url, string Snippet, int? DistanceMeters);
-
-    internal readonly record struct PlaceReading(List<Place> Places, bool AllFar);
-
+    // Null when Nominatim did not answer.
     internal async Task<PlaceReading?> SearchNearAsync(
         PlaceAsk ask,
         int limit,
         string language,
-        CancellationToken cancellationToken,
-        string? country = null,
-        bool requireCountry = false)
+        CancellationToken cancellationToken)
     {
-        // «La Puntilla, El Puerto» found only «Bar El Puerto» in Ceuta; «La Puntilla» alone
-        // finds the beach of El Puerto de Santa María. A candidate counts only if its
-        // address carries every word of the place's first part; the one that carries more
-        // of the rest wins; with none, the first part alone is asked once.
-        string[] segments = ask.Place.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        string[] required = PlaceWords(segments.Length > 0 ? segments[0] : ask.Place);
-        string[] wanted = PlaceWords(ask.Place);
-        // M56 (v3c-final F-p06-t2): the places the first part is said to be in («…, Madrid»)
-        // bind the candidate too, also when the first part is asked alone.
-        string[][] within = segments.Skip(1).Select(PlaceWords).Where(static words => words.Length > 0).ToArray();
         try
         {
-            Area? box = null;
-            foreach (string asked in segments.Length > 1 ? [ask.Place, segments[0]] : new[] { ask.Place })
-            {
-                string? area = await ReadAsync(
-                    Endpoint + "?format=jsonv2&addressdetails=1&limit=5&q=" + Uri.EscapeDataString(asked), cancellationToken)
-                    .ConfigureAwait(false);
-                if (area is null) return null;
-                box = AreaOf(area, required, wanted, country, requireCountry, within);
-                if (box is not null) break;
-            }
-            if (box is null) return new PlaceReading([], false);
+            string? area = await ReadAsync(
+                Endpoint + "?format=jsonv2&limit=1&accept-language=" + language + "&q=" + Uri.EscapeDataString(ask.Place),
+                cancellationToken).ConfigureAwait(false);
+            if (area is null) return null;
+            if (AreaOf(area) is not { } box) return new PlaceReading(null, []);
             string? found = await ReadAsync(
                 Endpoint + "?format=jsonv2&bounded=1&limit=10"
-                + "&accept-language=" + language + "&viewbox=" + box.Value.Viewbox
+                + "&accept-language=" + language + "&viewbox=" + box.Viewbox
                 + "&q=" + Uri.EscapeDataString(ask.Kind), cancellationToken).ConfigureAwait(false);
             if (found is null) return null;
-            List<Place> all = Places(found, box.Value.Latitude, box.Value.Longitude);
-            List<Place> near = all
-                .Where(place => place.DistanceMeters is not { } meters || meters <= box.Value.RadiusMeters)
-                .Take(Math.Clamp(limit, 1, 10))
-                .ToList();
-            return new PlaceReading(near, near.Count == 0 && all.Count > 0);
+            return new PlaceReading(
+                box.Name,
+                Places(found, box.Latitude, box.Longitude).Take(Math.Clamp(limit, 1, 10)).ToList());
         }
         catch (JsonException)
         {
@@ -264,7 +63,7 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         }
     }
 
-    internal readonly record struct Area(string Viewbox, double Latitude, double Longitude, int RadiusMeters = 1_500);
+    internal readonly record struct Area(string Name, string Viewbox, double Latitude, double Longitude);
 
     private const double MetersPerDegree = 111_320;
 
@@ -274,39 +73,15 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         Math.Sqrt(Math.Pow((otherLatitude - latitude) * MetersPerDegree, 2)
             + Math.Pow((otherLongitude - longitude) * MetersPerDegree * Math.Cos(latitude * Math.PI / 180), 2));
 
-    // Las palabras que nombran un lugar: plegadas, de tres letras o más, sin artículos.
-    private static string[] PlaceWords(string place) =>
-        WikipediaSearchSource.FoldedWords(place)
-            .Where(static word => word.Length >= 3 && word is not ("del" or "los" or "las" or "the"))
-            .ToArray();
-
-    // El recuadro del lugar elegido, con al menos ~1 km por lado y como mucho ~30 km, y
-    // su centro. Null cuando ningún candidato lleva las palabras del lugar (o, con
-    // «requireCountry», ninguno está en «country»; o, con «within», ninguno lleva en su
-    // dirección alguna palabra de cada lugar que lo contiene: la ciudad nombrada). A igual
-    // número de palabras gana el candidato de «country».
-    internal static Area? AreaOf(
-        string body,
-        string[] required,
-        string[] wanted,
-        string? country = null,
-        bool requireCountry = false,
-        IReadOnlyList<string[]>? within = null)
+    // The first place Nominatim lists with a bounding box: its address, its box (at least ~1 km and at most ~30 km a
+    // side) and its centre. Null when it lists none.
+    internal static Area? AreaOf(string body)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (document.RootElement.ValueKind != JsonValueKind.Array) throw new JsonException("Not a Nominatim answer.");
-        (int Score, double South, double North, double West, double East)? best = null;
-        bool countryKnown = !string.IsNullOrWhiteSpace(country);
         foreach (JsonElement place in document.RootElement.EnumerateArray())
         {
-            var named = new HashSet<string>(WikipediaSearchSource.FoldedWords(Text(place, "display_name")), StringComparer.Ordinal);
-            string placeCountry = place.TryGetProperty("address", out JsonElement address)
-                && address.ValueKind == JsonValueKind.Object ? Text(address, "country_code") : string.Empty;
-            bool inCountry = countryKnown && string.Equals(placeCountry, country, StringComparison.OrdinalIgnoreCase);
-            if (!required.All(named.Contains)
-                || (within is not null && !within.All(words => words.Any(named.Contains)))
-                || (requireCountry && countryKnown && !inCountry)
-                || !place.TryGetProperty("boundingbox", out JsonElement box)
+            if (!place.TryGetProperty("boundingbox", out JsonElement box)
                 || box.ValueKind != JsonValueKind.Array || box.GetArrayLength() != 4)
             {
                 continue;
@@ -318,57 +93,29 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                 read = box[index].ValueKind == JsonValueKind.String
                     && double.TryParse(box[index].GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out edges[index]);
             }
-            // Doubled, plus one in the preferred country: more words of the place always win, and
-            // the country breaks a tie (Nominatim's own order, by importance, breaks the rest).
-            // M58 (v3d-final F-p06-t3 «calle Génova, Madrid»): Villa del Prado's Calle Génova carries
-            // «Madrid» only in «Comunidad de Madrid» and came first. The town the place is said to be
-            // in counts first when it is the candidate's own town (its city, town or village).
-            int score = 2 * wanted.Count(named.Contains) + (inCountry ? 1 : 0)
-                + (within is null ? 0 : 8 * within.Count(words => LocalityHolds(address, words)));
-            if (read && (best is null || score > best.Value.Score))
-                best = (score, edges[0], edges[1], edges[2], edges[3]);
+            if (!read) continue;
+            (double south, double north, double west, double east) = (edges[0], edges[1], edges[2], edges[3]);
+            double latitude = (south + north) / 2, longitude = (west + east) / 2;
+            double halfHeight = Math.Clamp((north - south) / 2, 0.01, 0.15);
+            double halfWidth = Math.Clamp((east - west) / 2, 0.01, 0.15);
+            static string Coordinate(double value) => value.ToString("0.#####", CultureInfo.InvariantCulture);
+            return new Area(
+                Text(place, "display_name"),
+                Coordinate(longitude - halfWidth) + "," + Coordinate(latitude + halfHeight) + ","
+                + Coordinate(longitude + halfWidth) + "," + Coordinate(latitude - halfHeight),
+                latitude,
+                longitude);
         }
-        if (best is not { } chosen) return null;
-        double latitude = (chosen.South + chosen.North) / 2, longitude = (chosen.West + chosen.East) / 2;
-        double halfHeight = Math.Clamp((chosen.North - chosen.South) / 2, 0.01, 0.15);
-        double halfWidth = Math.Clamp((chosen.East - chosen.West) / 2, 0.01, 0.15);
-        static string Coordinate(double value) => value.ToString("0.#####", CultureInfo.InvariantCulture);
-        // M62: near the place is within its own size (half its diagonal), and never less than
-        // 1.5 km around a square or a street nor more than 20 km around a city.
-        int radius = (int)Math.Round(Math.Clamp(
-            Meters(latitude, longitude, chosen.North, chosen.East), 1_500, 20_000));
-        return new Area(
-            Coordinate(longitude - halfWidth) + "," + Coordinate(latitude + halfHeight) + ","
-            + Coordinate(longitude + halfWidth) + "," + Coordinate(latitude - halfHeight),
-            latitude,
-            longitude,
-            radius);
+        return null;
     }
 
-    // El pueblo o la ciudad de la dirección de Nominatim es exactamente el lugar dicho («Madrid»,
-    // no «Las Rozas de Madrid» ni «Comunidad de Madrid»).
-    private static readonly string[] LocalityKeys = ["city", "town", "village", "municipality", "hamlet"];
-
-    private static bool LocalityHolds(JsonElement address, string[] words)
-    {
-        if (address.ValueKind != JsonValueKind.Object) return false;
-        foreach (string key in LocalityKeys)
-        {
-            string[] locality = PlaceWords(Text(address, key));
-            if (locality.Length > 0 && locality.Length == words.Length && words.All(locality.Contains))
-                return true;
-        }
-        return false;
-    }
-
-    // Cada sitio: su nombre (o su clase), su dirección, su página en OpenStreetMap y su
-    // distancia en metros al centro del lugar (nula si Nominatim no dio sus coordenadas),
-    // del más cercano al más lejano (Nominatim los ordena por importancia, no por distancia).
+    // The sites Nominatim found inside the box, from the nearest to the farthest from the place's centre (Nominatim
+    // orders them by importance, not by distance).
     internal static List<Place> Places(string body, double latitude, double longitude)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (document.RootElement.ValueKind != JsonValueKind.Array) throw new JsonException("Not a Nominatim answer.");
-        var places = new List<(double Distance, string Title, string Url, string Snippet)>();
+        var places = new List<(double Distance, Place Place)>();
         foreach (JsonElement place in document.RootElement.EnumerateArray())
         {
             string kind = Text(place, "osm_type");
@@ -381,24 +128,20 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             string name = Text(place, "name");
             string title = name.Length > 0 ? name : Text(place, "type").Replace('_', ' ');
             if (title.Length == 0 || address.Length == 0) continue;
-            double distance = double.TryParse(Text(place, "lat"), NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
+            double? distance = double.TryParse(Text(place, "lat"), NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
                 && double.TryParse(Text(place, "lon"), NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
                     ? Meters(latitude, longitude, lat, lon)
-                    : double.MaxValue;
-            places.Add((
-                distance,
+                    : null;
+            places.Add((distance ?? double.MaxValue, new Place(
                 title,
+                address.Length <= 300 ? address : address[..300],
                 "https://www.openstreetmap.org/" + kind + "/" + osmId.ToString(CultureInfo.InvariantCulture),
-                address.Length <= 300 ? address : address[..300]));
+                // Said to the nearest ten metres: the centre of a square is not more exact than that.
+                distance is { } metres ? (int)(Math.Round(metres / 10) * 10) : null)));
         }
         return places
             .OrderBy(static place => place.Distance)
-            .Select(static place => new Place(
-                place.Title,
-                place.Url,
-                place.Snippet,
-                // Said to the nearest ten metres: the centre of a square is not more exact than that.
-                place.Distance == double.MaxValue ? null : (int)(Math.Round(place.Distance / 10) * 10)))
+            .Select(static place => place.Place)
             .ToList();
     }
 

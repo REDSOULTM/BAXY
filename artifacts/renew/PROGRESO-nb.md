@@ -319,3 +319,31 @@ se mide en el PC.
     (p = 0,55).
   - En los 25 casos de operaciones sustituidas, de 19 a **24**. Menos herramientas solapadas eligen mejor, y no se
     pierde nada en el resto.
+
+## Auditoría de reglas y arreglos de los proveedores (reparto aceptado por el líder, 12:20)
+
+Auditoría de todo baxy-renew (sólo lectura) en `investigacion/auditoria-reglas-1.md`: 55 violaciones y 51 zonas
+grises. El reparto quedó así: el notebook arregla los proveedores fuera de computer use, y el PC se encarga de
+computer use, la App y la mente.
+
+| Commit | Pieza | Medido |
+|---|---|---|
+| `1f2f33fd8` | El aviso de `schedule.alarms` se muestra de verdad (notificación de Windows comprobada en el historial; `msg.exe` no existe en Windows 11 Home) y el recibo se escribe después de sonar | prueba en vivo: suena a los 15 s con la notificación leída del historial |
+| `2f9c3ba7c` | La visión sólo acepta un modelo en loopback (`LocalVisionEndpoint`); `nearby` sólo por https. Nombres exactos tras plegar: Wi-Fi, juego, volumen por app y navegador. La zona horaria ya no quita artículos | Providers 2178/2178 |
+| `27c63e474` | El color se escribe en `#RRGGBB`, sin diccionario. `web.download` declara en el recibo y en la descripción cuándo baja la portada (`og:image`) de una página | WindowsFileTools 26/26 |
+| `a5fe636e7` | Una instalación o desinstalación de winget que sigue en curso ya no es un éxito. El `toggle` de Spotify verifica lo que pulsó: antes nunca verificaba y siempre decía `paused` | en vivo: `playing` y después `paused` |
+| `4574604aa` | Se retiran las 7 `routine.*`, que nada ejecutaba. El catálogo queda en 188 descriptores | Kernel 606, Providers 2176, Setup 477, Contracts 70 |
+| `2ab2b0bb4` | `WindowsInventoryAdapter` queda sólo como respaldo PnP de la lista Bluetooth | Providers 2175/2175 |
+| `4f14582e4` | `web.search` sin interpretación: `source` tipado (web, news, encyclopedia, currency, sports, places) con argumentos tipados; resultados tal cual | Providers 2121 |
+| `c4491571f` | `web.fetch` por páginas (`offset`, `hasMore`, `nextOffset`), en tramos de 4 000 caracteres | Providers 2121 |
+| `fe7335a61` | La terminal pide confirmación para `git` (`log --output` escribe, `diff` corre programas del repositorio); `cwd` sólo con las claves del catálogo | Kernel 606 |
+| `d631ccb8a` | `due` de una tarea sin zona es hora local, como se le dice al modelo (antes se tomaba como UTC) | tareas 4/4 |
+| (este) | Una ruta absoluta dentro de la carpeta nombrada es su ruta relativa (`file.read/edit/find/write`, `subdirectory` de `folder.open` y `trash.named`); fuera, falla antes de efecto (`known_path_outside_folder`). `folder.open` dice el código de su rechazo | Providers 2124/2124; `.ps1` en vivo, 4 rechazos sin abrir nada |
+
+**Producto completo en el notebook (conductor, 13:01).**
+
+- El perfil tiene que colgar directamente de `%LOCALAPPDATA%\BAXY\`. Uno en Temp hace fallar al núcleo con «could
+  not validate its private data directory» y la App informa `blocked_environment`.
+- Arranque en 30 s. «hola» se responde en 555 ms y **Piper empieza a sonar a los 713 ms** de llegar el texto (la
+  meta es ≤ 2,5 s).
+- El banco de punta a punta de práctica corre aquí sin E026, porque «para» apagó o bloqueó el PC del líder.

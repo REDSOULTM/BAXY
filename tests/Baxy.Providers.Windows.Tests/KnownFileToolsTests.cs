@@ -148,6 +148,48 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // The model copies the path the person said (e2e p3 F013): a full path inside the named folder is the same place as
+    // its relative path, and one outside it is refused before anything is read.
+    [Test]
+    public async Task AFullPathInsideTheFolderIsItsRelativePathAndOneOutsideIsRefused()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        await File.WriteAllTextAsync(Path.Combine(home, "BAXY-bench", "lista.txt"), "pan\n");
+        await File.WriteAllTextAsync(Path.Combine(temporary.Path, "fuera.txt"), "secreto\n");
+        var adapter = new WindowsKnownFileAdapter(temporary.Path, new Dictionary<string, string[]>
+        {
+            ["home"] = [home],
+        }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
+        string Args(string key, string value) => JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["folder"] = "home", [key] = value,
+        });
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "file.read", Json(Args("fileName", Path.Combine(home, "BAXY-bench", "lista.txt"))), CancellationToken.None);
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync(
+            "file.find", Json(Args("subdirectory", Path.Combine(home, "BAXY-bench"))), CancellationToken.None);
+        ExternalCapabilityReceipt outside = await adapter.InvokeAsync(
+            "file.read", Json(Args("fileName", Path.Combine(temporary.Path, "fuera.txt"))), CancellationToken.None);
+        ExternalCapabilityReceipt outsideFolder = await adapter.InvokeAsync(
+            "file.find", Json(Args("subdirectory", temporary.Path)), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.ToString(), Does.Contain("pan"));
+            Assert.That(found.Verified, Is.True, found.ErrorCode);
+            Assert.That(found.Result?.GetProperty("entries").EnumerateArray()
+                .Select(entry => entry.GetProperty("relativePath").GetString()),
+                Is.EqualTo(new[] { Path.Combine("BAXY-bench", "lista.txt") }));
+            Assert.That(outside.ErrorCode, Is.EqualTo("known_path_outside_folder"));
+            Assert.That(outside.Result?.ToString() ?? string.Empty, Does.Not.Contain("secreto"));
+            Assert.That(outsideFolder.ErrorCode, Is.EqualTo("known_path_outside_folder"));
+        });
+    }
+
     [Test]
     public async Task FindByContentGivesTheFirstMatchingLineAndSkipsWhatIsNotText()
     {
