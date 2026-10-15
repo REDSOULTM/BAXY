@@ -22,17 +22,15 @@ internal static class PageText
         @"<title\b[^>]*>(.*?)</title\s*>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
         RegexBudget);
 
-    // The page's title and readable text, one block per line, cut at maximumCharacters.
-    internal static (string Title, string Text, bool Truncated) Prose(string html, int maximumCharacters)
+    // The page's title and its whole readable text, one block per line (web.fetch hands it out in pages).
+    internal static (string Title, string Text) Prose(string html)
     {
         Match title = Title.Match(html);
         string prose = System.Net.WebUtility.HtmlDecode(Tag.Replace(Block.Replace(Unread.Replace(html, " "), "\n"), " "));
         string text = string.Join('\n', prose.Split('\n')
             .Select(static line => string.Join(' ', line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)))
             .Where(static line => line.Length > 0));
-        return (title.Success ? Text(title.Groups[1].Value) : string.Empty,
-            text.Length <= maximumCharacters ? text : text[..maximumCharacters],
-            text.Length > maximumCharacters);
+        return (title.Success ? Text(title.Groups[1].Value) : string.Empty, text);
     }
 
     private static string Text(string html) =>

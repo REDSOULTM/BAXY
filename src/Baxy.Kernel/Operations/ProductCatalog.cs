@@ -1994,13 +1994,14 @@ public static class ProductCatalog
             Schema(
                 [
                     Integer("maximumCharacters", 500, 20_000),
+                    Integer("offset", 0, 10_000_000),
                     String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
                 ["url"]),
             OperationRisks.ReadOnly,
             "web.fetch.public.http.text.v1",
             ToolExposure.Public,
-            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto acotado."),
+            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset)."),
         Descriptor(
             "web.news.headlines",
             Schema(

@@ -3098,6 +3098,17 @@ public sealed class ExternalAdaptersTests
             "web.fetch", Json("""{"url":"https://recetas.example.com/arroz"}"""), CancellationToken.None);
         ExternalCapabilityReceipt local = await adapter.InvokeAsync(
             "web.fetch", Json("""{"url":"http://192.168.1.10/admin"}"""), CancellationToken.None);
+        // A page comes in pages: the second one starts where the first said, and says there is no more.
+        var longPages = new RoutingHttpHandler("<html><body><p>" + new string('a', 800) + "</p></body></html>", "{}");
+        using var longHttp = new HttpClient(longPages);
+        using var longAdapter = new WebBrowserAdapter(browser, longHttp);
+        ExternalCapabilityReceipt first = await longAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://largo.example.com/","maximumCharacters":500}"""),
+            CancellationToken.None);
+        int next = first.Result!.Value.GetProperty("nextOffset").GetInt32();
+        ExternalCapabilityReceipt second = await longAdapter.InvokeAsync(
+            "web.fetch", Json($$"""{"url":"https://largo.example.com/","maximumCharacters":500,"offset":{{next}}}"""),
+            CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -3112,6 +3123,11 @@ public sealed class ExternalAdaptersTests
             Assert.That(text, Does.Not.Contain("Inicio Recetas"));
             Assert.That(local.Verified, Is.False);
             Assert.That(local.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(first.Result?.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(next, Is.EqualTo(500));
+            Assert.That(second.Result?.GetProperty("offset").GetInt32(), Is.EqualTo(500));
+            Assert.That(second.Result?.GetProperty("hasMore").GetBoolean(), Is.False);
+            Assert.That(second.Result?.GetProperty("totalCharacters").GetInt32(), Is.EqualTo(800));
             Assert.That(pages.Asked, Has.Count.EqualTo(1));
         });
     }

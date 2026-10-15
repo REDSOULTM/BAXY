@@ -266,15 +266,21 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
+        // A page comes in pages, as file.read gives a file: the paging fields go before the text, which the mind cuts
+        // at 6 000 characters (BAXY Renew e2e 2026-10-15: RFC 2324's 418 was past the first 8 000 and unreachable).
         int maximumCharacters = Math.Clamp(
-            ExternalJson.OptionalInt(arguments, "maximumCharacters", 8_000), 500, 20_000);
+            ExternalJson.OptionalInt(arguments, "maximumCharacters", 4_000), 500, 20_000);
+        int offset = Math.Max(0, ExternalJson.OptionalInt(arguments, "offset", 0));
         if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
         (Uri Final, string Html)? page = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
         if (page is not { } read)
             return ExternalJson.Failure(operation, "web_fetch_page_unreadable");
-        (string title, string text, bool truncated) = PageText.Prose(read.Html, maximumCharacters);
+        (string title, string whole) = PageText.Prose(read.Html);
+        int start = Math.Min(offset, whole.Length);
+        string text = whole.Substring(start, Math.Min(maximumCharacters, whole.Length - start));
+        bool hasMore = start + text.Length < whole.Length;
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -282,9 +288,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("requestedUrl", address.AbsoluteUri);
             writer.WriteString("finalUrl", read.Final.AbsoluteUri);
             writer.WriteString("title", title);
-            writer.WriteString("text", text);
-            writer.WriteBoolean("truncated", truncated);
+            writer.WriteNumber("totalCharacters", whole.Length);
+            writer.WriteNumber("offset", start);
+            writer.WriteBoolean("hasMore", hasMore);
+            if (hasMore)
+                writer.WriteNumber("nextOffset", start + text.Length);
             writer.WriteString("authority", "public_http_get_html_text");
+            writer.WriteString("text", text);
             writer.WriteEndObject();
         }), effectObserved: false);
     }
