@@ -83,7 +83,6 @@ public sealed class OperationRegistryTests
     [TestCase("app.close", PolicyDecision.RequireConfirmation)]
     [TestCase("system.power", PolicyDecision.Allow)]
     [TestCase("input.scroll", PolicyDecision.Allow)]
-    [TestCase("mission.computer.use", PolicyDecision.Allow)]
     public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
         string operation,
         PolicyDecision expected)

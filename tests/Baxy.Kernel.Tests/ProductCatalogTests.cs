@@ -55,13 +55,11 @@ public sealed class ProductCatalogTests
     ];
 
 
-    // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md):
-    // el desplazamiento verificado por superficie y la misión general del shell (el arrastre de v3 se retiró en la
-    // estabilización L: arrastrar es un límite declarado).
+    // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md): el desplazamiento verificado
+    // por superficie (el arrastre de v3 se retiró en la estabilización L; la misión general del shell, en BAXY Renew).
     internal static readonly string[] ComputerUseAdditions =
     [
         "input.scroll",
-        "mission.computer.use",
     ];
 
     // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto; editar, buscar, leer y
@@ -77,9 +75,11 @@ public sealed class ProductCatalogTests
     ];
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
-    // (reminder.* sólo guardaba un registro que nadie hacía sonar).
+    // (reminder.* sólo guardaba un registro que nadie hacía sonar). Y la misión de pantalla, que el bucle nativo
+    // ya no aloja (auditoría K3).
     internal static readonly string[] RenewRetired =
     [
+        "mission.computer.use",
         "notification.cancel.at",
         "notification.cancel.latest",
         "notification.diagnose",
@@ -100,7 +100,7 @@ public sealed class ProductCatalogTests
         "filesystem.write.text",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 18;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 19;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -201,84 +201,6 @@ public sealed class ProductCatalogTests
             Assert.That(OperationArgumentValidator.InvalidArguments(right.RootElement, schema), Is.Empty);
             Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
         });
-    }
-
-    // Computer use, chained missions (shared contract «steps»): up to ten ordered sub-goals (goal v3 point 2: long tasks;
-    // the mind's MAX_STEPS was 8 only because this limit was), each a closed object with its goal, application and
-    // success check; the whole mission up to thirty steps.
-    [TestCase("""{"goal":"abre Steam"}""", true)]
-    [TestCase("""{"goal":"abre Steam","budgetSteps":30}""", true)]
-    [TestCase("""{"goal":"abre Steam","budgetSteps":31}""", false)]
-    [TestCase("""{"goal":"abre Steam","steps":null}""", true)]
-    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":true}""", true)]
-    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":"si"}""", false)]
-    [TestCase("""{"goal":"a y b","application":null,"successCheck":null,"steps":[{"goal":"a","application":"Steam","successCheck":"text:a"},{"goal":"b","application":null,"successCheck":null}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":" "}]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"application":"Steam"}]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a","budgetSteps":3}]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a","application":7}]}""", false)]
-    [TestCase("""{"goal":"a","steps":["a"]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"},{"goal":"11"}]}""", false)]
-    // Ronda 20b, revisión 2: a sub-goal of a form carries the check of the whole form (formCheck), a string or null.
-    [TestCase("""{"goal":"a","steps":[{"goal":"poner alto en 500","formCheck":"value:ancho=500&value:alto=500"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"hacer clic en aceptar","formCheck":null}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a","formCheck":7}]}""", false)]
-    public void AComputerUseMissionMayChainOrderedSubgoals(string json, bool expected)
-    {
-        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
-        using JsonDocument arguments = JsonDocument.Parse(json);
-
-        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void ASubgoalLongerThanItsContractIsRejected()
-    {
-        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
-        string goal = new('x', 513);
-        string application = new('y', 129);
-        using JsonDocument longGoal = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"{{goal}}"}]}""");
-        using JsonDocument longApplication = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"a","application":"{{application}}"}]}""");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(OperationArgumentValidator.IsValid(longGoal.RootElement, descriptor.ArgumentsSchema), Is.False);
-            Assert.That(OperationArgumentValidator.IsValid(longApplication.RootElement, descriptor.ArgumentsSchema), Is.False);
-        });
-    }
-
-    [Test]
-    public void TheSubgoalSchemaIsPublishedAsAClosedObjectInsideTheArray()
-    {
-        OperationDescriptor tool = ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("mission.computer.use"));
-        JsonElement steps = tool.ArgumentsSchema.GetProperty("properties").GetProperty("steps");
-        JsonElement items = steps.GetProperty("items");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(steps.GetProperty("maxItems").GetInt32(), Is.EqualTo(10));
-            Assert.That(steps.GetProperty("minItems").GetInt32(), Is.EqualTo(1));
-            Assert.That(items.GetProperty("type").GetString(), Is.EqualTo("object"));
-            Assert.That(items.GetProperty("additionalProperties").GetBoolean(), Is.False);
-            Assert.That(items.GetProperty("required").EnumerateArray().Select(name => name.GetString()), Is.EqualTo(new[] { "goal" }));
-            // Estabilización L: «limit» (the declared limit the sub-goal is) and «requires» (the device its place needs).
-            Assert.That(
-                items.GetProperty("properties").EnumerateObject().Select(property => property.Name),
-                Is.EqualTo(new[] { "application", "formCheck", "goal", "limit", "requires", "successCheck" }));
-        });
-    }
-
-    [Test]
-    public void ObjectItemsCannotNestArrays()
-    {
-        var nested = new OperationArgumentsSchema(
-            [new OperationArgumentProperty("tags", OperationJsonType.Array, itemTypes: OperationJsonType.String)],
-            []);
-        Assert.Throws<ArgumentException>(() => _ = new OperationArgumentProperty(
-            "steps", OperationJsonType.Array, itemSchema: nested));
     }
 
     // input.scroll may name the control of the last view to scroll (a list, a conversation) instead of the window.
