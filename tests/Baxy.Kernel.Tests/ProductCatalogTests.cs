@@ -80,7 +80,9 @@ public sealed class ProductCatalogTests
     // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
     // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9). Y la
     // pareja preparar/confirmar de winget, que package.install sustituye. Y el paso interno que mandaba una ruta a una
-    // papelera privada sin vuelta, que nada invocaba.
+    // papelera privada sin vuelta, que nada invocaba. Auditoría final (2026-10-15): los nueve pasos internos que nada
+    // enviaba (hash, papelera privada, preparar/confirmar de Steam y su compra, resolver destinatario o tarea), y
+    // message.send y filesystem.trash.restore, que sólo servían a dos de ellos.
     internal static readonly string[] RenewRetired =
     [
         "app.status",
@@ -113,26 +115,21 @@ public sealed class ProductCatalogTests
         "package.install.commit",
         "package.install.prepare",
         "filesystem.path.ensure.absent",
-    ];
-
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30;
-
-    // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
-    // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).
-    internal static readonly string[] InternalSteps =
-    [
         "filesystem.hash",
         "filesystem.trash.commit",
         "filesystem.trash.prepare",
+        "filesystem.trash.restore",
         "game.install.commit",
         "game.install.prepare",
         "game.purchase.commit",
         "game.purchase.prepare",
         "message.recipient.resolve",
+        "message.send",
         "task.resolve.exact",
     ];
 
-    internal const int ExpectedTools = ExpectedDescriptors - 9;
+    // Every operation of the catalog is offered to the model as a tool.
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 11;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -315,7 +312,7 @@ public sealed class ProductCatalogTests
     [Test]
     public void CatalogHasStableUniqueCompleteToolDescriptors()
     {
-        ProductOperationDescriptor[] descriptors = ProductCatalog.Descriptors.ToArray();
+        ProductOperationDescriptor[] descriptors = ProductCatalog.ToolDescriptors.ToArray();
 
         Assert.Multiple(() =>
         {
@@ -344,16 +341,6 @@ public sealed class ProductCatalogTests
                 OperationRisks.IsKnown(descriptor.Risk)), Is.True);
             Assert.That(descriptors.All(static descriptor =>
                 !string.IsNullOrWhiteSpace(descriptor.VerifierContractId)), Is.True);
-            Assert.That(
-                ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
-                Is.EqualTo(descriptors
-                    .Where(static descriptor => !InternalSteps.Contains(descriptor.Name))
-                    .Select(static descriptor => descriptor.Name)));
-            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
-            Assert.That(
-                descriptors.Where(static descriptor => descriptor.ToolExposure == ToolExposure.Internal)
-                    .Select(static descriptor => descriptor.Name),
-                Is.EquivalentTo(InternalSteps));
         });
     }
 
@@ -365,7 +352,7 @@ public sealed class ProductCatalogTests
                 new OperationDefinition(descriptor)))
             .ToArray();
 
-        Assert.That(tools, Has.Length.EqualTo(ExpectedTools));
+        Assert.That(tools, Has.Length.EqualTo(ExpectedDescriptors));
         for (int index = 0; index < tools.Length; index++)
         {
             ProductOperationDescriptor product = ProductCatalog.ToolDescriptors[index];
@@ -387,7 +374,8 @@ public sealed class ProductCatalogTests
         }
 
         Assert.That(
-            () => ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("filesystem.hash")),
+            () => ProductCatalog.CreateToolDescriptor(
+                new OperationDefinition("note.create", OperationRisk.Reversible, "Not from the catalog.")),
             Throws.ArgumentException);
     }
 
@@ -436,7 +424,6 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.Risk, Is.EqualTo(operation is "file.find" or "file.read"
                 ? OperationRisks.ReadOnly : OperationRisks.LowReversible));
             Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema),
@@ -461,7 +448,6 @@ public sealed class ProductCatalogTests
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("audio.status.endpoint.read.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -483,7 +469,6 @@ public sealed class ProductCatalogTests
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId, Is.EqualTo("media.status.smtc.read.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
                 empty.RootElement,
@@ -505,7 +490,6 @@ public sealed class ProductCatalogTests
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.LowReversible));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("input.key.press.win32.sendinput.accepted.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -527,7 +511,6 @@ public sealed class ProductCatalogTests
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -545,7 +528,6 @@ public sealed class ProductCatalogTests
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("clipboard.copy.win32.foreground.sendinput.sequence.postread.v1"));
         });
@@ -585,7 +567,6 @@ public sealed class ProductCatalogTests
             Assert.That(
                 RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), operation: descriptor.Name),
                 Is.EqualTo(PolicyDecision.Allow));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("wifi.status.netsh.wlan.secondread.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -656,7 +637,6 @@ public sealed class ProductCatalogTests
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.LowReversible));
-            Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("media.seek.relative.smtc.timeline.postread.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -671,7 +651,7 @@ public sealed class ProductCatalogTests
     [Test]
     public void EverySchemaIsClosedCanonicalAndSelfDescribing()
     {
-        foreach (ProductOperationDescriptor descriptor in ProductCatalog.Descriptors)
+        foreach (ProductOperationDescriptor descriptor in ProductCatalog.ToolDescriptors)
         {
             OperationArgumentsSchema schema = descriptor.ArgumentsSchema;
             using JsonDocument document = JsonDocument.Parse(schema.CanonicalJson);
@@ -718,10 +698,10 @@ public sealed class ProductCatalogTests
     [Test]
     public void RegistryAndCatalogAreOneToOneByExactDescriptorIdentity()
     {
-        var exact = new OperationRegistry(ProductCatalog.Descriptors.Select(
+        var exact = new OperationRegistry(ProductCatalog.ToolDescriptors.Select(
             static descriptor => (IOperationHandler)new StubHandler(
                 ProductCatalog.CreateDefinition(descriptor.Name))));
-        IOperationHandler[] altered = ProductCatalog.Descriptors.Select(
+        IOperationHandler[] altered = ProductCatalog.ToolDescriptors.Select(
                 static descriptor => (IOperationHandler)new StubHandler(
                     ProductCatalog.CreateDefinition(descriptor.Name)))
             .ToArray();
@@ -740,17 +720,10 @@ public sealed class ProductCatalogTests
             Assert.That(exact.Definitions.All(static definition =>
                 definition.ProductDescriptor is not null), Is.True);
             Assert.That(exact.Definitions, Has.Count.EqualTo(ExpectedDescriptors));
-            Assert.That(exact.ToolDefinitions, Has.Count.EqualTo(ExpectedTools));
-            Assert.That(exact.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
-            Assert.That(
-                exact.ToolDefinitions.Select(static definition => definition.Name),
-                Is.EqualTo(ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)));
+            Assert.That(exact.ToolDescriptors, Has.Count.EqualTo(ExpectedDescriptors));
             Assert.That(
                 exact.ToolDescriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)));
-            Assert.That(
-                exact.ToolDefinitions.Select(static definition => definition.Name),
-                Has.None.AnyOf(InternalSteps));
         });
     }
 

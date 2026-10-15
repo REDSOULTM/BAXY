@@ -11,7 +11,7 @@ namespace Baxy.Kernel.Operations;
 public interface IInvocationRiskAssessor
 {
     /// <summary>
-    /// The risk of this exact invocation, or null to keep the declared one. Never called for a forbidden operation.
+    /// The risk of this exact invocation, or null to keep the declared one.
     /// </summary>
     OperationRisk? AssessInvocationRisk(JsonElement arguments);
 }

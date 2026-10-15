@@ -30,17 +30,6 @@ public sealed record FilesystemMutationResult(
     // it the model told the folder it had been asked for, not the one written).
     string? FullPath = null);
 
-public sealed record FilesystemTrashPreparation(
-    string TrashId,
-    string ReviewLabel,
-    string Kind,
-    long Size);
-
-public sealed record FilesystemTrashReceipt(
-    string RestoreId,
-    string ReviewLabel,
-    bool Trashed);
-
 public sealed record BackupReceipt(
     string BackupId,
     long Size,
@@ -82,9 +71,6 @@ public interface IFilesystemProvider
         string destinationRelativePath,
         string expectedSha256,
         bool move);
-    FilesystemTrashPreparation PrepareTrash(string resourceId);
-    FilesystemTrashReceipt CommitTrash(string trashId, string reviewLabel);
-    FilesystemMutationResult Restore(string restoreId);
     BackupReceipt CreateBackup(string resourceId, string expectedSha256);
     BackupListResult ListBackups(int limit);
     BackupReceipt VerifyBackup(string backupId);

@@ -2,7 +2,9 @@ namespace Baxy.Kernel.Operations;
 
 public sealed class OperationDefinition
 {
-    public OperationDefinition(
+    // Kernel.Tests' seam: a handler of any risk with no catalog entry (and so no schema to check arguments against).
+    // The product builds every definition from its catalog descriptor.
+    internal OperationDefinition(
         string name,
         OperationRisk risk,
         string description)

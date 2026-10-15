@@ -124,7 +124,7 @@ public sealed class PrivateReplayAmbiguityTests
                 .OpenAsync(
                     journalPath,
                     new JournalHmacAuthenticator(key),
-                    CancellationToken.None))
+                    cancellationToken: CancellationToken.None))
             using (var engine = new MissionEngine(
                 new OperationRegistry([handler]),
                 journal,
@@ -139,7 +139,7 @@ public sealed class PrivateReplayAmbiguityTests
                 .OpenAsync(
                     journalPath,
                     new JournalHmacAuthenticator(key),
-                    CancellationToken.None))
+                    cancellationToken: CancellationToken.None))
             using (var engine = new MissionEngine(
                 new OperationRegistry([replayHandler]),
                 journal,

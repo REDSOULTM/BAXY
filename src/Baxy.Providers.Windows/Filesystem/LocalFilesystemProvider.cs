@@ -14,16 +14,17 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private const int MaximumHandles = 512;
     private const int MaximumTextBytes = 1_048_576;
     private const long MaximumAppendTargetBytes = 10L * 1024 * 1024;
+    private const string RecordedHashExtension = ".sha256";
     private static readonly TimeSpan HandleLifetime = TimeSpan.FromMinutes(5);
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
     private static readonly ConcurrentDictionary<string, object> RootLocks =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly string _root;
+    // Where the retired sandbox trash (filesystem.trash.commit) left what it moved: kept out of listings and searches.
     private readonly string _trash;
     private readonly string _backups;
     private readonly object _gate;
     private readonly Dictionary<string, Handle> _handles = new(StringComparer.Ordinal);
-    private readonly Dictionary<string, TrashHandle> _trashHandles = new(StringComparer.Ordinal);
     private readonly TimeProvider _time;
     private readonly IRecycleBin _recycleBin;
 
@@ -40,12 +41,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         _trash = Path.Combine(_root, ".trash");
         _backups = Path.Combine(_root, ".backups");
         Directory.CreateDirectory(_root);
-        Directory.CreateDirectory(_trash);
         Directory.CreateDirectory(_backups);
         _gate = RootLocks.GetOrAdd(_root, static _ => new object());
         _time = timeProvider ?? TimeProvider.System;
         EnsureSafePath(_root, allowMissingLeaf: false);
-        EnsureSafePath(_trash, allowMissingLeaf: false);
         EnsureSafePath(_backups, allowMissingLeaf: false);
     }
 
@@ -264,52 +263,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
     }
 
-    public FilesystemTrashPreparation PrepareTrash(string resourceId)
-    {
-        lock (_gate)
-        {
-            string path = ResolveHandle(resourceId, requireFile: false);
-            string id = "trash_" + Guid.NewGuid().ToString("N");
-            string label = Path.GetFileName(path);
-            _trashHandles[id] = new TrashHandle(path, label, _time.GetUtcNow());
-            long size = File.Exists(path) ? new FileInfo(path).Length : 0;
-            return new FilesystemTrashPreparation(id, label,
-                Directory.Exists(path) ? "directory" : "file", size);
-        }
-    }
-
-    public FilesystemTrashReceipt CommitTrash(string trashId, string reviewLabel)
-    {
-        lock (_gate)
-        {
-            TrashHandle handle = ConsumeTrash(trashId);
-            if (!string.Equals(handle.ReviewLabel, reviewLabel, StringComparison.Ordinal)
-                || (!File.Exists(handle.Path) && !Directory.Exists(handle.Path)))
-                throw Error("trash_selection_changed");
-            string restoreId = "restore_" + Guid.NewGuid().ToString("N");
-            string destination = Path.Combine(_trash, restoreId + "_" + handle.ReviewLabel);
-            if (File.Exists(handle.Path)) File.Move(handle.Path, destination);
-            else Directory.Move(handle.Path, destination);
-            _trashHandles[restoreId] = new TrashHandle(
-                destination, Path.GetRelativePath(_root, handle.Path), _time.GetUtcNow());
-            return new FilesystemTrashReceipt(restoreId, reviewLabel, true);
-        }
-    }
-
-    public FilesystemMutationResult Restore(string restoreId)
-    {
-        lock (_gate)
-        {
-            TrashHandle handle = ConsumeTrash(restoreId);
-            string destination = Resolve(handle.ReviewLabel, allowMissingLeaf: true);
-            if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
-            if (File.Exists(handle.Path)) File.Move(handle.Path, destination);
-            else if (Directory.Exists(handle.Path)) Directory.Move(handle.Path, destination);
-            else throw Error("restore_not_found");
-            return Mutation(Issue(destination), destination, reachedState: false);
-        }
-    }
-
     public BackupReceipt CreateBackup(string resourceId, string expectedSha256)
     {
         if (!IsHash(expectedSha256)) throw Error("invalid_hash");
@@ -322,9 +275,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string id = "backup_" + Guid.NewGuid().ToString("N");
             string destination = Path.Combine(_backups, id + ".bin");
             File.Copy(source, destination);
-            BackupReceipt receipt = VerifyBackupUnsafe(id);
-            if (!string.Equals(receipt.Sha256, hash, StringComparison.Ordinal))
+            if (!string.Equals(HashFile(destination), hash, StringComparison.Ordinal))
                 throw Error("verification_failed");
+            File.WriteAllText(Path.Combine(_backups, id + RecordedHashExtension), hash);
+            BackupReceipt receipt = VerifyBackupUnsafe(id);
+            if (!receipt.Verified) throw Error("verification_failed");
             return receipt;
         }
     }
@@ -356,6 +311,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         lock (_gate)
         {
             BackupReceipt receipt = VerifyBackupUnsafe(backupId);
+            if (!receipt.Verified) throw Error("backup_not_verified");
             string source = Path.Combine(_backups, backupId + ".bin");
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
             if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
@@ -376,7 +332,19 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         EnsureSafePath(path, allowMissingLeaf: false);
         if (!File.Exists(path)) throw Error("backup_not_found");
         var info = new FileInfo(path);
-        return new BackupReceipt(backupId, info.Length, HashFile(path), true);
+        string hash = HashFile(path);
+        return new BackupReceipt(backupId, info.Length, hash, string.Equals(RecordedHash(backupId), hash, StringComparison.Ordinal));
+    }
+
+    // The SHA-256 a backup had when it was made (a file beside it), or null for one made before it was recorded: only a
+    // backup whose bytes still hash to it is verified.
+    private string? RecordedHash(string backupId)
+    {
+        string path = Path.Combine(_backups, backupId + RecordedHashExtension);
+        EnsureSafePath(path, allowMissingLeaf: true);
+        if (!File.Exists(path) || new FileInfo(path).Length != 64) return null;
+        string recorded = File.ReadAllText(path);
+        return IsHash(recorded) ? recorded : null;
     }
 
     private FilesystemEntry IssueEntry(string path) => Entry(Issue(path), path, includeHash: false);
@@ -470,20 +438,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
     }
 
-    private TrashHandle ConsumeTrash(string id)
-    {
-        Prune();
-        if (!_trashHandles.Remove(id, out TrashHandle? handle)) throw Error("invalid_trash_id");
-        return handle;
-    }
-
     private void Prune()
     {
         DateTimeOffset now = _time.GetUtcNow();
         foreach (string key in _handles.Where(pair => now - pair.Value.IssuedAt > HandleLifetime)
             .Select(static pair => pair.Key).ToArray()) _handles.Remove(key);
-        foreach (string key in _trashHandles.Where(pair => now - pair.Value.IssuedAt > HandleLifetime)
-            .Select(static pair => pair.Key).ToArray()) _trashHandles.Remove(key);
     }
 
     private bool IsUnderTrash(string path) => path.StartsWith(
@@ -522,5 +481,4 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static FilesystemProviderException Error(string code) => new(code);
 
     private sealed record Handle(string Path, string Root, DateTime LastWriteUtc, long Size, DateTimeOffset IssuedAt);
-    private sealed record TrashHandle(string Path, string ReviewLabel, DateTimeOffset IssuedAt);
 }

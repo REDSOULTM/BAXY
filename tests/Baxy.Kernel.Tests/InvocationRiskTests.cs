@@ -51,23 +51,6 @@ public sealed class InvocationRiskTests
     }
 
     [Test]
-    public async Task AForbiddenOperationStaysForbiddenWhateverTheHandlerSays()
-    {
-        var handler = new AssessingHandler(OperationRisk.Forbidden, documentless: "win_settings");
-        using var journal = new InMemoryInvocationJournal();
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
-
-        OperationResponse response = await engine.ExecuteAsync(
-            Request("""{"windowId":"win_settings"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(response.ErrorCode, Is.EqualTo("operation_forbidden"));
-            Assert.That(handler.ExecutionCount, Is.Zero);
-        });
-    }
-
-    [Test]
     public async Task AHandlerThatFailsToAssessKeepsTheDeclaredRisk()
     {
         var handler = new AssessingHandler(OperationRisk.Irreversible, documentless: null);

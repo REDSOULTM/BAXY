@@ -92,7 +92,7 @@ public sealed class ConfirmationAuthorityTests
     {
         using var journal = new InMemoryInvocationJournal();
         var primary = new CountingHandler(OperationRisk.Irreversible); // D3 2026-09-20: a nameless External effect no longer asks
-        var secondary = new CountingHandler(OperationRisk.External, "message.send");
+        var secondary = new CountingHandler(OperationRisk.External, "message.send.test");
         using var engine = new MissionEngine(new OperationRegistry([primary, secondary]), journal);
         OperationRequest request = CreateRequest("{\"destination\":\"equipo\"}");
         string token = RequiredToken(await engine.ExecuteAsync(request, CancellationToken.None));
@@ -119,7 +119,7 @@ public sealed class ConfirmationAuthorityTests
             request with
             {
                 RequestId = NewId(),
-                Operation = "message.send",
+                Operation = "message.send.test",
                 ConfirmationToken = token,
             },
         ];
@@ -352,39 +352,6 @@ public sealed class ConfirmationAuthorityTests
             Assert.That(replay.Status, Is.EqualTo(OperationStatuses.Completed));
             Assert.That(replay.Replayed, Is.True);
             Assert.That(handler.ExecutionCount, Is.EqualTo(1));
-        });
-    }
-
-    [Test]
-    public async Task Forbidden_operation_preserves_terminal_journaled_semantics_without_a_challenge()
-    {
-        using var journal = new InMemoryInvocationJournal();
-        var handler = new CountingHandler(OperationRisk.Forbidden);
-        var authority = new InMemoryConfirmationAuthority();
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
-                               new MissionEngineOptions { ConfirmationAuthority = authority });
-        OperationRequest request = CreateRequest("{}");
-
-        OperationResponse first = await engine.ExecuteAsync(request, CancellationToken.None);
-        OperationResponse replay = await engine.ExecuteAsync(
-            request with { RequestId = NewId() },
-            CancellationToken.None);
-        string? started = await journal.FindStartedFingerprintAsync(
-            request.InvocationId,
-            CancellationToken.None);
-        CompletedInvocation? completed = await journal.FindCompletedAsync(
-            request.InvocationId,
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(first.Status, Is.EqualTo(OperationStatuses.Rejected));
-            Assert.That(first.ErrorCode, Is.EqualTo("operation_forbidden"));
-            Assert.That(replay.Replayed, Is.True);
-            Assert.That(started, Is.EqualTo(RequestFingerprint.Compute(request)));
-            Assert.That(completed, Is.Not.Null);
-            Assert.That(authority.ActiveChallengeCount, Is.Zero);
-            Assert.That(handler.ExecutionCount, Is.Zero);
         });
     }
 

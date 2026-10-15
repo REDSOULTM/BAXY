@@ -420,8 +420,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
             : 0;
         // To the Windows Recycle Bin, where the person restores it (BAXY Renew audit 2026-10-15: it went to a private
-        // trash that nothing restored from; filesystem.trash.restore only knows the sandbox's). When the bin cannot
-        // take it, it stays where it was.
+        // trash that nothing restored from). When the bin cannot take it, it stays where it was.
         effectBoundary.Cross();
         if (!_recycleBin.Recycle(source))
             return ExternalJson.Failure(operation, "known_file_not_recycled");

@@ -112,32 +112,20 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     /// </summary>
     public int RotationPostponements { get; private set; }
 
-    public string? LastRotationPostponement { get; private set; }
+    // The cause of the last postponed rotation, which the diagnostics line carries.
+    internal string? LastRotationPostponement { get; private set; }
 
     /// <summary>
     /// Opens an authenticated journal and takes ownership of
-    /// <paramref name="authenticator"/>, including when opening fails.
-    /// </summary>
-    public static async ValueTask<FileInvocationJournal> OpenAsync(
-        string journalPath,
-        JournalHmacAuthenticator authenticator,
-        CancellationToken cancellationToken = default) =>
-        await OpenAsync(
-            journalPath,
-            authenticator,
-            diagnostics: null,
-            cancellationToken).ConfigureAwait(false);
-
-    /// <summary>
-    /// Opens like <see cref="OpenAsync(string, JournalHmacAuthenticator, CancellationToken)"/>
-    /// and reports each postponed rotation (its cause, bounded in frequency) through
+    /// <paramref name="authenticator"/>, including when opening fails. Each postponed
+    /// rotation (its cause, bounded in frequency) is reported through
     /// <paramref name="diagnostics"/>, so a journal heading to its hard cap shows up
     /// before it refuses operations.
     /// </summary>
     public static async ValueTask<FileInvocationJournal> OpenAsync(
         string journalPath,
         JournalHmacAuthenticator authenticator,
-        Action<string>? diagnostics,
+        Action<string>? diagnostics = null,
         CancellationToken cancellationToken = default) =>
         await OpenCoreAsync(
             journalPath,

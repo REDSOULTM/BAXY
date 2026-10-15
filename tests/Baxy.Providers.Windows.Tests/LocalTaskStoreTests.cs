@@ -17,7 +17,6 @@ public sealed class LocalTaskStoreTests
             "ejecutar pruebas",
             "2026-07-20T09:00:00-04:00");
 
-        LocalTaskRecord resolved = store.ResolveExact("revisar baxy", false);
         LocalTaskRecord completed = store.SetCompleted(created.Id, created.Version, true);
         LocalTaskRecord deleted = store.Delete(completed.Id, completed.Version, completed.Title);
         LocalTaskRecord restored = store.Restore(deleted.Id, deleted.Version);
@@ -25,7 +24,6 @@ public sealed class LocalTaskStoreTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(resolved, Is.EqualTo(created));
             Assert.That(completed.Completed, Is.True);
             Assert.That(completed.CompletedAtUtc, Is.Not.Null);
             Assert.That(deleted.Deleted, Is.True);

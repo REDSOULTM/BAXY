@@ -95,13 +95,13 @@ public sealed class Goal05TerminalStateTests
     {
         var handler = new ScriptedHandler(OperationOutcome.Success());
         handler.DefinitionOverride = new OperationDefinition(
-            "message.send",
+            "message.send.test",
             OperationRisk.External,
             "Send a message.");
         using var journal = new InMemoryInvocationJournal();
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         OperationRequest original = Request(
-            "message.send",
+            "message.send.test",
             "{\"destination\":\"equipo\"}");
         OperationResponse challenge = await engine.ExecuteAsync(original, CancellationToken.None);
         string token = challenge.Result!.Value.GetProperty("token").GetString()!;
