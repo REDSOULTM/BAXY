@@ -32,6 +32,8 @@ export interface AgentStatus {
   built: boolean;
   healthy: boolean;
   ready: boolean;
+  /** a risky call waits for the person's Sí or No (the buttons under BAXY's question) */
+  pendingConfirmation?: boolean;
 }
 
 /** Latest boot_stage event from the backend. Drives the placeholder text and
@@ -258,7 +260,9 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
     case 'agent':
       return {
         ...prev,
-        agent: { built: ev.built, healthy: ev.healthy, ready: ev.ready },
+        agent: {
+          built: ev.built, healthy: ev.healthy, ready: ev.ready, pendingConfirmation: !!ev.pendingConfirmation,
+        },
       };
     case 'boot_stage': {
       // A stage that reports phase:"completed" (e.g. the profile swap) is a

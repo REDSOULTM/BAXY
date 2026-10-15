@@ -20,6 +20,8 @@ export interface ActivityEntry {
   ts: string; // 'HH:MM:SS'
   /** the page a consulted answer was written from (M53, D35); shown as «fuente», never read aloud. */
   source?: string;
+  /** what the line is: the model's answer, its question, or its question about a call waiting for a «sí». */
+  route?: string;
 }
 
 export interface ModelInfo {
@@ -98,6 +100,8 @@ export type ServerEvent =
       built: boolean;
       healthy: boolean;
       ready: boolean;
+      /** a risky call waits for the person's Sí or No */
+      pendingConfirmation?: boolean;
     }
   | {
       /** granular boot-time progress. Emitted while the LLM and voice stack

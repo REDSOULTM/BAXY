@@ -30,15 +30,23 @@ interface Props {
   onSettings: () => void;
   onNewSession: () => void;
   onHelp: () => void;
+  /** a risky call waits for the person: the newest question about it carries the Sí and No buttons */
+  pendingConfirmation: boolean;
 }
 
 export function ActivityPanel({
   entries, session, surfaces, activeSurface, onSurface, clock,
-  settingsOpen, onSettings, onNewSession, onHelp,
+  settingsOpen, onSettings, onNewSession, onHelp, pendingConfirmation,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const ordered = useMemo(() => entries, [entries]);
+  // The question the buttons answer: BAXY's newest line about a call that waits for the person.
+  const asking = useMemo(() => {
+    if (!pendingConfirmation) return null;
+    const latest = [...entries].reverse().find((e) => e.src !== 'YOU');
+    return latest && latest.route === 'confirmation' ? latest.id : null;
+  }, [entries, pendingConfirmation]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -83,7 +91,7 @@ export function ActivityPanel({
         aria-atomic="false"
       >
         {ordered.length > 0 ? (
-          ordered.map((e) => <ActivityRow key={e.id} entry={e} />)
+          ordered.map((e) => <ActivityRow key={e.id} entry={e} asking={e.id === asking} />)
         ) : (
           <div className="activity-empty">waiting for live activity</div>
         )}
@@ -144,7 +152,16 @@ function openSource(url: string) {
   }).catch(() => { /* ignore */ });
 }
 
-function ActivityRow({ entry }: { entry: ActivityEntry }) {
+// The person's answer to a call that waits for their «sí»: the shell sends that exact call, or drops it.
+function answerConfirmation(approve: boolean) {
+  fetch('/confirmation/answer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ approve }),
+  }).catch(() => { /* ignore */ });
+}
+
+function ActivityRow({ entry, asking }: { entry: ActivityEntry; asking: boolean }) {
   const cls = SOURCE_CLASS[entry.src] ?? 'you';
   const source = entry.source;
   return (
@@ -154,6 +171,16 @@ function ActivityRow({ entry }: { entry: ActivityEntry }) {
         <span className={`src ${cls}`}>{entry.src}</span>
       </div>
       <div className="msg">{entry.msg}</div>
+      {asking ? (
+        <div className="confirm-actions">
+          <button className="ibtn xs labeled" onClick={() => answerConfirmation(true)} aria-label="Sí">
+            <span>Sí</span>
+          </button>
+          <button className="ibtn xs labeled" onClick={() => answerConfirmation(false)} aria-label="No">
+            <span>No</span>
+          </button>
+        </div>
+      ) : null}
       {source ? (
         <a
           className="source-link"

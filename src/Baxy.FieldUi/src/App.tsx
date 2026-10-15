@@ -650,6 +650,7 @@ export default function App() {
               onSettings={() => setOpenPanel(openPanel === 'settings' ? null : 'settings')}
               onNewSession={onNewSession}
               onHelp={onHelp}
+              pendingConfirmation={!!stream.agent.pendingConfirmation}
             />
           </div>
         </div>
