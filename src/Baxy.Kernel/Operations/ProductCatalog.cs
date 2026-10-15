@@ -1861,16 +1861,13 @@ public static class ProductCatalog
                 [
                     String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
                     String("name", types: NullableString, maximumUtf8Bytes: 200),
-                    // REOPEN1957 H0069 «Tienes algun meme?» (D11): with a query and no
-                    // address, the first image the search engine lists is downloaded.
-                    String("query", types: NullableString, maximumUtf8Bytes: 200),
-                    String("url", types: NullableString, maximumUtf8Bytes: 2_048),
+                    String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
-                []),
+                ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
             ToolExposure.Public,
-            "Descarga un archivo o una imagen de una dirección web (o, con una consulta y sin dirección, la primera imagen que lista el buscador) a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
+            "Descarga un archivo o una imagen de una dirección web a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.
