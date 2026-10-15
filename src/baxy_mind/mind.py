@@ -33,7 +33,8 @@ SYSTEM = (
     "está algo del PC, contesta por los resultados de esta conversación: sin una herramienta que lo hiciera, no lo "
     "hiciste, y sin una que lo mirara, no lo sabes: míralo con su herramienta antes de responder.\n"
     "3. Si al pedido le falta un dato que sólo la persona sabe (cuánto, cuál, a quién, qué texto), pregúntalo con "
-    "ask_user en una pregunta corta. No consultes el estado del PC para adivinarlo ni inventes nombres o valores.\n"
+    "ask_user en una pregunta corta. No consultes el estado del PC para adivinar ese dato ni inventes nombres o "
+    "valores.\n"
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
     "ni lo conviertas en una pregunta.\n"
     "5. Charla, cuentas, traducciones y lo que sabes con certeza respóndelo tú. Lo que cambia con el tiempo o no sabes, "
@@ -176,7 +177,9 @@ ASK_USER = {
         "description": (
             "Ask the person ONE short question, in their language, when a value an action needs is missing or the "
             "request could mean two different actions. Use when: «pon una alarma» (no time), «mándale un mensaje» "
-            "(no recipient or text). Do not use when: the request is complete, or to chat."
+            "(no recipient or text). Do not use when: the request is complete, to chat, or when no tool can do what is "
+            "asked (ordering food or a taxi, calls, payments, bookings): then say in one sentence that you don't do "
+            "that; asking for an address or a number will not make it possible."
         ),
         "parameters": {"type": "object", "properties": {"question": {"type": "string"}}, "required": ["question"]},
     },
@@ -233,7 +236,6 @@ class Mind:
         self.trace = trace
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
-        self.op_to_tool: dict[str, dict[str, Any]] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -255,7 +257,7 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, op_to_tool = [ASK_USER, CONFIRM], {}, {}
+        tools, wire_to_op = [ASK_USER, CONFIRM], {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
             description = self.english.get(name) or str(cap.get("description") or "")
@@ -279,12 +281,12 @@ class Mind:
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)
             wire_to_op[wire] = name
-            op_to_tool[name] = tool
-        self.tools, self.wire_to_op, self.op_to_tool = tools, wire_to_op, op_to_tool
+        self.tools, self.wire_to_op = tools, wire_to_op
         return len(capabilities)
 
     def warm(self) -> None:
         """Process the tools and the system prompt once, so every turn starts from a cached prefix."""
+        self.call_tokens = self.server.tokenize("<tool_call>")
         self.server.chat({"messages": [{"role": "system", "content": self._system()},
                                            {"role": "user", "content": "hola"}],
                               "tools": self.tools, "max_tokens": 1,
@@ -419,7 +421,7 @@ class Mind:
         # answer, the facts it may tell are together (it told «no pude abrir Steam» after Steam opened, «lo guardé»
         # after the typing failed, 2026-10-15 falsehood bench).
         done = turn.setdefault("done", [])
-        done.append(f"{turn.get('calling', '?')} → {_outcome(observation)}")
+        done.append(f"{str(turn.get('calling', '?')).replace('.', '_')} → {_outcome(observation)}")
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
@@ -462,10 +464,12 @@ class Mind:
                 # change measured, not by sampling noise (±3 of 90 without it).
                 "seed": 0}
         if final:
-            # Without tools the model can only answer in words: with tool_choice none Qwen3.5 still wrote a call as
-            # XML text, which reached the person (llama.cpp #20837; 2026-10-15 E017). The prefix is read again only
-            # for this last answer of an exhausted turn.
-            del body["tools"], body["parallel_tool_calls"]
+            # The last answer of an exhausted turn is words only. The tools stay, so the cached prefix (37k tokens)
+            # is not evicted by a shorter prompt (llama.cpp PR #24176: a restore re-reads ~4k tokens; measured 2.3-3.6 s
+            # on the next order). tool_choice none alone still let Qwen3.5 write a call as XML text that reached the
+            # person (llama.cpp #20837; 2026-10-15 E017): the token that opens a call cannot be sampled.
+            body["tool_choice"] = "none"
+            body["logit_bias"] = [[token, False] for token in self.call_tokens]
         reply = self.server.chat(body)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
@@ -498,10 +502,14 @@ class Mind:
                                   "arguments": None, "question": "", "reply": ""}
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
+            for later in turn.get("queue") or []:
+                turn["conv"].append({"role": "tool", "tool_call_id": later["id"], "content": NOT_RUN})
             turn["queue"], turn["awaiting"] = [], None
             if question:
                 turn["asked"] = call["id"]
                 result.update(kind="clarify", question=question)
+            else:
+                turn["conv"].append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN})
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
@@ -511,10 +519,12 @@ class Mind:
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)
-        self._log(stage, started, reply, text=turn["text"], kind=result["kind"], operation=result["operation"],
-                  # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop).
-                  arguments=(call["arguments"] if call and not str(result["operation"] or "").startswith("memory.")
-                             else None), content=content)
+        private = str(result["operation"] or "").startswith("memory.")
+        # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop): their words, the
+        # call's arguments and the model's text.
+        self._log(stage, started, reply, text=None if private else turn["text"], kind=result["kind"],
+                  operation=result["operation"], arguments=call["arguments"] if call and not private else None,
+                  content=None if private else content)
         return result
 
     # ---- trace ---------------------------------------------------------------------------------------------
