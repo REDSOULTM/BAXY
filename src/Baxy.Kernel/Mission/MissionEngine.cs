@@ -17,23 +17,8 @@ public sealed class MissionEngine : IDisposable
     private readonly IInvocationJournal _journal;
     private readonly InMemoryConfirmationAuthority _confirmationAuthority;
     private readonly IPrivateOperationEnvelopeAuthenticator? _privateEnvelopeAuthenticator;
-    private readonly IOperationResponseNarrator _narrator;
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
-    // SCREEN1403/1405 «leéme lo que dice la pantalla»: captures produced under
-    // a confirmed capture operation, keyed by captureId → consent expiry. The
-    // capture id is unguessable and exists only because the person confirmed
-    // that capture; reading it shortly afterwards is the consented purpose, not
-    // a second privacy decision. Plan steps carry their own mission ids, so the
-    // consent cannot be bound to a mission. The execution gate serializes access.
-    private static readonly TimeSpan ConsentedCaptureWindow = TimeSpan.FromMinutes(10);
-    private readonly Dictionary<string, DateTimeOffset> _consentedCaptures = new(StringComparer.Ordinal);
-
-    /// <summary>
-    /// Última autocorrección de este motor: afirmación, verificación que la
-    /// desmintió y texto de corrección. Nulo si el último turno no corrigió.
-    /// </summary>
-    public HonestyCorrectionTrace? LastHonestyCorrection { get; private set; }
 
     /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
@@ -48,9 +33,8 @@ public sealed class MissionEngine : IDisposable
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _journal = journal ?? throw new ArgumentNullException(nameof(journal));
         _confirmationAuthority = options?.ConfirmationAuthority
-            ?? new InMemoryConfirmationAuthority(options?.TimeProvider);
+            ?? new InMemoryConfirmationAuthority();
         _privateEnvelopeAuthenticator = options?.PrivateEnvelopeAuthenticator;
-        _narrator = options?.Narrator ?? DefaultOperationResponseNarrator.Instance;
         _confirmationMode = options?.ConfirmationMode
             ?? (() => ConfirmationMode.Normal);
     }
@@ -85,13 +69,10 @@ public sealed class MissionEngine : IDisposable
                 }
 
                 _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
-                OperationResponse replayed = PrivateOperationBoundary.NormalizeReplay(
+                return PrivateOperationBoundary.NormalizeReplay(
                     request,
                     completed.Response,
-                    _privateEnvelopeAuthenticator,
-                    _narrator);
-                LastHonestyCorrection = replayed.HonestyCorrection;
-                return replayed;
+                    _privateEnvelopeAuthenticator);
             }
 
             if (await _journal
@@ -128,14 +109,6 @@ public sealed class MissionEngine : IDisposable
                     // exact arguments decide whether it reaches a person.
                     request.Arguments)
                 : null;
-            if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
-            {
-                // SCREEN1403/1405 «leéme lo que dice la pantalla»: the person
-                // confirmed the capture; reading that same capture shortly after
-                // is the consented purpose, not a second privacy decision.
-                policy = PolicyDecision.Allow;
-            }
-
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
             {
@@ -208,18 +181,6 @@ public sealed class MissionEngine : IDisposable
                 request,
                 outcome,
                 _privateEnvelopeAuthenticator);
-            if (grantedBinding is not null
-                && request.Operation is "capture.screenshot" or "capture.active.window"
-                && outcome.Succeeded
-                && outcome.Verified
-                && outcome.Result is { ValueKind: JsonValueKind.Object } captureResult
-                && captureResult.TryGetProperty("captureId", out JsonElement consentedCapture)
-                && consentedCapture.ValueKind == JsonValueKind.String
-                && consentedCapture.GetString() is { Length: > 0 } consentedCaptureId)
-            {
-                _consentedCaptures[consentedCaptureId] = DateTimeOffset.UtcNow + ConsentedCaptureWindow;
-            }
-
             if (outcome.Retryable
                 && (outcome.Succeeded
                     || outcome.Verified
@@ -261,11 +222,10 @@ public sealed class MissionEngine : IDisposable
         }
     }
 
-    private OperationResponse ToResponse(
+    private static OperationResponse ToResponse(
         OperationRequest request,
         OperationOutcome outcome)
     {
-        LastHonestyCorrection = null;
         bool completed = outcome.Succeeded && outcome.Verified;
         string status = outcome.Retryable
             ? OperationStatuses.Pending
@@ -275,17 +235,7 @@ public sealed class MissionEngine : IDisposable
         string? errorCode = completed
             ? null
             : outcome.ErrorCode ?? (outcome.Succeeded ? "verification_failed" : "operation_failed");
-        string message = _narrator.Narrate(request.Operation, outcome);
-        HonestyCorrectionTrace? honesty = null;
-        if (outcome.Succeeded && !outcome.Verified)
-        {
-            honesty = HonestyCorrection.Correct(
-                HonestyCorrection.NonAssertingInProgress,
-                errorCode ?? "verification_failed",
-                message);
-            LastHonestyCorrection = honesty;
-        }
-
+        string message = OperationVisibleFacts.FromOutcome(request.Operation, outcome);
         return new OperationResponse(
             ProtocolTypes.OperationResponse,
             request.RequestId,
@@ -298,8 +248,7 @@ public sealed class MissionEngine : IDisposable
             outcome.Result,
             errorCode,
             outcome.EffectMayHaveOccurred,
-            outcome.CauseCode,
-            honesty);
+            outcome.CauseCode);
     }
 
     private async ValueTask<OperationResponse> CompleteAsync(
@@ -390,26 +339,6 @@ public sealed class MissionEngine : IDisposable
         }
     }
 
-    private bool IsReadOfConsentedCapture(OperationRequest request)
-    {
-        if (request.Operation is not ("ocr.read" or "vision.describe")
-            || request.Arguments.ValueKind != JsonValueKind.Object
-            || !request.Arguments.TryGetProperty("captureId", out JsonElement captureId)
-            || captureId.ValueKind != JsonValueKind.String
-            || captureId.GetString() is not { Length: > 0 } id)
-        {
-            return false;
-        }
-
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        foreach (string expired in _consentedCaptures.Where(entry => entry.Value <= now).Select(entry => entry.Key).ToArray())
-        {
-            _consentedCaptures.Remove(expired);
-        }
-
-        return _consentedCaptures.TryGetValue(id, out DateTimeOffset expiry) && expiry > now;
-    }
-
     private static JsonElement BuildConfirmationResult(
         ConfirmationChallenge challenge,
         bool reconciliationRequired)
@@ -431,7 +360,7 @@ public sealed class MissionEngine : IDisposable
         return document.RootElement.Clone();
     }
 
-    private OperationResponse Pending(
+    private static OperationResponse Pending(
         OperationRequest request,
         string errorCode,
         JsonElement? result) =>
@@ -441,7 +370,7 @@ public sealed class MissionEngine : IDisposable
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Pending,
-            _narrator.NarrateStatus(
+            OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Pending,
                 errorCode),
@@ -450,7 +379,7 @@ public sealed class MissionEngine : IDisposable
             result,
             errorCode);
 
-    private OperationResponse Rejected(
+    private static OperationResponse Rejected(
         OperationRequest request,
         string errorCode) =>
         new(
@@ -459,7 +388,7 @@ public sealed class MissionEngine : IDisposable
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Rejected,
-            _narrator.NarrateStatus(
+            OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Rejected,
                 errorCode),
@@ -468,14 +397,14 @@ public sealed class MissionEngine : IDisposable
             null,
             errorCode);
 
-    private OperationResponse InvalidArguments(OperationRequest request) =>
+    private static OperationResponse InvalidArguments(OperationRequest request) =>
         new(
             ProtocolTypes.OperationResponse,
             request.RequestId,
             request.MissionId,
             request.InvocationId,
             OperationStatuses.Failed,
-            _narrator.NarrateStatus(
+            OperationVisibleFacts.FromStatus(
                 request.Operation,
                 OperationStatuses.Failed,
                 "invalid_arguments"),

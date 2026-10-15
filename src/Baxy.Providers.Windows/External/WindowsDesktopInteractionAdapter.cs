@@ -831,9 +831,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                         && root.TryGetProperty("focused", out JsonElement focusedValue) && focusedValue.ValueKind == JsonValueKind.False
                             ? (identity, controlId, _fields.Clicks, Ticks())
                             : null;
-                    // «select»: a list-only combo box took the entry of that name (its selection re-read).
+                    // «select»: a list-only combo box took the entry of that name (its selection re-read), said as read.
                     return FieldReceipt(operation, key, text, identity, frontBefore, new FieldDelivery(
-                        method.GetString()!, whole, true, whole ? null : "input_effect_not_verified", fieldClass), keeper);
+                        method.GetString()!, whole, true, whole ? null : "input_effect_not_verified", fieldClass,
+                        ChosenEntry(root)), keeper);
                 }
 
                 // Nothing was set (the worker sets no read-only, password or disabled field): neither its edit
@@ -919,17 +920,29 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             if (!ok)
                 return effectBoundary.Failure(operation, error is { Length: > 0 } ? error : "field_no_receipt", true);
+            // Auditoría C9: no entry is called so (folded); nothing was chosen, and the list's entries go back as they read.
             if (!root.TryGetProperty("method", out JsonElement method) || method.ValueKind != JsonValueKind.String
                 || method.GetString() != "select")
-                return ExternalJson.FailureBeforeEffect(operation, "input_entry_not_found");
+                return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found",
+                    root.TryGetProperty("entries", out JsonElement entries) && entries.ValueKind == JsonValueKind.Array
+                        ? [.. entries.EnumerateArray().Where(entry => entry.ValueKind == JsonValueKind.String)
+                            .Select(entry => entry.GetString()!)]
+                        : []);
             bool whole = root.TryGetProperty("delivered", out JsonElement read) && read.ValueKind == JsonValueKind.True;
             string fieldClass = root.TryGetProperty("className", out JsonElement named) && named.ValueKind == JsonValueKind.String
                 ? named.GetString() ?? string.Empty
                 : string.Empty;
             return FieldReceipt(operation, null, text, identity, frontBefore, new FieldDelivery(
-                "select", whole, true, whole ? null : "input_effect_not_verified", fieldClass), keeper);
+                "select", whole, true, whole ? null : "input_effect_not_verified", fieldClass, ChosenEntry(root)), keeper);
         }
     }
+
+    // The entry a «select» chose, as the worker read its name; null when it said none.
+    private static string? ChosenEntry(JsonElement root) =>
+        root.TryGetProperty("chosen", out JsonElement chosen) && chosen.ValueKind == JsonValueKind.String
+            && chosen.GetString() is { Length: > 0 } name
+                ? name
+                : null;
 
     /// <summary>
     /// cu-v3-scroll-pegar-direccion (t-long-1, measured: Ctrl+V to a text editor just opened behind the person's window
@@ -1022,6 +1035,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // How it got there: setvalue (UI Automation), em_replacesel or wm_char (the edit control's messages),
             // postmessage (a queued key). None of them needs the keyboard or the front.
             writer.WriteString("method", delivery.Method);
+            // Auditoría C9: the entry of the list that was chosen, as read, never the text asked.
+            if (delivery.Entry is { } entry)
+                writer.WriteString("entry", entry);
             writer.WriteString("fieldClass", delivery.FieldClass);
             writer.WriteNumber("window", window);
             writer.WriteString("windowTitle", VisibleControlSurface.WindowTitle(window));

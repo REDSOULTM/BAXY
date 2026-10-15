@@ -61,9 +61,9 @@ def main() -> int:
                     try:
                         server.wait_ready(600)
                         mind.warm()
-                    except Exception as error:  # noqa: BLE001 - told to the App as a startup failure
+                    except Exception:  # noqa: BLE001 - told to the App as a startup failure
                         reply = protocol.error_reply(request_id, "request_failed", "catalog_runtime_failure")
-                        reply["startup"] = server.startup_failure(error)
+                        reply["startup"] = server.startup_failure()
                         protocol.write_message(reply)
                         continue
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})

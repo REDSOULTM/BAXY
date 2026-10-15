@@ -55,13 +55,11 @@ public sealed class ProductCatalogTests
     ];
 
 
-    // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md):
-    // el desplazamiento verificado por superficie y la misión general del shell (el arrastre de v3 se retiró en la
-    // estabilización L: arrastrar es un límite declarado).
+    // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md): el desplazamiento verificado
+    // por superficie (el arrastre de v3 se retiró en la estabilización L; la misión general del shell, en BAXY Renew).
     internal static readonly string[] ComputerUseAdditions =
     [
         "input.scroll",
-        "mission.computer.use",
     ];
 
     // BAXY Renew, herramientas de agente (2026-10-15): leer una página pública como texto; editar, buscar, leer y
@@ -77,9 +75,12 @@ public sealed class ProductCatalogTests
     ];
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
-    // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba.
+    // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
+    // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9).
     internal static readonly string[] RenewRetired =
     [
+        "app.status",
+        "mission.computer.use",
         "notification.cancel.at",
         "notification.cancel.latest",
         "notification.diagnose",
@@ -107,9 +108,27 @@ public sealed class ProductCatalogTests
         "routine.set.enabled",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 25;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 6 - 27;
 
-    internal const int ExpectedTools = ExpectedDescriptors - 1;
+    // Auditoría D-K14: the steps only the kernel's own handlers take are Internal in the catalog, so they are never
+    // offered to the model as tools (before, a text prefix in the mind's Spanish descriptions hid them).
+    internal static readonly string[] InternalSteps =
+    [
+        "filesystem.hash",
+        "filesystem.path.ensure.absent",
+        "filesystem.trash.commit",
+        "filesystem.trash.prepare",
+        "game.install.commit",
+        "game.install.prepare",
+        "game.purchase.commit",
+        "game.purchase.prepare",
+        "message.recipient.resolve",
+        "package.install.commit",
+        "package.install.prepare",
+        "task.resolve.exact",
+    ];
+
+    internal const int ExpectedTools = ExpectedDescriptors - 12;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -210,84 +229,6 @@ public sealed class ProductCatalogTests
         });
     }
 
-    // Computer use, chained missions (shared contract «steps»): up to ten ordered sub-goals (goal v3 point 2: long tasks;
-    // the mind's MAX_STEPS was 8 only because this limit was), each a closed object with its goal, application and
-    // success check; the whole mission up to thirty steps.
-    [TestCase("""{"goal":"abre Steam"}""", true)]
-    [TestCase("""{"goal":"abre Steam","budgetSteps":30}""", true)]
-    [TestCase("""{"goal":"abre Steam","budgetSteps":31}""", false)]
-    [TestCase("""{"goal":"abre Steam","steps":null}""", true)]
-    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":true}""", true)]
-    [TestCase("""{"goal":"en esta ventana guardá","frontWindow":"si"}""", false)]
-    [TestCase("""{"goal":"a y b","application":null,"successCheck":null,"steps":[{"goal":"a","application":"Steam","successCheck":"text:a"},{"goal":"b","application":null,"successCheck":null}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":" "}]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"application":"Steam"}]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a","budgetSteps":3}]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a","application":7}]}""", false)]
-    [TestCase("""{"goal":"a","steps":["a"]}""", false)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"1"},{"goal":"2"},{"goal":"3"},{"goal":"4"},{"goal":"5"},{"goal":"6"},{"goal":"7"},{"goal":"8"},{"goal":"9"},{"goal":"10"},{"goal":"11"}]}""", false)]
-    // Ronda 20b, revisión 2: a sub-goal of a form carries the check of the whole form (formCheck), a string or null.
-    [TestCase("""{"goal":"a","steps":[{"goal":"poner alto en 500","formCheck":"value:ancho=500&value:alto=500"}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"hacer clic en aceptar","formCheck":null}]}""", true)]
-    [TestCase("""{"goal":"a","steps":[{"goal":"a","formCheck":7}]}""", false)]
-    public void AComputerUseMissionMayChainOrderedSubgoals(string json, bool expected)
-    {
-        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
-        using JsonDocument arguments = JsonDocument.Parse(json);
-
-        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void ASubgoalLongerThanItsContractIsRejected()
-    {
-        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("mission.computer.use");
-        string goal = new('x', 513);
-        string application = new('y', 129);
-        using JsonDocument longGoal = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"{{goal}}"}]}""");
-        using JsonDocument longApplication = JsonDocument.Parse($$"""{"goal":"a","steps":[{"goal":"a","application":"{{application}}"}]}""");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(OperationArgumentValidator.IsValid(longGoal.RootElement, descriptor.ArgumentsSchema), Is.False);
-            Assert.That(OperationArgumentValidator.IsValid(longApplication.RootElement, descriptor.ArgumentsSchema), Is.False);
-        });
-    }
-
-    [Test]
-    public void TheSubgoalSchemaIsPublishedAsAClosedObjectInsideTheArray()
-    {
-        OperationDescriptor tool = ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("mission.computer.use"));
-        JsonElement steps = tool.ArgumentsSchema.GetProperty("properties").GetProperty("steps");
-        JsonElement items = steps.GetProperty("items");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(steps.GetProperty("maxItems").GetInt32(), Is.EqualTo(10));
-            Assert.That(steps.GetProperty("minItems").GetInt32(), Is.EqualTo(1));
-            Assert.That(items.GetProperty("type").GetString(), Is.EqualTo("object"));
-            Assert.That(items.GetProperty("additionalProperties").GetBoolean(), Is.False);
-            Assert.That(items.GetProperty("required").EnumerateArray().Select(name => name.GetString()), Is.EqualTo(new[] { "goal" }));
-            // Estabilización L: «limit» (the declared limit the sub-goal is) and «requires» (the device its place needs).
-            Assert.That(
-                items.GetProperty("properties").EnumerateObject().Select(property => property.Name),
-                Is.EqualTo(new[] { "application", "formCheck", "goal", "limit", "requires", "successCheck" }));
-        });
-    }
-
-    [Test]
-    public void ObjectItemsCannotNestArrays()
-    {
-        var nested = new OperationArgumentsSchema(
-            [new OperationArgumentProperty("tags", OperationJsonType.Array, itemTypes: OperationJsonType.String)],
-            []);
-        Assert.Throws<ArgumentException>(() => _ = new OperationArgumentProperty(
-            "steps", OperationJsonType.Array, itemSchema: nested));
-    }
-
     // input.scroll may name the control of the last view to scroll (a list, a conversation) instead of the window.
     [TestCase("""{"amount":3,"direction":"down"}""", true)]
     [TestCase("""{"amount":3,"direction":"down","index":0}""", true)]
@@ -341,10 +282,14 @@ public sealed class ProductCatalogTests
     [TestCase("input.visible.controls", """{"limit":60,"wanted":[3]}""", false)]
     [TestCase("input.visible.controls", """{"limit":60,"wanted":"aplicacion"}""", false)]
     [TestCase("input.visible.controls", """{"wanted":["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y"]}""", false)]
-    // Ronda 26: the mission's first look asks only who is in front when the application named has no window.
-    [TestCase("input.visible.controls", """{"limit":60,"application":"Calculadora","identityIfAbsent":true}""", true)]
-    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":null}""", true)]
-    [TestCase("input.visible.controls", """{"limit":60,"identityIfAbsent":"si"}""", false)]
+    // Auditoría K9: what only the retired mission sent to its look is no argument; a look may name the windows it
+    // reads by the number an earlier look gave, and ask for the newest entries of a conversation.
+    [TestCase("input.visible.controls", """{"limit":60,"application":"Calculadora","identityIfAbsent":true}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"candidates":true}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"known":[4660]}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"processId":4242}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"starting":true}""", false)]
+    [TestCase("input.visible.controls", """{"limit":60,"windows":[4660],"tail":true}""", true)]
     public void TheTypesOfTaskOfV3AreArgumentsOfThePrimitives(string operation, string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
@@ -394,21 +339,17 @@ public sealed class ProductCatalogTests
             Assert.That(descriptors.All(static descriptor =>
                 OperationRisks.IsKnown(descriptor.Risk)), Is.True);
             Assert.That(descriptors.All(static descriptor =>
-                descriptor.ArgumentsSchema.AdditionalProperties is false), Is.True);
-            Assert.That(descriptors.All(static descriptor =>
                 !string.IsNullOrWhiteSpace(descriptor.VerifierContractId)), Is.True);
             Assert.That(
                 ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors
-                    .Where(static descriptor => descriptor.Name != "app.status")
+                    .Where(static descriptor => !InternalSteps.Contains(descriptor.Name))
                     .Select(static descriptor => descriptor.Name)));
             Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
             Assert.That(
-                ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
-                Does.Not.Contain("app.status"));
-            Assert.That(
-                ProductCatalog.GetRequired("app.status").ToolExposure,
-                Is.EqualTo(ToolExposure.Internal));
+                descriptors.Where(static descriptor => descriptor.ToolExposure == ToolExposure.Internal)
+                    .Select(static descriptor => descriptor.Name),
+                Is.EquivalentTo(InternalSteps));
         });
     }
 
@@ -442,7 +383,7 @@ public sealed class ProductCatalogTests
         }
 
         Assert.That(
-            () => ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("app.status")),
+            () => ProductCatalog.CreateToolDescriptor(ProductCatalog.CreateDefinition("filesystem.hash")),
             Throws.ArgumentException);
     }
 
@@ -805,7 +746,7 @@ public sealed class ProductCatalogTests
                 Is.EqualTo(ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)));
             Assert.That(
                 exact.ToolDefinitions.Select(static definition => definition.Name),
-                Does.Not.Contain("app.status"));
+                Has.None.AnyOf(InternalSteps));
         });
     }
 

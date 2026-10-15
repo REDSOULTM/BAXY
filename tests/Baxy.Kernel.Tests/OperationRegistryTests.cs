@@ -12,11 +12,11 @@ public sealed class OperationRegistryTests
     public void Registry_orders_canonical_names_and_resolves_exactly()
     {
         var zeta = new StubHandler("note.read");
-        var alpha = new StubHandler("app.status");
+        var alpha = new StubHandler("app.close");
         var registry = new OperationRegistry([zeta, alpha]);
 
         Assert.That(registry.Definitions.Select(static item => item.Name),
-            Is.EqualTo(new[] { "app.status", "note.read" }));
+            Is.EqualTo(new[] { "app.close", "note.read" }));
         Assert.That(registry.TryGet("note.read", out IOperationHandler? resolved), Is.True);
         Assert.That(resolved, Is.SameAs(zeta));
         Assert.That(registry.TryGet("NOTE.READ", out _), Is.False);
@@ -83,7 +83,6 @@ public sealed class OperationRegistryTests
     [TestCase("app.close", PolicyDecision.RequireConfirmation)]
     [TestCase("system.power", PolicyDecision.Allow)]
     [TestCase("input.scroll", PolicyDecision.Allow)]
-    [TestCase("mission.computer.use", PolicyDecision.Allow)]
     public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
         string operation,
         PolicyDecision expected)
@@ -279,13 +278,6 @@ public sealed class OperationRegistryTests
     [TestCase("""{"label":"Eliminar","index":4,"manner":"double"}""", true)]
     [TestCase("""{"label":"Eliminar pruebas","index":4,"manner":"menu"}""", true)]
     [TestCase("""{"label":"General (canal de voz)","index":3,"manner":"double"}""", true)]
-    // Ronda 20b, palanca 6 (review finding 1): the collapse of a list a failed mission left open is a declared manner,
-    // and it asks as a click on its label would.
-    [TestCase("""{"label":"Fuente","index":2,"manner":"collapse","window":4660}""", false)]
-    [TestCase("""{"label":"Eliminar","index":4,"manner":"collapse"}""", true)]
-    // Review 3 of palanca 6 (finding 1): the close of a popup born in the mission is its own declared manner.
-    [TestCase("""{"label":"Windows PowerShell","index":2,"manner":"dismiss","window":4660}""", false)]
-    [TestCase("""{"label":"Eliminar","index":4,"manner":"dismiss"}""", true)]
     public void A_click_in_another_manner_asks_as_the_click_on_its_label_does(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
@@ -302,6 +294,9 @@ public sealed class OperationRegistryTests
 
     [TestCase("""{"label":"Nueva pestaña","index":2,"manner":"right"}""")]
     [TestCase("""{"label":"Nueva pestaña","index":2,"manner":""}""")]
+    // Auditoría K9: collapse and dismiss were sent only by the retired mission.
+    [TestCase("""{"label":"Fuente","index":2,"manner":"collapse","window":4660}""")]
+    [TestCase("""{"label":"Windows PowerShell","index":2,"manner":"dismiss"}""")]
     public void A_manner_outside_the_catalog_is_no_argument(string arguments)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
@@ -332,17 +327,6 @@ public sealed class OperationRegistryTests
                     ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.key.press", document.RootElement),
                 Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
         });
-    }
-
-    [TestCase("Cotele (canal de voz)", true)]
-    [TestCase("Join meeting", true)]
-    [TestCase("Unirse", true)]
-    [TestCase("Enviar", false)]
-    [TestCase("Publicar", false)]
-    [TestCase("", false)]
-    public void Only_a_label_that_joins_a_call_or_meeting_joins(string label, bool joins)
-    {
-        Assert.That(RiskPolicy.LabelJoins(label), Is.EqualTo(joins));
     }
 
     // Closing every tab of the person's browser loses their session: that exact

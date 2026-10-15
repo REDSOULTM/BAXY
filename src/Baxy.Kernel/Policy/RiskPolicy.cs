@@ -22,7 +22,7 @@ namespace Baxy.Kernel.Policy;
 /// un compositor de mensajes, salen al mundo o llegan a una persona; un clic que
 /// compra, paga, elimina o desinstala no se deshace. Ambos piden confirmación en
 /// modo normal, ligada a esa misma invocación. Las palabras de lo que sale al mundo
-/// son dato (<see cref="WorldActs"/>), el mismo que lee la mente. Igual una invocación cuyo argumento cierra de una vez todo lo
+/// son dato (<see cref="WorldActs"/>). Igual una invocación cuyo argumento cierra de una vez todo lo
 /// que la persona tiene abierto en una superficie (todas las pestañas de su
 /// navegador): pierde su sesión, aunque la operación con otro argumento no.
 /// Revisión de seguridad 2026-10-07: el verbo de enviar, reenviar, invitar o
@@ -46,14 +46,8 @@ public static partial class RiskPolicy
     public static PolicyDecision Evaluate(
         OperationRisk risk,
         ConfirmationMode mode = ConfirmationMode.Normal,
-        string? operation = null) =>
-        Evaluate(risk, mode, operation, arguments: null);
-
-    public static PolicyDecision Evaluate(
-        OperationRisk risk,
-        ConfirmationMode mode,
-        string? operation,
-        JsonElement? arguments)
+        string? operation = null,
+        JsonElement? arguments = null)
     {
         if (risk == OperationRisk.Forbidden)
         {
@@ -296,36 +290,6 @@ public static partial class RiskPolicy
         !string.IsNullOrWhiteSpace(label) && WorldActs.Reaches(Fold(label));
 
     /// <summary>
-    /// Encargo VZ (imp3d imp-dc-voz: the person confirmed «Cotele!!!😎, Canal de voz, Choche» and the same mission asked
-    /// again for «Cotele!!!😎 (canal de voz), RED, …»): the act this exact invocation takes out to the world, as its
-    /// family in the data and the name it acts on (the label's own name, before its first comma or parenthesis), or
-    /// null when it reaches no one. Enter over a message composer sends what it holds: family «send», no name.
-    /// </summary>
-    public static WorldAct? WorldActOf(string? operation, JsonElement arguments)
-    {
-        if (!ReachesAPerson(operation, arguments))
-        {
-            return null;
-        }
-
-        string? label = operation == "input.key.press" ? OntoOf(arguments) : ClickLabels(arguments).FirstOrDefault(LabelReachesAPerson);
-        if (string.IsNullOrWhiteSpace(label) || !LabelReachesAPerson(label))
-        {
-            return new WorldAct("send", string.Empty, Joins: false, Key: "send:");
-        }
-
-        string folded = Fold(label);
-        string name = label.Split([',', '('], 2)[0].Trim();
-        name = name.Length > 0 ? name : label.Trim();
-        string family = WorldActs.FamilyOf(folded)!;
-        return new WorldAct(family, name, WorldActs.Joins(folded), family + ":" + Fold(name));
-    }
-
-    /// <summary>A click whose label joins a voice channel, a call or a meeting: others hear or see the person from then on.</summary>
-    public static bool LabelJoins(string? label) =>
-        !string.IsNullOrWhiteSpace(label) && WorldActs.Joins(Fold(label));
-
-    /// <summary>
     /// Whether pressing a control of this name would need the person's word (it leaves the computer, reaches a person
     /// or cannot be undone) when the label a click was judged by does not: the policy read another name than the one
     /// about to be pressed, so nothing is pressed (ronda 29: a label that names its control by a part of its name).
@@ -401,10 +365,3 @@ public static partial class RiskPolicy
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }
-
-/// <summary>
-/// An act that goes out to the world (<see cref="RiskPolicy.WorldActOf"/>): its family in the data, the name it acts on,
-/// whether it joins a call, a voice channel or a meeting, and its key (the family and the folded name): two invocations
-/// with one key take one act, whatever control of the screen takes it.
-/// </summary>
-public sealed record WorldAct(string Family, string Name, bool Joins, string Key);

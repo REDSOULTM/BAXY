@@ -21,6 +21,134 @@ public sealed class DesktopMessagingAdapterTests
             WindowsDesktopMessagingAutomation.ContainsPhrase(source, expected),
             Is.EqualTo(result));
 
+    // C1: a shown name (title, search row, header line) names the recipient only with its whole words, folded.
+    [TestCase("Ron92", "ron", false)]
+    [TestCase("Juana", "ana", false)]
+    [TestCase("Discord | @Ron92", "ron92", true)]
+    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("Ana María", "ana maria", true)]
+    [TestCase("María Ana", "ana maria", false)]
+    [TestCase("Mario", "Maria", false)]
+    [TestCase("Ron92", "!!!", false)]
+    public void ARecipientIsNamedOnlyByItsWholeWords(string shown, string recipient, bool named) =>
+        Assert.That(WindowsDesktopMessagingAutomation.NamesRecipient(shown, recipient), Is.EqualTo(named));
+
+    // C2: the header line that names the recipient is what is said, with no letter of tolerance.
+    [Test]
+    public void TheHeaderLineThatNamesTheRecipientIsTheOneSaid()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsDesktopMessagingAutomation.HeaderLine("Misica\nMúsica  \nMusica", "Música"), Is.EqualTo("Música"));
+            Assert.That(WindowsDesktopMessagingAutomation.HeaderLine("Misica\nMarios", "Música"), Is.Null);
+            Assert.That(WindowsDesktopMessagingAutomation.HeaderLine("Mario\nMario", "Maria"), Is.Null);
+        });
+    }
+
+    // C3: a search whose rows never named the recipient is «recipient_not_found» with the row it showed; text that may
+    // have reached a composer keeps its possible effect and code.
+    [Test]
+    public void ASearchThatNamedNobodySaysTheRowItShowed()
+    {
+        DesktopRecipientObservation untouched = WindowsDesktopMessagingAutomation.NotNamedInSearch(
+            WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: true), "Ronaldo");
+        DesktopRecipientObservation touched = WindowsDesktopMessagingAutomation.NotNamedInSearch(
+            WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: false), null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(untouched.ErrorCode, Is.EqualTo(WindowsDesktopMessagingAutomation.RecipientNotFound));
+            Assert.That(untouched.EffectObserved, Is.False);
+            Assert.That(untouched.Shown, Is.EqualTo("Ronaldo"));
+            Assert.That(touched.ErrorCode, Is.EqualTo("recipient_identity_not_verified"));
+            Assert.That(touched.EffectObserved, Is.True);
+            Assert.That(touched.Shown, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task AFailedLookupCarriesTheRowItSaw()
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(false, false, (nint)42, 7, "recipient_not_found", "Ronaldo"),
+            new DesktopMessageObservation(true, true, "hash", null));
+        using var adapter = new DesktopMessagingAdapter(automation);
+
+        ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
+            "message.recipient.resolve",
+            Json("""{"channel":"discord","recipient":"Ron"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolved.Verified, Is.False);
+            Assert.That(resolved.ErrorCode, Is.EqualTo("recipient_not_found"));
+            Assert.That(resolved.Result?.GetProperty("observed").GetString(), Is.EqualTo("Ronaldo"));
+        });
+    }
+
+    // C4: a delivery read says whether it matched exactly or only with the OCR tolerance.
+    [TestCase("Tú: hola test 15:32", "hola test", "exact")]
+    [TestCase("Holatest 15:32", "hola test", "tolerant")]
+    [TestCase("probanda", "probando", "tolerant")]
+    [TestCase("otra cosa", "probando", null)]
+    public void ADeliveryReadSaysHowItMatched(string observed, string expected, string? match) =>
+        Assert.That(WindowsDesktopMessagingAutomation.TextMatch(observed, expected), Is.EqualTo(match));
+
+    // C5: the send and the draft read the composer before typing and never clear it first; the read (a select-all
+    // whose picture shows text) deletes nothing and stops on the person's draft.
+    [TestCase("SendInBurstAsync(")]
+    [TestCase("DraftInBurstAsync(")]
+    public void TheComposerIsReadBeforeTypingAndNeverClearedFirst(string flow)
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<DesktopMessageObservation> " + flow, StringComparison.Ordinal);
+        int typed = source.IndexOf("SendText(text);", Math.Max(start, 0), StringComparison.Ordinal);
+        int read = source.IndexOf("private static async ValueTask<bool> ComposerHoldsTextAsync(", StringComparison.Ordinal);
+        int readEnd = source.IndexOf("\n    }\n", Math.Max(read, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(read, Is.GreaterThan(0));
+            Assert.That(source[start..typed], Does.Contain("ComposerHoldsTextAsync("));
+            Assert.That(source[start..typed], Does.Contain("return new(false, false, string.Empty, ComposerHasPersonDraft);"));
+            Assert.That(source[start..typed], Does.Not.Contain("VirtualKeyBack"));
+            Assert.That(source[read..readEnd], Does.Not.Contain("VirtualKeyBack"));
+        });
+    }
+
+    // C7: every flow that resizes the person's window to the normalized layout runs inside InNormalizedWindowAsync,
+    // which gives the window its size back in a finally.
+    [Test]
+    public void EveryResizedFlowGivesThePersonsWindowItsSizeBack()
+    {
+        string source = AdapterSource();
+        int wrapper = source.IndexOf("private static async ValueTask<T> InNormalizedWindowAsync<T>(", StringComparison.Ordinal);
+        int wrapperEnd = source.IndexOf("\n    }\n", Math.Max(wrapper, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(wrapper, Is.GreaterThan(0));
+            Assert.That(source[wrapper..wrapperEnd], Does.Contain("finally"));
+            Assert.That(source[wrapper..wrapperEnd], Does.Contain("ResizeWindow(handle, size);"));
+            Assert.That(source, Does.Contain("flow => ResolveInBurstAsync("));
+            Assert.That(source, Does.Contain("flow => SendInBurstAsync("));
+            Assert.That(source, Does.Contain("flow => DraftInBurstAsync("));
+            Assert.That(source.Split("NormalizeWindow(channel, handle)").Length - 1, Is.EqualTo(1));
+        });
+    }
+
+    private static string AdapterSource()
+    {
+        DirectoryInfo? root = new(AppContext.BaseDirectory);
+        while (root is not null && !File.Exists(Path.Combine(root.FullName, "Baxy.slnx")))
+        {
+            root = root.Parent;
+        }
+
+        Assert.That(root, Is.Not.Null, "Baxy.slnx was not found.");
+        return File.ReadAllText(Path.Combine(
+            root!.FullName, "src", "Baxy.Providers.Windows", "External", "DesktopMessagingAdapter.cs"));
+    }
+
     // G1 (2026-10-11): the typed draft is read only once the composer band's
     // content changed; a blinking caret (one or two columns) is not a change, so
     // it never starts an OCR pass that holds the CPU the client needs to draw.
@@ -102,8 +230,8 @@ public sealed class DesktopMessagingAdapterTests
     public async Task ResolveThenSendUsesObservedOpaqueIdentityAndVerifiedReceipt()
     {
         var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null),
-            new DesktopMessageObservation(true, true, "evidence_hash", null));
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Discord | @CbaYeah"),
+            new DesktopMessageObservation(true, true, "evidence_hash", null, "Holatest 15:32", "tolerant"));
         using var adapter = new DesktopMessagingAdapter(automation);
 
         ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
@@ -120,11 +248,18 @@ public sealed class DesktopMessagingAdapterTests
         {
             Assert.That(resolved.Verified, Is.True);
             Assert.That(recipientId, Does.StartWith("recipient_"));
+            // C2: what the client showed is said, next to what was asked for.
+            Assert.That(resolved.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
+            Assert.That(resolved.Result?.GetProperty("recipient").GetString(), Is.EqualTo("CbaYeah"));
+            Assert.That(sent.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
             Assert.That(sent.Verified, Is.True);
             Assert.That(sent.EffectObserved, Is.True);
             Assert.That(sent.Result?.GetProperty("delivery").GetString(),
                 Is.EqualTo("visible_postcondition"));
-            Assert.That(automation.SentRecipient?.DisplayName, Is.EqualTo("CbaYeah"));
+            // C4: the text read and how it matched travel with the receipt.
+            Assert.That(sent.Result?.GetProperty("deliveryRead").GetString(), Is.EqualTo("Holatest 15:32"));
+            Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("tolerant"));
+            Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
             Assert.That(automation.SentText, Is.EqualTo("Hola"));
         });
     }
@@ -133,7 +268,7 @@ public sealed class DesktopMessagingAdapterTests
     public async Task ExpiredIdentityFailsBeforeAnyPhysicalSend()
     {
         var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null),
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
             new DesktopMessageObservation(true, true, "hash", null));
         using var adapter = new DesktopMessagingAdapter(automation);
 
@@ -155,7 +290,7 @@ public sealed class DesktopMessagingAdapterTests
     public async Task AmbiguousPostSendEvidencePreservesPossibleEffect()
     {
         var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null),
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
             new DesktopMessageObservation(
                 false,
                 true,
@@ -190,6 +325,17 @@ public sealed class DesktopMessagingAdapterTests
     {
         internal ResolvedRecipient? SentRecipient { get; private set; }
         internal string? SentText { get; private set; }
+
+        public ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
+            string channel,
+            CancellationToken cancellationToken) =>
+            ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+
+        public ValueTask<DesktopMessageObservation> DraftAsync(
+            ResolvedRecipient recipient,
+            string text,
+            CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("no draft in these tests");
 
         public ValueTask<DesktopRecipientObservation> ResolveAsync(
             string channel,

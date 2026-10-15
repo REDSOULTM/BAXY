@@ -7,8 +7,8 @@ namespace Baxy.Kernel.Operations;
 /// <summary>
 /// Estabilización, encargo C: the places of an application that have an address of their own (a protocol the application
 /// registered in Windows: its library, its store, its search with what is searched). One source, in data
-/// (src/baxy_mind/data/app_places.v1.json, embedded), read here and by the mind (semantic/app_places); the file's own
-/// examples tie both readers in their tests. app.open takes a place by its name (<see cref="PlaceNames"/>, the schema's
+/// (src/baxy_mind/data/app_places.v1.json, embedded), read here; the file's own examples are the contract its tests hold
+/// this reader to. app.open takes a place by its name (<see cref="PlaceNames"/>, the schema's
 /// closed list) and the address is composed only here, from the application's own entry: an application, a place or a
 /// value the data does not declare has no address, and no address ever has a scheme its application does not declare.
 /// No application is named in code. Encargo imp-steam: the same entry declares the acts of its game catalog that the
@@ -35,6 +35,21 @@ public static class ApplicationPlaces
         [.. Loaded.Value.Values.SelectMany(application => application.Places.Keys).Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal)];
 
+    private static readonly Lazy<IReadOnlyList<(string Name, IReadOnlyCollection<string> Places)>> Named = new(() =>
+    {
+        using JsonDocument document = Load();
+        IReadOnlyDictionary<string, Application> applications = Read(document);
+        return [.. document.RootElement.GetProperty("applications").EnumerateObject()
+            .Select(entry => (entry.Name, (IReadOnlyCollection<string>)[.. applications[Fold(entry.Name)].Places.Keys]))];
+    });
+
+    /// <summary>
+    /// The applications, as the data name them, that declare <paramref name="place"/> with an address of its own: what an
+    /// opening refused for that place is told with (e2e p3/p4 E014: «Configuración del sistema» with «sound», eight times).
+    /// </summary>
+    public static IReadOnlyList<string> ApplicationsWith(string? place) =>
+        place is null ? [] : [.. Named.Value.Where(entry => entry.Places.Contains(place)).Select(entry => entry.Name)];
+
     /// <summary>
     /// The address of <paramref name="place"/> of <paramref name="application"/> (its name in the Start catalog, as
     /// app.open says it) filled with <paramref name="value"/>; null when the data declares no such application or place,
@@ -43,13 +58,6 @@ public static class ApplicationPlaces
     /// </summary>
     public static string? Address(string? application, string? place, string? value) =>
         Address(Loaded.Value, application, place, value);
-
-    /// <summary>
-    /// Encargo IMP4: the data declare where <paramref name="application"/> draws its conversation («conversation»): a
-    /// question about what was written there is answered from the lines its own drawing shows (the mind reads them).
-    /// </summary>
-    public static bool HasConversation(string? application) =>
-        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? entry) && entry.Conversation;
 
     internal static string? Address(
         IReadOnlyDictionary<string, Application> applications, string? application, string? place, string? value)
@@ -146,8 +154,7 @@ public static class ApplicationPlaces
         IReadOnlyDictionary<string, string> Places,
         string? GameCatalog,
         IReadOnlyDictionary<string, GameAct> Acts,
-        TitleSearch? Titles,
-        bool Conversation = false);
+        TitleSearch? Titles);
 
     /// <summary>
     /// The data's applications by folded name. Every address must open with one of its application's schemes and carry at
@@ -182,9 +189,7 @@ public static class ApplicationPlaces
 
             string? catalog = entry.Value.TryGetProperty("gameCatalog", out JsonElement named) ? named.GetString() : null;
             applications[Fold(entry.Name)] = new Application(
-                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog),
-                entry.Value.TryGetProperty("conversation", out JsonElement conversation)
-                    && conversation.ValueKind == JsonValueKind.Object);
+                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog));
         }
 
         return applications;

@@ -33,7 +33,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
     private volatile MindStartupState _mindStartupState;
-    private MindStartupFailure? _mindStartupFailure;
     private int _mindStartupFailureCount;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
@@ -49,7 +48,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
     private bool _isMicAvailable;
-    private string _draft = string.Empty;
     private string _statusText = "Iniciando";
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
@@ -126,17 +124,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>A risky call waits for the person's Sí or No (the interface shows the two buttons).</summary>
     public bool HasPendingConfirmation => _loop.HasPendingConfirmation;
 
-    public string Draft
-    {
-        get => _draft;
-        set
-        {
-            if (SetField(ref _draft, value))
-            {
-                OnPropertyChanged(nameof(CanSend));
-            }
-        }
-    }
 
     public string StatusText
     {
@@ -158,7 +145,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (SetField(ref _isReady, value))
             {
                 OnPropertyChanged(nameof(IsInputEnabled));
-                OnPropertyChanged(nameof(CanSend));
             }
         }
     }
@@ -171,7 +157,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (SetField(ref _isBusy, value))
             {
                 OnPropertyChanged(nameof(IsInputEnabled));
-                OnPropertyChanged(nameof(CanSend));
             }
         }
     }
@@ -184,7 +169,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public bool IsInputEnabled => IsReady && !IsBusy;
 
-    public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
 
     public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
 
@@ -319,25 +303,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    public async Task SubmitAsync(CancellationToken cancellationToken)
-    {
-        if (!CanSend || _coreClient is null)
-        {
-            return;
-        }
-
-        string draft = Draft;
-        Draft = string.Empty;
-        try
-        {
-            await SubmitAsync(new MissionInput(draft, MissionInputSource.Text), cancellationToken);
-        }
-        catch (MissionInputRejectedException)
-        {
-            // The draft is given back untouched; the composer shows its own limit.
-            Draft = draft;
-        }
-    }
 
     /// <summary>The person's words (typed, transcribed or sent by the conductor) open a turn.</summary>
     internal async Task SubmitAsync(MissionInput input, CancellationToken cancellationToken)
@@ -478,6 +443,129 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         OnPropertyChanged(nameof(HasPendingConfirmation));
         StatusDescription = IdleStatus();
         return true;
+    }
+
+    /// <summary>
+    /// What BAXY remembers of the person («label: value»), for the heartbeat's moment: the memory's own list through its
+    /// sealed route. Empty when the memory is off, empty or not reachable.
+    /// </summary>
+    internal async Task<IReadOnlyList<string>> RememberedAsync(CancellationToken cancellationToken)
+    {
+        if (_coreClient is not { IsReady: true } core || _memoryProtector is not { } protector)
+        {
+            return [];
+        }
+
+        try
+        {
+            var list = new MemoryRoutedOperation("memory.list", new System.Text.Json.Nodes.JsonObject
+            {
+                ["version"] = 1,
+                ["limit"] = 20,
+                ["offset"] = 0,
+            });
+            PreparedOperation prepared = protector.Prepare(list).Prepared;
+            OperationResponse response = await core.SendOperationAsync(prepared, TimeSpan.FromSeconds(10), cancellationToken);
+            if (response.Status != OperationStatuses.Completed)
+            {
+                return [];
+            }
+
+            using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
+            using OpenedBoundProtectedJson arguments = protector.OpenPrivateArguments(prepared);
+            if (!MemoryOperationResponseProjection.TryCreateCompleted(
+                    prepared.OperationName, opened.Payload, out MemoryOperationResponseProjection? projection,
+                    response.Replayed, arguments.Payload)
+                || projection is null
+                || System.Text.Json.Nodes.JsonNode.Parse(projection.Message) is not System.Text.Json.Nodes.JsonObject facts)
+            {
+                return [];
+            }
+
+            var remembered = new List<string>();
+            Collect(facts, remembered);
+            return remembered;
+        }
+        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+            or ProtectedPayloadException or TimeoutException or InvalidOperationException)
+        {
+            return [];
+        }
+
+        static void Collect(System.Text.Json.Nodes.JsonNode? node, List<string> into)
+        {
+            switch (node)
+            {
+                case System.Text.Json.Nodes.JsonObject record
+                    when (string?)record["label"] is { } label && (string?)record["value"] is { } value:
+                    into.Add($"{label}: {value}");
+                    break;
+                case System.Text.Json.Nodes.JsonObject other:
+                    foreach ((_, System.Text.Json.Nodes.JsonNode? child) in other)
+                    {
+                        Collect(child, into);
+                    }
+
+                    break;
+                case System.Text.Json.Nodes.JsonArray items:
+                    foreach (System.Text.Json.Nodes.JsonNode? child in items)
+                    {
+                        Collect(child, into);
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// BAXY's alarms and reminders still to ring, for the heartbeat's moment: the schedule's own list (a read).
+    /// </summary>
+    internal async Task<System.Text.Json.Nodes.JsonArray> PendingRemindersAsync(CancellationToken cancellationToken)
+    {
+        var reminders = new System.Text.Json.Nodes.JsonArray();
+        if (_coreClient is not { IsReady: true } core || _retryableOperations is not { } registry)
+        {
+            return reminders;
+        }
+
+        try
+        {
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation(
+                "schedule.alarms", new System.Text.Json.Nodes.JsonObject { ["action"] = "list", ["limit"] = 10 }));
+            OperationResponse response;
+            try
+            {
+                response = await core.SendOperationAsync(prepared, TimeSpan.FromSeconds(10), cancellationToken);
+            }
+            finally
+            {
+                registry.MarkResolved(prepared);
+            }
+
+            if (response.Result is not { ValueKind: JsonValueKind.Object } result
+                || !result.TryGetProperty("notifications", out JsonElement items)
+                || items.ValueKind != JsonValueKind.Array)
+            {
+                return reminders;
+            }
+
+            foreach (JsonElement item in items.EnumerateArray())
+            {
+                reminders.Add(new System.Text.Json.Nodes.JsonObject
+                {
+                    ["text"] = item.TryGetProperty("title", out JsonElement title) ? title.GetString() : null,
+                    ["due"] = item.TryGetProperty("nextRunLocal", out JsonElement due) ? due.GetString() : null,
+                });
+            }
+        }
+        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+            or TimeoutException or InvalidOperationException or ArgumentException)
+        {
+            // The moment goes without them.
+        }
+
+        return reminders;
     }
 
     private static async Task InitializeMemorySessionAsync(
@@ -772,7 +860,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             Volatile.Write(ref _personVoiceChoice, 0);
             _mindClient = mind;
             _mindStartupState = MindStartupState.Ready;
-            _mindStartupFailure = null;
             _mindStartupFailureCount = 0;
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
             OnPropertyChanged(nameof(IsMindReady));
@@ -819,7 +906,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// </summary>
     private void RecordMindStartupFailure(MindStartupFailure? failure)
     {
-        _mindStartupFailure = failure;
         _mindStartupFailureCount++;
         _mindStartupState = MindStartupState.Failed;
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
@@ -829,10 +915,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal static TimeSpan MindRetryDelay(int failures) =>
         TimeSpan.FromSeconds(Math.Min(60, 10 * Math.Pow(2, Math.Clamp(failures, 1, 16) - 1)));
-
-    /// <summary>The cause of a model that is not up, for the interface's state; null when it is up or unknown.</summary>
-    internal string? MindUnavailableCause() =>
-        _mindStartupState == MindStartupState.Starting ? "iniciando" : _mindStartupFailure?.Cause;
 
     private async Task RetryMindAfterAsync(TimeSpan delay)
     {

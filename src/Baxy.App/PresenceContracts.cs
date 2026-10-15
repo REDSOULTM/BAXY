@@ -6,7 +6,6 @@ internal static class PresenceLimits
 {
     internal const string WindowClassName = "BAXY.Presence.Tray";
     internal const string WindowTitle = "BAXY.Presence";
-    internal const long VramCeilingBytes = 4L * 1024 * 1024 * 1024;
     internal const string AutostartValueName = "BAXY";
     internal const string FromWindowsStartArgument = "--from-windows-start";
     internal const string TrayArgument = "--tray";

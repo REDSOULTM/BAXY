@@ -65,9 +65,9 @@ public static class ApplicationOpenErrorCodes
 // shell hands it the file (package activation for files, or its executable with the path as argument), never a window
 // of it that already runs, and never keys.
 // NewDocument (cu-v3-documento-nuevo, uso real t4-c14 «pegame lo que copie en un bloc de notas nuevo» pasted into the
-// person's note): the person asked for a new document. The application's window comes to the front and its New
-// command makes the document; the result is the new window (or the window whose document changed to the new one),
-// never a window of the person's as it was.
+// person's note): the person asked for a new document. Auditoría D6: a new instance of the application is launched,
+// never a window it already had, and the New command of that new window makes the document; the result is the new
+// window (or that window showing the new document), never a window of the person's.
 public record ApplicationOpenRequest(
     string ApplicationId,
     string InvocationId,
@@ -111,7 +111,9 @@ public record ApplicationOpenResult(
     bool NewDocument = false,
     // r20b palanca 4: asked in front while the person worked in another window, the window was raised above it without
     // the activation, and their keyboard stayed where it was.
-    bool ShownWithoutFocus = false);
+    bool ShownWithoutFocus = false,
+    // Auditoría D1: no installed application is called so; the closest installed names, none of them opened.
+    IReadOnlyList<string>? Candidates = null);
 
 public interface IApplicationLauncher
 {

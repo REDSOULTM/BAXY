@@ -24,8 +24,6 @@ internal sealed class AppSurfaceNavigator : IAsyncDisposable
         _presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
     }
 
-    internal string CurrentId => _currentId;
-
     internal async ValueTask<AppSurfaceSession?> OpenAsync(
         string id,
         CancellationToken cancellationToken = default)
@@ -59,21 +57,6 @@ internal sealed class AppSurfaceNavigator : IAsyncDisposable
             }
 
             return await OpenCoreAsync(id);
-        }
-        finally
-        {
-            _transition.Release();
-        }
-    }
-
-    internal async ValueTask ReturnToFieldAsync(
-        CancellationToken cancellationToken = default)
-    {
-        await _transition.WaitAsync(cancellationToken);
-        try
-        {
-            ObjectDisposedException.ThrowIf(_disposed, this);
-            await ReturnToFieldCoreAsync().ConfigureAwait(false);
         }
         finally
         {

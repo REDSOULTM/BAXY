@@ -6,7 +6,10 @@ using Baxy.Providers.Windows.Windows;
 namespace Baxy.Core.Operations;
 
 internal sealed class AppOpenHandler(
-    IApplicationOpenProvider provider, LaunchProvenance? provenance = null, IApplicationPlaceOpener? places = null)
+    IApplicationOpenProvider provider,
+    LaunchProvenance? provenance = null,
+    IApplicationPlaceOpener? places = null,
+    Func<nint, string?>? windowIdFor = null)
     : IOperationHandler
 {
     private readonly IApplicationOpenProvider _provider =
@@ -47,7 +50,9 @@ internal sealed class AppOpenHandler(
             placeAddress = ApplicationPlaces.Address(arguments.AppId, arguments.Place, arguments.PlaceValue);
             if (placeAddress is null)
             {
-                return OperationOutcome.Failure("invalid_arguments");
+                // Said with the applications that do have that place, so the next opening can name the right one.
+                return OperationOutcome.Failure(
+                    "place_not_of_application", result: Names("placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place)));
             }
         }
 
@@ -71,6 +76,7 @@ internal sealed class AppOpenHandler(
             string errorCode = NormalizeErrorCode(providerResult.ErrorCode, providerResult.Verified);
             return OperationOutcome.Failure(
                 errorCode,
+                result: Names("candidates", providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
         }
 
@@ -95,8 +101,8 @@ internal sealed class AppOpenHandler(
                 providerResult.WindowHandle.GetValueOrDefault());
         }
 
-        // The application is open and verified; its place's address goes to the handler it registered. Whether its
-        // window arrived is the mission's check on the window.
+        // The application is open and verified; its place's address goes to the handler it registered. Only the
+        // handing over is reported (placeRequested): whether the place arrived is for a look at the window to say.
         PlaceOpening? place = placeAddress is null ? null
             : _places.Open(placeAddress, arguments.Foreground == true, providerResult.WindowHandle.GetValueOrDefault());
         if (place is { Opened: false })
@@ -114,12 +120,34 @@ internal sealed class AppOpenHandler(
             (providerResult.WindowsActivation && providerResult.FrontRestored) || place?.FrontRestored == true,
             providerResult.NewDocument,
             providerResult.ShownWithoutFocus,
-            PlaceOpened: place is not null,
-            FrontChanged: place?.FrontChanged == true);
+            PlaceRequested: place is not null,
+            FrontChanged: place?.FrontChanged == true,
+            WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()));
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.OpenApplicationResult);
         return OperationOutcome.Success(serialized);
+    }
+
+    // Auditoría D1: the installed names closest to one that matched none (or the applications that have a place),
+    // said with the failure (nothing was opened).
+    private static JsonElement? Names(string property, IReadOnlyList<string>? names)
+    {
+        if (names is not { Count: > 0 })
+            return null;
+        var buffer = new System.Buffers.ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteStartArray(property);
+            foreach (string name in names)
+                writer.WriteStringValue(name);
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     // A process creation time is stamped by the kernel's system clock, which advances in ticks of up to 15.6 ms and

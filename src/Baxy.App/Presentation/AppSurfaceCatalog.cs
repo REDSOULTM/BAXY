@@ -77,8 +77,6 @@ internal sealed class AppSurfaceCatalog
         _descriptors = byId.ToFrozenDictionary(StringComparer.Ordinal);
     }
 
-    internal IReadOnlyCollection<string> Ids => _descriptors.Keys;
-
     internal static AppSurfaceCatalog CreateDefault() =>
         new(
         [

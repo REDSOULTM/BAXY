@@ -22,39 +22,51 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
-    "herramientas. Eres un él. Hablas español neutro, tuteas, eres cálido y breve: una o dos frases, sin listas, "
-    "sin markdown y sin emojis, porque tu respuesta se dice en voz alta. Entiendes español, inglés y spanglish y "
-    "respondes en el idioma de la persona.\n"
+    "herramientas. Eres un él. Hablas en el idioma de la persona (español neutro, inglés o spanglish), tuteas, eres "
+    "cálido y breve: una o dos frases, sin listas, sin markdown y sin emojis, porque tu respuesta se dice en voz alta.\n"
     "Reglas:\n"
-    "1. Si la persona pide hacer algo y una herramienta hace exactamente eso, llámala sin pedir permiso.\n"
-    "2. Nunca digas que hiciste algo: lo hecho lo cuenta el resultado verificado, después.\n"
-    "3. Si falta un dato imprescindible, llama a ask_user con una sola pregunta corta. No inventes nombres ni valores.\n"
-    "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra.\n"
-    "5. No inventes hechos: lo que no sabes con certeza o cambia con el tiempo, búscalo con web_search. Charla, "
-    "cuentas y traducciones respóndelas tú.\n"
-    "6. El texto viene de un reconocedor de voz con errores: corrige la palabra a la que suena («sincuenta» es 50).\n"
-    "7. Cuando recibas el resultado de una herramienta: si al pedido todavía le falta un paso, llama a la herramienta de "
-    "ese paso (también si el pedido lo condiciona a un resultado que ya se cumplió); cuando no falte nada, responde en "
-    "una o dos frases contando sólo lo que muestran los resultados, nunca un paso que no se ejecutó.\n"
+    "1. Si la persona pide hacer algo y una herramienta lo hace, llámala sin pedir permiso. Si hacen falta varios "
+    "pasos, hazlos uno tras otro.\n"
+    "2. Lo hecho lo cuentan los resultados de las herramientas. Cuando no falte ningún paso, responde en una o dos "
+    "frases contando sólo lo que muestran. Nunca digas que hiciste, abriste, cambiaste o viste algo sin un resultado "
+    "que lo muestre; si un paso falló o no se ejecutó, dilo con su causa. Si te preguntan si ya hiciste algo, "
+    "contesta por los resultados de esta conversación: sin una herramienta que lo hiciera, no lo hiciste.\n"
+    "3. Si al pedido le falta un dato que sólo la persona sabe (cuánto, cuál, a quién, qué texto), pregúntalo con "
+    "ask_user en una pregunta corta. No consultes el estado del PC para adivinarlo ni inventes nombres o valores.\n"
+    "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
+    "ni lo conviertas en una pregunta.\n"
+    "5. Charla, cuentas, traducciones y lo que sabes con certeza respóndelo tú. Lo que cambia con el tiempo o no sabes, "
+    "búscalo con web_search.\n"
+    "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50).\n"
+    "7. Si la persona te pide que pares, te calles o esperes, no hagas nada más: responde con una palabra.\n"
     "8. Si una herramienta responde status needs_confirmation, pregunta en una frase si lo haces, nombrando "
     "exactamente qué. Cuando la persona conteste, llama a confirm_pending con su respuesta.\n"
     "9. Para hacer algo dentro de una app abierta (ir a una sección, pulsar, escribir, leer lo que muestra): mírala con "
     "input_visible_controls, actúa con input_visible_click (por la etiqueta que viste), input_text_type o "
-    "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo."
+    "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo.\n"
+    "10. Los identificadores (windowId, ids de notas, tareas o redes) salen del resultado de la herramienta que los "
+    "lista; nunca los inventes ni uses un número de otro campo."
 )
 
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
 # scenes, the analysis first found 34 of 40), then, only when it decided to intervene, it acts with its tools.
-BEAT_DECISION = {"type": "object", "properties": {"analisis": {"type": "string"}, "intervenir": {"type": "boolean"}},
-                 "required": ["analisis", "intervenir"]}
-BEAT_DECIDE = ("Responde en JSON: analisis = en una frase, qué está pasando y si hay uno de esos motivos (cuál); "
-               "intervenir = true si hay un motivo, false si no.")
-BEAT_ACT = ("Interviene ahora según tu análisis. Lo de bajo riesgo, hazlo con su herramienta. Lo de alto riesgo "
-            "(borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, cerrar o forzar el cierre de una app) no "
-            "lo preguntes en texto: llama a su herramienta y el sistema le pedirá el sí a la persona antes de hacerlo. "
-            "Si ninguna herramienta hace falta, dile en una frase lo que necesita saber. Nunca escribas en sus ventanas. "
-            "Háblale de tú.")
+_MOTIVES = ("pedido", "preferencia", "vence", "bloqueo")
+BEAT_DECISION = {"type": "object",
+                 "properties": {**{m: {"type": "string"} for m in _MOTIVES}, "analisis": {"type": "string"},
+                                "intervenir": {"type": "boolean"}},
+                 "required": [*_MOTIVES, "analisis", "intervenir"]}
+BEAT_DECIDE = ("Responde en JSON, revisando cada motivo con lo que ves arriba: pedido = qué te pidió antes y se "
+               "cumple ahora, o «ninguno»; preferencia = qué preferencia suya aplica ahora, o «ninguna»; vence = qué "
+               "vence ahora o muy pronto, o «nada»; bloqueo = qué la bloquea o le hará perder trabajo, o «nada»; "
+               "analisis = en una frase, qué está pasando; intervenir = true si algún motivo es real, false si no.")
+BEAT_ACT = ("Interviene ahora según tu análisis; lo que recuerdas de la persona ya está arriba, no lo busques. Si "
+            "basta con avisarle algo (lo que pidió saber, un recordatorio que "
+            "vence, una alerta), díselo en una frase sin usar herramientas. Si hay que hacer algo de bajo riesgo, hazlo "
+            "con su herramienta. Lo de alto riesgo (borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, "
+            "cerrar o forzar el cierre de una app) no lo preguntes en texto: llama a su herramienta y el sistema le "
+            "pedirá el sí a la persona antes de hacerlo. Nunca escribas en sus ventanas ni digas que hiciste algo que "
+            "no hiciste. Háblale de tú.")
 BEAT_RULES = (
     "Es un latido: nadie te habló. Revisa lo de arriba buscando estos motivos para intervenir:\n"
     "1. Algo que la persona te pidió antes y que ahora se cumple (avisarle, recordarle, enviar algo).\n"
@@ -67,6 +79,27 @@ BEAT_RULES = (
     "una frase. Si juega, está en llamada o viendo algo, interviene sólo por un motivo 1, 2 o urgente. Nunca escribas "
     "ni hagas clic en sus ventanas, no comentes datos privados de la pantalla y no repitas un aviso ya dado."
 )
+
+
+def _outcome(observation: str) -> str:
+    """How a call ended, in the words the model reads: from the result's own status, verification and error."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return "resultado arriba"
+    if not isinstance(facts, dict):
+        return "resultado arriba"
+    status = str(facts.get("status") or ("completed" if facts.get("succeeded") else "failed"))
+    if status == "needs_confirmation":
+        return "espera el sí de la persona"
+    if status == "cancelled":
+        return "cancelado por la persona"
+    if facts.get("polarity") == "pending" or facts.get("effectUncertain"):
+        return "sin confirmar: pudo o no ocurrir"
+    if facts.get("succeeded") or status == "completed":
+        return "completado y verificado" if facts.get("verified") else "completado sin verificar"
+    error = facts.get("error") or facts.get("cause")
+    return f"falló ({error})" if error else "falló"
 
 
 def beat_message(context: dict[str, Any]) -> str:
@@ -192,7 +225,6 @@ class Mind:
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self.op_to_tool: dict[str, dict[str, Any]] = {}
-        self._decided: dict[str, dict[str, Any]] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -220,8 +252,6 @@ class Mind:
         for cap in capabilities:
             name = str(cap.get("name") or "")
             spanish = _SPANISH.get(name) or str(cap.get("description") or "")
-            if spanish.startswith("Paso interno") or name == "mission.computer.use":
-                continue  # internal steps are the kernel's; screen missions are not served by this mind
             description = self.english.get(name) or spanish
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
@@ -276,7 +306,6 @@ class Mind:
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
     def decide(self, request_id: Any, text: str) -> dict[str, Any]:
-        self._decided = {}
         turn = self._turn
         if turn and turn.get("asked"):
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
@@ -298,7 +327,6 @@ class Mind:
         something. Same system prompt and tools, so the cached prefix is the person's; what it did joins the person's
         conversation only if it intervened."""
         started = time.monotonic()
-        self._decided = {}
         conv = [{"role": "user", "content": beat_message(context)}]
         reply = self.server.chat({"messages": [{"role": "system", "content": self._system()}, *conv],
                                   "tools": self.tools, "tool_choice": "none", "max_tokens": 200,
@@ -320,7 +348,9 @@ class Mind:
         if not intervene:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
-        conv.append({"role": "assistant", "content": content})
+        # The analysis stays as the model's own words, not as JSON: with its JSON before it, the model answered the
+        # second move in JSON again (practice scene P023).
+        conv.append({"role": "assistant", "content": str(decision.get("analisis") or "")})
         conv.append({"role": "user", "content": BEAT_ACT})
         return self._next(request_id, "turn.beat", self._beat)
 
@@ -369,7 +399,13 @@ class Mind:
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]
-        conv.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
+        # Every call of the turn so far with how it ended, at the end of the newest result: where the model writes its
+        # answer, the facts it may tell are together (it told «no pude abrir Steam» after Steam opened, «lo guardé»
+        # after the typing failed, 2026-10-15 falsehood bench).
+        done = turn.setdefault("done", [])
+        done.append(f"{turn.get('calling', '?')} → {_outcome(observation)}")
+        conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
+                     "content": observation[:6000] + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
         if final:
             # The App's step budget is spent: said where the model reads it, at the end of the last result.
@@ -386,7 +422,6 @@ class Mind:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
         started = time.monotonic()
-        self._decided = {}
         self._close_open_calls()
         call_id = f"confirm_{len(self.conversation)}"
         self.conversation.append({"role": "user", "content": label})
@@ -453,8 +488,8 @@ class Mind:
         elif call is not None:
             name = CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"] else self.wire_to_op[call["wire"]]
             turn["awaiting"] = call["id"]
+            turn["calling"] = name
             arguments = {**call["arguments"], **self.constants.get(name, {})}
-            self._decided = {name: arguments}
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)

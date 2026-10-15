@@ -135,28 +135,6 @@ def write_message(message: dict[str, Any], stream=None) -> None:
         stream.flush()
 
 
-def hello(models: dict[str, str]) -> dict[str, Any]:
-    return {
-        "type": "hello",
-        "protocol": PROTOCOL,
-        "mindVersion": "1.0.0",
-        "models": models,
-        "requests": [
-            "catalog.configure",
-            "turn.decide",
-            "plan",
-            "plan.ground",
-            "narrate",
-            "voice.start",
-            "voice.stop",
-            "voice.status",
-            "voice.speak",
-            "voice.cancel",
-            "shutdown",
-        ],
-    }
-
-
 def error_reply(request_id: str | None, code: str, message: str) -> dict[str, Any]:
     return {
         "type": "error",

@@ -67,13 +67,15 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
     /// <summary>The burst's ceiling ran out before the next sub-act.</summary>
     internal const string CapReached = "visible_search_cap_reached";
 
-    // What a search shows its results as, best first (the mind's _RESULT_KINDS); a field is never a result.
+    // What a search shows its results as, best first; a field is never a result.
     private static readonly string[] ResultKinds = ["ListItem", "TreeItem", "Button", "Hyperlink", "DataItem", "MenuItem", "TabItem"];
     private static readonly HashSet<string> FieldKinds = new(StringComparer.Ordinal) { "Edit", "ComboBox", "Document" };
     private static readonly HashSet<string> SwitchKinds = new(StringComparer.Ordinal) { "CheckBox", "RadioButton", "Slider" };
-    // Ronda 25, the mind's _ENTRY_KINDS (a result may hold the name among other words) and _DESCRIPTIVE_KINDS.
-    private static readonly HashSet<string> EntryKinds = new(StringComparer.Ordinal) { "ListItem", "TreeItem", "DataItem", "Hyperlink", "MenuItem" };
+    // The kinds that describe rather than act: one of them named as the search only repeats it.
     private static readonly HashSet<string> DescriptiveKinds = new(StringComparer.Ordinal) { "Text", "Group", "Pane", "Custom", "Document" };
+
+    // How many of the names a search showed go back with a result it did not name.
+    private const int SeenNames = 20;
 
     internal async ValueTask<ExternalCapabilityReceipt> RunAsync(
         string operation,
@@ -97,6 +99,8 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         bool effect = false;
         string? stopped = null;
         WindowsVisibleControlAdapter.ViewControl? chosen = null;
+        // Auditoría B1: what the last look showed as results, said when none of them was the one named.
+        IReadOnlyList<string> seen = [];
         bool restored;
         try
         {
@@ -124,6 +128,14 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
                 writer.WriteString("name", chosen.Name);
                 writer.WriteString("kind", chosen.Kind);
                 writer.WriteBoolean("surfaceChanged", true);
+            }
+
+            if (stopped == ResultNotFound && seen.Count > 0)
+            {
+                writer.WriteStartArray("seen");
+                foreach (string name in seen)
+                    writer.WriteStringValue(name);
+                writer.WriteEndArray();
             }
 
             writer.WriteNumber("waitedMs", burst.WaitedMs);
@@ -172,19 +184,20 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             if (!typed.Verified || typed.ErrorCode is not null)
                 return typed.ErrorCode ?? "input_effect_not_verified";
 
-            // 4. The result that names it, read inside the burst while the search fills its list.
+            // 4. The result of exactly that name, read inside the burst while the search fills its list.
             HashSet<string> shownIds = shown.Select(control => control.Id).ToHashSet(StringComparer.Ordinal);
-            HashSet<string> shownNames = shown.Select(control => Words(control.Name)).ToHashSet(StringComparer.Ordinal);
             WindowsVisibleControlAdapter.ViewControl? result = null;
             while (true)
             {
                 if (Interrupted() is { } whileLooking)
-                    return Refused(whileLooking == CapReached ? ResultNotFound : whileLooking, Click, "label", search);
+                    return Refused(whileLooking == CapReached ? ResultNotFound : whileLooking, Click, "label", choose ?? search);
                 IReadOnlyList<WindowsVisibleControlAdapter.ViewControl>? listed = await acts.LookAsync(window, cancellationToken)
                     .ConfigureAwait(false);
-                result = listed is null ? null : ResultNaming(listed, search, choose, controlId, shownIds, shownNames);
+                result = listed is null ? null : ResultNaming(listed, search, choose, controlId, shownIds);
                 if (result is not null)
                     break;
+                if (listed is not null)
+                    seen = [.. Results(listed, controlId).Select(control => control.Name).Distinct(StringComparer.Ordinal).Take(SeenNames)];
                 await clock.DelayAsync(ResultLookMs, cancellationToken).ConfigureAwait(false);
             }
 
@@ -431,58 +444,38 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
     }
 
     /// <summary>
-    /// The result that names the destination (the mind's <c>_result_naming</c>): no field, no switch, never the opener;
-    /// a result kind before any other, the exact name before one that only contains it. With <paramref name="choose"/>,
-    /// only the control of exactly that name.
+    /// The result that names the destination (auditoría B1): no field, no switch, never the opener, and exactly the name
+    /// searched for, folded (case, accents, spaces); with <paramref name="choose"/>, exactly that name instead. Never one
+    /// that only holds it or differs by a typo: nothing is pressed and the burst says the names it saw. A descriptive
+    /// control named as the search or as a field's value only repeats it (Discord's «cotele» drawn as a Text, c7). A
+    /// result kind before any other.
     /// </summary>
     internal static WindowsVisibleControlAdapter.ViewControl? ResultNaming(
         IReadOnlyList<WindowsVisibleControlAdapter.ViewControl> controls,
         string search,
         string? choose,
         string openerId,
-        IReadOnlyCollection<string>? shownBefore = null,
-        IReadOnlyCollection<string>? namesBefore = null)
+        IReadOnlyCollection<string>? shownBefore = null)
     {
-        string wanted = Words(search);
-        // What only repeats the search or a field's value (Discord's «cotele» drawn as a Text, c7).
+        string wanted = WindowsVisibleOcrLocator.Fold(choose ?? search);
         HashSet<string> echoes = [.. controls.Where(control => control.Kind is "Edit" or "ComboBox")
-            .Select(control => Echo(control.Value ?? string.Empty)).Append(Echo(search)).Where(echo => echo.Length > 0)];
-        WindowsVisibleControlAdapter.ViewControl[] listed = [.. controls.Where(control => control.Id.Length > 0
-            && control.Id != openerId && !FieldKinds.Contains(control.Kind) && !IsSwitch(control)
-            && (choose is null || SameName(control.Name, choose)))];
-        WindowsVisibleControlAdapter.ViewControl[] named = [.. listed.Where(control => NamesResult(wanted, control, echoes, namesBefore))];
-        WindowsVisibleControlAdapter.ViewControl[] near = [.. listed.Where(control => EntryKinds.Contains(control.Kind) && OneTypo(control.Name, wanted))];
-        return (named.Length > 0 ? named : near.Length == 1 ? near : [])
+            .Select(control => WindowsVisibleOcrLocator.Fold(control.Value ?? string.Empty))
+            .Append(WindowsVisibleOcrLocator.Fold(search)).Where(echo => echo.Length > 0)];
+        return Results(controls, openerId)
+            .Where(control => wanted.Length > 0 && WindowsVisibleOcrLocator.Fold(control.Name) == wanted
+                && !(DescriptiveKinds.Contains(control.Kind) && echoes.Contains(wanted)))
             // What the search listed after the text before what the window already showed (a server of the same name
             // in its side bar, measured on a chat application).
             .OrderBy(control => shownBefore is not null && shownBefore.Contains(control.Id))
-            .ThenBy(control => Array.IndexOf(ResultKinds, control.Kind) < 0)
-            .ThenBy(control => Words(control.Name) != wanted)
             .ThenBy(control => Array.IndexOf(ResultKinds, control.Kind) is var rank && rank >= 0 ? rank : ResultKinds.Length)
             .FirstOrDefault();
     }
 
-    // The mind's _result_naming, ronda 25: never an echo; the exact name, or whole words in a short entry, or in a short
-    // control the search brought (no name of the look before the text: the mind's newText); never «Comprimir …» (u1).
-    private static bool NamesResult(
-        string wanted, WindowsVisibleControlAdapter.ViewControl control, HashSet<string> echoes, IReadOnlyCollection<string>? namesBefore)
-    {
-        string name = Words(control.Name);
-        if (wanted.Length == 0 || (echoes.Contains(Echo(control.Name)) && (DescriptiveKinds.Contains(control.Kind) || name != wanted)))
-            return false;
-        return name == wanted || (!DescriptiveKinds.Contains(control.Kind) && control.Kind != "TabItem"
-            && (EntryKinds.Contains(control.Kind) || namesBefore is null || !namesBefore.Contains(name))
-            && name.Split(' ').Length <= wanted.Split(' ').Length + 6
-            && System.Text.RegularExpressions.Regex.IsMatch(name, $@"(?<!\w){System.Text.RegularExpressions.Regex.Escape(wanted)}(?!\w)"));
-    }
-
-    // The mind's _one_typo, _field_echo («Q fonts») and its folded words.
-    private static bool OneTypo(string name, string wanted) => Words(name) is var seen && wanted.Length / 5 > 0 && seen != wanted
-        && WindowsVisibleControlAdapter.EditDistance(wanted, seen, wanted.Length / 5) <= wanted.Length / 5;
-    private static string Echo(string text) => string.Join(' ', Words(text).Split(' ').SkipWhile(word => word.Length == 1)
-        .Reverse().SkipWhile(word => word.Length == 1).Reverse());
-    private static string Words(string text) =>
-        string.Join(' ', WindowsVisibleOcrLocator.Fold(text).Split(' ', StringSplitOptions.RemoveEmptyEntries));
+    // What a look shows that could be a result: a control with an identity, not the opener, no field and no switch.
+    private static IEnumerable<WindowsVisibleControlAdapter.ViewControl> Results(
+        IReadOnlyList<WindowsVisibleControlAdapter.ViewControl> controls, string openerId) =>
+        controls.Where(control => control.Id.Length > 0 && control.Id != openerId
+            && !FieldKinds.Contains(control.Kind) && !IsSwitch(control));
 
     // Pressing it would reach a person (a voice channel, a call, send) or could not be undone (a removal, a purchase):
     // the one question the adapter asks of any control it is about to press (ronda 29), here with no label judged.

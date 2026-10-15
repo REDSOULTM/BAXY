@@ -11,19 +11,12 @@ namespace Baxy.Kernel.Tests;
 public sealed class OperationOutcomeNarrationTests
 {
     [Test]
-    public async Task MissionEngineProjectsHandlerResultThroughInjectedNarrator()
+    public async Task MissionEngineMessageIsTheVisibleFactsOfTheHandlerOutcome()
     {
-        const string canary = "HANDLER-RESULT-MUST-NOT-BECOME-NARRATION";
-        JsonElement result = JsonDocument.Parse($"{{\"canary\":\"{canary}\"}}")
-            .RootElement
-            .Clone();
+        JsonElement result = JsonDocument.Parse("{\"title\":\"Compras\"}").RootElement.Clone();
         var handler = new ResultHandler(result);
-        var narrator = new FixedNarrator("Narración separada y determinista.");
         using var journal = new InMemoryInvocationJournal();
-        using var engine = new MissionEngine(
-            new OperationRegistry([handler]),
-            journal,
-                               new MissionEngineOptions { Narrator = narrator });
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         var request = new OperationRequest(
             ProtocolTypes.OperationRequest,
             Guid.NewGuid().ToString("D"),
@@ -32,18 +25,42 @@ public sealed class OperationOutcomeNarrationTests
             handler.Definition.Name,
             JsonDocument.Parse("{}").RootElement.Clone());
 
-        OperationResponse response = await engine.ExecuteAsync(
-            request,
-            CancellationToken.None);
+        OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(response.Message, Is.EqualTo("Narración separada y determinista."));
-            Assert.That(response.Message, Does.Not.Contain(canary));
-            Assert.That(response.Result?.GetProperty("canary").GetString(), Is.EqualTo(canary));
-            Assert.That(narrator.ObservedOperation, Is.EqualTo(handler.Definition.Name));
-            Assert.That(narrator.ObservedOutcome, Is.SameAs(handler.Outcome));
+            Assert.That(response.Message, Is.EqualTo(OperationVisibleFacts.FromOutcome(handler.Definition.Name, handler.Outcome)));
+            Assert.That(response.Result?.GetProperty("title").GetString(), Is.EqualTo("Compras"));
         });
+    }
+
+    [Test]
+    public void ObservationCarriesTheIdsTypedArgumentsAskForAndHoldsBackSecretsAndBookkeeping()
+    {
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            id = "a1",
+            noteId = "8f0c7c56-6a3e-4c55-9a4b-2f1f4c5a9d10",
+            deviceId = "bluetooth.4f2a",
+            sha256 = "ab12",
+            hash = "cd34",
+            recordId = "r1",
+            token = "secret-token",
+            fingerprint = "fp",
+            invocationId = "inv",
+            requestId = "req",
+            missionId = "mis",
+            hwnd = 42,
+            handle = 43,
+            processId = 44,
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("note.read", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+        string[] keys = [.. observed.EnumerateObject().Select(static property => property.Name)];
+
+        Assert.That(keys, Is.EquivalentTo(new[] { "id", "noteId", "deviceId", "sha256", "hash", "recordId" }));
     }
 
     [Test]
@@ -70,26 +87,6 @@ public sealed class OperationOutcomeNarrationTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             return ValueTask.FromResult(Outcome);
-        }
-    }
-
-    private sealed class FixedNarrator(string message) : IOperationResponseNarrator
-    {
-        public string? ObservedOperation { get; private set; }
-
-        public OperationOutcome? ObservedOutcome { get; private set; }
-
-        public string Narrate(string operation, OperationOutcome outcome)
-        {
-            ObservedOperation = operation;
-            ObservedOutcome = outcome;
-            return message;
-        }
-
-        public string NarrateStatus(string operation, string status, string? errorCode)
-        {
-            ObservedOperation = operation;
-            return message;
         }
     }
 }

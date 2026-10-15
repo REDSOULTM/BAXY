@@ -30,12 +30,12 @@ public sealed class M120ClienteCerradoTests
         public ValueTask<DesktopRecipientObservation> ResolveAsync(string channel, string recipient, CancellationToken cancellationToken)
         {
             Steps.Add("resolve:" + recipient);
-            return ValueTask.FromResult(new DesktopRecipientObservation(true, true, (nint)42, 7, null));
+            return ValueTask.FromResult(new DesktopRecipientObservation(true, true, (nint)42, 7, null, recipient));
         }
 
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
-            Steps.Add("send:" + recipient.DisplayName);
+            Steps.Add("send:" + recipient.Name);
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
 
@@ -46,14 +46,11 @@ public sealed class M120ClienteCerradoTests
         }
     }
 
-    private static string TemporaryStore() =>
-        Path.Combine(Path.GetTempPath(), "baxy-m120-" + Guid.NewGuid().ToString("N"), "recipient-channels.v1.json");
-
     private static async Task<(ExternalCapabilityReceipt Receipt, List<string> Steps)> DraftAsync(
         DesktopClientReadiness readiness, string channel = "whatsapp")
     {
         var automation = new ClientAutomation(readiness);
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
+        using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.draft",
             Json($$"""{"channel":"{{channel}}","recipient":"Tere","text":"llego en diez"}"""),
@@ -118,22 +115,77 @@ public sealed class M120ClienteCerradoTests
         });
     }
 
+    // C6: the test destinations are the owner's private data (a file under the profile's data), never source.
+    private static string TestDestinations(string? json)
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-m120-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string path = Path.Combine(directory, "test-destinations.v1.json");
+        if (json is not null)
+        {
+            File.WriteAllText(path, json);
+        }
+
+        return path;
+    }
+
     [Test]
     public async Task TheTestChannelsClientIsOpenedBeforeTheReviewedSend()
     {
         var automation = new ClientAutomation(new(true, true, null));
-        using var adapter = new DesktopMessagingAdapter(automation, TemporaryStore());
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "message.send.test",
-            Json("""{"channel":"whatsapp","requestedRecipient":"Tere","text":"hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+        string destinations = TestDestinations("""{"whatsapp":"Chat de prueba"}""");
+        try
         {
-            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(automation.Steps, Is.EqualTo(new[] { "ensure:whatsapp", "resolve:Música", "send:Música" }));
-            Assert.That(receipt.Result?.GetProperty("clientOpened").GetBoolean(), Is.True);
-        });
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"whatsapp","requestedRecipient":"Tere","text":"hola"}"""),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+                Assert.That(automation.Steps,
+                    Is.EqualTo(new[] { "ensure:whatsapp", "resolve:Chat de prueba", "send:Chat de prueba" }));
+                Assert.That(receipt.Result?.GetProperty("forcedDestination").GetString(), Is.EqualTo("Chat de prueba"));
+                Assert.That(receipt.Result?.GetProperty("clientOpened").GetBoolean(), Is.True);
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // C6 contracaso: without the private file, or without the channel in it, there is no test destination: the send
+    // fails before any client is touched.
+    [TestCase(null)]
+    [TestCase("""{"discord":"Otro chat"}""")]
+    [TestCase("not json")]
+    public async Task WithoutAConfiguredTestDestinationNothingIsTouched(string? json)
+    {
+        var automation = new ClientAutomation(new(true, true, null));
+        string destinations = TestDestinations(json);
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"whatsapp","requestedRecipient":"Tere","text":"hola"}"""),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("test_destination_not_configured"));
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(automation.Steps, Is.Empty);
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
     }
 
     private static ApplicationOpenResult Opened(bool succeeded, string? error, bool launchIssued) =>
@@ -176,17 +228,8 @@ public sealed class M120ClienteCerradoTests
                 Is.EqualTo(TimeSpan.FromSeconds(15)), "not listed: the default of D59 §1");
             Assert.That(ClientColdStart.For("discord"), Is.EqualTo(TimeSpan.FromSeconds(60)), "matched without case");
             Assert.That(WindowsDesktopMessagingAutomation.ClientStillStarting("discord"), Is.EqualTo("discord_client_still_starting"));
+            Assert.That(WindowsDesktopMessagingAutomation.ClientReadyUnread("discord"), Is.EqualTo("discord_client_ready_not_verified"));
         });
-    }
-
-    [TestCase("WhatsApp", true)]
-    [TestCase("#general | Amigos - Discord", true)]
-    [TestCase("Discord", true)]
-    [TestCase("Discord Updater", false)]
-    [TestCase("", false)]
-    public void OnlyTheClientsMainWindowIsReady(string title, bool ready)
-    {
-        Assert.That(WindowsDesktopMessagingAutomation.ClientWindowReady(title), Is.EqualTo(ready));
     }
 
     [TestCase("whatsapp", "WhatsApp")]

@@ -74,6 +74,11 @@ internal sealed class NativeTurnLoop
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
     private bool _beat;
+    // The person's answer is the person's: it counts only as the first move of a later turn they opened (their words or
+    // the Sí/No buttons), never in the turn that raised the question nor in a heartbeat (audit 2026-10-15, App 11).
+    private long _turn;
+    private long _askedInTurn;
+    private int _moves;
 
     internal NativeTurnLoop(Host host)
     {
@@ -95,8 +100,8 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(mind, await mind.DecideAsync(text, cancellationToken).ConfigureAwait(false), cancellationToken)
-            .ConfigureAwait(false);
+        await DriveAsync(mind, await mind.DecideAsync(text, cancellationToken), cancellationToken)
+            ;
     }
 
     /// <summary>The person pressed Sí or No on the pending confirmation.</summary>
@@ -111,9 +116,9 @@ internal sealed class NativeTurnLoop
 
         await DriveAsync(
                 mind,
-                await mind.ConfirmAsync(approve, label, cancellationToken).ConfigureAwait(false),
+                await mind.ConfirmAsync(approve, label, cancellationToken),
                 cancellationToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     /// <summary>
@@ -131,13 +136,13 @@ internal sealed class NativeTurnLoop
         _beat = true;
         try
         {
-            await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken).ConfigureAwait(false),
-                cancellationToken).ConfigureAwait(false);
+            await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken),
+                cancellationToken);
         }
         finally
         {
             _beat = false;
-            _ = await mind.EndBeatAsync(cancellationToken).ConfigureAwait(false);
+            _ = await mind.EndBeatAsync(cancellationToken);
         }
     }
 
@@ -149,6 +154,8 @@ internal sealed class NativeTurnLoop
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken)
     {
+        _turn++;
+        _moves = 0;
         for (int calls = 1; ; calls++)
         {
             switch (step)
@@ -171,10 +178,14 @@ internal sealed class NativeTurnLoop
                     return;
             }
 
-            string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken)
-                .ConfigureAwait(false);
-            step = await mind.ContinueAsync(observation, final: calls >= MaximumModelCalls, _beat, cancellationToken)
-                .ConfigureAwait(false);
+            _moves++;
+            string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
+            // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
+            // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
+            // at the call budget.
+            bool final = calls >= MaximumModelCalls || _host.Core() is not { IsReady: true } || HasPendingConfirmation;
+            step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
 
@@ -183,7 +194,7 @@ internal sealed class NativeTurnLoop
         long started = Stopwatch.GetTimestamp();
         if (operation == MindStep.ConfirmationAnswer)
         {
-            return await AnswerPendingAsync(arguments, started, cancellationToken).ConfigureAwait(false);
+            return await AnswerPendingAsync(arguments, started, cancellationToken);
         }
 
         // Anything else the person asked for replaces a confirmation still waiting: it is dropped, never run later.
@@ -222,17 +233,19 @@ internal sealed class NativeTurnLoop
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
             _proposalExpiresUtc = DateTimeOffset.UtcNow + ProposalLifetime;
+            _askedInTurn = _turn;
             return Record(operation, arguments, started, new JsonObject
             {
                 ["kind"] = "operation",
                 ["operation"] = operation,
                 ["status"] = "needs_confirmation",
+                ["next"] = "ask the person whether to do it and wait for their answer",
                 ["arguments"] = arguments.DeepClone(),
             }.ToJsonString());
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, started, cancellationToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     private static bool WritesInThePersonsWindow(string operation) =>
@@ -242,9 +255,22 @@ internal sealed class NativeTurnLoop
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
         bool approve = arguments["approve"] is JsonValue value && value.TryGetValue(out bool approved) && approved;
+        if (HasPendingConfirmation && (_beat || _moves != 1 || _askedInTurn >= _turn))
+        {
+            // Only the person answers: the waiting call stays as it is until they do.
+            return Record(MindStep.ConfirmationAnswer, arguments, started, new JsonObject
+            {
+                ["kind"] = "operation",
+                ["operation"] = MindStep.ConfirmationAnswer,
+                ["status"] = "rejected",
+                ["error"] = "only_the_person_answers",
+                ["next"] = "ask the person whether to do it and wait for their answer",
+            }.ToJsonString());
+        }
+
         if (_proposal is { } proposal && _proposalExpiresUtc > DateTimeOffset.UtcNow)
         {
-            return await AnswerProposalAsync(proposal, approve, started, cancellationToken).ConfigureAwait(false);
+            return await AnswerProposalAsync(proposal, approve, started, cancellationToken);
         }
 
         PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
@@ -273,7 +299,7 @@ internal sealed class NativeTurnLoop
         }
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, started, cancellationToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
@@ -302,12 +328,12 @@ internal sealed class NativeTurnLoop
         }
 
         string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, started,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken);
         if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
         {
             _pending = null;
             observation = await SendAsync(core, proposal, arguments, challenge.Token, started, cancellationToken)
-                .ConfigureAwait(false);
+                ;
         }
 
         return observation;
@@ -327,7 +353,7 @@ internal sealed class NativeTurnLoop
         try
         {
             response = await core.SendOperationAsync(prepared, OperationTimeout, cancellationToken, confirmationToken)
-                .ConfigureAwait(false);
+                ;
         }
         catch (Exception exception) when (exception is TimeoutException or System.IO.IOException
             or InvalidOperationException)
@@ -343,11 +369,13 @@ internal sealed class NativeTurnLoop
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
+            _askedInTurn = _turn;
             return Record(operation, arguments, started, new JsonObject
             {
                 ["kind"] = "operation",
                 ["operation"] = operation,
                 ["status"] = "needs_confirmation",
+                ["next"] = "ask the person whether to do it and wait for their answer",
                 ["arguments"] = arguments.DeepClone(),
                 ["effectStarted"] = challenge.ReconciliationRequired,
             }.ToJsonString(), response);

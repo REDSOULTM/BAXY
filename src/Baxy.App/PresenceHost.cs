@@ -55,10 +55,6 @@ internal sealed class PresenceHost : IDisposable
 
     internal string? AutostartCommand { get; private set; }
 
-    internal string StatusPath => _store.StatusPath;
-
-    internal IReadOnlyList<PresenceIdleSnapshot> IdleSamples => _sampler.Samples;
-
     internal void Start(IReadOnlyList<string> arguments)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -97,7 +93,9 @@ internal sealed class PresenceHost : IDisposable
                 (moment, speak) => window.Dispatcher.InvokeAsync(
                     () => beating.RunBeatAsync(moment, speak, CancellationToken.None)).Task.Unwrap(),
                 () => window.Dispatcher.Invoke(() => beating.CanBeat),
-                () => window.Dispatcher.Invoke(() => (IReadOnlyList<ConversationMessage>)[.. beating.Messages]));
+                () => window.Dispatcher.Invoke(() => (IReadOnlyList<ConversationMessage>)[.. beating.Messages]),
+                () => window.Dispatcher.InvokeAsync(() => beating.RememberedAsync(CancellationToken.None)).Task.Unwrap(),
+                () => window.Dispatcher.InvokeAsync(() => beating.PendingRemindersAsync(CancellationToken.None)).Task.Unwrap());
             _heartbeat.Start();
         }
 

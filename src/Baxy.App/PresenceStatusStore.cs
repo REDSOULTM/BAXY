@@ -32,12 +32,6 @@ internal sealed class PresenceStatusStore
     internal static PresenceStatusStore CreateDefault() =>
         new(Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "presence"));
 
-    internal string StatusPath => _statusPath;
-
-    internal string SamplesPath => _samples.FilePath;
-
-    internal string SamplesArchivePath => _samples.ArchivePath;
-
     internal void WriteStatus(PresenceStatusDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);

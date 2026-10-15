@@ -297,9 +297,19 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                 ? value.GetString() ?? string.Empty
                 : string.Empty;
             // Only a search that turned pages moved anything; the others read the tree and failed before an effect.
-            return method.Length > 0
+            ExternalCapabilityReceipt missing = method.Length > 0
                 ? effectBoundary.Failure(operation, "reveal_not_found", effectObserved: true)
                 : ExternalJson.FailureBeforeEffect(operation, error is "active_window_not_found" ? error : "reveal_not_found");
+            // Auditoría C10: the rows whose name only holds the label were brought to no view; their names go back.
+            return root.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.Array
+                ? missing with { Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WritePropertyName("candidates");
+                    candidates.WriteTo(writer);
+                    writer.WriteEndObject();
+                }) }
+                : missing;
         }
 
         string name = root.TryGetProperty("name", out JsonElement found) && found.ValueKind == JsonValueKind.String

@@ -21,6 +21,13 @@ Goal: `PROMPT_GOAL_RENEW.md`. Estado estructurado: `metas.json`. Notas del noteb
 - `AGENTS.md` dice «subagentes, por defecto no»; el prompt del goal manda usarlos con libertad. Manda el prompt.
 - `00_IDENTIDAD.md`: en modo Normal «apagar va directo»; el latido, por decisión del 2026-10-15, siempre propone apagar.
   Se aplica sólo a lo que el latido hace por instinto: un pedido explícito sigue la tabla de modos.
+- Traspaso: «el latido se pausa si el dueño juega o la GPU está ocupada» frente a «si juega, sólo una notificación» (y
+  escenas de juego que esperan actuar). Decisión: mientras juega se salta el latido periódico de 5 min; un latido por
+  cambio (empezó un juego, vence un recordatorio) sí corre, y avisa por notificación.
+- Los bancos e2e y de falsedades sellados no traían `SEALED-*.md` del subagente: el líder calculó su sha256 sin abrirlos
+  (ficheros sin cambios desde 04:05 y 04:09) y lo anotó en `metas.json`.
+- Exposición de herramientas: el dueño pidió «skills a demanda o lo que diga la evidencia, medido contra todas en el
+  prompt». Medido (notebook, 270 casos): el 4B nunca llamó a `skill_read`; gana «todas en el prompt con guías».
 
 **Arnés nuevo (commit siguiente a 06c7eb81).**
 - Mente: conversación de sesión con llamadas y resultados; `turn.result` con argumentos; `turn.confirm` (botones) y
@@ -56,3 +63,97 @@ modelo los puede leer con sus herramientas.
 
 **Pruebas de Providers:** 5 de `VisibleClick…` fallan en este escritorio (dependen de la ventana real al frente; no
 tocan lo cambiado; en el notebook pasan).
+
+**Tarde (2026-10-15).**
+- Fusionado del notebook: `web.fetch`, terminal que confirma lo que no sólo lee, `file.find/read/write/edit` (sustituyen
+  6 operaciones), `schedule.alarms` (17 → 1, hora local o minutos), limpieza de JSON. Catálogo 194 herramientas.
+- Tabla de equivalencias del catálogo (`scripts/renew/catalog_equivalence.json`): los jueces aceptan la operación que
+  sustituye a una retirada, con sus argumentos fijos y renombrados; los bancos no se editan.
+- Limpieza de la App por análisis Roslyn del notebook (−1 310 líneas, cadena «fuente» fuera, contexto bien informado).
+- Prompt v2 (decision2 270: v1 226, v2 227; una instrucción de «nota de progreso» no produjo ninguna nota y se retiró).
+  Resumen del turno al final de cada resultado (el modelo ve juntos los pasos completados y fallidos).
+- Latido: dos pasos con lista de motivos, avisar sin herramientas, memoria y avisos pendientes en el momento.
+  Escenas de práctica 29 → 35/40 (87,5 %), molestas 0.
+- Juez de falsedades: Qwen3.6-35B-A3B razonando, afirmación por afirmación, con la trampa del caso como foco. Sobre las
+  transcripciones de práctica p1 coincide con la revisión a mano (F001, F013, F015, F019) y es más estricto (F009, F014).
+- e2e práctica p2: 11/30. Causas: el sandbox `%USERPROFILE%\BAXY-bench` no es carpeta conocida (pedida la carpeta
+  `home` al notebook); dos CalculatorApp colgados por cierres forzados (míos) rompieron 3 casos; «sube a 40» → +40
+  (descripción ajustada); la terminal que pide confirmación no se preguntó (el resultado ahora dice «pregúntale»).
+- Desajustes banco/protocolo anotados (no se editan casos): «qué fecha es» se responde con el reloj del contexto; «haz
+  clic en Aceptar» mira primero (regla 9); las operaciones de ventana piden su id antes (el caso espera la directa).
+
+**Auditoría de reglas, parte del PC (2026-10-15, tarde).**
+- `confirm_pending` vale sólo como primer movimiento de un turno que la persona abrió después de la pregunta (sus
+  palabras o los botones); en el mismo turno o en un latido se rechaza y la llamada sigue esperando (App 11).
+- Memoria: `memory.enable`, `memory.disable`, `memory.sensitive.save` y `memory.session.clear` fallaban siempre por la
+  comprobación del analizador viejo; fuera. Probado en el producto: activar, guardar, listar y limpiar (App 12).
+- Interfaz: modelos de voz «descargados» sólo si está el fichero que carga la mente; fuera el «/ 4k» (App 13).
+- La vista de una ventana da su número (`window …`), que es lo que toman `input.visible.click`, `input.text.type`,
+  `input.key.press` e `input.scroll`; sus descripciones dicen que con él actúan en esa ventana y no en la del frente.
+  Antes el modelo no podía llenar `window` nunca (el hwnd no le llegaba).
+- Choque: la auditoría propone que toda entrada actúe sólo en ventanas que BAXY lanzó. La identidad dice «nunca
+  escribe ni hace clic en la ventana de la persona; puede traer su aplicación al frente mientras actúa y devolver el
+  frente» (`00_IDENTIDAD.md`, `COMO_ESCALAR_DESDE_AQUI.md` 4): la ventana de la persona es aquella en la que trabaja
+  mientras BAXY hace otra cosa, no toda app que no abrió BAXY (Steam abierto por el dueño es objetivo legítimo de «ve a
+  la biblioteca»). Decisión: no se añade la compuerta por procedencia; un pedido explícito sobre la ventana activa
+  («escribe hola», «pega aquí») la designa como objetivo. Lo que sí se cierra: el latido retiene toda operación de
+  entrada como propuesta (ya estaba) y el modelo ahora puede nombrar la ventana en la que actúa.
+- `browser.control` y `PagePlay` actúan en el navegador que la persona nombró como objetivo (misma lectura de la
+  identidad); `close_all` ya confirma en el kernel (`LosesTheSession`). Se quedan.
+- Expuestas al modelo `window.resolve`, `message.recipient.resolve` y `package.install.prepare/commit` (antes «Paso
+  interno»): en p2 el modelo inventaba `windowId` «4» trece veces porque nada se lo daba. Mente: fuera `protocol.hello`,
+  `_decided` y el parámetro muerto de `startup_failure`.
+- Subagentes en worktrees: clic/apertura/ventanas (P3, B1-B2, C8-C10, D1-D9), mensajería (C1-C7, C11, C14) y kernel
+  (K1, K3-K12, D-K*).
+- e2e p3 (en curso) muestra: `app.open` devuelve `windowHandle` y el modelo lo usa como `windowId` (los ids son de un
+  solo uso y salen sólo de `window.resolve`/`window.active`); el error `invalid_or_expired_window_id` lo contó como «ya no
+  está abierto» (falsedad). Arreglo en cola: `app.open` devuelve un `windowId` y el id vale mientras la identidad de la
+  ventana sea la misma.
+- decision2 (270) tras exponer internas y describir subcarpetas: 224 (antes 227). Lo que cambió por la exposición:
+  «desinstala el Zoom/Worms» → `package.install.prepare` (2 casos) y un mensaje a un contacto → `message.recipient.resolve` en
+  vez del borrador. Se retiran de nuevo `package.install.*` y `message.recipient.resolve` (ningún caso del banco instala;
+  el borrador es lo esperado). Instalar programas queda pendiente de una sola herramienta `package.install` con riesgo
+  de instalación (pedida al notebook); `window.resolve` se queda (las `window.*` la necesitan). RAM de llama-server en el
+  PC: USS 3436 MiB en esta corrida (2011 en s2, ~0,5 GB en el notebook): se mide aparte con `measure_resources.py`.
+- Mensajería (subagente, fusionado 75f56824): nombres por palabra entera plegada (sin subcadena ni tolerancia), Discord
+  no pulsa una fila que no nombra al destinatario, recibo con lo leído y si coincidió exacto o tolerante, no borra el
+  borrador de la persona (`composer_has_person_draft`), devuelve el tamaño de WhatsApp, fuera `channel: any` y el fichero
+  que recordaba canales, destinos de prueba en un fichero privado del perfil
+  (`%LOCALAPPDATA%\BAXY\development\messaging\test-destinations.v1.json`, creado en el PC; fuera del repo). Mensajería
+  101/101, Kernel 606/606. No restaurado: la vista lateral y la búsqueda de WhatsApp.
+- Clic, apertura y ventanas (subagente, fusionado): etiqueta sólo por igualdad plegada, sin alias ni erratas; lo que
+  sólo contiene la etiqueta vuelve como candidato sin pulsarse; la búsqueda en ráfaga pulsa sólo el nombre exacto; la
+  entrada de una lista por su nombre; el worker no actúa en el frente sin ventana; `app.open` sólo por nombre exacto
+  (si no, candidatos), sin alias, sin contar una ventana previa como lanzamiento, documento nuevo sin Ctrl+N en una
+  ventana ajena y sin cerrar «¿Guardar cambios?»; `app.close` distingue cerrada, ya no estaba y oculta. Límite anotado:
+  el clic por OCR comprueba el punto con un control cuyo nombre puede sólo contener la etiqueta (es verificación del
+  punto, no elección).
+- Kernel (subagente, fusionado): el modelo ve noteId, deviceId, sha256 e id (K1); fuera la misión de pantalla, el
+  validador de planes, HonestyCorrection del motor, FirstSignal, capturas consentidas y código de prueba en producto;
+  10 pasos y luego 13 operaciones `Internal`. K8 revertido (ver commit). Kernel 536/536, Contracts 70/70, Providers
+  2197/2197 (el de PDF pasó tras instalar pypdf).
+- **Python compartido del runtime:** instalado `pypdf==6.18.1` (sin dependencias) en
+  `%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1`: `file.read` de un PDF lo usa y faltaba en el PC.
+- `app.open` devuelve `windowId` de la ventana que verificó; probado: abrir, minimizar y maximizar el Bloc de notas
+  encadenando el id que devuelve cada acción.
+- Fusionado el notebook (7779bcd2): colores sólo hex, web.download declara la portada, winget «sigue corriendo» no es
+  éxito, Spotify verifica el play/pausa, fuera las 7 `routine.*` (nada las ejecutaba) y WindowsInventoryAdapter sólo
+  como respaldo PnP. En la App, en la misma fusión: fuera `/triggers` y el panel de disparadores (servían las rutinas);
+  el panel de herramientas lista las que ve el modelo (antes contaba 180 y mostraba una lista vacía). Los jueces
+  aceptan «eso no lo hago» para una operación retirada sin reemplazo (`"op": null` en catalog_equivalence).
+- Falsedades práctica p3 (sesión desbloqueada, juez con «hechos de Windows»): **2** en 26 líneas (p1: 4). F013 (ruta
+  pedida dicha como hecha, el archivo fue a la raíz del perfil) y F015 (aceptó «¿ya cerraste…?»): regla 2 ampliada;
+  F013 espera que file.* acepte rutas absolutas (pedido al notebook).
+- e2e práctica p4: **16/30** (herr 7/10, cu 4/8, agente 3/8, voz 2/4), primer sonido p50 2861 ms. E007 (minimizar) y
+  E011 (calculadora) pasan. Arreglos tras p4:
+  - Instrumento: la librería del banco (`lib\bench.ps1`) leía una ventana abierta como ausente (Windows PowerShell 5.1
+    no da `.Count` a un `[pscustomobject]` solo): E003 fallaba siempre y el oráculo de Configuración (E014) también.
+    Arreglado con `Update-TypeData` en la librería; los casos no se tocan; sello nuevo de la librería en metas.json.
+  - Con una llamada esperando el sí de la persona, el siguiente paso del modelo es final (E021: repitió la terminal 8
+    veces y acabó en «no puedo ejecutar comandos»).
+  - `app.open` con un lugar que la app no tiene falla con `place_not_of_application` y las apps que sí lo tienen
+    (E014: «Configuración del sistema» + sound, 8 veces con `invalid_arguments`).
+- Volumen «sube/baja … a/hasta N» (E028, P257): el 4B elige `audio.volume.adjust` y calcula la diferencia. Medido en un
+  juego propio de 10 frases (no copiadas de los bancos): descripciones actuales 6/10; descripciones «TO a level» frente
+  a «BY an amount» 4/10; una sola herramienta `audio.volume {level|change}` 6/10 (cambia los errores: «baja al 15» →
+  change −85). Nada mejora: **límite medido**, el catálogo se queda como está.

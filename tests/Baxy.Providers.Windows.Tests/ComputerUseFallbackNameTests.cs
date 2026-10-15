@@ -137,47 +137,65 @@ public sealed class ComputerUseFallbackNameTests
         }));
     }
 
-    // Ronda 22 (r18 t2-c04) and review 1 of motor-listas-abiertas (finding 3): a box's entry is chosen by a number
-    // asked only when exactly one entry says it as a whole number; the integer part of a decimal («2» of «2,5»,
-    // «125» of «125,5 %») or a longer number («150» of «1500») is never it, as the mind reads numbers.
+    // Auditoría C10: a row whose title only holds the label is never the control pressed for it; its name comes back as
+    // a candidate. Counter-case: the exact name, folded (case, accents), is the one found and no candidate is noted.
     [Test]
-    public void AComboEntryIsChosenByANumberOnlyWhenOneEntrySaysItWhole()
+    public void ARowThatOnlyHoldsTheLabelIsACandidateNeverTheControlFound()
+    {
+        JsonElement answer = RunWorker("""
+            Add-Type -AssemblyName UIAutomationClient
+            $Actionable=@('Button','ListItem')
+            $script:TitledKinds=@('ControlType.TabItem','ControlType.ListItem','ControlType.TreeItem','ControlType.Hyperlink')
+            function Test-SystemMenu($el){ return $false }
+            function Fake([string]$name,[string]$kind){
+              $props=[pscustomobject]@{ Name=$name; ControlType=[pscustomobject]@{ ProgrammaticName=('ControlType.'+$kind) }; IsOffscreen=$false }
+              return [pscustomobject]@{ Cached=$props; Current=$props; Tag=$name }
+            }
+            $script:Fakes=@((Fake 'Bloc de notas, 11.2, Microsoft' 'ListItem'), (Fake 'Configuración' 'Button'))
+            function Get-ShownDescendants($root,$hwnd,$seconds){ return $script:Fakes }
+            $script:NamedCandidates=@()
+            $held=@(Find-Named $null @('bloc de notas'))
+            $heldCandidates=@($script:NamedCandidates)
+            $script:NamedCandidates=@()
+            $exact=@(Find-Named $null @('configuracion'))
+            [Console]::Out.Write((ConvertTo-Json -Compress @($held.Count, ($heldCandidates -join ';'), ($exact | ForEach-Object { $_.Tag }), $script:NamedCandidates.Count)))
+            """);
+
+        Assert.That(answer.EnumerateArray().Select(item => item.ToString()), Is.EqualTo(new[]
+        {
+            "0", "Bloc de notas, 11.2, Microsoft", "Configuración", "0",
+        }));
+    }
+
+    // Auditoría C9: a box's entry is chosen only by its own name, folded (case, accents, spaces); «125» is not the entry
+    // «125% (recomendado)», nor «2» the entry «2,5».
+    [Test]
+    public void AComboEntryIsChosenOnlyByItsOwnName()
     {
         JsonElement answer = RunWorker("""
             function Entry([string]$name){ return [pscustomobject]@{ Cached=[pscustomobject]@{ Name=$name }; Tag=$name } }
             function Pick($names,[string]$text){
-              $chosen=Select-NumberedEntry @($names | ForEach-Object { Entry $_ }) $text
+              $chosen=Find-EntryNamed @($names | ForEach-Object { Entry $_ }) $text
               if($null -eq $chosen){ return '' } else { return $chosen.Tag }
             }
             $scale=@('100%','125% (recomendado)','150%','175%')
-            $spacing=@('1,0','1,15','1,5','2,5','3,0')
             [Console]::Out.Write((ConvertTo-Json -Compress @(
               (Pick $scale '125'),
-              (Pick $scale ' 150 '),
-              (Pick $spacing '1,5'),
+              (Pick $scale '125% (Recomendado)'),
+              (Pick $scale ' 150% '),
               (Pick @('1,0','2','2,5') '2'),
-              (Pick $spacing '2'),
-              (Pick @('125,5 %','150 %') '125'),
-              (Pick @('1.5x','2x') '1'),
-              (Pick @('1500%','125%') '150'),
-              (Pick @('100%','100% (personalizado)') '100'),
-              (Pick $scale 'grande'),
-              (Pick $scale '12'))))
+              (Pick @('1,0','2,5') '2'),
+              (Pick @('Pequeño','Grande') 'pequeno'))))
             """);
 
         Assert.That(answer.EnumerateArray().Select(item => item.GetString()), Is.EqualTo(new[]
         {
-            "125% (recomendado)",   // the one entry with the number asked
-            "150%",                 // the asked text is trimmed
-            "1,5",                  // a decimal asked is its own entry, never «1,15»
-            "2",                    // «2» beside «2,5» is the whole «2»
-            "",                     // counter-case: «2» is only the integer part of «2,5»
-            "",                     // counter-case: «125» is only the integer part of «125,5 %»
-            "",                     // counter-case: the same with a point
-            "",                     // counter-case: «150» is part of «1500»
-            "",                     // two entries with the number: none
-            "",                     // a text that is no number is not this rule's
-            "",                     // «12» is part of «125»
+            "",                     // a number is no entry that only holds it
+            "125% (recomendado)",   // its own name, folded
+            "150%",                 // spaces around are no part of a name
+            "2",
+            "",                     // «2» is not «2,5»
+            "Pequeño",              // accents folded
         }));
     }
 
@@ -243,8 +261,8 @@ public sealed class ComputerUseFallbackNameTests
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_FALLBACK_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
             $wanted=@('Format-Name','Get-Cut','Get-Name','Get-Prop','Get-ReadableId','Get-FallbackName','Get-ShownName',
-                      'Test-NameMatch','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
-                      'Test-SystemMenu','Test-SystemMenuChain','Select-NumberedEntry','Get-LookupScope',
+                      'Test-NameMatch','Get-LabelFolded','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
+                      'Test-SystemMenu','Test-SystemMenuChain','Find-EntryNamed','Get-LookupScope',
                       'Test-OffscreenUsable','Get-Rect')
             $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $wanted -contains $node.Name },$true))
             if($found.Count -ne $wanted.Count){ throw 'worker functions missing' }

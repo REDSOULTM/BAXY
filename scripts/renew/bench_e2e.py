@@ -92,6 +92,17 @@ class Conductor:
             self.process.wait(120)
         except subprocess.TimeoutExpired:
             self.process.kill()
+        # The launcher is a cmd wrapper: the product it started (this bench's own, found by its command folder) and the
+        # core and mind under it must not outlive the bench.
+        import psutil
+        for process in psutil.process_iter(["name", "cmdline"]):
+            if (process.info["name"] or "").lower() == "baxy.exe" and str(self.commands) in " ".join(
+                    process.info["cmdline"] or []):
+                for child in process.children(recursive=True) + [process]:
+                    try:
+                        child.kill()
+                    except psutil.Error:
+                        pass
 
 
 def run_turn(conductor: Conductor, command: dict, timeout: float) -> list[dict]:
@@ -111,6 +122,13 @@ def wait_silence(conductor: Conductor, timeout: float) -> None:
     last_start = max((i for i, e in enumerate(conductor.events.all) if e["type"] == "speech.start"), default=None)
     if last_start is not None and not any(e["type"] == "speech.end" for e in conductor.events.all[last_start:]):
         conductor.events.wait(lambda e: e["type"] == "speech.end", timeout)
+
+
+def session_locked() -> bool:
+    """Windows' lock screen is up (LogonUI runs): apps cannot be driven and every later case would be measured wrong.
+    BAXY itself locked the PC once (2026-10-15 04:34, «para» → system.power); the bench stops instead of going on."""
+    import psutil
+    return any((p.info["name"] or "").lower() == "logonui.exe" for p in psutil.process_iter(["name"]))
 
 
 def norm(text: str) -> str:
@@ -181,14 +199,16 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
                 continue
             stop = next((e for e in every[i + 1:] if e["type"] == "speech.end"), None)
             stop_ms = stop["t_ms"] if stop else 10**12
-            interrupted = any(e["type"] == "message" and e["speaker"] == "person" and event["t_ms"] <= e["t_ms"] <= stop_ms
-                              for e in every[i + 1:])
+            # The person's words that arrived while it sounded cut it; the cut took from them to the audio's end.
+            cut_by = next((e for e in every[i + 1:] if e["type"] == "message" and e["speaker"] == "person"
+                           and event["t_ms"] <= e["t_ms"] <= stop_ms), None)
+            interrupted = cut_by is not None
             asked = replies[number - 1]["confirmation_text"]
             kind = "confirmation" if asked and norm(event.get("text")) == norm(asked) else "final"
             speech.append({"turn": number, "kind": kind, "spoken": True, "spoken_text": event.get("text", ""),
                            "first_audio_ms": event["t_ms"] - turn_start if turn_start is not None else None,
                            "completed": stop is not None and not interrupted, "cancelled": interrupted,
-                           "stop_latency_ms": None})
+                           "stop_latency_ms": (stop_ms - cut_by["t_ms"]) if cut_by and stop else None})
 
     (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
     (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
@@ -248,6 +268,9 @@ def main() -> None:
     env_base = dict(os.environ)
     rows = []
     for case in cases:
+        if session_locked():
+            print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
+            break
         case_dir = run_dir / case["id"]
         case_dir.mkdir(exist_ok=True)
         row = judge_case(case, conductor, case_dir, env_base)

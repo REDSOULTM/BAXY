@@ -79,8 +79,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         _webView.WebMessageReceived += OnWebMessageReceived;
     }
 
-    internal FieldProductChannel ProductChannel => _channel;
-
     bool IFieldEventSink.Publish(JsonObject eventData) => PostEvent(eventData);
 
     private async void OnWebMessageReceived(
@@ -252,15 +250,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         }
     }
 
-
-    internal FieldProgressNotice? CurrentProgress() => _channel.CurrentProgress();
-
-    internal static string NormalizeActivitySource(string? source) =>
-        FieldProductChannel.NormalizeActivitySource(source);
-
-    internal static FieldModelIdentity ResolveModelIdentity(string? modelPath) =>
-        FieldProductChannel.ResolveModelIdentity(modelPath);
-
     private static JsonObject HttpValue(FieldHttpResponse response)
     {
         var headers = new JsonObject();
@@ -368,7 +357,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         or IOException
         or InvalidOperationException
         or ArgumentException
-        or Baxy.Kernel.Planning.MissionPlanValidationException
         or UnauthorizedAccessException;
 
     public async ValueTask DisposeAsync()

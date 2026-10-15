@@ -3,7 +3,7 @@ import type { ActivityEntry, SourceTag } from '../types';
 import type { SessionInfo, SurfacesCount } from '../hooks/useEventStream';
 import { Icon } from './Icon';
 
-type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
+type SurfaceId = 'sessions' | 'memory' | 'tools';
 
 interface SurfaceCard {
   id: SurfaceId;
@@ -12,7 +12,7 @@ interface SurfaceCard {
 }
 
 // the redesign splits the four surfaces: sessions/memory live on the RIGHT
-// (activity); triggers/tools moved to the LEFT (substrate).
+// (activity); tools moved to the LEFT (substrate).
 const SURFACES: SurfaceCard[] = [
   { id: 'sessions', label: 'sessions', unit: 'cached' },
   { id: 'memory',   label: 'memoria',  unit: 'recuerdos' },
@@ -142,16 +142,6 @@ const SOURCE_CLASS: Record<SourceTag, string> = {
   BOOT: 'boot', THOUGHT: 'thought', SYSTEM: 'system', CONTEXT: 'context',
 };
 
-// M53 (D35): the page a consulted answer was written from. The view never navigates;
-// the shell opens the address it published, in the person's own browser.
-function openSource(url: string) {
-  fetch('/source/open', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url }),
-  }).catch(() => { /* ignore */ });
-}
-
 // The person's answer to a call that waits for their «sí»: the shell sends that exact call, or drops it.
 function answerConfirmation(approve: boolean) {
   fetch('/confirmation/answer', {
@@ -163,7 +153,6 @@ function answerConfirmation(approve: boolean) {
 
 function ActivityRow({ entry, asking }: { entry: ActivityEntry; asking: boolean }) {
   const cls = SOURCE_CLASS[entry.src] ?? 'you';
-  const source = entry.source;
   return (
     <div className="act fade-in">
       <div className="meta">
@@ -180,19 +169,6 @@ function ActivityRow({ entry, asking }: { entry: ActivityEntry; asking: boolean 
             <span>No</span>
           </button>
         </div>
-      ) : null}
-      {source ? (
-        <a
-          className="source-link"
-          href={source}
-          title={source}
-          onClick={(e) => {
-            e.preventDefault();
-            openSource(source);
-          }}
-        >
-          fuente
-        </a>
       ) : null}
     </div>
   );

@@ -21,6 +21,25 @@ import psutil
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
+# The catalog changed after the banks were written (operations merged or replaced, 2026-10-15): an expectation that
+# names a retired operation is met by the operation that replaced it, with its fixed arguments and its arguments
+# renamed; an argument with no counterpart is not checked. An operation retired with nothing in its place (op null) is
+# met by saying so. Public, versioned, and applied without opening the banks.
+EQUIVALENCE_FILE = Path(__file__).with_name("catalog_equivalence.json")
+EQUIVALENCE = json.loads(EQUIVALENCE_FILE.read_text(encoding="utf-8")) if EQUIVALENCE_FILE.is_file() else {}
+
+
+def current(op, args=None):
+    """The operation and arguments that meet an expectation written for «op» in today's catalog."""
+    entry = EQUIVALENCE.get(op)
+    if not entry:
+        return op, dict(args or {}), {}
+    renamed = {}
+    for name, want in (args or {}).items():
+        target = (entry.get("args") or {}).get(name, name)
+        if target is not None:
+            renamed[target] = want
+    return entry["op"], renamed, dict(entry.get("fixed") or {})
 
 
 def norm(value):
@@ -43,38 +62,23 @@ def arg_ok(want, got):
     return norm(want) in norm(got)
 
 
-# BAXY Renew (2026-10-15): operations replaced in the catalog by one that does the same. An expectation written with
-# the old name is met by the new operation with the arguments that make it the same request; the cases, sealed or
-# open, are never edited.
-RENAMED = {
-    "notification.schedule": ("schedule.alarms", {"action": "create"}),
-    "reminder.create": ("schedule.alarms", {"action": "create"}),
-    "notification.list": ("schedule.alarms", {"action": "list"}),
-    "reminder.list": ("schedule.alarms", {"action": "list"}),
-    "notification.cancel.latest": ("schedule.alarms", {"action": "cancel"}),
-    "notification.cancel.at": ("schedule.alarms", {"action": "cancel"}),
-    "notification.diagnose": ("schedule.alarms", {"action": "diagnose"}),
-    "document.text.read": ("file.read", {}),
-    "document.pdf.read": ("file.read", {}),
-    "filesystem.known.list": ("file.find", {}),
-    "filesystem.known.search": ("file.find", {}),
-    "filesystem.write.text": ("file.write", {}),
-    "filesystem.sandbox.append.named": ("file.write", {"append": True}),
-}
-
-
-def called(result, arguments, op, args):
-    new_op, implied = RENAMED.get(op, (op, {}))
-    return (result.get("kind") == "action" and result.get("operation") == new_op
-            and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**implied, **(args or {})}.items()))
-
-
 def judge(expect, result, arguments):
     kind = result.get("kind")
     if expect["kind"] == "call":
-        return called(result, arguments, expect["op"], expect.get("args"))
+        op, args, fixed = current(expect["op"], expect.get("args"))
+        if op is None:  # retired with no replacement: BAXY says it does not do that
+            return kind == "conversation" and bool(str(result.get("reply", "")).strip())
+        return (kind == "action" and result.get("operation") == op
+                and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
-        return any(called(result, arguments, op, None) for op in expect["ops"])
+        for candidate in expect["ops"]:
+            op, _, fixed = current(candidate)
+            if op is None and kind == "conversation":
+                return True
+            if kind == "action" and result.get("operation") == op and all(
+                    arg_ok(v, (arguments or {}).get(k)) for k, v in fixed.items()):
+                return True
+        return False
     if expect["kind"] == "ask":
         return kind == "clarify" or (kind == "conversation" and str(result.get("reply", "")).strip().endswith("?"))
     if expect["kind"] == "text":
@@ -115,10 +119,11 @@ def main():
     parser.add_argument("--server-args", default="")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     parser.add_argument("--ctx", default="49152")
+    parser.add_argument("--src", default=str(ROOT / "src"), help="the mind to measure (a copy for an A/B of the prompt)")
     args = parser.parse_args()
     os.environ["BAXY_RENEW_DESCRIPTIONS"] = args.desc
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
-    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, args.src)
     from baxy_mind.llm_server import LlmServer  # noqa: E402
     from baxy_mind.mind import Mind  # noqa: E402
 
@@ -145,7 +150,7 @@ def main():
         except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
             result, error = {"kind": "error"}, repr(exc)[:200]
         latency = time.monotonic() - started
-        arguments = mind._decided.get(result.get("operation")) if result.get("operation") else None
+        arguments = result.get("arguments") if result.get("operation") else None
         ok = error is None and judge(case["expect"], result, arguments)
         fam = by_family.setdefault(str(case.get("family", "-")), [0, 0])
         fam[0] += ok

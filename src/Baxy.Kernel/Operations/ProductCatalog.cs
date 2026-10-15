@@ -48,14 +48,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
             ToolExposure.Public,
-            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; también acepta windows.notepad y windows.calculator."),
-        Descriptor(
-            "app.status",
-            EmptySchema(),
-            OperationRisks.ReadOnly,
-            "app.status.catalog.ready.v1",
-            ToolExposure.Internal,
-            "Checks that the local core is available and lists its operations."),
+            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
@@ -593,7 +586,7 @@ public static class ProductCatalog
             FilesystemResourceSchema(),
             OperationRisks.ReadOnly,
             "filesystem.hash.sandbox.revalidated.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Calcula SHA-256 después de revalidar la identidad opaca del archivo."),
         Descriptor(
             "filesystem.known.duplicates",
@@ -644,7 +637,7 @@ public static class ProductCatalog
             Schema([String("path", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["path"]),
             OperationRisks.RecoverableDelete,
             "filesystem.path.ensure.absent.windows.private.trash.postread.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Verifica la ausencia de una ruta absoluta; si existe, solo mueve archivos del perfil o TEMP a una papelera privada recuperable."),
         Descriptor(
             "filesystem.read.text",
@@ -704,14 +697,14 @@ public static class ProductCatalog
                 ["reviewLabel", "trashId"]),
             OperationRisks.RecoverableDelete,
             "filesystem.trash.commit.sandbox.absence.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una selección preparada y mueve el recurso a una papelera privada recuperable."),
         Descriptor(
             "filesystem.trash.prepare",
             FilesystemResourceSchema(),
             OperationRisks.ReadOnly,
             "filesystem.trash.prepare.sandbox.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Prepara una selección de papelera de un solo uso con etiqueta revisable."),
         Descriptor(
             "filesystem.trash.restore",
@@ -767,7 +760,7 @@ public static class ProductCatalog
             Schema([String("confirmationId", maximumLength: 96, nonWhitespace: true)], ["confirmationId"]),
             OperationRisks.Installation,
             "game.install.commit.steam.job.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una instalación preparada en una sesión Steam autenticada y verifica su job."),
         Descriptor(
             "game.install.named",
@@ -787,7 +780,7 @@ public static class ProductCatalog
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
             OperationRisks.ReadOnly,
             "game.install.prepare.steam.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos."),
         Descriptor(
             "game.install.status",
@@ -825,14 +818,14 @@ public static class ProductCatalog
                 ["confirmationId", "expectedPriceCents"]),
             OperationRisks.Monetary,
             "game.purchase.commit.steam.receipt.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una compra preparada con precio exacto; nunca se prueba contra dinero real."),
         Descriptor(
             "game.purchase.prepare",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
             OperationRisks.ReadOnly,
             "game.purchase.prepare.steam.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
@@ -1015,15 +1008,9 @@ public static class ProductCatalog
                     // ExpandCollapse (la flecha de un botón dividido, un desplegable),
                     // nunca su Invoke; menu: su menú contextual (ShowContextMenu o
                     // WM_CONTEXTMENU); double: doble clic por mensaje. Sin él, el clic
-                    // de siempre. Los mismos guards de etiqueta y confirmación.
-                    // Ronda 20b, palanca 6 (revisión, hallazgo 1, v3-40 b): collapse cierra
-                    // por su ExpandCollapse la lista que la misión abrió y dejó abierta
-                    // al no llegar; sólo la manda la App, nunca el modelo. Revisión 2
-                    // (hallazgo 3): sin ExpandCollapse abierto, el popup nacido en la
-                    // misión junto al control se cierra con Escape a su propia ventana.
-                    // Revisión 3 (hallazgo 1): ese cierre es dismiss, que nunca toca el
-                    // ExpandCollapse del control; collapse nunca pliega una rama de árbol.
-                    String("manner", types: NullableString, values: ["collapse", "dismiss", "double", "menu", "open"]),
+                    // de siempre. Los mismos guards de etiqueta y confirmación. (collapse y
+                    // dismiss, que sólo mandaba la misión retirada, salieron: auditoría K9.)
+                    String("manner", types: NullableString, values: ["double", "menu", "open"]),
                     // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el destino que se
                     // escribe en lo que el clic abre y cuyo resultado se elige por su
                     // nombre, en una sola ráfaga dentro de una pausa de la persona.
@@ -1046,41 +1033,20 @@ public static class ProductCatalog
             // una etiqueta que la aplicación aún no dibujó.
             Schema(
                 [
-                    // La aplicación de la misión: la ventana cuyo título la nombra es
-                    // la superficie mientras su proceso no se conoce o no muestra
+                    // La aplicación a mirar: la ventana cuyo título la nombra es la
+                    // superficie mientras su proceso no se conoce o no muestra
                     // ventana; «el navegador», la de delante del navegador de la persona.
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
-                    // Ronda 21, destino por contenido: sin aplicación ni ventana de la misión, las ventanas del
-                    // escritorio (de arriba abajo) con la firma de su árbol; la App busca en cuál está lo que el
-                    // pedido nombra. No se trae nada al frente ni se captura nada.
-                    Boolean("candidates", types: NullableBoolean),
-                    // Ronda 26: si la aplicación nombrada no tiene ventana, la mirada sólo dice qué ventana está
-                    // delante (título, proceso), sin árbol, captura ni texto: sobre eso se decide abrirla.
-                    Boolean("identityIfAbsent", types: NullableBoolean),
                     Boolean("includeText", types: NullableBoolean),
-                    // Goal v3 ventana-misión: las ventanas que la misión sabe que no son suyas (otras del
-                    // mismo proceso, vistas al atarse); la mirada nunca las toma por la superficie.
-                    new OperationArgumentProperty(
-                        "known",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        itemTypes: OperationJsonType.Integer,
-                        maximumItems: 256),
                     Integer("limit", 1, VisibleViewNumbering.Cap),
                     // Encargo IMP4: the written lines with their boxes, read from the window's own drawing.
                     Boolean("lines", types: NullableBoolean),
-                    // El proceso de la aplicación que la misión acaba de abrir: su
-                    // ventana es la superficie aunque otra tenga el foco.
-                    Integer("processId", 1, int.MaxValue, types: NullableInteger),
-                    // La app abierta en frío todavía arranca: si se activó sola, el frente vuelve a la
-                    // ventana de la persona (computer use v3, punto 1).
-                    Boolean("starting", types: NullableBoolean),
                     // Encargo IMP3: the cut of a look keeps the last entries of the window's tree (a conversation's
-                    // newest messages), read once at the end of a mission that answers a question.
+                    // newest messages).
                     Boolean("tail", types: NullableBoolean),
                     String("waitForLabel", types: NullableString, maximumUtf8Bytes: 256),
-                    // Ronda 21: las palabras del objetivo del paso (y sus otros nombres) que la mente ya usa para
-                    // ordenar la vista; con ellas el corte de los sesenta guarda un cupo acotado para los controles que
-                    // las nombran. Sin ellas (las lecturas que no son de una misión) la vista es la de siempre.
+                    // Ronda 21: las palabras de lo que se busca en la ventana; con ellas el corte de los sesenta
+                    // guarda un cupo acotado para los controles que las nombran. Sin ellas la vista es la de siempre.
                     new OperationArgumentProperty(
                         "wanted",
                         OperationJsonType.Array | OperationJsonType.Null,
@@ -1088,8 +1054,8 @@ public static class ProductCatalog
                         maximumItems: 24,
                         itemMaximumUtf8Bytes: 64,
                         itemNonWhitespace: true),
-                    // Goal v3 ventana-misión: las ventanas a las que la misión está atada (la que abrió,
-                    // creó o nombró la persona, y las que nacieron de ella); la mirada sólo lee ésas.
+                    // Las ventanas a mirar por su número (el «window N» que dio una vista anterior); la
+                    // mirada sólo lee ésas.
                     new OperationArgumentProperty(
                         "windows",
                         OperationJsonType.Array | OperationJsonType.Null,
@@ -1300,17 +1266,15 @@ public static class ProductCatalog
             "message.recipient.resolve",
             Schema(
                 [
-                    // Auditoría semántica 2026-09-20 (REOPEN1993 grupo E, D24): con «any» el
-                    // destinatario se busca en los clientes (el canal recordado, WhatsApp y
-                    // Discord); único → resuelto y recordado; en ninguno o en varios, se dice.
-                    String("channel", values: ["any", "discord", "whatsapp"]),
+                    // Auditoría C11: sin «any»; el proveedor no elige el cliente por su cuenta.
+                    String("channel", values: ["discord", "whatsapp"]),
                     String("recipient", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["channel", "recipient"]),
             OperationRisks.ReadOnly,
             "message.recipient.resolve.session.identity.v1",
-            ToolExposure.Public,
-            "Resuelve un único destinatario autenticado (en el cliente nombrado o, con «any», en el que lo tenga: el recordado, WhatsApp o Discord) y emite un identificador revisable."),
+            ToolExposure.Internal,
+            "Resuelve un único destinatario autenticado en el cliente nombrado (WhatsApp o Discord) y emite un identificador revisable."),
         Descriptor(
             "message.send",
             Schema(
@@ -1335,86 +1299,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "message.send.test.forced.destination.ocr.postread.v1",
             ToolExposure.Public,
-            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al canal seguro del dueño (WhatsApp grupo Música, Discord mensaje directo Ron92, correo a la casilla de pruebas del dueño), nunca al destinatario nombrado; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
-        // Motor general de computer use (plan post-goal Fase 4, D21;
-        // documentacion/computer-use/CONTRATO_VISTA_ACCION.md §4). El shell mira la
-        // ventana en primer plano (vista compacta), la mente elige UN paso del
-        // repertorio cerrado, el core ejecuta esa primitiva con su postlectura y
-        // se vuelve a mirar, hasta que la comprobación de éxito se cumple o se
-        // agota el presupuesto. Cada paso lleva el riesgo de su primitiva. El
-        // core solo no puede correr el bucle: sin el shell y la mente delante
-        // contesta que le faltan. Una misión encadenada trae sus sub-objetivos
-        // en orden (steps): cada uno con su aplicación y su comprobación.
-        Descriptor(
-            "mission.computer.use",
-            Schema(
-                [
-                    String("application", types: NullableString, maximumUtf8Bytes: 128),
-                    Integer("budgetSteps", 1, 30, types: NullableInteger),
-                    // Integración ronda 5 (seguridad): sin aplicación, la ventana de delante es de la persona y la
-                    // misión no actúa en ella, salvo que la persona la nombre («en esta ventana…»).
-                    Boolean("frontWindow"),
-                    String("goal", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    // Ronda 21, destino por contenido: sin aplicación, lo que el pedido nombra de la ventana donde
-                    // ocurre (un menú, un cuadro, un panel por su nombre; una selección; un documento sin guardar).
-                    // La App busca la única ventana visible que lo muestra; con varias o ninguna, pregunta.
-                    // Ronda 24 (pasada r23 t-form-4, t-drag-2): los diálogos nombrados («el cuadro de diálogo de
-                    // Fuente») van aparte, porque uno todavía cerrado no se ve; los nombres citados («la diapositiva
-                    // «Tres»») son contenido: suman a una ventana que ya encaja y nunca la habilitan solos.
-                    new OperationArgumentProperty(
-                        "referentDialogs",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        itemTypes: OperationJsonType.String,
-                        maximumItems: 8,
-                        itemMaximumUtf8Bytes: 64,
-                        itemNonWhitespace: true),
-                    new OperationArgumentProperty(
-                        "referentItems",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        itemTypes: OperationJsonType.String,
-                        maximumItems: 8,
-                        itemMaximumUtf8Bytes: 64,
-                        itemNonWhitespace: true),
-                    new OperationArgumentProperty(
-                        "referentLabels",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        itemTypes: OperationJsonType.String,
-                        maximumItems: 8,
-                        itemMaximumUtf8Bytes: 64,
-                        itemNonWhitespace: true),
-                    Boolean("referentSelection", types: NullableBoolean),
-                    new OperationArgumentProperty(
-                        "steps",
-                        OperationJsonType.Array | OperationJsonType.Null,
-                        minimumItems: 1,
-                        // Goal v3 punto 2: tareas largas de diez sub-objetivos (semantic/missions.py MAX_STEPS,
-                        // fijados iguales en tests/test_cu_v3_tipos_lectura.py).
-                        maximumItems: 10,
-                        itemSchema: Schema(
-                            [
-                                String("application", types: NullableString, maximumUtf8Bytes: 128),
-                                // Ronda 20b, revisión 2: el formulario es una unidad. Sus campos vinculados y su botón
-                                // por defecto llevan la comprobación del formulario entero (semantic/missions.py
-                                // _with_form_checks), que la mente vuelve a evaluar antes de aceptar.
-                                String("formCheck", types: NullableString, maximumUtf8Bytes: 512),
-                                String("goal", maximumUtf8Bytes: 512, nonWhitespace: true),
-                                // Estabilización L (límites de partida): el sub-objetivo que es un límite declarado
-                                // (semantic/limits.py, leído sobre su acto) no se intenta: la App para al llegar.
-                                String("limit", types: NullableString, maximumUtf8Bytes: 32),
-                                // El dispositivo que necesita el lugar (data computerUse.limits.devices): la App lo lee
-                                // antes del sub-objetivo y para si el equipo no lo tiene.
-                                String("requires", types: NullableString, maximumUtf8Bytes: 32),
-                                String("successCheck", types: NullableString, maximumUtf8Bytes: 512),
-                            ],
-                            ["goal"])),
-                    String("successCheck", types: NullableString, maximumUtf8Bytes: 512),
-                ],
-                ["goal"]),
-            OperationRisks.LowReversible,
-            "mission.computer.use.shell.loop.v1",
-            ToolExposure.Public,
-            "Cumple un objetivo dentro de cualquier aplicación —o una cadena ordenada de sub-objetivos, cada uno en su aplicación— mirando la ventana en primer plano, eligiendo un paso a la vez (pulsar, escribir, tecla, desplazar, abrir) y verificando cada uno hasta ver la comprobación de éxito o agotar el presupuesto.",
-            requiresObservedEffect: false),
+            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al destino de prueba del dueño para ese canal (un chat de WhatsApp, un mensaje directo de Discord o su casilla de correo de pruebas, guardados en sus datos privados), nunca al destinatario nombrado; sin ese destino configurado no envía nada; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
         Descriptor(
             "network.dns.status",
             EmptySchema(),
@@ -1565,7 +1450,7 @@ public static class ProductCatalog
             Schema([String("confirmationId", maximumLength: 96, nonWhitespace: true)], ["confirmationId"]),
             OperationRisks.Installation,
             "package.install.commit.winget.receipt.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Confirma una instalación preparada mediante winget y verifica su recibo."),
         Descriptor(
             "package.install.prepare",
@@ -1577,7 +1462,7 @@ public static class ProductCatalog
                 ["packageId"]),
             OperationRisks.ReadOnly,
             "package.install.prepare.winget.selection.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Resuelve un paquete winget exacto, o el único paquete que lleva el nombre pedido, y prepara una confirmación sin instalar."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo G): «desinstalá Discord»
         // es una desinstalación real por el gestor de paquetes, verificada por su
@@ -1892,7 +1777,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.ReadOnly,
             "task.resolve.exact.local.identity.v1",
-            ToolExposure.Public,
+            ToolExposure.Internal,
             "Resuelve un único título literal y emite autoridad CAS sin exponer detalles."),
         Descriptor(
             "task.restore",
@@ -2237,8 +2122,6 @@ public static class ProductCatalog
     private static readonly IReadOnlyList<ProductOperationDescriptor> ReadOnlyToolCatalog =
         Array.AsReadOnly(Catalog.Where(static descriptor =>
             descriptor.ToolExposure == ToolExposure.Public).ToArray());
-    private static readonly IReadOnlyList<string> ReadOnlyOperationNames =
-        Array.AsReadOnly(Catalog.Select(static descriptor => descriptor.Name).ToArray());
 
     static ProductCatalog()
     {
@@ -2253,11 +2136,10 @@ public static class ProductCatalog
         }
     }
 
-    public static IReadOnlyList<ProductOperationDescriptor> Descriptors => ReadOnlyCatalog;
+    // Every descriptor, internal ones too; only the catalog's tests list them whole.
+    internal static IReadOnlyList<ProductOperationDescriptor> Descriptors => ReadOnlyCatalog;
 
     public static IReadOnlyList<ProductOperationDescriptor> ToolDescriptors => ReadOnlyToolCatalog;
-
-    public static IReadOnlyList<string> OperationNames => ReadOnlyOperationNames;
 
     public static bool TryGet(
         string? name,

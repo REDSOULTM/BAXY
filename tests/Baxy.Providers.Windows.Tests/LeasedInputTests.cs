@@ -310,67 +310,6 @@ public sealed class LeasedInputTests
         Assert.That(done, Is.EqualTo(("done", false)));
     }
 
-    // Review of fable/cu-v3-molestia2: with no client named, a lookup stopped by the person ends the search with that
-    // cause. Probing the next client would take the front and type over them again, and «not found in either client»
-    // would be a false cause.
-    [TestCase("input_user_not_paused", false)]
-    [TestCase(LeasedInput.Interrupted, true)]
-    [TestCase(WindowsDesktopMessagingAutomation.DraftLeftAfterInterruption, true)]
-    public async Task WithNoClientNamedThePersonsStopEndsTheSearch(string code, bool effect)
-    {
-        using var scripts = new Scripts();
-        var automation = new SequenceAutomation(new DesktopRecipientObservation(false, effect, 0, 0, code));
-        using var adapter = new DesktopMessagingAdapter(automation, scripts.RecipientChannels);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "message.recipient.resolve", Json("""{"channel":"any","recipient":"Lucas"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
-            Assert.That(receipt.EffectObserved, Is.EqualTo(effect));
-            Assert.That(automation.Channels, Is.EqualTo(new[] { "whatsapp" }));
-        });
-    }
-
-    [Test]
-    public async Task TheRememberedClientStoppedByThePersonEndsTheSearchToo()
-    {
-        using var scripts = new Scripts();
-        File.WriteAllText(scripts.RecipientChannels, """{"lucas":"discord"}""");
-        var automation = new SequenceAutomation(
-            new DesktopRecipientObservation(false, true, 0, 0, LeasedInput.Interrupted));
-        using var adapter = new DesktopMessagingAdapter(automation, scripts.RecipientChannels);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "message.recipient.resolve", Json("""{"channel":"any","recipient":"Lucas"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.ErrorCode, Is.EqualTo(LeasedInput.Interrupted));
-            Assert.That(automation.Channels, Is.EqualTo(new[] { "discord" }));
-        });
-    }
-
-    // Contracase: a client where the recipient is simply not found lets the search go on to the next one.
-    [Test]
-    public async Task AClientThatDoesNotHaveTheRecipientLetsTheSearchGoOn()
-    {
-        using var scripts = new Scripts();
-        var automation = new SequenceAutomation(
-            new DesktopRecipientObservation(false, true, 0, 0, "recipient_identity_not_verified"));
-        using var adapter = new DesktopMessagingAdapter(automation, scripts.RecipientChannels);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "message.recipient.resolve", Json("""{"channel":"any","recipient":"Lucas"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("recipient_not_found_in_clients"));
-            Assert.That(automation.Channels, Is.EqualTo(new[] { "whatsapp", "discord" }));
-        });
-    }
-
     private static async Task<ExternalCapabilityReceipt> InterruptAsync(
         BlockingRunner runner, ScriptedLease lease, Task<ExternalCapabilityReceipt> running)
     {
@@ -415,8 +354,6 @@ public sealed class LeasedInputTests
         internal string Play => Path.Combine(_root, "Play.ps1");
 
         internal string Control => Path.Combine(_root, "Control.ps1");
-
-        internal string RecipientChannels => Path.Combine(_root, "recipient-channels.v1.json");
 
         internal WindowsDesktopInteractionAdapter Interaction(IExternalProcessRunner runner, IForegroundLease lease) =>
             new(runner,
@@ -473,22 +410,6 @@ public sealed class LeasedInputTests
 
             return new ExternalProcessResult(0, string.Empty, string.Empty);
         }
-    }
-
-    private sealed class SequenceAutomation(DesktopRecipientObservation answer) : IDesktopMessagingAutomation
-    {
-        internal List<string> Channels { get; } = [];
-
-        public ValueTask<DesktopRecipientObservation> ResolveAsync(
-            string channel, string recipient, CancellationToken cancellationToken)
-        {
-            Channels.Add(channel);
-            return ValueTask.FromResult(answer);
-        }
-
-        public ValueTask<DesktopMessageObservation> SendAsync(
-            ResolvedRecipient recipient, string text, CancellationToken cancellationToken) =>
-            throw new InvalidOperationException("nothing is sent while resolving");
     }
 
     private sealed class ScriptedLease : IForegroundLease

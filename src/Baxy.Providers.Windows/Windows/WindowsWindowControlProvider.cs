@@ -56,6 +56,25 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         _verifier = new WindowsWindowControlVerifier(platform);
     }
 
+    /// <summary>
+    /// The windowId of a window another verified operation already identified (the window app.open verified), so the
+    /// window operations can act on it without resolving it again; null when it is not on the desktop now.
+    /// </summary>
+    public string? IssueFor(nint handle)
+    {
+        WindowSnapshot? snapshot;
+        try
+        {
+            snapshot = _platform.DesktopWindows().FirstOrDefault(window => window.Identity.Handle == handle);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return null;
+        }
+
+        return snapshot is null ? null : Issue(snapshot.Identity);
+    }
+
     public ValueTask<WindowResolveResult> ResolveForegroundAsync(
         CancellationToken cancellationToken)
     {
@@ -452,6 +471,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             return new WindowCloseAllResult(true, true, desktop.Count, 0, 0, kept.Count, keptNames, [], null);
         }
 
+        // Auditoría D7: the windows gone before BAXY's close reached them are not BAXY's to count as closed.
+        var goneBefore = new HashSet<nint>();
         foreach (WindowSnapshot target in targets)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -459,10 +480,13 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             {
                 _ = _platform.RequestClose(target.Identity);
             }
-            catch (Exception exception) when (exception is Win32Exception
-                or InvalidOperationException or WindowIdentityChangedException)
+            catch (WindowIdentityChangedException)
             {
-                // A window that vanished meanwhile is closed already.
+                _ = goneBefore.Add(target.Identity.Handle);
+            }
+            catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+            {
+                // Not asked: it is counted by what is seen of it afterwards.
             }
         }
 
@@ -487,8 +511,13 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         List<string> remainingNames = remaining.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        List<WindowSnapshot> ended = targets.Except(remaining).ToList();
+        int hidden = ended.Count(window => _verifier.Fate(window.Identity) == WindowFate.Hidden);
+        int alreadyGone = ended.Count(window => goneBefore.Contains(window.Identity.Handle)
+            && _verifier.Fate(window.Identity) != WindowFate.Hidden);
         return new WindowCloseAllResult(
-            true, true, desktop.Count, targets.Count - remaining.Count, remaining.Count, kept.Count, keptNames, remainingNames, null);
+            true, true, desktop.Count, ended.Count - hidden - alreadyGone, remaining.Count, kept.Count, keptNames, remainingNames,
+            null, hidden, alreadyGone);
     }
 
     private async ValueTask<List<WindowSnapshot>> RemainingOpenAsync(
@@ -500,7 +529,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         for (int attempt = 0; attempt < attempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            open = open.Where(window => !_verifier.VerifyClosed(window.Identity)).ToList();
+            open = open.Where(window => _verifier.Fate(window.Identity) == WindowFate.Present).ToList();
             if (open.Count == 0 || attempt + 1 >= attempts)
             {
                 break;
@@ -818,9 +847,10 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             cancellationToken.ThrowIfCancellationRequested();
             primaryAccepted = _platform.RequestClose(identity!);
         }
-        catch (WindowIdentityChangedException)
+        catch (WindowIdentityChangedException changed)
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
+            // Auditoría D7: gone (or hidden) before BAXY's close reached it: never «closed by BAXY».
+            return Ended(identity!, title, changed.Hidden ? WindowCloseOutcomes.Hidden : WindowCloseOutcomes.AlreadyGone);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
@@ -828,14 +858,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 false, false, identity!.ProcessId, WindowControlErrorCodes.ActionFailed);
         }
 
-        if (primaryAccepted
-            && await WaitForClosedAsync(
-                    identity!,
-                    PrimaryCloseVerificationAttempts,
-                    cancellationToken)
-                .ConfigureAwait(false))
+        WindowFate primaryFate = primaryAccepted
+            ? await WaitForClosedAsync(identity!, PrimaryCloseVerificationAttempts, cancellationToken).ConfigureAwait(false)
+            : WindowFate.Present;
+        if (primaryFate != WindowFate.Present)
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
+            return Ended(identity!, title, OutcomeOf(primaryFate));
         }
 
         if (primaryAccepted && AskedOnClose(identity!, dialogsBefore))
@@ -854,23 +882,23 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             cancellationToken.ThrowIfCancellationRequested();
             fallbackAccepted = _platform.RequestSystemClose(identity!);
         }
-        catch (WindowIdentityChangedException)
+        catch (WindowIdentityChangedException changed)
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
+            // Gone after BAXY's close was sent: closed by it; gone with no close sent: it was not BAXY's doing.
+            return Ended(identity!, title, changed.Hidden ? WindowCloseOutcomes.Hidden
+                : primaryAccepted ? WindowCloseOutcomes.Closed : WindowCloseOutcomes.AlreadyGone);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
             fallbackAccepted = false;
         }
 
-        if (fallbackAccepted
-            && await WaitForClosedAsync(
-                    identity!,
-                    FallbackCloseVerificationAttempts,
-                    cancellationToken)
-                .ConfigureAwait(false))
+        WindowFate fallbackFate = fallbackAccepted
+            ? await WaitForClosedAsync(identity!, FallbackCloseVerificationAttempts, cancellationToken).ConfigureAwait(false)
+            : WindowFate.Present;
+        if (fallbackFate != WindowFate.Present)
         {
-            return new WindowCloseResult(true, true, identity!.ProcessId, null, Title: title);
+            return Ended(identity!, title, OutcomeOf(fallbackFate));
         }
 
         if (fallbackAccepted && AskedOnClose(identity!, dialogsBefore))
@@ -886,6 +914,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 ? WindowControlErrorCodes.VerificationFailed
                 : WindowControlErrorCodes.ActionFailed);
     }
+
+    private static WindowCloseResult Ended(WindowIdentity identity, string? title, string outcome) =>
+        new(true, true, identity.ProcessId, null, Title: title, Outcome: outcome);
+
+    private static string OutcomeOf(WindowFate fate) =>
+        fate == WindowFate.Hidden ? WindowCloseOutcomes.Hidden : WindowCloseOutcomes.Closed;
 
     private static WindowCloseResult Prompted(WindowIdentity identity) =>
         new(false, true, identity.ProcessId, WindowControlErrorCodes.ClosePrompted, ClosePrompted: true);
@@ -917,7 +951,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return OwnedDialogs(identity).Any(dialog => !before.Contains(dialog));
     }
 
-    private async ValueTask<bool> WaitForClosedAsync(
+    // What became of the window within the attempts: gone, hidden, or still there (Present).
+    private async ValueTask<WindowFate> WaitForClosedAsync(
         WindowIdentity identity,
         int attempts,
         CancellationToken cancellationToken)
@@ -925,9 +960,10 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         for (int attempt = 0; attempt < attempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (_verifier.VerifyClosed(identity))
+            WindowFate fate = _verifier.Fate(identity);
+            if (fate != WindowFate.Present)
             {
-                return true;
+                return fate;
             }
 
             if (attempt + 1 < attempts)
@@ -937,7 +973,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             }
         }
 
-        return false;
+        return WindowFate.Present;
     }
 
     private string Issue(WindowIdentity identity)
@@ -1118,22 +1154,30 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             snapshot.Bounds.Width, snapshot.Bounds.Height, snapshot.Title, snapshot.Owned);
 }
 
+// Auditoría D7: what became of a window: still there, gone, or hidden (it still exists, invisible).
+internal enum WindowFate
+{
+    Present,
+    Gone,
+    Hidden,
+}
+
 internal sealed class WindowsWindowControlVerifier(IWindowControlPlatform platform)
 {
-    public bool VerifyClosed(WindowIdentity identity)
+    public WindowFate Fate(WindowIdentity identity)
     {
         try
         {
             _ = platform.Observe(identity);
-            return false;
+            return WindowFate.Present;
         }
-        catch (WindowIdentityChangedException)
+        catch (WindowIdentityChangedException changed)
         {
-            return true;
+            return changed.Hidden ? WindowFate.Hidden : WindowFate.Gone;
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
-            return false;
+            return WindowFate.Present;
         }
     }
 
@@ -1238,7 +1282,11 @@ internal interface IWindowControlPlatform
     bool CapturesMicrophone(WindowIdentity identity) => false;
 }
 
-internal sealed class WindowIdentityChangedException : InvalidOperationException;
+// Hidden (auditoría D7): the window still exists and is invisible; otherwise it is gone (or its handle is another's).
+internal sealed class WindowIdentityChangedException(bool hidden = false) : InvalidOperationException
+{
+    internal bool Hidden { get; } = hidden;
+}
 
 internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatform
 {
@@ -1333,7 +1381,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
 
     public WindowSnapshot Observe(WindowIdentity identity)
     {
-        if (!IsWindow(identity.Handle) || !IsWindowVisible(identity.Handle))
+        if (!IsWindow(identity.Handle))
         {
             throw new WindowIdentityChangedException();
         }
@@ -1342,6 +1390,11 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         if (owner != checked((uint)identity.ProcessId))
         {
             throw new WindowIdentityChangedException();
+        }
+
+        if (!IsWindowVisible(identity.Handle))
+        {
+            throw new WindowIdentityChangedException(hidden: true);
         }
 
         using Process process = Process.GetProcessById(identity.ProcessId);

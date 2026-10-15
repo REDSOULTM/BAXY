@@ -34,7 +34,7 @@ public sealed class ComputerUsePerceptionTests
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("absentOrDisabled").GetBoolean(), Is.True);
             Assert.That(worker.Commands[^1], Does.Contain("\"cmd\":\"click\""));
-            Assert.That(worker.Commands[^1], Does.Contain("Aceptar"));
+            Assert.That(worker.Commands[^1], Does.Contain("\"aliases\":[\"aceptar\"]"), "auditoría P3: the label as written");
         });
     }
 
@@ -206,25 +206,37 @@ public sealed class ComputerUsePerceptionTests
     public void TheBrowserCategoryIsTheWordNotAProduct(string? application, bool expected) =>
         Assert.That(IUserBrowserWindowLocator.NamesTheCategory(application), Is.EqualTo(expected));
 
+    // Auditoría P3: only the name itself, folded (case, accents, spaces); no alias, no containment, no typo.
     [TestCase("aceptar", "Aceptar", true)]
     [TestCase("biblioteca", "BIBLIOTECA", true)]
-    [TestCase("Modo avión", "Modo avion", true)]
-    [TestCase("Cotele", "Cotele (canal de voz)", true)]
-    [TestCase("bibloteca", "Biblioteca", true)]
+    [TestCase("Modo avión", "Modo  avion", true)]
+    [TestCase("Cotele", "Cotele (canal de voz)", false)]
+    [TestCase("bibloteca", "Biblioteca", false)]
+    [TestCase("library", "Biblioteca", false)]
+    [TestCase("5", "Cinco", false)]
     [TestCase("Tienda", "Biblioteca", false)]
     [TestCase("", "Biblioteca", false)]
-    public void LabelsNameControlsFoldedAndWithABoundedTypo(string label, string name, bool expected)
+    public void ALabelNamesOnlyTheControlOfThatFoldedName(string label, string name, bool expected)
     {
-        Assert.That(WindowsVisibleControlAdapter.LabelNames(label, name), Is.EqualTo(expected));
+        Assert.That(WindowsVisibleControlAdapter.SameLabel(label, name), Is.EqualTo(expected));
     }
 
-    [TestCase("5", new[] { "5", "Cinco", "Five" })]
-    [TestCase("cinco", new[] { "5", "Cinco", "Five" })]
-    [TestCase("library", new[] { "Biblioteca", "Library", "library" })]
-    [TestCase("Cotele", new[] { "Cotele" })]
-    public void AliasesCoverDigitsAndBilingualCatalogLabels(string label, string[] expected)
+    [Test]
+    public void ALabelNamingNothingExactlyPressesNothingAndSaysTheNamesSeen()
     {
-        Assert.That(WindowsVisibleControlAdapter.Aliases(label), Is.EqualTo(expected));
+        ExternalCapabilityReceipt missing = WindowsVisibleControlAdapter.NotNamed(
+            "input.visible.click", "visible_button_not_found", ["Cotele (canal de voz)", "Cotele, texto"]);
+        ExternalCapabilityReceipt bare = WindowsVisibleControlAdapter.NotNamed("input.visible.click", "visible_button_not_found", []);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(missing.EffectObserved || missing.EffectMayHaveOccurred || missing.Verified, Is.False);
+            Assert.That(missing.Result?.GetProperty("candidates").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "Cotele (canal de voz)", "Cotele, texto" }));
+            Assert.That(bare.Result, Is.Null);
+            Assert.That(bare.EffectMayHaveOccurred, Is.False);
+        });
     }
 
     [TestCase(10, 10, "TL")]

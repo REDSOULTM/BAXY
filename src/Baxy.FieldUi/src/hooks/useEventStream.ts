@@ -19,7 +19,6 @@ export interface SurfacesCount {
   memory: number;
   // Encargo I2: the number of the store's last change by chat; an open memory panel reads its list again on it.
   memory_revision?: number;
-  triggers: number;
   tools: number;
 }
 
@@ -251,7 +250,6 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
           sessions: ev.sessions,
           memory: ev.memory,
           memory_revision: ev.memory_revision,
-          triggers: ev.triggers,
           tools: ev.tools,
         },
       };

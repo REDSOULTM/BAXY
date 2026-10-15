@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T05:30:00-03:00",
+  "actualizado": "2026-10-15T14:00:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -28,6 +28,24 @@
         "casos": 10,
         "sha256": "60949061a122259a358eaaa9d3b16e1299829ad02a8e61de382030adbfbb2c0a",
         "sellado": "2026-10-15T03:50:37-03:00"
+      },
+      "e2e": {
+        "archivo": "F:/BAXYeval/renew_v1/e2e/sealed.json",
+        "casos": 50,
+        "sha256": "e803902f7b1e87291bad751232a593f5f2e7aa0da28294101ec25d7324781b76",
+        "lib_bench_ps1_sha256": "d82eed38d13aba469ed3d421320eb808e4625a0690bd7d64f0ebda46aaa05372",
+        "sellado": "2026-10-15T12:24:45-03:00",
+        "nota": "sello final del subagente que lo escribió (SEALED-e2e.md); el sello de las 04:05 era un borrador que el subagente siguió puliendo (oráculos probados, limpieza). La sesión de ajuste no lo abrió.",
+        "lib_cambios": [
+          "2026-10-15 15:00, líder: Update-TypeData da Count 1 a un [pscustomobject] solo (Windows PowerShell 5.1 no lo da; un oráculo leía una ventana abierta como ausente). Arreglo del instrumento; los casos sellados no se abrieron ni se cambiaron. sha anterior 972c5b9f…"
+        ]
+      },
+      "falsedades": {
+        "archivo": "F:/BAXYeval/renew_v1/falsedades/sealed.json",
+        "casos": 42,
+        "sha256": "51e7e0ccc4e6e63b570033bbc1db59a0bc25790427611ee3c0f3b14e11e1942d",
+        "sellado": "2026-10-15T12:24:45-03:00",
+        "nota": "sello del subagente (SEALED-falsedades.md), igual al calculado por el líder a las 04:09"
       }
     }
   },
@@ -39,8 +57,8 @@
     },
     "falsedades": {
       "umbral": "0 en el banco automático",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "práctica p3 (juez Qwen3.6-35B): 2 en 26 líneas (F013 ruta pedida, F015 presuposición); arreglos: regla 2 ampliada, rutas absolutas pedidas al notebook"
     },
     "instinto": {
       "umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20",
@@ -49,18 +67,18 @@
     },
     "velocidad_decision_p50": {
       "umbral": "<= 1 s",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "decision2 270 d4: p50 0,672 s, p90 1,344 s (F:/BAXYeval/renew_v1/runs/d4.jsonl)"
     },
     "velocidad_texto_a_voz_p50": {
       "umbral": "<= 2,5 s",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "e2e práctica p3: primer sonido p50 2520 ms desde el texto de la persona (incluye turnos de varios pasos)"
     },
     "recursos": {
       "umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "d4 en PC: VRAM 3921 MiB; USS llama-server 3435 MiB + mente 22 MiB (en el notebook USS 659 MiB: por investigar en el PC)"
     },
     "ronda_final_auditoria": {
       "umbral": "nada que viole <reglas>",
@@ -87,14 +105,15 @@
     },
     {
       "id": "marco.e2e_y_falsedades",
-      "estado": "en_curso",
-      "quien": "PC (subagente)"
+      "estado": "cumplida",
+      "quien": "PC (subagente)",
+      "evidencia": "práctica abierta e2e 30 y falsedades 20; sellados 50 y 42; README y librería en F:/BAXYeval/renew_v1/e2e"
     },
     {
       "id": "marco.renew_check",
-      "estado": "en_curso",
+      "estado": "cumplida",
       "quien": "PC",
-      "evidencia": "bench_decision, bench_e2e, bench_escenas escritos; falta falsedades y unificar en renew_check.ps1"
+      "evidencia": "scripts/renew_check.ps1 corre decisión, escenas, e2e, falsedades y latido; -Holdout comprueba los sellos de metas.json"
     },
     {
       "id": "falsedades.diagnostico",
@@ -110,8 +129,9 @@
     },
     {
       "id": "voz.piper",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "Piper residente (voice_output.py, notebook): voice.speak→primer sonido 365 ms p50; en el producto la voz empieza ~0,4 s tras el texto (e2e p3)"
     },
     {
       "id": "arnes.nuevo",
@@ -123,28 +143,31 @@
       "id": "computer_use",
       "estado": "en_curso",
       "quien": "PC",
-      "evidencia": "vista compacta; Steam biblioteca 3 pasos; e2e práctica cu 3/8 (p1)"
+      "evidencia": "e2e práctica p3 cu 3/8; auditoría: clic sólo por etiqueta exacta o candidatos, worker sin frente implícito, app.open exacto con candidatos y windowId; vista con 'window N'"
     },
     {
       "id": "herramientas_agente",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "notebook: file.find/read/write/edit, web.fetch, shell que confirma lo no-lectura, schedule.alarms, carpeta home; e2e práctica agente 3/8 (p3), límites de subcarpetas pedidos al notebook"
     },
     {
       "id": "latido",
       "estado": "en_curso",
       "quien": "PC",
-      "evidencia": "escenas práctica 29/40 (p5); producto: propuesta y silencio verificados (runs/beat1)"
+      "evidencia": "escenas práctica 35/40 (87,5 %), molestas 0, riesgo solo 0 (p10); producto: propuesta, silencio y botones Sí/No verificados"
     },
     {
       "id": "limpieza_codigo_muerto",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "en_curso",
+      "quien": "NB",
+      "evidencia": "~25k líneas de legado fuera; Roslyn del notebook −1310; auditoría kernel (misión de pantalla, planificador, HonestyCorrection, FirstSignal…); routine.* retiradas; falta barrido final en la ronda de auditoría"
     },
     {
       "id": "perfil_4gb",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "Q4_K_M -np 1 -c 49152: 227/270 (84,1 %) p50 0,78 s VRAM 3912 MiB; IQ4_XS 227/270 3658 MiB; USS llama-server ~0,5 GB"
     },
     {
       "id": "optimizaciones",
@@ -160,6 +183,17 @@
       "id": "auditoria_final",
       "estado": "pendiente",
       "quien": "PC"
+    },
+    {
+      "id": "exposicion_herramientas",
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "decision2 270: A todas con guías 220 (81,5 %), B compacto 210, C skill_read 213 (el 4B nunca llamó skill_read), D sin lista de apps 214; cases.json D 79 vs A 83 → se queda A"
+    },
+    {
+      "id": "auditoria_reglas_1",
+      "estado": "cumplida",
+      "evidencia": "artifacts/renew/investigacion/auditoria-reglas-1.md (55 violaciones); arreglos fusionados: App (confirm_pending, memoria, interfaz, windowId), kernel K1-K12 (K8 revertido, razón en PROGRESO), mensajería C1-C14, clic/apertura P3/B1/C8-C10/D1-D9, proveedores del notebook; web.search W1-W21 en curso (notebook)"
     }
   ],
   "linea_base_recursos": {

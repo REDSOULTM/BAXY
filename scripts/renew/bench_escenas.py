@@ -22,6 +22,8 @@ OBSERVING = {"ocr.read", "vision.describe", "browser.page.read", "browser.tabs.l
 INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate"}
 VOICE_ACTIVITIES = {"libre", "trabajando"}
 MAX_CALLS = 4
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from bench_decision import current  # noqa: E402
 
 
 def channel_for(activity: str) -> str:
@@ -99,7 +101,8 @@ def main() -> None:
         channel = None if verdict == "silence" else channel_for(context.get("owner_activity", ""))
         ok = verdict == expect["kind"]
         if ok and verdict in {"act", "propose"}:
-            ok = effect in (expect.get("ops_any") or [])
+            # Operations named before the catalog changed are met by the ones that replaced them.
+            ok = effect in {current(op)[0] for op in expect.get("ops_any") or []}
         if ok and expect.get("channel"):
             ok = channel == expect["channel"]
         intrusive = any(str(op).startswith("input.") or op in INTRUSIVE for op in ops)

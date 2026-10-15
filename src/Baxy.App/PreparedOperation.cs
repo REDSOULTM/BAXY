@@ -73,28 +73,6 @@ internal sealed class PreparedOperation
             cloneArguments: false);
     }
 
-    internal static PreparedOperation CreateFollowUp(
-        string operationName,
-        JsonObject arguments,
-        string missionId)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(operationName);
-        ArgumentNullException.ThrowIfNull(arguments);
-        EnsurePlaintextOperationAllowed(operationName);
-        if (!ContractValidator.IsCanonicalIdentifier(missionId))
-        {
-            throw new ArgumentException("The local mission id is not valid.", nameof(missionId));
-        }
-
-        JsonElement ownedArguments = JsonSerializer.SerializeToElement(arguments);
-        return new PreparedOperation(
-            operationName,
-            ownedArguments,
-            missionId,
-            Guid.NewGuid().ToString("D"),
-            cloneArguments: false);
-    }
-
     internal static PreparedOperation Restore(
         string operationName,
         JsonElement arguments,
@@ -110,21 +88,6 @@ internal sealed class PreparedOperation
         OperationName,
         _arguments,
         confirmationToken);
-
-    internal bool Matches(RoutedOperation routed)
-    {
-        ArgumentNullException.ThrowIfNull(routed);
-        if (!string.Equals(OperationName, routed.Name, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        JsonElement ownedArguments = JsonSerializer.SerializeToElement(routed.Arguments);
-        return string.Equals(
-            IdentityKey,
-            CreateIdentityKey(routed.Name, ownedArguments),
-            StringComparison.Ordinal);
-    }
 
     private static string CreateIdentityKey(string operationName, JsonElement arguments)
     {
@@ -198,20 +161,6 @@ internal sealed class RetryableOperationRegistry
     private readonly DurableRetryStore _store;
     private readonly MemoryOperationProtector? _memoryProtector;
 
-    public RetryableOperationRegistry(string outboxPath)
-        : this(new DurableRetryStore(outboxPath), memoryProtector: null)
-    {
-    }
-
-    internal RetryableOperationRegistry(
-        string outboxPath,
-        MemoryOperationProtector memoryProtector)
-        : this(
-            new DurableRetryStore(outboxPath),
-            memoryProtector ?? throw new ArgumentNullException(nameof(memoryProtector)))
-    {
-    }
-
     internal RetryableOperationRegistry(
         DurableRetryStore store,
         MemoryOperationProtector? memoryProtector = null)
@@ -240,20 +189,6 @@ internal sealed class RetryableOperationRegistry
         ArgumentNullException.ThrowIfNull(routed);
         PreparedOperation candidate = PreparedOperation.Create(routed.Name, routed.Arguments);
         return GetOrAddPrepared(candidate);
-    }
-
-    public PreparedOperation GetOrAdd(ProtectedMemoryOperation protectedOperation)
-    {
-        ArgumentNullException.ThrowIfNull(protectedOperation);
-        if (_memoryProtector is null
-            || !_memoryProtector.Authenticates(protectedOperation))
-        {
-            throw new InvalidOperationException(
-                "La cola durable no puede autenticar esta operacion privada.");
-        }
-
-        _ = _memoryProtector.AuthenticateForOutbox(protectedOperation.Prepared);
-        return GetOrAddPrepared(protectedOperation.Prepared);
     }
 
     private void AuthenticateLoadedMemoryOperation(PreparedOperation operation)
@@ -296,63 +231,6 @@ internal sealed class RetryableOperationRegistry
         return candidate;
     }
 
-    public PreparedOperation Replace(PreparedOperation current, RoutedOperation routed)
-        => Replace(current, routed, preserveMission: false);
-
-    public PreparedOperation ReplaceWithFollowUp(
-        PreparedOperation current,
-        RoutedOperation routed)
-        => Replace(current, routed, preserveMission: true);
-
-    private PreparedOperation Replace(
-        PreparedOperation current,
-        RoutedOperation routed,
-        bool preserveMission)
-    {
-        ArgumentNullException.ThrowIfNull(current);
-        ArgumentNullException.ThrowIfNull(routed);
-        if (routed.Name.StartsWith("memory.", StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException(
-                "Una operacion de memoria no puede reemplazar una peticion en texto claro.");
-        }
-
-        if (!_operations.TryGetValue(current.IdentityKey, out PreparedOperation? registered)
-            || !ReferenceEquals(current, registered))
-        {
-            throw new InvalidOperationException("The pending request is no longer in the durable queue.");
-        }
-
-        PreparedOperation candidate = preserveMission
-            ? PreparedOperation.CreateFollowUp(routed.Name, routed.Arguments, current.MissionId)
-            : PreparedOperation.Create(routed.Name, routed.Arguments);
-        if (string.Equals(candidate.IdentityKey, current.IdentityKey, StringComparison.Ordinal))
-        {
-            return current;
-        }
-
-        bool candidateAlreadyPending = _operations.TryGetValue(
-            candidate.IdentityKey,
-            out PreparedOperation? existing);
-        PreparedOperation replacement = candidateAlreadyPending ? existing! : candidate;
-        List<PreparedOperation> next = _operations.Values
-            .Where(operation => !ReferenceEquals(operation, current))
-            .ToList();
-        if (!candidateAlreadyPending)
-        {
-            next.Add(candidate);
-        }
-
-        _store.Save(next);
-        _operations.Remove(current.IdentityKey);
-        if (!candidateAlreadyPending)
-        {
-            _operations.Add(candidate.IdentityKey, candidate);
-        }
-
-        return replacement;
-    }
-
     public void MarkResolved(PreparedOperation operation)
     {
         ArgumentNullException.ThrowIfNull(operation);
@@ -388,25 +266,5 @@ internal sealed class RetryableOperationRegistry
         {
             _operations.Remove(operation.IdentityKey);
         }
-    }
-
-    public IReadOnlyList<PreparedOperation> SnapshotPendingOperations() =>
-        _operations.Values.ToArray();
-
-    internal PreparedOperation RestorePlanOperation(PreparedOperation restored)
-    {
-        ArgumentNullException.ThrowIfNull(restored);
-        if (restored.OperationName.StartsWith("memory.", StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException(
-                "El planner general no puede restaurar operaciones privadas.");
-        }
-
-        if (_operations.TryGetValue(restored.IdentityKey, out PreparedOperation? existing))
-        {
-            return existing;
-        }
-
-        return GetOrAddPrepared(restored);
     }
 }

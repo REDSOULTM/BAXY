@@ -36,7 +36,6 @@ internal sealed class MemoryRoutedOperation
 internal sealed class MemoryOperationProtector
 {
     private readonly BoundProtectedJsonCodec _codec;
-    private readonly object _proof = new();
 
     internal MemoryOperationProtector(BoundProtectedJsonCodec codec, string sessionId)
     {
@@ -64,7 +63,7 @@ internal sealed class MemoryOperationProtector
     internal ProtectedMemoryOperation Prepare(MemoryRoutedOperation privateOperation)
     {
         ArgumentNullException.ThrowIfNull(privateOperation);
-        EnsureParserMemoryOperation(privateOperation.Name);
+        EnsureMemoryOperation(privateOperation.Name);
         JsonObject privateArguments = privateOperation.PrivateArguments;
         EnsureNoReservedPayloadProperties(privateArguments);
 
@@ -85,19 +84,7 @@ internal sealed class MemoryOperationProtector
             envelope,
             missionId,
             invocationId);
-        return new ProtectedMemoryOperation(prepared, _proof);
-    }
-
-    internal ProtectedMemoryOperation AuthenticateForOutbox(PreparedOperation prepared)
-    {
-        using OpenedBoundProtectedJson opened = OpenPrivateArguments(prepared);
-        return new ProtectedMemoryOperation(prepared, _proof);
-    }
-
-    internal bool Authenticates(ProtectedMemoryOperation operation)
-    {
-        ArgumentNullException.ThrowIfNull(operation);
-        return operation.HasProof(_proof);
+        return new ProtectedMemoryOperation(prepared);
     }
 
     internal OpenedBoundProtectedJson OpenPrivateArguments(PreparedOperation prepared)
@@ -197,16 +184,6 @@ internal sealed class MemoryOperationProtector
         or "memory.session.clear"
         or "memory.status";
 
-    internal static string ResolveWireOperationName(
-        MemoryRoutedOperation privateOperation)
-    {
-        ArgumentNullException.ThrowIfNull(privateOperation);
-        EnsureParserMemoryOperation(privateOperation.Name);
-        return ResolveWireOperationName(
-            privateOperation.Name,
-            privateOperation.PrivateArguments);
-    }
-
     internal static string ResolveDataRoot()
     {
         string? configured = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
@@ -224,9 +201,6 @@ internal sealed class MemoryOperationProtector
         JsonObject arguments) =>
         operationName switch
         {
-            "memory.configure" => RequiredBoolean(arguments, "enabled")
-                ? "memory.enable"
-                : "memory.disable",
             "memory.save" when RequiredString(arguments, "sensitivity")
                 is "sensitive" or "secret" => "memory.sensitive.save",
             "memory.save" => "memory.save",
@@ -439,22 +413,6 @@ internal sealed class MemoryOperationProtector
         }
     }
 
-    private static void EnsureParserMemoryOperation(string operationName)
-    {
-        if (operationName is not (
-            "memory.configure"
-            or "memory.correct"
-            or "memory.export"
-            or "memory.forget"
-            or "memory.list"
-            or "memory.recall"
-            or "memory.save"
-            or "memory.status"))
-        {
-            throw new InvalidDataException("La operacion no pertenece al parser de memoria.");
-        }
-    }
-
     private static void EnsureMemoryOperation(string operationName)
     {
         if (!IsMemoryOperation(operationName))
@@ -467,24 +425,16 @@ internal sealed class MemoryOperationProtector
 
 internal sealed class ProtectedMemoryOperation
 {
-    internal ProtectedMemoryOperation(
-        PreparedOperation prepared,
-        object proof)
+    internal ProtectedMemoryOperation(PreparedOperation prepared)
     {
         Prepared = prepared ?? throw new ArgumentNullException(nameof(prepared));
-        _proof = proof ?? throw new ArgumentNullException(nameof(proof));
         if (!MemoryOperationProtector.IsMemoryOperation(prepared.OperationName))
         {
             throw new ArgumentException("La operacion preparada no es memoria protegida.", nameof(prepared));
         }
     }
 
-    private readonly object _proof;
-
     internal PreparedOperation Prepared { get; }
-
-    internal bool HasProof(object proof) =>
-        ReferenceEquals(_proof, proof);
 
     public override string ToString() =>
         $"{nameof(ProtectedMemoryOperation)} {{ Operation = {Prepared.OperationName}, Arguments = [PROTECTED] }}";

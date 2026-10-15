@@ -55,6 +55,7 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
 /// </summary>
 internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text)
 {
+
     /// <summary>The operation the mind uses for the person's answer to a pending confirmation.</summary>
     internal const string ConfirmationAnswer = "confirmation.answer";
 }
@@ -121,7 +122,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal const string DisabledEnvironmentVariable = "BAXY_MIND_DISABLED";
     internal const string PythonEnvironmentVariable = "BAXY_MIND_PYTHON";
     internal const string PythonPathEnvironmentVariable = "BAXY_MIND_PYTHONPATH";
-    internal const string GpuLayersEnvironmentVariable = "BAXY_MIND_NGL";
     // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart.
     internal static readonly TimeSpan TurnRequestTimeout = TimeSpan.FromSeconds(30);
     private const int MaximumLineBytes = 1024 * 1024;
@@ -432,11 +432,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 return null;
         }
     }
-
-    public Task<bool> VoiceStartAsync(
-        TimeSpan timeout,
-        CancellationToken cancellationToken) =>
-        VoiceStartAsync("direct", timeout, cancellationToken);
 
     public async Task<bool> VoiceStartAsync(
         string mode,

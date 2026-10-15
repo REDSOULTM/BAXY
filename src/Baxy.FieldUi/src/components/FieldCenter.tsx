@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import type { ConvState } from '../types';
 import type { MicMode } from '../App';
-import type { AgentStatus, BootStage, CtxBudget } from '../hooks/useEventStream';
+import type { AgentStatus, BootStage } from '../hooks/useEventStream';
 import { NeuralGraph } from './NeuralGraph';
 import { Icon, type IconName } from './Icon';
 
@@ -9,7 +9,6 @@ interface Props {
   convState: ConvState;
   /** if non-null, render the debug chip row. clicking a chip flips the state. */
   onDebugState: ((s: ConvState) => void) | null;
-  ctx: CtxBudget | null;
   micMode: MicMode;
   /** true while /voice/start is loading the voice models on the backend.
    *  keeps the mic icon lit + pulsing so it doesn't flicker red→black. */
@@ -62,7 +61,7 @@ function fmtKb(n: number): string {
 }
 
 export function FieldCenter({
-  convState, onDebugState, ctx, micMode, micLoading, onMicLeftClick, onMicRightClick, agent,
+  convState, onDebugState, micMode, micLoading, onMicLeftClick, onMicRightClick, agent,
   bootStage,
 }: Props) {
   const [draft, setDraft] = useState('');
@@ -164,13 +163,6 @@ export function FieldCenter({
     });
   };
 
-  // estimated tokens of the draft vs the model's ctx budget — same heuristic
-  // as the prototype: ~4 chars per token, capped at 4096 so the counter
-  // visually fits without scientific notation.
-  const ctxBudget = ctx?.budget ?? 4096;
-  const tokensCap = Math.min(4096, ctxBudget);
-  const tokens = Math.min(tokensCap, Math.ceil(draft.length / 4));
-
   return (
     <div className="center-wrap">
       {/* Boot-error recovery — only mounts on a real boot failure. At rest
@@ -217,7 +209,6 @@ export function FieldCenter({
             aria-label="message input"
             aria-disabled={!ready}
           />
-          <span className="tokens">{tokens} / 4k</span>
           <div className="chat-actions">
             <button
               type="button"
