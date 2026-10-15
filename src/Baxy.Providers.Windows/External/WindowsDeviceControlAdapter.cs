@@ -230,9 +230,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     }
 
     /// <summary>
-    /// v3 point 0, fix 3: the calculator and quick-switcher scripts bring their window up and type into it by SendInput,
-    /// so each runs in one helper burst of this lease (after the person's pause; the front and the cursor given back
-    /// after). Null runs them directly (the test seams, whose runners are fakes).
+    /// v3 point 0, fix 3: the quick-switcher script brings Discord's window up and types into it by SendInput, so it
+    /// runs in one helper burst of this lease (after the person's pause; the front and the cursor given back after).
+    /// Null runs it directly (the test seams, whose runners are fakes).
     /// </summary>
     internal IForegroundLease? KeysLease { get; init; }
 
@@ -741,18 +741,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // SYSTEM1697 H0307 «dime la versión de Python instalada»: the installs a
     // Python distributor registered under Software\Python (PEP 514), read from
     // the registry only — no interpreter is started, nothing is executed.
-    // UI1725 «multiplicá 6 por 7 en la calc»: the expression is typed into the
-    // Windows Calculator that is already open — brought to the foreground and
-    // verified there, otherwise nothing is typed — and the display is read
-    // back through UI Automation (CalculatorResults / CalculatorExpression).
-    // M93 (DEV-D v3r and v3u D-w07-t2 «órale, y divídeme ahí 1850 entre 7» right after the Calculator was reused →
-    // calculator_not_foreground both times): a bare SetForegroundWindow from this helper process is refused by the
-    // foreground lock whenever BAXY itself is not in front (a spoken turn, or the window run). The handoff attaches to
-    // the foreground thread first, as the application open provider does (RequestForeground).
+    // UI1725 «multiplicá 6 por 7 en la calc»: the expression is pressed on the keypad of the Windows Calculator that is
+    // already open (KeypadFunctions, below) and the display is read back through UI Automation (CalculatorResults /
+    // CalculatorExpression).
     // Review of fable/cu-v3-pausa: SendKeys.SendWait cannot carry BAXY's input mark (BaxyInputMark.cs), so the pause
-    // detector took these keys for the person's and the harness could not tell them from the person's. The scripts
-    // send them with SendInput, marked, mapped through the keyboard layout (VkKeyScan) as SendKeys did; a character
-    // the layout cannot type goes as a Unicode key. C# 5: the scripts run in Windows PowerShell 5.1.
+    // detector took these keys for the person's and the harness could not tell them from the person's. The quick
+    // switcher's keys go with SendInput, marked, mapped through the keyboard layout (VkKeyScan) as SendKeys did; a
+    // character the layout cannot type goes as a Unicode key. C# 5: the script runs in Windows PowerShell 5.1.
     private const string MarkedKeysType = """
         $markedKeys='using System;using System.Collections.Generic;using System.Runtime.InteropServices;public static class BaxyMarkedKeys{[StructLayout(LayoutKind.Sequential)] struct KeyboardInput{public ushort Vk;public ushort Scan;public uint Flags;public uint Time;public UIntPtr Extra;}[StructLayout(LayoutKind.Sequential)] struct MouseInput{public int X;public int Y;public uint Data;public uint Flags;public uint Time;public UIntPtr Extra;}[StructLayout(LayoutKind.Explicit)] struct InputUnion{[FieldOffset(0)] public MouseInput Mouse;[FieldOffset(0)] public KeyboardInput Keyboard;}[StructLayout(LayoutKind.Sequential)] struct Input{public uint Type;public InputUnion Data;}[DllImport("user32.dll",SetLastError=true)] static extern uint SendInput(uint count,Input[] inputs,int size);[DllImport("user32.dll")] static extern short VkKeyScanW(char ch);static readonly UIntPtr Mark=new UIntPtr(0x42415859u);static Input Key(ushort vk,ushort scan,uint flags){Input input=new Input();input.Type=1;input.Data.Keyboard.Vk=vk;input.Data.Keyboard.Scan=scan;input.Data.Keyboard.Flags=flags;input.Data.Keyboard.Extra=Mark;return input;}static uint Send(List<Input> inputs){return SendInput((uint)inputs.Count,inputs.ToArray(),Marshal.SizeOf(typeof(Input)));}static uint Chord(ushort vk,int modifiers){List<Input> inputs=new List<Input>();ushort[] keys={0x10,0x11,0x12};for(int bit=0;bit<3;bit++){if((modifiers&(1<<bit))!=0)inputs.Add(Key(keys[bit],0,0));}inputs.Add(Key(vk,0,0));inputs.Add(Key(vk,0,2));for(int bit=2;bit>=0;bit--){if((modifiers&(1<<bit))!=0)inputs.Add(Key(keys[bit],0,2));}return Send(inputs);}public static uint Press(ushort vk,bool control){return Chord(vk,control?2:0);}public static uint Character(char ch,bool control){short scan=VkKeyScanW(ch);if(scan==-1){List<Input> unicode=new List<Input>();unicode.Add(Key(0,ch,4));unicode.Add(Key(0,ch,6));return Send(unicode);}return Chord((ushort)(scan&0xFF),((scan>>8)&0x7)|(control?2:0));}public static uint Text(string text){uint sent=0;foreach(char ch in text){sent+=Character(ch,false);}return sent;}}'
         if(-not ([System.Management.Automation.PSTypeName]'BaxyMarkedKeys').Type){Add-Type -TypeDefinition $markedKeys}
@@ -796,7 +791,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             # number other than 0 says the buttons were pressed (a result of 0 is not told from a keypad that ignored them).
             return -not (Test-ShowsZero $value)
           }
-          $last=([regex]::Match($keys,'(\d+(?:\.\d+)?)\)*$').Groups[1].Value -replace '[^0-9]','')
+          $last=([regex]::Match($keys,'(\d+(?:\.\d+)?)$').Groups[1].Value -replace '[^0-9]','')
           $digits=($shown -replace '[^0-9]','')
           return ($last.Length -gt 0 -and $digits.EndsWith($last))
         }
@@ -813,7 +808,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
         $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($f.Current.Name -match '^(Calculadora|Calculator)$'){$calc=$f;break}}
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $keys=($expr -replace '[^0-9+\-*/().]','')
+        $keys=($expr -replace '[^0-9+\-*/.]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
         $buttonCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
         $buttons=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond))
@@ -854,7 +849,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     });
 
     private static readonly Regex CalculatorExpression = new(
-        @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/×÷xX]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
+        @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
         RegexOptions.CultureInvariant);
 
     private async ValueTask<ExternalCapabilityReceipt> CalculatorEvaluateAsync(
@@ -868,10 +863,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             return ExternalJson.Failure(operation, "calculator_expression_invalid");
         }
+        // A decimal comma is the decimal separator the keypad presses as «.»; the operators are + - * / only.
         string normalized = expression
-            .Replace("×", "*", StringComparison.Ordinal)
-            .Replace("÷", "/", StringComparison.Ordinal)
-            .Replace("x", "*", StringComparison.OrdinalIgnoreCase)
             .Replace(",", ".", StringComparison.Ordinal)
             .Replace(" ", string.Empty, StringComparison.Ordinal);
         // Review r4: the buttons are pressed by UI Automation's Invoke, which sends no key, moves no pointer and takes
@@ -1967,9 +1960,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
         if (setting != "brightness")
         {
-            return ExternalJson.Failure(
-                operation,
-                "night_light_public_api_unavailable");
+            return ExternalJson.Failure(operation, "system_setting_invalid");
         }
 
         if (value is < 0 or > 100)

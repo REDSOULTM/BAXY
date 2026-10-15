@@ -17,8 +17,6 @@
   "*": ["multiplicar por", "por", "multiplicar", "multiply by", "times", "multiply"],
   "/": ["dividir por", "dividido por", "dividir", "divide by", "divided by", "divide"],
   ".": ["separador decimal", "coma decimal", "punto decimal", "decimal separator", "decimal point"],
-  "(": ["abrir paréntesis", "paréntesis de apertura", "paréntesis izquierdo", "left parenthesis", "open parenthesis"],
-  ")": ["cerrar paréntesis", "paréntesis de cierre", "paréntesis derecho", "right parenthesis", "close parenthesis"],
   "=": ["es igual a", "igual a", "igual", "equals", "equal"]
  },
  "clear": ["borrar", "clear"]

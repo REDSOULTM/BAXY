@@ -51,7 +51,7 @@ public sealed class KeypadInvokeTests
             "6 12 7 14",     // «Seis», «Multiplicar por», «Siete», «Es igual a»
             "1 15 5 13 2 14",
             "1 2 11 3 14",
-            "none",          // counter-case: a keypad without parentheses presses nothing at all
+            "none",          // counter-case: a character the keypad data names no button for presses nothing at all
             "none",          // counter-case: no «=» button, nothing is pressed
             "17",            // «Borrar» empties the entry, never «Borrar entrada» nor «Porcentaje»
             "17",

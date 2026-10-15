@@ -236,7 +236,7 @@ public static class ProductCatalog
             Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
             OperationRisks.LowReversible,
             "calculator.expression.evaluate.windows.calculator.uia.display.v1",
-            "Escribe una expresión aritmética simple en la Calculadora de Windows abierta (en primer plano, verificada) y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora."),
+            "Pulsa una expresión aritmética simple (números y + - * /) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora."),
         Descriptor(
             "calendar.event.create",
             Schema(
@@ -1434,14 +1434,14 @@ public static class ProductCatalog
                         values:
                         [
                             "accessible_mode", "airplane_mode", "brightness", "confirmation_bypass",
-                            "do_not_disturb", "night_light",
+                            "do_not_disturb",
                         ]),
                     Integer("value", 0, 100),
                 ],
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
-            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar, luz nocturna o modo avión sobre todas las radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
+            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar o modo avión sobre todas las radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
         Descriptor(
             "system.settings.status",
             Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
