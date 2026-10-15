@@ -20,14 +20,6 @@ public sealed class MissionEngine : IDisposable
     private readonly IOperationResponseNarrator _narrator;
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
-    // SCREEN1403/1405 «leéme lo que dice la pantalla»: captures produced under
-    // a confirmed capture operation, keyed by captureId → consent expiry. The
-    // capture id is unguessable and exists only because the person confirmed
-    // that capture; reading it shortly afterwards is the consented purpose, not
-    // a second privacy decision. Plan steps carry their own mission ids, so the
-    // consent cannot be bound to a mission. The execution gate serializes access.
-    private static readonly TimeSpan ConsentedCaptureWindow = TimeSpan.FromMinutes(10);
-    private readonly Dictionary<string, DateTimeOffset> _consentedCaptures = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
@@ -120,14 +112,6 @@ public sealed class MissionEngine : IDisposable
                     // exact arguments decide whether it reaches a person.
                     request.Arguments)
                 : null;
-            if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
-            {
-                // SCREEN1403/1405 «leéme lo que dice la pantalla»: the person
-                // confirmed the capture; reading that same capture shortly after
-                // is the consented purpose, not a second privacy decision.
-                policy = PolicyDecision.Allow;
-            }
-
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
             {
@@ -200,18 +184,6 @@ public sealed class MissionEngine : IDisposable
                 request,
                 outcome,
                 _privateEnvelopeAuthenticator);
-            if (grantedBinding is not null
-                && request.Operation is "capture.screenshot" or "capture.active.window"
-                && outcome.Succeeded
-                && outcome.Verified
-                && outcome.Result is { ValueKind: JsonValueKind.Object } captureResult
-                && captureResult.TryGetProperty("captureId", out JsonElement consentedCapture)
-                && consentedCapture.ValueKind == JsonValueKind.String
-                && consentedCapture.GetString() is { Length: > 0 } consentedCaptureId)
-            {
-                _consentedCaptures[consentedCaptureId] = DateTimeOffset.UtcNow + ConsentedCaptureWindow;
-            }
-
             if (outcome.Retryable
                 && (outcome.Succeeded
                     || outcome.Verified
@@ -368,26 +340,6 @@ public sealed class MissionEngine : IDisposable
         {
             return false;
         }
-    }
-
-    private bool IsReadOfConsentedCapture(OperationRequest request)
-    {
-        if (request.Operation is not ("ocr.read" or "vision.describe")
-            || request.Arguments.ValueKind != JsonValueKind.Object
-            || !request.Arguments.TryGetProperty("captureId", out JsonElement captureId)
-            || captureId.ValueKind != JsonValueKind.String
-            || captureId.GetString() is not { Length: > 0 } id)
-        {
-            return false;
-        }
-
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        foreach (string expired in _consentedCaptures.Where(entry => entry.Value <= now).Select(entry => entry.Key).ToArray())
-        {
-            _consentedCaptures.Remove(expired);
-        }
-
-        return _consentedCaptures.TryGetValue(id, out DateTimeOffset expiry) && expiry > now;
     }
 
     private static JsonElement BuildConfirmationResult(
