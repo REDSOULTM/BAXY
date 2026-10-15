@@ -314,7 +314,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
         message = CompletedFacts("memory.export", "memory_exported", new JsonObject
         {
-            ["destination"] = "Documents/BAXY",
+            ["fullPath"] = path,
             ["recordCount"] = count,
             ["integrityVerified"] = true,
             ["integrityAlgorithm"] = "SHA-256",

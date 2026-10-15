@@ -15,37 +15,21 @@ internal static class TurnVisibleFacts
     };
 
     internal static string Failure(string cause, JsonObject? extra = null) =>
-        Event("failure", cause, extra);
+        Event("failure", "failure", cause, extra);
 
     internal static string Status(string cause, JsonObject? extra = null) =>
-        Event("status", cause, extra);
+        Event("status", "success", cause, extra);
 
-    internal static string Event(string kind, string? cause = null, JsonObject? extra = null)
+    private static string Event(string kind, string polarity, string cause, JsonObject? extra)
     {
-        JsonObject payload = Base(kind, cause);
-        Merge(payload, extra);
-        return payload.ToJsonString(JsonOptions);
-    }
-
-    private static JsonObject Base(string kind, string? cause)
-    {
-        string polarity = kind switch
-        {
-            "failure" or "error" => "failure",
-            "confirmation" or "clarification" => "pending",
-            _ => "success",
-        };
         var payload = new JsonObject
         {
             ["kind"] = kind,
             ["polarity"] = polarity,
+            ["cause"] = cause,
         };
-        if (!string.IsNullOrWhiteSpace(cause))
-        {
-            payload["cause"] = cause;
-        }
-
-        return payload;
+        Merge(payload, extra);
+        return payload.ToJsonString(JsonOptions);
     }
 
     private static void Merge(JsonObject payload, JsonObject? extra)
