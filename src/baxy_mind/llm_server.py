@@ -44,9 +44,9 @@ class LlmServer:
             "--load-mode", "none",
             # The prompt cache in RAM holds a prompt the slot set aside (a heartbeat between two turns): at most 1.5 GB
             # instead of 8 GB, so the harness stays under 4 GB of RAM (one 37k prompt with its state is ~0.7 GB).
-            # Checkpoints of the recurrent state every 512 tokens instead of 8192, so a return to an earlier prompt
-            # restores near where it diverged instead of re-reading thousands of tokens (llama.cpp PR #25472, #24176).
-            "-cram", "1536", "-cms", "512", "-ctxcp", "8",
+            # Checkpoints stay at llama.cpp's spacing: every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM
+            # (decision2 d6 vs d6b, 2026-10-15) once the last answer of a turn keeps the tools and the prefix.
+            "-cram", "1536",
         ] + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
