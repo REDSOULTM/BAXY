@@ -58,6 +58,8 @@ al máximo para Qwen3.5-4B.
 | Uso del notebook | Queda dedicado: su agente usa toda la CPU, la GPU y la RAM sin esperar |
 | Decisiones del dueño | Pregunta con opciones y además le manda una notificación push al celular. Mientras espera, sigue con lo que no depende de la respuesta |
 | Uso agotado | Un recordatorio cada hora retoma el goal si quedó parado. Las dos sesiones quedan abiertas |
+| Hardware | **PC (redpc):** RTX 4060 Ti 16 GB, i9-12900HX, 32 GB de RAM, modelos en el M.2 `F:`. **Notebook (rednote):** RTX 3060 Laptop (6 GB por confirmar), Ryzen 7 5800H, 16 GB de RAM |
+| Reparto según rendimiento | **PC:** el arnés nuevo, computer use (las apps reales del dueño), el latido, la integración y la medición final. Con 16 GB caben dos llama-server a la vez, así que puede correr dos bancos en paralelo. **Notebook:** la voz que habla (Piper, CPU), las herramientas de agente, la limpieza de código muerto, el banco de escenas y la investigación. Con su GPU cerca del límite de 4 GB, mide el perfil de 4 GB (IQ4_XS con un hueco) en hardware real |
 
 ## Qué es Renew hoy
 
