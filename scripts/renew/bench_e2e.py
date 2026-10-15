@@ -205,8 +205,10 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
             interrupted = cut_by is not None
             asked = replies[number - 1]["confirmation_text"]
             kind = "confirmation" if asked and norm(event.get("text")) == norm(asked) else "final"
+            # The goal's speed is per order: from its text to the first sound of that turn, whatever was said first.
+            first = not any(s["turn"] == number for s in speech)
             speech.append({"turn": number, "kind": kind, "spoken": True, "spoken_text": event.get("text", ""),
-                           "first_audio_ms": event["t_ms"] - turn_start if turn_start is not None else None,
+                           "first_audio_ms": event["t_ms"] - turn_start if first and turn_start is not None else None,
                            "completed": stop is not None and not interrupted, "cancelled": interrupted,
                            "stop_latency_ms": (stop_ms - cut_by["t_ms"]) if cut_by and stop else None})
 
@@ -235,7 +237,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
     _, cleanup_out = run_ps(cleanup, lib_env, 300)
     leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
     ok = all(o["ok"] for o in oracles) and spoken_ok
-    first_audio = [s["first_audio_ms"] for s in speech if s["kind"] == "final" and s["first_audio_ms"] is not None]
+    first_audio = [s["first_audio_ms"] for s in speech if s["first_audio_ms"] is not None]
     return {"id": case["id"], "area": case.get("area"), "kind": case.get("kind"), "ok": ok,
             "status": "ok" if ok else "fallo", "spoken_ok": spoken_ok, "oracles": oracles, "replies": replies,
             "first_audio_ms": first_audio, "leftovers": leftovers,

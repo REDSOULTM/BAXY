@@ -176,3 +176,11 @@ tocan lo cambiado; en el notebook pasan).
   perdiendo la subcarpeta (Q1, Q3): límite medido. `filesystem.create.directory` acepta ahora `home` (el proveedor ya lo
   hacía; el catálogo no). decision2 d5: 221/270 (d4 225; P263 atribuible, corregido diciendo que la carpeta conocida va
   en `folder`; el resto ruido y el web.search nuevo).
+- **Velocidad, medición:** la meta es por orden («desde que el texto de una orden llega a la mente hasta que Piper
+  empieza a sonar»); el banco e2e contaba cada frase de un turno desde el inicio del turno (una segunda frase contaba
+  como primer sonido tardío). Ahora cuenta el primer sonido de cada turno. p6 con esa definición: **2316 ms p50** (36
+  órdenes). `speech.start` del conductor sale del estado de la voz de la mente (empieza a reproducir; el sonido llega
+  +0,09 s de latencia del dispositivo).
+- Velocidad, investigado y descartado: MTP (el GGUF de Qwen3.5-4B no trae capas MTP), especulación por n-gramas
+  (ngram-simple 0,83 s, ngram-mod 0,82 s contra 0,81 s sin ella), KV f16 (78,5 → 79,4 tok/s, a 16k peor). El modelo
+  genera a 78 tok/s en bruto (64 con el prefijo de herramientas): la decisión cuesta ~0,7 s por llamada.
