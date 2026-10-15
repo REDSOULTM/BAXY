@@ -198,13 +198,13 @@ public static class ProductCatalog
                 ["back", "close", "close_all", "fullscreen_video", "new_tab", "reload", "scroll_down", "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
-            "Controla la pagina CDP actual y verifica historial, desplazamiento o cierre mediante postlectura."),
+            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas sus pestañas) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP."),
         Descriptor(
             "browser.navigate",
             Schema([String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.cdp.url.postread.v1",
-            "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final."),
+            "Abre una URL exacta en el navegador predeterminado de la persona, con su perfil y sus sesiones, y verifica la llegada leyendo su barra de direcciones o el título de su ventana; sólo si no hay navegador predeterminado o no se puede lanzar, la abre en el navegador propio del producto por CDP y verifica la URL final."),
         Descriptor(
             "browser.navigate.named",
             Schema(
@@ -221,7 +221,7 @@ public static class ProductCatalog
             Schema([Integer("maximumCharacters", 256, 32_768)], []),
             OperationRisks.PrivacySensitive,
             "browser.page.read.cdp.dom.snapshot.v1",
-            "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+            "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP.",
             // WEB1541: a read observes no effect; the receipt says so truthfully.
             requiresObservedEffect: false),
         Descriptor(
@@ -229,7 +229,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
-            "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona, con título y URL, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
             requiresObservedEffect: false),
         Descriptor(
             "calculator.expression.evaluate",
