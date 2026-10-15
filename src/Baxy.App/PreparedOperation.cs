@@ -8,6 +8,9 @@ using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
+/// <summary>A catalog operation the model called, with its plain arguments (never a memory operation).</summary>
+internal sealed record RoutedOperation(string Name, JsonObject Arguments);
+
 internal sealed class PreparedOperation
 {
     private readonly JsonElement _arguments;

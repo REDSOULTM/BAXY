@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,30 +9,27 @@ using System.Windows.Threading;
 namespace Baxy.App;
 
 /// <summary>
-/// Starts the registered BAXY runtime without the product window and drives
-/// the same <see cref="FieldProductChannel"/> the UI uses.
+/// The benches' driver: starts the same <see cref="MainWindowViewModel"/> the window uses, without the window, sends the
+/// turns of a file (the person's words, or their Sí/No on a pending confirmation) and writes everything that happened as
+/// JSON lines: each line BAXY published, each call the model made with its status and verification, when the voice
+/// started to speak, and how each turn ended.
+/// <para>
+/// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT)
+/// [--timeout-ms N]</c>. A turns file has one JSON object per line: <c>{"text":"…"}</c> or <c>{"confirm":true}</c>
+/// (a bare line is text).
+/// </para>
 /// </summary>
 internal static class ProductConductorHost
 {
     internal const string Argument = "--conductor";
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = false,
-    };
+    // After the turn ends, how long the conductor waits for the voice to start saying its last line.
+    private static readonly TimeSpan SpeechWait = TimeSpan.FromSeconds(10);
 
     internal static bool IsRequested(IReadOnlyList<string> arguments)
     {
         ArgumentNullException.ThrowIfNull(arguments);
-        foreach (string argument in arguments)
-        {
-            if (string.Equals(argument, Argument, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return arguments.Any(static argument => string.Equals(argument, Argument, StringComparison.OrdinalIgnoreCase));
     }
 
     [DllImport("kernel32.dll", SetLastError = true)]
@@ -42,22 +40,22 @@ internal static class ProductConductorHost
 
     private const int AttachParentProcess = -1;
 
-    internal static async Task<int> RunAsync(
-        IReadOnlyList<string> arguments,
-        Dispatcher dispatcher)
+    internal static async Task<int> RunAsync(IReadOnlyList<string> arguments, Dispatcher dispatcher)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         ArgumentNullException.ThrowIfNull(dispatcher);
         EnsureConsole();
         ConductorArguments parsed = ConductorArguments.Parse(arguments);
         Directory.CreateDirectory(parsed.ProfileDirectory);
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", parsed.ProfileDirectory);
+        Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
+        StreamWriter? capture = null;
         if (!string.IsNullOrWhiteSpace(parsed.CaptureDirectory))
         {
             Directory.CreateDirectory(parsed.CaptureDirectory);
+            capture = new StreamWriter(Path.Combine(parsed.CaptureDirectory, "events.jsonl"), append: false,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)) { AutoFlush = true };
         }
-
-        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", parsed.ProfileDirectory);
-        Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
 
         using var lifetime = new CancellationTokenSource();
         Console.CancelKeyPress += (_, eventArgs) =>
@@ -66,1019 +64,170 @@ internal static class ProductConductorHost
             lifetime.Cancel();
         };
 
+        var clock = Stopwatch.StartNew();
+        void Emit(JsonObject entry)
+        {
+            entry["t_ms"] = clock.ElapsedMilliseconds;
+            string line = entry.ToJsonString();
+            Console.Out.WriteLine(line);
+            capture?.WriteLine(line);
+        }
+
         await using var viewModel = new MainWindowViewModel();
-        await using ProductConductor conductor = ProductConductor.Create(
-            viewModel,
-            lifetime.Token);
-        StreamWriter? capture = OpenCapture(parsed.CaptureDirectory, "events.jsonl");
+        long turnStartedMs = 0;
+        long? speechStartedMs = null;
+        viewModel.MessageAdded += message => Emit(new JsonObject
+        {
+            ["type"] = "message",
+            ["speaker"] = message.IsUser ? "person" : "baxy",
+            ["route"] = message.Route,
+            ["body"] = message.Body,
+            ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
+        });
+        viewModel.StepCompleted += step => Emit(new JsonObject
+        {
+            ["type"] = "step",
+            ["operation"] = step.Operation,
+            ["arguments"] = step.Arguments.DeepClone(),
+            ["status"] = step.Status,
+            ["verified"] = step.Verified,
+            ["error"] = step.ErrorCode,
+            ["elapsed_ms"] = step.ElapsedMs,
+            ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
+        });
+        viewModel.PropertyChanged += (_, change) =>
+        {
+            if (change.PropertyName == nameof(MainWindowViewModel.IsVoiceSpeaking) && viewModel.IsVoiceSpeaking
+                && speechStartedMs is null)
+            {
+                speechStartedMs = clock.ElapsedMilliseconds - turnStartedMs;
+                Emit(new JsonObject { ["type"] = "speech.start", ["since_turn_ms"] = speechStartedMs });
+            }
+        };
+
         try
         {
-            JsonObject meta = BuildMeta(parsed);
-            await EmitAsync(meta, capture, lifetime.Token).ConfigureAwait(true);
-
+            Emit(new JsonObject { ["type"] = "meta", ["profile"] = parsed.ProfileDirectory });
             await viewModel.InitializeAsync(lifetime.Token).ConfigureAwait(true);
-            DateTime mindDeadline = DateTime.UtcNow.AddSeconds(120);
-            while (!viewModel.IsMindReady
-                && !viewModel.HasStartupError
+            DateTime mindDeadline = DateTime.UtcNow.AddSeconds(180);
+            while ((!viewModel.IsMindReady || viewModel.IsMindPreparing) && !viewModel.HasStartupError
                 && DateTime.UtcNow < mindDeadline)
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(200), lifetime.Token)
-                    .ConfigureAwait(true);
+                await Task.Delay(TimeSpan.FromMilliseconds(200), lifetime.Token).ConfigureAwait(true);
             }
 
-            // Measurement only (--after-welcome): the first turn is sent once the start-up's own messages (the
-            // welcome) are composed and published, the way a person who reads the greeting would send it. Off, the
-            // turn goes as soon as the mind is ready, with the welcome possibly still on the mind's lane (cold figure).
-            bool? welcomeSettled = parsed.AfterWelcome && viewModel.IsReady
-                ? await WelcomeSettledAsync(
-                        () => viewModel.PendingModelMessageCount == 0 && viewModel.Messages.Count > 0,
-                        WelcomeWait,
-                        Task.Delay,
-                        lifetime.Token)
-                    .ConfigureAwait(true)
-                : null;
-
-            await EmitAsync(
-                    new JsonObject
-                    {
-                        ["type"] = "runtime",
-                        ["ready"] = viewModel.IsReady,
-                        ["startupError"] = viewModel.HasStartupError,
-                        ["status"] = viewModel.StatusDescription,
-                        ["afterWelcome"] = parsed.AfterWelcome,
-                        ["welcomeSettled"] = welcomeSettled,
-                    },
-                    capture,
-                    lifetime.Token)
-                .ConfigureAwait(true);
-
-            if (!viewModel.IsReady)
+            Emit(new JsonObject
             {
-                await EmitAsync(
-                        new JsonObject
-                        {
-                            ["type"] = "terminal",
-                            ["kind"] = "blocked_environment",
-                            ["diagnostic"] = "runtime_not_ready",
-                        },
-                        capture,
-                        lifetime.Token)
-                    .ConfigureAwait(true);
+                ["type"] = "runtime",
+                ["ready"] = viewModel.IsReady,
+                ["mindReady"] = viewModel.IsMindReady,
+                ["startupError"] = viewModel.HasStartupError,
+                ["status"] = viewModel.StatusDescription,
+            });
+            if (!viewModel.IsReady || !viewModel.IsMindReady)
+            {
+                Emit(new JsonObject { ["type"] = "terminal", ["kind"] = "blocked_environment" });
                 return 2;
             }
 
-            IReadOnlyList<JsonObject> commands = await LoadCommandsAsync(parsed, lifetime.Token)
-                .ConfigureAwait(true);
-            foreach (JsonObject command in commands)
+            int index = 0;
+            foreach (JsonObject turn in ReadTurns(parsed))
             {
-                lifetime.Token.ThrowIfCancellationRequested();
-                if (!await ExecuteCommandAsync(
-                        conductor,
-                        command,
-                        parsed.Timeout,
-                        parsed.ProfileDirectory,
-                        capture,
-                        lifetime.Token).ConfigureAwait(true))
+                turnStartedMs = clock.ElapsedMilliseconds;
+                speechStartedMs = null;
+                Emit(new JsonObject { ["type"] = "turn.start", ["index"] = index, ["input"] = turn.DeepClone() });
+                using var turnTimeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+                turnTimeout.CancelAfter(parsed.TurnTimeout);
+                if (turn["confirm"] is JsonValue confirm && confirm.TryGetValue(out bool approve))
                 {
-                    return 3;
+                    await viewModel.AnswerConfirmationAsync(approve, turnTimeout.Token).ConfigureAwait(true);
                 }
+                else
+                {
+                    try
+                    {
+                        await viewModel.SubmitAsync(
+                                new MissionInput((string?)turn["text"] ?? string.Empty, MissionInputSource.Text),
+                                turnTimeout.Token)
+                            .ConfigureAwait(true);
+                    }
+                    catch (MissionInputRejectedException rejected)
+                    {
+                        Emit(new JsonObject { ["type"] = "input.rejected", ["reason"] = rejected.Reason.ToString() });
+                    }
+                }
+
+                long endedMs = clock.ElapsedMilliseconds - turnStartedMs;
+                var speechDeadline = Stopwatch.StartNew();
+                while (viewModel.IsMindReady && speechStartedMs is null && speechDeadline.Elapsed < SpeechWait
+                    && !lifetime.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(25), lifetime.Token).ConfigureAwait(true);
+                }
+
+                Emit(new JsonObject
+                {
+                    ["type"] = "turn.end",
+                    ["index"] = index,
+                    ["ms"] = endedMs,
+                    ["speech_start_ms"] = speechStartedMs,
+                    ["timedOut"] = turnTimeout.IsCancellationRequested && !lifetime.IsCancellationRequested,
+                    ["failure"] = viewModel.LastTurnFailure,
+                    ["pendingConfirmation"] = viewModel.HasPendingConfirmation,
+                });
+                index++;
             }
 
-            await EmitAsync(
-                    PosteriorJson(conductor.CapturePosterior()),
-                    capture,
-                    lifetime.Token)
-                .ConfigureAwait(true);
+            Emit(new JsonObject { ["type"] = "terminal", ["kind"] = "completed", ["turns"] = index });
             return 0;
         }
         catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
         {
-            await EmitAsync(
-                    new JsonObject
-                    {
-                        ["type"] = "terminal",
-                        ["kind"] = "cancelled",
-                    },
-                    capture,
-                    CancellationToken.None)
-                .ConfigureAwait(true);
-            return 130;
+            Emit(new JsonObject { ["type"] = "terminal", ["kind"] = "cancelled" });
+            return 3;
         }
         finally
         {
-            if (capture is not null)
-            {
-                await capture.DisposeAsync();
-            }
+            capture?.Dispose();
         }
     }
 
-    internal const string AfterWelcomeArgument = "--after-welcome";
-
-    // How long --after-welcome waits for the start-up's messages before sending the first turn anyway (said in the
-    // «runtime» line as welcomeSettled=false).
-    private static readonly TimeSpan WelcomeWait = TimeSpan.FromSeconds(30);
-
-    /// <summary>
-    /// Waits until <paramref name="settled"/> says the start-up's messages are composed and published, looking every
-    /// 50 ms, for at most <paramref name="limit"/>. True when they settled; false when the limit passed first.
-    /// </summary>
-    internal static async Task<bool> WelcomeSettledAsync(
-        Func<bool> settled,
-        TimeSpan limit,
-        Func<TimeSpan, CancellationToken, Task> delay,
-        CancellationToken cancellationToken)
+    private static IEnumerable<JsonObject> ReadTurns(ConductorArguments parsed)
     {
-        ArgumentNullException.ThrowIfNull(settled);
-        ArgumentNullException.ThrowIfNull(delay);
-        TimeSpan step = TimeSpan.FromMilliseconds(50);
-        for (TimeSpan waited = TimeSpan.Zero; !settled(); waited += step)
+        if (parsed.Text is { } text)
         {
-            if (waited >= limit)
-            {
-                return false;
-            }
-
-            await delay(step, cancellationToken).ConfigureAwait(true);
+            yield return new JsonObject { ["text"] = text };
+            yield break;
         }
 
-        return true;
-    }
-
-    private static async Task<bool> ExecuteCommandAsync(
-        ProductConductor conductor,
-        JsonObject command,
-        TimeSpan timeout,
-        string profileDirectory,
-        StreamWriter? capture,
-        CancellationToken cancellationToken)
-    {
-        string cmd = ((string?)command["cmd"] ?? "turn").Trim().ToLowerInvariant();
-        if (cmd == "turn.confirm-reviewed")
+        if (parsed.TurnsFile is null)
         {
-            return await ExecuteReviewedAsync(
-                conductor, command, timeout, profileDirectory, capture, cancellationToken)
-                .ConfigureAwait(true);
-        }
-        if (cmd == "turn.memory-confirm")
-        {
-            return await ExecuteMemoryConfirmAsync(
-                conductor, command, timeout, capture, cancellationToken)
-                .ConfigureAwait(true);
-        }
-        if (cmd == "turn.answer-clarification")
-        {
-            return await ExecuteAnswerClarificationAsync(
-                conductor, command, timeout, profileDirectory, capture, cancellationToken)
-                .ConfigureAwait(true);
-        }
-        if (cmd == "turn.playback-then")
-        {
-            return await ExecutePlaybackThenAsync(
-                conductor, command, timeout, profileDirectory, capture, cancellationToken)
-                .ConfigureAwait(true);
-        }
-        if (cmd == "turn.memory-then")
-        {
-            return await ExecuteMemoryThenAsync(
-                conductor, command, timeout, capture, cancellationToken)
-                .ConfigureAwait(true);
-        }
-        if (cmd == "turn.confirm-if-matches")
-        {
-            string? caseId = command["caseId"] is JsonValue caseValue
-                && caseValue.TryGetValue(out string? parsedCase) ? parsedCase : null;
-            if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
-                || command["text"] is not JsonValue textValue
-                || !textValue.TryGetValue(out string? requestText)
-                || string.IsNullOrWhiteSpace(requestText)
-                || command["expectedOperation"] is not JsonValue operationValue
-                || !operationValue.TryGetValue(out string? expectedOperation)
-                || string.IsNullOrWhiteSpace(expectedOperation)
-                || command["expectedArguments"] is not JsonObject expectedArguments
-                || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-            {
-                await EmitTurnAsync(
-                    conductor.RejectConfirmation("confirmation_command_not_admitted"),
-                    capture, cancellationToken, caseId, "final").ConfigureAwait(true);
-                return false;
-            }
-
-            ProductTurnResult initial = await conductor
-                .TurnAsync(requestText, timeout, cancellationToken).ConfigureAwait(true);
-            PendingOperationConfirmation? observed =
-                conductor.ViewModel.CaptureConductorConfirmation();
-            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
-                .ConfigureAwait(true);
-            ProductTurnResult final = await conductor.ConfirmPendingAsync(
-                initial, observed, expectedOperation, expectedArguments,
-                timeout, cancellationToken).ConfigureAwait(true);
-            await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
-                .ConfigureAwait(true);
-            return !final.TimedOut
-                && final.Terminal == ProductTurnTerminal.PublishedFinal
-                && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
+            yield break;
         }
 
-        if (cmd is "session.new" or "new-session" or "sessions/new")
+        foreach (string raw in File.ReadLines(parsed.TurnsFile, Encoding.UTF8))
         {
-            FieldHttpResponse response = await conductor.NewSessionAsync()
-                .ConfigureAwait(true);
-            await EmitAsync(
-                    HttpJson("session.new", response),
-                    capture,
-                    cancellationToken)
-                .ConfigureAwait(true);
-            return true;
-        }
-
-        if (cmd == "upload")
-        {
-            FieldHttpResponse response = await conductor.UploadAsync()
-                .ConfigureAwait(true);
-            await EmitAsync(HttpJson("upload", response), capture, cancellationToken)
-                .ConfigureAwait(true);
-            return true;
-        }
-
-        // R07 pide inyectar el fallo, restaurar el recurso y volver a pedir en
-        // el mismo proceso, perfil y sesión. La inyección ya vivía en el shell
-        // (`FieldCompositionInjection.Mode`); sólo faltaba poder moverla sin
-        // arrancar otra vez, que es lo que dejaba la prueba en dos procesos.
-        if (cmd is "inject" or "restore")
-        {
-            string requested = cmd == "restore"
-                ? "none"
-                : ((string?)command["mode"] ?? "reject").Trim().ToLowerInvariant();
-            FieldCompositionInjection.Mode = requested switch
-            {
-                "reject" => FieldCompositionInjectionMode.Reject,
-                "timeout" => FieldCompositionInjectionMode.Timeout,
-                "exhaust" => FieldCompositionInjectionMode.Exhaust,
-                _ => FieldCompositionInjectionMode.None,
-            };
-            await EmitAsync(
-                    new JsonObject
-                    {
-                        ["type"] = "injection",
-                        ["mode"] = FieldCompositionInjection.Mode.ToString()
-                            .ToLowerInvariant(),
-                        ["pid"] = Environment.ProcessId,
-                    },
-                    capture,
-                    cancellationToken)
-                .ConfigureAwait(true);
-            return true;
-        }
-
-        if (cmd is "cancel" or "cancelar")
-        {
-            ProductTurnResult result = await conductor
-                .CancelAsync(timeout, cancellationToken)
-                .ConfigureAwait(true);
-            await EmitTurnAsync(result, capture, cancellationToken).ConfigureAwait(true);
-            return true;
-        }
-
-        string text = ((string?)command["text"] ?? string.Empty).Trim();
-        if (text.Length == 0)
-        {
-            FieldHttpResponse response = await conductor
-                .HandleHttpAsync("POST", "/turn", command.ToJsonString())
-                .ConfigureAwait(true);
-            await EmitAsync(HttpJson("turn", response), capture, cancellationToken)
-                .ConfigureAwait(true);
-            return true;
-        }
-
-        ProductTurnResult turn = await conductor
-            .TurnAsync(text, timeout, cancellationToken)
-            .ConfigureAwait(true);
-        await EmitTurnAsync(turn, capture, cancellationToken).ConfigureAwait(true);
-        return true;
-    }
-
-    private static async Task<bool> ExecuteReviewedAsync(
-        ProductConductor conductor,
-        JsonObject command,
-        TimeSpan timeout,
-        string profileDirectory,
-        StreamWriter? capture,
-        CancellationToken cancellationToken,
-        string completionPhase = "final")
-    {
-        string? caseId = ReviewString(command, "caseId");
-        string? text = ReviewString(command, "text");
-        string? directory = ReviewString(command, "reviewDirectory");
-        async Task<bool> RejectAsync(string diagnostic)
-        {
-            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
-                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
-            return false;
-        }
-
-        if (command.Count != 4 || string.IsNullOrWhiteSpace(caseId)
-            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(directory)
-            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            return await RejectAsync("review_command_not_admitted").ConfigureAwait(true);
-        }
-
-        var elapsed = System.Diagnostics.Stopwatch.StartNew();
-        try
-        {
-            directory = ValidateReviewDirectory(directory, profileDirectory);
-            Directory.CreateDirectory(directory);
-            ValidateReviewDirectory(directory, profileDirectory);
-        }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException
-            or ArgumentException or NotSupportedException)
-        {
-            return await RejectAsync("review_directory_invalid").ConfigureAwait(true);
-        }
-
-        ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
-            .ConfigureAwait(true);
-        PendingOperationConfirmation? observed = conductor.ViewModel
-            .CaptureConductorConfirmation(allowVerifiedReadPrefix: true);
-        if (observed is null && !initial.Posterior.HasPendingPlan)
-        {
-            // A genuine non-confirming result has one admission/final, not a
-            // fabricated extra rejection just because there is no challenge.
-            // THEN2001: when a follow-up turn comes after this one (D3 left
-            // the first turn of «pon una alarma… / cancelá la alarma» and
-            // «abrí el bloc de notas / ponle hola» without a confirmation),
-            // the phase the caller asked for («request») is kept, so the case
-            // reads request → final like any other dialogue; the follow-up
-            // only runs after a published first turn.
-            await EmitTurnAsync(initial, capture, cancellationToken, caseId, completionPhase)
-                .ConfigureAwait(true);
-            return !initial.TimedOut && !initial.Posterior.HasPendingPlan && !initial.Posterior.IsBusy
-                && (completionPhase == "final" || initial.Terminal == ProductTurnTerminal.PublishedFinal);
-        }
-
-        await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
-            .ConfigureAwait(true);
-        // H0516 «Abre Opera GX, busca una receta de pizza, guarda una captura en el
-        // escritorio y luego cierra Opera»: una misión puede llevar más de un efecto
-        // revisado. Cada uno se propone a la raíz por separado, con su propio nonce,
-        // y se ejecuta sólo con su propia aprobación; nunca se aprueba un sufijo. El
-        // turno termina cuando el plan no deja nada pendiente. Como mucho cuatro
-        // revisiones: más es una misión que no cabe en un turno.
-        ProductTurnResult current = initial;
-        for (int review = 0; review < 4; review++)
-        {
-            if (observed is null || current.TimedOut
-                || current.Terminal != ProductTurnTerminal.PublishedFinal
-                || current.Diagnostic is not null
-                || observed.Prepared.OperationName is not (
-                    "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
-                    // CLOSEALL1733 «cerrame todo»: the whole-desktop close is confirmed by the root reviewer.
-                    or "window.close.all"
-                    or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
-                    // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
-                    // confirmed by the root reviewer like the clipboard operations.
-                    or "capture.screenshot" or "capture.active.window"
-                    // WEB1539 «resumime esta página»: the privacy-sensitive read of the
-                    // page open in the browser session is reviewed the same way.
-                    or "browser.page.read"
-                    // MUSIC1553 «pon un video de lofi en youtube»: the external
-                    // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
-                    or "media.play.youtube"
-                    // MUSIC1747 «pon michael jackson en spotify»: the playback in the
-                    // Spotify desktop client is confirmed by the root reviewer.
-                    or "media.play.query"
-                    // NETWORK1737 «sí, prendelo»: switching the Wi-Fi radio on after the
-                    // offer is confirmed by the root reviewer.
-                    or "wifi.radio.set"
-                    // NETWORK1721 «conectate al wifi de casa»: the sensitive
-                    // connection to a saved profile is confirmed by the root reviewer.
-                    or "wifi.connect.named"
-                    // MSGSEND1845 «manda un mensaje a Musica en whatsapp que diga hola»: the
-                    // real send, forced by construction to the owner's test channel, is
-                    // confirmed by the root reviewer (owner decision, section 6).
-                    or "message.send.test"
-                    // Las 24 filas de vídeo «pon Stranger Things en Netflix»: la
-                    // reproducción en la sesión de streaming la confirma el revisor
-                    // de la raíz, igual que las otras reproducciones externas. Sin
-                    // esto el turno revisado se rechazaba con
-                    // review_pending_not_supported y la fila no se podía medir.
-                    or "streaming.play.named" or "streaming.navigate"))
-            {
-                return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
-            }
-
-            // Prepared owns its arguments; this independent snapshot never exposes
-            // the confirmation token and is never regenerated from reviewer input.
-            PreparedOperation prepared = observed.Prepared;
-            JsonObject arguments = JsonNode.Parse(prepared.Arguments.GetRawText())!.AsObject();
-            string nonce = Guid.NewGuid().ToString("N");
-            string reviewPath = Path.Combine(directory, nonce);
-            string proposalPath = Path.Combine(reviewPath, "proposal.json");
-            string approvalPath = Path.Combine(reviewPath, "approval.json");
-            var proposal = new JsonObject
-            {
-                ["schema"] = "conductor-review-proposal-v1",
-                ["nonce"] = nonce,
-                ["caseId"] = caseId,
-                ["requestText"] = text,
-                ["operation"] = prepared.OperationName,
-                ["arguments"] = arguments.DeepClone(),
-                ["missionId"] = prepared.MissionId,
-                ["invocationId"] = prepared.InvocationId,
-                ["expiresAtUtc"] = observed.ExpiresAtUtc.ToString("O"),
-            };
-            proposal[prepared.OperationName == "app.close" ? "windowObservations" : "webSearchObservations"] =
-                conductor.ViewModel.CaptureConductorReadEvidence();
-            ProductTurnResult? final = null;
-            try
-            {
-                ValidateReviewDirectory(directory, profileDirectory);
-                if (Directory.Exists(reviewPath))
-                {
-                    return await RejectAsync("review_directory_already_exists").ConfigureAwait(true);
-                }
-                Directory.CreateDirectory(reviewPath);
-                ValidateReviewDirectory(reviewPath, profileDirectory);
-                using (var stream = new FileStream(proposalPath, FileMode.CreateNew,
-                    FileAccess.Write, FileShare.Read))
-                {
-                    byte[] bytes = Encoding.UTF8.GetBytes(proposal.ToJsonString(JsonOptions));
-                    await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(true);
-                }
-
-                await EmitAsync(new JsonObject
-                {
-                    ["type"] = "review_required",
-                    ["caseId"] = caseId,
-                    ["nonce"] = nonce,
-                    ["proposalPath"] = proposalPath,
-                    ["approvalPath"] = approvalPath,
-                    ["maximumConfirmations"] = 1,
-                    ["review"] = review + 1,
-                }, capture, cancellationToken).ConfigureAwait(true);
-
-                while (elapsed.Elapsed < timeout && DateTimeOffset.UtcNow < observed.ExpiresAtUtc)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (!ReferenceEquals(observed, conductor.ViewModel
-                        .CaptureConductorConfirmation(allowVerifiedReadPrefix: true)))
-                    {
-                        return await RejectAsync("review_pending_changed").ConfigureAwait(true);
-                    }
-                    ValidateReviewDirectory(reviewPath, profileDirectory);
-                    if (File.Exists(approvalPath))
-                    {
-                        if ((File.GetAttributes(approvalPath) & FileAttributes.ReparsePoint) != 0)
-                        {
-                            return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
-                        }
-                        using var stream = new FileStream(approvalPath, FileMode.Open,
-                            FileAccess.Read, FileShare.Read);
-                        if (stream.Length is <= 0 or > 65_536)
-                        {
-                            return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
-                        }
-                        byte[] bytes = new byte[(int)stream.Length];
-                        await stream.ReadExactlyAsync(bytes, cancellationToken).ConfigureAwait(true);
-                        JsonObject? approval = JsonNode.Parse(bytes) as JsonObject;
-                        if (approval is null || approval.Count != 8
-                            || ReviewString(approval, "schema") != "conductor-review-approval-v1"
-                            || ReviewString(approval, "nonce") != nonce
-                            || ReviewString(approval, "caseId") != caseId
-                            || ReviewString(approval, "operation") != prepared.OperationName
-                            || ReviewString(approval, "missionId") != prepared.MissionId
-                            || ReviewString(approval, "invocationId") != prepared.InvocationId
-                            || !JsonNode.DeepEquals(approval["arguments"], arguments))
-                        {
-                            return await RejectAsync("review_approval_mismatch").ConfigureAwait(true);
-                        }
-                        if (ReviewString(approval, "decision") != "approve")
-                        {
-                            return await RejectAsync("review_not_approved").ConfigureAwait(true);
-                        }
-                        if (elapsed.Elapsed >= timeout
-                            || DateTimeOffset.UtcNow >= observed.ExpiresAtUtc)
-                        {
-                            break;
-                        }
-
-                        final = await conductor.ConfirmPendingAsync(
-                            current, observed, prepared.OperationName, arguments,
-                            timeout - elapsed.Elapsed, cancellationToken,
-                            allowVerifiedReadPrefix: true).ConfigureAwait(true);
-                        break;
-                    }
-                    await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken)
-                        .ConfigureAwait(true);
-                }
-            }
-            catch (Exception error) when (error is IOException or UnauthorizedAccessException
-                or JsonException or ArgumentException or InvalidOperationException)
-            {
-                return await RejectAsync("review_io_or_data_invalid").ConfigureAwait(true);
-            }
-
-            if (final is null)
-            {
-                return await RejectAsync("review_timed_out").ConfigureAwait(true);
-            }
-
-            PendingOperationConfirmation? next = conductor.ViewModel
-                .CaptureConductorConfirmation(allowVerifiedReadPrefix: true);
-            if (next is null || !final.Posterior.HasPendingPlan || final.TimedOut
-                || final.Terminal != ProductTurnTerminal.PublishedFinal)
-            {
-                // MUSIC1593: a playback that a follow-up turn continues is
-                // emitted as an intermediate «request» phase; the case's
-                // final is the follow-up.
-                await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
-                    .ConfigureAwait(true);
-                return !final.TimedOut
-                    && final.Terminal == ProductTurnTerminal.PublishedFinal
-                    && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
-            }
-
-            // Another reviewed effect of the same mission waits for its own review.
-            await EmitTurnAsync(final, capture, cancellationToken, caseId, "request")
-                .ConfigureAwait(true);
-            current = final;
-            observed = next;
-        }
-
-        return await RejectAsync("review_chain_too_long").ConfigureAwait(true);
-    }
-
-    /// <summary>
-    /// One request turn, then — only when the private memory channel itself
-    /// left a confirmation pending for the expected operation — the closed
-    /// reply «confirmar» as a second turn. On a fresh profile an explicit
-    /// «recuerda que me llamo …» ends in memory_disabled and the channel asks
-    /// to enable the local memory; enabling continues the original save
-    /// (MEMORY1245). Nothing is answered when no memory challenge is pending.
-    /// </summary>
-    /// <summary>
-    /// MUSIC1571 «pon música»: a two-turn dialogue. The first turn must end in a
-    /// clarification question (emitted as the «request» phase); the scripted
-    /// answer then runs as a reviewed turn, so an operation it needs is proposed
-    /// to the root reviewer exactly like a reviewed case. Nothing is answered
-    /// unless the product asked.
-    /// </summary>
-    private static async Task<bool> ExecuteAnswerClarificationAsync(
-        ProductConductor conductor,
-        JsonObject command,
-        TimeSpan timeout,
-        string profileDirectory,
-        StreamWriter? capture,
-        CancellationToken cancellationToken)
-    {
-        string? caseId = ReviewString(command, "caseId");
-        string? text = ReviewString(command, "text");
-        string? answer = ReviewString(command, "answer");
-        string? directory = ReviewString(command, "reviewDirectory");
-        async Task<bool> RejectAsync(string diagnostic)
-        {
-            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
-                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
-            return false;
-        }
-
-        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
-            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(answer)
-            || string.IsNullOrWhiteSpace(directory)
-            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            return await RejectAsync("answer_command_not_admitted").ConfigureAwait(true);
-        }
-
-        ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
-            .ConfigureAwait(true);
-        bool asked = !initial.TimedOut
-            && initial.Terminal == ProductTurnTerminal.PublishedFinal
-            && initial.Diagnostic is null
-            && !initial.Posterior.HasPendingPlan
-            && !initial.Posterior.IsBusy
-            && (initial.FinalText ?? string.Empty).TrimEnd().EndsWith('?');
-        if (!asked)
-        {
-            // No question: one admission, one final, and nothing is answered.
-            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "final")
-                .ConfigureAwait(true);
-            return false;
-        }
-
-        await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
-            .ConfigureAwait(true);
-        var reviewed = new JsonObject
-        {
-            ["cmd"] = "turn.confirm-reviewed",
-            ["text"] = answer,
-            ["caseId"] = caseId,
-            ["reviewDirectory"] = directory,
-        };
-        return await ExecuteReviewedAsync(
-            conductor, reviewed, timeout, profileDirectory, capture, cancellationToken)
-            .ConfigureAwait(true);
-    }
-
-    /// <summary>
-    /// MUSIC1593 «pará la música» / «qué está sonando» after a playback: the
-    /// reviewed playback runs first (proposal and completion emitted as the two
-    /// «request» phases), then the scripted follow-up runs as an ordinary turn
-    /// whose terminal is the case's «final». The follow-up never runs when the
-    /// playback did not complete.
-    /// </summary>
-    private static async Task<bool> ExecutePlaybackThenAsync(
-        ProductConductor conductor,
-        JsonObject command,
-        TimeSpan timeout,
-        string profileDirectory,
-        StreamWriter? capture,
-        CancellationToken cancellationToken)
-    {
-        string? caseId = ReviewString(command, "caseId");
-        string? text = ReviewString(command, "text");
-        string? followup = ReviewString(command, "followup");
-        string? directory = ReviewString(command, "reviewDirectory");
-        async Task<bool> RejectAsync(string diagnostic)
-        {
-            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
-                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
-            return false;
-        }
-
-        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
-            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(followup)
-            || string.IsNullOrWhiteSpace(directory)
-            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            return await RejectAsync("playback_then_command_not_admitted").ConfigureAwait(true);
-        }
-
-        var reviewed = new JsonObject
-        {
-            ["cmd"] = "turn.confirm-reviewed",
-            ["text"] = text,
-            ["caseId"] = caseId,
-            ["reviewDirectory"] = directory,
-        };
-        var started = System.Diagnostics.Stopwatch.StartNew();
-        bool played = await ExecuteReviewedAsync(
-            conductor, reviewed, timeout, profileDirectory, capture, cancellationToken,
-            completionPhase: "request").ConfigureAwait(true);
-        if (!played || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            // The playback did not complete: nothing follows, and the case has
-            // its terminal already (a «request» phase ends it as not passed).
-            return false;
-        }
-
-        TimeSpan remaining = timeout - started.Elapsed;
-        if (remaining <= TimeSpan.Zero)
-        {
-            return await RejectAsync("playback_then_timed_out").ConfigureAwait(true);
-        }
-
-        ProductTurnResult final = await conductor.TurnAsync(followup, remaining, cancellationToken)
-            .ConfigureAwait(true);
-        await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
-            .ConfigureAwait(true);
-        return !final.TimedOut
-            && final.Terminal == ProductTurnTerminal.PublishedFinal
-            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
-    }
-
-    private static async Task<bool> ExecuteMemoryConfirmAsync(
-        ProductConductor conductor,
-        JsonObject command,
-        TimeSpan timeout,
-        StreamWriter? capture,
-        CancellationToken cancellationToken,
-        string completionPhase = "final")
-    {
-        string? caseId = ReviewString(command, "caseId");
-        string? text = ReviewString(command, "text");
-        string? expectedOperation = ReviewString(command, "expectedOperation");
-        async Task<bool> RejectAsync(string diagnostic)
-        {
-            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
-                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
-            return false;
-        }
-
-        if (command.Count != 4 || string.IsNullOrWhiteSpace(caseId)
-            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(expectedOperation)
-            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            return await RejectAsync("memory_confirm_command_not_admitted").ConfigureAwait(true);
-        }
-
-        ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
-            .ConfigureAwait(true);
-        PendingMemoryConfirmation? observed = conductor.ViewModel.CaptureMemoryConfirmation();
-        if (observed is null)
-        {
-            // No private-memory challenge: one admission, one final, nothing to confirm.
-            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "final")
-                .ConfigureAwait(true);
-            return !initial.TimedOut && !initial.Posterior.HasPendingPlan && !initial.Posterior.IsBusy;
-        }
-
-        await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
-            .ConfigureAwait(true);
-        if (initial.TimedOut || initial.Terminal != ProductTurnTerminal.PublishedFinal
-            || initial.Diagnostic is not null
-            || !string.Equals(observed.Prepared.OperationName, expectedOperation, StringComparison.Ordinal))
-        {
-            return await RejectAsync("memory_confirmation_mismatch:" + observed.Prepared.OperationName)
-                .ConfigureAwait(true);
-        }
-
-        // The private channel reads the same closed reply words a person types.
-        ProductTurnResult final = await conductor.TurnAsync("confirmar", timeout, cancellationToken)
-            .ConfigureAwait(true);
-        // MEMORY1599: a save that a recall continues is emitted as an
-        // intermediate «request» phase; the case's final is the recall.
-        await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
-            .ConfigureAwait(true);
-        return !final.TimedOut
-            && final.Terminal == ProductTurnTerminal.PublishedFinal
-            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
-    }
-
-    /// <summary>
-    /// MEMORY1599 «como me llamo» / «que me gusta tomar»: a recall needs a
-    /// prior save in the same profile. The explicit save runs first through
-    /// the private-memory activation handshake (its request and completion
-    /// emitted as the two «request» phases), then the scripted recall runs as
-    /// an ordinary turn whose terminal is the case's «final». Nothing follows
-    /// a save that did not complete.
-    /// </summary>
-    private static async Task<bool> ExecuteMemoryThenAsync(
-        ProductConductor conductor,
-        JsonObject command,
-        TimeSpan timeout,
-        StreamWriter? capture,
-        CancellationToken cancellationToken)
-    {
-        string? caseId = ReviewString(command, "caseId");
-        string? text = ReviewString(command, "text");
-        string? expectedOperation = ReviewString(command, "expectedOperation");
-        string? followup = ReviewString(command, "followup");
-        async Task<bool> RejectAsync(string diagnostic)
-        {
-            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
-                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
-            return false;
-        }
-
-        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
-            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(expectedOperation)
-            || string.IsNullOrWhiteSpace(followup)
-            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            return await RejectAsync("memory_then_command_not_admitted").ConfigureAwait(true);
-        }
-
-        var save = new JsonObject
-        {
-            ["cmd"] = "turn.memory-confirm",
-            ["text"] = text,
-            ["caseId"] = caseId,
-            ["expectedOperation"] = expectedOperation,
-        };
-        var started = System.Diagnostics.Stopwatch.StartNew();
-        bool saved = await ExecuteMemoryConfirmAsync(
-            conductor, save, timeout, capture, cancellationToken, completionPhase: "request")
-            .ConfigureAwait(true);
-        if (!saved || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
-        {
-            return false;
-        }
-
-        TimeSpan remaining = timeout - started.Elapsed;
-        if (remaining <= TimeSpan.Zero)
-        {
-            return await RejectAsync("memory_then_timed_out").ConfigureAwait(true);
-        }
-
-        ProductTurnResult final = await conductor.TurnAsync(followup, remaining, cancellationToken)
-            .ConfigureAwait(true);
-        await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
-            .ConfigureAwait(true);
-        return !final.TimedOut
-            && final.Terminal == ProductTurnTerminal.PublishedFinal
-            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
-    }
-
-    private static string? ReviewString(JsonObject value, string key) =>
-        value[key] is JsonValue field && field.TryGetValue(out string? text) ? text : null;
-
-    private static string ValidateReviewDirectory(string directory, string profileDirectory)
-    {
-        string profile = Path.GetFullPath(profileDirectory);
-        string path = Path.GetFullPath(directory);
-        string localRoot = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY");
-        if (!profile.StartsWith(localRoot + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase)
-            || !path.StartsWith(profile.TrimEnd(Path.DirectorySeparatorChar)
-                + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new IOException("Review directory must be inside the private profile.");
-        }
-        for (DirectoryInfo? current = new(path); current is not null; current = current.Parent)
-        {
-            if (current.Exists && (current.Attributes & FileAttributes.ReparsePoint) != 0)
-            {
-                throw new IOException("Review path cannot traverse a reparse point.");
-            }
-        }
-        return path;
-    }
-
-    private static async Task EmitTurnAsync(
-        ProductTurnResult result,
-        StreamWriter? capture,
-        CancellationToken cancellationToken,
-        string? caseId = null,
-        string? phase = null)
-    {
-        await EmitAsync(HttpJson("turn", result.Admission), capture, cancellationToken)
-            .ConfigureAwait(true);
-        foreach (JsonObject publicEvent in result.PublicEvents)
-        {
-            await EmitAsync(
-                    new JsonObject
-                    {
-                        ["type"] = "event",
-                        ["event"] = publicEvent.DeepClone(),
-                    },
-                    capture,
-                    cancellationToken)
-                .ConfigureAwait(true);
-        }
-
-        var terminal = new JsonObject
-        {
-            ["type"] = "terminal",
-            ["kind"] = TerminalName(result.Terminal),
-            ["final"] = result.FinalText,
-            ["diagnostic"] = result.Diagnostic,
-            ["timedOut"] = result.TimedOut,
-            ["admissionStatus"] = result.Admission.Status,
-        };
-        if (caseId is not null)
-        {
-            terminal["caseId"] = caseId;
-            terminal["phase"] = phase;
-        }
-
-        await EmitAsync(terminal, capture, cancellationToken).ConfigureAwait(true);
-        await EmitAsync(PosteriorJson(result.Posterior), capture, cancellationToken)
-            .ConfigureAwait(true);
-    }
-
-    private static string TerminalName(ProductTurnTerminal terminal) => terminal switch
-    {
-        ProductTurnTerminal.PublishedFinal => "published_final",
-        ProductTurnTerminal.Filtered => "filtered",
-        ProductTurnTerminal.AcceptedWithoutFinal => "accepted_without_final",
-        ProductTurnTerminal.Silence => "silence",
-        ProductTurnTerminal.CompositionFailed => "composition_failed",
-        _ => "rejected",
-    };
-
-    private static JsonObject HttpJson(string command, FieldHttpResponse response) =>
-        new()
-        {
-            ["type"] = "admission",
-            ["command"] = command,
-            ["status"] = response.Status,
-            ["body"] = response.Body,
-        };
-
-    private static JsonObject PosteriorJson(ProductPosteriorState posterior) =>
-        new()
-        {
-            ["type"] = "posterior",
-            ["messageCount"] = posterior.MessageCount,
-            ["userMessageCount"] = posterior.UserMessageCount,
-            ["isBusy"] = posterior.IsBusy,
-            ["isInputEnabled"] = posterior.IsInputEnabled,
-            ["hasPendingPlan"] = posterior.HasPendingPlan,
-            ["pendingCompositionCount"] = posterior.PendingCompositionCount,
-            ["compositionFailure"] = posterior.CompositionFailure,
-            ["hasCompositionError"] = posterior.HasCompositionError,
-            ["statusDescription"] = posterior.StatusDescription,
-            ["mindReplyRejection"] = posterior.MindReplyRejection,
-            ["mindRejectedReply"] = posterior.MindRejectedReply,
-        };
-
-    private static JsonObject BuildMeta(ConductorArguments parsed)
-    {
-        string? manifestPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "BAXYRuntime",
-            "mind-runtime-v1.json");
-        JsonNode? manifest = null;
-        if (File.Exists(manifestPath))
-        {
-            try
-            {
-                manifest = JsonNode.Parse(File.ReadAllText(manifestPath));
-            }
-            catch (JsonException)
-            {
-                manifest = new JsonObject { ["error"] = "manifest_unreadable" };
-            }
-        }
-
-        return new JsonObject
-        {
-            ["type"] = "meta",
-            ["commit"] = parsed.Commit,
-            ["profile"] = parsed.ProfileDirectory,
-            ["capture"] = parsed.CaptureDirectory,
-            ["manifestPath"] = File.Exists(manifestPath) ? manifestPath : null,
-            ["manifest"] = manifest,
-            ["config"] = new JsonObject
-            {
-                ["BAXY_DATA_DIR"] = Environment.GetEnvironmentVariable("BAXY_DATA_DIR"),
-                ["BAXY_MIND_LLM_GGUF"] = Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
-                ["BAXY_MIND_PYTHON"] = Environment.GetEnvironmentVariable("BAXY_MIND_PYTHON"),
-                ["BAXY_MIND_PYTHONPATH"] = Environment.GetEnvironmentVariable("BAXY_MIND_PYTHONPATH"),
-                ["BAXY_MIND_LLAMA_SERVER"] =
-                    Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER"),
-                ["BAXY_MIND_NGL"] = Environment.GetEnvironmentVariable("BAXY_MIND_NGL"),
-                ["BAXY_ASSET_DESCRIPTOR"] =
-                    Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),
-                ["BAXY_VOICE_WAKE_ON_START"] =
-                    Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
-            },
-            ["process"] = Path.GetFileName(Environment.ProcessPath),
-            ["pid"] = Environment.ProcessId,
-        };
-    }
-
-    private static async Task<IReadOnlyList<JsonObject>> LoadCommandsAsync(
-        ConductorArguments parsed,
-        CancellationToken cancellationToken)
-    {
-        if (!string.IsNullOrWhiteSpace(parsed.TurnsFile))
-        {
-            string[] lines = await File.ReadAllLinesAsync(parsed.TurnsFile, cancellationToken)
-                .ConfigureAwait(true);
-            return [.. lines
-                .Select(static line => line.Trim())
-                .Where(static line => line.Length > 0 && !line.StartsWith('#'))
-                .Select(ParseCommand)];
-        }
-
-        if (!string.IsNullOrWhiteSpace(parsed.Text))
-        {
-            return [new JsonObject { ["cmd"] = "turn", ["text"] = parsed.Text }];
-        }
-
-        var commands = new List<JsonObject>();
-        using var reader = new StreamReader(Console.OpenStandardInput(), Encoding.UTF8);
-        while (await reader.ReadLineAsync(cancellationToken).ConfigureAwait(true) is { } line)
-        {
-            string trimmed = line.Trim();
-            if (trimmed.Length == 0)
+            string line = raw.Trim();
+            if (line.Length == 0)
             {
                 continue;
             }
 
-            commands.Add(ParseCommand(trimmed));
-        }
-
-        return commands;
-    }
-
-    private static JsonObject ParseCommand(string line)
-    {
-        JsonNode? node;
-        try
-        {
-            node = JsonNode.Parse(line);
-        }
-        catch (JsonException)
-        {
-            return new JsonObject { ["cmd"] = "turn", ["text"] = line };
-        }
-
-        if (node is JsonObject obj)
-        {
-            if (obj["cmd"] is null && obj["text"] is not null)
+            JsonObject? turn = null;
+            if (line.StartsWith('{'))
             {
-                obj["cmd"] = "turn";
+                try
+                {
+                    turn = JsonNode.Parse(line) as JsonObject;
+                }
+                catch (JsonException)
+                {
+                    turn = null;
+                }
             }
 
-            return obj;
+            yield return turn ?? new JsonObject { ["text"] = line };
         }
-
-        return new JsonObject { ["cmd"] = "turn", ["text"] = line };
     }
 
     private static void EnsureConsole()
@@ -1088,46 +237,8 @@ internal static class ProductConductorHost
             _ = AllocConsole();
         }
 
-        Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8)
-        {
-            AutoFlush = true,
-        });
-        Console.SetError(new StreamWriter(Console.OpenStandardError(), Encoding.UTF8)
-        {
-            AutoFlush = true,
-        });
-        Console.SetIn(new StreamReader(Console.OpenStandardInput(), Encoding.UTF8));
-    }
-
-    private static StreamWriter? OpenCapture(string? directory, string fileName)
-    {
-        if (string.IsNullOrWhiteSpace(directory))
-        {
-            return null;
-        }
-
-        var writer = new StreamWriter(
-            Path.Combine(directory, fileName),
-            append: false,
-            Encoding.UTF8)
-        {
-            AutoFlush = true,
-        };
-        return writer;
-    }
-
-    private static async Task EmitAsync(
-        JsonObject payload,
-        StreamWriter? capture,
-        CancellationToken cancellationToken)
-    {
-        string line = payload.ToJsonString(JsonOptions);
-        Console.Out.WriteLine(line);
-        await Console.Out.FlushAsync(cancellationToken).ConfigureAwait(true);
-        if (capture is not null)
-        {
-            await capture.WriteLineAsync(line.AsMemory(), cancellationToken).ConfigureAwait(true);
-        }
+        Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false)) { AutoFlush = true });
+        Console.SetError(new StreamWriter(Console.OpenStandardError(), new UTF8Encoding(false)) { AutoFlush = true });
     }
 
     internal sealed record ConductorArguments(
@@ -1135,53 +246,38 @@ internal static class ProductConductorHost
         string? CaptureDirectory,
         string? TurnsFile,
         string? Text,
-        string? Commit,
-        TimeSpan Timeout,
-        bool AfterWelcome = false)
+        TimeSpan TurnTimeout)
     {
         internal static ConductorArguments Parse(IReadOnlyList<string> arguments)
         {
             string profile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "BAXY",
-                "comprobaciones-c01");
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "conductor");
             string? capture = null;
             string? turns = null;
             string? text = null;
-            string? commit = Environment.GetEnvironmentVariable("BAXY_CONDUCTOR_COMMIT");
-            int timeoutMs = 120_000;
-            bool afterWelcome = false;
+            int timeoutMs = 180_000;
             for (int index = 0; index < arguments.Count; index++)
             {
-                string argument = arguments[index];
-                if (string.Equals(argument, AfterWelcomeArgument, StringComparison.OrdinalIgnoreCase))
+                if (TryTake(arguments, ref index, "--profile", out string? value))
                 {
-                    afterWelcome = true;
+                    profile = value!;
                 }
-                else if (TryTake(arguments, ref index, "--profile", out string? profileValue))
+                else if (TryTake(arguments, ref index, "--capture", out value))
                 {
-                    profile = profileValue!;
+                    capture = value;
                 }
-                else if (TryTake(arguments, ref index, "--capture", out string? captureValue))
+                else if (TryTake(arguments, ref index, "--turns-file", out value))
                 {
-                    capture = captureValue;
+                    turns = value;
                 }
-                else if (TryTake(arguments, ref index, "--turns-file", out string? turnsValue))
+                else if (TryTake(arguments, ref index, "--text", out value))
                 {
-                    turns = turnsValue;
+                    text = value;
                 }
-                else if (TryTake(arguments, ref index, "--text", out string? textValue))
+                else if (TryTake(arguments, ref index, "--timeout-ms", out value)
+                    && int.TryParse(value, out int parsedTimeout))
                 {
-                    text = textValue;
-                }
-                else if (TryTake(arguments, ref index, "--commit", out string? commitValue))
-                {
-                    commit = commitValue;
-                }
-                else if (TryTake(arguments, ref index, "--timeout-ms", out string? timeoutValue)
-                    && int.TryParse(timeoutValue, out int parsedTimeout))
-                {
-                    timeoutMs = Math.Clamp(parsedTimeout, 1_000, 600_000);
+                    timeoutMs = Math.Clamp(parsedTimeout, 1_000, 900_000);
                 }
             }
 
@@ -1190,16 +286,10 @@ internal static class ProductConductorHost
                 string.IsNullOrWhiteSpace(capture) ? null : Path.GetFullPath(capture),
                 string.IsNullOrWhiteSpace(turns) ? null : Path.GetFullPath(turns),
                 text,
-                commit,
-                TimeSpan.FromMilliseconds(timeoutMs),
-                afterWelcome);
+                TimeSpan.FromMilliseconds(timeoutMs));
         }
 
-        private static bool TryTake(
-            IReadOnlyList<string> arguments,
-            ref int index,
-            string expected,
-            out string? value)
+        private static bool TryTake(IReadOnlyList<string> arguments, ref int index, string expected, out string? value)
         {
             string argument = arguments[index];
             if (argument.StartsWith(expected + "=", StringComparison.OrdinalIgnoreCase))
@@ -1208,8 +298,7 @@ internal static class ProductConductorHost
                 return true;
             }
 
-            if (string.Equals(argument, expected, StringComparison.OrdinalIgnoreCase)
-                && index + 1 < arguments.Count)
+            if (string.Equals(argument, expected, StringComparison.OrdinalIgnoreCase) && index + 1 < arguments.Count)
             {
                 value = arguments[++index];
                 return true;

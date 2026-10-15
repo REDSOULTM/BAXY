@@ -118,7 +118,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly CancellationTokenSource _channelLifetime = new();
     private readonly SynchronizationContext _uiContext;
     private readonly Timer _progressPulse;
-    private readonly Timer _milestoneDue;
     private readonly string _sessionId = Guid.NewGuid().ToString("N")[..12];
     private string _sessionLabel = "current";
     private long _activitySequence;
@@ -158,17 +157,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _lifetimeCancellation = lifetimeCancellation;
         _uiContext = SynchronizationContext.Current ?? new SynchronizationContext();
         _viewModel.MessageAdded += OnMessageAdded;
-        _viewModel.CompositionFailed += OnCompositionFailed;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _viewModel.MemoryChanged += OnMemoryChanged;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
         _progressPulse = new Timer(
             _ => PostToUi(OnProgressPulse),
-            null,
-            Timeout.Infinite,
-            Timeout.Infinite);
-        _milestoneDue = new Timer(
-            _ => PostToUi(OnMilestoneDue),
             null,
             Timeout.Infinite,
             Timeout.Infinite);
@@ -293,6 +286,23 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (method == "POST" && route == "/turn")
         {
             return await HandleTurnAsync(body).ConfigureAwait(true);
+        }
+
+        if (method == "POST" && route == "/confirmation/answer")
+        {
+            JsonObject? answer = ParseBody(body);
+            if (answer?["approve"] is not JsonValue approveValue || !approveValue.TryGetValue(out bool approve))
+            {
+                return Error("invalid_answer", 400);
+            }
+
+            if (!_viewModel.HasPendingConfirmation)
+            {
+                return Error("nothing_pending", 409);
+            }
+
+            await _viewModel.AnswerConfirmationAsync(approve, _lifetimeCancellation).ConfigureAwait(true);
+            return Json(new JsonObject { ["ok"] = true });
         }
 
         if (method == "POST" && route == "/activity")
@@ -557,7 +567,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _viewModel.IsBusy,
             _viewModel.HasStartupError,
             _viewModel.StatusDescription,
-            _viewModel.ProgressLabel);
+            null);
 
     internal JsonObject AgentEvent() => new()
     {
@@ -565,6 +575,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["built"] = _viewModel.IsReady,
         ["healthy"] = _viewModel.IsReady && !_viewModel.HasStartupError,
         ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
+        // A risky call waits for the person: the interface shows Sí and No under BAXY's question.
+        ["pendingConfirmation"] = _viewModel.HasPendingConfirmation,
     };
 
     internal JsonObject SessionEvent() => new()
@@ -606,20 +618,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["type"] = "activity",
             ["entry"] = entry,
         };
-    }
-
-    private void OnCompositionFailed(PendingModelMessage pending, string failure)
-    {
-        string route = PublicResponseRoute.FromDraft(pending.Draft);
-        Publish(new JsonObject
-        {
-            ["type"] = "composition_failed",
-            ["cause"] = failure,
-            ["controlsUsable"] = true,
-            ["route"] = route,
-            ["injected"] = FieldCompositionInjection.Resolve()
-                != FieldCompositionInjectionMode.None,
-        });
     }
 
     internal static string NormalizeActivitySource(string? source) => source switch
@@ -714,7 +712,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
         catch (MissionInputRejectedException)
         {
-            _viewModel.PublishInputRejection();
             PublishAdmission(turnId, accepted: false, 400, "invalid_text");
             return Error("invalid_text", 400);
         }
@@ -734,7 +731,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
         catch (MissionInputRejectedException)
         {
-            _viewModel.PublishInputRejection();
             PublishAdmission(turnId, accepted: false, 400, "invalid_text");
             return Error("invalid_text", 400);
         }
@@ -821,7 +817,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
             or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.HasStartupError)
-            or nameof(MainWindowViewModel.IsMindPreparing))
+            or nameof(MainWindowViewModel.IsMindPreparing)
+            or nameof(MainWindowViewModel.HasPendingConfirmation))
         {
             Publish(AgentEvent());
         }
@@ -832,8 +829,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsBusy)
-            or nameof(MainWindowViewModel.HasCompositionError)
-            or nameof(MainWindowViewModel.PendingModelMessageCount)
             or nameof(MainWindowViewModel.IsListening)
             or nameof(MainWindowViewModel.IsVoiceSpeaking)
             or nameof(MainWindowViewModel.StatusDescription))
@@ -849,30 +844,16 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.HasStartupError)
             or nameof(MainWindowViewModel.IsMindPreparing)
-            or nameof(MainWindowViewModel.StatusDescription)
-            or nameof(MainWindowViewModel.ProgressLabel))
+            or nameof(MainWindowViewModel.StatusDescription))
         {
             PublishProgress();
             SyncProgressPulse();
-            if (eventArgs.PropertyName is nameof(MainWindowViewModel.ProgressLabel)
-                && _viewModel.ProgressLabel is not null)
-            {
-                RestartMilestoneDue();
-            }
         }
     }
 
     private void OnProgressPulse()
     {
-        _viewModel.TryEmitDueMilestone(DateTimeOffset.UtcNow);
         PublishProgress(forcePulse: true);
-    }
-
-    private void OnMilestoneDue()
-    {
-        _viewModel.TryEmitDueMilestone(DateTimeOffset.UtcNow);
-        PublishProgress();
-        RestartMilestoneDue();
     }
 
     private void SyncProgressPulse()
@@ -883,28 +864,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _ = _progressPulse.Change(
                 FieldBridgeContract.ProgressPulse,
                 FieldBridgeContract.ProgressPulse);
-            _ = _milestoneDue.Change(
-                FieldBridgeContract.MilestoneDue,
-                Timeout.InfiniteTimeSpan);
         }
         else
         {
             _ = _progressPulse.Change(Timeout.Infinite, Timeout.Infinite);
-            _ = _milestoneDue.Change(Timeout.Infinite, Timeout.Infinite);
-        }
-    }
-
-    private void RestartMilestoneDue()
-    {
-        if (_viewModel.IsBusy || !_viewModel.IsReady)
-        {
-            _ = _milestoneDue.Change(
-                FieldBridgeContract.MilestoneDue,
-                Timeout.InfiniteTimeSpan);
-        }
-        else
-        {
-            _ = _milestoneDue.Change(Timeout.Infinite, Timeout.Infinite);
         }
     }
 
@@ -953,11 +916,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private string CurrentConversationState()
     {
-        if (_viewModel.HasCompositionError)
-        {
-            return "error";
-        }
-
         if (_viewModel.IsVoiceSpeaking)
         {
             return "speaking";
@@ -969,8 +927,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return "listening";
         }
 
-        return _viewModel.IsBusy || _viewModel.PendingModelMessageCount > 0
-            ? "thinking" : "idle";
+        return _viewModel.IsBusy ? "thinking" : "idle";
     }
 
     private void PostActivity(string source, string text)
@@ -1248,12 +1205,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         _disposed = true;
         _viewModel.MessageAdded -= OnMessageAdded;
-        _viewModel.CompositionFailed -= OnCompositionFailed;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.MemoryChanged -= OnMemoryChanged;
         await _channelLifetime.CancelAsync();
         _channelLifetime.Dispose();
         await _progressPulse.DisposeAsync();
-        await _milestoneDue.DisposeAsync();
     }
 }

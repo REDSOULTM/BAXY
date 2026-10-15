@@ -65,58 +65,6 @@ internal sealed record OperationResponseProjection(string Message)
                     response.ErrorCode)));
     }
 
-    // M69 (guion v3h t46/t47): «activa mi microfono» with the microphone already
-    // active was published on the error route. The adapter reads the state and
-    // stops before any effect boundary (owner's test 2026-09-21, turn 205) with a
-    // typed code whose asked state already holds; that state is the result the
-    // person asked about, so the turn publishes it as one. Nothing was changed and
-    // the facts keep saying so (polarity failure, the typed code).
-    internal static bool AskedStateAlreadyHeld(OperationResponse response)
-    {
-        ArgumentNullException.ThrowIfNull(response);
-        return response.Status == OperationStatuses.Failed
-            && !response.EffectMayHaveOccurred
-            && UserMessagePolicy.IsAskedStateAlreadyHeldCode(response.ErrorCode);
-    }
-
-    // NETWORK1721: a confirmed step that fails hands the mind the operation's
-    // own typed facts (kind operation, polarity failure, error) exactly as an
-    // ordinary step does, so the cause reaches the final; anything else keeps
-    // the generic confirmed_no_effect reason.
-    internal static bool CarriesOperationFacts(string? message)
-    {
-        if (string.IsNullOrWhiteSpace(message))
-        {
-            return false;
-        }
-
-        string trimmed = message.Trim();
-        if (!trimmed.StartsWith('{') || trimmed.Length > MaximumMessageLength)
-        {
-            return false;
-        }
-
-        try
-        {
-            using JsonDocument document = JsonDocument.Parse(trimmed);
-            JsonElement root = document.RootElement;
-            return root.ValueKind == JsonValueKind.Object
-                && root.TryGetProperty("kind", out JsonElement kind)
-                && kind.ValueKind == JsonValueKind.String
-                && kind.GetString() == "operation"
-                && root.TryGetProperty("polarity", out JsonElement polarity)
-                && polarity.ValueKind == JsonValueKind.String
-                && polarity.GetString() == "failure"
-                && root.TryGetProperty("error", out JsonElement error)
-                && error.ValueKind == JsonValueKind.String
-                && !string.IsNullOrWhiteSpace(error.GetString());
-        }
-        catch (JsonException)
-        {
-            return false;
-        }
-    }
-
     private static string TruncateMessage(
         string value,
         string suffix = "… [respuesta truncada]",

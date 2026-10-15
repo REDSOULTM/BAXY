@@ -4,304 +4,111 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Baxy.Contracts;
-using Baxy.Kernel.Operations;
-using Baxy.Kernel.Policy;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
+/// <summary>
+/// The shell's state for the window, the interface channel, the tray and the conductor: it starts the core and the
+/// mind, takes the person's words (typed or transcribed) and their Sí/No, hands each turn to the native loop
+/// (<see cref="NativeTurnLoop"/>) and publishes what the model wrote. It authors no reply of its own: when a turn cannot
+/// reach an answer the interface shows a state, not a sentence.
+/// </summary>
 internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDisposable
 {
     private readonly SynchronizationContext _uiContext;
-    private readonly int _uiThreadId = Environment.CurrentManagedThreadId;
     private readonly string _memorySessionId;
-    private readonly Func<MissionInputRoute, RoutedOperation?>? _testTurnResolver;
     private readonly Func<MindSidecarClient> _mindClientFactory;
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
-    private readonly PendingModelMessageQueue _modelMessages;
+    private readonly NativeTurnLoop _loop;
+    private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private RetryableOperationRegistry? _retryableOperations;
-    private bool _earlierSessionMissionsRetired;
+    private MemoryOperationProtector? _memoryProtector;
     private CoreProcessClient? _coreClient;
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
     private volatile MindStartupState _mindStartupState;
-    // Ronda 22, revisión 2: each start of the mind is one attempt; only the latest writes the shared start-up state,
-    // so an attempt a newer one superseded never settles, fails or installs over it.
-    private int _mindStartupAttempt;
-    private DateTime _mindRetryAfterUtc = DateTime.MinValue;
     private MindStartupFailure? _mindStartupFailure;
     private int _mindStartupFailureCount;
-    private bool _isListening;
-    private bool _isWakeListening;
-    private bool _isVoiceSpeaking;
-    private bool _isMicAvailable;
-    private MemoryOperationProtector? _memoryProtector;
-    private readonly MemoryTurnSession _memoryTurns;
-    private readonly MindPlanSession _mindPlans;
-    private readonly PendingNoteInteractionState _pendingNoteInteraction = new();
-    private PreparedOperation? _pendingAudioOperation;
-    private string? _pendingMindClarificationObjective;
-    private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
     private bool _coreRecoveryPending;
     private Task _coreRecovery = Task.CompletedTask;
     private int _voiceCommandBusy;
-    // The voice the mind turns on by itself at startup yields to the person:
-    // once they give a voice command it never applies, and a command that
-    // arrives while it is starting waits for it first (see AwaitStartupVoiceAsync).
+    // The voice the mind turns on by itself at startup yields to the person: once they give a voice command it never
+    // applies, and a command that arrives while it is starting waits for it first.
     private int _personVoiceChoice;
     private Task _startupVoice = Task.CompletedTask;
+    private bool _startupMindPending;
+    private bool _isListening;
+    private bool _isWakeListening;
+    private bool _isVoiceSpeaking;
+    private bool _isMicAvailable;
     private string _draft = string.Empty;
     private string _statusText = "Iniciando";
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
     private bool _isBusy;
     private bool _hasStartupError;
-    private bool _hasCompositionError;
     private bool _isInitializing;
     private bool _isDisposed;
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
-    private string _currentTurnTraceId = "t0";
-    // The turn that was current when the person last submitted input: its greeting lost its moment then.
-    private string? _inputSubmittedDuringTraceId;
-    // When the current turn left the queue: the clock of its TurnBudget.
-    private long _turnStartedTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
-    private DateTimeOffset? _lastMilestoneAttemptUtc;
-    // Uso real t2-r4 c01-2: five model-composed «Estoy trabajando…» in one 24 s turn, each competing for the GPU with
-    // the turn's own composer. The model words the first milestone of a turn; the later ones are formulated.
-
-    /// <summary>
-    /// Por qué se descartó la respuesta que la mente había redactado en el
-    /// último turno, o null si se publicó. Sin esto, degradar a un mensaje de
-    /// estado dejaba el turno sin causa y no se distinguía un veto correcto
-    /// de uno falso sin repetir la campaña entera.
-    /// </summary>
-    internal string? LastMindReplyRejection { get; private set; }
-
-    /// <summary>
-    /// A7: the text the mind wrote and the shell refused (its reply, its clarification or its last composition),
-    /// for the private run audit only; the veto name alone did not tell a false veto from a right one.
-    /// </summary>
-    internal string? LastMindRejectedReply { get; private set; }
-    private string? _progressLabel;
-    private DateTimeOffset? _lastBaxyVisibleUtc;
     private DateTimeOffset? _firstWakeUtc;
 
     public MainWindowViewModel()
-        : this(testTurnResolver: null)
+        : this(mindClientFactory: null)
     {
     }
 
-    internal MainWindowViewModel(
-        Func<MissionInputRoute, RoutedOperation?>? testTurnResolver,
-        Func<MindSidecarClient>? mindClientFactory = null)
+    internal MainWindowViewModel(Func<MindSidecarClient>? mindClientFactory)
     {
         _uiContext = SynchronizationContext.Current ?? new SynchronizationContext();
         _memorySessionId = Guid.NewGuid().ToString("D");
-        _testTurnResolver = testTurnResolver;
-        _mindClientFactory =
-            mindClientFactory ?? (static () => new MindSidecarClient());
+        _mindClientFactory = mindClientFactory ?? (static () => new MindSidecarClient());
         Messages = new ObservableCollection<ConversationMessage>();
-        _modelMessages = new PendingModelMessageQueue(
-            WaitForMindReadyAsync,
-            PublishComposedMessageAsync,
-            failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
-            OnModelMessageQueued,
-            () => InvokeOnUiAsync(RestorePresentationState),
-            onExhaustedAsync: PublishCompositionFailureAsync,
-            isStale: IsStalePendingMessage);
-        _mindPlans = new MindPlanSession(
-            new MindPlanSession.Host
+        _loop = new NativeTurnLoop(
+            new NativeTurnLoop.Host
             {
                 Core = () => _coreClient,
                 Mind = () => _mindClient,
-                Publish = PublishPlanResult,
-                SetStatus = text => StatusDescription = text,
-                TryMarkResolved = TryMarkResolved,
-                TurnElapsed = TurnElapsed,
-            });
-        _memoryTurns = new MemoryTurnSession(
-            new MemoryTurnSession.Host
-            {
-                Core = () => _coreClient,
-                Protector = () => _memoryProtector,
-                Publish = PublishPlanResult,
-                PublishForObjective = PublishBaxyForObjective,
-                SetStatus = text => StatusDescription = text,
-                HasPendingAudio = () => _pendingAudioOperation is not null,
-                RecoverNotes = RecoverPendingNoteInteraction,
-                ContinuePublic = (route, registry, token) =>
-                    TryExecuteWithMindAsync(route, registry, token),
+                Registry = () => _retryableOperations,
+                MemoryProtector = () => _memoryProtector,
+                Publish = (text, route) => AddMessageCore("BAXY", text, isUser: false, route),
+                Fail = failure =>
+                {
+                    LastTurnFailure = failure;
+                    ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, ShellTraceStages.TurnError,
+                        failure);
+                },
+                StepCompleted = step => StepCompleted?.Invoke(step),
                 MemoryChanged = () => MemoryChanged?.Invoke(),
             });
-    }
-
-    /// <summary>Estabilización M: the chat changed what the memory holds (the interface reads its count again).</summary>
-    internal event Action? MemoryChanged;
-
-    /// <summary>
-    /// Estabilización M: the engine and the private-memory sealing the interface's memory panel uses, the same the chat
-    /// uses: its list, edit and forget are catalog operations the kernel authorizes and the journal records.
-    /// </summary>
-    internal CoreProcessClient? CoreClient => _coreClient;
-
-    internal MemoryOperationProtector? MemoryProtector => _memoryProtector;
-
-    private void PublishBaxy(string body, UserMessageEvent? messageEvent) =>
-        AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent);
-
-    // BAXY Renew native loop: while the model drives a turn, a step's verified result goes back to the model instead of
-    // being published; a confirmation the kernel asks for is always the person's, so it is published as before.
-    private bool _loopCapturing;
-    private (string Body, UserMessageEvent? Event)? _loopObservation;
-
-    private bool _loopAwaitingConfirmation;
-
-    private void PublishPlanResult(string body, UserMessageEvent? messageEvent)
-    {
-        if (_loopCapturing && messageEvent != UserMessageEvent.Confirmation)
-        {
-            _loopObservation = (body, messageEvent);
-            return;
-        }
-
-        if (_loopCapturing)
-        {
-            // The loop waits for the person's answer; after a «sí» the result goes back to the model (Resume…).
-            _loopAwaitingConfirmation = true;
-        }
-
-        PublishBaxy(body, messageEvent);
-    }
-
-    private void PublishBaxyForObjective(string body, UserMessageEvent? messageEvent, string? objective) =>
-        AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent, composeUserText: objective);
-
-    private void OnModelMessageQueued()
-    {
-        OnPropertyChanged(nameof(PendingModelMessageCount));
-        // Composition is presentation work, not an executing mission. A slow or
-        // recovering narrator must not lock text and voice input indefinitely.
-        IsBusy = _turnExecutionActive;
-        StatusText = "Trabajando";
-        // The Field UI already renders a non-linguistic thinking animation.
-        // Leave prose empty until a policy-checked model response is available.
-        StatusDescription = string.Empty;
-    }
-
-    /// <summary>
-    /// Una bienvenida o aviso de voz anterior a un turno no debe publicarse
-    /// encima de su respuesta. El acuse de wake también caduca al cerrar escucha.
-    /// Ronda 25 (latencia): caduca al enviar la persona su pedido, no al empezar el
-    /// turno (0,7–1,2 s después): así no ocupa el carril de la mente delante de él.
-    /// </summary>
-    private bool IsStalePendingMessage(PendingModelMessage pending)
-    {
-        bool voiceFeedback = (bool?)pending.Facts["voiceFeedback"] == true;
-        bool superseded = !string.Equals(
-                pending.TraceId, _currentTurnTraceId, StringComparison.Ordinal)
-            || string.Equals(
-                pending.TraceId, Volatile.Read(ref _inputSubmittedDuringTraceId), StringComparison.Ordinal);
-        return ((pending.Draft.Intent == "welcome" || voiceFeedback) && superseded)
-            || (voiceFeedback
-                && pending.Draft.Intent == "conversation"
-                && !IsWakeListening);
-    }
-
-    private async Task PublishComposedMessageAsync(
-        string text,
-        string? failure,
-        PendingModelMessage pending) =>
-        await InvokeOnUiAsync(
-            () =>
-            {
-                if (_isDisposed || IsStalePendingMessage(pending))
-                {
-                    return;
-                }
-
-                LastMessageCompositionFailure = failure;
-                LastMindRejectedReply ??= pending.LastRejectedText;
-                HasCompositionError = false;
-                // M53 (D35): an answer composed from a page BAXY consulted carries that page as
-                // its «fuente» link; a fallback line (failure set) was not written from it.
-                AddMessageCore(
-                    "BAXY",
-                    text,
-                    isUser: false,
-                    PublicResponseRoute.FromDraft(pending.Draft),
-                    failure is null ? ConsultedSource.From(pending.Facts) : null);
-                RestorePresentationState();
-            });
-
-    private async Task PublishCompositionFailureAsync(
-        PendingModelMessage pending,
-        string failure)
-    {
-        await InvokeOnUiAsync(
-            () =>
-            {
-                if (_isDisposed)
-                {
-                    return;
-                }
-
-                PublishCompositionFailureNow(pending, failure);
-                RestorePresentationState();
-            }).ConfigureAwait(false);
-    }
-
-    // On the UI thread: the failed composition's line, its event and its diagnostic, published now.
-    private void PublishCompositionFailureNow(PendingModelMessage pending, string failure)
-    {
-        LastMessageCompositionFailure = failure;
-        LastMindRejectedReply ??= pending.LastRejectedText;
-        HasCompositionError = true;
-        CompositionFailed?.Invoke(pending, failure);
-        // Owner session 2026-09-21 16:08 «que es una verga»: the composition
-        // failed and the transcript stayed empty, twice. The person always
-        // sees a line (and the private log keeps the cause for diagnosis).
-        AddMessageCore(
-            "BAXY",
-            CompositionFailureFallback(pending, failure),
-            isUser: false,
-            PublicResponseRoute.Error);
-    }
-
-    // Notebook closure 2026-09-22: the line stays (the transcript is never left
-    // empty), but the App does not author BAXY's prose (scripts/censo_voz_visible.py,
-    // zero fixed visible literals). Live 2026-10-07: the person read the raw
-    // «⚠ (internal_code;retry_exhausted)» after a question BAXY could not word; the
-    // line is now the operation floor's data sentence for what the turn was (a
-    // question still to ask, a result, anything else), in the person's language. The
-    // diagnostic code stays in the private log (LastMessageCompositionFailure, the
-    // composition_failed event); the marker remains only if the data has no line.
-    internal static string CompositionFailureFallback(PendingModelMessage pending, string failure)
-    {
-        ArgumentNullException.ThrowIfNull(pending);
-        bool english = ModelMessageComposer.LooksEnglish(pending.UserText);
-        if (OperationFloor.MindStartupSentence(OperationFloor.MindStartupCause(pending.Draft.Source), english)
-            is { } startup)
-        {
-            return startup;
-        }
-
-        return OperationFloor.CompositionFailureSentence(
-                pending.Draft.Intent, ModelMessageComposer.LooksEnglish(pending.UserText), pending.Draft.Source)
-            ?? "⚠ (" + failure + ")";
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event Action<ConversationMessage>? MessageAdded;
 
-    public event Action<PendingModelMessage, string>? CompositionFailed;
+    /// <summary>Each call the model made in a turn and what came of it (trace, conductor capture).</summary>
+    internal event Action<NativeTurnStep>? StepCompleted;
+
+    /// <summary>The chat changed what the memory holds (the interface reads its count again).</summary>
+    internal event Action? MemoryChanged;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
+
+    /// <summary>The engine and the private-memory sealing the interface's memory panel uses, the same the chat uses.</summary>
+    internal CoreProcessClient? CoreClient => _coreClient;
+
+    internal MemoryOperationProtector? MemoryProtector => _memoryProtector;
+
+    /// <summary>Why the last turn ended without an answer from the model (mind_unavailable, decision_unavailable).</summary>
+    internal string? LastTurnFailure { get; private set; }
+
+    /// <summary>A risky call waits for the person's Sí or No (the interface shows the two buttons).</summary>
+    public bool HasPendingConfirmation => _loop.HasPendingConfirmation;
 
     public string Draft
     {
@@ -324,140 +131,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public string StatusDescription
     {
         get => _statusDescription;
-        private set
-        {
-            if (SetField(ref _statusDescription, value) && _progressLabel is not null)
-            {
-                _progressLabel = null;
-                OnPropertyChanged(nameof(ProgressLabel));
-            }
-        }
-    }
-
-    public string? ProgressLabel => _progressLabel;
-
-    /// <summary>A computer-use mission is between its looks and steps (its state lives on the plan until it ends).</summary>
-    internal bool IsComputerUseMissionRunning => _mindPlans.Current?.ComputerUse is not null;
-
-    internal void ApplyInProgressSignal(string text, DateTimeOffset? nowUtc = null)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return;
-        }
-
-        _progressLabel = text.Trim();
-        _lastBaxyVisibleUtc = nowUtc ?? DateTimeOffset.UtcNow;
-        OnPropertyChanged(nameof(ProgressLabel));
-    }
-
-    internal void BeginTurnPresentation(string publicUserText, DateTimeOffset startedUtc)
-    {
-        AddMessage("Tú", publicUserText, isUser: true);
-        _turnExecutionActive = true;
-        LastMindReplyRejection = null;
-        LastMindRejectedReply = null;
-        // The language of the turn being decided, not the last one's (the progress notice reads it).
-        LastMindResponseLanguage = null;
-        HasCompositionError = false;
-        LastMessageCompositionFailure = null;
-        IsBusy = true;
-        StatusText = "Trabajando";
-        StatusDescription = "understanding";
-        ClearProgressLabel();
-        _lastBaxyVisibleUtc = startedUtc;
-    }
-
-    internal bool TryEmitDueMilestone(DateTimeOffset nowUtc)
-    {
-        if (!_turnExecutionActive || !IsBusy)
-        {
-            return false;
-        }
-
-        if (!FirstSignal.ShouldEmitMilestone(_lastBaxyVisibleUtc, nowUtc))
-        {
-            return false;
-        }
-
-        if (_lastMilestoneAttemptUtc is { } attempted
-            && !FirstSignal.ShouldEmitMilestone(attempted, nowUtc))
-        {
-            return false;
-        }
-
-        // Un aviso de progreso rechazado no puede reintentarse en caliente: sin
-        // esta marca, cada tic del temporizador lanzaba otra composición (hasta
-        // seis llamadas al modelo) y un turno lento acababa consumiendo miles.
-        string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
-            ?? string.Empty;
-        int step = 0;
-        int total = 0;
-        if (_mindPlans.Current is { } plan && plan.Steps.Count > 1)
-        {
-            step = Math.Min(plan.NextIndex + 1, plan.Steps.Count);
-            total = plan.Steps.Count;
-        }
-
-        // A computer-use mission shows its own status (acting, step by step),
-        // and a label composed by the model would cost the GPU 0.3-0.6 s every
-        // few seconds and evict the prompt cache the next step decision reuses.
-        // lat-apertura-clic (owner's rule: more than 3 s without a signal is
-        // not acceptable; r13a: «acting» pulsed through waits of 10-40 s with no
-        // text): its waits still get the formulated label, never composed, which
-        // says it goes on and claims no result.
-        // BAXY Renew: the progress notice is always the formulated label. A notice composed by the model competed with
-        // the turn for the mind and the GPU, and fired after the final answer (the second composition of «Hablame de
-        // messi», 2026-10-15).
-        _lastMilestoneAttemptUtc = nowUtc;
-        ApplyInProgressSignal(
-            FirstSignal.FormulateProgress(
-                userText,
-                FirstSignal.KindMilestone,
-                step,
-                total,
-                LastMindResponseLanguage),
-            nowUtc);
-        return true;
-    }
-
-    internal static UserMessageDraft CreateMilestoneDraft(string statusDescription, int step, int total)
-    {
-        string phase = FieldBridgeContract.ResolveProgress(
-            isReady: true, isBusy: true, hasStartupError: false, statusDescription)?.Stage
-            ?? FieldProgressNotice.StageWorking;
-        var extra = new JsonObject { ["phase"] = phase };
-        if (phase == FieldProgressNotice.StageActing && total > 1 && step > 0 && step <= total)
-        {
-            extra["step"] = step;
-            extra["totalSteps"] = total;
-        }
-        return UserMessagePolicy.Create(TurnVisibleFacts.Status("acting", extra), UserMessageEvent.Status);
-    }
-
-    internal bool TryApplyMilestone(string text, string turnId, string statusDescription)
-    {
-        if (_isDisposed || !_turnExecutionActive || !IsBusy
-            || !string.Equals(turnId, _currentTurnTraceId, StringComparison.Ordinal)
-            || !string.Equals(statusDescription, StatusDescription, StringComparison.Ordinal))
-        {
-            return false;
-        }
-        ApplyInProgressSignal(text);
-        return true;
-    }
-
-    internal void ClearProgressLabel()
-    {
-        if (_progressLabel is null && _lastBaxyVisibleUtc is null)
-        {
-            return;
-        }
-
-        _progressLabel = null;
-        _lastBaxyVisibleUtc = null;
-        _lastMilestoneAttemptUtc = null;
-        OnPropertyChanged(nameof(ProgressLabel));
+        private set => SetField(ref _statusDescription, value);
     }
 
     public bool IsReady
@@ -494,35 +168,38 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public bool IsInputEnabled => IsReady && !IsBusy;
 
+    public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
+
     public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
 
     public bool IsMindReady => _mindClient is { IsReady: true };
 
-    /// <summary>
-    /// Ronda 22 (r18, the four tandas: «listo» 9-15 s before <c>startup.mind.ready</c>): the shell opened while the
-    /// mind it started is still reading its model. The field says it is preparing, never ready, until the mind is
-    /// ready or its start ended without it; a turn sent meanwhile still queues behind it as before.
-    /// </summary>
+    /// <summary>The shell opened while the mind it started is still reading its model.</summary>
     public bool IsMindPreparing => _startupMindPending;
 
-    private bool _startupMindPending;
-
-    public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
-
-    internal string? LastMessageCompositionFailure { get; private set; }
-
-    internal bool HasCompositionError
+    public bool IsListening
     {
-        get => _hasCompositionError;
-        private set => SetField(ref _hasCompositionError, value);
+        get => _isListening;
+        private set => SetField(ref _isListening, value);
     }
 
-    internal int PendingModelMessageCount => _modelMessages.Count;
+    public bool IsWakeListening
+    {
+        get => _isWakeListening;
+        private set => SetField(ref _isWakeListening, value);
+    }
 
-    /// <summary>Language the mind chose for the latest request; the conductor
-    /// confirms a reviewed effect in that language so the final answer keeps it
-    /// (CLOSE1219/007 answered an English request in Spanish after «confirmar»).</summary>
-    internal string? LastMindResponseLanguage { get; private set; }
+    public bool IsVoiceSpeaking
+    {
+        get => _isVoiceSpeaking;
+        private set => SetField(ref _isVoiceSpeaking, value);
+    }
+
+    public bool IsMicAvailable
+    {
+        get => _isMicAvailable;
+        private set => SetField(ref _isMicAvailable, value);
+    }
 
     public Task InitializeAsync(CancellationToken cancellationToken) =>
         InitializeAsync(recovering: false, cancellationToken);
@@ -540,8 +217,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         IsReady = false;
         StatusText = "Iniciando";
         StatusDescription = "Comprobando BAXY";
-        _memoryTurns.ResetSession();
-        _pendingMindClarificationObjective = null;
+        _loop.Reset();
 
         if (_coreClient is not null)
         {
@@ -563,41 +239,31 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _memoryProtector ??= MemoryOperationProtector.CreateDefault(_memorySessionId);
             RetryableOperationRegistry registry = _retryableOperations
                 ??= RetryableOperationRegistry.CreateDefault(_memoryProtector);
-            _mindPlans.EnsureStore();
-            _mindPlans.TryRestore(registry);
-            if (!_earlierSessionMissionsRetired)
+            if (!recovering)
             {
-                // A computer-use mission and its acts were decided on the screen of the
-                // session that prepared them; no later session retries them. A recovered
-                // core keeps this session's entries. Set once the save held, so a start
-                // that failed to save sweeps again when it is retried.
-                registry.RetireWhere(static operation => ComputerUseMission.Prepares(operation.OperationName));
-                _earlierSessionMissionsRetired = true;
+                // A call of an earlier session is never resumed or retried by itself: the person's consent and the
+                // screen it was decided on belong to that session.
+                registry.RetireWhere(static _ => true);
             }
-            if (_testTurnResolver is null)
+
+            if (_mindClient is not { IsReady: true })
             {
-                // Ronda 22 (r18: the mind verified and started only after the core's hello, «listo» 9-15 s before
-                // startup.mind.ready): the mind's process and model start beside the core's hello; only its
-                // catalog.configure waits for the core's authenticated catalog. A mind already ready (a recovered
-                // core) is not prepared again.
+                // The mind's process and model start beside the core's hello; only its catalog waits for the core.
                 startupCatalog = new TaskCompletionSource<MindStartupCatalog>(
                     TaskCreationOptions.RunContinuationsAsynchronously);
-                _ = BeginStartupMind(startupCatalog.Task, startupMindAbandoned.Token, cancellationToken);
+                _startupMindPending = true;
+                OnPropertyChanged(nameof(IsMindPreparing));
+                _mindInitializationTask = InitializeMindAsync(
+                    startupCatalog.Task, startupMindAbandoned.Token, cancellationToken);
             }
+
             await client.StartAsync(CoreStartupBudget.HelloTimeout, cancellationToken);
             if (!client.IsReady || Volatile.Read(ref _coreDisconnectObserved) != 0)
             {
                 throw new IOException("El motor local se desconectó durante el arranque.");
             }
-            ShellTraceSink.Record(
-                ShellTraceScopes.Startup,
-                "boot",
-                ShellTraceStages.StartupCoreReady);
 
-            // The mind only needs the authenticated capability catalog, which
-            // is available as soon as the core handshake completes; it is
-            // configured while the private-memory session is initialized so
-            // the first user turn does not pay both costs serially.
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupCoreReady);
             startupCatalog?.TrySetResult(new MindStartupCatalog(
                 client.Capabilities,
                 client.ApplicationCatalog,
@@ -608,61 +274,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 throw new IOException("El motor local se desconectó al iniciar la memoria privada.");
             }
 
-            if (_mindInitializationTask is not null
-                && _mindStartupState == MindStartupState.Starting)
-            {
-                DateTime mindDeadline = DateTime.UtcNow.AddSeconds(12);
-                while (_mindClient is not { IsReady: true }
-                    && _mindStartupState == MindStartupState.Starting
-                    && DateTime.UtcNow < mindDeadline)
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationToken);
-                }
-            }
-
             IsReady = true;
-            if (!client.IsReady || Volatile.Read(ref _coreDisconnectObserved) != 0)
-            {
-                throw new IOException("El motor local se desconectó al finalizar el arranque.");
-            }
-
-            if (_startupMindPending)
-            {
-                StatusText = "Iniciando";
-                StatusDescription = "Preparando BAXY";
-                OnPropertyChanged(nameof(IsMindPreparing));
-            }
-            else
-            {
-                // A mind whose start already failed says why in the status line (arranque honesto).
-                StatusText = "Lista";
-                StatusDescription = MindStartupStatus() ?? "BAXY disponible";
-            }
-            if (!recovering)
-            {
-                // A recovered core continues the conversation: the disconnect
-                // was already said, and a greeting there would read as a reply.
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Welcome(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Welcome);
-            }
-
-            if (_mindPlans.DroppedRestoredPlan is { } droppedPlan)
-            {
-                // A plan of a previous session is never resumed: the person is
-                // told what was dropped (or that its effect may have occurred).
-                AddMessage(
-                    "BAXY",
-                    droppedPlan.PendingEffectMayHaveOccurred
-                        ? MissionNarration.CreateUncertainEffectMessage(droppedPlan)
-                        : MissionNarration.CreateCancellationMessage(droppedPlan),
-                    isUser: false);
-            }
-            RecoverPendingAudioOperation(announce: true);
-            _memoryTurns.RecoverFrom(registry, announce: true);
-            RecoverPendingNoteInteraction(announce: true);
+            StatusText = _startupMindPending ? "Iniciando" : "Lista";
+            StatusDescription = _startupMindPending ? "Preparando BAXY" : IdleStatus();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -670,16 +284,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         catch (Exception exception) when (IsExpectedStartupFailure(exception))
         {
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupFailed,
+                $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
             await HandleStartupFailureAsync(client);
         }
         finally
         {
-            // A core that never said hello hands the mind no catalog: its start ends without it, and the mind it
-            // started closes now instead of loading beside the next start-up's (ronda 22, revisión 2).
+            // A core that never said hello hands the mind no catalog: its start ends without it.
             if (startupCatalog?.TrySetCanceled(CancellationToken.None) == true)
             {
                 await startupMindAbandoned.CancelAsync();
             }
+
             _isInitializing = false;
         }
     }
@@ -691,598 +307,116 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
-        MissionInput input = new(Draft, MissionInputSource.Text);
+        string draft = Draft;
+        Draft = string.Empty;
         try
         {
-            await DispatchMissionInputAsync(
-                input,
-                () => Draft = string.Empty,
-                cancellationToken);
+            await SubmitAsync(new MissionInput(draft, MissionInputSource.Text), cancellationToken);
         }
         catch (MissionInputRejectedException)
         {
-            PublishInputRejection();
+            // The draft is given back untouched; the composer shows its own limit.
+            Draft = draft;
         }
     }
 
-    internal void PublishInputRejection()
-    {
-        AddMessage(
-            "BAXY",
-            MissionInputContract.SafeRejectionGuidance,
-            isUser: false,
-            messageEvent: UserMessageEvent.Clarification);
-    }
-
-    internal bool HasPendingPlan => _mindPlans.HasPending;
-
-    internal PendingOperationConfirmation? CaptureConductorConfirmation(bool allowVerifiedReadPrefix = false)
-    {
-        // The reviewer only learns "review_pending_not_supported"; the trace names
-        // the guard that refused the capture (CLOSE1215/000 was undiagnosable).
-        string? refusal =
-            Environment.CurrentManagedThreadId != _uiThreadId ? "thread"
-            : _isDisposed ? "disposed"
-            : !IsInputEnabled ? "input_disabled"
-            : _coreClient?.IsReady != true ? "core_not_ready"
-            : PendingModelMessageCount != 0 ? "pending_model_messages"
-            : HasCompositionError ? "composition_error"
-            : !string.IsNullOrEmpty(LastMessageCompositionFailure) ? "composition_failure"
-            : _memoryTurns.HasConfirmation ? "memory_confirmation"
-            : _memoryTurns.HasPendingOperation ? "memory_pending"
-            : _pendingAudioOperation is not null ? "audio_pending"
-            : _pendingNoteInteraction.Current is not null ? "note_pending"
-            : _mindPlans.Current is null ? "no_plan"
-            : null;
-        PendingMindPlanExecution? execution = _mindPlans.Current;
-        if (refusal is null && execution is not null)
-        {
-            refusal =
-                !ConductorConfirmationShape(execution, allowVerifiedReadPrefix) ? "shape"
-                : execution.ReplanCount != 0 ? "replanned"
-                : execution.PendingEffectMayHaveOccurred ? "effect_uncertain"
-                : execution.Confirmation is null ? "no_confirmation"
-                : execution.Confirmation.ReconciliationRequired ? "reconciliation_required"
-                : !ReferenceEquals(execution.PendingOperation, execution.Confirmation.Prepared) ? "pending_operation_mismatch"
-                : _retryableOperations?.SnapshotPendingOperations() is not { Count: 1 } pending ? "outbox_count"
-                : !ReferenceEquals(pending[0], execution.Confirmation.Prepared) ? "outbox_identity"
-                : execution.Confirmation.ExpiresAtUtc <= DateTimeOffset.UtcNow ? "expired"
-                : null;
-        }
-
-        if (refusal is not null)
-        {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                ShellTraceSink.TurnId ?? "capture",
-                "conductor.capture.refused",
-                refusal);
-            return null;
-        }
-
-        return execution!.Confirmation;
-    }
-
-    // Los efectos que el conductor revisado sabe proponer a la raíz uno por uno. Un
-    // paso restante que no sea de sólo lectura tiene que estar aquí, o la cadena no
-    // se admite: nada se ejecutaría sin su revisión.
-    private static readonly HashSet<string> ChainReviewedEffects = new(StringComparer.Ordinal)
-    {
-        "browser.navigate", "browser.navigate.named", "capture.screenshot",
-        "capture.active.window", "app.close", "input.visible.click", "streaming.play.named",
-    };
-
-    private static bool ReviewedEffectChainShape(PendingMindPlanExecution execution)
-    {
-        int done = execution.NextIndex;
-        if (done < 0 || done >= execution.Steps.Count
-            || execution.PendingOperation is not { } pending
-            || pending.OperationName != execution.CurrentStep.Operation
-            || !ChainReviewedEffects.Contains(pending.OperationName)
-            || execution.CompletedMessages.Count != done
-            || execution.Observations.Count != done)
-        {
-            return false;
-        }
-
-        for (int index = 0; index < done; index++)
-        {
-            if (execution.Observations[index] is not JsonObject observation
-                || (string?)observation["stepId"] != execution.Steps[index].Id
-                || (string?)observation["operation"] != execution.Steps[index].Operation
-                || (string?)observation["status"] != OperationStatuses.Completed
-                || (bool?)observation["verified"] != true)
-            {
-                return false;
-            }
-        }
-
-        for (int index = done + 1; index < execution.Steps.Count; index++)
-        {
-            string operation = execution.Steps[index].Operation;
-            if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
-                || (descriptor.Risk != OperationRisks.ReadOnly
-                    && !ChainReviewedEffects.Contains(operation)))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static bool ConductorConfirmationShape(
-        PendingMindPlanExecution execution,
-        bool allowVerifiedReadPrefix)
-    {
-        if (allowVerifiedReadPrefix && execution.Steps.Count >= 3
-            && ReviewedEffectChainShape(execution))
-        {
-            // H0516 «Abre Opera GX, busca una receta de pizza, guarda una captura
-            // en el escritorio y luego cierra Opera»: una misión de varios pasos
-            // con más de un efecto revisado. Las formas de abajo son de uno o dos
-            // pasos y no cambian; aquí la regla es general: todo lo ya hecho está
-            // completado y verificado, el paso pendiente es el actual, y cada paso
-            // que queda o es de sólo lectura o se revisará a su turno. Nunca se
-            // aprueba un sufijo: el revisor de la raíz ve cada efecto por separado.
-            return true;
-        }
-
-        if (execution.Steps.Count == 1 && execution.NextIndex == 0
-            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0)
-        {
-            // Reviewed closure must carry the window observation to its reviewer.
-            return !allowVerifiedReadPrefix || execution.CurrentStep.Operation != "app.close";
-        }
-
-        if (execution.Steps.Count == 2 && execution.NextIndex == 0
-            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0
-            && execution.CurrentStep.Operation is "capture.screenshot" or "capture.active.window"
-            && execution.Steps[1].Operation is "ocr.read" or "vision.describe")
-        {
-            // SCREEN1403 «leéme lo que dice la pantalla»: the reviewed capture is
-            // the first step; the read that follows it needs no confirmation
-            // and binds the capture the reviewer approved.
-            return true;
-        }
-
-        if (execution.Steps.Count == 2 && execution.NextIndex == 0
-            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0
-            && execution.CurrentStep.Operation == "wifi.radio.set"
-            && execution.Steps[1].Operation == "wifi.scan")
-        {
-            // NETWORK1743 «qué redes wifi hay» → «la radio está apagada, ¿la enciendo
-            // y busco redes?» → «sí»: the reviewed switch is the first step; the
-            // read-only scan that follows it needs no confirmation.
-            return true;
-        }
-
-        // CompleteStep records completed, verified responses. Failed/uncertain
-        // steps retain a boundary or replan; Capture rejects replans separately.
-        if (!allowVerifiedReadPrefix
-            || execution.Steps.Count != 2 || execution.NextIndex != 1
-            || execution.PendingOperation?.OperationName != execution.CurrentStep.Operation
-            || execution.CompletedMessages.Count != 1
-            || execution.Observations.Count != 1
-            || execution.Observations[0] is not JsonObject observation
-            || (string?)observation["stepId"] != execution.Steps[0].Id
-            || (string?)observation["operation"] != execution.Steps[0].Operation
-            || (string?)observation["status"] != OperationStatuses.Completed
-            || (bool?)observation["verified"] != true
-            || observation["result"] is not JsonObject result)
-        {
-            return false;
-        }
-
-        if (execution.Steps[0].Operation == "web.search")
-        {
-            return execution.CurrentStep.Operation is "browser.navigate" or "browser.navigate.named";
-        }
-
-        if (execution.Steps[0].Operation == "app.open")
-        {
-            // UI1393 «abrí la calculadora y apretá el 5»: a completed, verified
-            // opening (a real process) precedes the reviewed click on the window
-            // it produced; the reviewer still sees the single label argument.
-            return execution.CurrentStep.Operation == "input.visible.click"
-                && execution.PendingOperation is { } click
-                && click.Arguments.ValueKind == JsonValueKind.Object
-                && click.Arguments.EnumerateObject().Count() == 1
-                && click.Arguments.TryGetProperty("label", out JsonElement label)
-                && label.ValueKind == JsonValueKind.String
-                && !string.IsNullOrWhiteSpace(label.GetString())
-                && result["processId"] is JsonValue openedProcessValue
-                && openedProcessValue.TryGetValue(out int openedProcessId)
-                && openedProcessId > 0;
-        }
-
-        if (execution.Steps[0].Operation == "input.visible.controls")
-        {
-            // H0096 «aprieta en Among Us»: mirar antes de pulsar. Leer los
-            // controles visibles es de sólo lectura y no cruza frontera de
-            // efecto; el clic que la sigue sigue siendo revisado y el revisor ve
-            // el mismo argumento único de etiqueta que vería sin la lectura.
-            return execution.CurrentStep.Operation == "input.visible.click"
-                && execution.PendingOperation is { } looked
-                && looked.Arguments.ValueKind == JsonValueKind.Object
-                && looked.Arguments.EnumerateObject().Count() == 1
-                && looked.Arguments.TryGetProperty("label", out JsonElement looking)
-                && looking.ValueKind == JsonValueKind.String
-                && !string.IsNullOrWhiteSpace(looking.GetString())
-                && result["controls"] is JsonArray { Count: > 0 } listed
-                && result["controlCount"] is JsonValue listedCountValue
-                && listedCountValue.TryGetValue(out int listedCount)
-                && listedCount >= listed.Count;
-        }
-
-        if (execution.Steps[0].Operation is not ("window.resolve" or "window.active")
-            || execution.CurrentStep.Operation != "app.close"
-            || execution.PendingOperation is not { } prepared
-            || prepared.Arguments.ValueKind != JsonValueKind.Object
-            || prepared.Arguments.EnumerateObject().Count() != 1
-            || !prepared.Arguments.TryGetProperty("windowId", out JsonElement target)
-            || target.ValueKind != JsonValueKind.String
-            || string.IsNullOrWhiteSpace(target.GetString())
-            || result["windows"] is not JsonArray { Count: 1 } windows
-            || windows[0] is not JsonObject window
-            || result["count"] is not JsonValue countValue
-            || !countValue.TryGetValue(out int count) || count != 1
-            || window["windowId"] is not JsonValue identityValue
-            || !identityValue.TryGetValue(out string? windowId)
-            || !string.Equals(windowId, target.GetString(), StringComparison.Ordinal)
-            || window["processId"] is not JsonValue processValue
-            || !processValue.TryGetValue(out int processId) || processId <= 0)
-        {
-            return false;
-        }
-
-        if (execution.Steps[0].Operation == "window.active")
-        {
-            return window["foreground"] is JsonValue foregroundValue
-                && foregroundValue.TryGetValue(out bool foreground) && foreground;
-        }
-
-        // One item on a truncated/later page does not establish one candidate.
-        return result["complete"] is JsonValue completeValue
-            && completeValue.TryGetValue(out bool complete) && complete
-            && result["offset"] is JsonValue offsetValue
-            && offsetValue.TryGetValue(out int offset) && offset == 0
-            && result["observedCount"] is JsonValue observedValue
-            && observedValue.TryGetValue(out int observedCount) && observedCount == 1
-            && result["totalCount"] is JsonValue totalValue
-            && totalValue.TryGetValue(out int totalCount) && totalCount == 1
-            && result["hasMore"] is JsonValue moreValue
-            && moreValue.TryGetValue(out bool hasMore) && !hasMore;
-    }
-
-    /// <summary>
-    /// The private memory channel's pending confirmation, for the conductor's
-    /// two-phase memory case; null unless the UI thread owns a live, enabled
-    /// window with exactly that challenge pending.
-    /// </summary>
-    internal PendingMemoryConfirmation? CaptureMemoryConfirmation()
-    {
-        if (Environment.CurrentManagedThreadId != _uiThreadId || _isDisposed || !IsInputEnabled)
-        {
-            return null;
-        }
-
-        return _memoryTurns.Confirmation;
-    }
-
-    internal JsonArray CaptureConductorReadEvidence()
-    {
-        if (CaptureConductorConfirmation(allowVerifiedReadPrefix: true) is null
-            || _mindPlans.Current is not { NextIndex: >= 1 } execution)
-        {
-            return [];
-        }
-
-        // H0516: a chain carries every completed step before the reviewed one
-        // (the search, the navigation, the capture, the window read); the
-        // reviewer receives the whole verified prefix and judges the one its
-        // rule needs. Existing projection excludes messages, credentials and tokens.
-        var evidence = new JsonArray();
-        for (int index = 0; index < execution.NextIndex && index < execution.Observations.Count; index++)
-        {
-            if (execution.Observations[index] is not JsonObject observation)
-            {
-                continue;
-            }
-
-            evidence.Add(new JsonObject
-            {
-                ["stepId"] = observation["stepId"]?.DeepClone(),
-                ["operation"] = observation["operation"]?.DeepClone(),
-                ["verified"] = observation["verified"]?.DeepClone(),
-                ["status"] = observation["status"]?.DeepClone(),
-                ["result"] = observation["result"]?.DeepClone(),
-            });
-        }
-
-        return evidence;
-    }
-
-    internal async Task SubmitAsync(
-        MissionInput input,
-        CancellationToken cancellationToken)
+    /// <summary>The person's words (typed, transcribed or sent by the conductor) open a turn.</summary>
+    internal async Task SubmitAsync(MissionInput input, CancellationToken cancellationToken)
     {
         if (!IsInputEnabled || _coreClient is null)
         {
             return;
         }
 
-        await DispatchMissionInputAsync(
-            input,
-            onAccepted: null,
+        string text = MissionInputContract.ValidateAndTrim(input);
+        // Secrets the person typed never enter the transcript, the conversation log or the voice.
+        string visible = SensitiveText.Contains(text) ? SensitiveText.Hidden : text;
+        await RunTurnAsync(visible, () => _loop.RunAsync(text, cancellationToken), cancellationToken);
+    }
+
+    /// <summary>The person pressed Sí (<paramref name="approve"/>) or No on the pending confirmation.</summary>
+    internal async Task AnswerConfirmationAsync(bool approve, CancellationToken cancellationToken)
+    {
+        if (!IsInputEnabled || !_loop.HasPendingConfirmation)
+        {
+            return;
+        }
+
+        string label = approve ? "Sí" : "No";
+        await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, cancellationToken),
             cancellationToken);
     }
 
-    private Task DispatchMissionInputAsync(
-        MissionInput input,
-        Action? onAccepted,
-        CancellationToken cancellationToken)
+    private async Task RunTurnAsync(string visibleUserText, Func<Task> turn, CancellationToken cancellationToken)
     {
-        Volatile.Write(ref _inputSubmittedDuringTraceId, _currentTurnTraceId);
-        return MissionInputPipeline.DispatchAsync(
-            input,
-            async (route, token) =>
-            {
-                onAccepted?.Invoke();
-                await ExecuteMissionInputAsync(route, token);
-            },
-            cancellationToken);
-    }
-
-    private async Task ExecuteMissionInputAsync(
-        MissionInputRoute route,
-        CancellationToken cancellationToken)
-    {
-        string text = route.Text;
-        MemoryParseResult memory = route.Memory;
-        string publicUserText = memory.MaskPublicProjection
-            || NaturalMemoryRequestParser.ContainsSensitiveMaterial(text)
-                ? "Solicitud de memoria sensible [contenido oculto / sensitive content hidden]"
-                : text;
-        string turnTraceId = "t" + Interlocked.Increment(ref _turnTraceSequence)
-            .ToString(CultureInfo.InvariantCulture);
-        _currentTurnTraceId = turnTraceId;
-        Interlocked.Exchange(ref _turnStartedTimestamp, System.Diagnostics.Stopwatch.GetTimestamp());
+        string turnTraceId = "t" + Interlocked.Increment(ref _turnTraceSequence).ToString(CultureInfo.InvariantCulture);
         ShellTraceSink.TurnId = turnTraceId;
-        ShellTraceSink.Record(
-            ShellTraceScopes.Turn,
-            turnTraceId,
-            ShellTraceStages.QueueWaitEnd);
-        BeginTurnPresentation(publicUserText, DateTimeOffset.UtcNow);
-
+        ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.QueueWaitEnd);
+        AddMessageCore("Tú", visibleUserText, isUser: true);
+        _turnExecutionActive = true;
+        LastTurnFailure = null;
+        IsBusy = true;
+        StatusText = "Trabajando";
+        StatusDescription = "understanding";
         try
         {
-            RetryableOperationRegistry registry = _retryableOperations
-                ?? throw new InvalidOperationException("La cola durable no está disponible.");
-            MindTurnDecision? preclassifiedTurn = null;
-            if (_mindPlans.HasPending)
-            {
-                // BAXY Renew: a risk confirmation is the person's, so its yes/no is read here (the kernel's contract).
-                // Any other message supersedes it and goes to the model like any turn; an uncertain effect was already
-                // told once. No reader classifies the message beyond that.
-                if (_mindPlans.Current?.Confirmation is not null
-                    && ConfirmationReplyParser.Parse(text) != ConfirmationReplyKind.Invalid)
-                {
-                    await ResumeAfterConfirmationAsync(route, registry, cancellationToken);
-                    return;
-                }
-
-                if (!(_mindPlans.TrySupersedeUnstartedConfirmation(registry)
-                        || _mindPlans.TrySupersedeUncertainEffect(registry)))
-                {
-                    await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
-                    return;
-                }
-
-                _loopAwaitingConfirmation = false;
-            }
-
-            if (!_memoryTurns.HasConfirmation && !_memoryTurns.HasPendingOperation
-                && _pendingAudioOperation is null && _pendingNoteInteraction.Current is null)
-            {
-                if (_memoryTurns.TryCancelSaveInput(text))
-                {
-                    _pendingMindClarificationObjective = null;
-                    AddMessage("BAXY", TurnVisibleFacts.Status("memory_cancelled"), isUser: false);
-                    return;
-                }
-
-                if (_memoryTurns.TryResolveSaveInput(route, out MissionInputRoute? bound))
-                {
-                    route = bound!;
-                    memory = route.Memory;
-                    _pendingMindClarificationObjective = null;
-                }
-            }
-
-            if (_pendingMindClarificationObjective is { } pendingObjective)
-            {
-                // Consume before retrying so a failed/cancelled retry cannot
-                // leave stale context behind. A fresh clarify result will
-                // preserve the newly combined objective below. The incoming
-                // text is first classified without conversation history: a
-                // self-contained request supersedes this stale clarification,
-                // while a fragment still resumes it.
-                _pendingMindClarificationObjective = null;
-                if (!await TryExecuteWithMindAsync(
-                        route,
-                        registry,
-                        cancellationToken,
-                        pendingClarificationObjective: pendingObjective))
-                {
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Failure("ambiguous_clarification"),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Error(
-                            UserMessageDiagnosticCodes.ActionNotCompleted));
-                }
-
-                return;
-            }
-
-            if (_memoryTurns.HasConfirmation)
-            {
-                await _memoryTurns.HandleConfirmationAsync(text, registry, cancellationToken);
-                return;
-            }
-
-            if (_pendingAudioOperation is not null)
-            {
-                await HandlePendingAudioOperationAsync(text, registry, cancellationToken);
-                return;
-            }
-
-            if (_memoryTurns.HasPendingOperation)
-            {
-                await _memoryTurns.HandlePendingOperationAsync(text, registry, cancellationToken);
-                return;
-            }
-
-            switch (_pendingNoteInteraction.Current)
-            {
-                case PendingNoteInteraction.ReconcilingSelection selected:
-                    await HandlePendingSelectedNoteAsync(
-                        selected,
-                        text,
-                        registry,
-                        cancellationToken);
-                    return;
-                case PendingNoteInteraction.ReconcilingTitle title:
-                    await HandlePendingTitleNoteAsync(
-                        title,
-                        text,
-                        registry,
-                        cancellationToken);
-                    return;
-                case PendingNoteInteraction.AwaitingChoice choice:
-                    await HandlePendingNoteChoiceAsync(
-                        choice,
-                        text,
-                        registry,
-                        cancellationToken);
-                    return;
-            }
-
-            // BAXY Renew: memory requests are the model's tool choice like any other; no parser routes them.
-
-            // The semantic turn policy is covered by its own real-model gate.
-            // Shell integration tests may inject a typed contract oracle so
-            // they can exercise execution, retries and projections without a
-            // phrase classifier or a heavyweight model in the product path.
-            if (_testTurnResolver is not null)
-            {
-                RoutedOperation? testOperation = _testTurnResolver(route);
-                if (testOperation is null)
-                {
-                    AddMessage(
-                        "BAXY",
-                        NaturalNoteRequestParser.Guidance,
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Clarification);
-                }
-                else
-                {
-                    await ExecuteRoutedOperationAsync(
-                        testOperation,
-                        registry,
-                        cancellationToken);
-                }
-
-                return;
-            }
-
-            // La política contextual decide si este turno conversa, necesita
-            // una aclaración, ejecuta una acción o abre una misión. Cuando la
-            // mente no está disponible se degrada sin ejecutar: no existe una
-            // segunda clasificación de lenguaje basada en frases.
-            bool handledByMind = await TryExecuteWithMindAsync(
-                route,
-                registry,
-                cancellationToken,
-                preclassifiedTurn: preclassifiedTurn);
-            if (handledByMind)
-            {
-                return;
-            }
-
-            if (MindSidecarClient.IsConfigured
-                && UserMessagePolicy.ShouldComposeAsConversationNotError(route.Text)
-                && AddMindConversationFallback())
-            {
-                return;
-            }
-
-            bool mindUnavailable = !MindSidecarClient.IsConfigured
-                || LastMindReplyRejection == "decision_unavailable";
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure(mindUnavailable ? "mind_unavailable" : "ambiguous_request"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(mindUnavailable
-                    ? UserMessageDiagnosticCodes.LocalService
-                    : UserMessageDiagnosticCodes.ActionNotCompleted));
-        }
-        catch (TimeoutException)
-        {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                turnTraceId,
-                ShellTraceStages.TurnError,
-                "timeout");
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure("timeout"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.Timeout));
+            await turn();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                turnTraceId,
-                ShellTraceStages.TurnCancelled);
-            return;
+            ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnCancelled);
         }
-        catch (Exception exception) when (
-            exception is IOException
-                or InvalidDataException
-                or InvalidOperationException
-                or JsonException
-                or UnauthorizedAccessException
-                or ProtectedPayloadException)
+        catch (Exception exception) when (exception is IOException or InvalidDataException
+            or InvalidOperationException or JsonException or UnauthorizedAccessException
+            or ProtectedPayloadException or TimeoutException)
         {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                turnTraceId,
-                ShellTraceStages.TurnError,
+            LastTurnFailure = "turn_failed";
+            ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnError,
                 $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure("result_unverified"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
         }
         finally
         {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                turnTraceId,
-                ShellTraceStages.ResponseFinal);
+            ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.ResponseFinal);
             _turnExecutionActive = false;
+            IsBusy = false;
+            OnPropertyChanged(nameof(HasPendingConfirmation));
             if (_coreRecoveryPending)
             {
                 RecoverCoreWhenIdle();
             }
 
-            RestorePresentationState();
+            if (IsReady)
+            {
+                StatusText = "Lista";
+                StatusDescription = LastTurnFailure ?? IdleStatus();
+            }
         }
+    }
+
+    private string IdleStatus() =>
+        _loop.HasPendingConfirmation ? "awaiting_confirmation"
+        : _mindStartupState == MindStartupState.Failed ? "mind_unavailable"
+        : IsWakeListening ? "Esperando «Baxy»"
+        : "BAXY disponible";
+
+    /// <summary>A new conversation: the transcript, the model's session and anything pending start over.</summary>
+    internal bool StartNewUiSession()
+    {
+        if (IsBusy)
+        {
+            return false;
+        }
+
+        _loop.Reset();
+        Messages.Clear();
+        if (_mindClient is { IsReady: true } mind)
+        {
+            _ = mind.NewSessionAsync(CancellationToken.None);
+        }
+
+        OnPropertyChanged(nameof(HasPendingConfirmation));
+        StatusDescription = IdleStatus();
+        return true;
     }
 
     private static async Task InitializeMemorySessionAsync(
@@ -1290,419 +424,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         MemoryOperationProtector protector,
         CancellationToken cancellationToken)
     {
-        var status = new MemoryRoutedOperation(
-            "memory.status",
-            new JsonObject { ["version"] = 1 });
+        var status = new MemoryRoutedOperation("memory.status", new System.Text.Json.Nodes.JsonObject { ["version"] = 1 });
         PreparedOperation prepared = protector.Prepare(status).Prepared;
         OperationResponse response = await client.SendOperationAsync(
             prepared,
             TimeSpan.FromSeconds(20),
             cancellationToken);
         using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
-        if (!MemoryOperationResponseProjection.TryCreateCompleted(
-                prepared.OperationName,
-                opened.Payload,
-                out _))
+        if (!MemoryOperationResponseProjection.TryCreateCompleted(prepared.OperationName, opened.Payload, out _))
         {
             throw new InvalidDataException("El estado privado inicial no tiene una forma válida.");
         }
     }
 
-    private async Task HandlePendingAudioOperationAsync(
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PreparedOperation pending = _pendingAudioOperation
-            ?? throw new InvalidOperationException("No hay un ajuste de audio pendiente.");
-        RoutedOperation? routed;
-        if (NoteChoiceReplyParser.Parse(text).Kind == NoteChoiceReplyKind.Continue)
-        {
-            routed = new RoutedOperation(
-                pending.OperationName,
-                JsonNode.Parse(pending.Arguments.GetRawText())!.AsObject());
-        }
-        else if (!NaturalNoteRequestParser.TryParse(text, out routed))
-        {
-            routed = null;
-        }
+    // ---- voice ---------------------------------------------------------------------------------------------
 
-        if (routed is null || !pending.Matches(routed))
-        {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Confirmation(
-                    "pending_audio_reconcile",
-                    TurnVisibleFacts.ContinueRetry),
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-            return;
-        }
+    public async Task ToggleWakeVoiceAsync(CancellationToken cancellationToken) =>
+        _ = await SetWakeVoiceAsync(!IsWakeListening, cancellationToken);
 
-        await ExecutePreparedOperationAsync(
-            pending,
-            routed,
-            registry,
-            allowAmbiguity: false,
-            cancellationToken);
-    }
-
-    private async Task HandlePendingNoteChoiceAsync(
-        PendingNoteInteraction.AwaitingChoice interaction,
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PendingNoteChoice choice = interaction.Choice;
-        NoteChoiceReply reply = NoteChoiceReplyParser.Parse(text);
-        switch (reply.Kind)
-        {
-            case NoteChoiceReplyKind.Cancel:
-                if (TryMarkResolved(registry, interaction.Source))
-                {
-                    _pendingNoteInteraction.ClearChoice(interaction);
-                    AddMessage("BAXY", "Cancelé la selección. No hice cambios.", isUser: false);
-                }
-
-                return;
-            case NoteChoiceReplyKind.Next:
-                if (!choice.MoveNext())
-                {
-                    AddMessage("BAXY", "Ya estás en la última página de opciones.", isUser: false);
-                    return;
-                }
-
-                AddMessage(
-                    "BAXY",
-                    choice.CreatePrompt(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
-                return;
-            case NoteChoiceReplyKind.Previous:
-                if (!choice.MovePrevious())
-                {
-                    AddMessage("BAXY", "Ya estás en la primera página de opciones.", isUser: false);
-                    return;
-                }
-
-                AddMessage(
-                    "BAXY",
-                    choice.CreatePrompt(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
-                return;
-            case NoteChoiceReplyKind.Select:
-                if (!choice.TrySelect(reply.Number, out NoteChoiceCandidate? candidate)
-                    || candidate is null)
-                {
-                    AddMessage(
-                        "BAXY",
-                        $"Esa opción no está visible. Elige un número del {choice.FirstVisibleNumber} al {choice.LastVisibleNumber}, cambia de página o cancela.",
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Clarification);
-                    return;
-                }
-
-                RoutedOperation selectedRoute = choice.CreateSelectedRoute(candidate);
-                PreparedOperation prepared = registry.ReplaceWithFollowUp(
-                    interaction.Source,
-                    selectedRoute);
-                if (!PendingSelectedNote.TryCreate(
-                        prepared,
-                        reply.Number,
-                        out PendingSelectedNote? selected)
-                    || selected is null)
-                {
-                    throw new InvalidDataException("La selección durable no se pudo validar.");
-                }
-
-                _pendingNoteInteraction.PromoteToSelection(interaction, selected);
-                await ExecutePreparedOperationAsync(
-                    prepared,
-                    selectedRoute,
-                    registry,
-                    allowAmbiguity: false,
-                    cancellationToken);
-                return;
-            case NoteChoiceReplyKind.Invalid:
-                if (NaturalNoteRequestParser.TryParse(text, out RoutedOperation? replacement)
-                    && replacement is not null)
-                {
-                    PreparedOperation replacementPrepared = registry.Replace(
-                        interaction.Source,
-                        replacement);
-                    _pendingNoteInteraction.ClearChoice(interaction);
-                    await ExecutePreparedOperationAsync(
-                        replacementPrepared,
-                        replacement,
-                        registry,
-                        allowAmbiguity: true,
-                        cancellationToken);
-                    return;
-                }
-
-                AddMessage(
-                    "BAXY",
-                    $"Para esta selección responde con un número del {choice.FirstVisibleNumber} al {choice.LastVisibleNumber}, cambia de página o cancela.",
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
-                return;
-            default:
-                AddMessage(
-                    "BAXY",
-                    choice.CreatePrompt(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
-                return;
-        }
-    }
-
-    private async Task HandlePendingTitleNoteAsync(
-        PendingNoteInteraction.ReconcilingTitle interaction,
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PendingTitleNote pending = interaction.Pending;
-        NoteChoiceReply reply = NoteChoiceReplyParser.Parse(text);
-        bool repeatsOriginalRequest = false;
-        if (NaturalNoteRequestParser.TryParse(text, out RoutedOperation? repeated)
-            && repeated is not null)
-        {
-            PreparedOperation candidate = PreparedOperation.Create(repeated.Name, repeated.Arguments);
-            repeatsOriginalRequest = string.Equals(
-                candidate.IdentityKey,
-                pending.Prepared.IdentityKey,
-                StringComparison.Ordinal);
-        }
-
-        if (reply.Kind != NoteChoiceReplyKind.Continue && !repeatsOriginalRequest)
-        {
-            AddMessage(
-                "BAXY",
-                pending.CreateRecoveryPrompt(),
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-            return;
-        }
-
-        await ExecutePreparedOperationAsync(
-            pending.Prepared,
-            pending.CreateRoute(),
-            registry,
-            allowAmbiguity: true,
-            cancellationToken);
-    }
-
-    private async Task HandlePendingSelectedNoteAsync(
-        PendingNoteInteraction.ReconcilingSelection interaction,
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PendingSelectedNote pending = interaction.Pending;
-        NoteChoiceReply reply = NoteChoiceReplyParser.Parse(text);
-        bool repeatsSelectedNumber = reply.Kind == NoteChoiceReplyKind.Select
-            && pending.SelectedNumber is int selectedNumber
-            && reply.Number == selectedNumber;
-        if (reply.Kind != NoteChoiceReplyKind.Continue && !repeatsSelectedNumber)
-        {
-            AddMessage(
-                "BAXY",
-                pending.CreateRecoveryPrompt()
-                    + " No cambiaré esa elección mientras su resultado sea incierto.",
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-            return;
-        }
-
-        await ExecutePreparedOperationAsync(
-            pending.Prepared,
-            new RoutedOperation(
-                pending.Prepared.OperationName,
-                JsonNode.Parse(pending.Prepared.Arguments.GetRawText())!.AsObject()),
-            registry,
-            allowAmbiguity: false,
-            cancellationToken);
-    }
-
-    public bool IsListening
-    {
-        get => _isListening;
-        private set
-        {
-            if (SetField(ref _isListening, value))
-            {
-                OnPropertyChanged(nameof(MicToolTip));
-                OnPropertyChanged(nameof(VoiceModeLabel));
-                OnPropertyChanged(nameof(VoiceModeToolTip));
-            }
-        }
-    }
-
-    public bool IsWakeListening
-    {
-        get => _isWakeListening;
-        private set
-        {
-            if (SetField(ref _isWakeListening, value))
-            {
-                OnPropertyChanged(nameof(VoiceModeLabel));
-                OnPropertyChanged(nameof(VoiceModeToolTip));
-            }
-        }
-    }
-
-    public bool IsVoiceSpeaking
-    {
-        get => _isVoiceSpeaking;
-        private set
-        {
-            if (SetField(ref _isVoiceSpeaking, value))
-            {
-                OnPropertyChanged(nameof(VoiceModeLabel));
-            }
-        }
-    }
-
-    public bool IsMicAvailable
-    {
-        get => _isMicAvailable;
-        private set
-        {
-            if (SetField(ref _isMicAvailable, value))
-            {
-                OnPropertyChanged(nameof(MicToolTip));
-                OnPropertyChanged(nameof(VoiceModeLabel));
-                OnPropertyChanged(nameof(VoiceModeToolTip));
-            }
-        }
-    }
-
-    public string MicToolTip => !IsMicAvailable
-        ? "Micrófono no disponible"
-        : IsListening
-            ? "Dejar de escuchar"
-            : "Hablar con BAXY";
-
-    public string VoiceModeLabel => !IsMicAvailable
-        ? "voz · No disponible"
-        : IsListening
-            ? "voz · Escucha directa"
-            : IsWakeListening
-                ? IsVoiceSpeaking
-                    ? "voz · speaking"
-                    : "voz · Activa (di «Baxy»)"
-                : "voz · Activar wake word";
-
-    public string VoiceModeToolTip => !IsMicAvailable
-        ? "La pila local de voz no está disponible"
-        : IsWakeListening
-            ? "Desactivar la escucha por «Baxy»"
-            : "Escuchar en segundo plano y activarse solo al oír «Baxy»";
-
-    public async Task ToggleWakeVoiceAsync(CancellationToken cancellationToken)
-    {
-        if (Interlocked.CompareExchange(ref _voiceCommandBusy, 1, 0) != 0)
-        {
-            return;
-        }
-
-        try
-        {
-            bool wantsWake = !IsWakeListening;
-            await AwaitStartupVoiceAsync();
-            if (IsWakeListening == wantsWake)
-            {
-                // The startup voice already left it as the person wanted.
-                if (wantsWake)
-                {
-                    StatusDescription = "Esperando «Baxy»";
-                }
-
-                return;
-            }
-
-            await ToggleWakeVoiceCoreAsync(cancellationToken);
-        }
-        finally
-        {
-            Volatile.Write(ref _voiceCommandBusy, 0);
-        }
-    }
-
-    private async Task ToggleWakeVoiceCoreAsync(CancellationToken cancellationToken)
-    {
-        MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady)
-        {
-            return;
-        }
-
-        if (IsWakeListening)
-        {
-            _ = await mind.VoiceStopAsync(TimeSpan.FromSeconds(10), cancellationToken);
-            IsWakeListening = false;
-            IsListening = false;
-            IsVoiceSpeaking = false;
-            StatusDescription = "BAXY disponible";
-            return;
-        }
-
-        bool started = await mind.VoiceStartAsync(
-            "wake",
-            TimeSpan.FromSeconds(60),
-            cancellationToken);
-        if (started)
-        {
-            IsMicAvailable = true;
-            IsListening = false;
-            IsWakeListening = true;
-            StatusDescription = "Esperando «Baxy»";
-        }
-        else
-        {
-            // The direct microphone can still work when only the optional
-            // acoustic wake model has not been installed/calibrated.
-            IsWakeListening = false;
-            StatusDescription = "wake_inactive";
-        }
-    }
-
-    internal static string VoiceListenVisibleFacts(bool listenEnabled, bool changed)
-    {
-        if (listenEnabled)
-        {
-            return changed
-                ? TurnVisibleFacts.Status(
-                    "wake_listen_on",
-                    new JsonObject
-                    {
-                        ["observed"] = new JsonObject
-                        {
-                            ["listening"] = true,
-                            ["wakeWord"] = "Baxy",
-                        },
-                    })
-                : TurnVisibleFacts.Failure("wake_listen_unavailable");
-        }
-
-        return changed
-            ? TurnVisibleFacts.Status(
-                "wake_listen_off",
-                new JsonObject
-                {
-                    ["observed"] = new JsonObject
-                    {
-                        ["listening"] = false,
-                    },
-                })
-            : TurnVisibleFacts.Failure("wake_listen_stop_failed");
-    }
-
-    internal async Task<bool> SetWakeVoiceAsync(
-        bool enabled,
-        CancellationToken cancellationToken)
+    internal async Task<bool> SetWakeVoiceAsync(bool enabled, CancellationToken cancellationToken)
     {
         if (Interlocked.CompareExchange(ref _voiceCommandBusy, 1, 0) != 0)
         {
@@ -1712,7 +452,47 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         try
         {
             await AwaitStartupVoiceAsync();
-            return await SetWakeVoiceCoreAsync(enabled, cancellationToken);
+            MindSidecarClient? mind = _mindClient;
+            if (mind is not { IsReady: true })
+            {
+                return false;
+            }
+
+            if (enabled)
+            {
+                if (IsWakeListening)
+                {
+                    return true;
+                }
+
+                bool started = await mind.VoiceStartAsync("wake", TimeSpan.FromSeconds(60), cancellationToken);
+                IsWakeListening = started;
+                if (started)
+                {
+                    IsMicAvailable = true;
+                    IsListening = false;
+                    IsVoiceSpeaking = false;
+                }
+
+                StatusDescription = started ? "Esperando «Baxy»" : "wake_inactive";
+                return started;
+            }
+
+            if (!IsListening && !IsWakeListening)
+            {
+                return true;
+            }
+
+            bool stopped = await mind.VoiceStopAsync(TimeSpan.FromSeconds(10), cancellationToken);
+            if (stopped)
+            {
+                IsListening = false;
+                IsWakeListening = false;
+                IsVoiceSpeaking = false;
+                StatusDescription = IdleStatus();
+            }
+
+            return stopped;
         }
         finally
         {
@@ -1720,218 +500,32 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    private async Task<bool> SetWakeVoiceCoreAsync(
-        bool enabled,
-        CancellationToken cancellationToken)
-    {
-        MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady)
-        {
-            return false;
-        }
-
-        if (enabled)
-        {
-            if (IsWakeListening)
-            {
-                return true;
-            }
-
-            bool started = await mind.VoiceStartAsync(
-                "wake",
-                TimeSpan.FromSeconds(60),
-                cancellationToken);
-            if (!started)
-            {
-                IsWakeListening = false;
-                StatusDescription = "wake_inactive";
-                return false;
-            }
-
-            IsMicAvailable = true;
-            IsListening = false;
-            IsWakeListening = true;
-            IsVoiceSpeaking = false;
-            StatusDescription = "Esperando «Baxy»";
-            return true;
-        }
-
-        if (!IsListening && !IsWakeListening)
-        {
-            return true;
-        }
-
-        bool stopped = await mind.VoiceStopAsync(
-            TimeSpan.FromSeconds(10),
-            cancellationToken);
-        if (stopped)
-        {
-            IsListening = false;
-            IsWakeListening = false;
-            IsVoiceSpeaking = false;
-            StatusDescription = "BAXY disponible";
-        }
-
-        return stopped;
-    }
-
+    /// <summary>Dictation: the microphone listens now, without the wake word.</summary>
     internal async Task<bool> StartDirectVoiceAsync(CancellationToken cancellationToken)
     {
         await AwaitStartupVoiceAsync();
         MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady)
+        if (mind is not { IsReady: true })
         {
             return false;
         }
 
-        bool started = await mind.VoiceStartAsync(
-            "direct",
-            TimeSpan.FromSeconds(60),
-            cancellationToken);
-        if (!started)
+        bool started = await mind.VoiceStartAsync("direct", TimeSpan.FromSeconds(60), cancellationToken);
+        IsMicAvailable = started;
+        if (started)
         {
-            IsMicAvailable = false;
-            return false;
+            IsListening = true;
+            IsWakeListening = false;
+            IsVoiceSpeaking = false;
+            StatusDescription = "Escuchando";
         }
 
-        IsMicAvailable = true;
-        IsListening = true;
-        IsWakeListening = false;
-        IsVoiceSpeaking = false;
-        StatusDescription = "Escuchando";
-        return true;
-    }
-
-    internal bool StartNewUiSession()
-    {
-        if (IsBusy)
-        {
-            return false;
-        }
-
-        _mindPlans.Clear();
-        _pendingMindClarificationObjective = null;
-        // M48 (FINAL 2026-09-28): a new conversation leaves nothing asked in the old one pending. «olvida mi memoria»
-        // held 113 later turns on its confirmation, and the «cancelar» sent to clear it cancelled a real alarm when
-        // nothing was pending. A note already being reconciled after its effect is not a question and stays.
-        _memoryTurns.ResetSession();
-        _pendingAudioOperation = null;
-        if (_pendingNoteInteraction.Current is PendingNoteInteraction.AwaitingChoice choice)
-        {
-            _pendingNoteInteraction.ClearChoice(choice);
-        }
-
-        Messages.Clear();
-        // An input rejected before any turn (an unusable transcript, a text too long) marked the current turn's
-        // greeting stale; the new conversation's greeting carries that same turn id and is its moment.
-        Volatile.Write(ref _inputSubmittedDuringTraceId, null);
-        AddMessage(
-            "BAXY",
-            TurnVisibleFacts.Welcome(),
-            isUser: false,
-            messageEvent: UserMessageEvent.Welcome);
-        return true;
-    }
-
-    private void OnMindTurnSignal(string text)
-    {
-        string turnId = _currentTurnTraceId;
-        string statusDescription = StatusDescription;
-        _uiContext.Post(
-            _ => TryApplyMilestone(text, turnId, statusDescription),
-            null);
+        return started;
     }
 
     private void OnMindTranscript(string transcript)
     {
-        _uiContext.Post(
-            _ => _ = DispatchTranscriptAsync(transcript),
-            null);
-    }
-
-    private void OnMindVoiceEvent(JsonObject voiceEvent)
-    {
-        string eventName = (string?)voiceEvent["event"] ?? string.Empty;
-        string mode = (string?)voiceEvent["mode"] ?? string.Empty;
-        bool? speaking = (bool?)voiceEvent["speaking"];
-        UserMessageDraft? feedback = TurnVisibleFacts.VoiceFeedback(
-            eventName, (string?)voiceEvent["reason"]);
-        _uiContext.Post(
-            _ =>
-            {
-                if (_isDisposed)
-                {
-                    return;
-                }
-
-                if (eventName == "state")
-                {
-                    IsVoiceSpeaking = speaking ?? false;
-                    if (mode == "wake")
-                    {
-                        IsWakeListening = true;
-                        IsListening = false;
-                    }
-                    else if (mode == "direct")
-                    {
-                        IsWakeListening = false;
-                        IsListening = true;
-                    }
-                    else if (mode == "off")
-                    {
-                        IsWakeListening = false;
-                        IsListening = false;
-                    }
-                }
-                else if (eventName == "wake")
-                {
-                    StatusDescription = "Te escucho";
-                    if (_firstWakeUtc is null)
-                    {
-                        _firstWakeUtc = DateTimeOffset.UtcNow;
-                        OnPropertyChanged(nameof(FirstWakeUtc));
-                    }
-                }
-                else if (eventName == "wake_detected")
-                {
-                    // Only the dedicated acoustic detector emits this event.
-                    // The following ASR turn transcribes content; it does not
-                    // decide whether BAXY woke up.
-                    StatusDescription = "Te escucho…";
-                    if (_firstWakeUtc is null)
-                    {
-                        _firstWakeUtc = DateTimeOffset.UtcNow;
-                        OnPropertyChanged(nameof(FirstWakeUtc));
-                    }
-                }
-                else if (eventName == "partial")
-                {
-                    StatusDescription = "Transcribiendo…";
-                }
-                else if (eventName == "barge_in")
-                {
-                    StatusDescription = "Interrupción detectada";
-                }
-                else if (eventName == "error")
-                {
-                    StatusDescription = "La voz se degradó; el motor sigue disponible";
-                }
-
-                if (feedback is not null)
-                {
-                    // Compose asynchronously: waiting here blocks both the UI and
-                    // the next voice request. No previous request is invented for
-                    // a wake signal or an unintelligible transcript.
-                    JsonObject facts = ModelMessageComposer.CreateFacts(
-                        feedback, _currentTurnTraceId);
-                    facts["voiceFeedback"] = true;
-                    _modelMessages.Enqueue(
-                        new PendingModelMessage(
-                            feedback, string.Empty, facts, _currentTurnTraceId),
-                        _mindLifetimeCancellation.Token);
-                }
-            },
-            null);
+        _uiContext.Post(_ => _ = DispatchTranscriptAsync(transcript), null);
     }
 
     private async Task DispatchTranscriptAsync(string transcript)
@@ -1943,347 +537,49 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         try
         {
-            await DispatchMissionInputAsync(
-                new MissionInput(transcript, MissionInputSource.VoiceTranscript),
-                onAccepted: null,
-                CancellationToken.None);
+            await SubmitAsync(new MissionInput(transcript, MissionInputSource.VoiceTranscript), CancellationToken.None);
         }
         catch (MissionInputRejectedException)
         {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Clarification("voice_transcript_unusable"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
+            // An unusable transcript starts no turn.
         }
     }
 
-    /// <summary>
-    /// Arranque opcional del sidecar de mente. Nunca bloquea ni degrada el
-    /// arranque determinista: si no está configurado o falla, BAXY opera
-    /// exactamente como antes.
-    /// </summary>
-    private Task InitializeMindAsync(CancellationToken cancellationToken)
+    private void OnMindVoiceEvent(System.Text.Json.Nodes.JsonObject voiceEvent)
     {
-        _mindStartupState = MindStartupState.Starting;
-        return InitializeMindAsync(StartMindRuntimeDiscovery(), cancellationToken);
-    }
-
-    internal Task InitializeMindAsync(
-        Task<MindRuntimeDiscoveryResult> discoveryTask,
-        CancellationToken cancellationToken) =>
-        InitializeMindAsync(discoveryTask, catalog: null, cancellationToken);
-
-    /// <param name="catalog">The core's catalog when it comes later (the start-up starts the mind beside the core's
-    /// hello); null takes the connected core's catalog now.</param>
-    internal Task InitializeMindAsync(
-        Task<MindRuntimeDiscoveryResult> discoveryTask,
-        Task<MindStartupCatalog>? catalog,
-        CancellationToken cancellationToken) =>
-        InitializeMindAsync(discoveryTask, catalog, startupAbandoned: CancellationToken.None, cancellationToken);
-
-    /// <summary>
-    /// Ronda 22: the start-up starts the mind beside the core's hello. The field says «preparing» until this attempt
-    /// settles; <paramref name="startupAbandoned"/> fires when the start-up ended without handing the catalog, and
-    /// the mind this attempt started closes then instead of loading beside the next start-up's.
-    /// </summary>
-    internal Task BeginStartupMind(
-        Task<MindStartupCatalog> catalog,
-        CancellationToken startupAbandoned,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(catalog);
-        // r29: the shell's readers pay their first use while the mind loads, not in the person's first request.
-        _ = MissionInputPipeline.WarmReadersAsync();
-        _ = ComputerUseMission.WarmAsync();
-        _mindStartupState = MindStartupState.Starting;
-        _startupMindPending = _mindClient is not { IsReady: true };
-        Task initialization = InitializeMindAsync(
-            StartMindRuntimeDiscovery(),
-            catalog,
-            startupAbandoned,
-            cancellationToken);
-        _mindInitializationTask = initialization;
-        return initialization;
-    }
-
-    private async Task InitializeMindAsync(
-        Task<MindRuntimeDiscoveryResult> discoveryTask,
-        Task<MindStartupCatalog>? catalog,
-        CancellationToken startupAbandoned,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(discoveryTask);
-        // Taken before the first await: a start that begins after this one supersedes it at once.
-        int attempt = Interlocked.Increment(ref _mindStartupAttempt);
-        try
-        {
-            await InitializeMindCoreAsync(discoveryTask, catalog, attempt, startupAbandoned, cancellationToken);
-        }
-        catch (OperationCanceledException) when (startupAbandoned.IsCancellationRequested
-            && !cancellationToken.IsCancellationRequested)
-        {
-            // The start-up that started this mind ended without it: nothing waits on a cancelled start.
-        }
-        finally
-        {
-            // Ready, failed, not configured or cancelled: this attempt's wait for the mind is over.
-            SettleStartupMind(attempt);
-        }
-    }
-
-    private bool IsCurrentMindAttempt(int attempt) => Volatile.Read(ref _mindStartupAttempt) == attempt;
-
-    /// <summary>Only the latest attempt writes the shared start-up state; a superseded one ends silently.</summary>
-    private void SetMindStartupState(int attempt, MindStartupState state, bool retryLater = false)
-    {
-        if (!IsCurrentMindAttempt(attempt))
-        {
-            return;
-        }
-
-        _mindStartupState = state;
-        if (state == MindStartupState.Ready)
-        {
-            // A mind that came up leaves no earlier failure to say nor any growing wait behind it.
-            _mindStartupFailure = null;
-            _mindStartupFailureCount = 0;
-        }
-
-        if (retryLater)
-        {
-            _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
-        }
-    }
-
-    /// <summary>
-    /// Ronda 22: the start-up's wait for the mind ended. The field leaves «preparing»: ready when the shell already
-    /// opened (the mind ready says «Todo listo» itself; a mind that did not come leaves BAXY available without it).
-    /// An attempt a newer start superseded leaves the field to the newer one (revisión 2). A start that failed says
-    /// its measured cause there (arranque honesto).
-    /// </summary>
-    private void SettleStartupMind(int attempt)
-    {
-        if (!_startupMindPending || !IsCurrentMindAttempt(attempt))
-        {
-            return;
-        }
-
-        _startupMindPending = false;
-        if (IsReady && StatusDescription == "Preparando BAXY")
-        {
-            StatusText = "Lista";
-            StatusDescription = MindStartupStatus() ?? "BAXY disponible";
-        }
-        OnPropertyChanged(nameof(IsMindPreparing));
-    }
-
-    private async Task InitializeMindCoreAsync(
-        Task<MindRuntimeDiscoveryResult> discoveryTask,
-        Task<MindStartupCatalog>? catalog,
-        int attempt,
-        CancellationToken startupAbandoned,
-        CancellationToken cancellationToken)
-    {
-        using var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,
-            startupAbandoned,
-            _mindLifetimeCancellation.Token);
-        cancellationToken = linkedCancellation.Token;
-        SetMindStartupState(attempt, MindStartupState.Starting);
-        MindRuntimeDiscoveryResult discovery;
-        try
-        {
-            discovery = await discoveryTask.WaitAsync(cancellationToken);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            SetMindStartupState(attempt, MindStartupState.Failed, retryLater: true);
-            throw;
-        }
-        cancellationToken.ThrowIfCancellationRequested();
-        if (!MindRuntimeDiscovery.ApplyVerified(discovery)
-            || !MindSidecarClient.IsConfigured)
-        {
-            SetMindStartupState(attempt, MindStartupState.NotConfigured);
-            return;
-        }
-        ShellTraceSink.Record(
-            ShellTraceScopes.Startup,
-            "boot",
-            ShellTraceStages.StartupMindVerified);
-
-        if (_mindClient is { IsReady: true })
-        {
-            SetMindStartupState(attempt, MindStartupState.Ready);
-            return;
-        }
-
-        if (!IsCurrentMindAttempt(attempt))
-        {
-            // A newer start took over before this one started its mind: it starts nothing beside it.
-            return;
-        }
-
-        if (_mindClient is not null)
-        {
-            _mindClient.TranscriptReceived -= OnMindTranscript;
-            _mindClient.VoiceEventReceived -= OnMindVoiceEvent;
-            _mindClient.TurnSignalReceived -= OnMindTurnSignal;
-            await _mindClient.DisposeAsync();
-            _mindClient = null;
-        }
-
-        SetMindStartupState(attempt, MindStartupState.Starting);
-        MindSidecarClient mind = _mindClientFactory();
-        try
-        {
-            bool started = await mind.TryStartAsync(
-                catalog ?? Task.FromResult(new MindStartupCatalog(
-                    _coreClient?.Capabilities ?? Array.Empty<OperationDescriptor>(),
-                    _coreClient?.ApplicationCatalog,
-                    _coreClient?.GameCatalog)),
-                TimeSpan.FromSeconds(120),
-                cancellationToken);
-            if (started && !IsCurrentMindAttempt(attempt))
+        string eventName = (string?)voiceEvent["event"] ?? string.Empty;
+        string mode = (string?)voiceEvent["mode"] ?? string.Empty;
+        bool? speaking = (bool?)voiceEvent["speaking"];
+        _uiContext.Post(
+            _ =>
             {
-                // A newer start owns the field and its own mind: this one is closed, never installed over it.
-                await mind.DisposeAsync();
-            }
-            else if (started)
-            {
-                mind.TranscriptReceived += OnMindTranscript;
-                mind.VoiceEventReceived += OnMindVoiceEvent;
-                mind.TurnSignalReceived += OnMindTurnSignal;
-                Volatile.Write(ref _personVoiceChoice, 0);
-                _mindClient = mind;
-                MindVoiceStatus? voice = await mind.VoiceStatusAsync(
-                    TimeSpan.FromSeconds(10),
-                    cancellationToken);
-                IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
-                SetMindStartupState(attempt, MindStartupState.Ready);
-                ShellTraceSink.Record(
-                    ShellTraceScopes.Startup,
-                    "boot",
-                    ShellTraceStages.StartupMindReady);
-                OnPropertyChanged(nameof(IsMindReady));
-                SettleStartupMind(attempt);
-                if (!IsBusy && PendingStatusDescription() is null)
+                if (_isDisposed)
                 {
-                    StatusDescription = "Todo listo";
+                    return;
                 }
-                if (voice?.Pending == true)
+
+                switch (eventName)
                 {
-                    // The voice runtime is still importing: the mind serves
-                    // turns now and the voice state settles beside them. It
-                    // outlives this method, so it follows the mind's lifetime,
-                    // not this method's linked token (disposed on return).
-                    _ = SettleStartupVoiceAsync(mind, _mindLifetimeCancellation.Token);
+                    case "state":
+                        IsVoiceSpeaking = speaking ?? false;
+                        IsWakeListening = mode == "wake";
+                        IsListening = mode == "direct";
+                        break;
+                    case "wake_detected":
+                        StatusDescription = "Te escucho…";
+                        if (_firstWakeUtc is null)
+                        {
+                            _firstWakeUtc = DateTimeOffset.UtcNow;
+                            OnPropertyChanged(nameof(FirstWakeUtc));
+                        }
+
+                        break;
+                    case "partial":
+                        StatusDescription = "Transcribiendo…";
+                        break;
                 }
-                else
-                {
-                    Task startupVoice = ApplyStartupVoiceAsync(mind, voice, cancellationToken);
-                    _startupVoice = startupVoice;
-                    await startupVoice;
-                }
-            }
-            else
-            {
-                MindStartupFailure? failure = mind.LastStartupFailure;
-                await mind.DisposeAsync();
-                RecordMindStartupFailure(attempt, failure);
-            }
-        }
-        catch (Exception) when (cancellationToken.IsCancellationRequested)
-        {
-            await mind.DisposeAsync();
-            SetMindStartupState(attempt, MindStartupState.Failed, retryLater: true);
-        }
-        catch (Exception)
-        {
-            MindStartupFailure? failure = mind.LastStartupFailure;
-            await mind.DisposeAsync();
-            RecordMindStartupFailure(attempt, failure);
-        }
-    }
-
-    /// <summary>
-    /// r22 (2026-10-09): a model that could not come up (another llama-server held the VRAM) used to
-    /// leave «iniciando» on screen while the App retried every minute and turns ended in silence. The
-    /// failure is traced with its cause, said in the status line (data prose), and retried on its own
-    /// with a growing wait. Only the latest attempt records (ronda 22): a superseded one ends silently. While the
-    /// start-up still says «Preparando BAXY», the field is left to <see cref="SettleStartupMind"/>, which says the
-    /// cause when the wait ends.
-    /// </summary>
-    private void RecordMindStartupFailure(int attempt, MindStartupFailure? failure)
-    {
-        if (!IsCurrentMindAttempt(attempt))
-        {
-            return;
-        }
-
-        _mindStartupFailure = failure;
-        _mindStartupFailureCount++;
-        _mindStartupState = MindStartupState.Failed;
-        TimeSpan delay = MindRetryDelay(_mindStartupFailureCount);
-        _mindRetryAfterUtc = DateTime.UtcNow + delay;
-        ShellTraceSink.Record(
-            ShellTraceScopes.Startup,
-            "boot",
-            ShellTraceStages.StartupMindFailed,
-            failure?.TraceLabel ?? "desconocida");
-        if (!IsBusy && !_startupMindPending && MindStartupStatus() is { } status)
-        {
-            StatusDescription = status;
-        }
-
-        _ = RetryMindAfterAsync(delay);
-    }
-
-    /// <summary>10 s, 20 s, 40 s, then 60 s between attempts while the model cannot start.</summary>
-    internal static TimeSpan MindRetryDelay(int failures) =>
-        TimeSpan.FromSeconds(Math.Min(60, 10 * Math.Pow(2, Math.Clamp(failures, 1, 16) - 1)));
-
-    /// <summary>The status line for a model that is not up, from data; null when no cause is known.</summary>
-    private string? MindStartupStatus() =>
-        _mindStartupState == MindStartupState.Failed
-            ? OperationFloor.MindStartupSentence(_mindStartupFailure?.Cause, english: false)
-            : null;
-
-    /// <summary>The cause a turn sent while the mind is not ready carries in its facts.</summary>
-    internal string? MindUnavailableCause() =>
-        _mindStartupState == MindStartupState.Starting ? "iniciando" : _mindStartupFailure?.Cause;
-
-    private async Task RetryMindAfterAsync(TimeSpan delay)
-    {
-        try
-        {
-            await Task.Delay(delay, _mindLifetimeCancellation.Token);
-        }
-        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
-        {
-            return;
-        }
-
-        if (_isDisposed
-            || _mindStartupState != MindStartupState.Failed
-            || DateTime.UtcNow < _mindRetryAfterUtc
-            || _mindInitializationTask is { IsCompleted: false })
-        {
-            return;
-        }
-
-        try
-        {
-            Task initialization = InitializeMindAsync(_mindLifetimeCancellation.Token);
-            _mindInitializationTask = initialization;
-            await initialization;
-        }
-        catch (Exception)
-        {
-            // The next attempt is already scheduled by the failure it recorded.
-        }
+            },
+            null);
     }
 
     private async Task ApplyStartupVoiceAsync(
@@ -2301,16 +597,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
-        bool wakeStarted = await mind.VoiceStartAsync(
-            "wake",
-            TimeSpan.FromSeconds(60),
-            cancellationToken);
+        bool wakeStarted = await mind.VoiceStartAsync("wake", TimeSpan.FromSeconds(60), cancellationToken);
         IsWakeListening = wakeStarted;
         if (wakeStarted)
         {
             IsMicAvailable = true;
-            // A turn in flight keeps its own status line, and a voice command
-            // that arrived meanwhile (it waited for this start) sets its own.
             if (!IsBusy && Volatile.Read(ref _personVoiceChoice) == 0)
             {
                 StatusDescription = "Esperando «Baxy»";
@@ -2319,10 +610,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     /// <summary>
-    /// Whether the mind turns the wake word on by itself at startup: the voice
-    /// state is known (not <c>pending</c>), there is a microphone or a
-    /// recognizer, the product asks for it, and the person has not chosen
-    /// their voice yet (a command given, or dictation or wake already on).
+    /// Whether the mind turns the wake word on by itself at startup: the voice state is known (not <c>pending</c>),
+    /// there is a microphone or a recognizer, the product asks for it, and the person has not chosen their voice yet.
     /// </summary>
     internal static bool StartupWakeApplies(
         MindVoiceStatus? voice,
@@ -2335,12 +624,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         && !personChoseVoice
         && !voiceRunning;
 
-    /// <summary>
-    /// A voice command from the person: from now on the startup voice yields,
-    /// and a startup wake already starting finishes first so the command acts
-    /// on the real state (2026-10-08: «deja de escuchar» during the startup
-    /// read found nothing to stop and the wake came on after it).
-    /// </summary>
     private async Task AwaitStartupVoiceAsync()
     {
         Volatile.Write(ref _personVoiceChoice, 1);
@@ -2354,9 +637,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    private async Task SettleStartupVoiceAsync(
-        MindSidecarClient mind,
-        CancellationToken cancellationToken)
+    private async Task SettleStartupVoiceAsync(MindSidecarClient mind, CancellationToken cancellationToken)
     {
         try
         {
@@ -2375,758 +656,154 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         catch (Exception)
         {
-            // Voice availability is optional state. Until it settles the
-            // microphone reads as unavailable (the state is not known yet);
-            // a failed read never touches the turn.
+            // Voice availability is optional state; a failed read never touches the turn.
         }
-    }
-
-    private TimeSpan TurnElapsed() =>
-        TurnBudget.Elapsed(_turnExecutionActive, Interlocked.Read(ref _turnStartedTimestamp));
-
-    private static Task<MindRuntimeDiscoveryResult> StartMindRuntimeDiscovery() =>
-        Task.Run(static () => MindRuntimeDiscovery.DiscoverVerified());
-
-    private Task<MindSidecarClient?> WaitForMindReadyAsync(CancellationToken cancellationToken) =>
-        WaitForMindReadyAsync(personTurn: false, cancellationToken);
-
-    /// <summary>
-    /// Whether a failed mind is started again now: its wait ran out, or the person just sent a turn
-    /// (review r22: the person asking is the moment to try, not the next scheduled attempt).
-    /// </summary>
-    internal static bool MindRetryDue(bool failed, DateTime nowUtc, DateTime retryAfterUtc, bool personTurn) =>
-        failed && (personTurn || nowUtc >= retryAfterUtc);
-
-    private async Task<MindSidecarClient?> WaitForMindReadyAsync(
-        bool personTurn,
-        CancellationToken cancellationToken)
-    {
-        MindSidecarClient? mind = _mindClient;
-        if (mind is { IsReady: true })
-        {
-            return mind;
-        }
-
-        if (!MindSidecarClient.IsConfigured
-            && _mindStartupState != MindStartupState.Starting)
-        {
-            return null;
-        }
-
-        if (_mindStartupState == MindStartupState.Ready)
-        {
-            _mindStartupState = MindStartupState.Failed;
-            _mindRetryAfterUtc = DateTime.MinValue;
-        }
-
-        Task? initialization = _mindInitializationTask;
-        if (MindRetryDue(
-                _mindStartupState == MindStartupState.Failed,
-                DateTime.UtcNow,
-                _mindRetryAfterUtc,
-                personTurn)
-            && !_isDisposed)
-        {
-            initialization = InitializeMindAsync(cancellationToken);
-            _mindInitializationTask = initialization;
-        }
-
-        if (_mindStartupState == MindStartupState.Starting && initialization is not null)
-        {
-            try
-            {
-                await initialization.WaitAsync(
-                    TimeSpan.FromMilliseconds(250),
-                    cancellationToken);
-            }
-            catch (TimeoutException)
-            {
-                return null;
-            }
-        }
-
-        mind = _mindClient;
-        return mind is { IsReady: true } ? mind : null;
     }
 
     private static bool WakeOnStartRequested()
     {
-        string value = Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START")
-            ?? string.Empty;
+        string value = Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START") ?? string.Empty;
         return value.Equals("1", StringComparison.Ordinal)
             || value.Equals("true", StringComparison.OrdinalIgnoreCase)
             || value.Equals("yes", StringComparison.OrdinalIgnoreCase)
             || value.Equals("on", StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <summary>
-    /// Camino de la mente (ADR-0005), fail-closed en cada borde: una política
-    /// contextual decide conversación, aclaración, acción o plan; los
-    /// argumentos faltantes los extrae el LLM con gramática constreñida; la
-    /// conversación general la responde el LLM. Toda operación resultante entra por el MISMO camino
-    /// tipado que valida el core (schema, riesgo, confirmaciones). Las
-    /// operaciones memory.* nunca se puentean: su canal protegido exige la
-    /// gramática determinista, así que aquí solo se ofrece la vía concreta.
-    /// </summary>
-    /// <summary>
-    /// Reduce la clase de turno a una etiqueta estable del vocabulario del
-    /// contrato. El registro nunca recibe texto libre ni prosa del modelo.
-    /// </summary>
-    private static string SanitizedTurnKind(string kind) => kind switch
-    {
-        "conversation" or "clarify" or "action" or "plan" => kind,
-        _ => "invalid",
-    };
+    // ---- mind start-up -------------------------------------------------------------------------------------
 
-    private async Task<MindTurnDecision?> DecideMindTurnAsync(
-        MindSidecarClient mind,
-        MissionInputRoute route,
-        IReadOnlyList<(string Role, string Content)> decisionHistory,
-        CancellationToken cancellationToken,
-        string? pendingObjective = null)
-    {
-        StatusDescription = "understanding";
-        string decisionTraceId = _currentTurnTraceId;
-        ShellTraceSink.Record(
-            ShellTraceScopes.Turn,
-            decisionTraceId,
-            ShellTraceStages.DecisionStart);
-        MindTurnDecision? turn = await mind.DecideTurnAsync(
-            route.Text,
-            decisionHistory,
-            MindSidecarClient.TurnDecisionRequestTimeout,
-            cancellationToken,
-            pendingClarification: false,
-            pendingObjective: pendingObjective);
-        ShellTraceSink.Record(
-            ShellTraceScopes.Turn,
-            decisionTraceId,
-            ShellTraceStages.DecisionReady,
-            turn is null ? "unavailable" : SanitizedTurnKind(turn.Kind));
-        return turn;
-    }
-
-    private async Task<bool> TryExecuteWithMindAsync(
-        MissionInputRoute route,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken,
-        string? pendingClarificationObjective = null,
-        MindTurnDecision? preclassifiedTurn = null)
-    {
-        MindSidecarClient? mind = await WaitForMindReadyAsync(personTurn: true, cancellationToken);
-        if (mind is null)
-        {
-            if (_mindStartupState == MindStartupState.Starting
-                && _mindInitializationTask is { } initialization)
-            {
-                try
-                {
-                    await initialization.WaitAsync(
-                        TimeSpan.FromSeconds(30),
-                        cancellationToken);
-                }
-                catch (TimeoutException)
-                {
-                    // The bounded message below keeps the request fail-closed.
-                }
-
-                mind = _mindClient is { IsReady: true } readyMind
-                    ? readyMind
-                    : null;
-            }
-
-            if (mind is null && MindSidecarClient.IsConfigured)
-            {
-                // r22: the request was never read, so it is told at once (never queued for a mind that is
-                // down), with why the mind is not up when it is known.
-                string? startupCause = MindUnavailableCause();
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Failure(
-                        "mind_unavailable",
-                        startupCause is null ? null : new JsonObject { ["startup"] = startupCause }),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(
-                        UserMessageDiagnosticCodes.LocalService));
-                return true;
-            }
-
-            if (mind is null)
-            {
-                return false;
-            }
-        }
-
-        // A pending objective does not erase facts supplied in conversation.
-        // The pendingClarification flag below owns the independent reading;
-        // dialogue remains reference data, not permission to resume an effect.
-        IReadOnlyList<(string Role, string Content)> decisionHistory = BuildMindHistory();
-        // The mind owns the dialogue slot: it receives the pending request and
-        // returns the request this message completes, if it completes one.
-        MindTurnDecision? turn = preclassifiedTurn ?? await DecideMindTurnAsync(
-            mind, route, decisionHistory, cancellationToken, pendingClarificationObjective);
-        LastMindResponseLanguage = turn?.ResponseLanguage;
-        if (turn is null)
-        {
-            LastMindReplyRejection = "decision_unavailable";
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure("decision_unavailable"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
-            return true;
-        }
-
-        // BAXY Renew: the model's own turn is published as it is. What it says is its answer, what it asks is its
-        // question, what it proposes goes to the kernel, which authorizes it, and to the provider, which verifies it.
-        // No reader or veto stands between the model and the person.
-        if (turn.Kind == "conversation" && turn.Reply is { Length: > 0 })
-        {
-            _pendingMindClarificationObjective = null;
-            AddMessage(
-                "BAXY",
-                turn.Reply,
-                isUser: false,
-                formulatedByMind: true,
-                route: PublicResponseRoute.Conversation);
-            return true;
-        }
-
-        if (turn.Kind == "clarify" && turn.Question is { Length: > 0 })
-        {
-            return AddMindClarification(
-                route.Text,
-                turn.Question,
-                turn.ResponseLanguage,
-                turn.PreserveObjective,
-                turn.MissingFields);
-        }
-
-        if (turn.Kind == "action" && turn.Operation is { Length: > 0 } routedOperation)
-        {
-            return mind.IsTurnContinueAvailable
-                ? await RunNativeToolLoopAsync(mind, route, turn, registry, cancellationToken)
-                : await TryExecuteMindOperationAsync(
-                    mind,
-                    route,
-                    routedOperation,
-                    registry,
-                    cancellationToken,
-                    responseLanguage: turn.ResponseLanguage);
-        }
-
-        AddMessage(
-            "BAXY",
-            TurnVisibleFacts.Failure(turn.RecoveryFailureCode ?? "plan_incomplete"),
-            isUser: false,
-            messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
-        return true;
-    }
-
-    // BAXY Renew native loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop): the model calls a tool,
-    // the kernel authorizes it and the provider executes and verifies it, the verified result goes back into the turn's
-    // conversation, and the model decides the next call or answers. Its final text is the answer; nothing is composed
-    // apart. Six model calls at most per turn; past that, the last verified result is told as it is.
-    internal const int NativeLoopModelCalls = 6;
-
-    private async Task<bool> RunNativeToolLoopAsync(
-        MindSidecarClient mind,
-        MissionInputRoute route,
-        MindTurnDecision turn,
-        RetryableOperationRegistry registry,
+    private async Task InitializeMindAsync(
+        Task<MindStartupCatalog> catalog,
+        CancellationToken startupAbandoned,
         CancellationToken cancellationToken)
     {
-        _loopAwaitingConfirmation = false;
-        MindTurnDecision current = turn;
-        for (int steps = 1; ; steps++)
-        {
-            MindTurnDecision step = current;
-            (string Body, UserMessageEvent? Event)? observation = await CaptureLoopStepAsync(
-                () => TryExecuteMindOperationAsync(
-                    mind,
-                    route,
-                    step.Operation!,
-                    registry,
-                    cancellationToken,
-                    responseLanguage: step.ResponseLanguage));
-            if (observation is not { } verified)
-            {
-                return true;
-            }
-
-            MindTurnDecision? next = await NextLoopDecisionAsync(mind, route, verified, steps, cancellationToken);
-            if (next is null)
-            {
-                return true;
-            }
-
-            current = next;
-        }
-    }
-
-    // Runs one step with its verified result captured. Null when the step ended the turn itself (a question, a risk
-    // confirmation the person must answer, a private memory route) or left an uncertain effect, which the person sees.
-    private async Task<(string Body, UserMessageEvent? Event)?> CaptureLoopStepAsync(Func<Task> step)
-    {
-        _loopObservation = null;
-        _loopCapturing = true;
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token);
+        _mindStartupState = MindStartupState.Starting;
+        MindSidecarClient? mind = null;
         try
         {
-            await step();
-        }
-        finally
-        {
-            _loopCapturing = false;
-        }
-
-        if (_loopObservation is { } observation && _mindPlans.HasPending)
-        {
-            PublishBaxy(observation.Body, observation.Event);
-            return null;
-        }
-
-        return _loopObservation;
-    }
-
-    // The model's next move after a verified result: another action (returned), or the end of the turn (its own text,
-    // its question, or — past the step budget or when the mind does not answer — the verified result itself).
-    private async Task<MindTurnDecision?> NextLoopDecisionAsync(
-        MindSidecarClient mind,
-        MissionInputRoute route,
-        (string Body, UserMessageEvent? Event) observation,
-        int steps,
-        CancellationToken cancellationToken)
-    {
-        MindTurnDecision? next = steps < NativeLoopModelCalls
-            ? await mind.ContinueTurnAsync(observation.Body, NativeLoopContinueTimeout, cancellationToken)
-            : null;
-        if (next is { Kind: "action", Operation.Length: > 0 })
-        {
-            return next;
-        }
-
-        if (next is { Kind: "conversation", Reply.Length: > 0 })
-        {
-            AddMessage(
-                "BAXY",
-                next.Reply,
-                isUser: false,
-                formulatedByMind: true,
-                route: PublicResponseRoute.Conversation);
-            return null;
-        }
-
-        if (next is { Kind: "clarify", Question.Length: > 0 })
-        {
-            _ = AddMindClarification(route.Text, next.Question, next.ResponseLanguage);
-            return null;
-        }
-
-        PublishBaxy(observation.Body, observation.Event);
-        return null;
-    }
-
-    // After the person answers a risk confirmation that suspended the loop, the confirmed step's verified result goes
-    // back to the model, which goes on with the steps that were left (BFCL multi-turn: the loop resumes on the result).
-    private async Task ResumeAfterConfirmationAsync(
-        MissionInputRoute route,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        bool resume = _loopAwaitingConfirmation && _mindClient is { IsTurnContinueAvailable: true };
-        _loopAwaitingConfirmation = false;
-        if (!resume)
-        {
-            await _mindPlans.HandlePendingAsync(route.Text, registry, cancellationToken);
-            return;
-        }
-
-        MindSidecarClient mind = _mindClient!;
-        (string Body, UserMessageEvent? Event)? observation = await CaptureLoopStepAsync(
-            () => _mindPlans.HandlePendingAsync(route.Text, registry, cancellationToken));
-        if (observation is not { } verified)
-        {
-            return;
-        }
-
-        MindTurnDecision? next = await NextLoopDecisionAsync(mind, route, verified, steps: 1, cancellationToken);
-        if (next is not null)
-        {
-            _ = await RunNativeToolLoopAsync(mind, route, next, registry, cancellationToken);
-        }
-    }
-
-    private static readonly TimeSpan NativeLoopContinueTimeout = TimeSpan.FromSeconds(25);
-
-    /// <summary>
-    /// An operation whose schema carries an identity only a verified producer
-    /// issues (windowId, taskId, confirmationId…) can never be grounded from
-    /// the person's words. It keeps the mind's routing decision but crosses the
-    /// dependency-aware planner, which adds the producer step. The criterion is
-    /// the kernel's own producer relation, not a list kept here (M44: FINAL
-    /// F-w06-t1, F-w08-t1 and F-p02-t3 were asked «¿Cuál es el ID…?»).
-    /// </summary>
-    internal static bool ConsumesVerifiedDependency(string operation) =>
-        Baxy.Kernel.Planning.MissionPlanValidator
-            .RequiredPredecessorOperations(operation).Length > 0;
-
-    private async Task<bool> TryExecuteMindOperationAsync(
-        MindSidecarClient mind,
-        MissionInputRoute route,
-        string operationName,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken,
-        JsonObject? knownArguments = null,
-        string? responseLanguage = null)
-    {
-        bool memory = operationName.StartsWith("memory.", StringComparison.Ordinal);
-        if (!ProductCatalog.TryGet(
-                operationName,
-                out ProductOperationDescriptor? descriptor)
-            || descriptor is null)
-        {
-            return AddMindConversationFallback();
-        }
-
-        JsonObject groundedArguments;
-        if (knownArguments is not null)
-        {
-            groundedArguments = knownArguments;
-        }
-        else if (MindArgumentNormalization.RequiresExtraction(descriptor))
-        {
-            MindArgumentResult? extraction = await mind.ExtractArgumentResultAsync(
-                operationName,
-                route.Text,
-                MindSidecarClient.ArgumentRequestTimeout,
-                cancellationToken,
-                BuildMindHistory(),
-                responseLanguage);
-
-            if (extraction is null)
+            MindRuntimeDiscoveryResult discovery = await Task.Run(
+                static () => MindRuntimeDiscovery.DiscoverVerified(), linked.Token);
+            if (!MindRuntimeDiscovery.ApplyVerified(discovery) || !MindSidecarClient.IsConfigured)
             {
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Failure("decision_unavailable"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
-                return true;
+                _mindStartupState = MindStartupState.NotConfigured;
+                return;
             }
 
-            if (extraction.Arguments is null)
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindVerified);
+            if (_mindClient is not null)
             {
-                return AddMindClarification(route.Text, extraction.Question, responseLanguage);
+                DetachMind(_mindClient);
+                await _mindClient.DisposeAsync();
+                _mindClient = null;
             }
 
-            groundedArguments = extraction.Arguments;
-        }
-        else
-        {
-            groundedArguments = new JsonObject();
-        }
-
-        if (memory)
-        {
-            MemoryRoutedOperation routed;
-            try
+            mind = _mindClientFactory();
+            if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(120), linked.Token))
             {
-                routed = MemoryParseResult.Route(new MemoryRoutedOperation(operationName, groundedArguments))
-                    .Operation!;
-            }
-            catch (ArgumentException)
-            {
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Failure("memory_arguments_invalid"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.MissingData));
-                return true;
+                RecordMindStartupFailure(mind.LastStartupFailure);
+                await mind.DisposeAsync();
+                return;
             }
 
-            await _memoryTurns.ExecuteRouteAsync(
-                routed, registry, durableBeforeSend: true, cancellationToken,
-                route.PublicObjective, route.Source, route.Text);
-            return true;
-        }
-
-        var step = new MindPlanStep(
-            "step_1",
-            operationName,
-            "Cumplir exactamente el efecto solicitado.",
-            Array.Empty<string>(),
-            "literal",
-            groundedArguments);
-        var execution = new PendingMindPlanExecution(route.Text, [step]);
-        _mindPlans.Begin(execution);
-        await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
-        return true;
-    }
-
-    // The memory operations the App's private route prepares (MemoryOperationProtector), never one the App's own
-    // reader found implicit: a write when the message only stated a datum or asked not to keep it, a forget when it
-    // named nothing to forget.
-    internal static bool MindMemoryAllowed(string operationName, MemoryParseResult reading) => operationName switch
-    {
-        "memory.save" or "memory.correct" => !reading.MustNotPersist,
-        "memory.forget" => !reading.MustNotDelete,
-        "memory.recall" or "memory.list" or "memory.status" or "memory.export" => !reading.MustNotInvent,
-        _ => false,
-    };
-
-    private bool AddMindClarification(
-        string request,
-        string question,
-        string? responseLanguage = null,
-        bool preserveObjective = true,
-        IReadOnlyList<string>? missingFields = null)
-    {
-        // Turn classification, planning and argument extraction share the same
-        // pending state. Rewording a rejected question must not turn it into
-        // conversation or discard the objective required by the next fragment.
-        _pendingMindClarificationObjective = preserveObjective ? request : null;
-        LastMindReplyRejection = null;
-        LastMindRejectedReply = null;
-        AddMessage(
-            "BAXY", question, isUser: false, formulatedByMind: true,
-            route: PublicResponseRoute.Clarification);
-        return true;
-    }
-
-    // The contract's own value (planner.fixed_arguments on the mind's side): a constant, an integer with one value, a
-    // set of one.
-    internal static bool FixedByContract(OperationArgumentProperty property) =>
-        property.ConstantBoolean is not null
-        || property.AllowedValues.Count == 1
-        || property.Minimum is not null && property.Minimum == property.Maximum;
-
-    private bool AddMindConversationFallback(string? conversationKind = null)
-    {
-        // BAXY Renew: no regex picks an intent here; the turn says plainly that it could not be completed.
-        AddMessage(
-            "BAXY",
-            TurnVisibleFacts.Failure(conversationKind == "unsupported" ? "out_of_catalog" : "decision_unavailable"),
-            isUser: false,
-            messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
-        return true;
-    }
-
-    private List<(string Role, string Content)> BuildMindHistory()
-    {
-        // Six dialogue exchanges are at most twelve role messages. The old
-        // value kept only six messages (roughly three exchanges), despite its
-        // "turns" name, and could evict the user's contextual fact before the
-        // follow-up reached the bounded mind protocol.
-        const int maximumMessages = 12;
-        var history = new List<(string Role, string Content)>();
-        for (int index = Math.Max(0, Messages.Count - maximumMessages);
-             index < Messages.Count;
-             index++)
-        {
-            ConversationMessage message = Messages[index];
-            history.Add((message.IsUser ? "user" : "assistant", message.Body));
-        }
-
-        return history;
-    }
-
-    private async Task ExecuteRoutedOperationAsync(
-        RoutedOperation routed,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PreparedOperation prepared = registry.GetOrAdd(routed);
-        await ExecutePreparedOperationAsync(
-            prepared,
-            routed,
-            registry,
-            allowAmbiguity: true,
-            cancellationToken);
-    }
-
-    private async Task ExecutePreparedOperationAsync(
-        PreparedOperation prepared,
-        RoutedOperation routed,
-        RetryableOperationRegistry registry,
-        bool allowAmbiguity,
-        CancellationToken cancellationToken)
-    {
-        CoreProcessClient client = _coreClient
-            ?? throw new InvalidOperationException("El motor local no está disponible.");
-        // La marca del tramo de Core vive dentro de CoreProcessClient, que es
-        // el punto por el que pasan todas las rutas de ejecución.
-        OperationResponse response = await client.SendOperationAsync(
-            prepared,
-            TimeSpan.FromSeconds(20),
-            cancellationToken);
-        if (allowAmbiguity
-            && PendingNoteChoice.TryCreate(response, routed, out PendingNoteChoice? choice)
-            && choice is not null)
-        {
-            _pendingNoteInteraction.BeginChoice(choice, prepared);
-            AddMessage(
-                "BAXY",
-                choice.CreatePrompt(),
-                isUser: false,
-                messageEvent: UserMessageEvent.Clarification);
-            return;
-        }
-
-        var projection = OperationResponseProjection.Create(response, routed.Name);
-        AddMessage(
-            "BAXY",
-            MindPlanBoundary.WithVerifiedContent(
-                projection.Message, JsonNode.Parse(prepared.Arguments.GetRawText()) as JsonObject),
-            isUser: false,
-            // M69 (guion v3h t47): the asked state that already held is the result, not an error.
-            messageEvent: string.Equals(
-                response.Status,
-                OperationStatuses.Completed,
-                StringComparison.Ordinal)
-                || OperationResponseProjection.AskedStateAlreadyHeld(response)
-                ? UserMessageEvent.Status
-                : UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
-        if (ShouldRetainRetryIdentity(response))
-        {
-            if (response.Status == OperationStatuses.Pending
-                && IsAudioOperation(prepared.OperationName))
+            mind.TranscriptReceived += OnMindTranscript;
+            mind.VoiceEventReceived += OnMindVoiceEvent;
+            Volatile.Write(ref _personVoiceChoice, 0);
+            _mindClient = mind;
+            _mindStartupState = MindStartupState.Ready;
+            _mindStartupFailure = null;
+            _mindStartupFailureCount = 0;
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
+            OnPropertyChanged(nameof(IsMindReady));
+            MindVoiceStatus? voice = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), linked.Token);
+            IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
+            if (voice?.Pending == true)
             {
-                _pendingAudioOperation = prepared;
+                // The voice runtime is still importing: the mind serves turns now and the voice settles beside them.
+                _ = SettleStartupVoiceAsync(mind, _mindLifetimeCancellation.Token);
             }
             else
             {
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Status("recovery_identity_kept"),
-                    isUser: false);
+                _startupVoice = ApplyStartupVoiceAsync(mind, voice, linked.Token);
+                await _startupVoice;
             }
-
-            return;
         }
-
-        bool resolved = TryMarkResolved(registry, prepared);
-        if (_pendingAudioOperation is not null
-            && ReferenceEquals(_pendingAudioOperation, prepared)
-            && resolved)
+        catch (Exception) when (linked.IsCancellationRequested)
         {
-            _pendingAudioOperation = null;
-            RecoverPendingAudioOperation(announce: true);
-            if (_retryableOperations is not null)
+            if (mind is not null && !ReferenceEquals(mind, _mindClient))
             {
-                _memoryTurns.RecoverFrom(_retryableOperations, announce: true);
+                await mind.DisposeAsync();
             }
-            RecoverPendingNoteInteraction(announce: true);
+
+            if (_mindStartupState == MindStartupState.Starting)
+            {
+                _mindStartupState = MindStartupState.Failed;
+            }
         }
-        else if (resolved && _pendingNoteInteraction.TryClearResolved(prepared))
+        finally
         {
-            RecoverPendingNoteInteraction(announce: true);
+            _startupMindPending = false;
+            OnPropertyChanged(nameof(IsMindPreparing));
+            if (IsReady && !IsBusy)
+            {
+                StatusText = "Lista";
+                StatusDescription = IdleStatus();
+            }
         }
     }
 
-    private bool TryMarkResolved(
-        RetryableOperationRegistry registry,
-        PreparedOperation prepared)
+    /// <summary>
+    /// r22 (2026-10-09): a model that could not come up is traced with its cause, shown as a state, and retried on its
+    /// own with a growing wait (10 s, 20 s, 40 s, then 60 s).
+    /// </summary>
+    private void RecordMindStartupFailure(MindStartupFailure? failure)
+    {
+        _mindStartupFailure = failure;
+        _mindStartupFailureCount++;
+        _mindStartupState = MindStartupState.Failed;
+        ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
+            failure?.TraceLabel ?? "desconocida");
+        _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+    }
+
+    internal static TimeSpan MindRetryDelay(int failures) =>
+        TimeSpan.FromSeconds(Math.Min(60, 10 * Math.Pow(2, Math.Clamp(failures, 1, 16) - 1)));
+
+    /// <summary>The cause of a model that is not up, for the interface's state; null when it is up or unknown.</summary>
+    internal string? MindUnavailableCause() =>
+        _mindStartupState == MindStartupState.Starting ? "iniciando" : _mindStartupFailure?.Cause;
+
+    private async Task RetryMindAfterAsync(TimeSpan delay)
     {
         try
         {
-            registry.MarkResolved(prepared);
-            return true;
+            await Task.Delay(delay, _mindLifetimeCancellation.Token);
         }
-        catch (Exception exception) when (IsDurableStoreFailure(exception))
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
         {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure("recovery_journal_incomplete"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
-            return false;
+            return;
         }
+
+        if (_isDisposed || _mindStartupState != MindStartupState.Failed || _coreClient is not { IsReady: true } core)
+        {
+            return;
+        }
+
+        Task initialization = InitializeMindAsync(
+            Task.FromResult(new MindStartupCatalog(core.Capabilities, core.ApplicationCatalog, core.GameCatalog)),
+            CancellationToken.None,
+            _mindLifetimeCancellation.Token);
+        _mindInitializationTask = initialization;
+        await initialization;
     }
 
-    private void RecoverPendingAudioOperation(bool announce)
+    private void DetachMind(MindSidecarClient mind)
     {
-        RetryableOperationRegistry? registry = _retryableOperations;
-        if (registry is null || _pendingAudioOperation is not null)
-        {
-            return;
-        }
-
-        PreparedOperation? pending = registry
-            .SnapshotPendingOperations()
-            .FirstOrDefault(static operation => IsAudioOperation(operation.OperationName));
-        if (pending is null)
-        {
-            return;
-        }
-
-        _pendingAudioOperation = pending;
-        StatusDescription = "Esperando comprobar el audio";
-        if (announce)
-        {
-            AddMessage(
-                "BAXY",
-                PrivateOperationNarration.CreateAudioRecoveryPrompt(pending),
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-        }
+        mind.TranscriptReceived -= OnMindTranscript;
+        mind.VoiceEventReceived -= OnMindVoiceEvent;
     }
 
-    private void RecoverPendingNoteInteraction(bool announce)
-    {
-        RetryableOperationRegistry? registry = _retryableOperations;
-        if (registry is null
-            || _pendingAudioOperation is not null
-            || _memoryTurns.HasConfirmation
-            || _memoryTurns.HasPendingOperation
-            || _pendingNoteInteraction.HasPending)
-        {
-            return;
-        }
-
-        PreparedOperation[] pendingOperations = registry.SnapshotPendingOperations().ToArray();
-        foreach (PreparedOperation operation in pendingOperations)
-        {
-            if (!PendingSelectedNote.TryCreate(operation, selectedNumber: null, out PendingSelectedNote? pending)
-                || pending is null)
-            {
-                continue;
-            }
-
-            _pendingNoteInteraction.RestoreSelection(pending);
-            if (announce)
-            {
-                AddMessage(
-                    "BAXY",
-                    pending.CreateRecoveryPrompt(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Confirmation);
-            }
-
-            return;
-        }
-
-        foreach (PreparedOperation operation in pendingOperations)
-        {
-            if (!PendingTitleNote.TryCreate(operation, out PendingTitleNote? pending)
-                || pending is null)
-            {
-                continue;
-            }
-
-            _pendingNoteInteraction.RestoreTitle(pending);
-            if (announce)
-            {
-                AddMessage(
-                    "BAXY",
-                    pending.CreateRecoveryPrompt(),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Confirmation);
-            }
-
-            return;
-        }
-    }
+    // ---- core ----------------------------------------------------------------------------------------------
 
     public async ValueTask DisposeAsync()
     {
@@ -3138,7 +815,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _isDisposed = true;
         IsReady = false;
         _mindLifetimeCancellation.Cancel();
-        await _modelMessages.CloseAsync();
         if (_mindInitializationTask is not null)
         {
             try
@@ -3149,7 +825,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
             }
         }
-        _memoryTurns.ClearConfirmation();
+
         if (_coreClient is not null)
         {
             DetachCoreDisconnectedHandler(_coreClient);
@@ -3159,18 +835,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (_mindClient is not null)
         {
-            _mindClient.TranscriptReceived -= OnMindTranscript;
-            _mindClient.VoiceEventReceived -= OnMindVoiceEvent;
-            _mindClient.TurnSignalReceived -= OnMindTurnSignal;
+            DetachMind(_mindClient);
             await _mindClient.DisposeAsync();
             _mindClient = null;
         }
+
         _mindLifetimeCancellation.Dispose();
     }
 
     private async Task HandleStartupFailureAsync(CoreProcessClient client)
     {
-        _memoryTurns.ClearConfirmation();
+        _loop.Reset();
         DetachCoreDisconnectedHandler(client);
         await client.DisposeAsync();
         if (ReferenceEquals(_coreClient, client))
@@ -3182,11 +857,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         HasStartupError = true;
         StatusText = "No disponible";
         StatusDescription = "retry_without_close";
-        AddMessage(
-            "BAXY",
-            "BAXY no pudo iniciar correctamente. Pulsa reintentar para recuperarlo.",
-            isUser: false,
-            messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
     }
 
     private void OnCoreDisconnected(CoreProcessClient client)
@@ -3208,29 +878,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
 
                 owner.IsReady = false;
-                owner.IsBusy = false;
-                owner._memoryTurns.ClearConfirmation();
+                owner._loop.Reset();
                 owner.HasStartupError = true;
                 owner.StatusText = "Desconectada";
-                owner.StatusDescription = "Conexión interrumpida";
-                owner.AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Failure("core_disconnected"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(
-                        UserMessageDiagnosticCodes.LocalService));
+                owner.StatusDescription = "core_disconnected";
                 owner.RecoverCoreWhenIdle();
             },
             (this, client));
     }
 
     /// <summary>
-    /// 2026-09-28: baxy-core ended during «captura la ventana activa» and the
-    /// App stayed with input disabled for good — every turn, «cancelar» and a
-    /// new session got agent_not_ready until the process was closed. The
-    /// retry that the startup failure offers (<see cref="InitializeAsync(CancellationToken)"/>)
-    /// already restarts the core and drops a stale plan; after a disconnect
-    /// the App takes it itself, once the turn in flight has ended.
+    /// 2026-09-28: a core that ended mid-turn left input disabled for good. After a disconnect the App restarts it
+    /// itself, once the turn in flight has ended.
     /// </summary>
     private void RecoverCoreWhenIdle()
     {
@@ -3255,17 +914,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             await InitializeAsync(recovering: true, _mindLifetimeCancellation.Token);
         }
-        catch (Exception exception) when (
-            exception is OperationCanceledException or ObjectDisposedException)
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
         {
             // The shell is closing; there is nothing left to recover.
         }
     }
 
-    /// <summary>
-    /// A turn that arrives while the core restarts waits for it instead of
-    /// being refused as agent_not_ready.
-    /// </summary>
+    /// <summary>A turn that arrives while the core restarts waits for it instead of being refused.</summary>
     internal Task WaitForCoreRecoveryAsync() => _coreRecovery;
 
     internal static bool IsExpectedStartupFailure(Exception exception) =>
@@ -3280,27 +935,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             or ArgumentException
             or ProtectedPayloadException;
 
-    internal static bool ShouldRetainRetryIdentity(OperationResponse response)
-    {
-        ArgumentNullException.ThrowIfNull(response);
-        return response.EffectMayHaveOccurred
-            || string.Equals(response.Status, OperationStatuses.Pending, StringComparison.Ordinal)
-            || string.Equals(
-                response.ErrorCode,
-                "journal_capacity_reached",
-                StringComparison.Ordinal);
-    }
-
-    internal static bool IsAudioOperation(string operationName) => operationName is
-        "audio.mute" or "audio.volume";
-
-    private static bool IsDurableStoreFailure(Exception exception) =>
-        exception is IOException
-            or InvalidDataException
-            or InvalidOperationException
-            or JsonException
-            or UnauthorizedAccessException;
-
     private void DetachCoreDisconnectedHandler(CoreProcessClient client)
     {
         if (_coreDisconnectedHandler is not null)
@@ -3310,336 +944,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    private string ComposeRequestText()
+    // ---- publishing ----------------------------------------------------------------------------------------
+
+    private void AddMessageCore(string speaker, string body, bool isUser, string? route = null)
     {
-        // The closed confirmation word («confirmar», «confirm», «cancelar»)
-        // answers a challenge; the reply still describes the request that
-        // raised it. WEB1257 composed «Sí, confirmo que se navegó a…» against
-        // «confirmar» after a reviewed navigation.
-        string? fallback = null;
-        for (int index = Messages.Count - 1; index >= 0; index--)
-        {
-            ConversationMessage message = Messages[index];
-            if (!message.IsUser)
-            {
-                continue;
-            }
-
-            fallback ??= message.Body;
-            if (ConfirmationReplyParser.Parse(message.Body) == ConfirmationReplyKind.Invalid)
-            {
-                return message.Body;
-            }
-        }
-
-        return fallback ?? string.Empty;
-    }
-
-    private void AddMessage(
-        string speaker,
-        string body,
-        bool isUser,
-        bool formulatedByMind = false,
-        UserMessageEvent? messageEvent = null,
-        string? route = null,
-        string? composeUserText = null)
-    {
-        if (formulatedByMind)
-        {
-            body = UserMessagePolicy.StripLeadingPromptLabels(body);
-        }
-
-        if (!isUser
-            && string.Equals(speaker, "BAXY", StringComparison.Ordinal)
-            && !formulatedByMind
-            && !UserMessagePolicy.BypassLlmCompositionForTests)
-        {
-            UserMessageDraft draft = UserMessagePolicy.Create(
-                body,
-                messageEvent ?? UserMessageEvent.Status);
-            // A private continuation answers the request that started it; the
-            // last user message may be only its closed confirmation word.
-            string userText = composeUserText ?? ComposeRequestText();
-            JsonObject facts = ModelMessageComposer.CreateFacts(
-                draft,
-                _currentTurnTraceId,
-                PreviousPublishedAnswer(),
-                PreviousUserRequests());
-            var pending = new PendingModelMessage(
-                draft,
-                userText,
-                facts,
-                _currentTurnTraceId);
-            if (_mindClient is { IsReady: true } mind)
-            {
-                ShellTraceSink.Record(
-                    ShellTraceScopes.Turn,
-                    _currentTurnTraceId,
-                    ShellTraceStages.ComposeStart,
-                    draft.Intent);
-                LastMessageCompositionFailure = null;
-                ModelMessageCompositionOutcome outcome;
-                try
-                {
-                    outcome = ModelMessageComposer.ComposeAsync(
-                            draft,
-                            userText,
-                            facts,
-                            mind.ComposeUserMessageAsync,
-                            MindSidecarClient.IsCpuFallbackProfile,
-                            // A spent turn takes no second composition: the deterministic final says it now.
-                            allowRecovery: !TurnBudget.IsSpent(TurnElapsed()),
-                            CancellationToken.None)
-                        .GetAwaiter()
-                        .GetResult();
-                }
-                catch (Exception exception) when (
-                    ModelMessageComposer.IsTransientFailure(exception))
-                {
-                    outcome = new ModelMessageCompositionOutcome(
-                        null,
-                        "composer_request_failed",
-                        UsedRecovery: false,
-                        Unanswered: true);
-                }
-                finally
-                {
-                    ShellTraceSink.Record(
-                        ShellTraceScopes.Turn,
-                        _currentTurnTraceId,
-                        ShellTraceStages.ComposeEnd);
-                }
-
-                if (IsStalePendingMessage(pending))
-                {
-                    return;
-                }
-
-                if (outcome.Text is { } finalBody)
-                {
-                    LastMessageCompositionFailure = outcome.Failure;
-                    AddMessageCore(
-                        "BAXY",
-                        finalBody,
-                        isUser: false,
-                        PublicResponseRoute.FromDraft(draft));
-                }
-                else if (ModelMessageComposer.InTurnFloor(
-                             outcome, draft, userText, facts, _modelMessages.HoldsAnAnswer) is { } floor)
-                {
-                    // M153: the floor of a refusal the mind answered is this turn's final, not the next one's.
-                    LastMessageCompositionFailure =
-                        $"{outcome.Failure ?? "model_response_rejected"};deterministic_fallback";
-                    LastMindRejectedReply ??= outcome.RejectedText;
-                    AddMessageCore(
-                        "BAXY",
-                        floor,
-                        isUser: false,
-                        PublicResponseRoute.FromDraft(draft));
-                }
-                else if (OperationFloor.DeciderCouldNotRead(draft.Source))
-                {
-                    // Regresiones r2 M5: a request the decider could not read is told now, never after the mind
-                    // comes back (live v2-s02: 171 s of silence), with the line of any failed composition (M75).
-                    PublishCompositionFailureNow(pending, outcome.Failure ?? "no_response");
-                }
-                else
-                {
-                    LastMessageCompositionFailure = outcome.Failure;
-                    _modelMessages.EnqueueFailed(
-                        pending, outcome, _mindLifetimeCancellation.Token);
-                }
-                return;
-            }
-
-            if (OperationFloor.DeciderCouldNotRead(draft.Source))
-            {
-                // The same with no mind ready to word it: queued, it waited for a mind that was not coming back.
-                PublishCompositionFailureNow(pending, "composer_unavailable");
-                return;
-            }
-
-            LastMessageCompositionFailure = "composer_unavailable";
-            _modelMessages.Enqueue(pending, _mindLifetimeCancellation.Token);
-            return;
-        }
-
-        AddMessageCore(
-            speaker,
-            body,
-            isUser,
-            route
-                ?? (formulatedByMind
-                    ? PublicResponseRoute.Conversation
-                    : messageEvent is null
-                        ? null
-                        : PublicResponseRoute.FromDraft(
-                            UserMessagePolicy.Create(body, messageEvent))));
-    }
-
-    private Task<bool> InvokeOnUiAsync(Action action)
-    {
-        var completion = new TaskCompletionSource<bool>(
-            TaskCreationOptions.RunContinuationsAsynchronously);
-        _uiContext.Post(
-            static state =>
-            {
-                var invocation = ((Action Action, TaskCompletionSource<bool> Completion))state!;
-                try
-                {
-                    invocation.Action();
-                    invocation.Completion.TrySetResult(true);
-                }
-                catch (Exception exception)
-                {
-                    invocation.Completion.TrySetException(exception);
-                }
-            },
-            (action, completion));
-        return completion.Task;
-    }
-
-    private void RestorePresentationState()
-    {
-        OnPropertyChanged(nameof(PendingModelMessageCount));
-        bool hasPendingModelMessage = PendingModelMessageCount > 0;
-        IsBusy = _turnExecutionActive;
-        if (hasPendingModelMessage)
-        {
-            StatusText = "Trabajando";
-            StatusDescription = string.Empty;
-            return;
-        }
-
-        if (_turnExecutionActive || !IsReady)
-        {
-            return;
-        }
-
-        ClearProgressLabel();
-        StatusText = "Lista";
-        StatusDescription = PendingStatusDescription() ?? "BAXY disponible";
-    }
-
-    /// <summary>
-    /// What BAXY is waiting on from the person, or null when nothing is pending. The one reading of it: the idle
-    /// status and the mind's «Todo listo» both ask here, so a mind that comes up late never hides a pending wait.
-    /// </summary>
-    private string? PendingStatusDescription() =>
-        _memoryTurns.HasConfirmation
-            ? "Esperando confirmación de memoria"
-            : _pendingAudioOperation is not null
-            ? "Esperando comprobar el audio"
-            : _mindPlans.HasPending
-                ? "awaiting_mission_resume"
-            : _pendingMindClarificationObjective is not null
-                ? "Esperando tu aclaración"
-            : _memoryTurns.HasPendingOperation
-                ? "Esperando comprobar la memoria"
-            : _pendingNoteInteraction.Current
-                is PendingNoteInteraction.ReconcilingSelection
-                ? "Esperando una comprobación segura"
-            : _pendingNoteInteraction.Current
-                is PendingNoteInteraction.ReconcilingTitle
-                ? "awaiting_request_recovery"
-            : _pendingNoteInteraction.Current
-                is PendingNoteInteraction.AwaitingChoice
-                ? "Esperando tu elección"
-                : null;
-
-    /// <summary>
-    /// La última respuesta publicada, para que un seguimiento («¿por qué
-    /// importa?») conserve el tema. Un turno acotado, no la conversación
-    /// entera: el compositor sólo necesita de qué se estaba hablando.
-    /// </summary>
-    /// <summary>
-    /// Lo que la persona pidió antes en esta conversación, sin el turno en
-    /// curso. Un seguimiento elíptico —«¿por qué importa?»— deja su tema en el
-    /// pedido anterior; cuando la respuesta de la mente se descarta y compone
-    /// el compositor, sin esto contesta en abstracto. Es dato, no instrucción:
-    /// quien lo lee es la lectura única del pedido, en la mente.
-    /// </summary>
-    private List<string> PreviousUserRequests()
-    {
-        var requests = new List<string>();
-        for (int index = Messages.Count - 1; index >= 0 && requests.Count < 6; index--)
-        {
-            ConversationMessage message = Messages[index];
-            if (!message.IsUser)
-            {
-                continue;
-            }
-
-            string body = message.Body.Trim();
-            if (body.Length == 0)
-            {
-                continue;
-            }
-
-            requests.Add(body.Length > 320 ? body[..320] : body);
-        }
-
-        requests.Reverse();
-        return requests;
-    }
-
-    private string? PreviousPublishedAnswer()
-    {
-        for (int index = Messages.Count - 1; index >= 0; index--)
-        {
-            ConversationMessage message = Messages[index];
-            if (message.IsUser
-                || !string.Equals(message.Speaker, "BAXY", StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            string body = message.Body.Trim();
-            if (body.Length == 0 || UserMessagePolicy.IsStructuredFacts(body))
-            {
-                continue;
-            }
-
-            return body.Length > 320 ? body[..320] : body;
-        }
-
-        return null;
-    }
-
-    private void AddMessageCore(
-        string speaker,
-        string body,
-        bool isUser,
-        string? route = null,
-        string? sourceUrl = null)
-    {
-        // Sólo se descarta una repetición literal. Descartar cualquier segundo
-        // mensaje de BAXY hacía desaparecer en silencio avisos distintos —el
-        // pendiente de audio, de nota o de memoria— detrás de la bienvenida.
-        if (!isUser
-            && string.Equals(speaker, "BAXY", StringComparison.Ordinal)
-            && Messages.LastOrDefault() is { IsUser: false } previous
-            && string.Equals(previous.Speaker, "BAXY", StringComparison.Ordinal)
-            && string.Equals(previous.Body, body, StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        var message = new ConversationMessage(
-            speaker,
-            body,
-            isUser,
-            DateTimeOffset.Now,
-            route,
-            sourceUrl);
+        var message = new ConversationMessage(speaker, body, isUser, DateTimeOffset.Now, route);
         Messages.Add(message);
         MessageAdded?.Invoke(message);
-        // Registro privado de la conversación (dueño, 2026-09-20): texto, ruta y
-        // latencia de cada turno, sólo en el perfil local.
+        // The private log of the conversation (owner, 2026-09-20): text, route and time of each turn, local only.
         _conversationLog?.Append(message);
         MindSidecarClient? mind = _mindClient;
         if (mind is { IsVoiceAvailable: true })
         {
+            // What BAXY answers is said aloud; the person speaking (or typing) over it stops the voice.
             _ = isUser
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);

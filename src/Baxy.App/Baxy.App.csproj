@@ -25,14 +25,6 @@
       <Link>FieldUiHost\field-native-bridge.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <!-- M107: the operation floor's data, one file read by the mind and by this twin (OperationFloor). -->
-    <EmbeddedResource Include="..\baxy_mind\data\operation_floor.v1.json" LogicalName="Baxy.App.OperationFloor.json" />
-    <!-- Ronda 19: the operations that place an open window (an absent window of an installed application is opened first). -->
-    <EmbeddedResource Include="..\baxy_mind\data\open_window_operations.v1.json" LogicalName="Baxy.App.OpenWindowOperations.json" />
-    <!-- Ronda 23 revision 3: the words with which a question asks for its answer (ComputerUseMission.RequestWords), one file with the mind (semantic.answer_evidence). -->
-    <EmbeddedResource Include="..\baxy_mind\data\answer_evidence_words.v1.json" LogicalName="Baxy.App.AnswerEvidenceWords.json" />
-    <!-- Revisión M H5: the bare yes, one list with the mind (semantic.dialogue). -->
-    <EmbeddedResource Include="..\baxy_mind\data\assent_words.v1.json" LogicalName="Baxy.App.AssentWords.json" />
     <!-- Estabilización M2: each datum's name in the person's words, for the memory panel (one file with the mind). -->
     <EmbeddedResource Include="..\baxy_mind\data\memory_subjects.v1.json" LogicalName="Baxy.App.MemorySubjects.json" />
   </ItemGroup>
