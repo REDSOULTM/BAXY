@@ -58,7 +58,8 @@ public sealed class ComputerUsePressedNameTests
             """
             $asks=$env:BAXY_ASKS | ConvertFrom-Json
             $cases=$env:BAXY_CASES | ConvertFrom-Json
-            [Console]::Out.Write((ConvertTo-Json -Compress -InputObject @($cases | ForEach-Object { [bool](Test-AsksMore ([string]$_.name) @([string]$_.label) $asks) })))
+            function Get-LineageWalker(){ return $null }
+            [Console]::Out.Write((ConvertTo-Json -Compress -InputObject @($cases | ForEach-Object { [bool](Get-AskingName $null ([string]$_.name) @([string]$_.label) $asks) })))
             """,
             cases);
 
@@ -80,7 +81,7 @@ public sealed class ComputerUsePressedNameTests
     {
         JsonElement answer = RunWorker(
             """
-            [Console]::Out.Write((ConvertTo-Json -Compress -InputObject @([bool](Test-AsksMore 'General (canal de voz)' @('General') $null))))
+            [Console]::Out.Write((ConvertTo-Json -Compress -InputObject @([bool](Get-AskingName $null 'General (canal de voz)' @('General') $null))))
             """,
             "[]");
         Assert.That(answer[0].GetBoolean(), Is.False);
@@ -267,7 +268,7 @@ public sealed class ComputerUsePressedNameTests
             $tokens=$null;$errors=$null
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_PRESSED_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
-            $wanted=@('Get-AskFolded','Test-AsksMore','Test-Asks','Get-AskAliases','Note-AskingName','Get-AskingName',
+            $wanted=@('Get-AskFolded','Test-Asks','Get-AskAliases','Note-AskingName','Get-AskingName',
                       'Test-PressesItself','Format-Name','Get-Cut','Get-Name','Get-Prop','Get-ReadableId','Get-FallbackName',
                       'Get-ShownName','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-ItemHolds','Test-NameHolds','Find-Named',
                       'Test-SystemMenu','Test-SystemMenuChain','Get-LookupScope','Test-OffscreenUsable','Get-Rect')

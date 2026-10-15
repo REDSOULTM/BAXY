@@ -1362,11 +1362,6 @@ function Test-Asks([string]$text,$asks){
   if([string]::IsNullOrWhiteSpace($text)){ return $false }
   return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
 }
-function Test-AsksMore([string]$name,[string[]]$aliases,$asks){
-  if($null -eq $asks -or ([string]$asks.pattern).Length -eq 0 -or -not (Test-Asks $name $asks)){ return $false }
-  foreach($alias in $aliases){ if(Test-Asks $alias $asks){ return $false } }
-  return $true
-}
 # Revision de V (H2, H3): lo que recibe la pulsacion. Su nombre crudo (Format-Name lo recorta a 80: un canal de voz de
 # nombre largo perdia 'Canal de voz' en el recorte) y su nombre mostrado; y, si no se pulsa por si mismo (sin Invoke,
 # SelectionItem, Toggle ni ExpandCollapse: el Text de dentro de un enlace, cuya pulsacion legacy, render o de puntero cae
@@ -2405,8 +2400,8 @@ function ConvertTo-MenuViewEntries($menuEntries){
     if($null -eq $menu -or ([string]$menu.Path).Length -eq 0){ continue }
     $parts=@()
     if([bool]$menu.FillsOnOpen){ $parts+='fills-on-open' }
-    # Revision 2 (B2): marcable es un hecho neutro (la entrada conmuta un ajuste), no su estado: la mente no la pulsa
-    # buscando un lugar.
+    # Revision 2 (B2): marcable es un hecho neutro (la entrada conmuta un ajuste), no su estado: la vista dice que no
+    # lleva a un lugar.
     elseif([bool]$menu.Checkable -or [bool]$menu.Checked){ $parts+='checkable' }
     $id=$(if([bool]$menu.FillsOnOpen -or [int]$menu.Id -le 0){ '' } else { 'hmenu.'+[int]$menu.Id })
     $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; nameSource='menu'; id=$id; state=($parts -join ' '); value=$null; itemType=''; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
@@ -2651,8 +2646,8 @@ function Do-View($request){
       try { $shortcut=[string]$item.Cached.AcceleratorKey; if([string]::IsNullOrWhiteSpace($shortcut)){ $shortcut=[string]$item.Cached.AccessKey } } catch { $shortcut='' }
       if($null -eq $shortcut){ $shortcut='' } else { $shortcut=($shortcut -replace '\s+',' ').Trim() }
       if($shortcut.Length -gt 24){ $shortcut='' }
-      # Ronda 20b, palanca 8 (v3-62): la cadena del menu del sistema bajo la TitleBar va marcada; la mision no la
-      # cuenta como contenido y la mente la oculta salvo que el objetivo pida mover, restaurar o cerrar la ventana.
+      # Ronda 20b, palanca 8 (v3-62): la cadena del menu del sistema bajo la TitleBar va marcada (systemMenu): la vista
+      # dice que mueve, restaura o cierra la ventana, no que es su contenido.
       $systemMenu=$false
       if(($kind -eq 'MenuItem' -or $kind -eq 'MenuBar') -and $titleBars.Count -gt 0){
         # Sin rectangulo (un menu del sistema leido asi) o dibujado dentro de una TitleBar: su cadena decide.

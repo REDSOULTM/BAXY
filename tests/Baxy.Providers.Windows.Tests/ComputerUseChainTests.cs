@@ -474,7 +474,7 @@ public sealed class ComputerUseChainTests
     // Encargo V (banco e2, c7): the worker found the control the label names by a word of its name, beyond the view, and
     // refused it, since that name joins a voice channel and the label does not say so. The click answers that refusal
     // with the control's name and no effect, and no later stage (OCR, tooltip, vision, the pointer) presses it. The click
-    // carries RiskPolicy's own pattern (the worker's Test-AsksMore).
+    // carries RiskPolicy's own pattern (the worker's Get-AskingName).
     [TestCase(true, TestName = "by label alone: named, and no later stage presses it")]
     [TestCase(false, TestName = "by identity: named, answered as is")]
     public void AControlThatAsksMoreThanItsLabelIsNamedAndNotPressed(bool labelAlone)

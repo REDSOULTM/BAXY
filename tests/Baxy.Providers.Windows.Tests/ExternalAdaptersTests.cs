@@ -1788,7 +1788,9 @@ public sealed class ExternalAdaptersTests
                 "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
                 "\"folder\":\"downloads\",\"authority\":\"windows_shell_location_postread\"}"),
             folderScript,
-            selectScript);
+            Path.Combine(temporary.Path, "KnownFileOpen.ps1"),
+            selectScript,
+            Path.Combine(temporary.Path, "DesktopKeyPress.ps1"));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.folder.open",
@@ -1822,7 +1824,8 @@ public sealed class ExternalAdaptersTests
                 "\"authority\":\"known_folder_latest_safe_file_process_postread\"}"),
             folderScript,
             fileScript,
-            selectScript);
+            selectScript,
+            Path.Combine(temporary.Path, "DesktopKeyPress.ps1"));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.file.open.latest",

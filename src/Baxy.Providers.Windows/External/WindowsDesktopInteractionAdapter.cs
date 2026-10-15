@@ -32,11 +32,6 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     internal Func<long> Ticks { get; init; } = static () => Environment.TickCount64;
 
-    internal WindowsDesktopInteractionAdapter()
-        : this(null)
-    {
-    }
-
     /// <summary>The product's adapter: a mission's key or text goes to its window by window messages or UI Automation
     /// when its field takes them (<paramref name="fields"/>: the last view's fields), else by the keyboard.</summary>
     internal WindowsDesktopInteractionAdapter(IViewedFields? fields)
@@ -60,33 +55,6 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// the person asked for, and giving the cursor back would undo it.
     /// </summary>
     internal IForegroundLease? ChordLease { get; init; }
-
-    internal WindowsDesktopInteractionAdapter(
-        IExternalProcessRunner runner,
-        string folderScript,
-        string selectAllScript)
-        : this(
-            runner,
-            folderScript,
-            Path.Combine(Path.GetDirectoryName(folderScript) ?? string.Empty, "KnownFileOpen.ps1"),
-            selectAllScript,
-            Path.Combine(Path.GetDirectoryName(folderScript) ?? string.Empty, "DesktopKeyPress.ps1"))
-    {
-    }
-
-    internal WindowsDesktopInteractionAdapter(
-        IExternalProcessRunner runner,
-        string folderScript,
-        string fileScript,
-        string selectAllScript)
-        : this(
-            runner,
-            folderScript,
-            fileScript,
-            selectAllScript,
-            Path.Combine(Path.GetDirectoryName(folderScript) ?? string.Empty, "DesktopKeyPress.ps1"))
-    {
-    }
 
     internal WindowsDesktopInteractionAdapter(
         IExternalProcessRunner runner,

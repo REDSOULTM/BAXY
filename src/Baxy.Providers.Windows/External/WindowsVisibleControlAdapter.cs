@@ -2216,7 +2216,7 @@ internal sealed class WindowsVisibleControlAdapter
                     if (placedLines is not null && placedIn.Width > 0 && placedIn.Height > 0)
                     {
                         // Encargo IMP4: each line read with its box, in fractions of the window's own drawing, in the
-                        // order read (a chat without an accessible tree is read from them: semantic.chat_lines).
+                        // order read (a chat without an accessible tree is read from them, each line by its place).
                         writer.WriteStartArray("textLines");
                         foreach (WindowsVisibleOcrLocator.LayoutLine line in placedLines)
                         {
@@ -3365,7 +3365,7 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteEndObject();
             }), error);
 
-    // What the worker must not press without its name in the invocation (the worker's Test-AsksMore), RiskPolicy's own.
+    // What the worker must not press without its name in the invocation (the worker's Get-AskingName), RiskPolicy's own.
     private static JsonObject AsksRequest() => new()
     {
         ["pattern"] = RiskPolicy.AsksPattern,

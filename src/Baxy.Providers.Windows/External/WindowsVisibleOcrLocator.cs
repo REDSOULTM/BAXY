@@ -253,7 +253,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
     // accesibilidad: la interfaz del lanzador de juegos devuelve un solo nodo
     // (la ventana heredada de CEF), sin un hijo. Ahí lo único que se puede
     // leer es lo que se ve.
-    // Encargo WA-LEER: con «placed» cada línea vale por su sitio (las de un chat, semantic.chat_lines): un texto que se
+    // Encargo WA-LEER: con «placed» cada línea vale por su sitio (las de un chat que se lee por sus líneas): un texto que se
     // repite en otro sitio es otra línea —trece burbujas «prueba BAXY imp», la hora y la fecha de la última burbuja que
     // la lista de chats repite— y sólo se descarta la segunda lectura del mismo texto en el mismo sitio; una línea larga
     // de un mensaje se guarda entera. Medido en redpc (chat «Abuela» abierto, 1938×1098): por texto quedaban 45 de 66
