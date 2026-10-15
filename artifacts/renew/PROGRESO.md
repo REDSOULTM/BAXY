@@ -109,3 +109,9 @@ tocan lo cambiado; en el notebook pasan).
   solo uso y salen sólo de `window.resolve`/`window.active`); el error `invalid_or_expired_window_id` lo contó como «ya no
   está abierto» (falsedad). Arreglo en cola: `app.open` devuelve un `windowId` y el id vale mientras la identidad de la
   ventana sea la misma.
+- decision2 (270) tras exponer internas y describir subcarpetas: 224 (antes 227). Lo que cambió por la exposición:
+  «desinstala el Zoom/Worms» → `package.install.prepare` (2 casos) y un mensaje a un contacto → `message.recipient.resolve` en
+  vez del borrador. Se retiran de nuevo `package.install.*` y `message.recipient.resolve` (ningún caso del banco instala;
+  el borrador es lo esperado). Instalar programas queda pendiente de una sola herramienta `package.install` con riesgo
+  de instalación (pedida al notebook); `window.resolve` se queda (las `window.*` la necesitan). RAM de llama-server en el
+  PC: USS 3436 MiB en esta corrida (2011 en s2, ~0,5 GB en el notebook): se mide aparte con `measure_resources.py`.
