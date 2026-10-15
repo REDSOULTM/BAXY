@@ -1,6 +1,6 @@
 """Instinct bench: the heartbeat on the scenes of <banks>/escenas, with Renew's own Mind on its own llama-server.
 
-usage: py -3.12 -X utf8 scripts/renew/bench_escenas.py <label> --scenes FILE [--catalog FILE]
+usage: py -3.12 -X utf8 scripts/renew/bench_escenas.py <label> --scenes FILE [--catalog FILE] [--src DIR]
 Each scene's context goes to Mind.beat as the App would send it. What the model does is classified by the judge of
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
 result; a high-risk call is a proposal (the App holds every heartbeat call of that risk for the person's «sí»); any
@@ -39,8 +39,9 @@ def main() -> None:
     parser.add_argument("--gguf", default=os.environ.get("BAXY_MIND_LLM_GGUF", r"F:\BAXYeval\models\Qwen3.5-4B-Q4_K_M.gguf"))
     parser.add_argument("--server", default=os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe"))
     parser.add_argument("--ctx", default="49152")
+    parser.add_argument("--src", default=str(ROOT / "src"), help="the mind to measure (a copy for an A/B of the prompt)")
     args = parser.parse_args()
-    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, args.src)
     from baxy_mind.llm_server import LlmServer  # noqa: E402
     from baxy_mind.mind import Mind  # noqa: E402
 

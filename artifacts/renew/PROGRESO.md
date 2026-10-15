@@ -184,3 +184,9 @@ tocan lo cambiado; en el notebook pasan).
 - Velocidad, investigado y descartado: MTP (el GGUF de Qwen3.5-4B no trae capas MTP), especulación por n-gramas
   (ngram-simple 0,83 s, ngram-mod 0,82 s contra 0,81 s sin ella), KV f16 (78,5 → 79,4 tok/s, a 16k peor). El modelo
   genera a 78 tok/s en bruto (64 con el prefijo de herramientas): la decisión cuesta ~0,7 s por llamada.
+- **Latido (escenas de práctica, 40):** tras los cambios del día bajó a 30/40. Medido: la frase de la regla 2 sobre «¿ya
+  lo hiciste?» lo vuelve más callado (sin ella 32 muestreado / 34 voraz; con ella 30 / 31; otra redacción 30). El latido
+  usa ahora el texto de sistema sin esa frase (sólo la pregunta una persona; en Qwen3.5 las herramientas van antes del
+  sistema, así que no rompe la caché compartida) y decide si interviene de forma voraz. Resultado p13: 32/40 (80 %),
+  molestas 0, riesgo solo 0. Ruido entre corridas iguales: ±2 escenas incluso voraz (la caché de prefijo cambia el
+  camino numérico: 25 de 40 decisiones con texto distinto).

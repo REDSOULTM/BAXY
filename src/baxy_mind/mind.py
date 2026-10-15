@@ -48,6 +48,15 @@ SYSTEM = (
     "lista; nunca los inventes ni uses un número de otro campo."
 )
 
+# The heartbeat reads the same rules without the answer to «¿ya lo hiciste?», which only a person asks: with it, the
+# open scenes went from 34 to 31 of 40 and the notices it should give from 3 to 1 of 6 (two wordings, sampled and greedy,
+# 2026-10-15). Qwen3.5's template puts the tools before the system text, so the heartbeat's own conversation re-reads
+# only this text, as it already re-read its own messages.
+_ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo, contesta por los resultados de esta conversación: sin una "
+                  "herramienta que lo hiciera, no lo hiciste.")
+assert _ASKED_IF_DONE in SYSTEM
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
+
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
 # scenes, the analysis first found 34 of 40), then, only when it decided to intervene, it acts with its tools.
@@ -284,9 +293,9 @@ class Mind:
                               "tools": self.tools, "max_tokens": 1,
                           "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.DECIDE, timeout=600)
 
-    def _system(self) -> str:
+    def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
-        return SYSTEM
+        return BEAT_SYSTEM if beat else SYSTEM
 
     @staticmethod
     def _clock() -> str:
@@ -333,10 +342,11 @@ class Mind:
         conversation only if it intervened."""
         started = time.monotonic()
         conv = [{"role": "user", "content": beat_message(context)}]
-        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()}, *conv],
+        # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.
+        reply = self.server.chat({"messages": [{"role": "system", "content": self._system(beat=True)}, *conv],
                                   "tools": self.tools, "tool_choice": "none", "max_tokens": 200,
                                   "chat_template_kwargs": {"enable_thinking": False},
-                                  "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
+                                  "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
                                   "seed": 0,
                                   "response_format": {"type": "json_schema",
                                                       "json_schema": {"name": "latido", "schema": BEAT_DECISION}}},
@@ -442,7 +452,7 @@ class Mind:
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.monotonic()
         conv = turn["conv"]
-        messages = [{"role": "system", "content": self._system()}, *conv]
+        messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
