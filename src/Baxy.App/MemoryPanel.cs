@@ -290,8 +290,8 @@ internal sealed class MemoryPanel
         string value,
         CancellationToken cancellationToken)
     {
-        // Revisión M H2: the panel keeps no value the chat would refuse (a secret, a grant of permissions).
-        if (NaturalMemoryRequestParser.JudgeValueToKeep(value, value) != MemoryValueJudgement.Keepable)
+        // A value that carries a secret is never kept from the panel either (privacy masking).
+        if (string.IsNullOrWhiteSpace(value) || SensitiveText.Contains(value))
         {
             return "memory_value_refused";
         }

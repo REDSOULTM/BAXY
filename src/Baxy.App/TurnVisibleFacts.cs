@@ -14,51 +14,11 @@ internal static class TurnVisibleFacts
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    internal static readonly string[] ConfirmCancel =
-        ["confirmar", "confirm", "cancelar", "cancel"];
-
-    internal static readonly string[] ContinueCancel =
-        ["continuar", "continue", "cancelar", "cancel"];
-
-    internal static readonly string[] ContinueRetry =
-        ["continuar", "continue", "retry"];
-
-    internal static string Welcome() => Event("welcome");
-
-    internal static UserMessageDraft? VoiceFeedback(string eventName, string? reason = null) =>
-        eventName switch
-        {
-            "wake" => UserMessagePolicy.Create(
-                Event("conversation", "voice_wake_listening"),
-                UserMessageEvent.Conversation),
-            "ignored" when reason == "transcript_doubtful" => UserMessagePolicy.Create(
-                Clarification("voice_transcript_uncertain"),
-                UserMessageEvent.Clarification),
-            _ => null,
-        };
-
     internal static string Failure(string cause, JsonObject? extra = null) =>
         Event("failure", cause, extra);
 
     internal static string Status(string cause, JsonObject? extra = null) =>
         Event("status", cause, extra);
-
-    internal static string Clarification(string cause, JsonObject? extra = null) =>
-        Event("clarification", cause, extra);
-
-    internal static string Confirmation(string cause, IReadOnlyList<string> choices, JsonObject? extra = null)
-    {
-        JsonObject payload = Base("confirmation", cause);
-        var array = new JsonArray();
-        foreach (string choice in choices)
-        {
-            array.Add(choice);
-        }
-
-        payload["choices"] = array;
-        Merge(payload, extra);
-        return payload.ToJsonString(JsonOptions);
-    }
 
     internal static string Event(string kind, string? cause = null, JsonObject? extra = null)
     {

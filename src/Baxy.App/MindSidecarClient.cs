@@ -5,7 +5,6 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
-using Baxy.Kernel.Planning;
 
 namespace Baxy.App;
 
@@ -49,157 +48,16 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
 }
 
 /// <summary>
-/// Decisión de turno emitida por la política contextual de la mente. Es una
-/// clasificación abstinente: el shell sigue siendo la única autoridad para
-/// ejecutar, confirmar y validar operaciones.
+/// The model's move in the native loop. <see cref="Kind"/>: <c>action</c> (one tool call: <see cref="Operation"/> with
+/// its <see cref="Arguments"/>, which the kernel authorizes and the provider executes and verifies), <c>reply</c> (its
+/// answer to the person), <c>question</c> (one question it asks the person). The App runs what the model chose and
+/// publishes what it wrote; it never rewrites either.
 /// </summary>
-internal sealed record MindTurnDecision(
-    string Kind,
-    string? Operation,
-    IReadOnlyList<string> EffectOperations,
-    string Question,
-    string Reply)
+internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text)
 {
-    /// <summary>
-    /// Non-authoritative model selection retained for presentation and
-    /// diagnostics. Only <see cref="EffectOperations"/> may reach execution.
-    /// </summary>
-    public IReadOnlyList<string> IntentOperations { get; init; } = [];
-
-    /// <summary>Recognized missing fields for clarification, never execution arguments.</summary>
-    public IReadOnlyList<string> MissingFields { get; init; } = [];
-
-    /// <summary>
-    /// Whether a clarification supplies a missing slot for the current
-    /// objective. Recovery clarifications set this to false so a failed
-    /// conversational turn cannot poison later dialogue context.
-    /// </summary>
-    public bool PreserveObjective { get; init; } = true;
-
-    /// <summary>
-    /// The mind recognized a new request that needs its own clarification.
-    /// It must not be appended as a value for an older pending objective.
-    /// This flag grants no execution authority and does not discard the new objective.
-    /// </summary>
-    public bool StartsNewObjective { get; init; }
-
-    /// <summary>
-    /// Language the mind actually wrote <see cref="Reply"/> in, as reported by
-    /// the mind. The shell never re-derives it: a second reading here is what
-    /// vetoed an English greeting composed as Spanish and left the turn silent.
-    /// </summary>
-    public string? ResponseLanguage { get; init; }
-
-    // Presentation disposition only; this never grants an executable effect.
-    public string? ConversationKind { get; init; }
-
-    /// <summary>
-    /// Estabilidad cu-v3 2026-10-08 (v2-v3-61; review r2 finding 3): a recovered turn the mind understood as talk
-    /// («social», «knowledge», «followup», or «conversation» when its attempts agreed on no kind) whose wording failed.
-    /// Presentation only: its failure is not asked back with the person's words. Grants no effect.
-    /// </summary>
-    public string? UnderstoodAs { get; init; }
-
-    public string? RecoveryFailureCode { get; init; }
-
-    /// <summary>
-    /// The request this turn decided when the message completed the dialogue
-    /// slot (an answer to the pending question, a pronoun, a new destination).
-    /// The shell executes and keeps this text; it never rebuilds it itself.
-    /// </summary>
-    public string? Objective { get; init; }
+    /// <summary>The operation the mind uses for the person's answer to a pending confirmation.</summary>
+    internal const string ConfirmationAnswer = "confirmation.answer";
 }
-
-internal sealed record MindArgumentResult(
-    JsonObject? Arguments,
-    string Question);
-
-internal sealed record MindPlanStep(
-    string Id,
-    string Operation,
-    string Purpose,
-    IReadOnlyList<string> DependsOn,
-    string ArgumentsMode,
-    JsonObject? Arguments);
-
-internal sealed record MindPlanResult(
-    string Kind,
-    string Question,
-    IReadOnlyList<MindPlanStep> Steps)
-{
-    /// <summary>
-    /// Ronda 19 (revisión, MUSIC1675, CLOSE1371): the mind read the request as conditioned on an application being
-    /// open now («si tengo word abierto, ponelo a la izquierda», «if Chrome is open, snap it to the right»; read in
-    /// semantic/apps.py <c>present_state_condition</c>). The plan's window read is that check, so no window means the
-    /// condition is false: the shell never opens the absent application to satisfy it
-    /// (<see cref="MindPlanBoundary.OpenBeforeResolvingAgain"/>). Grants no effect.
-    /// </summary>
-    public bool PresentStateCondition { get; init; }
-}
-
-/// <summary>
-/// The mind's answer to one composition. <see cref="Text"/> is null when the
-/// writer answered without an accepted draft (every candidate refused, or its
-/// budget ran out first). <see cref="Reproducible"/> says the writer decodes
-/// this request deterministically (greedy or fixed seed): the same request
-/// returns the same draft, so repeating it does not buy another chance. In
-/// tanda-01 and uso-real-03, 74 of 80 repeats returned the same first draft
-/// (continuous batching moved the other six) and one of 80 published.
-/// </summary>
-internal sealed record MindComposedMessage(string? Text, bool Reproducible = false);
-
-/// <summary>
-/// One step of the computer-use loop chosen by the mind over the compact view
-/// (CONTRATO_VISTA_ACCION.md §4.4). <see cref="Operation"/> is a catalog
-/// primitive, or <c>done</c> when the success is visible (with its evidence),
-/// or <c>none</c> when the mind sees no way forward. <see cref="Code"/> says why
-/// there is no step (<c>no_document_open</c>: the application is on its start
-/// page), or what the next look waits for (<c>expects_title_change</c>: the act
-/// creates a document whose window replaces the start page).
-/// <see cref="Alias"/> ({from, to}) says the click is on the other language's
-/// name of the place the goal said; <see cref="Translation"/> ({label, names,
-/// source}) is the translation the mind looked up for the label cache (§4.4.1).
-/// <see cref="Source"/> says where the mind's step came from (<c>model</c>,
-/// <c>rule</c>, <c>semantic</c>: a name matched by meaning) and
-/// <see cref="Encoder"/> what its E5 encoder was when the step asked it
-/// (<c>ready</c>, <c>cold</c>: still loading, <c>failed</c>), for the trace.
-/// <see cref="EncoderMs"/> is the time the step spent in the encoder (waiting
-/// for it and encoding), so the trace's model time is the model's (lat-e5).
-/// <see cref="Wanted"/> (ronda 21) are the goal's words the mind ranked the view by; the next look of the same
-/// sub-goal carries them so the view's cut keeps a bounded room for the controls they name.
-/// </summary>
-internal sealed record MindComputerUseStep(
-    string Operation,
-    JsonObject Arguments,
-    string Reason,
-    string Code = "",
-    JsonObject? Alias = null,
-    JsonObject? Translation = null,
-    string Source = "",
-    string Encoder = "",
-    long EncoderMs = 0,
-    JsonArray? Wanted = null);
-
-/// <summary>
-/// What the mind is asked for one computer-use step: the person's whole
-/// request (<see cref="Objective"/>), the CURRENT sub-goal's goal, application
-/// and success check, the compact view, that sub-goal's history, the steps
-/// left, and where the sub-goal sits in a chained mission (0-based).
-/// <see cref="LabelTranslations"/> is the label cache's entry for the goal's
-/// label only ({label: {names: […]}}), or null (§4.4.1).
-/// </summary>
-internal sealed record ComputerUseStepRequest(
-    string Objective,
-    string Goal,
-    string? Application,
-    string? SuccessCheck,
-    JsonObject View,
-    JsonArray History,
-    int BudgetLeft,
-    int Subgoal,
-    int SubgoalCount,
-    JsonObject? LabelTranslations = null,
-    string? FormCheck = null);
 
 internal sealed record MindVoiceStatus(
     bool Available,
@@ -253,11 +111,10 @@ internal sealed record MindStartupCatalog(
     GameCatalogSnapshot? GameCatalog);
 
 /// <summary>
-/// Cliente del sidecar de inteligencia (baxy.mind.v1, ADR-0005). Es un
-/// segundo proceso local sobre la misma frontera JSONL + Job Object que el
-/// core. Es OPCIONAL y degradable: si no está configurado, no arranca o
-/// muere, todos los métodos devuelven null y el shell no ejecuta lenguaje
-/// libre por una ruta alternativa (fail-closed).
+/// Client of the mind sidecar (baxy.mind.v1): a second local process on the same JSONL + Job Object boundary as the
+/// core. It keeps the session's conversation with the model; this side sends the person's words, each verified result
+/// and the person's answer to a confirmation, and reads back the model's next move. Optional and fail-closed: when it
+/// is not configured, does not start or dies, every request returns null and nothing runs by another route.
 /// </summary>
 internal sealed class MindSidecarClient : IAsyncDisposable
 {
@@ -265,34 +122,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal const string PythonEnvironmentVariable = "BAXY_MIND_PYTHON";
     internal const string PythonPathEnvironmentVariable = "BAXY_MIND_PYTHONPATH";
     internal const string GpuLayersEnvironmentVariable = "BAXY_MIND_NGL";
-    // The sidecar owns an 18 s total deadline for argument extraction and may
-    // use the remaining budget for a second, schema-grounded clarification
-    // generation. Keep 2 s for transport scheduling outside that boundary.
-    internal static readonly TimeSpan ArgumentRequestTimeout =
-        TimeSpan.FromSeconds(20);
-    // turn.decide is read-only and can perform one bounded local retry after
-    // a transient constrained-decoding failure.
-    internal static readonly TimeSpan TurnDecisionRequestTimeout =
-        TimeSpan.FromSeconds(22);
-    // One factual status composition may need a zero-temperature correction
-    // when the first draft omits actor or verified literals. A five-second
-    // ceiling covers the measured cold 4.5 s path without delaying successful
-    // one-pass responses; the shell already exposes honest progress meanwhile.
-    internal static readonly TimeSpan MessageCompositionRequestTimeout =
-        TimeSpan.FromSeconds(5);
-    internal static readonly TimeSpan DenseMessageCompositionRequestTimeout =
-        TimeSpan.FromSeconds(10);
-    // CPU composition keeps the same model-authored and grounded contract as
-    // GPU. Ordinary drafts receive 55 s inside a 60 s transport boundary;
-    // dense verified missions receive the full 120 s model budget inside a
-    // 130 s boundary. The remaining time belongs to JSONL delivery and cleanup.
-    internal static readonly TimeSpan CpuMessageCompositionRequestTimeout =
-        TimeSpan.FromSeconds(60);
-    internal static readonly TimeSpan CpuDenseMessageCompositionRequestTimeout =
-        TimeSpan.FromSeconds(130);
-    private const double MaximumMessageCompositionProtocolBudgetSeconds = 120d;
-    private const int DenseMessageFactCount = 8;
-    private const int DenseMessageFactCharacters = 512;
+    // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart.
+    internal static readonly TimeSpan TurnRequestTimeout = TimeSpan.FromSeconds(30);
     private const int MaximumLineBytes = 1024 * 1024;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> _pending = new();
@@ -305,9 +136,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private CancellationTokenSource? _pumpCancellation;
     private long _requestSequence;
     private volatile bool _ready;
-    private volatile bool _plannerAvailable;
-    private volatile bool _turnDecisionAvailable;
-    private volatile bool _turnContinueAvailable;
+    private volatile bool _turnAvailable;
     private volatile bool _voiceAvailable;
     private bool _disposed;
 
@@ -316,161 +145,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Why the last catalog handshake found the model down, or null.</summary>
     internal MindStartupFailure? LastStartupFailure { get; private set; }
 
-    internal bool HasActiveRequest => _requestLock.CurrentCount == 0;
+    /// <summary>The mind runs the native loop (turn.decide, turn.continue, turn.confirm).</summary>
+    public bool IsTurnAvailable => IsReady && _turnAvailable;
 
-    public bool IsPlannerAvailable => IsReady && _plannerAvailable;
-
-    public bool IsTurnDecisionAvailable => IsReady && _turnDecisionAvailable;
-
-    /// <summary>BAXY Renew: the mind keeps the turn's conversation and takes each verified result back.</summary>
-    public bool IsTurnContinueAvailable => IsReady && _turnContinueAvailable;
-
-    /// <summary>Whether the mind speaks (offers voice.speak; BAXY Renew listens but does not speak yet): no speech request
-    /// is sent otherwise.</summary>
+    /// <summary>Whether the mind speaks (its hello offers voice.speak): no speech request is sent otherwise.</summary>
     public bool IsVoiceAvailable => IsReady && _voiceAvailable;
-
-    internal static bool IsCpuFallbackProfile =>
-        string.Equals(
-            Environment.GetEnvironmentVariable(GpuLayersEnvironmentVariable)?.Trim(),
-            "0",
-            StringComparison.Ordinal);
-
-    internal static TimeSpan SelectWelcomeCompositionTimeout(bool cpuFallback) =>
-        cpuFallback
-            ? CpuMessageCompositionRequestTimeout
-            : DenseMessageCompositionRequestTimeout;
-
-    internal static double SelectMessageCompositionProtocolBudget(TimeSpan timeout) =>
-        Math.Clamp(
-            timeout.TotalSeconds >= CpuMessageCompositionRequestTimeout.TotalSeconds
-                ? timeout.TotalSeconds - 5d
-                : timeout.TotalSeconds - 1d,
-            1d,
-            MaximumMessageCompositionProtocolBudgetSeconds);
-
-    internal static TimeSpan SelectMessageCompositionTimeout(
-        JsonObject facts,
-        bool cpuFallback = false)
-    {
-        ArgumentNullException.ThrowIfNull(facts);
-        int requiredFactCount = facts["requiredFacts"] is JsonArray requiredFacts
-            ? requiredFacts.Count
-            : 0;
-        int requiredFactCharacters = facts["requiredFacts"] is JsonArray factValues
-            ? factValues.Sum(static fact => (fact?.GetValue<string>() ?? string.Empty).Length)
-            : 0;
-        bool partialMission = facts["partialMission"]?.GetValue<bool>() is true;
-        bool dense = partialMission
-            || requiredFactCount >= DenseMessageFactCount
-            || requiredFactCharacters >= DenseMessageFactCharacters
-            || HasDenseObservedInventory(facts);
-        if (cpuFallback)
-        {
-            return dense
-                ? CpuDenseMessageCompositionRequestTimeout
-                : CpuMessageCompositionRequestTimeout;
-        }
-
-        return dense
-            ? DenseMessageCompositionRequestTimeout
-            : MessageCompositionRequestTimeout;
-    }
-
-    private static bool HasDenseObservedInventory(JsonObject facts)
-    {
-        if (facts["situation"] is not JsonValue value
-            || !value.TryGetValue<string>(out string? source)
-            || string.IsNullOrWhiteSpace(source)
-            || !source.TrimStart().StartsWith('{'))
-        {
-            return false;
-        }
-
-        try
-        {
-            if (JsonNode.Parse(source) is not JsonObject situation)
-            {
-                return false;
-            }
-
-            // SCREEN1413: the final of a completed mission carries its steps as
-            // JSON strings; a verified screen reading among them is dense too.
-            if (situation["steps"] is JsonArray steps
-                && steps.Any(static step => step is JsonValue stepValue
-                    && stepValue.TryGetValue<string>(out string? stepSource)
-                    && HasDenseScreenReading(stepSource)))
-            {
-                return true;
-            }
-
-            if (situation["verified"]?.GetValueKind() != JsonValueKind.True
-                || situation["succeeded"]?.GetValueKind() != JsonValueKind.True
-                || situation["observed"] is not JsonObject observed)
-            {
-                return false;
-            }
-
-            // SCREEN1411 «leéme lo que dice la pantalla»: quoting a few recognized
-            // lines verbatim is a dense output; the five-second ceiling cut every
-            // attempt while the model was still writing the quotation.
-            if (situation["operation"]?.ToString() == "ocr.read"
-                && observed["text"] is JsonValue recognized
-                && recognized.TryGetValue<string>(out string? screenText)
-                && screenText.Length >= DenseMessageFactCharacters)
-            {
-                return true;
-            }
-
-            // Inventory observations travel in situation, outside requiredFacts.
-            // Apply the same dense budget without changing the factual contract.
-            string? collection = situation["operation"]?.ToString() switch
-            {
-                "window.resolve" => "windows",
-                "system.process.list" => "processes",
-                "filesystem.known.list" => "entries",
-                // WEB1451 «Investiga Spider-Man»: five results with snippets make
-                // a report the five-second ceiling cut before its shortened retry.
-                "web.search" => "results",
-                _ => null,
-            };
-            return collection is not null && observed[collection] is JsonArray rows
-                && ((collection == "processes" && rows.Count > 1)
-                    || rows.Count >= DenseMessageFactCount
-                    || rows.ToJsonString().Length >= DenseMessageFactCharacters);
-        }
-        catch (JsonException)
-        {
-            return false;
-        }
-    }
-
-    private static bool HasDenseScreenReading(string source)
-    {
-        try
-        {
-            return JsonNode.Parse(source) is JsonObject step
-                && step["operation"]?.ToString() == "ocr.read"
-                && step["verified"]?.GetValueKind() == JsonValueKind.True
-                && step["succeeded"]?.GetValueKind() == JsonValueKind.True
-                && step["observed"] is JsonObject observed
-                && observed["text"] is JsonValue recognized
-                && recognized.TryGetValue<string>(out string? screenText)
-                && screenText.Length >= DenseMessageFactCharacters;
-        }
-        catch (JsonException)
-        {
-            return false;
-        }
-    }
 
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
     public event Action<string>? TranscriptReceived;
 
     /// <summary>Estado no sensible de la tubería de voz (hilo del pump).</summary>
     public event Action<JsonObject>? VoiceEventReceived;
-
-    /// <summary>Señal temprana o hito: prosa formulada, nunca un resultado.</summary>
-    public event Action<string>? TurnSignalReceived;
 
     internal static bool IsDisabled =>
         string.Equals(
@@ -484,50 +169,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             Environment.GetEnvironmentVariable(PythonEnvironmentVariable));
 
     /// <summary>
-    /// Arranca el sidecar si está configurado. Nunca lanza hacia el caller:
-    /// devuelve false y queda deshabilitado ante cualquier fallo.
-    /// </summary>
-    public async Task<bool> TryStartAsync(
-        IReadOnlyList<OperationDescriptor> capabilities,
-        TimeSpan handshakeTimeout,
-        CancellationToken cancellationToken) =>
-        await TryStartAsync(
-            capabilities,
-            applicationCatalog: null,
-            gameCatalog: null,
-            handshakeTimeout,
-            cancellationToken).ConfigureAwait(false);
-
-    public async Task<bool> TryStartAsync(
-        IReadOnlyList<OperationDescriptor> capabilities,
-        ApplicationCatalogSnapshot? applicationCatalog,
-        TimeSpan handshakeTimeout,
-        CancellationToken cancellationToken) =>
-        await TryStartAsync(
-            capabilities,
-            applicationCatalog,
-            gameCatalog: null,
-            handshakeTimeout,
-            cancellationToken).ConfigureAwait(false);
-
-    public async Task<bool> TryStartAsync(
-        IReadOnlyList<OperationDescriptor> capabilities,
-        ApplicationCatalogSnapshot? applicationCatalog,
-        GameCatalogSnapshot? gameCatalog,
-        TimeSpan handshakeTimeout,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(capabilities);
-        return await TryStartAsync(
-            Task.FromResult(new MindStartupCatalog(capabilities, applicationCatalog, gameCatalog)),
-            handshakeTimeout,
-            cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Ronda 22 (r18: «listo» 9-15 s before <c>startup.mind.ready</c>): the process and its model start while the
     /// core still says hello; <c>catalog.configure</c> goes once <paramref name="catalog"/> carries the core's
     /// authenticated catalog. A catalog that never comes (the core failed, cancelled) ends the start without a mind.
+    /// Never throws to the caller: returns false and stays disabled on any failure.
     /// </summary>
     internal async Task<bool> TryStartAsync(
         Task<MindStartupCatalog> catalog,
@@ -585,12 +230,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             bool hasLlm = hello["models"] is JsonObject models
                 && models["llm"] is JsonValue;
             JsonArray? requests = hello["requests"] as JsonArray;
-            _plannerAvailable = hasLlm
-                && requests?.Any(static request => (string?)request == "plan") == true;
-            _turnDecisionAvailable = hasLlm
-                && requests?.Any(static request => (string?)request == "turn.decide") == true;
-            _turnContinueAvailable = hasLlm
-                && requests?.Any(static request => (string?)request == "turn.continue") == true;
+            _turnAvailable = hasLlm
+                && requests?.Any(static request => (string?)request == "turn.confirm") == true;
             _voiceAvailable = requests?.Any(static request => (string?)request == "voice.speak") == true;
             MindStartupCatalog inputs = await catalog
                 .WaitAsync(startupCancellation.Token)
@@ -705,903 +346,68 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         return request;
     }
 
-    public async Task<MindTurnDecision?> DecideTurnAsync(
-        string text,
-        IReadOnlyList<(string Role, string Content)> history,
-        TimeSpan timeout,
-        CancellationToken cancellationToken,
-        bool pendingClarification = false,
-        string? pendingObjective = null)
-    {
-        if (!IsTurnDecisionAvailable)
-        {
-            return null;
-        }
-
-        var historyArray = new JsonArray();
-        foreach ((string role, string content) in history)
-        {
-            historyArray.Add(new JsonObject
-            {
-                ["role"] = role,
-                ["content"] = content,
-            });
-        }
-
-        var decideRequest = new JsonObject
-        {
-            ["type"] = "turn.decide",
-            ["text"] = text,
-            ["history"] = historyArray,
-            ["pendingClarification"] = pendingClarification,
-            ["uiLanguage"] =
-                CultureInfo.CurrentUICulture.TwoLetterISOLanguageName,
-        };
-        if (!string.IsNullOrWhiteSpace(pendingObjective))
-        {
-            decideRequest["pendingObjective"] = pendingObjective;
-        }
-
-        JsonObject? reply = await RequestAsync(
-            decideRequest,
-            timeout,
-            cancellationToken).ConfigureAwait(false);
-        return ParseTurnResult(reply);
-    }
+    /// <summary>The person's words open a turn; the model answers with its first move.</summary>
+    public Task<MindStep?> DecideAsync(string text, CancellationToken cancellationToken) =>
+        TurnRequestAsync(new JsonObject { ["type"] = "turn.decide", ["text"] = text }, cancellationToken);
 
     /// <summary>
-    /// BAXY Renew native loop: one verified result goes back into the turn's own conversation, and the model answers
-    /// with its next step (another tool call, a question, or the final text), in the same shape as turn.decide.
+    /// The verified result of the model's last call goes back to it; it answers with its next move. With
+    /// <paramref name="final"/> the step budget is spent and the model answers in words from what the results show.
     /// </summary>
-    public async Task<MindTurnDecision?> ContinueTurnAsync(
-        string observation,
-        TimeSpan timeout,
-        CancellationToken cancellationToken)
+    public Task<MindStep?> ContinueAsync(string observation, bool final, CancellationToken cancellationToken) =>
+        TurnRequestAsync(
+            new JsonObject { ["type"] = "turn.continue", ["observation"] = observation, ["final"] = final },
+            cancellationToken);
+
+    /// <summary>The person pressed Sí or No: their answer enters the conversation as the confirmation call.</summary>
+    public Task<MindStep?> ConfirmAsync(bool approve, string label, CancellationToken cancellationToken) =>
+        TurnRequestAsync(
+            new JsonObject { ["type"] = "turn.confirm", ["approve"] = approve, ["label"] = label },
+            cancellationToken);
+
+    /// <summary>A new conversation: the model forgets the session's turns.</summary>
+    public async Task<bool> NewSessionAsync(CancellationToken cancellationToken)
     {
-        if (!IsTurnContinueAvailable)
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "session.new" },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && (string?)reply["type"] == "session.ready";
+    }
+
+    private async Task<MindStep?> TurnRequestAsync(JsonObject request, CancellationToken cancellationToken)
+    {
+        if (!IsTurnAvailable)
         {
             return null;
         }
 
-        JsonObject? reply = await RequestAsync(
-            new JsonObject { ["type"] = "turn.continue", ["observation"] = observation },
-            timeout,
-            cancellationToken).ConfigureAwait(false);
-        return ParseTurnResult(reply);
+        return ParseStep(await RequestAsync(request, TurnRequestTimeout, cancellationToken).ConfigureAwait(false));
     }
 
-    private static MindTurnDecision? ParseTurnResult(JsonObject? reply)
+    internal static MindStep? ParseStep(JsonObject? reply)
     {
         if (reply is null || (string?)reply["type"] != "turn.result")
         {
             return null;
         }
 
-        string kind = (string?)reply["kind"] ?? string.Empty;
-        string? operation = (string?)reply["operation"];
-        if (!TryParseEffectOperations(reply, out string[] effectOperations))
+        switch ((string?)reply["kind"])
         {
-            return null;
-        }
-        string[] intentOperations = [];
-        if (reply["intentOperations"] is not null
-            && !TryParseOperations(
-                reply,
-                "intentOperations",
-                out intentOperations))
-        {
-            return null;
-        }
-        string[] missingFields = [];
-        if (reply["missingFields"] is JsonNode missingFieldsNode)
-        {
-            if (kind != "clarify"
-                || missingFieldsNode is not JsonArray fields
-                || fields.Count is < 1 or > 64)
-            {
+            case "action" when (string?)reply["operation"] is { Length: > 0 and <= 256 } operation
+                && operation.All(static c => char.IsAsciiLetterOrDigit(c) || c == '.'):
+                return new MindStep(
+                    "action",
+                    operation,
+                    reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject(),
+                    string.Empty);
+            case "clarify" when (string?)reply["question"] is { Length: > 0 } question:
+                return new MindStep("question", null, null, question.Trim());
+            case "conversation" when (string?)reply["reply"] is { Length: > 0 } text:
+                return new MindStep("reply", null, null, text.Trim());
+            default:
                 return null;
-            }
-
-            var parsedFields = new List<string>(fields.Count);
-            foreach (JsonNode? node in fields)
-            {
-                if (node is not JsonValue fieldValue
-                    || !fieldValue.TryGetValue(out string? fieldName)
-                    || string.IsNullOrEmpty(fieldName)
-                    || fieldName.Length > 128
-                    || !char.IsAsciiLetter(fieldName[0])
-                    || fieldName.Any(static character =>
-                        !char.IsAsciiLetterOrDigit(character) && character != '_')
-                    || parsedFields.Contains(fieldName, StringComparer.Ordinal))
-                {
-                    return null;
-                }
-                parsedFields.Add(fieldName);
-            }
-            missingFields = parsedFields.ToArray();
         }
-        string question = (string?)reply["question"] ?? string.Empty;
-        string response = (string?)reply["reply"] ?? string.Empty;
-        string? conversationKind = null;
-        if (reply["conversationKind"] is JsonNode disposition
-            && (kind != "conversation"
-                || disposition is not JsonValue value
-                || !value.TryGetValue(out conversationKind)
-                || conversationKind is not ("social" or "knowledge" or "followup"
-                    or "unsupported" or "unsupported_language")))
-        {
-            return null;
-        }
-        string? understoodAs = null;
-        if (reply["understoodAs"] is JsonNode understood
-            && (kind != "conversation"
-                || understood is not JsonValue understoodValue
-                || !understoodValue.TryGetValue(out understoodAs)
-                || understoodAs is not ("social" or "knowledge" or "followup" or "conversation")))
-        {
-            return null;
-        }
-        string? responseLanguage = (string?)reply["responseLanguage"] is { } language
-            && language is "es" or "en" or "mixed"
-                ? language
-                : null;
-        if (!TryParsePreserveObjective(reply, out bool preserveObjective)
-            || !TryParseStartsNewObjective(reply, out bool startsNewObjective))
-        {
-            return null;
-        }
-        string? objective = reply["objective"] is JsonNode objectiveNode
-            ? objectiveNode is JsonValue objectiveValue
-                && objectiveValue.TryGetValue(out string? objectiveText)
-                && objectiveText is { Length: > 0 and <= 2_048 }
-                    ? objectiveText
-                    : null
-            : null;
-        if (reply["objective"] is not null && objective is null)
-        {
-            return null;
-        }
-        string? recoveryFailureCode = (string?)reply["failure_code"];
-        if (recoveryFailureCode is not null
-            && (recoveryFailureCode is not ("turn_contract_failure" or "turn_runtime_failure" or "turn_unavailable")
-                || effectOperations.Length != 0))
-        {
-            return null;
-        }
-        bool validEffects = effectOperations.Length <= 8
-            && effectOperations.All(static value =>
-                value.Length <= 256
-                && value.All(static character =>
-                    char.IsAsciiLetterOrDigit(character) || character == '.'))
-            && (kind switch
-            {
-                "action" => effectOperations.Length == 1
-                    && string.Equals(
-                        effectOperations[0],
-                        operation,
-                        StringComparison.Ordinal),
-                "plan" => operation is null,
-                "conversation" =>
-                    effectOperations.Length == 0 && operation is null,
-                "clarify" =>
-                    effectOperations.Length == 0
-                    && operation is null
-                    && IsSingleClarificationQuestion(question)
-                    && string.IsNullOrEmpty(response),
-                _ => false,
-            });
-        bool validIntents = intentOperations.All(static value =>
-            value.Length <= 256
-            && value.All(static character =>
-                char.IsAsciiLetterOrDigit(character) || character == '.'));
-        return kind is "conversation" or "clarify" or "action" or "plan"
-            && validEffects
-            && validIntents
-            ? new MindTurnDecision(
-                kind,
-                operation,
-                effectOperations,
-                question,
-                response)
-            {
-                IntentOperations = intentOperations,
-                MissingFields = missingFields,
-                PreserveObjective = preserveObjective,
-                StartsNewObjective = startsNewObjective,
-                ResponseLanguage = responseLanguage,
-                ConversationKind = conversationKind,
-                UnderstoodAs = understoodAs,
-                RecoveryFailureCode = recoveryFailureCode,
-                Objective = objective,
-            }
-            : null;
-    }
-
-    internal static bool TryParsePreserveObjective(
-        JsonObject reply,
-        out bool preserveObjective)
-        => TryParseOptionalBoolean(reply, "preserveObjective", true, out preserveObjective);
-
-    internal static bool TryParseStartsNewObjective(
-        JsonObject reply,
-        out bool startsNewObjective)
-        => TryParseOptionalBoolean(reply, "startsNewObjective", false, out startsNewObjective);
-
-    private static bool TryParseOptionalBoolean(
-        JsonObject reply,
-        string property,
-        bool defaultValue,
-        out bool result)
-    {
-        ArgumentNullException.ThrowIfNull(reply);
-        result = defaultValue;
-        JsonNode? value = reply[property];
-        if (value is null)
-        {
-            return true;
-        }
-
-        return value is JsonValue scalar
-            && scalar.TryGetValue(out result);
-    }
-
-    internal static bool TryParseEffectOperations(
-        JsonObject reply,
-        out string[] effectOperations)
-        => TryParseOperations(
-            reply,
-            "effectOperations",
-            out effectOperations);
-
-    internal static bool TryParseOperations(
-        JsonObject reply,
-        string propertyName,
-        out string[] effectOperations)
-    {
-        effectOperations = [];
-        if (reply[propertyName] is not JsonArray effects
-            || effects.Count > 8)
-        {
-            return false;
-        }
-
-        var parsed = new List<string>(effects.Count);
-        foreach (JsonNode? node in effects)
-        {
-            if (node is not JsonValue value
-                || !value.TryGetValue(out string? operation)
-                || string.IsNullOrWhiteSpace(operation))
-            {
-                return false;
-            }
-
-            parsed.Add(operation);
-        }
-
-        effectOperations = parsed.ToArray();
-        return true;
-    }
-
-    public async Task<MindArgumentResult?> ExtractArgumentResultAsync(
-        string operation,
-        string text,
-        TimeSpan timeout,
-        CancellationToken cancellationToken,
-        IReadOnlyList<(string Role, string Content)>? history = null,
-        string? responseLanguage = null)
-    {
-        // El grounding de argumentos es un tramo propio: no pertenece ni a la
-        // decisión ni al Core, y fundirlo con ellos oculta dónde está el coste.
-        ShellTraceSink.Record(
-            ShellTraceScopes.Turn,
-            ShellTraceSink.TurnId,
-            ShellTraceStages.ArgumentsStart);
-        try
-        {
-            var historyArray = new JsonArray();
-            foreach ((string role, string content) in history ?? [])
-            {
-                historyArray.Add(new JsonObject
-                {
-                    ["role"] = role,
-                    ["content"] = content,
-                });
-            }
-            var request = new JsonObject
-            {
-                ["type"] = "arguments",
-                ["operation"] = operation,
-                ["text"] = text,
-                ["history"] = historyArray,
-            };
-            // The question for a missing argument is written in the language
-            // the mind decided for the turn; the objective alone may have been
-            // restated in the other one (M47, FINAL F-w09-t5).
-            if (responseLanguage is "es" or "en" or "mixed")
-            {
-                request["responseLanguage"] = responseLanguage;
-            }
-
-            JsonObject? reply = await RequestAsync(
-                request,
-                timeout,
-                cancellationToken).ConfigureAwait(false);
-            return ParseArgumentResult(reply, operation);
-        }
-        finally
-        {
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                ShellTraceSink.TurnId,
-                ShellTraceStages.ArgumentsEnd);
-        }
-    }
-
-    internal static MindArgumentResult? ParseArgumentResult(
-        JsonObject? reply,
-        string expectedOperation)
-    {
-        if (reply is null
-            || (string?)reply["type"] != "arguments.result"
-            || (string?)reply["operation"] != expectedOperation
-            || (bool?)reply["ok"] is not bool ok)
-        {
-            return null;
-        }
-
-        JsonObject? arguments = reply["arguments"]?.DeepClone() as JsonObject;
-        string question = (string?)reply["question"] ?? string.Empty;
-        if (ok)
-        {
-            return arguments is not null && string.IsNullOrEmpty(question)
-                ? new MindArgumentResult(arguments, string.Empty)
-                : null;
-        }
-
-        return arguments is null && IsSingleClarificationQuestion(question)
-            ? new MindArgumentResult(null, question)
-            : null;
-    }
-
-    private static bool IsSingleClarificationQuestion(string question)
-    {
-        if (string.IsNullOrWhiteSpace(question)
-            || question.Length > 512
-            || !string.Equals(question, question.Trim(), StringComparison.Ordinal)
-            || question.Contains('\r')
-            || question.Contains('\n')
-            || !question.EndsWith('?'))
-        {
-            return false;
-        }
-
-        return question.Count(character => character == '?') == 1;
-    }
-
-    public async Task<MindPlanResult?> PlanAsync(
-        string text,
-        IReadOnlyList<(string Role, string Content)> history,
-        TimeSpan timeout,
-        CancellationToken cancellationToken,
-        JsonObject? recovery = null,
-        IReadOnlyList<string>? expectedOperations = null,
-        MindReplanSuffixContract? expectedSuffix = null)
-    {
-        JsonObject request = CreatePlanRequest(
-            text,
-            history,
-            recovery,
-            expectedOperations,
-            expectedSuffix);
-
-        JsonObject? reply = await RequestAsync(
-            request,
-            timeout,
-            cancellationToken,
-            returnProtocolError: true).ConfigureAwait(false);
-        if (reply is null || (string?)reply["type"] == "error")
-        {
-            return new MindPlanResult(
-                "failed",
-                TurnVisibleFacts.Failure(PlanFailureCause(reply)),
-                Array.Empty<MindPlanStep>());
-        }
-
-        MindPlanResult? result = ParsePlanResult(reply);
-        return ValidateExpectedPlanResult(
-            result,
-            expectedOperations,
-            expectedSuffix);
-    }
-
-    /// <summary>
-    /// Ronda 20 P5 (pasada r18 v3-27: a 4xx of the local model server's grammar told as «No pude abrir … en este
-    /// equipo»): the cause of a plan request that failed. No reply (the transport failed, the
-    /// mind closed or its deadline expired) or the mind's runtime fault («plan_runtime_failure», an exception under
-    /// the plan such as an HTTP error of the model server) is <c>internal_fault</c>, BAXY's own; a reply the
-    /// contract refused stays <c>plan_incomplete</c>.
-    /// </summary>
-    internal static string PlanFailureCause(JsonObject? reply) =>
-        reply is null
-            || ((string?)reply["type"] == "error"
-                && ((string?)reply["message"])?.EndsWith("_runtime_failure", StringComparison.Ordinal) == true)
-            ? "internal_fault"
-            : "plan_incomplete";
-
-    internal static JsonObject CreatePlanRequest(
-        string text,
-        IReadOnlyList<(string Role, string Content)> history,
-        JsonObject? recovery = null,
-        IReadOnlyList<string>? expectedOperations = null,
-        MindReplanSuffixContract? expectedSuffix = null)
-    {
-        ArgumentNullException.ThrowIfNull(text);
-        ArgumentNullException.ThrowIfNull(history);
-        if (expectedOperations is { Count: > 0 } && expectedSuffix is not null)
-        {
-            throw new ArgumentException(
-                "A plan request cannot combine effect-name and pending-suffix constraints.");
-        }
-
-        var historyArray = new JsonArray();
-        foreach ((string role, string content) in history)
-        {
-            historyArray.Add(new JsonObject
-            {
-                ["role"] = role,
-                ["content"] = content,
-            });
-        }
-
-        var request = new JsonObject
-        {
-            ["type"] = "plan",
-            ["text"] = text,
-            ["history"] = historyArray,
-        };
-        JsonObject? recoveryContract = recovery?.DeepClone().AsObject();
-        if (expectedSuffix is not null)
-        {
-            recoveryContract ??= new JsonObject();
-            if (recoveryContract.ContainsKey("pendingSuffix"))
-            {
-                throw new ArgumentException(
-                    "Recovery already contains a pending-suffix contract.",
-                    nameof(recovery));
-            }
-
-            recoveryContract["pendingSuffix"] = expectedSuffix.ToRecoveryJson();
-        }
-
-        if (recoveryContract is not null)
-        {
-            request["recovery"] = recoveryContract;
-        }
-        if (expectedOperations is { Count: > 0 })
-        {
-            var expected = new JsonArray();
-            foreach (string operation in expectedOperations)
-            {
-                expected.Add(operation);
-            }
-
-            request["expectedOperations"] = expected;
-        }
-
-        return request;
-    }
-
-    internal static MindPlanResult? ValidateExpectedPlanResult(
-        MindPlanResult? result,
-        IReadOnlyList<string>? expectedOperations,
-        MindReplanSuffixContract? expectedSuffix = null)
-    {
-        if (expectedOperations is { Count: > 0 } && expectedSuffix is not null)
-        {
-            return null;
-        }
-
-        if (result is not null && expectedSuffix is not null)
-        {
-            return (result.Kind == "clarify"
-                || MindPlanBoundary.IsSafeReplanSuffix(expectedSuffix, result))
-                ? result
-                : null;
-        }
-
-        if (result is null || expectedOperations is not { Count: > 0 })
-        {
-            return result;
-        }
-
-        if (expectedOperations.Count > 8
-            || expectedOperations.Any(static operation =>
-                string.IsNullOrWhiteSpace(operation)
-                || operation.Length > 256
-                || operation.Any(static character =>
-                    !char.IsAsciiLetterOrDigit(character) && character != '.')))
-        {
-            return null;
-        }
-
-        if (result.Kind == "clarify")
-        {
-            return result;
-        }
-
-        if (result.Kind != "plan")
-        {
-            return null;
-        }
-
-        string[] observedPlan = result.Steps
-            .Select(static step => step.Operation)
-            .ToArray();
-        string[] perTargetPlan = WithoutRepeatedTargets(observedPlan);
-        return ExpandExpectedPlanOperationVariants(expectedOperations)
-            .Any(expectedPlan => observedPlan.SequenceEqual(
-                    expectedPlan,
-                    StringComparer.Ordinal)
-                || perTargetPlan.SequenceEqual(
-                    expectedPlan,
-                    StringComparer.Ordinal))
-            ? result
-            : null;
-    }
-
-    /// <summary>
-    /// M55 (v3b F-w06-t1 «pon el word a la izquierda y el chrome a la derecha»):
-    /// the mind lists each kind of effect once, so a request that docks two
-    /// windows arrives as one expected <c>window.snap</c> and is planned as one
-    /// verified producer and consumer per window. A consumer repeated right
-    /// after itself, each time behind its own required producer, is the same
-    /// effect on another target; it collapses to one occurrence before the
-    /// comparison. A repeat without its own producer (a shared identity) or
-    /// any other added or dropped effect still fails.
-    /// </summary>
-    private static string[] WithoutRepeatedTargets(string[] observedPlan)
-    {
-        var kept = new List<string>(observedPlan.Length);
-        for (int index = 0; index < observedPlan.Length; index++)
-        {
-            if (index + 1 < observedPlan.Length
-                && kept.Count > 0
-                && string.Equals(kept[^1], observedPlan[index + 1], StringComparison.Ordinal)
-                && MissionPlanValidator.RequiredPredecessorOperations(observedPlan[index + 1])
-                    .Contains(observedPlan[index], StringComparer.Ordinal))
-            {
-                index++;
-                continue;
-            }
-
-            kept.Add(observedPlan[index]);
-        }
-
-        return kept.ToArray();
-    }
-
-    private static string[][] ExpandExpectedPlanOperationVariants(
-        IReadOnlyList<string> expectedOperations)
-    {
-        var variants = new List<List<string>> { new() };
-        var seenEffects = new HashSet<string>(StringComparer.Ordinal);
-        foreach (string operation in expectedOperations)
-        {
-            string[] prerequisites = MissionPlanValidator
-                .RequiredPredecessorOperations(operation);
-            bool repeatedIdentityConsumer = prerequisites.Length > 0
-                && seenEffects.Contains(operation);
-            var next = new List<List<string>>(variants.Count * 2);
-            foreach (List<string> expanded in variants)
-            {
-                bool needsPredecessor = prerequisites.Length > 0
-                    && (repeatedIdentityConsumer
-                        || !expanded.Any(prerequisites.Contains));
-                if (needsPredecessor)
-                {
-                    foreach (string prerequisite in prerequisites)
-                    {
-                        var candidate = new List<string>(expanded)
-                        {
-                            prerequisite,
-                            operation,
-                        };
-                        next.Add(candidate);
-                    }
-                }
-                else
-                {
-                    var candidate = new List<string>(expanded) { operation };
-                    next.Add(candidate);
-                }
-            }
-
-            variants = next;
-            seenEffects.Add(operation);
-        }
-
-        return variants
-            .Where(static variant => variant.Count <= MissionPlanValidator.MaximumSteps)
-            .Select(static variant => variant.ToArray())
-            .Distinct(StringArrayComparer.Instance)
-            .ToArray();
-    }
-
-    private sealed class StringArrayComparer : IEqualityComparer<string[]>
-    {
-        internal static StringArrayComparer Instance { get; } = new();
-
-        public bool Equals(string[]? left, string[]? right) =>
-            ReferenceEquals(left, right)
-            || left is not null
-            && right is not null
-            && left.SequenceEqual(right, StringComparer.Ordinal);
-
-        public int GetHashCode(string[] value)
-        {
-            var hash = new HashCode();
-            foreach (string item in value)
-            {
-                hash.Add(item, StringComparer.Ordinal);
-            }
-
-            return hash.ToHashCode();
-        }
-    }
-
-    public async Task<JsonObject?> GroundPlanStepAsync(
-        string objective,
-        MindPlanStep step,
-        JsonArray observations,
-        TimeSpan timeout,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(step);
-        ArgumentNullException.ThrowIfNull(observations);
-        JsonObject? reply = await RequestAsync(
-            new JsonObject
-            {
-                ["type"] = "plan.ground",
-                ["objective"] = objective,
-                ["operation"] = step.Operation,
-                ["purpose"] = step.Purpose,
-                ["observations"] = observations.DeepClone(),
-            },
-            timeout,
-            cancellationToken).ConfigureAwait(false);
-        if (reply is null
-            || (string?)reply["type"] != "plan.ground.result"
-            || (string?)reply["operation"] != step.Operation)
-        {
-            return null;
-        }
-
-        return reply["arguments"]?.DeepClone() as JsonObject;
-    }
-
-    // Computer use: one decision per look; the model reads at most sixty
-    // controls and the text by zone and answers a single strict JSON step at
-    // temperature 0 (CONTRATO_VISTA_ACCION.md §4.4).
-    internal static readonly TimeSpan ComputerUseStepRequestTimeout = TimeSpan.FromSeconds(30);
-
-    internal async Task<MindComputerUseStep?> DecideComputerUseStepAsync(
-        ComputerUseStepRequest step,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(step);
-        var request = new JsonObject
-        {
-            ["type"] = "computer.use.step",
-            ["objective"] = step.Objective,
-            ["goal"] = step.Goal,
-            ["application"] = step.Application,
-            ["successCheck"] = step.SuccessCheck,
-            ["view"] = step.View.DeepClone(),
-            ["history"] = step.History.DeepClone(),
-            ["budgetLeft"] = step.BudgetLeft,
-            ["subgoal"] = step.Subgoal,
-            ["subgoalCount"] = step.SubgoalCount,
-        };
-        if (step.LabelTranslations is { Count: > 0 } translations)
-        {
-            request["labelTranslations"] = translations.DeepClone();
-        }
-
-        if (step.FormCheck is { Length: > 0 } formCheck)
-        {
-            // Ronda 20b, revisión 2: the check of the whole form the sub-goal belongs to.
-            request["formCheck"] = formCheck;
-        }
-
-        JsonObject? reply = await RequestAsync(
-            request,
-            ComputerUseStepRequestTimeout,
-            cancellationToken).ConfigureAwait(false);
-        if (reply is null
-            || (string?)reply["type"] != "computer.use.step.result"
-            || (string?)reply["operation"] is not { Length: > 0 } operation)
-        {
-            return null;
-        }
-
-        JsonObject arguments = reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject();
-        return new MindComputerUseStep(
-            operation, arguments, (string?)reply["reason"] ?? string.Empty, (string?)reply["code"] ?? string.Empty,
-            reply["alias"]?.DeepClone() as JsonObject, reply["translation"]?.DeepClone() as JsonObject,
-            TraceWord(reply["source"]), TraceWord(reply["encoder"]), EncoderMilliseconds(reply["encoderMs"]),
-            WantedWords(reply["wanted"]));
-    }
-
-    // Ronda 21: the goal's words the mind ranked the view by, as the catalog's «wanted» takes them (at most 24 non-empty
-    // texts of at most 64 characters); anything else is no word.
-    internal static JsonArray? WantedWords(JsonNode? node)
-    {
-        if (node is not JsonArray given)
-        {
-            return null;
-        }
-
-        var words = new JsonArray();
-        foreach (JsonNode? item in given)
-        {
-            if (item is JsonValue value && value.TryGetValue(out string? word) && !string.IsNullOrWhiteSpace(word)
-                && System.Text.Encoding.UTF8.GetByteCount(word.Trim()) <= 64 && words.Count < 24)
-            {
-                words.Add(word.Trim());
-            }
-        }
-
-        return words.Count > 0 ? words : null;
-    }
-
-    // The step's time in the encoder (lat-e5): whole milliseconds within the step's own timeout, else 0.
-    internal static long EncoderMilliseconds(JsonNode? node) =>
-        node is JsonValue value && value.GetValueKind() == System.Text.Json.JsonValueKind.Number
-            && long.TryParse(value.ToJsonString(), System.Globalization.NumberStyles.None,
-                System.Globalization.CultureInfo.InvariantCulture, out long milliseconds)
-            && milliseconds > 0 && milliseconds <= (long)ComputerUseStepRequestTimeout.TotalMilliseconds
-            ? milliseconds
-            : 0;
-
-    // A short lowercase word of the mind's step for the trace (source, encoder); anything else is dropped.
-    internal static string TraceWord(JsonNode? node) =>
-        node is JsonValue value && value.TryGetValue(out string? word)
-            && word is { Length: > 0 and <= 16 } && word.All(character => character is >= 'a' and <= 'z')
-            ? word
-            : string.Empty;
-
-    public async Task<MindComposedMessage?> ComposeUserMessageAsync(
-        string userText,
-        string intent,
-        JsonObject facts,
-        TimeSpan timeout,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(facts);
-        switch (FieldCompositionInjection.Resolve())
-        {
-            case FieldCompositionInjectionMode.Reject:
-                return new MindComposedMessage("planner tool catalog schema");
-            case FieldCompositionInjectionMode.Timeout:
-                throw new TimeoutException("composition_injection_timeout");
-            case FieldCompositionInjectionMode.Exhaust:
-                return new MindComposedMessage(null, Reproducible: true);
-        }
-        JsonObject? reply = await RequestAsync(
-            new JsonObject
-            {
-                ["type"] = "message.compose",
-                ["userText"] = userText,
-                ["intent"] = intent,
-                ["facts"] = facts.DeepClone(),
-                ["budgetSeconds"] = SelectMessageCompositionProtocolBudget(timeout),
-            },
-            timeout,
-            cancellationToken).ConfigureAwait(false);
-        return ParseComposeResult(reply);
-    }
-
-    /// <summary>
-    /// Null means the mind did not answer (not ready, transport failure,
-    /// runtime error): another attempt may succeed. An answer without text is
-    /// the writer's own outcome and carries whether it is reproducible.
-    /// </summary>
-    internal static MindComposedMessage? ParseComposeResult(JsonObject? reply)
-    {
-        if (reply is null || (string?)reply["type"] != "message.compose.result")
-        {
-            return null;
-        }
-
-        bool reproducible = reply["reproducible"] is JsonValue flag
-            && flag.TryGetValue(out bool value)
-            && value;
-        string? text = (string?)reply["text"] is { } raw && raw.Trim() is { Length: > 0 } trimmed
-            ? trimmed
-            : null;
-        return new MindComposedMessage(text, reproducible);
-    }
-
-    internal static MindPlanResult? ParsePlanResult(JsonObject? reply)
-    {
-        if (reply is null
-            || (string?)reply["type"] != "plan.result"
-            || (int?)reply["version"] != 1
-            || (string?)reply["kind"] is not { } kind
-            || kind is not ("plan" or "clarify" or "conversation")
-            || (string?)reply["question"] is not { } question
-            || reply["steps"] is not JsonArray rawSteps
-            || rawSteps.Count > MissionPlanValidator.MaximumSteps)
-        {
-            return null;
-        }
-
-        // Ronda 19 (revisión): optional and only ever true when present on a plan. Outside a plan it conditions nothing
-        // and is ignored (revisión 2): a clarify or conversation answer keeps its question instead of failing the turn
-        // («si tengo el chrome abierto, movelo» asking where).
-        bool presentStateCondition = false;
-        if (kind == "plan"
-            && reply.TryGetPropertyValue("presentStateCondition", out JsonNode? condition)
-            && (condition is not JsonValue conditionValue
-                || !conditionValue.TryGetValue(out presentStateCondition)
-                || !presentStateCondition))
-        {
-            return null;
-        }
-
-        var steps = new List<MindPlanStep>(rawSteps.Count);
-        foreach (JsonNode? node in rawSteps)
-        {
-            if (node is not JsonObject raw
-                || raw.Count != 6
-                || (string?)raw["id"] is not { Length: > 0 } id
-                || (string?)raw["operation"] is not { Length: > 0 } operation
-                || (string?)raw["purpose"] is not { Length: > 0 } purpose
-                || raw["dependsOn"] is not JsonArray dependencies
-                || (string?)raw["argumentsMode"] is not { } argumentsMode
-                || argumentsMode is not ("literal" or "after_dependencies"))
-            {
-                return null;
-            }
-
-            var dependsOn = new List<string>(dependencies.Count);
-            foreach (JsonNode? dependency in dependencies)
-            {
-                if ((string?)dependency is not { Length: > 0 } value)
-                {
-                    return null;
-                }
-
-                dependsOn.Add(value);
-            }
-
-            JsonObject? arguments = raw["arguments"]?.DeepClone() as JsonObject;
-            if (argumentsMode == "literal" && arguments is null
-                || argumentsMode == "after_dependencies" && raw["arguments"] is not null)
-            {
-                return null;
-            }
-
-            steps.Add(new MindPlanStep(
-                id,
-                operation,
-                purpose,
-                dependsOn,
-                argumentsMode,
-                arguments));
-        }
-
-        if (kind == "plan" && (question.Length != 0 || steps.Count == 0)
-            || kind == "clarify" && (string.IsNullOrWhiteSpace(question) || steps.Count != 0)
-            || kind == "conversation" && (question.Length != 0 || steps.Count != 0))
-        {
-            return null;
-        }
-
-        return new MindPlanResult(kind, question, steps)
-        {
-            PresentStateCondition = presentStateCondition,
-        };
     }
 
     public Task<bool> VoiceStartAsync(
@@ -1702,12 +508,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         CancellationToken cancellationToken,
         bool returnProtocolError = false)
     {
-        // Cancellation is handled by the sidecar control plane independently
-        // of model work and must never wait for an inference to finish.
-        // voice.status stays on the serial lane, like the sidecar keeps it: it
-        // is short because the sidecar never waits on the voice import for it
-        // (2026-10-08, v2-v3-04: turn.decide waited 10 s behind voice.status).
-        if ((string?)request["type"] is "voice.cancel" or "shutdown")
+        // Cancellation and speech are handled by the sidecar apart from model work and never wait for an inference.
+        if ((string?)request["type"] is "voice.cancel" or "voice.speak" or "shutdown")
         {
             return await SendRequestAsync(request, timeout, returnProtocolError,
                 cancellationToken).ConfigureAwait(false);
@@ -1737,7 +539,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
 
         string requestId = Interlocked.Increment(ref _requestSequence)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToString(CultureInfo.InvariantCulture);
         request["id"] = requestId;
         string requestType = (string?)request["type"] ?? "unknown";
         string traceId = ShellTraceSink.TurnId;
@@ -1877,38 +679,21 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                     continue;
                 }
 
-                if ((string?)message["type"] == "hello")
+                switch ((string?)message["type"])
                 {
-                    helloCompletion.TrySetResult(message);
-                    continue;
-                }
+                    case "hello":
+                        helloCompletion.TrySetResult(message);
+                        continue;
+                    case "voice.transcript":
+                        if ((string?)message["text"] is { Length: > 0 } transcript)
+                        {
+                            TranscriptReceived?.Invoke(transcript);
+                        }
 
-                if ((string?)message["type"] == "voice.transcript")
-                {
-                    if ((string?)message["text"] is { Length: > 0 } transcript)
-                    {
-                        TranscriptReceived?.Invoke(transcript);
-                    }
-
-                    continue;
-                }
-
-                if ((string?)message["type"] == "voice.event")
-                {
-                    VoiceEventReceived?.Invoke(message);
-                    continue;
-                }
-
-                if ((string?)message["type"] == "turn.signal")
-                {
-                    if ((string?)message["id"] is { Length: > 0 } signalRequestId
-                        && _pending.ContainsKey(signalRequestId)
-                        && (string?)message["text"] is { Length: > 0 } signal)
-                    {
-                        TurnSignalReceived?.Invoke(signal);
-                    }
-
-                    continue;
+                        continue;
+                    case "voice.event":
+                        VoiceEventReceived?.Invoke(message);
+                        continue;
                 }
 
                 if ((string?)message["id"] is { Length: > 0 } id
@@ -1920,8 +705,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
         catch (Exception)
         {
-            // El pump nunca propaga: la mente queda no-disponible y el shell
-            // continúa por su camino determinista.
+            // The pump never throws: the mind becomes unavailable and every request returns null.
         }
         finally
         {
@@ -1941,7 +725,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private async Task ShutdownQuietlyAsync()
     {
         _ready = false;
-        _plannerAvailable = false;
         Task? pump = _pump;
         _pump = null;
         CancellationTokenSource? pumpCancellation = _pumpCancellation;

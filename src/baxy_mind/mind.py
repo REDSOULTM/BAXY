@@ -35,19 +35,33 @@ SYSTEM = (
     "6. El texto viene de un reconocedor de voz con errores: corrige la palabra a la que suena («sincuenta» es 50).\n"
     "7. Cuando recibas el resultado de una herramienta: si al pedido todavía le falta un paso, llama a la herramienta de "
     "ese paso (también si el pedido lo condiciona a un resultado que ya se cumplió); cuando no falte nada, responde en "
-    "una o dos frases contando sólo lo que muestran los resultados, nunca un paso que no se ejecutó."
+    "una o dos frases contando sólo lo que muestran los resultados, nunca un paso que no se ejecutó.\n"
+    "8. Si una herramienta responde status needs_confirmation, pregunta en una frase si lo haces, nombrando "
+    "exactamente qué. Cuando la persona conteste, llama a confirm_pending con su respuesta."
 )
 
-COMPOSE = (
-    "Eres BAXY. Escribe la respuesta final para la persona: una o dos frases cálidas y breves, habladas, sin "
-    "markdown ni emojis, en el idioma de la persona. Di sólo lo que dicen los hechos verificados, con el dato "
-    "concreto. Si el resultado no salió (ok false) dilo plano y con su causa, sin disculpas. Si no quedó verificado, "
-    "di que diste la orden pero no pudiste confirmarlo. Si los hechos traen una pregunta o una confirmación "
-    "pendiente, hazla. No inventes nada que no esté en los hechos. No menciones operaciones, campos ni "
-    "verificaciones: habla como una persona.\n"
-    "Ejemplos de tono: «Listo, el volumen quedó en 50.» · «No pude: Spotify no responde.» · «Di la orden, pero no "
-    "pude confirmar que el wifi se apagó.» · «En Curicó hay 14 grados y está nublado.»"
-)
+# The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
+# model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
+HISTORY_TURNS = 8
+HISTORY_CHARS = 24000
+
+NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
+
+# The operation the App reads as «the person answered the pending confirmation» (the kernel's challenge): the App sends
+# the exact invocation the kernel challenged again with its token, or drops it.
+CONFIRM_OPERATION = "confirmation.answer"
+CONFIRM = {
+    "type": "function",
+    "function": {
+        "name": "confirm_pending",
+        "description": (
+            "Give the person's answer to the confirmation you asked them for (an action that needed their «sí»). "
+            "Use when: you asked «¿Lo borro?» and they said «sí, dale» (approve true) or «no, déjalo» (approve false). "
+            "Do not use when: nothing is waiting for confirmation, or they asked for something new instead."
+        ),
+        "parameters": {"type": "object", "properties": {"approve": {"type": "boolean"}}, "required": ["approve"]},
+    },
+}
 
 ASK_USER = {
     "type": "function",
@@ -116,6 +130,7 @@ class Mind:
         self.op_to_tool: dict[str, dict[str, Any]] = {}
         self._decided: dict[str, dict[str, Any]] = {}
         self._turn: dict[str, Any] | None = None
+        self.conversation: list[dict[str, Any]] = []
         self.constants: dict[str, dict[str, Any]] = {}
         language = os.environ.get("BAXY_RENEW_DESCRIPTIONS", "en")
         self.english = (
@@ -136,7 +151,7 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, op_to_tool = [ASK_USER], {}, {}
+        tools, wire_to_op, op_to_tool = [ASK_USER, CONFIRM], {}, {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
             spanish = _SPANISH.get(name) or str(cap.get("description") or "")
@@ -182,47 +197,98 @@ class Mind:
                 "los campos que terminan en Utc van en UTC]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
-    # One conversation per turn (native loop): the model's tool calls stay in it, each verified result comes back as a
-    # tool message, and the model decides the next call or answers. Parallel calls run in order, one per round trip.
-    def decide(self, request_id: Any, text: str, history: list[dict[str, Any]],
-               pending_clarification: bool = False) -> dict[str, Any]:
+    # One conversation for the whole session (native loop): every tool call the model made, every verified result that
+    # came back as a tool message and every answer stay in it, turn after turn. The model reads what was really run in
+    # earlier turns, not a retelling of it: a history of bare «Listo, abrí Steam» replies without the calls behind them
+    # taught it to answer «Listo» without calling (2026-10-15 01:52, diagnosed on the notebook against the journal).
+    # Parallel calls run in order, one per round trip.
+    def new_session(self, history: list[dict[str, Any]] | None = None) -> None:
+        """Start a fresh conversation, optionally from earlier plain exchanges (a bench case's context)."""
+        self._turn = None
+        self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
+                             if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
+
+    def decide(self, request_id: Any, text: str) -> dict[str, Any]:
         self._decided = {}
         turn = self._turn
-        if pending_clarification and turn and turn.get("asked"):
-            # The person answered the model's own ask_user: the answer is that call's result, in the same loop, so the
-            # steps already run stay in the conversation and are never run again.
-            turn["messages"].append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
+        if turn and turn.get("asked"):
+            # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
+            # the steps already run stay in the conversation and are never run again. A new request instead of an
+            # answer reaches the model the same way, and the model reads it as what it is.
+            self.conversation.append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
             turn["text"] = text
             return self._next(request_id, "turn.decide")
-        items = [item for item in history[-13:]
-                 if item.get("role") in {"user", "assistant"} and isinstance(item.get("content"), str)
-                 and item["content"].strip()]
-        if items and items[-1].get("role") == "user" and items[-1]["content"].strip() == text.strip():
-            items = items[:-1]  # the App's history already ends with this message
-        messages = [{"role": "system", "content": self._system()}]
-        messages += [{"role": item["role"], "content": item["content"]} for item in items[-12:]]
-        messages.append({"role": "user", "content": self._with_clock(text)})
-        self._turn = {"messages": messages, "queue": [], "awaiting": None, "text": text}
+        self._close_open_calls()
+        self.conversation.append({"role": "user", "content": self._with_clock(text)})
+        self._trim()
+        self._turn = {"queue": [], "awaiting": None, "text": text}
         return self._next(request_id, "turn.decide")
 
-    def continue_turn(self, request_id: Any, observation: str) -> dict[str, Any]:
-        turn = getattr(self, "_turn", None)
+    def _close_open_calls(self) -> None:
+        """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
+        valid tool transcript and the model never reads an unanswered call as done."""
+        turn = self._turn or {}
+        pending = [c["id"] for c in turn.get("queue") or []]
+        for call_id in [turn.get("awaiting"), turn.get("asked"), *pending]:
+            if call_id:
+                self.conversation.append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
+        self._turn = None
+
+    def _trim(self) -> None:
+        """Keep the last turns that fit the budget; a turn starts at a person's message, so no call loses its result."""
+        starts = [i for i, m in enumerate(self.conversation) if m["role"] == "user"]
+        while len(starts) > 1 and (len(starts) > HISTORY_TURNS
+                                   or sum(len(json.dumps(m, ensure_ascii=False)) for m in self.conversation)
+                                   > HISTORY_CHARS):
+            self.conversation = self.conversation[starts[1]:]
+            starts = [i for i, m in enumerate(self.conversation) if m["role"] == "user"]
+
+    def continue_turn(self, request_id: Any, observation: str, final: bool = False) -> dict[str, Any]:
+        """The verified result of the call the App ran goes back as that call's tool message. ``final``: the App's step
+        budget is spent, so the model answers now in text from what the results show."""
+        turn = self._turn
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
-        turn["messages"].append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
+        self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
         turn["awaiting"] = None
-        if turn["queue"]:
+        if turn["queue"] and not final:
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
-        return self._next(request_id, "turn.continue")
+        for call in turn["queue"]:
+            self.conversation.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN})
+        turn["queue"] = []
+        return self._next(request_id, "turn.continue", final=final)
 
-    def _next(self, request_id: Any, stage: str) -> dict[str, Any]:
+    def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
+        """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
+        confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
+        started = time.monotonic()
+        self._decided = {}
+        self._close_open_calls()
+        call_id = f"confirm_{len(self.conversation)}"
+        self.conversation.append({"role": "user", "content": label})
+        self.conversation.append({"role": "assistant", "content": "", "tool_calls": [
+            {"id": call_id, "type": "function",
+             "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
+        self._turn = {"queue": [], "awaiting": call_id, "text": label}
+        self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
+                  arguments={"approve": approve})
+        return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
+                "arguments": {"approve": approve}, "reply": "", "question": ""}
+
+    def _next(self, request_id: Any, stage: str, final: bool = False) -> dict[str, Any]:
         started = time.monotonic()
         turn = self._turn
-        reply = self.server.chat({"messages": turn["messages"], "tools": self.tools, "max_tokens": 512,
-                                  "parallel_tool_calls": True,
-                                  "chat_template_kwargs": {"enable_thinking": False},
-                                  "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0},
-                                 slot=LlmServer.DECIDE)
+        assert turn is not None
+        messages = [{"role": "system", "content": self._system()}, *self.conversation]
+        body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
+                "chat_template_kwargs": {"enable_thinking": False},
+                "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
+                # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
+                # change measured, not by sampling noise (±3 of 90 without it).
+                "seed": 0}
+        if final:
+            body["tool_choice"] = "none"
+        reply = self.server.chat(body, slot=LlmServer.DECIDE)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
@@ -233,87 +299,44 @@ class Mind:
             except json.JSONDecodeError:
                 arguments = {}
             arguments = arguments if isinstance(arguments, dict) else {}
-            if wire == "ask_user" or wire in self.wire_to_op:
-                calls.append({"id": call.get("id") or f"call_{index}", "wire": wire, "arguments": arguments})
+            if wire in {"ask_user", CONFIRM["function"]["name"]} or wire in self.wire_to_op:
+                calls.append({"id": call.get("id") or f"call_{len(self.conversation)}_{index}", "wire": wire,
+                              "arguments": arguments})
         if calls:
-            turn["messages"].append({"role": "assistant", "content": "", "tool_calls": [
+            self.conversation.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
                  "function": {"name": c["wire"], "arguments": json.dumps(c["arguments"], ensure_ascii=False)}}
                 for c in calls]})
             turn["queue"] = calls[1:]
             return self._result(request_id, turn, calls[0], reply, stage, started, content)
         if content:
-            turn["messages"].append({"role": "assistant", "content": content})
+            self.conversation.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)
 
     def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,
                 stage: str, started: float, content: str) -> dict[str, Any]:
-        result: dict[str, Any] = {"type": "turn.result", "id": request_id, "operation": None,
-                                  "intentOperations": [], "effectOperations": [], "question": "", "reply": ""}
+        result: dict[str, Any] = {"type": "turn.result", "id": request_id, "kind": "conversation", "operation": None,
+                                  "arguments": None, "question": "", "reply": ""}
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
             turn["queue"], turn["awaiting"], turn["asked"] = [], None, call["id"]
-            if question.endswith("?") and question.count("?") == 1:
+            if question:
                 result.update(kind="clarify", question=question)
-            elif question:
-                result.update(kind="conversation", reply=question)
             else:
-                result.update(kind="conversation", failure_code="turn_runtime_failure")
+                result.update(failure="empty_question")
         elif call is not None:
-            name = self.wire_to_op[call["wire"]]
+            name = CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"] else self.wire_to_op[call["wire"]]
             turn["awaiting"] = call["id"]
-            self._decided = {name: {**call["arguments"], **self.constants.get(name, {})}}
-            result.update(kind="action", operation=name, intentOperations=[name], effectOperations=[name])
+            arguments = {**call["arguments"], **self.constants.get(name, {})}
+            self._decided = {name: arguments}
+            result.update(kind="action", operation=name, arguments=arguments)
         elif content:
-            result.update(kind="conversation", reply=content)
+            result.update(reply=content)
         else:
-            result.update(kind="conversation", failure_code="turn_runtime_failure")
+            result.update(failure="empty_reply")
         self._log(stage, started, reply, text=turn["text"], kind=result["kind"], operation=result["operation"],
                   arguments=call["arguments"] if call else None, content=content)
         return result
-
-    def arguments(self, request_id: Any, operation: str, text: str, history: list[dict[str, Any]]) -> dict[str, Any]:
-        started = time.monotonic()
-        if operation in self._decided:
-            arguments = self._decided.pop(operation)
-            self._log("arguments", started, None, operation=operation, reused=True)
-            return {"type": "arguments.result", "id": request_id, "operation": operation, "ok": True,
-                    "arguments": arguments, "question": ""}
-        tool = self.op_to_tool.get(operation)
-        if tool is None:
-            raise RuntimeError(f"unknown operation {operation}")
-        items = [m for m in history[-7:] if m.get("role") in {"user", "assistant"}]
-        if items and items[-1].get("role") == "user" and str(items[-1].get("content", "")).strip() == text.strip():
-            items = items[:-1]
-        messages = [{"role": "system", "content": self._system()}] + items[-6:]
-        messages.append({"role": "user", "content": self._with_clock(text)})
-        reply = self.server.chat({"messages": messages, "tools": [tool], "max_tokens": 256,
-                                  "tool_choice": "required",
-                                  "chat_template_kwargs": {"enable_thinking": False}, "temperature": 0.0},
-                                 slot=LlmServer.SHORT)
-        calls = reply["choices"][0]["message"].get("tool_calls") or []
-        arguments: dict[str, Any] = {}
-        if calls:
-            try:
-                parsed = json.loads(calls[0]["function"].get("arguments") or "{}")
-                arguments = parsed if isinstance(parsed, dict) else {}
-            except json.JSONDecodeError:
-                arguments = {}
-        arguments = {**arguments, **self.constants.get(operation, {})}
-        self._log("arguments", started, reply, operation=operation, reused=False, arguments=arguments)
-        return {"type": "arguments.result", "id": request_id, "operation": operation, "ok": True,
-                "arguments": arguments, "question": ""}
-
-    def compose(self, request_id: Any, user_text: str, intent: str, facts: Any) -> dict[str, Any]:
-        started = time.monotonic()
-        data = json.dumps({"pedido": user_text, "intencion": intent, "hechos": facts}, ensure_ascii=False)
-        reply = self.server.chat({"messages": [{"role": "system", "content": COMPOSE},
-                                               {"role": "user", "content": data[:12000]}],
-                                  "max_tokens": 200, "temperature": 0.3, "top_p": 0.8,
-                                  "chat_template_kwargs": {"enable_thinking": False}}, slot=LlmServer.SHORT)
-        text = (reply["choices"][0]["message"].get("content") or "").strip()
-        self._log("message.compose", started, reply, intent=intent, text=text)
-        return {"type": "message.compose.result", "id": request_id, "text": text}
 
     # ---- trace ---------------------------------------------------------------------------------------------
     def _log(self, stage: str, started: float, reply: dict[str, Any] | None, **fields: Any) -> None:

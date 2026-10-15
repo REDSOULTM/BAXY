@@ -9,6 +9,30 @@ using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
+// Memory arguments are private until the shell encrypts them. Keeping this type
+// unrelated to RoutedOperation makes an unsealed memory request impossible to
+// hand to RetryableOperationRegistry by accident.
+internal sealed class MemoryRoutedOperation
+{
+    private readonly JsonObject _privateArguments;
+
+    internal MemoryRoutedOperation(string name, JsonObject privateArguments)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(privateArguments);
+        Name = name;
+        _privateArguments = (JsonObject)privateArguments.DeepClone();
+    }
+
+    internal string Name { get; }
+
+    internal JsonObject PrivateArguments => (JsonObject)_privateArguments.DeepClone();
+
+    public override string ToString() =>
+        $"{nameof(MemoryRoutedOperation)} {{ Name = {Name}, PrivateArguments = [REDACTED] }}";
+}
+
+
 internal sealed class MemoryOperationProtector
 {
     private readonly BoundProtectedJsonCodec _codec;
@@ -240,7 +264,7 @@ internal sealed class MemoryOperationProtector
                     if (sensitivity is not ("normal" or "personal")
                         || payload.TryGetProperty("value", out JsonElement value)
                         && value.ValueKind == JsonValueKind.String
-                        && NaturalMemoryRequestParser.ContainsSensitiveMaterial(value.GetString()!))
+                        && SensitiveText.Contains(value.GetString()!))
                     {
                         throw new InvalidDataException("La memoria requiere el canal sensible.");
                     }
@@ -300,7 +324,7 @@ internal sealed class MemoryOperationProtector
                     if (sensitivity is not ("normal" or "personal")
                         || payload["value"] is JsonValue value
                         && value.TryGetValue(out string? clearValue)
-                        && NaturalMemoryRequestParser.ContainsSensitiveMaterial(clearValue!))
+                        && SensitiveText.Contains(clearValue!))
                     {
                         throw new InvalidDataException("La memoria requiere el canal sensible.");
                     }
@@ -530,74 +554,4 @@ internal sealed class PendingMemoryConfirmation
 
     public override string ToString() =>
         $"{nameof(PendingMemoryConfirmation)} {{ Operation = {Prepared.OperationName}, Token = [REDACTED], ExpiresAtUtc = {ExpiresAtUtc:O}, ReconciliationRequired = {ReconciliationRequired} }}";
-}
-
-internal enum ConfirmationReplyKind
-{
-    Invalid,
-    Confirm,
-    Cancel,
-}
-
-internal static class ConfirmationReplyParser
-{
-    internal static ConfirmationReplyKind Parse(string? text)
-    {
-        if (string.IsNullOrWhiteSpace(text)
-            || text.Any(static character => char.IsControl(character)))
-        {
-            return ConfirmationReplyKind.Invalid;
-        }
-
-        string normalized = text.Trim().Normalize(NormalizationForm.FormC);
-        if (!normalized.Contains('?', StringComparison.Ordinal)
-            && !normalized.Contains('¿', StringComparison.Ordinal)
-            && ConfirmPattern.Value.IsMatch(Folded(normalized)))
-        {
-            return ConfirmationReplyKind.Confirm;
-        }
-
-        return CancelPattern.Value.IsMatch(Folded(normalized))
-            ? ConfirmationReplyKind.Cancel
-            : ConfirmationReplyKind.Invalid;
-    }
-
-    // A reply made only of assent words confirms («sí, dale», «ok, confirmo», «sí, estoy seguro»); anything else in it
-    // («sí, pero abrí Paint») or a question mark («¿seguro?») is not a bare confirmation. Revisión M H5: the words are
-    // one list with the mind's (src/baxy_mind/data/assent_words.v1.json, embedded).
-    private static readonly Lazy<Regex> ConfirmPattern = new(() => WholeAnswer("words"));
-
-    // Estabilización M2 (identity live check 2026-10-11: «No, cancelá» to «¿confirmar o cancelar?» asked again; only a
-    // lone word cancelled): a reply made only of decline words cancels («no, cancelá», «no, dejalo», «cancelalo», «nah»,
-    // «no thanks»); «no, mandalo igual» says something else. The words are one list with the mind's refusal
-    // (declineWords in the same file).
-    private static readonly Lazy<Regex> CancelPattern = new(() => WholeAnswer("declineWords"));
-
-    private static Regex WholeAnswer(string list)
-    {
-        using Stream stream = typeof(ConfirmationReplyParser).Assembly.GetManifestResourceStream("Baxy.App.AssentWords.json")
-            ?? throw new InvalidOperationException("The assent words are not embedded.");
-        IEnumerable<string> words = ((JsonArray)JsonNode.Parse(stream)![list]!)
-            .Select(static word => (string)word!)
-            .OrderByDescending(static word => word.Length)
-            .Select(static word => Regex.Escape(word).Replace("\\ ", "[ \\t]+", StringComparison.Ordinal));
-        return new Regex(
-            "^(?:(?:" + string.Join('|', words) + ")[ \\t]*[,.!]*[ \\t]*){1,4}$",
-            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
-    }
-
-    private static string Folded(string text)
-    {
-        var builder = new StringBuilder(text.Length);
-        foreach (char character in text.Normalize(NormalizationForm.FormD).ToLowerInvariant())
-        {
-            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
-                != System.Globalization.UnicodeCategory.NonSpacingMark)
-            {
-                builder.Append(character == '’' ? '\'' : character);
-            }
-        }
-
-        return builder.ToString();
-    }
 }

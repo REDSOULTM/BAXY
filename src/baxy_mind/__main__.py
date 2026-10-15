@@ -10,7 +10,8 @@ from .llm_server import LlmServer
 from .mind import Mind
 from .voice import Voice
 
-UNSUPPORTED = {"plan", "plan.ground", "computer.use.step", "narrate", "message.send", "voice.speak"}
+UNSUPPORTED = {"plan", "plan.ground", "computer.use.step", "narrate", "message.send", "voice.speak", "arguments",
+               "message.compose"}
 
 
 def main() -> int:
@@ -30,7 +31,7 @@ def main() -> int:
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL, "mindVersion": "renew-0.1",
         "models": {"llm": server.name},
-        "requests": ["catalog.configure", "turn.decide", "turn.continue", "arguments", "message.compose",
+        "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "session.new",
                      "voice.start", "voice.stop", "voice.status", "voice.cancel", "shutdown"],
     })
     try:
@@ -60,18 +61,16 @@ def main() -> int:
                         continue
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
                 elif kind == "turn.decide":
-                    protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
-                                                       list(message.get("history") or []),
-                                                       bool(message.get("pendingClarification"))))
+                    protocol.write_message(mind.decide(request_id, str(message.get("text") or "")))
                 elif kind == "turn.continue":
-                    protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or "")))
-                elif kind == "arguments":
-                    protocol.write_message(mind.arguments(request_id, str(message.get("operation") or ""),
-                                                          str(message.get("text") or ""),
-                                                          list(message.get("history") or [])))
-                elif kind == "message.compose":
-                    protocol.write_message(mind.compose(request_id, str(message.get("userText") or ""),
-                                                        str(message.get("intent") or ""), message.get("facts")))
+                    protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or ""),
+                                                              bool(message.get("final"))))
+                elif kind == "turn.confirm":
+                    protocol.write_message(mind.confirm(request_id, bool(message.get("approve")),
+                                                        str(message.get("label") or "")))
+                elif kind == "session.new":
+                    mind.new_session()
+                    protocol.write_message({"type": "session.ready", "id": request_id})
                 elif kind == "voice.start":
                     mode = str(message.get("mode") or "direct")
                     if voice.start(mode):
@@ -96,7 +95,7 @@ def main() -> int:
                 else:
                     protocol.write_message(protocol.error_reply(request_id, "unknown_request", kind))
             except Exception as error:  # noqa: BLE001 - one failed request never ends the sidecar
-                surface = {"turn.decide": "turn", "turn.continue": "turn", "arguments": "arguments"}.get(kind, "request")
+                surface = {"turn.decide": "turn", "turn.continue": "turn", "turn.confirm": "turn"}.get(kind, "request")
                 sys.stderr.write(f"baxy_mind_renew_failure:{kind}:{error!r}\n")
                 sys.stderr.flush()
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",

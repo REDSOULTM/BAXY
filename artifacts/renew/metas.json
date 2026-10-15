@@ -1,41 +1,169 @@
 {
   "actualizado": "2026-10-15T03:50:00-03:00",
   "bancos": {
-    "ubicacion": "F:\\BAXYeval\\renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
+    "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
-      "F:\\BAXYeval\\renew_bench\\cases.json (90, ya usado para ajustar)",
-      "F:\\BAXYeval\\renew_v1\\escenas\\practice.json",
-      "F:\\BAXYeval\\renew_v1\\e2e\\practice.json",
-      "F:\\BAXYeval\\renew_v1\\falsedades\\practice.json"
+      "F:/BAXYeval/renew_bench/cases.json (90, ya usado para ajustar)",
+      "F:/BAXYeval/renew_v1/escenas/practice.json",
+      "F:/BAXYeval/renew_v1/e2e/practice.json",
+      "F:/BAXYeval/renew_v1/falsedades/practice.json"
     ],
-    "sellados": {}
+    "sellados": {
+      "holdout_decision": {
+        "archivo": "F:/BAXYeval/renew_v1/holdout/decision.json",
+        "casos": 167,
+        "sha256": "0e791a9bda31c86918aa61b9ef8471157a751e863b0ac6fadbb10d62c7df4c07",
+        "sellado": "2026-10-15T03:48:15-03:00",
+        "fuentes": "torneo 36+46 (mapeados), MASSIVE 40 (25 es, 15 en), pedidos reales del dueño 45"
+      },
+      "escenas": {
+        "archivo": "F:/BAXYeval/renew_v1/escenas/sealed.json",
+        "casos": 60,
+        "sha256": "368c1b8f0265eea74997d5b33c55105f2921b2294c53c27d5c6d5b13242d575f",
+        "sellado": "2026-10-15T03:50:37-03:00",
+        "mezcla": "35 silencio, 10 actuar, 6 proponer, 9 decir"
+      },
+      "holdout_latido": {
+        "archivo": "F:/BAXYeval/renew_v1/escenas/holdout_latido.json",
+        "casos": 10,
+        "sha256": "60949061a122259a358eaaa9d3b16e1299829ad02a8e61de382030adbfbb2c0a",
+        "sellado": "2026-10-15T03:50:37-03:00"
+      }
+    }
   },
   "metas": {
-    "holdout": {"umbral": ">= 85 %", "estado": "pendiente", "evidencia": null},
-    "falsedades": {"umbral": "0 en el banco automático", "estado": "pendiente", "evidencia": null},
-    "instinto": {"umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20", "estado": "pendiente", "evidencia": null},
-    "velocidad_decision_p50": {"umbral": "<= 1 s", "estado": "pendiente", "evidencia": null},
-    "velocidad_texto_a_voz_p50": {"umbral": "<= 2,5 s", "estado": "pendiente", "evidencia": null},
-    "recursos": {"umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)", "estado": "pendiente", "evidencia": null},
-    "ronda_final_auditoria": {"umbral": "nada que viole <reglas>", "estado": "pendiente", "evidencia": null}
+    "holdout": {
+      "umbral": ">= 85 %",
+      "estado": "pendiente",
+      "evidencia": null
+    },
+    "falsedades": {
+      "umbral": "0 en el banco automático",
+      "estado": "pendiente",
+      "evidencia": null
+    },
+    "instinto": {
+      "umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20",
+      "estado": "pendiente",
+      "evidencia": null
+    },
+    "velocidad_decision_p50": {
+      "umbral": "<= 1 s",
+      "estado": "pendiente",
+      "evidencia": null
+    },
+    "velocidad_texto_a_voz_p50": {
+      "umbral": "<= 2,5 s",
+      "estado": "pendiente",
+      "evidencia": null
+    },
+    "recursos": {
+      "umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)",
+      "estado": "pendiente",
+      "evidencia": null
+    },
+    "ronda_final_auditoria": {
+      "umbral": "nada que viole <reglas>",
+      "estado": "pendiente",
+      "evidencia": null
+    }
   },
   "tareas": [
-    {"id": "marco.estado", "estado": "cumplida", "quien": "PC"},
-    {"id": "marco.holdout_decision", "estado": "en_curso", "quien": "PC (subagente)"},
-    {"id": "marco.escenas", "estado": "en_curso", "quien": "PC (subagente)"},
-    {"id": "marco.e2e_y_falsedades", "estado": "en_curso", "quien": "PC (subagente)"},
-    {"id": "marco.renew_check", "estado": "pendiente", "quien": "PC"},
-    {"id": "falsedades.diagnostico", "estado": "pendiente", "quien": "NB"},
-    {"id": "ronda1.medir", "estado": "pendiente", "quien": "NB"},
-    {"id": "voz.piper", "estado": "pendiente", "quien": "NB"},
-    {"id": "arnes.nuevo", "estado": "pendiente", "quien": "PC"},
-    {"id": "computer_use", "estado": "pendiente", "quien": "PC"},
-    {"id": "herramientas_agente", "estado": "pendiente", "quien": "NB"},
-    {"id": "latido", "estado": "pendiente", "quien": "PC"},
-    {"id": "limpieza_codigo_muerto", "estado": "pendiente", "quien": "NB"},
-    {"id": "perfil_4gb", "estado": "pendiente", "quien": "NB"},
-    {"id": "optimizaciones", "estado": "pendiente", "quien": "PC"},
-    {"id": "medicion_final", "estado": "pendiente", "quien": "PC"},
-    {"id": "auditoria_final", "estado": "pendiente", "quien": "PC"}
-  ]
+    {
+      "id": "marco.estado",
+      "estado": "cumplida",
+      "quien": "PC"
+    },
+    {
+      "id": "marco.holdout_decision",
+      "estado": "cumplida",
+      "quien": "PC (subagente)"
+    },
+    {
+      "id": "marco.escenas",
+      "estado": "cumplida",
+      "quien": "PC (subagente)",
+      "evidencia": "práctica abierta 40 (sha c016d8fc…), sellado 60, holdout del latido 10; fuentes en F:/BAXYeval/renew_v1/escenas/README.md (OpenClaw heartbeat, ProactiveBench arXiv 2410.12361, PRISM 2602.01532, CHI 2025 2502.18658)"
+    },
+    {
+      "id": "marco.e2e_y_falsedades",
+      "estado": "en_curso",
+      "quien": "PC (subagente)"
+    },
+    {
+      "id": "marco.renew_check",
+      "estado": "pendiente",
+      "quien": "PC"
+    },
+    {
+      "id": "falsedades.diagnostico",
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "artifacts/renew/PROGRESO-nb.md (journal: todo se ejecutó y verificó; lo falso es lo dicho después; historial sin tool_calls; plan pendiente con regex)"
+    },
+    {
+      "id": "ronda1.medir",
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "r1 en PC 79/90 p50 0,726 s (F:/BAXYeval/renew_v1/runs/r1-base.jsonl); NB 80/90 p50 0,80 s; en02v2 era 85/90"
+    },
+    {
+      "id": "voz.piper",
+      "estado": "pendiente",
+      "quien": "NB"
+    },
+    {
+      "id": "arnes.nuevo",
+      "estado": "pendiente",
+      "quien": "PC"
+    },
+    {
+      "id": "computer_use",
+      "estado": "pendiente",
+      "quien": "PC"
+    },
+    {
+      "id": "herramientas_agente",
+      "estado": "pendiente",
+      "quien": "NB"
+    },
+    {
+      "id": "latido",
+      "estado": "pendiente",
+      "quien": "PC"
+    },
+    {
+      "id": "limpieza_codigo_muerto",
+      "estado": "pendiente",
+      "quien": "NB"
+    },
+    {
+      "id": "perfil_4gb",
+      "estado": "pendiente",
+      "quien": "NB"
+    },
+    {
+      "id": "optimizaciones",
+      "estado": "pendiente",
+      "quien": "PC"
+    },
+    {
+      "id": "medicion_final",
+      "estado": "pendiente",
+      "quien": "PC"
+    },
+    {
+      "id": "auditoria_final",
+      "estado": "pendiente",
+      "quien": "PC"
+    }
+  ],
+  "linea_base_recursos": {
+    "fecha": "2026-10-15",
+    "ctx": "2x40960 q8_0, -kvu",
+    "gpu_crece_mib": "~4557 (5470 - 913 de base)",
+    "llama_server_privado_mib": 5911,
+    "llama_server_working_set_mib": 3435,
+    "nota": "no cabe en 4+4 GB: hay que bajar prefijo y ctx"
+  }
 }

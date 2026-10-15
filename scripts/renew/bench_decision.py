@@ -111,7 +111,8 @@ def main():
     for case in cases:
         started = time.monotonic()
         try:
-            result = mind.decide(case["id"], case["text"], case.get("history") or [])
+            mind.new_session(case.get("history") or [])
+            result = mind.decide(case["id"], case["text"])
             error = None
         except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
             result, error = {"kind": "error"}, repr(exc)[:200]
