@@ -240,13 +240,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         try
         {
             _memoryProtector ??= MemoryOperationProtector.CreateDefault(_memorySessionId);
-            RetryableOperationRegistry registry = _retryableOperations
-                ??= RetryableOperationRegistry.CreateDefault(_memoryProtector);
-            if (!recovering)
+            if (!recovering || _retryableOperations is null)
             {
                 // A call of an earlier session is never resumed or retried by itself: the person's consent and the
                 // screen it was decided on belong to that session.
-                registry.RetireWhere(static _ => true);
+                _retryableOperations = new RetryableOperationRegistry();
             }
 
             if (_mindClient is not { IsReady: true })

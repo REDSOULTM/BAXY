@@ -219,6 +219,12 @@ internal sealed class NativeTurnLoop
                 : (_host.Registry() ?? throw new InvalidOperationException("outbox_unavailable"))
                     .GetOrAdd(new RoutedOperation(operation, arguments));
         }
+        catch (MemoryValueNeedsSensitiveChannelException)
+        {
+            // The result says why: memory.save keeps a value that looks like a secret only as sensitive.
+            return Record(operation, arguments, started, Observation(operation, "rejected", false,
+                "memory_value_needs_sensitive_channel"));
+        }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
         {
