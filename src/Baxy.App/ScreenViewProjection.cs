@@ -46,8 +46,9 @@ internal static class ScreenViewProjection
         var text = new StringBuilder();
         if (view["window"] is JsonObject window)
         {
+            // Its number is what the acting tools take as window, so they act in it and not in the person's window.
             text.Append("Ventana «").Append((string?)window["title"]).Append("» (").Append((string?)window["process"])
-                .Append(')');
+                .Append(", window ").Append((long?)window["hwnd"]).Append(')');
             text.Append((bool?)window["foreground"] == false ? ", no está al frente" : ", al frente");
             if (window["coveredBy"] is JsonObject cover)
             {

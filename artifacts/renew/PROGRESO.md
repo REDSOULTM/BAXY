@@ -81,3 +81,20 @@ tocan lo cambiado; en el notebook pasan).
   (descripción ajustada); la terminal que pide confirmación no se preguntó (el resultado ahora dice «pregúntale»).
 - Desajustes banco/protocolo anotados (no se editan casos): «qué fecha es» se responde con el reloj del contexto; «haz
   clic en Aceptar» mira primero (regla 9); las operaciones de ventana piden su id antes (el caso espera la directa).
+
+**Auditoría de reglas, parte del PC (2026-10-15, tarde).**
+- `confirm_pending` vale sólo como primer movimiento de un turno que la persona abrió después de la pregunta (sus
+  palabras o los botones); en el mismo turno o en un latido se rechaza y la llamada sigue esperando (App 11).
+- Memoria: `memory.enable`, `memory.disable`, `memory.sensitive.save` y `memory.session.clear` fallaban siempre por la
+  comprobación del analizador viejo; fuera. Probado en el producto: activar, guardar, listar y limpiar (App 12).
+- Interfaz: modelos de voz «descargados» sólo si está el fichero que carga la mente; fuera el «/ 4k» (App 13).
+- La vista de una ventana da su número (`window …`), que es lo que toman `input.visible.click`, `input.text.type`,
+  `input.key.press` e `input.scroll`; sus descripciones dicen que con él actúan en esa ventana y no en la del frente.
+  Antes el modelo no podía llenar `window` nunca (el hwnd no le llegaba).
+- Choque: la auditoría propone que toda entrada actúe sólo en ventanas que BAXY lanzó. La identidad dice «nunca
+  escribe ni hace clic en la ventana de la persona; puede traer su aplicación al frente mientras actúa y devolver el
+  frente» (`00_IDENTIDAD.md`, `COMO_ESCALAR_DESDE_AQUI.md` 4): la ventana de la persona es aquella en la que trabaja
+  mientras BAXY hace otra cosa, no toda app que no abrió BAXY (Steam abierto por el dueño es objetivo legítimo de «ve a
+  la biblioteca»). Decisión: no se añade la compuerta por procedencia; un pedido explícito sobre la ventana activa
+  («escribe hola», «pega aquí») la designa como objetivo. Lo que sí se cierra: el latido retiene toda operación de
+  entrada como propuesta (ya estaba) y el modelo ahora puede nombrar la ventana en la que actúa.
