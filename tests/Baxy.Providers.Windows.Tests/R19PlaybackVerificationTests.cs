@@ -35,17 +35,17 @@ public sealed class R19PlaybackVerificationTests
             Assert.That(receipt.Result?.GetProperty("beforeNowPlaying").GetString(),
                 Is.EqualTo("aruarian dance de nujabes"));
             Assert.That(receipt.Result?.GetProperty("selectedControl").GetString(), Is.EqualTo("Reproducir"));
-            // The request's words never travel to the script: nothing is decided by a list of words. Ronda 24,
-            // revisión 2: the only other argument is the fixed data of function words (the same for every
-            // request, never derived from it), which the script sets aside when it compares the query. SP2: and its
-            // deadline, the run's budget less the margin, never derived from the request either.
+            // The request's words never travel to the script as anything but the text searched: nothing is decided
+            // by a list of words (BAXY Renew audit 2026-10-15, S1: the function words the query was compared with
+            // are gone). SP2: the only other argument is its deadline, the run's budget less the margin, never
+            // derived from the request either.
             Assert.That(runner.Arguments[^1], Is.EqualTo("query"));
-            Assert.That(runner.Arguments, Has.Length.EqualTo(11));
-            Assert.That(runner.Arguments[5], Is.EqualTo("-QueryWordsBase64"));
-            Assert.That(runner.Arguments[6], Is.EqualTo(SpotifyDesktopAdapter.QueryWordsBase64.Value));
-            Assert.That(runner.Arguments[7], Is.EqualTo("-DeadlineMs"));
-            Assert.That(runner.Arguments[8],
+            Assert.That(runner.Arguments, Has.Length.EqualTo(9));
+            Assert.That(runner.Arguments[5], Is.EqualTo("-DeadlineMs"));
+            Assert.That(runner.Arguments[6],
                 Is.EqualTo(SpotifyDesktopAdapter.ScriptDeadlineMs(SpotifyDesktopAdapter.ScriptBudget)));
+            Assert.That(runner.Arguments[7],
+                Is.EqualTo(Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("los bunkers"))));
         });
     }
 

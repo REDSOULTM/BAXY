@@ -139,7 +139,6 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     run => _runner.RunAsync(
                         "powershell.exe",
                         ["-NoProfile", "-NonInteractive", "-STA", "-File", _scriptPath,
-                            .. (exactSelection ? [] : new[] { "-QueryWordsBase64", QueryWordsBase64.Value }),
                             "-DeadlineMs", ScriptDeadlineMs(budget),
                             Convert.ToBase64String(Encoding.UTF8.GetBytes(title)),
                             exactSelection ? "exact" : "query"],
@@ -195,23 +194,34 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                         : effectBoundary.Failure(operation, error, effect);
                     return WithDiagnostic(failure, response.RootElement);
                 }
+                // BAXY Renew audit 2026-10-15 (S4): an exact title the client was already playing is answered with
+                // nothing pressed; the receipt says so and carries the script's own effect (none), never a press.
+                bool alreadyPlaying = response.RootElement.TryGetProperty("alreadyPlaying", out JsonElement already)
+                    && already.ValueKind == JsonValueKind.True;
                 JsonElement result = ExternalJson.Create(writer =>
                 {
                     writer.WriteStartObject(); writer.WriteNumber("version", 1);
                     writer.WriteString("provider", "spotify");
-                    writer.WriteString("title", response.RootElement.TryGetProperty("title", out JsonElement observedTitle)
-                        ? observedTitle.GetString() ?? title : title);
                     if (!exactSelection) writer.WriteString("query", title);
-                    // Ronda 23 (t2-c01 «Fother Muckers» told as «los bunkers»): whether what plays was shown to be
-                    // what the query asked for. False is a fact for the composer, never the request achieved; a
-                    // script that does not say keeps the receipt without it.
-                    if (!exactSelection && QueryMatch(response.RootElement) is bool matchesQuery)
-                        writer.WriteBoolean("matchesQuery", matchesQuery);
+                    // BAXY Renew audit 2026-10-15 (S2, S5, S7): only what the script observed, as it read it: the
+                    // client's window title, the control it pressed, the now-playing line and, for a search, the
+                    // observation that told the playback started. A field the script did not observe is left out,
+                    // never filled with the requested title, and nothing says whether it is what was asked for.
+                    foreach (string field in ObservedFields)
+                    {
+                        if (response.RootElement.TryGetProperty(field, out JsonElement value)
+                            && value.ValueKind == JsonValueKind.String
+                            && !string.IsNullOrWhiteSpace(value.GetString()))
+                        {
+                            writer.WriteString(field, value.GetString());
+                        }
+                    }
+                    if (alreadyPlaying) writer.WriteBoolean("alreadyPlaying", true);
                     writer.WriteString("playbackStatus", "playing");
                     writer.WriteNumber("processId", response.RootElement.GetProperty("processId").GetInt32());
                     writer.WriteString("authority", "spotify_windows_uia_postread"); writer.WriteEndObject();
                 });
-                return ExternalJson.Success(operation, result, effectObserved: true);
+                return ExternalJson.Success(operation, result, effectObserved: effect);
             }
             return effectBoundary.Failure(
                 operation, "spotify_exact_selection_not_verified");
@@ -272,25 +282,10 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         return failure with { Result = diagnostic };
     }
 
-    /// <summary>
-    /// Ronda 24, revisión 2: the function words, medium words and purpose markers a query is compared with in the
-    /// script (data query_function_words.v1.json, embedded), as the base64 of its UTF-8 text.
-    /// </summary>
-    internal static readonly Lazy<string> QueryWordsBase64 = new(static () =>
-    {
-        using Stream stream = typeof(SpotifyDesktopAdapter).Assembly.GetManifestResourceStream(
-                "Baxy.Providers.Windows.QueryFunctionWords.json")
-            ?? throw new InvalidOperationException("query_function_words_missing");
-        using var buffer = new MemoryStream();
-        stream.CopyTo(buffer);
-        return Convert.ToBase64String(buffer.ToArray());
-    });
-
-    internal static bool? QueryMatch(JsonElement response) =>
-        response.TryGetProperty("matchesQuery", out JsonElement value)
-        && value.ValueKind is JsonValueKind.True or JsonValueKind.False
-            ? value.GetBoolean()
-            : null;
+    // What a verified playback's receipt carries from the script, each only when the script observed it: the window's
+    // title, the control pressed, the now-playing line (folded, as the script compares it) and, in query mode, the
+    // observation that told the press started playback (BAXY Renew audit 2026-10-15, S2, S5, S7).
+    private static readonly string[] ObservedFields = ["title", "selectedControl", "observedNowPlaying", "playbackEvidence"];
 
     // The script's stage before it searches (and so before it presses anything): it only brought the client up and
     // looked for its search box.
@@ -325,7 +320,9 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
             && sourceApp.ValueKind == JsonValueKind.String)
         {
-            if (!sourceApp.GetString()!.Contains("spotify", StringComparison.OrdinalIgnoreCase))
+            // BAXY Renew audit 2026-10-15 (S6): the app the model named is compared whole with the provider's own name
+            // (the catalog's «provider» value for Spotify), never searched for inside the argument.
+            if (!string.Equals(sourceApp.GetString(), "spotify", StringComparison.OrdinalIgnoreCase))
             {
                 return ExternalJson.Failure(operation, "media_source_app_not_spotify");
             }

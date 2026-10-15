@@ -5,50 +5,97 @@ using NUnit.Framework;
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Ronda 24, «latencia de lo fácil y reproducción fiel»: a Spotify search says whether what plays was shown to be
-/// what the query asked for (t2-c01 «pone los bunkers en spotify pa estudiar» played «Fother Muckers» and was told as
-/// the request done), and a browser search arrives by a changed window title that names every word searched (t4-c10,
-/// t3-c06: Opera GX's stale address field).
+/// Ronda 24, «latencia de lo fácil y reproducción fiel»: a Spotify playback's receipt carries what was pressed and
+/// what plays as the script observed them, and nothing BAXY's own grammar derived from the query (BAXY Renew audit
+/// 2026-10-15, S1-S7; t2-c01 «pone los bunkers en spotify pa estudiar» played «Fother Muckers»: the receipt shows it,
+/// the model judges it), and a browser search arrives by a changed window title that names every word searched
+/// (t4-c10, t3-c06: Opera GX's stale address field).
 /// </summary>
 [TestFixture]
 public sealed class R24FaithfulPlaybackTests
 {
-    private static string Output(string title, string matches) =>
-        "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"" + title
-        + "\",\"selectedControl\":\"Reproducir\",\"matchesQuery\":" + matches + ",\"processId\":42}";
+    private const string Played =
+        "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Fother Muckers - Nada en este Mundo\","
+        + "\"selectedControl\":\"Reproducir Fother Muckers\",\"beforeNowPlaying\":\"aruarian dance de nujabes\","
+        + "\"observedNowPlaying\":\"nada en este mundo de fother muckers\",\"playbackEvidence\":\"now_playing_changed\","
+        + "\"presses\":1,\"processId\":42}";
 
+    // S2, S7: what was pressed, what plays and the observation that told the playback started travel as the script
+    // read them; no field says whether it is what the query asked for.
     [Test]
-    public async Task AQueryWhosePlayingTrackDoesNotMatchCarriesThatFactNeverAMatch()
+    public async Task AQueryReceiptCarriesWhatWasPressedAndWhatPlaysAsObserved()
     {
-        var adapter = new SpotifyDesktopAdapter(new Runner(Output("Fother Muckers - Nada en este Mundo", "false")));
+        var adapter = new SpotifyDesktopAdapter(new Runner(Played));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "media.play.query", Json("""{"provider":"spotify","query":"los bunkers"}"""), CancellationToken.None);
 
+        JsonElement result = receipt.Result!.Value;
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, "something plays: that is a fact");
-            Assert.That(receipt.Result?.GetProperty("matchesQuery").GetBoolean(), Is.False);
-            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Fother Muckers - Nada en este Mundo"));
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("los bunkers"));
+            Assert.That(result.GetProperty("title").GetString(), Is.EqualTo("Fother Muckers - Nada en este Mundo"));
+            Assert.That(result.GetProperty("selectedControl").GetString(), Is.EqualTo("Reproducir Fother Muckers"));
+            Assert.That(result.GetProperty("observedNowPlaying").GetString(),
+                Is.EqualTo("nada en este mundo de fother muckers"));
+            Assert.That(result.GetProperty("playbackEvidence").GetString(), Is.EqualTo("now_playing_changed"));
+            Assert.That(result.TryGetProperty("matchesQuery", out _), Is.False);
+            Assert.That(result.TryGetProperty("alreadyPlaying", out _), Is.False);
         });
     }
 
-    [Test]
-    public async Task AQueryWhosePlayingTrackMatchesSaysSo()
+    // S1: the script gets the text to search and its deadline, never a list of words to compare it with.
+    [TestCase("media.play.query", """{"provider":"spotify","query":"rap para entrenar"}""", "query")]
+    [TestCase("media.play.exact", """{"provider":"spotify","title":"Vida de perros"}""", "exact")]
+    public async Task ASearchPassesOnlyItsTextAndItsDeadline(string operation, string arguments, string mode)
     {
-        var adapter = new SpotifyDesktopAdapter(new Runner(Output("Los Bunkers - Llueve sobre la ciudad", "true")));
+        var runner = new Runner(Played);
+        var adapter = new SpotifyDesktopAdapter(runner);
 
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.query", Json("""{"provider":"spotify","query":"los bunkers"}"""), CancellationToken.None);
+        await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
 
-        Assert.That(receipt.Result?.GetProperty("matchesQuery").GetBoolean(), Is.True);
+        IReadOnlyList<string> passed = runner.Calls.Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(passed.Where(static argument => argument.StartsWith('-')),
+                Is.EqualTo(new[] { "-NoProfile", "-NonInteractive", "-STA", "-File", "-DeadlineMs" }));
+            Assert.That(passed[^1], Is.EqualTo(mode));
+        });
     }
 
-    // Contracaso: «pon Vida de perros de Los Bunkers» in exact mode keeps its receipt as it was.
+    // S4 («pon Vida de perros» while it already plays): nothing is pressed; the receipt is verified with no effect, says
+    // it was already playing and carries the window title the script read, never the title asked for.
     [Test]
-    public async Task TheExactModeReceiptIsUnchanged()
+    public async Task AnExactTitleAlreadyPlayingIsVerifiedWithNoEffectAndTheObservedTitle()
     {
-        var adapter = new SpotifyDesktopAdapter(new Runner(Output("Los Bunkers - Vida de perros", "null")));
+        var adapter = new SpotifyDesktopAdapter(new Runner(
+            "{\"ok\":true,\"effectObserved\":false,\"alreadyPlaying\":true,\"error\":null,"
+            + "\"title\":\"Los Bunkers - Vida de perros\",\"observedNowPlaying\":\"vida de perros de los bunkers\",\"processId\":42}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.exact", Json("""{"provider":"spotify","title":"Vida de perros"}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False, "nothing was pressed");
+            Assert.That(result.GetProperty("alreadyPlaying").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("title").GetString(), Is.EqualTo("Los Bunkers - Vida de perros"));
+            Assert.That(result.GetProperty("observedNowPlaying").GetString(), Is.EqualTo("vida de perros de los bunkers"));
+            Assert.That(result.TryGetProperty("query", out _), Is.False);
+            Assert.That(result.TryGetProperty("selectedControl", out _), Is.False);
+        });
+    }
+
+    // S5: a script that read no title leaves the receipt without one, never the requested title in its place.
+    [TestCase("""{"ok":true,"effectObserved":true,"error":null,"processId":42}""")]
+    [TestCase("""{"ok":true,"effectObserved":true,"error":null,"title":"","processId":42}""")]
+    public async Task AReceiptWithNoObservedTitleCarriesNone(string output)
+    {
+        var adapter = new SpotifyDesktopAdapter(new Runner(output));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "media.play.exact", Json("""{"provider":"spotify","title":"Vida de perros"}"""), CancellationToken.None);
@@ -56,62 +103,23 @@ public sealed class R24FaithfulPlaybackTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.TryGetProperty("matchesQuery", out _), Is.False);
-            Assert.That(receipt.Result?.TryGetProperty("query", out _), Is.False);
+            Assert.That(receipt.Result?.TryGetProperty("title", out _), Is.False);
         });
     }
 
-    // A script that says nothing about the match keeps the receipt without the fact (never a guessed true).
-    [Test]
-    public async Task AScriptThatDoesNotSayLeavesNoMatchFact()
+    // S6: the app named for media.control is compared whole with «spotify», never looked for inside the argument.
+    [TestCase("spotify", "spotify_client_not_running")]
+    [TestCase("Spotify", "spotify_client_not_running")]
+    [TestCase("spotify web player", "media_source_app_not_spotify")]
+    [TestCase("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify", "media_source_app_not_spotify")]
+    public async Task TheSourceAppIsComparedWholeWithSpotify(string sourceApp, string error)
     {
-        var adapter = new SpotifyDesktopAdapter(new Runner(
-            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"x\",\"processId\":42}"));
+        var adapter = new SpotifyDesktopAdapter(new Runner("{\"ok\":true}"), processExists: static _ => false);
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string> { ["action"] = "next", ["sourceApp"] = sourceApp });
 
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.play.query", Json("""{"provider":"spotify","query":"musica para estudiar"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("media.control", Json(arguments), CancellationToken.None);
 
-        Assert.That(receipt.Result?.TryGetProperty("matchesQuery", out _), Is.False);
-    }
-
-    // Revisión 2 («rap para entrenar» → «Rock para entrenar»): a query is compared in the script without its function
-    // words and with its purpose apart, words the provider reads from data (query_function_words.v1.json) and passes.
-    [Test]
-    public async Task AQuerySearchPassesTheFunctionWordsFromData()
-    {
-        var runner = new Runner(Output("Rap Chileno", "true"));
-        var adapter = new SpotifyDesktopAdapter(runner);
-
-        await adapter.InvokeAsync(
-            "media.play.query", Json("""{"provider":"spotify","query":"rap para entrenar"}"""), CancellationToken.None);
-
-        IReadOnlyList<string> arguments = runner.Calls.Single();
-        int flag = arguments.ToList().IndexOf("-QueryWordsBase64");
-        Assert.That(flag, Is.GreaterThan(0));
-        using JsonDocument words = JsonDocument.Parse(Convert.FromBase64String(arguments[flag + 1]));
-        string[] Read(string key) =>
-            words.RootElement.GetProperty(key).EnumerateArray().Select(static w => w.GetString()!).ToArray();
-        Assert.Multiple(() =>
-        {
-            Assert.That(Read("purpose_markers"), Does.Contain("para"));
-            Assert.That(Read("function_words"), Does.Contain("lo").And.Contain("los"));
-            // Short content words are never function words: they count.
-            Assert.That(Read("function_words").Concat(Read("medium_words")),
-                Has.None.AnyOf("rap", "pop", "fi", "rock", "cumbia"));
-        });
-    }
-
-    // Contracaso: the exact mode compares the exact title and passes no words.
-    [Test]
-    public async Task AnExactSearchPassesNoWords()
-    {
-        var runner = new Runner(Output("Los Bunkers - Vida de perros", "null"));
-        var adapter = new SpotifyDesktopAdapter(runner);
-
-        await adapter.InvokeAsync(
-            "media.play.exact", Json("""{"provider":"spotify","title":"Vida de perros"}"""), CancellationToken.None);
-
-        Assert.That(runner.Calls.Single(), Does.Not.Contain("-QueryWordsBase64"));
+        Assert.That(receipt.ErrorCode, Is.EqualTo(error));
     }
 
     private static readonly SearchAddress[] Engines = LoadEngines();

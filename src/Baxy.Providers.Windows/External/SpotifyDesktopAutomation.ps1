@@ -1,9 +1,6 @@
 param(
     [Parameter(Mandatory=$true)][string]$TitleBase64,
     [ValidateSet('exact','query')][string]$Mode='exact',
-    # Query mode: the function words, medium words and purpose markers (data query_function_words.v1.json, embedded in
-    # the provider and passed by SpotifyDesktopAdapter) the query is compared with.
-    [string]$QueryWordsBase64='',
     # SP2 (tandas n3 del notebook: three searches killed at the adapter's 65 s with nothing said, «spotify_uia_adapter_failed»):
     # the adapter's budget for this run less its margin, in ms (0: none). Every wait ends by it, nothing is searched or
     # pressed after it, and a run it stops says its stage and the time of each stage instead of dying unheard.
@@ -198,7 +195,10 @@ function Test-BaxySpotifyPlayingRelatesTo([string]$Pressed,[string[]]$Seen){
     # Whether what plays (the now-playing line or the window title, folded) shares a word with the result that was
     # pressed: a word of four letters or more of the result as a word of what plays or the start of one
     # («prisionero» in «prisioneros»); a result with no such word, all of its words («ac dc», «u2»). Nothing pressed
-    # or nothing seen relates to nothing.
+    # or nothing seen relates to nothing. BAXY Renew audit 2026-10-15 (S7): it compares what was pressed with what was
+    # observed, never with the request; a playback told started by it says so in the receipt
+    # (playbackEvidence «resumed_track_shares_word_prefix_with_pressed_result»), so the comparison's tolerance of
+    # prefixes is not hidden.
     $resultWords=@(($Pressed -split ' ')|Where-Object {$_})
     $seenWords=@(foreach($line in @($Seen|Where-Object {$_})){($line -split ' ')|Where-Object {$_}})
     if($resultWords.Count -eq 0 -or $seenWords.Count -eq 0){return $false}
@@ -214,14 +214,16 @@ function Get-BaxySpotifyQueryEvidence([bool]$Pause,[string]$Observed,[string]$Be
     # Ronda 19 (t2-c01 T1 «pone los bunkers en spotify pa estudiar»: the client had a lo-fi track loaded in pause, the
     # press only resumed it and that was told as the search played). What a query-mode press proves:
     # «none»: nothing plays by this press yet.
-    # «started»: something new plays (now playing moved, or the pressed control reads as its pause label), or what
-    # resumed is related to the pressed result (heldout t17: a client restored paused on the very track the chosen
-    # result starts with).
     # «resumed»: the only evidence is that the track the client already had loaded plays again, and nothing ties it
     # to the pressed result: it cannot be told apart from a press that missed the result, so it is not confirmed.
+    # Any other value: the press started playback, named by the observation that showed it (the receipt's
+    # playbackEvidence, BAXY Renew audit 2026-10-15, S7): «now_playing_changed», «pressed_control_reads_pause», or
+    # «resumed_track_shares_word_prefix_with_pressed_result» (Test-BaxySpotifyPlayingRelatesTo; heldout t17: a client
+    # restored paused on the very track the chosen result starts with).
     if(-not (Test-BaxySpotifyPlaybackVerified 'query' $Pause $false $Observed $Before $PauseBefore $SelectedFlipped)){return 'none'}
-    if($Observed -ne $Before -or $SelectedFlipped){return 'started'}
-    if(Test-BaxySpotifyPlayingRelatesTo $Pressed $Seen){return 'started'}
+    if($Observed -ne $Before){return 'now_playing_changed'}
+    if($SelectedFlipped){return 'pressed_control_reads_pause'}
+    if(Test-BaxySpotifyPlayingRelatesTo $Pressed $Seen){return 'resumed_track_shares_word_prefix_with_pressed_result'}
     return 'resumed'
 }
 function Test-BaxySpotifyRepress([int]$Presses,[double]$SincePressMilliseconds,[bool]$Pause,[bool]$PauseBefore,[string]$Observed,[string]$Before,[bool]$SelectedFlipped,[bool]$ControlStillPlayable){
@@ -250,82 +252,11 @@ function Test-BaxySpotifyContentExposed([bool]$ColdStart,[bool]$PlayableSeen){
     # horizon) for its page to expose a playable control before searching.
     return -not $ColdStart -or $PlayableSeen
 }
-function Get-BaxySpotifySearchPageSeconds([bool]$SnapshotReady){
-    # A page that already shows a result or a play control keeps the 12 s
-    # horizon; one that shows nothing playable at all is still being built (or
-    # its search did not land) and gets 20 s.
-    if($SnapshotReady){return 12}
-    return 20
-}
-function Test-BaxySpotifyResearch([int]$Searches,[double]$SinceSearchMilliseconds,[bool]$SnapshotReady){
+function Test-BaxySpotifyResearch([int]$Searches,[double]$SinceSearchMilliseconds){
     # One bounded re-issue of the same search URI, only when eight seconds after
-    # the first one the page still shows nothing to play. Nothing was pressed
-    # yet, so re-navigating can never repeat an effect.
-    return $Searches -eq 1 -and $SinceSearchMilliseconds -ge 8000 -and -not $SnapshotReady
-}
-function Test-BaxySpotifyTermIn([string]$Term,[string[]]$Words){
-    # A folded word of the query found among folded words: the same word, whatever its length («rap», «fi»); for a
-    # term and a word of four letters or more, one the start of the other («prisionero» in «prisioneros»); or two
-    # adjacent words written together («lofi» against «lo fi»).
-    if(-not $Term){return $false}
-    for($i=0;$i -lt $Words.Count;$i++){
-        $word=$Words[$i]
-        if($word -eq $Term){return $true}
-        if($Term.Length -ge 4 -and $word.Length -ge 4 -and ($word.StartsWith($Term) -or $Term.StartsWith($word))){return $true}
-        if($i+1 -lt $Words.Count -and ($word+$Words[$i+1]) -eq $Term){return $true}
-    }
-    return $false
-}
-function Get-BaxySpotifyQueryCoverage([string]$Query,[string]$Text,[string[]]$FunctionWords,[string[]]$PurposeMarkers){
-    # Ronda 24, revisión 2 («rap para entrenar» answered by «Rock para entrenar», «lo fi para estudiar» by «Piano
-    # para estudiar»): which content words of the query (folded) a text names. The function words (data:
-    # query_function_words.v1.json, passed as -QueryWordsBase64) never count, whatever their length; every other word
-    # counts, whatever its length («rap», «pop», «fi»). Two adjacent words of the query written together in the text
-    # are one unit («lo fi» in «lofi»), checked before the function words are set aside. The words after a purpose
-    # marker («para estudiar», «pa entrenar») are the modifier; the ones before it the core, what was asked for. A
-    # query with no core has its modifier as core («musica para estudiar»: «musica» names only the medium).
-    $q=@(($Query -split ' ')|Where-Object {$_})
-    $t=@(($Text -split ' ')|Where-Object {$_})
-    $cut=$q.Count
-    for($i=1;$i -lt $q.Count;$i++){if($q[$i] -in $PurposeMarkers){$cut=$i;break}}
-    $units=New-Object 'System.Collections.Generic.List[object]'
-    $i=0
-    while($i -lt $q.Count){
-        if($i+1 -lt $q.Count -and $i+1 -ne $cut -and (Test-BaxySpotifyTermIn ($q[$i]+$q[$i+1]) $t)){
-            $units.Add([pscustomobject]@{Core=$i -lt $cut;Found=$true})
-            $i+=2
-            continue
-        }
-        $word=$q[$i]
-        if($word -notin $FunctionWords -and $word -notin $PurposeMarkers){$units.Add([pscustomobject]@{Core=$i -lt $cut;Found=(Test-BaxySpotifyTermIn $word $t)})}
-        $i++
-    }
-    $core=@($units|Where-Object {$_.Core})
-    $modifier=@($units|Where-Object {-not $_.Core})
-    if($core.Count -eq 0){$core=$modifier;$modifier=@()}
-    return [pscustomobject]@{Core=@($core|Where-Object {$_.Found}).Count;CoreTotal=$core.Count;Modifier=@($modifier|Where-Object {$_.Found}).Count}
-}
-function Get-BaxySpotifyQueryOverlap([string]$Query,[string]$Result,[string[]]$FunctionWords,[string[]]$PurposeMarkers){
-    # Ronda 23 (t2-c01 «pone los bunkers en spotify pa estudiar»: the first «Reproducir ...» control by position was
-    # pressed, unrelated to the query, and «Fother Muckers» played). The rank of a result name for the query: the
-    # core it names first, the modifier only between equal cores (Get-BaxySpotifyQueryCoverage). Zero when it names
-    # nothing; position decides between equal ranks.
-    $coverage=Get-BaxySpotifyQueryCoverage $Query $Result $FunctionWords $PurposeMarkers
-    return 100*$coverage.Core+$coverage.Modifier
-}
-function Test-BaxySpotifyCoversQuery([string]$Query,[string]$Text,[string[]]$FunctionWords,[string[]]$PurposeMarkers){
-    # A text names the whole core of the query («rap chileno» for «rap para entrenar»; never «rock para entrenar»).
-    $coverage=Get-BaxySpotifyQueryCoverage $Query $Text $FunctionWords $PurposeMarkers
-    return $coverage.CoreTotal -gt 0 -and $coverage.Core -eq $coverage.CoreTotal
-}
-function Test-BaxySpotifyMatchesQuery([string]$Query,[string]$Pressed,[bool]$SelectedFlipped,[string[]]$Seen,[string[]]$FunctionWords,[string[]]$PurposeMarkers){
-    # The fact the receipt carries as matchesQuery: what plays names the core of the query (the now-playing line or
-    # the window title, each on its own), or the pressed result names it and its own control now reads as its pause
-    # label (that very result plays: a «lofi beats» playlist whose track is «snowman»). A result that shares only the
-    # modifier or the function words («rock para entrenar» for «rap para entrenar») says false: something plays, not
-    # shown to be what was asked for.
-    foreach($line in @($Seen|Where-Object {$_})){if(Test-BaxySpotifyCoversQuery $Query $line $FunctionWords $PurposeMarkers){return $true}}
-    return $SelectedFlipped -and (Test-BaxySpotifyCoversQuery $Query $Pressed $FunctionWords $PurposeMarkers)
+    # the first one the page still shows nothing to play (it is asked only then).
+    # Nothing was pressed yet, so re-navigating can never repeat an effect.
+    return $Searches -eq 1 -and $SinceSearchMilliseconds -ge 8000
 }
 function Get-BaxySpotifyRowKey($Row){
     # X3 (tandas n1/n2 del notebook, t1-c07, t2-c01, t4-c01: 7 of 8 searches «spotify_exact_result_not_found» after
@@ -348,7 +279,7 @@ function Get-BaxySpotifyPageBefore([string]$ValueBefore,[string]$Query,[string[]
     if($ValueBefore -ne $Query){foreach($key in $Keys){if($key -and -not $key.StartsWith('|')){[void]$set.Add($key)}}}
     return ,$set
 }
-function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]$Title,[string]$ExpectedPlay,$SearchRect,$WindowRect,[string[]]$FunctionWords,[string[]]$PurposeMarkers){
+function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]$Title,[string]$ExpectedPlay,$SearchRect,$WindowRect){
     # What one snapshot of the search page offers (rows of Get-BaxySpotifySnapshot, names folded): the play control,
     # the card titled as the query with its identity link, and whether the search answered. Rows of the page shown
     # before the search (Get-BaxySpotifyPageBefore) are never a result.
@@ -356,9 +287,6 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
     $button=[Windows.Automation.ControlType]::Button
     $playCandidate=$null
     $playCandidateLeft=[double]::PositiveInfinity
-    # Ronda 23: in query mode the controls are ranked by the words their result shares with the query
-    # (Get-BaxySpotifyQueryOverlap), position only between equals; the exact mode has no rank (always 0).
-    $playCandidateOverlap=-1
     # SP3: how many play controls of this search passed those filters (the detail of a search that picked nothing).
     $shown=0
     foreach($element in $results){try{
@@ -367,10 +295,11 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
         $name=$element.Fold
         $matches=if($Mode -eq 'query'){$name.StartsWith('reproducir ') -or $name.StartsWith('play ')}else{$name -eq $ExpectedPlay -or $name.StartsWith($ExpectedPlay+' ')}
         if(-not ($rect.Width -gt 0 -and $rect.Height -gt 0 -and $matches -and $rect.Top -gt ($SearchRect.Top+20) -and $rect.Top -lt ($SearchRect.Top+600) -and $rect.Left -ge $WindowRect.Left -and $rect.Right -le $WindowRect.Right)){continue}
-        # Ranked only once a control passed the type, name and place filters: a handful per page, not the tree.
         $shown++
-        $overlap=if($Mode -eq 'query'){Get-BaxySpotifyQueryOverlap $Title (Get-BaxySpotifyPressedResult $name '') $FunctionWords $PurposeMarkers}else{0}
-        if($overlap -gt $playCandidateOverlap -or ($overlap -eq $playCandidateOverlap -and $rect.Left -lt $playCandidateLeft)){$playCandidate=$element;$playCandidateLeft=$rect.Left;$playCandidateOverlap=$overlap}
+        # BAXY Renew audit 2026-10-15 (S1): both modes take the first of these controls by position, the leftmost; the
+        # query mode plays the first result of Spotify's own search for the text it was given, and no result is ranked
+        # by the words it shares with that text (the receipt says which control was pressed and what plays).
+        if($rect.Left -lt $playCandidateLeft){$playCandidate=$element;$playCandidateLeft=$rect.Left}
     }catch{}}
     $candidate=$null
     $candidateTop=[double]::PositiveInfinity
@@ -390,13 +319,7 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
         foreach($element in $Rows){try{$rect=$element.Rect;$name=$element.Fold;if($element.Type -eq [Windows.Automation.ControlType]::Hyperlink -and $name -and $name -ne $Title -and $rect.Left -ge $candidateRect.Left -and $rect.Right -le $candidateRect.Right -and $rect.Top -ge $candidateRect.Top -and $rect.Bottom -le $candidateRect.Bottom){$candidateIdentity=$name;break}}catch{}}
         foreach($element in $Rows){try{$rect=$element.Rect;$name=$element.Fold;if($element.Type -eq $button -and -not $element.Offscreen -and $rect.Width -gt 0 -and $rect.Height -gt 0 -and $name -in @('reproducir','play') -and $rect.Left -ge $candidateRect.Left -and $rect.Right -le $candidateRect.Right -and $rect.Top -ge $candidateRect.Top -and $rect.Bottom -le $candidateRect.Bottom){$playCandidate=$element;break}}catch{}}
     }
-    # SP (fin2 t1-c07/t2-c01; redpc, cold client: the box held the query while the Home page and the library rows,
-    # drawn after the page before was read, still showed «reproducir descubrimiento semanal», «reproducir 00s rock
-    # anthems»): a query search answered when it shows the card titled as the query or a result that names the
-    # query (overlap above zero). This replaces the former proof by the box's value, which the URI sets seconds
-    # before the page changes. A page of results none of which names the query is taken at the horizon.
-    $answered=($null -ne $playCandidate -or $null -ne $candidate) -and ($Mode -ne 'query' -or $null -ne $candidate -or $playCandidateOverlap -gt 0)
-    return [pscustomobject]@{Play=$playCandidate;Overlap=$playCandidateOverlap;Card=$candidate;Identity=$candidateIdentity;Answered=$answered;Shown=$shown}
+    return [pscustomobject]@{Play=$playCandidate;Card=$candidate;Identity=$candidateIdentity;Shown=$shown}
 }
 function Get-BaxySpotifyNotFoundDetail($Rows,$PageBefore,[int]$Shown,[int]$Searches,[bool]$ColdStart,[bool]$BoxHoldsQuery,[bool]$Iconic,[bool]$Front,[string]$CoveredBy){
     # SP3 (tandas n9/n10 del notebook, t1-c07 and t2-c01: played in n9, «spotify_exact_result_not_found» after 24 s in
@@ -519,24 +442,14 @@ try {
     # The desktop client can take several seconds to replace the previous
     # page after resolving a spotify:search URI: the first observation that
     # shows a result of this search ends the wait, never a blind sleep.
-    # The function words and purpose markers the query is compared with (data passed by the adapter).
-    $queryFunctionWords=@()
-    $queryPurposeMarkers=@()
-    if($Mode -eq 'query'){
-        if(-not $QueryWordsBase64){throw 'spotify_query_words_missing'}
-        $queryWords=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($QueryWordsBase64))|ConvertFrom-Json
-        $queryFunctionWords=@($queryWords.function_words)+@($queryWords.medium_words)
-        $queryPurposeMarkers=@($queryWords.purpose_markers)
-    }
     $expectedPlay=Fold('Reproducir '+$title)
     $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
     # MUSIC1753: a client launched seconds earlier renders its search page late;
     # the bounded wait is 12 s. M169: a page that shows nothing playable at all
-    # gets 20 s and one re-issued search (the adapter budget of 65 s covers
-    # 12.5 + 20 + 12 + 15).
-    $searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $true))
+    # is still being built (or its search did not land) and gets 20 s and one
+    # re-issued search (the adapter budget of 65 s covers 12.5 + 20 + 12 + 15).
+    $searchPageDeadline=$searchedAt.AddSeconds(12)
     $searchPageReady=$false
-    $searchSnapshotReady=$false
     $searchObservationError=$null
     do {
         try {
@@ -548,33 +461,39 @@ try {
             foreach($element in $all){try{if($element.Type -eq [Windows.Automation.ControlType]::Button -and $element.Fold -in @('pausar','pause')){$alreadyPausedControl=$true;break}}catch{}}
             $beforeNowPlaying=''
             foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$beforeNowPlaying=$name.Substring($prefix.Length+1);break}}catch{}}
-            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $expectedPlay $searchRect $windowRect $queryFunctionWords $queryPurposeMarkers
+            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $expectedPlay $searchRect $windowRect
             $playCandidate=$choice.Play
-            $playCandidateOverlap=$choice.Overlap
             $candidate=$choice.Card
             $candidateIdentity=$choice.Identity
             $candidateAlreadyPlaying=$null -ne $candidate -and $beforeNowPlaying.StartsWith($foldTitle+' ') -and $candidateIdentity -and $beforeNowPlaying.Contains(' de '+$candidateIdentity)
-            if($Mode -eq 'exact' -and $candidateAlreadyPlaying -and $alreadyPausedControl){[pscustomobject]@{ok=$true;effectObserved=$effect;error=$null;title=$title;processId=$process.Id}|ConvertTo-Json -Compress;exit 0}
-            $searchSnapshotReady=$null -ne $playCandidate -or $null -ne $candidate
-            $searchPageReady=$choice.Answered
+            if($Mode -eq 'exact' -and $candidateAlreadyPlaying -and $alreadyPausedControl){
+                # BAXY Renew audit 2026-10-15 (S4): the title already plays and nothing is pressed: the receipt says
+                # what was observed (the client's window title and its now-playing line), that it was already playing,
+                # and no effect ($effect is still false), never the requested title as the one seen.
+                [pscustomobject]@{ok=$true;effectObserved=$effect;alreadyPlaying=$true;error=$null;title=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle;observedNowPlaying=$beforeNowPlaying;processId=$process.Id}|ConvertTo-Json -Compress;exit 0
+            }
+            # BAXY Renew audit 2026-10-15 (S1; read on the notebook's client): the results page is the one whose
+            # content group the client names «Spotify – Buscar» («Spotify – Search» in English; Home is «Spotify -
+            # Reproductor web: …»). Until it shows, play controls are not results: a cold client draws Home and library
+            # rows after the page before was read (fin2: «reproducir descubrimiento semanal»). At the horizon the last
+            # observation is taken as it is.
+            $resultsShown=$Mode -ne 'query' -or @($all|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')}).Count -gt 0
+            $searchPageReady=$resultsShown -and ($null -ne $playCandidate -or $null -ne $candidate)
             $searchObservationError=$null
         } catch {
             $searchPageReady=$false
-            $searchSnapshotReady=$false
             $searchObservationError=$_
         }
         if($searchPageReady){break}
         if($null -eq $searchObservationError){
-            $searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $searchSnapshotReady))
-            if(Test-BaxySpotifyResearch $searches (((Get-Date)-$searchedAt).TotalMilliseconds) $searchSnapshotReady){
+            $searchPageDeadline=$searchedAt.AddSeconds(20)
+            if(Test-BaxySpotifyResearch $searches (((Get-Date)-$searchedAt).TotalMilliseconds)){
                 $searches=2
                 Start-Process $searchUri
                 Add-BaxySpotifyMark 'researched'
             }
         }
     } while((Wait-BaxyPoll $searchPageDeadline 500))
-    # At the horizon the last observation is taken as it is (a page of results none of which names the query).
-    if(-not $searchPageReady -and $searchSnapshotReady -and $null -eq $searchObservationError){$searchPageReady=$true}
     if(-not $searchPageReady -and $null -ne $searchObservationError){throw $searchObservationError}
     if($null -eq $playCandidate){
         if($null -eq $candidate){
@@ -627,8 +546,6 @@ try {
     $selectedRect=$playCandidate.Rect
     $selectedPauseName=Get-BaxySpotifyPauseName $selectedFold
     $pressedResult=Get-BaxySpotifyPressedResult $selectedFold $(if($null -ne $candidate){(@($foldTitle,$candidateIdentity)|Where-Object {$_})-join ' '}else{''})
-    $pressedOverlap=Get-BaxySpotifyQueryOverlap $foldTitle $pressedResult $queryFunctionWords $queryPurposeMarkers
-    $matchesQuery=$false
     # A same-named context that was already playing is not this press's doing.
     $flipBefore=$false
     foreach($element in $all){try{if($element.Type -eq [Windows.Automation.ControlType]::Button -and $selectedPauseName -and $element.Fold -eq $selectedPauseName -and ($selectedPauseName -notin @('pausar','pause') -or (Test-BaxySpotifyNear $element.Rect $selectedRect))){$flipBefore=$true;break}}catch{}}
@@ -670,8 +587,7 @@ try {
             if($Mode -eq 'query'){
                 $windowNow=Fold((Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle)
                 $evidence=Get-BaxySpotifyQueryEvidence $pause $observedNowPlaying $beforeNowPlaying $pauseAlready $selectedFlipped $pressedResult @($observedNowPlaying,$windowNow)
-                $verified=$evidence -eq 'started'
-                $matchesQuery=Test-BaxySpotifyMatchesQuery $foldTitle $pressedResult $selectedFlipped @($observedNowPlaying,$windowNow) $queryFunctionWords $queryPurposeMarkers
+                $verified=$evidence -notin @('none','resumed')
                 # Only the loaded track resumed: the wait goes on to its end (the line or the control may still move
                 # to the result), and only a wait that never saw more ends unconfirmed.
                 if($evidence -eq 'resumed'){$resumedOnly=$true}
@@ -698,7 +614,7 @@ try {
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}elseif($resumedOnly){'spotify_query_result_not_confirmed'}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle
-    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;pauseBefore=$pauseAlready;selectedFlipped=$selectedFlipped;matchesQuery=$(if($Mode -eq 'query'){$matchesQuery}else{$null});pressedOverlap=$pressedOverlap;presses=$presses;pressIgnored=$pressIgnored;searches=$searches;coldStart=$coldStart;processId=$process.Id}|ConvertTo-Json -Compress
+    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;pauseBefore=$pauseAlready;selectedFlipped=$selectedFlipped;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});presses=$presses;pressIgnored=$pressIgnored;searches=$searches;coldStart=$coldStart;processId=$process.Id}|ConvertTo-Json -Compress
 } catch {
     Add-BaxySpotifyMark
     [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_uia_failed';stage=$stage;detail=$_.Exception.Message;timings=$timings}|ConvertTo-Json -Compress
