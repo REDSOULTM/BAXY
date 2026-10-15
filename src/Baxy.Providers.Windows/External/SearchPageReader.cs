@@ -47,7 +47,11 @@ internal sealed class SearchPageReader : IDisposable
     }
 
     // The page's HTML, or null when it is not a public address, not HTML, not a success or redirects too often.
-    internal async Task<string?> ReadHtmlAsync(Uri page, CancellationToken cancellationToken)
+    internal async Task<string?> ReadHtmlAsync(Uri page, CancellationToken cancellationToken) =>
+        (await ReadPageAsync(page, cancellationToken).ConfigureAwait(false))?.Html;
+
+    // The same, with the address the page was finally read from (after its checked redirects).
+    internal async Task<(Uri Final, string Html)?> ReadPageAsync(Uri page, CancellationToken cancellationToken)
     {
         Uri current = page;
         for (int hop = 0; hop <= MaximumRedirects; hop++)
@@ -71,7 +75,7 @@ internal sealed class SearchPageReader : IDisposable
             }
             byte[] body = await WebBrowserAdapter.ReadBoundedBytesAsync(response, MaximumBytes, cancellationToken)
                 .ConfigureAwait(false);
-            return Decode(body, type.CharSet);
+            return (current, Decode(body, type.CharSet));
         }
         return null;
     }

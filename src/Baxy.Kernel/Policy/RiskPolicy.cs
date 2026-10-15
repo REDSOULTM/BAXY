@@ -75,7 +75,8 @@ public static partial class RiskPolicy
         if (arguments is { } invocation
             && (ReachesAPerson(operation, invocation)
                 || CannotBeUndone(operation, invocation)
-                || LosesTheSession(operation, invocation)))
+                || LosesTheSession(operation, invocation)
+                || ShellMayChange(operation, invocation)))
         {
             return PolicyDecision.RequireConfirmation;
         }
@@ -94,6 +95,67 @@ public static partial class RiskPolicy
             _ => PolicyDecision.Deny,
         };
     }
+
+    /// <summary>
+    /// BAXY Renew (2026-10-15; identity: confirm what destroys data and what goes out to the world): a console command
+    /// runs directly only when it provably just reads. Every stage of its pipeline starts with a reading cmdlet, and
+    /// nothing redirects, chains another command, calls .NET or a method, or runs a script block, a variable or a
+    /// sub-expression. Anything else (writing, deleting, installing, sending over the network, running a program) asks
+    /// first with the exact command, as Claude Code and OpenClaw's exec approvals do. Fail-closed: when in doubt it asks.
+    /// </summary>
+    public static bool ShellMayChange(string? operation, JsonElement arguments)
+    {
+        if (!string.Equals(operation, "shell.command.run", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("command", out JsonElement value)
+            || value.ValueKind != JsonValueKind.String
+            || value.GetString() is not { Length: > 0 } command
+            || command.IndexOfAny(['>', '<', '&', ';', '`', '{', '}', '$', '(', ')', '[', ']', '@', '\n', '\r']) >= 0)
+        {
+            return true;
+        }
+
+        foreach (string stage in command.Split('|'))
+        {
+            string[] words = stage.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (words.Length == 0)
+            {
+                return true;
+            }
+
+            string head = words[0].ToLowerInvariant();
+            bool reads = head == "git"
+                ? words.Length >= 2 && ReadingGit.Contains(words[1].ToLowerInvariant())
+                : ReadingCommands.Contains(head);
+            if (!reads)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Cmdlets, their built-in aliases and programs that only read and print, with no parameter that writes or sends.
+    private static readonly HashSet<string> ReadingCommands = new(StringComparer.Ordinal)
+    {
+        "get-childitem", "gci", "dir", "ls", "get-content", "gc", "cat", "type", "get-item", "gi",
+        "get-itemproperty", "gp", "get-location", "gl", "pwd", "get-process", "gps", "ps", "get-service", "gsv",
+        "get-date", "get-command", "gcm", "get-help", "get-volume", "get-psdrive", "gdr", "get-computerinfo",
+        "get-netadapter", "get-netipaddress", "get-filehash", "get-ciminstance", "gcim", "get-disk",
+        "get-physicaldisk", "get-printer", "get-hotfix", "get-culture", "get-timezone", "get-host", "get-winevent",
+        "get-uptime", "select-string", "sls", "select-object", "select", "where-object", "where", "sort-object",
+        "sort", "group-object", "group", "measure-object", "measure", "compare-object", "compare", "format-table",
+        "ft", "format-list", "fl", "format-wide", "fw", "out-string", "convertto-json", "convertfrom-json",
+        "convertto-csv", "convertfrom-csv", "resolve-path", "rvpa", "split-path", "join-path", "test-path",
+        "write-output", "echo", "write", "hostname", "whoami", "systeminfo", "tasklist",
+    };
+
+    private static readonly HashSet<string> ReadingGit = new(StringComparer.Ordinal) { "status", "log", "diff", "show" };
 
     /// <summary>
     /// Whether this exact invocation of a computer-use primitive leaves the

@@ -101,6 +101,7 @@ internal static class ExternalCapabilityHandlers
         "system.settings.set",
         "vision.describe",
         "web.search",
+        "web.fetch",
         "filesystem.explorer.count",
         "filesystem.file.open.latest",
         "filesystem.folder.open",

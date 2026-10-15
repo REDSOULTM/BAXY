@@ -3473,6 +3473,39 @@ public sealed class ExternalAdaptersTests
         </article><footer>Arroz por persona para la cena, copyright 2026, todos los derechos</footer></body></html>
         """;
 
+    // BAXY Renew agent tools (2026-10-15): web.fetch reads one public page as text, its title and the address it was
+    // read from; never its scripts, styles, menu or footer, and never an address of this PC or its network.
+    [Test]
+    public async Task WebFetchReadsAPublicPageAsText()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        var pages = new RoutingHttpHandler(RicePage, "{}");
+        using var http = new HttpClient(pages);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://recetas.example.com/arroz"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt local = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"http://192.168.1.10/admin"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True);
+            Assert.That(read.EffectObserved, Is.False);
+            Assert.That(read.Result?.GetProperty("title").GetString(), Is.EqualTo("Arroz"));
+            Assert.That(read.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://recetas.example.com/arroz"));
+            string text = read.Result?.GetProperty("text").GetString() ?? "";
+            Assert.That(text, Does.Contain("80 gramos de arroz crudo por persona"));
+            Assert.That(text, Does.Not.Contain("999"));
+            Assert.That(text, Does.Not.Contain("copyright"));
+            Assert.That(text, Does.Not.Contain("Inicio Recetas"));
+            Assert.That(local.Verified, Is.False);
+            Assert.That(local.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(pages.Asked, Has.Count.EqualTo(1));
+        });
+    }
+
     // M98 (DEV-D v3x D-w01-t2): the sentences of the page that answer, figures first when a figure is asked; never
     // the page's scripts, menus or footer, and never what the snippet already said.
     [Test]

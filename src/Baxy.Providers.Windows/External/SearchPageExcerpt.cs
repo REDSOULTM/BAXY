@@ -272,6 +272,24 @@ internal static class SearchPageExcerpt
         return row.Length > MaximumRowCharacters ? row[..MaximumRowCharacters].TrimEnd() + "…" : row;
     }
 
+    private static readonly Regex Title = new(
+        @"<title\b[^>]*>(.*?)</title\s*>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        RegexBudget);
+
+    // web.fetch: the page's title and readable text, one block per line, without what a reader skips (the head,
+    // scripts, menus, forms), cut at maximumCharacters.
+    internal static (string Title, string Text, bool Truncated) Prose(string html, int maximumCharacters)
+    {
+        Match title = Title.Match(html);
+        string prose = System.Net.WebUtility.HtmlDecode(Tag.Replace(Block.Replace(Unread.Replace(html, " "), "\n"), " "));
+        string text = string.Join('\n', prose.Split('\n')
+            .Select(static line => string.Join(' ', line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)))
+            .Where(static line => line.Length > 0));
+        return (title.Success ? Text(title.Groups[1].Value) : string.Empty,
+            text.Length <= maximumCharacters ? text : text[..maximumCharacters],
+            text.Length > maximumCharacters);
+    }
+
     private static string Text(string html) =>
         string.Join(' ', System.Net.WebUtility.HtmlDecode(Tag.Replace(html, " "))
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
