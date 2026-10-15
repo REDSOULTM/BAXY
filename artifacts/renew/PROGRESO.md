@@ -297,3 +297,15 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   un latido sin retenerse (viola «nada sale sin pedido»), memory.export y media.control sin retener, la vista oculta
   partial/frameOnly/disabled, confirmación vencida dicha como nothing_pending, NoteChangesAsync sin try, errores de
   argumentos que no dicen qué argumento falló, código muerto del Field UI, ParseStep que no acepta «_».
+- A/B de presentación (decision2 práctica, PC, mismo servidor; ruido entre configuraciones ±6 de 268):
+  d6 = presentación nueva (nombres con «_», significados clave, paso final con tools) 231/268 p50 0,81 s; el notebook
+  lo confirma en su GPU: 231, +9 sobre su base y ninguno perdido. d6b (checkpoints por defecto) 225 p50 0,77 s: los
+  checkpoints cada 512 costaban ~46 ms y 55 MiB, vuelven al defecto. SYSTEM del agente (abSys) 223 y variante mínima
+  (abSys2: honestidad concreta en regla 2 + regla 3 sin contradicción) 221: el prompt de sistema se queda (escenas
+  32/31 vs 31, sin diferencia). Lista de apps compacta: −2 % de prefijo con cambio de contrato; sin ejemplos −14 %
+  pero los ejemplos son lo que ganó: descartadas. Inferencia (notebook): temp 0 = igual; -c 40960 = igual con menos
+  margen; KV f16 228/268 y 4454 MiB de VRAM (no cabe): queda q8_0; presence_penalty descartado (penaliza copiar las
+  palabras de la persona).
+- 304 significados de argumentos (agente, verificados en código): decisión 229 (neutro), e2e práctica p9 20/30 (mejor
+  hasta ahora) pero el prefijo subió de 37,6k a 45,1k tokens, 18,1 ms/token y primer sonido p50 3206 ms, con sólo 4k
+  tokens libres para un turno. Podados a 84 donde hay fallos o trampas (ae88641a8); se mide en p10.
