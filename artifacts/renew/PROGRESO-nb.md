@@ -297,3 +297,25 @@ se mide en el PC.
 - **RAM: dentro de los 4 GB** con cualquiera de las dos medidas, el USS (783 MB) o el working set (3,5 GB).
 - **Al margen:** en esa corrida, «sube el volumen a 40» se decidió como `audio.volume.adjust` y no como
   `audio.volume`. Es un error del modelo, no del arnés; los bancos lo cuentan.
+
+## Herramientas de archivo fusionadas, y el catálogo nuevo medido
+
+- **Las cuatro herramientas.** `file.find`, `file.read`, `file.write` y `file.edit`, hechas por un agente en la rama
+  `nb-file-tools` y fusionadas con `schedule.alarms`, sustituyen a seis operaciones: `document.text.read`,
+  `document.pdf.read`, `filesystem.known.list`, `filesystem.known.search`, `filesystem.write.text` y
+  `filesystem.sandbox.append.named`.
+- **El catálogo queda en 195 descriptores y 194 herramientas.**
+- **La versión anterior se puede recuperar.** Al reemplazar o editar, va primero a la Papelera de reciclaje real de
+  Windows (`WindowsRecycleBin`), así que no hace falta confirmar.
+  - La «papelera» que existía (`filesystem.known.trash.named`) era una carpeta privada de BAXY sin forma de restaurar.
+    `filesystem.trash.restore` no reconoce lo que esa operación borra: queda anotado para la re-auditoría.
+- **Verde sobre la fusión:** Kernel 606, Providers 2170, Contracts 70 y Setup 477.
+- **Juez con equivalencias.** En `scripts/renew/bench_decision.py`, `RENAMED` hace que una expectativa escrita con el
+  nombre viejo la cumpla la operación nueva, con los argumentos que la vuelven el mismo pedido. Los casos, sellados o
+  no, no se editan.
+- **Catálogo viejo contra nuevo** (misma mente, `decision2`, 270 casos). El catálogo nuevo se generó desde
+  `ProductCatalog.ToolDescriptors`, como lo manda la App, en `renew_v1/catalog.nb-tools.json`.
+  - Viejo, con el juez original: 224. Nuevo, con equivalencias: **227**. Sólo el viejo acierta 4 y sólo el nuevo 7
+    (p = 0,55).
+  - En los 25 casos de operaciones sustituidas, de 19 a **24**. Menos herramientas solapadas eligen mejor, y no se
+    pierde nada en el resto.
