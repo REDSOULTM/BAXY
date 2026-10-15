@@ -3275,7 +3275,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(router.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
             Assert.That(intranet.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
-            Assert.That(redirected.ErrorCode, Is.EqualTo("web_fetch_page_unreadable"));
+            Assert.That(redirected.ErrorCode, Is.EqualTo("web_fetch_redirect_not_public"));
             Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "recetas.example.es" }));
         });
     }

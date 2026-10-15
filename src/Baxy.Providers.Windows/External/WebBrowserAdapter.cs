@@ -274,9 +274,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
-        (Uri Final, string Html)? page = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
-        if (page is not { } read)
-            return ExternalJson.Failure(operation, "web_fetch_page_unreadable");
+        SearchPageReader.PageRead read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        if (read.Html is null || read.Final is null)
+            return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole) = PageText.Prose(read.Html);
         int start = Math.Min(offset, whole.Length);
         string text = whole.Substring(start, Math.Min(maximumCharacters, whole.Length - start));
@@ -289,6 +289,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("finalUrl", read.Final.AbsoluteUri);
             writer.WriteString("title", title);
             writer.WriteNumber("totalCharacters", whole.Length);
+            // The body is read up to 1.5 MB: past it the page goes on, unread, and its text here ends there.
+            writer.WriteBoolean("bodyTruncated", read.Truncated);
             writer.WriteNumber("offset", start);
             writer.WriteBoolean("hasMore", hasMore);
             if (hasMore)
@@ -1028,11 +1030,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int maximumBytes,
         CancellationToken cancellationToken)
     {
-        byte[] body = await ReadBoundedBytesAsync(response, maximumBytes, cancellationToken).ConfigureAwait(false);
+        (byte[] body, _) = await ReadBoundedBytesAsync(response, maximumBytes, cancellationToken).ConfigureAwait(false);
         return Encoding.UTF8.GetString(body);
     }
 
-    internal static async Task<byte[]> ReadBoundedBytesAsync(
+    // The body up to maximumBytes, and whether more was left unread.
+    internal static async Task<(byte[] Body, bool Truncated)> ReadBoundedBytesAsync(
         HttpResponseMessage response,
         int maximumBytes,
         CancellationToken cancellationToken)
@@ -1041,12 +1044,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             .ConfigureAwait(false);
         using var buffer = new MemoryStream();
         byte[] chunk = ArrayPool<byte>.Shared.Rent(16 * 1024);
+        bool truncated = false;
         try
         {
             int read;
             while ((read = await stream.ReadAsync(chunk, cancellationToken).ConfigureAwait(false)) > 0)
             {
-                if (buffer.Length + read > maximumBytes) break;
+                if (buffer.Length + read > maximumBytes)
+                {
+                    truncated = true;
+                    break;
+                }
                 buffer.Write(chunk, 0, read);
             }
         }
@@ -1054,7 +1062,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             ArrayPool<byte>.Shared.Return(chunk);
         }
-        return buffer.ToArray();
+        return (buffer.ToArray(), truncated);
     }
 
     private static readonly Regex HtmlTag = new(

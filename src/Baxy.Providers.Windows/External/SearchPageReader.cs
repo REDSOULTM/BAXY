@@ -46,14 +46,20 @@ internal sealed class SearchPageReader : IDisposable
         if (_ownsClient) _http.Dispose();
     }
 
-    // The page's HTML with the address it was finally read from (after its checked redirects), or null when it is not
-    // a public address, not HTML, not a success or redirects too often.
-    internal async Task<(Uri Final, string Html)?> ReadPageAsync(Uri page, CancellationToken cancellationToken)
+    // A page read: its HTML with the address it was finally read from (after its checked redirects) and whether its
+    // body went past the bound; or, with no HTML, why: a redirect to an address that is not public, a redirect without
+    // a target, too many redirects, a status other than success, or content that is not HTML.
+    internal sealed record PageRead(Uri? Final, string? Html, bool Truncated, string? Error)
+    {
+        internal static PageRead Failed(string error) => new(null, null, false, error);
+    }
+
+    internal async Task<PageRead> ReadPageAsync(Uri page, CancellationToken cancellationToken)
     {
         Uri current = page;
         for (int hop = 0; hop <= MaximumRedirects; hop++)
         {
-            if (!IsPublicPageAddress(current)) return null;
+            if (!IsPublicPageAddress(current)) return PageRead.Failed("web_fetch_redirect_not_public");
             using var request = new HttpRequestMessage(HttpMethod.Get, current);
             request.Headers.UserAgent.ParseAdd(UserAgent);
             using HttpResponseMessage response = await _http
@@ -61,20 +67,20 @@ internal sealed class SearchPageReader : IDisposable
                 .ConfigureAwait(false);
             if ((int)response.StatusCode is >= 300 and < 400)
             {
-                if (response.Headers.Location is not { } location) return null;
+                if (response.Headers.Location is not { } location) return PageRead.Failed("web_fetch_redirect_without_target");
                 current = location.IsAbsoluteUri ? location : new Uri(current, location);
                 continue;
             }
+            if (!response.IsSuccessStatusCode)
+                return PageRead.Failed("web_fetch_status_" + ((int)response.StatusCode).ToString(System.Globalization.CultureInfo.InvariantCulture));
             MediaTypeHeaderValue? type = response.Content.Headers.ContentType;
-            if (!response.IsSuccessStatusCode || type?.MediaType is not ("text/html" or "application/xhtml+xml"))
-            {
-                return null;
-            }
-            byte[] body = await WebBrowserAdapter.ReadBoundedBytesAsync(response, MaximumBytes, cancellationToken)
-                .ConfigureAwait(false);
-            return (current, Decode(body, type.CharSet));
+            if (type?.MediaType is not ("text/html" or "application/xhtml+xml"))
+                return PageRead.Failed("web_fetch_not_html");
+            (byte[] body, bool truncated) = await WebBrowserAdapter.ReadBoundedBytesAsync(
+                response, MaximumBytes, cancellationToken).ConfigureAwait(false);
+            return new PageRead(current, Decode(body, type.CharSet), truncated, null);
         }
-        return null;
+        return PageRead.Failed("web_fetch_too_many_redirects");
     }
 
     internal static bool IsPublicPageAddress(Uri address)
