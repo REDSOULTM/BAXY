@@ -67,7 +67,7 @@ public sealed class ExternalAdaptersTests
     {
         var identity = new WindowsProcessIdentity(4242, 638900000000000000);
         var platform = new StubProcessTerminationPlatform(
-            [[identity], []], terminateResult: true);
+            [[identity], []], terminateResult: WindowsProcessTermination.Terminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -95,7 +95,7 @@ public sealed class ExternalAdaptersTests
     {
         var identity = new WindowsProcessIdentity(5151, 638900000000000001);
         var platform = new StubProcessTerminationPlatform(
-            [[identity], [identity]], terminateResult: false);
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.NotTerminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -112,12 +112,54 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task ExactNamedProcessTerminationFailsBeforeEffectWhenNothingRuns()
+    {
+        var platform = new StubProcessTerminationPlatform([[]], terminateResult: WindowsProcessTermination.Terminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named",
+            Json("""{"name":"steam"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_not_running"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Terminated, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ExactNamedProcessTerminationDoesNotCountAProcessThatHadAlreadyExited()
+    {
+        var identity = new WindowsProcessIdentity(5252, 638900000000000002);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], []], terminateResult: WindowsProcessTermination.AlreadyExited);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named",
+            Json("""{"name":"steam"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.Result?.GetProperty("terminatedCount").GetInt32(), Is.Zero);
+            Assert.That(receipt.Result?.GetProperty("alreadyExitedCount").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public async Task ExactNamedProcessTerminationAllowsAWindowsRestartWithANewIdentity()
     {
         var original = new WindowsProcessIdentity(5151, 638900000000000001);
         var replacement = new WindowsProcessIdentity(6262, 638900000000000099);
         var platform = new StubProcessTerminationPlatform(
-            [[original], [replacement]], terminateResult: true);
+            [[original], [replacement]], terminateResult: WindowsProcessTermination.Terminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -186,7 +228,7 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task ExactNamedProcessTerminationRejectsPathsBeforeTakingAnEffect()
     {
-        var platform = new StubProcessTerminationPlatform([], terminateResult: true);
+        var platform = new StubProcessTerminationPlatform([], terminateResult: WindowsProcessTermination.Terminated);
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -215,9 +257,11 @@ public sealed class ExternalAdaptersTests
         using var process = Process.Start(new ProcessStartInfo
         {
             FileName = probePath,
-            Arguments = "/d /c ping -t 127.0.0.1",
+            // A single process: the console waits on its own input, so ending it leaves no child behind.
+            Arguments = "/d /q /k",
             CreateNoWindow = true,
             UseShellExecute = false,
+            RedirectStandardInput = true,
         })!;
         try
         {
@@ -4705,7 +4749,7 @@ public sealed class ExternalAdaptersTests
 
     private sealed class StubProcessTerminationPlatform(
         IReadOnlyList<IReadOnlyList<WindowsProcessIdentity>> snapshots,
-        bool terminateResult) : IWindowsProcessTerminationPlatform
+        WindowsProcessTermination terminateResult) : IWindowsProcessTerminationPlatform
     {
         private int _snapshotIndex;
         internal List<WindowsProcessIdentity> Terminated { get; } = [];
@@ -4719,7 +4763,7 @@ public sealed class ExternalAdaptersTests
             return snapshot;
         }
 
-        public bool Terminate(string processName, WindowsProcessIdentity identity)
+        public WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity)
         {
             Terminated.Add(identity);
             return terminateResult;
