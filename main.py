@@ -80,6 +80,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--capture", help="directorio de captura JSONL del conductor")
     parser.add_argument("--turns-file", help="JSONL de comandos públicos (text/session.new/upload/cancel)")
     parser.add_argument("--text", help="un turno de texto natural")
+    parser.add_argument("--command-dir", help="carpeta de comandos del conductor (un producto para un banco entero)")
     parser.add_argument("--timeout-ms", type=int, default=120000)
     parser.add_argument(
         "--ui-probe",
@@ -304,6 +305,8 @@ def launch_conductor(args: argparse.Namespace) -> None:
         command.extend(["-TurnsFile", args.turns_file])
     if args.text:
         command.extend(["-Text", args.text])
+    if args.command_dir:
+        command.extend(["-CommandDir", args.command_dir])
     run_checked(command, environment=environment)
 
 

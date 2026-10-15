@@ -16,6 +16,7 @@ param(
     [string]$Capture,
     [string]$TurnsFile,
     [string]$Text,
+    [string]$CommandDir,
     [int]$TimeoutMs = 120000,
     # Sólo medida: el primer turno espera a que la bienvenida esté compuesta y publicada (--after-welcome).
     [switch]$AfterWelcome
@@ -81,6 +82,12 @@ if (-not [string]::IsNullOrWhiteSpace($TurnsFile)) {
 }
 if (-not [string]::IsNullOrWhiteSpace($Text)) {
     $argumentList.Add("--text=$Text")
+}
+if (-not [string]::IsNullOrWhiteSpace($CommandDir)) {
+    if (-not (Test-Path $CommandDir)) {
+        New-Item -ItemType Directory -Path $CommandDir -Force | Out-Null
+    }
+    $argumentList.Add("--command-dir=$((Resolve-Path $CommandDir).Path)")
 }
 
 $workDir = Split-Path $app

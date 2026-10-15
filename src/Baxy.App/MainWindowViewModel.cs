@@ -174,6 +174,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public bool IsMindReady => _mindClient is { IsReady: true };
 
+    /// <summary>BAXY's answers are said aloud (the mind offers its voice).</summary>
+    internal bool CanSpeak => _mindClient is { IsVoiceAvailable: true };
+
     /// <summary>The shell opened while the mind it started is still reading its model.</summary>
     public bool IsMindPreparing => _startupMindPending;
 

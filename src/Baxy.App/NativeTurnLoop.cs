@@ -13,7 +13,8 @@ internal sealed record NativeTurnStep(
     string Status,
     bool Verified,
     string? ErrorCode,
-    long ElapsedMs);
+    long ElapsedMs,
+    string Observation);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -333,7 +334,8 @@ internal sealed class NativeTurnLoop
             response?.Status ?? StatusOf(observation),
             response?.Verified ?? false,
             response?.ErrorCode,
-            elapsed);
+            elapsed,
+            observation);
         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.step",
             $"{operation}.{step.Status}.{(step.Verified ? "verified" : "unverified")}.ms.{elapsed}");
         _host.StepCompleted?.Invoke(step);
