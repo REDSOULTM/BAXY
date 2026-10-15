@@ -4,7 +4,7 @@
  "tools": {
   "app.close": "Close one window of an application that is already open, gracefully; never force-kills the process. Use when: the person asks to close an app or its window. Do not use when: closing every window (use window_close_all), force-killing a hung program (use system_process_terminate_named), closing a web page (use browser_control). Examples: «cierra el spotify», «ciérrame la calculadora», «close chrome».",
   "app.installed": "Check whether a normal application is installed on this PC, without opening it; when no installed application has exactly that name, the result gives the closest installed names. Use when: the request is a question about an app being installed. Do not use when: the person wants it opened (use app_open), the target is a game (use game_installed_named), or asks if it is open right now (use window_application_status). Examples: «¿tengo instalado el zoom?», «¿está instalado discord?», «is obs installed?».",
-  "app.open": "Open an application or game launcher by name (Steam, Epic Games, Discord, Spotify, Notepad, Calculator) and verify its window gets focus. Use when: abre/open/inicia an app or launcher. Do not use when: asking if installed (use app_installed or game_installed_named), playing a game (use game_launch), playing music or video (use media_play_query or streaming_play_named), an already open window (use window_focus), a file (use file_open). Examples: «abre steam», «ábreme el discord», «open spotify». Look at the window afterwards to see where it arrived.",
+  "app.open": "Open an application or game launcher by name (Steam, Epic Games, Discord, Spotify, Notepad, Calculator) and verify its window gets focus. Use when: abre/open/inicia an app or launcher. Do not use when: asking if installed (use app_installed or game_installed_named), playing a game (use game_launch), playing music or video (use media_play_query or streaming_play_named), an already open window (use window_focus), a file (use file_open). Examples: «abre steam», «ábreme el discord», «open spotify». Set foreground true so the person sees it, and forControl true; set forControl false only when the person asks to run it as administrator. place opens a section of the app directly, with no clicks: Windows Settings (appId «Configuración») at sound, display, wifi, bluetooth, network, update and the other places listed; Steam at library or store; Discord at directs. placeValue is what to search when the place is a search. Look at the window afterwards to see where it arrived.",
   "audio.app.volume.adjust": "Raise or lower one application's volume (its mixer slider) by an amount from its current level; master volume untouched. Use when: an app is named with sube/baja/más/menos and an amount. Do not use when: an exact target level (use audio_app_volume_set), no app named (use audio_volume_adjust). Examples: «bájale 20 al spotify», «sube el volumen de discord en 10», «turn down chrome by 15».",
   "audio.app.volume.set": "Set one application's volume (its mixer slider) to an exact level 0-100, even while paused; master volume untouched. Use when: an app is named with a target number or percent. Do not use when: raising or lowering by an amount (use audio_app_volume_adjust), no app named (use audio_volume). Examples: «pon el spotify al 30», «discord al 50 por ciento», «set chrome volume to 20».",
   "audio.microphone.mute": "Mute or unmute the default microphone (sound input). Use when: the person mentions the micrófono or mic. Do not use when: muting the speakers or headphones (use audio_mute). Examples: «silencia el micrófono», «activa el micro de nuevo», «mutea el mic».",
@@ -29,7 +29,7 @@
   "browser.navigate.named": "Open a web address in a named browser: Opera, Opera GX, Chrome, Edge or Brave. Use when: the person names one of those browsers as where the page opens. Do not use when: no browser is named (use browser_navigate), only the browser app is wanted with no page (use app_open). Examples: «abre youtube en opera gx», «abre gmail en chrome», «open netflix.com en edge».",
   "browser.page.read": "Read the title, address and visible text of the page in front in the person's own default browser, without touching it. Use when: asking what the current page says or to summarize it. Do not use when: a PDF or text file (use file_read), searching the internet (use web_search), listing tabs (use browser_tabs_list). Examples: «¿qué dice esta página?», «resúmeme la página», «lee la web abierta».",
   "browser.tabs.list": "List the tabs of the person's own default browser (its front window), with title and address. Use when: asking which tabs or pestañas are open. Do not use when: reading one page's text (use browser_page_read), asking which app window is in front (use window_active). Examples: «¿qué pestañas tengo abiertas?», «lista las pestañas», «muéstrame los tabs».",
-  "calculator.expression.evaluate": "Type a simple arithmetic expression into the open Windows Calculator and read the result it displays. Use when: the person asks to compute something in the Calculator. Do not use when: the Calculator should only be opened (use app_open). Examples: «calcula 25 por 4 en la calculadora», «usa la calculadora para 120 entre 3», «súmalo en la calculadora: 15 más 27». Only when the person explicitly asks to use the Calculator app; a plain arithmetic question is answered directly in text, without tools. It must be open and not minimized first (app_open).",
+  "calculator.expression.evaluate": "Type a simple arithmetic expression into the open Windows Calculator and read the result it displays. Use when: the person asks to compute something in the Calculator. Do not use when: the Calculator should only be opened (use app_open). Examples: «calcula 25 por 4 en la calculadora», «usa la calculadora para 120 entre 3», «súmalo en la calculadora: 15 más 27». Only when the person explicitly asks to use the Calculator app; a plain arithmetic question is answered directly in text, without tools. expression: numbers with + - * / only, no parentheses; the Calculator applies each operator in the order typed, so «(12+8)*3» is written «12+8*3» (it shows 60). It must be open and not minimized first (app_open).",
   "calendar.event.create": "Create an event with a title, start time and end time in the person's Outlook calendar, which syncs it to their account; BAXY asks the person first. Use when: agendar a meeting or appointment with a time span. Do not use when: something must ring or remind at a time (use schedule_alarms), a to-do (use task_create). Examples: «agenda una reunión mañana de 3 a 4», «crea un evento el viernes de 10 a 11», «dentista en el calendario el lunes de 9 a 10».",
   "calendar.event.list": "List the calendar events between two dates or times, without changing them. Use when: asking what is on the calendar or agenda: meetings today, the next meeting, who attends. Do not use when: alarms or reminders (use schedule_alarms), tasks (use task_list). Examples: «¿qué tengo en el calendario mañana?», «muéstrame mis eventos de esta semana», «¿tengo reuniones hoy?».",
   "capture.active.window": "Take a screenshot of only the active window; optionally also save it as PNG in a known folder. Use when: the capture is of this window or the current app. Do not use when: the whole desktop (use capture_screenshot), reading or describing the screen (use ocr_read or vision_describe after a capture). Examples: «captura la ventana activa», «sácale foto a esta ventana», «screenshot de esta ventana».",
@@ -73,12 +73,12 @@
   "game.installed.named": "Answer only whether a Steam or Epic game is installed on this PC, by name, without opening it. Use when: the request is a question («¿está instalado X?»). Do not use when: abre/juega/lanza (use game_launch for a game; «abre steam» is app_open), library ownership (use game_entitlement_named), normal apps (use app_installed). Examples: «¿tengo instalado el minecraft?», «¿está instalado el gta v?», «is rocket league installed?». Only for yes/no questions about installation; a request to play or open the game is game_launch.",
   "game.launch": "Launch (play) a Steam game the person owns. Use when: juega, abre or lanza a specific game title. Do not use when: opening Steam, Epic or any normal application (use app_open), only asking whether it is installed (use game_installed_named). Examples: «abre el hollow knight», «quiero jugar terraria», «lanza el cs2». A wish to play a game the person names is a launch, not an installed-check.",
   "game.uninstall.named": "Uninstall an installed Steam game by its title, after confirmation. Use when: desinstala a game. Do not use when: a normal program (use package_uninstall), canceling a download (use game_install_cancel). Examples: «desinstala worms rumble», «borra el dota de steam», «uninstall terraria».",
-  "input.key.press": "Press one key or shortcut in the active window (Enter, Escape, Tab, arrows, Ctrl+S/Z/F/T/W, Alt+Tab, F5, Ctrl+Shift+Esc). Ctrl+W can close the whole window, so BAXY asks the person first. Use when: a key or shortcut is named. Do not use when: typing text (use input_text_type), select all (use input_select_all), copy or paste (use clipboard_copy or clipboard_paste), clicking a button (use input_visible_click). Examples: «presiona enter», «aprieta escape», «dale ctrl z».",
+  "input.key.press": "Press one key or shortcut in the active window (Enter, Escape, Tab, arrows, Ctrl+S/Z/F/T/W, Alt+Tab, F5, Ctrl+Shift+Esc). Ctrl+W can close the whole window, so BAXY asks the person first. Use when: a key or shortcut is named. Do not use when: typing text (use input_text_type), select all (use input_select_all), copy or paste (use clipboard_copy or clipboard_paste), clicking a button (use input_visible_click). Examples: «presiona enter», «aprieta escape», «dale ctrl z». Pass window = the window number from your look at that window, so it acts there (brought to the front and handed back) and not in the window the person has in front.",
   "input.keyboard.layout": "Switch the keyboard input language of the active window to Spanish. Use when: pon el teclado en español. Do not use when: only asking which language it is (use input_keyboard_status), the on-screen keyboard (use input_keyboard_open). Examples: «cambia el teclado a español», «pon el teclado en español», «teclado in spanish please».",
   "input.keyboard.open": "Open the Windows on-screen keyboard. Use when: teclado en pantalla or teclado virtual. Do not use when: changing the keyboard language (use input_keyboard_layout), typing text (use input_text_type). Examples: «abre el teclado en pantalla», «muéstrame el teclado virtual», «open on-screen keyboard».",
   "input.keyboard.status": "Read the input language of the active window's keyboard, without changing it. Use when: en qué idioma está el teclado. Do not use when: changing it (use input_keyboard_layout). Examples: «¿en qué idioma está el teclado?», «¿el teclado está en inglés?», «keyboard layout actual?».",
   "input.pointer.control": "Move the mouse pointer to the screen center, click where it is, or scroll down. Use when: a raw mouse action with no target named. Do not use when: clicking a named button or option (use input_visible_click), scrolling a web page (use browser_control). Examples: «haz clic», «mueve el mouse al centro», «scrollea hacia abajo».",
-  "input.scroll": "Scroll the active window or a named list or panel up or down by an amount. Use when: baja, sube or desplázate in a page, list or document on screen. Do not use when: moving the mouse pointer (use input_pointer_control), clicking a visible option (use input_visible_click). Examples: «baja un poco la página», «sube en la lista», «scroll down».",
+  "input.scroll": "Scroll the active window or a named list or panel up or down by an amount. Use when: baja, sube or desplázate in a page, list or document on screen. Do not use when: moving the mouse pointer (use input_pointer_control), clicking a visible option (use input_visible_click). Examples: «baja un poco la página», «sube en la lista», «scroll down». Pass window = the window number from your look at that window, so it acts there (brought to the front and handed back) and not in the window the person has in front.",
   "input.select.all": "Select everything in the focused control of the active window, like Ctrl+A. Use when: selecciona todo. Do not use when: copying (use clipboard_copy; select and copy are separate steps). Examples: «selecciona todo», «marca todo el texto», «select all».",
   "input.text.type": "Type a given literal text where the cursor is, in the active window. Use when: escribe or tipea a stated text. Do not use when: pasting the clipboard (use clipboard_paste), a chat message to someone (use message_draft), writing a file (use file_write), pressing a key (use input_key_press). Examples: «escribe hola mundo», «tipea buenos días», «escribe mi correo: ana@gmail.com».",
   "input.visible.click": "Click a control or a text you saw in your last look at the window (input_visible_controls), by its label, adding its index when the look gave one. Use when: going to a section, tab or menu of an open app, or pressing a button there. Do not use when: the section is an app_open place (Windows Settings pages, Steam library or store, Discord directs: use app_open with place), you have not looked at the window yet (look first), a raw click where the pointer is (use input_pointer_control), going to a web address (use browser_navigate). Examples: «haz clic en aceptar», «pulsa guardar», «entra a Tu biblioteca» (after looking at Spotify).",
@@ -117,13 +117,13 @@
   "ocr.read": "Read the text that appears in a screenshot already taken (by its capture id). Use when: the text on screen or in a capture is wanted. Do not use when: describing what is seen (use vision_describe), the open web page (use browser_page_read), no capture yet (use capture_screenshot first). Examples: «lee el texto de la captura», «¿qué dice en la pantalla?», «haz OCR de la captura».",
   "office.document.create": "Create a new Office document, Word (.docx) or Excel (.xlsx), with a title. Use when: crea un documento de Word or una planilla Excel. Do not use when: a PowerPoint (use document_presentation_create), a plain text file (use file_write). Examples: «crea un documento de word llamado informe», «haz una planilla excel de gastos», «new word doc tesis».",
   "office.document.read": "Read the content of an already identified Office document. Use when: reading a document created or identified earlier. Do not use when: a PDF or a text file (use file_read). Examples: «lee ese documento», «¿qué dice el word que creaste?», «read that doc».",
-  "package.install": "Install a normal program on the PC with winget and verify it is installed, after confirmation. If the name is not exactly one package, nothing is installed and the result lists the candidates winget gave (name, packageId, source): call again with the packageId of the one the person wants, or ask which. alreadyInstalled true means it was there and nothing ran. winget_install_still_running means the installer started and has not finished: say it is installing, not that it is installed. Use when: instala, descarga e instala or pon a program. Do not use when: uninstalling (use package_uninstall), a Steam or Epic game (use game_install_named), opening it (use app_open). Examples: «instala spotify», «bájame el vlc», «install 7-zip».",
+  "package.install": "Install a normal program on the PC with winget and verify it is installed, after confirmation. packageId is the winget id (Spotify.Spotify) or the program's name as the person said it (spotify, vlc). If the name is not exactly one package, nothing is installed and the result lists the candidates winget gave (name, packageId, source): call again with the packageId of the one the person wants, or ask which. alreadyInstalled true means it was there and nothing ran. winget_install_still_running means the installer started and has not finished: say it is installing, not that it is installed. Use when: instala, descarga e instala or pon a program. Do not use when: uninstalling (use package_uninstall), a Steam or Epic game (use game_install_named), opening it (use app_open). Examples: «instala spotify», «bájame el vlc», «install 7-zip».",
   "package.uninstall": "Uninstall a normal program from the PC by its name and verify it is gone, after confirmation. Use when: desinstala a program. Do not use when: installing (use package_install), a Steam game (use game_uninstall_named), closing it (use app_close). Examples: «desinstala discord», «quita el zoom del pc», «uninstall vlc».",
   "peripheral.list": "List connected peripherals (mouse, keyboard, printer, scanner, USB), optionally of one kind. Use when: qué periféricos hay or is a mouse or printer connected. Do not use when: USB drives and free space (use storage_removable_list), Bluetooth devices (use bluetooth_device_list), monitors (use display_status). Examples: «¿qué periféricos hay conectados?», «¿hay una impresora conectada?», «lista los dispositivos usb».",
   "peripheral.print": "Print an already identified document on a printer. Use when: imprime. Do not use when: listing printers (use peripheral_list). Examples: «imprime ese documento», «mándalo a la impresora», «print it».",
   "peripheral.scan": "Scan a document with a scanner. Use when: escanea. Do not use when: a screenshot (use capture_screenshot), reading text from a capture (use ocr_read). Examples: «escanea este documento», «usa el escáner», «scan a page».",
   "schedule.alarms": "Set, list or cancel BAXY's alarms and reminders, which ring on this PC (Windows Task Scheduler; also on battery and waking it from sleep, not when it is shut down), or check why one did not ring. Use when: an alarm, a timer, a wake-up or a reminder at a time or in some minutes, which ones are set, or cancelling one. Do not use when: a to-do without a time (use task_create), a calendar event (use calendar_event_create), a note (use note_create). Examples: «recuérdame en 20 minutos sacar la ropa» (create, inMinutes 20), «despiértame mañana a las 7» (create, alarm, at 07:00), «qué alarmas tengo» (list), «cancela la alarma de las 7» (cancel, at 07:00).",
-  "shell.command.run": "Run a PowerShell console command and return its output; a command that does more than read (writes, deletes, installs, sends, runs a program) waits for the person's yes. Use when: ejecuta or corre a command. Do not use when: a dedicated operation exists (system_process_list, network_ping, app_open). Examples: «ejecuta ls en el escritorio», «corre pytest en documentos/proyecto», «run git status».",
+  "shell.command.run": "Run a PowerShell console command and return its output; cwd is desktop, documents, downloads or home, optionally with a folder inside it (documents/proyecto), or a full path, and without cwd it runs in a private empty folder; a command that does more than read (writes, deletes, installs, sends, runs a program) waits for the person's yes. Use when: ejecuta or corre a command. Do not use when: a dedicated operation exists (system_process_list, network_ping, app_open). Examples: «ejecuta ls en el escritorio», «corre pytest en documentos/proyecto», «run git status».",
   "software.python.package.status": "Check whether a Python package is installed, and its version, in each registered Python, without installing anything. Use when: tengo X instalado for a Python package. Do not use when: which Python versions exist (use software_python_status), normal apps (use app_installed). Examples: «¿tengo instalado numpy?», «¿qué versión de pandas tengo?», «is requests installed?».",
   "software.python.status": "List the Python versions installed on the PC. Use when: qué python tengo. Do not use when: a Python package (use software_python_package_status). Examples: «¿qué versión de python tengo?», «¿está instalado python?», «python versions?».",
   "storage.removable.list": "List the USB drives and pendrives connected now and their free space. Use when: hay un pendrive or cuánto espacio le queda al USB. Do not use when: the internal disk (use system_status), other peripherals (use peripheral_list). Examples: «¿hay un pendrive conectado?», «¿cuánto espacio le queda al usb?», «lista los discos externos».",
@@ -149,10 +149,10 @@
   "task.search": "Search the tasks whose title or details contain a text. Use when: busca en mis tareas. Do not use when: notes (use note_search), files (use file_find). Examples: «busca tareas sobre la tesis», «¿tengo alguna tarea con banco?», «search tasks informe».",
   "task.update": "Change the title, details or date of a task or a list item. Use when: cambia la fecha or el nombre de la tarea X. Do not use when: marking it done (use task_complete), a note (use note_update). Examples: «cambia la tarea informe para el lunes», «renombra la tarea banco a ir al banco», «update task pan: dos marraquetas».",
   "vision.describe": "Describe what is seen in a screenshot already taken (by its capture id). Use when: qué ves en la pantalla or describe la captura. Do not use when: only the text (use ocr_read), the clickable controls (use input_visible_controls), no capture exists yet (use capture_screenshot first). Examples: «¿qué ves en la captura?», «describe lo que hay en pantalla», «what's on my screen?».",
-  "weather.current": "Read the current weather and tomorrow's forecast, here or in a named place. When several places of comparable size carry the name, or none does, nothing is read and they come back as candidates (name, region, country): ask which one, or call again with the region or country. Use when: clima, qué tiempo hace, temperatura, va a llover, or whether to take an umbrella or a jacket. Do not use when: news (use web_search with source news), the time (use system_time). Examples: «¿cómo está el clima?», «¿va a llover mañana en Santiago?», «weather en Valparaíso».",
+  "weather.current": "Read the current weather and tomorrow's forecast, here or in a named place. location is the place's own name, optionally followed by a comma and its region or country («Valencia, España», «Foster City, California»); only a place named exactly so is read. When several places of comparable size carry the name, or none does, nothing is read and they come back as candidates (name, region, country): ask which one, or call again with the region or country. Use when: clima, qué tiempo hace, temperatura, va a llover, or whether to take an umbrella or a jacket. Do not use when: news (use web_search with source news), the time (use system_time). Examples: «¿cómo está el clima?», «¿va a llover mañana en Santiago?», «weather en Valparaíso».",
   "web.download": "Download a file or image from the internet into a known folder (Downloads by default), by its public web address (url; never this PC or the local network); the address of a web page downloads the image that page announces as its cover. Without an address, find one first with web_search and download a result's url. Use when: descarga or bájame a file or image. Do not use when: a game (use game_install_named), just viewing a page (use browser_navigate). Examples: «descarga la imagen de portada de wikipedia.org al escritorio», «bájame un meme», «download ejemplo.com/manual.pdf».",
   "web.fetch": "Read one public web page (http or https) as plain text: its title, final address and text. A long page comes in pages: when hasMore is true, call it again with offset set to nextOffset to read on; bodyTruncated true means the page was longer than BAXY reads (1.5 MB) and its text stops there. Never call it again with the same url and offset: the same text comes back. Use when: the person gives a link or asks what a page says, or to read a page a web_search result points to. Do not use when: looking something up (use web_search), showing the page to the person (use browser_navigate), saving a file (use web_download). Examples: «léeme esta página https://…», «¿qué dice el primer resultado?», «read https://example.com/news».",
-  "web.search": "Look something up in one public source and return what that source returned, as it gave it. Choose «source»: «web» (default): a web search engine; each result has title, url and snippet. «news»: the news, on a topic or the latest ones when none is named (query: the topic, or «noticias»); each item has title, outlet, url and time. «encyclopedia»: Wikipedia in «language» (es or en, default es); each article has title, url and its opening lines. «currency»: a conversion; «from» and «to» are ISO 4217 codes (USD, EUR, CLP, MXN, ARS…), «amount» the number to convert (default 1); returns the rate, its date and the converted amount. «sports»: a team's match; «team» is the team's name as a sports site writes it (Boca Juniors, Los Angeles Lakers, national sides in English: Spain, Chile), «wants» is next (default) or last; returns that match as the calendar gives it, with the team it found. «places»: sites of a kind in a place; «kind» is the kind of site in English (pharmacy, parking, restaurant, atm), «place» the place with its city and country (Plaza de Armas, Santiago, Chile); returns names, addresses and distances. Results are what the source returned, not checked against the question: judge them yourself, and to read a result's page call web_fetch with its url. Use when: what changes over time or what you are not sure of: news, prices, schedules, results, currency conversions, a team's next or last match, places near me or in a named place. Do not use when: what you know for sure and does not change (definitions, geography, science, well-known history): answer it yourself; weather (use weather_current), opening a site or results page in the browser (use browser_navigate), playing YouTube (use media_play_youtube). Examples: «¿qué pasó hoy en el congreso?» → source news, query «congreso»; «¿cuánto son 100 dólares en pesos chilenos?» → source currency, from USD, to CLP, amount 100; «¿cuándo juega Boca?» → source sports, team «Boca Juniors», wants next; «farmacias cerca de mí» → source places, kind «pharmacy», nearby true; «busca opiniones del iPhone 17» → source web. It only reads information: never use it to buy, order, book, pay or do anything the person asked you to do; if no tool performs that action, say in one sentence that you don't do that.",
+  "web.search": "Look something up in one public source and return what that source returned, as it gave it. Choose «source»: «web» (default): a web search engine; each result has title, url and snippet. «news»: the news, on a topic or the latest ones when none is named (query: the topic, or «noticias»); each item has title, outlet, url and time. «encyclopedia»: Wikipedia in «language» (es or en, default es); each article has title, url and its opening lines. «currency»: a conversion; «from» and «to» are ISO 4217 codes (USD, EUR, CLP, MXN, ARS…), «amount» the number to convert (default 1); returns the rate, its date and the converted amount. «sports»: a team's match; «team» is the team's name as a sports site writes it (Boca Juniors, Los Angeles Lakers, national sides in English: Spain, Chile), «wants» is next (default) or last; returns that match as the calendar gives it, with the team it found. «places»: sites of a kind in a place; «kind» is the kind of site in English (pharmacy, parking, restaurant, atm), «place» the place with its city and country (Plaza de Armas, Santiago, Chile); returns names, addresses and distances. «query» always says what you look for; for web, news and encyclopedia it is the text searched, so write the search words and years as numbers (2026, not this year). «limit»: 1 to 10 results (default 5). «nearby»: true adds this PC's city and country to the query (for places, they are the place, after «place» if you give one); use it only when the person asks for something near them. Results are what the source returned, not checked against the question: judge them yourself, and to read a result's page call web_fetch with its url. Use when: what changes over time or what you are not sure of: news, prices, schedules, results, currency conversions, a team's next or last match, places near me or in a named place. Do not use when: what you know for sure and does not change (definitions, geography, science, well-known history): answer it yourself; weather (use weather_current), opening a site or results page in the browser (use browser_navigate), playing YouTube (use media_play_youtube). Examples: «¿qué pasó hoy en el congreso?» → source news, query «congreso»; «¿cuánto son 100 dólares en pesos chilenos?» → source currency, from USD, to CLP, amount 100; «¿cuándo juega Boca?» → source sports, team «Boca Juniors», wants next; «farmacias cerca de mí» → source places, kind «pharmacy», nearby true; «busca opiniones del iPhone 17» → source web. It only reads information: never use it to buy, order, book, pay or do anything the person asked you to do; if no tool performs that action, say in one sentence that you don't do that.",
   "wifi.connect": "Connect to a saved Wi-Fi network already identified by its profile id. Use when: the network was identified earlier in the conversation. Do not use when: the network is said by name or by place such as casa or trabajo (use wifi_connect_named). Examples: «conéctate a esa red», «sí, conéctate», «connect to it».",
   "wifi.connect.named": "Connect to a saved Wi-Fi network by its name or by its place (casa, trabajo, oficina). Use when: conéctate al wifi X or al de la casa. Do not use when: turning the Wi-Fi radio on (use wifi_radio_set), seeing networks around (use wifi_scan). Examples: «conéctate al wifi de la casa», «conéctate a la red MiCasa5G», «connect al wifi del trabajo».",
   "wifi.disconnect": "Disconnect from the current Wi-Fi network. Use when: desconéctate del wifi. Do not use when: turning the Wi-Fi radio off (use wifi_radio_set). Examples: «desconéctate del wifi», «sal de esta red», «disconnect wifi».",
@@ -165,15 +165,15 @@
   "window.active": "Tell which window or application is in the foreground now. Use when: qué ventana está activa or al frente. Do not use when: whether a named app is open (use window_application_status). Examples: «¿qué ventana tengo activa?», «¿qué programa está al frente?», «what window is this?».",
   "window.application.status": "Check whether a named application is open with a visible window, without opening it. Use when: está abierto X. Do not use when: opening it (use app_open), whether it is installed (use app_installed), which window is in front (use window_active). Examples: «¿está abierto el spotify?», «¿tengo el chrome abierto?», «is discord open?».",
   "window.close.all": "Close all open windows at once (the person's editors and terminals too), except BAXY's own, after the person's yes; never forces, so a window that asks to save stays open. Use when: cierra todo or todas las ventanas. Do not use when: one app (use app_close), only hiding windows to see the desktop (use window_minimize_all). Examples: «cierra todas las ventanas», «cierra todo», «close everything».",
-  "window.focus": "Bring an open window to the front . Use when: cambia a, ve a or trae al frente an open app. Do not use when: the app is not open (use app_open), maximizing (use window_maximize). Examples: «tráeme al frente el chrome», «cambia a la ventana de word», «focus spotify».",
-  "window.maximize": "Maximize an already identified window. Use when: maximiza or agranda la ventana. Do not use when: back to normal size (use window_restore), fullscreen video in the browser (use browser_control). Examples: «maximiza el chrome», «agranda la ventana», «maximize word».",
-  "window.minimize": "Minimize one already identified window, not all. Use when: minimiza X or esta ventana. Do not use when: minimizing everything to show the desktop (use window_minimize_all), closing it (use app_close). Examples: «minimiza el spotify», «minimiza esta ventana», «minimize chrome».",
+  "window.focus": "Bring an open window to the front by the windowId that window_resolve, window_active or app_open returned, or the one the last window action gave back (never windowHandle or another number). Use when: cambia a, ve a or trae al frente an open app. Do not use when: the app is not open (use app_open), maximizing (use window_maximize). Examples: «tráeme al frente el chrome», «cambia a la ventana de word», «focus spotify».",
+  "window.maximize": "Maximize an already identified window. Use when: maximiza or agranda la ventana. Do not use when: back to normal size (use window_restore), fullscreen video in the browser (use browser_control). Examples: «maximiza el chrome», «agranda la ventana», «maximize word». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
+  "window.minimize": "Minimize one already identified window, not all. Use when: minimiza X or esta ventana. Do not use when: minimizing everything to show the desktop (use window_minimize_all), closing it (use app_close). Examples: «minimiza el spotify», «minimiza esta ventana», «minimize chrome». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
   "window.minimize.all": "Minimize all windows to show the desktop, closing nothing. Use when: minimiza todo or muéstrame el escritorio. Do not use when: one window or one named application (use window_minimize), closing all windows (use window_close_all). Examples: «minimiza todo», «muéstrame el escritorio», «minimize all».",
-  "window.move": "Move an already identified window to another position on the screen (x, y). Use when: mueve la ventana a a position. Do not use when: the left or right half (use window_snap), changing its size (use window_resize). Examples: «mueve el chrome arriba a la izquierda», «mueve la ventana a 100, 100», «move notepad a la esquina».",
-  "window.resize": "Resize an already identified window to a given width and height. Use when: cambia el tamaño a N por M. Do not use when: maximizing (use window_maximize), half the screen (use window_snap). Examples: «haz la ventana de 800 por 600», «cambia el tamaño del bloc de notas a 1024x768», «resize chrome to 1280x720».",
+  "window.move": "Move an already identified window to another position on the screen (x, y). Use when: mueve la ventana a a position. Do not use when: the left or right half (use window_snap), changing its size (use window_resize). Examples: «mueve el chrome arriba a la izquierda», «mueve la ventana a 100, 100», «move notepad a la esquina». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
+  "window.resize": "Resize an already identified window to a given width and height. Use when: cambia el tamaño a N por M. Do not use when: maximizing (use window_maximize), half the screen (use window_snap). Examples: «haz la ventana de 800 por 600», «cambia el tamaño del bloc de notas a 1024x768», «resize chrome to 1280x720». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
   "window.resolve": "List the open windows of an application or process, each with its windowId, title, state and whether it is in front. Use when: you need the windowId of an open app's window to focus, maximize, minimize, restore, snap, move or resize it. Do not use when: only whether the app is open (use window_application_status), the window in front (use window_active). Examples: «maximiza el chrome» (resolve chrome, then window_maximize), «pon el bloc de notas a la izquierda», «minimiza spotify».",
-  "window.restore": "Return an already identified minimized or maximized window to its normal size. Use when: restaura or devuelve la ventana a su tamaño. Do not use when: only bringing it to front (use window_focus), maximizing (use window_maximize). Examples: «restaura la ventana del chrome», «vuelve el spotify a tamaño normal», «restore word».",
-  "window.snap": "Place an already identified window on the left or right half of the screen. Use when: pon X a la izquierda or a la derecha. Do not use when: exact coordinates (use window_move), maximizing (use window_maximize). Examples: «pon el chrome a la izquierda», «manda el word a la mitad derecha», «snap spotify right»."
+  "window.restore": "Return an already identified minimized or maximized window to its normal size. Use when: restaura or devuelve la ventana a su tamaño. Do not use when: only bringing it to front (use window_focus), maximizing (use window_maximize). Examples: «restaura la ventana del chrome», «vuelve el spotify a tamaño normal», «restore word». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
+  "window.snap": "Place an already identified window on the left or right half of the screen. Use when: pon X a la izquierda or a la derecha. Do not use when: exact coordinates (use window_move), maximizing (use window_maximize). Examples: «pon el chrome a la izquierda», «manda el word a la mitad derecha», «snap spotify right». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one."
  },
  "arguments": {
   "file.write": {
@@ -216,19 +216,15 @@
    "fileName": "The exact name of the file or folder to delete, with its extension («viejo.txt»); no path: a subfolder goes in subdirectory."
   },
   "filesystem.folder.open": {
-   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
-   "folder": "The known folder to open: desktop, documents, downloads, pictures, or home (the user's folder, also for any other folder of theirs, named in subdirectory)."
+   "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
   },
   "media.control": {
-   "sourceApp": "Only to control a player other than what is playing now: the sourceAppUserModelId media_status gave for it, exactly as it gave it. Leave it out to control what is playing.",
-   "action": "pause, play (resume), toggle (play if paused, pause if playing), stop, next (skip to the next track) or previous."
+   "sourceApp": "Only to control a player other than what is playing now: the sourceAppUserModelId media_status gave for it, exactly as it gave it. Leave it out to control what is playing."
   },
   "input.key.press": {
    "target": "Where the keyboard is: message_composer when the focused field holds a message to someone, so Enter or Space sends it (BAXY then asks the person first); text_field when it is any other text field, so Delete only erases characters (without it, Delete deletes what is selected and BAXY asks first). Leave it out otherwise.",
    "onto": "The exact label, as your last look showed it, of the control Enter or Space presses (the focused button, or the result chosen in a list). A control that sends, joins a call, buys or deletes makes BAXY ask the person first. Leave it out when the key presses no control.",
-   "consequence": "overwrite when the key confirms replacing a file that already exists (Enter on the focused «Sí» of «¿Desea reemplazarlo?»): BAXY asks the person first. Leave it out otherwise.",
-   "key": "The key or shortcut the person named, as one value (enter, escape, ctrl_z, alt_tab); ctrl_l focuses a browser's address bar; ctrl_w may close the window.",
-   "window": "The number after «window» in your last input_visible_controls look at that window, so the key goes there; leave it out to press it in the window in front."
+   "consequence": "overwrite when the key confirms replacing a file that already exists (Enter on the focused «Sí» of «¿Desea reemplazarlo?»): BAXY asks the person first. Leave it out otherwise."
   },
   "input.visible.click": {
    "consequence": "overwrite when the click confirms replacing a file that already exists (the «Sí» of «¿Desea reemplazarlo?»): BAXY asks the person first. Leave it out otherwise.",
@@ -241,18 +237,11 @@
    "window": "The number after «window» in your last input_visible_controls look at that window, so the click acts there; leave it out only for the window in front."
   },
   "memory.recall": {
-   "selector": "With scope exact: the name the memory was saved under (as memory_list shows it). Case, accents and spacing do not matter; a part of the name does not match.",
-   "scope": "exact for one named thing (selector its name); kind for all of one kind (selector fact, preference, rule or context); all for everything (selector null).",
-   "version": "Always 1."
+   "selector": "With scope exact: the name the memory was saved under (as memory_list shows it). Case, accents and spacing do not matter; a part of the name does not match."
   },
   "input.visible.controls": {
    "wanted": "Words of what you look for in that window (a name, a button). The view keeps sixty controls; with these words, up to ten more whose names have one of them as a whole word are added after those. Leave it out for the usual view.",
-   "tail": "true to keep the last entries of a long window (a conversation's newest messages) when the view is cut, instead of the first ones.",
-   "application": "The app to look at, by name («Spotify»), right after opening it or when it is not in front; leave it out for the window just opened or in front.",
-   "includeText": "true to also read the text written on screen (messages, results), besides the controls.",
-   "limit": "How many controls to show, at most (default and maximum 60).",
-   "lines": "true to read the window's written lines with their place, for a chat or document; it implies includeText.",
-   "waitForLabel": "A label the app should show soon (after opening or a click): the look waits up to 24 seconds for it to appear."
+   "tail": "true to keep the last entries of a long window (a conversation's newest messages) when the view is cut, instead of the first ones."
   },
   "web.fetch": {
    "offset": "Where to go on reading the same page: the nextOffset its last result gave (hasMore true). Without it the page starts again from the beginning.",
@@ -263,16 +252,10 @@
    "level": "The level the person wants the volume at, 0 to 100: the number after «a», «al», «en» or «hasta», also with sube or baja."
   },
   "audio.volume.adjust": {
-   "amount": "How much to change it from where it is now: only when the person gave no level to end at («sube 10», «baja 5»).",
-   "direction": "up to raise it (sube, más), down to lower it (baja, menos)."
+   "amount": "How much to change it from where it is now: only when the person gave no level to end at («sube 10», «baja 5»)."
   },
   "app.open": {
-   "place": "A section to open directly, only for an app that declares it: «Configuración» (Windows Settings pages), «Steam» (library, store, community, a game's page, results), «Spotify» (home, search, results) or «Discord» (directs).",
-   "appId": "One name from the installed list below, exactly as written there (Configuración is Windows Settings), the closest to what the person said; another name opens nothing.",
-   "forControl": "true, so BAXY can read and press its window; false only when the person asks to run it as administrator.",
-   "foreground": "true when the person asked to open or see it, so it comes to the front; false only when you open it to work in it behind their window.",
-   "newDocument": "true only when the person wants a new, empty document of the app («un bloc de notas nuevo»): a new window opens, never one they had.",
-   "placeValue": "With place results (Spotify, Steam): the words to search; with Steam place game: the game's Steam number. Leave it out for any other place: a value there opens nothing."
+   "place": "A section to open directly, only for an app that declares it: «Configuración» (Windows Settings pages), «Steam» (library, store, community, a game's page, results), «Spotify» (home, search, results) or «Discord» (directs)."
   },
   "wifi.connect.named": {
    "place": "casa, oficina or trabajo whenever the person said one.",
@@ -291,77 +274,12 @@
    "foreground": "true when the person asked to open it, so they see it in front; leave it out only when you open it to work in it.",
    "name": "The file's name with extension («tarea.docx»), with its subfolders inside folder when said («proyecto/informe.docx»); never a full C:\\ path."
   },
-  "app.close": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number."
-  },
-  "app.installed": {
-   "name": "The application's name as the person said it («zoom», «obs studio»)."
-  },
-  "audio.app.volume.adjust": {
-   "amount": "How much to move it, 1 to 100, as the person said («bájale 20»): counted from its current level, not the level to end at.",
-   "app": "The application's name as the person said it (spotify, discord, chrome); it needs an open audio session (it plays or played sound).",
-   "direction": "up to raise it (sube, más), down to lower it (baja, menos)."
-  },
-  "audio.app.volume.set": {
-   "app": "The application's name as the person said it (spotify, discord, chrome); it needs an open audio session (it plays or played sound).",
-   "level": "The level to end at, 0 to 100: the number after «al» or «a» («pon el spotify al 30»)."
-  },
-  "audio.microphone.mute": {
-   "state": "true mutes the microphone (silencia, mutea); false turns it back on (activa, quita el mute)."
-  },
-  "audio.mute": {
-   "state": "true mutes the PC sound; false unmutes it (quítale el mute, activa el sonido)."
-  },
-  "backup.create": {
-   "expectedSha256": "The sha256 filesystem_read_text gave for that same resourceId (filesystem_list gives none); a file changed since is refused.",
-   "resourceId": "The resourceId filesystem_list or filesystem_search gave for that file in BAXY's work folder; the person's folders have none."
-  },
-  "backup.known.create": {
-   "folder": "The folder to back up: desktop, documents, pictures, projects (Documents\\Projects or the user's Projects), or all_known for documents, pictures and desktop together."
-  },
-  "backup.known.list": {
-   "limit": "How many backups to list, at most (default 20); leave it out unless the person asked for a number."
-  },
-  "backup.known.restore.latest": {
-   "folder": "The folder whose latest ZIP backup to restore: desktop, documents, pictures or projects; all_known takes the latest backup of any of them."
-  },
-  "backup.known.verify.latest": {
-   "folder": "The folder whose latest ZIP backup to check: desktop, documents, pictures or projects; all_known checks the latest backup of any of them."
-  },
-  "backup.list": {
-   "limit": "How many file backups to list, newest first (default 20); leave it out unless the person asked for a number."
-  },
-  "backup.restore": {
-   "backupId": "The backupId backup_list or backup_create gave (backup_ and 32 hex characters); never a file name.",
-   "destinationRelativePath": "A new path inside BAXY's work folder, with the file name («restaurados/informe.txt»); an existing file or folder there is refused."
-  },
-  "backup.verify": {
-   "backupId": "The backupId backup_list or backup_create gave (backup_ and 32 hex characters); never a file name."
-  },
-  "bluetooth.device.pair": {
-   "deviceId": "The deviceId bluetooth_device_list gave for that device; when it says the id expired, list again. Never the device's name."
-  },
-  "bluetooth.radio.set": {
-   "state": "true turns Bluetooth on (prende, activa); false turns it off (apaga, desactiva)."
-  },
-  "browser.control": {
-   "action": "back (previous page), reload, scroll_down or scroll_up (move the page), new_tab, fullscreen_video (the video playing), close (this tab), close_all (every tab of that window)."
-  },
   "browser.navigate": {
    "url": "The full address with https:// («https://youtube.com»); to search there, the engine's results address («https://www.google.com/search?q=…»). A bare «youtube.com» is refused."
   },
   "browser.navigate.named": {
    "browser": "The browser the person named: opera, opera_gx (Opera GX), chrome, edge or brave.",
    "url": "The full address with https:// («https://gmail.com»); a bare «gmail.com» is refused."
-  },
-  "browser.page.read": {
-   "maximumCharacters": "How much page text to read, 256 to 32768 (default 12000); leave it out unless more of a long page is needed."
-  },
-  "browser.tabs.list": {
-   "limit": "How many tabs to list, at most (default 20); leave it out unless the person asked for a number."
-  },
-  "calculator.expression.evaluate": {
-   "expression": "Numbers with + - * / only, no parentheses; the Calculator applies each operator in the order typed, so «(12+8)*3» is written «12+8*3»."
   },
   "calendar.event.create": {
    "endUtc": "When it ends, in UTC ending in Z («2026-10-16T19:00:00Z»): the person's local time moved by the clock line's UTC offset; after startUtc.",
@@ -372,121 +290,16 @@
    "endUtc": "The end of the span, in UTC ending in Z: local time moved by the clock line's UTC offset; after startUtc, at most 366 days later.",
    "startUtc": "The start of the span, in UTC ending in Z («2026-10-16T03:00:00Z» is local midnight at UTC-3): local time moved by the clock line's offset."
   },
-  "capture.active.window": {
-   "folder": "Only when the person asks to keep the capture: desktop, documents, downloads, or pictures (its Screenshots subfolder) gets a PNG. Leave it out to only capture."
-  },
-  "capture.screenshot": {
-   "folder": "Only when the person asks to keep the capture: desktop, documents, downloads, or pictures (its Screenshots subfolder) gets a PNG. Leave it out to only capture."
-  },
-  "client.channel.locate": {
-   "name": "The channel or chat name as the person said it («general», «memes»); only a row named exactly so counts as found."
-  },
-  "clipboard.read.text": {
-   "maxCharacters": "How many characters to read at most (default 8192); leave it out unless a longer clipboard must be read whole."
-  },
-  "clipboard.write.text": {
-   "text": "Exactly the text the person dictated to put there, without «copia al portapapeles» or the quotes around it."
-  },
-  "desktop.wallpaper.set": {
-   "color": "A solid colour as #RRGGBB («#004E98» blue, «#000000» black): turn the colour the person named into it; a name like «azul» is refused. Leave it out for an image.",
-   "folder": "With name, for an image: desktop, documents, downloads or pictures, where the image is. Leave it out for a colour.",
-   "name": "With folder: the image's file name with extension, directly in that folder («playa.jpg»), no subfolders. Leave it out for a colour."
-  },
-  "document.presentation.create": {
-   "folder": "Where to save the .pptx: desktop, documents or downloads, as the person said; without it, Documents.",
-   "slides": "One string per slide, as many as asked (up to 12): its title on the first line, then up to 8 bullet lines, separated by \\n.",
-   "title": "The presentation's title; it is also the file name (an existing one gets « (2)»)."
-  },
-  "email.latest.reply": {
-   "text": "The reply's text as the person dictated it («llego tarde»), without «respóndele que»."
-  },
-  "email.send": {
-   "subject": "The subject only when the person gives one; leave it out otherwise (the start of the text is used).",
-   "text": "The email's body as the person dictated it, without «manda un correo a…».",
-   "to": "The recipient's email address exactly as the person said it («juan@gmail.com»)."
-  },
-  "file.compress": {
-   "folder": "The known folder holding the file or folder to zip: desktop, documents, downloads or pictures.",
-   "name": "The exact name of the file (with extension) or folder directly in that folder, no subfolders; the zip goes next to it and must not exist yet."
-  },
-  "filesystem.copy": {
-   "destinationRelativePath": "The new path inside BAXY's work folder, with the file name («respaldo/notas.txt»); an existing file or folder there is refused.",
-   "expectedSha256": "The sha256 filesystem_read_text gave for that same resourceId (filesystem_list gives none); a file changed since is refused.",
-   "resourceId": "The resourceId filesystem_list or filesystem_search gave for that file in BAXY's work folder; the person's folders have none."
-  },
-  "filesystem.explorer.count": {
-   "extension": "The extension to count, with or without the dot: «py», «.pdf», «jpg».",
-   "folder": "The known folder the person named: desktop, documents, downloads, home or pictures. Leave it out only for «esta carpeta» (the File Explorer window in front)."
-  },
-  "filesystem.file.open.latest": {
-   "folder": "The known folder to take the newest file from: downloads for «lo último que descargué», otherwise desktop, documents or pictures as said."
-  },
-  "filesystem.known.duplicates": {
-   "limit": "How many groups of duplicates to return, at most (default 20); leave it out unless the person asked for a number."
-  },
   "filesystem.list": {
    "limit": "How many entries to list, at most (default 50).",
    "relativeDirectory": "A folder inside BAXY's work folder to list («respaldo»); leave it out for its top level."
-  },
-  "filesystem.move": {
-   "destinationRelativePath": "The new path inside BAXY's work folder, with the file name («respaldo/notas.txt»); an existing file or folder there is refused.",
-   "expectedSha256": "The sha256 filesystem_read_text gave for that same resourceId (filesystem_list gives none); a file changed since is refused.",
-   "resourceId": "The resourceId filesystem_list or filesystem_search gave for that file in BAXY's work folder; the person's folders have none."
-  },
-  "filesystem.read.text": {
-   "maximumBytes": "Leave it out (reads up to 1 MB); a file larger than this is refused, not cut.",
-   "resourceId": "The resourceId filesystem_list or filesystem_search gave for that file."
-  },
-  "filesystem.sandbox.diff.named": {
-   "leftFileName": "The first file's exact name in BAXY's work folder, with extension («version1.txt»).",
-   "rightFileName": "The second file's exact name in BAXY's work folder, with extension («version2.txt»)."
-  },
-  "filesystem.sandbox.move.named": {
-   "destinationRelativePath": "Where it goes inside BAXY's work folder, with the file name («viejos/notas.txt»); an existing file or folder there is refused.",
-   "sourceFileName": "The file's exact name in BAXY's work folder, with extension («informe.txt»); it must be the only file so named there."
-  },
-  "filesystem.search": {
-   "limit": "How many matches to return, at most (default 50).",
-   "query": "Part of the file name to find in BAXY's work folder («informe»); no path."
-  },
-  "game.catalog.list": {
-   "limit": "How many games to list, at most (default 50).",
-   "query": "Words of a game's name to filter by («counter»); leave it out to list the whole library."
-  },
-  "game.entitlement.named": {
-   "store": "epic when the person names Epic Games; leave it out for Steam.",
-   "title": "The game's title as the person said it («hollow knight», «portal 2»)."
-  },
-  "game.install.cancel": {
-   "appId": "The game's Steam AppID number, as game_install_named, game_install_status or game_catalog_list gave it; never the title."
   },
   "game.install.named": {
    "store": "epic when the person names Epic Games; leave it out for Steam.",
    "title": "The game's title as the person said it («fall guys», «terraria»)."
   },
-  "game.install.status": {
-   "appId": "The game's Steam AppID number, as game_install_named, game_install_status or game_catalog_list gave it; never the title."
-  },
-  "game.installed.named": {
-   "provider": "steam or epic when the person names that store; any to check both.",
-   "title": "The game's title as the person said it («minecraft», «gta v»)."
-  },
   "game.launch": {
    "appId": "The appId of one game in the library list below: the title closest to what the person said, even misheard; never an invented number."
-  },
-  "game.uninstall.named": {
-   "store": "Leave it out (Steam); epic is refused: BAXY does not uninstall Epic games.",
-   "title": "The installed game's title as the person said it («worms rumble»)."
-  },
-  "input.pointer.control": {
-   "action": "move_center (pointer to the screen's center), click (where the pointer already is), scroll_down (wheel down)."
-  },
-  "input.scroll": {
-   "amount": "How many wheel steps, 1 to 10; «un poco» is about 3.",
-   "direction": "down or up, as the person said (baja, sube).",
-   "index": "The [number] of the list or panel to scroll in your last look; leave it out to scroll the window itself.",
-   "label": "The name of an element of that window that is out of view, to bring it into view without the wheel; needs window.",
-   "window": "The number after «window» in your last input_visible_controls look at that window, so it scrolls there; leave it out to scroll the window in front."
   },
   "input.text.type": {
    "entry": "true when text is an entry of the field's own drop-down list (a ComboBox) to choose; needs index and window. Nothing is typed freely then.",
@@ -494,18 +307,6 @@
    "replace": "true to replace what the field holds instead of adding to it; needs index, never for a document or a password.",
    "text": "Exactly the text to type, without line breaks or tabs: press Enter or Tab with input_key_press.",
    "window": "The number after «window» in your last input_visible_controls look at that window, so the text goes there; leave it out to type where the cursor is."
-  },
-  "media.play.exact": {
-   "title": "The song's exact title as the person said it, without the artist («Bohemian Rhapsody»)."
-  },
-  "media.play.query": {
-   "query": "What to search, as the person said it: an artist, song, podcast or style («bad bunny», «rock», «lofi»), even when it sounds misheard."
-  },
-  "media.play.youtube": {
-   "query": "The search words for the video, as the person said them («video de gatos», «tráiler de dune»)."
-  },
-  "media.seek.relative": {
-   "seconds": "Seconds to move: positive to skip forward (adelanta), negative to go back (retrocede); one minute is 60."
   },
   "memory.correct": {
    "expectedValue": "Leave it out; only to change it if it still is the value memory_recall showed: that current value.",
@@ -515,23 +316,9 @@
    "value": "The new value the person gave («verde», «Toby»).",
    "version": "Always 1."
   },
-  "memory.disable": {
-   "version": "Always 1."
-  },
-  "memory.enable": {
-   "version": "Always 1."
-  },
-  "memory.export": {
-   "version": "Always 1."
-  },
   "memory.forget": {
    "scope": "exact: one memory (selector its name); topic: those whose name or tag is selector; kind: all of one kind (fact, preference, rule, context); all: everything (selector null).",
    "selector": "What scope needs: the memory's name, the topic word or the kind; null with scope all.",
-   "version": "Always 1."
-  },
-  "memory.list": {
-   "limit": "How many to list: 20 unless the person asked for more (1 to 100).",
-   "offset": "0 for the first page; to go on, the previous offset plus limit.",
    "version": "Always 1."
   },
   "memory.save": {
@@ -544,66 +331,10 @@
    "version": "Always 1.",
    "sensitivity": "normal, or personal for data about the person's private life (family, address, birthday); only a label: both are shown when recalled."
   },
-  "memory.sensitive.save": {
-   "expiryPolicy": "Leave it out with retention persistent; session_end with session; after_relevance_window with temporary. Any other pairing is refused.",
-   "kind": "fact (a datum), preference (how the person likes things), rule (how BAXY must behave), context (their current situation).",
-   "retention": "persistent to remember for good (the usual); session only for this conversation; temporary for 24 hours.",
-   "selector": "A short name for what is remembered, in the person's words («color favorito», «nombre del perro»): the name it is recalled by later.",
-   "tags": "One-word topics for it («perro», «trabajo»), so memory_forget with scope topic finds it; [] when none.",
-   "value": "The datum itself («azul», «Toby», 42, true), without its name.",
-   "version": "Always 1.",
-   "sensitivity": "secret for keys and passwords, sensitive for health data or ID numbers; either way recall shows it hidden, never the value."
-  },
-  "memory.session.clear": {
-   "selector": "Always null.",
-   "version": "Always 1."
-  },
-  "memory.status": {
-   "version": "Always 1."
-  },
   "message.draft": {
    "channel": "whatsapp or discord, as the person said (wsp and wasap are whatsapp).",
    "recipient": "The contact's name exactly as the person said it (a name or a family word: «mamá»); never a phone number.",
    "text": "Only the message to leave written, as the person dictated it («llego a las 8»), without «dile que»."
-  },
-  "message.send.test": {
-   "channel": "whatsapp, discord or email: the channel the test is asked on.",
-   "requestedRecipient": "Who the person named as recipient, only recorded: the test always goes to the owner's test channel. «prueba» when they named nobody.",
-   "text": "The test message's text as dictated; «mensaje de prueba» when none was given."
-  },
-  "network.ping": {
-   "host": "The host name or IP address as said («google.com», «8.8.8.8»), without http:// or a path."
-  },
-  "network.port.list": {
-   "limit": "How many ports to list, at most (default 50)."
-  },
-  "note.create": {
-   "content": "The note's text as the person dictated it («comprar pan»).",
-   "title": "A short title: the one the person gave, or a few words of the content when they gave none."
-  },
-  "note.list": {
-   "limit": "How many notes to list (default 50, up to 100).",
-   "offset": "0 for the first page; to go on, the nextOffset the last note_list gave.",
-   "scope": "active (the default), trashed for deleted notes («borradas»), all for both."
-  },
-  "note.restore": {
-   "expectedIsTrashed": "Leave it out.",
-   "expectedRevision": "Leave it out.",
-   "expectedTitle": "Leave it out.",
-   "noteId": "Leave it out and give title; only when a title matched several notes, the noteId of the one meant among the candidates.",
-   "title": "The deleted note's title as the person said it."
-  },
-  "note.search": {
-   "includeTrashed": "true to also search deleted notes; leave it out otherwise.",
-   "limit": "How many notes to return, at most (default 20).",
-   "query": "The word or text to find inside the notes («tesis», «teléfono de Juan»)."
-  },
-  "note.trash": {
-   "expectedIsTrashed": "Leave it out.",
-   "expectedRevision": "Leave it out.",
-   "expectedTitle": "Leave it out.",
-   "noteId": "Leave it out and give title; only when a title matched several notes, the noteId of the one meant among the candidates.",
-   "title": "The note's title as the person said it."
   },
   "note.update": {
    "content": "The note's whole content after the change; to keep it, the content note_read gave. It replaces what was there.",
@@ -611,34 +342,6 @@
    "expectedTitle": "The note's current title, exactly as note_read gave it.",
    "noteId": "The noteId note_read gave for this note.",
    "title": "The note's title after the change: the new one when renaming, otherwise its current title unchanged."
-  },
-  "ocr.read": {
-   "captureId": "The captureId capture_screenshot or capture_active_window gave.",
-   "language": "Leave it out (the PC's own languages); only a language tag such as «en-US» when the text is in another language."
-  },
-  "office.document.create": {
-   "format": "docx for Word (documento), xlsx for Excel (planilla, hoja de cálculo).",
-   "title": "The document's title as the person said it («informe», «gastos»)."
-  },
-  "office.document.read": {
-   "documentId": "The documentId office_document_create gave."
-  },
-  "package.install": {
-   "packageId": "The winget id («Spotify.Spotify») or the program's name as the person said it («spotify», «vlc»); after candidates, the packageId of the one wanted.",
-   "version": "Leave it out (the latest); only an exact version the person named."
-  },
-  "package.uninstall": {
-   "packageId": "The program's name as the person said it («discord») or its winget id; after candidates, the packageId of the one wanted."
-  },
-  "peripheral.list": {
-   "kind": "Only the kind asked about: mouse, keyboard, printer, scanner or usb; leave it out (all) otherwise."
-  },
-  "peripheral.print": {
-   "deviceId": "The deviceId peripheral_list (kind printer) gave for the printer.",
-   "documentId": "The documentId office_document_create gave for the document."
-  },
-  "peripheral.scan": {
-   "deviceId": "The deviceId peripheral_list (kind scanner) gave for the scanner."
   },
   "schedule.alarms": {
    "action": "create a new one, list the ones set, cancel one, or diagnose why one did not ring.",
@@ -650,83 +353,10 @@
    "recurrence": "daily or hourly only when the person says it repeats («todos los días», «cada hora»); leave it out for once.",
    "title": "Required with create: what it is for, as the person said it («sacar la ropa», «despertar»)."
   },
-  "shell.command.run": {
-   "command": "One PowerShell command line exactly as asked («git status», «ls»); no line breaks.",
-   "cwd": "Where to run it: desktop, documents, downloads or home, optionally with a subfolder («documents/proyecto»), or a full path. Leave it out only when the person named no folder."
-  },
-  "software.python.package.status": {
-   "package": "The package's pip name as the person said it («numpy», «requests»)."
-  },
-  "streaming.navigate": {
-   "resourceUri": "The full https:// address of the content on that service's own site («https://www.netflix.com/watch/123»); another site is refused.",
-   "service": "The service the address belongs to: netflix, hbo_max, prime_video or youtube."
-  },
-  "streaming.play.named": {
-   "service": "netflix, disney_plus (Disney+) or hbo_max (HBO Max), as the person said.",
-   "title": "The movie or series title as the service names it («Stranger Things», «Moana»)."
-  },
-  "system.application.crash.diagnose": {
-   "hours": "How far back to look, in hours (default 24, up to 168 for a week).",
-   "limit": "How many events to return, at most (default 20)."
-  },
-  "system.power": {
-   "action": "lock (bloquea), signout (cierra sesión), sleep (suspende), shutdown (apaga), restart (reinicia): only the one the person said."
-  },
-  "system.process.list": {
-   "limit": "How many processes to list (default 10, up to 50).",
-   "sort": "cpu for what uses most processor, memory for most RAM, name for alphabetical order."
-  },
-  "system.process.terminate.named": {
-   "name": "The program's executable name («chrome», «spotify.exe»), not its window title."
-  },
-  "system.settings.adjust": {
-   "amount": "How many points to move the brightness, 1 to 100, as the person said («sube el brillo 20»).",
-   "direction": "up to raise it (sube), down to lower it (baja)."
-  },
-  "system.settings.set": {
-   "setting": "brightness, do_not_disturb (no molestar), airplane_mode (modo avión), accessible_mode (BAXY's accessible interface), confirmation_bypass (BAXY's no-confirmation mode; can only be turned off).",
-   "value": "For brightness the level 0 to 100; for the others 1 turns it on and 0 off (confirmation_bypass takes only 0)."
-  },
-  "system.settings.status": {
-   "setting": "brightness for the screen's level, airplane_mode for whether airplane mode is on."
-  },
-  "system.status": {
-   "scope": "What to read: battery, cpu, memory (RAM), cpu_memory, disk, gpu_identity (which graphics card), gpu_usage (its load), os (Windows), os_memory, or summary (all, the default)."
-  },
-  "system.time": {
-   "place": "The city, country or time zone the person named («Tokio», «Madrid»); leave it out for the time here."
-  },
-  "task.complete": {
-   "expectedVersion": "The task's version from the latest task_list or task_search result for it.",
-   "taskId": "The taskId task_list or task_search gave for that task."
-  },
-  "task.create": {
-   "details": "Extra details the person gave beyond the title; leave it out when none.",
-   "due": "Only when the person gives a date: their local date, or date and time (YYYY-MM-DDTHH:mm), not UTC; it rings nothing.",
-   "title": "The to-do or list item as the person said it («leche», «llamar al banco»)."
-  },
   "task.delete": {
    "expectedVersion": "The task's version from the latest task_list or task_search result for it.",
    "taskId": "The taskId task_list or task_search gave for that task.",
    "reviewLabel": "The task's title exactly as task_list or task_search gave it; another text deletes nothing."
-  },
-  "task.list": {
-   "includeDeleted": "true to also show deleted tasks (needed to restore one); leave it out otherwise.",
-   "limit": "How many tasks to list, at most (default 20).",
-   "status": "open (the default) for pending ones, completed for done ones, all for both."
-  },
-  "task.reopen": {
-   "expectedVersion": "The task's version from the latest task_list or task_search result for it.",
-   "taskId": "The taskId task_list (status completed) or task_search gave for that task."
-  },
-  "task.restore": {
-   "expectedVersion": "The task's version from the latest task_list or task_search result for it.",
-   "taskId": "The taskId task_list with includeDeleted true gave for the deleted task."
-  },
-  "task.search": {
-   "limit": "How many tasks to return, at most (default 20).",
-   "query": "The word or text to find in the tasks' titles and details («banco», «tesis»).",
-   "status": "all (the default), open for pending ones, completed for done ones."
   },
   "task.update": {
    "details": "The task's details after the change, replacing the current ones; empty when it has none.",
@@ -735,74 +365,10 @@
    "taskId": "The taskId task_list or task_search gave for that task.",
    "title": "The task's title after the change: the new one when renaming, otherwise its current title from task_list."
   },
-  "vision.describe": {
-   "captureId": "The captureId capture_screenshot or capture_active_window gave.",
-   "prompt": "Leave it out for a plain description; only the person's own question about the image («¿qué dice el error?»)."
-  },
-  "weather.current": {
-   "dialectCountry": "The country the person's Spanish marks (CL, AR, MX, ES, CO, VE): among same-named places of similar size it picks that country's. Leave it out otherwise.",
-   "location": "The place's own name, optionally «, region or country» («Valencia, España»); leave it out for where this PC is."
-  },
   "web.download": {
    "folder": "Where to save it: desktop, documents, downloads or pictures, as the person said; without it, Downloads.",
    "name": "Leave it out to keep the file's own name; only a name the person gave («meme.jpg»). An existing name gets « (2)», never overwritten.",
    "url": "The file's or page's full public address, as said or from a web_search result; a page gives the image it announces as its cover."
-  },
-  "web.search": {
-   "amount": "With source currency: the number to convert («100 dólares» is 100); leave it out for 1.",
-   "from": "With source currency: the ISO 4217 code to convert from (USD, EUR, CLP, MXN, ARS).",
-   "kind": "With source places: the kind of site, in English («pharmacy», «parking», «restaurant», «atm»).",
-   "language": "With encyclopedia or news: es (the default) or en, the Wikipedia or news edition.",
-   "limit": "How many results, 1 to 10 (default 5).",
-   "nearby": "true only when the person asks for something near them: this PC's city and country are added (for places, they are the place).",
-   "place": "With source places: the place with its city and country («Plaza de Armas, Santiago, Chile»); leave it out with nearby.",
-   "query": "What you look for; for web, news and encyclopedia, the words searched, with years as numbers («2026», not «este año»).",
-   "source": "web (default, a search engine), news (events), encyclopedia (Wikipedia), currency (a conversion), sports (a team's match), places (sites of a kind in a place).",
-   "team": "With source sports: the team's name as sports sites write it («Boca Juniors»; national sides in English: «Spain»).",
-   "to": "With source currency: the ISO 4217 code to convert to.",
-   "wants": "With source sports: next (the default) for the coming match, last for the one played."
-  },
-  "wifi.connect": {
-   "profileId": "The profileId wifi_profile_list or wifi_status gave for that network; never the network's name."
-  },
-  "wifi.radio.set": {
-   "state": "true turns Wi-Fi on (prende); false turns it off (apaga)."
-  },
-  "window.application.status": {
-   "name": "The application's name as the person said it («spotify», «chrome»)."
-  },
-  "window.focus": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number."
-  },
-  "window.maximize": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number."
-  },
-  "window.minimize": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number."
-  },
-  "window.move": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number.",
-   "x": "Pixels from the desktop's left edge to the window's left side (0 is the far left).",
-   "y": "Pixels from the desktop's top edge to the window's top side (0 is the top)."
-  },
-  "window.resize": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number.",
-   "height": "The new height in pixels («800 por 600»: 600).",
-   "width": "The new width in pixels («800 por 600»: 800)."
-  },
-  "window.resolve": {
-   "applicationName": "The installed app's exact name («Google Chrome», «Spotify») to list its windows; then leave process, byTitle and offset out.",
-   "byTitle": "With process only: true when process holds words of a window title instead of a program name.",
-   "limit": "How many windows to list (default 20, up to 50).",
-   "offset": "With process only: the nextOffset of the last page, to go on; leave it out for the first page.",
-   "process": "Instead of applicationName: a program name («chrome»), or * for every window; with byTitle true, words of the window title."
-  },
-  "window.restore": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number."
-  },
-  "window.snap": {
-   "windowId": "The windowId that window_resolve, window_active or app_open returned, or the fresh one the last window action gave back; never windowHandle or another number.",
-   "side": "left or right half of the screen, as the person said."
   }
  }
 }
