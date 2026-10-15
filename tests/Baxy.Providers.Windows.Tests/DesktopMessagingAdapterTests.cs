@@ -86,6 +86,14 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // C4: a delivery read says whether it matched exactly or only with the OCR tolerance.
+    [TestCase("Tú: hola test 15:32", "hola test", "exact")]
+    [TestCase("Holatest 15:32", "hola test", "tolerant")]
+    [TestCase("probanda", "probando", "tolerant")]
+    [TestCase("otra cosa", "probando", null)]
+    public void ADeliveryReadSaysHowItMatched(string observed, string expected, string? match) =>
+        Assert.That(WindowsDesktopMessagingAutomation.TextMatch(observed, expected), Is.EqualTo(match));
+
     // G1 (2026-10-11): the typed draft is read only once the composer band's
     // content changed; a blinking caret (one or two columns) is not a change, so
     // it never starts an OCR pass that holds the CPU the client needs to draw.
@@ -168,7 +176,7 @@ public sealed class DesktopMessagingAdapterTests
     {
         var automation = new StubAutomation(
             new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Discord | @CbaYeah"),
-            new DesktopMessageObservation(true, true, "evidence_hash", null));
+            new DesktopMessageObservation(true, true, "evidence_hash", null, "Holatest 15:32", "tolerant"));
         using var adapter = new DesktopMessagingAdapter(automation);
 
         ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
@@ -193,6 +201,9 @@ public sealed class DesktopMessagingAdapterTests
             Assert.That(sent.EffectObserved, Is.True);
             Assert.That(sent.Result?.GetProperty("delivery").GetString(),
                 Is.EqualTo("visible_postcondition"));
+            // C4: the text read and how it matched travel with the receipt.
+            Assert.That(sent.Result?.GetProperty("deliveryRead").GetString(), Is.EqualTo("Holatest 15:32"));
+            Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("tolerant"));
             Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
             Assert.That(automation.SentText, Is.EqualTo("Hola"));
         });

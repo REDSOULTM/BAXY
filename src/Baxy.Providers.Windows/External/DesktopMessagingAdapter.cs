@@ -199,7 +199,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("displayName", recipient.Shown),
                 ("contentSha256", Convert.ToHexStringLower(SHA256.HashData(
                     Encoding.UTF8.GetBytes(text)))),
-                ("delivery", "visible_postcondition")));
+                ("delivery", "visible_postcondition"),
+                ("deliveryRead", observation.Read),
+                ("deliveryMatch", observation.Match)));
     }
 
     private async ValueTask<ExternalCapabilityReceipt> DraftAsync(
@@ -264,6 +266,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("sent", false),
                 ("clientOpened", client.Opened),
                 ("evidenceHash", draft.EvidenceHash),
+                ("draftRead", draft.Read),
+                ("draftMatch", draft.Match),
                 ("authority", "desktop_client_composer_ocr_postread")));
     }
 
@@ -341,6 +345,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("sent", true),
                 ("clientOpened", client.Opened),
                 ("evidenceHash", sent.EvidenceHash),
+                ("deliveryRead", sent.Read),
+                ("deliveryMatch", sent.Match),
                 ("authority", "desktop_client_send_ocr_postread")));
     }
 
@@ -448,16 +454,19 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 observation.Shown is null ? null : JsonObject(("version", 1), ("observed", observation.Shown)),
                 observation.ErrorCode ?? "recipient_identity_not_verified");
 
-    private static JsonElement JsonObject(params (string Name, object Value)[] values)
+    private static JsonElement JsonObject(params (string Name, object? Value)[] values)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
             writer.WriteStartObject();
-            foreach ((string name, object value) in values)
+            foreach ((string name, object? value) in values)
             {
                 switch (value)
                 {
+                    case null:
+                        writer.WriteNull(name);
+                        break;
                     case string text:
                         writer.WriteString(name, text);
                         break;
@@ -509,11 +518,14 @@ internal sealed record DesktopRecipientObservation(
     string? ErrorCode,
     string? Shown = null);
 
+// Read and Match (C4): the text read where the message was looked for, and «exact» or «tolerant» (TextMatch).
 internal sealed record DesktopMessageObservation(
     bool Verified,
     bool EffectObserved,
     string EvidenceHash,
-    string? ErrorCode);
+    string? ErrorCode,
+    string? Read = null,
+    string? Match = null);
 
 // D59 §1 (owner, 2026-10-02): WhatsApp and Discord are installed and signed in on
 // this PC, so a message request that finds the client closed opens it first.
@@ -998,9 +1010,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // The bubble's small text takes the same one-letter OCR noise as the
         // header title («probanda» for «probando»), so the tolerant word match
         // applies here too; the band changed and the header still names the
-        // destination, which no other chat's text can satisfy at once.
-        bool visible = ContainsPhrase(afterText, text) || DeliveryMatches(afterText, text);
-        if (!visible)
+        // destination, which no other chat's text can satisfy at once. C4: the
+        // receipt says the text read and whether it matched exactly or tolerantly.
+        string deliveryRead = afterText;
+        string? match = TextMatch(afterText, text);
+        if (match is null)
         {
             // A long message's bubble is wider than the narrow right-end band
             // (MSGCLAR1851: «prueba 1 de WhatsApp, ya funciona de nuevo» sent and
@@ -1013,9 +1027,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 byte[] wider = CaptureRegion(
                     recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, bandWidth);
                 string widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
-                if (ContainsPhrase(widerText, text) || DeliveryMatches(widerText, text))
+                match = TextMatch(widerText, text);
+                if (match is not null)
                 {
-                    visible = true;
+                    deliveryRead = widerText;
                     afterHash = Convert.ToHexStringLower(SHA256.HashData(wider));
                     break;
                 }
@@ -1027,11 +1042,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             recipient.Channel,
             recipient.Name,
             cancellationToken).ConfigureAwait(false) is not null;
+        bool delivered = changed && match is not null && stillTarget;
         return new(
-            changed && visible && stillTarget,
+            delivered,
             true,
             afterHash,
-            changed && visible && stillTarget ? null : "message_delivery_not_verified");
+            delivered ? null : "message_delivery_not_verified",
+            deliveryRead.Trim(),
+            match);
     }
 
     public async ValueTask<DesktopMessageObservation> DraftAsync(
@@ -1106,7 +1124,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             true,
             true,
             Convert.ToHexStringLower(SHA256.HashData(draftObservation.Bitmap)),
-            null);
+            null,
+            draftObservation.Read,
+            draftObservation.Match);
     }
 
     // Typed text reaches a busy client's composer late: during a turn on the
@@ -1137,16 +1157,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             {
                 read = bitmap;
                 string observed = await ReadTextAsync(bitmap, cancellationToken).ConfigureAwait(false);
-                if (ContainsPhrase(observed, text) || DeliveryMatches(observed, text))
+                if (TextMatch(observed, text) is { } match)
                 {
-                    return new(bitmap, true);
+                    return new(bitmap, true, observed.Trim(), match);
                 }
             }
 
             if (expired)
             {
                 await AuditUnverifiedDraftAsync(before, bitmap, cancellationToken).ConfigureAwait(false);
-                return new(bitmap, false);
+                return new(bitmap, false, null, null);
             }
 
             previous = bitmap;
@@ -1269,6 +1289,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
         return false;
     }
+
+    // C4: how a read shows the expected text: «exact» (its folded words, whole and in order), «tolerant» (the OCR
+    // tolerance of DeliveryMatches: spaces lost, or one letter off in a word of five or more), or null.
+    internal static string? TextMatch(string observed, string expected) =>
+        ContainsPhrase(observed, expected) ? "exact" : DeliveryMatches(observed, expected) ? "tolerant" : null;
 
     internal static bool DeliveryMatches(string observed, string target)
     {
@@ -1571,7 +1596,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     private readonly record struct MessageVisualObservation(
         byte[] Bitmap,
-        bool Verified);
+        bool Verified,
+        string? Read,
+        string? Match);
 
     private static string? FindTesseract()
     {
