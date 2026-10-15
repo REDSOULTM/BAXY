@@ -281,3 +281,19 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   por `BAXY_RENEW_*`). No se registra ni se toca `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json`.
 - Código muerto de la misión en el adaptador de vista (argumentos `windows`, `known`, `processId`, `starting`,
   `candidates`, `identityIfAbsent` y sus salidas): lo quita el notebook en Providers sin cambiar lo que el modelo lee.
+- Corrección del registro (agente de velocidad, 2026-10-15): MTP SÍ se midió con `F:\BAXYeval\models\Qwen3.5-4B-MTP-Q4_K_M.gguf`
+  (`bench-en02mtp.log`): aceptación 0,77–1,0, pero el total p50 empeoró de 638 a 744 ms (el prompt subió de 108 a 284 ms).
+  Descartado por medición, no porque el GGUF no traiga MTP. Draft Qwen3.5-0.8B: no cabe en 4 GB de VRAM con el 4B y en
+  modelos híbridos un borrador parcial obliga a restaurar checkpoints (llama.cpp PR #19493, ~10 % más lento en texto).
+- Ronda de optimización para el 4B (pedido del dueño: agentes sin parar). Seis agentes de solo lectura en el PC:
+  formato/sampling de Qwen3.5 (el arnés ya usa el XML de Qwen3-Coder con la plantilla oficial; presence_penalty 1,5 de
+  la model card castigaría copiar las palabras de la persona porque llama-server penaliza sobre todo el prompt),
+  velocidad (el prefijo mide 36,8k tokens; el paso final sin tools lo desalojaba), descripciones herramienta por
+  herramienta contra los fallos de práctica, y auditoría línea por línea de App/FieldUi, Kernel/Core/Contracts/mente y
+  Providers/jueces. Aplicado en ee435857e (ver commit). Medido: el paso final relee 156 tokens en vez de ~4k y la
+  orden siguiente 236. Falsedades práctica p7 (antes de ee435857e): 3/26 (F009, F013, F015); F001 y F019 arregladas
+  por quitar `windows`.
+- Hallazgos de la auditoría de la App que van al notebook (su carril): app_open con placeValue sale a Spotify/Steam en
+  un latido sin retenerse (viola «nada sale sin pedido»), memory.export y media.control sin retener, la vista oculta
+  partial/frameOnly/disabled, confirmación vencida dicha como nothing_pending, NoteChangesAsync sin try, errores de
+  argumentos que no dicen qué argumento falló, código muerto del Field UI, ParseStep que no acepta «_».

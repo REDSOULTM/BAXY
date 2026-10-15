@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T17:35:00-03:00",
+  "actualizado": "2026-10-15T19:30:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -204,5 +204,32 @@
     "llama_server_privado_mib": 5911,
     "llama_server_working_set_mib": 3435,
     "nota": "no cabe en 4+4 GB: hay que bajar prefijo y ctx"
-  }
+  },
+  "limites": [
+    {
+      "limite": "volumen «sube/baja a N»",
+      "estado": "medido, sin arreglo en la presentación",
+      "evidencia": "e2e práctica E028, decisión P257; juego propio de 10 frases: descripciones actuales 6/10, TO/BY 4/10, una sola herramienta 6/10 (cambia el error: «baja al 15» → change −85)"
+    },
+    {
+      "limite": "ruta completa dictada en file.write pierde a veces la subcarpeta",
+      "estado": "mitigado: el proveedor acepta la ruta completa dentro de la carpeta nombrada y el recibo dice fullPath",
+      "evidencia": "e2e práctica p5/p6 E006, E017, E020, E024, E027; juego de rutas 3/8 → 6/8; F013 arreglada (cf3acc126); 0075c505f, 42a468051"
+    },
+    {
+      "limite": "velocidad del texto al primer sonido en el borde de 2,5 s",
+      "estado": "en el borde: la mediana cambia de lado entre corridas (estimado: una herramienta rápida entra, dos o más no)",
+      "evidencia": "e2e práctica por orden p6 p50 2316 ms, p7 2540 ms (18/36 bajo 2,5 s); decisión ~0,7 s; Piper 138–279 ms; MTP (el GGUF no lo trae), n-gramas y KV f16 investigados y descartados"
+    },
+    {
+      "limite": "Renew sin instalador completo",
+      "estado": "abierto, declarado en el paquete",
+      "evidencia": "el build de producto y Baxy.Setup terminan (e2631eefe: lista de Field UI derivada del dist) y el paquete declara deployment.mind = not_included: no lleva la mente, el modelo GGUF, llama-server ni Piper; Renew se arranca con run_renew.cmd en una máquina que ya los tiene"
+    },
+    {
+      "limite": "el latido corre solo lo que el kernel no confirma (consola de lectura, escribir un archivo nuevo, ajustes reversibles, memoria)",
+      "estado": "aceptado: lo de riesgo lo confirma el kernel; lo que sale a la red o manda entrada a una ventana se retiene",
+      "evidencia": "0edcd0509: el latido retiene para el sí la red (web.search, web.fetch, web.download, weather.current, network.ping, game.entitlement.named, system.time con lugar) y la entrada a ventanas (input.*, clipboard, message.draft, browser.control, calculadora, window.*); la lista es por nombre porque el catálogo no tiene aún un atributo tipado «sale de la máquina» / «actúa en una ventana»; el banco de escenas la lee de NativeTurnLoop.cs (e9c818c24)"
+    }
+  ]
 }

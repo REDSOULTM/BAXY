@@ -41,7 +41,10 @@ def main() -> None:
             counted = [parts[name] for name in ("decision", "e2e", "latido")]
             ok = sum(part["ok"] for part in counted)
             n = sum(part["n"] for part in counted)
-            summary["holdout_final"] = {"ok": ok, "n": n, "accuracy": round(ok / n, 4) if n else None}
+            # The cases left out of the count (operations retired with nothing in their place) go with the total.
+            excluded = {name: parts[name].get("excluded_retired", []) for name in ("decision", "latido")}
+            summary["holdout_final"] = {"ok": ok, "n": n, "accuracy": round(ok / n, 4) if n else None,
+                                        "excluded": excluded}
     print(json.dumps(summary, ensure_ascii=False, indent=1))
     (RUNS / f"{label}-resumen.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
 

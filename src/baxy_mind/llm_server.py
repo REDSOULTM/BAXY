@@ -42,6 +42,11 @@ class LlmServer:
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
             "--load-mode", "none",
+            # The prompt cache in RAM holds a prompt the slot set aside (a heartbeat between two turns): at most 1.5 GB
+            # instead of 8 GB, so the harness stays under 4 GB of RAM (one 37k prompt with its state is ~0.7 GB).
+            # Checkpoints of the recurrent state every 512 tokens instead of 8192, so a return to an earlier prompt
+            # restores near where it diverged instead of re-reading thousands of tokens (llama.cpp PR #25472, #24176).
+            "-cram", "1536", "-cms", "512", "-ctxcp", "8",
         ] + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -91,6 +96,17 @@ class LlmServer:
         )
         with urllib.request.urlopen(request, timeout=timeout) as reply:
             return json.loads(reply.read())
+
+    def tokenize(self, text: str) -> list[int]:
+        """The model's tokens for a text, special tokens included (<tool_call> is one)."""
+        self.wait_ready(600)
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}/tokenize",
+            data=json.dumps({"content": text, "parse_special": True}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(request, timeout=30) as reply:
+            return list(json.loads(reply.read())["tokens"])
 
     def close(self) -> None:
         if self._process is not None and self._process.poll() is None:
