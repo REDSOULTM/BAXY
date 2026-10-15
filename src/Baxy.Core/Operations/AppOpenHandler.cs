@@ -71,6 +71,7 @@ internal sealed class AppOpenHandler(
             string errorCode = NormalizeErrorCode(providerResult.ErrorCode, providerResult.Verified);
             return OperationOutcome.Failure(
                 errorCode,
+                result: Candidates(providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
         }
 
@@ -120,6 +121,26 @@ internal sealed class AppOpenHandler(
             result,
             CoreJsonContext.Default.OpenApplicationResult);
         return OperationOutcome.Success(serialized);
+    }
+
+    // Auditoría D1: the installed names closest to one that matched none, said with the failure (nothing was opened).
+    private static JsonElement? Candidates(IReadOnlyList<string>? names)
+    {
+        if (names is not { Count: > 0 })
+            return null;
+        var buffer = new System.Buffers.ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteStartArray("candidates");
+            foreach (string name in names)
+                writer.WriteStringValue(name);
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     // A process creation time is stamped by the kernel's system clock, which advances in ticks of up to 15.6 ms and

@@ -48,7 +48,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
             ToolExposure.Public,
-            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; también acepta windows.notepad y windows.calculator."),
+            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
         Descriptor(
             "app.status",
             EmptySchema(),
