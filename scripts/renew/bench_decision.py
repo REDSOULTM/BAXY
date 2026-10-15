@@ -21,6 +21,24 @@ import psutil
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
+# The catalog changed after the banks were written (operations merged or replaced, 2026-10-15): an expectation that
+# names a retired operation is met by the operation that replaced it, with its fixed arguments and its arguments
+# renamed; an argument with no counterpart is not checked. Public, versioned, and applied without opening the banks.
+EQUIVALENCE_FILE = Path(__file__).with_name("catalog_equivalence.json")
+EQUIVALENCE = json.loads(EQUIVALENCE_FILE.read_text(encoding="utf-8")) if EQUIVALENCE_FILE.is_file() else {}
+
+
+def current(op, args=None):
+    """The operation and arguments that meet an expectation written for «op» in today's catalog."""
+    entry = EQUIVALENCE.get(op)
+    if not entry:
+        return op, dict(args or {}), {}
+    renamed = {}
+    for name, want in (args or {}).items():
+        target = (entry.get("args") or {}).get(name, name)
+        if target is not None:
+            renamed[target] = want
+    return entry["op"], renamed, dict(entry.get("fixed") or {})
 
 
 def norm(value):
@@ -46,10 +64,16 @@ def arg_ok(want, got):
 def judge(expect, result, arguments):
     kind = result.get("kind")
     if expect["kind"] == "call":
-        return (kind == "action" and result.get("operation") == expect["op"]
-                and all(arg_ok(v, (arguments or {}).get(k)) for k, v in (expect.get("args") or {}).items()))
+        op, args, fixed = current(expect["op"], expect.get("args"))
+        return (kind == "action" and result.get("operation") == op
+                and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
-        return kind == "action" and result.get("operation") in expect["ops"]
+        for candidate in expect["ops"]:
+            op, _, fixed = current(candidate)
+            if kind == "action" and result.get("operation") == op and all(
+                    arg_ok(v, (arguments or {}).get(k)) for k, v in fixed.items()):
+                return True
+        return False
     if expect["kind"] == "ask":
         return kind == "clarify" or (kind == "conversation" and str(result.get("reply", "")).strip().endswith("?"))
     if expect["kind"] == "text":

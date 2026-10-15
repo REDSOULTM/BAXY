@@ -73,6 +73,27 @@ BEAT_RULES = (
 )
 
 
+def _outcome(observation: str) -> str:
+    """How a call ended, in the words the model reads: from the result's own status, verification and error."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return "resultado arriba"
+    if not isinstance(facts, dict):
+        return "resultado arriba"
+    status = str(facts.get("status") or ("completed" if facts.get("succeeded") else "failed"))
+    if status == "needs_confirmation":
+        return "espera el sí de la persona"
+    if status == "cancelled":
+        return "cancelado por la persona"
+    if facts.get("polarity") == "pending" or facts.get("effectUncertain"):
+        return "sin confirmar: pudo o no ocurrir"
+    if facts.get("succeeded") or status == "completed":
+        return "completado y verificado" if facts.get("verified") else "completado sin verificar"
+    error = facts.get("error") or facts.get("cause")
+    return f"falló ({error})" if error else "falló"
+
+
 def beat_message(context: dict[str, Any]) -> str:
     """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
     remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
@@ -373,7 +394,13 @@ class Mind:
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]
-        conv.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": observation[:6000]})
+        # Every call of the turn so far with how it ended, at the end of the newest result: where the model writes its
+        # answer, the facts it may tell are together (it told «no pude abrir Steam» after Steam opened, «lo guardé»
+        # after the typing failed, 2026-10-15 falsehood bench).
+        done = turn.setdefault("done", [])
+        done.append(f"{turn.get('calling', '?')} → {_outcome(observation)}")
+        conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
+                     "content": observation[:6000] + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
         if final:
             # The App's step budget is spent: said where the model reads it, at the end of the last result.
@@ -457,6 +484,7 @@ class Mind:
         elif call is not None:
             name = CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"] else self.wire_to_op[call["wire"]]
             turn["awaiting"] = call["id"]
+            turn["calling"] = name
             arguments = {**call["arguments"], **self.constants.get(name, {})}
             self._decided = {name: arguments}
             result.update(kind="action", operation=name, arguments=arguments)
