@@ -103,7 +103,7 @@ public sealed class X1EnvioBusquedaTests
 
     // The adapter waits for the named row instead of the fixed 1.2 s, matches rows as it matches the title, clicks the
     // row only once it named the recipient (C3), and the resolve never presses Enter in the client's search (the send
-    // is message.send's alone: nothing is sent twice).
+    // is SendAsync's alone: nothing is sent twice).
     [Test]
     public void TheSearchWaitsForTheNamedRowAndNeverSends()
     {

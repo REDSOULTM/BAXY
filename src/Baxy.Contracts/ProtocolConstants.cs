@@ -67,10 +67,7 @@ public static class OperationRisks
     public const string PrivacySensitive = "privacy_sensitive";
     public const string Installation = "installation";
     public const string ExternalCommunication = "external_communication";
-    public const string SessionDisruption = "session_disruption";
     public const string WorkLoss = "work_loss";
-    public const string Monetary = "monetary";
-    public const string ForbiddenDestructive = "forbidden_destructive";
 
     public static bool IsKnown(string? value) =>
         value is ReadOnly
@@ -79,8 +76,5 @@ public static class OperationRisks
             or PrivacySensitive
             or Installation
             or ExternalCommunication
-            or SessionDisruption
-            or WorkLoss
-            or Monetary
-            or ForbiddenDestructive;
+            or WorkLoss;
 }

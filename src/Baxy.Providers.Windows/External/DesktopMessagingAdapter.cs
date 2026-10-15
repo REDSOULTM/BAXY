@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Buffers.Binary;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -14,7 +13,6 @@ namespace Baxy.Providers.Windows.External;
 internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisposable
 {
     private readonly IDesktopMessagingAutomation _automation;
-    private readonly ConcurrentDictionary<string, ResolvedRecipient> _recipients = new();
     private readonly SemaphoreSlim _interaction = new(1, 1);
     private readonly string _testDestinationsPath;
 
@@ -30,8 +28,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     }
 
     public bool CanHandle(string operation) =>
-        operation is "message.recipient.resolve" or "message.send" or "message.draft"
-            or "message.send.test";
+        operation is "message.draft" or "message.send.test";
 
     // MSG §6 (owner decisions 2026-09-17 and 2026-09-18 §3): real sends are allowed ONLY to the owner's own test
     // destinations. message.send.test forces the destination to these by construction; the requested recipient is
@@ -112,10 +109,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             return operation switch
             {
-                "message.recipient.resolve" => await ResolveAsync(arguments, cancellationToken)
-                    .ConfigureAwait(false),
-                "message.send" => await SendAsync(arguments, cancellationToken)
-                    .ConfigureAwait(false),
                 "message.send.test" => await SendTestAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 "message.draft" => await DraftAsync(arguments, cancellationToken)
@@ -127,96 +120,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             _interaction.Release();
         }
-    }
-
-    private async ValueTask<ExternalCapabilityReceipt> ResolveAsync(
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        string channel = RequiredString(arguments, "channel");
-        string recipient = RequiredString(arguments, "recipient");
-        // D59 §1, ronda 19 (t1-c09, t2-c07, t3-c07 «mandale a Ron92 por discord …» with
-        // Discord closed): the named client is opened before its recipient is looked
-        // for, as the draft and the reviewed send already do; resolving against a
-        // closed client only answered «<client>_client_not_running».
-        DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
-            channel,
-            cancellationToken).ConfigureAwait(false);
-        if (!client.Ready)
-        {
-            return Failure(
-                "message.recipient.resolve",
-                client.ErrorCode ?? $"{channel}_client_not_running",
-                client.Opened);
-        }
-
-        DesktopRecipientObservation observation = await _automation.ResolveAsync(
-            channel,
-            recipient,
-            cancellationToken).ConfigureAwait(false);
-        if (Unresolved("message.recipient.resolve", observation) is { } unresolved)
-        {
-            return unresolved;
-        }
-
-        string recipientId = "recipient_" + Guid.NewGuid().ToString("N");
-        var resolved = new ResolvedRecipient(
-            recipientId,
-            channel,
-            recipient,
-            observation.Shown!,
-            observation.WindowHandle,
-            observation.ProcessId);
-        _recipients[recipientId] = resolved;
-        return Success(
-            "message.recipient.resolve",
-            JsonObject(
-                ("version", 1),
-                ("recipientId", recipientId),
-                ("channel", channel),
-                ("recipient", recipient),
-                ("displayName", resolved.Shown),
-                ("verified", true)));
-    }
-
-    private async ValueTask<ExternalCapabilityReceipt> SendAsync(
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        string recipientId = RequiredString(arguments, "recipientId");
-        string text = RequiredString(arguments, "text", allowEmpty: true);
-        if (!_recipients.TryGetValue(recipientId, out ResolvedRecipient? recipient))
-        {
-            return Failure("message.send", "recipient_identity_expired");
-        }
-
-        DesktopMessageObservation observation = await _automation.SendAsync(
-            recipient,
-            text,
-            cancellationToken).ConfigureAwait(false);
-        if (!observation.Verified)
-        {
-            return Failure(
-                "message.send",
-                observation.ErrorCode ?? "message_delivery_not_verified",
-                observation.EffectObserved);
-        }
-
-        string fingerprint = Convert.ToHexStringLower(SHA256.HashData(
-            Encoding.UTF8.GetBytes(recipientId + "\n" + text + "\n" + observation.EvidenceHash)));
-        return Success(
-            "message.send",
-            JsonObject(
-                ("version", 1),
-                ("messageId", "message_" + fingerprint[..24]),
-                ("recipientId", recipientId),
-                ("channel", recipient.Channel),
-                ("displayName", recipient.Shown),
-                ("contentSha256", Convert.ToHexStringLower(SHA256.HashData(
-                    Encoding.UTF8.GetBytes(text)))),
-                ("delivery", "visible_postcondition"),
-                ("deliveryRead", observation.Read),
-                ("deliveryMatch", observation.Match)));
     }
 
     private async ValueTask<ExternalCapabilityReceipt> DraftAsync(

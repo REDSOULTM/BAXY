@@ -41,7 +41,6 @@ public sealed class OperationRegistryTests
     [TestCase(OperationRisk.Sensitive, PolicyDecision.Allow)]
     [TestCase(OperationRisk.External, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Irreversible, PolicyDecision.RequireConfirmation)]
-    [TestCase(OperationRisk.Forbidden, PolicyDecision.Deny)]
     public void Policy_is_proportional_and_fail_closed(
         OperationRisk risk,
         PolicyDecision expected)
@@ -53,7 +52,6 @@ public sealed class OperationRegistryTests
     // copying, capturing, typing, radios and settings do not. Installing asks since
     // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
     // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct».
-    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
     [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
     [TestCase("media.play.query", PolicyDecision.Allow)]
@@ -69,13 +67,10 @@ public sealed class OperationRegistryTests
     [TestCase("system.settings.set", PolicyDecision.Allow)]
     [TestCase("memory.enable", PolicyDecision.Allow)]
     [TestCase("game.install.named", PolicyDecision.RequireConfirmation)]
-    [TestCase("game.install.commit", PolicyDecision.RequireConfirmation)]
     [TestCase("package.install", PolicyDecision.RequireConfirmation)]
     [TestCase("game.uninstall.named", PolicyDecision.RequireConfirmation)]
     [TestCase("game.launch", PolicyDecision.Allow)]
-    [TestCase("game.install.prepare", PolicyDecision.Allow)]
     [TestCase("game.install.cancel", PolicyDecision.RequireConfirmation)]
-    [TestCase("game.purchase.commit", PolicyDecision.RequireConfirmation)]
     [TestCase("memory.forget", PolicyDecision.RequireConfirmation)]
     [TestCase("system.process.terminate.named", PolicyDecision.RequireConfirmation)]
     [TestCase("system.recyclebin.empty", PolicyDecision.RequireConfirmation)]
@@ -360,7 +355,6 @@ public sealed class OperationRegistryTests
     [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Sensitive, ConfirmationMode.Bypass, PolicyDecision.Allow)]
     [TestCase(OperationRisk.External, ConfirmationMode.Bypass, PolicyDecision.Allow)]
-    [TestCase(OperationRisk.Forbidden, ConfirmationMode.Bypass, PolicyDecision.Deny)]
     [TestCase(OperationRisk.Reversible, ConfirmationMode.Normal, PolicyDecision.Allow)]
     public void Confirmation_mode_is_one_setting_on_the_same_path(
         OperationRisk risk,

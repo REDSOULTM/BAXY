@@ -100,10 +100,18 @@ public static class OperationVisibleFacts
             // Read from the element itself: a repeated key keeps its last value,
             // as every other reader of the result does (JsonElement.GetProperty,
             // the planner's projection), instead of failing the whole parse.
+            bool cut = false;
             sanitized = Sanitize(
-                result,
+                result, ref cut,
                 processInventory: processInventory, ocrObservation: ocrObservation,
                 captureObservation: captureObservation);
+            // Auditoría final V2: what the bounds below left out is said where the model reads, as the size budget
+            // says it (WithProjectedObservation).
+            if (cut && sanitized is JsonObject root)
+            {
+                root["truncated"] = true;
+            }
+
             payload["observed"] = sanitized;
         }
 
@@ -350,12 +358,17 @@ public static class OperationVisibleFacts
     // «deviceId» (peripheral.print, peripheral.scan, bluetooth.device.pair),
     // «sha256»/«hash» (expectedSha256 of filesystem.copy and filesystem.move)
     // and «recordId».
+    // Bounded too: past four levels nothing is kept, and a list keeps its first twenty items (fifty processes); each
+    // cut sets «cut». A list cut under a name says how many items it shows («<name>Shown»: a count or a next offset
+    // of the provider speaks of all of them) and, when the observation carries no count of its own, how many it had
+    // («<name>Count»).
     private static JsonNode? Sanitize(
-        JsonElement element, int depth = 0, bool processInventory = false, bool ocrObservation = false,
+        JsonElement element, ref bool cut, int depth = 0, bool processInventory = false, bool ocrObservation = false,
         bool captureObservation = false)
     {
         if (!ocrObservation && depth > 4)
         {
+            cut |= element.ValueKind != JsonValueKind.Null;
             return null;
         }
 
@@ -375,22 +388,35 @@ public static class OperationVisibleFacts
                         continue;
                     }
 
-                    JsonNode? sanitized = Sanitize(property.Value, depth + 1, processInventory, ocrObservation, captureObservation);
+                    JsonNode? sanitized = Sanitize(property.Value, ref cut, depth + 1, processInventory, ocrObservation, captureObservation);
                     if (sanitized is not null)
                     {
                         clean[key] = sanitized;
+                    }
+
+                    if (property.Value.ValueKind == JsonValueKind.Array
+                        && sanitized is JsonArray kept
+                        && property.Value.GetArrayLength() > kept.Count)
+                    {
+                        clean[key + "Shown"] = kept.Count;
+                        if (!element.TryGetProperty("count", out _) && !element.TryGetProperty("totalCount", out _)
+                            && !element.TryGetProperty(key + "Count", out _))
+                        {
+                            clean[key + "Count"] = property.Value.GetArrayLength();
+                        }
                     }
                 }
 
                 return clean;
             case JsonValueKind.Array:
                 var cleanArray = new JsonArray();
-                foreach (JsonElement item in element.EnumerateArray().Take(
-                    ocrObservation ? int.MaxValue : processInventory ? 50 : 20))
+                int shown = ocrObservation ? int.MaxValue : processInventory ? 50 : 20;
+                foreach (JsonElement item in element.EnumerateArray().Take(shown))
                 {
-                    cleanArray.Add(Sanitize(item, depth + 1, processInventory, ocrObservation, captureObservation));
+                    cleanArray.Add(Sanitize(item, ref cut, depth + 1, processInventory, ocrObservation, captureObservation));
                 }
 
+                cut |= element.GetArrayLength() > shown;
                 return cleanArray;
             case JsonValueKind.Null:
                 return null;

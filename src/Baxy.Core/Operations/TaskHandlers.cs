@@ -14,7 +14,6 @@ internal static class TaskHandlers
         new DeleteTaskHandler(store),
         new ListTasksHandler(store),
         new ReopenTaskHandler(store),
-        new ResolveExactTaskHandler(store),
         new RestoreTaskHandler(store),
         new SearchTasksHandler(store),
         new UpdateTaskHandler(store),
@@ -47,10 +46,6 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         catch (Exception exception) when (exception is LocalTaskNotFoundException or NoteNotFoundException)
         {
             return ValueTask.FromResult(OperationOutcome.Failure("task_not_found"));
-        }
-        catch (LocalTaskAmbiguousException)
-        {
-            return ValueTask.FromResult(OperationOutcome.Failure("task_ambiguous"));
         }
         catch (Exception exception)
             when (exception is LocalTaskVersionConflictException or NoteSelectionStaleException)
@@ -224,31 +219,6 @@ internal sealed class UpdateTaskHandler(ILocalTaskStore store) : TaskHandlerBase
     }
 }
 
-internal sealed class ResolveExactTaskHandler(ILocalTaskStore store) : TaskHandlerBase(store)
-{
-    public override OperationDefinition Definition { get; } =
-        ProductCatalog.CreateDefinition("task.resolve.exact");
-
-    protected override OperationOutcome Execute(OperationInvocation invocation)
-    {
-        TaskResolveExactArguments arguments = Parse(
-            invocation.Arguments,
-            CoreJsonContext.Default.TaskResolveExactArguments);
-        LocalTaskRecord found = Store.ResolveExact(arguments.Title, arguments.IncludeDeleted ?? false);
-        LocalTaskRecord verified = Store.Read(found.Id, includeDeleted: true);
-        if (verified != found) return OperationOutcome.Failure("verification_failed");
-        var result = new TaskSelectionResult(
-            found.Id.ToString("D"),
-            found.Version,
-            found.Title,
-            found.Deleted,
-            found.Completed ? "completed" : "open");
-        return OperationOutcome.Success(JsonSerializer.SerializeToElement(
-            result,
-            CoreJsonContext.Default.TaskSelectionResult));
-    }
-}
-
 internal sealed class ListTasksHandler(ILocalTaskStore store) : TaskHandlerBase(store)
 {
     public override OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("task.list");
@@ -318,8 +288,6 @@ internal sealed record TaskUpdateArguments(
     string Details,
     string? Due);
 
-internal sealed record TaskResolveExactArguments(string Title, bool? IncludeDeleted);
-
 internal sealed record TaskListArguments(string? Status, bool? IncludeDeleted, int? Limit);
 
 internal sealed record TaskSearchArguments(string Query, string? Status, int? Limit);
@@ -344,13 +312,6 @@ internal sealed record TaskSummaryResult(
     bool Deleted,
     DateTimeOffset UpdatedAtUtc,
     long Version);
-
-internal sealed record TaskSelectionResult(
-    string TaskId,
-    long ExpectedVersion,
-    string ReviewLabel,
-    bool Deleted,
-    string Status);
 
 internal sealed record TaskListResult(
     TaskSummaryResult[] Tasks,

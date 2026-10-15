@@ -16,14 +16,10 @@ internal static class FilesystemHandlers
         new FilesystemHandler("file.write", provider),
         new FilesystemHandler("filesystem.copy", provider),
         new FilesystemHandler("filesystem.create.directory", provider),
-        new FilesystemHandler("filesystem.hash", provider),
         new FilesystemHandler("filesystem.list", provider),
         new FilesystemHandler("filesystem.move", provider),
         new FilesystemHandler("filesystem.read.text", provider),
         new FilesystemHandler("filesystem.search", provider),
-        new FilesystemHandler("filesystem.trash.commit", provider),
-        new FilesystemHandler("filesystem.trash.prepare", provider),
-        new FilesystemHandler("filesystem.trash.restore", provider),
     ];
 }
 
@@ -63,8 +59,6 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                 "filesystem.read.text" => FilesystemResultJson.Text(_provider.ReadText(
                     RequiredString(arguments, "resourceId"),
                     OptionalInt(arguments, "maximumBytes") ?? 1_048_576)),
-                "filesystem.hash" => FilesystemResultJson.Entry(_provider.Hash(
-                    RequiredString(arguments, "resourceId"))),
                 "filesystem.create.directory" => VerifiedMutation(
                     _provider.CreateDirectory(
                         RequiredString(arguments, "relativePath"),
@@ -79,14 +73,6 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                     OptionalString(arguments, "folder")),
                 "filesystem.copy" => VerifiedMutation(TransferResult(arguments, move: false)),
                 "filesystem.move" => VerifiedMutation(TransferResult(arguments, move: true)),
-                "filesystem.trash.prepare" => FilesystemResultJson.TrashPreparation(
-                    _provider.PrepareTrash(RequiredString(arguments, "resourceId"))),
-                "filesystem.trash.commit" => FilesystemResultJson.TrashReceipt(
-                    _provider.CommitTrash(
-                        RequiredString(arguments, "trashId"),
-                        RequiredString(arguments, "reviewLabel"))),
-                "filesystem.trash.restore" => VerifiedMutation(
-                    _provider.Restore(RequiredString(arguments, "restoreId"))),
                 _ => throw new InvalidOperationException("Unknown filesystem operation."),
             };
             return ValueTask.FromResult(OperationOutcome.Success(result));
@@ -157,9 +143,6 @@ internal static class FilesystemResultJson
         writer.WriteNumber("count", result.Count);
     });
 
-    public static JsonElement Entry(FilesystemEntry entry) =>
-        Write(writer => WriteEntryProperties(writer, entry));
-
     public static JsonElement Text(FilesystemTextResult result) => Write(writer =>
     {
         writer.WriteString("resourceId", result.ResourceId);
@@ -180,21 +163,6 @@ internal static class FilesystemResultJson
         if (result.PreviousVersionRecycled is bool recycled) writer.WriteBoolean("previousVersionRecycled", recycled);
         if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
         if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
-    });
-
-    public static JsonElement TrashPreparation(FilesystemTrashPreparation result) => Write(writer =>
-    {
-        writer.WriteString("trashId", result.TrashId);
-        writer.WriteString("reviewLabel", result.ReviewLabel);
-        writer.WriteString("kind", result.Kind);
-        writer.WriteNumber("size", result.Size);
-    });
-
-    public static JsonElement TrashReceipt(FilesystemTrashReceipt result) => Write(writer =>
-    {
-        writer.WriteString("restoreId", result.RestoreId);
-        writer.WriteString("reviewLabel", result.ReviewLabel);
-        writer.WriteBoolean("trashed", result.Trashed);
     });
 
     public static JsonElement Backup(BackupReceipt result) => Write(writer =>

@@ -25,8 +25,6 @@ public interface ILocalTaskStore
 
     LocalTaskRecord Read(Guid id, bool includeDeleted = false);
 
-    LocalTaskRecord ResolveExact(string title, bool includeDeleted);
-
     IReadOnlyList<LocalTaskRecord> List(TaskListStatus status, bool includeDeleted, int limit);
 
     IReadOnlyList<LocalTaskRecord> Search(string query, TaskListStatus status, int limit);
@@ -56,8 +54,6 @@ public class LocalTaskStoreException : Exception
 public sealed class LocalTaskValidationException(string message) : LocalTaskStoreException(message);
 
 public sealed class LocalTaskNotFoundException(string message) : LocalTaskStoreException(message);
-
-public sealed class LocalTaskAmbiguousException(string message) : LocalTaskStoreException(message);
 
 public sealed class LocalTaskVersionConflictException(Guid id)
     : LocalTaskStoreException($"Task '{id:D}' changed before the requested mutation.");

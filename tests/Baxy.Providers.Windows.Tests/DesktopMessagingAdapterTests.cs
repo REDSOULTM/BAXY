@@ -74,8 +74,8 @@ public sealed class DesktopMessagingAdapterTests
         using var adapter = new DesktopMessagingAdapter(automation);
 
         ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            Json("""{"channel":"discord","recipient":"Ron"}"""),
+            "message.draft",
+            Json("""{"channel":"discord","recipient":"Ron","text":"hola"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -227,63 +227,39 @@ public sealed class DesktopMessagingAdapterTests
     }
 
     [Test]
-    public async Task ResolveThenSendUsesObservedOpaqueIdentityAndVerifiedReceipt()
+    public async Task ATestSendCarriesWhatTheClientShowedAndHowTheDeliveryMatched()
     {
         var automation = new StubAutomation(
             new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Discord | @CbaYeah"),
             new DesktopMessageObservation(true, true, "evidence_hash", null, "Holatest 15:32", "tolerant"));
-        using var adapter = new DesktopMessagingAdapter(automation);
-
-        ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            Json("""{"channel":"discord","recipient":"CbaYeah"}"""),
-            CancellationToken.None);
-        string recipientId = resolved.Result!.Value.GetProperty("recipientId").GetString()!;
-        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
-            "message.send",
-            Json($$"""{"recipientId":"{{recipientId}}","text":"Hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+        string destinations = TestDestinations("""{"discord":"CbaYeah"}""");
+        try
         {
-            Assert.That(resolved.Verified, Is.True);
-            Assert.That(recipientId, Does.StartWith("recipient_"));
-            // C2: what the client showed is said, next to what was asked for.
-            Assert.That(resolved.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
-            Assert.That(resolved.Result?.GetProperty("recipient").GetString(), Is.EqualTo("CbaYeah"));
-            Assert.That(sent.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
-            Assert.That(sent.Verified, Is.True);
-            Assert.That(sent.EffectObserved, Is.True);
-            Assert.That(sent.Result?.GetProperty("delivery").GetString(),
-                Is.EqualTo("visible_postcondition"));
-            // C4: the text read and how it matched travel with the receipt.
-            Assert.That(sent.Result?.GetProperty("deliveryRead").GetString(), Is.EqualTo("Holatest 15:32"));
-            Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("tolerant"));
-            Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
-            Assert.That(automation.SentText, Is.EqualTo("Hola"));
-        });
-    }
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
 
-    [Test]
-    public async Task ExpiredIdentityFailsBeforeAnyPhysicalSend()
-    {
-        var automation = new StubAutomation(
-            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
-            new DesktopMessageObservation(true, true, "hash", null));
-        using var adapter = new DesktopMessagingAdapter(automation);
+            ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"discord","requestedRecipient":"Lucas","text":"Hola"}"""),
+                CancellationToken.None);
 
-        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
-            "message.send",
-            Json("""{"recipientId":"recipient_unknown","text":"Hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+            Assert.Multiple(() =>
+            {
+                // C2: what the client showed is said, next to what was asked for.
+                Assert.That(sent.Result?.GetProperty("displayName").GetString(), Is.EqualTo("Discord | @CbaYeah"));
+                Assert.That(sent.Result?.GetProperty("requestedRecipient").GetString(), Is.EqualTo("Lucas"));
+                Assert.That(sent.Verified, Is.True);
+                Assert.That(sent.EffectObserved, Is.True);
+                // C4: the text read and how it matched travel with the receipt.
+                Assert.That(sent.Result?.GetProperty("deliveryRead").GetString(), Is.EqualTo("Holatest 15:32"));
+                Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("tolerant"));
+                Assert.That(automation.SentRecipient?.Name, Is.EqualTo("CbaYeah"));
+                Assert.That(automation.SentText, Is.EqualTo("Hola"));
+            });
+        }
+        finally
         {
-            Assert.That(sent.Verified, Is.False);
-            Assert.That(sent.EffectObserved, Is.False);
-            Assert.That(sent.ErrorCode, Is.EqualTo("recipient_identity_expired"));
-            Assert.That(automation.SentRecipient, Is.Null);
-        });
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
     }
 
     [Test]
@@ -296,24 +272,37 @@ public sealed class DesktopMessagingAdapterTests
                 true,
                 "ambiguous_hash",
                 "message_delivery_not_verified"));
-        using var adapter = new DesktopMessagingAdapter(automation);
-        ExternalCapabilityReceipt resolved = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            Json("""{"channel":"whatsapp","recipient":"Letras"}"""),
-            CancellationToken.None);
-        string recipientId = resolved.Result!.Value.GetProperty("recipientId").GetString()!;
-
-        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
-            "message.send",
-            Json($$"""{"recipientId":"{{recipientId}}","text":"Hola"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
         {
-            Assert.That(sent.Verified, Is.False);
-            Assert.That(sent.EffectObserved, Is.True);
-            Assert.That(sent.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
-        });
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}"""),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(sent.Verified, Is.False);
+                Assert.That(sent.EffectObserved, Is.True);
+                Assert.That(sent.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // C6: the owner's test destinations, a private file the adapter is pointed at.
+    private static string TestDestinations(string json)
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-messaging-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string path = Path.Combine(directory, "test-destinations.v1.json");
+        File.WriteAllText(path, json);
+        return path;
     }
 
     private static JsonElement Json(string value) =>

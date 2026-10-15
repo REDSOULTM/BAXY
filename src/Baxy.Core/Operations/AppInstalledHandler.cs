@@ -35,6 +35,15 @@ internal sealed class AppInstalledHandler(IApplicationInventoryProvider provider
             if (observed.InstalledVersion is null) writer.WriteNull("installedVersion");
             else writer.WriteString("installedVersion", observed.InstalledVersion);
             writer.WriteBoolean("installed", observed.Installed);
+            // Auditoría final: as app.open, a name that matches no installed application gets the closest names back.
+            if (observed.Candidates is { Count: > 0 } candidates)
+            {
+                writer.WriteStartArray("candidates");
+                foreach (string candidate in candidates)
+                    writer.WriteStringValue(candidate);
+                writer.WriteEndArray();
+            }
+
             writer.WriteString(
                 "authority",
                 observed.InstalledVersion is null

@@ -25,5 +25,7 @@
  "routine.read": {"op": null},
  "routine.resolve.exact": {"op": null},
  "routine.restore": {"op": null},
- "routine.set.enabled": {"op": null}
+ "routine.set.enabled": {"op": null},
+ "message.send": {"op": null},
+ "filesystem.trash.restore": {"op": null}
 }

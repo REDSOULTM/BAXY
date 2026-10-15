@@ -31,22 +31,19 @@ public sealed partial class OperationRegistry
                 .Select(static handler => handler.Definition)
                 .OrderBy(static definition => definition.Name, StringComparer.Ordinal)
                 .ToArray());
-        ToolDefinitions = Array.AsReadOnly(
+        _toolDescriptors = new Lazy<IReadOnlyList<OperationDescriptor>>(() => Array.AsReadOnly(
             Definitions
-                .Where(static definition =>
-                    definition.ProductDescriptor?.ToolExposure == ToolExposure.Public)
-                .ToArray());
-        ToolDescriptors = Array.AsReadOnly(
-            ToolDefinitions
                 .Select(ProductCatalog.CreateToolDescriptor)
-                .ToArray());
+                .ToArray()));
     }
 
     public IReadOnlyList<OperationDefinition> Definitions { get; }
 
-    public IReadOnlyList<OperationDefinition> ToolDefinitions { get; }
+    // The tools the model is offered, one per registered catalog operation (projected when first asked for: only a
+    // definition bound to its catalog descriptor can be offered).
+    public IReadOnlyList<OperationDescriptor> ToolDescriptors => _toolDescriptors.Value;
 
-    public IReadOnlyList<OperationDescriptor> ToolDescriptors { get; }
+    private readonly Lazy<IReadOnlyList<OperationDescriptor>> _toolDescriptors;
 
     public bool TryGet(string operationName, out IOperationHandler? handler)
     {

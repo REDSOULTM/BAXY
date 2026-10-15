@@ -390,8 +390,11 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
         }
 
-        public ValueTask<DesktopMessageObservation> DraftAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken) =>
-            throw new InvalidOperationException("no draft in these tests");
+        public ValueTask<DesktopMessageObservation> DraftAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
+        {
+            Steps.Add("draft:" + recipient.Name);
+            return ValueTask.FromResult(new DesktopMessageObservation(true, true, "hash", null));
+        }
     }
 
     // t1-c09#1 («Ron92»), t2-c07#1 («Ron92»), t3-c07 t1 («ron92»); a recipient that does not exist ends the same way.
@@ -403,8 +406,8 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         var automation = new ColdClient(WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, composerUntouched: true));
         using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            JsonDocument.Parse($$"""{"channel":"discord","recipient":"{{recipient}}"}""").RootElement.Clone(),
+            "message.draft",
+            JsonDocument.Parse($$"""{"channel":"discord","recipient":"{{recipient}}","text":"hola"}""").RootElement.Clone(),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -417,17 +420,21 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         });
     }
 
-    // Contracaso: a chat that was verified goes on to the send as before.
+    // Contracaso: a chat that was verified goes on to the draft as before.
     [Test]
     public async Task AVerifiedChatStillResolves()
     {
         var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null, "Ron92"));
         using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "message.recipient.resolve",
-            JsonDocument.Parse("""{"channel":"discord","recipient":"Ron92"}""").RootElement.Clone(),
+            "message.draft",
+            JsonDocument.Parse("""{"channel":"discord","recipient":"Ron92","text":"hola"}""").RootElement.Clone(),
             CancellationToken.None);
-        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(automation.Steps, Is.EqualTo(new[] { "ensure:discord", "resolve:discord:Ron92", "draft:Ron92" }));
+        });
     }
 
     // --------------------------------------------------------------- the probe over the worker

@@ -248,6 +248,22 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Auditoría final: a name installed under no entry gets the closest installed names back, as app.open says them.
+    [Test]
+    public async Task ANameNotInstalledGetsTheClosestInstalledNames()
+    {
+        var provider = new WindowsInstalledApplicationOpenProvider(new FakePlatform(Catalog));
+
+        ApplicationInstalledResult result = await provider.IsInstalledAsync("Visual", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Installed, Is.False);
+            Assert.That(result.Candidates, Does.Contain("Visual Studio").And.Contain("Visual Studio Code"));
+        });
+    }
+
     [TestCase("Steam", true, true, "Steam")]
     [TestCase("Visual Studio", true, false, "Visual Studio")]
     [TestCase("Definitely Missing", false, false, null)]
