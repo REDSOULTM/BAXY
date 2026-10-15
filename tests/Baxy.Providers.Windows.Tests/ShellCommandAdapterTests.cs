@@ -28,7 +28,10 @@ public sealed class ShellCommandAdapterTests
         JsonElement result = receipt.Result!.Value;
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.EffectObserved, Is.True);
+            // Nothing read back what the command changed: it may have changed something (git is not a read-only
+            // command for the kernel), but no effect was observed.
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(runner.Executable, Is.EqualTo("powershell.exe"));
             Assert.That(runner.Arguments, Does.Contain("-NoProfile").And.Contain("-NonInteractive"));
             Assert.That(runner.Arguments[^1], Does.StartWith("Set-Location -LiteralPath '").And.Contain("; git status; exit $LASTEXITCODE"));

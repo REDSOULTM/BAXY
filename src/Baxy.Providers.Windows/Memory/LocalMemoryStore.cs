@@ -1151,16 +1151,13 @@ public sealed class LocalMemoryStore : IMemoryStore
     {
         return request.Scope switch
         {
-            MemoryForgetScope.Exact => string.Equals(
-                record.Selector,
-                request.Selector,
-                StringComparison.Ordinal),
+            MemoryForgetScope.Exact => request.Selector is not null && SameSelector(record.Selector, request.Selector),
             MemoryForgetScope.Kind => record.Kind == request.Kind,
-            // Auditoría final G4: a topic deletes only the memories that are that selector or carry that tag, folded;
-            // never one that merely contains its words.
+            // Auditoría final G4: a topic deletes only the memories that are that selector or carry that tag, folded as
+            // recall folds (case and accents); never one that merely contains its words.
             MemoryForgetScope.Topic => request.Topic is not null
-                && (string.Equals(record.Selector, request.Topic, StringComparison.Ordinal)
-                    || record.Tags.Contains(request.Topic, StringComparer.Ordinal)),
+                && (SameSelector(record.Selector, request.Topic)
+                    || record.Tags.Any(tag => SameSelector(tag, request.Topic))),
             MemoryForgetScope.Session => record.Retention == MemoryRetention.Session
                 && string.Equals(record.SessionId, request.SessionId, StringComparison.Ordinal),
             MemoryForgetScope.All => true,

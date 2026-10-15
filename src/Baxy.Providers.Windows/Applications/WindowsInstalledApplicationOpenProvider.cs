@@ -1344,32 +1344,7 @@ internal static class InstalledApplicationResolver
         return new InstalledApplicationResolution(null, false, closest);
     }
 
-    internal static string Normalize(string value)
-    {
-        var builder = new StringBuilder(value.Length);
-        bool previousSpace = true;
-        foreach (char character in value.Normalize(NormalizationForm.FormD))
-        {
-            UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(character);
-            if (category == UnicodeCategory.NonSpacingMark)
-            {
-                continue;
-            }
-
-            if (!char.IsWhiteSpace(character))
-            {
-                builder.Append(char.ToLowerInvariant(character));
-                previousSpace = false;
-            }
-            else if (!previousSpace)
-            {
-                builder.Append(' ');
-                previousSpace = true;
-            }
-        }
-
-        return builder.ToString().Trim();
-    }
+    internal static string Normalize(string value) => CatalogNames.Normalize(value);
 
     internal static bool IsUsable(InstalledApplicationEntry entry) =>
         ApplicationIds.IsValidRequest(entry.Name)
@@ -1936,19 +1911,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         @"^(?:[A-Za-z]+[-_])?v?\d+(?:\.\d+){1,3}$",
         System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-    /// <summary>
-    /// The running image is the shortcut's executable, or the same file name in a
-    /// direct versioned subfolder of the shortcut's folder: self-updating
-    /// installers put a launcher next to <c>app-1.0.9260\</c> and the window
-    /// belongs to the copy inside (t4-r6: «cierra discord» → window_not_found).
-    /// A same-named executable anywhere else is a different program.
-    /// </summary>
-    /// <summary>
-    /// A window drawn by a helper the application started (Steam's windows belong to steamwebhelper.exe, a child of
-    /// steam.exe; measured on the PC 2026-10-15 after the identity by words was removed): the window's process descends,
-    /// within three generations, from a process running the launched image, each parent older than its child so a reused
-    /// process id never passes for a parent.
-    /// </summary>
+    // Whether one of the processes running the launched image's name is an ancestor of this one, within three
+    // generations (the cheap filter; DescendsFromLaunchedImage proves it).
     private static bool HasAncestorAmong(uint process, HashSet<uint> ancestors, Dictionary<uint, uint> parents)
     {
         for (int generation = 0; generation < 3 && parents.TryGetValue(process, out uint parent) && parent != 0;
@@ -1962,9 +1926,19 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return false;
     }
 
+    /// <summary>
+    /// A window drawn by a helper the application itself ships (Steam's windows belong to steamwebhelper.exe, a child
+    /// of steam.exe in Steam's own folder): the window's process descends, within three generations, from a process
+    /// running the launched image, each parent older than its child so a reused process id never passes for a parent;
+    /// and the helper's executable lies under the launched executable's folder and names the same company. A program the
+    /// application only started (a game Steam launches, a page a chat opens) is a different program (re-audit of the
+    /// second round, 2026-10-15: «cierra steam» would have closed the game).
+    /// </summary>
     internal static bool DescendsFromLaunchedImage(
         Process process, string expectedPath, IReadOnlyDictionary<uint, uint> parents)
     {
+        if (!ShippedWith(ExecutableImagePath(process.Id), expectedPath))
+            return false;
         try
         {
             uint id = unchecked((uint)process.Id);
@@ -1991,6 +1965,33 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return false;
     }
 
+    private static bool ShippedWith(string? helperPath, string expectedPath)
+    {
+        if (string.IsNullOrWhiteSpace(helperPath) || !Path.IsPathFullyQualified(helperPath))
+            return false;
+        string? folder = Path.GetDirectoryName(Path.GetFullPath(expectedPath));
+        string helper = Path.GetFullPath(helperPath);
+        if (folder is null || !helper.StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            return false;
+        try
+        {
+            string? company = FileVersionInfo.GetVersionInfo(expectedPath).CompanyName?.Trim();
+            string? helperCompany = FileVersionInfo.GetVersionInfo(helper).CompanyName?.Trim();
+            return !string.IsNullOrEmpty(company) && string.Equals(company, helperCompany, StringComparison.Ordinal);
+        }
+        catch (Exception exception) when (exception is FileNotFoundException or ArgumentException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// The running image is the shortcut's executable, or the same file name in a
+    /// direct versioned subfolder of the shortcut's folder: self-updating
+    /// installers put a launcher next to <c>app-1.0.9260\</c> and the window
+    /// belongs to the copy inside (t4-r6: «cierra discord» → window_not_found).
+    /// A same-named executable anywhere else is a different program.
+    /// </summary>
     internal static bool ExecutableIsLaunchedImage(string actualPath, string expectedPath)
     {
         if (string.Equals(actualPath, expectedPath, StringComparison.OrdinalIgnoreCase))

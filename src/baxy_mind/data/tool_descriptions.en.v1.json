@@ -217,7 +217,7 @@
    "selector": "With scope exact: the name the memory was saved under (as memory.list shows it). Case, accents and spacing do not matter; a part of the name does not match."
   },
   "input.visible.controls": {
-   "wanted": "Words of what you look for in that window (a name, a button). The view keeps sixty controls; with these words, up to ten more whose names contain one of them are added after those. Leave it out for the usual view.",
+   "wanted": "Words of what you look for in that window (a name, a button). The view keeps sixty controls; with these words, up to ten more whose names have one of them as a whole word are added after those. Leave it out for the usual view.",
    "windows": "The window numbers your earlier look gave (window N): the look reads only those windows.",
    "tail": "true to keep the last entries of a long window (a conversation's newest messages) when the view is cut, instead of the first ones."
   },

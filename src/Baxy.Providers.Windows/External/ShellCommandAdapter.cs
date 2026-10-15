@@ -156,7 +156,7 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         // with its output and error text.
         bool mayChange = Baxy.Kernel.Policy.RiskPolicy.ShellMayChange(operation, arguments);
         return process.ExitCode == 0
-            ? ExternalJson.Success(operation, result, effectObserved: mayChange)
+            ? ExternalJson.Success(operation, result, effectObserved: false) with { EffectMayHaveOccurred = mayChange }
             : new ExternalCapabilityReceipt(operation, false, false, result, "shell_command_exit_nonzero")
             {
                 EffectMayHaveOccurred = mayChange,

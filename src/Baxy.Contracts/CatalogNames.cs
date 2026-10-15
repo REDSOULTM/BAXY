@@ -4,9 +4,9 @@ using System.Text;
 namespace Baxy.Contracts;
 
 /// <summary>
-/// The one fold of an application or game name the catalogs compare by (auditoría final 2, fila 20: it was written
-/// twice, identical, in ApplicationCatalogContract and GameCatalogContract): lower case, compatibility forms, no
-/// accents, letters and digits separated by single spaces.
+/// The one fold of an application or game name everything compares by (the catalogs, the resolver, the snapshot the
+/// model reads): lower case, compatibility forms, no accents, runs of white space as one space; every other character
+/// stays («Notepad++» is not «Notepad»; re-audit of the second round, 2026-10-15).
 /// </summary>
 public static class CatalogNames
 {
@@ -29,7 +29,7 @@ public static class CatalogNames
                 continue;
             }
 
-            if (character is >= 'a' and <= 'z' or >= '0' and <= '9')
+            if (!char.IsWhiteSpace(character))
             {
                 builder.Append(character);
                 previousSeparator = false;

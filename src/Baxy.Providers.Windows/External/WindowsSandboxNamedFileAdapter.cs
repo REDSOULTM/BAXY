@@ -127,13 +127,10 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             AttributesToSkip = FileAttributes.ReparsePoint,
             MaxRecursionDepth = 20,
         };
-        // The work folder's own private folders (the filesystem provider's .trash and .backups) hold no file of the
-        // person's.
-        string trash = Path.Combine(_root, ".trash") + Path.DirectorySeparatorChar;
+        // The work folder's own private folder (the filesystem provider's .backups) holds no file of the person's.
         string backups = Path.Combine(_root, ".backups") + Path.DirectorySeparatorChar;
         return Directory.EnumerateFiles(_root, "*", options).Where(path =>
-            !path.StartsWith(trash, StringComparison.OrdinalIgnoreCase)
-            && !path.StartsWith(backups, StringComparison.OrdinalIgnoreCase));
+            !path.StartsWith(backups, StringComparison.OrdinalIgnoreCase));
     }
 
     private string ConfinedDestination(string relative)
