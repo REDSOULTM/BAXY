@@ -177,15 +177,14 @@ public sealed class RiskPolicyWorldActsTests
         });
     }
 
-    // Revisión de V (H1): Enter or space on what the step's view says it lands on («onto»: the voice channel the search
-    // holds chosen) asks as a click on it would; a text channel, no name, or another key does not; bypass never asks.
-    [TestCase("""{"key":"enter","onto":"Cotele!!!😎, Canal de voz, Choche","window":68208}""", true)]
-    [TestCase("""{"key":"space","onto":"Cotele (canal de voz)"}""", true)]
-    [TestCase("""{"key":"enter","onto":"Eliminar pruebas"}""", true)]
-    [TestCase("""{"key":"enter","onto":"general (canal de texto)"}""", false)]
-    [TestCase("""{"key":"enter","onto":null}""", false)]
-    [TestCase("""{"key":"tab","onto":"Cotele!!!😎, Canal de voz, Choche"}""", false)]
-    public void A_key_on_what_asks_asks_as_its_click_would(string arguments, bool asks)
+    // Auditoría K8: Enter or Space may send what is written or press what reaches someone (the voice channel a search
+    // holds chosen), and the kernel does not see the focus, so they always ask; another key does not; bypass never asks.
+    [TestCase("""{"key":"enter","window":68208}""", true)]
+    [TestCase("""{"key":"space"}""", true)]
+    [TestCase("""{"key":"enter","target":"text_field"}""", true)]
+    [TestCase("""{"key":"tab","window":68208}""", false)]
+    [TestCase("""{"key":"arrow_down"}""", false)]
+    public void Enter_or_space_always_asks(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
         using JsonDocument document = JsonDocument.Parse(arguments);
