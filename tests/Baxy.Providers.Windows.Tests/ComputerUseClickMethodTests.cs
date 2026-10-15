@@ -314,6 +314,41 @@ public sealed class ComputerUseClickMethodTests
         }));
     }
 
+    // Auditoría C8: without a window named, a command that acts has no root (the window in front is the person's); only
+    // the commands that read take the window in front. The adapters resolve the act's window before they ask.
+    [Test]
+    public void ACommandThatActsNeverFallsBackToTheWindowInFront()
+    {
+        string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
+        Assume.That(File.Exists(worker), "the worker script is copied next to the tests");
+        string answer = RunPowerShell("""
+            $tokens=$null;$errors=$null
+            $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_CLICK_WORKER,[ref]$tokens,[ref]$errors)
+            $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Get-Root' },$true))
+            . ([scriptblock]::Create($found[0].Extent.Text))
+            [Console]::Out.Write(([string]($null -eq (Get-Root 0)))+'|'+([string]($null -eq (Get-Root -1))))
+            """, ("BAXY_CLICK_WORKER", worker));
+        string script = File.ReadAllText(worker, Encoding.UTF8);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(answer, Is.EqualTo("True|True"));
+            foreach (string acting in new[] { "Do-ClickJudged", "Do-At", "Do-Scroll", "Do-Reveal", "Do-Field", "Do-Focus" })
+            {
+                int at = script.IndexOf("function " + acting + "(", StringComparison.Ordinal);
+                string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
+                Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd)").And.Not.Contain("-Front"), acting);
+            }
+
+            foreach (string reading in new[] { "Do-View", "Do-Signature", "Do-Find", "Do-Interaction", "Do-Unnamed" })
+            {
+                int at = script.IndexOf("function " + reading + "(", StringComparison.Ordinal);
+                string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
+                Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd) -Front"), reading);
+            }
+        });
+    }
+
     [Test]
     public void APointOnTheControlTheTreeAlreadyPressedIsNotPressedAgain()
     {

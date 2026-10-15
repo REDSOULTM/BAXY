@@ -1129,8 +1129,11 @@ function Send-Line($object){
   [Console]::Out.WriteLine($line)
   [Console]::Out.Flush()
 }
-function Get-Root([long]$hwnd){
-  if($hwnd -le 0){ $handle=[BaxyUiaWorkerNative]::GetForegroundWindow() } else { $handle=[IntPtr]$hwnd }
+# Auditoria C8: la ventana que nombra la peticion. Sin una (hwnd 0), solo una lectura (-Front: view, signature, find,
+# interaction, unnamed) lee la del frente; un comando que actua (click, at, field, focus, scroll, reveal) no tiene
+# raiz y responde active_window_not_found: el adaptador ya resolvio la ventana objetivo antes de pedirlo.
+function Get-Root([long]$hwnd,[switch]$Front){
+  if($hwnd -gt 0){ $handle=[IntPtr]$hwnd } elseif($Front){ $handle=[BaxyUiaWorkerNative]::GetForegroundWindow() } else { return $null }
   if($handle -eq [IntPtr]::Zero){ return $null }
   return @{ hwnd=$handle; root=$AE::FromHandle($handle) }
 }
@@ -2568,7 +2571,7 @@ function Select-BodySurface($surfaces,$primary){
 }
 function Do-View($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
   $root=$target.root
   if($null -eq $root){ return @{ ok=$false; error='visible_controls_root_unavailable' } }
@@ -2727,7 +2730,7 @@ function Do-Signature($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
   $budget=[int]$request.budgetMs; if($budget -lt 100){$budget=100}; if($budget -gt 4000){$budget=4000}
   if([long]$request.hwnd -le 0){ return @{ ok=$false; error='active_window_not_found' } }
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='visible_controls_root_unavailable' } }
   $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
   $queue=New-Object System.Collections.Generic.Queue[object]
@@ -3994,7 +3997,7 @@ function Do-Script($request){
 }
 function Do-Find($request){
   $aliases=@($request.aliases | ForEach-Object { [string]$_ })
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found'; count=0 } }
   $script:NamedCandidates=@()
   $matches=@(Find-Named $target.root $aliases)
@@ -4005,7 +4008,7 @@ function Do-Find($request){
 # que una persona interactua (un campo editable o una lista), no cuando tiene titulo; y un atajo abrio su buscador cuando
 # un campo editable de esa ventana tiene el foco. Solo lectura: aqui nada se pulsa, se enfoca ni se escribe.
 function Do-Interaction($request){
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
   $root=$target.root
   $owner=0; try { $owner=[int]$root.Current.ProcessId } catch { return @{ ok=$false; error='active_window_not_found' } }
@@ -4222,7 +4225,7 @@ function Test-HoverCandidate([string]$kind,[string]$name,$rect){
 }
 function Do-Unnamed($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt 24){$limit=24}
-  $target=Get-Root ([long]$request.hwnd)
+  $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
   $all=Get-Descendants $target.root
   $out=New-Object System.Collections.ArrayList
