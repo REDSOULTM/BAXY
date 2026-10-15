@@ -84,6 +84,11 @@ internal sealed class BuildDeployment
 
     [JsonPropertyName("symbols")]
     public string Symbols { get; init; } = string.Empty;
+
+    /// <summary>«not_included»: the package carries no mind (src/baxy_mind, its Python runtime), model, llama-server or
+    /// Piper; Renew runs with scripts/run_renew.cmd where they are registered.</summary>
+    [JsonPropertyName("mind")]
+    public string Mind { get; init; } = string.Empty;
 }
 
 internal sealed class BuildFileRecord

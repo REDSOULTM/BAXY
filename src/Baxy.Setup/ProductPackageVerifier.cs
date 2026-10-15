@@ -281,7 +281,7 @@ public sealed class ProductPackageVerifier
         AssertPropertySequence(document.RootElement.GetProperty("toolchain"),
             ["dotnet_sdk", "powershell"], "build manifest toolchain");
         AssertPropertySequence(document.RootElement.GetProperty("deployment"),
-            ["app", "native_libraries", "core", "symbols"], "build manifest deployment");
+            ["app", "native_libraries", "core", "symbols", "mind"], "build manifest deployment");
 
         JsonElement filesElement = document.RootElement.GetProperty("files");
         if (filesElement.ValueKind != JsonValueKind.Array || filesElement.GetArrayLength() != PackageContract.PayloadPaths.Length)
@@ -350,7 +350,8 @@ public sealed class ProductPackageVerifier
         if (!string.Equals(manifest.Deployment.App, "self_contained_single_file", StringComparison.Ordinal) ||
             !string.Equals(manifest.Deployment.NativeLibraries, "adjacent_no_self_extraction", StringComparison.Ordinal) ||
             !string.Equals(manifest.Deployment.Core, "native_aot_self_contained", StringComparison.Ordinal) ||
-            !string.Equals(manifest.Deployment.Symbols, "excluded_from_user_payload", StringComparison.Ordinal))
+            !string.Equals(manifest.Deployment.Symbols, "excluded_from_user_payload", StringComparison.Ordinal) ||
+            !string.Equals(manifest.Deployment.Mind, "not_included", StringComparison.Ordinal))
         {
             throw new ProductPackageException("The build manifest deployment contract is invalid.");
         }

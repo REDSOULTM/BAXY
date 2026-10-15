@@ -20,53 +20,8 @@ $script:BaxyMaximumPayloadFileBytes = 128L * 1024L * 1024L
 $script:BaxyMaximumManifestBytes = 256 * 1024
 $script:BaxyMaximumChecksumBytes = 64 * 1024
 $script:BaxyMaximumVersionLength = 128
-# The reviewed payload but the Field UI's built assets, whose names carry the build's content hashes: those come
-# from src/Baxy.FieldUi/dist/assets, as Baxy.Setup's contract takes them (Baxy.Setup.csproj, FieldUiAssets). Each
-# list in ordinal order, the order the manifest, the checksums and the ZIP are written in.
-$script:BaxyReviewedPayloadPaths = @(
-    'Baxy.exe',
-    'D3DCompiler_47_cor3.dll',
-    'DesktopKeyPress.ps1',
-    'DesktopSelectAll.ps1',
-    'DesktopUiaWorker.ps1',
-    'FieldUi/index.html',
-    'FieldUiHost/field-native-bridge.js',
-    'KnownFileOpen.ps1',
-    'KnownFolderOpen.ps1',
-    'Microsoft.Web.WebView2.Core.xml',
-    'Microsoft.Web.WebView2.WinForms.xml',
-    'Microsoft.Web.WebView2.Wpf.xml',
-    'PenImc_cor3.dll',
-    'PresentationNative_cor3.dll',
-    'SpotifyDesktopAutomation.ps1',
-    'WebView2Loader.dll',
-    'core/DesktopKeyPress.ps1',
-    'core/DesktopSelectAll.ps1',
-    'core/DesktopUiaWorker.ps1',
-    'core/KnownFileOpen.ps1',
-    'core/KnownFolderOpen.ps1',
-    'core/SpotifyDesktopAutomation.ps1',
-    'core/baxy-core.exe',
-    'runtimes/win-x64/native/WebView2Loader.dll',
-    'tools/mpv/mpv.exe',
-    'tools/mpv/vulkan-1.dll',
-    'tools/yt-dlp/yt-dlp.exe',
-    'vcruntime140_cor3.dll',
-    'wpfgfx_cor3.dll'
-)
-$script:BaxyFieldUiAssetPaths = @(
-    Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot '../src/Baxy.FieldUi/dist/assets') -File |
-        ForEach-Object { 'FieldUi/assets/' + $_.Name }
-)
-if ($script:BaxyFieldUiAssetPaths.Count -eq 0) { throw 'src/Baxy.FieldUi/dist/assets is empty: build the Field UI first.' }
-function Get-BaxyOrdinalPaths {
-    param([Parameter(Mandatory = $true)][string[]]$Paths)
-
-    $sorted = [string[]]$Paths.Clone()
-    [Array]::Sort($sorted, [StringComparer]::Ordinal)
-    return ,$sorted
-}
-$script:BaxyPackagePayloadPaths = Get-BaxyOrdinalPaths ($script:BaxyReviewedPayloadPaths + $script:BaxyFieldUiAssetPaths)
+# The product's payload, as product_build_common.ps1 lists it (one list for both builds).
+$script:BaxyPackagePayloadPaths = $script:BaxyProductPayloadPaths
 $script:BaxyPackageChecksumPaths = Get-BaxyOrdinalPaths ($script:BaxyPackagePayloadPaths + 'build-manifest.json')
 $script:BaxyPackageZipPaths = Get-BaxyOrdinalPaths ($script:BaxyPackageChecksumPaths + 'SHA256SUMS')
 
@@ -192,7 +147,7 @@ function Get-BaxyValidatedPackageManifest {
     Assert-BaxyPropertySet -Object $manifest.toolchain -Expected @('dotnet_sdk', 'powershell') `
         -Context 'embedded product build manifest toolchain'
     Assert-BaxyPropertySet -Object $manifest.deployment -Expected @(
-        'app', 'native_libraries', 'core', 'symbols'
+        'app', 'native_libraries', 'core', 'symbols', 'mind'
     ) -Context 'embedded product build manifest deployment'
 
     if (-not [string]::Equals([string]$manifest.schema, 'baxy-product-build-v4', [StringComparison]::Ordinal) -or
@@ -228,7 +183,8 @@ function Get-BaxyValidatedPackageManifest {
     if (-not [string]::Equals([string]$manifest.deployment.app, 'self_contained_single_file', [StringComparison]::Ordinal) -or
         -not [string]::Equals([string]$manifest.deployment.native_libraries, 'adjacent_no_self_extraction', [StringComparison]::Ordinal) -or
         -not [string]::Equals([string]$manifest.deployment.core, 'native_aot_self_contained', [StringComparison]::Ordinal) -or
-        -not [string]::Equals([string]$manifest.deployment.symbols, 'excluded_from_user_payload', [StringComparison]::Ordinal)) {
+        -not [string]::Equals([string]$manifest.deployment.symbols, 'excluded_from_user_payload', [StringComparison]::Ordinal) -or
+        -not [string]::Equals([string]$manifest.deployment.mind, 'not_included', [StringComparison]::Ordinal)) {
         throw 'Embedded package manifest deployment contract is invalid.'
     }
 

@@ -14,14 +14,16 @@ $script:BaxyRuntimeIdentifier = $script:BaxyBuildLayout.RuntimeIdentifier
 $script:BaxyTargetFramework = $script:BaxyBuildLayout.WindowsTargetFramework
 $script:BaxySemVerPattern = '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?\z'
 $script:BaxyUtf8NoBom = New-Object Text.UTF8Encoding($false, $true)
-$script:BaxyProductPayloadPaths = @(
+# The reviewed payload but the Field UI's built assets, whose names carry the build's content hashes: those come from
+# src/Baxy.FieldUi/dist/assets, as Baxy.Setup's contract takes them (Baxy.Setup.csproj, FieldUiAssets). One list for the
+# product build and the Setup build (audit 2026-10-15, App H26: this one still named the old assets, and both builds
+# refused the current dist). In ordinal order, the order the manifest, the checksums and the ZIP are written in.
+$script:BaxyReviewedPayloadPaths = @(
     'Baxy.exe',
     'D3DCompiler_47_cor3.dll',
     'DesktopKeyPress.ps1',
     'DesktopSelectAll.ps1',
     'DesktopUiaWorker.ps1',
-    'FieldUi/assets/index-CjozYCnU.css',
-    'FieldUi/assets/index-D3QuhrLm.js',
     'FieldUi/index.html',
     'FieldUiHost/field-native-bridge.js',
     'KnownFileOpen.ps1',
@@ -47,6 +49,19 @@ $script:BaxyProductPayloadPaths = @(
     'vcruntime140_cor3.dll',
     'wpfgfx_cor3.dll'
 )
+$script:BaxyFieldUiAssetPaths = @(
+    Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot '../src/Baxy.FieldUi/dist/assets') -File |
+        ForEach-Object { 'FieldUi/assets/' + $_.Name }
+)
+if ($script:BaxyFieldUiAssetPaths.Count -eq 0) { throw 'src/Baxy.FieldUi/dist/assets is empty: build the Field UI first.' }
+function Get-BaxyOrdinalPaths {
+    param([Parameter(Mandatory = $true)][string[]]$Paths)
+
+    $sorted = [string[]]$Paths.Clone()
+    [Array]::Sort($sorted, [StringComparer]::Ordinal)
+    return ,$sorted
+}
+$script:BaxyProductPayloadPaths = Get-BaxyOrdinalPaths ($script:BaxyReviewedPayloadPaths + $script:BaxyFieldUiAssetPaths)
 
 if ($null -eq ('BaxyNativeStreamInspector' -as [type])) {
     Add-Type -TypeDefinition @'
@@ -815,6 +830,9 @@ function New-BaxyBuildManifest {
             native_libraries = 'adjacent_no_self_extraction'
             core = 'native_aot_self_contained'
             symbols = 'excluded_from_user_payload'
+            # Renew's mind (src/baxy_mind and its Python runtime), the GGUF model, llama-server and Piper are not in
+            # the package: Renew runs with scripts/run_renew.cmd where they are registered (a measured limit).
+            mind = 'not_included'
         }
         file_count = [int]$sortedFiles.Count
         total_bytes = $totalBytes
@@ -869,7 +887,7 @@ function Get-BaxyValidatedBuildManifest {
     ) -Context 'build manifest'
     Assert-BaxyPropertySet -Object $manifest.source -Expected @('commit', 'dirty', 'provenance', 'source_date_epoch') -Context 'build manifest source'
     Assert-BaxyPropertySet -Object $manifest.toolchain -Expected @('dotnet_sdk', 'powershell') -Context 'build manifest toolchain'
-    Assert-BaxyPropertySet -Object $manifest.deployment -Expected @('app', 'native_libraries', 'core', 'symbols') -Context 'build manifest deployment'
+    Assert-BaxyPropertySet -Object $manifest.deployment -Expected @('app', 'native_libraries', 'core', 'symbols', 'mind') -Context 'build manifest deployment'
 
     if (-not [string]::Equals([string]$manifest.schema, $script:BaxyBuildManifestSchema, [StringComparison]::Ordinal)) { throw 'Unsupported build manifest schema.' }
     if (-not [string]::Equals([string]$manifest.product, $script:BaxyProductName, [StringComparison]::Ordinal)) { throw 'Unexpected build manifest product.' }
@@ -911,6 +929,7 @@ function Get-BaxyValidatedBuildManifest {
     if (-not [string]::Equals([string]$manifest.deployment.native_libraries, 'adjacent_no_self_extraction', [StringComparison]::Ordinal)) { throw 'Build manifest native library deployment is invalid.' }
     if (-not [string]::Equals([string]$manifest.deployment.core, 'native_aot_self_contained', [StringComparison]::Ordinal)) { throw 'Build manifest core deployment is invalid.' }
     if (-not [string]::Equals([string]$manifest.deployment.symbols, 'excluded_from_user_payload', [StringComparison]::Ordinal)) { throw 'Build manifest symbol policy is invalid.' }
+    if (-not [string]::Equals([string]$manifest.deployment.mind, 'not_included', [StringComparison]::Ordinal)) { throw 'Build manifest must say the mind is not included.' }
 
     $manifestRecords = @()
     $caseInsensitivePaths = New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
