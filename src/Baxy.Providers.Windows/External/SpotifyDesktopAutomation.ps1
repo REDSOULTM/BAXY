@@ -170,6 +170,12 @@ function Get-BaxySpotifyPauseName([string]$PlayName){
 function Test-BaxySpotifyNear($Rect,$Anchor){
     return [Math]::Abs(($Rect.Left+$Rect.Width/2)-($Anchor.Left+$Anchor.Width/2)) -le 48 -and [Math]::Abs(($Rect.Top+$Rect.Height/2)-($Anchor.Top+$Anchor.Height/2)) -le 48
 }
+# The client's now-playing line («<title> de <artist>», folded) is the asked title when its title part is the title,
+# whole, and, when a result card named its artist, that artist follows « de ». One rule before the press (already
+# playing) and after it (verified).
+function Test-BaxySpotifyNowPlayingIs([string]$Playing,[string]$Title,[string]$Identity){
+    ($Playing -eq $Title -or $Playing.StartsWith($Title+' de ')) -and (-not $Identity -or $Playing.Contains(' de '+$Identity))
+}
 function Test-BaxySpotifyPlaybackVerified([string]$Mode,[bool]$Pause,[bool]$IdentityMatches,[string]$Observed,[string]$Before,[bool]$PauseBefore,[bool]$SelectedFlipped){
     if($Mode -ne 'query'){return $IdentityMatches -and $Pause}
     if(-not $Pause -or $Observed -eq ''){return $false}
@@ -462,7 +468,7 @@ try {
             $playCandidate=$choice.Play
             $candidate=$choice.Card
             $candidateIdentity=$choice.Identity
-            $candidateAlreadyPlaying=$null -ne $candidate -and $beforeNowPlaying.StartsWith($foldTitle+' ') -and $candidateIdentity -and $beforeNowPlaying.Contains(' de '+$candidateIdentity)
+            $candidateAlreadyPlaying=$null -ne $candidate -and $candidateIdentity -and (Test-BaxySpotifyNowPlayingIs $beforeNowPlaying $foldTitle $candidateIdentity)
             if($Mode -eq 'exact' -and $candidateAlreadyPlaying -and $alreadyPausedControl){
                 # BAXY Renew audit 2026-10-15 (S4): the title already plays and nothing is pressed: the receipt says
                 # what was observed (the client's window title and its now-playing line), that it was already playing,
@@ -568,7 +574,7 @@ try {
             $selectedFlipped=$false
             $replayControl=$null
             $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
-            foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$playingIdentity=$name.Substring($prefix.Length+1);$titleMatches=$playingIdentity -eq $foldTitle -or $playingIdentity.StartsWith($foldTitle+' de ');$identityMatches=-not $candidateIdentity -or $playingIdentity.Contains(' de '+$candidateIdentity);if($titleMatches -and $identityMatches){$nowPlaying=$true}};if($element.Type -eq [Windows.Automation.ControlType]::Button -and $name -in @('pausar','pause')){$pause=$true}}catch{}}
+            foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$playingIdentity=$name.Substring($prefix.Length+1);if(Test-BaxySpotifyNowPlayingIs $playingIdentity $foldTitle $candidateIdentity){$nowPlaying=$true}};if($element.Type -eq [Windows.Automation.ControlType]::Button -and $name -in @('pausar','pause')){$pause=$true}}catch{}}
             foreach($element in $all){try{
                 if($element.Type -eq [Windows.Automation.ControlType]::Button){
                     $name=$element.Fold
