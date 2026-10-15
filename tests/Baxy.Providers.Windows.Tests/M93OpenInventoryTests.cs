@@ -8,7 +8,8 @@ namespace Baxy.Providers.Windows.Tests;
 /// journal of the run (window-v3u-devD/journal/missions.jsonl) has app.open failed with «inventory_failed» for both
 /// packaged apps, in about a second (shell trace t119: core.call 339341 → 340449 ms), while «Calculadora» (its own
 /// provider) was reused and Google Keep was «app_not_found». In v3r the same Fotos window was reused. One visible process
-/// whose package identity could not be read threw out of the whole open inventory.
+/// whose package identity could not be read threw out of the whole open inventory. Auditoría final V1: such a process is
+/// skipped (it is no candidate of the package), never judged by its name or title.
 /// </summary>
 [TestFixture]
 public sealed class M93OpenInventoryTests
@@ -17,23 +18,9 @@ public sealed class M93OpenInventoryTests
         throw new ApplicationInventoryException("The visible process application identity could not be opened.");
 
     [Test]
-    public void AnUnreadableProcessIsJudgedByItsNameWhenOpening()
+    public void AnUnreadableProcessIsSkippedWithoutAbortingTheInventory()
     {
-        bool kept = WindowsInstalledApplicationPlatform.TryReadPackagedIdentity(
-            Unreadable, strongIdentityOnly: false, out string? applicationId);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(kept, Is.True);
-            Assert.That(applicationId, Is.Null);
-        });
-    }
-
-    [Test]
-    public void TheStrongInventoryStillSkipsAnUnreadableProcess()
-    {
-        bool kept = WindowsInstalledApplicationPlatform.TryReadPackagedIdentity(
-            Unreadable, strongIdentityOnly: true, out string? applicationId);
+        bool kept = WindowsInstalledApplicationPlatform.TryReadPackagedIdentity(Unreadable, out string? applicationId);
 
         Assert.Multiple(() =>
         {
@@ -43,18 +30,14 @@ public sealed class M93OpenInventoryTests
     }
 
     [Test]
-    public void AReadableIdentityIsKeptInBothInventories()
+    public void AReadableIdentityIsKept()
     {
         const string photos = "Microsoft.Windows.Photos_8wekyb3d8bbwe!App";
-        foreach (bool strong in new[] { false, true })
+        bool kept = WindowsInstalledApplicationPlatform.TryReadPackagedIdentity(() => photos, out string? applicationId);
+        Assert.Multiple(() =>
         {
-            bool kept = WindowsInstalledApplicationPlatform.TryReadPackagedIdentity(
-                () => photos, strong, out string? applicationId);
-            Assert.Multiple(() =>
-            {
-                Assert.That(kept, Is.True);
-                Assert.That(applicationId, Is.EqualTo(photos));
-            });
-        }
+            Assert.That(kept, Is.True);
+            Assert.That(applicationId, Is.EqualTo(photos));
+        });
     }
 }

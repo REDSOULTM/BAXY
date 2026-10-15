@@ -1331,7 +1331,8 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         var result = new List<WindowSnapshot>(limit);
         int observedCount = 0;
         bool complete = true;
-        string selector = InstalledApplicationResolver.Normalize(processName);
+        // Auditoría final V3/G3: a title is the one asked only when it is that title, folded (case, accents, whitespace).
+        string? title = byTitle ? InstalledApplicationResolver.Normalize(processName) : null;
         EnumWindowsProc callback = (handle, _) =>
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1347,11 +1348,8 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             try
             {
                 using Process process = Process.GetProcessById(checked((int)owner));
-                string title = ReadWindowTitle(handle);
-                bool matches = allWindows || (byTitle
-                    ? string.Equals(title.Trim(), processName, StringComparison.OrdinalIgnoreCase)
-                        || selector.Length > 0 && WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
-                            InstalledApplicationResolver.Normalize(title), selector)
+                bool matches = allWindows || (title is not null
+                    ? title.Length > 0 && InstalledApplicationResolver.Normalize(ReadWindowTitle(handle)) == title
                     : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
                 if (!matches)
                     return true;

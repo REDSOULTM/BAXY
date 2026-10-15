@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Baxy.Contracts;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -120,6 +119,13 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
 
         InstalledApplicationEntry entry = resolution.Entry;
+        // Auditoría final V1: a window is the application's only by the identity Windows gives it (its package, or the
+        // executable its shortcut launches); without one nothing is launched, since no window could be verified.
+        if (!_platform.IdentifiesWindows(entry))
+        {
+            return Failure(request, entry.Name, ApplicationOpenErrorCodes.WindowIdentityUnavailable);
+        }
+
         IReadOnlyList<InstalledApplicationObservation> before;
         try
         {
@@ -504,14 +510,6 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         return null;
     }
 
-    internal async ValueTask<(IReadOnlyList<InstalledApplicationObservation> Windows, string? ErrorCode)>
-        ResolveWindowIdentitiesAsync(string applicationName, CancellationToken cancellationToken)
-    {
-        var (windows, errorCode, _) = await ResolveApplicationWindowsAsync(applicationName, cancellationToken)
-            .ConfigureAwait(false);
-        return (windows, errorCode);
-    }
-
     // v3 r6 lectores: the windows of one installed application with the catalog identity that resolved them, so a
     // window issued from it keeps which application it is even when its frame belongs to a shared host process.
     internal async ValueTask<(IReadOnlyList<InstalledApplicationObservation> Windows, string? ErrorCode,
@@ -533,9 +531,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 return ([], ApplicationOpenErrorCodes.ApplicationAmbiguous, null);
             if (resolution.Entry is not { } entry)
                 return ([], ApplicationOpenErrorCodes.ApplicationNotFound, null);
-            if (!entry.AppUserModelId.Contains('!')
-                && WindowsInstalledApplicationPlatform.StrongExecutablePath(entry) is null)
-                return ([], "application_window_identity_unavailable", null);
+            if (!_platform.IdentifiesWindows(entry))
+                return ([], ApplicationOpenErrorCodes.WindowIdentityUnavailable, null);
 
             return (_platform.InventoryForWindowResolution(entry, cancellationToken), null, entry.AppUserModelId);
         }
@@ -576,6 +573,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         if (resolution.Entry is null)
         {
             return new(applicationName, null, false, false, 0, true, null);
+        }
+
+        if (!_platform.IdentifiesWindows(resolution.Entry))
+        {
+            return new(applicationName, resolution.Entry.Name, true, false, 0, false,
+                ApplicationOpenErrorCodes.WindowIdentityUnavailable);
         }
 
         IReadOnlyList<InstalledApplicationObservation> observations;
@@ -823,7 +826,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             entry = InstalledApplicationResolver.Resolve(
                 request.ApplicationId, await ReadCatalogAsync(cancellationToken).ConfigureAwait(false)).Entry;
-            theirs = entry is null ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
+            // An application without a window identity is refused by the opening below, before any launch.
+            theirs = entry is null || !_platform.IdentifiesWindows(entry)
+                ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
         }
         catch (Exception exception) when (exception is ApplicationInventoryException
             or InvalidDataException
@@ -1208,6 +1213,10 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
         CancellationToken cancellationToken);
 
+    // Whether Windows gives the application an identity its windows can be told by: a package, or the executable its
+    // shortcut launches (auditoría final V1). Without one, no window is ever said to be the application's.
+    bool IdentifiesWindows(InstalledApplicationEntry entry) => true;
+
     IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry);
 
     IReadOnlyList<InstalledApplicationObservation> InventoryForWindowResolution(
@@ -1291,8 +1300,8 @@ internal static class InstalledApplicationResolver
     // How many of the closest installed names a name that matches none gets back.
     private const int CandidateCount = 5;
 
-    // Auditoría D1: the application is the catalog entry of exactly that name, folded (case, accents, punctuation);
-    // «Motion» is never Notion. Without one, nothing is resolved and the closest names are only said.
+    // Auditoría D1: the application is the catalog entry of exactly that name, folded (case, accents, whitespace);
+    // «Motion» is never Notion, and «Notepad» is never Notepad++ (auditoría final V2: punctuation is part of a name). Without one, nothing is resolved and the closest names are only said.
     internal static InstalledApplicationResolution Resolve(
         string query,
         IReadOnlyList<InstalledApplicationEntry> catalog)
@@ -1347,7 +1356,7 @@ internal static class InstalledApplicationResolver
                 continue;
             }
 
-            if (char.IsLetterOrDigit(character))
+            if (!char.IsWhiteSpace(character))
             {
                 builder.Append(char.ToLowerInvariant(character));
                 previousSpace = false;
@@ -1620,6 +1629,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
     }
 
+    public bool IdentifiesWindows(InstalledApplicationEntry entry) =>
+        entry.AppUserModelId.Contains('!') || ExpectedExecutable(entry) is not null;
+
     public IReadOnlyList<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry) =>
         Inventory(entry, strongIdentityOnly: false, CancellationToken.None);
@@ -1655,9 +1667,13 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         // (CabinetWClass) count as the application being open (APPS1231/005).
         bool shellExplorer = !packaged && string.Equals(
             entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal);
-        string? expectedExecutable = strongIdentityOnly && !packaged
-            ? StrongExecutablePath(entry) : null;
-        if (strongIdentityOnly && !packaged && expectedExecutable is null)
+        string? windowClass = shellExplorer ? ExplorerWindowClass : null;
+        // Auditoría final V1: a window is the application's by its package identity (AUMID) or by the executable its
+        // shortcut launches, for opening as for closing; never by words of its name, its process name or its title
+        // («Notepad++» was taken for «Bloc de notas»). Strict (strongIdentityOnly) only adds that the inventory is
+        // complete.
+        string? expectedExecutable = packaged ? null : ExpectedExecutable(entry);
+        if (!packaged && expectedExecutable is null)
             throw new ApplicationInventoryException("The installed executable identity is unavailable.");
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
@@ -1670,14 +1686,23 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 try
                 {
                     process.Refresh();
+                    if (!packaged && !string.Equals(
+                            process.ProcessName,
+                            Path.GetFileNameWithoutExtension(expectedExecutable),
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        // A process of another executable cannot be this
+                        // classic application; reading its main module (elevated
+                        // Task Manager, CLOSE1221) must not abort the inventory.
+                        continue;
+                    }
+
                     // A foreign window being destroyed (Chrome tearing down after a
                     // close, CLOSE1223/009) has no readable rectangle; only the
                     // candidate's enumeration must be complete.
-                    nint[]? ownedWindows = strongIdentityOnly
-                        ? VisibleTopLevelWindows(process.Id, requireComplete: false)
-                        : shellExplorer
-                            ? VisibleTopLevelWindows(process.Id, requireComplete: false, ExplorerWindowClass)
-                            : null;
+                    nint[]? ownedWindows = strongIdentityOnly || shellExplorer
+                        ? VisibleTopLevelWindows(process.Id, requireComplete: false, windowClass)
+                        : null;
                     nint window = ownedWindows is null
                         ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
                     // Computer use (CU1959, measured on Configuración): a packaged
@@ -1701,29 +1726,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
                     }
 
-                    if (strongIdentityOnly && !packaged && !string.Equals(
-                            process.ProcessName,
-                            Path.GetFileNameWithoutExtension(expectedExecutable),
-                            StringComparison.OrdinalIgnoreCase))
-                    {
-                        // A windowed process of another executable cannot be this
-                        // classic application; reading its main module (elevated
-                        // Task Manager, CLOSE1221) must not abort the inventory.
-                        continue;
-                    }
-
-                    string? applicationId = null;
-                    if (packaged && !TryReadPackagedIdentity(
-                            () => ReadApplicationUserModelId(process.Id), strongIdentityOnly, out applicationId))
-                    {
-                        // An unreadable foreign process is not a candidate for
-                        // this package; only candidates need a strong identity.
-                        continue;
-                    }
-                    if (strongIdentityOnly
-                        ? packaged && !string.Equals(entry.AppUserModelId, applicationId, StringComparison.Ordinal)
-                        : !WindowProcessIdentifiesApplication(
-                            entry, process.ProcessName, process.MainWindowTitle, applicationId))
+                    // An unreadable foreign process is not a candidate for this package; only candidates need a
+                    // strong identity.
+                    if (packaged
+                        && (!TryReadPackagedIdentity(() => ReadApplicationUserModelId(process.Id), out string? applicationId)
+                            || !string.Equals(entry.AppUserModelId, applicationId, StringComparison.Ordinal)))
                     {
                         continue;
                     }
@@ -1739,11 +1746,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     if (strongIdentityOnly)
                     {
                         // The candidate's own window set must be complete and stable.
-                        ownedWindows = VisibleTopLevelWindows(process.Id, requireComplete: true);
+                        ownedWindows = VisibleTopLevelWindows(process.Id, requireComplete: true, windowClass);
                         if (ownedWindows.Length == 0)
                             continue;
                     }
-                    if (strongIdentityOnly && !packaged
+                    if (!packaged
                         && !ExecutableIsLaunchedImage(Path.GetFullPath(executablePath), expectedExecutable!))
                         continue;
 
@@ -1824,11 +1831,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     /// The package identity of a visible process. M93 (DEV-D v3u D-s119 «Abrir la app de photos.», D-w11-t5 «¿Me abres
     /// el Spotify?»): both packaged apps ended in inventory_failed in about a second, while the Calculator (its own
     /// provider) and an unknown app were answered; one visible process whose identity could not be read aborted the
-    /// whole open inventory. For opening, an unreadable process keeps no identity and is judged by its name and title
-    /// like a classic one (false keeps the old skip of the strong inventory that closing and window resolution use).
+    /// whole open inventory. A process whose identity cannot be read is skipped: it is no candidate of the package.
     /// </summary>
-    internal static bool TryReadPackagedIdentity(
-        Func<string?> read, bool strongIdentityOnly, out string? applicationId)
+    internal static bool TryReadPackagedIdentity(Func<string?> read, out string? applicationId)
     {
         try
         {
@@ -1838,7 +1843,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         catch (ApplicationInventoryException)
         {
             applicationId = null;
-            return !strongIdentityOnly;
+            return false;
         }
     }
 
@@ -1947,6 +1952,13 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             && VersionedFolder.IsMatch(Path.GetFileName(versioned));
     }
 
+    // The executable a classic application's windows run: File Explorer's own image for the shell's catalog entry (its
+    // id carries no path), else the shortcut's executable; null when Windows gives none.
+    internal static string? ExpectedExecutable(InstalledApplicationEntry entry) =>
+        string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe")
+            : StrongExecutablePath(entry);
+
     internal static string? StrongExecutablePath(InstalledApplicationEntry entry)
     {
         // Shell-supplied executable paths only. No display-name/process-name
@@ -1966,40 +1978,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             }
         }
         return null;
-    }
-
-    internal static bool WindowProcessIdentifiesApplication(
-        InstalledApplicationEntry entry,
-        string processName,
-        string windowTitle,
-        string? observedApplicationId)
-    {
-        if (entry.AppUserModelId.Contains('!'))
-        {
-            // The OS identity is independent of the localized display name,
-            // executable name and document title. A different package (or an
-            // unidentified process) cannot satisfy this catalog application.
-            return string.Equals(
-                entry.AppUserModelId, observedApplicationId, StringComparison.Ordinal);
-        }
-
-        string normalizedProcessName = InstalledApplicationResolver.Normalize(processName);
-        if (string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal))
-        {
-            // File Explorer windows are titled «<folder> - Explorador de archivos»:
-            // the application name is a suffix, never the prefix the title rule
-            // expects, and the catalog id carries no executable. The process is
-            // the identity (APPS1235/000: verification_failed with the window
-            // on screen).
-            return string.Equals(normalizedProcessName, "explorer", StringComparison.Ordinal);
-        }
-        return BuildProcessIdentities(entry).Any(identity =>
-                normalizedProcessName == identity
-                || (identity.Length >= 4
-                    && normalizedProcessName.StartsWith(identity, StringComparison.Ordinal)))
-            || WindowTitleIdentifiesApplication(
-                InstalledApplicationResolver.Normalize(windowTitle),
-                InstalledApplicationResolver.Normalize(entry.Name));
     }
 
     private static string? ReadApplicationUserModelId(int processId)
@@ -2114,25 +2092,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return process is not null ? FileActivation.Outcome.Issued : FileActivation.Outcome.Refused;
     }
 
-    internal static bool WindowTitleIdentifiesApplication(string windowTitle, string applicationName)
-    {
-        if (string.IsNullOrWhiteSpace(windowTitle)
-            || string.IsNullOrWhiteSpace(applicationName)
-            || applicationName.Length < 3)
-        {
-            return false;
-        }
-
-        if (windowTitle == applicationName)
-            return true;
-        if (!windowTitle.StartsWith(applicationName, StringComparison.Ordinal))
-            return false;
-        if (windowTitle.Length == applicationName.Length)
-            return true;
-        char next = windowTitle[applicationName.Length];
-        return next is ' ' or '-' or ':' or '|' or '(';
-    }
-
     public long ForegroundWindow() => ForegroundHandBack.Foreground();
 
     public long PersonWorkingIn(long window) => ForegroundHandBack.PersonWorkingIn(window);
@@ -2219,36 +2178,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>
         new(Task.Delay(delay, cancellationToken));
 
-    private static HashSet<string> BuildProcessIdentities(InstalledApplicationEntry entry)
-    {
-        var identities = new HashSet<string>(StringComparer.Ordinal);
-        foreach (string token in InstalledApplicationResolver.Normalize(entry.Name)
-                     .Split(' ', StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (token.Length >= 3 && token is not ("microsoft" or "google" or "app"))
-            {
-                identities.Add(token);
-            }
-        }
-
-        foreach (Match match in ExecutableIdentityPattern().Matches(entry.AppUserModelId))
-        {
-            string identity = InstalledApplicationResolver.Normalize(match.Groups["name"].Value);
-            if (identity.Length >= 3)
-            {
-                identities.Add(identity);
-            }
-        }
-
-        string simpleAppId = InstalledApplicationResolver.Normalize(entry.AppUserModelId);
-        if (!simpleAppId.Contains(' ') && simpleAppId.Length is >= 3 and <= 32)
-        {
-            identities.Add(simpleAppId);
-        }
-
-        return identities;
-    }
-
     private const string ShellExplorerAppUserModelId = "Microsoft.Windows.Explorer";
     private const string ExplorerWindowClass = "CabinetWClass";
 
@@ -2303,9 +2232,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 
     [LibraryImport("user32.dll", EntryPoint = "GetClassNameW")]
     private static unsafe partial int GetClassName(nint window, char* buffer, int capacity);
-
-    [GeneratedRegex(@"(?<name>[A-Za-z0-9_-]+)\.exe", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex ExecutableIdentityPattern();
 
     [StructLayout(LayoutKind.Sequential)]
     private struct Rect

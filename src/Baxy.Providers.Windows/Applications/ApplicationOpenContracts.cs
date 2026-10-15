@@ -50,6 +50,9 @@ public static class ApplicationOpenErrorCodes
     // cu-v3-documento-nuevo: the person asked for a new document and the application's New command (Ctrl+N, sent only
     // to its window in front) showed no new window nor a new document in it; nothing is written anywhere.
     public const string NewDocumentNotCreated = "new_document_not_created";
+    // Auditoría final V1: Windows gives the application no identity its windows can be told by (no package, no
+    // executable behind its shortcut); nothing is launched nor said about its windows.
+    public const string WindowIdentityUnavailable = "application_window_identity_unavailable";
     public const string StateCorrupt = "state_corrupt";
     public const string StateCapacityReached = "state_capacity_reached";
     public const string StateUnavailable = "state_unavailable";
