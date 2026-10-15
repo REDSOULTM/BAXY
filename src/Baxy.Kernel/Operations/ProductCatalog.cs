@@ -450,7 +450,7 @@ public static class ProductCatalog
                 ["folder", "name"]),
             OperationRisks.LowReversible,
             "file.open.shell.window.process.postread.v1",
-            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece."),
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto."),
         Descriptor(
             "file.read",
             Schema(
