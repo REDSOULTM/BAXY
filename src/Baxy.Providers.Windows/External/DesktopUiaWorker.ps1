@@ -291,7 +291,7 @@ public static class BaxyUiaWorkerNative {
     }
     return best;
   }
-  // Whether any host shows a render surface at all (the planner's fact «render»).
+  // Whether any host shows a render surface at all (the look's «render»).
   public static bool HostsRender(IntPtr[] hosts, uint process) {
     if(hosts==null) return false;
     foreach(IntPtr host in hosts){
@@ -2444,10 +2444,9 @@ function Find-MenuCommand($menuEntries,[string[]]$aliases,[string]$controlId){
 # no son filas (encabezados, pestanas, barras, menus, botones, campos). (3) Las filas (ListItem, TreeItem). (4) Lo demas
 # que se ve. Lo elegido sale en el orden de siempre (accionables y luego lo demas, cada grupo en orden del arbol); sin
 # corte la vista es la misma que antes. (5) Revision 1: hasta $script:WantedRoom controles que quedaron fuera y cuyo
-# nombre lleva una palabra del objetivo del paso («wanted»: las que la mente usa para ordenar la vista) van DESPUES de
-# todo lo anterior, marcados «reserved». Asi la base del corte no depende de las palabras: la mirada de antes del primer
-# acto de un subobjetivo (sin palabras) y la de despues (con ellas) se comparan sobre lo mismo, y la mision no cuenta lo
-# reservado como algo que el acto trajo (ComputerUseSuccessCheck.ComparedControls).
+# nombre lleva, como palabras enteras, una de las palabras que el modelo dio a la mirada («wanted», plegadas) van
+# DESPUES de todo lo anterior, marcados «reserved». Asi la base del corte no depende de las palabras: dos miradas, con
+# y sin ellas, comparten lo mismo antes de lo reservado.
 # Ronda 23 (indices de vista y esquema, t-menu-2): el tope de una mirada, el cupo reservado y el cuerpo numeran la
 # vista de 0 a $script:ViewCap+$script:WantedRoom (VisibleViewNumbering en el kernel: el catalogo acepta ese rango y
 # un test lee estas constantes de aqui).
@@ -2457,7 +2456,8 @@ $script:WantedRoom=10
 function Test-WantedName([string]$name,[string[]]$wanted){
   $folded=Get-Folded $name
   if($folded.Length -eq 0){ return $false }
-  foreach($word in @($wanted)){ $needle=Get-Folded ([string]$word); if($needle.Length -gt 0 -and $folded.Contains($needle)){ return $true } }
+  $words=' '+$folded+' '
+  foreach($word in @($wanted)){ $needle=Get-Folded ([string]$word); if($needle.Length -gt 0 -and $words.Contains(' '+$needle+' ')){ return $true } }
   return $false
 }
 # Los campos de texto que son la celda de una fila de su mismo nombre (el centro dentro de la fila, o sin rectangulo).
