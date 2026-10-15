@@ -355,7 +355,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 true,
                 null,
                 TryReadInstalledVersion(entry.Name))
-            : new(applicationName, null, false, true, null);
+            : new(applicationName, null, false, true, null, Candidates: resolution.Candidates);
     }
 
     public async ValueTask<InstalledApplicationCatalogSnapshot> GetCatalogSnapshotAsync(

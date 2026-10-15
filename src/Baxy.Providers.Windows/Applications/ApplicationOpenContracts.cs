@@ -137,13 +137,15 @@ public interface IApplicationOpenProvider
         CancellationToken cancellationToken);
 }
 
+// Candidates: not installed under that name, the installed names closest to it, as app.open says them (auditoría D1).
 public sealed record ApplicationInstalledResult(
     string RequestedName,
     string? DisplayName,
     bool Installed,
     bool Verified,
     string? ErrorCode,
-    string? InstalledVersion = null);
+    string? InstalledVersion = null,
+    IReadOnlyList<string>? Candidates = null);
 
 public sealed record ApplicationWindowStatusResult(
     string RequestedName,
