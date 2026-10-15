@@ -30,12 +30,6 @@ public sealed class MissionEngine : IDisposable
     private readonly Dictionary<string, DateTimeOffset> _consentedCaptures = new(StringComparer.Ordinal);
 
     /// <summary>
-    /// Última autocorrección de este motor: afirmación, verificación que la
-    /// desmintió y texto de corrección. Nulo si el último turno no corrigió.
-    /// </summary>
-    public HonestyCorrectionTrace? LastHonestyCorrection { get; private set; }
-
-    /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
     /// <see cref="MissionEngineOptions"/>, para que añadir una dependencia no
     /// vuelva a duplicar el número de combinaciones.
@@ -85,13 +79,11 @@ public sealed class MissionEngine : IDisposable
                 }
 
                 _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
-                OperationResponse replayed = PrivateOperationBoundary.NormalizeReplay(
+                return PrivateOperationBoundary.NormalizeReplay(
                     request,
                     completed.Response,
                     _privateEnvelopeAuthenticator,
                     _narrator);
-                LastHonestyCorrection = replayed.HonestyCorrection;
-                return replayed;
             }
 
             if (await _journal
@@ -265,7 +257,6 @@ public sealed class MissionEngine : IDisposable
         OperationRequest request,
         OperationOutcome outcome)
     {
-        LastHonestyCorrection = null;
         bool completed = outcome.Succeeded && outcome.Verified;
         string status = outcome.Retryable
             ? OperationStatuses.Pending
@@ -276,16 +267,6 @@ public sealed class MissionEngine : IDisposable
             ? null
             : outcome.ErrorCode ?? (outcome.Succeeded ? "verification_failed" : "operation_failed");
         string message = _narrator.Narrate(request.Operation, outcome);
-        HonestyCorrectionTrace? honesty = null;
-        if (outcome.Succeeded && !outcome.Verified)
-        {
-            honesty = HonestyCorrection.Correct(
-                HonestyCorrection.NonAssertingInProgress,
-                errorCode ?? "verification_failed",
-                message);
-            LastHonestyCorrection = honesty;
-        }
-
         return new OperationResponse(
             ProtocolTypes.OperationResponse,
             request.RequestId,
@@ -298,8 +279,7 @@ public sealed class MissionEngine : IDisposable
             outcome.Result,
             errorCode,
             outcome.EffectMayHaveOccurred,
-            outcome.CauseCode,
-            honesty);
+            outcome.CauseCode);
     }
 
     private async ValueTask<OperationResponse> CompleteAsync(

@@ -103,7 +103,6 @@ public sealed class ConfirmationModeTests
             Assert.That(denied.Status, Is.Not.EqualTo(OperationStatuses.Completed));
             Assert.That(denied.Verified, Is.False);
             Assert.That(denied.ErrorCode, Is.EqualTo("verification_failed"));
-            Assert.That(engine.LastHonestyCorrection, Is.Not.Null);
         });
     }
 
@@ -225,7 +224,8 @@ public sealed class ConfirmationModeTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return ValueTask.FromResult(OperationOutcome.Unverified());
+            // An effect the provider could not verify: never a completed claim.
+            return ValueTask.FromResult(new OperationOutcome(true, false, null, null));
         }
     }
 }
