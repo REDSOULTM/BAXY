@@ -21,3 +21,18 @@ Goal: `PROMPT_GOAL_RENEW.md`. Estado estructurado: `metas.json`. Notas del noteb
 - `AGENTS.md` dice «subagentes, por defecto no»; el prompt del goal manda usarlos con libertad. Manda el prompt.
 - `00_IDENTIDAD.md`: en modo Normal «apagar va directo»; el latido, por decisión del 2026-10-15, siempre propone apagar.
   Se aplica sólo a lo que el latido hace por instinto: un pedido explícito sigue la tabla de modos.
+
+**Arnés nuevo (commit siguiente a 06c7eb81).**
+- Mente: conversación de sesión con llamadas y resultados; `turn.result` con argumentos; `turn.confirm` (botones) y
+  `confirm_pending` (respuesta por voz o texto, sin lista de palabras); `turn.continue final`; semilla fija.
+- App: `NativeTurnLoop` (kernel → Core → resultado verificado al modelo, hasta 15 movimientos), `MainWindowViewModel`,
+  `MindSidecarClient` y conductor reescritos; `POST /confirmation/answer` en el canal de la UI; ~25k líneas de legado
+  fuera. Enmascarado de secretos conservado en `SensitiveText`.
+- Fusionado del notebook: Piper residente (`voice_output.py`), limpieza de pruebas heredadas, JSON y scripts.
+- Humo en el producto real (`F:\BAXYeval\renew_v1\runs\smoke1`): 6 turnos completos; voz empieza 0,9–1,4 s tras el
+  texto en turnos de una llamada. Visto: tras `app.close` con `invalid_or_expired_window_id` el modelo dijo «el Bloc de
+  notas ya no está abierto» (interpretación falsa) → banco de falsedades.
+- Trampa: un perfil del conductor en `F:` falla al preparar el almacén privado (ACL); usar el perfil por defecto en C:.
+
+**Práctica.** `r2-conv-seed` (cases.json): 80/90, p50 0,69 s, VRAM 4,7 GB (sobre el límite). Banco de práctica 2:
+`F:\BAXYeval\renew_v1\practica\decision2.json` (270 casos, 131 operaciones).

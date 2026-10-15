@@ -284,6 +284,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         catch (Exception exception) when (IsExpectedStartupFailure(exception))
         {
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupFailed,
+                $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
             await HandleStartupFailureAsync(client);
         }
         finally
