@@ -101,10 +101,15 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             return OperationOutcome.Failure(result.ErrorCode ?? "app_close_failed");
         }
 
-        return OperationOutcome.Success(Receipt(result.ProcessId.Value, windowClosed: true, closePrompted: false, result.Title));
+        // Auditoría D7: «closed» only for a window that went away after BAXY's close; one already gone, or hidden instead
+        // of closed, says so.
+        return OperationOutcome.Success(Receipt(
+            result.ProcessId.Value, windowClosed: result.Outcome == WindowCloseOutcomes.Closed, closePrompted: false,
+            result.Title, result.Outcome));
     }
 
-    private static JsonElement Receipt(int processId, bool windowClosed, bool closePrompted, string? title = null)
+    private static JsonElement Receipt(
+        int processId, bool windowClosed, bool closePrompted, string? title = null, string? outcome = null)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -113,6 +118,16 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             writer.WriteNumber("version", 1);
             writer.WriteNumber("processId", processId);
             writer.WriteBoolean("windowClosed", windowClosed);
+            if (outcome == WindowCloseOutcomes.AlreadyGone)
+            {
+                writer.WriteBoolean("alreadyGone", true);
+            }
+
+            if (outcome == WindowCloseOutcomes.Hidden)
+            {
+                writer.WriteBoolean("hidden", true);
+            }
+
             // Encargo H1 (tandas fin1/fin2 t2-c03 t2): what it closed, as Windows wrote the window's title; the final
             // names it from here, never from the request.
             if (!string.IsNullOrWhiteSpace(title))
@@ -180,6 +195,9 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             writer.WriteNumber("version", 1);
             writer.WriteNumber("desktopWindows", result.Found);
             writer.WriteNumber("closed", result.Closed);
+            // Auditoría D7: never counted as closed.
+            writer.WriteNumber("hidden", result.Hidden);
+            writer.WriteNumber("alreadyGone", result.AlreadyGone);
             writer.WriteNumber("remainingVisible", result.Remaining);
             writer.WriteNumber("keptOpen", result.Kept);
             writer.WriteStartArray("keptProcesses");
@@ -188,7 +206,7 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             writer.WriteStartArray("remainingProcesses");
             foreach (string name in result.RemainingProcesses) writer.WriteStringValue(name);
             writer.WriteEndArray();
-            writer.WriteBoolean("allClosed", result.Remaining == 0);
+            writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
             writer.WriteBoolean("editorKeptOpen", result.Kept > 0);
             writer.WriteString("authority", "win32_desktop_windows_close_postread");
             writer.WriteEndObject();

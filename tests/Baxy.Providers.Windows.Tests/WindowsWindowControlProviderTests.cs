@@ -98,6 +98,41 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Auditoría D7: a window gone before BAXY's close reached it is «alreadyGone», and one that went invisible instead
+    // of closing (an application that hides in the notification area) is «hidden»: neither is «closed».
+    [TestCase(false, WindowCloseOutcomes.Closed)]
+    [TestCase(true, WindowCloseOutcomes.Hidden)]
+    public async Task ACloseSaysWhetherTheWindowClosedOrOnlyHid(bool hides, string outcome)
+    {
+        var platform = new FakePlatform { CloseHides = hides };
+        var provider = new WindowsWindowControlProvider(platform);
+        WindowResolveResult resolved = await provider.ResolveAsync("notepad", 10, CancellationToken.None);
+
+        WindowCloseResult result = await provider.CloseAsync(resolved.Windows.Single().WindowId, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Outcome, Is.EqualTo(outcome));
+        });
+    }
+
+    [Test]
+    public async Task AWindowGoneBeforeTheCloseIsAlreadyGoneNeverClosedByBaxy()
+    {
+        var platform = new FakePlatform { GoneAtClose = true };
+        var provider = new WindowsWindowControlProvider(platform);
+        WindowResolveResult resolved = await provider.ResolveAsync("notepad", 10, CancellationToken.None);
+
+        WindowCloseResult result = await provider.CloseAsync(resolved.Windows.Single().WindowId, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Outcome, Is.EqualTo(WindowCloseOutcomes.AlreadyGone));
+        });
+    }
+
     [TestCase(true)]
     [TestCase(false)]
     public async Task CloseFallsBackToVerifiedSystemCommandForHostedOrUiAccessWindows(
@@ -242,8 +277,14 @@ public sealed class WindowsWindowControlProviderTests
             return new WindowEnumeration([new WindowSnapshot(_identity, _state, _foreground, _bounds)], 1, true);
         }
 
+        // Auditoría D7: the close hides the window instead (it still exists, invisible), or the window is gone when
+        // the close would reach it.
+        public bool CloseHides { get; set; }
+        public bool GoneAtClose { get; set; }
+
         public WindowSnapshot Observe(WindowIdentity identity)
         {
+            if (Closed && CloseHides) throw new WindowIdentityChangedException(hidden: true);
             if (IdentityChanged || Closed) throw new WindowIdentityChangedException();
             Assert.That(identity.Handle, Is.EqualTo(_identity.Handle));
             Assert.That(identity.ProcessCreationTimeUtcTicks,
@@ -289,6 +330,7 @@ public sealed class WindowsWindowControlProviderTests
         public bool RequestClose(WindowIdentity identity)
         {
             CloseCalls++;
+            if (GoneAtClose) throw new WindowIdentityChangedException();
             _ = Observe(identity);
             if (PrimaryCloseCloses)
             {
