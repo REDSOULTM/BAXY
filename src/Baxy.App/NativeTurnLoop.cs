@@ -95,8 +95,8 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(mind, await mind.DecideAsync(text, cancellationToken).ConfigureAwait(false), cancellationToken)
-            .ConfigureAwait(false);
+        await DriveAsync(mind, await mind.DecideAsync(text, cancellationToken), cancellationToken)
+            ;
     }
 
     /// <summary>The person pressed Sí or No on the pending confirmation.</summary>
@@ -111,9 +111,9 @@ internal sealed class NativeTurnLoop
 
         await DriveAsync(
                 mind,
-                await mind.ConfirmAsync(approve, label, cancellationToken).ConfigureAwait(false),
+                await mind.ConfirmAsync(approve, label, cancellationToken),
                 cancellationToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     /// <summary>
@@ -131,13 +131,13 @@ internal sealed class NativeTurnLoop
         _beat = true;
         try
         {
-            await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken).ConfigureAwait(false),
-                cancellationToken).ConfigureAwait(false);
+            await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken),
+                cancellationToken);
         }
         finally
         {
             _beat = false;
-            _ = await mind.EndBeatAsync(cancellationToken).ConfigureAwait(false);
+            _ = await mind.EndBeatAsync(cancellationToken);
         }
     }
 
@@ -171,10 +171,8 @@ internal sealed class NativeTurnLoop
                     return;
             }
 
-            string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken)
-                .ConfigureAwait(false);
-            step = await mind.ContinueAsync(observation, final: calls >= MaximumModelCalls, _beat, cancellationToken)
-                .ConfigureAwait(false);
+            string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            step = await mind.ContinueAsync(observation, final: calls >= MaximumModelCalls, _beat, cancellationToken);
         }
     }
 
@@ -183,7 +181,7 @@ internal sealed class NativeTurnLoop
         long started = Stopwatch.GetTimestamp();
         if (operation == MindStep.ConfirmationAnswer)
         {
-            return await AnswerPendingAsync(arguments, started, cancellationToken).ConfigureAwait(false);
+            return await AnswerPendingAsync(arguments, started, cancellationToken);
         }
 
         // Anything else the person asked for replaces a confirmation still waiting: it is dropped, never run later.
@@ -232,7 +230,7 @@ internal sealed class NativeTurnLoop
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, started, cancellationToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     private static bool WritesInThePersonsWindow(string operation) =>
@@ -244,7 +242,7 @@ internal sealed class NativeTurnLoop
         bool approve = arguments["approve"] is JsonValue value && value.TryGetValue(out bool approved) && approved;
         if (_proposal is { } proposal && _proposalExpiresUtc > DateTimeOffset.UtcNow)
         {
-            return await AnswerProposalAsync(proposal, approve, started, cancellationToken).ConfigureAwait(false);
+            return await AnswerProposalAsync(proposal, approve, started, cancellationToken);
         }
 
         PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
@@ -273,7 +271,7 @@ internal sealed class NativeTurnLoop
         }
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, started, cancellationToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
@@ -302,12 +300,12 @@ internal sealed class NativeTurnLoop
         }
 
         string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, started,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken);
         if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
         {
             _pending = null;
             observation = await SendAsync(core, proposal, arguments, challenge.Token, started, cancellationToken)
-                .ConfigureAwait(false);
+                ;
         }
 
         return observation;
@@ -327,7 +325,7 @@ internal sealed class NativeTurnLoop
         try
         {
             response = await core.SendOperationAsync(prepared, OperationTimeout, cancellationToken, confirmationToken)
-                .ConfigureAwait(false);
+                ;
         }
         catch (Exception exception) when (exception is TimeoutException or System.IO.IOException
             or InvalidOperationException)

@@ -480,6 +480,79 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return true;
     }
 
+    /// <summary>
+    /// What BAXY remembers of the person («label: value»), for the heartbeat's moment: the memory's own list through its
+    /// sealed route. Empty when the memory is off, empty or not reachable.
+    /// </summary>
+    internal async Task<IReadOnlyList<string>> RememberedAsync(CancellationToken cancellationToken)
+    {
+        if (_coreClient is not { IsReady: true } core || _memoryProtector is not { } protector)
+        {
+            return [];
+        }
+
+        try
+        {
+            var list = new MemoryRoutedOperation("memory.list", new System.Text.Json.Nodes.JsonObject
+            {
+                ["version"] = 1,
+                ["limit"] = 20,
+                ["offset"] = 0,
+            });
+            PreparedOperation prepared = protector.Prepare(list).Prepared;
+            OperationResponse response = await core.SendOperationAsync(prepared, TimeSpan.FromSeconds(10), cancellationToken);
+            if (response.Status != OperationStatuses.Completed)
+            {
+                return [];
+            }
+
+            using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
+            using OpenedBoundProtectedJson arguments = protector.OpenPrivateArguments(prepared);
+            if (!MemoryOperationResponseProjection.TryCreateCompleted(
+                    prepared.OperationName, opened.Payload, out MemoryOperationResponseProjection? projection,
+                    response.Replayed, arguments.Payload)
+                || projection is null
+                || System.Text.Json.Nodes.JsonNode.Parse(projection.Message) is not System.Text.Json.Nodes.JsonObject facts)
+            {
+                return [];
+            }
+
+            var remembered = new List<string>();
+            Collect(facts, remembered);
+            return remembered;
+        }
+        catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException
+            or ProtectedPayloadException or TimeoutException or InvalidOperationException)
+        {
+            return [];
+        }
+
+        static void Collect(System.Text.Json.Nodes.JsonNode? node, List<string> into)
+        {
+            switch (node)
+            {
+                case System.Text.Json.Nodes.JsonObject record
+                    when (string?)record["label"] is { } label && (string?)record["value"] is { } value:
+                    into.Add($"{label}: {value}");
+                    break;
+                case System.Text.Json.Nodes.JsonObject other:
+                    foreach ((_, System.Text.Json.Nodes.JsonNode? child) in other)
+                    {
+                        Collect(child, into);
+                    }
+
+                    break;
+                case System.Text.Json.Nodes.JsonArray items:
+                    foreach (System.Text.Json.Nodes.JsonNode? child in items)
+                    {
+                        Collect(child, into);
+                    }
+
+                    break;
+            }
+        }
+    }
+
     private static async Task InitializeMemorySessionAsync(
         CoreProcessClient client,
         MemoryOperationProtector protector,

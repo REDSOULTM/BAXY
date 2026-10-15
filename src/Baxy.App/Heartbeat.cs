@@ -18,6 +18,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly Func<JsonObject, bool, Task> _beat;
     private readonly Func<bool> _canBeat;
     private readonly Func<IReadOnlyList<ConversationMessage>> _recent;
+    private readonly Func<Task<IReadOnlyList<string>>> _remembered;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly List<string> _events = [];
     private readonly object _gate = new();
@@ -31,14 +32,17 @@ internal sealed class Heartbeat : IAsyncDisposable
 
     /// <param name="beat">Runs one heartbeat with the moment; the flag says whether its words may be spoken.</param>
     /// <param name="canBeat">Whether a heartbeat may run now (the mind is ready and nothing else holds the turn).</param>
+    /// <param name="remembered">What BAXY remembers of the person, read when a heartbeat runs.</param>
     internal Heartbeat(
         Func<JsonObject, bool, Task> beat,
         Func<bool> canBeat,
-        Func<IReadOnlyList<ConversationMessage>> recent)
+        Func<IReadOnlyList<ConversationMessage>> recent,
+        Func<Task<IReadOnlyList<string>>> remembered)
     {
         _beat = beat;
         _canBeat = canBeat;
         _recent = recent;
+        _remembered = remembered;
         string downloads = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
         if (Directory.Exists(downloads))
         {
@@ -106,6 +110,8 @@ internal sealed class Heartbeat : IAsyncDisposable
 
             _lastBeat = DateTimeOffset.UtcNow;
             JsonObject moment = HeartbeatMoment.Observe(events, _recent());
+            moment["memory"] = new JsonArray((await _remembered().ConfigureAwait(false))
+                .Select(static line => (JsonNode?)JsonValue.Create(line)).ToArray());
             try
             {
                 await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty))

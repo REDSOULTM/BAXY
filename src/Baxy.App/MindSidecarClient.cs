@@ -55,6 +55,7 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
 /// </summary>
 internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text)
 {
+
     /// <summary>The operation the mind uses for the person's answer to a pending confirmation.</summary>
     internal const string ConfirmationAnswer = "confirmation.answer";
 }

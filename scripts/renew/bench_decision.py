@@ -90,10 +90,11 @@ def main():
     parser.add_argument("--server-args", default="")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     parser.add_argument("--ctx", default="49152")
+    parser.add_argument("--src", default=str(ROOT / "src"), help="the mind to measure (a copy for an A/B of the prompt)")
     args = parser.parse_args()
     os.environ["BAXY_RENEW_DESCRIPTIONS"] = args.desc
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
-    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, args.src)
     from baxy_mind.llm_server import LlmServer  # noqa: E402
     from baxy_mind.mind import Mind  # noqa: E402
 

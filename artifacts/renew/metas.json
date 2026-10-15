@@ -28,6 +28,20 @@
         "casos": 10,
         "sha256": "60949061a122259a358eaaa9d3b16e1299829ad02a8e61de382030adbfbb2c0a",
         "sellado": "2026-10-15T03:50:37-03:00"
+      },
+      "e2e": {
+        "archivo": "F:/BAXYeval/renew_v1/e2e/sealed.json",
+        "casos": 50,
+        "sha256": "bffe9721d20d80f858da95d1d5ca6f10dd6b34ad24505b9bce397ee4a9c9c9d4",
+        "sellado": "2026-10-15T04:05:51-03:00",
+        "nota": "escrito por un subagente sin que la sesión de ajuste lo viera; sello calculado por el líder sobre el fichero sin cambios desde su escritura"
+      },
+      "falsedades": {
+        "archivo": "F:/BAXYeval/renew_v1/falsedades/sealed.json",
+        "casos": 42,
+        "sha256": "51e7e0ccc4e6e63b570033bbc1db59a0bc25790427611ee3c0f3b14e11e1942d",
+        "sellado": "2026-10-15T04:09:44-03:00",
+        "nota": "ídem"
       }
     }
   },
@@ -87,8 +101,9 @@
     },
     {
       "id": "marco.e2e_y_falsedades",
-      "estado": "en_curso",
-      "quien": "PC (subagente)"
+      "estado": "cumplida",
+      "quien": "PC (subagente)",
+      "evidencia": "práctica abierta e2e 30 y falsedades 20; sellados 50 y 42; README y librería en F:/BAXYeval/renew_v1/e2e"
     },
     {
       "id": "marco.renew_check",
@@ -143,8 +158,9 @@
     },
     {
       "id": "perfil_4gb",
-      "estado": "pendiente",
-      "quien": "NB"
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "Q4_K_M -np 1 -c 49152: 227/270 (84,1 %) p50 0,78 s VRAM 3912 MiB; IQ4_XS 227/270 3658 MiB; USS llama-server ~0,5 GB"
     },
     {
       "id": "optimizaciones",
@@ -160,6 +176,12 @@
       "id": "auditoria_final",
       "estado": "pendiente",
       "quien": "PC"
+    },
+    {
+      "id": "exposicion_herramientas",
+      "estado": "cumplida",
+      "quien": "NB",
+      "evidencia": "decision2 270: A todas con guías 220 (81,5 %), B compacto 210, C skill_read 213 (el 4B nunca llamó skill_read), D sin lista de apps 214; cases.json D 79 vs A 83 → se queda A"
     }
   ],
   "linea_base_recursos": {

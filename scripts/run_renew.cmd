@@ -13,8 +13,9 @@ if /I "%COMPUTERNAME%"=="REDNOTE" (
 ) else (
   set "BAXY_MIND_LLM_GGUF=F:\BAXYeval\models\Qwen3.5-4B-Q4_K_M.gguf"
   set "BAXY_MIND_LLAMA_SERVER=F:\BAXYeval\llama\llama-server.exe"
-  set "BAXY_RENEW_WAKE_DIR=C:\Users\usuario\Desktop\ETC\Programacion\WakewordBaxy\models\final\baxy-wake-k4"
-  set "BAXY_RENEW_STT_DIR=D:\TranscripcionBaxy-modelos\parakeet-ultra-sherpa-int8-oli"
+  rem Un banco puede apagar el oido (k4 y Ultra quedan fuera de la medicion del arnes) definiendo antes la variable.
+  if not defined BAXY_RENEW_WAKE_DIR set "BAXY_RENEW_WAKE_DIR=C:\Users\usuario\Desktop\ETC\Programacion\WakewordBaxy\models\final\baxy-wake-k4"
+  if not defined BAXY_RENEW_STT_DIR set "BAXY_RENEW_STT_DIR=D:\TranscripcionBaxy-modelos\parakeet-ultra-sherpa-int8-oli"
   set "BAXY_RENEW_TTS_MODEL=C:\Users\usuario\.gemma4\models\piper\es_MX-claude-high.onnx"
   set "BAXY_RENEW_PIPER_DIR=%LOCALAPPDATA%\BAXYRuntime\assets\piper-2023.11.14-2"
 )

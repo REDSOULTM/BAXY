@@ -21,6 +21,13 @@ Goal: `PROMPT_GOAL_RENEW.md`. Estado estructurado: `metas.json`. Notas del noteb
 - `AGENTS.md` dice «subagentes, por defecto no»; el prompt del goal manda usarlos con libertad. Manda el prompt.
 - `00_IDENTIDAD.md`: en modo Normal «apagar va directo»; el latido, por decisión del 2026-10-15, siempre propone apagar.
   Se aplica sólo a lo que el latido hace por instinto: un pedido explícito sigue la tabla de modos.
+- Traspaso: «el latido se pausa si el dueño juega o la GPU está ocupada» frente a «si juega, sólo una notificación» (y
+  escenas de juego que esperan actuar). Decisión: mientras juega se salta el latido periódico de 5 min; un latido por
+  cambio (empezó un juego, vence un recordatorio) sí corre, y avisa por notificación.
+- Los bancos e2e y de falsedades sellados no traían `SEALED-*.md` del subagente: el líder calculó su sha256 sin abrirlos
+  (ficheros sin cambios desde 04:05 y 04:09) y lo anotó en `metas.json`.
+- Exposición de herramientas: el dueño pidió «skills a demanda o lo que diga la evidencia, medido contra todas en el
+  prompt». Medido (notebook, 270 casos): el 4B nunca llamó a `skill_read`; gana «todas en el prompt con guías».
 
 **Arnés nuevo (commit siguiente a 06c7eb81).**
 - Mente: conversación de sesión con llamadas y resultados; `turn.result` con argumentos; `turn.confirm` (botones) y
