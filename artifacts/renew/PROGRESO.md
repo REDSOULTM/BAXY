@@ -466,3 +466,10 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - Cierre: ronda_final_auditoria = límite honesto (metas.json): la única pasada con los 4 focos limpios (d3a82c12c)
     convivió con candidatas reales del notebook que seguían ahí; cada pasada halló menos, pero no hubo una ronda 4+4
     limpia sobre el último commit antes del tope. Producto final: 97df86ba1 (sin holdout propio).
+  - Última ronda 4+4 completa sobre 97df86ba1 (08:20-08:24): mente, App y bancos limpios en el PC; mente y App limpios
+    en el notebook; proveedores VIOLA (2 en el PC: excepciones del navegador propio tras lanzarlo; Winget con versión
+    pedida y ya instalado) y (1 en el notebook: Steam, instalado tomado por propiedad); bancos VIOLA (1 en el notebook:
+    la voz tardía de un turno agotado contaba en el siguiente). Las cuatro se arreglaron en 8b464e794 y 11d7a5542.
+    Sobre 11d7a5542 ya no cupo otra ronda antes del tope (08:49): ronda_final_auditoria queda como límite honesto
+    (metas.json), con la tendencia medida (026c7af91: hallazgos en los 4 focos; 97df86ba1: sólo en proveedores y en
+    una línea del banco). Producto final: 11d7a5542 (sin holdout propio; el holdout v2 es de 026c7af91).
