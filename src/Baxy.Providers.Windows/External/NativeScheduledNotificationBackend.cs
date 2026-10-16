@@ -68,10 +68,13 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
     // read back from Windows' history and which sound played.
     private string Diagnose(ScheduledNotificationRequest request)
     {
+        // Auditoría final (regla 3): a setting or a history that was not read is said as not read: it is neither
+        // «enabled», nor «not shown», nor counted toward «healthy».
         int? toastSetting = host.ToastsEnabledSetting();
-        bool toastEnabled = toastSetting is null || toastSetting.Value != 0;
+        bool? toastEnabled = toastSetting is null ? null : toastSetting.Value != 0;
         List<FiredReceipt> fired = FiredReceipts(request.AlarmRoot);
-        int firedNotShown = fired.Count(receipt => receipt.NotificationShown != true);
+        int firedNotShown = fired.Count(receipt => receipt.NotificationShown == false);
+        int firedShownUnread = fired.Count(receipt => receipt.NotificationShown is null);
         IReadOnlyList<ScheduledTaskSnapshot>? observed;
         try
         {
@@ -85,17 +88,19 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
             observed = null;
         }
         int issueCount = (observed?.Count(task => !Acceptable(task.LastTaskResult)) ?? 1) + firedNotShown
-            + (toastEnabled ? 0 : 1);
+            + (toastEnabled == false ? 1 : 0);
+        bool allRead = toastEnabled is not null && firedShownUnread == 0;
         return Json(writer =>
         {
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", true);
             writer.WriteBoolean("schedulerRunning", observed is not null);
-            writer.WriteBoolean("toastEnabled", toastEnabled);
-            writer.WriteBoolean("healthy", issueCount == 0);
+            if (toastEnabled is bool enabled) writer.WriteBoolean("toastEnabled", enabled);
+            if (issueCount > 0 || allRead) writer.WriteBoolean("healthy", issueCount == 0);
             if (observed is not null) writer.WriteNumber("taskCount", observed.Count);
             writer.WriteNumber("firedReceiptCount", fired.Count);
             writer.WriteNumber("firedNotShownCount", firedNotShown);
+            if (firedShownUnread > 0) writer.WriteNumber("firedShownUnreadCount", firedShownUnread);
             writer.WriteNumber("issueCount", issueCount);
             writer.WriteStartArray("firedReceipts");
             foreach (FiredReceipt receipt in fired.Take(ShownFiredReceipts))

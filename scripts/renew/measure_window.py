@@ -51,9 +51,15 @@ def main() -> None:
     while time.monotonic() < deadline and not model_up():
         time.sleep(2)
     time.sleep(60)  # the model loads and warms; the window draws
-    gpu, peak = before or 0, {}
+    # Auditoría final: the peak is only of the samples nvidia-smi answered; none answered leaves the VRAM unmeasured,
+    # and a model that never came up is said in the result.
+    loaded = model_up()
+    gpu: int | None = None
+    peak: dict[str, int] = {}
     for _ in range(10):
-        gpu = max(gpu, gpu_used_mib() or 0)
+        sample = gpu_used_mib()
+        if sample is not None:
+            gpu = max(gpu or 0, sample)
         roles: dict[str, int] = {}
         for process in product_tree():
             try:
@@ -74,7 +80,8 @@ def main() -> None:
     except subprocess.TimeoutExpired:
         launcher.kill()
     result = {"label": label, "ventana": True, "latido": False, "oido_cargado": False,
-              "vram_mib": (gpu - before) if before is not None else None, "gpu_before_mib": before,
+              "modelo_cargado": loaded,
+              "vram_mib": (gpu - before) if gpu is not None and before is not None else None, "gpu_before_mib": before,
               "gpu_peak_mib": gpu, "uss_mib": peak, "producto_ram_mib": sum(peak.values())}
     (BANKS / "runs" / f"{label}-recursos-ventana.json").write_text(json.dumps(result, ensure_ascii=False, indent=1),
                                                                     encoding="utf-8")

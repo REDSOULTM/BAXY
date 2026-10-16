@@ -17,16 +17,17 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         Add-Type -MemberDefinition $signature -Name ForegroundProbe -Namespace BaxyExplorer | Out-Null
         $foreground = [BaxyExplorer.ForegroundProbe]::GetForegroundWindow().ToInt64()
         $shell = New-Object -ComObject Shell.Application
-        $path = ''
+        $path = '';$explorer = $false;$unread = $false
         foreach ($window in @($shell.Windows())) {
             try {
                 if ([int64]$window.HWND -eq $foreground -and $window.FullName -like '*explorer.exe') {
+                    $explorer = $true
                     $url = [string]$window.LocationURL
                     if ($url.StartsWith('file:///')) { $path = [System.Uri]::UnescapeDataString($url.Substring(8)).Replace('/', '\') }
                 }
-            } catch { }
+            } catch { $unread = $true }
         }
-        @{ foreground = $foreground; path = $path } | ConvertTo-Json -Compress
+        @{ foreground = $foreground; path = $path; explorer = $explorer; unread = $unread } | ConvertTo-Json -Compress
         """;
 
     private readonly IExternalProcessRunner _runner;
@@ -68,7 +69,11 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
                 : Count(operation, known, "known_folder", extension);
         }
 
+        // Auditoría final (regla 3): «no Explorer in front» only from a probe that read every shell window; a probe
+        // that failed, or a window it could not read, is the front not read, and an Explorer showing no file folder is
+        // said as that.
         string? explorerPath = null;
+        string notCounted = "explorer_front_not_read";
         try
         {
             ExternalProcessResult probe = await _runner.RunPowerShellAsync(
@@ -79,11 +84,20 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             if (probe.ExitCode == 0 && probe.Output.TrimStart().StartsWith('{'))
             {
                 using JsonDocument document = JsonDocument.Parse(probe.Output);
-                if (document.RootElement.TryGetProperty("path", out JsonElement pathElement)
+                JsonElement root = document.RootElement;
+                if (root.TryGetProperty("path", out JsonElement pathElement)
                     && pathElement.ValueKind == JsonValueKind.String
                     && pathElement.GetString() is { Length: > 0 } path)
                 {
                     explorerPath = path;
+                }
+                else if (root.TryGetProperty("explorer", out JsonElement explorer) && explorer.ValueKind == JsonValueKind.True)
+                {
+                    notCounted = "explorer_in_front_shows_no_file_folder";
+                }
+                else if (root.TryGetProperty("unread", out JsonElement unread) && unread.ValueKind == JsonValueKind.False)
+                {
+                    notCounted = "no_explorer_in_front";
                 }
             }
         }
@@ -93,7 +107,7 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         }
 
         return explorerPath is null
-            ? ExternalJson.FailureBeforeEffect(operation, "no_explorer_in_front")
+            ? ExternalJson.FailureBeforeEffect(operation, notCounted)
             : Count(operation, explorerPath, "explorer_foreground", extension);
     }
 

@@ -454,6 +454,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
+                // Auditoría final (regla 3): a known folder whose listing failed was not searched.
+                incomplete = true;
                 continue;
             }
 
@@ -480,6 +482,14 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
         writer.WriteEndArray();
         writer.WriteBoolean("searchComplete", target.SearchComplete);
+        // What the search covers, as it was made: the four known folders, four levels down, without hidden, system or
+        // unreadable folders and without links.
+        writer.WriteStartArray("searchedFolders");
+        foreach (string known in OpenSearchFolders)
+            writer.WriteStringValue(known);
+        writer.WriteEndArray();
+        writer.WriteNumber("searchedDepth", OpenSearchDepth);
+        writer.WriteBoolean("skipsHiddenSystemAndUnreadable", true);
         writer.WriteEndObject();
     });
 

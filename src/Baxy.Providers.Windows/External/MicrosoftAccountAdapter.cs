@@ -21,20 +21,22 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $start=[DateTimeOffset]::Parse($input.startUtc).UtcDateTime
           $end=[DateTimeOffset]::Parse($input.endUtc).UtcDateTime
           if($input.action -eq 'list') {
-            $events=@();$items=$calendar.Items;$items.IncludeRecurrences=$true;$items.Sort('[Start]')
+            # Auditoría final (regla 3): an appointment whose fields could not be read is counted, never dropped, and a
+            # list cut at 200 says so.
+            $events=@();$unread=0;$truncated=$false;$items=$calendar.Items;$items.IncludeRecurrences=$true;$items.Sort('[Start]')
             $filter="[Start] < '"+$end.ToLocalTime().ToString('g')+"' AND [End] > '"+$start.ToLocalTime().ToString('g')+"'"
             $restricted=$items.Restrict($filter)
             foreach($item in $restricted) {
-              if($events.Count -ge 200){break}
+              if($events.Count -ge 200){$truncated=$true;break}
               try {
                 $itemStart=([DateTime]$item.Start).ToUniversalTime()
                 $itemEnd=([DateTime]$item.End).ToUniversalTime()
                 if($itemEnd -gt $start -and $itemStart -lt $end) {
                   $events+=@([pscustomobject]@{entryId=[string]$item.EntryID;title=[string]$item.Subject;startUtc=$itemStart.ToString('O');endUtc=$itemEnd.ToString('O')})
                 }
-              } catch {}
+              } catch {$unread++}
             }
-            [pscustomobject]@{ok=$true;effectObserved=$false;events=$events}|ConvertTo-Json -Depth 5 -Compress
+            [pscustomobject]@{ok=$true;effectObserved=$false;events=$events;unreadCount=$unread;truncated=$truncated}|ConvertTo-Json -Depth 5 -Compress
           } else {
             $appointment=$outlook.CreateItem(1)
             $appointment.Subject=[string]$input.title
@@ -530,7 +532,13 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
                 writer.WriteEndObject();
             }
         }
-        writer.WriteEndArray(); writer.WriteString("authority", "outlook_mapi_snapshot"); writer.WriteEndObject();
+        writer.WriteEndArray();
+        if (root.TryGetProperty("unreadCount", out JsonElement unread) && unread.ValueKind == JsonValueKind.Number
+            && unread.GetInt32() > 0)
+            writer.WriteNumber("unreadAppointments", unread.GetInt32());
+        if (root.TryGetProperty("truncated", out JsonElement truncated) && truncated.ValueKind == JsonValueKind.True)
+            writer.WriteBoolean("truncatedAt200", true);
+        writer.WriteString("authority", "outlook_mapi_snapshot"); writer.WriteEndObject();
     });
 
     private static JsonElement EmailResult(JsonElement root, bool replied, string? replyText) =>

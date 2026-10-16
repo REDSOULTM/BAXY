@@ -11,7 +11,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     private static readonly string[] DiagnosticBooleanProperties =
         ["schedulerRunning", "toastEnabled", "healthy"];
     private static readonly string[] DiagnosticIntegerProperties =
-        ["taskCount", "firedReceiptCount", "firedNotShownCount", "issueCount"];
+        ["taskCount", "firedReceiptCount", "firedNotShownCount", "firedShownUnreadCount", "issueCount"];
     private static readonly string[] DiagnosticArrayProperties = ["tasks", "firedReceipts"];
     private readonly string _alarmRoot;
     private readonly IScheduledNotificationBackend _backend;
@@ -645,7 +645,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     // What rings: a Windows notification with the title (PowerShell's own AppUserModelID, which Windows registers;
     // msg.exe, used before, does not exist on Windows 11 Home, so the title was never shown there), then the sound.
     // The receipt is written after ringing and says what was delivered: the notification only when it is read back
-    // from the notification history, and which sound played.
+    // from the notification history, and which sound played. Auditoría final (regla 3): a history that could not be read
+    // after Show leaves notificationShown null (not read), and a sound counts once it played once.
     private static void WriteRingScript(string path, string receiptPath, string title)
     {
         string title64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(title));
@@ -660,12 +661,12 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             + "$xml=[Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)\n"
             + "$text=$xml.GetElementsByTagName('text');[void]$text.Item(0).AppendChild($xml.CreateTextNode('BAXY'));[void]$text.Item(1).AppendChild($xml.CreateTextNode($title))\n"
             + "$note=[Windows.UI.Notifications.ToastNotification]::new($xml);$note.Tag='" + tag + "'\n"
-            + "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($note);Start-Sleep -Milliseconds 300\n"
+            + "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($note);$toast=$null;Start-Sleep -Milliseconds 300\n"
             + "$toast=@([Windows.UI.Notifications.ToastNotificationManager]::History.GetHistory($app)|Where-Object{$_.Tag -eq '" + tag + "'}).Count -gt 0}catch{}\n"
             + "$sound='none'\n"
             + "try{$wav='C:\\Windows\\Media\\Alarm01.wav'\n"
-            + "if([IO.File]::Exists($wav)){for($i=0;$i -lt 3;$i++){(New-Object Media.SoundPlayer $wav).PlaySync()};$sound='wav'}"
-            + "else{for($i=0;$i -lt 3;$i++){[Console]::Beep(880,700)};$sound='beep'}}catch{}\n"
+            + "if([IO.File]::Exists($wav)){for($i=0;$i -lt 3;$i++){(New-Object Media.SoundPlayer $wav).PlaySync();$sound='wav'}}"
+            + "else{for($i=0;$i -lt 3;$i++){[Console]::Beep(880,700);$sound='beep'}}}catch{}\n"
             + "[IO.File]::WriteAllText($receipt,(@{rangUtc=[DateTimeOffset]::UtcNow.ToString('O');notificationShown=$toast;sound=$sound}|ConvertTo-Json -Compress))\n";
         File.WriteAllText(path, script, new UTF8Encoding(false));
     }

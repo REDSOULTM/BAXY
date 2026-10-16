@@ -71,9 +71,10 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         string folder = ExternalJson.RequiredString(arguments, "folder");
-        BackupManifest? latest = Manifests(50, cancellationToken)
-            .FirstOrDefault(item => folder == "all_known" || item.Folder == folder);
-        if (latest is null) return ExternalJson.Failure(operation, "known_backup_not_found");
+        (BackupManifest? latest, bool unreadableBefore) = Latest(folder, cancellationToken);
+        if (latest is null)
+            return ExternalJson.Failure(operation, unreadableBefore ? "known_backup_manifest_unreadable" : "known_backup_not_found");
+        if (unreadableBefore) return ExternalJson.Failure(operation, "known_backup_newer_manifest_unreadable");
         if (!VerifyManifest(latest))
             return ExternalJson.Failure(operation, "known_backup_hash_mismatch");
         string archivePath = Path.Combine(_backupRoot, latest.BackupId + ".zip");
@@ -210,11 +211,20 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
-        BackupManifest[] manifests = Manifests(limit, cancellationToken).ToArray();
+        var manifests = new List<BackupManifest>();
+        int unreadable = 0;
+        foreach (BackupManifest? manifest in Manifests(cancellationToken))
+        {
+            if (manifest is null) unreadable++;
+            else manifests.Add(manifest);
+            if (manifests.Count >= limit) break;
+        }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteNumber("count", manifests.Length); writer.WriteStartArray("backups");
+            writer.WriteNumber("count", manifests.Count);
+            if (unreadable > 0) writer.WriteNumber("unreadableManifests", unreadable);
+            writer.WriteStartArray("backups");
             foreach (BackupManifest manifest in manifests)
             {
                 writer.WriteStartObject(); WriteManifest(writer, manifest);
@@ -233,26 +243,41 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         string folder = ExternalJson.RequiredString(arguments, "folder");
-        BackupManifest? latest = Manifests(50, cancellationToken)
-            .FirstOrDefault(item => folder == "all_known" || item.Folder == folder);
-        if (latest is null) return ExternalJson.Failure(operation, "known_backup_not_found");
+        (BackupManifest? latest, bool unreadableBefore) = Latest(folder, cancellationToken);
+        if (latest is null)
+            return ExternalJson.Failure(operation, unreadableBefore ? "known_backup_manifest_unreadable" : "known_backup_not_found");
+        if (unreadableBefore) return ExternalJson.Failure(operation, "known_backup_newer_manifest_unreadable");
         bool verified = VerifyManifest(latest);
         if (!verified) return ExternalJson.Failure(operation, "known_backup_hash_mismatch");
         return ExternalJson.Success(operation, ManifestResult(latest, verified), false);
     }
 
-    private IEnumerable<BackupManifest> Manifests(int limit, CancellationToken token)
+    // Auditoría final (regla 3): the newest backup of a folder is looked for among all the manifests, not the newest
+    // 50 of every folder, and a manifest newer than it that could not be read leaves «the latest» not known.
+    private (BackupManifest? Latest, bool UnreadableBefore) Latest(string folder, CancellationToken token)
+    {
+        bool unreadable = false;
+        foreach (BackupManifest? manifest in Manifests(token))
+        {
+            if (manifest is null) unreadable = true;
+            else if (folder == "all_known" || manifest.Folder == folder) return (manifest, unreadable);
+        }
+        return (null, unreadable);
+    }
+
+    // Newest first; a manifest that cannot be read is null, never skipped.
+    private IEnumerable<BackupManifest?> Manifests(CancellationToken token)
     {
         if (!Directory.Exists(_backupRoot)) yield break;
         foreach (string path in Directory.EnumerateFiles(_backupRoot, "known_backup_*.json")
-            .OrderByDescending(File.GetLastWriteTimeUtc).Take(limit))
+            .OrderByDescending(File.GetLastWriteTimeUtc))
         {
             token.ThrowIfCancellationRequested();
-            BackupManifest manifest;
+            BackupManifest? manifest;
             try { manifest = ReadManifest(path); }
             catch (Exception exception) when (exception is IOException or JsonException)
             {
-                continue;
+                manifest = null;
             }
             yield return manifest;
         }

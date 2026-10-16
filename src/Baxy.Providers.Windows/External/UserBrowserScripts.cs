@@ -571,6 +571,7 @@ internal static class UserBrowserScripts
           }
           if ($page -eq $null) { Emit $false '' '' $false 'page_document_not_found'; exit 0 }
           $text = ''
+          $walkCut = $false
           $pattern = $null
           if ($page.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern, [ref]$pattern)) {
             $text = [string]$pattern.DocumentRange.GetText($Maximum + 1)
@@ -580,6 +581,9 @@ internal static class UserBrowserScripts
             $queue = New-Object System.Collections.Generic.Queue[object]
             $queue.Enqueue($page)
             $visited = 0
+            # Auditoría final (regla 3): nodes that could not be read, and a walk cut by its node limit, are said: an
+            # empty text from a walk that failed is the page not read, never an empty page.
+            $failedNodes = 0
             while ($queue.Count -gt 0 -and $visited -lt 6000 -and $builder.Length -le $Maximum) {
               $node = $queue.Dequeue()
               $visited++
@@ -587,11 +591,13 @@ internal static class UserBrowserScripts
                 if ($node.Current.ControlType -eq $textType) { [void]$builder.Append([string]$node.Current.Name).Append("`n") }
                 $child = $walker.GetFirstChild($node)
                 while ($child -ne $null) { $queue.Enqueue($child); $child = $walker.GetNextSibling($child) }
-              } catch { }
+              } catch { $failedNodes++ }
             }
             $text = $builder.ToString()
+            $walkCut = $queue.Count -gt 0 -and $builder.Length -le $Maximum
+            if (-not $text -and ($failedNodes -gt 0 -or $walkCut)) { Emit $false '' '' $false 'page_text_not_read'; exit 0 }
           }
-          $truncated = $text.Length -gt $Maximum
+          $truncated = $text.Length -gt $Maximum -or $walkCut
           if ($truncated) { $text = $text.Substring(0, $Maximum) }
           Emit $true ([string]$page.Current.Name) $text $truncated ''
         } catch {

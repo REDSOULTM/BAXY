@@ -49,6 +49,13 @@ internal enum PointPressOutcome
     /// this click and saw nothing change from: neither its way nor the pointer presses it a second time.
     /// </summary>
     AlreadyPressed,
+
+    /// <summary>
+    /// Auditoría final (regla 3): the field there already had the keyboard's focus (the worker's «prefocused»):
+    /// nothing was pressed and the state asked for was already reached, said as that (changed:false), never as the
+    /// control not found.
+    /// </summary>
+    AlreadyFocused,
 }
 
 /// <summary>A control pressed at a point of a window without moving the mouse, and how.</summary>
@@ -194,6 +201,25 @@ internal static class LocatedPointPress
         {
             return new Outcome(
                 ExternalJson.FailureBeforeEffect(operation, WindowsVisibleControlAdapter.PointAlreadyPressed),
+                string.Empty, false, string.Empty, null);
+        }
+        if (pressed.Outcome == PointPressOutcome.AlreadyFocused)
+        {
+            JsonElement reached = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("label", label);
+                writer.WriteString("method", "target");
+                writer.WriteString("name", pressed.Name);
+                writer.WriteString("kind", pressed.Kind);
+                writer.WriteBoolean("focused", true);
+                writer.WriteBoolean("alreadyFocused", true);
+                writer.WriteString("authority", "uia_keyboard_focus_preread");
+                writer.WriteEndObject();
+            });
+            return new Outcome(
+                ExternalJson.Switched(operation, reached, effectObserved: false),
                 string.Empty, false, string.Empty, null);
         }
         if (pressed.Outcome == PointPressOutcome.Unconfirmed)
@@ -2578,10 +2604,10 @@ internal sealed class WindowsVisibleControlAdapter
         // surface that changes, as for any press at a point.
         if (method is "invoke" or "select" or "toggle" or "expand" or "render")
             return new PointPressed(PointPressOutcome.Pressed, method, name, kind);
-        // Ronda final: a field that already had the focus was not pressed (via «prefocused»): nothing is claimed here.
+        // Auditoría final: a field that already had the focus was not pressed (via «prefocused»): the state reached.
         if (method == "target" && focused && root.TryGetProperty("via", out JsonElement via)
             && via.ValueKind == JsonValueKind.String && via.GetString() == "prefocused")
-            return PointPressed.AlreadyPressed;
+            return new PointPressed(PointPressOutcome.AlreadyFocused, method, name, kind, Focused: true);
         // A field is the text's destination only with the keyboard's focus; any other answer is not known to be safe.
         return method == "target" && focused
             ? new PointPressed(PointPressOutcome.Pressed, method, name, kind, Focused: true)

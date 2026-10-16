@@ -540,7 +540,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         if (radios.All(radio => radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled)))
         {
             return ExternalJson.FailureBeforeEffect(
-                operation, value == 1 ? "airplane_mode_already_on" : "airplane_mode_already_off");
+                operation, value == 1 ? "airplane_radios_already_all_off" : "airplane_radios_already_on");
         }
         bool effectObserved = false;
         foreach (Radio radio in radios)
@@ -568,7 +568,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteNumber("version", 1);
             writer.WriteString("setting", "airplane_mode");
             writer.WriteNumber("value", value);
-            writer.WriteBoolean("airplaneMode", allOff);
+            // Auditoría final (regla 3): what is read is every radio's state, not Windows' own airplane switch.
+            writer.WriteBoolean("allRadiosOff", allOff);
             writer.WriteBoolean("changed", effectObserved);
             writer.WriteStartArray("radios");
             foreach (Radio radio in observed)
@@ -603,7 +604,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("setting", "airplane_mode");
-            writer.WriteBoolean("airplaneMode", radios.All(radio => radio.State != RadioState.On));
+            writer.WriteBoolean("allRadiosOff", radios.All(radio => radio.State != RadioState.On));
             writer.WriteNumber("radioCount", radios.Length);
             writer.WriteStartArray("radios");
             foreach (Radio radio in radios)
@@ -1180,6 +1181,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Read-Items {
           $r=@();$node=[System.Windows.Automation.AutomationElement]::FocusedElement
           if($null -eq $node -or $node.Current.ProcessId -ne $clientPid){return ,$r}
+          # Auditoría final (regla 3): the switcher counts as read only when the focus was in the client's own tree.
+          $script:read=$true
           $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
           $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
           while($null -ne $node -and $node.Current.ControlType -ne [System.Windows.Automation.ControlType]::Document -and $node.Current.NativeWindowHandle -ne $h.ToInt32()){
@@ -1202,7 +1205,6 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);continue}
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
-          $read=$true
           for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
           [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
         }

@@ -202,7 +202,7 @@ public sealed class KnownTextAndExplorerCountTests
         var inFront = new ExplorerFolderAdapter(
             new ScriptedRunner("{\"foreground\":123,\"path\":\"" + project.Replace("\\", "\\\\") + "\"}"),
             known);
-        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\"}"), known);
+        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\",\"explorer\":false,\"unread\":false}"), known);
 
         ExternalCapabilityReceipt counted = await inFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":".py"}"""), CancellationToken.None);

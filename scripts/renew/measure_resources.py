@@ -67,9 +67,12 @@ def measure(label: str, ear: bool) -> dict:
         run_turn(conductor, {"text": text}, 120)
         wait_silence(conductor, 30)
     peak: dict[str, int] = {}
-    gpu = before
+    # Auditoría final: the peak is only of the samples nvidia-smi answered; none answered leaves the VRAM unmeasured.
+    gpu: int | None = None
     for _ in range(5):
-        gpu = max(gpu or 0, gpu_used_mib() or 0)
+        sample = gpu_used_mib()
+        if sample is not None:
+            gpu = max(gpu or 0, sample)
         for role, processes in product_processes().items():
             uss = 0
             for process in processes:
