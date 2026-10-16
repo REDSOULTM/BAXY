@@ -31,8 +31,8 @@ internal sealed record NativeTurnStep(
 /// <para>
 /// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call with one of the catalog's
 /// risks in <see cref="ProposedRisks"/>, one that sends keys, clicks or commands to a window
-/// (<see cref="SendsInputToAWindow"/>), or one that sends something out of the PC (<see cref="ReachesTheNetwork"/>), is
-/// held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
+/// (<see cref="SendsInputToAWindow"/>), one that sends something out of the PC (<see cref="ReachesTheNetwork"/>), or one
+/// that writes over what the person copied (<see cref="ReplacesThePersonsClipboard"/>), is held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
 /// runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
@@ -341,7 +341,7 @@ internal sealed class NativeTurnLoop
         }
 
         if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation, arguments)
-                || ReachesTheNetwork(operation, arguments)))
+                || ReachesTheNetwork(operation, arguments) || ReplacesThePersonsClipboard(operation)))
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
@@ -368,12 +368,22 @@ internal sealed class NativeTurnLoop
     // BAXY's browser, which CDP drives by running a script in the page as a user gesture, in a window that holds the
     // person's session: it is held unless its sourceApp names a session other than that tab, which the tab's adapter
     // refuses before any effect (WebBrowserAdapter.ControlYouTubeTabAsync). media.seek.relative has only SMTC.
+    // game.launch hands Steam the game's address and clicks «Jugar» in the dialog Steam opens for it (the data's
+    // «confirm», SteamLocalAdapter.LaunchAsync). app.open reuses the window of an application that already runs, and
+    // brings it to the front (foreground: ShowWindow and SetForegroundWindow), presses Ctrl+N in it (newDocument) or
+    // hands it a place's address, which the application opens in its window and raises (place, ApplicationPlaceOpener);
+    // whether one runs is read only as it opens, so without those three it is not held: the window that runs is left as
+    // it is, or a new process starts and the front goes back where it was. input.keyboard.open starts osk.exe, which
+    // sends nothing to any window and does not take the focus (DesktopKeyPress.ps1): it is not held either.
     private static bool SendsInputToAWindow(string operation, JsonObject arguments) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
             or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
             or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
-            or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move" or "window.resize"
-            or "window.snap"
+            or "game.launch" or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move"
+            or "window.resize" or "window.snap"
+        || (operation == "app.open" && arguments["foreground"] is JsonValue front && IsTrue(front))
+        || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
+        || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))
         || (operation == "media.control" && !(arguments["sourceApp"] is JsonValue source && Named(source)
             && !string.Equals((string?)source, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
                 StringComparison.OrdinalIgnoreCase)));
@@ -383,19 +393,23 @@ internal sealed class NativeTurnLoop
     // carries the person's memory, window titles and recent lines, and nothing of theirs leaves unasked (owner,
     // 2026-10-15; audit App H3). By name, read from the providers that use HTTP or ping: web.search's sources, web.fetch
     // and web.download, Open-Meteo for the weather and for a place's clock, the Steam store for whether a game is owned,
-    // ICMP to the host named, the export of the memory (its receipt says it may be redirected or synced: OneDrive),
-    // app.open with a place value (app_places builds spotify:search:{value} and Steam's store search from it), a console
-    // command (one that only reads still reaches \\host\share or another computer by name), and a print (the printer
-    // may be on the network). The ones with an external_communication or installation risk are held by ProposedRisks
-    // already.
+    // ICMP to the host named, the export of the memory (its receipt says it may be redirected or synced: OneDrive), a
+    // console command (one that only reads still reaches \\host\share or another computer by name), and a print (the
+    // printer may be on the network). The ones with an external_communication or installation risk are held by
+    // ProposedRisks already, and app.open with a place (app_places builds spotify:search:{value} and Steam's store
+    // search from its value) by SendsInputToAWindow.
     private static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
         operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
             or "game.entitlement.named" or "memory.export" or "shell.command.run" or "peripheral.print"
-        || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place))
-        || (operation == "app.open" && arguments["placeValue"] is JsonValue value && Named(value));
+        || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place));
+
+    // The clipboard holds what the person copied: writing over it unasked is an effect on their data (audit, round A).
+    private static bool ReplacesThePersonsClipboard(string operation) => operation is "clipboard.write.text";
 
     private static bool Named(JsonValue value) =>
         value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);
+
+    private static bool IsTrue(JsonValue value) => value.TryGetValue(out bool set) && set;
 
     // The turn ends on a call that waits for the person's «sí»: the last result says that call has not run, so the
     // answer cannot tell what it would have done (e2e E021: «Python 3.11.2» after a console command that never ran).

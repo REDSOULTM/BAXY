@@ -33,7 +33,7 @@ from bench_decision import current  # noqa: E402
 
 def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str, tuple[str, set[str]]]]:
     """What the App holds in a heartbeat, read from its source: the risks of ProposedRisks, the operations named in
-    SendsInputToAWindow and ReachesTheNetwork, those held only with an argument («operation == "x" && arguments["y"]»),
+    SendsInputToAWindow, ReachesTheNetwork and ReplacesThePersonsClipboard, those held only with an argument («operation == "x" && arguments["y"]»),
     and those held unless an argument names something other than the provider's ids it is compared with
     («operation == "x" && !(arguments["y"] … WindowsExternalCapabilityProvider.Z)»: the argument and those ids)."""
     source = (ROOT / "src" / "Baxy.App" / "NativeTurnLoop.cs").read_text(encoding="utf-8")
@@ -41,9 +41,10 @@ def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str
                 "WindowsExternalCapabilityProvider.cs").read_text(encoding="utf-8")
     risks = re.search(r"HashSet<string> ProposedRisks = new\(StringComparer\.Ordinal\)\s*\{(.*?)\};", source, re.S)
     bodies = [re.search(rf"private static bool {name}\(.*?\) =>(.*?);\r?\n", source, re.S)
-              for name in ("SendsInputToAWindow", "ReachesTheNetwork")]
+              for name in ("SendsInputToAWindow", "ReachesTheNetwork", "ReplacesThePersonsClipboard")]
     if risks is None or None in bodies:
-        raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks, SendsInputToAWindow and ReachesTheNetwork")
+        raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks, SendsInputToAWindow, ReachesTheNetwork and "
+                         "ReplacesThePersonsClipboard")
     text = "".join(body.group(1) for body in bodies)
     conditional: dict[str, set[str]] = {}
     for op, argument in re.findall(r'operation == "([^"]+)"\s*&&\s*\(?\s*arguments\["([^"]+)"\]', text):
