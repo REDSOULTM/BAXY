@@ -241,7 +241,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             page = await browser.ReadPageAsync(maximumCharacters, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is IOException or TimeoutException && browser.Launches > launches)
+        catch (Exception exception) when (exception is IOException or HttpRequestException or WebSocketException
+            or JsonException or TimeoutException && browser.Launches > launches)
         {
             // Ronda final: the read opened its browser and then failed: a window was opened.
             return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
@@ -324,7 +325,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             tabs = await browser.ListTabsAsync(limit, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is IOException or TimeoutException && browser.Launches > launches)
+        catch (Exception exception) when (exception is IOException or HttpRequestException or WebSocketException
+            or JsonException or TimeoutException && browser.Launches > launches)
         {
             return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
         }
