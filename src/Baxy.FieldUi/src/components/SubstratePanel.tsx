@@ -199,7 +199,7 @@ export function SubstratePanel({
             type="button"
             className="prow bypass on"
             aria-pressed={true}
-            aria-label="modo bypass encendido: no pido confirmación en lo que me pides; lo que te proponga por mi cuenta sigue esperando tu sí. pulsa para apagarlo"
+            aria-label="modo bypass encendido: no pido confirmación en lo que me pides; lo que te proponga por mi cuenta sigue esperando tu sí y borrar en el panel de memoria sigue pidiendo confirmar. pulsa para apagarlo"
             onClick={() => onConfirmation('normal')}
           >
             <span className="prow-ic"><Icon name="bolt" size={14} /></span>
@@ -218,7 +218,8 @@ export function SubstratePanel({
               sobrescribir o cerrar sin guardar, ni para instalar o desinstalar, comprar,
               enviar mensajes o correos, publicar, unirte a una llamada, crear eventos en tu
               calendario o ejecutar comandos que cambian algo, hasta que lo apagues aquí.
-              lo que te proponga por mi cuenta sigue esperando tu sí.
+              lo que yo propongo por mi cuenta sigue esperando tu sí, y borrar en el panel de
+              memoria sigue pidiendo confirmar.
             </p>
             <div className="bypass-ask-actions">
               <button

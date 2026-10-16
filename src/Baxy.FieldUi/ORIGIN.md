@@ -112,8 +112,9 @@ y después (vista por defecto, cada panel, ventana estrecha y modo accesible), n
 ## Reapertura de honestidad (notebook, ronda B) de 2026-10-16
 
 El aviso de bypass y su etiqueta accesible dicen hasta dónde llega: deja de confirmar lo que la persona pide; lo que
-BAXY propone por su cuenta (el latido) sigue esperando su sí. Build deliberado `pnpm build` con el grafo fijado.
+BAXY propone por su cuenta (el latido) sigue esperando su sí, y borrar en el panel de memoria sigue en dos pasos
+(«borrar», «confirmar borrado»). Build deliberado `pnpm build` con el grafo fijado.
 
-- `dist/index.html`: `E6EC08DA9A89579EE3EEDFC79AA299306563258BD73762DFE5797BD7C7952802`
+- `dist/index.html`: `548E75C082BE6AAA80253EC96F69111C037BD277B3CA7136870596D2B7F12AFF`
 - `dist/assets/index-COQjHLMx.css`: sin cambios
-- `dist/assets/index-Dbo167mL.js`: `BD33AF95731F05AFA695DE2930A00D960968E329E2A80D124557FF93EEB84265`
+- `dist/assets/index-DiHBS7rP.js`: `05C457592758E4EA44ACAF14A184ED40DFF48F86C4DC72F3D26B85AE20BDD241`
