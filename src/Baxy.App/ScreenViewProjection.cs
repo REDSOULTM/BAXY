@@ -7,7 +7,7 @@ namespace Baxy.App;
 /// <summary>
 /// How the model reads a look at an application window (<c>input.visible.controls</c>): one line per control with the
 /// index it clicks by, its kind, name and state, then the text on screen grouped top, middle and bottom in reading
-/// order. Pixel rectangles, colours, repeated OCR marks and the reader's own bookkeeping are left out: the model acts by
+/// order. Pixel rectangles, repeated OCR marks and the reader's own bookkeeping are left out: the model acts by
 /// index or label, and a 4B reads a short text view far better than a long JSON one (AgentOccam, ICLR 2025: the same
 /// agent +161 % from the observation alone; OSWorld and UFO2 filter the tree to visible, enabled, named controls).
 /// Presentation only: every control and every line the reader returned is kept, nothing is ranked or chosen, and what
