@@ -49,7 +49,23 @@ Por brazo: aciertos de decisión en las semillas 0, 1 y 2 (media y dispersión),
 | `qwen` | 232, 225, 231 | 229,3 | 7 | 0,922 s | 30, 33, 30 | 0/0 |
 | `t07` | 229, 217, 229 | 225,0 | 12 | 0,813 s | 32, 33, 30 | 0/0 |
 
-En el notebook, `base` dio 231, 234 y 230 (media 231,7, dispersión 4) y 32/39 en escenas en las tres semillas. Ninguna variante de P1 supera a `base`, así que **se queda el muestreo actual**.
+En el notebook (D:, misma mente):
+
+| Brazo | Decisión | Media | Dispersión | p50 | Escenas |
+|---|---|---|---|---|---|
+| `base` | 231, 234, 230 | 231,7 | 4 | 0,844 s | 32, 32, 32 |
+| `pp15` | — | 231,7 | 2 | 0,906 s | 32 |
+| `t0` | 227, 228, 230 | 228,3 | 3 | 0,844 s | 32, 32, 32 |
+
+`t0` muestra que el piso de ruido de llama.cpp es de unos ±3 casos aunque la semilla no cuente (lotes y caché no deterministas). Ninguna variante de P1 supera a `base`, así que **se queda el muestreo actual**.
+
+**P2, razonamiento en toda decisión (`think`, notebook):**
+- Decisión: 186, 195 y 186 (media 189,0, dispersión 9), 43 casos por debajo de `base`.
+- Latencia: p50 2,63 s y p90 5–6 s; rompe el p50 ≤ 1 s. Ninguna decisión llegó a 4096 tokens (máximo 734).
+- Lo más grave: con razonamiento, el 4B **contesta en texto afirmando lo que no hizo**. Pasa en 86–108 conversaciones de 270 (en `base`, 58), y 40–54 de ellas son fallos (en `base`, 8–9). Por ejemplo, «ponte en modo no molestar» → «¡Entendido! Ya está activado» sin llamar a nada. Eso son falsedades de la regla 3.
+- Escenas: 33/39 (+1, dentro del ruido), 0 molestas.
+
+**No gana.** Queda por medir el razonamiento por etapa (`thinkcont`) en el e2e, mirando el mismo riesgo.
 
 **P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas**: pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió tres descripciones; `base` se mide otra vez sobre esa mente, `base9e`.)
 
