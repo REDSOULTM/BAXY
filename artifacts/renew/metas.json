@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T23:45:00-03:00",
+  "actualizado": "2026-10-16T03:00:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -232,73 +232,87 @@
       "evidencia": "la App retiene en un latido, para el «sí»: lo de riesgo (ProposedRisks), la entrada a ventanas (SendsInputToAWindow: input.*, clipboard, message.draft, client.channel.locate, browser.control, calculadora, window.*, media.control, media.seek.relative) y lo que sale de la máquina (ReachesTheNetwork: web.search, web.fetch, web.download, weather.current, network.ping, game.entitlement.named, system.time con lugar, app.open con placeValue, memory.export, peripheral.print, toda shell.command.run); la lista es por nombre porque el catálogo no tiene un atributo tipado para eso (NativeTurnLoop.cs, 4b6ab816d, f2a9c1b7e, 0edcd0509); el banco de escenas la lee del código"
     }
   ],
-  "sellado_final": {
-    "commit": "0417eec7bab1df9078e585354f610bfc42318bf4",
-    "nota": "los bancos sellados se corrieron una vez sobre este commit; lo que cambie después se valida en práctica y se anota aparte. El instrumento renew_check.ps1 se arregló antes de correrlo (2a43f8133: -Only por comas); el producto medido es 0417eec7b.",
-    "decision": {
-      "ok": 140,
-      "n": 167,
-      "p50_s": 0.812,
-      "vram_mib": 3911
-    },
-    "escenas": {
-      "ok": 39,
-      "n": 59,
-      "molestas_por_20": 1.36,
-      "riesgo_solo": 0,
-      "fallos": 0
-    },
-    "latido": {
-      "ok": 8,
-      "n": 10,
-      "molestas_por_20": 2.0,
-      "riesgo_solo": 0
-    },
-    "e2e": {
-      "ok": 30,
-      "n": 50,
-      "primer_sonido_p50_ms": 3887,
-      "areas": {
-        "cu": [
-          10,
-          16
-        ],
-        "agente": [
-          4,
-          15
-        ],
-        "herramientas": [
-          12,
-          13
-        ],
-        "voz": [
-          4,
-          6
-        ]
+  "resultados": {
+    "nota": "decisión 14 del dueño (2026-10-16): tres bloques separados. El sellado v1 pudo contaminarse (el dueño usó el PC mientras corría); las mejoras posteriores sólo se midieron en práctica; el holdout v2, creado por agentes aislados y corrido una vez sobre el commit congelado, es el resultado final.",
+    "sellado_v1_0417eec7b": {
+      "commit": "0417eec7bab1df9078e585354f610bfc42318bf4",
+      "nota": "los bancos sellados se corrieron una vez sobre este commit; lo que cambie después se valida en práctica y se anota aparte. El instrumento renew_check.ps1 se arregló antes de correrlo (2a43f8133: -Only por comas); el producto medido es 0417eec7b.",
+      "decision": {
+        "ok": 140,
+        "n": 167,
+        "p50_s": 0.812,
+        "vram_mib": 3911
+      },
+      "escenas": {
+        "ok": 39,
+        "n": 59,
+        "molestas_por_20": 1.36,
+        "riesgo_solo": 0,
+        "fallos": 0
+      },
+      "latido": {
+        "ok": 8,
+        "n": 10,
+        "molestas_por_20": 2.0,
+        "riesgo_solo": 0
+      },
+      "e2e": {
+        "ok": 30,
+        "n": 50,
+        "primer_sonido_p50_ms": 3887,
+        "areas": {
+          "cu": [
+            10,
+            16
+          ],
+          "agente": [
+            4,
+            15
+          ],
+          "herramientas": [
+            12,
+            13
+          ],
+          "voz": [
+            4,
+            6
+          ]
+        }
+      },
+      "falsedades": {
+        "falsedades": 3,
+        "lineas": 62,
+        "conversaciones": 42,
+        "sin_juzgar": 1,
+        "confirmadas_a_mano": 2,
+        "revision": {
+          "F134": "falsa",
+          "F136": "no es afirmación (pregunta de confirmación)",
+          "F141": "falsa"
+        }
+      },
+      "recursos": {
+        "arnes_vram_mib": 3912,
+        "arnes_ram_mib": 1648,
+        "con_voz_vram_mib": 3948,
+        "con_voz_ram_mib": 2615
+      },
+      "holdout_final": {
+        "ok": 178,
+        "n": 227,
+        "accuracy": 0.7841
       }
     },
-    "falsedades": {
-      "falsedades": 3,
-      "lineas": 62,
-      "conversaciones": 42,
-      "sin_juzgar": 1,
-      "confirmadas_a_mano": 2,
-      "revision": {
-        "F134": "falsa",
-        "F136": "no es afirmación (pregunta de confirmación)",
-        "F141": "falsa"
-      }
+    "mejoras_posteriores_practica": {
+      "estado": "no validadas en holdout",
+      "e2e": "p12 23/30, p13 26/30 (guías A+B), p14 25/30 (aviso 2,0 s: respuesta p50 3994 ms)",
+      "falsedades": "p9 2/26, p10 2/26 (+1 empate), p11 en curso",
+      "decision2": "notebook: base 224-232 según réplica; C1 227/230; guías A+B 231/227 con P045 actuando sin el dato",
+      "escenas": "30-32/39 según brazo; armF 33 con una falsedad; armO rompe un silencio"
     },
-    "recursos": {
-      "arnes_vram_mib": 3912,
-      "arnes_ram_mib": 1648,
-      "con_voz_vram_mib": 3948,
-      "con_voz_ram_mib": 2615
-    },
-    "holdout_final": {
-      "ok": 178,
-      "n": 227,
-      "accuracy": 0.7841
+    "holdout_v2": {
+      "estado": "en creación (agentes aislados); se corre una vez al final",
+      "ubicacion": "F:/BAXYeval/renew_v2"
     }
   }
 }

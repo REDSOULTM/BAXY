@@ -360,3 +360,25 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   9. Más guías de ejemplos, medidas una por una (la A salió: P045 actuaba sin el dato; la B en medición).
   10. Se posponen hasta después del goal: instalador, interfaz, fine-tuning y el modo conversación.
   11. BAXY es de 4 GB a propósito: nunca proponer más VRAM ni modelos más grandes.
+- DECISIONES DEL DUEÑO, segunda tanda (2026-10-16 02:49; tope nuevo: 6 h, hasta las 08:49; el dueño duerme y el PC
+  queda libre hasta las 12:00):
+  10. Si el dueño está ausente, el latido sólo notifica. Cuando vuelve (por la actividad del PC, sin micrófono) el
+      instinto puede saludarlo en voz alta y conversar, con la personalidad en el prompt. Se mide que no rompa
+      silencios. (App: el evento «volvió tras N min»; mente: el texto del latido.)
+  11. Después del goal: instalador, interfaz, fine-tuning, modo conversación y reconocer la voz del dueño al entrar.
+  12. BAXY es de 4 GB a propósito: nunca proponer más VRAM ni modelos más grandes (guardado en memoria).
+  13. Las pestañas guardadas del Bloc de notas se borran antes de cada banco (bench_e2e.clear_notepad_tabs, sólo con
+      el Bloc cerrado); los agentes tienen permisos totales en los dos PCs.
+  14. metas.json separa tres cosas: el sellado de 0417eec7b (pudo contaminarse: el dueño usó el PC mientras corría),
+      las mejoras posteriores medidas sólo en práctica (no validadas), y el holdout nuevo, que es el resultado final.
+  15. Dentro de este goal, dos agentes aislados crean un holdout nuevo de las mismas cinco partes (decisión, escenas,
+      latido, e2e, falsedades) en F:\BAXYeval\renew_v2, sellado con sha; la sesión de ajuste no lo ve. Se corre una
+      sola vez al final sobre el commit congelado (e2e y falsedades en el PC, decisión, escenas y latido en el
+      notebook) y después no se ajusta nada más.
+  16. Goal completo = lo mejor posible dentro de las reglas: cada meta cumplida o cerrada como límite honesto con su
+      evidencia; nunca un número forzado con trucos.
+  17. Tope: 6 horas desde las 02:49 para terminar las rondas, crear y correr el holdout nuevo y cerrar metas.json y
+      PROGRESO.
+  18. El PC queda libre hasta las 12:00: el e2e y las falsedades del holdout nuevo se corren en el PC.
+  19. Mientras el dueño duerme: ante cada decisión, la opción recomendada que respete las reglas, aplicada y anotada
+      aquí para que la revise.
