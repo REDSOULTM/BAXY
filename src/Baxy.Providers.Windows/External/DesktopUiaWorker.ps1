@@ -11,8 +11,6 @@
 # Comandos:
 #   {"cmd":"ping"}
 #   {"cmd":"view","hwnd":123,"limit":60}
-#   {"cmd":"signature","hwnd":123,"limit":60,"budgetMs":1200}   (tipo y nombre de los primeros controles y si hay texto
-#      seleccionado, acotado en tiempo; no toca la ultima vista: Do-Signature)
 #   {"cmd":"click","hwnd":123,"aliases":["Biblioteca"],"controlId":"42.1837.4"}
 #      (con «manner»: open | menu | double, ese control de la vista abierto por su flecha, su menu contextual o un doble
 #      clic, solo por su identidad: Invoke-MannerControl)
@@ -2701,71 +2699,6 @@ function Do-View($request){
   }
   return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; clientProviders=$script:ClientProviders; disabled=$disabled; clientFrom=$clientFrom; frameOnly=$frameOnly; partial=$viewPartial }
 }
-# Ronda 21, revision 1 (B2, B4): la firma barata de una ventana, para buscar el destino de un pedido sin aplicacion. Un
-# recorrido en anchura del arbol de control acotado en nodos y en tiempo (budgetMs), sin releer el cliente, sin las
-# entradas del HMENU ni la segunda lectura de deshabilitados, y sin tocar la ultima vista ($script:LastView): solo tipo y
-# nombre de los primeros controles que se ven, y si un Document o un Edit tiene una seleccion de texto no vacia
-# (TextPattern.GetSelection), leida, nunca supuesta.
-# Revision 1 de la ronda 24 (B1): cada control que esta dentro de un Document (el contenido de una pagina, el boton
-# «Guardar» de un video) sale con content=true, para que el destino nunca tome el contenido por el marco de la ventana.
-$script:SignatureNodes=600
-$script:SignatureTexts=4
-function Test-TextSelected($el){
-  $pattern=$null
-  try {
-    if(-not $el.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$pattern)){ return $false }
-    foreach($range in @(([System.Windows.Automation.TextPattern]$pattern).GetSelection())){
-      if(-not [string]::IsNullOrWhiteSpace([string]$range.GetText(256))){ return $true }
-    }
-  } catch {}
-  return $false
-}
-function Do-Signature($request){
-  $watch=[System.Diagnostics.Stopwatch]::StartNew()
-  $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
-  $budget=[int]$request.budgetMs; if($budget -lt 100){$budget=100}; if($budget -gt 4000){$budget=4000}
-  if([long]$request.hwnd -le 0){ return @{ ok=$false; error='active_window_not_found' } }
-  $target=Get-Root ([long]$request.hwnd) -Front
-  if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='visible_controls_root_unavailable' } }
-  $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
-  $queue=New-Object System.Collections.Generic.Queue[object]
-  $inside=New-Object System.Collections.Generic.Queue[bool]
-  $queue.Enqueue($target.root)
-  $inside.Enqueue($false)
-  $controls=New-Object System.Collections.ArrayList
-  $seen=@{}
-  $texts=0;$selection=$false;$visited=0;$complete=$true
-  while($queue.Count -gt 0 -and $complete){
-    $node=$queue.Dequeue()
-    $nodeContent=$inside.Dequeue()
-    $child=$null
-    try { $child=$walker.GetFirstChild($node,$script:Cache) } catch { $child=$null }
-    while($null -ne $child){
-      if($watch.ElapsedMilliseconds -ge $budget -or $visited -ge $script:SignatureNodes){ $complete=$false; break }
-      $visited++
-      $shown=$false;$kind='';$name=''
-      try {
-        $shown=-not $child.Cached.IsOffscreen
-        $kind=$child.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-        $name=Format-Name ([string]$child.Cached.Name)
-      } catch { $shown=$false }
-      if($shown -and -not $selection -and $texts -lt $script:SignatureTexts -and ($kind -eq 'Document' -or $kind -eq 'Edit')){
-        $texts++
-        $selection=Test-TextSelected $child
-      }
-      $key=$kind+'|'+$name+'|'+$nodeContent
-      if($shown -and $name.Length -gt 0 -and $controls.Count -lt $limit -and -not $seen.ContainsKey($key)){
-        $seen[$key]=$true
-        if($nodeContent){ [void]$controls.Add([pscustomobject]@{ kind=$kind; name=$name; content=$true }) }
-        else { [void]$controls.Add([pscustomobject]@{ kind=$kind; name=$name }) }
-      }
-      $queue.Enqueue($child)
-      $inside.Enqueue(($nodeContent -or $kind -eq 'Document'))
-      try { $child=$walker.GetNextSibling($child,$script:Cache) } catch { $child=$null }
-    }
-  }
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; controls=@($controls); selection=$selection; complete=$complete; visited=$visited; elapsedMs=[long]$watch.ElapsedMilliseconds }
-}
 # Los accionables que se ven pero estan deshabilitados (pasada r15b, v3-27 y v3-29: «Copiar» y «Buscar» del Mapa de
 # caracteres esperan texto en su campo y la vista los quitaba, asi que el modelo no sabia que existian). Van aparte de
 # los controles, sin indice ni identidad (nada los pulsa), y solo en un arbol pequeno (con cientos de controles a la
@@ -4338,7 +4271,6 @@ while($true){
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
     elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; pid=$PID; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput; uiaInputDropped=[BaxyUiaQuietInput]::Dropped; uiaInputRefused=[BaxyUiaQuietInput]::Refused; uiaWaitAnswered=[BaxyUiaQuietInput]::Answered; frontReturned=[BaxyFrontKeeper]::Returned; frontReturnFailed=[BaxyFrontKeeper]::Failed; frontReturnMs=[BaxyFrontKeeper]::LastReturnMs; frontYielded=[BaxyFrontKeeper]::Yielded; frontLeaseYielded=[BaxyFrontKeeper]::LeaseYielded; frontRawInput=[BaxyFrontKeeper]::RawInput; frontBidKey=[BaxyFrontKeeper]::BidKey; frontBids=[BaxyFrontKeeper]::Bids; frontBidsAnswered=[BaxyFrontKeeper]::BidsAnswered; frontLate=[BaxyFrontKeeper]::Late; frontLateMs=[BaxyFrontKeeper]::LateMs } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
-    elseif($cmd -eq 'signature'){ Send-Line (Do-Signature $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }
     elseif($cmd -eq 'postread'){ Send-Line (Add-FrontReport (Do-Postread $request)) }
