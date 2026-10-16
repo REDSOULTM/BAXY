@@ -85,6 +85,10 @@ internal readonly record struct WindowIdentity(nint Window, int ProcessId, long 
     internal bool Alive => Window != 0 && ProcessId > 0;
 }
 
+/// <summary>BAXY Renew (notebook), F004: the edit control that had the keyboard's focus of the window in front right
+/// before a text was typed into it by the keyboard, and the length its text must reach once the text is in.</summary>
+internal readonly record struct TypedMark(nint Field, int Expected);
+
 /// <summary>What a delivery aimed at a field did: the method that took it, whether its re-read proves it was
 /// delivered, whether anything may have reached the field, the failure when it did not, and the entry of a list a «select»
 /// chose, as it was read (auditoría C9).</summary>
@@ -199,9 +203,7 @@ internal sealed class WindowsTextDelivery
                 return new FieldDelivery("em_replacesel", false, false, "input_field_not_replaced", fieldClass);
         }
 
-        (int Start, int End)? selection = _messages.Selection(field);
-        int replaced = selection is { } range && range.End >= range.Start ? range.End - range.Start : 0;
-        int expected = before - replaced + text.Length;
+        int expected = Expected(field, before, text.Length);
 
         if (!Same(identity))
             return new FieldDelivery("em_replacesel", false, false, "input_window_changed", fieldClass);
@@ -259,6 +261,39 @@ internal sealed class WindowsTextDelivery
         return queued == 2
             ? new FieldDelivery("postmessage", true, true, null, fieldClass)
             : new FieldDelivery("postmessage", false, queued > 0, "input_effect_not_verified", fieldClass);
+    }
+
+    /// <summary>
+    /// BAXY Renew (notebook), F004: the mark of the control with the keyboard's focus of <paramref name="window"/> (the
+    /// window in front) before a text of <paramref name="length"/> characters is typed into it, so the text can be read
+    /// back as a delivery's is. Null when that focus is no edit control of the window's own process, or one that is
+    /// disabled, read-only or a password (its text is never read), or one whose text does not answer.
+    /// </summary>
+    internal TypedMark? Mark(nint window, int length)
+    {
+        nint field = _messages.FocusOf(window);
+        if (field == 0 || !IsEditClass(_messages.ClassName(field)) || !_messages.IsEnabled(field)
+            || !TakesTyping(_messages.Style(field)))
+            return null;
+        int before = _messages.TextLength(field);
+        return before < 0 ? null : new TypedMark(field, Expected(field, before, length));
+    }
+
+    /// <summary>Whether the typed text is in the marked control, by the proof of a delivery: its text grew by the text
+    /// (minus the selection it replaced) and holds it. Nothing of the control's text leaves this check.</summary>
+    internal bool ReadsBack(TypedMark mark, string text)
+    {
+        int after = _messages.TextLength(mark.Field);
+        return after == mark.Expected && Holds(mark.Field, text, after);
+    }
+
+    // The length a control's text has once a text of «length» characters is inserted at its caret, replacing its
+    // selection.
+    private int Expected(nint field, int before, int length)
+    {
+        (int Start, int End)? selection = _messages.Selection(field);
+        int replaced = selection is { } range && range.End >= range.Start ? range.End - range.Start : 0;
+        return before - replaced + length;
     }
 
     private bool Same(WindowIdentity identity) => _messages.Identity(identity.Window) == identity;

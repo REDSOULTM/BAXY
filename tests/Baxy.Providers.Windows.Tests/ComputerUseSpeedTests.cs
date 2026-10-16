@@ -57,7 +57,8 @@ public sealed class ComputerUseSpeedTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(keyboard.Chords.Single(), Is.EqualTo(chord));
             Assert.That(receipt.Result?.GetProperty("expectedEvents").GetInt32(), Is.EqualTo(chord.Length * 2));
-            Assert.That(receipt.Result?.GetProperty("foregroundTitleBefore").GetString(), Is.EqualTo("Documento - Editor"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("title").GetString(), Is.EqualTo("Documento - Editor"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("Editor"));
             Assert.That(receipt.Result?.GetProperty("foregroundProcessIdBefore").GetInt32(), Is.EqualTo(4242));
             Assert.That(receipt.Result?.GetProperty("action").GetString(), Is.EqualTo("key"));
         });
@@ -897,6 +898,11 @@ public sealed class ComputerUseSpeedTests
 internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
 {
     internal DesktopForeground Front { get; init; } = new(0x1234, 4242, "Documento - Editor");
+
+    // The program a view names the window in front by.
+    internal string FrontProcess { get; init; } = "Editor";
+
+    public string ProcessName(nint window) => FrontProcess;
 
     internal int? AcceptOnly { get; init; }
 

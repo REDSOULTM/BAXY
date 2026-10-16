@@ -1979,7 +1979,11 @@ public sealed class ExternalAdaptersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(typed.Verified, Is.True);
+            // BAXY Renew (notebook), F004: without the field's messages nothing reads the text back, so it is not told
+            // verified; what Windows accepted travels with it.
+            Assert.That(typed.Verified, Is.False);
+            Assert.That(typed.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(typed.Result?.GetProperty("readBack").GetBoolean(), Is.False);
             Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola" }));
             Assert.That(typed.Result?.GetProperty("acceptedEvents").GetInt32(), Is.EqualTo(8));
             Assert.That(typed.Result?.GetProperty("textLength").GetInt32(), Is.EqualTo(4));
