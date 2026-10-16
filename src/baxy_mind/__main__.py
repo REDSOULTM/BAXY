@@ -40,43 +40,44 @@ def main() -> int:
         "models": {"llm": server.name},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
                      "session.new",
-                     "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel", "shutdown"],
+                     "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel"],
     })
-    # Speech and cancellation are answered by the reader as they arrive, so they never wait for an inference (the
-    # App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round 2
-    # of nb-aviso); every other request keeps its order on this loop. None ends it (the App closed stdin, or shutdown);
-    # a protocol violation is its exit code.
+    # The reader answers voice.speak, voice.cancel and voice.status as they arrive, so they never wait for an inference
+    # (the App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round
+    # 2 of nb-aviso); every other request keeps its order on this loop. None ends it (the App closed stdin); an int is
+    # the exit code (a protocol violation, or the pipe failing).
     pending: queue.Queue[dict | int | None] = queue.Queue()
 
     def read() -> None:
-        while True:
-            try:
-                message = protocol.read_message()
-            except protocol.ProtocolViolation as violation:
-                protocol.write_message(protocol.error_reply(None, violation.code, violation.detail))
-                pending.put(65)
-                return
-            if message is None:
-                pending.put(None)
-                return
-            if not message:
-                continue
-            kind = str(message.get("type"))
-            if kind == "voice.speak":
-                protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
-                                        "accepted": voice.speech.speak(str(message.get("text") or ""))})
-            elif kind == "voice.cancel":
-                voice.speech.cancel()
-                protocol.write_message({"type": "voice.cancelled", "id": message.get("id")})
-            elif kind == "voice.status":
-                protocol.write_message({"type": "voice.status.result", "id": message.get("id"),
-                                        "status": voice.status()})
-            elif kind == "shutdown":
-                protocol.write_message({"type": "shutdown.ack", "id": message.get("id")})
-                pending.put(None)
-                return
-            else:
-                pending.put(message)
+        try:
+            while True:
+                try:
+                    message = protocol.read_message()
+                except protocol.ProtocolViolation as violation:
+                    protocol.write_message(protocol.error_reply(None, violation.code, violation.detail))
+                    pending.put(65)
+                    return
+                if message is None:
+                    pending.put(None)
+                    return
+                if not message:
+                    continue
+                kind = str(message.get("type"))
+                if kind == "voice.speak":
+                    protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
+                                            "accepted": voice.speech.speak(str(message.get("text") or ""))})
+                elif kind == "voice.cancel":
+                    voice.speech.cancel()
+                    protocol.write_message({"type": "voice.cancelled", "id": message.get("id")})
+                elif kind == "voice.status":
+                    protocol.write_message({"type": "voice.status.result", "id": message.get("id"),
+                                            "status": voice.status()})
+                else:
+                    pending.put(message)
+        except Exception as error:  # noqa: BLE001 - the pipe failed: the loop ends instead of waiting forever
+            sys.stderr.write(f"baxy_mind_renew_failure:reader:{error!r}\n")
+            sys.stderr.flush()
+            pending.put(74)
 
     threading.Thread(target=read, name="mind-reader", daemon=True).start()
     try:

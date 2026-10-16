@@ -30,7 +30,7 @@ if ($Holdout) {
     # The seals name the PC's paths; each machine checks its own copy of the banks under BAXY_RENEW_BANKS (the
     # notebook keeps them in D:).
     foreach ($entry in $metas.bancos.sellados.PSObject.Properties) {
-        $file = ($entry.Value.archivo -replace '^F:/BAXYeval/renew_v1', $banks) -replace '/', '\'
+        $file = ($entry.Value.archivo -replace '^F:/BAXYeval/renew_v[0-9]+', $banks) -replace '/', '\'
         if (-not (Test-Path $file)) { continue }  # a bank this machine does not run (the -Only split)
         $actual = (Get-FileHash -Algorithm SHA256 $file).Hash.ToLowerInvariant()
         if ($actual -ne $entry.Value.sha256) { throw "sello roto: $($entry.Name) ($file)" }

@@ -23,25 +23,11 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # What BAXY says once when a turn of the person's has said nothing for 2 s and is still working (goal identity: a
 # notice that claims no result when the turn will go past 3 s in silence). The App times it; the words are the
 # persona's, so they live here with the prompt.
-NOTICE = "Dame un momento."
+NOTICE = "Un momento."
 
 _GUIDES = (
-    "\nGuías (ejemplos de llamadas; los valores son de ejemplo):\n"
-    "A. Archivos de la persona: folder es sólo la carpeta conocida (desktop, documents, downloads, o home = "
-    "C:\\Users\\<nombre>); cada carpeta que nombre dentro va en relativePath o subdirectory, delante del nombre, y una "
-    "ruta completa que diga se copia entera ahí. En file_write y filesystem_create_directory, sin folder la ruta cae en "
-    "tu carpeta de trabajo, no en la suya.\n"
-    "«crea informe.txt en C:\\Users\\ana\\trabajo que diga hola» → file_write {\"folder\": \"home\", "
-    "\"relativePath\": \"C:\\Users\\ana\\trabajo\\informe.txt\", \"text\": \"hola\"}\n"
-    "«añade 'llamar a Luis' al final de pendientes.txt de la carpeta casa» → file_write {\"folder\": \"home\", "
-    "\"relativePath\": \"casa/pendientes.txt\", \"text\": \"llamar a Luis\", \"append\": true}\n"
-    "«en la carpeta clientes de mi usuario crea 2024 con marzo dentro» → filesystem_create_directory {\"folder\": "
-    "\"home\", \"relativePath\": \"clientes/2024/marzo\"}\n"
-    "«¿qué archivo pesa más en la carpeta proyectos de mi usuario?» → file_find {\"folder\": \"home\", "
-    "\"subdirectory\": \"proyectos\", \"query\": \"*\", \"order\": \"size\"}\n"
-    "Al contarlo, di dónde quedó o dónde está según el resultado (fullPath, o folder y relativePath), no lo que se "
-    "pidió.\n"
-    "B. «abre <app> y escribe X»: app_open, input_visible_controls de esa app, input_text_type {\"window\": <el "
+    "\nGuía (ejemplo de llamadas; los valores son de ejemplo):\n"
+    "«abre <app> y escribe X»: app_open, input_visible_controls de esa app, input_text_type {\"window\": <el "
     "número tras «window» en tu mirada>, \"text\": \"X\"}, y vuelve a mirarla antes de contarlo. file_write sólo si "
     "pide un archivo."
 )
@@ -391,8 +377,8 @@ class Mind:
     def beat(self, request_id: Any, context: dict[str, Any]) -> dict[str, Any]:
         """The heartbeat: nobody spoke; the model looks at the moment in a conversation of its own (OpenClaw's isolated
         heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
-        something. Same system prompt and tools, so the cached prefix is the person's; what it did joins the person's
-        conversation only if it intervened."""
+        something. Same tools (the cached prefix: the template puts them first) and a system text without the guides and
+        the «¿ya lo hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
         started = time.monotonic()
         conv = [{"role": "user", "content": beat_message(context)}]
         # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.

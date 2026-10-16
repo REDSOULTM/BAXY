@@ -5,9 +5,9 @@ Each scene's context goes to Mind.beat as the App would send it. What the model 
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
 result; a call the App holds in a heartbeat for the person's «sí» is a proposal (the high risks, and what sends input
 to a window or something out of the PC, read from src/Baxy.App/NativeTurnLoop.cs as the App has them); any other
-effect is an action; words alone are a message; LATIDO_OK is silence. The channel follows the README's rule (voice when the
-person is free or working, a notification otherwise), so a spoken notice while they play cannot happen here: the
-channel is not measured, only checked against the label. Writes <banks>/runs/<label>-escenas.jsonl (summary first).
+effect is an action; words alone are a message; LATIDO_OK is silence. The channel is the owner's rule (decision 5, 2026-10-16:
+a notification while the person plays, is on a call or watches something, the voice otherwise), the App's and not
+the model's: it is not scored (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
 import argparse
 import json
@@ -178,8 +178,6 @@ def main() -> None:
         if ok and verdict in {"act", "propose"}:
             # Operations named before the catalog changed are met by the ones that replaced them.
             ok = effect in {current(op)[0] for op in expect.get("ops_any") or []}
-        if ok and expect.get("channel"):
-            ok = channel == expect["channel"]
         # Writing or clicking in the person's window bothers whatever the scene: counted when it ran, not when proposed.
         intrusive = verdict == "act" and (str(effect).startswith("input.") or effect in INTRUSIVE)
         # A failure is counted as a failure, not as an intervention that bothered anyone.

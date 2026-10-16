@@ -70,8 +70,23 @@ class Events:
         return None
 
 
+def clear_notepad_tabs() -> None:
+    """The Notepad restores its saved tabs: text a previous run typed would pass a later case (practice p13 E012). With
+    the owner's leave (2026-10-16) they are cleared before a bench, only while no Notepad is open."""
+    import psutil
+    if any((p.info["name"] or "").lower() == "notepad.exe" for p in psutil.process_iter(["name"])):
+        return
+    tabs = Path(os.environ["LOCALAPPDATA"]) / "Packages" / "Microsoft.WindowsNotepad_8wekyb3d8bbwe" / "LocalState" / "TabState"
+    for saved in tabs.glob("*") if tabs.is_dir() else []:
+        try:
+            saved.unlink()
+        except OSError:
+            pass
+
+
 class Conductor:
     def __init__(self, run_dir: Path, profile: Path) -> None:
+        clear_notepad_tabs()
         self.commands = run_dir / "commands"
         self.commands.mkdir(parents=True, exist_ok=True)
         self.sequence = 0

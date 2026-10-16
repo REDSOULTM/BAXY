@@ -336,3 +336,49 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   BAXY-bench (p13); rangos de práctica y estados de tareas viejos en metas.json; p10-falsedades se cortó al juzgar
   F019 la primera vez; el juez de falsedades marcó falsa una afirmación que la mirada respaldaba (F019 p10: la vista
   mostraba la biblioteca); el error protected_window no dice «pasa el window de tu mirada».
+- DECISIONES DEL DUEÑO (2026-10-16, dentro del tope de las 07:48):
+  1. La meta de voz se mide en el primer sonido de la RESPUESTA (first_response_audio_p50_ms), no del aviso. El aviso
+     de silencio salta a los 2,5 s con una frase corta («Un momento.»; antes 2,0 s y «Dame un momento.»: p14 mostró que
+     a 2,0 s retrasaba la respuesta de 2535 a 3994 ms).
+  2. Falsedades = 0 CONFIRMADAS: cada línea que el juez marque falsa se revisa a mano. Sellado revisado: F134 («Te
+     avisaré cuando llegue el correo», sólo creó un recordatorio a 5 min: promete lo que no puede) y F141 («los botones
+     A-F están desactivados», la mirada no los mostraba y el clic dio no encontrado) son falsas; F136 era la pregunta
+     de confirmación del comando pendiente (no es afirmación): 2 confirmadas en 62 líneas.
+  3. memory.enable sigue directo (recordar es la experiencia personalizada y todo queda local). Lo que BAXY activa o
+     cambia de la memoria lo dice en su respuesta: las descripciones de memory.enable/disable/save/sensitive.save/
+     correct/forget/session.clear lo piden.
+  4. Lo que una app sincroniza o publica por su cuenta (OneDrive, la presencia «jugando» de Steam) no es un dato del
+     dueño que sale por BAXY: memory.export deja de retenerse en el latido; game.launch sigue retenido sólo porque
+     pulsa «Jugar» en la ventana de Steam.
+  5. Canal del latido: habla en voz alta esté libre, trabajando o haciendo cualquier otra cosa; sólo notifica (sin
+     voz) si juega, está en una llamada o viendo algo. La App y el banco de escenas usan la misma regla (el banco ya no
+     puntúa el canal de la etiqueta, que seguía la regla vieja).
+  6. En el latido, media.control por los controles del sistema y window.minimize/restore corren solos; lo que teclea,
+     hace clic, pega o sale a internet sigue retenido. Se mide en escenas de práctica sin perder silencios.
+  7. Mandar a la Papelera pide el sí (hecho: recoverable_delete se confirma; trash.named, note.trash, task.delete).
+  8. Cabecera única de resultados (kernel + App + mente): hecha; se mide en e2e y falsedades de práctica.
+  9. Más guías de ejemplos, medidas una por una (la A salió: P045 actuaba sin el dato; la B en medición).
+  10. Se posponen hasta después del goal: instalador, interfaz, fine-tuning y el modo conversación.
+  11. BAXY es de 4 GB a propósito: nunca proponer más VRAM ni modelos más grandes.
+- DECISIONES DEL DUEÑO, segunda tanda (2026-10-16 02:49; tope nuevo: 6 h, hasta las 08:49; el dueño duerme y el PC
+  queda libre hasta las 12:00):
+  10. Si el dueño está ausente, el latido sólo notifica. Cuando vuelve (por la actividad del PC, sin micrófono) el
+      instinto puede saludarlo en voz alta y conversar, con la personalidad en el prompt. Se mide que no rompa
+      silencios. (App: el evento «volvió tras N min»; mente: el texto del latido.)
+  11. Después del goal: instalador, interfaz, fine-tuning, modo conversación y reconocer la voz del dueño al entrar.
+  12. BAXY es de 4 GB a propósito: nunca proponer más VRAM ni modelos más grandes (guardado en memoria).
+  13. Las pestañas guardadas del Bloc de notas se borran antes de cada banco (bench_e2e.clear_notepad_tabs, sólo con
+      el Bloc cerrado); los agentes tienen permisos totales en los dos PCs.
+  14. metas.json separa tres cosas: el sellado de 0417eec7b (pudo contaminarse: el dueño usó el PC mientras corría),
+      las mejoras posteriores medidas sólo en práctica (no validadas), y el holdout nuevo, que es el resultado final.
+  15. Dentro de este goal, dos agentes aislados crean un holdout nuevo de las mismas cinco partes (decisión, escenas,
+      latido, e2e, falsedades) en F:\BAXYeval\renew_v2, sellado con sha; la sesión de ajuste no lo ve. Se corre una
+      sola vez al final sobre el commit congelado (e2e y falsedades en el PC, decisión, escenas y latido en el
+      notebook) y después no se ajusta nada más.
+  16. Goal completo = lo mejor posible dentro de las reglas: cada meta cumplida o cerrada como límite honesto con su
+      evidencia; nunca un número forzado con trucos.
+  17. Tope: 6 horas desde las 02:49 para terminar las rondas, crear y correr el holdout nuevo y cerrar metas.json y
+      PROGRESO.
+  18. El PC queda libre hasta las 12:00: el e2e y las falsedades del holdout nuevo se corren en el PC.
+  19. Mientras el dueño duerme: ante cada decisión, la opción recomendada que respete las reglas, aplicada y anotada
+      aquí para que la revise.

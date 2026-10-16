@@ -13,10 +13,12 @@ namespace Baxy.App;
 internal sealed class SilenceNotice
 {
     /// <summary>
-    /// 2.0 s: e2e p11/p12 left 31 of 72 commands silent past 3 s (file.find 11-12 s, web.fetch 9-14 s); the same runs
-    /// simulated with a notice at 2.0 s gave a first sound at 2.0 s p50 and 2 of 72 past 3 s (leader, 2026-10-16).
+    /// 2.5 s: e2e p11/p12 left 31 of 72 commands silent past 3 s (file.find 11-12 s, web.fetch 9-14 s). At 2.0 s (p14)
+    /// the first sound came at 2106 ms p50 with none past 3 s, but the notice took the voice when an answer was due at
+    /// 2-3 s: the answer's own first sound went from 2535 ms p50 (p13, no notice) to 3994 ms. 2.5 s lets those answers
+    /// come first (leader, 2026-10-16).
     /// </summary>
-    internal static readonly TimeSpan After = TimeSpan.FromSeconds(2.0);
+    internal static readonly TimeSpan After = TimeSpan.FromSeconds(2.5);
 
     private readonly object _gate = new();
     private readonly TimeProvider _time;

@@ -136,7 +136,7 @@ public static partial class RiskPolicy
     {
         "get-childitem", "gci", "dir", "ls", "get-content", "gc", "cat", "type", "get-item", "gi",
         "get-itemproperty", "gp", "get-location", "gl", "pwd", "get-process", "gps", "ps", "get-service", "gsv",
-        "get-date", "get-command", "gcm", "get-help", "get-volume", "get-psdrive", "gdr", "get-computerinfo",
+        "get-date", "get-command", "gcm", "get-volume", "get-psdrive", "gdr", "get-computerinfo",
         "get-netadapter", "get-netipaddress", "get-filehash", "get-ciminstance", "gcim", "get-disk",
         "get-physicaldisk", "get-printer", "get-hotfix", "get-culture", "get-timezone", "get-host", "get-winevent",
         "get-uptime", "select-string", "sls", "select-object", "select", "where-object", "where", "sort-object",

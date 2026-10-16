@@ -22,7 +22,7 @@ public sealed class SilenceNoticeTests
     }
 
     [Test]
-    public void ASilentTurnSaysTheNoticeOnceAfterTwoSeconds()
+    public void ASilentTurnSaysTheNoticeOnceAtItsDelay()
     {
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
@@ -31,7 +31,7 @@ public sealed class SilenceNoticeTests
         notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
-        Assert.That(time.Timers[0].DueTime, Is.EqualTo(TimeSpan.FromSeconds(2.0)));
+        Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After));
         Assert.That(said, Is.Empty);
         time.Timers[0].Fire();
         time.Timers[0].Fire();
@@ -52,7 +52,7 @@ public sealed class SilenceNoticeTests
         notice.Open("Dame un momento.", arrived, () => true, said.Add);
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
-        Assert.That(time.Timers[0].DueTime, Is.EqualTo(TimeSpan.FromSeconds(0.5)));
+        Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After - TimeSpan.FromSeconds(1.5)));
         Assert.That(said, Is.Empty);
         time.Timers[0].Fire();
         Assert.That(said, Is.EqualTo(new[] { "Dame un momento." }));
