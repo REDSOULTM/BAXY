@@ -82,6 +82,9 @@ ARMS["thinkcont"] = [
 ]
 THINKING_ARMS = {"think", "thinkcont"}
 ARMS["sysen"] = []
+# P10, one call per decision: llama.cpp leaves parallel tool calls disabled by default (docs/function-calling.md,
+# «Parallel tool calls … disabled by default»); the mind asks for them. One call at a time is measured here.
+ARMS["noparallel"] = [('"max_tokens": 512, "parallel_tool_calls": True,', '"max_tokens": 512, "parallel_tool_calls": False,')]
 
 # P9, the system text in English, rule by rule the same (the tool descriptions are English already): multilingual
 # models follow instructions written in English better than the same instructions in another language (Shi et al.,
