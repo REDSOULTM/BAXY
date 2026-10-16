@@ -613,9 +613,16 @@ internal sealed class WindowsVisibleControlAdapter
     private static readonly HashSet<string> CascadeAfter = new(StringComparer.Ordinal)
     {
         "visible_button_not_found",
-        "visible_button_uia_failed",
-        "visible_click_no_receipt",
         "active_window_not_found",
+    };
+
+    // Ronda B (falta 1): the tree's press was sent and its answer never came back («no receipt») or came back unreadable:
+    // the control may have been pressed and nothing says which one, so no later stage (OCR, tooltip, vision, another look)
+    // could keep off it. The click ends with that press, its effect uncertain; nothing is pressed a second time.
+    private static readonly HashSet<string> PressUnanswered = new(StringComparer.Ordinal)
+    {
+        "visible_click_no_receipt",
+        "visible_click_receipt_invalid",
     };
 
     // H0096 «aprieta en Among Us»: el worker sólo emite este código después de
@@ -1075,6 +1082,8 @@ internal sealed class WindowsVisibleControlAdapter
                     return uia;
                 // An administrator's window refuses every stage alike (UIPI): no OCR, tooltip or vision is tried on it.
                 if (uia.ErrorCode is WindowElevated or NeedsConfirmation)
+                    return uia;
+                if (uia.EffectMayHaveOccurred && uia.ErrorCode is { } unanswered && PressUnanswered.Contains(unanswered))
                     return uia;
                 // lat-apertura-clic (r13a), review of the branch (finding 4): the tree found the control and pressed it,
                 // and its post-read saw nothing change. A later stage still looks for the label (the tree may have

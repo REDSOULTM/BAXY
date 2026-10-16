@@ -977,6 +977,48 @@ public sealed class ComputerUseClickMethodTests
         }
     }
 
+    [Test]
+    public void ATreePressWithoutAnAnswerEndsTheClickWithoutAnotherPress()
+    {
+        // Ronda B (falta 1): the worker took the press and its answer never came (no receipt): the control may have been
+        // pressed and nothing says which. No OCR, vision, tooltip or later look runs after it (each could press it, or
+        // its twin, again); the receipt says the effect is uncertain. The window is this test's own, off the screen.
+        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY unanswered fixture", 0x90000000u,
+            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        Assert.That(window, Is.Not.EqualTo(nint.Zero));
+        try
+        {
+            var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(answers: []);
+            var ocr = new BoundLocator("ocr");
+            var vision = new BoundLocator("vision");
+            var tooltip = new BoundLocator("tooltip");
+            var pointer = new RecordingPointer(ready: true);
+            var adapter = new WindowsVisibleControlAdapter(
+                worker, ocr, vision, timing: Quick, pointer: pointer, tooltip: tooltip, elevated: _ => false);
+
+            ExternalCapabilityReceipt receipt = adapter.InvokeAsync(
+                    "input.visible.click", Json("{\"label\":\"Enviar\",\"window\":" + (long)window + "}"),
+                    CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_no_receipt"));
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True, "the press was sent: its effect is uncertain");
+                Assert.That(worker.Commands.Count(command => command.Contains("\"cmd\":\"click\"", StringComparison.Ordinal)),
+                    Is.EqualTo(1), "one press, never a second look that presses");
+                Assert.That(worker.Commands, Has.None.Contains("\"cmd\":\"at\""));
+                Assert.That(ocr.Calls + vision.Calls + tooltip.Calls, Is.Zero);
+                Assert.That(pointer.Clicks, Is.Empty);
+            });
+        }
+        finally
+        {
+            _ = DestroyWindow(window);
+        }
+    }
+
     private static readonly VisibleClickTiming Quick = VisibleClickTiming.Default with
     {
         SettledLabel = TimeSpan.FromMilliseconds(60),
