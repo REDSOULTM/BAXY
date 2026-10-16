@@ -39,8 +39,16 @@ def main() -> None:
     launcher = subprocess.Popen(["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd")], cwd=str(ROOT), env=env,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     deadline = time.monotonic() + 300
-    while time.monotonic() < deadline and not any(
-            (p.name() or "").lower() == "llama-server.exe" for p in product_tree()):
+    def model_up() -> bool:
+        for process in product_tree():
+            try:
+                if process.name().lower() == "llama-server.exe":
+                    return True
+            except psutil.Error:
+                pass
+        return False
+
+    while time.monotonic() < deadline and not model_up():
         time.sleep(2)
     time.sleep(60)  # the model loads and warms; the window draws
     gpu, peak = before or 0, {}
