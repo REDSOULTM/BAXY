@@ -241,9 +241,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             page = await browser.ReadPageAsync(maximumCharacters, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException && browser.Launches > launches)
+        catch (Exception exception) when (!(exception is OperationCanceledException && cancellationToken.IsCancellationRequested)
+            && browser.Launches > launches)
         {
-            // Ronda final: the read opened its browser and then failed: a window was opened.
+            // Ronda final: the read opened its browser and then failed (an internal timeout too): a window may have been opened.
             return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
         }
 
@@ -324,7 +325,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             tabs = await browser.ListTabsAsync(limit, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException && browser.Launches > launches)
+        catch (Exception exception) when (!(exception is OperationCanceledException && cancellationToken.IsCancellationRequested)
+            && browser.Launches > launches)
         {
             return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
         }
