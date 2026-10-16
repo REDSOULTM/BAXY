@@ -397,3 +397,13 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   de Spotify); bancos VIOLA (4: límite del latido viejo, guías dadas por adoptadas, código muerto del canal en el juez
   de escenas, e2e que se acortaba en silencio con la sesión bloqueada). Arreglos de mente y bancos hechos por el PC; App
   y proveedores, por el notebook.
+- CONGELADO 026c7af91 (2026-10-16 05:15) tras la ronda B (la última por el tope de 2 rondas). Incluye la integración
+  de la ronda B del notebook (App: Sí/No sólo bajo la pregunta de ese turno, la marca de la pregunta al publicarla,
+  bypass honesto, «no molestar» retenido en el latido; proveedores: «ya estaba» como Switched, la papelera ya no
+  devuelve oculto el archivo de la persona, clic doble en la cascada por etiqueta, el ping del worker sin datos sin
+  lector, Spotify) y la del PC (mente y bancos). Decisión tomada con el dueño dormido (regla 19): la suite de Providers
+  se cuelga en una prueba nueva (también en el notebook, sin GPU de por medio); se congeló el PRODUCTO y se arrancó el
+  holdout v2 para no pasar el tope; si el arreglo de esa prueba toca sólo tests/, no cambia lo medido; si revela un
+  fallo del producto, queda como límite honesto. Kernel 562, Contracts 69, Setup 477 en verde; App compila.
+- Holdout v2 en curso: e2e, falsedades y recursos en el PC (BAXY_RENEW_BANKS=F:\BAXYeval\renew_v2, sellos intactos);
+  decisión, escenas y latido en la GPU del notebook.
