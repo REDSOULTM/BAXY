@@ -9,7 +9,7 @@ from pathlib import Path
 
 from . import protocol
 from .llm_server import LlmServer
-from .mind import Mind
+from .mind import NOTICE, Mind
 from .voice import Voice
 
 
