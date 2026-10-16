@@ -2591,10 +2591,8 @@ function Do-View($request){
   Add-ViewBody $controls $body $elements
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
-  $position=0
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
-    $position++
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.
@@ -2633,7 +2631,7 @@ function Get-DisabledShown($found,[int]$shownCount,$seen){
       $key=$kind+'|'+$name
       if($seen.ContainsKey($key) -or $named.ContainsKey($key)){ continue }
       $named[$key]=$true
-      [void]$out.Add([pscustomobject]@{ kind=$kind; name=$name; state='disabled'; rect=(Get-Rect $item) })
+      [void]$out.Add([pscustomobject]@{ kind=$kind; name=$name; rect=(Get-Rect $item) })
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
   return ,$out.ToArray()
@@ -4135,7 +4133,7 @@ function Test-ActedByPattern($result){
 }
 # El parte de la vigilancia en curso (desde su Begin): si la familia del objetivo tomo el frente, si se devolvio
 # siempre, cuantas veces fallo y el retorno mas largo. Lo lleva la respuesta del comando y la de su postread (la cola
-# termina despues de la respuesta), y el adaptador lo copia al recibo para el medidor de molestia.
+# termina despues de la respuesta), y el adaptador lo copia al recibo.
 function Add-FrontReport($result){
   if($null -eq $result -or -not ($result -is [hashtable])){ return $result }
   $taken=[BaxyFrontKeeper]::WatchTaken

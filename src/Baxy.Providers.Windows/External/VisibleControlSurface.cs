@@ -677,7 +677,7 @@ internal static partial class VisibleControlSurface
 
     /// <summary>
     /// The process a view names as its window's: the hosted app's for an ApplicationFrameHost frame (the shared host
-    /// is never a mission's process), else the window's own.
+    /// is never the process a look names), else the window's own.
     /// </summary>
     internal static (int ProcessId, string ProcessName) ViewProcess(nint hwnd)
     {

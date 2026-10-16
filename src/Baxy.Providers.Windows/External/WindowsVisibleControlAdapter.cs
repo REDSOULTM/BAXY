@@ -827,7 +827,7 @@ internal sealed class WindowsVisibleControlAdapter
         string label;
         int? index = null;
         string? controlId = null;
-        nint missionWindow = 0;
+        nint namedWindow = 0;
         string? search;
         string? choose;
         string? manner;
@@ -863,7 +863,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 if (named.ValueKind != JsonValueKind.Number || !named.TryGetInt64(out long handle) || handle <= 0)
                     throw new InvalidDataException("window");
-                missionWindow = (nint)handle;
+                namedWindow = (nint)handle;
             }
         }
         catch (InvalidDataException)
@@ -902,12 +902,12 @@ internal sealed class WindowsVisibleControlAdapter
         bool namedByLabel = false;
         if (controlId is null && index is null && search is null && manner is null && opener is not null)
         {
-            controlId = NamedInView(missionWindow, label);
+            controlId = NamedInView(namedWindow, label);
             namedByLabel = controlId is not null;
         }
 
         if (search is not null)
-            return await SearchInBurstAsync(operation, label, controlId, missionWindow, search, choose, cancellationToken)
+            return await SearchInBurstAsync(operation, label, controlId, namedWindow, search, choose, cancellationToken)
                 .ConfigureAwait(false);
 
         // Goal v3 B3: a control opened by its arrow, its context menu or a double click is pressed only by its identity
@@ -919,18 +919,18 @@ internal sealed class WindowsVisibleControlAdapter
         {
             if (search is not null || controlId is null)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
-            HashSet<string>? shownBefore = ChainedNames(opener, missionWindow, controlId, ViewNames(missionWindow));
-            ExternalCapabilityReceipt pressed = await InvokeUiaAsync(operation, label, controlId, missionWindow, cancellationToken, manner)
+            HashSet<string>? shownBefore = ChainedNames(opener, namedWindow, controlId, ViewNames(namedWindow));
+            ExternalCapabilityReceipt pressed = await InvokeUiaAsync(operation, label, controlId, namedWindow, cancellationToken, manner)
                 .ConfigureAwait(false);
             // Ronda 20 (P7, v3-09): an item the opener showed (a collapsed ribbon's gallery) that the act's manner (its
             // arrow) found closed: the opener and the item, in that manner, go in one burst of the lease.
-            if (await ReopenShownAsync(operation, opener, pressed, label, controlId, missionWindow, manner, cancellationToken)
+            if (await ReopenShownAsync(operation, opener, pressed, label, controlId, namedWindow, manner, cancellationToken)
                     .ConfigureAwait(false) is { } reopenedInManner)
                 return reopenedInManner;
             // An arrow or a context menu opens a list or a menu by definition: noted as the opener of what it showed,
             // with its manner, so the burst that reopens it presses its arrow again, never its own action (v3-37).
             if (pressed.Verified && pressed.ErrorCode is null)
-                NoteOpenerIn(missionWindow, controlId, label, shownBefore, manner is "open" or "menu", manner);
+                NoteOpenerIn(namedWindow, controlId, label, shownBefore, manner is "open" or "menu", manner);
             return pressed;
         }
 
@@ -955,16 +955,16 @@ internal sealed class WindowsVisibleControlAdapter
 
         if (controlId is not null)
         {
-            HashSet<string>? namesBefore = ChainedNames(opener, missionWindow, controlId, ViewNames(missionWindow));
-            bool opens = OpensAgain(missionWindow, controlId);
+            HashSet<string>? namesBefore = ChainedNames(opener, namedWindow, controlId, ViewNames(namedWindow));
+            bool opens = OpensAgain(namedWindow, controlId);
             ExternalCapabilityReceipt identified = await InvokeUiaAsync(
-                operation, label, controlId, missionWindow, cancellationToken).ConfigureAwait(false);
-            if (await ReopenShownAsync(operation, opener, identified, label, controlId, missionWindow, null, cancellationToken)
+                operation, label, controlId, namedWindow, cancellationToken).ConfigureAwait(false);
+            if (await ReopenShownAsync(operation, opener, identified, label, controlId, namedWindow, null, cancellationToken)
                     .ConfigureAwait(false) is { } reopened)
                 return reopened;
 
             if (identified.Verified && identified.ErrorCode is null)
-                NoteOpener(missionWindow, controlId, label, namesBefore, opens);
+                NoteOpener(namedWindow, controlId, label, namesBefore, opens);
             // Revision 1 of the branch: an identity this adapter took from the label itself (NamedInView) that failed
             // before any effect leaves the label to its ordinary cascade, as a click by label alone always had.
             bool cascadeAfterNamed = namedByLabel && !identified.Verified && !identified.EffectObserved
@@ -996,7 +996,7 @@ internal sealed class WindowsVisibleControlAdapter
         // window. Any other click looks two or three times and answers.
         VisibleControlSurface.OpenedApplication? opened = _focus.TakeOpened();
         if (opened is { } seenOpening && _openedLooked is { } looked
-            && looked.Shows(seenOpening, missionWindow, label))
+            && looked.Shows(seenOpening, namedWindow, label))
         {
             // lat-apertura-clic: a look already read the opened application's window after its wait for it, the click
             // names that very window, and the look showed its label (a control so named, or a written line that is
@@ -1062,7 +1062,7 @@ internal sealed class WindowsVisibleControlAdapter
                 // whose identity went stale: nothing is read or pressed on whatever else holds the front (the person
                 // took it). The accessible tree reaches the bound window behind; OCR and vision read its own image
                 // and press through the tree at the point, or with the pointer only inside a burst of the lease.
-                nint boundWindow = opened is not null ? surfaceWindow : missionWindow != 0 ? missionWindow : viewWindow;
+                nint boundWindow = opened is not null ? surfaceWindow : namedWindow != 0 ? namedWindow : viewWindow;
                 using IDisposable bound = VisibleControlSurface.RequireWindow(boundWindow);
                 _lookedTreeSize = -1;
                 uia = await InvokeUiaAsync(operation, label, null, boundWindow, cancellationToken)
@@ -2100,20 +2100,20 @@ internal sealed class WindowsVisibleControlAdapter
         ExternalCapabilityReceipt pressed,
         string label,
         string controlId,
-        nint missionWindow,
+        nint namedWindow,
         string? manner,
         CancellationToken cancellationToken)
     {
-        if (missionWindow == 0 || opener is not { } shownBy || BurstLease is not { } reopenLease
+        if (namedWindow == 0 || opener is not { } shownBy || BurstLease is not { } reopenLease
             || !VisibleControlSurface.IsAlive(shownBy.Window) || _elevated(shownBy.Window)
-            || !ReopensShownItem(pressed.ErrorCode, label, controlId, missionWindow,
-                shownBy.Window, shownBy.Id, shownBy.NamesBefore, VisibleControlSurface.IsAlive(missionWindow),
-                missionWindow == shownBy.Window ? [] : PopupsOf(shownBy.Window), (shownBy.NamesBefore as OpenerNames)?.Described))
+            || !ReopensShownItem(pressed.ErrorCode, label, controlId, namedWindow,
+                shownBy.Window, shownBy.Id, shownBy.NamesBefore, VisibleControlSurface.IsAlive(namedWindow),
+                namedWindow == shownBy.Window ? [] : PopupsOf(shownBy.Window), (shownBy.NamesBefore as OpenerNames)?.Described))
             return null;
         _lookedWindow = shownBy.Window;
         return await new SearchBurst(reopenLease, SearchClock, this)
             .ReopenAsync(operation, shownBy.Window, shownBy.Label, shownBy.Id, label, cancellationToken,
-                shownIn: missionWindow == shownBy.Window ? 0 : missionWindow, openerManner: shownBy.Manner, itemManner: manner)
+                shownIn: namedWindow == shownBy.Window ? 0 : namedWindow, openerManner: shownBy.Manner, itemManner: manner)
             .ConfigureAwait(false);
     }
 
