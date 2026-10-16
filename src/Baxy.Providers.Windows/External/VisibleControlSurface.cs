@@ -827,9 +827,11 @@ internal static partial class VisibleControlSurface
     /// browser window are the person's, and keys or a lease meant for this window never count them as it. Ronda 24
     /// (t-menu-4): a pop-up is part of its owner, so the owner in front holds it too (<see cref="HeldByItsOwner"/>).
     /// </summary>
-    internal static bool ForegroundIsOrOwnedBy(nint window)
+    internal static bool ForegroundIsOrOwnedBy(nint window) => IsOrOwnedBy(window, GetForegroundWindow());
+
+    // ForegroundIsOrOwnedBy on a front already read (BAXY Renew, notebook: app.open names the very front it judged).
+    internal static bool IsOrOwnedBy(nint window, nint foreground)
     {
-        nint foreground = GetForegroundWindow();
         if (IsOrOwnedByFamily(window, FamilyPeer(window), foreground,
                 static hwnd => GetAncestor(hwnd, 2), static hwnd => GetWindow(hwnd, 4)))
             return true;
@@ -1481,6 +1483,13 @@ internal static partial class VisibleControlSurface
         }
 
         return surface;
+    }
+
+    // The top-level window a window is part of (itself when it is one, or when Windows names no parent).
+    internal static nint Root(nint hwnd)
+    {
+        nint root = hwnd == 0 ? 0 : GetAncestor(hwnd, 2);
+        return root == 0 ? hwnd : root;
     }
 
     internal static string WindowTitle(nint hwnd)

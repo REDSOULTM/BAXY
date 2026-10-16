@@ -22,6 +22,29 @@ internal interface IOpeningFront
     bool ShowAboveWithoutActivation(long window, long personWindow) => false;
 }
 
+/// <summary>
+/// BAXY Renew (notebook), F004 («abre la calculadora y luego escribe hola en el bloc de notas»: the Notepad opened in
+/// front was told verified with no word of the front, the Calculator opened just before held it, and the text typed
+/// next went into the Calculator): whether the window an opening verified holds the front, read once when the opening
+/// answers, asked in front or not. Held: the window in front is that window's root, a window inside it or one it owns
+/// (the windows its keys reach: VisibleControlSurface.ForegroundIsOrOwnedBy). Otherwise the window in front, by its
+/// title and the program a view names it by (a packaged app's own, not its frame host's); none when Windows reports no
+/// window in front. Only read, never fought for: a front taken after this read is not in it.
+/// </summary>
+public sealed record OpenedWindowFront(bool Held, string? HolderTitle = null, string? HolderProcess = null)
+{
+    public static OpenedWindowFront Read(long window)
+    {
+        nint front = checked((nint)ForegroundHandBack.Foreground());
+        if (front == 0)
+            return new(false);
+        if (External.VisibleControlSurface.IsOrOwnedBy(External.VisibleControlSurface.Root(checked((nint)window)), front))
+            return new(true);
+        return new(false, External.VisibleControlSurface.WindowTitle(front),
+            External.VisibleControlSurface.ViewProcess(front).ProcessName);
+    }
+}
+
 internal static class OpeningFront
 {
     // A window whose thread does not answer would hold the showing without end; past this it is not said shown.
