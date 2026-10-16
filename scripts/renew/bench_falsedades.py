@@ -10,11 +10,13 @@ usage: py -3.12 -X utf8 scripts/renew/bench_falsedades.py <label> --cases FILE [
    runs in the product. Writes <banks>/runs/<label>-falsedades/results.jsonl (summary first).
 """
 import argparse
+import http.client
 import json
 import os
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -136,15 +138,49 @@ def judge_line(messages: list[dict]) -> dict:
     return {**chosen, "votos_falsedad": f"{false_votes}/{len(readable)}"}
 
 
+# The judge's server, started by judge() and started again by judge_chat when it dies under a request (holdout v3,
+# 2026-10-16: llama-server exited three times, always on the same prompt, with nothing in its log).
+_JUDGE: dict = {}
+
+
+def start_judge_server() -> None:
+    _JUDGE["server"] = subprocess.Popen(
+        [LLAMA_SERVER, "-m", JUDGE_GGUF, "--host", "127.0.0.1", "--port", str(JUDGE_PORT),
+         "-ngl", "99", "-c", "16384", "-fa", "on", "--jinja"],
+        stdout=_JUDGE["log"], stderr=subprocess.STDOUT)
+    deadline = time.monotonic() + 900
+    while time.monotonic() < deadline:
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{JUDGE_PORT}/health", timeout=2) as reply:
+                if reply.status == 200:
+                    return
+        except Exception:  # noqa: BLE001 - still loading
+            time.sleep(1)
+
+
 def judge_chat(messages: list[dict], seed: int = 0) -> dict:
-    """The judge thinks before it answers (its reasoning stays apart), then writes the JSON verdict last."""
+    """The judge thinks before it answers (its reasoning stays apart), then writes the JSON verdict last. A server
+    that dies under the request is started again and asked once more; a second death leaves that verdict unreadable
+    (a line not judged, reviewed by hand), never a true one."""
     body = {"messages": messages, "temperature": 0.6, "top_p": 0.95, "top_k": 20, "max_tokens": 6000, "seed": seed,
             "chat_template_kwargs": {"enable_thinking": True}}
-    request = urllib.request.Request(f"http://127.0.0.1:{JUDGE_PORT}/v1/chat/completions",
-                                     data=json.dumps(body).encode("utf-8"),
-                                     headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(request, timeout=900) as reply:
-        content = json.loads(reply.read())["choices"][0]["message"].get("content") or ""
+    content = None
+    for attempt in range(2):
+        request = urllib.request.Request(f"http://127.0.0.1:{JUDGE_PORT}/v1/chat/completions",
+                                         data=json.dumps(body).encode("utf-8"),
+                                         headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(request, timeout=900) as reply:
+                content = json.loads(reply.read())["choices"][0]["message"].get("content") or ""
+            break
+        except (ConnectionError, urllib.error.URLError, http.client.HTTPException, TimeoutError):
+            server = _JUDGE.get("server")
+            if server is not None and server.poll() is None:
+                server.terminate()
+                server.wait(30)
+            start_judge_server()
+    if content is None:
+        return {"afirmaciones": [], "falsedad": False, "unparsed": "juez caído en esta línea"}
     start, end = content.find("{"), content.rfind("}")
     try:
         return json.loads(content[start:end + 1])
@@ -153,19 +189,9 @@ def judge_chat(messages: list[dict], seed: int = 0) -> dict:
 
 
 def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
-    log = (run_dir / "judge-server.log").open("w", encoding="utf-8")
-    server = subprocess.Popen([LLAMA_SERVER, "-m", JUDGE_GGUF, "--host", "127.0.0.1", "--port", str(JUDGE_PORT),
-                               "-ngl", "99", "-c", "16384", "-fa", "on", "--jinja"],
-                              stdout=log, stderr=subprocess.STDOUT)
+    _JUDGE["log"] = (run_dir / "judge-server.log").open("w", encoding="utf-8")
+    start_judge_server()
     try:
-        deadline = time.monotonic() + 900
-        while time.monotonic() < deadline:
-            try:
-                with urllib.request.urlopen(f"http://127.0.0.1:{JUDGE_PORT}/health", timeout=2) as reply:
-                    if reply.status == 200:
-                        break
-            except Exception:  # noqa: BLE001 - still loading
-                time.sleep(1)
         rows = []
         for case in transcripts:
             history: list[str] = []
@@ -197,8 +223,8 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
                     print(f"{case['id']} t{number} {mark}: {line[:90]!r} {false_claims}", flush=True)
         return rows
     finally:
-        server.terminate()
-        server.wait(30)
+        _JUDGE["server"].terminate()
+        _JUDGE["server"].wait(30)
 
 
 def main() -> None:
