@@ -244,14 +244,6 @@ public static class BaxyUiaWorkerNative {
     IntPtr position=(IntPtr)(((y & 0xFFFF) << 16) | (x & 0xFFFF));
     return PostMessage(own,0x007B,own,position);
   }
-  // Ronda 20b, palanca 6, revision 2 (hallazgo 3): the Escape a popup's own window gets as its key (WM_KEYDOWN and
-  // WM_KEYUP of VK_ESCAPE posted to it), with neither the keyboard nor the front: the menu loop of a context menu and a
-  // flyout's host close on it. Never to a window that is not alive.
-  public static bool PostEscape(IntPtr popup) {
-    if(popup==IntPtr.Zero || !IsWindow(popup)) return false;
-    return PostMessage(popup,0x0100,(IntPtr)0x1B,(IntPtr)0x00010001)
-      && PostMessage(popup,0x0101,(IntPtr)0x1B,new IntPtr(unchecked((int)0xC0010001)));
-  }
   // fable/cu-v3-clic-chromium: the render surface of a Chromium host (WebView2, CEF, Electron), told by its window
   // class, never by an application's name. Measured live on a WebView2 messaging client behind the person's window: a
   // press posted to its render surface window in client coordinates gave its search field the keyboard's focus
@@ -1954,41 +1946,6 @@ function Get-HolderWindow($el){
   }
   return [IntPtr]::Zero
 }
-# Ronda 20b, palanca 6, revision 2 (hallazgo 3): las ventanas propias de los popups abiertos junto al control: un menu
-# (ControlType Menu) o el anfitrion de un popup (su clase de marco dice Popup) de nivel superior del mismo proceso y a
-# menos de 64 px del control (como Get-OpenMenus: nunca un menu que la persona abre en otra parte del proceso), o un menu
-# dentro de la ventana. Solo la ventana que contiene a cada uno y nunca la ventana del pedido misma ni su raiz: el
-# Escape nunca va al cuerpo de la ventana de la persona.
-function Get-BornPopups($root,$el,[IntPtr]$top){
-  $found=New-Object System.Collections.Generic.List[long]
-  $process=0
-  try { $process=[int]$el.Current.ProcessId } catch { $process=0 }
-  if($process -eq 0){ return @() }
-  $box=$null
-  try { $box=$el.Current.BoundingRectangle } catch { $box=$null }
-  $frame=[BaxyUiaWorkerNative]::GetAncestor($top,2)
-  $menuType=[System.Windows.Automation.ControlType]::Menu
-  $candidates=@()
-  try {
-    $own=New-Object System.Windows.Automation.PropertyCondition($AE::ProcessIdProperty,$process)
-    foreach($shown in @($AE::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children,$own))){
-      $isMenu=$false; $class=''
-      try { $isMenu=$shown.Current.ControlType -eq $menuType; $class=[string]$shown.Current.ClassName } catch { continue }
-      if(-not $isMenu -and $class -notmatch 'Popup'){ continue }
-      $r=$null
-      try { $r=$shown.Current.BoundingRectangle } catch { $r=$null }
-      if($null -eq $box -or $box.IsEmpty -or $null -eq $r -or $r.IsEmpty){ continue }
-      if($r.Right+64 -ge $box.Left -and $r.Left-64 -le $box.Right -and $r.Bottom+64 -ge $box.Top -and $r.Top-64 -le $box.Bottom){ $candidates+=$shown }
-    }
-  } catch {}
-  try { $candidates+=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,$menuType)))) } catch {}
-  foreach($candidate in $candidates){
-    $holder=Get-HolderWindow $candidate
-    if($holder -eq [IntPtr]::Zero -or $holder -eq $top -or $holder -eq $frame -or -not [BaxyUiaWorkerNative]::IsWindowVisible($holder)){ continue }
-    if(-not $found.Contains($holder.ToInt64())){ $found.Add($holder.ToInt64()) }
-  }
-  return @($found | ForEach-Object { [IntPtr]$_ })
-}
 function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
   $pattern=$null
   if($manner -eq 'open'){
@@ -2007,44 +1964,6 @@ function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
       Start-Sleep -Milliseconds 50
     }
     return @{ method='expand' }
-  }
-  # Ronda 20b, palanca 6 (revision, hallazgo 1, v3-40 b): la lista que la mision abrio y dejo abierta al no llegar se
-  # cierra por su propio ExpandCollapse, sin puntero ni teclado. No suelta la red: el frente vuelve a la persona como
-  # tras cualquier patron que actuo (KeptMethods). Lo que ya no estaba abierto no se toca.
-  # Revision 2 (hallazgo 3): sin ExpandCollapse abierto (el menu contextual de una pestana, el flyout de un boton dividido
-  # abierto por su flecha con el puntero), el popup que sigue abierto junto al control se cierra con Escape enviado como
-  # mensaje a su propia ventana (Get-BornPopups), nunca a la ventana de la persona ni por el teclado. Sin popup abierto
-  # no se envia nada (visible_control_not_open); cerrado es solo el que se lee cerrado despues.
-  # Revision 3 (hallazgo 1): 'collapse' es solo el ExpandCollapse de la lista que la mision abrio, nunca el de una rama
-  # de arbol (TreeItem: donde navega la persona); 'dismiss' es solo el Escape al popup nacido en la mision y nunca toca
-  # el ExpandCollapse del control (una rama o una lista de la persona junto al menu quedan como estaban).
-  if($manner -eq 'collapse'){
-    $expanded=[System.Windows.Automation.ExpandCollapseState]::Expanded
-    $treeItem=$false
-    try { $treeItem=$el.Current.ControlType -eq [System.Windows.Automation.ControlType]::TreeItem } catch { $treeItem=$true }
-    if($treeItem -or -not $el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){
-      return @{ error='visible_control_not_open' }
-    }
-    $ec=([System.Windows.Automation.ExpandCollapsePattern]$pattern)
-    if($ec.Current.ExpandCollapseState -ne $expanded){ return @{ error='visible_control_not_open' } }
-    $ec.Collapse()
-    for($look=0;$look -lt 8;$look++){
-      if($ec.Current.ExpandCollapseState -ne $expanded){ return @{ method='collapse'; closed=$true } }
-      Start-Sleep -Milliseconds 50
-    }
-    return @{ method='collapse' }
-  }
-  if($manner -eq 'dismiss'){
-    $popups=@(Get-BornPopups $root $el $top)
-    if($popups.Count -eq 0){ return @{ error='visible_control_not_open' } }
-    $sent=$false
-    foreach($popup in $popups){ if([BaxyUiaWorkerNative]::PostEscape($popup)){ $sent=$true } }
-    if(-not $sent){ return @{ error='visible_control_not_open' } }
-    for($look=0;$look -lt 10;$look++){
-      Start-Sleep -Milliseconds 60
-      if(@(Get-BornPopups $root $el $top).Count -eq 0){ return @{ method='escape'; closed=$true } }
-    }
-    return @{ method='escape' }
   }
   $point=Get-PressPoint $el
   if($manner -eq 'menu'){
@@ -3516,12 +3435,6 @@ function Do-ClickJudged($request){
       $held.method=[string]$done.method; $held.opened=$true; $held.manner=$manner
       return $held
     }
-    if($done.closed){
-      # La lista que la mision dejo abierta se lee cerrada: esa es la prueba del cierre.
-      $held=Click-Result $true $true '' $name $identity $false $false $false $kind
-      $held.method=[string]$done.method; $held.closed=$true; $held.manner=$manner
-      return $held
-    }
     $pending=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
     $pending.manner=$manner
     if($null -ne $script:Pending){ $script:Pending.manner=$manner }
@@ -4215,7 +4128,7 @@ function Do-Tooltips($request){
 # tenia. La cola solo sigue a un patron que actuo de verdad (pulso, eligio, alterno, escribio el valor, desplazo o
 # revelo): cualquier otra respuesta puede seguir con el puntero, la rueda o el teclado del adaptador, que toman el
 # frente a proposito dentro del lease, y la red no debe pelearlo.
-$script:KeptMethods=@('invoke','select','toggle','legacy','message','setvalue','render','collapse','escape')
+$script:KeptMethods=@('invoke','select','toggle','legacy','message','setvalue','render')
 function Test-ActedByPattern($result){
   if($null -eq $result){ return $false }
   if($script:KeptMethods -contains [string]$result.method){ return $true }

@@ -633,8 +633,6 @@ internal sealed class WindowsVisibleControlAdapter
         "visible_control_no_double_click",
         // Review of B3, finding 6: the arrow's list was already open; this step opened nothing.
         "visible_control_already_open",
-        // Ronda 20b, palanca 6 (review finding 1): the list to collapse was no longer open; nothing was sent.
-        "visible_control_not_open",
         // Ronda 21 (pasada r18 v3-65, v3-25): the worker's walk of what is shown ran out of its own time before it found
         // the control, and said so before the host's limit: nothing was pressed.
         "visible_lookup_timeout",
@@ -839,7 +837,7 @@ internal sealed class WindowsVisibleControlAdapter
             search = OptionalText(arguments, "search");
             choose = OptionalText(arguments, "choose");
             manner = OptionalText(arguments, "manner");
-            if (manner is not (null or "collapse" or "dismiss" or "double" or "menu" or "open"))
+            if (manner is not (null or "double" or "menu" or "open"))
                 throw new InvalidDataException("manner");
             // Revisión 1 de la ronda 21 (hallazgo 2): choose names the result of a search burst, never an item of an
             // opening: without search it would be dropped and the control pressed by its own action (a split button's
@@ -2825,9 +2823,6 @@ internal sealed class WindowsVisibleControlAdapter
         // Goal v3 B3: the list a control's arrow opened, or the context menu asked for, read open after the press.
         bool opened = root.TryGetProperty("opened", out JsonElement openedValue)
             && openedValue.ValueKind == JsonValueKind.True;
-        // Ronda 20b, palanca 6 (review finding 1): the list a click left open, read closed after its collapse.
-        bool closed = root.TryGetProperty("closed", out JsonElement closedValue)
-            && closedValue.ValueKind == JsonValueKind.True;
         // Recibo del clic por estado (r15b v3-42, v3-51), review finding 1: a field (Edit, Document, ComboBox) that took
         // the keyboard's focus or changed its value with the press, and the click's window disabled by the modal dialog
         // the press opened, are the worker's post-read proofs, each under its own key.
@@ -2835,7 +2830,7 @@ internal sealed class WindowsVisibleControlAdapter
             && fieldValue.ValueKind == JsonValueKind.True;
         bool dialogOpened = root.TryGetProperty("dialogOpened", out JsonElement dialogValue)
             && dialogValue.ValueKind == JsonValueKind.True;
-        return dismissed || selected || toggled || surface || targeted || opened || closed || fieldTook || dialogOpened;
+        return dismissed || selected || toggled || surface || targeted || opened || fieldTook || dialogOpened;
     }
 
     private static ExternalCapabilityReceipt ReceiptFromWorker(
