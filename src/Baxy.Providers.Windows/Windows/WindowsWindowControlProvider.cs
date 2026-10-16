@@ -1536,7 +1536,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     private List<WindowSnapshot> EnumerateDesktopWindows(nint below, out int unread, out int cloakedTitled)
     {
         int failed = 0;
-        int cloakedSeen = 0;
+        var cloakedTitledWindows = new List<nint>();
         // MINALL1687: what the taskbar would show as windows. The shell's own
         // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
         // popups and untitled windows are not windows a person minimizes; the
@@ -1558,8 +1558,9 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
                 return true;
             if (DwmGetWindowAttribute(handle, CloakedAttribute, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
             {
-                if (ReadWindowTitle(handle).Length > 0)
-                    cloakedSeen++;
+                GetWindowThreadProcessId(handle, out uint cloakedOwner);
+                if ((int)cloakedOwner != self && ReadWindowTitle(handle).Length > 0)
+                    cloakedTitledWindows.Add(handle);
                 return true;
             }
             string className = ReadClassName(handle);
@@ -1590,7 +1591,9 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         if (!EnumWindows(callback, nint.Zero))
             throw new Win32Exception(Marshal.GetLastWin32Error());
         unread = failed;
-        cloakedTitled = cloakedSeen;
+        // Ronda final 12 (regla 3): of the cloaked windows, those on another virtual desktop are left open elsewhere;
+        // one the shell does not place is counted too (not known to be here), a suspended app on this desktop is not.
+        cloakedTitled = VirtualDesktops.OnAnotherDesktop(cloakedTitledWindows).Count(static elsewhere => elsewhere != false);
         return found;
     }
 

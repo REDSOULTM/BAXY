@@ -191,6 +191,50 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Ronda final 12: a last page («nextOffset: null») whose list only the 8 KiB projection cuts still goes on from the
+    // first item not shown; and an operation that takes no offset (note.search) is never given a next page.
+    [Test]
+    public void ALastPageCutByTheSizeBoundGoesOnAndASearchWithoutOffsetsIsNeverPaged()
+    {
+        JsonElement lastPage = JsonSerializer.SerializeToElement(new
+        {
+            windows = Enumerable.Range(0, 18).Select(static index => new { title = "w" + index, detail = new string('d', 600) }).ToArray(),
+            count = 18,
+            limit = 20,
+            offset = 40,
+            hasMore = false,
+            nextOffset = (int?)null,
+        });
+        JsonElement search = JsonSerializer.SerializeToElement(new
+        {
+            notes = Enumerable.Range(0, 30).Select(static index => new { title = "n" + index }).ToArray(),
+            count = 30,
+            totalCount = 30,
+            scope = "search",
+            limit = 30,
+            offset = 0,
+            nextOffset = (int?)null,
+        });
+
+        using JsonDocument cutPage = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("window.resolve", OperationOutcome.Success(lastPage)));
+        using JsonDocument cutSearch = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("note.search", OperationOutcome.Success(search)));
+        JsonElement page = cutPage.RootElement.GetProperty("observed");
+        JsonElement found = cutSearch.RootElement.GetProperty("observed");
+        int shown = page.GetProperty("windows").GetArrayLength();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown, Is.LessThan(18), "the size bound cut the page");
+            Assert.That(page.GetProperty("nextOffset").GetInt32(), Is.EqualTo(40 + shown));
+            Assert.That(page.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(found.GetProperty("notesShown").GetInt32(), Is.EqualTo(20));
+            Assert.That(found.GetProperty("nextOffset").ValueKind, Is.EqualTo(JsonValueKind.Null));
+            Assert.That(found.TryGetProperty("hasMore", out _), Is.False);
+        });
+    }
+
     [Test]
     public void AListWithoutACountKeepsItsLengthAndADeepValueLeftOutIsSaid()
     {

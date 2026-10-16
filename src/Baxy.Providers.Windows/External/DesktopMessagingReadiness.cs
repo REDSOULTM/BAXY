@@ -390,5 +390,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation
             ErrorCode = unverified.EffectObserved ? unverified.ErrorCode
                 : row is null ? "recipient_search_not_read" : RecipientNotFound,
             Shown = row,
+            // Ronda final 12 (regla 3): the switcher was opened, the name typed and closed: an effect, whatever was found.
+            EffectObserved = true,
         };
 }

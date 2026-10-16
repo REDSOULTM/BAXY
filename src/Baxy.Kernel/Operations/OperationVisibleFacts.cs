@@ -57,6 +57,10 @@ public static class OperationVisibleFacts
         bool processInventory = operation == "system.process.list";
         bool ocrObservation = operation == "ocr.read";
         bool captureObservation = operation is "capture.active.window" or "capture.screenshot";
+        // Ronda final 12 (regla 3): only an operation whose typed schema takes an offset pages its list (window.resolve,
+        // note.list); note.search, with a nextOffset null and no offset to take, is never given a next page.
+        bool paged = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
+            && descriptor.ArgumentsSchema.Properties.Any(static property => property.Name == "offset");
         // SHELL2075 «ejecutá dir en el escritorio»: the console adapter already
         // bounds what it returns (8 KiB of output and sixty lines), and with the
         // lines beside the text that bundle crosses 8 KiB, so the observation was
@@ -102,7 +106,7 @@ public static class OperationVisibleFacts
             sanitized = Sanitize(
                 result, ref cut,
                 processInventory: processInventory, ocrObservation: ocrObservation,
-                captureObservation: captureObservation);
+                captureObservation: captureObservation, paged: paged);
             // Auditoría final V2: what the bounds below left out is said where the model reads, as the size budget
             // says it (WithProjectedObservation).
             if (cut && sanitized is JsonObject root)
@@ -116,7 +120,7 @@ public static class OperationVisibleFacts
         string json = payload.ToJsonString(JsonOptions);
         if (!ocrObservation && sanitized is not null && json.Length > messageLimit)
         {
-            json = WithProjectedObservation(payload, sanitized, messageLimit);
+            json = WithProjectedObservation(payload, sanitized, messageLimit, paged);
         }
         if (ocrObservation && json.Length > messageLimit)
         {
@@ -266,7 +270,7 @@ public static class OperationVisibleFacts
     // reads as «more not shown»), and a cut list keeps its full length beside
     // it when the observation carries no count of its own. Nothing is added
     // that the observation did not hold.
-    private static string WithProjectedObservation(JsonObject payload, JsonNode observed, int limit)
+    private static string WithProjectedObservation(JsonObject payload, JsonNode observed, int limit, bool paged)
     {
         payload[ObservedLimitKey] = ObservedProjected;
         // A page of a text read by offset (file.read, web.fetch) keeps as much of its text as the message holds, not
@@ -286,7 +290,7 @@ public static class OperationVisibleFacts
             for (int attempt = 0; attempt < 3 && room > ObservedProjectionSteps[0].Text; attempt++)
             {
                 bool cut = false;
-                JsonNode projected = Project(observed, null, room, int.MaxValue, ref cut);
+                JsonNode projected = Project(observed, null, room, int.MaxValue, paged, ref cut);
                 if (!cut || projected is not JsonObject root)
                 {
                     break;
@@ -307,7 +311,7 @@ public static class OperationVisibleFacts
         foreach ((int text, int items) in ObservedProjectionSteps)
         {
             bool cut = false;
-            JsonNode projected = Project(observed, null, text, items, ref cut);
+            JsonNode projected = Project(observed, null, text, items, paged, ref cut);
             if (!cut)
             {
                 continue;
@@ -343,7 +347,7 @@ public static class OperationVisibleFacts
         target["hasMore"] = true;
     }
 
-    private static JsonNode Project(JsonNode node, string? key, int text, int items, ref bool cut)
+    private static JsonNode Project(JsonNode node, string? key, int text, int items, bool paged, ref bool cut)
     {
         switch (node)
         {
@@ -352,7 +356,7 @@ public static class OperationVisibleFacts
                 int? listShown = null;
                 foreach ((string name, JsonNode? value) in obj)
                 {
-                    projected[name] = value is null ? null : Project(value, name, text, items, ref cut);
+                    projected[name] = value is null ? null : Project(value, name, text, items, paged, ref cut);
                     if (value is JsonArray list && list.Count > items
                         && !obj.ContainsKey("count") && !obj.ContainsKey("totalCount")
                         && !obj.ContainsKey(name + "Count"))
@@ -378,7 +382,7 @@ public static class OperationVisibleFacts
                             projected[name + "Shown"] = shownItems;
                     }
 
-                    PageFrom(obj["offset"], obj.ContainsKey("nextOffset"), shownItems, projected);
+                    PageFrom(obj["offset"], paged && obj.ContainsKey("nextOffset"), shownItems, projected);
                 }
 
                 // A page of a text read by offset (file.read, web.fetch) whose text was cut here goes on from where
@@ -406,7 +410,7 @@ public static class OperationVisibleFacts
                 var kept = new JsonArray();
                 foreach (JsonNode? item in array.Take(items))
                 {
-                    kept.Add(item is null ? null : Project(item, key, text, items, ref cut));
+                    kept.Add(item is null ? null : Project(item, key, text, items, paged, ref cut));
                 }
 
                 cut |= array.Count > items;
@@ -476,7 +480,7 @@ public static class OperationVisibleFacts
 
     private static JsonNode? Sanitize(
         JsonElement element, ref bool cut, int depth = 0, bool processInventory = false, bool ocrObservation = false,
-        bool captureObservation = false)
+        bool captureObservation = false, bool paged = false)
     {
         if (!ocrObservation && depth > 4)
         {
@@ -506,8 +510,10 @@ public static class OperationVisibleFacts
                         continue;
                     }
 
-                    JsonNode? sanitized = Sanitize(property.Value, ref cut, depth + 1, processInventory, ocrObservation, captureObservation);
-                    if (sanitized is not null)
+                    JsonNode? sanitized = Sanitize(property.Value, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged);
+                    // Ronda final 12 (regla 3): a last page's «nextOffset: null» is kept, so a later cut of its list
+                    // still knows it is a page by offset and says where to go on.
+                    if (sanitized is not null || key == "nextOffset")
                     {
                         clean[key] = sanitized;
                     }
@@ -529,7 +535,7 @@ public static class OperationVisibleFacts
                 // Ronda final 11 (regla 3): a page by offset whose list was cut goes on from the first item not shown.
                 if (cleanShown is int keptItems)
                 {
-                    PageFrom(clean["offset"], element.TryGetProperty("nextOffset", out _), keptItems, clean);
+                    PageFrom(clean["offset"], paged && element.TryGetProperty("nextOffset", out _), keptItems, clean);
                 }
 
                 return clean;
@@ -538,7 +544,7 @@ public static class OperationVisibleFacts
                 int shown = ocrObservation ? int.MaxValue : processInventory ? 50 : 20;
                 foreach (JsonElement item in element.EnumerateArray().Take(shown))
                 {
-                    cleanArray.Add(Sanitize(item, ref cut, depth + 1, processInventory, ocrObservation, captureObservation));
+                    cleanArray.Add(Sanitize(item, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged));
                 }
 
                 cut |= element.GetArrayLength() > shown;

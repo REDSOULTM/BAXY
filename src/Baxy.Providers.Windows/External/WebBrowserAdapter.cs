@@ -726,7 +726,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                     return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
                 return await PlacesAsync(operation, query,
                         new OpenStreetMapPlaceSource.PlaceAsk(kind, string.Join(", ", new[] { place, city }.OfType<string>())),
-                        limit, language, cancellationToken)
+                        limit, language, city is not null, cancellationToken)
                     .ConfigureAwait(false);
             case "web" or "news" or "encyclopedia":
                 string? near = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
@@ -932,6 +932,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         OpenStreetMapPlaceSource.PlaceAsk ask,
         int limit,
         string language,
+        bool cityFromThisPc,
         CancellationToken cancellationToken)
     {
         OpenStreetMapPlaceSource.PlaceReading? reading = await _places
@@ -952,8 +953,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             {
                 writer.WriteString("kind", ask.Kind);
                 writer.WriteString("place", ask.Place);
-                if (read.Resolved is { } resolved)
-                    writer.WriteString("placeFound", resolved);
+                writer.WriteString("placeFound", read.Resolved);
+                // Ronda final 12 (regla 3): where the place came from and where distances start: «near me» is this PC's
+                // city read from its public address, and a distance is from the centre of the place, never from the
+                // person.
+                if (cityFromThisPc) writer.WriteString("locatedBy", "public_ip_city");
+                writer.WriteString("distanceFrom", "place_center");
                 // The source's own cap: the sites listed are its ten, nearest first among them.
                 writer.WriteNumber("sourceLimit", 10);
                 if (read.SourceLimitReached) writer.WriteBoolean("sourceLimitReached", true);
@@ -1700,14 +1705,25 @@ internal class CdpBrowserSession : IDisposable
             cancellationToken).ConfigureAwait(false);
         double before = await EvaluateNumberAsync(socket, "window.scrollY", cancellationToken)
             .ConfigureAwait(false);
+        // Ronda final 12 (regla 3): the scroll is instant (a page's smooth scrolling would read as not moved), and «at
+        // the edge» is said only when the edge is read: the top at 0, or the bottom where the document ends.
         string expression = action == "scroll_down"
-            ? "window.scrollBy(0, Math.max(300, innerHeight * 0.8)); window.scrollY"
-            : "window.scrollBy(0, -Math.max(300, innerHeight * 0.8)); window.scrollY";
+            ? "window.scrollBy({ top: Math.max(300, innerHeight * 0.8), behavior: 'instant' }); window.scrollY"
+            : "window.scrollBy({ top: -Math.max(300, innerHeight * 0.8), behavior: 'instant' }); window.scrollY";
         double after = await EvaluateNumberAsync(socket, expression, cancellationToken)
             .ConfigureAwait(false);
         bool moved = Math.Abs(after - before) > 0.5;
         if (!moved && documentScrolls < 0.5)
             return new(false, false, action, targetId, string.Empty, "cdp_scroll_surface_not_read");
+        if (!moved)
+        {
+            double atEdge = await EvaluateNumberAsync(socket, action == "scroll_down"
+                    ? "window.scrollY + innerHeight >= (document.scrollingElement || document.documentElement).scrollHeight - 1 ? 1 : 0"
+                    : "window.scrollY <= 0 ? 1 : 0",
+                cancellationToken).ConfigureAwait(false);
+            if (atEdge < 0.5)
+                return new(false, false, action, targetId, string.Empty, "cdp_scroll_not_verified");
+        }
         string state = moved ? $"scroll_y:{after.ToString(CultureInfo.InvariantCulture)}" : "scroll_boundary";
         return new(true, moved, action, targetId, state, string.Empty);
     }

@@ -736,7 +736,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 // conversation's composer (the search not focused, the person's draft there).
                 if (await ComposerHoldsTextAsync(handle, channel, composerBefore, cancellationToken).ConfigureAwait(false))
                 {
-                    return new(false, false, handle, processId, ComposerHasPersonDraft);
+                    // Ronda final 12 (regla 3): the clicks and the selection already reached the client: an effect.
+                return new(false, true, handle, processId, ComposerHasPersonDraft);
                 }
 
                 SendKey(VirtualKeyBack);
@@ -820,7 +821,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             if (AfterSearchWait(input, coldClient, retried: true) == SearchStep.Refuse)
             {
                 SendKey(VirtualKeyEscape);
-                return UnverifiedChat(handle, processId, composerUntouched: true);
+                // Ronda final 12 (regla 3): Ctrl+K and Escape reached the client: an effect, though nothing was typed.
+                return UnverifiedChat(handle, processId, composerUntouched: true) with { EffectObserved = true };
             }
 
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after ctrl+k");
@@ -830,7 +832,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     handle, channel, CaptureRegion(handle, CaptureArea.Composer, channel), cancellationToken)
                 .ConfigureAwait(false))
             {
-                return new(false, false, handle, processId, ComposerHasPersonDraft);
+                // Ronda final 12 (regla 3): the clicks and the selection already reached the client: an effect.
+                return new(false, true, handle, processId, ComposerHasPersonDraft);
             }
 
             SendText(recipient);

@@ -56,7 +56,12 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                 + "&q=" + Uri.EscapeDataString(ask.Kind), cancellationToken).ConfigureAwait(false);
             if (found is null) return null;
             List<Place> all = Places(found, box.Latitude, box.Longitude);
-            return new PlaceReading(box.Name, all.Take(Math.Clamp(limit, 1, 10)).ToList(), all.Count >= 10);
+            // Ronda final 12 (regla 3): the source's cap is on what it gave, before the entries without a name or an
+            // address are left out.
+            int given;
+            using (JsonDocument answer = JsonDocument.Parse(found))
+                given = answer.RootElement.ValueKind == JsonValueKind.Array ? answer.RootElement.GetArrayLength() : 0;
+            return new PlaceReading(box.Name, all.Take(Math.Clamp(limit, 1, 10)).ToList(), given >= 10);
         }
         catch (JsonException)
         {

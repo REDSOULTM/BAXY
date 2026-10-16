@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; en d4bb323e7 y af70fae8e cambiaron 13 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde d4bb323e7 cambiaron 25 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -543,6 +543,14 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     y minimize.all no dicen «todas» con ventanas encubiertas (otro escritorio); 11 descripciones más (bluetooth pair,
     game.catalog.list, backup.create, task.update, wifi.connect.named, system.status, crash.diagnose, streaming.play,
     web.search news y sports). Sin medir.
+  - Ronda final 12: la proyección conserva un nextOffset null y pagina sólo una operación cuyo esquema toma offset
+    (note.search no recibe una página que no tiene); cloakedWindows cuenta sólo ventanas en otro escritorio virtual
+    (IVirtualDesktopManager.IsWindowOnCurrentVirtualDesktop, la API documentada del shell), no las del sistema ni las de
+    BAXY; el scroll del navegador propio es instantáneo y dice «al borde» sólo leyendo el borde; lugares con su tope
+    contado sobre lo que dio la fuente, locatedBy y distanceFrom; mensajería: abrir y escribir en el buscador es un
+    efecto en todos los caminos; el seek dice la posición que verificó; note.update dice que reemplaza título y
+    contenido. metas.json: la auditoría pasa a «pendiente» (no es un límite del modelo) y se corrigen la cuenta de
+    descripciones (25), P4 (descartada por la cuenta, no medida) y el commit de la medida con voz (f61f2da38). Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

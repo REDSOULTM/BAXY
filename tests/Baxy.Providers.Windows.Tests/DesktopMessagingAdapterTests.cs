@@ -85,7 +85,8 @@ public sealed class DesktopMessagingAdapterTests
     }
 
     // C3: a search whose rows never named the recipient is «recipient_not_found» with the row it showed; text that may
-    // have reached a composer keeps its possible effect and code.
+    // have reached a composer keeps its possible effect and code. Ronda final 12: the switcher opened, typed into and
+    // closed is an effect either way.
     [Test]
     public void ASearchThatNamedNobodySaysTheRowItShowed()
     {
@@ -96,7 +97,7 @@ public sealed class DesktopMessagingAdapterTests
         Assert.Multiple(() =>
         {
             Assert.That(untouched.ErrorCode, Is.EqualTo(WindowsDesktopMessagingAutomation.RecipientNotFound));
-            Assert.That(untouched.EffectObserved, Is.False);
+            Assert.That(untouched.EffectObserved, Is.True);
             Assert.That(untouched.Shown, Is.EqualTo("Ronaldo"));
             Assert.That(touched.ErrorCode, Is.EqualTo("recipient_identity_not_verified"));
             Assert.That(touched.EffectObserved, Is.True);
