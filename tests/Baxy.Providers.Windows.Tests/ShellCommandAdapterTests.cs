@@ -1,4 +1,10 @@
+using System.Security.Cryptography;
 using System.Text.Json;
+using Baxy.Contracts;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
@@ -117,6 +123,67 @@ public sealed class ShellCommandAdapterTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("shell_command_directory_not_found"));
             Assert.That(runner.Executable, Is.Null);
         });
+    }
+
+    // A command that ran well reaches the person as completed through the handler and the kernel, the same path the
+    // product takes (round 3: a change to the observed-effect rule turned a console that ran well into «failed», and
+    // nothing between the adapter and the response was tested). One that may change something is asked for first and
+    // runs with the person's yes; one that only reads runs at once.
+    [TestCase("git status")]
+    [TestCase("Get-Date")]
+    public async Task ACommandThatRanWellIsCompletedThroughTheHandlerAndTheKernel(string command)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-shell-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            var runner = new RecordingRunner(0, "ok\r\n", string.Empty);
+            var handler = new ExternalCapabilityHandler(
+                "shell.command.run", new AdapterProvider(new ShellCommandAdapter(runner, root)));
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+            var request = new OperationRequest(
+                ProtocolTypes.OperationRequest,
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                "shell.command.run",
+                JsonSerializer.SerializeToElement(new { command, cwd = root }));
+
+            OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+            if (response.ErrorCode == "confirmation_required")
+            {
+                response = await engine.ExecuteAsync(
+                    request with
+                    {
+                        RequestId = Guid.NewGuid().ToString("D"),
+                        ConfirmationToken = response.Result!.Value.GetProperty("token").GetString(),
+                    },
+                    CancellationToken.None);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed), response.Message);
+                Assert.That(response.Verified, Is.True);
+                Assert.That(response.ErrorCode, Is.Null);
+                Assert.That(response.Result!.Value.GetProperty("exitCode").GetInt32(), Is.Zero);
+                Assert.That(runner.Executable, Is.EqualTo("powershell.exe"), "the command ran");
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    private sealed class AdapterProvider(ShellCommandAdapter adapter) : IExternalCapabilityProvider
+    {
+        public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+            adapter.InvokeAsync(operation, arguments, cancellationToken);
     }
 
     private sealed class RecordingRunner(int exitCode, string output, string error) : IExternalProcessRunner
