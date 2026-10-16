@@ -6,7 +6,8 @@ turns (a confirmation BAXY asks for is answered with the case's reply as the per
 N ms after the previous answer started to sound), the replies and utterances written for the oracles, the oracles,
 then the cleanup. Writes <banks>/runs/<label>-e2e/results.jsonl (summary first) beside the conductor's events.jsonl.
 Speed per turn, from its text: first_audio_ms is its first sound, whatever was said first (the notice of a silent turn
-counts, it is sound: the goal's «3 s en silencio»); first_response_audio_ms is the first sound of its response.
+counts, it is sound: the goal's «3 s en silencio»); first_response_audio_ms is the first sound of its response. The
+notice's utterance is of the bank's kind "progress" (the conductor marks it notice).
 """
 import argparse
 import json
@@ -207,11 +208,11 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
                            and event["t_ms"] <= e["t_ms"] <= stop_ms), None)
             interrupted = cut_by is not None
             asked = replies[number - 1]["confirmation_text"]
-            kind = ("notice" if event.get("notice")
+            kind = ("progress" if event.get("notice")
                     else "confirmation" if asked and norm(event.get("text")) == norm(asked) else "final")
             # The goal's speed is per order: from its text to the first sound of that turn, whatever was said first. The
             # notice's utterance and the response's first one each carry their own (the oracles read the response's).
-            first = not any(s["turn"] == number and (s["kind"] == "notice") == (kind == "notice") for s in speech)
+            first = not any(s["turn"] == number and (s["kind"] == "progress") == (kind == "progress") for s in speech)
             speech.append({"turn": number, "kind": kind, "spoken": True, "spoken_text": event.get("text", ""),
                            "first_audio_ms": event["t_ms"] - turn_start if first and turn_start is not None else None,
                            "completed": stop is not None and not interrupted, "cancelled": interrupted,
@@ -247,13 +248,13 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
         sounds = [s for s in speech if s["turn"] == number and s["first_audio_ms"] is not None]
         if sounds:
             first_audio.append(min(s["first_audio_ms"] for s in sounds))
-        response = [s["first_audio_ms"] for s in sounds if s["kind"] != "notice"]
+        response = [s["first_audio_ms"] for s in sounds if s["kind"] != "progress"]
         if response:
             first_response_audio.append(response[0])
     return {"id": case["id"], "area": case.get("area"), "kind": case.get("kind"), "ok": ok,
             "status": "ok" if ok else "fallo", "spoken_ok": spoken_ok, "oracles": oracles, "replies": replies,
             "first_audio_ms": first_audio, "first_response_audio_ms": first_response_audio,
-            "notices": sum(s["kind"] == "notice" for s in speech), "leftovers": leftovers,
+            "notices": sum(s["kind"] == "progress" for s in speech), "leftovers": leftovers,
             "steps": [{"op": e["operation"], "status": e["status"], "verified": e["verified"]}
                       for events in turn_events for e in events if e["type"] == "step"],
             "seconds": round(time.monotonic() - started, 1)}
