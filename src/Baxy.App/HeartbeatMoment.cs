@@ -31,7 +31,7 @@ internal static class HeartbeatMoment
     /// </summary>
     internal static bool Speaks(string activity) => activity is not (Away or Playing or InCall or Watching or Unknown);
 
-    internal static string Activity(out bool fullscreen, out bool? gpuBusy)
+    internal static string Activity(out bool? fullscreen, out bool? gpuBusy)
     {
         gpuBusy = GpuBusy();
         string activity = Presence(out fullscreen);
@@ -39,10 +39,10 @@ internal static class HeartbeatMoment
     }
 
     /// <summary>What the person is doing, as far as no GPU reading is needed (a window filling the screen is watching).</summary>
-    internal static string Presence(out bool fullscreen)
+    internal static string Presence(out bool? fullscreen)
     {
         bool? fills = ForegroundFillsTheScreen();
-        fullscreen = fills == true;
+        fullscreen = fills;
         // A call or a film goes on without the person's input: they are read before the idle time, or ten minutes into
         // one the person would read as away and a heartbeat would only notify of what it saw.
         bool? microphone = MicrophoneHeldByAnotherProgram();
@@ -51,7 +51,7 @@ internal static class HeartbeatMoment
             return InCall;
         }
 
-        if (fullscreen)
+        if (fills == true)
         {
             return Watching;
         }
@@ -70,7 +70,7 @@ internal static class HeartbeatMoment
         IEnumerable<string> events, IReadOnlyList<ConversationMessage> recent, string? connectivity)
     {
         DateTimeOffset now = DateTimeOffset.Now;
-        string activity = Activity(out bool fullscreen, out bool? gpuBusy);
+        string activity = Activity(out bool? fullscreen, out bool? gpuBusy);
         var context = new JsonObject
         {
             ["now"] = now.ToString("yyyy-MM-dd'T'HH:mm:sszzz", CultureInfo.InvariantCulture),
@@ -80,7 +80,9 @@ internal static class HeartbeatMoment
         nint front = GetForegroundWindow();
         if (Describe(front) is { } frontWindow)
         {
-            frontWindow["fullscreen"] = fullscreen;
+            // Auditoría final (regla 3): written only when the window's and the monitor's bounds were read.
+            if (fullscreen is bool fills)
+                frontWindow["fullscreen"] = fills;
             context["foreground"] = frontWindow;
         }
 
