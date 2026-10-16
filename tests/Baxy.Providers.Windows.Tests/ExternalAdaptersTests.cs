@@ -2439,9 +2439,9 @@ public sealed class ExternalAdaptersTests
         var runner = new SequencedProcessRunner([
             "{\"ok\":true,\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
             "{\"ok\":true,\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
-            "{\"connected\":false,\"profile\":\"\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
             "",
-            "{\"connected\":true,\"profile\":\"Galaxy Phone 5G 0000\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Galaxy Phone 5G 0000\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner, delays.DelayAsync);
@@ -2475,7 +2475,7 @@ public sealed class ExternalAdaptersTests
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
             "{\"ok\":true,\"profiles\":[\"Casa\"]}",
-            "{\"connected\":true,\"profile\":\"Casa\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Casa\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner, delays.DelayAsync);
@@ -2500,9 +2500,9 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
-            "{\"connected\":true,\"profile\":\"Casa\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Casa\"}",
             "",
-            "{\"connected\":false,\"profile\":\"\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path,
@@ -2531,7 +2531,7 @@ public sealed class ExternalAdaptersTests
     public async Task WifiDisconnectWhenAlreadyDisconnectedChangesNothingAndSaysSo()
     {
         using TemporaryDirectory temporary = new();
-        var runner = new SequencedProcessRunner(["{\"connected\":false,\"profile\":\"\"}"]);
+        var runner = new SequencedProcessRunner(["{\"ok\":true,\"connected\":false,\"profile\":\"\"}"]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path,
             temporary.Path,
@@ -2561,9 +2561,9 @@ public sealed class ExternalAdaptersTests
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
             "{\"ok\":true,\"profiles\":[\"Casa\"]}",
-            "{\"connected\":false,\"profile\":\"\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
             "",
-            "{\"connected\":false,\"profile\":\"\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path,
@@ -2591,9 +2591,9 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
-            "{\"connected\":true,\"profile\":\"Casa\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Casa\"}",
             "",
-            "{\"connected\":true,\"profile\":\"Casa\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Casa\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path,
@@ -2639,8 +2639,8 @@ public sealed class ExternalAdaptersTests
     {
         using TemporaryDirectory temporary = new();
         var runner = new SequencedProcessRunner([
-            "{\"connected\":true,\"profile\":\"Private WiFi\"}",
-            "{\"connected\":true,\"profile\":\"Private WiFi\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Private WiFi\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Private WiFi\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner);
@@ -2667,8 +2667,8 @@ public sealed class ExternalAdaptersTests
     {
         using TemporaryDirectory temporary = new();
         var runner = new SequencedProcessRunner([
-            "{\"connected\":false,\"profile\":\"\"}",
-            "{\"connected\":true,\"profile\":\"Private WiFi\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Private WiFi\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner);
@@ -4818,7 +4818,7 @@ public sealed class ExternalAdaptersTests
             // Disconnected until this runner's connect ran (the adapter reads first).
             string output = script.Contains("show profiles", StringComparison.Ordinal)
                 ? "{\"ok\":true,\"profiles\":[\"Casa\"]}"
-                : startsConnected || ConnectCalls > 0 ? "{\"connected\":true,\"profile\":\"Casa\"}" : "{\"connected\":false,\"profile\":\"\"}";
+                : startsConnected || ConnectCalls > 0 ? "{\"ok\":true,\"connected\":true,\"profile\":\"Casa\"}" : "{\"ok\":true,\"connected\":false,\"profile\":\"\"}";
             return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
         }
     }

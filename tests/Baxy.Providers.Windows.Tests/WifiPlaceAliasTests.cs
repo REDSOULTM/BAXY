@@ -50,12 +50,12 @@ public sealed class WifiPlaceAliasTests
         var runner = new SequencedRunner([
             "{\"ok\":true,\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
             "{\"ok\":true,\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
-            "{\"connected\":false,\"profile\":\"\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
             "",
-            "{\"connected\":true,\"profile\":\"Fibertel-2G\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Fibertel-2G\"}",
             "{\"ok\":true,\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
             // Already connected to it: the state reached, nothing dispatched.
-            "{\"connected\":true,\"profile\":\"Fibertel-2G\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Fibertel-2G\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner, static (_, _) => ValueTask.CompletedTask);

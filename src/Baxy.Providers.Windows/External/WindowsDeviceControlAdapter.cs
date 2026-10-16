@@ -17,13 +17,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     private const string PeripheralListScript = """
         $kind=[string]$args[0]
         if($kind -notin @('all','printer','scanner','usb','mouse','keyboard')){throw 'peripheral_kind_invalid'}
-        $p=@();$s=@();$u=@();$m=@();$k=@()
-        if($kind -in @('all','printer')){$p=@(Get-Printer -ErrorAction SilentlyContinue|Select-Object Name,PrinterStatus)}
-        if($kind -in @('all','scanner')){try{$d=New-Object -ComObject WIA.DeviceManager;foreach($i in $d.DeviceInfos){if($i.Type -eq 1){$s+=@([pscustomobject]@{Name=[string]$i.Properties.Item('Name').Value;DeviceID=[string]$i.DeviceID;Status='available'})}}}catch{}}
-        if($kind -in @('all','usb')){$u=@(Get-PnpDevice -PresentOnly -ErrorAction SilentlyContinue|Where-Object {$_.InstanceId -like 'USB*'}|Select-Object FriendlyName,Status,InstanceId)}
+        # Auditoría final (regla 3): a kind whose read failed (spooler stopped, WIA or PnP unanswered) is listed in
+        # unread, never as no devices of that kind.
+        $p=@();$s=@();$u=@();$m=@();$k=@();$unread=@()
+        if($kind -in @('all','printer')){try{$p=@(Get-Printer -ErrorAction Stop|Select-Object Name,PrinterStatus)}catch{$unread+=@('printer')}}
+        if($kind -in @('all','scanner')){try{$d=New-Object -ComObject WIA.DeviceManager;foreach($i in $d.DeviceInfos){if($i.Type -eq 1){$s+=@([pscustomobject]@{Name=[string]$i.Properties.Item('Name').Value;DeviceID=[string]$i.DeviceID;Status='available'})}}}catch{$s=@();$unread+=@('scanner')}}
+        if($kind -in @('all','usb')){try{$u=@(Get-PnpDevice -PresentOnly -ErrorAction Stop|Where-Object {$_.InstanceId -like 'USB*'}|Select-Object FriendlyName,Status,InstanceId)}catch{$unread+=@('usb')}}
+        function Get-BaxyPresent([string]$className) {
+          try{@(Get-PnpDevice -PresentOnly -Class $className -ErrorAction Stop)}
+          catch{if($_.CategoryInfo.Category -ne 'ObjectNotFound'){throw};@()}
+        }
         function Get-BaxyInputDevices([string]$className) {
           @(
-            Get-PnpDevice -PresentOnly -Class $className -ErrorAction SilentlyContinue|ForEach-Object {
+            Get-BaxyPresent $className|ForEach-Object {
               $props=@(Get-PnpDeviceProperty -InstanceId $_.InstanceId -ErrorAction SilentlyContinue)
               $parentId=[string](($props|Where-Object KeyName -eq 'DEVPKEY_Device_Parent'|Select-Object -First 1).Data)
               $parentProps=if($parentId){@(Get-PnpDeviceProperty -InstanceId $parentId -ErrorAction SilentlyContinue)}else{@()}
@@ -40,15 +46,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
           )
         }
-        if($kind -in @('all','mouse')){$m=@(Get-BaxyInputDevices 'Mouse')}
-        if($kind -in @('all','keyboard')){$k=@(Get-BaxyInputDevices 'Keyboard')}
-        [pscustomobject]@{printers=$p;scanners=$s;usb=$u;mice=$m;keyboards=$k}|ConvertTo-Json -Depth 5 -Compress
+        if($kind -in @('all','mouse')){try{$m=@(Get-BaxyInputDevices 'Mouse')}catch{$m=@();$unread+=@('mouse')}}
+        if($kind -in @('all','keyboard')){try{$k=@(Get-BaxyInputDevices 'Keyboard')}catch{$k=@();$unread+=@('keyboard')}}
+        [pscustomobject]@{printers=$p;scanners=$s;usb=$u;mice=$m;keyboards=$k;unread=@($unread)}|ConvertTo-Json -Depth 5 -Compress
         """;
     private const string ConnectedInputListScript = """
         $ErrorActionPreference='Stop'
         $class=[string]$args[0]
         if($class -notin @('Mouse','Keyboard')){throw 'input_class_invalid'}
         $text=(& pnputil.exe /enum-devices /class $class /connected /relations|Out-String)
+        if($LASTEXITCODE -ne 0){throw 'pnputil_not_read'}
         $devices=@()
         foreach($block in @($text -split '(?:\r?\n){2,}')){
           $ids=@()
@@ -107,11 +114,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $profiles=@();foreach($line in $text){if($line -match '^\s*(?:All User Profile|Perfil de todos los usuarios)\s*:\s*(.+?)\s*$'){$profiles+=@($Matches[1])}}
         [pscustomobject]@{ok=$true;profiles=$profiles}|ConvertTo-Json -Compress
         """;
+    // Auditoría final (regla 3): a netsh that failed or printed no interface header is a status not read, never
+    // «disconnected».
     private const string WifiStatusScript = """
-        $text=netsh wlan show interfaces
+        $text=@(netsh wlan show interfaces);$code=$LASTEXITCODE
+        if($code -ne 0 -or -not (($text -join "`n") -match '(?i)(?:hay|there (?:is|are))\s+\d+\s+interfa')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
         $connected=$false;$profile=''
         foreach($line in $text){if($line -match '^\s*(?:State|Estado)\s*:\s*(connected|conectado)\s*$'){$connected=$true};if($line -match '^\s*(?:Profile|Perfil)\s*:\s*(.+?)\s*$'){$profile=$Matches[1]}}
-        [pscustomobject]@{connected=$connected;profile=$profile}|ConvertTo-Json -Compress
+        [pscustomobject]@{ok=$true;connected=$connected;profile=$profile}|ConvertTo-Json -Compress
         """;
     // Encargo H2 (tandas redpc t2-c03, t3-c04, t4-c04: «Intenté poner el brillo…, pero no pude confirmar si se hizo» on
     // a monitor that does not expose its brightness): WMI answers its brightness classes there with «not supported»
@@ -914,8 +924,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved: true);
     }
 
-    private static List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> EnumerateRegisteredPythons()
+    // Auditoría final (regla 3): only the PEP 514 registry is read, so the count is of registered Pythons, and a key
+    // that could not be read makes the read incomplete, never a Python fewer.
+    private static List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> EnumerateRegisteredPythons(out bool registryReadIncomplete)
     {
+        registryReadIncomplete = false;
         var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach ((Microsoft.Win32.RegistryKey hive, string scope) in new[]
@@ -969,7 +982,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 catch (Exception exception) when (exception is System.Security.SecurityException
                     or UnauthorizedAccessException or IOException)
                 {
-                    continue;
+                    registryReadIncomplete = true;
                 }
             }
         }
@@ -979,12 +992,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
     private static ExternalCapabilityReceipt PythonStatus(string operation)
     {
-        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
+        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons(out bool registryReadIncomplete);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
-            writer.WriteNumber("pythonCount", installs.Count);
+            writer.WriteNumber("registeredPythonCount", installs.Count);
+            if (registryReadIncomplete) writer.WriteBoolean("registryReadIncomplete", true);
             writer.WriteStartArray("pythons");
             foreach ((string company, string tag, string version, string displayName, string? executable, string scope) in installs)
             {
@@ -1029,7 +1043,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             return ExternalJson.Failure(operation, "python_package_name_invalid");
         }
-        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
+        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons(out bool registryReadIncomplete);
         // Auditoría final (regla 3): pip and the package are said only as pip answered; a run that failed, or no
         // executable, leaves both unread (null, omitted), never «not installed».
         var rows = new List<(string DisplayName, string Version, bool? PipAvailable, bool? Installed, string? PackageVersion)>();
@@ -1076,7 +1090,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("package", package);
-            writer.WriteNumber("pythonCount", rows.Count);
+            writer.WriteNumber("registeredPythonCount", rows.Count);
+            if (registryReadIncomplete) writer.WriteBoolean("registryReadIncomplete", true);
             writer.WriteNumber("installedCount", rows.Count(row => row.Installed == true));
             writer.WriteNumber("unreadCount", rows.Count(row => row.Installed is null));
             writer.WriteStartArray("pythons");
@@ -1467,6 +1482,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             if (requestedKind is "all" or "keyboard")
                 WritePeripherals(writer, source.RootElement, "keyboards", "keyboard", "FriendlyName", "InstanceId", "Status");
             writer.WriteEndArray(); writer.WriteString("requestedKind", requestedKind);
+            if (source.RootElement.TryGetProperty("unread", out JsonElement unread)
+                && unread.ValueKind == JsonValueKind.Array && unread.GetArrayLength() > 0)
+            {
+                writer.WriteStartArray("unreadKinds");
+                foreach (JsonElement kind in unread.EnumerateArray())
+                    writer.WriteStringValue(kind.GetString());
+                writer.WriteEndArray();
+            }
             writer.WriteString(
                 "authority",
                 inputOnly
@@ -1852,7 +1875,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // A powered-down radio is a typed state (wifi_interface_off), never a scan.
     private const string WifiScanScript = """
         $text=@(netsh wlan show networks mode=bssid);$code=$LASTEXITCODE;$joined=($text -join "`n")
-        if($joined -match '(?i)apagada|powered down|is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wifi_interface_off'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)apagada|powered down'){[pscustomobject]@{ok=$false;error='wifi_interface_off'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wlan_service_not_running'}|ConvertTo-Json -Compress;exit 0}
         if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_radio_not_found'}|ConvertTo-Json -Compress;exit 0}
         # Auditoría final (regla 3): the list counts only when netsh says how many it sees and the blocks read match it.
         if($code -ne 0 -or -not ($joined -match '(?i)(?:hay|there (?:are|is))\s+(\d+)\s+(?:redes?|networks?)')){[pscustomobject]@{ok=$false;error='wifi_scan_not_read'}|ConvertTo-Json -Compress;exit 0}
@@ -2227,7 +2251,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             WifiStatusScript,
             [],
             token);
-        return JsonDocument.Parse(process.Output);
+        JsonDocument status = ParseLastJson(process.Output);
+        if (status.RootElement.ValueKind != JsonValueKind.Object || !Bool(status.RootElement, "ok"))
+        {
+            status.Dispose();
+            throw new IOException("netsh wlan show interfaces was not read.");
+        }
+        return status;
     }
 
     private ValueTask<ExternalProcessResult> RunPowerShellAsync(

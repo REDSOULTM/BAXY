@@ -9,9 +9,19 @@ internal sealed class WindowsApplicationCrashDiagnosticAdapter : IExternalOperat
         $ErrorActionPreference='Stop'
         $hours=[int]$args[0]
         $limit=[int]$args[1]
+        # Auditoría final (regla 3): only «no events matched» is an empty window; any other failure of the log read is
+        # the diagnostic failed, never «no crash».
+        function Read-BaxyWindowEvents {
+          try {
+            @(Get-WinEvent -FilterHashtable @{LogName='Application';StartTime=(Get-Date).AddHours(-$hours);Id=1000,1001,1002,1026} -ErrorAction Stop)
+          } catch {
+            if([string]$_.FullyQualifiedErrorId -notlike 'NoMatchingEventsFound*'){throw}
+            @()
+          }
+        }
         function Read-BaxyCrashEvents {
           @(
-            Get-WinEvent -FilterHashtable @{LogName='Application';StartTime=(Get-Date).AddHours(-$hours);Id=1000,1001,1002,1026} -ErrorAction SilentlyContinue |
+            Read-BaxyWindowEvents |
               Where-Object {$_.ProviderName -in @('Application Error','Windows Error Reporting','Application Hang','.NET Runtime')} |
               Sort-Object RecordId -Descending |
               Select-Object -First ([Math]::Min(200,$limit*4)) |

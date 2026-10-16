@@ -67,7 +67,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             if([int]$candidate.Class -eq 43){$latest=$candidate;break}
             $candidate=$items.GetNext()
           }
-          if($null -eq $latest){throw 'outlook_inbox_empty'}
+          # Auditoría final (regla 3): what was looked at is what is said: the whole inbox without a mail item (it may
+          # hold invitations or receipts), or only its newest 100 items.
+          if($null -eq $latest){if($null -eq $candidate){throw 'outlook_inbox_has_no_mail_item'};throw 'outlook_no_mail_in_latest_100_items'}
           $entryId=[string]$latest.EntryID
           $verified=$session.GetItemFromID($entryId)
           if($null -eq $verified -or [string]$verified.EntryID -cne $entryId){throw 'outlook_latest_identity_mismatch'}
@@ -101,7 +103,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           if($null -eq $sent){throw 'outlook_sent_postread_missing'}
           [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
         } catch {
-          $code=[string]$_.Exception.Message;if(@('outlook_inbox_empty','outlook_latest_identity_mismatch','outlook_sent_postread_missing') -notcontains $code){$code='outlook_mail_com_failed'}
+          $code=[string]$_.Exception.Message;if(@('outlook_inbox_has_no_mail_item','outlook_no_mail_in_latest_100_items','outlook_latest_identity_mismatch','outlook_sent_postread_missing') -notcontains $code){$code='outlook_mail_com_failed'}
           [pscustomobject]@{ok=$false;effectObserved=$effect;error=$code}|ConvertTo-Json -Compress
           exit 2
         }
