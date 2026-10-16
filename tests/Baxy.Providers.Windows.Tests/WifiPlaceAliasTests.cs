@@ -48,12 +48,12 @@ public sealed class WifiPlaceAliasTests
     {
         using TemporaryDirectory temporary = new();
         var runner = new SequencedRunner([
-            "{\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
-            "{\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
+            "{\"ok\":true,\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
+            "{\"ok\":true,\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
             "{\"connected\":false,\"profile\":\"\"}",
             "",
             "{\"connected\":true,\"profile\":\"Fibertel-2G\"}",
-            "{\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
+            "{\"ok\":true,\"profiles\":[\"Fibertel-2G\",\"Vecino\"]}",
             // Already connected to it: the state reached, nothing dispatched.
             "{\"connected\":true,\"profile\":\"Fibertel-2G\"}",
         ]);
@@ -93,7 +93,7 @@ public sealed class WifiPlaceAliasTests
     public async Task ANameThatIsNotSavedStaysAnHonestNotFoundWithoutAPlace()
     {
         using TemporaryDirectory temporary = new();
-        var runner = new SequencedRunner(["{\"profiles\":[\"Fibertel-2G\"]}"]);
+        var runner = new SequencedRunner(["{\"ok\":true,\"profiles\":[\"Fibertel-2G\"]}"]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner, static (_, _) => ValueTask.CompletedTask);
 

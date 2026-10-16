@@ -140,7 +140,11 @@ internal static class HeartbeatMoment
             pc["internet"] = connectivity;
         }
 
-        pc["idle_min"] = (int)IdleTime().TotalMinutes;
+        // Ronda final: left out when Windows did not say when the last input was (as gpu_busy and plugged).
+        if (ReadIdleTime() is { } idle)
+        {
+            pc["idle_min"] = (int)idle.TotalMinutes;
+        }
         return pc;
     }
 
@@ -210,12 +214,14 @@ internal static class HeartbeatMoment
 
     private static bool IsToolWindow(nint window) => (GetWindowLongPtr(window, -20) & 0x80) != 0;
 
-    internal static TimeSpan IdleTime()
+    internal static TimeSpan IdleTime() => ReadIdleTime() ?? TimeSpan.Zero;
+
+    internal static TimeSpan? ReadIdleTime()
     {
         var info = new LastInputInfo { Size = (uint)Marshal.SizeOf<LastInputInfo>() };
         return GetLastInputInfo(ref info)
             ? TimeSpan.FromMilliseconds(unchecked((uint)Environment.TickCount - info.Time))
-            : TimeSpan.Zero;
+            : null;
     }
 
     private static bool ForegroundFillsTheScreen()

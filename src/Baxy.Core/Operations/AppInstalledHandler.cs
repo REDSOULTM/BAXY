@@ -34,7 +34,10 @@ internal sealed class AppInstalledHandler(IApplicationInventoryProvider provider
             else writer.WriteString("displayName", observed.DisplayName);
             if (observed.InstalledVersion is null) writer.WriteNull("installedVersion");
             else writer.WriteString("installedVersion", observed.InstalledVersion);
-            writer.WriteBoolean("installed", observed.Installed);
+            // Auditoría final (regla 3): the Start catalog is not every installed program, so a name
+            // it does not list is said as that read, never as «not installed».
+            if (observed.Installed) writer.WriteBoolean("installed", true);
+            else writer.WriteBoolean("inStartCatalog", false);
             // Auditoría final: as app.open, a name that matches no installed application gets the closest names back.
             if (observed.Candidates is { Count: > 0 } candidates)
             {
@@ -85,9 +88,14 @@ internal sealed class ApplicationWindowStatusHandler(IApplicationInventoryProvid
             writer.WriteString("requestedName", observed.RequestedName);
             if (observed.DisplayName is null) writer.WriteNull("displayName");
             else writer.WriteString("displayName", observed.DisplayName);
-            writer.WriteBoolean("installed", observed.Installed);
-            writer.WriteBoolean("hasVisibleWindow", observed.HasVisibleWindow);
-            writer.WriteNumber("visibleWindowCount", observed.VisibleWindowCount);
+            // Auditoría final (regla 3): a name outside the Start catalog has no windows looked at, so none are denied.
+            if (observed.Installed)
+            {
+                writer.WriteBoolean("installed", true);
+                writer.WriteBoolean("hasVisibleWindow", observed.HasVisibleWindow);
+                writer.WriteNumber("visibleWindowCount", observed.VisibleWindowCount);
+            }
+            else writer.WriteBoolean("inStartCatalog", false);
             writer.WriteString("authority", "windows_start_catalog_and_visible_window_snapshot");
             writer.WriteEndObject();
         }

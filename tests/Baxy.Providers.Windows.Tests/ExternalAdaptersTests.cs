@@ -2437,8 +2437,8 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
-            "{\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
-            "{\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
+            "{\"ok\":true,\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
+            "{\"ok\":true,\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
             "{\"connected\":false,\"profile\":\"\"}",
             "",
             "{\"connected\":true,\"profile\":\"Galaxy Phone 5G 0000\"}",
@@ -2474,7 +2474,7 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
-            "{\"profiles\":[\"Casa\"]}",
+            "{\"ok\":true,\"profiles\":[\"Casa\"]}",
             "{\"connected\":true,\"profile\":\"Casa\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
@@ -2560,7 +2560,7 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
-            "{\"profiles\":[\"Casa\"]}",
+            "{\"ok\":true,\"profiles\":[\"Casa\"]}",
             "{\"connected\":false,\"profile\":\"\"}",
             "",
             "{\"connected\":false,\"profile\":\"\"}",
@@ -4817,7 +4817,7 @@ public sealed class ExternalAdaptersTests
             string script = arguments[3];
             // Disconnected until this runner's connect ran (the adapter reads first).
             string output = script.Contains("show profiles", StringComparison.Ordinal)
-                ? "{\"profiles\":[\"Casa\"]}"
+                ? "{\"ok\":true,\"profiles\":[\"Casa\"]}"
                 : startsConnected || ConnectCalls > 0 ? "{\"connected\":true,\"profile\":\"Casa\"}" : "{\"connected\":false,\"profile\":\"\"}";
             return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
         }

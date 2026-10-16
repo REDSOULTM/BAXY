@@ -688,7 +688,7 @@ public static class ProductCatalog
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
             OperationRisks.LowReversible,
             "game.launch.steam.process.postread.v1",
-            "Inicia un AppID poseído y verifica la identidad del proceso lanzado."),
+            "Inicia un AppID instalado en este PC y verifica la identidad del proceso lanzado."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
         // dirección del dato y el diálogo propio de Steam, ya no por su consola),

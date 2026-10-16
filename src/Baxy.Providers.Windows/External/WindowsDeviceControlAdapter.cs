@@ -100,10 +100,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [pscustomobject]@{ok=($file.Length -gt 0);effectObserved=$true;length=$file.Length}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='scan_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
+    // Auditoría final (regla 3): a netsh that failed or printed no profile header is a list not read, never an empty one.
     private const string WifiProfilesScript = """
-        $text=netsh wlan show profiles
+        $text=@(netsh wlan show profiles);$code=$LASTEXITCODE
+        if($code -ne 0 -or -not (($text -join "`n") -match '(?im)^\s*(?:Profiles on interface|Perfiles en la interfaz)')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
         $profiles=@();foreach($line in $text){if($line -match '^\s*(?:All User Profile|Perfil de todos los usuarios)\s*:\s*(.+?)\s*$'){$profiles+=@($Matches[1])}}
-        [pscustomobject]@{profiles=$profiles}|ConvertTo-Json -Compress
+        [pscustomobject]@{ok=$true;profiles=$profiles}|ConvertTo-Json -Compress
         """;
     private const string WifiStatusScript = """
         $text=netsh wlan show interfaces
@@ -1028,12 +1030,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "python_package_name_invalid");
         }
         List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
-        var rows = new List<(string DisplayName, string Version, bool PipAvailable, bool Installed, string? PackageVersion)>();
+        // Auditoría final (regla 3): pip and the package are said only as pip answered; a run that failed, or no
+        // executable, leaves both unread (null, omitted), never «not installed».
+        var rows = new List<(string DisplayName, string Version, bool? PipAvailable, bool? Installed, string? PackageVersion)>();
         foreach ((string _, string _, string version, string displayName, string? executable, string _) in installs)
         {
             if (executable is null)
             {
-                rows.Add((displayName, version, false, false, null));
+                rows.Add((displayName, version, null, null, null));
                 continue;
             }
             ExternalProcessResult process = await RunPowerShellAsync(PipShowScript, [Encode(executable), Encode(package)], token);
@@ -1056,12 +1060,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     exit = -1;
                 }
             }
-            bool pipAvailable = !output.Contains("No module named pip", StringComparison.OrdinalIgnoreCase);
             Match name = Regex.Match(output, @"(?im)^Name:\s*(\S+)\s*$");
             Match packageVersion = Regex.Match(output, @"(?im)^Version:\s*(\S+)\s*$");
-            bool installed = pipAvailable && exit == 0 && name.Success
+            bool shown = exit == 0 && name.Success
                 && string.Equals(NormalizePythonPackage(name.Groups[1].Value), NormalizePythonPackage(package), StringComparison.Ordinal);
-            rows.Add((displayName, version, pipAvailable, installed, installed && packageVersion.Success ? packageVersion.Groups[1].Value : null));
+            bool notFound = exit == 1 && output.Contains("Package(s) not found", StringComparison.OrdinalIgnoreCase);
+            bool? pipAvailable = output.Contains("No module named pip", StringComparison.OrdinalIgnoreCase)
+                ? false
+                : shown || notFound ? true : null;
+            bool? installed = shown ? true : notFound ? false : null;
+            rows.Add((displayName, version, pipAvailable, installed, shown && packageVersion.Success ? packageVersion.Groups[1].Value : null));
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -1069,15 +1077,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteNumber("version", 1);
             writer.WriteString("package", package);
             writer.WriteNumber("pythonCount", rows.Count);
-            writer.WriteNumber("installedCount", rows.Count(row => row.Installed));
+            writer.WriteNumber("installedCount", rows.Count(row => row.Installed == true));
+            writer.WriteNumber("unreadCount", rows.Count(row => row.Installed is null));
             writer.WriteStartArray("pythons");
-            foreach ((string displayName, string version, bool pipAvailable, bool installed, string? packageVersion) in rows)
+            foreach ((string displayName, string version, bool? pipAvailable, bool? installed, string? packageVersion) in rows)
             {
                 writer.WriteStartObject();
                 writer.WriteString("displayName", displayName);
                 writer.WriteString("pythonVersion", version);
-                writer.WriteBoolean("pipAvailable", pipAvailable);
-                writer.WriteBoolean("installed", installed);
+                if (pipAvailable is bool pip) writer.WriteBoolean("pipAvailable", pip);
+                if (installed is bool seen) writer.WriteBoolean("installed", seen);
                 if (packageVersion is not null)
                 {
                     writer.WriteString("packageVersion", packageVersion);
@@ -1525,11 +1534,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, true);
     }
 
-    private async ValueTask<ExternalCapabilityReceipt> WifiProfilesAsync(string operation, CancellationToken token)
+    private async ValueTask<string[]?> ReadWifiProfilesAsync(CancellationToken token)
     {
         ExternalProcessResult process = await RunPowerShellAsync(WifiProfilesScript, [], token);
-        using JsonDocument source = JsonDocument.Parse(process.Output);
-        string[] profiles = source.RootElement.TryGetProperty("profiles", out JsonElement values)
+        using JsonDocument source = ParseLastJson(process.Output);
+        if (source.RootElement.ValueKind != JsonValueKind.Object || !Bool(source.RootElement, "ok"))
+        {
+            return null;
+        }
+        return source.RootElement.TryGetProperty("profiles", out JsonElement values)
             ? values.ValueKind switch
             {
                 JsonValueKind.Array => values
@@ -1541,6 +1554,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 _ => [],
             }
             : [];
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> WifiProfilesAsync(string operation, CancellationToken token)
+    {
+        if (await ReadWifiProfilesAsync(token) is not { } profiles)
+        {
+            return ExternalJson.Failure(operation, "wifi_profiles_not_read");
+        }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -1589,20 +1610,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             && placeValue.ValueKind == JsonValueKind.String
             ? placeValue.GetString()
             : null;
-        ExternalProcessResult process = await RunPowerShellAsync(WifiProfilesScript, [], token);
-        using JsonDocument source = JsonDocument.Parse(process.Output);
-        string[] profiles = source.RootElement.TryGetProperty("profiles", out JsonElement values)
-            ? values.ValueKind switch
-            {
-                JsonValueKind.Array => values
-                    .EnumerateArray()
-                    .Select(static item => item.GetString() ?? string.Empty)
-                    .Where(static item => item.Length > 0)
-                    .ToArray(),
-                JsonValueKind.String => [values.GetString() ?? string.Empty],
-                _ => [],
-            }
-            : [];
+        if (await ReadWifiProfilesAsync(token) is not { } profiles)
+        {
+            return ExternalJson.Failure(operation, "wifi_profiles_not_read");
+        }
         string folded = FoldProfile(requested);
         string[] ordinal = profiles
             .Where(profile =>
@@ -1840,9 +1851,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // NETWORK1729 «qué redes wifi hay»: the networks the adapter sees right now.
     // A powered-down radio is a typed state (wifi_interface_off), never a scan.
     private const string WifiScanScript = """
-        $text=@(netsh wlan show networks mode=bssid);$joined=($text -join "`n")
+        $text=@(netsh wlan show networks mode=bssid);$code=$LASTEXITCODE;$joined=($text -join "`n")
         if($joined -match '(?i)apagada|powered down|is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wifi_interface_off'}|ConvertTo-Json -Compress;exit 0}
         if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_radio_not_found'}|ConvertTo-Json -Compress;exit 0}
+        # Auditoría final (regla 3): the list counts only when netsh says how many it sees and the blocks read match it.
+        if($code -ne 0 -or -not ($joined -match '(?i)(?:hay|there (?:are|is))\s+(\d+)\s+(?:redes?|networks?)')){[pscustomobject]@{ok=$false;error='wifi_scan_not_read'}|ConvertTo-Json -Compress;exit 0}
+        $visible=[int]$Matches[1]
         $networks=@();$current=$null
         foreach($line in $text){
           if($line -match '^\s*SSID\s+\d+\s*:\s*(.*?)\s*$'){if($current){$networks+=$current};$current=[ordered]@{ssid=$Matches[1];authentication='';signalPercent=$null};continue}
@@ -1851,6 +1865,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           if($line -match '^\s*(?:Signal|Señal)\s*:\s*(\d+)\s*%' -and $null -eq $current.signalPercent){$current.signalPercent=[int]$Matches[1];continue}
         }
         if($current){$networks+=$current}
+        if($networks.Count -ne $visible){[pscustomobject]@{ok=$false;error='wifi_scan_not_read'}|ConvertTo-Json -Compress;exit 0}
         [pscustomobject]@{ok=$true;networks=@($networks|ForEach-Object {[pscustomobject]$_})}|ConvertTo-Json -Compress -Depth 4
         """;
 

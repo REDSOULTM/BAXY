@@ -334,7 +334,13 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             "winget.exe",
             ["search", query, "--disable-interactivity", "--accept-source-agreements"],
             QueryTimeout, cancellationToken).ConfigureAwait(false);
-        return process.ExitCode == 0 ? ParseTable(process.Output) : [];
+        // Ronda final: as the list below, only winget's «no package found» is no match; another exit is a search not read.
+        return process.ExitCode switch
+        {
+            0 => ParseTable(process.Output),
+            NoInstalledPackageFound => [],
+            _ => throw new IOException("winget search was not read."),
+        };
     }
 
     // Ronda final: winget's own «no installed package found» (APPINSTALLER_CLI_ERROR_NO_APPLICATIONS_FOUND) is the only
