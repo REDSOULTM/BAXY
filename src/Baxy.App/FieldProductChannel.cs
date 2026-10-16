@@ -446,7 +446,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 out string turnError,
                 out int turnStatus))
         {
-            PublishAdmission(turnId, accepted: false, turnStatus, turnError);
             return Error(turnError, turnStatus);
         }
 
@@ -457,11 +456,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
         catch (MissionInputRejectedException)
         {
-            PublishAdmission(turnId, accepted: false, 400, "invalid_text");
             return Error("invalid_text", 400);
         }
 
-        PublishAdmission(turnId, accepted: true, 200, error: null);
         ShellTraceSink.Record(
             ShellTraceScopes.Bridge,
             turnId,
@@ -477,7 +474,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
         catch (MissionInputRejectedException)
         {
-            PublishAdmission(turnId, accepted: false, 400, "invalid_text");
             return Error("invalid_text", 400);
         }
 
@@ -486,18 +482,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             turnId,
             ShellTraceStages.ResponseFinal);
         return Json(new JsonObject { ["ok"] = true, ["status"] = "accepted" });
-    }
-
-    private void PublishAdmission(string turnId, bool accepted, int status, string? error)
-    {
-        Publish(new JsonObject
-        {
-            ["type"] = "admission",
-            ["turnId"] = turnId,
-            ["accepted"] = accepted,
-            ["status"] = status,
-            ["error"] = error,
-        });
     }
 
     private void OnMessageAdded(ConversationMessage message)

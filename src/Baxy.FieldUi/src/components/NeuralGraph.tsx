@@ -117,7 +117,6 @@ const CORE_FEEDS = ['n17', 'n18', 'n19', 'n20'];
 
 const STATE_EDGES: Record<ConvState, EdgeT[]> = {
   error: [],
-  standby: [],
   idle: EDGES,
   listening: EDGES.filter((e) => e.tag === 'voice' || e.tag === 'core'),
   thinking: EDGES.filter((e) => e.tag === 'core' || e.tag === 'memory' || e.tag === 'context' || e.tag === 'agent'),
@@ -126,7 +125,6 @@ const STATE_EDGES: Record<ConvState, EdgeT[]> = {
 
 const STATE_SPAWN_RATE: Record<ConvState, number> = {
   error: 0,
-  standby: 0,
   idle: 0.8,
   listening: 5,
   thinking: 12,
@@ -139,7 +137,6 @@ interface CorePalette {
 }
 const CORE_COLORS: Record<ConvState, CorePalette> = {
   error:     { halo: '#7A1E2B', mid: '#B83A4A', inner: '#E55366', hot: '#FFE9EC', labelColor: '#E55366', pulseSpeed: 0.8 },
-  standby:   { halo: '#3F4860', mid: '#5B6580', inner: '#8B95A8', hot: '#D8DCE6', labelColor: '#5B6580', pulseSpeed: 0.8 },
   idle:      { halo: '#7A1E2B', mid: '#B83A4A', inner: '#E55366', hot: '#F5C6CC', labelColor: '#7A1E2B', pulseSpeed: 1.1 },
   listening: { halo: '#B83A4A', mid: '#E55366', inner: '#F5C6CC', hot: '#FFE9EC', labelColor: '#B83A4A', pulseSpeed: 2.4 },
   thinking:  { halo: '#1B2A5E', mid: '#2E4BA0', inner: '#5B7FDB', hot: '#B8C6E8', labelColor: '#2E4BA0', pulseSpeed: 3.4 },
@@ -147,7 +144,6 @@ const CORE_COLORS: Record<ConvState, CorePalette> = {
 };
 
 function orbitTint(state: ConvState, isRed: boolean): string {
-  if (state === 'standby')   return isRed ? '#5B6580' : '#3F4860';
   if (state === 'thinking')  return isRed ? '#5B7FDB' : '#2E4BA0';
   if (state === 'speaking')  return isRed ? '#C9A66B' : '#8A7A4A';
   if (state === 'listening') return isRed ? '#E55366' : '#B83A4A';
@@ -190,14 +186,6 @@ function nodeTint(state: ConvState, id: string, isHub: boolean, isInner: boolean
       labelFill: isHub ? '#E55366' : '#5B6580',
     };
   }
-  if (state === 'standby') {
-    return {
-      outerFill: isInner ? '#3F4860' : '#5B6580',
-      innerFill: '#8B95A8',
-      glow: 'url(#nodeStandbyGlow)',
-      labelFill: '#3F4860',
-    };
-  }
   // idle — voice/memory hubs glow red, the rest stay blue
   const hubRed = isHub && (id === 'voice' || id === 'memory');
   return {
@@ -210,7 +198,6 @@ function nodeTint(state: ConvState, id: string, isHub: boolean, isInner: boolean
 
 const NEBULA_TINT: Record<ConvState, { a: string; b: string }> = {
   error:     { a: '#7A1E2B', b: '#3F4860' },
-  standby:   { a: '#3F4860', b: '#5B6580' },
   idle:      { a: '#1B2A5E', b: '#7A1E2B' },
   listening: { a: '#6B5A2F', b: '#1B2A5E' },
   thinking:  { a: '#7A1E2B', b: '#6B5A2F' },
@@ -271,9 +258,6 @@ interface Props {
   state: ConvState;
 }
 
-const NODE_COUNT = ALL_NODES.length;
-const EDGE_COUNT = EDGES.length;
-
 export function NeuralGraph({ state }: Props) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ w: 720, h: 480 });
@@ -312,7 +296,7 @@ export function NeuralGraph({ state }: Props) {
   // state transition side effects: trigger afterglow on edges, fire the tracer
   useEffect(() => {
     const prev = prevStateRef.current;
-    if ((state === 'idle' || state === 'standby') && (prev === 'speaking' || prev === 'thinking')) {
+    if (state === 'idle' && (prev === 'speaking' || prev === 'thinking')) {
       lastTurnRef.current = {
         endedAt: performance.now(),
         tags: new Set(['core', 'memory', 'context', 'agent', 'voice', 'tools']),
@@ -389,15 +373,13 @@ export function NeuralGraph({ state }: Props) {
         }
       }
 
-      const rotSpeed = s === 'standby' ? 1.5
-        : s === 'idle' ? 4
+      const rotSpeed = s === 'idle' ? 4
         : s === 'listening' ? 9
         : s === 'thinking' ? 22
         : s === 'speaking' ? 14 : 4;
       rotationRef.current = (rotationRef.current + rotSpeed * dt) % 360;
 
-      const galSpeed = s === 'standby' ? 0.15
-        : s === 'idle' ? 0.30
+      const galSpeed = s === 'idle' ? 0.30
         : s === 'listening' ? 0.55
         : s === 'thinking' ? 1.20
         : s === 'speaking' ? 0.70 : 0.30;
@@ -439,7 +421,6 @@ export function NeuralGraph({ state }: Props) {
 
   const litTags: Set<string> = {
     error: new Set<string>(),
-    standby: new Set<string>(),
     idle: new Set<string>(),
     listening: new Set<string>(['voice']),
     thinking: new Set<string>(['core', 'memory', 'context', 'agent']),
@@ -463,12 +444,8 @@ export function NeuralGraph({ state }: Props) {
   // performance.now() during render is impure; sample it once and reuse below.
   const renderNow = typeof performance !== 'undefined' ? performance.now() : 0;
 
-  const corePulse = state === 'standby'
-    ? 0.35 + Math.sin(tNow * coreC.pulseSpeed) * 0.05
-    : 0.55 + Math.sin(tNow * coreC.pulseSpeed) * 0.18;
-  const coreHotPulse = state === 'standby'
-    ? 0.4 + Math.sin(tNow * 1.5) * 0.1
-    : 0.7 + Math.sin(tNow * coreC.pulseSpeed * 1.8) * 0.25;
+  const corePulse = 0.55 + Math.sin(tNow * coreC.pulseSpeed) * 0.18;
+  const coreHotPulse = 0.7 + Math.sin(tNow * coreC.pulseSpeed * 1.8) * 0.25;
   const pulseStyle = pulseTint(state);
 
   return (
@@ -516,11 +493,6 @@ export function NeuralGraph({ state }: Props) {
             <stop offset="0%" stopColor="#E8C98E" stopOpacity="0.55" />
             <stop offset="60%" stopColor="#8A7A4A" stopOpacity="0.18" />
             <stop offset="100%" stopColor="#8A7A4A" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="nodeStandbyGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#8B95A8" stopOpacity="0.35" />
-            <stop offset="60%" stopColor="#5B6580" stopOpacity="0.10" />
-            <stop offset="100%" stopColor="#5B6580" stopOpacity="0" />
           </radialGradient>
           <radialGradient id="pulseGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%"  stopColor="#E55366" stopOpacity="0.85" />
@@ -604,7 +576,7 @@ export function NeuralGraph({ state }: Props) {
                 x2={cx} y2={cy}
                 stroke={coreC.halo}
                 strokeWidth={1}
-                opacity={state === 'standby' ? 0.25 : 0.45}
+                opacity={0.45}
                 strokeDasharray="2 3"
               />
             );
@@ -622,7 +594,7 @@ export function NeuralGraph({ state }: Props) {
                 cx={x.toFixed(2)} cy={y.toFixed(2)}
                 r={p.size.toFixed(2)}
                 fill={orbitTint(state, p.red)}
-                opacity={(p.op * (state === 'standby' ? 0.55 : 1)).toFixed(2)}
+                opacity={p.op.toFixed(2)}
               />
             );
           })}
@@ -631,8 +603,8 @@ export function NeuralGraph({ state }: Props) {
         {/* layer 6 — central core */}
         <g>
           <circle cx={cx} cy={cy} r={coreR * 2.0} fill="url(#coreHalo)" opacity={corePulse.toFixed(3)} />
-          <circle cx={cx} cy={cy} r={coreR * 1.0} fill="url(#coreInner)" opacity={state === 'standby' ? 0.55 : 0.95} />
-          <circle cx={cx} cy={cy} r={coreR * 0.32} fill={coreC.inner} opacity={state === 'standby' ? 0.55 : 0.92} />
+          <circle cx={cx} cy={cy} r={coreR * 1.0} fill="url(#coreInner)" opacity={0.95} />
+          <circle cx={cx} cy={cy} r={coreR * 0.32} fill={coreC.inner} opacity={0.92} />
           <circle cx={cx} cy={cy} r={coreR * 0.12} fill={coreC.hot} opacity={coreHotPulse.toFixed(3)} />
           <text
             x={cx} y={cy + coreR * 1.85}
@@ -642,7 +614,7 @@ export function NeuralGraph({ state }: Props) {
             fontSize={Math.max(18, coreR * 0.72)}
             fontWeight={500}
             letterSpacing="0.28em"
-            opacity={state === 'standby' ? 0.6 : 0.95}
+            opacity={0.95}
           >
             {state.charAt(0).toUpperCase() + state.slice(1)}
           </text>
@@ -804,5 +776,3 @@ function TracerLayer({
     </g>
   );
 }
-
-export { NODE_COUNT, EDGE_COUNT };

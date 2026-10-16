@@ -1,6 +1,6 @@
 /* shared types — match server WS payload contract and HTTP endpoints. */
 
-export type ConvState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
+export type ConvState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
 
 /** who wrote the line: the person, BAXY (what the model wrote), or the view itself. */
 export type SourceTag = 'YOU' | 'BAXY' | 'SYSTEM';

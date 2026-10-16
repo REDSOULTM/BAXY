@@ -7,8 +7,6 @@ import { Icon, type IconName } from './Icon';
 
 interface Props {
   convState: ConvState;
-  /** if non-null, render the debug chip row. clicking a chip flips the state. */
-  onDebugState: ((s: ConvState) => void) | null;
   micMode: MicMode;
   /** true while /voice/start is loading the voice models on the backend.
    *  keeps the mic icon lit + pulsing so it doesn't flicker red→black. */
@@ -38,10 +36,8 @@ const MIC_ARIA: Record<MicMode, string> = {
   off: 'microphone off',
 };
 
-const DEBUG_STATES: ConvState[] = ['standby', 'idle', 'listening', 'thinking', 'speaking'];
-
 export function FieldCenter({
-  convState, onDebugState, micMode, micLoading, voiceError, onMicLeftClick, onMicRightClick, agent,
+  convState, micMode, micLoading, voiceError, onMicLeftClick, onMicRightClick, agent,
 }: Props) {
   const [draft, setDraft] = useState('');
 
@@ -111,21 +107,6 @@ export function FieldCenter({
             </button>
           </div>
         </form>
-
-        {onDebugState && (
-          <div className="profile-chips" style={{ marginTop: 8 }} aria-label="debug state switcher">
-            {DEBUG_STATES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                className={`chip${convState === s ? ' on' : ''}`}
-                onClick={() => onDebugState(s)}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

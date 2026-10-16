@@ -13,7 +13,6 @@ import { useEventStream } from './hooks/useEventStream';
 import type { SurfacesCount } from './hooks/useEventStream';
 import { toastError } from './hooks/useToast';
 import { startNewSession } from './hooks/newSession';
-import type { ConvState } from './types';
 // the prototype's styles.css is loaded literal — this is the single source of
 // truth for all cosmetic rules. additions live at the bottom of that file.
 import './styles/prototype.css';
@@ -27,7 +26,6 @@ type SurfaceId = 'sessions' | 'memory' | 'tools';
  *  voice loop is stopped. */
 export type MicMode = 'listening' | 'off';
 
-const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
 // The interface's two presentations. The profile's file on the host is the only
 // source (GET/PUT /accessibility); the chat switches the same file.
 export type AccessMode = 'normal' | 'accessible';
@@ -181,30 +179,12 @@ export default function App() {
     }
   }, []);
 
-  // debug override + auto-cycler when WS is down
-  const [debugState, setDebugState] = useState<ConvState | null>(null);
-  const debugOn =
-    typeof window !== 'undefined'
-    && new URLSearchParams(window.location.search).has('debug');
-
-  useEffect(() => {
-    if (!debugOn || stream.connected) return;
-    let i = 0;
-    const id = window.setInterval(() => {
-      i = (i + 1) % STATE_CYCLE.length;
-      setDebugState(STATE_CYCLE[i]);
-    }, 3500);
-    return () => window.clearInterval(id);
-  }, [debugOn, stream.connected]);
-
-  // when the WS is live, debug override is ignored so real events win.
   // The mic being OFF does NOT deactivate the app: text mode is a fully alive
   // mode. We keep the real conversational state (idle stays idle, alive) so the
   // field, neurons and border keep breathing while the user types. Only an
   // actual backend disconnect drops us to a degraded look (see `online` below);
   // muting the mic just mutes the mic.
-  const effectiveState: ConvState =
-    stream.connected ? stream.convState : (debugState ?? stream.convState);
+  const convState = stream.convState;
 
   // global keyboard shortcuts. mirror the legacy QShortcut bindings so users
   // of the PyQt6 GUI find the same muscle memory here. shortcuts that hit
@@ -397,8 +377,8 @@ export default function App() {
   const voiceOn = micMode !== 'off';
   const poweredRef = useRef(online);
   useEffect(() => { poweredRef.current = online; }, [online]);
-  const visualStateRef = useRef(effectiveState);
-  useEffect(() => { visualStateRef.current = effectiveState; }, [effectiveState]);
+  const visualStateRef = useRef(convState);
+  useEffect(() => { visualStateRef.current = convState; }, [convState]);
 
   // Drive the traveling border without forcing a style/layout update at display
   // refresh rate while BAXY is resting. Active conversation remains at 30 Hz.
@@ -452,29 +432,28 @@ export default function App() {
 
   // Recolor the border, the chrome accent (--carmine) and the metric bars
   // (--bar-color) per state — the prototype's SET table, verbatim. Chrome stays
-  // carmesí at rest (idle/standby) and only takes the contrast color during an
+  // carmesí at rest (idle) and only takes the contrast color during an
   // active conversation state (listening/thinking/speaking), then returns to red.
   useEffect(() => {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
     const SET: Record<string, { base: string; mid: string; hi: string; peak: string; glow: string; bar: string }> = {
       error:     { base: '#7A1E2B', mid: '#B83A4A', hi: '#E55366', peak: '#FFE9EC', glow: 'rgba(229,83,102,0.9)', bar: '#E55366' },
-      standby:   { base: '#2a2f3a', mid: '#5B6580', hi: '#8B95A8', peak: '#D8DCE6', glow: 'rgba(139,149,168,0.75)', bar: '#5B6580' },
       idle:      { base: '#5a1a22', mid: '#B83A4A', hi: '#FF4D63', peak: '#FFE3E7', glow: 'rgba(255,77,99,0.9)',    bar: '#5B7FDB' },
       listening: { base: '#7A1E2B', mid: '#E55366', hi: '#FF6677', peak: '#FFFFFF', glow: 'rgba(255,102,119,0.95)', bar: '#6FA8B0' },
       thinking:  { base: '#1B2A5E', mid: '#2E4BA0', hi: '#5B7FDB', peak: '#C8D6F5', glow: 'rgba(91,127,219,0.9)',   bar: '#C9A66B' },
       speaking:  { base: '#6B5A2F', mid: '#C9A66B', hi: '#E8C98E', peak: '#F8EED2', glow: 'rgba(232,201,142,0.9)',  bar: '#7B95D9' },
     };
-    const c = SET[effectiveState] || SET.idle;
+    const c = SET[convState] || SET.idle;
     frame.style.setProperty('--bd-base', c.base);
     frame.style.setProperty('--bd-mid', c.mid);
     frame.style.setProperty('--bd-hi', c.hi);
     frame.style.setProperty('--bd-peak', c.peak);
     frame.style.setProperty('--bd-glow', c.glow);
     frame.style.setProperty('--bar-color', c.bar);
-    const active = effectiveState === 'listening' || effectiveState === 'thinking' || effectiveState === 'speaking';
+    const active = convState === 'listening' || convState === 'thinking' || convState === 'speaking';
     frame.style.setProperty('--carmine', active ? c.bar : '#B83A4A');
-  }, [effectiveState]);
+  }, [convState]);
 
   return (
     <div className="window-root">
@@ -484,7 +463,7 @@ export default function App() {
         <div className="cols">
           <div className="col left">
             <SubstratePanel
-              convState={effectiveState}
+              convState={convState}
               wsModel={stream.model}
               accessMode={accessMode}
               onAccessMode={setAccessMode}
@@ -500,8 +479,7 @@ export default function App() {
           </div>
           <div className="col center">
             <FieldCenter
-              convState={effectiveState}
-              onDebugState={debugOn ? setDebugState : null}
+              convState={convState}
               micMode={micMode}
               micLoading={micLoading}
               voiceError={voiceError}

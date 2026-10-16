@@ -1,33 +1,28 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Icon } from './Icon';
 
-/** pywebview exposes the controller passed as `js_api=` under
- *  window.pywebview.api. The launcher wires minimize/toggle_maximize/close +
- *  is_maximized (see launcher.py _WindowControls). In a plain browser / vite
- *  dev there is no pywebview object — the buttons degrade gracefully (close
- *  falls back to window.close(), min/max no-op). */
-interface PyWebviewApi {
-  win_minimize?: () => Promise<unknown>;
-  win_toggle_maximize?: () => Promise<boolean>;
-  win_close?: () => Promise<unknown>;
-  win_is_maximized?: () => Promise<boolean>;
+/** The window controls. The native bridge (Baxy.App's field-native-bridge.js,
+ *  injected before the page loads) defines them under window.pywebview.api,
+ *  the name the historical export used, and the host runs each as a
+ *  window_command. */
+interface WindowApi {
+  win_minimize: () => Promise<unknown>;
+  win_toggle_maximize: () => Promise<boolean>;
+  win_close: () => Promise<unknown>;
+  win_is_maximized: () => Promise<boolean>;
 }
 declare global {
   interface Window {
-    pywebview?: { api?: PyWebviewApi };
+    pywebview: { api: WindowApi };
   }
 }
 
-function api(): PyWebviewApi | null {
-  return (typeof window !== 'undefined' && window.pywebview?.api) || null;
-}
-
 /** A thin custom title bar that sits above the red instrument frame. The
- *  window is created frameless (launcher.py) so without this the user has no
- *  way to move/minimise/close the window. The `.pywebview-drag-region` span is
- *  the native drag handle; the buttons live OUTSIDE it so a click on a control
- *  isn't swallowed by the drag (pywebview starts a drag when the mousedown
- *  target — or any ancestor — is the drag region). */
+ *  window has no native frame, so without this the user has no way to
+ *  move/minimise/close it. The `.pywebview-drag-region` span is the drag
+ *  handle (the bridge starts a native window drag on a primary press inside
+ *  it); the buttons live OUTSIDE it so a click on a control isn't swallowed
+ *  by the drag. */
 export function TitleBar({ bypass }: { bypass: boolean }) {
   const [maximized, setMaximized] = useState(false);
 
@@ -44,11 +39,9 @@ export function TitleBar({ bypass }: { bypass: boolean }) {
   // the window regains focus (the OS can maximise via Win+Up / double-click the
   // drag region / aero-snap without going through our button).
   useEffect(() => {
-    const a = api();
-    if (!a?.win_is_maximized) return;
     let cancelled = false;
     const sync = () => {
-      a.win_is_maximized!()
+      window.pywebview.api.win_is_maximized()
         .then((m) => { if (!cancelled) setMaximized(!!m); })
         .catch(() => { /* ignore */ });
     };
@@ -66,22 +59,17 @@ export function TitleBar({ bypass }: { bypass: boolean }) {
   }, []);
 
   const onMinimize = useCallback(() => {
-    api()?.win_minimize?.().catch(() => { /* ignore */ });
+    window.pywebview.api.win_minimize().catch(() => { /* ignore */ });
   }, []);
 
   const onToggleMax = useCallback(() => {
-    const a = api();
-    if (!a?.win_toggle_maximize) { setMaximized((m) => !m); return; }
-    a.win_toggle_maximize()
+    window.pywebview.api.win_toggle_maximize()
       .then((isMax) => setMaximized(!!isMax))
       .catch(() => { /* ignore */ });
   }, []);
 
   const onClose = useCallback(() => {
-    const a = api();
-    if (a?.win_close) { a.win_close().catch(() => { /* ignore */ }); return; }
-    // browser / dev fallback
-    window.close();
+    window.pywebview.api.win_close().catch(() => { /* ignore */ });
   }, []);
 
   return (
