@@ -135,7 +135,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             return Failure(
                 "message.draft",
                 draft.ErrorCode ?? "message_draft_not_verified",
-                draft.EffectObserved);
+                draft.EffectObserved,
+                draft.EffectMayHaveOccurred);
         }
 
         return Success(
@@ -213,7 +214,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             return Failure(
                 "message.send.test",
                 sent.ErrorCode ?? "message_delivery_not_verified",
-                sent.EffectObserved);
+                sent.EffectObserved,
+                sent.EffectMayHaveOccurred);
         }
 
         return Success(
@@ -321,8 +323,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     private static ExternalCapabilityReceipt Failure(
         string operation,
         string error,
-        bool effectObserved = false) =>
-        new(operation, effectObserved, false, null, error);
+        bool effectObserved = false,
+        bool effectMayHaveOccurred = false) =>
+        new(operation, effectObserved, false, null, error) { EffectMayHaveOccurred = effectMayHaveOccurred };
 
     // C2, C3: a recipient is resolved only with what the client showed naming it; a lookup that did not end on the
     // recipient fails with its cause and, when a search row was read, that row as «observed», or the rows of the chat
@@ -424,7 +427,16 @@ internal sealed record DesktopMessageObservation(
     string EvidenceHash,
     string? ErrorCode,
     string? Read = null,
-    string? Match = null);
+    string? Match = null)
+{
+    // Keys reached the composer without positive evidence of what they left (EffectObserved stays false).
+    internal bool EffectMayHaveOccurred { get; init; }
+
+    // Ronda B: the typed text was not seen in the composer and what was typed here is cleared (it was empty before,
+    // C5); the keys reached it, and a part of the text may remain, so the failure says an effect may have occurred.
+    internal static DesktopMessageObservation DraftNotVerified() =>
+        new(false, false, string.Empty, "message_draft_not_verified") { EffectMayHaveOccurred = true };
+}
 
 // D59 §1 (owner, 2026-10-02): WhatsApp and Discord are installed and signed in on
 // this PC, so a message request that finds the client closed opens it first.
@@ -935,7 +947,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 // The composer was empty before (C5): only the text typed here is cleared.
                 SendChord(VirtualKeyControl, VirtualKeyA);
                 SendKey(VirtualKeyBack);
-                return new(false, false, string.Empty, "message_draft_not_verified");
+                return DesktopMessageObservation.DraftNotVerified();
             }
 
             // The delivery is read from the band of last messages just above the
@@ -1067,7 +1079,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 // The composer was empty before (C5): only the text typed here is cleared.
                 SendChord(VirtualKeyControl, VirtualKeyA);
                 SendKey(VirtualKeyBack);
-                return new(false, true, string.Empty, "message_draft_not_verified");
+                return DesktopMessageObservation.DraftNotVerified();
             }
         }
         catch (LeasedInput.BurstStoppedException stop)
