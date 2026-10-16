@@ -3,7 +3,8 @@ rem BAXY Renew: Qwen3.5-4B, la wake word k4 (WakewordBaxy), Parakeet Ultra (Tran
 rem Las rutas son de cada maquina; en una tercera, agrega su bloque.
 for %%I in ("%~dp0..") do set "ROOT=%%~fI"
 set "PATH=C:\Program Files (x86)\Microsoft Visual Studio\Installer;%PATH%"
-set "BAXY_MIND_PYTHONPATH=%ROOT%\src"
+rem Un banco puede medir otra copia de la mente (decision 20: los brazos de make_arms_d20.py) definiendo antes la variable.
+if not defined BAXY_MIND_PYTHONPATH set "BAXY_MIND_PYTHONPATH=%ROOT%\src"
 if /I "%COMPUTERNAME%"=="REDNOTE" (
   rem Notebook: el mismo GGUF (sha 00fe7986) en D:, llama-server b11609 copiado del PC. Sin k4 ni Ultra: la voz de entrada no se usa aqui.
   set "BAXY_MIND_LLM_GGUF=D:\BAXYRuntime\experiments\models\qwen35-4b-e87f1764\Qwen3.5-4B-Q4_K_M.gguf"
