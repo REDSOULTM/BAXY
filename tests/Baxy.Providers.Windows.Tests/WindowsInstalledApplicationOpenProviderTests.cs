@@ -894,8 +894,9 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
-    // v3 r5a M5 review: the provider hands the platform whether the opening is for a computer-use mission; only then
-    // does the platform start a program Windows would raise unasked with the person's rights.
+    // v3 r5a M5 review: the provider hands the platform whether the application is opened so that BAXY can read and
+    // press its window; only then does the platform start a program Windows would raise unasked with the person's
+    // rights.
     [TestCase(false)]
     [TestCase(true)]
     public async Task TheActivationSaysWhetherTheOpeningIsForControl(bool forControl)

@@ -332,7 +332,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
         });
     }
 
-    // Counter-case: a click that names no window (not a mission's) keeps the opening's wait too: it would otherwise be
+    // Counter-case: a click that names no window keeps the opening's wait too: it would otherwise be
     // bound to whatever holds the front.
     [Test]
     public async Task AClickWithoutItsWindowKeepsTheOpeningsWait()

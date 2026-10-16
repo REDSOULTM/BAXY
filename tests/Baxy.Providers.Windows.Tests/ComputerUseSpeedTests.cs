@@ -131,11 +131,11 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
-    // Safety review 2026-10-07: a mission's key goes to its window or nowhere. Goal v3 (point 0, fix 1): this is now
-    // the keyboard path, taken only when no window message reaches the window's field (this adapter has no message
-    // seam); the delivery without the front is pinned in TextDeliveryTests.
+    // Safety review 2026-10-07: a key for a named window goes to that window or nowhere. Goal v3 (point 0, fix 1): this
+    // is now the keyboard path, taken only when no window message reaches the window's field (this adapter has no
+    // message seam); the delivery without the front is pinned in TextDeliveryTests.
     [Test]
-    public async Task AMissionKeyGoesOnlyToItsWindowBroughtToTheFront()
+    public async Task ANamedWindowsKeyGoesOnlyToItBroughtToTheFront()
     {
         var keyboard = new FakeDesktopKeyboard();
 
@@ -151,7 +151,7 @@ public sealed class ComputerUseSpeedTests
     }
 
     [Test]
-    public async Task AMissionWindowThatCannotBeFrontedGetsNothing()
+    public async Task ANamedWindowThatCannotBeFrontedGetsNothing()
     {
         var keyboard = new FakeDesktopKeyboard { Frontable = false };
 
@@ -170,10 +170,10 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
-    // Companion rule (GOAL_COMPUTER_USE_V3 point 0, fix 3): a mission's keys go inside a burst of the foreground
-    // lease, after the person's pause, and the front is given back before the receipt, which says so.
+    // Companion rule (GOAL_COMPUTER_USE_V3 point 0, fix 3): the keys for a named window go inside a burst of the
+    // foreground lease, after the person's pause, and the front is given back before the receipt, which says so.
     [Test]
-    public async Task AMissionKeyGoesInABurstThatIsGivenBackAndReported()
+    public async Task ANamedWindowsKeyGoesInABurstThatIsGivenBackAndReported()
     {
         var keyboard = new FakeDesktopKeyboard { WaitedMs = 640 };
 
@@ -189,9 +189,9 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
-    // Contracase: a key the person asked for in the window in front (no mission window) takes no burst.
+    // Contracase: a key the person asked for in the window in front (no named window) takes no burst.
     [Test]
-    public async Task AKeyWithoutAMissionWindowTakesNoBurst()
+    public async Task AKeyWithoutANamedWindowTakesNoBurst()
     {
         var keyboard = new FakeDesktopKeyboard();
 
@@ -227,7 +227,7 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
-    // Review of fable/cu-v3-rafaga: a key, a click or the wheel of the person while the mission's window held the
+    // Review of fable/cu-v3-rafaga: a key, a click or the wheel of the person while the named window held the
     // front went into its field, mixed with the text; the text ends there, interrupted with its effect, never verified
     // (back to what it was before r4a M1 made it go on after the person's pause).
     [Test]
@@ -290,9 +290,10 @@ public sealed class ComputerUseSpeedTests
 
     // r4a M1 (c6): the fixed bursts of 8 characters cut every keyboard text at its 8th character (the next burst was
     // asked for before the previous one gave the front back, and that restore took it from the next). While the
-    // person stays still a mission's text goes whole in one burst; their input is what cuts it (the test above).
+    // person stays still a text for a named window goes whole in one burst; their input is what cuts it (the test
+    // above).
     [Test]
-    public async Task ALongMissionTextGoesWholeInOneBurstWhileThePersonStaysStill()
+    public async Task ALongTextForANamedWindowGoesWholeInOneBurstWhileThePersonStaysStill()
     {
         var keyboard = new FakeDesktopKeyboard { WaitedMs = 100 };
 
@@ -336,22 +337,22 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
-    // Contracases: a text short enough for one burst, and a text without a mission window, go in one piece.
+    // Contracases: a text short enough for one burst, and a text without a named window, go in one piece.
     [Test]
-    public async Task AShortMissionTextOrATextWithoutAMissionWindowGoesInOnePiece()
+    public async Task AShortTextForANamedWindowOrATextWithoutOneGoesInOnePiece()
     {
-        var mission = new FakeDesktopKeyboard();
+        var named = new FakeDesktopKeyboard();
         var front = new FakeDesktopKeyboard();
 
-        _ = await Keys(mission).InvokeAsync(
+        _ = await Keys(named).InvokeAsync(
             "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
         _ = await Keys(front).InvokeAsync(
             "input.text.type", Json("""{"text":"abcdefghijklmnopqrst"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(mission.Texts, Is.EqualTo(new[] { "hola" }));
-            Assert.That(mission.Fronted, Has.Count.EqualTo(1));
+            Assert.That(named.Texts, Is.EqualTo(new[] { "hola" }));
+            Assert.That(named.Fronted, Has.Count.EqualTo(1));
             Assert.That(front.Texts, Is.EqualTo(new[] { "abcdefghijklmnopqrst" }));
             Assert.That(front.Fronted, Is.Empty);
         });
@@ -360,7 +361,7 @@ public sealed class ComputerUseSpeedTests
     // v3 point 0 review: the window was fronted, then lost the front before the press (an opened application's
     // hand-back guard, the person): the key goes nowhere instead of to the window in front.
     [Test]
-    public async Task AMissionKeyIsNotSentWhenItsWindowLostTheFrontAfterBeingFronted()
+    public async Task ANamedWindowsKeyIsNotSentWhenItLostTheFrontAfterBeingFronted()
     {
         var keyboard = new FakeDesktopKeyboard { LosesFrontOnceFronted = true };
 
@@ -376,7 +377,7 @@ public sealed class ComputerUseSpeedTests
     }
 
     [Test]
-    public async Task TypingStopsWhenTheMissionWindowLosesTheFront()
+    public async Task TypingStopsWhenTheNamedWindowLosesTheFront()
     {
         var keyboard = new FakeDesktopKeyboard { LosesFrontAfter = 3 };
 
@@ -427,7 +428,7 @@ public sealed class ComputerUseSpeedTests
 
     [TestCase("hola\\nchau")]
     [TestCase("hola\\tchau")]
-    public async Task AMissionTextWithALineBreakOrATabIsRefused(string text)
+    public async Task ATextForANamedWindowWithALineBreakOrATabIsRefused(string text)
     {
         var keyboard = new FakeDesktopKeyboard();
 
@@ -684,10 +685,10 @@ public sealed class ComputerUseSpeedTests
         Assert.That(receipt.ErrorCode, Is.EqualTo("scroll_argument_invalid"));
     }
 
-    // v3 point 0 review: a mission's scroll names its view's window; one Windows cannot bring to the front (here: one
+    // v3 point 0 review: a scroll names its view's window; one Windows cannot bring to the front (here: one
     // that does not exist) gets no wheel, which would move whatever covers it.
     [Test]
-    public async Task AMissionScrollWhoseWindowCannotBeFrontedMovesNothing()
+    public async Task AScrollWhoseNamedWindowCannotBeFrontedMovesNothing()
     {
         ExternalCapabilityReceipt receipt = await new WindowsScrollAdapter().InvokeAsync(
             "input.scroll", Json("""{"direction":"down","amount":2,"window":4026531839}"""), CancellationToken.None);
@@ -750,9 +751,9 @@ public sealed class ComputerUseSpeedTests
         }
     }
 
-    // The mission's window for a click: whether it is the one in front (the premise of the test; the adapter no
+    // The named window for a click: whether it is the one in front (the premise of the test; the adapter no
     // longer asks, v3 point 0: the click reaches the window by its handle either way).
-    private sealed class MissionWindowFocus(bool frontable) : IOpenedApplicationFocus
+    private sealed class NamedWindowFocus(bool frontable) : IOpenedApplicationFocus
     {
         internal bool Frontable => frontable;
 
@@ -776,17 +777,17 @@ public sealed class ComputerUseSpeedTests
         "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_unchanged\"," +
         "\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":false,\"selected\":false}";
 
-    // v3 point 0 review: a mission's click names its view's window, and goes to that window only. Merge of round 1
+    // v3 point 0 review: a click names its view's window, and goes to that window only. Merge of round 1
     // (fable/cu-v3-clic over fable/cu-v3-vista): the click is not preceded by taking the front any more. The accessible
     // tree reaches the window behind the person's, and the pointer, the only way that needs the front, takes it inside
     // a burst of the foreground lease after the person's pause (ComputerUseClickMethodTests pins that path). Whether
-    // the mission's window is in front or behind, the press goes to it and nothing is brought up for it.
+    // the named window is in front or behind, the press goes to it and nothing is brought up for it.
     [TestCase(false)]
     [TestCase(true)]
-    public async Task AMissionClickGoesToItsWindowWithoutTakingTheFront(bool inFront)
+    public async Task ANamedWindowsClickGoesToItWithoutTakingTheFront(bool inFront)
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(PendingClick, UnchangedControl);
-        var focus = new MissionWindowFocus(frontable: inFront);
+        var focus = new NamedWindowFocus(frontable: inFront);
         var adapter = new WindowsVisibleControlAdapter(worker, null, null, focus, capture: NoCapture);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -799,16 +800,16 @@ public sealed class ComputerUseSpeedTests
             Assert.That(
                 worker.Commands.Where(command => !command.Contains("\"cmd\":\"postread\"", StringComparison.Ordinal)),
                 Has.All.Contain("\"hwnd\":4660"),
-                "only the mission's window is read or pressed (a post-read reads the control just pressed)");
+                "only the named window is read or pressed (a post-read reads the control just pressed)");
         });
     }
 
     [TestCase("0")]
     [TestCase("\"4660\"")]
-    public async Task AMissionClickWithAnInvalidWindowIsRefused(string window)
+    public async Task AClickNamingAnInvalidWindowIsRefused(string window)
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(PendingClick);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, new MissionWindowFocus(true), capture: NoCapture);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, new NamedWindowFocus(true), capture: NoCapture);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("{\"label\":\"Aceptar\",\"window\":" + window + "}"), CancellationToken.None);
@@ -839,7 +840,7 @@ public sealed class ComputerUseSpeedTests
         }
 
         var adapter = new WindowsVisibleControlAdapter(
-            worker, null, null, new MissionWindowFocus(true), capture: Capture);
+            worker, null, null, new NamedWindowFocus(true), capture: Capture);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
@@ -864,7 +865,7 @@ public sealed class ComputerUseSpeedTests
                 new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, captures++ == 0 ? "before" : "after"));
 
         var adapter = new WindowsVisibleControlAdapter(
-            worker, null, null, new MissionWindowFocus(true), capture: Capture);
+            worker, null, null, new NamedWindowFocus(true), capture: Capture);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
