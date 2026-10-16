@@ -553,7 +553,9 @@ internal partial interface IAudioEndpointVolume
 /// <summary>
 /// AUDIO1787 «subí el volumen de spotify»: one application's audio sessions on the
 /// default output endpoint, adjusted together and re-read (Core Audio session
-/// volumes, the per-app sliders of the Windows volume mixer).
+/// volumes, the per-app sliders of the Windows volume mixer). Changed (round A): some session's level read back
+/// differs from its own level before. The levels are the loudest session's, so they can stay equal while a quieter
+/// session moved (sessions at 40 and 20 set to 40: only the second one changes).
 /// </summary>
 internal sealed record ApplicationSessionAdjustment(
     string ProcessName,
@@ -561,7 +563,8 @@ internal sealed record ApplicationSessionAdjustment(
     int BaselineLevel,
     int Level,
     bool Muted,
-    string EndpointId);
+    string EndpointId,
+    bool Changed);
 
 internal sealed partial class WindowsCoreAudioPlatform
 {
@@ -736,15 +739,16 @@ internal sealed partial class WindowsCoreAudioPlatform
                 return null;
             }
 
-            // The application's level is the level of its loudest session; every
-            // session moves by the same delta so their relation is preserved.
-            int baseline = 0;
+            // The application's level is the level of its loudest session. A relative change moves each session by
+            // the delta from its own level (clamped at 0 and 100); an absolute one sets every session to the level,
+            // so sessions at different levels end at the same one. Each session is read before and after.
+            var before = new List<int>(volumes.Count);
             bool muted = true;
             foreach ((ISimpleAudioVolume volume, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 ThrowForHResult(volume.GetMute(out int sessionMuted), AudioControlErrorCodes.EndpointUnavailable);
-                baseline = Math.Max(baseline, Percent(scalar));
+                before.Add(Percent(scalar));
                 muted &= sessionMuted != 0;
             }
 
@@ -757,23 +761,24 @@ internal sealed partial class WindowsCoreAudioPlatform
                 ThrowForHResult(volume.SetMasterVolume(requested / 100f, in context), AudioControlErrorCodes.EndpointUnavailable);
             }
 
-            int level = 0;
+            var after = new List<int>(volumes.Count);
             bool mutedAfter = true;
             foreach ((ISimpleAudioVolume volume, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 ThrowForHResult(volume.GetMute(out int sessionMuted), AudioControlErrorCodes.EndpointUnavailable);
-                level = Math.Max(level, Percent(scalar));
+                after.Add(Percent(scalar));
                 mutedAfter &= sessionMuted != 0;
             }
 
             return new ApplicationSessionAdjustment(
                 volumes[0].ProcessName,
                 volumes.Count,
-                baseline,
-                level,
+                before.Max(),
+                after.Max(),
                 mutedAfter && muted,
-                endpointId);
+                endpointId,
+                Changed: !before.SequenceEqual(after));
         }
         finally
         {

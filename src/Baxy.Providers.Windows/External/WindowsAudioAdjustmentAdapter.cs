@@ -174,7 +174,7 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
             if (Math.Abs(adjusted.Level - requested) > 2)
             {
                 return ValueTask.FromResult(effectBoundary.Failure(
-                    operation, "volume_adjustment_postread_mismatch", adjusted.BaselineLevel != adjusted.Level));
+                    operation, "volume_adjustment_postread_mismatch", adjusted.Changed));
             }
             JsonElement result = ExternalJson.Create(writer =>
             {
@@ -193,7 +193,7 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
                 writer.WriteEndObject();
             });
             return ValueTask.FromResult(ExternalJson.Success(
-                operation, result, effectObserved: adjusted.BaselineLevel != adjusted.Level));
+                operation, result, effectObserved: adjusted.Changed));
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -277,7 +277,7 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
             if (Math.Abs(adjusted.Level - level) > 2)
             {
                 return ValueTask.FromResult(effectBoundary.Failure(
-                    operation, "volume_postread_mismatch", adjusted.BaselineLevel != adjusted.Level));
+                    operation, "volume_postread_mismatch", adjusted.Changed));
             }
             JsonElement result = ExternalJson.Create(writer =>
             {
@@ -295,7 +295,7 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
                 writer.WriteEndObject();
             });
             return ValueTask.FromResult(ExternalJson.Success(
-                operation, result, effectObserved: adjusted.BaselineLevel != adjusted.Level));
+                operation, result, effectObserved: adjusted.Changed));
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)

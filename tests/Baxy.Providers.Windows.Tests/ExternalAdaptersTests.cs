@@ -3438,6 +3438,45 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Round A: Spotify with sessions at 40 and 20 set to 40: the loudest stays at 40 (the level read before and after)
+    // and the quieter one rises. That is an observed effect, not «external_effect_unobserved».
+    [Test]
+    public async Task AnAppVolumeChangeInAQuieterSessionIsAnObservedEffect()
+    {
+        var set = new WindowsAppVolumeSetAdapter((_, level, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 2, 40, level, false, "endpoint-1", Changed: true);
+        });
+        var adjust = new WindowsAppVolumeAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 2, 100, 100, false, "endpoint-1", Changed: true);
+        });
+        var unchanged = new WindowsAppVolumeSetAdapter((_, level, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 2, 40, level, false, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt raised = await set.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":40}"""), CancellationToken.None);
+        ExternalCapabilityReceipt upAtTheTop = await adjust.InvokeAsync(
+            "audio.app.volume.adjust", Json("""{"app":"Spotify","direction":"up","amount":10}"""), CancellationToken.None);
+        ExternalCapabilityReceipt already = await unchanged.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":40}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(raised.Verified, Is.True, raised.ErrorCode);
+            Assert.That(raised.EffectObserved, Is.True);
+            Assert.That(upAtTheTop.Verified, Is.True, upAtTheTop.ErrorCode);
+            Assert.That(upAtTheTop.EffectObserved, Is.True);
+            Assert.That(already.Verified, Is.True);
+            Assert.That(already.EffectObserved, Is.False);
+        });
+    }
+
     [Test]
     public async Task AppVolumeSetFixesTheSessionsAtAnAbsoluteLevelAndReportsThePostread()
     {
@@ -3447,7 +3486,7 @@ public sealed class ExternalAdaptersTests
         {
             beforeEffect?.Invoke();
             requested.Add((app, level));
-            return new ApplicationSessionAdjustment("Spotify", 2, 85, level, false, "endpoint-1");
+            return new ApplicationSessionAdjustment("Spotify", 2, 85, level, false, "endpoint-1", Changed: true);
         });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
