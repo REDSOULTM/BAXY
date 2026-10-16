@@ -240,7 +240,7 @@ internal sealed class NativeTurnLoop
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
         {
-            return Record(operation, arguments, started, Observation(operation, "failed", false, "engine_unavailable"));
+            return Record(operation, arguments, started, Observation("failed", "engine_unavailable"));
         }
 
         if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) || descriptor is null)
@@ -248,7 +248,7 @@ internal sealed class NativeTurnLoop
             // A name no catalog operation has: what the model put in it is kept out of the trace and the conductor's
             // events, since no schema says what it may carry (a made-up memory call with the person's values).
             return Record(operation, new JsonObject(), started,
-                Observation(operation, "rejected", false, "unknown_operation"));
+                Observation("rejected", "unknown_operation"));
         }
 
         PreparedOperation prepared;
@@ -263,14 +263,14 @@ internal sealed class NativeTurnLoop
         catch (MemoryValueNeedsSensitiveChannelException)
         {
             // The result says why and what to call: memory.save keeps a value that looks like a secret only as sensitive.
-            return Record(operation, arguments, started, Observation(operation, "rejected", false,
+            return Record(operation, arguments, started, Observation("rejected",
                 "memory_value_needs_sensitive_channel",
                 new JsonObject { ["detail"] = "This value looks like a secret: save it with memory_sensitive_save." }));
         }
         catch (MemoryRequestRefusedException refused)
         {
             // The protector's own reason, by its code and its words; the call's values stay out of the observation.
-            return Record(operation, arguments, started, Observation(operation, "rejected", false, refused.Code,
+            return Record(operation, arguments, started, Observation("rejected", refused.Code,
                 new JsonObject { ["detail"] = refused.Message }));
         }
         catch (InvalidOperationException unavailable)
@@ -278,7 +278,7 @@ internal sealed class NativeTurnLoop
         {
             // BAXY's own part that was not ready, never the model's arguments (audit 2026-10-15: it read as
             // arguments_invalid and the model blamed its call).
-            return Record(operation, arguments, started, Observation(operation, "failed", false, unavailable.Message));
+            return Record(operation, arguments, started, Observation("failed", unavailable.Message));
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
             or System.IO.InvalidDataException or System.Text.Json.JsonException)
@@ -297,7 +297,7 @@ internal sealed class NativeTurnLoop
                 }
             }
 
-            return Record(operation, arguments, started, Observation(operation, "failed", false,
+            return Record(operation, arguments, started, Observation("failed",
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
@@ -310,10 +310,8 @@ internal sealed class NativeTurnLoop
             _askedInTurn = _turn;
             return Record(operation, arguments, started, WithArguments(new JsonObject
             {
-                ["kind"] = "operation",
-                ["operation"] = operation,
                 ["status"] = "needs_confirmation",
-                ["next"] = AskThePerson,
+                ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments).ToJsonString());
         }
 
@@ -377,6 +375,12 @@ internal sealed class NativeTurnLoop
     private const string AskThePerson =
         "ask the person whether to do it; when they answer, call confirm_pending with their answer";
 
+    // The call held for the person's «sí»: nothing ran, and calling it again only asks again (e2e E021: after «sí»
+    // the model called shell_command_run again instead of confirm_pending).
+    private static string AskThePersonAbout(string operation) =>
+        "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (approve true or false); "
+        + $"calling {operation.Replace('.', '_')} again only asks again";
+
     // A memory call's values never travel in an observation (it reaches the trace and the conductor's events).
     private static JsonObject WithArguments(JsonObject facts, string key, string operation, JsonObject arguments)
     {
@@ -396,8 +400,6 @@ internal sealed class NativeTurnLoop
             // Only the person answers: the waiting call stays as it is until they do.
             return Record(MindStep.ConfirmationAnswer, arguments, started, new JsonObject
             {
-                ["kind"] = "operation",
-                ["operation"] = MindStep.ConfirmationAnswer,
                 ["status"] = "rejected",
                 ["error"] = "only_the_person_answers",
                 ["next"] = AskThePerson,
@@ -417,8 +419,8 @@ internal sealed class NativeTurnLoop
             string? expired = _pending?.Prepared.OperationName ?? _proposal?.OperationName;
             DropPending();
             return Record(MindStep.ConfirmationAnswer, arguments, started, expired is null
-                ? Observation(MindStep.ConfirmationAnswer, "failed", false, "nothing_pending")
-                : Observation(expired, "failed", false, "confirmation_expired"));
+                ? Observation("failed", "nothing_pending")
+                : Observation("failed", "confirmation_expired", about: expired));
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
@@ -426,7 +428,7 @@ internal sealed class NativeTurnLoop
         {
             DropPending();
             return Record(pending.Prepared.OperationName, pendingArguments, started,
-                Observation(pending.Prepared.OperationName, "cancelled", false, "declined_by_person"));
+                Observation("cancelled", "declined_by_person", about: pending.Prepared.OperationName));
         }
 
         _pending = null;
@@ -435,7 +437,7 @@ internal sealed class NativeTurnLoop
         {
             _host.Registry()?.MarkResolved(pending.Prepared);
             return Record(pending.Prepared.OperationName, pendingArguments, started,
-                Observation(pending.Prepared.OperationName, "failed", false, "engine_unavailable"));
+                Observation("failed", "engine_unavailable", about: pending.Prepared.OperationName));
         }
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, started, cancellationToken)
@@ -456,7 +458,7 @@ internal sealed class NativeTurnLoop
         {
             Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
             return Record(proposal.OperationName, arguments, started,
-                Observation(proposal.OperationName, "cancelled", false, "declined_by_person"));
+                Observation("cancelled", "declined_by_person", about: proposal.OperationName));
         }
 
         CoreProcessClient? core = _host.Core();
@@ -464,7 +466,7 @@ internal sealed class NativeTurnLoop
         {
             Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
             return Record(proposal.OperationName, arguments, started,
-                Observation(proposal.OperationName, "failed", false, "engine_unavailable"));
+                Observation("failed", "engine_unavailable", about: proposal.OperationName));
         }
 
         string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, started,
@@ -500,7 +502,7 @@ internal sealed class NativeTurnLoop
         {
             Resolve(prepared, memory);
             return Record(operation, arguments, started,
-                Observation(operation, "failed", false, "engine_no_answer", effectUncertain: true));
+                Observation("failed", "engine_no_answer", about: operation, effectUncertain: true));
         }
 
         if (PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System,
@@ -512,10 +514,8 @@ internal sealed class NativeTurnLoop
             _askedInTurn = _turn;
             JsonObject asked = WithArguments(new JsonObject
             {
-                ["kind"] = "operation",
-                ["operation"] = operation,
                 ["status"] = "needs_confirmation",
-                ["next"] = AskThePerson,
+                ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments);
             asked["effectStarted"] = challenge.ReconciliationRequired;
             return Record(operation, arguments, started, asked.ToJsonString(), response);
@@ -555,12 +555,12 @@ internal sealed class NativeTurnLoop
                     privateArguments.Payload)
                 && projection is not null
                     ? projection.Message
-                    : Observation(prepared.OperationName, "completed", false, "result_unreadable");
+                    : Observation("completed", "result_unreadable");
         }
         catch (Exception exception) when (exception is System.IO.InvalidDataException or MemoryRequestRefusedException
             or ProtectedPayloadException)
         {
-            return Observation(prepared.OperationName, "completed", false, "result_unreadable");
+            return Observation("completed", "result_unreadable");
         }
     }
 
@@ -635,24 +635,34 @@ internal sealed class NativeTurnLoop
         }
     }
 
+    // What BAXY itself says of a call it did not send or whose answer it could not read, with one header: how it ended
+    // (status), its code and, only when they hold, that it may have happened and that a completion is unverified.
+    // The call is the model's own (the result answers its tool_call_id); about names another one, the call a
+    // confirm_pending answered.
     private static string Observation(
-        string operation,
         string status,
-        bool verified,
         string error,
         JsonObject? extra = null,
+        string? about = null,
         bool effectUncertain = false)
     {
-        var facts = new JsonObject
+        var facts = new JsonObject { ["status"] = status };
+        if (status == OperationStatuses.Completed)
         {
-            ["kind"] = "operation",
-            ["operation"] = operation,
-            ["status"] = status,
-            ["verified"] = verified,
-            ["succeeded"] = false,
-            ["error"] = error,
-            ["effectUncertain"] = effectUncertain,
-        };
+            facts["verified"] = false;
+        }
+
+        facts["error"] = error;
+        if (effectUncertain)
+        {
+            facts["effectUncertain"] = true;
+        }
+
+        if (about is not null)
+        {
+            facts["operation"] = about;
+        }
+
         foreach ((string key, JsonNode? value) in extra ?? [])
         {
             facts[key] = value?.DeepClone();
