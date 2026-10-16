@@ -367,7 +367,8 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("observedState", closed > 0 ? "tabs_closed" : "nothing_to_close");
             writer.WriteString("browser", step.Browser.DisplayName);
             writer.WriteNumber("closedTabs", closed);
-            writer.WriteNumber("tabCount", frame.Tabs.Count);
+            if (frame.TabsComplete) writer.WriteNumber("tabCount", frame.Tabs.Count);
+            else writer.WriteBoolean("tabsComplete", false);
             if (frame.Tabs.FirstOrDefault(tab => tab.Selected) is { } active)
                 writer.WriteString("activeTab", active.Title);
             writer.WriteString("authority", FrameAuthority);
@@ -389,7 +390,9 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("browser", step.Browser.DisplayName);
             if (frame is not null)
             {
-                writer.WriteNumber("tabCount", frame.Tabs.Count);
+                // Auditoría final (regla 3): the count only from a strip read whole (back and reload read it as it was).
+                if (frame.TabsComplete) writer.WriteNumber("tabCount", frame.Tabs.Count);
+                else writer.WriteBoolean("tabsComplete", false);
                 if (frame.Tabs.FirstOrDefault(tab => tab.Selected) is { } active)
                     writer.WriteString("activeTab", active.Title);
             }

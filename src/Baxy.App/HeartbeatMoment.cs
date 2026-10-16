@@ -41,10 +41,12 @@ internal static class HeartbeatMoment
     /// <summary>What the person is doing, as far as no GPU reading is needed (a window filling the screen is watching).</summary>
     internal static string Presence(out bool fullscreen)
     {
-        fullscreen = ForegroundFillsTheScreen();
+        bool? fills = ForegroundFillsTheScreen();
+        fullscreen = fills == true;
         // A call or a film goes on without the person's input: they are read before the idle time, or ten minutes into
         // one the person would read as away and a heartbeat would only notify of what it saw.
-        if (MicrophoneHeldByAnotherProgram())
+        bool? microphone = MicrophoneHeldByAnotherProgram();
+        if (microphone == true)
         {
             return InCall;
         }
@@ -52,6 +54,13 @@ internal static class HeartbeatMoment
         if (fullscreen)
         {
             return Watching;
+        }
+
+        // Auditoría final (regla 3): a reading that failed (the microphone's record, the window's or the monitor's
+        // bounds, the last input) leaves the person's activity not known, never «libre».
+        if (microphone is null || fills is null)
+        {
+            return Unknown;
         }
 
         return ReadIdleTime() is not { } idle ? Unknown : idle >= AwayWatch.After ? Away : Free;
@@ -225,19 +234,26 @@ internal static class HeartbeatMoment
             : null;
     }
 
-    private static bool ForegroundFillsTheScreen()
+    // True or false as read; null when the window's or the monitor's bounds could not be read. No window in front at all
+    // is read as no window filling the screen.
+    private static bool? ForegroundFillsTheScreen()
     {
         nint front = GetForegroundWindow();
-        if (front == 0 || !GetWindowRect(front, out Rect window))
+        if (front == 0)
         {
             return false;
+        }
+
+        if (!GetWindowRect(front, out Rect window))
+        {
+            return null;
         }
 
         nint monitor = MonitorFromWindow(front, 2);
         var info = new MonitorInfo { Size = (uint)Marshal.SizeOf<MonitorInfo>() };
         if (!GetMonitorInfo(monitor, ref info))
         {
-            return false;
+            return null;
         }
 
         string className = ClassName(front);
@@ -248,7 +264,8 @@ internal static class HeartbeatMoment
 
     // Windows records which program holds the microphone (Settings > Privacy > Microphone shows it as «in use»): an
     // entry whose last use has started and not stopped. BAXY's own listening (the mind's Python) is not a call.
-    private static bool MicrophoneHeldByAnotherProgram()
+    // True or false as read; null when Windows' record of the microphone could not be read.
+    private static bool? MicrophoneHeldByAnotherProgram()
     {
         const string store = @"Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";
         string? ownPython = Environment.GetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable);
@@ -286,7 +303,7 @@ internal static class HeartbeatMoment
         catch (Exception exception) when (exception is System.Security.SecurityException or IOException
             or UnauthorizedAccessException)
         {
-            return false;
+            return null;
         }
 
         return false;
