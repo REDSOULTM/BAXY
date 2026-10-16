@@ -508,4 +508,4 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - e91c31774: `fullscreen` del momento sólo con los límites leídos.
   - 25ef56681: el recorrido UIA del navegador marca su lectura parcial, y lo dicen la barra, la dirección y la página.
   - e2888e0ce: Children sin hijos duplicados; atrás y recargar sólo con marcos leídos enteros.
-  - El commit de minimize.all: `changed:false` sólo si no se envió a ninguna ventana (una que se escondió al minimizarla fue un cambio).
+  - 24a8d7e95: minimize.all `changed:false` sólo si no se envió a ninguna ventana (una que se escondió al minimizarla fue un cambio).
