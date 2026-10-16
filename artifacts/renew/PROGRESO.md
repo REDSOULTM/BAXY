@@ -494,3 +494,9 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   la sesión de ajuste no lo ve). Se corre una sola vez al final sobre el commit congelado.
 - Las rondas de auditoría siguieron en paralelo, y cada violación se arregló (regla «una violación se arregla
   siempre»). La ronda sobre 7cc3e04d1 dio SIN VIOLACIONES en computer use y en mente/App/decisión 20.
+- Holdout v3 sellado (2026-10-16 ~16:35, dos agentes aislados; sha256 en `F:\BAXYeval\renew_v3\SEALED-*.md`):
+  `holdout\decision.json` 160 (2f088dbd…), `escenas\sealed.json` 60 (fb74b01c…), `escenas\holdout_latido.json` 12
+  (bef20e41…), `e2e\sealed.json` 40 (5eda2c9e…; `e2e\lib\bench.ps1` = el de v1, d82eed38…), `falsedades\sealed.json`
+  36 (a3d06dd0…). Incidente de aislamiento: un agente dejó sus generadores en el scratchpad de la sesión de ajuste; el
+  PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
+  desde la sesión de ajuste.
