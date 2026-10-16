@@ -102,9 +102,32 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(mind, await mind.DecideAsync(text, cancellationToken), cancellationToken)
+        await DriveAsync(mind, await mind.DecideAsync(text, WaitingCall(), cancellationToken), cancellationToken)
             ;
     }
+
+    // The call that waits for the person's «sí», as the mind reads it with their next words: its operation, and its
+    // arguments unless it is a memory call (their values stay sealed).
+    private JsonObject? WaitingCall()
+    {
+        if (WaitingPrepared() is not { } prepared)
+        {
+            return null;
+        }
+
+        var call = new JsonObject { ["operation"] = prepared.OperationName };
+        if (!MemoryOperationProtector.IsMemoryOperation(prepared.OperationName))
+        {
+            call["arguments"] = PrivateArguments(prepared);
+        }
+
+        return call;
+    }
+
+    private PreparedOperation? WaitingPrepared() =>
+        _pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow ? pending.Prepared
+        : _proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow ? _proposal
+        : null;
 
     /// <summary>The person pressed Sí or No on the pending confirmation.</summary>
     internal async Task AnswerConfirmationAsync(bool approve, string label, CancellationToken cancellationToken)
@@ -194,6 +217,11 @@ internal sealed class NativeTurnLoop
             // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
             // at the call budget.
             bool final = calls >= MaximumModelCalls || _host.Core() is not { IsReady: true } || HasPendingConfirmation;
+            if (WaitingPrepared() is { } waiting)
+            {
+                observation = Waiting(observation, waiting.OperationName);
+            }
+
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
@@ -324,6 +352,26 @@ internal sealed class NativeTurnLoop
 
     private static bool Named(JsonValue value) =>
         value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);
+
+    // The turn ends on a call that waits for the person's «sí»: the last result says that call has not run, so the
+    // answer cannot tell what it would have done (e2e E021: «Python 3.11.2» after a console command that never ran).
+    private static string Waiting(string observation, string operation)
+    {
+        string note = $"{operation.Replace('.', '_')} waits for the person's yes and has not run";
+        try
+        {
+            if (JsonNode.Parse(observation) is JsonObject facts)
+            {
+                facts["waiting"] = note;
+                return facts.ToJsonString();
+            }
+        }
+        catch (System.Text.Json.JsonException)
+        {
+        }
+
+        return observation + "\n(" + note + ")";
+    }
 
     // What the model reads with a call that waits for the person: who answers and how the answer comes back.
     private const string AskThePerson =
