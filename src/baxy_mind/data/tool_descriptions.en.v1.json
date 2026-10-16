@@ -46,13 +46,13 @@
   "email.latest.reply": "Reply with a given text to the most recent email received in Outlook. Use when: respóndele or contéstale al último correo. Do not use when: a new email to an address (use email_send), only reading it (use email_latest_read). Examples: «responde al último correo que llego tarde», «contéstale al último mail: gracias», «reply ok al último email».",
   "email.send": "Send a new email to an address, with an optional subject, from the owner's Outlook. Use when: a correo or mail to a given address with its text. Do not use when: replying to the last email (use email_latest_reply), WhatsApp or Discord (use message_draft), a test send (use message_send_test). Examples: «manda un correo a juan@gmail.com que mañana no voy», «envía un mail a ana@empresa.cl con asunto reunión», «send an email a pedro@mail.com: listo».",
   "file.compress": "Compress a file or folder from a known folder into a ZIP with the same name next to it. Use when: comprimir or zipear. Do not use when: a verified backup of a whole known folder (use backup_known_create). Examples: «comprime la carpeta fotos del escritorio», «haz un zip de informe.docx en documentos», «zipea proyecto en descargas».",
-  "file.edit": "Replace an exact piece of text with another in a text file of a known folder (Desktop, Documents, Downloads, the user's home folder), by the file's name or the relativePath file_find gave; the previous version goes to the Recycle Bin. Use when: cambia X por Y en un archivo, corrige una línea or a word inside a file. Do not use when: writing the whole content (use file_write), adding at the end (use file_write with append), a note (use note_update). Examples: «en notas.txt cambia lunes por martes», «corrige 'hloa' por 'hola' en el readme.md», «reemplaza todas las veces 2024 por 2025 en informe.md».",
-  "file.find": "List the top level of a known folder (Desktop, Documents, Downloads, the user's home folder, or all), or find files under it by name (part of the name, or a pattern like *.pdf) or by a text inside its text files; order recent puts the newest first and order size the largest first, and each file comes with its relativePath and size in bytes. A search that took too long says timeLimitReached: what it found so far, not all. Use when: qué hay en a folder, busca el archivo X, dónde está mi X, which file mentions X. Do not use when: BAXY's private work folder (use filesystem_list or filesystem_search), reading a file (use file_read), notes (use note_search), the internet (use web_search). Examples: «¿qué hay en el escritorio?», «busca el archivo presupuesto», «¿qué archivo de documentos habla de la reunión con Juan?».",
-  "file.open": "Open a specific file by its name from a known folder with its default app or a named installed app. name may carry subfolders of that folder («proyecto\\informe.docx»). A file not there is not opened: the receipt (seenElsewhere) says in which known folder, and under which subfolders, a file of that exact name was seen, so you can open it from there. Use when: abre el archivo X. Do not use when: the newest unnamed file (use filesystem_file_open_latest), a folder (use filesystem_folder_open), an application (use app_open), reading without showing (use file_read). Examples: «abre tarea.docx del escritorio», «abre foto.png de descargas con paint», «open informe.pdf», «abre notas.txt de mi carpeta Proyectos» → folder home, name «Proyectos\\notas.txt».",
-  "file.read": "Read the text of a file by its name (or the relativePath file_find gave) from a known folder: a text or code file (txt, md, json, code) or a PDF (its own text, no OCR), without opening it on screen. totalLines is how many lines the whole file has and lines how many the returned text has, already counted: say those numbers, never count yourself. Use when: qué dice, resume or lee a named file. Do not use when: showing it on screen (use file_open), a file in BAXY's private work folder (use filesystem_read_text), the open web page (use browser_page_read), a Word or Excel document BAXY created (use office_document_read). Examples: «resume el pdf contrato.pdf», «¿de qué trata el roadmap.md?», «léeme notas.txt del escritorio».",
-  "file.write": "Write text to a file in Desktop, Documents, Downloads, the user's home folder or BAXY's work folder: create it, replace an existing one (pass expectedSha256, the fileSha256 file_read gave; its previous version goes to the Recycle Bin), or with append true add the text as a new line at the end, keeping what is there. Use when: crea un archivo de texto, escribe X en un archivo, agrega una línea al final de un archivo. Do not use when: changing only part of a file (use file_edit), a note (use note_create), Word or Excel (use office_document_create), a PowerPoint (use document_presentation_create). Examples: «crea hola.txt en el escritorio que diga hola», «agrega 'comprar pan' al final de lista.txt», «save this en notas.txt».",
+  "file.edit": "Replace an exact piece of text with another in a text file of a known folder (Desktop, Documents, Downloads, the user's home folder), by the file's name or the relativePath file_find gave; the previous version goes to the Recycle Bin. oldText must appear exactly once unless replaceAll is true: copy it exactly as file_read showed it. Use when: cambia X por Y en un archivo, corrige una línea or a word inside a file. Do not use when: writing the whole content (use file_write), adding at the end (use file_write with append), a note (use note_update). Examples: «en notas.txt cambia lunes por martes», «corrige 'hloa' por 'hola' en el readme.md», «reemplaza todas las veces 2024 por 2025 en informe.md». A file inside a subfolder: the subfolder goes in subdirectory, or give fileName as the full path the person said.",
+  "file.find": "List the top level of a known folder (Desktop, Documents, Downloads, the user's home folder, or all), or find files under it by name (part of the name, or a pattern like *.pdf) or by a text inside its text files; order recent puts the newest first and order size the largest first, and each file comes with its relativePath and size in bytes. A search that took too long says timeLimitReached: what it found so far, not all. Use when: qué hay en a folder, busca el archivo X, dónde está mi X, which file mentions X. Do not use when: BAXY's private work folder (use filesystem_list or filesystem_search), reading a file (use file_read), notes (use note_search), the internet (use web_search). Examples: «¿qué hay en el escritorio?», «busca el archivo presupuesto», «¿qué archivo de documentos habla de la reunión con Juan?». A subfolder of the folder goes in subdirectory («Viajes», or the full path the person said when it lies inside the folder).",
+  "file.open": "Open a specific file by its name from a known folder with its default app or a named installed app. name may carry subfolders of that folder («proyecto\\informe.docx»). A file not there is not opened: the receipt (seenElsewhere) says in which known folder, and under which subfolders, a file of that exact name was seen, so you can open it from there. Use when: abre el archivo X. Do not use when: the newest unnamed file (use filesystem_file_open_latest), a folder (use filesystem_folder_open), an application (use app_open), reading without showing (use file_read). Examples: «abre tarea.docx del escritorio», «abre foto.png de descargas con paint», «open informe.pdf», «abre notas.txt de mi carpeta Proyectos» → folder home, name «Proyectos\\notas.txt». Set foreground true so the person sees the file.",
+  "file.read": "Read the text of a file by its name (or the relativePath file_find gave) from a known folder: a text or code file (txt, md, json, code) or a PDF (its own text, no OCR), without opening it on screen. A long file comes in pages: when hasMore is true, call again with offset set to nextOffset. totalLines is how many lines the whole file has and lines how many the returned text has, already counted: say those numbers, never count yourself. Use when: qué dice, resume or lee a named file. Do not use when: showing it on screen (use file_open), a file in BAXY's private work folder (use filesystem_read_text), the open web page (use browser_page_read), a Word or Excel document BAXY created (use office_document_read). Examples: «resume el pdf contrato.pdf», «¿de qué trata el roadmap.md?», «léeme notas.txt del escritorio». A file inside a subfolder: the subfolder goes in subdirectory, or give fileName as the full path the person said when it lies inside the folder.",
+  "file.write": "Write text to a file in Desktop, Documents, Downloads, the user's home folder or BAXY's work folder: create it, replace an existing one (pass expectedSha256, the fileSha256 file_read gave; its previous version goes to the Recycle Bin), or with append true add the text as a new line at the end, keeping what is there. relativePath is the path inside the folder, subfolders included («proyectos/notas.txt»); the full path the person said («C:\\Users\\ana\\proyectos\\notas.txt», with folder home) is accepted as it is when it lies inside the folder. Use when: crea un archivo de texto, escribe X en un archivo, agrega una línea al final de un archivo. Do not use when: changing only part of a file (use file_edit), a note (use note_create), Word or Excel (use office_document_create), a PowerPoint (use document_presentation_create). Examples: «crea hola.txt en el escritorio que diga hola», «agrega 'comprar pan' al final de lista.txt», «save this en notas.txt».",
   "filesystem.copy": "Copy an already identified file to another path inside BAXY's private work folder, verifying its hash. Use when: copying a sandbox file BAXY listed earlier. Do not use when: a backup (use backup_create), files in Desktop, Documents or Downloads (sandbox only). Examples: «copia ese archivo a la carpeta respaldo», «duplica notas.txt en tu carpeta de trabajo», «copy it to otra carpeta».",
-  "filesystem.create.directory": "Create a new folder in Desktop, Documents, Downloads, the user's home folder or BAXY's private work folder. Use when: crea una carpeta. Do not use when: opening an existing folder (use filesystem_folder_open), creating a file (use file_write). Examples: «crea una carpeta proyectos en el escritorio», «haz una carpeta nueva llamada fotos en documentos», «make a folder tareas en descargas».",
+  "filesystem.create.directory": "Create a new folder in Desktop, Documents, Downloads, the user's home folder or BAXY's private work folder; relativePath may include subfolders («proyectos/src»), or be the full path the person said when it lies inside the folder. Use when: crea una carpeta. Do not use when: opening an existing folder (use filesystem_folder_open), creating a file (use file_write). Examples: «crea una carpeta proyectos en el escritorio», «haz una carpeta nueva llamada fotos en documentos», «make a folder tareas en descargas».",
   "filesystem.explorer.count": "Count how many files with an extension are directly in a folder: the known folder the person names (folder: desktop, documents, downloads, home, pictures), or without folder the one shown by the File Explorer window in front (no_explorer_in_front: none is in front; ask which folder). Use when: cuántos archivos .X hay. Do not use when: listing or searching files (use file_find). Examples: «¿cuántos archivos .py hay en esta carpeta?», «cuenta los pdf del escritorio», «how many jpg hay aquí?».",
   "filesystem.file.open.latest": "Open the most recently modified file of a known folder, without the person naming it. Use when: lo último que descargué or el archivo más reciente. Do not use when: the file is named (use file_open), opening the folder itself (use filesystem_folder_open). Examples: «abre el último archivo de descargas», «abre lo último que bajé», «open the newest file en documentos».",
   "filesystem.folder.open": "Open a known Windows folder (Desktop, Documents, Downloads, Pictures, the user's home folder), or a folder inside it (subdirectory), in File Explorer. Use when: abre la carpeta de descargas or documentos. Do not use when: saying its contents aloud (use file_find), opening a file (use file_open), creating a folder (use filesystem_create_directory). Examples: «abre descargas», «ábreme la carpeta documentos», «open my pictures folder».",
@@ -71,7 +71,7 @@
   "game.install.named": "Download and install a Steam or Epic game by its title. It checks the library itself: call it directly, never game_installed_named or game_entitlement_named first. Use when: descarga or instala a game. Do not use when: only asking whether it is installed or owned (use game_installed_named or game_entitlement_named), checking progress (use game_install_status), a normal program that is not a game (use package_install). Examples: «descarga el hollow knight», «instala fall guys en epic», «install terraria de steam».",
   "game.install.status": "Check how the download or installation of an already identified Steam game is going. Use when: cómo va or cuánto le falta a una descarga. Do not use when: asking whether it is installed (use game_installed_named), starting a download (use game_install_named). Examples: «¿cómo va la descarga de dota?», «¿cuánto le falta al cs2?», «install progress de terraria». Only while a download or install is in progress; whether a game is installed or downloaded at all is game_installed_named.",
   "game.installed.named": "Answer only whether a Steam or Epic game is installed on this PC, by name, without opening it. Use when: the request is a question («¿está instalado X?»). Do not use when: abre/juega/lanza (use game_launch for a game; «abre steam» is app_open), library ownership (use game_entitlement_named), normal apps (use app_installed). Examples: «¿tengo instalado el minecraft?», «¿está instalado el gta v?», «is rocket league installed?». Only for yes/no questions about installation; a request to play or open the game is game_launch.",
-  "game.launch": "Launch (play) a Steam game the person owns. Use when: juega, abre or lanza a specific game title. Do not use when: opening Steam, Epic or any normal application (use app_open), only asking whether it is installed (use game_installed_named). Examples: «abre el hollow knight», «quiero jugar terraria», «lanza el cs2». A wish to play a game the person names is a launch, not an installed-check.",
+  "game.launch": "Launch (play) a Steam game the person owns. Use when: juega, abre or lanza a specific game title. Do not use when: opening Steam, Epic or any normal application (use app_open), only asking whether it is installed (use game_installed_named). Examples: «abre el hollow knight», «quiero jugar terraria», «lanza el cs2». appId must be the appId of one game in the person's library list below; never invent an id. Take the title in the list closest to what the person said, even misheard or spelled differently, and do not check whether it is installed first. A wish to play a game the person names is a launch, not an installed-check.",
   "game.uninstall.named": "Uninstall an installed Steam game by its title, after confirmation. Use when: desinstala a game. Do not use when: a normal program (use package_uninstall), canceling a download (use game_install_cancel). Examples: «desinstala worms rumble», «borra el dota de steam», «uninstall terraria».",
   "input.key.press": "Press one key or shortcut in the active window (Enter, Escape, Tab, arrows, Ctrl+S/Z/F/T/W, Alt+Tab, F5, Ctrl+Shift+Esc). Ctrl+W can close the whole window, so BAXY asks the person first. Use when: a key or shortcut is named. Do not use when: typing text (use input_text_type), select all (use input_select_all), copy or paste (use clipboard_copy or clipboard_paste), clicking a button (use input_visible_click). Examples: «presiona enter», «aprieta escape», «dale ctrl z». Pass window = the window number from your look at that window, so it acts there (brought to the front and handed back) and not in the window the person has in front.",
   "input.keyboard.layout": "Switch the keyboard input language of the active window to Spanish. Use when: pon el teclado en español. Do not use when: only asking which language it is (use input_keyboard_status), the on-screen keyboard (use input_keyboard_open). Examples: «cambia el teclado a español», «pon el teclado en español», «teclado in spanish please».",
@@ -80,8 +80,8 @@
   "input.pointer.control": "Move the mouse pointer to the screen center, click where it is, or scroll down. Use when: a raw mouse action with no target named. Do not use when: clicking a named button or option (use input_visible_click), scrolling a web page (use browser_control). Examples: «haz clic», «mueve el mouse al centro», «scrollea hacia abajo».",
   "input.scroll": "Scroll the active window or a named list or panel up or down by an amount. Use when: baja, sube or desplázate in a page, list or document on screen. Do not use when: moving the mouse pointer (use input_pointer_control), clicking a visible option (use input_visible_click). Examples: «baja un poco la página», «sube en la lista», «scroll down». Pass window = the window number from your look at that window, so it acts there (brought to the front and handed back) and not in the window the person has in front.",
   "input.select.all": "Select everything in the focused control of the active window, like Ctrl+A. Use when: selecciona todo. Do not use when: copying (use clipboard_copy; select and copy are separate steps). Examples: «selecciona todo», «marca todo el texto», «select all».",
-  "input.text.type": "Type a given literal text where the cursor is, in the active window. Use when: escribe or tipea a stated text. Do not use when: pasting the clipboard (use clipboard_paste), a chat message to someone (use message_draft), writing a file (use file_write), pressing a key (use input_key_press). Examples: «escribe hola mundo», «tipea buenos días», «escribe mi correo: ana@gmail.com».",
-  "input.visible.click": "Click a control or a text you saw in your last look at the window (input_visible_controls), by its label, adding its index when the look gave one. Use when: going to a section, tab or menu of an open app, or pressing a button there. Do not use when: the section is an app_open place (Windows Settings pages, Steam library or store, Discord directs: use app_open with place), you have not looked at the window yet (look first), a raw click where the pointer is (use input_pointer_control), going to a web address (use browser_navigate). Examples: «haz clic en aceptar», «pulsa guardar», «entra a Tu biblioteca» (after looking at Spotify).",
+  "input.text.type": "Type a given literal text where the cursor is, in the active window. The text carries no line break or tab: press Enter or Tab with input_key_press. Use when: escribe or tipea a stated text. Do not use when: pasting the clipboard (use clipboard_paste), a chat message to someone (use message_draft), writing a file (use file_write), pressing a key (use input_key_press). Examples: «escribe hola mundo», «tipea buenos días», «escribe mi correo: ana@gmail.com». Pass window = the window number from your look at that window, so it acts there (brought to the front and handed back) and not in the window the person has in front.",
+  "input.visible.click": "Click a control or a text you saw in your last look at the window (input_visible_controls), by its label, adding its index when the look gave one. Use when: going to a section, tab or menu of an open app, or pressing a button there. Do not use when: the section is an app_open place (Windows Settings pages, Steam library or store, Discord directs: use app_open with place), you have not looked at the window yet (look first), a raw click where the pointer is (use input_pointer_control), going to a web address (use browser_navigate). Examples: «haz clic en aceptar», «pulsa guardar», «entra a Tu biblioteca» (after looking at Spotify). Pass window = the window number from your look at that window, so it acts there (brought to the front and handed back) and not in the window the person has in front.",
   "input.visible.controls": "Look at an application window: returns its visible controls (index, kind, name, state) and the text on screen. Use when: you must act inside an open app or read what it shows — before clicking, typing or answering about it — or the person asks what is on screen; set application to the app's name (for example right after opening it). Do not use when: the text of a web page is wanted (use browser_page_read). Examples: «entra a Tu biblioteca en Spotify» (look at Spotify, then click «Tu biblioteca»), «¿qué marca la calculadora?», «¿qué botones hay?».",
   "media.control": "Pause, play, resume, stop, skip to next or go back to previous on what is already playing. Use when: pausa, siguiente, skip, anterior or dale play without naming new content. Do not use when: playing something new by name (use media_play_query, media_play_exact, media_play_youtube or streaming_play_named), seeking seconds (use media_seek_relative), muting (use audio_mute). Examples: «pausa la música», «siguiente canción», «dale play».",
   "media.play.exact": "Play one exact song by its title on Spotify, not just open the app: the result titled as title (case, accents and punctuation aside) is played and the now-playing line must name it; a song already playing is left as it is (alreadyPlaying, nothing pressed); when several songs carry that title, nothing plays and they come back as candidates (title, artist): say them, or use media_play_query with the title and the artist. Use when: a precise song title is given. Do not use when: an artist, genre or loose search (use media_play_query), YouTube or a video (use media_play_youtube), a movie or series (use streaming_play_named), only opening Spotify (use app_open). Examples: «pon la canción Bohemian Rhapsody», «reproduce Despacito exacta en spotify», «play the song Yellow».",
@@ -100,7 +100,7 @@
   "memory.sensitive.save": "Ask BAXY to remember a sensitive or secret datum (health, ID numbers, keys). Use when: the fact to remember is sensitive. Do not use when: an ordinary fact or preference (use memory_save). Examples: «recuerda mi RUT 12.345.678-9», «guarda que soy alérgico a la penicilina», «remember mi clave del wifi».",
   "memory.session.clear": "Delete only what was remembered in this conversation, keeping permanent memory. Use when: olvida lo de esta conversación. Do not use when: forgetting permanent facts, or everything about the person (use memory_forget). Examples: «olvida lo que hablamos ahora», «borra la memoria de esta sesión», «clear this session».",
   "memory.status": "Report whether BAXY's memory is on and what its limits are. Use when: asking if memory is active. Do not use when: listing remembered facts (use memory_list). Examples: «¿está activa tu memoria?», «¿puedes recordar cosas?», «memory status».",
-  "message.draft": "Leave a message written for someone in WhatsApp or Discord without sending it; the person sends it. Use when: escríbele or mándale un mensaje a X. Do not use when: an email (use email_send), a test send (use message_send_test). Examples: «escríbele a mamá por whatsapp que llego a las 8», «mándale a Pedro en discord que se conecte», «dile a Ana por wsp hola». Only a chat named exactly so (case and accents aside) is opened; when none is, or several are, nothing is written and the names the chat list showed come back as candidates.",
+  "message.draft": "Leave a message written for someone in WhatsApp or Discord without sending it; the person sends it. Use when: escríbele or mándale un mensaje a X. Do not use when: an email (use email_send), a test send (use message_send_test). Examples: «escríbele a mamá por whatsapp que llego a las 8», «mándale a Pedro en discord que se conecte», «dile a Ana por wsp hola». The recipient is the contact name exactly as the person says it (a name or a family word); never ask for a phone number. Only a chat named exactly so (case and accents aside) is opened; when none is, or several are, nothing is written and the names the chat list showed come back as candidates.",
   "message.send.test": "Really send a test message or email, always forced to the owner's test channel, never to the person named. Use when: a mensaje or correo de prueba is asked for. Do not use when: a normal message to a contact (use message_draft), a normal email (use email_send). Examples: «manda un mensaje de prueba por whatsapp», «envía un correo de prueba», «test message en discord».",
   "network.dns.status": "Read which DNS servers the PC's connection uses. Use when: qué DNS uso. Do not use when: IP addresses (use network_ip_list), general connectivity (use network_status). Examples: «¿qué dns tengo?», «muéstrame los servidores dns», «dns actuales?».",
   "network.ip.list": "List this PC's own IP addresses. Use when: cuál es mi IP. Do not use when: DNS servers (use network_dns_status), testing another host (use network_ping). Examples: «¿cuál es mi ip?», «dime mis direcciones ip», «what's my ip».",
@@ -122,7 +122,7 @@
   "peripheral.list": "List connected peripherals (mouse, keyboard, printer, scanner, USB), optionally of one kind. Use when: qué periféricos hay or is a mouse or printer connected. Do not use when: USB drives and free space (use storage_removable_list), Bluetooth devices (use bluetooth_device_list), monitors (use display_status). Examples: «¿qué periféricos hay conectados?», «¿hay una impresora conectada?», «lista los dispositivos usb».",
   "peripheral.print": "Print an already identified document on a printer. Use when: imprime. Do not use when: listing printers (use peripheral_list). Examples: «imprime ese documento», «mándalo a la impresora», «print it».",
   "peripheral.scan": "Scan a document with a scanner. Use when: escanea. Do not use when: a screenshot (use capture_screenshot), reading text from a capture (use ocr_read). Examples: «escanea este documento», «usa el escáner», «scan a page».",
-  "schedule.alarms": "Set, list or cancel BAXY's alarms and reminders, which ring on this PC (Windows Task Scheduler; also on battery and waking it from sleep, not when it is shut down), or check why one did not ring. Use when: an alarm, a timer, a wake-up or a reminder at a time or in some minutes, which ones are set, or cancelling one. Do not use when: a to-do without a time (use task_create), a calendar event (use calendar_event_create), a note (use note_create). Examples: «recuérdame en 20 minutos sacar la ropa» (create, inMinutes 20), «despiértame mañana a las 7» (create, alarm, at 07:00), «qué alarmas tengo» (list), «cancela la alarma de las 7» (cancel, at 07:00).",
+  "schedule.alarms": "Set, list or cancel BAXY's alarms and reminders, which ring on this PC (Windows Task Scheduler; also on battery and waking it from sleep, not when it is shut down), or check why one did not ring. Use when: an alarm, a timer, a wake-up or a reminder at a time or in some minutes, which ones are set, or cancelling one. Do not use when: a to-do without a time (use task_create), a calendar event (use calendar_event_create), a note (use note_create). How to fill it: action create needs title and either inMinutes (minutes from now), inSeconds (seconds, for a short timer) or at (the local time in 24 hours, HH:mm, or YYYY-MM-DDTHH:mm for another day); kind alarm for alarms and wake-ups, reminder otherwise; recurrence daily or hourly only when it repeats. action cancel with at cancels the one at that local time, without at the latest. Examples: «recuérdame en 20 minutos sacar la ropa» (create, inMinutes 20), «despiértame mañana a las 7» (create, alarm, at 07:00), «qué alarmas tengo» (list), «cancela la alarma de las 7» (cancel, at 07:00).",
   "shell.command.run": "Run a PowerShell console command and return its output; cwd is desktop, documents, downloads or home, optionally with a folder inside it (documents/proyecto), or a full path, and without cwd it runs in a private empty folder; a command that does more than read (writes, deletes, installs, sends, runs a program) waits for the person's yes. Use when: ejecuta or corre a command. Do not use when: a dedicated operation exists (system_process_list, network_ping, app_open). Examples: «ejecuta ls en el escritorio», «corre pytest en documentos/proyecto», «run git status».",
   "software.python.package.status": "Check whether a Python package is installed, and its version, in each registered Python, without installing anything. Use when: tengo X instalado for a Python package. Do not use when: which Python versions exist (use software_python_status), normal apps (use app_installed). Examples: «¿tengo instalado numpy?», «¿qué versión de pandas tengo?», «is requests installed?».",
   "software.python.status": "List the Python versions installed on the PC. Use when: qué python tengo. Do not use when: a Python package (use software_python_package_status). Examples: «¿qué versión de python tengo?», «¿está instalado python?», «python versions?».",
@@ -180,40 +180,27 @@
    "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works.",
    "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in relativePath).",
    "append": "true adds the text as a new last line («añade al final») and keeps the file.",
-   "expectedSha256": "Only to replace a file that exists: the fileSha256 file_read gave for it. version_conflict means the file exists, or the fileSha256 given is not that of the file there now: read it first, or use append.",
-   "text": "The file's whole new content exactly as the person dictated it (line breaks allowed); with append true, only the line to add."
+   "expectedSha256": "Only to replace a file that exists: the fileSha256 file_read gave for it. version_conflict means the file exists, or the fileSha256 given is not that of the file there now: read it first, or use append."
   },
   "filesystem.create.directory": {
-   "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works.",
-   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs. Without it, BAXY's private work folder."
+   "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works."
   },
   "file.read": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
    "offset": "Where to go on reading the same file: the nextOffset its last result gave (hasMore true). Without it the file starts again from the beginning.",
-   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder.",
-   "fileName": "The file's name with extension («notas.txt»), the relativePath file_find gave (then leave subdirectory out), or the full path the person said.",
-   "maximumCharacters": "How many characters per page (default 4000, up to 200000); leave it out unless the person wants a long file in fewer pages."
+   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder."
   },
   "file.find": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
-   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder.",
-   "content": "A text to look for inside the files («reunión con Juan»), when the person asks which file mentions it. Leave it out to search by name.",
-   "limit": "How many files to return, at most (default 20; 50 when listing the folder); leave it out unless the person asked for a number.",
-   "order": "recent for the newest first («lo último», «más recientes»), size for the largest first; leave it out for name order.",
-   "query": "Part of the file's name («presupuesto») or a pattern («*.pdf»). Leave it and content out to list what the folder holds."
+   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder."
   },
   "file.edit": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
-   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder.",
-   "fileName": "The file's name with extension («notas.txt»), the relativePath file_find gave (then leave subdirectory out), or the full path the person said.",
-   "newText": "The text that takes oldText's place, exactly as it must read; empty deletes oldText.",
-   "oldText": "The exact text to replace, copied as file_read showed it (case, accents, spaces); it must appear once unless replaceAll is true.",
-   "replaceAll": "true when the person asks to change every occurrence («todas las veces»); otherwise leave it out, and a repeated oldText changes nothing."
+   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder."
   },
   "filesystem.known.trash.named": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
-   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder.",
-   "fileName": "The exact name of the file or folder to delete, with its extension («viejo.txt»); no path: a subfolder goes in subdirectory."
+   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory or relativePath); all_known only when they named no folder."
   },
   "filesystem.folder.open": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder."
@@ -231,10 +218,7 @@
    "search": "Text to type into the search box the click opens, in the same step; then the result named exactly as that text (or as choose) is pressed. If none is, nothing is pressed and the names seen are returned.",
    "choose": "With search: the exact name of the result to press among those the search shows. Judged like a label: one that sends, joins a call, buys or deletes makes BAXY ask the person first.",
    "manner": "How to press it: double (double click), menu (open its context menu), open (only open its drop-down or split arrow). Leave it out for a normal click.",
-   "controlId": "The id your last look gave for that control, when its label repeats on the screen; label must still name the same control.",
-   "index": "The [number] before that control in your last look, when the look gave one; label must still name that same control.",
-   "label": "The control's name exactly as your last look showed it between « ».",
-   "window": "The number after «window» in your last input_visible_controls look at that window, so the click acts there; leave it out only for the window in front."
+   "controlId": "The id your last look gave for that control, when its label repeats on the screen; label must still name the same control."
   },
   "memory.recall": {
    "selector": "With scope exact: the name the memory was saved under (as memory_list shows it). Case, accents and spacing do not matter; a part of the name does not match."
@@ -244,9 +228,7 @@
    "tail": "true to keep the last entries of a long window (a conversation's newest messages) when the view is cut, instead of the first ones."
   },
   "web.fetch": {
-   "offset": "Where to go on reading the same page: the nextOffset its last result gave (hasMore true). Without it the page starts again from the beginning.",
-   "maximumCharacters": "How many characters per page (default 4000, up to 20000); leave it out unless more text per call is needed.",
-   "url": "The page's full public address with https:// («https://example.com/news»), as given or from a web_search result."
+   "offset": "Where to go on reading the same page: the nextOffset its last result gave (hasMore true). Without it the page starts again from the beginning."
   },
   "audio.volume": {
    "level": "The level the person wants the volume at, 0 to 100: the number after «a», «al», «en» or «hasta», also with sube or baja."
@@ -255,7 +237,7 @@
    "amount": "How much to change it from where it is now: only when the person gave no level to end at («sube 10», «baja 5»)."
   },
   "app.open": {
-   "place": "A section to open directly, only for an app that declares it: «Configuración» (Windows Settings pages), «Steam» (library, store, community, a game's page, results), «Spotify» (home, search, results) or «Discord» (directs)."
+   "place": "A section to open directly, only with appId «Configuración» (Windows Settings), «Steam» (library, store) or «Discord» (directs)."
   },
   "wifi.connect.named": {
    "place": "casa, oficina or trabajo whenever the person said one.",
@@ -265,110 +247,10 @@
    "title": "The note's title as the person said it.",
    "expectedTitle": "Leave it out.",
    "expectedRevision": "Leave it out.",
-   "expectedIsTrashed": "Leave it out.",
-   "noteId": "Leave it out and give title; only when a title matched several notes, the noteId of the one meant among the candidates."
+   "expectedIsTrashed": "Leave it out."
   },
   "file.open": {
-   "folder": "Which of the person's folders: desktop, documents, downloads or pictures when they name one; home for any other folder of theirs, with that folder before the file in name («Proyectos\\informe.docx»).",
-   "application": "The installed app the person named to open it with («paint», «fotos»), as app_open's appId; leave it out for the file's default app.",
-   "foreground": "true when the person asked to open it, so they see it in front; leave it out only when you open it to work in it.",
-   "name": "The file's name with extension («tarea.docx»), with its subfolders inside folder when said («proyecto/informe.docx»); never a full C:\\ path."
-  },
-  "browser.navigate": {
-   "url": "The full address with https:// («https://youtube.com»); to search there, the engine's results address («https://www.google.com/search?q=…»). A bare «youtube.com» is refused."
-  },
-  "browser.navigate.named": {
-   "browser": "The browser the person named: opera, opera_gx (Opera GX), chrome, edge or brave.",
-   "url": "The full address with https:// («https://gmail.com»); a bare «gmail.com» is refused."
-  },
-  "calendar.event.create": {
-   "endUtc": "When it ends, in UTC ending in Z («2026-10-16T19:00:00Z»): the person's local time moved by the clock line's UTC offset; after startUtc.",
-   "startUtc": "When it starts, in UTC ending in Z («2026-10-16T18:00:00Z»): the person's local time moved by the clock line's UTC offset.",
-   "title": "The event's name as the person said it («reunión con Juan», «dentista»), without the date or time."
-  },
-  "calendar.event.list": {
-   "endUtc": "The end of the span, in UTC ending in Z: local time moved by the clock line's UTC offset; after startUtc, at most 366 days later.",
-   "startUtc": "The start of the span, in UTC ending in Z («2026-10-16T03:00:00Z» is local midnight at UTC-3): local time moved by the clock line's offset."
-  },
-  "filesystem.list": {
-   "limit": "How many entries to list, at most (default 50).",
-   "relativeDirectory": "A folder inside BAXY's work folder to list («respaldo»); leave it out for its top level."
-  },
-  "game.install.named": {
-   "store": "epic when the person names Epic Games; leave it out for Steam.",
-   "title": "The game's title as the person said it («fall guys», «terraria»)."
-  },
-  "game.launch": {
-   "appId": "The appId of one game in the library list below: the title closest to what the person said, even misheard; never an invented number."
-  },
-  "input.text.type": {
-   "entry": "true when text is an entry of the field's own drop-down list (a ComboBox) to choose; needs index and window. Nothing is typed freely then.",
-   "index": "The [number] of the field in your last look that receives the text; needs window.",
-   "replace": "true to replace what the field holds instead of adding to it; needs index, never for a document or a password.",
-   "text": "Exactly the text to type, without line breaks or tabs: press Enter or Tab with input_key_press.",
-   "window": "The number after «window» in your last input_visible_controls look at that window, so the text goes there; leave it out to type where the cursor is."
-  },
-  "memory.correct": {
-   "expectedValue": "Leave it out; only to change it if it still is the value memory_recall showed: that current value.",
-   "kind": "Leave it out; if given, it must be the kind the memory was saved with.",
-   "retention": "The retention it was saved with, as memory_recall or memory_list show it (usually persistent); another one finds nothing.",
-   "selector": "The name the memory was saved under, as memory_recall or memory_list show it.",
-   "value": "The new value the person gave («verde», «Toby»).",
-   "version": "Always 1."
-  },
-  "memory.forget": {
-   "scope": "exact: one memory (selector its name); topic: those whose name or tag is selector; kind: all of one kind (fact, preference, rule, context); all: everything (selector null).",
-   "selector": "What scope needs: the memory's name, the topic word or the kind; null with scope all.",
-   "version": "Always 1."
-  },
-  "memory.save": {
-   "expiryPolicy": "Leave it out with retention persistent; session_end with session; after_relevance_window with temporary. Any other pairing is refused.",
-   "kind": "fact (a datum), preference (how the person likes things), rule (how BAXY must behave), context (their current situation).",
-   "retention": "persistent to remember for good (the usual); session only for this conversation; temporary for 24 hours.",
-   "selector": "A short name for what is remembered, in the person's words («color favorito», «nombre del perro»): the name it is recalled by later.",
-   "tags": "One-word topics for it («perro», «trabajo»), so memory_forget with scope topic finds it; [] when none.",
-   "value": "The datum itself («azul», «Toby», 42, true), without its name.",
-   "version": "Always 1.",
-   "sensitivity": "normal, or personal for data about the person's private life (family, address, birthday); only a label: both are shown when recalled."
-  },
-  "message.draft": {
-   "channel": "whatsapp or discord, as the person said (wsp and wasap are whatsapp).",
-   "recipient": "The contact's name exactly as the person said it (a name or a family word: «mamá»); never a phone number.",
-   "text": "Only the message to leave written, as the person dictated it («llego a las 8»), without «dile que»."
-  },
-  "note.update": {
-   "content": "The note's whole content after the change; to keep it, the content note_read gave. It replaces what was there.",
-   "expectedRevision": "The revision note_read gave for this note just before.",
-   "expectedTitle": "The note's current title, exactly as note_read gave it.",
-   "noteId": "The noteId note_read gave for this note.",
-   "title": "The note's title after the change: the new one when renaming, otherwise its current title unchanged."
-  },
-  "schedule.alarms": {
-   "action": "create a new one, list the ones set, cancel one, or diagnose why one did not ring.",
-   "at": "Local 24-hour time HH:mm («07:00», the next time it comes) or YYYY-MM-DDTHH:mm for another day. With cancel: the time of the one to cancel.",
-   "inMinutes": "With create: minutes from now («en 20 minutos» is 20), instead of at.",
-   "inSeconds": "With create: seconds from now, 10 to 86400, for a short timer («en 30 segundos»), instead of at.",
-   "kind": "alarm for alarms and wake-ups, reminder otherwise (the default); with cancel, the kind of the one to cancel.",
-   "limit": "With list: how many to list, at most (default 20).",
-   "recurrence": "daily or hourly only when the person says it repeats («todos los días», «cada hora»); leave it out for once.",
-   "title": "Required with create: what it is for, as the person said it («sacar la ropa», «despertar»)."
-  },
-  "task.delete": {
-   "expectedVersion": "The task's version from the latest task_list or task_search result for it.",
-   "taskId": "The taskId task_list or task_search gave for that task.",
-   "reviewLabel": "The task's title exactly as task_list or task_search gave it; another text deletes nothing."
-  },
-  "task.update": {
-   "details": "The task's details after the change, replacing the current ones; empty when it has none.",
-   "due": "The local date and time after the change (YYYY-MM-DDTHH:mm, not UTC); to keep it, the dueUtc task_list gave; null removes it.",
-   "expectedVersion": "The task's version from the latest task_list or task_search result for it.",
-   "taskId": "The taskId task_list or task_search gave for that task.",
-   "title": "The task's title after the change: the new one when renaming, otherwise its current title from task_list."
-  },
-  "web.download": {
-   "folder": "Where to save it: desktop, documents, downloads or pictures, as the person said; without it, Downloads.",
-   "name": "Leave it out to keep the file's own name; only a name the person gave («meme.jpg»). An existing name gets « (2)», never overwritten.",
-   "url": "The file's or page's full public address, as said or from a web_search result; a page gives the image it announces as its cover."
+   "folder": "Which of the person's folders: desktop, documents, downloads or pictures when they name one; home for any other folder of theirs, with that folder before the file in name («Proyectos\\informe.docx»)."
   }
  }
 }
