@@ -20,6 +20,32 @@ from .llm_server import LlmServer
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
+# What BAXY says once when a turn of the person's has said nothing for 2 s and is still working (goal identity: a
+# notice that claims no result when the turn will go past 3 s in silence). The App times it; the words are the
+# persona's, so they live here with the prompt.
+NOTICE = "Dame un momento."
+
+_GUIDES = (
+    "\nGuías (ejemplos de llamadas; los valores son de ejemplo):\n"
+    "A. Archivos de la persona: folder es sólo la carpeta conocida (desktop, documents, downloads, o home = "
+    "C:\\Users\\<nombre>); cada carpeta que nombre dentro va en relativePath o subdirectory, delante del nombre, y una "
+    "ruta completa que diga se copia entera ahí. En file_write y filesystem_create_directory, sin folder la ruta cae en "
+    "tu carpeta de trabajo, no en la suya.\n"
+    "«crea informe.txt en C:\\Users\\ana\\trabajo que diga hola» → file_write {\"folder\": \"home\", "
+    "\"relativePath\": \"C:\\Users\\ana\\trabajo\\informe.txt\", \"text\": \"hola\"}\n"
+    "«añade 'llamar a Luis' al final de pendientes.txt de la carpeta casa» → file_write {\"folder\": \"home\", "
+    "\"relativePath\": \"casa/pendientes.txt\", \"text\": \"llamar a Luis\", \"append\": true}\n"
+    "«en la carpeta clientes de mi usuario crea 2024 con marzo dentro» → filesystem_create_directory {\"folder\": "
+    "\"home\", \"relativePath\": \"clientes/2024/marzo\"}\n"
+    "«¿qué archivo pesa más en la carpeta proyectos de mi usuario?» → file_find {\"folder\": \"home\", "
+    "\"subdirectory\": \"proyectos\", \"query\": \"*\", \"order\": \"size\"}\n"
+    "Al contarlo, di dónde quedó o dónde está según el resultado (fullPath, o folder y relativePath), no lo que se "
+    "pidió.\n"
+    "B. «abre <app> y escribe X»: app_open, input_visible_controls de esa app, input_text_type {\"window\": <el "
+    "número tras «window» en tu mirada>, \"text\": \"X\"}, y vuelve a mirarla antes de contarlo. file_write sólo si "
+    "pide un archivo."
+)
+
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
     "herramientas. Eres un él. Hablas en el idioma de la persona (español neutro, inglés o spanglish), tuteas, eres "
@@ -48,6 +74,7 @@ SYSTEM = (
     "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo.\n"
     "10. Los identificadores (windowId, ids de notas, tareas o redes) salen del resultado de la herramienta que los "
     "lista; nunca los inventes ni uses un número de otro campo."
+    + _GUIDES
 )
 
 # The heartbeat reads the same rules without the answer to «¿ya lo hiciste?», which only a person asks: with it, the
@@ -58,7 +85,7 @@ _ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo o cómo está algo del PC
                   "conversación: sin una herramienta que lo hiciera, no lo hiciste, y sin una que lo mirara, no lo "
                   "sabes: míralo con su herramienta antes de responder.")
 assert _ASKED_IF_DONE in SYSTEM
-BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_GUIDES, "")
 
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
@@ -563,6 +590,8 @@ class Mind:
                 if not content:
                     # Nothing to say beside it: the model answers in words from what ran (an empty reply after an
                     # action was a failed turn that never told what happened; round 2).
+                    self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                              kind="ask_user_empty", operation=None, arguments=None, content=None)
                     return self._next(request_id, stage, turn, final=True)
                 result.update(reply=content)
         elif call is not None:

@@ -65,7 +65,8 @@ def main() -> int:
                         reply["startup"] = server.startup_failure()
                         protocol.write_message(reply)
                         continue
-                    protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
+                    protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count,
+                                            "notice": NOTICE})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
