@@ -87,4 +87,24 @@ public sealed class PowerShellUtf8OutputTests
 
         Assert.That(lines, Does.Contain(PowerShellCommand.Utf8Output.TrimEnd('\n')));
     }
+
+    // The helper scripts have no BOM and PowerShell 5.1 reads such a file as ANSI: a character beyond ASCII in their
+    // code would arrive as two or three others (the worker's full-width colon «：» became «ï¼š»), so it goes as an
+    // escape; only the comments, PowerShell's and those of the C# they compile, keep their accents.
+    [TestCase("DesktopKeyPress.ps1")]
+    [TestCase("DesktopSelectAll.ps1")]
+    [TestCase("DesktopUiaWorker.ps1")]
+    [TestCase("KnownFileOpen.ps1")]
+    [TestCase("KnownFolderOpen.ps1")]
+    [TestCase("SpotifyDesktopAutomation.ps1")]
+    public void EachHelperScriptKeepsItsCodeAscii(string name)
+    {
+        string[] beyondAscii = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, name))
+            .Select(line => line.Trim())
+            .Where(line => !line.StartsWith('#') && !line.StartsWith("//", StringComparison.Ordinal))
+            .Where(line => line.Any(character => character > '\x7f'))
+            .ToArray();
+
+        Assert.That(beyondAscii, Is.Empty);
+    }
 }
