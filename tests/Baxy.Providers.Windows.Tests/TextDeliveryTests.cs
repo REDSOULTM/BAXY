@@ -600,6 +600,87 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // BAXY Renew (notebook), F004: «abre la calculadora y luego escribe hola en el bloc de notas». The Notepad was opened,
+    // the Calculator held the front, and «hola» was typed with no window named: the keys went to the Calculator. The
+    // receipt names the window they were sent to and, with no edit control of it to read the text back from, does not
+    // say the text was written (its effect stays possible).
+    [Test]
+    public async Task ATextTypedWithNoWindowIntoAnotherApplicationNamesItAndIsNotVerified()
+    {
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(0x5678, 3364, "Calculadora"),
+            FrontProcess = "CalculatorApp",
+        };
+        FakeFieldMessages notepad = Notepad();
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("title").GetString(), Is.EqualTo("Calculadora"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("CalculatorApp"));
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.False);
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola" }));
+            Assert.That(notepad.Content[Edit], Is.Empty, "nothing reached the Notepad");
+        });
+    }
+
+    // The same text with the Notepad in front: its edit control has the focus, and «hola» is read back there.
+    [Test]
+    public async Task ATextTypedWithNoWindowIsVerifiedWhenItIsReadBackInTheFocusedEditControl()
+    {
+        FakeFieldMessages notepad = Notepad("lista: ");
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas"),
+            FrontProcess = "Notepad",
+            EachCharacter = typed => notepad.Content[Edit] += "hola"[typed],
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("win32_sendinput_and_edit_text_reread"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("Notepad"));
+        });
+    }
+
+    // The focused edit control's text did not take the keys (they went elsewhere), or it is a password box, whose text
+    // is never read: not verified, and nothing of the control's text is in the receipt.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ATextTypedWithNoWindowThatIsNotReadBackIsNotVerified(bool password)
+    {
+        FakeFieldMessages field = Notepad("secreto");
+        if (password)
+            field.Styles[Edit] = 0x0020;
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Iniciar sesión"),
+            EachCharacter = typed => { if (password) field.Content[Edit] += "hola"[typed]; },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, field).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.False);
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("secreto"));
+        });
+    }
+
     [TestCase("Edit", true)]
     [TestCase("RichEditD2DPT", true)]
     [TestCase("RICHEDIT50W", true)]

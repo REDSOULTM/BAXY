@@ -298,8 +298,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     /// <summary>
     /// A key or a text sent to the window in front by SendInput from this process: verified when Windows accepted
-    /// every event, with the foreground read before and after for the receipt. Nothing is sent while nobody holds
-    /// the foreground or when the native INPUT record does not have its native size.
+    /// every event, with the foreground read before and after for the receipt, which names the window the keys were
+    /// sent to (<c>sentTo</c>). BAXY Renew (notebook), F004: a text with no window named is verified only when it is
+    /// read back (<c>readBack</c>) in the edit control that had the keyboard's focus of the window in front; otherwise
+    /// its keys went in and what they wrote is not known (<c>input_text_not_read_back</c>, its effect possible).
+    /// Nothing is sent while nobody holds the foreground or when the native INPUT record does not have its native size.
     /// Safety review 2026-10-07: a computer-use step names its mission's window (<c>window</c>, the hwnd of its last
     /// view), and its key or text is delivered to that window or nowhere. Goal v3 (point 0, fix 1): «bound» means the
     /// delivery is aimed at that window (its hwnd, process and process creation time, checked before every send), not
@@ -500,6 +503,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return stays;
         }
 
+        // BAXY Renew (notebook), F004 (a text typed with no window named went into the Calculator in front, and was told
+        // verified because Windows accepted its events): what the focused edit control of the window in front holds is
+        // marked before the first key, so the text can be read back there afterwards.
+        TypedMark? mark = typing && window == 0 ? _delivery?.Mark(before.Window, text.Length) : null;
         uint accepted = 0;
         string? focusAt = null;
         if (!typing)
@@ -628,13 +635,17 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return effectBoundary.Failure(operation, "input_window_changed", effect);
         if (!verified)
             return effectBoundary.Failure(operation, "input_effect_not_verified", effect);
+        // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
+        // with no window named is verified by its read-back alone.
+        bool readBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
+        string? unread = typing && window == 0 && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
-            writer.WriteBoolean("ok", true);
+            writer.WriteBoolean("ok", unread is null);
             // CU12 (auditoría final 2): what Windows accepted (SendInput's count), delivered to the window in front;
-            // what the control did with it is not read here.
+            // what the control did with it is read only for a text with no window named («readBack»).
             writer.WriteBoolean("delivered", effect);
             writer.WriteString("action", typing ? "text" : "key");
             if (key is null)
@@ -649,7 +660,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteNumber("lastWin32Error", lastError);
             writer.WriteNumber("foregroundProcessIdBefore", before.ProcessId);
             writer.WriteNumber("foregroundProcessIdAfter", after.ProcessId);
-            writer.WriteString("foregroundTitleBefore", before.Title);
+            // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad).
+            writer.WriteStartObject("sentTo");
+            writer.WriteString("title", before.Title);
+            writer.WriteString("process", _keyboard.ProcessName(before.Window));
+            writer.WriteEndObject();
+            if (typing && window == 0)
+                writer.WriteBoolean("readBack", readBack);
             if (bursts.Current is not null)
             {
                 writer.WriteNumber("waitedMs", bursts.WaitedMs);
@@ -662,11 +679,19 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // Revision 1 of r24b: the field the key went to, its focus put and re-read by UI Automation right before it.
             if (focusAt is not null)
                 writer.WriteString("focusAt", focusAt);
-            writer.WriteString("authority", focusAt is null ? "win32_sendinput_return_count" : "uia_focus_reread_and_win32_sendinput");
-            writer.WriteNull("error");
+            writer.WriteString("authority", focusAt is not null ? "uia_focus_reread_and_win32_sendinput"
+                : readBack ? "win32_sendinput_and_edit_text_reread"
+                : "win32_sendinput_return_count");
+            if (unread is null)
+                writer.WriteNull("error");
+            else
+                writer.WriteString("error", unread);
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effect);
+        // A text with no window named whose read-back did not find it: its keys went in, what they wrote is unknown.
+        return unread is null
+            ? ExternalJson.Success(operation, result, effect)
+            : new ExternalCapabilityReceipt(operation, effect, false, result, unread) { EffectMayHaveOccurred = true };
     }
 
     // The field a value was set into without the keyboard's focus, when it is of this same window (same process and

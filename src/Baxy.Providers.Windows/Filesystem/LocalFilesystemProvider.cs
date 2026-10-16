@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using Baxy.Providers.Windows.External;
 
 namespace Baxy.Providers.Windows.Filesystem;
 
@@ -52,13 +53,12 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         {
             string directory = Resolve(relativeDirectory, allowMissingLeaf: false);
             if (!Directory.Exists(directory)) throw Error("directory_not_found");
-            FilesystemEntry[] entries = Directory.EnumerateFileSystemEntries(directory)
+            string[] paths = Directory.EnumerateFileSystemEntries(directory)
                 .Where(path => !IsReserved(path))
                 .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
-                .Take(limit)
-                .Select(IssueEntry)
                 .ToArray();
-            return new FilesystemListResult(entries, entries.Length);
+            FilesystemEntry[] entries = paths.Take(limit).Select(IssueEntry).ToArray();
+            return new FilesystemListResult(entries, entries.Length, Path.GetFullPath(directory), paths.Length);
         }
     }
 
@@ -166,7 +166,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 : append
                     ? expectedSha256 is not null && !string.Equals(current, expectedSha256, StringComparison.Ordinal)
                     : !IsHash(expectedSha256) || !string.Equals(current, expectedSha256, StringComparison.Ordinal);
-            if (conflict) throw Error("version_conflict");
+            // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
+            if (conflict)
+                throw WriteRefused(
+                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append);
 
             string temporary = Path.Combine(
                 Path.GetDirectoryName(path)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
@@ -182,7 +185,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 }
                 if (exists && append)
                 {
-                    if (!string.Equals(HashFile(path), current, StringComparison.Ordinal)) throw Error("version_conflict");
+                    if (!string.Equals(HashFile(path), current, StringComparison.Ordinal))
+                        throw WriteRefused("version_conflict", path, exists, append);
                     File.Move(temporary, path, overwrite: true);
                 }
                 else if (exists)
@@ -404,7 +408,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         if (!full.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
             && !string.Equals(full, root, StringComparison.OrdinalIgnoreCase))
             throw string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)
-                ? new FilesystemProviderException("path_outside_sandbox", takesFolder ? OutsideTheWorkingFolder : null)
+                ? OutsideTheSandbox(takesFolder)
                 : Error("path_outside_folder");
         if (string.Equals(root, _root, StringComparison.OrdinalIgnoreCase) && IsReserved(full)) throw Error("path_reserved");
         EnsureSafePathIn(root, full, allowMissingLeaf);
@@ -472,9 +476,35 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
 
-    private const string OutsideTheWorkingFolder =
-        "without folder, relativePath is read inside your working folder; a folder of the person's needs folder "
-        + "(desktop, documents, downloads, or home for C:\\Users\\<name>\\...) with the rest of the path in relativePath";
+    // A path outside the working folder: where the operation takes a folder, the refusal says how to name the person's.
+    private static FilesystemProviderException OutsideTheSandbox(bool takesFolder) =>
+        new("path_outside_sandbox")
+        {
+            Result = takesFolder
+                ? ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("next", "without folder, relativePath is read inside your working folder; a "
+                        + "folder of the person's needs folder (desktop, documents, downloads, or home for "
+                        + "C:\\Users\\<name>\\...) with the rest of the path in relativePath");
+                    writer.WriteEndObject();
+                })
+                : null,
+        };
+
+    // What a refused write saw: whether the file is there, where, and whether the call appended.
+    private static FilesystemProviderException WriteRefused(string code, string path, bool exists, bool append) =>
+        new(code)
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("exists", exists);
+                writer.WriteString("fullPath", Path.GetFullPath(path));
+                writer.WriteBoolean("append", append);
+                writer.WriteEndObject();
+            }),
+        };
 
     private sealed record Handle(string Path, string Root, DateTime LastWriteUtc, long Size, DateTimeOffset IssuedAt);
 }

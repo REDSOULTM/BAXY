@@ -10,6 +10,7 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <ProjectReference Include="..\..\src\Baxy.Contracts\Baxy.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Baxy.Core\Baxy.Core.csproj" />
     <ProjectReference Include="..\..\src\Baxy.Kernel\Baxy.Kernel.csproj" />
     <ProjectReference Include="..\..\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj" />
     <ProjectReference Include="..\..\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />

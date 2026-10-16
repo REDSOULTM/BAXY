@@ -2,6 +2,8 @@ using System.Globalization;
 using System.Security;
 using System.Text.Json;
 using System.Xml.Linq;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
@@ -232,6 +234,98 @@ public sealed class NativeScheduledNotificationTests
             Assert.That(receipt.Result!.Value.GetProperty("schedulerRunning").GetBoolean(), Is.False);
             Assert.That(receipt.Result!.Value.GetProperty("healthy").GetBoolean(), Is.False);
         });
+    }
+
+    // BAXY Renew (notebook): through the handler the model's call goes through, a list, a diagnosis and a cancel
+    // with nothing pending are done with what they read (before, every one came back external_verification_failed
+    // with no result).
+    [Test]
+    public async Task TheHandlerReturnsTheListTheSchedulerReadBack()
+    {
+        using TemporaryDirectory temporary = new();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, new FakeTaskScheduler());
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"reminder","title":"Regar"}"""),
+            CancellationToken.None);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"list"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("notifications")[0].GetProperty("title").GetString(),
+                Is.EqualTo("Regar"));
+        });
+    }
+
+    [Test]
+    public async Task TheHandlerReturnsTheDiagnosisTheSchedulerReadBack()
+    {
+        using TemporaryDirectory temporary = new();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, new FakeTaskScheduler());
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"diagnose"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_task_scheduler_notification_diagnostics_postread"));
+        });
+    }
+
+    [Test]
+    public async Task TheHandlerSaysNothingWasPendingToCancel()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("canceled").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("pendingFound").GetBoolean(), Is.False);
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task TheHandlerReportsACancelThatDeletedThePendingOne()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"alarm","title":"Despertar"}"""),
+            CancellationToken.None);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("canceled").GetBoolean(), Is.True);
+            Assert.That(outcome.Result!.Value.TryGetProperty("pendingFound", out _), Is.False);
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    private static ValueTask<OperationOutcome> Handle(WindowsScheduledNotificationAdapter adapter, string arguments) =>
+        new ExternalCapabilityHandler("schedule.alarms", new AdapterProvider(adapter)).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", Json(arguments)), CancellationToken.None);
+
+    private sealed class AdapterProvider(WindowsScheduledNotificationAdapter adapter) : IExternalCapabilityProvider
+    {
+        public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+            adapter.InvokeAsync(operation, arguments, cancellationToken);
     }
 
     [Test]

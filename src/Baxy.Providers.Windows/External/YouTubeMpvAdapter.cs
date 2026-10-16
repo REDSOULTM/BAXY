@@ -400,6 +400,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             && !string.IsNullOrWhiteSpace(sourceApp.GetString())
             && !string.Equals(sourceApp.GetString(), SourceAppUserModelId, StringComparison.OrdinalIgnoreCase))
             return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_local_player");
+        var effectBoundary = new ExternalEffectBoundary();
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
@@ -407,7 +408,6 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_inactive");
             if (action is "next" or "previous")
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_action_unsupported");
-            var effectBoundary = new ExternalEffectBoundary();
             if (action == "stop")
             {
                 Process player = _activePlayer!;
@@ -449,7 +449,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         catch (Exception exception) when (exception is IOException or JsonException
             or InvalidOperationException or TimeoutException)
         {
-            return ExternalJson.Failure(operation, "local_player_ipc_failed");
+            // BAXY Renew (notebook): once the command may have reached the player the failure is after it, so the
+            // dispatch stops here and no other player is pressed by a request meant for this one.
+            return effectBoundary.Failure(operation, "local_player_ipc_failed");
         }
         finally
         {

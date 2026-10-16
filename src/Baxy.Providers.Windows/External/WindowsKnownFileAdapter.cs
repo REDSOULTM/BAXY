@@ -410,10 +410,24 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             .Concat(EnumerateDirectories(roots))
             .Where(item => string.Equals(
                 Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
-            .Take(2)
+            .Take(5)
             .ToArray();
-        if (matches.Length == 0) return ExternalJson.Failure(operation, "known_file_not_found");
-        if (matches.Length > 1) return ExternalJson.Failure(operation, "known_file_ambiguous");
+        // BAXY Renew (notebook): none says the known folders it walked; two or more, their places as file.read
+        // gives them, so the next call can name the right one.
+        if (matches.Length == 0)
+        {
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteStartArray("searchedFolders");
+                foreach (string label in roots.Where(item => Directory.Exists(item.Root))
+                    .Select(item => item.Label).Distinct(StringComparer.Ordinal))
+                    writer.WriteStringValue(label);
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }), "known_file_not_found");
+        }
+        if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
         (string label, _, string source) = matches[0];
         bool isFolder = Directory.Exists(source);
         int entries = isFolder
@@ -780,7 +794,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 .Take(5)];
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
         if (candidates.Length == 0) return ExternalJson.Failure(operation, code);
-        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        return CandidatesRefusal(operation, code, candidates);
+    }
+
+    // A refusal with the places it saw: each one's name, known folder and path relative to that folder.
+    private ExternalCapabilityReceipt CandidatesRefusal(
+        string operation, string code, IEnumerable<KnownEntry> candidates) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteStartArray("candidates");
@@ -795,7 +815,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteEndArray();
             writer.WriteEndObject();
         }), code);
-    }
 
     private static bool CrossesReparsePoint(string root, string path)
     {
