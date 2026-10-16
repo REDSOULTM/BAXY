@@ -99,6 +99,7 @@ public sealed class SteamLocalAdapterTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
             Assert.That(receipt.Result?.GetProperty("appId").GetString(), Is.EqualTo("620"));
             Assert.That(receipt.Result?.GetProperty("state").GetString(),
                 Is.EqualTo("already_installed"));
@@ -371,7 +372,33 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("canceledCount").GetInt32(), Is.EqualTo(2));
             Assert.That(receipt.Result?.GetProperty("remainingActiveCount").GetInt32(), Is.Zero);
+            Assert.That(receipt.StateAlreadyReached, Is.False);
             Assert.That(automation.CancelCount, Is.EqualTo(2));
+        });
+    }
+
+    // Ronda B: with no download active there is nothing to cancel: the request already reached (changed:false), never
+    // an unobserved effect.
+    [Test]
+    public async Task CancelActiveWithNoActiveDownloadIsAlreadyReached()
+    {
+        var automation = new FakeSteamAutomation(onDispatch: null, onCancel: null);
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.cancel.active", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.Result?.GetProperty("canceledCount").GetInt32(), Is.Zero);
+            Assert.That(automation.CancelCount, Is.Zero);
         });
     }
 

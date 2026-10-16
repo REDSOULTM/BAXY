@@ -82,6 +82,7 @@ public sealed class R24FaithfulPlaybackTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.False, "nothing was pressed");
+            Assert.That(receipt.StateAlreadyReached, Is.True, "already playing is the request done, not unobserved");
             Assert.That(result.GetProperty("alreadyPlaying").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("title").GetString(), Is.EqualTo("Los Bunkers - Vida de perros"));
             Assert.That(result.GetProperty("observedNowPlaying").GetString(), Is.EqualTo("vida de perros de los bunkers"));

@@ -414,7 +414,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "bluetooth_identity_expired");
         DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId);
         if (item.Pairing.IsPaired)
-            return ExternalJson.Success(operation, BluetoothPairResult(id, item.Name), false);
+            return ExternalJson.Switched(operation, BluetoothPairResult(id, item.Name), effectObserved: false);
         if (!item.Pairing.CanPair) return ExternalJson.Failure(operation, "bluetooth_device_cannot_pair");
         effectBoundary.Cross(cancellationToken);
         DevicePairingResult paired = await item.Pairing.PairAsync(DevicePairingProtectionLevel.Default);
@@ -1963,7 +1963,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     "windows_uia_notifications_toggle_postread");
                 writer.WriteEndObject();
             });
-            return ExternalJson.Success(operation, quietResult, quietEffect);
+            return ExternalJson.Switched(operation, quietResult, quietEffect);
         }
 
         if (setting != "brightness")

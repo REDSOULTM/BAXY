@@ -2358,6 +2358,30 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Ronda B: Do Not Disturb already at the asked value toggles nothing: the request already reached, not unobserved.
+    [Test]
+    public async Task DoNotDisturbAlreadyAtTheValueIsAlreadyReached()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new WindowsDeviceControlAdapter(
+            temporary.Path, temporary.Path,
+            new StubProcessRunner("{\"ok\":true,\"effectObserved\":false,\"before\":1,\"value\":1}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.settings.set",
+            Json("""{"setting":"do_not_disturb","value":1}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.Result?.GetProperty("before").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task NamedWifiResolvesOneSavedProfileBeforeVerifiedConnect()
     {
@@ -3505,6 +3529,8 @@ public sealed class ExternalAdaptersTests
             Assert.That(upAtTheTop.EffectObserved, Is.True);
             Assert.That(already.Verified, Is.True);
             Assert.That(already.EffectObserved, Is.False);
+            Assert.That(already.StateAlreadyReached, Is.True, "already at the level is the request done");
+            Assert.That(raised.StateAlreadyReached, Is.False);
         });
     }
 
