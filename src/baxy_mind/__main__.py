@@ -40,11 +40,11 @@ def main() -> int:
         "models": {"llm": server.name},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
                      "session.new",
-                     "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel", "shutdown"],
+                     "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel"],
     })
     # Speech and cancellation are answered by the reader as they arrive, so they never wait for an inference (the
     # App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round 2
-    # of nb-aviso); every other request keeps its order on this loop. None ends it (the App closed stdin, or shutdown);
+    # of nb-aviso); every other request keeps its order on this loop. None ends it (the App closed stdin);
     # a protocol violation is its exit code.
     pending: queue.Queue[dict | int | None] = queue.Queue()
 
@@ -71,10 +71,6 @@ def main() -> int:
             elif kind == "voice.status":
                 protocol.write_message({"type": "voice.status.result", "id": message.get("id"),
                                         "status": voice.status()})
-            elif kind == "shutdown":
-                protocol.write_message({"type": "shutdown.ack", "id": message.get("id")})
-                pending.put(None)
-                return
             else:
                 pending.put(message)
 

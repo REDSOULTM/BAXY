@@ -391,8 +391,8 @@ class Mind:
     def beat(self, request_id: Any, context: dict[str, Any]) -> dict[str, Any]:
         """The heartbeat: nobody spoke; the model looks at the moment in a conversation of its own (OpenClaw's isolated
         heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
-        something. Same system prompt and tools, so the cached prefix is the person's; what it did joins the person's
-        conversation only if it intervened."""
+        something. Same tools (the cached prefix: the template puts them first) and a system text without the guides and
+        the «¿ya lo hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
         started = time.monotonic()
         conv = [{"role": "user", "content": beat_message(context)}]
         # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.

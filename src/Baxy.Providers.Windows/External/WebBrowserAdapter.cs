@@ -261,8 +261,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        // A page comes in pages, as file.read gives a file: the paging fields go before the text, which the mind cuts
-        // at 6 000 characters (BAXY Renew e2e 2026-10-15: RFC 2324's 418 was past the first 8 000 and unreachable).
+        // A page comes in pages, as file.read gives a file: the paging fields go before the text, which the kernel's
+        // message bound may cut (BAXY Renew e2e 2026-10-15: RFC 2324's 418 was past the first 8 000 and unreachable).
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 4_000), 500, 20_000);
         int offset = Math.Max(0, ExternalJson.OptionalInt(arguments, "offset", 0));

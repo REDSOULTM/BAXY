@@ -13,8 +13,8 @@ from typing import Any
 
 
 class LlmServer:
-    # One slot (slot 0): every request (the person's turns and the heartbeat, which keeps the same system prompt and
-    # tools) starts from the same cached prefix. A second slot only served the composition and the forced arguments,
+    # One slot (slot 0): every request (the person's turns and the heartbeat, which keeps the same tools and a system
+    # text of its own) starts from the same cached tools. A second slot only served the composition and the forced arguments,
     # which the native loop no longer makes; it cost 950 MiB of VRAM (measured on the notebook, 2026-10-15).
 
     def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768,

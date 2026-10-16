@@ -422,7 +422,8 @@ public static class OperationVisibleFacts
     // Held back from the model is only what is a secret or the kernel's own
     // bookkeeping: the confirmation «token», the request «fingerprint», the
     // invocation, request and mission ids, and window and process handles
-    // («hwnd», «handle», «pid», «processId»), which no public operation takes.
+    // («hwnd», «handle», «pid», «processId») of a provider's receipt: the window number an operation takes is the
+    // one a look shows («window <hwnd>», ScreenViewProjection), not these.
     // An id a typed argument asks for travels: «id», «noteId» (note.update),
     // «deviceId» (peripheral.print, peripheral.scan, bluetooth.device.pair),
     // «sha256»/«hash» (expectedSha256 of filesystem.copy and filesystem.move)

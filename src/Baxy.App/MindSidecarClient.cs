@@ -535,7 +535,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool returnProtocolError = false)
     {
         // Cancellation and speech are handled by the sidecar apart from model work and never wait for an inference.
-        if ((string?)request["type"] is "voice.cancel" or "voice.speak" or "shutdown")
+        if ((string?)request["type"] is "voice.cancel" or "voice.speak")
         {
             return await SendRequestAsync(request, timeout, returnProtocolError,
                 cancellationToken).ConfigureAwait(false);
