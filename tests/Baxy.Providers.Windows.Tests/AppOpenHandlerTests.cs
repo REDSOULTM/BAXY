@@ -9,8 +9,8 @@ namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
 /// BAXY Renew (notebook): what app.open says back. A place its application does not have is refused with what was
-/// asked; a verified opening names the program whose window it verified, and whether that window holds the front as the
-/// opening answers (F004: the window of another application did).
+/// asked; a verified opening names the program of the window it verified as a view names it, and whether that window
+/// holds the front as the opening answers (F004: the window of another application did).
 /// </summary>
 [TestFixture]
 public sealed class AppOpenHandlerTests
@@ -34,19 +34,42 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // The Calculator is launched by System32\calc.exe, and the window verified is CalculatorApp's: the opening names it
+    // CalculatorApp, as the window in front would be named (foregroundHeldBy) and the keys sent to it (sentTo).
     [Test]
-    public async Task AVerifiedOpeningNamesTheProgramOfTheWindowItVerified()
+    public async Task AVerifiedOpeningNamesTheProgramOfTheWindowItVerifiedNotItsLauncher()
     {
-        var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
+        var provider = new VerifiedOpening(@"C:\Windows\System32\calc.exe");
+        var read = new List<long>();
 
-        OperationOutcome outcome = await Handler(provider).ExecuteAsync(
-            Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+        OperationOutcome outcome = await Handler(provider, window =>
+        {
+            read.Add(window);
+            return new OpenedWindowFront(true, "CalculatorApp");
+        }).ExecuteAsync(Invocation("""{"appId":"Calculadora"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
-            Assert.That(outcome.Result!.Value.GetProperty("displayName").GetString(), Is.EqualTo("Bloc de notas"));
-            Assert.That(outcome.Result!.Value.GetProperty("processName").GetString(), Is.EqualTo("notepad"));
+            Assert.That(read, Is.EqualTo(new[] { 777L }), "the name is the verified window's");
+            Assert.That(outcome.Result!.Value.GetProperty("displayName").GetString(), Is.EqualTo("Calculadora"));
+            Assert.That(outcome.Result!.Value.GetProperty("processName").GetString(), Is.EqualTo("CalculatorApp"));
+        });
+    }
+
+    // No name was read for the verified window: none is said (never the launcher's in its place).
+    [Test]
+    public async Task AVerifiedWindowWithoutANameReadNamesNoProgram()
+    {
+        var provider = new VerifiedOpening(@"C:\Windows\System32\calc.exe");
+
+        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(true, null))
+            .ExecuteAsync(Invocation("""{"appId":"Calculadora"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.TryGetProperty("processName", out _), Is.False);
         });
     }
 
@@ -59,7 +82,7 @@ public sealed class AppOpenHandlerTests
         OperationOutcome outcome = await Handler(provider, window =>
         {
             read.Add(window);
-            return new OpenedWindowFront(true);
+            return new OpenedWindowFront(true, "Notepad");
         }).ExecuteAsync(Invocation("""{"appId":"Bloc de notas","foreground":true}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -78,7 +101,7 @@ public sealed class AppOpenHandlerTests
     {
         var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
 
-        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(false, "Calculadora", "CalculatorApp"))
+        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(false, "Notepad", "Calculadora", "CalculatorApp"))
             .ExecuteAsync(Invocation("""{"appId":"Bloc de notas","foreground":true}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -98,7 +121,7 @@ public sealed class AppOpenHandlerTests
     {
         var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
 
-        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(false))
+        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(false, "Notepad"))
             .ExecuteAsync(Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -111,7 +134,7 @@ public sealed class AppOpenHandlerTests
     private static AppOpenHandler Handler(IApplicationOpenProvider provider, Func<long, OpenedWindowFront>? frontOf = null) => new(
         provider,
         new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
-        frontOf: frontOf ?? (static _ => new OpenedWindowFront(true)));
+        frontOf: frontOf ?? (static _ => new OpenedWindowFront(true, "Notepad")));
 
     private static OperationInvocation Invocation(string arguments)
     {

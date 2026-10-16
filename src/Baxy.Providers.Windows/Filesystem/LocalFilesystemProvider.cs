@@ -315,6 +315,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
             if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             File.Copy(source, destination);
             if (!string.Equals(HashFile(destination), receipt.Sha256, StringComparison.Ordinal))
                 throw Error("verification_failed");

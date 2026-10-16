@@ -120,7 +120,8 @@ internal sealed class AppOpenHandler(
         }
 
         // BAXY Renew (notebook), F004: whether the window this opening verified holds the front as it answers (after
-        // its place too), and the window that holds it when it does not. Read once; nothing is done about it.
+        // its place too), and the window that holds it when it does not; with the program that window is named by.
+        // Read once; nothing is done about it.
         OpenedWindowFront front = _frontOf(providerResult.WindowHandle.GetValueOrDefault());
         var result = new OpenApplicationResult(
             arguments.AppId,
@@ -135,7 +136,7 @@ internal sealed class AppOpenHandler(
             PlaceRequested: place is not null,
             FrontChanged: place?.FrontChanged == true,
             WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()),
-            ProcessName: Path.GetFileNameWithoutExtension(providerResult.Receipt.ExecutablePath),
+            ProcessName: front.Process,
             Foreground: front.Held,
             ForegroundHeldBy: front.HolderTitle is { } title ? new WindowName(title, front.HolderProcess ?? string.Empty) : null);
         JsonElement serialized = JsonSerializer.SerializeToElement(

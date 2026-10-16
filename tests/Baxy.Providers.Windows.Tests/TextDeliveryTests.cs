@@ -681,6 +681,56 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // A field whose text is longer than the delivery reads: its length matching the insertion proves nothing, so
+    // the text is not verified, its effect stays possible, and it is not typed a second time.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ATextInAFieldTooLongToReadIsNotVerified(bool overSelection)
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        string held = new('x', WindowsTextDelivery.ReadableText + 1);
+        FakeFieldMessages messages = Notepad(held);
+        if (overSelection)
+            messages.Selected[Edit] = (0, 4);
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_effect_not_verified"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(messages.Content[Edit], Is.EqualTo(overSelection ? "hola" + held[4..] : held + "hola"),
+                "the text went in once, by EM_REPLACESEL");
+            Assert.That(keyboard.Texts, Is.Empty);
+        });
+    }
+
+    // The same with no window named: the keys reached the focused edit control, whose text is too long to read back.
+    [Test]
+    public async Task ATextTypedWithNoWindowIntoAFieldTooLongToReadIsNotReadBack()
+    {
+        FakeFieldMessages notepad = Notepad(new string('x', WindowsTextDelivery.ReadableText + 1));
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas"),
+            FrontProcess = "Notepad",
+            EachCharacter = typed => notepad.Content[Edit] += "hola"[typed],
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.False);
+        });
+    }
+
     [TestCase("Edit", true)]
     [TestCase("RichEditD2DPT", true)]
     [TestCase("RICHEDIT50W", true)]
@@ -772,6 +822,9 @@ internal sealed class FakeFieldMessages : IFieldMessages
 
     internal Dictionary<nint, string> Content { get; } = [];
 
+    // A selection the control holds (absent: the caret at the end of its text), replaced by EM_REPLACESEL.
+    internal Dictionary<nint, (int Start, int End)> Selected { get; } = [];
+
     internal HashSet<nint> Outside { get; } = [];
 
     // GWL_STYLE by control (0 when absent) and the controls that are disabled.
@@ -824,6 +877,7 @@ internal sealed class FakeFieldMessages : IFieldMessages
     public (int Start, int End)? Selection(nint hwnd) =>
         !Content.TryGetValue(hwnd, out string? text) ? null
         : _allSelected.Contains(hwnd) ? (0, text.Length)
+        : Selected.TryGetValue(hwnd, out (int Start, int End) range) ? range
         : (text.Length, text.Length);
 
     public bool SelectAll(nint hwnd)
@@ -837,7 +891,9 @@ internal sealed class FakeFieldMessages : IFieldMessages
     {
         if (TakesReplace && Content.TryGetValue(hwnd, out string? content))
         {
-            Content[hwnd] = _allSelected.Remove(hwnd) ? text : content + text;
+            Content[hwnd] = _allSelected.Remove(hwnd) ? text
+                : Selected.Remove(hwnd, out (int Start, int End) range) ? content[..range.Start] + text + content[range.End..]
+                : content + text;
         }
 
         return true;
