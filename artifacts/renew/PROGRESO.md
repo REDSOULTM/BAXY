@@ -430,3 +430,39 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - Pendiente para el dueño: no se empujó a origin (GitHub público): enviar algo a un servicio externo pide su
     confirmación; el hub local tiene todo. La prueba de Providers que se cuelga la está aislando el notebook (sólo
     pruebas).
+- RONDA FINAL DE AUDITORÍA (2026-10-16 07:01-08:25; tope del dueño 08:49). Criterio literal: «una ronda de agentes
+  de auditoría que no encuentra nada que viole <reglas>»; se juzgó SÓLO contra las 5 reglas (código muerto,
+  comentarios internos y deudas de pruebas aparte, como gris). Decisión tomada con el dueño dormido (regla 19,
+  opción recomendada): la regla del dueño «una violación se arregla siempre» manda sobre «después del holdout no se
+  ajusta nada»; los arreglos son de honestidad (regla 3), no ajustes hacia el holdout, cuyos números siguen
+  atribuidos a 026c7af91. Lotes (todos con Kernel 562, Contracts 69, Setup 477, Providers 2168 en verde):
+  - a1c1ecde2: confirm_pending sin approve booleano = invalid_arguments (antes «declined_by_person»); RollForward de
+    memoria que falla tras la intención durable = efecto posible; YouTube con navegador caliente; SearchBurst
+    surfaceChanged leído; textos de BEAT_ACT (memoria), schedule.alarms (WakeToRun sólo con temporizadores del plan),
+    calendar (sincroniza si la cuenta sincroniza) y game.install.named.
+  - f61f2da38: nota de la llamada retenida «llamarla otra vez no es su respuesta»; [En este turno] «sin verificar» con
+    effectReadBack:false; barra del bypass; relecturas de memoria; Steam/Epic «no está en la caché local», nunca
+    owned:false; game_launch «installed games»; tecla por PostMessage = delivered; proxy MSAA rechazado antes de
+    pulsar; .ps1 huérfano borrado; run_turn con su propio command.done (el desfase de F119); measure_resources con App,
+    Core y worker UIA. Fuente citada: Anthropic, «Writing effective tools for agents»
+    (https://www.anthropic.com/engineering/writing-tools-for-agents); para el resumen [En este turno] (b965b4d2e) y el
+    Prompt v2 (d72d89600), que entraron sin fuente (regla 4), se citan a posteriori ese artículo y Liu et al., «Lost in
+    the Middle» (TACL 2023, arXiv:2307.03172: lo relevante al final del contexto se usa mejor); la razón medida de
+    entonces fue decision2 226 contra 227.
+  - d3a82c12c: lo sólo entregado (teclas, texto) y el encendido aceptado = «completado sin verificar»; Steam/Epic sin
+    título o sin caché leída no afirman nada; Epic con manifiesto previo; cancel de descarga pausada; OCR y visión
+    tras pulsar = efecto posible; worker UIA reemplazado si se cancela la lectura. Pasada del PC: SIN VIOLACIONES en los
+    cuatro focos.
+  - dd4d09d40, 617b63599, 1b00c4da8, 97df86ba1 (candidatas que el notebook verificó en el código y pasadas
+    posteriores): KillSent; Discord (fallo tras teclear = efecto posible; selector nunca leído); brillo con changed;
+    fondo con los retornos de SetSysColors/SystemParametersInfo; mensaje enviado sólo con texto nuevo (franja y panel
+    de antes del Enter); lecturas del navegador propio que lo abrieron; Winget availableVersion; gpu_busy omitido sin
+    lectura.
+  - Recursos medidos otra vez sobre f61f2da38 con el producto entero bajo el conductor: VRAM 3910 MiB; RAM 1828 MiB
+    (2792 con k4 y Ultra); sin medir el WebView2 de la ventana.
+  - Práctica del notebook (no sellada): decisión dentro del ruido (229 → 230-232); escenas +2 por corrida; pierde el
+    silencio estable P019 (desde f61f2da38) y el recordatorio L005 del latido (desde a1c1ecde2); 0 de riesgo. Efecto
+    medido de arreglos de honestidad, no mejora: queda anotado.
+  - Cierre: ronda_final_auditoria = límite honesto (metas.json): la única pasada con los 4 focos limpios (d3a82c12c)
+    convivió con candidatas reales del notebook que seguían ahí; cada pasada halló menos, pero no hubo una ronda 4+4
+    limpia sobre el último commit antes del tope. Producto final: 97df86ba1 (sin holdout propio).
