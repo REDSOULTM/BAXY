@@ -1804,8 +1804,10 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
     } elseif($method -eq 'render'){
       # La pulsacion enviada a la superficie de render bajo el punto del control: sin frente ni cursor, y solo si la
       # pagina tiene ese control en el punto. Un campo solo es destino si tomo el foco del teclado (releido hasta
-      # 400 ms); si no, la siguiente via, como con «target». Un campo que ya tenia el foco es ya el destino: no se pulsa
-      # (su foco no probaria la pulsacion, y el clic dejaria el cursor de texto en medio de lo escrito).
+      # 400 ms). Un campo que ya tenia el foco es ya el destino: no se pulsa (su foco no probaria la pulsacion, y el
+      # clic dejaria el cursor de texto en medio de lo escrito).
+      # Ronda B (falta 2): enviada, la pulsacion cuenta como dada aunque el campo no tome el foco: ninguna via mas (la
+      # accion por defecto, el puntero) pulsa otra vez; su postread dice si el campo la tomo o si nada cambio.
       $field=(@('Edit','Document') -contains [string]$facts.kind -and $facts.value)
       if($field){
         $already=$false
@@ -1823,7 +1825,7 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
           try { $focused=[bool]$el.Current.HasKeyboardFocus } catch { $focused=$false }
         }
         if($focused){ return @{ method='target'; focused=$true; via='render' } }
-        $renderStep='unfocused'
+        return @{ method='render' }
       }
     } elseif($method -eq 'legacy'){
       $action=''

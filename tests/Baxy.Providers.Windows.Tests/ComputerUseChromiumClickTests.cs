@@ -109,8 +109,9 @@ public sealed class ComputerUseChromiumClickTests
             "target|render||0|2@332:154/11216",
             // Counter-case: an element of another process (the frame's own) is never pressed through the content.
             "pointer|||0|",
-            // Counter-case: posted but the field did not take the focus: no destination, the next way says why.
-            "pointer||unfocused|0|2@332:154/11216",
+            // Ronda B (fault 2): posted but the field did not take the focus: no destination, yet the press was sent, so
+            // no other way (the default action, the pointer) presses again; its post-read says what it did.
+            "render|||0|2@332:154/11216",
             // Counter-case: the press could not be sent: the next way.
             "pointer||post-failed|0|2@332:154/11216",
             // Counter-case: no render surface: as before.
