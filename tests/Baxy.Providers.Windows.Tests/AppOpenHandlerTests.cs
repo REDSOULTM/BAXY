@@ -131,6 +131,34 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Round A: Steam opened and verified, and its library's address could not be handed over: the place failed, not the
+    // launch, and the opening already happened.
+    [Test]
+    public async Task APlaceThatCouldNotBeHandedOverAfterAVerifiedOpeningIsNotALaunchFailure()
+    {
+        var provider = new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe");
+        var handler = new AppOpenHandler(
+            provider,
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new RefusedPlace(),
+            frontOf: static _ => new OpenedWindowFront(true, "steam"));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"library"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(provider.Calls, Is.EqualTo(1));
+            Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_opened"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    private sealed class RefusedPlace : IApplicationPlaceOpener
+    {
+        public PlaceOpening Open(string address, bool keepFront, long applicationWindow) => new(false);
+    }
+
     private static AppOpenHandler Handler(IApplicationOpenProvider provider, Func<long, OpenedWindowFront>? frontOf = null) => new(
         provider,
         new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),

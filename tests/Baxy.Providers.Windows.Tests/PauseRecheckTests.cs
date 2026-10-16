@@ -198,6 +198,24 @@ public sealed class PauseRecheckTests
         });
     }
 
+    // Round A: a read after the wheel that failed, or came back from another window, is no evidence the surface stayed:
+    // scroll_postread_failed, not scroll_surface_unchanged. The same surface is unchanged; another one moved.
+    [Test]
+    public void TheReadAfterTheWheelSaysWhetherItFailedOrTheSurfaceStayed()
+    {
+        VisibleControlSurface.CapturedWindow before = Capture(Mission, "aaaa");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsScrollAdapter.WheelPostreadError(before, null), Is.EqualTo("scroll_postread_failed"));
+            Assert.That(WindowsScrollAdapter.WheelPostreadError(before, Capture(0x9999, "bbbb")),
+                Is.EqualTo("scroll_postread_failed"));
+            Assert.That(WindowsScrollAdapter.WheelPostreadError(before, Capture(Mission, "aaaa")),
+                Is.EqualTo("scroll_surface_unchanged"));
+            Assert.That(WindowsScrollAdapter.WheelPostreadError(before, Capture(Mission, "bbbb")), Is.Null);
+        });
+    }
+
     private static VisibleControlSurface.CapturedWindow Capture(
         nint hwnd, string sha, int left = 100, int top = 80, int width = 800, int height = 600) =>
         new(hwnd, [], left, top, width, height, sha);

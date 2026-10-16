@@ -116,7 +116,9 @@ internal sealed class AppOpenHandler(
             : _places.Open(placeAddress, arguments.Foreground == true, providerResult.WindowHandle.GetValueOrDefault());
         if (place is { Opened: false })
         {
-            return OperationOutcome.Failure("launch_failed", effectMayHaveOccurred: true);
+            // Round A: the application is open and verified; what failed is handing its place over (it said
+            // launch_failed, a launch that had in fact worked).
+            return OperationOutcome.Failure("place_not_opened", effectMayHaveOccurred: true);
         }
 
         // BAXY Renew (notebook), F004: whether the window this opening verified holds the front as it answers (after
