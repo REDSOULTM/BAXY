@@ -13,8 +13,7 @@ import { useEventStream } from './hooks/useEventStream';
 import type { SurfacesCount } from './hooks/useEventStream';
 import { toastError } from './hooks/useToast';
 import { startNewSession } from './hooks/newSession';
-// the prototype's styles.css is loaded literal — this is the single source of
-// truth for all cosmetic rules. additions live at the bottom of that file.
+// the cosmetic rules: the prototype's stylesheet with this app's additions.
 import './styles/prototype.css';
 
 type OpenPanel = 'settings' | 'sessions' | 'memory' | 'tools' | null;

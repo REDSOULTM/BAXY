@@ -93,3 +93,17 @@ lleva. Build deliberado con el mismo grafo.
 - `dist/assets/index-DivO9-Mf.css`: sin cambios
 - `dist/assets/index-C1M38p-E.js`: `B2A4985772C1641058F68E7FBBEB5F58D30D256020F3DC6328B8F17AF1B3CC9C`
 - sello conjunto source + payload: `E0E7B6DBD0E46CC07E2B238B831362F898D2387A0C0DF1DB8ADCEA2AADD96B20`
+
+## Reapertura de honestidad (notebook, ronda A) de 2026-10-16
+
+La vista dice lo que el producto hace. El aviso de bypass nombra todo lo que deja de confirmar; la voz es la
+palabra «Baxy» y el clic derecho (el modo «ptt» era el mismo bucle de palabra de activación y se fue); fuera el
+modo `?debug`, el estado `standby` que el host nunca manda, el proxy de dev a un backend que Renew no tiene y los
+fallbacks sin `field-native-bridge.js`; comentarios corregidos. `prototype.css` pierde 28 variables sin lector y la
+copia del prototipo que el rediseño redefine: el estilo computado de cada elemento, comparado en Edge headless antes
+y después (vista por defecto, cada panel, ventana estrecha y modo accesible), no cambia. Build deliberado
+`pnpm build` con el grafo fijado (reproducible byte a byte antes del cambio).
+
+- `dist/index.html`: `9152441B7EF84927E6E26A42DEFDEE3218791D7D8AD583B52113D4077057AE28`
+- `dist/assets/index-CtOf6CKi.css`: `80C043596B71DA696B87543E43748A978F13B40B8EF731B61F8084C2E66A662A`
+- `dist/assets/index-DhLcw8N7.js`: `ADF10A563BB172CF40E31357B03E5D4EE8077DCC99F0D2010A8329CF1BA74578`
