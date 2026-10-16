@@ -2439,6 +2439,7 @@ public sealed class ExternalAdaptersTests
         var runner = new SequencedProcessRunner([
             "{\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
             "{\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
+            "{\"connected\":false,\"profile\":\"\"}",
             "",
             "{\"connected\":true,\"profile\":\"Galaxy Phone 5G 0000\"}",
         ]);
@@ -2462,8 +2463,34 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("connected").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("Galaxy"));
-            Assert.That(runner.Calls, Is.EqualTo(4));
+            Assert.That(runner.Calls, Is.EqualTo(5));
             Assert.That(delays.Calls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task WifiAlreadyConnectedToTheProfileIsTheStateAlreadyReachedWithoutConnecting()
+    {
+        using TemporaryDirectory temporary = new();
+        var delays = new RecordingDelay();
+        var runner = new SequencedProcessRunner([
+            "{\"profiles\":[\"Casa\"]}",
+            "{\"connected\":true,\"profile\":\"Casa\"}",
+        ]);
+        var adapter = new WindowsDeviceControlAdapter(
+            temporary.Path, temporary.Path, runner, delays.DelayAsync);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "wifi.connect.named",
+            Json("""{"profileName":"Casa"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(runner.Calls, Is.EqualTo(2));
         });
     }
 
@@ -2534,6 +2561,7 @@ public sealed class ExternalAdaptersTests
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
             "{\"profiles\":[\"Casa\"]}",
+            "{\"connected\":false,\"profile\":\"\"}",
             "",
             "{\"connected\":false,\"profile\":\"\"}",
         ]);
@@ -2552,7 +2580,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("wifi_connect_not_verified"));
-            Assert.That(runner.Calls, Is.EqualTo(33));
+            Assert.That(runner.Calls, Is.EqualTo(34));
             AssertRetryHorizon(delays, expectedIntervals: 30, intervalMilliseconds: 500);
         });
     }
@@ -2591,7 +2619,7 @@ public sealed class ExternalAdaptersTests
     public async Task EnsureWifiConnectedReturnsOnlyAnObservedCurrentSavedProfile()
     {
         using TemporaryDirectory temporary = new();
-        var runner = new WifiProcessRunner();
+        var runner = new WifiProcessRunner(startsConnected: true);
         var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, runner);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -4772,7 +4800,7 @@ public sealed class ExternalAdaptersTests
         }
     }
 
-    private sealed class WifiProcessRunner : IExternalProcessRunner
+    private sealed class WifiProcessRunner(bool startsConnected = false) : IExternalProcessRunner
     {
         internal int ConnectCalls { get; private set; }
 
@@ -4787,9 +4815,10 @@ public sealed class ExternalAdaptersTests
                 return ValueTask.FromResult(new ExternalProcessResult(0, "", ""));
             }
             string script = arguments[3];
+            // Disconnected until this runner's connect ran (the adapter reads first).
             string output = script.Contains("show profiles", StringComparison.Ordinal)
                 ? "{\"profiles\":[\"Casa\"]}"
-                : "{\"connected\":true,\"profile\":\"Casa\"}";
+                : startsConnected || ConnectCalls > 0 ? "{\"connected\":true,\"profile\":\"Casa\"}" : "{\"connected\":false,\"profile\":\"\"}";
             return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
         }
     }

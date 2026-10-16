@@ -1728,6 +1728,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         CancellationToken token,
         string? place = null)
     {
+        // Ronda final: read first, as the disconnection does. Already connected to this profile is the request done
+        // with nothing changed (changed:false), never a connection this call made.
+        using (JsonDocument before = await WifiStatusAsync(token))
+        {
+            if (Bool(before.RootElement, "connected")
+                && before.RootElement.TryGetProperty("profile", out JsonElement current)
+                && current.ValueKind == JsonValueKind.String
+                && string.Equals(current.GetString(), profile, StringComparison.OrdinalIgnoreCase))
+                return ExternalJson.Switched(operation, WifiResult(id, true, place), effectObserved: false);
+        }
+
         effectBoundary.Cross(token);
         ExternalProcessResult dispatch = await _runner.RunAsync(
             "netsh.exe",
