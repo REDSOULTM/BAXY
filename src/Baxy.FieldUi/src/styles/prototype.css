@@ -101,15 +101,6 @@ body {
   border-color: var(--carmine);
   background: rgba(184, 58, 74, 0.08);
 }
-/* ptt mode is "on but manual" — keep the lit colour but use a dashed border
-   so the user can tell at a glance that the mic is not in always-listen. */
-.ibtn.mic-btn.mic-ptt {
-  border-style: dashed;
-  background: rgba(184, 58, 74, 0.04);
-}
-.ibtn.mic-btn.mic-ptt:hover {
-  background: rgba(184, 58, 74, 0.10);
-}
 /* Loading state: while /voice/start loads the models (~1-3s), keep the
    mic lit carmine and pulse it, plus a rotating ring, so the user sees
    "starting" instead of a red→black flicker. */

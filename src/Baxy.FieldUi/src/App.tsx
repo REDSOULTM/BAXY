@@ -21,11 +21,11 @@ import './styles/prototype.css';
 type OpenPanel = 'settings' | 'sessions' | 'memory' | 'tools' | null;
 type SurfaceId = 'sessions' | 'memory' | 'tools';
 
-/** Mic has three modes. `listening` = always-on wake word; `ptt` = push-to-talk
- *  (mic loop is up, but capture only fires on right-click trigger); `off` =
- *  voice loop fully stopped. Click-left cycles listening↔off; click-right
- *  toggles ptt against the previous on-mode. */
-export type MicMode = 'listening' | 'ptt' | 'off';
+/** The voice is on or off. `listening` = the voice loop is up and saying «Baxy»
+ *  starts a request; a right click also starts one at once, without the wake
+ *  word, and the voice goes back to waiting for «Baxy» after it. `off` = the
+ *  voice loop is stopped. */
+export type MicMode = 'listening' | 'off';
 
 const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
 // The interface's two presentations. The profile's file on the host is the only
@@ -38,21 +38,20 @@ export default function App() {
   const stream = useEventStream();
 
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
-  // mic mode reflects the voice loop on the backend. defaults to 'listening'
-  // (always-on wake word) since server.py auto-enables voice on boot. mode
-  // is persisted to localStorage so it survives reloads.
+  // mic mode reflects the voice loop on the host. defaults to 'listening' (the
+  // wake word armed), which the mount auto-start below brings up. mode is
+  // persisted to localStorage so it survives reloads; an earlier 'ptt' ran the
+  // same wake-word loop, so it reads as 'listening'.
   const [micMode, setMicMode] = useState<MicMode>(() => {
     const stored = localStorage.getItem('field.mic_mode');
-    if (stored === 'listening' || stored === 'ptt' || stored === 'off') return stored;
-    return 'listening';
+    return stored === 'off' ? 'off' : 'listening';
   });
   useEffect(() => { localStorage.setItem('field.mic_mode', micMode); }, [micMode]);
 
   // poll /voice/status once after mount + every 4s while the page is open,
   // so a backend-driven voice state change (load failed, mic device went
-  // away, etc.) shows up in the UI. backend only knows on/off — we keep our
-  // own ptt/listening distinction client-side; if backend reports running
-  // false while we think we're on, flip to 'off' so the icon stays honest.
+  // away, etc.) shows up in the UI. if the backend reports running false
+  // while we think we're on, flip to 'off' so the icon stays honest.
   // Guards the status-sync from fighting the mount auto-start: until the
   // auto-start has had its chance (and while a start is in flight), we must NOT
   // flip the UI to 'off' just because the backend loop hasn't finished booting.
@@ -295,19 +294,13 @@ export default function App() {
     );
   }, [postActivity]);
 
-  // Mic has three modes — see MicMode docstring. Left click cycles
-  // listening↔off (the common case: just want to mute the mic). Right click
-  // toggles ptt mode: if you're in listening it enters ptt and immediately
-  // arms a capture; if already in ptt it goes back to listening. Right click
-  // while in off turns voice on into ptt (so the user can opt-in to manual
-  // capture without going through always-listen first).
-  //
-  // Backend only knows on/off through /voice/start and /voice/stop. We map:
-  //   listening → /voice/start  (mic loop up, wake-word armed)
-  //   ptt       → /voice/start  (mic loop up; capture only via /voice/trigger)
-  //   off       → /voice/stop
-  // /voice/trigger fires the wake event manually so the next phrase is
-  // captured without saying 'gemma'.
+  // See MicMode. Left click cycles listening↔off (mute the mic). Right click
+  // starts a request now: it turns the voice on if it was off, then captures
+  // the next phrase without the wake word.
+  //   listening   → /voice/start   (mic loop up, wake word armed)
+  //   off         → /voice/stop
+  //   right click → /voice/trigger (one phrase without saying «Baxy»; the voice
+  //                                 then waits for «Baxy» again)
   // True while /voice/start is loading the models (VAD + wake + STT +
   // Piper, ~1-3s blocking on the backend). Drives the mic button's
   // "loading" animation so the icon stays lit + pulsing instead of
@@ -327,7 +320,7 @@ export default function App() {
       }
       return;
     }
-    // listening / ptt need the loop running. The backend blocks while it
+    // listening needs the loop running. The backend blocks while it
     // loads models, so show the loading state and DON'T revert just
     // because it took a few seconds — only revert on an explicit failure.
     setMicLoading(true);
@@ -350,9 +343,9 @@ export default function App() {
   }, [micMode]);
 
   // AUTO-START voice on mount, but RESPECT the user's choice. The persisted
-  // micMode ('listening'/'ptt'/'off') is the source of truth: if it's not
-  // 'off' we boot the backend voice loop automatically (so the mic is armed AND
-  // Gemma's TTS plays without the user having to click the mic first). If the
+  // micMode ('listening'/'off') is the source of truth: if it's not 'off' we
+  // boot the backend voice loop automatically (so the mic is armed AND BAXY's
+  // spoken replies play without the user having to click the mic first). If the
   // user previously turned the mic OFF, we honor that and stay silent — we do
   // NOT auto-start. One-shot: runs once after mount.
   const didAutoStartVoice = useRef(false);
@@ -374,21 +367,14 @@ export default function App() {
   }, []);
 
   const onMicLeftClick = useCallback(() => {
-    // listening → off. off → listening. ptt → off (so left click is always
-    // "mute me"; to leave ptt the user right-clicks again).
+    // listening → off. off → listening.
     setMicModeAsync(micMode === 'off' ? 'listening' : 'off');
   }, [micMode, setMicModeAsync]);
 
+  // the person wants to speak NOW without the wake word.
   const onMicRightClick = useCallback(() => {
-    // toggle ptt vs the previous on-mode. when leaving 'off' via right click
-    // we go straight to ptt and arm a capture; that's the whole point of the
-    // gesture (user wants to speak NOW without the wake word).
-    if (micMode === 'ptt') {
-      setMicModeAsync('listening');
-    } else {
-      setMicModeAsync('ptt', { triggerAfter: true });
-    }
-  }, [micMode, setMicModeAsync]);
+    setMicModeAsync('listening', { triggerAfter: true });
+  }, [setMicModeAsync]);
 
   // clicking a surface card BOTH marks it active (visual carmesí border) AND
   // opens the matching modal — sessions opens SessionsPanel, memory/tools open

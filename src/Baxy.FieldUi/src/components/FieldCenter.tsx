@@ -17,7 +17,7 @@ interface Props {
   voiceError: string | null;
   /** left click: cycle listening↔off (mute toggle). */
   onMicLeftClick: () => void;
-  /** right click: toggle push-to-talk vs the previous on-mode. */
+  /** right click: start a request now, without the wake word (turning the voice on if it is off). */
   onMicRightClick: () => void;
   /** the shell's gate. while !ready, the chat input is disabled; a failure is shown by its code. */
   agent: AgentStatus;
@@ -25,19 +25,16 @@ interface Props {
 
 const MIC_ICON: Record<MicMode, IconName> = {
   listening: 'mic',
-  ptt: 'mic-ptt',
   off: 'mic-off',
 };
 
 const MIC_TIP: Record<MicMode, string> = {
-  listening: 'voice · always listening · right-click for push-to-talk · left-click to mute',
-  ptt: 'voice · push-to-talk · right-click again to arm capture · left-click to mute',
-  off: 'voice · off · left-click to enable always-listen · right-click to enable push-to-talk',
+  listening: 'voice · say «Baxy» or right-click to speak now · left-click to mute',
+  off: 'voice · off · left-click to listen for «Baxy» · right-click to speak now',
 };
 
 const MIC_ARIA: Record<MicMode, string> = {
-  listening: 'microphone always listening',
-  ptt: 'microphone push-to-talk',
+  listening: 'microphone listening for «Baxy»',
   off: 'microphone off',
 };
 
@@ -94,7 +91,7 @@ export function FieldCenter({
           <div className="chat-actions">
             <button
               type="button"
-              className={`ibtn mic-btn mic-${micMode}${micMode !== 'off' ? ' active' : ''}${micLoading ? ' mic-loading' : ''}`}
+              className={`ibtn mic-btn${micMode !== 'off' ? ' active' : ''}${micLoading ? ' mic-loading' : ''}`}
               data-tip={micLoading ? 'voice · cargando modelos…' : voiceError ? `voice · ${voiceError}` : MIC_TIP[micMode]}
               onClick={onMicLeftClick}
               onContextMenu={(e) => { e.preventDefault(); onMicRightClick(); }}
