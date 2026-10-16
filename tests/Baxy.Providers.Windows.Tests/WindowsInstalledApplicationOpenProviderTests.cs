@@ -828,33 +828,6 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
-    // v3 point 1 review: the looks while an application starts hand back a front only for the last opening that left
-    // the person's window in front; an opening asked in front (or any later opening) replaces it.
-    [Test]
-    public async Task OnlyAnOpeningBehindThePersonsWindowIsNotedForTheLooksWhileItStarts()
-    {
-        var behind = new FakePlatform(Catalog)
-        {
-            ObservationAfterActivation = Observation(foreground: false),
-            PersonFront = 0x500,
-        };
-        var inFront = new FakePlatform(Catalog)
-        {
-            ObservationAfterActivation = Observation(foreground: false),
-            PersonFront = 0x500,
-        };
-
-        _ = await new WindowsInstalledApplicationOpenProvider(behind).OpenAsync(Request("Steam"), CancellationToken.None);
-        _ = await new WindowsInstalledApplicationOpenProvider(inFront)
-            .OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(behind.Openings, Is.EqualTo(new[] { "forget", "note 1280 4242" }));
-            Assert.That(inFront.Openings, Is.EqualTo(new[] { "forget" }), "an opening in front forgets the earlier one");
-        });
-    }
-
     [Test]
     public void TakingTheFrontOnPurposeInterruptsAGuardStartedBefore()
     {
@@ -1652,13 +1625,6 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             _frontBack = HandBackHolds && HandedBack.Count > RetakesAfterHandBack;
             return HandBackHolds;
         }
-
-        // The openings noted for the looks while the application starts, and the forgotten ones, in order.
-        public List<string> Openings { get; } = [];
-
-        public void NoteOpening(long previousFront, int processId) => Openings.Add($"note {previousFront} {processId}");
-
-        public void ForgetOpening() => Openings.Add("forget");
 
         public int ActivateCalls { get; private set; }
 

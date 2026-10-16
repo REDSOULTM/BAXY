@@ -217,7 +217,10 @@ internal sealed class NativeTurnLoop
 
         if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) || descriptor is null)
         {
-            return Record(operation, arguments, started, Observation(operation, "rejected", false, "unknown_operation"));
+            // A name no catalog operation has: what the model put in it is kept out of the trace and the conductor's
+            // events, since no schema says what it may carry (a made-up memory call with the person's values).
+            return Record(operation, new JsonObject(), started,
+                Observation(operation, "rejected", false, "unknown_operation"));
         }
 
         PreparedOperation prepared;

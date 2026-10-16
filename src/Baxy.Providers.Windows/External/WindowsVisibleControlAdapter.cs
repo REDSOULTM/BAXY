@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
@@ -1464,10 +1463,9 @@ internal sealed class WindowsVisibleControlAdapter
         var stopwatch = Stopwatch.StartNew();
         nint hwnd = 0;
         nint cover = 0;
-        bool requested = false;
         // Encargo EX: the window was read through the modal dialog that disabled it (ModalSurface).
         bool modal = false;
-        // The top-level window the look is of, before its modal dialog is taken (said as «root»).
+        // The top-level window the look is of, before its modal dialog is taken.
         nint windowRoot = 0;
         try
         {
@@ -1475,16 +1473,13 @@ internal sealed class WindowsVisibleControlAdapter
             // window holds the foreground.
             hwnd = await _requestedWindow(application, cancellationToken).ConfigureAwait(false);
 
-            // Whether the window is the application the look names and not just
-            // what holds the front.
-            requested = hwnd != 0;
             // The application just opened, where it is (behind the person's window, as it was opened).
             if (hwnd == 0 && openedWindow != 0 && VisibleControlSurface.IsAlive(openedWindow))
                 hwnd = openedWindow;
             // Auditoría final V3: an application named that no window is, exactly, is never read in another window's
             // place (the person's in front): the visible windows go back as candidates and nothing is looked at.
             if (hwnd == 0 && application is not null)
-                return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop().Windows), []);
+                return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop()), []);
             if (hwnd == 0)
             {
                 hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
@@ -1518,8 +1513,8 @@ internal sealed class WindowsVisibleControlAdapter
             return new ViewResult(ExternalJson.Failure(operation, "active_window_not_found"), []);
 
         string command = ViewCommand(hwnd, limit, wanted, tail);
-        // One capture serves the colours, the written text and the surface
-        // hash; a window without an accessible tree (CEF, SDL, canvas) is
+        // One capture serves the colours and the written text;
+        // a window without an accessible tree (CEF, SDL, canvas) is
         // read from what is drawn, the case measured in a game launcher (UI1731).
         // The capture, and the text when it is asked for, are read while the
         // worker walks the accessible tree: they do not wait on each other.
@@ -1541,9 +1536,7 @@ internal sealed class WindowsVisibleControlAdapter
         // caption buttons, the non-client input, a busy indicator) over the content window a process it started draws
         // under it (measured: a WinUI frame activated by a click lay above its WebView2 editor, and the view kept the
         // caption parts while the person saw the editor) is read through that content window, linked to it as the
-        // family surface over it is: the look's root stays the application's window. What was found, or why nothing was,
-        // is said.
-        VisibleControlSurface.ContentChoice? surfaceChoice = null;
+        // family surface over it is: the look's root stays the application's window.
         if (hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
             && answer.RootElement.TryGetProperty("ok", out JsonElement frameOk) && frameOk.ValueKind == JsonValueKind.True
             && VisibleControlSurface.TryBounds(hwnd, out int frameLeft, out int frameTop, out int frameRight, out int frameBottom))
@@ -1552,14 +1545,12 @@ internal sealed class WindowsVisibleControlAdapter
             var frameControls = CaptionReading(answer.RootElement);
             if (VisibleControlSurface.MayShowOnlyCaption(frame, frameControls))
             {
-                VisibleControlSurface.ContentChoice choice = VisibleControlSurface.TakeContentWindow(
-                    hwnd, content => VisibleControlSurface.ShowsOnlyCaption(frame, content, frameControls));
-                surfaceChoice = choice;
-                if (choice.Window != 0)
+                nint content = VisibleControlSurface.TakeContentWindow(
+                    hwnd, box => VisibleControlSurface.ShowsOnlyCaption(frame, box, frameControls));
+                if (content != 0)
                 {
                     answer.Dispose();
                     Discard(captureTask, textTask);
-                    nint content = choice.Window;
                     hwnd = content;
                     cover = VisibleControlSurface.CoveringWindow(content);
                     bool contentCovered = cover != 0 || lines;
@@ -1625,7 +1616,6 @@ internal sealed class WindowsVisibleControlAdapter
             long ocrMs = 0;
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
-            List<VisibleTextMarks.Mark>? textMarks = null;
             IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? placedLines = null;
             (int Width, int Height) placedIn = (0, 0);
             var names = new List<string>();
@@ -1664,11 +1654,6 @@ internal sealed class WindowsVisibleControlAdapter
                             bucket.Add(line.Text);
                             names.Add(line.Text);
                         }
-
-                        // Where the written text is all the window shows, each label carries the colour of its ink
-                        // (contract §1.7): the item a row of navigation labels marks is read from it (check atom mark:).
-                        if (controls.Count <= 1)
-                            textMarks = VisibleTextMarks.Read(capture.Bmp, capture.Left, capture.Top, read);
                     }
                     else
                     {
@@ -1717,25 +1702,10 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteString("process", processName);
                 writer.WriteNumber("processId", ownerProcessId);
                 writer.WriteNumber("hwnd", hwnd);
-                writer.WriteBoolean("requested", requested);
-                // Goal v3 ventana-misión: the top-level window the look is of (the window behind its modal dialog, the
-                // application's window behind its family surface), the window owning that one, and how long ago the
-                // person's last input went to it (the window they work in).
-                if (windowRoot != 0)
-                    writer.WriteNumber("root", windowRoot);
                 // Encargo EX (tanda n6 t4-c06: Excel held «Guardar este archivo» from an earlier turn): the view is of
                 // the modal dialog that disabled the window, not of the window itself.
                 if (modal)
                     writer.WriteBoolean("modal", true);
-                if (VisibleControlSurface.RootOwner(windowRoot) is var owner and not 0)
-                    writer.WriteNumber("owner", owner);
-                if ((WindowsUserInputPause.Shared.PersonInputAgoMs(windowRoot) ?? WindowsUserInputPause.Shared.PersonInputAgoMs(hwnd))
-                    is long personAgo)
-                    writer.WriteNumber("personInputAgoMs", personAgo);
-                // Ronda 20 P2: without Raw Input no window of the person is known, only how long ago the session's last
-                // input came (the App weighs it on a look nobody asked for, in front, with no application named).
-                else if (WindowsUserInputPause.Shared.UnknownInputAgoMs is long unknownAgo)
-                    writer.WriteNumber("personInputUnknownAgoMs", unknownAgo);
                 // Contract «Seguridad v2»: a developer's or BAXY's own window (an editor, an IDE, a terminal, a console,
                 // BAXY) that the request did not name, told by its process, never by its title. No act reaches such a
                 // window (protected_window, VisibleControlSurface.ActRefused); one this look named by its application
@@ -1746,25 +1716,14 @@ internal sealed class WindowsVisibleControlAdapter
                 else
                     VisibleControlSurface.NoteNamedProtected(windowRoot != 0 ? windowRoot : hwnd, processName);
                 // v3 point 1: the content of the application's window drawn by a process it started (WebView2, CEF):
-                // the application's process first, then the processes it started. The mission's keys and text are
-                // bound to this family and to no other process.
+                // the application's process first, then the processes it started. A look at it is the opened
+                // application's when that application's process is one of them (NoteOpenedLooked).
                 if (VisibleControlSurface.SurfaceFamily(hwnd) is { Length: > 0 } family)
                 {
                     writer.WriteStartArray("family");
                     foreach (uint member in family)
                         writer.WriteNumberValue(member);
                     writer.WriteEndArray();
-                }
-
-                // Ronda 20 P6: a frame showing only its caption parts says whether its family's content window was read
-                // instead, or why not, with that window's extended style and owner (the trace «computer_use.surface»).
-                if (surfaceChoice is { } surfaceRead)
-                {
-                    writer.WriteStartObject("surface");
-                    writer.WriteString("reason", surfaceRead.Reason);
-                    writer.WriteString("exStyle", surfaceRead.ExStyle.ToString("x8", CultureInfo.InvariantCulture));
-                    writer.WriteNumber("owner", surfaceRead.Owner);
-                    writer.WriteEndObject();
                 }
 
                 // Read in front or behind the person's window (v3 point 0): behind, «focused» cannot say where the
@@ -1778,7 +1737,6 @@ internal sealed class WindowsVisibleControlAdapter
                     if (Applications.InvokerLaunch.WindowReopensUnraised(ownerProcessId))
                         writer.WriteBoolean("reopensUnraised", true);
                 }
-                WriteRect(writer, "rect", windowRect);
                 if (cover != 0)
                 {
                     (_, string coverProcess) = VisibleControlSurface.WindowProcess(cover);
@@ -1816,9 +1774,6 @@ internal sealed class WindowsVisibleControlAdapter
                         writer.WriteNull("value");
                     else
                         writer.WriteString("value", control.Value);
-                    // What a list, grid or tree item is as its application reports it (a folder, a shortcut).
-                    if (control.ItemType.Length > 0)
-                        writer.WriteString("itemType", control.ItemType);
                     // Goal v3 B3: the key the application declares for the control (AcceleratorKey or AccessKey).
                     if (control.Shortcut.Length > 0)
                         writer.WriteString("shortcut", control.Shortcut);
@@ -1830,15 +1785,6 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteString("color", control.Color);
                     if (control.Repeated > 0)
                         writer.WriteNumber("repeated", control.Repeated);
-                    // Ronda 20b, palanca 8 (v3-62): the window's system menu chain under its title bar.
-                    if (control.SystemMenu)
-                        writer.WriteBoolean("systemMenu", true);
-                    // Ronda 21: the window's content surface, listed past the cap.
-                    if (control.Body)
-                        writer.WriteBoolean("body", true);
-                    // Revision 1 of ronda 21: listed past the cut only because it names the goal's words («wanted»).
-                    if (control.Reserved)
-                        writer.WriteBoolean("reserved", true);
                     writer.WriteEndObject();
                 }
 
@@ -1860,23 +1806,9 @@ internal sealed class WindowsVisibleControlAdapter
                 }
 
                 writer.WriteNumber("controlCount", counted);
-                // Goal v3, analysis r3a M1: whether the worker read the classic Win32 controls through the client-side
-                // providers (a combo box, a tree, a list as themselves) or, without them, as opaque panes.
-                if (root.TryGetProperty("clientProviders", out JsonElement providers)
-                    && providers.ValueKind is JsonValueKind.True or JsonValueKind.False)
-                {
-                    writer.WriteBoolean("clientProviders", providers.GetBoolean());
-                }
-
-                // Ronda 20b, palanca 8 (v3-51, v3-62): a look that brought only the window's frame was read again,
-                // under the same root without the offscreen filter («unfiltered») or under the owner window
-                // («owner»); «frameOnly» when neither brought content.
-                if (root.TryGetProperty("clientFrom", out JsonElement clientFrom)
-                    && clientFrom.ValueKind == JsonValueKind.String && clientFrom.GetString() is { Length: > 0 } from)
-                {
-                    writer.WriteString("clientFrom", from);
-                }
-
+                // Ronda 20b, palanca 8 (v3-51, v3-62): a look that brought only the window's frame, read again by the
+                // worker under the same root without the offscreen filter, then under the owner window, is «frameOnly»
+                // when neither brought content.
                 if (root.TryGetProperty("frameOnly", out JsonElement frameOnly) && frameOnly.ValueKind == JsonValueKind.True)
                 {
                     writer.WriteBoolean("frameOnly", true);
@@ -1928,27 +1860,8 @@ internal sealed class WindowsVisibleControlAdapter
 
                         writer.WriteEndArray();
                     }
-
-                    if (textMarks is { Count: > 0 })
-                    {
-                        writer.WriteStartArray("textMarks");
-                        foreach (VisibleTextMarks.Mark mark in textMarks)
-                        {
-                            writer.WriteStartObject();
-                            writer.WriteString("text", mark.Text);
-                            writer.WriteString("zone", mark.Zone);
-                            WriteRect(writer, "rect", new Rect(mark.X, mark.Y, mark.W, mark.H));
-                            writer.WriteString("ink", mark.Ink);
-                            writer.WriteNumber("inkV", mark.InkValue);
-                            writer.WriteNumber("bgV", mark.BackgroundValue);
-                            writer.WriteEndObject();
-                        }
-
-                        writer.WriteEndArray();
-                    }
                 }
 
-                writer.WriteString("surface", captured?.Sha256 ?? string.Empty);
                 writer.WriteStartObject("elapsedMs");
                 writer.WriteNumber("uia", uiaMs);
                 writer.WriteNumber("ocr", ocrMs);
@@ -2052,14 +1965,9 @@ internal sealed class WindowsVisibleControlAdapter
                     && value.ValueKind == JsonValueKind.String
                         ? value.GetString()
                         : null,
-                ItemType = ReadString(item, "itemType"),
                 Shortcut = ReadString(item, "shortcut"),
                 RectValue = rect,
                 Repeated = ReadInt(item, "repeated"),
-                SystemMenu = item.TryGetProperty("systemMenu", out JsonElement systemMenu)
-                    && systemMenu.ValueKind == JsonValueKind.True,
-                Body = item.TryGetProperty("body", out JsonElement body) && body.ValueKind == JsonValueKind.True,
-                Reserved = item.TryGetProperty("reserved", out JsonElement reserved) && reserved.ValueKind == JsonValueKind.True,
             });
         }
 
@@ -3258,17 +3166,11 @@ internal sealed class WindowsVisibleControlAdapter
         internal string Id { get; set; } = string.Empty;
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }
-        internal string ItemType { get; set; } = string.Empty;
         internal string Shortcut { get; set; } = string.Empty;
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
         internal string Zone { get; set; } = string.Empty;
         internal string Color { get; set; } = string.Empty;
-        internal bool SystemMenu { get; set; }
-        // Ronda 21: the window's content surface (the largest pane, canvas or document that holds no control), listed
-        // past the cap by its kind and rectangle.
-        internal bool Body { get; set; }
-        internal bool Reserved { get; set; }
     }
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls);

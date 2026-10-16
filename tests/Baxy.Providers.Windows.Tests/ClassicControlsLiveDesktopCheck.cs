@@ -204,8 +204,7 @@ public sealed class ClassicControlsLiveDesktopCheck
         using JsonDocument? view = await host.SendAsync(
             $$"""{"cmd":"view","hwnd":{{window}},"limit":60}""", TimeSpan.FromSeconds(30), CancellationToken.None);
         Assert.That(view?.RootElement.GetProperty("ok").GetBoolean(), Is.True);
-        Assert.That(view!.RootElement.GetProperty("clientProviders").GetBoolean(), Is.True);
-        return [.. view.RootElement.GetProperty("controls").EnumerateArray().Select(control => control.Clone())];
+        return [.. view!.RootElement.GetProperty("controls").EnumerateArray().Select(control => control.Clone())];
     }
 
     // Started minimized and not activated (STARTF_USESHOWWINDOW with SW_SHOWMINNOACTIVE): never in front.
