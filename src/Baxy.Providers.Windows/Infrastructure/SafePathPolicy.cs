@@ -4,17 +4,6 @@ namespace Baxy.Providers.Windows.Infrastructure;
 
 internal static class SafePathPolicy
 {
-    public static string NormalizeAndValidateExistingFile(string path)
-    {
-        string fullPath = NormalizeAbsolute(path);
-        if (!File.Exists(fullPath) || !IsExistingPathWithoutReparse(fullPath))
-        {
-            throw new FileNotFoundException("The trusted executable path is unavailable.", fullPath);
-        }
-
-        return fullPath;
-    }
-
     public static string NormalizeAndCreatePrivateDirectory(string path)
     {
         string fullPath = NormalizeAbsolute(path);

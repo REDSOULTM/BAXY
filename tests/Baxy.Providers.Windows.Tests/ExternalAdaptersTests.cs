@@ -1051,7 +1051,7 @@ public sealed class ExternalAdaptersTests
         Directory.CreateDirectory(alarms);
         await File.WriteAllTextAsync(Path.Combine(alarms, own + ".ps1"), "# ring");
         string next = DateTimeOffset.UtcNow.AddHours(3).ToString("O");
-        string output = $$"""{"ok":true,"tasks":[{"taskName":"{{own}}","state":"Ready","nextRunUtc":"{{next}}"},{"taskName":"{{other}}","state":"Ready","nextRunUtc":"{{next}}"}]}""";
+        string output = $$"""{"ok":true,"schedulerRunning":true,"tasks":[{"taskName":"{{own}}","state":"Ready","nextRunUtc":"{{next}}"},{"taskName":"{{other}}","state":"Ready","nextRunUtc":"{{next}}"}]}""";
         var adapter = new WindowsScheduledNotificationAdapter(
             temporary.Path, ScriptedNotificationBackend.Lines(output));
 

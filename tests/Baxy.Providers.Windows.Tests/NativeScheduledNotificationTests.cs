@@ -233,6 +233,60 @@ public sealed class NativeScheduledNotificationTests
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
             Assert.That(receipt.Result!.Value.GetProperty("schedulerRunning").GetBoolean(), Is.False);
             Assert.That(receipt.Result!.Value.GetProperty("healthy").GetBoolean(), Is.False);
+            Assert.That(receipt.Result!.Value.TryGetProperty("taskCount", out _), Is.False);
+            Assert.That(receipt.Result!.Value.TryGetProperty("tasks", out _), Is.False);
+        });
+    }
+
+    // A scheduler that does not answer listed nothing: the list fails and says why, never an empty list.
+    [Test]
+    public async Task AListFromASchedulerThatDoesNotAnswerIsNoEmptyList()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler
+        {
+            OpenFailure = new TaskSchedulerHostException("task_scheduler_connect_failed:0x800706BA"),
+        };
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"list"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("notification_scheduler_unavailable"));
+            Assert.That(receipt.Result, Is.Null);
+        });
+    }
+
+    // Its tasks unread, a scheduler that does not answer proves no task gone: an old ring script stays.
+    [Test]
+    public async Task ASchedulerThatDoesNotAnswerLetsNoRingScriptGo()
+    {
+        using TemporaryDirectory temporary = new();
+        string alarms = Path.Combine(temporary.Path, "scheduled-notifications");
+        Directory.CreateDirectory(alarms);
+        string stem = Path.Combine(alarms, TaskName("Reminder", 'd'));
+        await File.WriteAllTextAsync(stem + ".ps1", "# ring");
+        await File.WriteAllTextAsync(stem + ".fired", """{"rangUtc":"2026-08-01T07:00:00.0000000+00:00"}""");
+        File.SetLastWriteTimeUtc(stem + ".fired", DateTime.UtcNow.AddDays(-45));
+        var scheduler = new FakeTaskScheduler
+        {
+            OpenFailure = new TaskSchedulerHostException("task_scheduler_connect_failed:0x800706BA"),
+        };
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(1))}}","kind":"reminder","title":"Prueba"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("notification_scheduler_unavailable"));
+            Assert.That(File.Exists(stem + ".ps1"), Is.True);
+            Assert.That(File.Exists(stem + ".fired"), Is.True);
         });
     }
 

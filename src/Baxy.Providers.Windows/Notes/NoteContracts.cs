@@ -187,8 +187,6 @@ public sealed class NoteTitleAmbiguousException : NoteStoreException
 
     public NoteListScope Scope { get; }
 
-    public int MatchCount => Candidates.Count;
-
     public IReadOnlyList<NoteAmbiguityCandidate> Candidates { get; }
 }
 

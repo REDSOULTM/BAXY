@@ -47,12 +47,10 @@ internal static unsafe partial class FileActivation
     /// Review of cu-v3-abrir-archivo, finding 1: the file goes only to an application Windows lists as a handler of its
     /// type. A desktop application is matched by its executable's full path; a packaged one by the identity its handler
     /// reports, a handler inside its package's folder, or a handler named by its identity or its catalog name. Anything
-    /// else (an interpreter, an uninstaller, a launcher that drops its shortcut's arguments) gets no file.
+    /// else (an interpreter, an uninstaller, a launcher that drops its shortcut's arguments) gets no file. The index is
+    /// the matched handler's place in the list (the one invoked), -1 with None.
     /// </summary>
-    internal static HandOff HandOffFor(InstalledApplicationEntry entry, string? executable, IReadOnlyList<Handler> handlers) =>
-        Match(entry, executable, handlers).HandOff;
-
-    private static (HandOff HandOff, int Index) Match(
+    internal static (HandOff HandOff, int Index) Match(
         InstalledApplicationEntry entry, string? executable, IReadOnlyList<Handler> handlers)
     {
         int bang = entry.AppUserModelId.IndexOf('!');
@@ -105,7 +103,7 @@ internal static unsafe partial class FileActivation
     }
 
     /// <summary>
-    /// The handler Windows lists for the file's type that is the entry's (HandOffFor): a packaged one is invoked with
+    /// The handler Windows lists for the file's type that is the entry's (Match): a packaged one is invoked with
     /// the file here (Package, and whether Windows took it); a desktop one is left to the caller (Executable), which
     /// starts its executable with the path. None: Windows lists no handler of the entry for that type.
     /// </summary>

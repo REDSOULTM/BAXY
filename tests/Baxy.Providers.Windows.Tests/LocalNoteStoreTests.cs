@@ -175,7 +175,7 @@ public sealed class LocalNoteStoreTests
                 () => store.ReadExactTitle("compras"),
                 Throws.TypeOf<NoteTitleAmbiguousException>()
                     .With.Property(nameof(NoteTitleAmbiguousException.Scope)).EqualTo(NoteListScope.Active)
-                    .And.Property(nameof(NoteTitleAmbiguousException.MatchCount)).EqualTo(2));
+                    .And.Property(nameof(NoteTitleAmbiguousException.Candidates)).Exactly(2).Items);
             Assert.That(
                 () => store.TrashExactTitle("compras"),
                 Throws.TypeOf<NoteTitleAmbiguousException>());
@@ -193,12 +193,12 @@ public sealed class LocalNoteStoreTests
                 () => store.TrashExactTitle(" compras "),
                 Throws.TypeOf<NoteTitleAmbiguousException>()
                     .With.Property(nameof(NoteTitleAmbiguousException.Scope)).EqualTo(NoteListScope.All)
-                    .And.Property(nameof(NoteTitleAmbiguousException.MatchCount)).EqualTo(2));
+                    .And.Property(nameof(NoteTitleAmbiguousException.Candidates)).Exactly(2).Items);
             Assert.That(
                 () => store.RestoreExactTitle("compras"),
                 Throws.TypeOf<NoteTitleAmbiguousException>()
                     .With.Property(nameof(NoteTitleAmbiguousException.Scope)).EqualTo(NoteListScope.All)
-                    .And.Property(nameof(NoteTitleAmbiguousException.MatchCount)).EqualTo(2));
+                    .And.Property(nameof(NoteTitleAmbiguousException.Candidates)).Exactly(2).Items);
             Assert.That(store.Read(first.Id, includeTrashed: true), Is.EqualTo(firstTrashed));
             Assert.That(store.Read(second.Id), Is.EqualTo(second));
         });

@@ -760,7 +760,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
-        await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
+        await GuardOver();
 
         Assert.That(platform.HandedBack, Has.Count.EqualTo(expectedHandBacks));
     }
@@ -782,7 +782,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
-        await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
+        await GuardOver();
 
         Assert.That(platform.HandedBack, Has.Count.EqualTo(handedBack));
     }
@@ -804,7 +804,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
-        await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
+        await GuardOver();
 
         Assert.Multiple(() =>
         {
@@ -813,6 +813,13 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(platform.HandedBack, Is.EqualTo(handedBack ? [0x500L] : Array.Empty<long>()));
         });
     }
+
+    // The guard's last look starts inside its window and a hand-back takes at most its budget: once both have passed
+    // (and a look's pause), everything the guard hands back has been handed back.
+    private static Task GuardOver() => Task.Delay(
+        WindowsInstalledApplicationOpenProvider.FrontGuard
+        + WindowsInstalledApplicationOpenProvider.ForegroundBudget
+        + TimeSpan.FromMilliseconds(500));
 
     [Test]
     public void TakingTheFrontOnPurposeInterruptsAGuardStartedBefore()
