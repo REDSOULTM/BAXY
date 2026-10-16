@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference='Stop'
 # MUSIC1769: the adapter decodes stdout as UTF-8; PowerShell 5.1 otherwise writes the console code page and
 # non-ASCII titles arrive as U+FFFD.
-[Console]::OutputEncoding=[Text.Encoding]::UTF8
+[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
 Add-Type -AssemblyName UIAutomationClient
 $nativeSource=@'
 using System;

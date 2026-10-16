@@ -1,4 +1,6 @@
 $ErrorActionPreference='Stop'
+# The runner reads stdout as UTF-8 (PowerShellCommand); PowerShell 5.1 otherwise writes the console's code page.
+[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
 $effect=$false
 function Wait-BaxyPoll([DateTime]$Deadline,[int]$IntervalMilliseconds){
     $remaining=$Deadline-(Get-Date)

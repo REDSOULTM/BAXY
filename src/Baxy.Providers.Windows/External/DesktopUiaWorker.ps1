@@ -32,7 +32,7 @@
 param([switch]$DpiUnaware)
 $ErrorActionPreference='Stop'
 [Console]::InputEncoding=[System.Text.Encoding]::UTF8
-[Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
 Add-Type -ReferencedAssemblies Accessibility -TypeDefinition @'

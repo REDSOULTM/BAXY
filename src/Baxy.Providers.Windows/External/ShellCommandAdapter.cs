@@ -118,7 +118,8 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
             effectBoundary.Cross(cancellationToken);
             process = await _runner.RunAsync(
                 "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script],
+                ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command",
+                    PowerShellCommand.Utf8Output + script],
                 CommandTimeout, cancellationToken).ConfigureAwait(false);
         }
         catch (TimeoutException)
