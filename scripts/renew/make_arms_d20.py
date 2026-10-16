@@ -38,6 +38,23 @@ ARMS: dict[str, list[tuple[str, str]]] = {
     "t0": [(DECIDE_SAMPLING, '"temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0,')],
 }
 
+# P5, context order (Liu et al., «Lost in the Middle», TACL 2024: what sits at the end of the context is used best): the
+# rules the decision turns on, said again right after the person's words.
+TAIL = ("\n[Recuerda: si una herramienta lo hace, llámala; lo hecho lo cuentan sus resultados; si falta un dato que sólo "
+        "la persona sabe, pregúntalo con ask_user; si ninguna lo hace, dilo en una frase.]")
+ARMS["tail"] = [('        self.conversation.append({"role": "user", "content": text})\n',
+                 '        self.conversation.append({"role": "user", "content": text + ' + repr(TAIL) + '})\n')]
+# P6, one header per result (Anthropic, «Writing effective tools for agents»: the high-signal part of a result first):
+# how every call of the turn ended goes before the result, not after it.
+ARMS["head"] = [('"content": observation + "\\n[En este turno: " + "; ".join(done) + "]"})',
+                 '"content": "[En este turno: " + "; ".join(done) + "]\\n" + observation})')]
+# P7, an example of the computer-use loop in its rule (Brown et al. 2020, «Language Models are Few-Shot Learners»).
+ARMS["cuex"] = [('"input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo.\\n"',
+                 '"input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo. Ejemplo: «ponle '
+                 'negrita al título en Word» → input_visible_controls de la ventana de Word → input_visible_click con la '
+                 'etiqueta «Negrita» que viste → input_visible_controls otra vez para ver que quedó en negrita → la '
+                 'respuesta.\\n"')]
+
 SERVER_THINK = ('"--jinja", "--reasoning", "off", "--reasoning-budget", "0",', '"--jinja", "--reasoning", "on",')
 # Thinking on every decision, with the card's thinking sampling and room for the thought.
 ARMS["think"] = [
