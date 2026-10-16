@@ -89,4 +89,10 @@ public class FilesystemProviderException(string code) : Exception(code)
     /// it exists, its next step).
     /// </summary>
     public JsonElement? Result { get; init; }
+
+    /// <summary>
+    /// Round A: the call already wrote, moved or copied when it failed (a read-back that did not match), so the change
+    /// may be on disk; a refusal before any change leaves it false.
+    /// </summary>
+    public bool EffectMayHaveOccurred { get; init; }
 }

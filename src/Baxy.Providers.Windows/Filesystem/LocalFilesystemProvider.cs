@@ -208,7 +208,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 if (File.Exists(temporary)) File.Delete(temporary);
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
-                throw Error("verification_failed");
+                throw AfterEffect("verification_failed");
             return Mutation(Issue(path, root), path, reachedState: false, previousVersionRecycled: recycled);
         }
     }
@@ -257,7 +257,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             if (!File.Exists(destination)
                 || !string.Equals(HashFile(destination), sourceHash, StringComparison.Ordinal)
                 || (move && File.Exists(source)))
-                throw Error("verification_failed");
+                throw AfterEffect("verification_failed");
             return Mutation(Issue(destination), destination, reachedState: false);
         }
     }
@@ -275,10 +275,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string destination = Path.Combine(_backups, id + ".bin");
             File.Copy(source, destination);
             if (!string.Equals(HashFile(destination), hash, StringComparison.Ordinal))
-                throw Error("verification_failed");
+                throw AfterEffect("verification_failed");
             File.WriteAllText(Path.Combine(_backups, id + RecordedHashExtension), hash);
             BackupReceipt receipt = VerifyBackupUnsafe(id);
-            if (!receipt.Verified) throw Error("verification_failed");
+            if (!receipt.Verified) throw AfterEffect("verification_failed");
             return receipt;
         }
     }
@@ -318,7 +318,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             File.Copy(source, destination);
             if (!string.Equals(HashFile(destination), receipt.Sha256, StringComparison.Ordinal))
-                throw Error("verification_failed");
+                throw AfterEffect("verification_failed");
             return Mutation(Issue(destination), destination, reachedState: false);
         }
     }
@@ -477,6 +477,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         && value.All(static character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
+
+    // A failure once the file was already written, moved or copied: the change may be on disk.
+    private static FilesystemProviderException AfterEffect(string code) => new(code) { EffectMayHaveOccurred = true };
 
     // A path outside the working folder: where the operation takes a folder, the refusal says how to name the person's.
     private static FilesystemProviderException OutsideTheSandbox(bool takesFolder) =>
