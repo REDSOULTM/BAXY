@@ -587,8 +587,10 @@ internal sealed record VisibleClickTiming(
 
 /// <summary>
 /// Perception and the click of the computer-use engine.
-/// <c>input.visible.controls</c> is the view of a window: up to sixty actionable
-/// controls with index, kind, label, state, value and shortcut, the disabled ones
+/// <c>input.visible.controls</c> is the view of a window: up to sixty controls
+/// (actionable ones first, then the rest), plus up to ten more whose names carry a
+/// word of «wanted» and the window's body, with index, kind, label, state, value
+/// and shortcut, the disabled ones
 /// by kind and label, the written text by zone (OCR), the window's title and
 /// process. <c>input.visible.click</c> invokes one control by label, by the index
 /// of the last view (resolved here to that control's identity, kept with the view

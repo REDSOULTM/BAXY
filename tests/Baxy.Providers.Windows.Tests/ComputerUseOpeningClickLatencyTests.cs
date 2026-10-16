@@ -386,7 +386,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
         Assume.That(front, Is.Not.EqualTo((nint)0), "the desktop has a shell window");
         int process = VisibleControlSurface.ViewProcess(front).ProcessId;
         string view = "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Iniciador\",\"controls\":[" +
-            "{\"i\":0,\"kind\":\"Hyperlink\",\"name\":\"Biblioteca\",\"id\":\"4.2\",\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}," +
+            "{\"kind\":\"Hyperlink\",\"name\":\"Biblioteca\",\"id\":\"4.2\",\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}," +
             "{\"i\":1,\"kind\":\"Hyperlink\",\"name\":\"Inicio\",\"id\":\"4.3\",\"state\":\"\",\"value\":null,\"rect\":null,\"repeated\":0}]," +
             "\"controlCount\":2,\"focused\":null}";
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(view, NotFoundByUia);

@@ -501,7 +501,7 @@ public sealed class ComputerUseSpeedTests
         const long front = 0x7FFF_0F1E;
         string view =
             "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Inicio\",\"controls\":[" +
-            "{\"i\":0,\"kind\":\"Button\",\"name\":\"Aceptar\",\"id\":\"4.2\",\"state\":\"\",\"value\":null," +
+            "{\"kind\":\"Button\",\"name\":\"Aceptar\",\"id\":\"4.2\",\"state\":\"\",\"value\":null," +
             "\"rect\":null,\"repeated\":0}],\"controlCount\":1,\"focused\":null}";
         var focus = new CountingFocus();
 
@@ -648,7 +648,7 @@ public sealed class ComputerUseSpeedTests
         long front = GoneWindow();
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
             "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Lista\",\"controls\":[" +
-            "{\"i\":0,\"kind\":\"List\",\"name\":\"Canciones\",\"id\":\"7.1\",\"state\":\"\",\"value\":null," +
+            "{\"kind\":\"List\",\"name\":\"Canciones\",\"id\":\"7.1\",\"state\":\"\",\"value\":null," +
             "\"rect\":{\"x\":10,\"y\":10,\"w\":200,\"h\":300},\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
         var controls = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult((nint)front));
         _ = await controls.InvokeAsync(
