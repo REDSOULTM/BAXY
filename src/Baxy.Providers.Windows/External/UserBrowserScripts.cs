@@ -24,6 +24,8 @@ internal static class UserBrowserScripts
             $child = $walker.GetFirstChild($node)
             while ($child -ne $null -and $kids.Count -lt 400) { $kids.Add($child); $child = $walker.GetNextSibling($child) }
           } catch {
+            # The forward walk failed part way: the backward one starts from an empty list, so no child is taken twice.
+            $kids.Clear()
             try {
               $child = $walker.GetLastChild($node)
               while ($child -ne $null -and $kids.Count -lt 400) { $kids.Add($child); $child = $walker.GetPreviousSibling($child) }
@@ -402,7 +404,7 @@ internal static class UserBrowserScripts
                   $value = [string]$pattern.Current.Value
                   if ($value -and $value -notmatch '\s' -and $value -match '[\.:/]') { $address = $value }
                 }
-              } catch { }
+              } catch { $unreadNodes++ }
             }
             if ($depth -ge 26) { $unreadNodes++; continue }
             foreach ($child in (Children $walker $node)) { $queue.Enqueue(@($child, ($depth + 1))) }
@@ -622,7 +624,7 @@ internal static class UserBrowserScripts
           }
           # A node that failed lost its subtree: the text read is not the whole page either.
           $truncated = $text.Length -gt $Maximum -or $walkCut -or $failedNodes -gt 0
-          if ($truncated) { $text = $text.Substring(0, $Maximum) }
+          if ($text.Length -gt $Maximum) { $text = $text.Substring(0, $Maximum) }
           Emit $true ([string]$page.Current.Name) $text $truncated ''
         } catch {
           Emit $false '' '' $false ('uia_failed: ' + $_.Exception.GetType().Name)

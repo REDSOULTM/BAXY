@@ -73,7 +73,9 @@ internal sealed partial class UserBrowserSurface
     private async ValueTask<ExternalCapabilityReceipt> HistoryStepAsync(
         TabStep step, int command, CancellationToken cancellationToken)
     {
-        UserBrowserFrame? before = await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+        // Auditoría final (regla 3): back and reload compare page and address only between frames read whole, so an
+        // address or a page document a partial read missed is never taken for the change.
+        UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         if (before is null || before.PageId.Length == 0)
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         bool back = command == AppCommandBack;
@@ -84,8 +86,8 @@ internal sealed partial class UserBrowserSurface
         step.Boundary.Cross(CancellationToken.None);
         UserBrowserFrame? after = await AwaitFrameAsync(
             step.Window,
-            frame => frame.PageId.Length > 0 && frame.PageId != before.PageId
-                || back && frame.Address.Length > 0 && frame.Address != before.Address,
+            frame => frame.TabsComplete && (frame.PageId.Length > 0 && frame.PageId != before.PageId
+                || back && frame.Address.Length > 0 && frame.Address != before.Address),
             cancellationToken).ConfigureAwait(false);
         return after is null
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
