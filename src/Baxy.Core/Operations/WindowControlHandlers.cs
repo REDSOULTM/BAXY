@@ -182,7 +182,9 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
             writer.WriteNumber("remainingVisible", result.Remaining);
             if (result.Gone > 0)
                 writer.WriteNumber("goneMeanwhile", result.Gone);
-            writer.WriteBoolean("allMinimized", true);
+            // Auditoría final (regla 3): a desktop window that was there and not read leaves «all» unsaid.
+            if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
+            else writer.WriteBoolean("allMinimized", true);
             // Auditoría final (regla 3): nothing was minimized, so the desktop was already that way.
             if (result.Minimized == 0)
                 writer.WriteBoolean("changed", false);
@@ -226,7 +228,8 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             writer.WriteStartArray("remainingProcesses");
             foreach (string name in result.RemainingProcesses) writer.WriteStringValue(name);
             writer.WriteEndArray();
-            writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
+            if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
+            else writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
             writer.WriteString("authority", "win32_desktop_windows_close_postread");
             writer.WriteEndObject();
         }

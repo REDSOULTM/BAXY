@@ -1834,8 +1834,12 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       try { $own=[int]$el.Current.NativeWindowHandle } catch { $own=0 }
       if($own -ne 0){ try { $action=[BaxyUiaWorkerNative]::WindowDefault([IntPtr]$own) } catch { $action='' } }
       $windowStep=$(if($own -ne 0){ [string][BaxyUiaWorkerNative]::LegacyStep } else { '' })
+      # Auditoría final (regla 3): a default action that raised while it ran may have acted: the press ends there (the
+      # caller says it as after the effect), never followed by a message or the pointer.
+      if($windowStep -like 'window-action:*'){ throw 'press_raised_after_send' }
       if(([string]$action).Length -eq 0){
         try { $action=[BaxyUiaWorkerNative]::LegacyDefault($top,[int[]]$el.GetRuntimeId()) } catch { $action='' }
+        if([string][BaxyUiaWorkerNative]::LegacyStep -like 'action:*'){ throw 'press_raised_after_send' }
       }
       $legacyStep=(($windowStep+' '+[string][BaxyUiaWorkerNative]::LegacyStep).Trim())
       if(([string]$action).Length -gt 0){ return @{ method='legacy' } }
@@ -3102,8 +3106,11 @@ function Do-Postread($request){
     $absent=(-not [BaxyUiaWorkerNative]::IsWindow($handle)) -or (-not [BaxyUiaWorkerNative]::IsWindowVisible($handle)) -or (-not [BaxyUiaWorkerNative]::IsWindowEnabled($handle))
   } else {
     $button=$pending.element
+    $was=$pending.stateBefore
+    $alreadySelected=$false
     try {
-      if(-not $button.Current.IsEnabled -or $button.Current.IsOffscreen){$absent=$true}
+      $enabledNow=[bool]$button.Current.IsEnabled; $offscreenNow=[bool]$button.Current.IsOffscreen
+      if((-not $enabledNow -and -not ($null -ne $was -and $was.enabled -eq $false)) -or ($offscreenNow -and -not ($null -ne $was -and $was.offscreen -eq $true))){$absent=$true}
       # Revision B3, hallazgo 6: el primer DOWN de un doble clic ya selecciona el elemento; su seleccion no prueba que
       # la aplicacion lo abriera (eso lo dice que se fuera o que la ventana cambiara).
       # Ronda 21 (t-menu-2): tampoco la de un menu contextual ni la de una apertura por su flecha: el elemento ya estaba
@@ -3126,7 +3133,7 @@ function Do-Postread($request){
           return $doubt
         }
       }
-      elseif(Test-Selected $button){$selected=$true}
+      elseif((Test-Selected $button) -and -not ($null -ne $was -and $was.selected -eq $true)){$selected=$true}
       elseif(@($pending.lineage | Where-Object { Test-Selected $_ }).Count -gt 0){$selected=$true}
       elseif($null -ne $pending.toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $pending.toggleBefore){$toggled=$true} }
       # Ronda 21 (t-drag-4): la marca de otro de su linea del mismo nombre (el Button de una galeria cuyo ListItem se
@@ -3135,6 +3142,7 @@ function Do-Postread($request){
       if(-not $selected -and -not $toggled -and @('double','menu','open') -notcontains [string]$pending.manner -and $null -eq $pending.placeBefore -and
          (Test-LineageToggled $pending.lineageToggles)){ $toggled=$true }
       if(-not $selected -and -not $toggled -and $null -ne $pending.fieldBefore){ $fieldTook=Test-FieldTook $button $pending.fieldBefore }
+      if(-not $absent -and -not $selected -and -not $toggled -and -not $fieldTook -and $null -ne $was -and $was.selected -eq $true -and (Test-Selected $button)){ $alreadySelected=$true }
     }
     catch [System.Windows.Automation.ElementNotAvailableException] {$absent=$true}
   }
@@ -3165,6 +3173,13 @@ function Do-Postread($request){
     if($pending.blocked){ $took.blocked=$true }
     return $took
   }
+  # Already selected before the press and still so, nothing else changed: the state asked for was there (changed:false).
+  if([bool]$alreadySelected -and -not $dialog){
+    $script:Pending=$null
+    $there=Click-Result $true $false '' $pending.name $pending.identity $false $true $false $pending.kind
+    $there.method=[string]$pending.method; $there.alreadyReached=$true
+    return $there
+  }
   if(-not $absent -and -not $selected -and -not $toggled){
     $unchanged=Click-Result $false $true 'visible_button_postread_unchanged' $pending.name $pending.identity $false $false $false $pending.kind
     $unchanged.method=[string]$pending.method
@@ -3181,6 +3196,13 @@ function Do-Postread($request){
 }
 # Recibo del clic por estado (r15b v3-42): en un campo (Edit, Document, ComboBox) el efecto de un clic es que tome el
 # foco del teclado o que cambie su valor; su lectura antes del clic y la comparacion despues.
+function Get-PressState($el){
+  $state=@{ enabled=$null; offscreen=$null; selected=$null }
+  try { $state.enabled=[bool]$el.Current.IsEnabled } catch {}
+  try { $state.offscreen=[bool]$el.Current.IsOffscreen } catch {}
+  try { $state.selected=[bool](Test-Selected $el) } catch {}
+  return $state
+}
 function Get-FieldState($el){
   $state=@{ focus=$false; value=$null }
   try { $state.focus=[bool]$el.Current.HasKeyboardFocus } catch {}
@@ -3399,9 +3421,13 @@ function Do-ClickJudged($request){
   $lineage=@($script:NamedLineage | Where-Object { -not (Test-Selected $_) })
   $script:LineageToggles=@(Get-LineageToggles $script:NamedLineage)
   $done=$null
+  # Auditoría final (regla 3): the control's own state before the press, so its postread counts only what changed
+  # (a control already offscreen, disabled or selected is no proof of this press).
+  $stateBefore=Get-PressState $button
   if($manner.Length -gt 0){
     try { $done=Invoke-MannerControl $button $root $target.hwnd $manner }
-    catch { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
+    catch [System.Windows.Automation.ElementNotEnabledException] { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
+    catch { return (Click-Result $false $false 'visible_press_raised' $name $identity $false $false $false $kind) }
     if(([string]$done.error).Length -gt 0){
       $refused=Click-Result $false $false ([string]$done.error) $name $identity $false $false $false $kind
       if(([string]$done.legacyStep).Length -gt 0){ $refused.legacyStep=[string]$done.legacyStep }
@@ -3415,7 +3441,7 @@ function Do-ClickJudged($request){
     }
     $pending=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
     $pending.manner=$manner
-    if($null -ne $script:Pending){ $script:Pending.manner=$manner }
+    if($null -ne $script:Pending){ $script:Pending.manner=$manner; $script:Pending.stateBefore=$stateBefore }
     return $pending
   }
   $fieldBefore=$(if(@('Edit','Document','ComboBox') -contains $kind){ Get-FieldState $button } else { $null })
@@ -3425,13 +3451,16 @@ function Do-ClickJudged($request){
   if($null -ne $toggleBefore){
     try { $witness=Get-ToggleWitness $name $kind ([string]$toggleBefore) @(Get-WitnessEntries $root $kind) } catch { $witness=$null }
   }
+  # Auditoría final (regla 3): a press that raised once sent (a node rebuilt by its own press) may have acted: it is
+  # said as that (visible_press_raised), and the click ends with it; only a disabled control was not pressed.
   try { $done=Invoke-NamedControl $button $target.hwnd }
-  catch { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
+  catch [System.Windows.Automation.ElementNotEnabledException] { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
+  catch { return (Click-Result $false $false 'visible_press_raised' $name $identity $false $false $false $kind) }
   if($null -eq $done){ return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'covered'){ return (Click-Result $false $false 'visible_control_covered' $name $identity $false $false $false $kind) }
   $pressed=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
-  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled }
+  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore }
   if($null -ne $script:Pending -and $null -ne $witness -and [string]$done.method -eq 'toggle'){
     $facts=Get-ClickFacts $button
     $script:Pending.witness=$witness; $script:Pending.root=$root; $script:Pending.retried=$false
@@ -3667,7 +3696,7 @@ function Find-AnyNamed($root,[string[]]$aliases,$until=$null){
   $hits=@()
   foreach($item in (Get-Descendants $root)){
     # Each name read crosses to the window's process: a long walk stops at the deadline with what it found.
-    if($null -ne $until -and [DateTime]::UtcNow -gt $until){ break }
+    if($null -ne $until -and [DateTime]::UtcNow -gt $until){ $script:RevealCut=$true; break }
     try {
       $name=Get-ShownName $item
       if(Test-NameMatch $name $aliases){ $hits+=@($item) }
@@ -3748,6 +3777,9 @@ function Do-Reveal($request){
   $root=$target.root
   $touched=$false
   $script:NamedCandidates=@()
+  # Auditoría final (regla 3): a walk cut by the deadline did not look at the whole window: «not found» is said only
+  # after a whole search, else reveal_search_incomplete.
+  $script:RevealCut=$false
   $hits=@(Find-AnyNamed $root $aliases $deadline)
   if($hits.Count -gt 0){
     $listed=Reveal-Listed $hits ([ref]$touched)
@@ -3757,11 +3789,11 @@ function Do-Reveal($request){
   if($null -ne $contained){ return $contained }
   # Lo que pudo haberse movido ya (un ScrollIntoView, un Realize) es un efecto: el metodo no queda vacio.
   $tried=$(if($touched){ 'scrollintoview' } else { '' })
-  if([DateTime]::UtcNow -gt $deadline){ return (Reveal-Result $false 'reveal_not_found' $tried $null) }
+  if([DateTime]::UtcNow -gt $deadline){ return (Reveal-Result $false 'reveal_search_incomplete' $tried $null) }
   # El contenedor desplazable verticalmente mas grande, por pagina, hasta verlo o llegar al final.
   $pattern=$null;$scroller=$null;$area=0;$holder=$root
   foreach($item in @($root) + @(Get-Descendants $root)){
-    if([DateTime]::UtcNow -gt $deadline){ break }
+    if([DateTime]::UtcNow -gt $deadline){ $script:RevealCut=$true; break }
     try {
       if(-not $item.TryGetCurrentPattern([System.Windows.Automation.ScrollPattern]::Pattern,[ref]$pattern)){ continue }
       $scroll=[System.Windows.Automation.ScrollPattern]$pattern
@@ -3771,17 +3803,26 @@ function Do-Reveal($request){
       if($null -eq $scroller -or $size -gt $area){ $scroller=$scroll; $area=$size; $holder=$item }
     } catch {}
   }
-  if($null -eq $scroller -or [DateTime]::UtcNow -gt $deadline){ return (Reveal-Result $false 'reveal_not_found' $tried $null) }
+  if([DateTime]::UtcNow -gt $deadline -or ($null -eq $scroller -and $script:RevealCut)){ return (Reveal-Result $false 'reveal_search_incomplete' $tried $null) }
+  if($null -eq $scroller){ return (Reveal-Result $false 'reveal_not_found' $tried $null) }
   $step=$(if([string]$request.direction -eq 'up'){[System.Windows.Automation.ScrollAmount]::LargeDecrement}else{[System.Windows.Automation.ScrollAmount]::LargeIncrement})
   $pages=[int]$request.amount; if($pages -lt 1){ $pages=10 }; if($pages -gt 40){ $pages=40 }
+  # Auditoría final (regla 3): once a page was turned, a read that fails (a container rebuilt by its own scroll) is
+  # said after the effect, with method scroll, never as a search that moved nothing.
+  $moved=$tried
+  $ended=$false
   for($page=0;$page -lt $pages -and [DateTime]::UtcNow -lt $deadline;$page++){
-    $before=[double]$scroller.Current.VerticalScrollPercent
+    try { $before=[double]$scroller.Current.VerticalScrollPercent } catch { return (Reveal-Result $false 'reveal_scroll_reread_failed' $moved $null) }
     try { $scroller.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) } catch { break }
+    $moved='scroll'
     # Solo lo que contiene el contenedor que se desplaza: el resto de la ventana no cambio con la pagina.
-    foreach($hit in @(Find-AnyNamed $holder $aliases $deadline)){ if(Test-Shown $hit){ return (Reveal-Result $true '' 'scroll' $hit) } }
-    if([double]$scroller.Current.VerticalScrollPercent -eq $before){ break }
+    try {
+      foreach($hit in @(Find-AnyNamed $holder $aliases $deadline)){ if(Test-Shown $hit){ return (Reveal-Result $true '' 'scroll' $hit) } }
+      if([double]$scroller.Current.VerticalScrollPercent -eq $before){ $ended=$true; break }
+    } catch { return (Reveal-Result $false 'reveal_scroll_reread_failed' 'scroll' $null) }
   }
-  return (Reveal-Result $false 'reveal_not_found' 'scroll' $null)
+  $code=$(if($ended -and -not $script:RevealCut){ 'reveal_not_found' } else { 'reveal_search_incomplete' })
+  return (Reveal-Result $false $code $moved $null)
 }
 # Los guiones del navegador (UserBrowserScripts) corren en un runspace propio y
 # persistente: su «exit» termina el guion, no el worker, y sus variables no se

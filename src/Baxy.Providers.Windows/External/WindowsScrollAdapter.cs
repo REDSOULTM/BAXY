@@ -307,9 +307,12 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                 ? value.GetString() ?? string.Empty
                 : string.Empty;
             // Only a search that turned pages moved anything; the others read the tree and failed before an effect.
+            // Auditoría final (regla 3): a search cut by its deadline, or a read that failed after a page turned, is said
+            // as that, never as the element not being there.
+            string code = error is "reveal_search_incomplete" or "reveal_scroll_reread_failed" ? error : "reveal_not_found";
             ExternalCapabilityReceipt missing = method.Length > 0
-                ? effectBoundary.Failure(operation, "reveal_not_found", effectObserved: true)
-                : ExternalJson.FailureBeforeEffect(operation, error is "active_window_not_found" ? error : "reveal_not_found");
+                ? effectBoundary.Failure(operation, code, effectObserved: true)
+                : ExternalJson.FailureBeforeEffect(operation, error is "active_window_not_found" ? error : code);
             // Auditoría C10: the rows whose name only holds the label were brought to no view; their names go back.
             return root.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.Array
                 ? missing with { Result = ExternalJson.Create(writer =>

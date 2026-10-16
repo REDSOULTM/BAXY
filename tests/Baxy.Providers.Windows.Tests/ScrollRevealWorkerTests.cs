@@ -138,7 +138,7 @@ public sealed class ScrollRevealWorkerTests
     }
 
     [Test]
-    public void ARevealPastItsDeadlineAnswersNotFoundWithoutTurningPages()
+    public void ARevealPastItsDeadlineAnswersAnIncompleteSearchWithoutTurningPages()
     {
         string output = Run(RevealPrelude + """
             $script:RevealSeconds=0
@@ -147,7 +147,8 @@ public sealed class ScrollRevealWorkerTests
             $answer=Do-Reveal @{ aliases=@('Spotify'); hwnd=1; direction='down'; amount=1 }
             "$($answer.ok)|$($answer.error)|$($answer.method)"
             """);
-        Assert.That(output, Is.EqualTo("False|reveal_not_found|"));
+        // Auditoría final (regla 3): the window was not walked whole, so nothing is said to be missing.
+        Assert.That(output, Is.EqualTo("False|reveal_search_incomplete|"));
     }
 
     [Test]

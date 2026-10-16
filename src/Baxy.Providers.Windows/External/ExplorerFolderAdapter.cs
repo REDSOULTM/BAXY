@@ -17,17 +17,21 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         Add-Type -MemberDefinition $signature -Name ForegroundProbe -Namespace BaxyExplorer | Out-Null
         $foreground = [BaxyExplorer.ForegroundProbe]::GetForegroundWindow().ToInt64()
         $shell = New-Object -ComObject Shell.Application
-        $path = '';$explorer = $false;$unread = $false
+        # Windows 11's tabs are shell windows of the same HWND: one folder among them is the one in front only when they
+        # all show it; different folders leave the tab on show not known. A file:// URL of a share is its UNC path.
+        $paths = @();$explorer = $false;$unread = $false
         foreach ($window in @($shell.Windows())) {
             try {
                 if ([int64]$window.HWND -eq $foreground -and $window.FullName -like '*explorer.exe') {
                     $explorer = $true
                     $url = [string]$window.LocationURL
-                    if ($url.StartsWith('file:///')) { $path = [System.Uri]::UnescapeDataString($url.Substring(8)).Replace('/', '\') }
+                    if ($url.StartsWith('file:')) { $paths += @(([System.Uri]$url).LocalPath) }
                 }
             } catch { $unread = $true }
         }
-        @{ foreground = $foreground; path = $path; explorer = $explorer; unread = $unread } | ConvertTo-Json -Compress
+        $distinct = @($paths | Sort-Object -Unique)
+        $path = if ($distinct.Count -eq 1) { [string]$distinct[0] } else { '' }
+        @{ foreground = $foreground; path = $path; explorer = $explorer; unread = $unread; tabs = $distinct.Count } | ConvertTo-Json -Compress
         """;
 
     private readonly IExternalProcessRunner _runner;
@@ -91,9 +95,16 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
                 {
                     explorerPath = path;
                 }
+                else if (root.TryGetProperty("tabs", out JsonElement tabs) && tabs.ValueKind == JsonValueKind.Number
+                    && tabs.GetInt32() > 1)
+                {
+                    notCounted = "explorer_front_tab_not_known";
+                }
                 else if (root.TryGetProperty("explorer", out JsonElement explorer) && explorer.ValueKind == JsonValueKind.True)
                 {
-                    notCounted = "explorer_in_front_shows_no_file_folder";
+                    notCounted = root.TryGetProperty("unread", out JsonElement partly) && partly.ValueKind == JsonValueKind.True
+                        ? "explorer_front_not_read"
+                        : "explorer_in_front_shows_no_file_folder";
                 }
                 else if (root.TryGetProperty("unread", out JsonElement unread) && unread.ValueKind == JsonValueKind.False)
                 {

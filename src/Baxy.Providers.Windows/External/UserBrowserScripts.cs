@@ -236,6 +236,10 @@ internal static class UserBrowserScripts
           $seen = @()
           $document = $null
           $typed = -not $TypeSearch
+          # Auditoría final (regla 3): «the title is not there» only from cards that were read; no card read at all, or the
+          # exact card found without a way to press it, is said as that, never as candidates of a missing title.
+          $anyCard = $false
+          $exactUnpressable = $false
           while ((Get-Date) -lt $deadline) {
             # The page of the active tab is the document named as the window title begins; side panels (Opera GX's sidebar
             # web panels) are documents too and are never touched.
@@ -277,10 +281,12 @@ internal static class UserBrowserScripts
               foreach ($item in $items) {
                 $cardTitle = CardTitle ([string]$item.Current.Name)
                 if (-not $cardTitle) { continue }
+                $anyCard = $true
                 if ((Fold $cardTitle) -eq $want) { $exact = $item; $exactTitle = $cardTitle; break }
                 if ($cardTitle.Length -le 120 -and -not $titles.Contains($cardTitle)) { $titles.Add($cardTitle) }
               }
-              if ($exact -ne $null -and (Press $exact)) {
+              if ($exact -ne $null -and -not (Press $exact)) { $exactUnpressable = $true }
+              elseif ($exact -ne $null) {
                 $chosen = $exactTitle
                 $chosenFolded = Fold $chosen
                 $seen = @()
@@ -313,6 +319,8 @@ internal static class UserBrowserScripts
             }
             Start-Sleep -Milliseconds 700
           }
+          if ($step -eq 'title' -and $exactUnpressable) { $step = 'title_unpressable'; $seen = @() }
+          elseif ($step -eq 'title' -and -not $anyCard) { $step = 'title_unread' }
           Emit $false $step $chosen $seen
         } catch {
           Emit $false ('uia_failed: ' + $_.Exception.GetType().Name) ''

@@ -369,7 +369,23 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
     }
 
+    // Auditoría final (regla 3): a desktop window that is there and could not be read is not among «all» of them: the
+    // result carries how many, and the handler says none of «all minimized» or «all closed».
     public async ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken)
+    {
+        WindowMinimizeAllResult result = await MinimizeAllReadAsync(cancellationToken).ConfigureAwait(false);
+        int unread = _platform.UnreadDesktopWindows;
+        return unread > 0 && result.Succeeded ? result with { Unread = unread } : result;
+    }
+
+    public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
+    {
+        WindowCloseAllResult result = await CloseAllReadAsync(cancellationToken).ConfigureAwait(false);
+        int unread = _platform.UnreadDesktopWindows;
+        return unread > 0 && result.Succeeded ? result with { Unread = unread } : result;
+    }
+
+    private async ValueTask<WindowMinimizeAllResult> MinimizeAllReadAsync(CancellationToken cancellationToken)
     {
         // MINALL1687 «minimizá todas las ventanas»: every desktop window that is
         // not already minimized gets the minimize command, and the result is
@@ -464,7 +480,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         "Baxy", "Baxy.App", "baxy-core",
     };
 
-    public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
+    private async ValueTask<WindowCloseAllResult> CloseAllReadAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         IReadOnlyList<WindowSnapshot> desktop;
@@ -1305,6 +1321,8 @@ internal interface IWindowControlPlatform
     // MINALL1687: the windows a person sees on the desktop (visible, not cloaked,
     // not a tool window, root owner, titled), excluding the shell and this process.
     IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
+    // How many windows the last DesktopWindows() saw alive and visible but could not read (their process).
+    int UnreadDesktopWindows => 0;
     // M149: the same desktop windows, only those below `front` in the z-order, nearest first.
     IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
@@ -1493,15 +1511,23 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         };
     }
 
-    public IReadOnlyList<WindowSnapshot> DesktopWindows() => EnumerateDesktopWindows(below: 0);
+    public IReadOnlyList<WindowSnapshot> DesktopWindows()
+    {
+        List<WindowSnapshot> found = EnumerateDesktopWindows(below: 0, out int unread);
+        UnreadDesktopWindows = unread;
+        return found;
+    }
+
+    public int UnreadDesktopWindows { get; private set; }
 
     // M149: EnumWindows walks the top-level windows in z-order, top first; collection starts right after
     // `front`. A front window that is gone meanwhile yields nothing rather than a guess.
     public IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) =>
-        front.Handle == 0 ? [] : EnumerateDesktopWindows(front.Handle);
+        front.Handle == 0 ? [] : EnumerateDesktopWindows(front.Handle, out _);
 
-    private List<WindowSnapshot> EnumerateDesktopWindows(nint below)
+    private List<WindowSnapshot> EnumerateDesktopWindows(nint below, out int unread)
     {
+        int failed = 0;
         // MINALL1687: what the taskbar would show as windows. The shell's own
         // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
         // popups and untitled windows are not windows a person minimizes; the
@@ -1542,12 +1568,15 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             catch (Exception exception) when (exception is Win32Exception
                 or InvalidOperationException or NotSupportedException or ArgumentException)
             {
-                // A window or its owner can disappear during enumeration.
+                // A window or its owner can disappear during enumeration; one still there was not read.
+                if (IsWindow(handle) && IsWindowVisible(handle))
+                    failed++;
             }
             return true;
         };
         if (!EnumWindows(callback, nint.Zero))
             throw new Win32Exception(Marshal.GetLastWin32Error());
+        unread = failed;
         return found;
     }
 

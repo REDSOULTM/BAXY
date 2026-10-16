@@ -111,7 +111,9 @@ public sealed record WindowMinimizeAllResult(
     // Round A: the minimize was sent and some windows were not read back minimized.
     bool EffectMayHaveOccurred = false,
     // Ronda final: windows that were gone when sent to or read back (closed meanwhile): never counted as minimized.
-    int Gone = 0);
+    int Gone = 0,
+    // Auditoría final: desktop windows there and not read, so not among «all».
+    int Unread = 0);
 
 // CLOSEALL1733 «cerrame todo»: the desktop windows found before, how many were
 // verified closed, how many stayed visible, how many were kept on purpose
@@ -129,7 +131,9 @@ public sealed record WindowCloseAllResult(
     // Auditoría D7: windows that went invisible instead of closing, and windows gone before the close reached them;
     // neither is counted in Closed.
     int Hidden = 0,
-    int AlreadyGone = 0);
+    int AlreadyGone = 0,
+    // Auditoría final: desktop windows there and not read, so not among «all».
+    int Unread = 0);
 
 public interface IWindowControlProvider
 {

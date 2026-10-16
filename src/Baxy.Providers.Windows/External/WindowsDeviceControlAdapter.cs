@@ -1120,13 +1120,21 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // drives connected right now, read through DriveInfo; nothing is copied.
     private static ExternalCapabilityReceipt RemovableStorageList(string operation)
     {
+        // Auditoría final (regla 3): a removable drive that is there but not ready (locked by BitLocker, RAW, still
+        // mounting) or whose read failed is counted and named by its letter, never left out of «the drives».
         var drives = new List<(string Letter, string Label, string Format, double FreeGiB, double TotalGiB)>();
+        var notRead = new List<string>();
         foreach (DriveInfo drive in DriveInfo.GetDrives())
         {
             try
             {
-                if (drive.DriveType != DriveType.Removable || !drive.IsReady)
+                if (drive.DriveType != DriveType.Removable)
                 {
+                    continue;
+                }
+                if (!drive.IsReady)
+                {
+                    notRead.Add(drive.Name.TrimEnd('\\', '/'));
                     continue;
                 }
                 string letter = drive.Name.TrimEnd('\\', '/');
@@ -1136,7 +1144,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
-                continue;
+                notRead.Add(drive.Name.TrimEnd('\\', '/'));
             }
         }
         JsonElement result = ExternalJson.Create(writer =>
@@ -1144,6 +1152,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteNumber("driveCount", drives.Count);
+            if (notRead.Count > 0)
+            {
+                writer.WriteStartArray("presentNotReadable");
+                foreach (string letter in notRead)
+                    writer.WriteStringValue(letter);
+                writer.WriteEndArray();
+            }
             writer.WriteStartArray("drives");
             foreach ((string letter, string label, string format, double free, double total) in drives)
             {
@@ -1181,13 +1196,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Read-Items {
           $r=@();$node=[System.Windows.Automation.AutomationElement]::FocusedElement
           if($null -eq $node -or $node.Current.ProcessId -ne $clientPid){return ,$r}
-          # Auditoría final (regla 3): the switcher counts as read only when the focus was in the client's own tree.
-          $script:read=$true
+          # Auditoría final (regla 3): the switcher counts as read only with its rows found, or with the focus in a text
+          # field that holds exactly what was typed (the switcher's own input, with no match); a focus left in the
+          # message box is the switcher not read.
+          try{$vp=$null;if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit -and $node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp) -and ([string]$vp.Current.Value) -eq $label){$script:read=$true}}catch{}
           $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
           $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
           while($null -ne $node -and $node.Current.ControlType -ne [System.Windows.Automation.ControlType]::Document -and $node.Current.NativeWindowHandle -ne $h.ToInt32()){
             $found=$node.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
-            if($found.Count -gt 0){foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}};break}
+            if($found.Count -gt 0){$script:read=$true;foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}};break}
             $node=$walker.GetParent($node)
           }
           ,$r

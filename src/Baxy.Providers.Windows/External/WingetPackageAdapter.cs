@@ -444,6 +444,10 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             rows.Add(new PackageRow(name, id.Groups["id"].Value, rest[0], source));
         }
 
+        // Auditoría final (regla 3): a winget that exited 0 without its table was not read; «no rows» is only an empty
+        // table under its header (no results is its own exit code, NoInstalledPackageFound).
+        if (!body)
+            throw new IOException("winget printed no table.");
         return rows;
     }
 

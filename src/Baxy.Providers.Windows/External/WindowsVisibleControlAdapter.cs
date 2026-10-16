@@ -630,6 +630,16 @@ internal sealed class WindowsVisibleControlAdapter
 {
     // The code of a click refused because its window runs as administrator (contract §4, «window_elevated»).
     internal const string WindowElevated = "window_elevated";
+    private static readonly TimeSpan AnimationProbe = TimeSpan.FromMilliseconds(120);
+    // Auditoría final (regla 3): a window whose process token could not be read is not said to run as administrator;
+    // it is refused all the same (nothing is pressed where UIPI may block it), as not read.
+    internal const string WindowElevationUnread = "window_elevation_unread";
+
+    private static string ElevatedCode(nint window)
+    {
+        int processId = VisibleControlSurface.WindowProcess(window).ProcessId;
+        return processId > 0 && VisibleControlSurface.Elevated(processId) is null ? WindowElevationUnread : WindowElevated;
+    }
 
     // Encargo V: the worker found the control to press and its name asks for the person's word while no label of the click
     // does (RiskPolicy.PressedNameAsksMoreThanItsLabel): nothing is pressed, by this stage or a later one, and the receipt
@@ -649,6 +659,8 @@ internal sealed class WindowsVisibleControlAdapter
     {
         "visible_click_no_receipt",
         "visible_click_receipt_invalid",
+        // Auditoría final (regla 3): the press raised once sent; it may have acted, so no later stage presses again.
+        "visible_press_raised",
     };
 
     // H0096 «aprieta en Among Us»: el worker sólo emite este código después de
@@ -1110,7 +1122,7 @@ internal sealed class WindowsVisibleControlAdapter
                 if (ShouldKeep(uia))
                     return uia;
                 // An administrator's window refuses every stage alike (UIPI): no OCR, tooltip or vision is tried on it.
-                if (uia.ErrorCode is WindowElevated or NeedsConfirmation)
+                if (uia.ErrorCode is WindowElevated or WindowElevationUnread or NeedsConfirmation)
                     return uia;
                 if (uia.EffectMayHaveOccurred && uia.ErrorCode is { } unanswered && PressUnanswered.Contains(unanswered))
                     return uia;
@@ -2028,7 +2040,7 @@ internal sealed class WindowsVisibleControlAdapter
         // input from BAXY. Every click route says so before acting, never «nothing on the screen is called that»
         // (live v3-21: «add the command line column» answered as a missing label). Only the view marked it before.
         if (_elevated(hwnd))
-            return ExternalJson.FailureBeforeEffect(operation, WindowElevated);
+            return ExternalJson.FailureBeforeEffect(operation, ElevatedCode(hwnd));
         _lookedWindow = hwnd;
 
         return await PressUiaAsync(operation, label, controlId, hwnd, effectBoundary, cancellationToken, manner)
@@ -2056,7 +2068,7 @@ internal sealed class WindowsVisibleControlAdapter
         if (BurstLease is not { } lease || TypeInWindow is null)
             return ExternalJson.FailureBeforeEffect(operation, "visible_search_unavailable");
         if (_elevated(window))
-            return ExternalJson.FailureBeforeEffect(operation, WindowElevated);
+            return ExternalJson.FailureBeforeEffect(operation, ElevatedCode(window));
         IReadOnlyList<ViewControl> before;
         lock (_viewLock)
         {
@@ -2327,6 +2339,16 @@ internal sealed class WindowsVisibleControlAdapter
         try
         {
             before = await _capture(hwnd, null, cancellationToken).ConfigureAwait(false);
+            // Auditoría final (regla 3): a window that changes by itself (a video, a caret, a spinner) gives no proof of
+            // the click by its image: two captures before it that differ leave the surface out of the post-read (the
+            // control's own answer, a popup or a window it handed to still prove it).
+            if (before is { } first)
+            {
+                await Task.Delay(AnimationProbe, cancellationToken).ConfigureAwait(false);
+                VisibleControlSurface.CapturedWindow? second = await _capture(hwnd, first.SelfDrawn, cancellationToken).ConfigureAwait(false);
+                if (second is not { } next || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
+                    before = null;
+            }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {

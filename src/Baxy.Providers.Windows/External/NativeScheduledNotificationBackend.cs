@@ -72,7 +72,8 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         // «enabled», nor «not shown», nor counted toward «healthy».
         int? toastSetting = host.ToastsEnabledSetting();
         bool? toastEnabled = toastSetting is null ? null : toastSetting.Value != 0;
-        List<FiredReceipt> fired = FiredReceipts(request.AlarmRoot);
+        List<FiredReceipt>? read = FiredReceipts(request.AlarmRoot);
+        List<FiredReceipt> fired = read ?? [];
         int firedNotShown = fired.Count(receipt => receipt.NotificationShown == false);
         int firedShownUnread = fired.Count(receipt => receipt.NotificationShown is null);
         IReadOnlyList<ScheduledTaskSnapshot>? observed;
@@ -89,7 +90,7 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         }
         int issueCount = (observed?.Count(task => !Acceptable(task.LastTaskResult)) ?? 1) + firedNotShown
             + (toastEnabled == false ? 1 : 0);
-        bool allRead = toastEnabled is not null && firedShownUnread == 0;
+        bool allRead = toastEnabled is not null && read is not null && firedShownUnread == 0;
         return Json(writer =>
         {
             writer.WriteNumber("version", 1);
@@ -98,7 +99,7 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
             if (toastEnabled is bool enabled) writer.WriteBoolean("toastEnabled", enabled);
             if (issueCount > 0 || allRead) writer.WriteBoolean("healthy", issueCount == 0);
             if (observed is not null) writer.WriteNumber("taskCount", observed.Count);
-            writer.WriteNumber("firedReceiptCount", fired.Count);
+            if (read is not null) writer.WriteNumber("firedReceiptCount", fired.Count);
             writer.WriteNumber("firedNotShownCount", firedNotShown);
             if (firedShownUnread > 0) writer.WriteNumber("firedShownUnreadCount", firedShownUnread);
             writer.WriteNumber("issueCount", issueCount);
@@ -327,7 +328,9 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
     private sealed record FiredReceipt(string TaskName, string? RangUtc, bool? NotificationShown, string? Sound);
 
     // The rings of this data root, the latest first; an unreadable folder has none.
-    private static List<FiredReceipt> FiredReceipts(string? alarmRoot)
+    // The receipts of the rings, newest first: none when the folder was never made (nothing scheduled yet), null when
+    // the folder could not be listed (auditoría final, regla 3: not «no rings»).
+    private static List<FiredReceipt>? FiredReceipts(string? alarmRoot)
     {
         if (string.IsNullOrEmpty(alarmRoot) || !Directory.Exists(alarmRoot)) return [];
         try
@@ -339,7 +342,7 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            return [];
+            return null;
         }
     }
 

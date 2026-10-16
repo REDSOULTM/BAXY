@@ -66,6 +66,23 @@ ARMS["think"] = [
 ]
 
 
+# P2 by task, as a stage of the protocol (never by reading the person's words): the first decision of a turn keeps
+# thinking off (its p50 must stay within 1 s), and each decision after a tool result thinks, with the card's thinking
+# sampling: the steps of computer use and of multi-step requests, the weakest areas of holdout v2.
+ARMS["thinkcont"] = [
+    ('        body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,\n'
+     '                "chat_template_kwargs": {"enable_thinking": False},\n'
+     '                ' + DECIDE_SAMPLING,
+     '        thinking = stage == "turn.continue" and not final\n'
+     '        body = {"messages": messages, "tools": self.tools, "max_tokens": 4096 if thinking else 512,\n'
+     '                "parallel_tool_calls": True, "chat_template_kwargs": {"enable_thinking": thinking},\n'
+     '                **({"temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0, "presence_penalty": 1.5}\n'
+     '                   if thinking else {"temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20,\n'
+     '                                     "min_p": 0.0}),'),
+]
+THINKING_ARMS = {"think", "thinkcont"}
+
+
 def write(out: Path, arm: str, seed: int) -> Path:
     target = out / f"d20-{arm}-s{seed}"
     if target.exists():
@@ -78,7 +95,7 @@ def write(out: Path, arm: str, seed: int) -> Path:
             raise SystemExit(f"{arm}: the text to change is not once in mind.py: {old[:60]!r}")
         text = text.replace(old, new)
     mind.write_text(text, encoding="utf-8")
-    if arm == "think":
+    if arm in THINKING_ARMS:
         server = target / "baxy_mind" / "llm_server.py"
         source = server.read_text(encoding="utf-8")
         if source.count(SERVER_THINK[0]) != 1:

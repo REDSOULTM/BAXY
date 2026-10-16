@@ -42,7 +42,12 @@ try {
         if(-not $inside.StartsWith($path.TrimEnd('\')+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'known_subdirectory_invalid'}
         $path=$inside
     }
-    if(-not (Test-Path -LiteralPath $path -PathType Container)){throw 'known_folder_missing'}
+    # Auditoría final (regla 3): only a path that is not there is «missing»; access denied, a path too long or a
+    # network that does not answer is the folder not read (Test-Path says false for all of them).
+    try{$item=Get-Item -LiteralPath $path -Force -ErrorAction Stop}
+    catch [System.Management.Automation.ItemNotFoundException]{throw 'known_folder_missing'}
+    catch{throw 'known_folder_not_read'}
+    if(-not $item.PSIsContainer){throw 'known_folder_missing'}
     Start-Process explorer.exe -ArgumentList @($path)
     $effect=$true
     $shell=New-Object -ComObject Shell.Application

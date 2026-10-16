@@ -45,10 +45,11 @@ public sealed class ComputerUseOpeningClickLatencyTests
 
     private static JsonElement Json(string text) => JsonDocument.Parse(text).RootElement.Clone();
 
-    // A window that animates (a caret, a spinner): every image differs from the one before. Before, the receipt waited
-    // for two equal images and paid the whole SurfacePostread (1.5 s); now the first different image answers.
+    // Auditoría final (regla 3): a window that animates (a caret, a spinner, a video) differs between two images taken
+    // before the click, so no image after it proves the click: an unchanged control leaves it unverified, and the
+    // surface is not watched (no capture after the click).
     [Test]
-    public async Task AClickOnAnAnimatedWindowIsVerifiedAtTheFirstDifferentImage()
+    public async Task AClickOnAnAnimatedWindowIsNeverVerifiedByItsImage()
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(PendingClick, UnchangedControl);
         int captures = 0;
@@ -56,18 +57,15 @@ public sealed class ComputerUseOpeningClickLatencyTests
             ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
                 new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, "frame" + captures++));
         var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: Capture);
-        var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
 
-        TestContext.Out.WriteLine($"animated window receipt: {clock.ElapsedMilliseconds} ms (budget {VisibleClickTiming.Default.SurfacePostread.TotalMilliseconds} ms)");
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("surfaceChanged").GetBoolean(), Is.True);
-            Assert.That(captures, Is.EqualTo(2), "the image before and the first one after");
-            Assert.That(clock.Elapsed, Is.LessThan(VisibleClickTiming.Default.SurfacePostread / 2));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.Result?.TryGetProperty("surfaceChanged", out _) ?? false, Is.False);
+            Assert.That(captures, Is.EqualTo(2), "the two images before the click, and none after it");
         });
     }
 
