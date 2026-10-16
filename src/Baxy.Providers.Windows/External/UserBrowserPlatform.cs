@@ -37,7 +37,8 @@ internal sealed record UserBrowserFrame(
     string Address,
     string PageId,
     string PageTitle,
-    double Scroll);
+    double Scroll,
+    bool TabsComplete = true);
 
 /// <summary>What a UI Automation step inside the frame or the page did (see UserBrowserScripts.Act).</summary>
 internal sealed record UserBrowserAct(string Step, double Before, double After);
@@ -59,7 +60,8 @@ internal interface IUserBrowserPlatform
 
     IReadOnlyList<UserBrowserWindow> ListWindows(string processName);
 
-    ValueTask<IReadOnlyList<UserMediaSession>> ReadMediaSessionsAsync(CancellationToken cancellationToken);
+    /// <summary>The media sessions, or null when they could not all be read.</summary>
+    ValueTask<IReadOnlyList<UserMediaSession>?> ReadMediaSessionsAsync(CancellationToken cancellationToken);
 
     ValueTask<bool> PlayMediaSessionAsync(UserMediaSession session, CancellationToken cancellationToken);
 
@@ -174,9 +176,9 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         return windows;
     }
 
-    public async ValueTask<IReadOnlyList<UserMediaSession>> ReadMediaSessionsAsync(
+    public async ValueTask<IReadOnlyList<UserMediaSession>?> ReadMediaSessionsAsync(
         CancellationToken cancellationToken) =>
-        await MediaSessionCalls.ReadAsync(cancellationToken).ConfigureAwait(false);
+        await MediaSessionCalls.ReadCompleteAsync(cancellationToken).ConfigureAwait(false);
 
     public async ValueTask<bool> PlayMediaSessionAsync(
         UserMediaSession target, CancellationToken cancellationToken)
@@ -280,7 +282,8 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             Text(value, "address"),
             hasPage ? Text(page, "id") : string.Empty,
             hasPage ? Text(page, "title") : string.Empty,
-            hasPage ? Number(page, "scroll", -1) : -1);
+            hasPage ? Number(page, "scroll", -1) : -1,
+            !(value.TryGetProperty("tabsComplete", out JsonElement complete) && complete.ValueKind == JsonValueKind.False));
     }
 
     public bool PostAppCommand(nint window, int command) =>

@@ -18,7 +18,8 @@ public sealed class UserBrowserTests
         "\"C:\\Users\\owner\\AppData\\Local\\Programs\\Opera GX\\opera.exe\" -noautoupdate -- \"%1\"";
 
     // A new tab or the browser's start page leaves the address field empty: the read finds no address there.
-    private static string? EmptyAddressField(nint window) => null;
+    // The whole frame read with no address on show (a new tab, the start page): an empty value, not «not read» (null).
+    private static string? EmptyAddressField(nint window) => string.Empty;
 
     private static readonly UserBrowserIdentity OperaGx = new(
         "Opera GXStable", "opera_gx", "Opera GX",
@@ -397,6 +398,25 @@ public sealed class UserBrowserTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://www.youtube.com/feed/you"));
         });
+    }
+
+    [Test]
+    public async Task ARedirectAfterAnUnreadEarlierAddressIsNeverTakenForTheLanding()
+    {
+        // Auditoría final (regla 3): the front tab's address before the link was not read, so a page of the same site
+        // there may be the one the person already had: the navigation stays unconfirmed.
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressBeforeOpen = _ => null,
+            AddressOf = _ => "www.youtube.com/feed/you",
+        };
+        platform.WindowsAfterOpen = [new(11, "YouTube - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://youtube.com/"}"""), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.False);
     }
 
     [Test]
@@ -1826,17 +1846,17 @@ public sealed class UserBrowserTests
 
         internal int SessionReads { get; private set; }
 
-        public ValueTask<IReadOnlyList<UserMediaSession>> ReadMediaSessionsAsync(CancellationToken cancellationToken)
+        public ValueTask<IReadOnlyList<UserMediaSession>?> ReadMediaSessionsAsync(CancellationToken cancellationToken)
         {
             SessionReads++;
             if (!_opened)
-                return ValueTask.FromResult(SessionsBeforeOpen);
+                return ValueTask.FromResult<IReadOnlyList<UserMediaSession>?>(SessionsBeforeOpen);
             if (SessionsAfterOpen.Count == 0)
-                return ValueTask.FromResult<IReadOnlyList<UserMediaSession>>([]);
+                return ValueTask.FromResult<IReadOnlyList<UserMediaSession>?>([]);
             IReadOnlyList<UserMediaSession> current = SessionsAfterOpen[0];
             if (SessionsAfterOpen.Count > 1)
                 SessionsAfterOpen.RemoveAt(0);
-            return ValueTask.FromResult(current);
+            return ValueTask.FromResult<IReadOnlyList<UserMediaSession>?>(current);
         }
 
         public ValueTask<bool> PlayMediaSessionAsync(UserMediaSession session, CancellationToken cancellationToken)

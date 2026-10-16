@@ -84,6 +84,29 @@ internal static class MediaSessionCalls
         return reads.Where(item => item.Answered).Select(item => item.Value).ToArray();
     }
 
+    /// <summary>
+    /// Auditoría final (regla 3): the sessions as <see cref="ReadAsync"/> reads them, or null when the read is not
+    /// complete (the service did not answer, a session did not answer or its read failed): a «before» that must tell an
+    /// old session from a new one is never a partial list.
+    /// </summary>
+    internal static async Task<IReadOnlyList<UserMediaSession>?> ReadCompleteAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            GlobalSystemMediaTransportControlsSessionManager manager =
+                await GlobalSystemMediaTransportControlsSessionManager.RequestAsync().Bounded(cancellationToken)
+                    .ConfigureAwait(false);
+            IReadOnlyList<GlobalSystemMediaTransportControlsSession> all = manager.GetSessions();
+            IReadOnlyList<UserMediaSession> read =
+                await ReadEachAsync(all, ReadOneAsync, cancellationToken).ConfigureAwait(false);
+            return read.Count == all.Count ? read : null;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>The system media sessions now: source, title, artist and playback status. Empty when unreadable.</summary>
     internal static async Task<IReadOnlyList<UserMediaSession>> ReadAsync(CancellationToken cancellationToken = default)
     {

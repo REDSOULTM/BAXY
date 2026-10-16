@@ -55,25 +55,32 @@ internal static class UserBrowserScripts
           $queue = New-Object System.Collections.Generic.Queue[object]
           $queue.Enqueue(@($root, 0))
           $visited = 0
+          # Auditoría final (regla 3): no address is read as «none shown» (a new tab, the start page: ok with an empty
+          # value) only when the whole frame was walked with every node read; a node that failed, a field whose value
+          # could not be read or a walk cut by its limits is the address not read.
+          $unread = $false
           while ($queue.Count -gt 0 -and $visited -lt 1500) {
             $pair = $queue.Dequeue()
             $node = $pair[0]; $depth = $pair[1]
             $visited++
-            try { $type = $node.Current.ControlType } catch { continue }
+            try { $type = $node.Current.ControlType } catch { $unread = $true; continue }
             if ($type -eq $document) { continue }
             if ($type -eq $edit) {
               $pattern = $null
-              if ($node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$pattern)) {
-                $value = [string]$pattern.Current.Value
-                if ($value -and $value -notmatch '\s' -and $value -match '[\.:/]') {
-                  Emit $true $value ''
-                  exit 0
+              try {
+                if ($node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$pattern)) {
+                  $value = [string]$pattern.Current.Value
+                  if ($value -and $value -notmatch '\s' -and $value -match '[\.:/]') {
+                    Emit $true $value ''
+                    exit 0
+                  }
                 }
-              }
+              } catch { $unread = $true }
             }
-            if ($depth -ge 24) { continue }
+            if ($depth -ge 24) { $unread = $true; continue }
             foreach ($child in (Children $walker $node)) { $queue.Enqueue(@($child, ($depth + 1))) }
           }
+          if (-not $unread -and $queue.Count -eq 0) { Emit $true '' ''; exit 0 }
           Emit $false '' 'address_field_not_found'
         } catch {
           Emit $false '' ('uia_failed: ' + $_.Exception.GetType().Name)
@@ -342,11 +349,14 @@ internal static class UserBrowserScripts
           $queue = New-Object System.Collections.Generic.Queue[object]
           $queue.Enqueue(@($root, 0))
           $visited = 0
+          # Auditoría final (regla 3): a node or a tab that could not be read, or a walk cut by its limit, leaves the
+          # tab list incomplete, never shorter.
+          $unreadNodes = 0
           while ($queue.Count -gt 0 -and $visited -lt 2500) {
             $pair = $queue.Dequeue()
             $node = $pair[0]; $depth = $pair[1]
             $visited++
-            try { $current = $node.Current; $type = $current.ControlType } catch { continue }
+            try { $current = $node.Current; $type = $current.ControlType } catch { $unreadNodes++; continue }
             if ($type -eq $CT::Document) {
               if ($current.AutomationId -eq 'RootWebArea') { $documents.Add($node) }
               continue
@@ -365,7 +375,7 @@ internal static class UserBrowserScripts
                   $y = ($box.Top + $box.Height / 2 - $frame.Top) / $frame.Height
                 }
                 $tabs.Add([pscustomobject]@{ title = [string]$current.Name; selected = $selected; shown = $shown; x = $x; y = $y })
-              } catch { }
+              } catch { $unreadNodes++ }
               continue
             }
             if ($type -eq $CT::Button -and $back -eq '') {
@@ -403,8 +413,9 @@ internal static class UserBrowserScripts
             }
           }
           $reason = if ($tabs.Count -gt 0) { '' } else { 'tab_strip_not_found' }
+          $tabsComplete = $unreadNodes -eq 0 -and $queue.Count -eq 0
           [pscustomobject]@{
-            version = 1; ok = ($tabs.Count -gt 0); tabs = $tabs.ToArray(); back = $back; address = $address
+            version = 1; ok = ($tabs.Count -gt 0); tabs = $tabs.ToArray(); tabsComplete = $tabsComplete; back = $back; address = $address
             page = [pscustomobject]@{ id = $pageId; title = $pageTitle; scroll = $scroll }; error = $reason
           } | ConvertTo-Json -Compress -Depth 4
         } catch {

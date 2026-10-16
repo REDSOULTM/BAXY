@@ -15,6 +15,7 @@ namespace Baxy.Providers.Windows.External;
 /// </summary>
 internal sealed partial class UserBrowserSurface
 {
+    internal const string MediaSessionsNotRead = "media_sessions_not_read_before";
     internal const string NavigationUnconfirmed = "user_browser_navigation_unconfirmed";
     internal const string PlaybackUnconfirmed = "user_browser_playback_unconfirmed";
     internal const string StreamingPlaybackUnconfirmed = "user_browser_streaming_playback_unconfirmed";
@@ -158,10 +159,15 @@ internal sealed partial class UserBrowserSurface
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<UserMediaSession> before = await _platform.ReadMediaSessionsAsync(cancellationToken)
+        IReadOnlyList<UserMediaSession>? read = await _platform.ReadMediaSessionsAsync(cancellationToken)
             .ConfigureAwait(false);
         // A browser that is not running yet has a launch of its own to pay before any page plays.
         bool browserRunning = _platform.ListWindows(browser.ProcessName).Count > 0;
+        // Auditoría final (regla 3): with the sessions before the page not all read, an old session cannot be told
+        // from the new one (nor kept from being pressed), so nothing is opened; a browser not running has none.
+        if (read is null && browserRunning)
+            return ExternalJson.FailureBeforeEffect(operation, MediaSessionsNotRead);
+        IReadOnlyList<UserMediaSession> before = read ?? [];
         if (!TryOpen(video.WatchUri, effectBoundary, cancellationToken))
             return null;
         // Ronda 19 (t1-c01 «ponme algo de los prisioneros», Opera closed): a browser this request launched has no
@@ -202,8 +208,11 @@ internal sealed partial class UserBrowserSurface
         CancellationToken cancellationToken)
     {
         StreamingSearch search = SearchFor(service, title);
-        IReadOnlyList<UserMediaSession> sessionsBefore = await _platform.ReadMediaSessionsAsync(cancellationToken)
+        IReadOnlyList<UserMediaSession>? sessionsRead = await _platform.ReadMediaSessionsAsync(cancellationToken)
             .ConfigureAwait(false);
+        if (sessionsRead is null && _platform.ListWindows(browser.ProcessName).Count > 0)
+            return ExternalJson.FailureBeforeEffect(operation, MediaSessionsNotRead);
+        IReadOnlyList<UserMediaSession> sessionsBefore = sessionsRead ?? [];
         NavigationBaseline windowsBefore = await BaselineAsync(browser, cancellationToken).ConfigureAwait(false);
         if (!TryOpen(search.Address, effectBoundary, cancellationToken))
             return null;
@@ -366,6 +375,8 @@ internal sealed partial class UserBrowserSurface
             writer.WriteNumber("version", 1);
             writer.WriteNumber("count", tabs.Count);
             writer.WriteBoolean("truncated", tabs.Count > limit);
+            // Auditoría final (regla 3): a tab strip read with tabs that failed is the tabs read, not all of them.
+            if (frame is { TabsComplete: false }) writer.WriteBoolean("tabsComplete", false);
             writer.WriteStartArray("tabs");
             foreach (UserBrowserTab tab in tabs.Take(limit))
             {
@@ -457,23 +468,23 @@ internal sealed partial class UserBrowserSurface
 
     /// <summary>
     /// The browser before the link is opened: the title of each window and the address field of the front one, where
-    /// the browser opens a link in a new tab. <paramref name="FrontAddress"/> is null when that field held no address:
-    /// a new tab or the browser's start page leaves it empty (the read skips an empty field, as it skips Opera GX's
-    /// empty <c>AddressBarViewGx</c>), so no page of any site was on show there.
+    /// the browser opens a link in a new tab. <paramref name="FrontAddress"/> is empty when the whole frame was read and
+    /// showed no address (a new tab, the start page, Opera GX's empty <c>AddressBarViewGx</c>): no page of any site was on
+    /// show there. It is null when the address was not read, so the earlier page there is not known.
     /// </summary>
     private sealed record NavigationBaseline(Dictionary<nint, string> Titles, nint Front, string? FrontAddress)
     {
         /// <summary>
         /// The address could only have come from the link just opened: its window is new, or it is the front window
-        /// and its address field showed something else before (no address at all on a new tab or start page).
-        /// Another window's earlier address is unknown, so an address there that is not the destination itself is
-        /// never taken for the arrival.
+        /// and its address field was read before showing no address or another one. Auditoría final (regla 3): an
+        /// earlier address not read is unknown, as another window's is, so an address there that is not the
+        /// destination itself is never taken for the arrival.
         /// </summary>
         internal bool Fresh(nint window, Uri observed)
         {
             if (!Titles.ContainsKey(window))
                 return true;
-            if (window != Front)
+            if (window != Front || FrontAddress is null)
                 return false;
             return !(TryAddress(FrontAddress, out Uri? earlier) && SameAddress(earlier, observed));
         }
@@ -490,7 +501,7 @@ internal sealed partial class UserBrowserSurface
             return new(titles, nint.Zero, null);
         nint front = windows[0].Handle;
         string? address = await _platform.ReadAddressAsync(front, cancellationToken).ConfigureAwait(false);
-        return new(titles, front, string.IsNullOrWhiteSpace(address) ? null : address.Trim());
+        return new(titles, front, address?.Trim());
     }
 
     /// <summary>
@@ -651,7 +662,7 @@ internal sealed partial class UserBrowserSurface
         {
             await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);
             IReadOnlyList<UserMediaSession> sessions = await _platform.ReadMediaSessionsAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) ?? [];
             traced |= !BrowserSessionsUnchanged(browser, before, sessions);
             UserMediaSession? candidate = PlaybackCandidate(
                 browser, expectedTitle, before, sessions, anyNewBrowserSession, coldLaunch);
