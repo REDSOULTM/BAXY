@@ -118,7 +118,11 @@ internal static class HeartbeatMoment
         if (GetSystemPowerStatus(out PowerStatus power) && power.BatteryLifePercent <= 100)
         {
             pc["battery_pct"] = (int)power.BatteryLifePercent;
-            pc["plugged"] = power.ACLineStatus == 1;
+            // Ronda final: ACLineStatus 255 is «unknown»: the plug is said only when Windows read it (0 or 1).
+            if (power.ACLineStatus is 0 or 1)
+            {
+                pc["plugged"] = power.ACLineStatus == 1;
+            }
         }
 
         try
