@@ -7,7 +7,9 @@ N ms after the previous answer started to sound), the replies and utterances wri
 then the cleanup. Writes <banks>/runs/<label>-e2e/results.jsonl (summary first) beside the conductor's events.jsonl.
 Speed per turn, from its text: first_audio_ms is its first sound, whatever was said first (the notice of a silent turn
 counts, it is sound: the goal's «3 s en silencio»); first_response_audio_ms is the first sound of its response. The
-notice's utterance is of the bank's kind "progress" (the conductor marks it notice).
+notice's utterance is of the bank's kind "progress" (the conductor marks it notice). A turn whose response never
+sounded is listed in turns_unanswered (case#turn) and counts as the slowest in first_response_audio_p50_all_turns_ms,
+beside the median of the turns that sounded (first_response_audio_p50_ms).
 """
 import argparse
 import json
@@ -258,7 +260,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
     _, cleanup_out = run_ps(cleanup, lib_env, 300)
     leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
     ok = bool(oracles) and all(o["ok"] for o in oracles) and spoken_ok  # a case with no oracle checks nothing
-    first_audio, first_response_audio = [], []
+    first_audio, first_response_audio, unanswered = [], [], []
     for number in range(1, len(turn_from) + 1):
         sounds = [s for s in speech if s["turn"] == number and s["first_audio_ms"] is not None]
         if sounds:
@@ -266,9 +268,12 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
         response = [s["first_audio_ms"] for s in sounds if s["kind"] != "progress"]
         if response:
             first_response_audio.append(response[0])
+        else:
+            unanswered.append(number)  # its response never sounded (a notice alone does not answer)
     return {"id": case["id"], "area": case.get("area"), "kind": case.get("kind"), "ok": ok,
             "status": "ok" if ok else "fallo", "spoken_ok": spoken_ok, "oracles": oracles, "replies": replies,
             "first_audio_ms": first_audio, "first_response_audio_ms": first_response_audio,
+            "turns": len(turn_from), "turns_unanswered": unanswered,
             "notices": sum(s["kind"] == "progress" for s in speech), "leftovers": leftovers,
             "steps": [{"op": e["operation"], "status": e["status"], "verified": e["verified"]}
                       for events in turn_events for e in events if e["type"] == "step"],
@@ -323,6 +328,12 @@ def main() -> None:
         tally[1] += 1
     audio = [ms for row in rows for ms in row.get("first_audio_ms") or []]
     response_audio = [ms for row in rows for ms in row.get("first_response_audio_ms") or []]
+    unanswered = [f"{row['id']}#{number}" for row in rows for number in row.get("turns_unanswered") or []]
+    turns = sum(row.get("turns") or 0 for row in rows)
+    # Every turn counts: one whose response never sounded is later than any that did (round A/B: the median of the
+    # sounded turns alone left them out). None when the middle turn is one that never sounded.
+    every = sorted(response_audio) + [float("inf")] * len(unanswered)
+    every_p50 = statistics.median(every) if every else None
     summary = {"label": args.label, "cases": args.cases, "ok": sum(r["ok"] for r in rows), "n": len(rows),
                "stopped_before": stopped_before,
                "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4), "areas": by_area,
@@ -333,6 +344,8 @@ def main() -> None:
                "first_response_audio_p50_ms": statistics.median(response_audio) if response_audio else None,
                "first_response_audio_over_3s": sum(ms > 3000 for ms in response_audio),
                "turns_sounded": len(audio),
+               "turns": turns, "turns_unanswered": unanswered,
+               "first_response_audio_p50_all_turns_ms": None if every_p50 in (None, float("inf")) else every_p50,
                "setup_failed": [r["id"] for r in rows if r["status"] == "setup_fallido"]}
     with (run_dir / "results.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")

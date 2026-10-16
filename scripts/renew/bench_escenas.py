@@ -5,9 +5,8 @@ Each scene's context goes to Mind.beat as the App would send it. What the model 
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
 result; a call the App holds in a heartbeat for the person's «sí» is a proposal (the high risks, and what sends input
 to a window or something out of the PC, read from src/Baxy.App/NativeTurnLoop.cs as the App has them); any other
-effect is an action; words alone are a message; LATIDO_OK is silence. The channel is the owner's rule (decision 5, 2026-10-16:
-a notification while the person plays, is on a call or watches something, the voice otherwise), the App's and not
-the model's: it is not scored (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
+effect is an action; words alone are a message; LATIDO_OK is silence. The channel (voice or a notification) is the
+App's (HeartbeatMoment.Speaks), not the model's, and is not judged (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
 import argparse
 import json
@@ -30,10 +29,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import current  # noqa: E402
 
 
-def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str, tuple[str, set[str]]]]:
+def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str, tuple[str, set[str]]],
+                               dict[str, tuple[str, str]]]:
     """What the App holds in a heartbeat, read from its source: the risks of ProposedRisks, the operations named in
     SendsInputToAWindow, ReachesTheNetwork and ReplacesThePersonsClipboard, those held only with an argument («operation == "x" && arguments["y"]»),
-    and those held unless an argument names something other than the provider's ids it is compared with
+    those held only with an argument of one value («operation == "x" && (string?)arguments["y"] == "v"»: the argument and
+    the value), and those held unless an argument names something other than the provider's ids it is compared with
     («operation == "x" && !(arguments["y"] … WindowsExternalCapabilityProvider.Z)»: the argument and those ids)."""
     source = (ROOT / "src" / "Baxy.App" / "NativeTurnLoop.cs").read_text(encoding="utf-8")
     provider = (ROOT / "src" / "Baxy.Providers.Windows" / "External" /
@@ -58,14 +59,19 @@ def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str
                 raise SystemExit(f"WindowsExternalCapabilityProvider.cs no longer has {name}")
             ids.add(value.group(1).lower())
         unless[op] = (argument, ids)
-    if len(re.findall(r'operation ==', text)) != sum(len(arguments) for arguments in conditional.values()) + len(unless):
+    valued: dict[str, tuple[str, str]] = {}
+    for op, argument, value in re.findall(
+            r'operation == "([^"]+)"\s*&&\s*\(string\?\)arguments\["([^"]+)"\]\s*==\s*"([^"]+)"', text):
+        valued[op] = (argument, value)
+    if len(re.findall(r'operation ==', text)) != (sum(len(arguments) for arguments in conditional.values())
+                                                  + len(unless) + len(valued)):
         raise SystemExit("NativeTurnLoop.cs holds an operation by a condition this bench does not read")
-    named = set(re.findall(r'"([a-z]+(?:\.[a-z]+)+)"', text)) - set(conditional) - set(unless)
-    return set(re.findall(r'"([^"]+)"', risks.group(1))), named, conditional, unless
+    named = set(re.findall(r'"([a-z]+(?:\.[a-z]+)+)"', text)) - set(conditional) - set(unless) - set(valued)
+    return set(re.findall(r'"([^"]+)"', risks.group(1))), named, conditional, unless, valued
 
 
 def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
-    risks, named, conditional, unless = holds
+    risks, named, conditional, unless, valued = holds
     if risk in risks or op in named:
         return True
     given = arguments if isinstance(arguments, dict) else {}
@@ -73,6 +79,10 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
         argument, ids = unless[op]
         value = given.get(argument)
         return not (isinstance(value, str) and value.strip()) or value.lower() in ids
+    if op in valued:
+        argument, value = valued[op]
+        if given.get(argument) == value:
+            return True
     return any(str(given.get(argument) or "").strip() for argument in conditional.get(op, ()))
 
 

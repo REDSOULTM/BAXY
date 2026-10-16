@@ -175,7 +175,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             && !HasControlCharacter(value))
         {
             observed["remembered"] = value.Trim();
-            // Estabilización M2: the datum's name as the store keeps it, so the floor says which one
+            // Estabilización M2: the datum's name as the store keeps it, so the model can say which one
             // («Listo, me acuerdo: tu color favorito es el verde.»).
             observed["selector"] = selector.ToLowerInvariant();
         }

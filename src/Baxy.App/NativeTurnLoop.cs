@@ -85,13 +85,16 @@ internal sealed class NativeTurnLoop
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
     private bool _beat;
-    // The person's answer is the person's: it answers only a call asked before their words or their press arrived
-    // (_askedAt before _personAt, both Stopwatch timestamps), never one asked in the turn that answers nor in a
-    // heartbeat (audit 2026-10-15, App 11), nor a heartbeat's proposal made while their words waited for the turn
+    // The person's answer is the person's: it answers only a call whose question was published before their words or
+    // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
+    // ConfirmationAsk.Unpublished from the hold or the kernel's challenge until the question is published, and a turn
+    // or heartbeat that ends without publishing it drops the call), never one asked in the turn that answers nor in a
+    // heartbeat (audit 2026-10-15, App 11), nor a heartbeat's proposal asked while their words waited for the turn
     // (audit, round A: they were said before it existed). In a heartbeat every call that waits was asked in it (none
     // waits when it starts), after the person's last moment.
     private long _personAt;
     private long _askedAt;
+    private long _turnStarted;
 
     internal NativeTurnLoop(Host host)
     {
@@ -133,6 +136,7 @@ internal sealed class NativeTurnLoop
     {
         _personAt = arrivedAt;
         long started = Stopwatch.GetTimestamp();
+        _turnStarted = started;
         _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
         try
         {
@@ -141,6 +145,7 @@ internal sealed class NativeTurnLoop
         finally
         {
             _notice.Close();
+            DropUnasked();
         }
     }
 
@@ -148,7 +153,7 @@ internal sealed class NativeTurnLoop
     // they arrived: its operation, and its arguments unless it is a memory call (their values stay sealed).
     private JsonObject? WaitingCall()
     {
-        if (WaitingPrepared() is not { } prepared || _askedAt >= _personAt)
+        if (WaitingPrepared() is not { } prepared || !ConfirmationAsk.Answers(_askedAt, _personAt))
         {
             return null;
         }
@@ -208,6 +213,7 @@ internal sealed class NativeTurnLoop
         }
 
         _beat = true;
+        _turnStarted = Stopwatch.GetTimestamp();
         try
         {
             await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken),
@@ -216,6 +222,7 @@ internal sealed class NativeTurnLoop
         finally
         {
             _beat = false;
+            DropUnasked();
             _ = await mind.EndBeatAsync(cancellationToken);
         }
     }
@@ -238,15 +245,10 @@ internal sealed class NativeTurnLoop
                 case { Kind: "silence" }:
                     return;
                 case { Kind: "reply" }:
-                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
-                        ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Conversation));
+                    Publish(step.Text, PublicResponseRoute.Conversation);
                     return;
                 case { Kind: "question" }:
-                    // A question about a call that waits for the person's «sí» is that confirmation (Sí/No buttons).
-                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
-                        ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Clarification));
+                    Publish(step.Text, PublicResponseRoute.Clarification);
                     return;
             }
 
@@ -264,6 +266,25 @@ internal sealed class NativeTurnLoop
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
+
+    // A line about a call that waits for the person's «sí» is that confirmation (Sí/No buttons), when the model can be
+    // asking about it: the turn's own call or the one offered to it with the person's words (ConfirmationAsk).
+    // Its question is asked once it is published: from then on the person's words answer it.
+    private void Publish(string text, string route) =>
+        _notice.Publish(() =>
+        {
+            if (!ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted, _personAt))
+            {
+                _host.Publish(text, route);
+                return;
+            }
+
+            _host.Publish(text, PublicResponseRoute.Confirmation);
+            if (_askedAt == ConfirmationAsk.Unpublished)
+            {
+                _askedAt = Stopwatch.GetTimestamp();
+            }
+        });
 
     private async Task<string> ExecuteAsync(string operation, JsonObject arguments, CancellationToken cancellationToken)
     {
@@ -346,7 +367,7 @@ internal sealed class NativeTurnLoop
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
             _proposalExpiresUtc = DateTimeOffset.UtcNow + ProposalLifetime;
-            _askedAt = Stopwatch.GetTimestamp();
+            _askedAt = ConfirmationAsk.Unpublished;
             return Record(operation, arguments, started, WithArguments(new JsonObject
             {
                 ["status"] = "needs_confirmation",
@@ -377,6 +398,9 @@ internal sealed class NativeTurnLoop
     // whether one runs is read only as it opens, so without those three it is not held: the window that runs is left as
     // it is, or a new process starts and the front goes back where it was. input.keyboard.open starts osk.exe, which
     // sends nothing to any window and does not take the focus (DesktopKeyPress.ps1): it is not held either.
+    // system.settings.set with do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch
+    // by UI Automation's Toggle (WindowsDeviceControlAdapter's DoNotDisturbScript): held; with airplane_mode it goes
+    // through the radios API and reaches no window. The setting is a string by then: the catalog's schema checked it.
     private static bool SendsInputToAWindow(string operation, JsonObject arguments) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
             or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
@@ -386,6 +410,7 @@ internal sealed class NativeTurnLoop
         || (operation == "app.open" && arguments["foreground"] is JsonValue front && IsTrue(front))
         || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
         || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))
+        || (operation == "system.settings.set" && (string?)arguments["setting"] == "do_not_disturb")
         || (operation == "media.control" && !(arguments["sourceApp"] is JsonValue source && Named(source)
             && !string.Equals((string?)source, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
                 StringComparison.OrdinalIgnoreCase)));
@@ -460,7 +485,7 @@ internal sealed class NativeTurnLoop
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
         bool approve = arguments["approve"] is JsonValue value && value.TryGetValue(out bool approved) && approved;
-        if (HasPendingConfirmation && _askedAt >= _personAt)
+        if (HasPendingConfirmation && !ConfirmationAsk.Answers(_askedAt, _personAt))
         {
             // Only the person answers, and only a call asked before their words or their press: the waiting call stays
             // as it is until they do.
@@ -582,7 +607,7 @@ internal sealed class NativeTurnLoop
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
-            _askedAt = Stopwatch.GetTimestamp();
+            _askedAt = ConfirmationAsk.Unpublished;
             JsonObject asked = WithArguments(new JsonObject
             {
                 ["status"] = "needs_confirmation",
@@ -651,6 +676,16 @@ internal sealed class NativeTurnLoop
         if (!memory)
         {
             _host.Registry()?.MarkResolved(prepared);
+        }
+    }
+
+    // A call held or challenged in a turn or heartbeat that ended without publishing its question was asked of nobody:
+    // it is dropped, never left for words that did not answer it.
+    private void DropUnasked()
+    {
+        if (_askedAt == ConfirmationAsk.Unpublished)
+        {
+            DropPending();
         }
     }
 

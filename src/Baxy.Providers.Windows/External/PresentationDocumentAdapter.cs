@@ -74,7 +74,7 @@ internal sealed class PresentationDocumentAdapter : IExternalOperationAdapter
         effectBoundary.Cross(cancellationToken);
         try
         {
-            WritePackage(path, title, slides);
+            WritePackage(path, slides);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
@@ -115,7 +115,7 @@ internal sealed class PresentationDocumentAdapter : IExternalOperationAdapter
         return ValueTask.FromResult(ExternalJson.Success(operation, result, effectObserved: true));
     }
 
-    internal static void WritePackage(string path, string title, IReadOnlyList<(string Title, string[] Bullets)> slides)
+    internal static void WritePackage(string path, IReadOnlyList<(string Title, string[] Bullets)> slides)
     {
         using FileStream stream = new(path, FileMode.CreateNew, FileAccess.Write);
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create);
@@ -201,8 +201,6 @@ internal sealed class PresentationDocumentAdapter : IExternalOperationAdapter
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
                 + "<Relationship Id=\"rIdLayout\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout1.xml\"/></Relationships>");
         }
-
-        _ = title;
     }
 
     private static void Add(ZipArchive zip, string name, string xml)
