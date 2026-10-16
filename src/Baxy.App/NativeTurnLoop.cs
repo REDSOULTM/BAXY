@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.External;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
@@ -339,7 +340,7 @@ internal sealed class NativeTurnLoop
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
-        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation)
+        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation, arguments)
                 || ReachesTheNetwork(operation, arguments)))
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
@@ -357,18 +358,25 @@ internal sealed class NativeTurnLoop
             ;
     }
 
-    // Every operation whose provider sends keys, clicks or window commands (SendInput, UI Automation's Invoke or
-    // SetValue, posted messages, ShowWindow/SetWindowPos) to a window that may be the person's. The catalog has no typed
-    // fact for it yet, so the list is by name: an operation that starts sending input joins it (audit 2026-10-15, App
-    // H1: input.keyboard.layout posts WM_INPUTLANGCHANGEREQUEST to the focused window, and window.* move, size, show or
-    // focus the person's windows; media.control and media.seek.relative drive the person's player, its YouTube tab as
-    // browser.control does).
-    private static bool SendsInputToAWindow(string operation) =>
+    // Every operation whose provider sends keys, clicks, window commands or a script (SendInput, UI Automation's Invoke
+    // or SetValue, posted messages, ShowWindow/SetWindowPos, a script run in a page as a user gesture) to a window that
+    // may be the person's. The catalog has no typed fact for it yet, so the list is by name: an operation that starts
+    // sending input joins it (audit 2026-10-15, App H1: input.keyboard.layout posts WM_INPUTLANGCHANGEREQUEST to the
+    // focused window, and window.* move, size, show or focus the person's windows; owner, 2026-10-16: minimizing one and
+    // restoring it are done alone). media.control goes to BAXY's own player (mpv, by the pipe BAXY opened for it), then
+    // to the system's media controls (SMTC: the owner's channel for a heartbeat, 2026-10-16), then to the YouTube tab of
+    // BAXY's browser, which CDP drives by running a script in the page as a user gesture, in a window that holds the
+    // person's session: it is held unless its sourceApp names a session other than that tab, which the tab's adapter
+    // refuses before any effect (WebBrowserAdapter.ControlYouTubeTabAsync). media.seek.relative has only SMTC.
+    private static bool SendsInputToAWindow(string operation, JsonObject arguments) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
             or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
-            or "message.draft" or "client.channel.locate" or "browser.control" or "media.control"
-            or "media.seek.relative" or "calculator.expression.evaluate" or "window.focus" or "window.maximize" or "window.minimize" or "window.minimize.all" or "window.move"
-            or "window.resize" or "window.restore" or "window.snap";
+            or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
+            or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move" or "window.resize"
+            or "window.snap"
+        || (operation == "media.control" && !(arguments["sourceApp"] is JsonValue source && Named(source)
+            && !string.Equals((string?)source, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
+                StringComparison.OrdinalIgnoreCase)));
 
     // Every operation whose provider sends what the model wrote out of the PC (a query, an address, a host, a place, a
     // title) and whose risk the kernel does not already challenge: in a heartbeat its words come from the moment, which

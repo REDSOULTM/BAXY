@@ -4072,7 +4072,7 @@ public sealed class ExternalAdaptersTests
     // pauses them, and a word of the id is not the id.
     [TestCase("spotify", "media_source_app_not_youtube_tab")]
     [TestCase("youtube", "media_source_app_not_youtube_tab")]
-    [TestCase("BAXY YouTube (Edge)", "youtube_tab_not_found")]
+    [TestCase(WindowsExternalCapabilityProvider.YouTubeTabMediaSource, "youtube_tab_not_found")]
     public async Task TheYouTubeTabIsNamedOnlyByItsOwnId(string sourceApp, string error)
     {
         using TemporaryDirectory temporary = new();

@@ -515,10 +515,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // it, so the request fell to the Spotify automation and ended in an ambiguous
     // failure. The tab this session plays is driven and read here; with no such
     // tab the adapter stands aside (no effect, no browser launched) and the chain
-    // goes on to the next player.
-    // How media.status names the YouTube tab this session plays, and so how media.control's sourceApp names it.
-    private const string YouTubeTabSourceAppUserModelId = "BAXY YouTube (Edge)";
-
+    // goes on to the next player. media.status names the tab, and media.control's sourceApp names it, by
+    // WindowsExternalCapabilityProvider.YouTubeTabMediaSource.
     private async ValueTask<ExternalCapabilityReceipt> ControlYouTubeTabAsync(
         string operation,
         JsonElement arguments,
@@ -539,7 +537,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
             && sourceApp.ValueKind == JsonValueKind.String
             && sourceApp.GetString() is { Length: > 0 } requestedSource
-            && !string.Equals(requestedSource, YouTubeTabSourceAppUserModelId, StringComparison.OrdinalIgnoreCase))
+            && !string.Equals(requestedSource, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
+                StringComparison.OrdinalIgnoreCase))
         {
             return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_youtube_tab");
         }
@@ -580,7 +579,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
-            writer.WriteString("sourceAppUserModelId", YouTubeTabSourceAppUserModelId);
+            writer.WriteString("sourceAppUserModelId", WindowsExternalCapabilityProvider.YouTubeTabMediaSource);
             writer.WriteString("action", action);
             writer.WriteString("title", control.Title);
             writer.WriteBoolean("titleObserved", control.Title.Length > 0);
@@ -610,7 +609,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
-            writer.WriteString("sourceAppUserModelId", YouTubeTabSourceAppUserModelId);
+            writer.WriteString("sourceAppUserModelId", WindowsExternalCapabilityProvider.YouTubeTabMediaSource);
             writer.WriteString("title", status.Title);
             writer.WriteBoolean("titleObserved", status.Title.Length > 0);
             writer.WriteString("artist", string.Empty);

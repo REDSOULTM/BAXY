@@ -15,6 +15,13 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     private readonly Func<string, JsonElement, bool>? _actRefused;
     private int _disposed;
 
+    /// <summary>
+    /// How media.status names the YouTube tab of BAXY's browser, and so the one sourceApp with which media.control
+    /// reaches that tab (<see cref="WebBrowserAdapter"/> drives it through CDP, by a script in the page); with any other
+    /// session named, the tab's adapter refuses it before any effect.
+    /// </summary>
+    public const string YouTubeTabMediaSource = "BAXY YouTube (Edge)";
+
     public WindowsExternalCapabilityProvider()
         : this(Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
