@@ -167,7 +167,7 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
             if (adjusted is null)
             {
                 return ValueTask.FromResult(ExternalJson.Failure(
-                    operation, "app_audio_session_not_found"));
+                    operation, "app_audio_session_not_found_on_default_output"));
             }
             int requested = Math.Clamp(
                 adjusted.BaselineLevel + (direction == "up" ? amount : -amount), 0, 100);
@@ -272,7 +272,7 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
             if (adjusted is null)
             {
                 return ValueTask.FromResult(ExternalJson.Failure(
-                    operation, "app_audio_session_not_found"));
+                    operation, "app_audio_session_not_found_on_default_output"));
             }
             if (Math.Abs(adjusted.Level - level) > 2)
             {

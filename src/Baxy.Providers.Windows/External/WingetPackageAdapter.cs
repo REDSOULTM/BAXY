@@ -337,13 +337,22 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         return process.ExitCode == 0 ? ParseTable(process.Output) : [];
     }
 
+    // Ronda final: winget's own «no installed package found» (APPINSTALLER_CLI_ERROR_NO_APPLICATIONS_FOUND) is the only
+    // non-zero exit that means absence; any other is a list that was not read, never «not installed».
+    private const int NoInstalledPackageFound = unchecked((int)0x8A150014);
+
     private async Task<List<PackageRow>> ListAsync(string query, CancellationToken cancellationToken)
     {
         ExternalProcessResult process = await _runner.RunAsync(
             "winget.exe",
             ["list", query, "--disable-interactivity", "--accept-source-agreements"],
             QueryTimeout, cancellationToken).ConfigureAwait(false);
-        return process.ExitCode == 0 ? ParseTable(process.Output) : [];
+        return process.ExitCode switch
+        {
+            0 => ParseTable(process.Output),
+            NoInstalledPackageFound => [],
+            _ => throw new IOException("winget list was not read."),
+        };
     }
 
     private async Task<bool> IsInstalledAsync(string packageId, CancellationToken cancellationToken)
@@ -352,8 +361,12 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             "winget.exe",
             ["list", "--id", packageId, "--exact", "--disable-interactivity", "--accept-source-agreements"],
             QueryTimeout, cancellationToken).ConfigureAwait(false);
-        return process.ExitCode == 0
-            && ParseTable(process.Output).Any(row => string.Equals(row.Id, packageId, StringComparison.OrdinalIgnoreCase));
+        return process.ExitCode switch
+        {
+            0 => ParseTable(process.Output).Any(row => string.Equals(row.Id, packageId, StringComparison.OrdinalIgnoreCase)),
+            NoInstalledPackageFound => false,
+            _ => throw new IOException("winget list was not read."),
+        };
     }
 
     internal static bool MatchesName(PackageRow row, string requested)

@@ -1461,9 +1461,10 @@ internal class CdpBrowserSession : IDisposable
             {
                 try
                 {
+                    // Ronda final: nothing to close (no page) is the state reached, not an effect (changed:false).
                     if ((await CollectPageTargetIdsAsync(endpoint, cancellationToken)
                             .ConfigureAwait(false)).Count == 0)
-                        return new(true, true, action, string.Empty,
+                        return new(true, closed > 0, action, string.Empty,
                             "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture), string.Empty);
                 }
                 catch (Exception exception) when (

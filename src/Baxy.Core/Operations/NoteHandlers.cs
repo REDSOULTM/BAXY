@@ -450,6 +450,17 @@ internal sealed class UpdateNoteHandler(INoteStore store) : NoteHandlerBase(stor
             return OperationOutcome.Failure("invalid_note_selection");
         }
 
+        // Ronda final: the revision as stored before the update (a replay of a write already made keeps it), never the
+        // one the model gave.
+        long? revisionBefore = null;
+        try
+        {
+            revisionBefore = Store.Read(id).Revision;
+        }
+        catch (Exception exception) when (exception is NoteNotFoundException or IOException or InvalidDataException)
+        {
+        }
+
         NoteRecord updated = Store.UpdateSelected(
             new NoteSelection(id, arguments.ExpectedTitle, arguments.ExpectedRevision, false),
             arguments.Title,
@@ -474,7 +485,7 @@ internal sealed class UpdateNoteHandler(INoteStore store) : NoteHandlerBase(stor
                 "verification_failed",
                 effectMayHaveOccurred: true);
         }
-        return Verified(verified, arguments.ExpectedRevision);
+        return Verified(verified, revisionBefore);
     }
 }
 

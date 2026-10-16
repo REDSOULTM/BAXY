@@ -3642,7 +3642,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(tooHigh.Verified, Is.False);
             Assert.That(tooHigh.ErrorCode, Is.EqualTo("volume_level_invalid"));
             Assert.That(noSession.Verified, Is.False);
-            Assert.That(noSession.ErrorCode, Is.EqualTo("app_audio_session_not_found"));
+            Assert.That(noSession.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
         });
     }
 

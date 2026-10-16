@@ -12,6 +12,9 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class WingetPackageAdapterTests
 {
+    // winget's own exit code for «no installed package found» (APPINSTALLER_CLI_ERROR_NO_APPLICATIONS_FOUND).
+    private const int NoInstalledPackageFound = unchecked((int)0x8A150014);
+
     private const string SearchSpotify = """
         Nombre                       Id                             Versión             Coincidencia            Origen
         ---------------------------------------------------------------------------------------------------------------
@@ -93,7 +96,7 @@ public sealed class WingetPackageAdapterTests
             args[0] == "search" ? (0, SearchSpotify)
             : args[0] == "list" && launchedOnce ? (0, ListDiscord.Replace(
                 "Discord XPDC2RH70K22MN 1.0.9258", "Spotify Spotify.Spotify 1.3.1.234", StringComparison.Ordinal))
-            : args[0] == "list" ? (1, Nothing)
+            : args[0] == "list" ? (NoInstalledPackageFound, Nothing)
             : (1, string.Empty));
         List<IReadOnlyList<string>> launched = [];
         var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); launchedOnce = true; return new(999_999, () => null); });
@@ -179,7 +182,7 @@ public sealed class WingetPackageAdapterTests
         bool removed = false;
         var runner = new ScriptedRunner(args =>
             args[0] == "list" && !args.Contains("--exact") ? (0, ListDiscord)
-            : args[0] == "list" ? (removed ? (1, Nothing) : (0, ListDiscord))
+            : args[0] == "list" ? (removed ? (NoInstalledPackageFound, Nothing) : (0, ListDiscord))
             : (1, string.Empty));
         List<IReadOnlyList<string>> launched = [];
         var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); removed = true; return new(999_999, () => null); });
@@ -204,9 +207,23 @@ public sealed class WingetPackageAdapterTests
     }
 
     [Test]
-    public async Task UninstallingWhatIsNotInstalledIsAnHonestAbsenceBeforeAnyEffect()
+    public async Task AListWingetDidNotReadIsNeverNotInstalled()
     {
         var runner = new ScriptedRunner(_ => (1, Nothing));
+        var adapter = new WingetPackageAdapter(runner, args => new(1, () => null));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.uninstall",
+            JsonSerializer.SerializeToElement(new { packageId = "Photoshop" }),
+            CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.Not.EqualTo("winget_package_not_installed"));
+    }
+
+    [Test]
+    public async Task UninstallingWhatIsNotInstalledIsAnHonestAbsenceBeforeAnyEffect()
+    {
+        var runner = new ScriptedRunner(_ => (NoInstalledPackageFound, Nothing));
         List<IReadOnlyList<string>> launched = [];
         var adapter = new WingetPackageAdapter(runner, args => { launched.Add(args); return new(1, () => null); });
 
@@ -273,7 +290,7 @@ public sealed class WingetPackageAdapterTests
         var runner = new ScriptedRunner(args =>
             args[0] == "search" ? (0, SearchSpotify)
             : args[0] == "list" && launchedOnce ? throw new TimeoutException("winget list exceeded its budget")
-            : args[0] == "list" ? (1, Nothing)
+            : args[0] == "list" ? (NoInstalledPackageFound, Nothing)
             : (1, string.Empty));
         var adapter = new WingetPackageAdapter(runner, _ => { launchedOnce = true; return new(999_999, () => null); });
 

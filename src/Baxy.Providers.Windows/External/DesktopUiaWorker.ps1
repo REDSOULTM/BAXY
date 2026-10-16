@@ -3886,8 +3886,18 @@ function Select-ComboEntry($combo,[string]$text){
     $items=@($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
     $chosen=Find-EntryNamed $items $text
     if($null -eq $chosen){ $script:ComboEntries=@($items | ForEach-Object { Get-Name $_ } | Where-Object { $_.Length -gt 0 } | Select-Object -First 30) }
-    # Ronda final: la entrada ya elegida antes es el estado alcanzado; no se vuelve a elegir.
-    if($null -ne $chosen -and [bool](Test-Selected $chosen)){ return @{ entry=(Get-Name $chosen); delivered=$true; alreadyReached=$true } }
+    # Ronda final: la entrada ya elegida antes es el estado alcanzado; no se vuelve a elegir. Como en la entrega normal,
+    # una caja que publica su valor tiene que mostrar esa entrada (una lista marcada que la caja no tomo no es «ya estaba»).
+    if($null -ne $chosen -and [bool](Test-Selected $chosen)){
+      $shownName=Get-Name $chosen
+      $shown=$null; $shownPattern=$null
+      if($combo.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$shownPattern)){
+        try { $shown=[string]([System.Windows.Automation.ValuePattern]$shownPattern).Current.Value } catch { $shown=$null }
+      }
+      if([string]::IsNullOrWhiteSpace([string]$shown) -or [string]::Equals(([string]$shown).Trim(),([string]$shownName).Trim(),[StringComparison]::OrdinalIgnoreCase)){
+        return @{ entry=$shownName; delivered=$true; alreadyReached=$true }
+      }
+    }
     if($null -ne $chosen){
       $select=$null
       if($chosen.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$select)){ try { ([System.Windows.Automation.ScrollItemPattern]$select).ScrollIntoView() } catch {} }
