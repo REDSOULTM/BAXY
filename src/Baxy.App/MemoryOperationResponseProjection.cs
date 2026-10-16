@@ -89,7 +89,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             case "memory.list":
                 message = TryProjectRecords(privatePayload, out ProjectedRecords? records)
                     && records is not null
-                        ? CreateRecordsMessage(records, operationName, responseReplayed)
+                        ? CreateRecordsMessage(records, responseReplayed)
                         : null;
                 break;
             default:
@@ -501,7 +501,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             _ => false,
         };
 
-    private static string CreateRecordsMessage(ProjectedRecords projected, string operationName, bool responseReplayed)
+    private static string CreateRecordsMessage(ProjectedRecords projected, bool responseReplayed)
     {
         if (projected.TotalCount == 0)
         {

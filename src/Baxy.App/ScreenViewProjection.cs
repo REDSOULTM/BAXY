@@ -12,10 +12,13 @@ namespace Baxy.App;
 /// process of the window covering it. The model acts by index or label, and a 4B reads a short text view far better
 /// than a long JSON one (AgentOccam, ICLR 2025: the same agent +161 % from the observation alone; OSWorld and UFO2
 /// filter the tree to visible, enabled, named controls).
-/// Presentation only: every control and every line the reader returned is kept, nothing is ranked or chosen, and what
-/// the reader said about its own reading stays said: a cut walk, a frame without content, a tree it could not read, text
-/// it could not read, the disabled controls, the window being a modal dialog, protected or run as administrator (audit
-/// 2026-10-15: those were dropped, and a cut walk read as «(ninguno)» with no cause).
+/// Presentation only: every control the reader returned is kept, one it found several times once with «×N», N the
+/// times it found it (the worker's «repeated» counts the copies after the first); every line of text the reader
+/// returned is kept in its zone, a line that repeats included (a chat read by its lines repeats a bubble's text, and
+/// two «ok» are two messages); nothing is ranked or chosen, and what the reader said about its own reading stays said:
+/// a cut walk, a frame without content, a tree it could not read, text it could not read, the disabled controls, the
+/// window being a modal dialog, protected or run as administrator (audit 2026-10-15: those were dropped, and a cut
+/// walk read as «(ninguno)» with no cause).
 /// </summary>
 internal static class ScreenViewProjection
 {
@@ -141,7 +144,6 @@ internal static class ScreenViewProjection
 
         if (view["text"] is JsonObject zones)
         {
-            var seen = new HashSet<string>(StringComparer.Ordinal);
             foreach ((string label, string[] bandZones) in Bands)
             {
                 var lines = new List<string>();
@@ -154,8 +156,7 @@ internal static class ScreenViewProjection
 
                     foreach (JsonNode? line in zoneLines)
                     {
-                        string value = ((string?)line ?? string.Empty).Trim();
-                        if (value.Length > 0 && seen.Add(value))
+                        if ((string?)line is { Length: > 0 } value)
                         {
                             lines.Add(value);
                         }
@@ -209,9 +210,11 @@ internal static class ScreenViewProjection
             line.Append(" (").Append(state).Append(')');
         }
 
-        if ((int?)control["repeated"] is > 1 and int repeated)
+        // The worker counts the copies after the first (DesktopUiaWorker.ps1, $seen[$key].repeated): found three
+        // times it says 2, and the view says the three.
+        if ((int?)control["repeated"] is > 0 and int copies)
         {
-            line.Append(" ×").Append(repeated);
+            line.Append(" ×").Append(copies + 1);
         }
 
         if ((string?)control["shortcut"] is { Length: > 0 } shortcut)
