@@ -1090,7 +1090,7 @@ $AE=[System.Windows.Automation.AutomationElement]
 # SysTreeView32, SysListView32, Button, Static) llega como un Pane opaco con el texto de su ventana (medido: una tabla
 # de caracteres del sistema, 21 Pane y 1 Edit; con ellos, sus ComboBox, Button, Edit y ListItem; el arbol de carpetas del shell, de 0 a 21
 # TreeItem). Se registran una vez, despues de la primera llamada a UIA (antes de ella el registro falla con
-# NullReference), con la version, la cultura y la clave del propio cliente. El recibo de la vista dice si se cargaron.
+# NullReference), con la version, la cultura y la clave del propio cliente. El ping dice si se cargaron.
 # Se registra su tabla por clase de ventana, sin la entrada sin clase (el puente MSAA nativo para cualquier ventana que
 # responde IAccessible por si misma): por ella el contenido de una ventana CEF sin UIA llegaba nodo a nodo entre procesos
 # (medido en vivo 2026-10-08: el lanzador de un juego, miles de nodos a ~10 ms cada uno, la vista agotaba sus 20 s y la
