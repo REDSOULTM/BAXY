@@ -234,7 +234,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     return ExternalJson.FailureBeforeEffect(operation, error);
                 return effectBoundary.Failure(operation, error, effect);
             }
-            return ExternalJson.Success(operation, root.Clone(), effect);
+            // Ronda final: a paste, a click or a scroll is what SendInput accepted, as the keyboard's (CU12): delivered,
+            // not an effect seen (nothing reads what the window did with it).
+            bool deliveredOnly = operation == "clipboard.paste"
+                || (operation == "input.pointer.control"
+                    && !(root.TryGetProperty("pointerAction", out JsonElement pointer)
+                        && pointer.ValueKind == JsonValueKind.String && pointer.GetString() == "move_center"));
+            return ExternalJson.Success(operation, deliveredOnly ? AsDelivered(root) : root.Clone(), effect);
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -1073,4 +1079,18 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         });
         return ExternalJson.Success(operation, result, true);
     }
+
+    private static JsonElement AsDelivered(JsonElement root) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        foreach (JsonProperty property in root.EnumerateObject())
+        {
+            if (property.NameEquals("effectObserved"))
+                writer.WriteBoolean("delivered", property.Value.ValueKind == JsonValueKind.True);
+            else
+                property.WriteTo(writer);
+        }
+
+        writer.WriteEndObject();
+    });
 }
