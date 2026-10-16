@@ -189,15 +189,15 @@
     },
     {
       "id": "latido",
-      "estado": "en_curso",
+      "estado": "limite_honesto",
       "quien": "PC",
-      "evidencia": "última práctica 32/39 (notebook) y 31/39 (PC, e15) con el juez actual; antes p13 32/40; riesgo_solo lo mide el juez actual con un conjunto fijo de riesgos"
+      "evidencia": "holdout v2: escenas 43/60 (71,7 %), latido 6/12; ver metas.instinto"
     },
     {
       "id": "limpieza_codigo_muerto",
-      "estado": "en_curso",
+      "estado": "limite_honesto",
       "quien": "NB",
-      "evidencia": "~25k líneas de legado fuera; Roslyn del notebook −1310; auditoría kernel (misión de pantalla, planificador, HonestyCorrection, FirstSignal…); routine.* retiradas; falta barrido final en la ronda de auditoría"
+      "evidencia": "rondas A y B quitaron lo hallado; quedan los puntos (2) y (3) de metas.ronda_final_auditoria (código que sólo leen pruebas)"
     },
     {
       "id": "perfil_4gb",
