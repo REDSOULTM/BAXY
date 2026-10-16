@@ -4173,7 +4173,7 @@ function Get-TipName([string]$kind,[string]$name,[string]$className,[string]$inn
   return ''
 }
 # Los tooltips visibles ahora: las ventanas de primer nivel pequenas de esos procesos (un tooltip es una ventana aparte)
-# y los ToolTip dentro de la ventana de la mision (una pagina que dibuja el suyo con role=tooltip). Solo lectura.
+# y los ToolTip dentro de la ventana del pedido (una pagina que dibuja el suyo con role=tooltip). Solo lectura.
 function Do-Tooltips($request){
   $tips=New-Object System.Collections.ArrayList
   $tipType=New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ToolTip)
