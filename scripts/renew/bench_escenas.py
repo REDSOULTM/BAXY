@@ -5,8 +5,9 @@ Each scene's context goes to Mind.beat as the App would send it. What the model 
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
 result; a call the App holds in a heartbeat for the person's «sí» is a proposal (the high risks, and what sends input
 to a window or something out of the PC, read from src/Baxy.App/NativeTurnLoop.cs as the App has them); any other
-effect is an action; words alone are a message; LATIDO_OK is silence. The channel is the App's: voice only when
-the person is free or working. Writes <banks>/runs/<label>-escenas.jsonl (summary first).
+effect is an action; words alone are a message; LATIDO_OK is silence. The channel follows the README's rule (voice when the
+person is free or working, a notification otherwise), so a spoken notice while they play cannot happen here: the
+channel is not measured, only checked against the label. Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
 import argparse
 import json
@@ -58,7 +59,7 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
 
 
 def channel_for(activity: str) -> str:
-    """The App's channel policy: speak only when the person is free or working; otherwise a notification."""
+    """The README's channel rule: speak only when the person is free or working; otherwise a notification."""
     return "voz" if activity in VOICE_ACTIVITIES else "notificacion"
 
 
@@ -147,8 +148,7 @@ def main() -> None:
         # Writing or clicking in the person's window bothers whatever the scene: counted when it ran, not when proposed.
         intrusive = verdict == "act" and (str(effect).startswith("input.") or effect in INTRUSIVE)
         # A failure is counted as a failure, not as an intervention that bothered anyone.
-        annoying = (expect["kind"] == "silence" and verdict not in {"silence", "failure"}) or intrusive or (
-            channel == "voz" and context.get("owner_activity") in {"jugando", "llamada", "viendo"})
+        annoying = (expect["kind"] == "silence" and verdict not in {"silence", "failure"}) or intrusive
         rows.append({"id": scene["id"], "category": scene.get("category"), "expect": expect["kind"], "got": verdict,
                      "excluded": excluded,
                      "ops": ops, "ok": ok, "annoying": annoying,
