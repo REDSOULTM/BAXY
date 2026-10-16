@@ -230,6 +230,41 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // BAXY Renew (notebook): a name found nowhere says the folders walked; found twice, the places, as file.read
+    // gives them; neither sends anything to the bin.
+    [Test]
+    public async Task TrashSaysWhereItLookedAndTheMatchesItCouldNotChooseBetween()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, FolderRecycleBin bin) = Folders(temporary);
+        await File.WriteAllTextAsync(Path.Combine(desktop, "notas.txt"), "x");
+        Directory.CreateDirectory(Path.Combine(documents, "viejas"));
+        await File.WriteAllTextAsync(Path.Combine(documents, "viejas", "notas.txt"), "x");
+
+        ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt ambiguous = await adapter.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+
+        JsonElement[] candidates = [.. ambiguous.Result!.Value.GetProperty("candidates").EnumerateArray()];
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(missing.EffectMayHaveOccurred, Is.False);
+            Assert.That(missing.Result!.Value.GetProperty("searchedFolders").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { "desktop", "documents" }));
+            Assert.That(ambiguous.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(candidates.Select(item => (item.GetProperty("folder").GetString(),
+                    item.GetProperty("relativePath").GetString(), item.GetProperty("name").GetString())),
+                Is.EquivalentTo(new[]
+                {
+                    ("desktop", "notas.txt", "notas.txt"),
+                    ("documents", Path.Combine("viejas", "notas.txt"), "notas.txt"),
+                }));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     [TestCase("", 0)]
     [TestCase("uno", 1)]
     [TestCase("uno\n", 1)]

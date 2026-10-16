@@ -55,7 +55,10 @@ internal sealed record OpenApplicationResult(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false,
     // WindowId: the id the window operations take for the window this opening verified (e2e p3 E007: the model passed
     // windowHandle as windowId and read the refusal as «it is no longer open»).
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null,
+    // ProcessName (BAXY Renew, notebook): the program whose window this opening verified, from that process's own
+    // executable.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? ProcessName = null);
 
 internal sealed record AudioVolumeArguments(
     [property: JsonRequired] int Level);

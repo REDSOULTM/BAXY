@@ -299,7 +299,10 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteString("authority", "windows_task_scheduler_notification_diagnostics_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, false);
+        // BAXY Renew (notebook): a read of this operation, which also writes, changes nothing: what it asked for is
+        // the scheduler read back, reached once the read answered (before, the handler turned it into
+        // external_effect_unobserved and the model never saw the diagnosis).
+        return ExternalJson.Switched(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ListAsync(
@@ -386,7 +389,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved: false);
+        // A read reached by reading, as the diagnosis above.
+        return ExternalJson.Switched(operation, result, effectObserved: false);
     }
 
     private static string? ReadRingTitle(string path)
@@ -504,6 +508,14 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                     observedTask.GetString(), expectedTaskName, StringComparison.Ordinal)))
             return effectBoundary.Failure(
                 operation, "notification_scheduler_identity_mismatch", effect);
+        bool? canceled = source.TryGetProperty("canceled", out JsonElement canceledValue)
+            && canceledValue.ValueKind is JsonValueKind.True or JsonValueKind.False
+                ? canceledValue.GetBoolean()
+                : null;
+        // BAXY Renew (notebook): a cancel whose verified read found nothing of that kind pending from this BAXY
+        // deleted nothing (canceled:false, no effect): nothing is left to cancel, the state asked for, and the
+        // result says that nothing was pending (before, the handler reported it as a verification that failed).
+        bool nothingPending = canceled == false && !effect;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1); writeKnown(writer);
@@ -513,12 +525,15 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                     && value.ValueKind == JsonValueKind.String)
                     writer.WriteString(name, value.GetString());
             }
-            if (source.TryGetProperty("canceled", out JsonElement canceled)
-                && canceled.ValueKind is JsonValueKind.True or JsonValueKind.False)
-                writer.WriteBoolean("canceled", canceled.GetBoolean());
+            if (canceled is bool wasCanceled)
+                writer.WriteBoolean("canceled", wasCanceled);
+            if (nothingPending)
+                writer.WriteBoolean("pendingFound", false);
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effect);
+        return nothingPending
+            ? ExternalJson.Switched(operation, result, effectObserved: false)
+            : ExternalJson.Success(operation, result, effect);
     }
 
     /// <summary>

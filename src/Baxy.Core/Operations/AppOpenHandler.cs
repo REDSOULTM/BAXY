@@ -50,9 +50,16 @@ internal sealed class AppOpenHandler(
             placeAddress = ApplicationPlaces.Address(arguments.AppId, arguments.Place, arguments.PlaceValue);
             if (placeAddress is null)
             {
-                // Said with the applications that do have that place, so the next opening can name the right one.
+                // Said with what was asked (BAXY Renew, notebook) and the applications that do have that place, so
+                // the next opening can name the right one.
                 return OperationOutcome.Failure(
-                    "place_not_of_application", result: Names("placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place)));
+                    "place_not_of_application",
+                    result: Facts(writer =>
+                    {
+                        writer.WriteString("appId", arguments.AppId);
+                        if (arguments.Place is not null) writer.WriteString("place", arguments.Place);
+                        WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
+                    }));
             }
         }
 
@@ -122,7 +129,8 @@ internal sealed class AppOpenHandler(
             providerResult.ShownWithoutFocus,
             PlaceRequested: place is not null,
             FrontChanged: place?.FrontChanged == true,
-            WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()));
+            WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()),
+            ProcessName: Path.GetFileNameWithoutExtension(providerResult.Receipt.ExecutablePath));
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.OpenApplicationResult);
@@ -131,18 +139,26 @@ internal sealed class AppOpenHandler(
 
     // Auditoría D1: the installed names closest to one that matched none (or the applications that have a place),
     // said with the failure (nothing was opened).
-    private static JsonElement? Names(string property, IReadOnlyList<string>? names)
+    private static JsonElement? Names(string property, IReadOnlyList<string>? names) =>
+        names is { Count: > 0 } ? Facts(writer => WriteNames(writer, property, names)) : null;
+
+    private static void WriteNames(Utf8JsonWriter writer, string property, IReadOnlyList<string>? names)
     {
         if (names is not { Count: > 0 })
-            return null;
+            return;
+        writer.WriteStartArray(property);
+        foreach (string name in names)
+            writer.WriteStringValue(name);
+        writer.WriteEndArray();
+    }
+
+    private static JsonElement Facts(Action<Utf8JsonWriter> write)
+    {
         var buffer = new System.Buffers.ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
             writer.WriteStartObject();
-            writer.WriteStartArray(property);
-            foreach (string name in names)
-                writer.WriteStringValue(name);
-            writer.WriteEndArray();
+            write(writer);
             writer.WriteEndObject();
         }
 

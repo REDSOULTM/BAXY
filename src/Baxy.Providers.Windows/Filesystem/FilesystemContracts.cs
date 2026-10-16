@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Baxy.Providers.Windows.Filesystem;
 
 public sealed record FilesystemEntry(
@@ -10,7 +12,11 @@ public sealed record FilesystemEntry(
 
 public sealed record FilesystemListResult(
     IReadOnlyList<FilesystemEntry> Entries,
-    int Count);
+    int Count,
+    // BAXY Renew (notebook): the folder a list read and how many entries it holds, so the receipt says where and
+    // whether the limit left some out.
+    string? FullPath = null,
+    int? TotalCount = null);
 
 public sealed record FilesystemTextResult(
     string ResourceId,
@@ -74,10 +80,13 @@ public interface IFilesystemProvider
     FilesystemMutationResult RestoreBackup(string backupId, string destinationRelativePath);
 }
 
-public class FilesystemProviderException(string code, string? next = null) : Exception(code)
+public class FilesystemProviderException(string code) : Exception(code)
 {
     public string Code { get; } = code;
 
-    /// <summary>What the call can do instead, when the refusal has a next step the model can take.</summary>
-    public string? Next { get; } = next;
+    /// <summary>
+    /// What the refused call had observed, or what it can do instead, when that helps the model act (where, whether
+    /// it exists, its next step).
+    /// </summary>
+    public JsonElement? Result { get; init; }
 }
