@@ -565,15 +565,6 @@ internal static partial class VisibleControlSurface
     internal static nint ApplicationRoot(nint surface) =>
         SurfaceFamily(surface) is not null && FamilyPeer(surface) is var peer and not 0 ? peer : surface;
 
-    /// <summary>The window that owns <paramref name="window"/> at the root of its owner chain; 0 when it owns itself.</summary>
-    internal static nint RootOwner(nint window)
-    {
-        if (window == 0)
-            return 0;
-        nint owner = GetAncestor(window, 3);
-        return owner == 0 || owner == window ? 0 : owner;
-    }
-
     /// <summary>
     /// Whether <paramref name="cover"/>, a window of <paramref name="coverProcess"/> drawn over the centre of
     /// <paramref name="window"/> (of <paramref name="process"/>), is that window's content and not a window over it:

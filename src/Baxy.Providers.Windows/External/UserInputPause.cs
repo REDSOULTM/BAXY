@@ -301,12 +301,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     }
 
     /// <summary>
-    /// Ronda 20 P2: without Raw Input no window of the person is known (<see cref="PersonInputAgoMs"/> is null), only
-    /// how long ago (ms) Windows' last input of the session came, whoever's and wherever it went; null with Raw Input.
-    /// </summary>
-    internal long? UnknownInputAgoMs => _rawInput ? null : Math.Max(0, Environment.TickCount64 - LastInputMs());
-
-    /// <summary>
     /// Goal v3 ventana-misión (review, finding 1): how long ago (ms) the person's last input that reaches a window's
     /// content went to a window of one of <paramref name="processes"/> (the born window's process, the shell's: where
     /// a person opens, restores or starts a window); null when none did, or when it cannot be told.
