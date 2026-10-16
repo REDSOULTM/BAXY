@@ -177,9 +177,9 @@
     },
     {
       "id": "computer_use",
-      "estado": "en_curso",
+      "estado": "limite_honesto",
       "quien": "PC",
-      "evidencia": "e2e práctica p7 (código congelado) cu 5/8; identidad de ventana por ejecutable/AUMID y árbol de procesos (Steam verificado en el producto)"
+      "evidencia": "holdout v2: computer use 1/10 en el e2e (usar la Calculadora sin abrirla, escribir un archivo en vez de teclear en la ventana, negar una capacidad sin intentarla, clics a etiquetas que no están); práctica p12-p15 6-8/8"
     },
     {
       "id": "herramientas_agente",
