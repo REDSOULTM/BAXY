@@ -331,8 +331,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
 
-    /// <summary>The person's words (typed, transcribed or sent by the conductor) open a turn.</summary>
-    internal async Task SubmitAsync(MissionInput input, CancellationToken cancellationToken)
+    /// <summary>
+    /// The person's words (typed, transcribed or sent by the conductor) open a turn. <paramref name="arrivedAt"/> is when
+    /// they arrived (<see cref="System.Diagnostics.Stopwatch.GetTimestamp"/>), before any wait for the turn (a heartbeat
+    /// holds it): the notice of a silent turn counts from then.
+    /// </summary>
+    internal async Task SubmitAsync(MissionInput input, long arrivedAt, CancellationToken cancellationToken)
     {
         if (!IsInputEnabled || _coreClient is null)
         {
@@ -342,11 +346,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string text = MissionInputContract.ValidateAndTrim(input);
         // Secrets the person typed never enter the transcript, the conversation log or the voice.
         string visible = SensitiveText.Contains(text) ? SensitiveText.Hidden : text;
-        await RunTurnAsync(visible, () => _loop.RunAsync(text, cancellationToken), cancellationToken);
+        await RunTurnAsync(visible, () => _loop.RunAsync(text, arrivedAt, cancellationToken), cancellationToken);
     }
 
-    /// <summary>The person pressed Sí (<paramref name="approve"/>) or No on the pending confirmation.</summary>
-    internal async Task AnswerConfirmationAsync(bool approve, CancellationToken cancellationToken)
+    /// <summary>
+    /// The person pressed Sí (<paramref name="approve"/>) or No on the pending confirmation; the press arrived at
+    /// <paramref name="arrivedAt"/>, as in <see cref="SubmitAsync"/>.
+    /// </summary>
+    internal async Task AnswerConfirmationAsync(bool approve, long arrivedAt, CancellationToken cancellationToken)
     {
         if (!IsInputEnabled || !_loop.HasPendingConfirmation)
         {
@@ -354,7 +361,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         string label = approve ? "Sí" : "No";
-        await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, cancellationToken),
+        await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, arrivedAt, cancellationToken),
             cancellationToken);
     }
 
@@ -699,10 +706,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private void OnMindTranscript(string transcript)
     {
-        _uiContext.Post(_ => _ = DispatchTranscriptAsync(transcript), null);
+        // The person's words arrived now, before the interface's thread takes them.
+        long arrivedAt = System.Diagnostics.Stopwatch.GetTimestamp();
+        _uiContext.Post(_ => _ = DispatchTranscriptAsync(transcript, arrivedAt), null);
     }
 
-    private async Task DispatchTranscriptAsync(string transcript)
+    private async Task DispatchTranscriptAsync(string transcript, long arrivedAt)
     {
         if (_isDisposed)
         {
@@ -720,7 +729,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         try
         {
-            await SubmitAsync(new MissionInput(transcript, MissionInputSource.VoiceTranscript), CancellationToken.None);
+            await SubmitAsync(new MissionInput(transcript, MissionInputSource.VoiceTranscript), arrivedAt,
+                CancellationToken.None);
         }
         catch (MissionInputRejectedException)
         {

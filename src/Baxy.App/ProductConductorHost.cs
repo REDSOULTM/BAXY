@@ -223,7 +223,8 @@ internal static class ProductConductorHost
                 turnTimeout.CancelAfter(parsed.TurnTimeout);
                 if (turn["confirm"] is JsonValue confirm && confirm.TryGetValue(out bool approve))
                 {
-                    await viewModel.AnswerConfirmationAsync(approve, turnTimeout.Token).ConfigureAwait(true);
+                    await viewModel.AnswerConfirmationAsync(approve, Stopwatch.GetTimestamp(), turnTimeout.Token)
+                        .ConfigureAwait(true);
                 }
                 else
                 {
@@ -231,6 +232,7 @@ internal static class ProductConductorHost
                     {
                         await viewModel.SubmitAsync(
                                 new MissionInput((string?)turn["text"] ?? string.Empty, MissionInputSource.Text),
+                                Stopwatch.GetTimestamp(),
                                 turnTimeout.Token)
                             .ConfigureAwait(true);
                     }
