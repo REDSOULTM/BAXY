@@ -375,14 +375,16 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     {
         WindowMinimizeAllResult result = await MinimizeAllReadAsync(cancellationToken).ConfigureAwait(false);
         int unread = _platform.UnreadDesktopWindows;
-        return unread > 0 && result.Succeeded ? result with { Unread = unread } : result;
+        int cloaked = _platform.CloakedDesktopWindows;
+        return result.Succeeded ? result with { Unread = unread, Cloaked = cloaked } : result;
     }
 
     public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
     {
         WindowCloseAllResult result = await CloseAllReadAsync(cancellationToken).ConfigureAwait(false);
         int unread = _platform.UnreadDesktopWindows;
-        return unread > 0 && result.Succeeded ? result with { Unread = unread } : result;
+        int cloaked = _platform.CloakedDesktopWindows;
+        return result.Succeeded ? result with { Unread = unread, Cloaked = cloaked } : result;
     }
 
     private async ValueTask<WindowMinimizeAllResult> MinimizeAllReadAsync(CancellationToken cancellationToken)
@@ -1323,6 +1325,9 @@ internal interface IWindowControlPlatform
     IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
     // How many windows the last DesktopWindows() saw alive and visible but could not read (their process).
     int UnreadDesktopWindows => 0;
+    // Ronda final 11: how many titled windows the last DesktopWindows() left out because DWM cloaks them (another
+    // virtual desktop, a suspended app): not on screen, not touched, and never among «all».
+    int CloakedDesktopWindows => 0;
     // M149: the same desktop windows, only those below `front` in the z-order, nearest first.
     IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
@@ -1513,21 +1518,25 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
 
     public IReadOnlyList<WindowSnapshot> DesktopWindows()
     {
-        List<WindowSnapshot> found = EnumerateDesktopWindows(below: 0, out int unread);
+        List<WindowSnapshot> found = EnumerateDesktopWindows(below: 0, out int unread, out int cloakedTitled);
         UnreadDesktopWindows = unread;
+        CloakedDesktopWindows = cloakedTitled;
         return found;
     }
 
     public int UnreadDesktopWindows { get; private set; }
 
+    public int CloakedDesktopWindows { get; private set; }
+
     // M149: EnumWindows walks the top-level windows in z-order, top first; collection starts right after
     // `front`. A front window that is gone meanwhile yields nothing rather than a guess.
     public IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) =>
-        front.Handle == 0 ? [] : EnumerateDesktopWindows(front.Handle, out _);
+        front.Handle == 0 ? [] : EnumerateDesktopWindows(front.Handle, out _, out _);
 
-    private List<WindowSnapshot> EnumerateDesktopWindows(nint below, out int unread)
+    private List<WindowSnapshot> EnumerateDesktopWindows(nint below, out int unread, out int cloakedTitled)
     {
         int failed = 0;
+        int cloakedSeen = 0;
         // MINALL1687: what the taskbar would show as windows. The shell's own
         // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
         // popups and untitled windows are not windows a person minimizes; the
@@ -1548,7 +1557,11 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             if ((exStyle & ToolWindowStyle) != 0)
                 return true;
             if (DwmGetWindowAttribute(handle, CloakedAttribute, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
+            {
+                if (ReadWindowTitle(handle).Length > 0)
+                    cloakedSeen++;
                 return true;
+            }
             string className = ReadClassName(handle);
             if (className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
                 return true;
@@ -1577,6 +1590,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         if (!EnumWindows(callback, nint.Zero))
             throw new Win32Exception(Marshal.GetLastWin32Error());
         unread = failed;
+        cloakedTitled = cloakedSeen;
         return found;
     }
 

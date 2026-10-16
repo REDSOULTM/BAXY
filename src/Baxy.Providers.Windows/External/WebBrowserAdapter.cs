@@ -937,6 +937,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         OpenStreetMapPlaceSource.PlaceReading? reading = await _places
             .SearchNearAsync(ask, limit, language, cancellationToken).ConfigureAwait(false);
         if (reading is not { } read) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        // Ronda final 11 (regla 3): the place asked was not found, so no site was looked for: never «no results».
+        if (read.Resolved is null) return ExternalJson.FailureBeforeEffect(operation, "place_area_not_resolved");
         return SearchReceipt(operation, "places", query, OpenStreetMapPlaceSource.Authority, read.Places,
             static (writer, place) =>
             {
@@ -952,6 +954,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteString("place", ask.Place);
                 if (read.Resolved is { } resolved)
                     writer.WriteString("placeFound", resolved);
+                // The source's own cap: the sites listed are its ten, nearest first among them.
+                writer.WriteNumber("sourceLimit", 10);
+                if (read.SourceLimitReached) writer.WriteBoolean("sourceLimitReached", true);
             });
     }
 
@@ -1688,6 +1693,11 @@ internal class CdpBrowserSession : IDisposable
             return new(false, true, action, targetId, string.Empty, "cdp_fullscreen_not_verified");
         }
 
+        // Ronda final 11 (regla 3): a page that scrolls an inner element (webmail, chat) leaves window.scrollY still,
+        // so «at the end» is said only when the document itself scrolls; otherwise the scroll is not verified.
+        double documentScrolls = await EvaluateNumberAsync(socket,
+            "(document.scrollingElement || document.documentElement).scrollHeight > innerHeight + 1 ? 1 : 0",
+            cancellationToken).ConfigureAwait(false);
         double before = await EvaluateNumberAsync(socket, "window.scrollY", cancellationToken)
             .ConfigureAwait(false);
         string expression = action == "scroll_down"
@@ -1696,6 +1706,8 @@ internal class CdpBrowserSession : IDisposable
         double after = await EvaluateNumberAsync(socket, expression, cancellationToken)
             .ConfigureAwait(false);
         bool moved = Math.Abs(after - before) > 0.5;
+        if (!moved && documentScrolls < 0.5)
+            return new(false, false, action, targetId, string.Empty, "cdp_scroll_surface_not_read");
         string state = moved ? $"scroll_y:{after.ToString(CultureInfo.InvariantCulture)}" : "scroll_boundary";
         return new(true, moved, action, targetId, state, string.Empty);
     }

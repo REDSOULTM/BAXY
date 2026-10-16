@@ -3163,8 +3163,8 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // With nearby and no place, the place is this PC's city and country; a place Nominatim does not find is no result,
-    // and no site is asked.
+    // With nearby and no place, the place is this PC's city and country; a place Nominatim does not find is said so
+    // (ronda final 11: never «no results», since no site was looked for), and no site is asked.
     [Test]
     public async Task APlacesSearchNearbyIsInThisPcsCityAndAnUnknownPlaceHasNoResults()
     {
@@ -3196,7 +3196,7 @@ public sealed class ExternalAdaptersTests
             JsonElement first = near.Result!.Value.GetProperty("results")[0];
             Assert.That(first.GetProperty("name").GetString(), Is.EqualTo("Farmacia Central"));
             Assert.That(first.TryGetProperty("distanceMeters", out _), Is.False);
-            Assert.That(unknown.ErrorCode, Is.EqualTo("web_search_no_results"));
+            Assert.That(unknown.ErrorCode, Is.EqualTo("place_area_not_resolved"));
             Assert.That(handler.Asked.Count(asked => asked.Uri.Query.Contains("pharmacy", StringComparison.Ordinal)), Is.EqualTo(1));
             Assert.That(handler.Asked.Where(asked => asked.Uri.Host != "ipwho.is"),
                 Has.All.Matches<AskedRequest>(asked => !asked.Uri.Query.Contains("33.03", StringComparison.Ordinal)));

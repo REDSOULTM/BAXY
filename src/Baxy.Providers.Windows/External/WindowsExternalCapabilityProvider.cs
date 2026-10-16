@@ -292,7 +292,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 }
             }
 
-            sessionsBefore = await sessions.SessionsAsync().ConfigureAwait(false);
+            // Ronda final 11 (regla 3): a «before» read in part would take a session of the person's for BAXY's.
+            sessionsBefore = await sessions.CompleteSessionsAsync().ConfigureAwait(false);
         }
 
         if (paused.Count == 0)

@@ -57,7 +57,9 @@ public sealed class UserBrowserTests
     public void YouTubeResultsPageGivesTheFirstVideoAndItsOwnTitle()
     {
         YouTubeSearchResult video = YouTubeSearch.Parse(YouTubePage("dQw4w9WgXcQ", "Rick Astley \\u0026 Co - Never"));
-        YouTubeSearchResult none = YouTubeSearch.Parse("<html>nothing</html>");
+        YouTubeSearchResult none = YouTubeSearch.Parse("<html><script>var ytInitialData = {};</script></html>");
+        // Ronda final 11: a page without the results data (consent, captcha) is not read, never «no video».
+        YouTubeSearchResult unread = YouTubeSearch.Parse("<html>nothing</html>");
 
         Assert.Multiple(() =>
         {
@@ -66,6 +68,7 @@ public sealed class UserBrowserTests
             Assert.That(video.Title, Is.EqualTo("Rick Astley & Co - Never"));
             Assert.That(video.WatchUri.AbsoluteUri, Is.EqualTo("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
             Assert.That(none.ErrorCode, Is.EqualTo("youtube_result_not_found"));
+            Assert.That(unread.ErrorCode, Is.EqualTo("youtube_search_page_unreadable"));
         });
     }
 

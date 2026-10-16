@@ -156,6 +156,38 @@ public sealed class OperationOutcomeNarrationTests
             Assert.That(observed.TryGetProperty("windowsCount", out _), Is.False, "the provider's count stays the total");
             Assert.That(observed.GetProperty("count").GetInt32(), Is.EqualTo(50));
             Assert.That(observed.GetProperty("truncated").GetBoolean(), Is.True);
+            // Ronda final 11: the next page starts at the first window not shown, never at the provider's 50.
+            Assert.That(observed.GetProperty("nextOffset").GetInt32(), Is.EqualTo(20));
+            Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
+        });
+    }
+
+    // Ronda final 11: the provider's offset, nextOffset and hasMore come after its list (window.resolve, note.list); a
+    // list cut in the projection still says the shown page, whichever cut was last.
+    [Test]
+    public void APageByOffsetCutInTheProjectionGoesOnFromTheFirstItemNotShown()
+    {
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            windows = Enumerable.Range(0, 40).Select(static index => new { title = new string('w', 300) + index }).ToArray(),
+            count = 40,
+            limit = 40,
+            offset = 10,
+            hasMore = false,
+            nextOffset = (int?)null,
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("window.resolve", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+        int shown = observed.GetProperty("windows").GetArrayLength();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown, Is.LessThan(40));
+            Assert.That(observed.GetProperty("windowsShown").GetInt32(), Is.EqualTo(shown));
+            Assert.That(observed.GetProperty("nextOffset").GetInt32(), Is.EqualTo(10 + shown));
+            Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
         });
     }
 

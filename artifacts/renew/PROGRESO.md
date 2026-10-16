@@ -534,6 +534,15 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     mostró; backup.known.list, clima y mensajería cuentan sus candidatos; browser.control que abrió el navegador propio
     nunca dice «ya estaba»; streaming.navigate ya no se llama «autenticado» por la dirección; web.fetch conserva el texto
     de los formularios y dice cuánto texto de menús, cabeceras y botones saltó. Sin medir.
+  - Ronda final 11: la proyección reescribe Shown, nextOffset y hasMore después de copiar todas las claves (el arreglo de
+    la ronda 10 no sobrevivía) y también en el primer corte (Sanitize); medios: un rechazo de la app tras enviar es
+    efecto posible, el seek parte de la posición de ahora y el «antes» de una reproducción es una lectura entera;
+    YouTube distingue una página no leída; lugares con place_area_not_resolved y el tope de la fuente; mensajería:
+    la búsqueda escrita es un efecto, Discord sin filas leídas no es «no encontrado», el envío dice que la entrega
+    por la red no se leyó; el scroll del navegador propio no dice «al final» de una página que no se desplaza; close.all
+    y minimize.all no dicen «todas» con ventanas encubiertas (otro escritorio); 11 descripciones más (bluetooth pair,
+    game.catalog.list, backup.create, task.update, wifi.connect.named, system.status, crash.diagnose, streaming.play,
+    web.search news y sports). Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -542,9 +551,10 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - e2e 22/40 = 55 % (herramientas 10/12, cu 4/10, agente 4/12, voz 4/6; primer sonido p50 2591 ms, primer sonido de
     la respuesta p50 4149 ms, 23 turnos sobre 3 s). Cinco casos no llegaron a prepararse en el notebook (setup_fallido:
     su setup.ps1 abortó con `notepad_already_open` en E315, E316 y E340 y `settings_already_open` en E317 y E318). Causa,
-    comprobada por el notebook en events.jsonl y results.jsonl (sin abrir el sealed.json): el entorno del notebook, con
-    un Bloc de notas (con texto sin guardar) y Configuración abiertos desde el 2026-10-15, antes de la corrida; ningún
-    paso del producto abrió ninguno de los dos. La regla los cuenta. Sin ellos, 22/35 = 62,9 %.
+    comprobada por el notebook (sin abrir el sealed.json): Get-Process da un Bloc de notas arrancado el 2026-10-15 a las
+    13:03 y Configuración a las 04:11, antes de la corrida, que seguían abiertos; y en events.jsonl y results.jsonl ningún
+    paso del producto abrió ninguno de los dos. Todos los errores de setup del notebook empiezan por
+    `@{Count=System.Management.Automation.PSScriptProperty}`, un indicio de algo común en su PowerShell que no se aisló. La regla los cuenta. Sin ellos, 22/35 = 62,9 %.
   - Combinado 176/212 = 83,0 % (decisión + e2e + latido, como en v2; 176/207 = 85,0 % sin los cinco setup_fallido).
   - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F307, F313, F315 y F322 por el mismo Bloc de notas,
     F331 por la misma Configuración; F306, por un error de `Set-ItemProperty` en la línea 7 de su setup.ps1, con causa

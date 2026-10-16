@@ -36,9 +36,13 @@ internal static partial class YouTubeSearch
         if (Encoding.UTF8.GetByteCount(html) > 4_000_000)
             return new(string.Empty, string.Empty, "youtube_search_response_too_large");
         Match video = VideoRenderer().Match(html);
-        return video.Success
-            ? Result(html, video)
-            : new(string.Empty, string.Empty, "youtube_result_not_found");
+        if (video.Success)
+            return Result(html, video);
+        // Ronda final 11 (regla 3): a consent page, a captcha or another markup has no results data: not read, never
+        // «no video».
+        return html.Contains("ytInitialData", StringComparison.Ordinal)
+            ? new(string.Empty, string.Empty, "youtube_result_not_found")
+            : new(string.Empty, string.Empty, "youtube_search_page_unreadable");
     }
 
     private static YouTubeSearchResult Result(string html, Match video)

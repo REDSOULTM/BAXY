@@ -386,7 +386,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation
     internal static DesktopRecipientObservation NotNamedInSearch(DesktopRecipientObservation unverified, string? row) =>
         unverified with
         {
-            ErrorCode = unverified.EffectObserved ? unverified.ErrorCode : RecipientNotFound,
+            // Ronda final 11 (regla 3): no row read at all is a search not read, never «not found».
+            ErrorCode = unverified.EffectObserved ? unverified.ErrorCode
+                : row is null ? "recipient_search_not_read" : RecipientNotFound,
             Shown = row,
         };
 }

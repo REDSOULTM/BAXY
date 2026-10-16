@@ -331,12 +331,25 @@ public static class OperationVisibleFacts
         return payload.ToJsonString(JsonOptions);
     }
 
+    // A page by offset (window.resolve, note.list) whose list was cut to «shown» goes on from the first item not shown,
+    // never from the provider's next page: the model never skips items it did not see, and «no more» is never said of
+    // a page it saw only part of.
+    private static void PageFrom(JsonNode? offset, bool paged, int shown, JsonObject target)
+    {
+        if (!paged)
+            return;
+        int start = offset is JsonValue value && value.TryGetValue(out int read) ? read : 0;
+        target["nextOffset"] = start + shown;
+        target["hasMore"] = true;
+    }
+
     private static JsonNode Project(JsonNode node, string? key, int text, int items, ref bool cut)
     {
         switch (node)
         {
             case JsonObject obj:
                 var projected = new JsonObject();
+                int? listShown = null;
                 foreach ((string name, JsonNode? value) in obj)
                 {
                     projected[name] = value is null ? null : Project(value, name, text, items, ref cut);
@@ -348,18 +361,24 @@ public static class OperationVisibleFacts
                     }
 
                     // Ronda final 10 (regla 3): a list cut here says how many it shows now (an earlier «Shown» counted
-                    // the provider's page), and a page by offset goes on from the first item not shown, never from
-                    // the provider's next page, so the model never skips items it did not see.
+                    // the provider's page).
                     if (value is JsonArray cutList && cutList.Count > items)
                     {
-                        projected[name + "Shown"] = items;
-                        if (obj["offset"] is JsonValue listOffset && listOffset.TryGetValue(out int listStart)
-                            && obj.ContainsKey("nextOffset"))
-                        {
-                            projected["nextOffset"] = listStart + items;
-                            projected["hasMore"] = true;
-                        }
+                        listShown = items;
                     }
+                }
+
+                // Ronda final 11 (regla 3): after every key is copied (the provider's nextOffset and hasMore come after
+                // the list), a cut list's Shown and a page by offset's next offset are the shown ones.
+                if (listShown is int shownItems)
+                {
+                    foreach ((string name, JsonNode? value) in obj)
+                    {
+                        if (value is JsonArray list && list.Count > items)
+                            projected[name + "Shown"] = shownItems;
+                    }
+
+                    PageFrom(obj["offset"], obj.ContainsKey("nextOffset"), shownItems, projected);
                 }
 
                 // A page of a text read by offset (file.read, web.fetch) whose text was cut here goes on from where
@@ -469,6 +488,7 @@ public static class OperationVisibleFacts
         {
             case JsonValueKind.Object:
                 var clean = new JsonObject();
+                int? cleanShown = null;
                 foreach (JsonProperty property in element.EnumerateObject())
                 {
                     string key = property.Name;
@@ -497,12 +517,19 @@ public static class OperationVisibleFacts
                         && property.Value.GetArrayLength() > kept.Count)
                     {
                         clean[key + "Shown"] = kept.Count;
+                        cleanShown = kept.Count;
                         if (!element.TryGetProperty("count", out _) && !element.TryGetProperty("totalCount", out _)
                             && !element.TryGetProperty(key + "Count", out _))
                         {
                             clean[key + "Count"] = property.Value.GetArrayLength();
                         }
                     }
+                }
+
+                // Ronda final 11 (regla 3): a page by offset whose list was cut goes on from the first item not shown.
+                if (cleanShown is int keptItems)
+                {
+                    PageFrom(clean["offset"], element.TryGetProperty("nextOffset", out _), keptItems, clean);
                 }
 
                 return clean;

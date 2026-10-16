@@ -232,6 +232,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("evidenceHash", sent.EvidenceHash),
                 ("deliveryRead", sent.Read),
                 ("deliveryMatch", sent.Match),
+                // Ronda final 11 (regla 3): the message is read in the chat; whether the network took it (WhatsApp's
+                // pending clock, Discord's «could not be delivered») is not read.
+                ("networkDeliveryRead", false),
                 ("authority", "desktop_client_send_ocr_postread")));
     }
 
@@ -758,7 +761,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 {
                     SendChord(VirtualKeyControl, VirtualKeyA);
                     SendKey(VirtualKeyBack);
-                    return new(false, false, handle, processId,
+                    // Ronda final 11 (regla 3): the view was clicked to and the search typed and emptied: an effect.
+                    return new(false, true, handle, processId,
                         rows.Lines is null ? "recipient_search_unreadable"
                         : rows.Hits.Count == 0 ? RecipientNotFound : "recipient_ambiguous")
                     {

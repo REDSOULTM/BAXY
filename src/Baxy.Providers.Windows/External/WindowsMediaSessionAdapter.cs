@@ -32,12 +32,36 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         Func<string, string, ValueTask> Resume)
     {
         internal static MediaSessionAccess System { get; } =
-            new(SnapshotAsync, PauseSystemSessionAsync, ResumeSystemSessionAsync);
+            new(SnapshotAsync, PauseSystemSessionAsync, ResumeSystemSessionAsync)
+            {
+                CompleteSnapshot = CompleteSnapshotAsync,
+            };
+
+        // The complete read (MediaSessionCalls.ReadCompleteAsync), or null; a fake without it uses Snapshot.
+        internal Func<ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>?>>? CompleteSnapshot { get; init; }
     }
 
     /// <summary>The system media sessions now, as this adapter reads them.</summary>
     internal ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>> SessionsAsync() =>
         _sessions.Snapshot();
+
+    /// <summary>Ronda final 11 (regla 3): the sessions as a «before» that tells an old session from a new one: the
+    /// complete read, or null when a session or the service did not answer (nothing is then remembered as BAXY's).
+    /// </summary>
+    internal async ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>?> CompleteSessionsAsync() =>
+        _sessions.CompleteSnapshot is { } complete
+            ? await complete().ConfigureAwait(false)
+            : await _sessions.Snapshot().ConfigureAwait(false);
+
+    // Where a track is now: a playing one's reported Position plus the time since Windows took it.
+    private static TimeSpan PositionNow(GlobalSystemMediaTransportControlsSessionTimelineProperties timeline, bool playing)
+    {
+        if (!playing || timeline.LastUpdatedTime == default)
+            return timeline.Position;
+        TimeSpan since = DateTimeOffset.Now - timeline.LastUpdatedTime;
+        TimeSpan now = timeline.Position + (since > TimeSpan.Zero ? since : TimeSpan.Zero);
+        return now > timeline.EndTime ? timeline.EndTime : now;
+    }
 
     public bool CanHandle(string operation) =>
         operation is "media.control" or "media.seek.relative" or "media.play.exact" or "media.status";
@@ -139,6 +163,12 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             && !before.Any(earlier => earlier.Playing
                 && string.Equals(earlier.Source, session.Source, StringComparison.Ordinal)
                 && string.Equals(earlier.Title, session.Title, StringComparison.Ordinal)));
+
+    /// <summary>The system media sessions now, read whole, or null when a session or the service did not answer.</summary>
+    internal static async ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>?> CompleteSnapshotAsync() =>
+        (await MediaSessionCalls.ReadCompleteAsync().ConfigureAwait(false))?
+            .Select(session => (session.SourceAppUserModelId, session.Title, session.PlaybackStatus == "playing"))
+            .ToArray();
 
     /// <summary>The system media sessions now: source, title and whether each plays. Empty when unreadable.</summary>
     internal static async ValueTask<IReadOnlyList<(string Source, string Title, bool Playing)>> SnapshotAsync() =>
@@ -370,7 +400,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 dispatched = await session.TryPlayAsync().Bounded(cancellationToken);
                 if (!dispatched)
                 {
-                    return ExternalJson.Failure(operation, "spotify_play_dispatch_rejected");
+                    // Ronda final 11 (regla 3): the play was sent; «false» is the app's word, not a read.
+                    return ExternalJson.FailureAfterEffect(operation, "spotify_play_dispatch_rejected");
                 }
             }
 
@@ -459,7 +490,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             };
             if (!dispatched)
             {
-                return ExternalJson.Failure(operation, "smtc_control_dispatch_rejected");
+                // Ronda final 11 (regla 3): the command was sent; «false» is the app's word, not a read.
+                return ExternalJson.FailureAfterEffect(operation, "smtc_control_dispatch_rejected");
             }
 
             GlobalSystemMediaTransportControlsSessionMediaProperties after = before;
@@ -616,7 +648,12 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             {
                 return ExternalJson.Failure(operation, "media_timeline_not_available");
             }
-            TimeSpan requested = before.Position + TimeSpan.FromSeconds(seconds);
+            // Ronda final 11 (regla 3): a playing track's Position is where it was at LastUpdatedTime; where it is now
+            // is that plus the time since (the app may report it only on events).
+            bool playingBefore = session.GetPlaybackInfo().PlaybackStatus
+                == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
+            TimeSpan positionBefore = PositionNow(before, playingBefore);
+            TimeSpan requested = positionBefore + TimeSpan.FromSeconds(seconds);
             TimeSpan desired = requested < before.StartTime
                 ? before.StartTime
                 : requested > before.EndTime
@@ -624,14 +661,14 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     : requested;
             // Ronda final: a target that is where the track already is (clamped at its start or its end), read before,
             // is the state reached (changed:false): nothing is sent.
-            if ((before.Position - desired).Duration() <= TimeSpan.FromMilliseconds(500))
+            if (!playingBefore && (positionBefore - desired).Duration() <= TimeSpan.FromMilliseconds(500))
             {
                 return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
                 {
                     writer.WriteStartObject();
                     writer.WriteNumber("version", 1);
                     writer.WriteNumber("requestedDeltaSeconds", seconds);
-                    writer.WriteNumber("positionSeconds", before.Position.TotalSeconds);
+                    writer.WriteNumber("positionSeconds", positionBefore.TotalSeconds);
                     writer.WriteNumber("durationSeconds", before.EndTime.TotalSeconds);
                     writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
                     writer.WriteString("authority", "windows_smtc_timeline_preread");
@@ -642,12 +679,13 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             effectBoundaryCrossed = true;
             if (!await session.TryChangePlaybackPositionAsync(desired.Ticks).Bounded(cancellationToken))
             {
-                return ExternalJson.Failure(operation, "media_seek_dispatch_rejected");
+                // Ronda final 11 (regla 3): the seek was sent; «false» is the app's word, not a read.
+                return ExternalJson.FailureAfterEffect(operation, "media_seek_dispatch_rejected");
             }
 
             GlobalSystemMediaTransportControlsSessionTimelineProperties after = before;
             bool alreadyWithinPostreadTolerance =
-                (before.Position - desired).Duration() <= TimeSpan.FromSeconds(2.5);
+                (positionBefore - desired).Duration() <= TimeSpan.FromSeconds(2.5);
             bool verified = false;
             Exception? observationError = null;
             for (int attempt = 0; attempt <= SmtcPostreadPollIntervals; attempt++)
@@ -658,7 +696,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     bool playing = session.GetPlaybackInfo().PlaybackStatus
                         == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
                     TimeSpan tolerance = TimeSpan.FromSeconds(playing ? 2.5 : 1.0);
-                    verified = (after.Position - desired).Duration() <= tolerance;
+                    verified = (PositionNow(after, playing) - desired).Duration() <= tolerance;
                     observationError = null;
                 }
                 catch (Exception exception) when (!cancellationToken.IsCancellationRequested
@@ -697,7 +735,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
                 writer.WriteNumber("requestedDeltaSeconds", seconds);
-                writer.WriteNumber("previousPositionSeconds", before.Position.TotalSeconds);
+                writer.WriteNumber("previousPositionSeconds", positionBefore.TotalSeconds);
                 writer.WriteNumber("positionSeconds", after.Position.TotalSeconds);
                 writer.WriteNumber("durationSeconds", after.EndTime.TotalSeconds);
                 writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);

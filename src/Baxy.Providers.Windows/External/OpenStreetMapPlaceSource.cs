@@ -32,7 +32,9 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
 
     // «Resolved»: the address of the place Nominatim found for the place asked; null when it found none (and then no
     // site is asked).
-    internal readonly record struct PlaceReading(string? Resolved, List<Place> Places);
+    // SourceLimitReached (ronda final 11): Nominatim gave its 10, chosen by its own importance; the nearest of all
+    // may not be among them.
+    internal readonly record struct PlaceReading(string? Resolved, List<Place> Places, bool SourceLimitReached = false);
 
     // Null when Nominatim did not answer.
     internal async Task<PlaceReading?> SearchNearAsync(
@@ -53,9 +55,8 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                 + "&accept-language=" + language + "&viewbox=" + box.Viewbox
                 + "&q=" + Uri.EscapeDataString(ask.Kind), cancellationToken).ConfigureAwait(false);
             if (found is null) return null;
-            return new PlaceReading(
-                box.Name,
-                Places(found, box.Latitude, box.Longitude).Take(Math.Clamp(limit, 1, 10)).ToList());
+            List<Place> all = Places(found, box.Latitude, box.Longitude);
+            return new PlaceReading(box.Name, all.Take(Math.Clamp(limit, 1, 10)).ToList(), all.Count >= 10);
         }
         catch (JsonException)
         {

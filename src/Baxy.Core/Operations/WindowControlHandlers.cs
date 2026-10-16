@@ -184,7 +184,9 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
                 writer.WriteNumber("goneMeanwhile", result.Gone);
             // Auditoría final (regla 3): a desktop window that was there and not read leaves «all» unsaid.
             if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
-            else writer.WriteBoolean("allMinimized", true);
+            // Ronda final 11 (regla 3): windows Windows hides (another desktop) were not minimized: no «all».
+            if (result.Cloaked > 0) writer.WriteNumber("cloakedWindows", result.Cloaked);
+            if (result.Unread == 0 && result.Cloaked == 0) writer.WriteBoolean("allMinimized", true);
             // Auditoría final (regla 3): nothing was sent to (no window to minimize, none gone meanwhile), so the
             // desktop was already that way; a window that hid itself when sent the minimize was changed by it.
             if (result.Minimized == 0 && result.Gone == 0)
@@ -230,7 +232,10 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             foreach (string name in result.RemainingProcesses) writer.WriteStringValue(name);
             writer.WriteEndArray();
             if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
-            else writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
+            // Ronda final 11 (regla 3): windows Windows hides (another desktop) were not closed: no «all».
+            if (result.Cloaked > 0) writer.WriteNumber("cloakedWindows", result.Cloaked);
+            if (result.Unread == 0 && result.Cloaked == 0)
+                writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
             writer.WriteString("authority", "win32_desktop_windows_close_postread");
             writer.WriteEndObject();
         }

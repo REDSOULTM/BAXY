@@ -113,7 +113,9 @@ public sealed record WindowMinimizeAllResult(
     // Ronda final: windows that were gone when sent to or read back (closed meanwhile): never counted as minimized.
     int Gone = 0,
     // Auditoría final: desktop windows there and not read, so not among «all».
-    int Unread = 0);
+    int Unread = 0,
+    // Ronda final 11: titled windows DWM cloaks (another virtual desktop, a suspended app), not touched.
+    int Cloaked = 0);
 
 // CLOSEALL1733 «cerrame todo»: the desktop windows found before, how many were
 // verified closed, how many stayed visible, how many were kept on purpose
@@ -133,7 +135,9 @@ public sealed record WindowCloseAllResult(
     int Hidden = 0,
     int AlreadyGone = 0,
     // Auditoría final: desktop windows there and not read, so not among «all».
-    int Unread = 0);
+    int Unread = 0,
+    // Ronda final 11: titled windows DWM cloaks (another virtual desktop, a suspended app), not touched.
+    int Cloaked = 0);
 
 public interface IWindowControlProvider
 {
