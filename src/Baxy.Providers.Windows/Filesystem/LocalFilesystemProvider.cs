@@ -294,7 +294,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             FileInfo[] all = Directory.EnumerateFiles(
                     _backups, "backup_????????????????????????????????.bin", SearchOption.TopDirectoryOnly)
                 .Select(path => new FileInfo(path))
-                .OrderByDescending(static info => info.LastWriteTimeUtc)
+                // Ronda final 9 (regla 3): newest backup first by when the copy was made; File.Copy keeps the original's
+                // last write time, so that would order by the original's last edit.
+                .OrderByDescending(static info => info.CreationTimeUtc)
                 .ThenBy(static info => info.Name, StringComparer.Ordinal)
                 .ToArray();
             BackupReceipt[] backups = all

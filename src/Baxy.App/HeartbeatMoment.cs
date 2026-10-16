@@ -107,7 +107,7 @@ internal static class HeartbeatMoment
         {
             windows.Add(new JsonObject
             {
-                ["title"] = $"y {cloaked} más fuera de la vista (en otro escritorio o suspendidas)",
+                ["title"] = $"y {cloaked} más que Windows oculta (encubiertas: no se ven en la pantalla)",
                 ["process"] = "sin leer",
             });
         }

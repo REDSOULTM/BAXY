@@ -502,7 +502,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  El holdout v3 se corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
+  (Era la mente congelada; desde d4bb323e7 tres descripciones del catálogo cambiaron, ver abajo.) El holdout v3 se
+  corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
   - 805618957: atrás/recargar con tabCount sólo de una barra entera; latido «desconocido» con micrófono o límites sin leer.
@@ -535,11 +536,15 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     paso del producto abrió ninguno de los dos. La regla los cuenta. Sin ellos, 22/35 = 62,9 %.
   - Combinado 176/212 = 83,0 % (decisión + e2e + latido, como en v2; 176/207 = 85,0 % sin los cinco setup_fallido).
   - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F307, F313, F315 y F322 por el mismo Bloc de notas,
-    F331 por la misma Configuración, F306 por una ruta o clave que su setup.ps1 espera y el notebook no tiene). El servidor
+    F331 por la misma Configuración; F306, por un error de `Set-ItemProperty` en la línea 7 de su setup.ps1, con causa
+    sin aislar). El servidor
     del juez 35B se cayó bajo F303 t1 en la primera corrida y bajo F308 t1 en la segunda y la tercera (ConnectionReset;
     cada corrida pisa el log de la anterior, así que su causa no se conserva). La cuarta, con `--judge-only` sobre el
     mismo transcripts.json (sha 046ce32b…) y el código de 0d2e5433b, reinició el servidor una vez y siguió, pero se
     paró en F323: sus filas no guardan los votos de cada semilla, así que los criterios más estrictos de las rondas 6
     y 7 (toda línea sin sus tres votos legibles va a revisión; un voto es falso si lo dice el veredicto o una
-    afirmación) no se le podían aplicar. El juicio que cuenta es el quinto, entero, con el código final del juez
-    (`v3-falsedades-judge5.out`). Los cambios del juez nunca tocan las conversaciones, que ya estaban escritas.
+    afirmación) no se le podían aplicar; lo paró el PC a mano para juzgar todo otra vez. El juicio que cuenta es el
+    quinto (`v3-falsedades-judge5.out`), entero sobre las mismas conversaciones, con el código del juez cargado a las
+    18:53 (0d2e5433b y las rondas 6 y 7). No lleva el cambio de d4bb323e7 (una respuesta del juez sin mensaje = voto
+    ilegible): sin él, una respuesta así habría abortado la corrida, nunca la habría falseado. Los cambios del juez
+    nunca tocan las conversaciones, que ya estaban escritas.

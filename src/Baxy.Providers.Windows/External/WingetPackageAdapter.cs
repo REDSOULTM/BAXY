@@ -198,12 +198,15 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         string operation,
         string errorCode,
         string requested,
-        IReadOnlyList<PackageRow> rows) =>
+        List<PackageRow> rows) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("requested", requested);
+            // Ronda final 9 (regla 3): how many winget gave, so the eight listed are never read as all of them.
+            writer.WriteNumber("candidateCount", rows.Count);
+            if (rows.Count > 8) writer.WriteBoolean("truncated", true);
             writer.WriteStartArray("candidates");
             foreach (PackageRow row in rows.Take(8))
             {

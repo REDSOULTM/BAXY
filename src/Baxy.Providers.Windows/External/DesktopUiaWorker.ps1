@@ -1662,7 +1662,8 @@ function Get-SteadyPlace([IntPtr]$top){
 function Test-PlaceMoved($before,$after){
   if($null -eq $before -or $null -eq $after){ return $true }
   if([string]$before.title -ne [string]$after.title){ return $true }
-  if($before.partial -or $after.partial){ return $false }
+  # Ronda final 9 (regla 3): from a trace read in part it is neither moved nor still: undecided ($null).
+  if($before.partial -or $after.partial){ return $null }
   $volatile=$(if($null -ne $before.volatile){ $before.volatile } else { @{} })
   $was=$(if($null -ne $before.items){ $before.items } else { @{} })
   $now=$(if($null -ne $after.items){ $after.items } else { @{} })
@@ -1680,8 +1681,9 @@ function Wait-PlaceMoved($before,[IntPtr]$top){
   $watch=[System.Diagnostics.Stopwatch]::StartNew()
   $budget=[int]$script:PlaceWaitMs
   while($true){
-    if(Test-PlaceMoved $before (Get-PlaceTrace $top)){ return $true }
-    if($watch.ElapsedMilliseconds + 50 -ge $budget){ return $false }
+    $moved=Test-PlaceMoved $before (Get-PlaceTrace $top)
+    if($moved -eq $true){ return $true }
+    if($watch.ElapsedMilliseconds + 50 -ge $budget){ return $moved }
     Start-Sleep -Milliseconds 50
   }
 }
@@ -1758,12 +1760,18 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       if(-not [BaxyUiaTimedPress]::InvokeWithin($el,$script:InvokeWaitMs)){ return @{ method='invoke'; blocked=$true; ways=$ways; selectable=$choosing } }
       if(-not $choosing -or (Wait-Chosen $el)){
         if($null -eq $steadyBefore){ return @{ method='invoke'; ways=$ways; selectable=$choosing } }
-        if(Wait-PlaceMoved $steadyBefore $top){ return @{ method='invoke'; ways=$ways; selectable=$choosing; placeMoved=$true } }
+        $placeNow=Wait-PlaceMoved $steadyBefore $top
+        if($placeNow -eq $true){ return @{ method='invoke'; ways=$ways; selectable=$choosing; placeMoved=$true } }
+        # Ronda final 9: a place not read whole never gets another Invoke on that read.
+        if($null -eq $placeNow){ return @{ method='invoke'; ways=$ways; selectable=$choosing; placeUnread=$true } }
         # Elegido sin moverse: un lugar recibe su Invoke otra vez (lo abre), una vez; Select ya no elige nada mas.
         if(-not $placeItem){ return @{ method='invoke'; ways=$ways; selectable=$choosing; placeMoved=$false } }
         $ways+='invoke'
         if(-not [BaxyUiaTimedPress]::InvokeWithin($el,$script:InvokeWaitMs)){ return @{ method='invoke'; blocked=$true; ways=$ways; selectable=$choosing } }
-        return @{ method='invoke'; ways=$ways; selectable=$choosing; placeMoved=[bool](Wait-PlaceMoved $steadyBefore $top) }
+        # Ronda final 9 (regla 3): placeMoved only from a place read whole; an undecided read says placeUnread.
+        $placeNow=Wait-PlaceMoved $steadyBefore $top
+        if($null -eq $placeNow){ return @{ method='invoke'; ways=$ways; selectable=$choosing; placeUnread=$true } }
+        return @{ method='invoke'; ways=$ways; selectable=$choosing; placeMoved=[bool]$placeNow }
       }
       if(Test-InvokeActedAlone $trace (Get-InvokeTrace $el $top)){ return @{ method='invoke'; ways=$ways; selectable=$choosing } }
     } elseif($method -eq 'select'){
@@ -1775,12 +1783,15 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       if(-not $choosing -or $methods[-1] -eq 'select' -or (Wait-Chosen $el)){
         # Palanca 7: elegida, pero en un marco que no la hace actual solo vale si el lugar se movio.
         # Revision 1 de r24b (B3): el lugar que ya se vio movido aqui lo dice el recibo, sin otra lectura.
-        $moved=$(if($null -ne $placeBefore){ [bool](Test-PlaceMoved $placeBefore (Get-PlaceTrace $top)) } else { $false })
-        if($moved){ return @{ method='select'; ways=$ways; selectable=$choosing; placeMoved=$true } }
+        $moved=$(if($null -ne $placeBefore){ Test-PlaceMoved $placeBefore (Get-PlaceTrace $top) } else { $false })
+        if($moved -eq $true){ return @{ method='select'; ways=$ways; selectable=$choosing; placeMoved=$true } }
+        if($null -eq $moved){ return @{ method='select'; ways=$ways; selectable=$choosing; placeUnread=$true } }
         if($null -eq $placeBefore){
           # Ronda 24b: un lugar (nodo, pestana) elegido por Select y quieto pasa una vez a la via que pulsa de verdad.
           if($null -ne $steadyBefore -and $null -eq $placeBefore -and $methods[-1] -ne 'select'){
-            if(Wait-PlaceMoved $steadyBefore $top){ return @{ method='select'; ways=$ways; selectable=$choosing; placeMoved=$true } }
+            $placeNow=Wait-PlaceMoved $steadyBefore $top
+            if($placeNow -eq $true){ return @{ method='select'; ways=$ways; selectable=$choosing; placeMoved=$true } }
+            if($null -eq $placeNow){ return @{ method='select'; ways=$ways; selectable=$choosing; placeUnread=$true } }
             if($methods -contains 'message' -and $placeItem){ $chosenUnmoved=$true; continue }
             return @{ method='select'; ways=$ways; selectable=$choosing; placeMoved=$false }
           }
@@ -1883,6 +1894,9 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       return @{ method='pointer'; point=$point; rect=(Get-CurrentRect $el); legacyStep=$legacyStep; renderStep=$renderStep }
     }
   }
+  # Ronda final 9 (regla 3): an Invoke already sent and not seen to act ends the press here, so the postread judges
+  # it; another way or another candidate would press a second time.
+  if($ways -contains 'invoke'){ return @{ method='invoke'; ways=$ways; selectable=$choosing } }
   return $null
   }
   # Revision 1 de la ronda 24b (B3): un lugar (nodo, pestana) elegido lleva siempre placeMoved, verdadero o falso, por
@@ -1890,9 +1904,12 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
   # render, el Invoke que actuo solo): sin la clave, la mente no sabe si llego. Lo que el postread prueba con el lugar
   # (placeBefore) lo dice alli; una pulsacion bloqueada o por el puntero aun no se dio: el postread lo lee con
   # steadyBefore.
-  if($null -ne $steadyBefore -and $done -is [hashtable] -and $null -eq $done.placeMoved -and $null -eq $done.placeBefore -and [string]$done.method -ne 'container'){
+  if($null -ne $steadyBefore -and $done -is [hashtable] -and $null -eq $done.placeMoved -and -not [bool]$done.placeUnread -and $null -eq $done.placeBefore -and [string]$done.method -ne 'container'){
     if([bool]$done.blocked -or [string]$done.method -eq 'pointer'){ $done.steadyBefore=$steadyBefore; $done.steadyTop=$top }
-    else { $done.placeMoved=[bool](Wait-PlaceMoved $steadyBefore $top) }
+    else {
+      $placeNow=Wait-PlaceMoved $steadyBefore $top
+      if($null -eq $placeNow){ $done.placeUnread=$true } else { $done.placeMoved=[bool]$placeNow }
+    }
   }
   return $done
 }
@@ -3150,10 +3167,11 @@ function Do-Postread($request){
       # se prueba con esa marca: solo con el lugar movido (titulo o nombres de la ventana), releido hasta 600 ms; si no
       # se movio, el efecto de la pulsacion enviada queda incierto (la superficie redibujo la marca del Select).
       elseif($null -ne $pending.placeBefore){
-        if(Wait-PlaceMoved $pending.placeBefore $pending.top){ $selected=$true; $pending.placeMoved=$true }
+        $placeNow=Wait-PlaceMoved $pending.placeBefore $pending.top
+        if($placeNow -eq $true){ $selected=$true; $pending.placeMoved=$true }
         # Ronda 24b: el lugar ya estaba elegido por la via anterior (su marca es cierta) y la pulsacion no lo movio: el
-        # recibo dice elegido sin llegar.
-        elseif([bool]$pending.chosenAlready -and (Test-Selected $button)){ $selected=$true; $pending.placeMoved=$false }
+        # recibo dice elegido sin llegar. Ronda final 9: sólo con el lugar leído entero; sin eso, queda incierto.
+        elseif($placeNow -eq $false -and [bool]$pending.chosenAlready -and (Test-Selected $button)){ $selected=$true; $pending.placeMoved=$false }
         else {
           $script:Pending=$null
           $doubt=Click-Result $false $true 'visible_choice_uncorroborated' $pending.name $pending.identity $false $false $false $pending.kind
@@ -3211,8 +3229,12 @@ function Do-Postread($request){
   $held.method=[string]$pending.method
   # Ronda 24b: si el lugar se movio con la eleccion (nodo de arbol, pestana), para la mente.
   if($null -ne $pending.placeMoved){ $held.placeMoved=[bool]$pending.placeMoved }
+  elseif([bool]$pending.placeUnread){ $held.placeUnread=$true }
   # Revision 1 (B3): la pulsacion que aun no se habia dado al elegir (bloqueada) dice aqui si movio el lugar.
-  elseif($null -ne $pending.steadyBefore -and $null -ne $pending.steadyTop){ $held.placeMoved=[bool](Wait-PlaceMoved $pending.steadyBefore $pending.steadyTop) }
+  elseif($null -ne $pending.steadyBefore -and $null -ne $pending.steadyTop){
+    $placeNow=Wait-PlaceMoved $pending.steadyBefore $pending.steadyTop
+    if($null -eq $placeNow){ $held.placeUnread=$true } else { $held.placeMoved=[bool]$placeNow }
+  }
   return $held
 }
 # Recibo del clic por estado (r15b v3-42): en un campo (Edit, Document, ComboBox) el efecto de un clic es que tome el
@@ -3251,7 +3273,7 @@ function Pressed-Result($done,$button,[string]$name,[string]$identity,[string]$k
   }
   # Las marcas de la linea leidas por Do-Click antes de pulsar valen solo para esta pulsacion.
   $lineageToggles=@($script:LineageToggles); $script:LineageToggles=@()
-  $script:Pending=@{ native=$null; element=$button; toggleBefore=$toggleBefore; lineage=$lineage; lineageToggles=$lineageToggles; name=$name; identity=$identity; kind=$kind; method=$done.method; blocked=[bool]$done.blocked; placeBefore=$done.placeBefore; placeMoved=$done.placeMoved; chosenAlready=[bool]$done.chosenAlready; steadyBefore=$done.steadyBefore; steadyTop=$done.steadyTop }
+  $script:Pending=@{ native=$null; element=$button; toggleBefore=$toggleBefore; lineage=$lineage; lineageToggles=$lineageToggles; name=$name; identity=$identity; kind=$kind; method=$done.method; blocked=[bool]$done.blocked; placeBefore=$done.placeBefore; placeMoved=$done.placeMoved; placeUnread=[bool]$done.placeUnread; chosenAlready=[bool]$done.chosenAlready; steadyBefore=$done.steadyBefore; steadyTop=$done.steadyTop }
   $result=Pending-Result $script:Pending
   if($done.blocked){ $result.blocked=$true }
   if($done.selectable){ $result.selectable=$true }

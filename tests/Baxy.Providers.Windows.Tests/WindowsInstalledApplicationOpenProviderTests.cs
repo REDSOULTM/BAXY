@@ -1647,6 +1647,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             InstalledApplicationEntry entry) => InventoryFailure is null
                 ? Observations : throw InventoryFailure;
 
+        // The window status reads the strict inventory (ronda final 9); this fake's inventory is complete or fails.
+        public IReadOnlyList<InstalledApplicationObservation> InventoryForWindowResolution(
+            InstalledApplicationEntry entry,
+            CancellationToken cancellationToken) => Inventory(entry);
+
         public List<bool> ActivatedForControl { get; } = [];
 
         // The processes that run as administrator and whose program would open again with the person's rights.

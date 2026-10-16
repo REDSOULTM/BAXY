@@ -579,7 +579,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         IReadOnlyList<InstalledApplicationObservation> observations;
         try
         {
-            observations = _platform.Inventory(resolution.Entry);
+            // Ronda final 9 (regla 3): a count of the application's windows comes from the strict inventory (as
+            // window.resolve's): a live process of it that could not be read fails the read, never «no window».
+            observations = _platform.InventoryForWindowResolution(resolution.Entry, cancellationToken);
         }
         catch (Exception exception) when (exception is ApplicationInventoryException
             or InvalidOperationException

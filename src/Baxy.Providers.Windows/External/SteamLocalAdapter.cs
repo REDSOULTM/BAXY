@@ -81,7 +81,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     internal InstalledGameCatalogSnapshot GetCatalogSnapshot()
     {
-        InstalledGameCatalogEntry[] entries = _snapshot()
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        InstalledGameCatalogEntry[] entries = catalog
             .Where(static game => game.Installed)
             .OrderBy(static game => game.Name, StringComparer.OrdinalIgnoreCase)
             .ThenBy(static game => game.AppId, StringComparer.Ordinal)
@@ -90,9 +91,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 game.AppId,
                 game.Name))
             .ToArray();
+        // Ronda final 9 (regla 3): a library on a drive not mounted leaves the installed list incomplete.
         return new InstalledGameCatalogSnapshot(
             Verified: true,
-            Complete: true,
+            Complete: UnreadLibraries(catalog) == 0,
             entries);
     }
 
@@ -628,7 +630,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private ExternalCapabilityReceipt Status(string operation, JsonElement arguments)
     {
         string appId = RequireAppId(arguments);
-        SteamLocalGame? game = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        SteamLocalGame? game = catalog.SingleOrDefault(candidate => candidate.AppId == appId);
+        // Ronda final 9 (regla 3): with a library unread, a game not found may be installed there.
+        bool librariesUnread = UnreadLibraries(catalog) > 0;
         IReadOnlySet<string>? cache = _owned();
         if (game is null && cache is null)
         {
@@ -642,7 +647,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("jobId", JobId(appId)); writer.WriteString("appId", appId);
-            writer.WriteString("state", game is null ? "not_installed" : InstallState(game));
+            writer.WriteString("state", game is not null ? InstallState(game)
+                : librariesUnread ? "install_not_read" : "not_installed");
+            if (game is null && librariesUnread) writer.WriteBoolean("librariesUnread", true);
             writer.WriteNumber("bytesDownloaded", game?.BytesDownloaded ?? 0);
             writer.WriteNumber("bytesTotal", game?.BytesToDownload ?? 0);
             if (game is not null && game.BytesToDownload > 0)

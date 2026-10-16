@@ -20,7 +20,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # Auditoría final (regla 3): a kind whose read failed (spooler stopped, WIA or PnP unanswered) is listed in
         # unread, never as no devices of that kind.
         $p=@();$s=@();$u=@();$m=@();$k=@();$unread=@()
-        if($kind -in @('all','printer')){try{$p=@(Get-Printer -ErrorAction Stop|Select-Object Name,PrinterStatus)}catch{$unread+=@('printer')}}
+        if($kind -in @('all','printer')){try{$p=@(Get-Printer -ErrorAction Stop|Select-Object Name,@{n='PrinterStatus';e={[string]$_.PrinterStatus}})}catch{$unread+=@('printer')}}
         if($kind -in @('all','scanner')){try{$d=New-Object -ComObject WIA.DeviceManager;foreach($i in $d.DeviceInfos){if($i.Type -eq 1){$s+=@([pscustomobject]@{Name=[string]$i.Properties.Item('Name').Value;DeviceID=[string]$i.DeviceID;Status='available'})}}}catch{$s=@();$unread+=@('scanner')}}
         if($kind -in @('all','usb')){try{$u=@(Get-PnpDevice -PresentOnly -ErrorAction Stop|Where-Object {$_.InstanceId -like 'USB*'}|Select-Object FriendlyName,Status,InstanceId)}catch{$unread+=@('usb')}}
         function Get-BaxyPresent([string]$className) {
@@ -86,7 +86,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         """;
     private const string PrintScript = """
         $ErrorActionPreference='Stop';$i=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))|ConvertFrom-Json
-        $before=@(Get-PrintJob -PrinterName ([string]$i.printer) -ErrorAction SilentlyContinue|ForEach-Object {$_.ID})
+        # Ronda final 9 (regla 3): a queue not read before would take any job already there for this one.
+        try {$before=@(Get-PrintJob -PrinterName ([string]$i.printer) -ErrorAction Stop|ForEach-Object {$_.ID})}
+        catch {[pscustomobject]@{ok=$false;effectObserved=$false;error='print_queue_not_read'}|ConvertTo-Json -Compress;exit 2}
         $effect=$false
         try {
           $p=Start-Process -FilePath ([string]$i.path) -Verb PrintTo -ArgumentList ('"'+[string]$i.printer+'"') -PassThru;$effect=$true
@@ -1353,6 +1355,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     private static ExternalCapabilityReceipt DisplayStatus(string operation)
     {
         var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
+        int unreadMonitors = 0;
         for (uint index = 0; index < 32; index++)
         {
             DisplayDevice device = default;
@@ -1377,19 +1380,22 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             const int currentSettings = -1;
             if (!EnumDisplaySettingsW(name, currentSettings, ref mode))
             {
+                // Ronda final 9 (regla 3): attached and not read is not «no monitor there».
+                unreadMonitors++;
                 continue;
             }
             monitors.Add((name, (device.StateFlags & primaryDevice) != 0, mode.PelsWidth, mode.PelsHeight, mode.DisplayFrequency));
         }
         if (monitors.Count == 0)
         {
-            return ExternalJson.Failure(operation, "display_devices_not_found");
+            return ExternalJson.Failure(operation, unreadMonitors > 0 ? "display_settings_not_read" : "display_devices_not_found");
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteNumber("monitorCount", monitors.Count);
+            if (unreadMonitors > 0) writer.WriteNumber("monitorsUnread", unreadMonitors);
             writer.WriteStartArray("monitors");
             foreach ((string name, bool primary, uint width, uint height, uint hertz) in monitors)
             {
@@ -1536,7 +1542,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         using JsonDocument response = ParseLastJson(process.Output);
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
-            return effectBoundary.Failure(operation, "print_job_not_verified", effect);
+            return effectBoundary.Failure(operation,
+                response.RootElement.TryGetProperty("error", out JsonElement printError)
+                && printError.GetString() == "print_queue_not_read" ? "print_queue_not_read" : "print_job_not_verified",
+                effect);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1); writer.WriteString("deviceId", deviceId);
