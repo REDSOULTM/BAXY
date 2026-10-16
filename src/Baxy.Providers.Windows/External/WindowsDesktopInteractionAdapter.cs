@@ -477,6 +477,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         DesktopForeground before = _keyboard.Foreground();
         if (before.Window == 0 || _keyboard.InputSize != (IntPtr.Size == 8 ? 40 : 28))
             return ExternalJson.FailureBeforeEffect(operation, "key_press_sendinput_failed");
+        string sentToProcess = _keyboard.ProcessName(before.Window);
         // v3 point 0: something may take the front back between fronting the window and the press (the person, or an
         // application opened behind that Windows activated late): the key is checked against the window right before
         // it goes, never sent to whatever holds the front now.
@@ -613,13 +614,23 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         bool verified = accepted == expected;
         int lastError = verified ? 0 : _keyboard.LastError();
         bool effect = accepted > 0;
+        // A failure once the keys went still names the window they were sent to.
+        ExternalCapabilityReceipt SentFailure(string errorCode) => effectBoundary.Failure(operation, errorCode, effect) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                WriteSentTo(writer, before, sentToProcess);
+                writer.WriteEndObject();
+            }),
+        };
         try
         {
             await _keyboard.SettleAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            return effectBoundary.Failure(operation, "desktop_interaction_adapter_failed", effect);
+            return SentFailure("desktop_interaction_adapter_failed");
         }
 
         DesktopForeground after = _keyboard.Foreground();
@@ -628,13 +639,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         string stopped = refusedLater ?? (userActed ? "input_user_interrupted" : "input_window_changed");
         if (interrupted)
             return effect
-                ? effectBoundary.Failure(operation, stopped, effect)
+                ? SentFailure(stopped)
                 : ExternalJson.FailureBeforeEffect(operation, stopped);
         // The text went whole, but another process took the front while it was typed: what it got is not proven.
         if (typing && after.ProcessId != before.ProcessId)
-            return effectBoundary.Failure(operation, "input_window_changed", effect);
+            return SentFailure("input_window_changed");
         if (!verified)
-            return effectBoundary.Failure(operation, "input_effect_not_verified", effect);
+            return SentFailure("input_effect_not_verified");
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
         bool readBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
@@ -660,11 +671,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteNumber("lastWin32Error", lastError);
             writer.WriteNumber("foregroundProcessIdBefore", before.ProcessId);
             writer.WriteNumber("foregroundProcessIdAfter", after.ProcessId);
-            // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad).
-            writer.WriteStartObject("sentTo");
-            writer.WriteString("title", before.Title);
-            writer.WriteString("process", _keyboard.ProcessName(before.Window));
-            writer.WriteEndObject();
+            WriteSentTo(writer, before, sentToProcess);
             if (typing && window == 0)
                 writer.WriteBoolean("readBack", readBack);
             if (bursts.Current is not null)
@@ -692,6 +699,16 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         return unread is null
             ? ExternalJson.Success(operation, result, effect)
             : new ExternalCapabilityReceipt(operation, effect, false, result, unread) { EffectMayHaveOccurred = true };
+    }
+
+    // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
+    // and the program a view names it by, read before the first key.
+    private static void WriteSentTo(Utf8JsonWriter writer, DesktopForeground before, string process)
+    {
+        writer.WriteStartObject("sentTo");
+        writer.WriteString("title", before.Title);
+        writer.WriteString("process", process);
+        writer.WriteEndObject();
     }
 
     // The field a value was set into without the keyboard's focus, when it is of this same window (same process and

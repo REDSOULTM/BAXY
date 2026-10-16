@@ -56,8 +56,8 @@ internal sealed record OpenApplicationResult(
     // WindowId: the id the window operations take for the window this opening verified (e2e p3 E007: the model passed
     // windowHandle as windowId and read the refusal as «it is no longer open»).
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null,
-    // ProcessName (BAXY Renew, notebook): the program whose window this opening verified, from that process's own
-    // executable.
+    // ProcessName (BAXY Renew, notebook): the program a view names the window this opening verified by, as
+    // ForegroundHeldBy and the keys' sentTo name a window (a packaged app's own: CalculatorApp, not its launcher calc).
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? ProcessName = null,
     // Foreground (BAXY Renew, notebook, F004): whether the window this opening verified holds the front when the opening
     // answers, asked in front or not; ForegroundHeldBy: the window in front instead (none when Windows reports none).

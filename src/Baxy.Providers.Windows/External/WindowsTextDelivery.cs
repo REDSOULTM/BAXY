@@ -110,7 +110,8 @@ internal readonly record struct FieldDelivery(
 /// </summary>
 internal sealed class WindowsTextDelivery
 {
-    private const int ReadableText = 1 << 20;
+    // The longest control text a re-read reads; a longer one proves nothing (Holds).
+    internal const int ReadableText = 1 << 20;
     private const long EsPassword = 0x0020;
     private const long EsReadOnly = 0x0800;
 
@@ -211,8 +212,10 @@ internal sealed class WindowsTextDelivery
         int after = _messages.TextLength(field);
         if (after == expected && Holds(field, text, after, replace))
             return new FieldDelivery("em_replacesel", true, true, null, fieldClass);
-        // The control answered and its text did not move: it does not take EM_REPLACESEL, nothing was inserted.
-        if (!answered || after != before)
+        // The control answered and its text did not move: it does not take EM_REPLACESEL, nothing was inserted. Unless
+        // the insertion replaced a selection as long as itself and the text is too long to be read: then nothing tells
+        // the two apart, and typing it again could put it in twice.
+        if (!answered || after != before || (after == expected && after > ReadableText))
             return new FieldDelivery("em_replacesel", false, true, "input_effect_not_verified", fieldClass);
 
         int queued = 0;
@@ -298,11 +301,12 @@ internal sealed class WindowsTextDelivery
 
     private bool Same(WindowIdentity identity) => _messages.Identity(identity.Window) == identity;
 
-    // The text is in the field; a replaced value is the field's whole text.
+    // The text is in the field; a replaced value is the field's whole text. A text too long to be read proves
+    // neither: its length alone is never taken for the text (rule 3).
     private bool Holds(nint field, string text, int length, bool whole = false)
     {
         if (length > ReadableText)
-            return !whole;
+            return false;
         string? content = _messages.Text(field, length)?.Replace("\r", string.Empty, StringComparison.Ordinal);
         return content is not null
             && (whole ? content == text : content.Contains(text, StringComparison.Ordinal));

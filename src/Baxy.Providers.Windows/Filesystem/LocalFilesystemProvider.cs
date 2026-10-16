@@ -145,8 +145,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         {
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (Directory.Exists(path)) throw Error("destination_is_directory");
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             bool exists = File.Exists(path);
             byte[] previous = [];
             if (exists && append)
@@ -171,6 +169,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 throw WriteRefused(
                     current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append);
 
+            // A refused write leaves nothing behind: the folder of a new file is made only now.
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             string temporary = Path.Combine(
                 Path.GetDirectoryName(path)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
             bool recycled = false;
@@ -314,6 +315,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
             if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             File.Copy(source, destination);
             if (!string.Equals(HashFile(destination), receipt.Sha256, StringComparison.Ordinal))
                 throw Error("verification_failed");

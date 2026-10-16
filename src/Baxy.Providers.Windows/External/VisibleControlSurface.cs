@@ -660,7 +660,7 @@ internal static partial class VisibleControlSurface
     /// <summary>
     /// The process a visible ApplicationFrameHost frame hosts; 0 when the window is no such frame or hosts nothing.
     /// Review 2026-10-07: the frame's own process is one ApplicationFrameHost shared by every packaged app on screen
-    /// (Settings, the Store, the Calculator); a mission bound to it could take another app's frame on its next look.
+    /// (Settings, the Store, the Calculator); a look bound to it could take another app's frame the next time.
     /// </summary>
     internal static uint HostedProcess(nint frame)
     {
@@ -845,8 +845,8 @@ internal static partial class VisibleControlSurface
     /// a root): owned by it (GW_OWNER), of its very process, no window of its own on the taskbar (no
     /// WS_EX_APPWINDOW), and one that never takes the activation itself (<see cref="TakesActivation(long, long)"/>). A
     /// menu or a list a window shows lives in such a window while its owner keeps the activation, and the keys reach it
-    /// through its owner. Review 1 of ronda 24 (finding 1): a modeless dialog with a title bar (a find and replace the
-    /// mission opened) takes the activation itself, so its owner in front never holds it: the keys meant for it would
+    /// through its owner. Review 1 of ronda 24 (finding 1): a modeless dialog with a title bar (a find and replace a
+    /// click opened) takes the activation itself, so its owner in front never holds it: the keys meant for it would
     /// land in the person's document. Contracases: such a dialog, a window of another process, a window with a taskbar
     /// button of its own (a second main window the first owns), and an owner that is not the one in front are never held.
     /// </summary>
@@ -1483,13 +1483,6 @@ internal static partial class VisibleControlSurface
         }
 
         return surface;
-    }
-
-    // The top-level window a window is part of (itself when it is one, or when Windows names no parent).
-    internal static nint Root(nint hwnd)
-    {
-        nint root = hwnd == 0 ? 0 : GetAncestor(hwnd, 2);
-        return root == 0 ? hwnd : root;
     }
 
     internal static string WindowTitle(nint hwnd)

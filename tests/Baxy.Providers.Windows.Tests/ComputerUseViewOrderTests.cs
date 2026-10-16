@@ -367,7 +367,7 @@ public sealed class ComputerUseViewOrderTests
         });
     }
 
-    // The worker hears the goal's words only when the look carries some: a look outside a mission is the old request.
+    // The worker hears the goal's words only when the look carries some: without them the view is the usual one.
     [Test]
     public void TheViewRequestCarriesTheGoalsWordsOnlyWhenGiven()
     {
