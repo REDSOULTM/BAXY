@@ -211,7 +211,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final: the local library cache is incomplete (see InstallNamedAsync), so a game absent from it is
             // absent from the cache, never «not owned».
             if (owned || installed) writer.WriteBoolean("owned", true);
-            else writer.WriteBoolean("inLocalLibraryCache", false);
+            else if (appId is not null) writer.WriteBoolean("inLocalLibraryCache", false);
             writer.WriteBoolean("installed", installed);
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
@@ -399,6 +399,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         string? ownedName = null;
         string? ownedCatalogId = null;
         int ownedMatches = 0;
+        bool cacheRead = false;
         if (File.Exists(catalogCache))
         {
             try
@@ -421,6 +422,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                         ownedCatalogId ??= item.TryGetProperty("id", out JsonElement itemId)
                             && itemId.ValueKind == JsonValueKind.String ? itemId.GetString() : null;
                     }
+                    cacheRead = true;
                 }
             }
             catch (FormatException)
@@ -444,11 +446,13 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteBoolean("resolved", owned);
             if (catalogItemId is null) writer.WriteNull("appId"); else writer.WriteString("appId", catalogItemId);
             writer.WriteString("title", installedName ?? ownedName ?? title);
+            // Ronda final: without the catalog cache read, the library was not looked at.
             if (owned) writer.WriteBoolean("owned", true);
-            else writer.WriteBoolean("inLocalLibraryCache", false);
+            else if (cacheRead) writer.WriteBoolean("inLocalLibraryCache", false);
             writer.WriteBoolean("installed", installed);
             writer.WriteString("state", installed ? "installed"
-                : owned ? "owned_not_installed" : "not_in_local_library_cache");
+                : owned ? "owned_not_installed"
+                : cacheRead ? "not_in_local_library_cache" : "library_cache_unavailable");
             writer.WriteString("authority", installed
                 ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");
             writer.WriteEndObject();
@@ -630,7 +634,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     InstallState(after),
                     InstallState(before),
                     StringComparison.Ordinal);
-            if (terminal && (observation > 0 || changedFromPreDispatch))
+            // Ronda final: a download that was already paused shows nothing by staying paused; only a change is the
+            // cancel's.
+            if (terminal && (changedFromPreDispatch || (observation > 0 && InstallState(before) != "paused")))
             {
                 JsonElement result = ExternalJson.Create(writer =>
                 {

@@ -114,10 +114,12 @@ def _outcome(observation: str) -> str:
     if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir"
     if status == "completed":
-        # A completed call is verified unless its result says it is not (the App's own completed-but-unreadable) or
-        # that what it changed was not read back (ronda final: a shell command that exited 0).
-        observed = facts.get("observed")
-        if facts.get("verified") is False or (isinstance(observed, dict) and observed.get("effectReadBack") is False):
+        # A completed call is verified unless its result says it is not (the App's own completed-but-unreadable), that
+        # what it changed was not read back (ronda final: a shell command that exited 0) or that it was only delivered
+        # (keys and text Windows accepted, with no read-back of what the window did with them).
+        observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+        if (facts.get("verified") is False or observed.get("effectReadBack") is False
+                or ("delivered" in observed and observed.get("readBack") is not True)):
             return "completado sin verificar"
         return "completado y verificado"
     error = facts.get("error") or facts.get("cause")

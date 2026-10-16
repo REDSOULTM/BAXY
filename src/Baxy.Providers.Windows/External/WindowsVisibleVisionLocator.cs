@@ -42,6 +42,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         if (captured is null)
             return null;
         VisibleControlSurface.CapturedWindow before = captured.Value;
+        bool pressedOnce = false;
         try
         {
             byte[] image = before.Bmp;
@@ -97,6 +98,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 .ConfigureAwait(false);
             if (pressed.Failure is { } refused)
                 return refused;
+            pressedOnce = true;
             before = pressed.Before ?? baseline;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
@@ -163,7 +165,10 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             or FormatException
             or KeyNotFoundException)
         {
-            return ExternalJson.Failure(operation, "vision_provider_request_failed");
+            // Ronda final: after the press, a failed post-read is a press that may have acted.
+            return pressedOnce
+                ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid")
+                : ExternalJson.Failure(operation, "vision_provider_request_failed");
         }
     }
 

@@ -32,6 +32,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         if (captured is null)
             return null;
         VisibleControlSurface.CapturedWindow before = captured.Value;
+        bool pressedOnce = false;
         try
         {
             OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
@@ -69,6 +70,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 .ConfigureAwait(false);
             if (pressed.Failure is { } refused)
                 return refused;
+            pressedOnce = true;
             if (pressed.Before is { } fresh)
                 before = fresh;
             else if (pressed.Burst is null && baseline is { } now && now.Hwnd == before.Hwnd)
@@ -163,7 +165,9 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             or InvalidDataException
             or ArgumentException)
         {
-            return null;
+            // Ronda final: after the press, a failed post-read is a press that may have acted, never «not found» (the
+            // cascade would press again).
+            return pressedOnce ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid") : null;
         }
     }
 

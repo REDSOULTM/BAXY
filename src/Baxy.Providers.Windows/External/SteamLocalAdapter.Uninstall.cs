@@ -139,11 +139,13 @@ internal sealed partial class SteamLocalAdapter
         if (ns is null || appName is null)
             return ExternalJson.FailureBeforeEffect(operation, "epic_install_link_not_resolved");
         string link = "com.epicgames.launcher://apps/" + Uri.EscapeDataString(ns + ":" + catalogItemId + ":" + appName) + "?action=install&silent=true";
+        // Ronda final: a manifest already there (a download the person paused) cannot show this request's transition.
+        bool hadManifest = Directory.Exists(manifests) && EpicManifestExists(manifests, catalogItemId);
         effectBoundary.Cross(cancellationToken);
         SteamDispatchResult dispatch = await _automation.DispatchAsync(link, cancellationToken).ConfigureAwait(false);
         if (!dispatch.Accepted)
             return effectBoundary.Failure(operation, "epic_install_dispatch_rejected", dispatch.EffectObserved);
-        for (int observation = 0; observation <= InstallObservationIntervals; observation++)
+        for (int observation = 0; !hadManifest && observation <= InstallObservationIntervals; observation++)
         {
             if (Directory.Exists(manifests) && EpicManifestExists(manifests, catalogItemId))
             {

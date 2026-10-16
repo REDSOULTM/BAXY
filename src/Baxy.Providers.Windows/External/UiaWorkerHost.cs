@@ -105,6 +105,13 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
 
                 return JsonDocument.Parse(line);
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Ronda final: a read the caller cancelled leaves its answer in the pipe, where the next command would
+                // read it as its own: the worker is replaced.
+                Terminate();
+                throw;
+            }
             catch (Exception exception) when (exception is IOException or JsonException
                 or InvalidOperationException
                 || (exception is OperationCanceledException && !cancellationToken.IsCancellationRequested))

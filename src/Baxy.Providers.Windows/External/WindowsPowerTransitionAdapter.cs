@@ -228,6 +228,8 @@ internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
                     writer.WriteNumber("delaySeconds", WindowsPowerTransitionPlatform.TransitionDelaySeconds);
                 writer.WriteString("requestedUtc", DateTimeOffset.UtcNow);
                 writer.WriteString("authority", transition.Authority);
+                // Ronda final: Windows accepted the transition; nothing reads back that it happened.
+                writer.WriteBoolean("effectReadBack", false);
                 writer.WriteEndObject();
             });
             return ValueTask.FromResult(ExternalJson.Success(operation, result));

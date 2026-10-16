@@ -81,7 +81,8 @@ def measure(label: str, ear: bool) -> dict:
         time.sleep(1)
     conductor.close()
     harness = sum(peak.get(role, 0) for role in ("llama-server", "mente", "piper"))
-    # Ronda final: the whole product as well (App, Core and the UIA worker beside the harness), so no process is left out.
+    # Ronda final: the product as the conductor runs it as well (App, Core and the UIA worker beside the harness); the
+    # window's WebView2 and the browser's own UIA worker do not run under the conductor and are not measured.
     return {"oido_cargado": ear, "vram_mib": (gpu - before) if gpu is not None and before is not None else None,
             "uss_mib": peak, "arnes_ram_mib": harness, "producto_ram_mib": sum(peak.values()),
             "gpu_before_mib": before, "gpu_peak_mib": gpu}
