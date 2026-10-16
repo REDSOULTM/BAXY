@@ -586,14 +586,14 @@ internal sealed record VisibleClickTiming(
 }
 
 /// <summary>
-/// Perception and the click of the computer-use engine
-/// (documentacion/computer-use/CONTRATO_VISTA_ACCION.md §1, §2).
-/// <c>input.visible.controls</c> is the compact view of the foreground window:
-/// up to sixty actionable controls with index, kind, label, state, rectangle,
-/// the written text by zone (OCR), the window's
-/// title and process. <c>input.visible.click</c> invokes one control by label
-/// or by the identity the view handed out, through the persistent UIA worker,
-/// then OCR, then vision, and demands a post-read.
+/// Perception and the click of the computer-use engine.
+/// <c>input.visible.controls</c> is the view of a window: up to sixty actionable
+/// controls with index, kind, label, state, value and shortcut, the disabled ones
+/// by kind and label, the written text by zone (OCR), the window's title and
+/// process. <c>input.visible.click</c> invokes one control by label, by the index
+/// of the last view (resolved here to that control's identity, kept with the view
+/// and not written in it) or by an identity given as <c>controlId</c>, through the
+/// persistent UIA worker, then OCR, then vision, and demands a post-read.
 /// </summary>
 internal sealed class WindowsVisibleControlAdapter
     : IExternalOperationAdapter, IViewedFields, IPointPress, ISearchBurstActs, IDisposable
@@ -873,7 +873,7 @@ internal sealed class WindowsVisibleControlAdapter
             return ExternalJson.FailureBeforeEffect(operation, "visible_click_argument_invalid");
         }
 
-        // The engine clicks by the identity the last view handed out. The
+        // The engine clicks by the identity the last view kept for the index. The
         // index is resolved against that view, and the label must name the
         // same control: an index that drifted is refused, never clicked.
         if (index is int position && controlId is null)
@@ -912,10 +912,11 @@ internal sealed class WindowsVisibleControlAdapter
             return await SearchInBurstAsync(operation, label, controlId, missionWindow, search, choose, cancellationToken)
                 .ConfigureAwait(false);
 
-        // Goal v3 B3: a control opened by its arrow, its context menu or a double click is pressed only by the identity
-        // the view handed out, through the accessible tree or a message, never by the pointer nor by the label's
-        // cascade (OCR, vision): a press found that way would be the ordinary click the manner exists to avoid (the
-        // split button's Invoke opened another tab, v3-37). A control that moved since the view is not pressed.
+        // Goal v3 B3: a control opened by its arrow, its context menu or a double click is pressed only by its identity
+        // (its index's in the last view, or a controlId), through the accessible tree or a message, never by the
+        // pointer nor by the label's cascade (OCR, vision): a press found that way would be the ordinary click the
+        // manner exists to avoid (the split button's Invoke opened another tab, v3-37). A control that moved since
+        // the view is not pressed.
         if (manner is not null)
         {
             if (search is not null || controlId is null)
@@ -1746,11 +1747,6 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteNumber("i", control.Index);
                     writer.WriteString("kind", control.Kind);
                     writer.WriteString("name", control.Name);
-                    // Where a name came from when the control had no Name of its own (helpText, labeledBy,
-                    // automationId): absent for a control's own Name.
-                    if (control.NameSource.Length > 0)
-                        writer.WriteString("nameSource", control.NameSource);
-                    writer.WriteString("id", control.Id);
                     writer.WriteString("state", control.State);
                     if (control.Value is null)
                         writer.WriteNull("value");
@@ -1759,10 +1755,6 @@ internal sealed class WindowsVisibleControlAdapter
                     // Goal v3 B3: the key the application declares for the control (AcceleratorKey or AccessKey).
                     if (control.Shortcut.Length > 0)
                         writer.WriteString("shortcut", control.Shortcut);
-                    if (control.RectValue is { } rect)
-                        WriteRect(writer, "rect", rect);
-                    else
-                        writer.WriteNull("rect");
                     if (control.Repeated > 0)
                         writer.WriteNumber("repeated", control.Repeated);
                     writer.WriteEndObject();
@@ -1935,7 +1927,6 @@ internal sealed class WindowsVisibleControlAdapter
                 Index = controls.Count,
                 Kind = ReadString(item, "kind"),
                 Name = name,
-                NameSource = ReadString(item, "nameSource"),
                 Id = ReadString(item, "id"),
                 State = ReadString(item, "state"),
                 Value = item.TryGetProperty("value", out JsonElement value)
@@ -1961,16 +1952,6 @@ internal sealed class WindowsVisibleControlAdapter
             && value.TryGetInt32(out int number)
             ? number
             : 0;
-
-    private static void WriteRect(Utf8JsonWriter writer, string name, Rect rect)
-    {
-        writer.WriteStartObject(name);
-        writer.WriteNumber("x", rect.X);
-        writer.WriteNumber("y", rect.Y);
-        writer.WriteNumber("w", rect.W);
-        writer.WriteNumber("h", rect.H);
-        writer.WriteEndObject();
-    }
 
     private static readonly string[] ZoneOrder = ["TL", "T", "TR", "L", "C", "R", "BL", "B", "BR"];
 
@@ -3139,7 +3120,6 @@ internal sealed class WindowsVisibleControlAdapter
         internal int Index { get; set; }
         internal string Kind { get; set; } = string.Empty;
         internal string Name { get; set; } = string.Empty;
-        internal string NameSource { get; set; } = string.Empty;
         internal string Id { get; set; } = string.Empty;
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }
