@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.IO.Pipes;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -3551,6 +3553,78 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_stream_not_resolved"));
         });
+    }
+
+    // BAXY Renew (notebook): the pause command reached the player and its answer could not be read; the request
+    // may have paused it, so the dispatch stops there and no other player gets pressed.
+    [Test]
+    public async Task LocalPlayerFailureAfterThePauseWasSentStopsTheDispatch()
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        string? sentCommand = null;
+        Task player = Task.Run(async () =>
+        {
+            await AnswerOnceAsync(pipeName, request =>
+                $$"""{"request_id":{{RequestId(request)}},"error":"success","data":false}""");
+            await AnswerOnceAsync(pipeName, request =>
+            {
+                sentCommand = request;
+                return "not json";
+            });
+        });
+        var other = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", true, true, Json("{}"), null));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+        using var provider = new WindowsExternalCapabilityProvider([local, other]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.control", Json("""{"action":"pause"}"""), CancellationToken.None);
+            await player;
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sentCommand, Does.Contain("""["set_property","pause",true]"""));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("local_player_ipc_failed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(other.Calls, Is.Zero);
+        });
+    }
+
+    // One connection of the player's IPC: one request line answered, then the client's close.
+    private static async Task AnswerOnceAsync(string pipeName, Func<string, string> answer)
+    {
+        await using var pipe = new NamedPipeServerStream(
+            pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+        await pipe.WaitForConnectionAsync();
+        using var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+        using var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true) { AutoFlush = true };
+        string request = await reader.ReadLineAsync() ?? throw new IOException("No request.");
+        await writer.WriteLineAsync(answer(request));
+        while (await reader.ReadLineAsync() is not null)
+        {
+        }
+    }
+
+    private static int RequestId(string request)
+    {
+        using JsonDocument document = JsonDocument.Parse(request);
+        return document.RootElement.GetProperty("request_id").GetInt32();
     }
 
     [Test]
