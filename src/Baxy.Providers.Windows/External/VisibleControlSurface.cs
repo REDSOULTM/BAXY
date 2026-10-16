@@ -5,6 +5,21 @@ namespace Baxy.Providers.Windows.External;
 
 internal static partial class VisibleControlSurface
 {
+    private static readonly TimeSpan AnimationProbe = TimeSpan.FromMilliseconds(120);
+
+    /// <summary>
+    /// Auditoría final (regla 3): whether the window in front changes by itself (a video, a caret, a spinner): a second
+    /// capture a moment after <paramref name="first"/> that differs, or that could not be taken. On such a window an
+    /// image that differs after a press is no proof of it.
+    /// </summary>
+    internal static async ValueTask<bool> ForegroundAnimatesAsync(CapturedWindow first, CancellationToken cancellationToken)
+    {
+        await Task.Delay(AnimationProbe, cancellationToken).ConfigureAwait(false);
+        CapturedWindow? second = await CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+        return second is not { } again || again.Hwnd != first.Hwnd
+            || !string.Equals(again.Sha256, first.Sha256, StringComparison.Ordinal);
+    }
+
     internal static async ValueTask<CapturedWindow?> CaptureForegroundAsync(
         CancellationToken cancellationToken)
     {

@@ -93,6 +93,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
             if (current is not { } baseline || baseline.Hwnd != before.Hwnd)
                 return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
+            // Auditoría final (regla 3): a window that changes by itself proves nothing by a changed image.
+            bool animated = await VisibleControlSurface.ForegroundAnimatesAsync(baseline, cancellationToken).ConfigureAwait(false);
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
                 press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken)
                 .ConfigureAwait(false);
@@ -126,7 +128,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             }
 
             // A surface that changed after the person acted proves nothing of the click.
-            changed &= !userActed;
+            changed &= !userActed && !animated;
             bool targeted = method == "target" && pressed.Focused;
             bool ok = changed || targeted;
             JsonElement result = ExternalJson.Create(writer =>

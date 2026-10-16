@@ -214,7 +214,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // An installed manifest is not the account's ownership (a shared or free game): only the cache says owned.
             if (owned) writer.WriteBoolean("owned", true);
             else if (appId is not null && !installed && cache is not null) writer.WriteBoolean("inLocalLibraryCache", false);
-            writer.WriteBoolean("installed", installed);
+            // Auditoría final (regla 3): installed or not is read by the AppID's manifest; a title not resolved to one says
+            // nothing of it.
+            if (appId is not null) writer.WriteBoolean("installed", installed);
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
                 : owned ? "owned_not_installed" : cache is not null ? "not_in_local_library_cache" : "library_cache_unavailable");
@@ -397,6 +399,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }
         string? installedName = null;
         string? installedCatalogId = null;
+        // Auditoría final (regla 3): a manifest that could not be read leaves «not installed» unsaid, and what is read is a
+        // manifest with that exact name, said as that.
+        bool manifestUnread = false;
         if (Directory.Exists(manifests))
         {
             foreach (string file in Directory.EnumerateFiles(manifests, "*.item"))
@@ -422,9 +427,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 catch (JsonException)
                 {
                     // A manifest the launcher is rewriting is not evidence either way.
+                    manifestUnread = true;
                 }
                 catch (IOException)
                 {
+                    manifestUnread = true;
                 }
             }
         }
@@ -482,9 +489,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final: without the catalog cache read, the library was not looked at.
             if (owned) writer.WriteBoolean("owned", true);
             else if (cacheRead) writer.WriteBoolean("inLocalLibraryCache", false);
-            writer.WriteBoolean("installed", installed);
+            if (installed) writer.WriteBoolean("installed", true);
+            else if (!manifestUnread) writer.WriteBoolean("epicManifestWithThatName", false);
             writer.WriteString("state", installed ? "installed"
-                : owned ? "owned_not_installed"
+                : owned ? (manifestUnread ? "owned_install_not_read" : "owned_no_epic_manifest_with_that_name")
                 : cacheRead ? "not_in_local_library_cache" : "library_cache_unavailable");
             writer.WriteString("authority", installed
                 ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");

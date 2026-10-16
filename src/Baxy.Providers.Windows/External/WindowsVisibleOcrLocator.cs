@@ -65,6 +65,9 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // in, a spinner) is not the press's. What is at the point when it is pressed is the worker's check.
             VisibleControlSurface.CapturedWindow? baseline =
                 await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            // Auditoría final (regla 3): a window that changes by itself proves nothing by a changed image.
+            bool animated = baseline is not { } still
+                || await VisibleControlSurface.ForegroundAnimatesAsync(still, cancellationToken).ConfigureAwait(false);
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
                 press, operation, before.Hwnd, screenX, screenY, label, before, Relocate, cancellationToken)
                 .ConfigureAwait(false);
@@ -126,7 +129,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // A field made the text's destination is proved by the designation itself, not by a redraw; a surface
             // that changed after the person acted proves nothing of the click.
             bool targeted = method == "target" && pressed.Focused;
-            bool ok = (changed && !userActed) || targeted;
+            bool ok = (changed && !userActed && !animated) || targeted;
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();

@@ -163,11 +163,11 @@ internal sealed partial class UserBrowserSurface
             .ConfigureAwait(false);
         // A browser that is not running yet has a launch of its own to pay before any page plays.
         bool browserRunning = _platform.ListWindows(browser.ProcessName).Count > 0;
-        // Auditoría final (regla 3): with the sessions before the page not all read, an old session cannot be told
-        // from the new one (nor kept from being pressed), so nothing is opened; a browser not running has none.
-        if (read is null && browserRunning)
+        // Auditoría final (regla 3): with the sessions before the page not all read, an old session (another app's of
+        // the same title, too) cannot be told from the new one, nor kept from being pressed, so nothing is opened.
+        if (read is null)
             return ExternalJson.FailureBeforeEffect(operation, MediaSessionsNotRead);
-        IReadOnlyList<UserMediaSession> before = read ?? [];
+        IReadOnlyList<UserMediaSession> before = read;
         if (!TryOpen(video.WatchUri, effectBoundary, cancellationToken))
             return null;
         // Ronda 19 (t1-c01 «ponme algo de los prisioneros», Opera closed): a browser this request launched has no
@@ -210,9 +210,9 @@ internal sealed partial class UserBrowserSurface
         StreamingSearch search = SearchFor(service, title);
         IReadOnlyList<UserMediaSession>? sessionsRead = await _platform.ReadMediaSessionsAsync(cancellationToken)
             .ConfigureAwait(false);
-        if (sessionsRead is null && _platform.ListWindows(browser.ProcessName).Count > 0)
+        if (sessionsRead is null)
             return ExternalJson.FailureBeforeEffect(operation, MediaSessionsNotRead);
-        IReadOnlyList<UserMediaSession> sessionsBefore = sessionsRead ?? [];
+        IReadOnlyList<UserMediaSession> sessionsBefore = sessionsRead;
         NavigationBaseline windowsBefore = await BaselineAsync(browser, cancellationToken).ConfigureAwait(false);
         if (!TryOpen(search.Address, effectBoundary, cancellationToken))
             return null;
