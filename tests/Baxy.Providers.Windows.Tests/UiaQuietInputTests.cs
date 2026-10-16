@@ -443,7 +443,6 @@ public sealed class UiaQuietInputTests
             Assert.That(loaded, Is.GreaterThan(0));
             Assert.That(install, Is.GreaterThan(loaded), "installed after the client is loaded (before, it is absent)");
             Assert.That(install, Is.LessThan(loop), "installed before the first command");
-            Assert.That(text, Does.Contain("quietInput=$script:QuietInput"), "the ping says whether it is on");
         });
     }
 

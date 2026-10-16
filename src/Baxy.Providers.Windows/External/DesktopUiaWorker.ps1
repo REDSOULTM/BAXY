@@ -1060,12 +1060,11 @@ $AE=[System.Windows.Automation.AutomationElement]
 # SysTreeView32, SysListView32, Button, Static) llega como un Pane opaco con el texto de su ventana (medido: una tabla
 # de caracteres del sistema, 21 Pane y 1 Edit; con ellos, sus ComboBox, Button, Edit y ListItem; el arbol de carpetas del shell, de 0 a 21
 # TreeItem). Se registran una vez, despues de la primera llamada a UIA (antes de ella el registro falla con
-# NullReference), con la version, la cultura y la clave del propio cliente. El ping dice si se cargaron.
+# NullReference), con la version, la cultura y la clave del propio cliente.
 # Se registra su tabla por clase de ventana, sin la entrada sin clase (el puente MSAA nativo para cualquier ventana que
 # responde IAccessible por si misma): por ella el contenido de una ventana CEF sin UIA llegaba nodo a nodo entre procesos
 # (medido en vivo 2026-10-08: el lanzador de un juego, miles de nodos a ~10 ms cada uno, la vista agotaba sus 20 s y la
 # mision paraba con computer_use_view_unavailable; sin ella, 3 nodos en 16 ms y la vista sigue por lo dibujado).
-$script:ClientProviders=$false
 try {
   $null=$AE::RootElement
   $providers=$AE.Assembly.GetName()
@@ -1074,12 +1073,10 @@ try {
   $byClass=@($providerTable | Where-Object { -not [string]::IsNullOrEmpty($_.ClassName) })
   if($byClass.Count -gt 0){
     [System.Windows.Automation.ClientSettings]::RegisterClientSideProviders([System.Windows.Automation.ClientSideProviderDescription[]]$byClass)
-    $script:ClientProviders=$true
   }
 } catch {}
 # El cliente UIA ya esta cargado (RootElement): su SendInput deja de llegar a la pantalla (BaxyUiaQuietInput, r4a M1).
-$script:QuietInput='off'
-try { $script:QuietInput=[BaxyUiaQuietInput]::Install('UIAutomationCore.dll') } catch { $script:QuietInput='failed' }
+try { [void][BaxyUiaQuietInput]::Install('UIAutomationCore.dll') } catch {}
 # Ronda 21 (v3-64): un encabezado de columna (HeaderItem) se pulsa para ordenar por esa columna: es accionable.
 $Actionable=@('Button','MenuItem','ListItem','TabItem','Hyperlink','CheckBox','RadioButton','Edit','ComboBox','TreeItem','SplitButton','Slider','Document','HeaderItem')
 $script:LastView=@{ hwnd=[IntPtr]::Zero; elements=@{} }
@@ -4139,7 +4136,7 @@ while($true){
     $request=$line | ConvertFrom-Json
     $cmd=[string]$request.cmd
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
-    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput } }
+    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }

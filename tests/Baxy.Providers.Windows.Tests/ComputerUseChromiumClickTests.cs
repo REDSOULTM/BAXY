@@ -388,9 +388,9 @@ public sealed class ComputerUseChromiumClickTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(ping?.RootElement.GetProperty("renderClasses").EnumerateArray().Select(item => item.GetString()),
-                Is.EqualTo(new[] { "BaxyTestSurface" }), "a ping without classes keeps the host's");
-            Assert.That(handed?.RootElement.GetProperty("line").GetString(), Does.Contain("\"value\":\"True\""));
+            Assert.That(ping?.RootElement.GetProperty("ok").GetBoolean(), Is.True);
+            Assert.That(handed?.RootElement.GetProperty("line").GetString(), Does.Contain("\"value\":\"True\""),
+                "a ping without classes keeps the host's");
             Assert.That(other?.RootElement.GetProperty("line").GetString(), Does.Contain("\"value\":\"False\""),
                 "counter-case: a class the host did not hand over is no render surface");
         });
