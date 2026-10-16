@@ -99,24 +99,30 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
             if (toastEnabled is bool enabled) writer.WriteBoolean("toastEnabled", enabled);
             if (issueCount > 0 || allRead) writer.WriteBoolean("healthy", issueCount == 0);
             if (observed is not null) writer.WriteNumber("taskCount", observed.Count);
-            if (read is not null) writer.WriteNumber("firedReceiptCount", fired.Count);
-            writer.WriteNumber("firedNotShownCount", firedNotShown);
-            if (firedShownUnread > 0) writer.WriteNumber("firedShownUnreadCount", firedShownUnread);
-            writer.WriteNumber("issueCount", issueCount);
-            writer.WriteStartArray("firedReceipts");
-            foreach (FiredReceipt receipt in fired.Take(ShownFiredReceipts))
+            if (read is not null)
             {
-                writer.WriteStartObject();
-                writer.WriteString("taskName", receipt.TaskName);
-                if (receipt.RangUtc is not null) writer.WriteString("rangUtc", receipt.RangUtc);
-                else writer.WriteNull("rangUtc");
-                if (receipt.NotificationShown is bool shown) writer.WriteBoolean("notificationShown", shown);
-                else writer.WriteNull("notificationShown");
-                if (receipt.Sound is not null) writer.WriteString("sound", receipt.Sound);
-                else writer.WriteNull("sound");
-                writer.WriteEndObject();
+                writer.WriteNumber("firedReceiptCount", fired.Count);
+                writer.WriteNumber("firedNotShownCount", firedNotShown);
             }
-            writer.WriteEndArray();
+            if (firedShownUnread > 0) writer.WriteNumber("firedShownUnreadCount", firedShownUnread);
+            if (issueCount > 0 || allRead) writer.WriteNumber("issueCount", issueCount);
+            if (read is not null)
+            {
+                writer.WriteStartArray("firedReceipts");
+                foreach (FiredReceipt receipt in fired.Take(ShownFiredReceipts))
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("taskName", receipt.TaskName);
+                    if (receipt.RangUtc is not null) writer.WriteString("rangUtc", receipt.RangUtc);
+                    else writer.WriteNull("rangUtc");
+                    if (receipt.NotificationShown is bool shown) writer.WriteBoolean("notificationShown", shown);
+                    else writer.WriteNull("notificationShown");
+                    if (receipt.Sound is not null) writer.WriteString("sound", receipt.Sound);
+                    else writer.WriteNull("sound");
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+            }
             if (observed is not null)
             {
                 writer.WriteStartArray("tasks");

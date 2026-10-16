@@ -1196,10 +1196,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Read-Items {
           $r=@();$node=[System.Windows.Automation.AutomationElement]::FocusedElement
           if($null -eq $node -or $node.Current.ProcessId -ne $clientPid){return ,$r}
-          # Auditoría final (regla 3): the switcher counts as read only with its rows found, or with the focus in a text
-          # field that holds exactly what was typed (the switcher's own input, with no match); a focus left in the
-          # message box is the switcher not read.
-          try{$vp=$null;if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit -and $node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp) -and ([string]$vp.Current.Value) -eq $label){$script:read=$true}}catch{}
+          # Auditoría final (regla 3): the switcher counts as read only with its rows found: a focused field holding the
+          # typed name may be the message box (a lost Ctrl+K), so no rows is the switcher not read, never «no channel».
           $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
           $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
           while($null -ne $node -and $node.Current.ControlType -ne [System.Windows.Automation.ControlType]::Document -and $node.Current.NativeWindowHandle -ne $h.ToInt32()){

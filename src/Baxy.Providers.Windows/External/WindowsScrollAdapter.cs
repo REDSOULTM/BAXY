@@ -309,7 +309,9 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             // Only a search that turned pages moved anything; the others read the tree and failed before an effect.
             // Auditoría final (regla 3): a search cut by its deadline, or a read that failed after a page turned, is said
             // as that, never as the element not being there.
-            string code = error is "reveal_search_incomplete" or "reveal_scroll_reread_failed" ? error : "reveal_not_found";
+            string code = error is "reveal_search_incomplete" or "reveal_scroll_reread_failed" or "reveal_scroll_raised"
+                ? error
+                : "reveal_not_found";
             ExternalCapabilityReceipt missing = method.Length > 0
                 ? effectBoundary.Failure(operation, code, effectObserved: true)
                 : ExternalJson.FailureBeforeEffect(operation, error is "active_window_not_found" ? error : code);

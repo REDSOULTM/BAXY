@@ -8,7 +8,7 @@ holdout nuevo sellado, y documentar el techo como límite honesto con su evidenc
 ## Protocolo de medida
 
 - **Bancos:** sólo los abiertos de práctica.
-  - `renew_v1/practica/decision2.json`: 270 turnos, decisión.
+  - `renew_v1/practica/decision2.json`: 270 turnos, decisión (268 medidos: dos casos de operaciones retiradas quedan fuera).
   - `renew_v1/escenas/practice.json`: 39 escenas, instinto y silencio.
   - `renew_v1/e2e/practice.json`: computer use y voz, sólo en el PC.
 
@@ -39,4 +39,18 @@ holdout nuevo sellado, y documentar el techo como límite honesto con su evidenc
 
 ## Resultados
 
-(se completan con cada medición: brazo, semilla, banco, aciertos, p50, silencios y riesgo)
+Por brazo: aciertos de decisión en las semillas 0, 1 y 2 (media y dispersión), p50 de la decisión, escenas y escenas molestas o de riesgo. El campo `temp` de los registros es la variable de entorno del banco (0.2); en los brazos con temperatura fija (`qwen`, `t07`, `t0`, `think`) no es la que se usó.
+
+**P1, PC (2026-10-16):**
+
+| Brazo | Decisión | Media | Dispersión | p50 | Escenas | Molestas/riesgo |
+|---|---|---|---|---|---|---|
+| `base` | 233, 229, 230 | 230,7 | 4 | 0,891 s | 31, 31, 31 | 0/0 |
+| `qwen` | 232, 225, 231 | 229,3 | 7 | 0,922 s | 30, 33, 30 | 0/0 |
+| `t07` | 229, 217, 229 | 225,0 | 12 | 0,813 s | 32, 33, 30 | 0/0 |
+
+En el notebook, `base` dio 231, 234 y 230 (media 231,7, dispersión 4) y 32/39 en escenas en las tres semillas. Ninguna variante de P1 supera a `base`, así que **se queda el muestreo actual**.
+
+**P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas**: pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió tres descripciones; `base` se mide otra vez sobre esa mente, `base9e`.)
+
+Las escenas no varían con la semilla en `base`: el latido decide en greedy con semilla 0 fija. Su ruido se toma de lo observado entre corridas y commits, unos ±2.

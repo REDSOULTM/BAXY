@@ -42,7 +42,8 @@ def main() -> None:
             arm["risky"].append(summary.get("risky_alone", 0))
     for name, arm in arms.items():
         dec, esc = arm["dec"], arm["esc"]
-        print(f"{name:8} dec {dec} mean {statistics.mean(dec):.1f} spread {max(dec) - min(dec) if dec else 0} "
+        mean = f"{statistics.mean(dec):.1f}" if dec else "-"
+        print(f"{name:8} dec {dec} mean {mean} spread {max(dec) - min(dec) if dec else 0} "
               f"p50 {statistics.median(arm['p50']) if arm['p50'] else '-'} | esc {esc} "
               f"annoying {sum(arm['annoying'])} risky {sum(arm['risky'])}")
 

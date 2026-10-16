@@ -3107,7 +3107,6 @@ function Do-Postread($request){
   } else {
     $button=$pending.element
     $was=$pending.stateBefore
-    $alreadySelected=$false
     try {
       $enabledNow=[bool]$button.Current.IsEnabled; $offscreenNow=[bool]$button.Current.IsOffscreen
       if((-not $enabledNow -and -not ($null -ne $was -and $was.enabled -eq $false)) -or ($offscreenNow -and -not ($null -ne $was -and $was.offscreen -eq $true))){$absent=$true}
@@ -3142,7 +3141,6 @@ function Do-Postread($request){
       if(-not $selected -and -not $toggled -and @('double','menu','open') -notcontains [string]$pending.manner -and $null -eq $pending.placeBefore -and
          (Test-LineageToggled $pending.lineageToggles)){ $toggled=$true }
       if(-not $selected -and -not $toggled -and $null -ne $pending.fieldBefore){ $fieldTook=Test-FieldTook $button $pending.fieldBefore }
-      if(-not $absent -and -not $selected -and -not $toggled -and -not $fieldTook -and $null -ne $was -and $was.selected -eq $true -and (Test-Selected $button)){ $alreadySelected=$true }
     }
     catch [System.Windows.Automation.ElementNotAvailableException] {$absent=$true}
   }
@@ -3172,13 +3170,6 @@ function Do-Postread($request){
     if($dialog){ $took.dialogOpened=$true }
     if($pending.blocked){ $took.blocked=$true }
     return $took
-  }
-  # Already selected before the press and still so, nothing else changed: the state asked for was there (changed:false).
-  if([bool]$alreadySelected -and -not $dialog){
-    $script:Pending=$null
-    $there=Click-Result $true $false '' $pending.name $pending.identity $false $true $false $pending.kind
-    $there.method=[string]$pending.method; $there.alreadyReached=$true
-    return $there
   }
   if(-not $absent -and -not $selected -and -not $toggled){
     $unchanged=Click-Result $false $true 'visible_button_postread_unchanged' $pending.name $pending.identity $false $false $false $pending.kind
@@ -3424,6 +3415,13 @@ function Do-ClickJudged($request){
   # Auditoría final (regla 3): the control's own state before the press, so its postread counts only what changed
   # (a control already offscreen, disabled or selected is no proof of this press).
   $stateBefore=Get-PressState $button
+  # A tab already the selected one is the state asked for: nothing is pressed and it is said as that (changed:false).
+  # Any other control already selected is pressed (a row opens, a page goes back), and its mark proves nothing.
+  if($manner.Length -eq 0 -and $kind -eq 'TabItem' -and $stateBefore.selected -eq $true){
+    $there=Click-Result $true $false '' $name $identity $false $true $false $kind
+    $there.method='select'; $there.alreadyReached=$true
+    return $there
+  }
   if($manner.Length -gt 0){
     try { $done=Invoke-MannerControl $button $root $target.hwnd $manner }
     catch [System.Windows.Automation.ElementNotEnabledException] { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
@@ -3813,7 +3811,11 @@ function Do-Reveal($request){
   $ended=$false
   for($page=0;$page -lt $pages -and [DateTime]::UtcNow -lt $deadline;$page++){
     try { $before=[double]$scroller.Current.VerticalScrollPercent } catch { return (Reveal-Result $false 'reveal_scroll_reread_failed' $moved $null) }
-    try { $scroller.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) } catch { break }
+    # Only a refused call (no scroll there, an invalid amount) moved nothing; any other failure may have scrolled.
+    try { $scroller.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) }
+    catch [System.InvalidOperationException] { break }
+    catch [System.ArgumentException] { break }
+    catch { return (Reveal-Result $false 'reveal_scroll_raised' 'scroll' $null) }
     $moved='scroll'
     # Solo lo que contiene el contenedor que se desplaza: el resto de la ventana no cambio con la pagina.
     try {
