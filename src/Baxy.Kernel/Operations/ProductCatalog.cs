@@ -878,10 +878,9 @@ public static class ProductCatalog
             "Invoca un único control visible por etiqueta, o por el índice o la identidad que dio la vista, en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada."),
         Descriptor(
             "input.visible.controls",
-            // Motor de computer use (CONTRATO_VISTA_ACCION.md §1): la vista compacta
-            // —índice, tipo, etiqueta, estado, rectángulo, zona y color de cada
-            // control, texto por zonas, título y proceso— y la espera acotada de
-            // una etiqueta que la aplicación aún no dibujó.
+            // La vista compacta que lee el modelo (ScreenViewProjection): número, tipo,
+            // etiqueta y estado de cada control, el texto por zonas, título y proceso,
+            // y la espera acotada de una etiqueta que la aplicación aún no dibujó.
             Schema(
                 [
                     // La aplicación a mirar: la ventana cuyo título la nombra es la
@@ -909,7 +908,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "input.visible.controls.windows.uia.snapshot.v2",
-            "Vista compacta de la ventana en primer plano: hasta sesenta controles visibles y habilitados con índice, tipo, etiqueta, estado, rectángulo, zona y color, el texto leído por zonas, el título y el proceso; no toca nada."),
+            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas, el título y el proceso; no toca nada."),
         Descriptor(
             "media.control",
             Schema(

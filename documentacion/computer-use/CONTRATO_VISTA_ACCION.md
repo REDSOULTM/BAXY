@@ -1,3 +1,6 @@
+> **Histórico (anterior a BAXY Renew).** La misión de computer use se retiró; varios campos de la vista que nombra este
+> contrato ya no existen. Lo que hoy lee el modelo está en `src/Baxy.App/ScreenViewProjection.cs`.
+
 # Computer use — contrato de vista y acción
 
 Fase 4 del plan post-goal C03 (`artifacts/comprobaciones/C03/PLAN_POSTGOAL_2026-09-20.md`),
